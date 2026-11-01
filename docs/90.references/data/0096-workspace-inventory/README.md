@@ -1,6 +1,6 @@
 ---
 title: "Workspace Inventory"
-version: "0.1.0"
+version: "0.2.0"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
@@ -82,6 +82,44 @@ rtk python3 scripts/operations/workspace-inventory.py scan --root . --output _wo
 사설 입력은 합성 파일로 대체하고 경계 밖 포함·상속 경로는 거부한다. 각 사례의
 성공·실패·오류·시간 예산으로 인한 미실행을 따로 남긴다. 수집이나 메타데이터
 검증 명령의 성공을 모든 구성 사례 또는 실제 서비스 실행의 성공으로 읽지 않는다.
+
+`--render-inputs`는 `--render`와 함께 사용하는 명시적 합성 입력 계약 파일이다.
+파일 전체는 사례 목록이어야 한다. 각 사례는 `source`, `selection`으로 식별하며,
+선택 항목 `files`에는 base를 먼저, 선택한 overlay를 마지막에 둔다. `variables`는
+변수 이름을 `directory`, `file`, `image`, `integer`, `port`, `subnet`, `text` 중
+하나에 연결한다. 실제 값은 임시 복제본에서만 생성한다. 선언되지 않은 변수,
+실행 환경을 제어하는 변수 이름, 알 수 없는 자료형과 경계 밖 경로는 거부한다.
+
+다음은 현재 선언된 예제의 합성 입력 메타데이터다. 자격 값이 아닌 자료형만
+기록한다. 전체 원장을 입력 파일로 전달하지 않는다.
+
+```yaml
+- source: examples/operations/postgres-logical-upgrade/docker-compose.yml
+  selection: all-profiles
+  variables:
+    IOR_POSTGRES_PASSWORD: text
+```
+
+공개 계약의 정본 목록은 `data.yaml`의 `compose.synthetic_interpolation_inputs`다.
+이 목록만 실제 존재하는 로컬 메타데이터 파일로 추출한 뒤 `--render-inputs`에
+전달한다. 실제 `.env`나 운영 자격을 입력으로 사용하지 않는다. 공개된 기록은
+변수 이름·자료형·결과만 포함하며 생성한 합성 값도 보관하지 않는다.
+
+루트에 포함되는 leaf와 overlay의 검사는 공통 망 정의를 포함하는 루트 문맥을
+사용한다. 별도 예제는 문서에 지정된 base 조합과 그 조합의 필수 입력을 명시한다.
+누락 입력을 임의의 운영 값으로 채우거나, 실제 예제의 결함을 검사기 성공으로
+바꾸지 않는다. 사례의 안전한 오류 코드와 후속 작성자·재개 조건을 따로 남긴다.
+
+이번 후속 검사는 이전 성공 182건의 원래 실행 시각과 결과를 보존하고, 영향받은
+21건만 다시 실행해 20건 성공·1건 실패를 기록했다. 같은 69개 구성 소스 지문과
+정규화한 호출·준비 입력의 동등성 확인은 이전 결과 재사용의 근거이며 새 구성
+실행 성공이 아니다. 합계는 203건 중 202건 성공이고, 남은 준비 상태 예제의
+망 정의 결함은 정확한 소스·작성권·재개 조건과 함께 별도 인계한다.
+
+선택된 로컬 검사 여섯 묶음과 수정 후 일곱 번째 무결성 검사 720건은 각각
+실제 통과했으며, 마지막 검사에서 P01 48건도 모두 통과했다. 이전 환경별 실패는
+이력으로 보존한다. 별도 실행한 이 결과를 전체 14개 검사 일괄 통과·원격 CI·
+실제 호스트 신뢰·서비스 운영 인수로 확대하지 않는다.
 
 ### Consumers
 

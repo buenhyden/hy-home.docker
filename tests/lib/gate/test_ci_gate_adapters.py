@@ -9,6 +9,7 @@ import os
 import pathlib
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -18,6 +19,7 @@ from collections.abc import Mapping
 from unittest import mock
 
 from scripts.lib.gate import ci_gate_adapters as adapters
+from tests.lib.gate.subprocess_support import root_owned_system_git_fixture
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 REAL_SUBPROCESS_RUN = subprocess.run
@@ -1259,6 +1261,33 @@ class CiGateAdapterTests(unittest.TestCase):
             priority_error.exception.code,
         )
 
+    def test_source_provenance_rejects_untrusted_git_before_reading_index(self) -> None:
+        regular = stat.S_IFREG | 0o755
+        cases = (
+            ("unmapped-owner", "/usr/bin/git", regular, 65534, True),
+            ("user-owned", "/tmp/user-git", regular, 1000, True),
+            ("group-writable", "/usr/bin/git", regular | stat.S_IWGRP, 0, True),
+            ("other-writable", "/usr/bin/git", regular | stat.S_IWOTH, 0, True),
+            ("directory", "/usr/bin/git", stat.S_IFDIR | 0o755, 0, True),
+            ("not-executable", "/usr/bin/git", regular, 0, False),
+            ("relative", "git", regular, 0, True),
+        )
+        for label, path, mode, owner, executable in cases:
+            metadata = os.stat_result((mode, 0, 0, 1, owner, 0, 0, 0, 0, 0))
+            with (
+                self.subTest(case=label),
+                mock.patch.object(pathlib.Path, "stat", return_value=metadata),
+                mock.patch.object(os, "access", return_value=executable),
+                mock.patch.object(adapters.subprocess, "run") as child,
+                self.assertRaisesRegex(adapters.EvidenceError, "trusted Git"),
+            ):
+                adapters._tracked_source_object(
+                    self.root,
+                    "scripts/lib/gate/ci_gate_adapters.py",
+                    {"TRUSTED_GIT_PATH": path},
+                )
+            child.assert_not_called()
+
     def test_run_zizmor_sarif_writes_main_security_evidence_with_artifact_hash(
         self,
     ) -> None:
@@ -1308,6 +1337,7 @@ class CiGateAdapterTests(unittest.TestCase):
             "node": {"status": "NOT_SELECTED", "version": None, "sha256": None},
         }
         with (
+            root_owned_system_git_fixture(),
             mock.patch.object(adapters, "_run_child", side_effect=write_sarif),
             mock.patch.object(
                 adapters,
@@ -1387,6 +1417,7 @@ class CiGateAdapterTests(unittest.TestCase):
         (self.root / "results.sarif").write_bytes(b"stale")
         with (
             self.assertRaises(adapters.AdapterError),
+            root_owned_system_git_fixture(),
             mock.patch.object(adapters, "_run_child", side_effect=write_sarif),
             mock.patch.object(
                 adapters,

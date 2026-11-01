@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import posixpath
+import re
 import subprocess
 import tempfile
 import time
@@ -81,7 +82,9 @@ def _prepare_sources(copied, sources):
         pairs = []
         for key_node, value in merge_entries(node):
             key = key_node.value
-            if key == "env_file" or (key == "file" and parent != "extends"):
+            if key in {"env_file", "label_file"} or (
+                key == "file" and parent != "extends"
+            ):
                 value = yaml.ScalarNode("tag:yaml.org,2002:str", str(synthetic))
                 substitutions.append({"source": source, "field": key})
             elif parent == "include" and key == "project_directory":
@@ -131,7 +134,118 @@ def _prepare_sources(copied, sources):
     return substitutions, blocked
 
 
-def render_inventory(root, document, *, run=None, budget_seconds=120, only_cases=None):
+def _closure(files, compose):
+    pending, result = list(files), set()
+    while pending:
+        source = pending.pop()
+        if source not in result:
+            result.add(source)
+            pending.extend(
+                r["target"]
+                for r in compose["relations"]
+                if r["source"] == source and r.get("target") and r["kind"] != "overlay"
+            )
+    return result
+
+
+def _contracts(inputs, cases, compose):
+    from scripts.lib.ops.workspace_inventory import _require
+
+    _require(isinstance(inputs, list), "Invalid synthetic input contracts.")
+    known = {(c["source"], c["selection"]): c for c in cases}
+    allowed = {r["path"] for r in compose["sources"]}
+    result = {}
+    for item in inputs:
+        _require(
+            isinstance(item, dict)
+            and set(item) <= {"source", "selection", "variables", "files"}
+        )
+        identity = (item.get("source"), item.get("selection"))
+        _require(
+            all(isinstance(v, str) for v in identity)
+            and identity in known
+            and identity not in result
+        )
+        variables = item.get("variables", {})
+        _require(isinstance(variables, dict) and len(variables) <= 128)
+        for name, kind in variables.items():
+            _require(
+                isinstance(name, str)
+                and re.fullmatch(r"[A-Z][A-Z0-9_]{0,99}", name) is not None
+            )
+            _require(
+                not name.startswith(("COMPOSE", "DOCKER", "PYTHON", "LD_", "GIT_"))
+                and name not in {"PATH", "HOME", "ENV", "BASH_ENV", "SHELLOPTS"}
+            )
+            _require(
+                isinstance(kind, str)
+                and kind
+                in {"directory", "file", "image", "integer", "port", "subnet", "text"}
+            )
+        files = item.get("files", known[identity]["files"])
+        _require(
+            isinstance(files, list)
+            and 0 < len(files) <= 8
+            and all(isinstance(p, str) and p in allowed for p in files)
+        )
+        _require(
+            len(set(files)) == len(files) and item["source"] in _closure(files, compose)
+        )
+        overlay = known[identity].get("overlay")
+        if overlay:
+            _require(
+                files[-1] == overlay
+                and item["source"] in _closure(files[:-1], compose),
+                "Selected overlay and preceding base required.",
+            )
+        result[identity] = {**item, "variables": variables, "files": files}
+    return result
+
+
+def _synthetic_environment(copied, contract, ordinal):
+    result = {}
+    for index, (name, kind) in enumerate(sorted(contract["variables"].items())):
+        fixture = copied / ".p01-fixtures" / str(ordinal) / name
+        if kind in {"directory", "file"}:
+            fixture.parent.mkdir(parents=True, exist_ok=True)
+            if kind == "directory":
+                fixture.mkdir()
+            else:
+                fixture.write_text("", encoding="utf-8")
+            value = str(fixture)
+        else:
+            value = {
+                "image": "example.invalid/p01/fixture:synthetic",
+                "integer": "1000",
+                "port": "45678",
+                "subnet": f"10.254.{index}.0/24",
+                "text": "p01-synthetic",
+            }[kind]
+        result[name] = value
+    return result
+
+
+def _failure_reason(stderr):
+    message = (
+        stderr.decode("utf-8", errors="replace")
+        if isinstance(stderr, bytes)
+        else str(stderr or "")
+    )
+    for tokens, reason in (
+        (("required variable", "missing a value"), "missing-required-interpolation"),
+        (("undefined network",), "undefined-network"),
+        (("undefined volume",), "undefined-volume"),
+        (("undefined service",), "undefined-service"),
+        (("neither an image nor a build",), "missing-service-definition"),
+    ):
+        if all(token in message[:16384] for token in tokens):
+            return reason
+    return "configuration-not-rendered"
+
+
+def render_inventory(
+    root, document, *, run=None, budget_seconds=120, only_cases=None, case_inputs=None
+):
     """Render copied public sources only; never contacts Docker's daemon.
 
     Every case is counted, including fragments, exclusions and time-budget
@@ -180,6 +294,27 @@ def render_inventory(root, document, *, run=None, budget_seconds=120, only_cases
             }
             for name in compose["root_services"]
         ]
+    root_sources = {r["source"] for r in root_rows}
+    cases = [
+        {
+            **case,
+            "files": [
+                "docker-compose.yml"
+                if case.get("overlay") and case["source"] in root_sources
+                else case["source"],
+                *([case["overlay"]] if case.get("overlay") else []),
+            ],
+        }
+        for case in cases
+    ]
+    contracts = _contracts([] if case_inputs is None else case_inputs, cases, compose)
+    cases = [
+        {
+            **case,
+            "files": contracts.get((case["source"], case["selection"]), case)["files"],
+        }
+        for case in cases
+    ]
     _require(len(cases) <= 512, "Render case budget exceeded.")
     if only_cases is not None:
         selected = set(only_cases)
@@ -224,34 +359,40 @@ def render_inventory(root, document, *, run=None, budget_seconds=120, only_cases
             if (copied / ".env.example").exists()
             else b""
         )
+        source_variables = {
+            row["path"]: set(
+                re.findall(
+                    r"(?<!\$)\$\{([A-Z][A-Z0-9_]*)", (copied / row["path"]).read_text()
+                )
+            )
+            for row in compose["sources"]
+        }
+        for contract in contracts.values():
+            declared = set().union(
+                *(
+                    source_variables.get(source, set())
+                    for source in _closure(contract["files"], compose)
+                )
+            )
+            _require(
+                set(contract["variables"]) <= declared, "Undeclared synthetic variable."
+            )
         substitutions, blocked = _prepare_sources(copied, compose["sources"])
-        for case in cases:
+        for ordinal, case in enumerate(cases):
             outcome = {
                 "source": case["source"],
                 "selection": case["selection"],
                 "overlay": case.get("overlay"),
                 "environment": "isolated-public-copy",
                 "observed_at": datetime.now(UTC).isoformat(),
+                "files": case["files"],
             }
             if time.monotonic() - start >= budget_seconds:
                 results.append(
                     {**outcome, "result": "NOT_RUN", "reason": "time-budget"}
                 )
                 continue
-            closure, pending = (
-                set(),
-                [case["source"], *([case["overlay"]] if case.get("overlay") else [])],
-            )
-            while pending:
-                member = pending.pop()
-                if member in closure:
-                    continue
-                closure.add(member)
-                pending.extend(
-                    r["target"]
-                    for r in compose["relations"]
-                    if r["source"] == member and r.get("target")
-                )
+            closure = _closure(case["files"], compose)
             if closure.intersection(blocked):
                 results.append(
                     {
@@ -271,9 +412,7 @@ def render_inventory(root, document, *, run=None, budget_seconds=120, only_cases
                 "p01-inventory",
                 "--env-file",
                 str(synthetic),
-                "-f",
-                case["source"],
-                *(["-f", case["overlay"]] if case.get("overlay") else []),
+                *[arg for source in case["files"] for arg in ("-f", source)],
                 *case["argv"],
                 "config",
                 "--no-env-resolution",
@@ -283,11 +422,22 @@ def render_inventory(root, document, *, run=None, budget_seconds=120, only_cases
             ]
             if case.get("service"):
                 command.append(case["service"])
+            case_environment = {
+                **environment,
+                **_synthetic_environment(
+                    copied,
+                    contracts.get(
+                        (case["source"], case["selection"]),
+                        {"files": case["files"], "variables": {}},
+                    ),
+                    ordinal,
+                ),
+            }
             try:
                 response = run(
                     command,
                     cwd=copied,
-                    env=environment,
+                    env=case_environment,
                     capture_output=True,
                     check=False,
                     timeout=min(
@@ -300,7 +450,7 @@ def render_inventory(root, document, *, run=None, budget_seconds=120, only_cases
                             **outcome,
                             "result": "FAIL",
                             "exit_code": response.returncode,
-                            "reason": "configuration-not-rendered",
+                            "reason": _failure_reason(response.stderr),
                         }
                     )
                     continue
@@ -328,6 +478,11 @@ def render_inventory(root, document, *, run=None, budget_seconds=120, only_cases
             **compose,
             "render_cases": results,
             "synthetic_file_inputs": substitutions,
+            "synthetic_interpolation_inputs": [
+                item
+                for identity, item in contracts.items()
+                if identity in {(c["source"], c["selection"]) for c in cases}
+            ],
         },
         "coverage": {
             **document["coverage"],

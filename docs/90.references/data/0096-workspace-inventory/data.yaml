@@ -1,48 +1,30 @@
 schema_version: 1
-observed_at: '2026-11-01T13:17:24.815977Z'
+observed_at: '2026-11-01T14:19:26.910304Z'
 workspace:
   path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: ac573aaa1c0db602e16cdb6e68678ea4d6cfb14d
+  head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
   branch: codex/p01-workspace-inventory
   dirty_paths:
-  - status: 'M '
-    path: .github/workflow-contract.yml
-  - status: 'M '
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-  - status: 'M '
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-  - status: AM
+  - status: ' M'
     path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
-  - status: AM
+  - status: ' M'
     path: docs/90.references/data/0096-workspace-inventory/README.md
-  - status: 'A '
-    path: docs/90.references/data/0096-workspace-inventory/data.yaml
-  - status: 'M '
-    path: docs/90.references/data/README.md
-  - status: 'M '
-    path: docs/99.templates/registry.json
-  - status: 'A '
+  - status: ' M'
     path: scripts/lib/ops/_workspace_render.py
-  - status: AM
-    path: scripts/lib/ops/_workspace_services.py
-  - status: 'A '
-    path: scripts/lib/ops/workspace_inventory.py
-  - status: 'M '
-    path: scripts/manifest.yaml
-  - status: 'A '
+  - status: ' M'
     path: scripts/operations/workspace-inventory.py
-  - status: 'A '
+  - status: ' M'
+    path: tests/lib/gate/subprocess_support.py
+  - status: ' M'
+    path: tests/lib/gate/test_ci_gate_adapters.py
+  - status: ' M'
     path: tests/lib/ops/test_workspace_inventory.py
-  - status: AM
-    path: tests/lib/ops/test_workspace_services.py
-  - status: 'M '
-    path: tests/validation/_script_manifest_support.py
-  - status: MM
+  - status: ' M'
     path: tests/validation/test_ci_gate_plan.py
-  - status: 'A '
+  - status: ' M'
     path: tests/validation/test_workspace_inventory.py
   worktrees:
   - in_boundary: true
@@ -57,7 +39,7 @@ roots:
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: ac573aaa1c0db602e16cdb6e68678ea4d6cfb14d
+  head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
   branch: codex/p01-workspace-inventory
   dirty_paths: []
   worktrees:
@@ -66,7 +48,7 @@ roots:
   submodules: []
   tracked_query: PASS
   write_boundary: /home/hyunyoun/data/hy-home.docker
-  dirty_count: 18
+  dirty_count: 9
 files:
 - path: .agents/README.md
   tracked: true
@@ -2989,7 +2971,7 @@ files:
   review:
     path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
     reviewer: /root/p01_docs (doc-writer)
-    observed_at: '2026-11-01T13:16:16+00:00'
+    observed_at: '2026-11-01T14:18:17.518585+00:00'
     sha256: d051454790444c51b62628c21c77906e49702ac133ba75f9225e1f6f8781d51f
     scope: P01 authored amendment and governing scope/acceptance links; historical
       completed Task bodies unchanged
@@ -3004,7 +2986,7 @@ files:
   review:
     path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
     reviewer: /root/p01_docs (doc-writer)
-    observed_at: '2026-11-01T13:16:16+00:00'
+    observed_at: '2026-11-01T14:18:17.518585+00:00'
     sha256: 4c78623b1b9b745d2d5679b32bf32b138af5381e49e5b57e36cc65a3ad6c2456
     scope: P01 authored amendment and governing scope/acceptance links; historical
       completed Task bodies unchanged
@@ -3317,16 +3299,18 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
   tracked: true
   kind: document
-  bytes: 17313
+  bytes: 32746
   state: HASHED
-  sha256: ea395dc04f7e44809ed4bad4214ae0550ef54efc243b0a08fcf14ea5923ede2c
+  sha256: a946e47cac814437da5418f941333e76a5bc321548d11d2797d79c07013b7073
   review:
     path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
     reviewer: /root/p01_docs (doc-writer)
-    observed_at: '2026-11-01T13:16:16+00:00'
-    sha256: ea395dc04f7e44809ed4bad4214ae0550ef54efc243b0a08fcf14ea5923ede2c
-    scope: P01 authored amendment and governing scope/acceptance links; historical
-      completed Task bodies unchanged
+    observed_at: '2026-11-01T14:27:45.040366+00:00'
+    sha256: a946e47cac814437da5418f941333e76a5bc321548d11d2797d79c07013b7073
+    scope: Authored P01 current Task and follow-up result reconciliation only; selected7-source-bound
+      checks,720/720 actual resolver,202/203 configuration disposition, one leaf handoff;
+      no historical Task body or operational acceptance.; coordinator QA normalized
+      two extra blank lines after normal-hook MD012 rejection
     complete: false
     state: PARTIAL
 - path: docs/03.specs/0213-dev-data-and-influx-retirement/plan.md
@@ -6444,21 +6428,23 @@ files:
 - path: docs/90.references/data/0096-workspace-inventory/README.md
   tracked: true
   kind: document
-  bytes: 5508
+  bytes: 8195
   state: HASHED
-  sha256: 95b5e0229cadd5d8fc920098b7b3ef1afee024e4ab6081596572fe6d60b8d0b6
+  sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
   review:
     path: docs/90.references/data/0096-workspace-inventory/README.md
     reviewer: /root/p01_docs (doc-writer)
-    observed_at: '2026-11-01T13:16:16+00:00'
-    sha256: 95b5e0229cadd5d8fc920098b7b3ef1afee024e4ab6081596572fe6d60b8d0b6
-    scope: Authored inventory consumer navigation, schema limits and refresh boundary
+    observed_at: '2026-11-01T14:18:17.518585+00:00'
+    sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
+    scope: Authored inventory schema/refresh contract, typed list-only synthetic inputs,
+      bounded182-old/21-new result reuse and selected7-local checks; no machine payload
+      whole-body review.
     complete: false
     state: PARTIAL
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   tracked: true
   kind: configuration
-  bytes: 1112164
+  bytes: 1108350
   state: GENERATED_OUTPUT
 - path: docs/90.references/data/README.md
   tracked: true
@@ -6469,7 +6455,7 @@ files:
   review:
     path: docs/90.references/data/README.md
     reviewer: /root/p01_docs (doc-writer)
-    observed_at: '2026-11-01T13:16:16+00:00'
+    observed_at: '2026-11-01T14:18:17.518585+00:00'
     sha256: 9565e5a6a3b4e3470d0aababfb5c21b77873eab8dd7bb2593f708e0cb82b86ea
     scope: Authored inventory consumer navigation, schema limits and refresh boundary
     complete: false
@@ -8843,7 +8829,7 @@ files:
   review:
     path: docs/99.templates/registry.json
     reviewer: /root/p01_docs (doc-writer)
-    observed_at: '2026-11-01T13:16:16+00:00'
+    observed_at: '2026-11-01T14:18:17.518585+00:00'
     sha256: 7b532443623fcd74a051142b24322264ac3c7ad432364af389a321cdac8094e7
     scope: DATA-0096 allocation segment only; no other Registry field changed
     complete: false
@@ -15417,16 +15403,16 @@ files:
 - path: scripts/lib/ops/_workspace_render.py
   tracked: true
   kind: code
-  bytes: 13061
+  bytes: 18592
   state: HASHED
-  sha256: f745f8ad8fb9bcac309ec3b59082d597ea7fc5eda3b7a9e7ea69abdcec24c69a
+  sha256: 27cfce645f2a15099081e70a89d94702bb96bc0b7a71e4950691d4b860f30537
   review:
     path: scripts/lib/ops/_workspace_render.py
-    sha256: f745f8ad8fb9bcac309ec3b59082d597ea7fc5eda3b7a9e7ea69abdcec24c69a
+    sha256: 27cfce645f2a15099081e70a89d94702bb96bc0b7a71e4950691d4b860f30537
     reviewer: code-reviewer /root/p01_review
-    observed_at: '2026-11-01T13:17:19.313706+00:00'
-    scope: Complete authored source/test body; approved independent review; operational
-      stages excluded.
+    observed_at: '2026-11-01T14:19:21.208120+00:00'
+    scope: Prior complete authored-body review plus independently approved bounded
+      follow-up diff; exact current fingerprint; operational acceptance excluded.
     complete: true
     state: REVIEWED
 - path: scripts/lib/ops/_workspace_services.py
@@ -15758,16 +15744,16 @@ files:
 - path: scripts/operations/workspace-inventory.py
   tracked: true
   kind: code
-  bytes: 4256
+  bytes: 4646
   state: HASHED
-  sha256: 555a868d4c5b1ab795ed06b1777a7c1ef87046a7ad2824d12ff664b84b175fb3
+  sha256: 31ee0f53ba3e93b9d0f4c61ac8ae0cefcbc8cb51c74d2568d752e050cc893a33
   review:
     path: scripts/operations/workspace-inventory.py
-    sha256: 555a868d4c5b1ab795ed06b1777a7c1ef87046a7ad2824d12ff664b84b175fb3
+    sha256: 31ee0f53ba3e93b9d0f4c61ac8ae0cefcbc8cb51c74d2568d752e050cc893a33
     reviewer: code-reviewer /root/p01_review
-    observed_at: '2026-11-01T13:17:19.313795+00:00'
-    scope: Complete authored source/test body; approved independent review; operational
-      stages excluded.
+    observed_at: '2026-11-01T14:19:21.208193+00:00'
+    scope: Prior complete authored-body review plus independently approved bounded
+      follow-up diff; exact current fingerprint; operational acceptance excluded.
     complete: true
     state: REVIEWED
 - path: scripts/requirements-controller.lock
@@ -16765,19 +16751,33 @@ files:
 - path: tests/lib/gate/subprocess_support.py
   tracked: true
   kind: test
-  bytes: 820
+  bytes: 1539
   state: HASHED
-  sha256: 604ef59592299034fc351dd69ad7ea46941a8eed7a9d6a122d3868e9ecf33ee5
+  sha256: b5062e111094b7005216424bcc86a08ae5cb1b19bac91e0a2641b12d974fe7a4
   review:
-    state: UNREVIEWED
+    path: tests/lib/gate/subprocess_support.py
+    sha256: b5062e111094b7005216424bcc86a08ae5cb1b19bac91e0a2641b12d974fe7a4
+    reviewer: code-reviewer /root/p01_review
+    observed_at: '2026-11-01T14:19:21.212449+00:00'
+    scope: Independent current CI fixture/negative-guard diff review only; broader
+      pre-existing body not fully reviewed.
+    complete: false
+    state: PARTIAL
 - path: tests/lib/gate/test_ci_gate_adapters.py
   tracked: true
   kind: test
-  bytes: 75381
+  bytes: 76967
   state: HASHED
-  sha256: ba4cc392f78ce837c74f4e9a3d0a3379a09bcbc0b781ff8571227968180d84a4
+  sha256: 63d707b448aeaf06feaa86ab435f807c251612df035806ce0ce40eb18ef46bdf
   review:
-    state: UNREVIEWED
+    path: tests/lib/gate/test_ci_gate_adapters.py
+    sha256: 63d707b448aeaf06feaa86ab435f807c251612df035806ce0ce40eb18ef46bdf
+    reviewer: code-reviewer /root/p01_review
+    observed_at: '2026-11-01T14:19:21.212599+00:00'
+    scope: Independent current CI fixture/negative-guard diff review only; broader
+      pre-existing body not fully reviewed.
+    complete: false
+    state: PARTIAL
 - path: tests/lib/gate/test_ci_gate_contract.py
   tracked: true
   kind: test
@@ -16997,16 +16997,16 @@ files:
 - path: tests/lib/ops/test_workspace_inventory.py
   tracked: true
   kind: test
-  bytes: 17945
+  bytes: 23302
   state: HASHED
-  sha256: 4ca52a5adb93e4b27936a9aa40e7fd4dd202efc5930a47ba994720e6845878b0
+  sha256: 48fcd1578ff1eadcc99adee3c5b9a7a815cba55f42593965a27d053fe90d0aee
   review:
     path: tests/lib/ops/test_workspace_inventory.py
-    sha256: 4ca52a5adb93e4b27936a9aa40e7fd4dd202efc5930a47ba994720e6845878b0
+    sha256: 48fcd1578ff1eadcc99adee3c5b9a7a815cba55f42593965a27d053fe90d0aee
     reviewer: code-reviewer /root/p01_review
-    observed_at: '2026-11-01T13:17:19.313899+00:00'
-    scope: Complete authored source/test body; approved independent review; operational
-      stages excluded.
+    observed_at: '2026-11-01T14:19:21.208269+00:00'
+    scope: Prior complete authored-body review plus independently approved bounded
+      follow-up diff; exact current fingerprint; operational acceptance excluded.
     complete: true
     state: REVIEWED
 - path: tests/lib/ops/test_workspace_services.py
@@ -17315,11 +17315,18 @@ files:
 - path: tests/validation/test_ci_gate_plan.py
   tracked: true
   kind: test
-  bytes: 95882
+  bytes: 97868
   state: HASHED
-  sha256: e566f71a4e4f5ecdf0eb968d4bc63243a48d4a593e36193e55782b4394bcc526
+  sha256: 2bbc0dc031c59816f2c043d37d0ffaaa9cc29374136e0dfa818ab753c479bff1
   review:
-    state: UNREVIEWED
+    path: tests/validation/test_ci_gate_plan.py
+    sha256: 2bbc0dc031c59816f2c043d37d0ffaaa9cc29374136e0dfa818ab753c479bff1
+    reviewer: code-reviewer /root/p01_review
+    observed_at: '2026-11-01T14:19:21.212737+00:00'
+    scope: Independent current CI fixture/negative-guard diff review only; broader
+      pre-existing body not fully reviewed.
+    complete: false
+    state: PARTIAL
 - path: tests/validation/test_compose_baseline_gates.py
   tracked: true
   kind: test
@@ -18099,24 +18106,24 @@ files:
 - path: tests/validation/test_workspace_inventory.py
   tracked: true
   kind: test
-  bytes: 5775
+  bytes: 6854
   state: HASHED
-  sha256: 73758591d89cc5918fd163600d4bba5a1207864d1fc097f4f4010657c52df903
+  sha256: 72e6aabd3c95f2d57dbed7f71a055879248ce2e91a583d9f1914bb3744442ac2
   review:
     path: tests/validation/test_workspace_inventory.py
-    sha256: 73758591d89cc5918fd163600d4bba5a1207864d1fc097f4f4010657c52df903
+    sha256: 72e6aabd3c95f2d57dbed7f71a055879248ce2e91a583d9f1914bb3744442ac2
     reviewer: code-reviewer /root/p01_review
-    observed_at: '2026-11-01T13:17:19.314078+00:00'
-    scope: Complete authored source/test body; approved independent review; operational
-      stages excluded.
+    observed_at: '2026-11-01T14:19:21.208384+00:00'
+    scope: Prior complete authored-body review plus independently approved bounded
+      follow-up diff; exact current fingerprint; operational acceptance excluded.
     complete: true
     state: REVIEWED
 excluded:
   binary: 34
   code: 125
-  configuration: 326
+  configuration: 341
   document: 102
-  generated: 37953
+  generated: 37976
   private: 204
 opaque:
   git_directories: 1
@@ -33899,54 +33906,77 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 112
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:26.790411+00:00'
+    observed_at: '2026-11-01T13:42:48.187013+00:00'
+    files: &id001
+    - docker-compose.yml
+    - examples/operations/compose-core-readiness/compose.core-runtime.override.yml
     result: FAIL
     exit_code: 1
-    reason: configuration-not-rendered
+    reason: undefined-network
+    evidence_binding: direct-followup-isolated-render
   - source: examples/operations/locust-telemetry/compose.override.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:26.880270+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:51.017431+00:00'
+    files: &id002
+    - labs/locust.yml
+    - examples/operations/locust-telemetry/compose.override.yml
+    result: PASS
+    exit_code: 0
+    service_count: 3
+    evidence_binding: direct-followup-isolated-render
   - source: examples/operations/postgres-logical-upgrade/docker-compose.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:26.964702+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:51.162813+00:00'
+    files: &id003
+    - examples/operations/postgres-logical-upgrade/docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+    evidence_binding: direct-followup-isolated-render
   - source: examples/operations/quality-metrics/docker-compose.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.035494+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:51.259959+00:00'
+    files: &id004
+    - examples/operations/quality-metrics/docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 3
+    evidence_binding: direct-followup-isolated-render
   - source: examples/operations/quality-path-guard/docker-compose.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.118482+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:51.360415+00:00'
+    files: &id005
+    - examples/operations/quality-path-guard/docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+    evidence_binding: direct-followup-isolated-render
   - source: examples/operations/sample-service-delivery/compose.delivery.override.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.195826+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:51.468370+00:00'
+    files: &id006
+    - examples/sample-web-service/docker-compose.yml
+    - examples/operations/sample-service-delivery/compose.delivery.override.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+    evidence_binding: direct-followup-isolated-render
   - source: examples/sample-web-service/docker-compose.yml
     selection: all-profiles
     overlay: null
@@ -33955,126 +33985,179 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: labs/cassandra.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.375929+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:51.575736+00:00'
+    files: &id007
+    - labs/cassandra.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+    evidence_binding: direct-followup-isolated-render
   - source: labs/couchdb.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.453299+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:51.689590+00:00'
+    files: &id008
+    - labs/couchdb.yml
+    result: PASS
+    exit_code: 0
+    service_count: 4
+    evidence_binding: direct-followup-isolated-render
   - source: labs/kafka-cluster.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.527944+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:51.818725+00:00'
+    files: &id009
+    - labs/kafka-cluster.yml
+    result: PASS
+    exit_code: 0
+    service_count: 5
+    evidence_binding: direct-followup-isolated-render
   - source: labs/locust.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.610279+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:51.962225+00:00'
+    files: &id010
+    - labs/locust.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+    evidence_binding: direct-followup-isolated-render
   - source: labs/mongodb.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.686263+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:52.089729+00:00'
+    files: &id011
+    - labs/mongodb.yml
+    result: PASS
+    exit_code: 0
+    service_count: 6
+    evidence_binding: direct-followup-isolated-render
   - source: labs/opensearch-cluster.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.767808+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:52.266723+00:00'
+    files: &id012
+    - labs/opensearch-cluster.yml
+    result: PASS
+    exit_code: 0
+    service_count: 4
+    evidence_binding: direct-followup-isolated-render
   - source: labs/postgresql-ha.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.857521+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:52.455145+00:00'
+    files: &id013
+    - labs/postgresql-ha.yml
+    result: PASS
+    exit_code: 0
+    service_count: 11
+    evidence_binding: direct-followup-isolated-render
   - source: labs/supabase.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:27.939267+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:52.668441+00:00'
+    files: &id014
+    - labs/supabase.yml
+    result: PASS
+    exit_code: 0
+    service_count: 13
+    evidence_binding: direct-followup-isolated-render
   - source: labs/valkey-cluster.yml
     selection: all-profiles
     overlay: null
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:28.028171+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:52.877833+00:00'
+    files: &id015
+    - labs/valkey-cluster.yml
+    result: PASS
+    exit_code: 0
+    service_count: 8
+    evidence_binding: direct-followup-isolated-render
   - source: infra/01-gateway/traefik/docker-compose.yml
     selection: overlay:infra/01-gateway/traefik/compose.window-ca.override.yml
     overlay: infra/01-gateway/traefik/compose.window-ca.override.yml
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:28.112641+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:53.055678+00:00'
+    files: &id016
+    - docker-compose.yml
+    - infra/01-gateway/traefik/compose.window-ca.override.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+    evidence_binding: direct-followup-isolated-render
   - source: infra/02-auth/oauth2-proxy/docker-compose.yml
     selection: overlay:infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
     overlay: infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:28.242735+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:55.640740+00:00'
+    files: &id017
+    - docker-compose.yml
+    - infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+    evidence_binding: direct-followup-isolated-render
   - source: infra/04-data/mng-db/docker-compose.yml
     selection: overlay:infra/04-data/mng-db/docker-compose.n8n-acl.yml
     overlay: infra/04-data/mng-db/docker-compose.n8n-acl.yml
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:28.376683+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:42:58.063761+00:00'
+    files: &id018
+    - docker-compose.yml
+    - infra/04-data/mng-db/docker-compose.n8n-acl.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+    evidence_binding: direct-followup-isolated-render
   - source: infra/07-workflow/airflow/docker-compose.yml
     selection: overlay:infra/07-workflow/airflow/docker-compose.monitor-acl.yml
     overlay: infra/07-workflow/airflow/docker-compose.monitor-acl.yml
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:28.536673+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:43:00.586103+00:00'
+    files: &id019
+    - docker-compose.yml
+    - infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+    evidence_binding: direct-followup-isolated-render
   - source: infra/07-workflow/airflow/docker-compose.yml
     selection: overlay:infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
     overlay: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:28.744141+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:43:03.668845+00:00'
+    files: &id020
+    - docker-compose.yml
+    - infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+    evidence_binding: direct-followup-isolated-render
   - source: infra/07-workflow/n8n/docker-compose.yml
     selection: overlay:infra/07-workflow/n8n/docker-compose.monitor-acl.yml
     overlay: infra/07-workflow/n8n/docker-compose.monitor-acl.yml
     environment: isolated-public-copy
-    observed_at: '2026-11-01T12:52:28.913932+00:00'
-    result: FAIL
-    exit_code: 1
-    reason: configuration-not-rendered
+    observed_at: '2026-11-01T13:43:06.749839+00:00'
+    files: &id021
+    - docker-compose.yml
+    - infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+    evidence_binding: direct-followup-isolated-render
   - source: docker-compose.yml
     selection: overlay:infra/07-workflow/n8n/docker-compose.ollama-local.yml
     overlay: infra/07-workflow/n8n/docker-compose.ollama-local.yml
@@ -34083,6 +34166,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 112
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: overlay:infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
     overlay: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
@@ -34091,6 +34176,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 112
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:admin
     overlay: null
@@ -34099,6 +34186,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:admin-data
     overlay: null
@@ -34107,6 +34196,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:admin-logs
     overlay: null
@@ -34115,6 +34206,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:ai
     overlay: null
@@ -34123,6 +34216,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:ai-image
     overlay: null
@@ -34131,6 +34226,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:ai-llm
     overlay: null
@@ -34139,6 +34236,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:alerting
     overlay: null
@@ -34147,6 +34246,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:analytics-engineering
     overlay: null
@@ -34155,6 +34256,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:api-mock
     overlay: null
@@ -34163,6 +34266,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:auth
     overlay: null
@@ -34171,6 +34276,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:availability
     overlay: null
@@ -34179,6 +34286,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:backup
     overlay: null
@@ -34187,6 +34296,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:batch-metrics
     overlay: null
@@ -34195,6 +34306,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:bi
     overlay: null
@@ -34203,6 +34316,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 7
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:blog-ingestion
     overlay: null
@@ -34211,6 +34326,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:cdc
     overlay: null
@@ -34219,6 +34336,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 9
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:contract-testing
     overlay: null
@@ -34227,6 +34346,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:core
     overlay: null
@@ -34235,6 +34356,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 11
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:crawl4ai
     overlay: null
@@ -34243,6 +34366,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:data-science
     overlay: null
@@ -34251,6 +34376,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 12
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:dedicated-valkey
     overlay: null
@@ -34259,6 +34386,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:dependency-update
     overlay: null
@@ -34267,6 +34396,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:dev
     overlay: null
@@ -34275,6 +34406,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 18
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:dev-data
     overlay: null
@@ -34283,6 +34416,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:experience
     overlay: null
@@ -34291,6 +34426,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:graph
     overlay: null
@@ -34299,6 +34436,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:iac
     overlay: null
@@ -34307,6 +34446,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:lakehouse
     overlay: null
@@ -34315,6 +34456,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 11
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:local
     overlay: null
@@ -34323,6 +34466,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 12
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:logs
     overlay: null
@@ -34331,6 +34476,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 8
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:mail-dev
     overlay: null
@@ -34339,6 +34486,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:mail-server
     overlay: null
@@ -34347,6 +34496,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:messaging
     overlay: null
@@ -34355,6 +34506,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 7
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:messaging-admin
     overlay: null
@@ -34363,6 +34516,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:messaging-broker
     overlay: null
@@ -34371,6 +34526,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:messaging-connect
     overlay: null
@@ -34379,6 +34536,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:messaging-rest
     overlay: null
@@ -34387,6 +34546,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:messaging-schema
     overlay: null
@@ -34395,6 +34556,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:mlops
     overlay: null
@@ -34403,6 +34566,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 11
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:mng
     overlay: null
@@ -34411,6 +34576,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:nginx
     overlay: null
@@ -34419,6 +34586,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:notebook
     overlay: null
@@ -34427,6 +34596,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:obs
     overlay: null
@@ -34435,6 +34606,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 17
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:obs-core
     overlay: null
@@ -34443,6 +34616,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:obs-gpu
     overlay: null
@@ -34451,6 +34626,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:obs-host
     overlay: null
@@ -34459,6 +34636,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:ollama
     overlay: null
@@ -34467,6 +34646,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:opensearch
     overlay: null
@@ -34475,6 +34656,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:policy-check
     overlay: null
@@ -34483,6 +34666,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:profiling
     overlay: null
@@ -34491,6 +34676,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:qdrant
     overlay: null
@@ -34499,6 +34686,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:quality-results
     overlay: null
@@ -34507,6 +34696,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:registry
     overlay: null
@@ -34515,6 +34706,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:sast
     overlay: null
@@ -34523,6 +34716,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:seaweedfs
     overlay: null
@@ -34531,6 +34726,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:secrets
     overlay: null
@@ -34539,6 +34736,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:security
     overlay: null
@@ -34547,6 +34746,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:storage
     overlay: null
@@ -34555,6 +34756,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:storage-seaweedfs
     overlay: null
@@ -34563,6 +34766,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:surrealdb
     overlay: null
@@ -34571,6 +34776,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:testing
     overlay: null
@@ -34579,6 +34786,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:tooling
     overlay: null
@@ -34587,6 +34796,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:tracing
     overlay: null
@@ -34595,6 +34806,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 8
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:workflow
     overlay: null
@@ -34603,6 +34816,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 12
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:workflow-airflow
     overlay: null
@@ -34611,6 +34826,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 8
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: profile:workflow-n8n
     overlay: null
@@ -34619,6 +34836,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:airflow-apiserver
     overlay: null
@@ -34627,6 +34846,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:airflow-dag-processor
     overlay: null
@@ -34635,6 +34856,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:airflow-init
     overlay: null
@@ -34643,6 +34866,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:airflow-scheduler
     overlay: null
@@ -34651,6 +34876,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:airflow-statsd-exporter
     overlay: null
@@ -34659,6 +34886,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:airflow-triggerer
     overlay: null
@@ -34667,6 +34896,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:airflow-valkey
     overlay: null
@@ -34675,6 +34906,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:airflow-valkey-exporter
     overlay: null
@@ -34683,6 +34916,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:airflow-worker
     overlay: null
@@ -34691,6 +34926,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:alertmanager
     overlay: null
@@ -34699,6 +34936,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 10
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:alloy
     overlay: null
@@ -34707,6 +34946,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 9
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:backup-sqlite-export
     overlay: null
@@ -34715,6 +34956,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:blog-ingestion
     overlay: null
@@ -34723,6 +34966,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:cadvisor
     overlay: null
@@ -34731,6 +34976,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:comfyui
     overlay: null
@@ -34739,6 +34986,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:conftest
     overlay: null
@@ -34747,6 +34996,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:crawl4ai
     overlay: null
@@ -34755,6 +35006,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:crawl4ai-egress
     overlay: null
@@ -34763,6 +35016,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dbt
     overlay: null
@@ -34771,6 +35026,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dbt-db-provision
     overlay: null
@@ -34779,6 +35036,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dcgm-exporter
     overlay: null
@@ -34787,6 +35046,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:debezium-db-provision
     overlay: null
@@ -34795,6 +35056,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dev-perf-provision
     overlay: null
@@ -34803,6 +35066,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dev-pg
     overlay: null
@@ -34811,6 +35076,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dev-pg-exporter
     overlay: null
@@ -34819,6 +35086,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dev-pg-monitor-provision
     overlay: null
@@ -34827,6 +35096,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dev-platform-provision
     overlay: null
@@ -34835,6 +35106,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dev-valkey
     overlay: null
@@ -34843,6 +35116,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dev-valkey-exporter
     overlay: null
@@ -34851,6 +35126,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:dozzle
     overlay: null
@@ -34859,6 +35136,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:flink-jobmanager
     overlay: null
@@ -34867,6 +35146,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:flink-taskmanager
     overlay: null
@@ -34875,6 +35156,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 7
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:flower
     overlay: null
@@ -34883,6 +35166,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:gatus
     overlay: null
@@ -34891,6 +35176,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:grafana
     overlay: null
@@ -34899,6 +35186,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 9
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:grafana-db-provision
     overlay: null
@@ -34907,6 +35196,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:great-expectations
     overlay: null
@@ -34915,6 +35206,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 7
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:jupyterlab
     overlay: null
@@ -34923,6 +35216,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 10
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:k6
     overlay: null
@@ -34931,6 +35226,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:kafbat-ui
     overlay: null
@@ -34939,6 +35236,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:kafka-1
     overlay: null
@@ -34947,6 +35246,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:kafka-connect
     overlay: null
@@ -34955,6 +35256,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:kafka-exporter
     overlay: null
@@ -34963,6 +35266,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:kafka-init
     overlay: null
@@ -34971,6 +35276,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:kafka-rest-proxy
     overlay: null
@@ -34979,6 +35286,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:keycloak
     overlay: null
@@ -34987,6 +35296,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:loki
     overlay: null
@@ -34995,6 +35306,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:mailpit
     overlay: null
@@ -35003,6 +35316,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:mlflow
     overlay: null
@@ -35011,6 +35326,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 9
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:mlflow-db-provision
     overlay: null
@@ -35019,6 +35336,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:mng-pg
     overlay: null
@@ -35027,6 +35346,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:mng-pg-exporter
     overlay: null
@@ -35035,6 +35356,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:mng-pg-init
     overlay: null
@@ -35043,6 +35366,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:mng-pg-monitor-provision
     overlay: null
@@ -35051,6 +35376,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:mng-valkey
     overlay: null
@@ -35059,6 +35386,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:mng-valkey-exporter
     overlay: null
@@ -35067,6 +35396,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:n8n
     overlay: null
@@ -35075,6 +35406,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:n8n-task-runner
     overlay: null
@@ -35083,6 +35416,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:n8n-task-runner-worker
     overlay: null
@@ -35091,6 +35426,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:n8n-valkey
     overlay: null
@@ -35099,6 +35436,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:n8n-valkey-exporter
     overlay: null
@@ -35107,6 +35446,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:n8n-worker
     overlay: null
@@ -35115,6 +35456,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:neo4j
     overlay: null
@@ -35123,6 +35466,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:nginx
     overlay: null
@@ -35131,6 +35476,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:node-exporter
     overlay: null
@@ -35139,6 +35486,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:oauth2-proxy
     overlay: null
@@ -35147,6 +35496,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:oauth2-proxy-valkey
     overlay: null
@@ -35155,6 +35506,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:oauth2-proxy-valkey-exporter
     overlay: null
@@ -35163,6 +35516,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:ollama
     overlay: null
@@ -35171,6 +35526,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:ollama-exporter
     overlay: null
@@ -35179,6 +35536,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:open-webui
     overlay: null
@@ -35187,6 +35546,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:open_notebook
     overlay: null
@@ -35195,6 +35556,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:openbao
     overlay: null
@@ -35203,6 +35566,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:openbao-agent
     overlay: null
@@ -35211,6 +35576,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:opensearch
     overlay: null
@@ -35219,6 +35586,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:opensearch-dashboards
     overlay: null
@@ -35227,6 +35596,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:opentofu
     overlay: null
@@ -35235,6 +35606,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:pact-broker
     overlay: null
@@ -35243,6 +35616,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:pact-broker-db-provision
     overlay: null
@@ -35251,6 +35626,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:prometheus
     overlay: null
@@ -35259,6 +35636,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:pushgateway
     overlay: null
@@ -35267,6 +35646,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 10
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:pyroscope
     overlay: null
@@ -35275,6 +35656,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:qdrant
     overlay: null
@@ -35283,6 +35666,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:redisinsight
     overlay: null
@@ -35291,6 +35676,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:registry
     overlay: null
@@ -35299,6 +35686,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:renovate
     overlay: null
@@ -35307,6 +35696,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:restic
     overlay: null
@@ -35315,6 +35706,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:restic-offsite
     overlay: null
@@ -35323,6 +35716,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:schema-registry
     overlay: null
@@ -35331,6 +35726,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:seaweedfs-buckets
     overlay: null
@@ -35339,6 +35736,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:seaweedfs-filer
     overlay: null
@@ -35347,6 +35746,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:seaweedfs-master
     overlay: null
@@ -35355,6 +35756,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:seaweedfs-s3
     overlay: null
@@ -35363,6 +35766,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:seaweedfs-table-bucket
     overlay: null
@@ -35371,6 +35776,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:seaweedfs-volume
     overlay: null
@@ -35379,6 +35786,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:sonarqube
     overlay: null
@@ -35387,6 +35796,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:spark
     overlay: null
@@ -35395,6 +35806,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:stalwart
     overlay: null
@@ -35403,6 +35816,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:stalwart-config
     overlay: null
@@ -35411,6 +35826,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:storybook
     overlay: null
@@ -35419,6 +35836,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:storybook-mcp
     overlay: null
@@ -35427,6 +35846,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:superset
     overlay: null
@@ -35435,6 +35856,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 5
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:superset-db-provision
     overlay: null
@@ -35443,6 +35866,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 3
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:superset-init
     overlay: null
@@ -35451,6 +35876,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 4
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:surrealdb
     overlay: null
@@ -35459,6 +35886,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:tempo
     overlay: null
@@ -35467,6 +35896,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:terrakube-api
     overlay: null
@@ -35475,6 +35906,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:terrakube-executor
     overlay: null
@@ -35483,6 +35916,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:terrakube-ui
     overlay: null
@@ -35491,6 +35926,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 2
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:traefik
     overlay: null
@@ -35499,6 +35936,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:trino
     overlay: null
@@ -35507,6 +35946,8 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 6
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   - source: docker-compose.yml
     selection: service:wiremock
     overlay: null
@@ -35515,19 +35956,431 @@ compose:
     result: PASS
     exit_code: 0
     service_count: 1
+    evidence_binding: prior-measured-pass-equivalent-inputs
+    reuse_evidence: followup-render-equivalence.json
   gaps: []
+  synthetic_interpolation_inputs:
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    selection: all-profiles
+    files: *id001
+    variables:
+      CRR_CONFIG_DIR: directory
+      CRR_SECRET_DIR: directory
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: examples/operations/locust-telemetry/compose.override.yml
+    selection: all-profiles
+    files: *id002
+    variables:
+      LAB_LOCUST_RESULT_DIR: directory
+      LAB_LOCUST_SCENARIO_DIR: directory
+      QUALITY_GID: integer
+      QUALITY_LOCUST_IMAGE: image
+      QUALITY_MAPPINGS_DIR: directory
+      QUALITY_MOCK_IMAGE: image
+      QUALITY_RESULTS_DIR: directory
+      QUALITY_SCENARIO_DIR: directory
+      QUALITY_UID: integer
+  - source: examples/operations/postgres-logical-upgrade/docker-compose.yml
+    selection: all-profiles
+    files: *id003
+    variables:
+      IOR_POSTGRES_PASSWORD: text
+  - source: examples/operations/quality-metrics/docker-compose.yml
+    selection: all-profiles
+    files: *id004
+    variables:
+      METRICS_ALLOY_CONFIG: file
+      METRICS_ALLOY_IMAGE: image
+      METRICS_ALLOY_TOKEN: file
+      METRICS_NETWORK: text
+      METRICS_PROBE_IMAGE: image
+      METRICS_PROM_CONFIG: file
+      METRICS_PROM_IMAGE: image
+  - source: examples/operations/quality-path-guard/docker-compose.yml
+    selection: all-profiles
+    files: *id005
+    variables:
+      QUALITY_BACKEND_NETWORK: text
+      QUALITY_BACKEND_SUBNET: subnet
+      QUALITY_GUARD_CONFIG: file
+      QUALITY_GUARD_IMAGE: image
+      QUALITY_MOCK_IMAGE: image
+      QUALITY_MOCK_MAPPINGS: directory
+      QUALITY_RUNNER_NETWORK: text
+      QUALITY_RUNNER_SUBNET: subnet
+      QUALITY_RUN_ID: text
+  - source: examples/operations/sample-service-delivery/compose.delivery.override.yml
+    selection: all-profiles
+    files: *id006
+    variables:
+      DRE_HOST_PORT: port
+      DRE_IMAGE_REF: image
+      DRE_ROLE: text
+      DRE_TASK_ID: text
+  - source: labs/cassandra.yml
+    selection: all-profiles
+    files: *id007
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/couchdb.yml
+    selection: all-profiles
+    files: *id008
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/kafka-cluster.yml
+    selection: all-profiles
+    files: *id009
+    variables:
+      LAB_DATA_DIR: directory
+      LAB_KAFKA_CLUSTER_ID: text
+  - source: labs/locust.yml
+    selection: all-profiles
+    files: *id010
+    variables:
+      LAB_LOCUST_RESULT_DIR: directory
+      LAB_LOCUST_SCENARIO_DIR: directory
+  - source: labs/mongodb.yml
+    selection: all-profiles
+    files: *id011
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/opensearch-cluster.yml
+    selection: all-profiles
+    files: *id012
+    variables:
+      LAB_DATA_DIR: directory
+      LAB_OPENSEARCH_CERT_DIR: directory
+      LAB_SECRET_DIR: directory
+  - source: labs/postgresql-ha.yml
+    selection: all-profiles
+    files: *id013
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/supabase.yml
+    selection: all-profiles
+    files: *id014
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/valkey-cluster.yml
+    selection: all-profiles
+    files: *id015
+    variables:
+      LAB_DATA_DIR: directory
+  - source: infra/01-gateway/traefik/docker-compose.yml
+    selection: overlay:infra/01-gateway/traefik/compose.window-ca.override.yml
+    files: *id016
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: infra/02-auth/oauth2-proxy/docker-compose.yml
+    selection: overlay:infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+    files: *id017
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: infra/04-data/mng-db/docker-compose.yml
+    selection: overlay:infra/04-data/mng-db/docker-compose.n8n-acl.yml
+    files: *id018
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: infra/07-workflow/airflow/docker-compose.yml
+    selection: overlay:infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+    files: *id019
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: infra/07-workflow/airflow/docker-compose.yml
+    selection: overlay:infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
+    files: *id020
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+      OPSFLOW_AIRFLOW_IMAGE: image
+      OPSFLOW_CODE_DIR: directory
+      OPSFLOW_SECRET_DIR: directory
+  - source: infra/07-workflow/n8n/docker-compose.yml
+    selection: overlay:infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+    files: *id021
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  synthetic_file_inputs:
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/sample-service-delivery/compose.delivery.override.yml
+    field: env_file
+  - source: examples/sample-web-service/docker-compose.yml
+    field: env_file
+  - source: labs/couchdb.yml
+    field: file
+  - source: labs/couchdb.yml
+    field: file
+  - source: labs/mongodb.yml
+    field: file
+  - source: labs/mongodb.yml
+    field: file
+  - source: labs/opensearch-cluster.yml
+    field: file
+  - source: labs/opensearch-cluster.yml
+    field: file
+  - source: labs/opensearch-cluster.yml
+    field: file
+  - source: labs/opensearch-cluster.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/valkey-cluster.yml
+    field: file
+  render_evidence_reuse:
+    kind: isolated invocation and transformed public-YAML equivalence; mocked callbacks
+      are NOT Compose acceptance
+    cases: 182
+    source_count: 69
+    source_fingerprints_equal: true
+    argv_environment_transformed_sources_equal: true
+    prior_measured_results_reused: 182
+    affected_cases_rerun: 21
+    prior_evidence_source: Git2fc98e1e2 DATA0096 render_cases
+    runtime: NOT_RUN
 coverage:
   files:
-    numerator: 40991
-    denominator: 40991
+    numerator: 41029
+    denominator: 41029
   body_review:
     numerator: 7
     denominator: 2240
   body_review_partial:
-    numerator: 6
+    numerator: 9
     denominator: 2240
   render:
-    numerator: 182
+    numerator: 202
     denominator: 203
   runtime:
     numerator: 0
@@ -35553,8 +36406,24 @@ requirements:
   evidence:
   - DATA-0096
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
-  limit: SOURCE_READY implementation; required exact interpreter gate and broader
-    Git-trust CI result remain unresolved. Operational stages remain separate.
+  limit: SOURCE_READY bounded P01 implementation. Selected existingPython3.14.8 with
+    locked dependencies/seals preflight PASS; six registered CI leaves PASS and corrected
+    exact seventh repository-integrity720tests PASS278.518s exit0, including48/48
+    P01 cases. These source-bound checks are separate executions, not one full14 aggregate
+    or remote CI. Current configuration202/203 leaves one readiness fixture handoff;
+    final P12/operator acceptance and operational axes remain separate. Actual restricted-namespace
+    ambient GitUID denial is not hosted acceptance.
+  historical_environment_block: Initial system Python 3.12.3 mismatched the required
+    version and one other installed 3.14.8 build lacked F_ADD_SEALS; this is not the
+    current selected-toolchain result.
+  source_verification: 'PASS: bounded authored source and independent exact-fingerprint
+    review'
+  static_checks: 'PASS: selected local metadata/format/source checks with individual
+    evidence scopes'
+  isolated_tests: 'PASS: focused48/48 plus final registered integrity720/720; no live
+    service operations'
+  registered_selected_local_checks: 'PASS: six prior selected CI leaves and separately
+    corrected seventh integrity leaf; no full14 aggregate claim'
 - id: P01.02
   criterion: 52
   work_unit: W57
@@ -35572,8 +36441,24 @@ requirements:
   evidence:
   - DATA-0096
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
-  limit: SOURCE_READY implementation; required exact interpreter gate and broader
-    Git-trust CI result remain unresolved. Operational stages remain separate.
+  limit: SOURCE_READY bounded P01 implementation. Selected existingPython3.14.8 with
+    locked dependencies/seals preflight PASS; six registered CI leaves PASS and corrected
+    exact seventh repository-integrity720tests PASS278.518s exit0, including48/48
+    P01 cases. These source-bound checks are separate executions, not one full14 aggregate
+    or remote CI. Current configuration202/203 leaves one readiness fixture handoff;
+    final P12/operator acceptance and operational axes remain separate. Actual restricted-namespace
+    ambient GitUID denial is not hosted acceptance.
+  historical_environment_block: Initial system Python 3.12.3 mismatched the required
+    version and one other installed 3.14.8 build lacked F_ADD_SEALS; this is not the
+    current selected-toolchain result.
+  source_verification: 'PASS: bounded authored source and independent exact-fingerprint
+    review'
+  static_checks: 'PASS: selected local metadata/format/source checks with individual
+    evidence scopes'
+  isolated_tests: 'PASS: focused48/48 plus final registered integrity720/720; no live
+    service operations'
+  registered_selected_local_checks: 'PASS: six prior selected CI leaves and separately
+    corrected seventh integrity leaf; no full14 aggregate claim'
 - id: P01.03
   criterion: 53
   work_unit: W58
@@ -35591,8 +36476,24 @@ requirements:
   evidence:
   - DATA-0096
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
-  limit: SOURCE_READY implementation; required exact interpreter gate and broader
-    Git-trust CI result remain unresolved. Operational stages remain separate.
+  limit: SOURCE_READY bounded P01 implementation. Selected existingPython3.14.8 with
+    locked dependencies/seals preflight PASS; six registered CI leaves PASS and corrected
+    exact seventh repository-integrity720tests PASS278.518s exit0, including48/48
+    P01 cases. These source-bound checks are separate executions, not one full14 aggregate
+    or remote CI. Current configuration202/203 leaves one readiness fixture handoff;
+    final P12/operator acceptance and operational axes remain separate. Actual restricted-namespace
+    ambient GitUID denial is not hosted acceptance.
+  historical_environment_block: Initial system Python 3.12.3 mismatched the required
+    version and one other installed 3.14.8 build lacked F_ADD_SEALS; this is not the
+    current selected-toolchain result.
+  source_verification: 'PASS: bounded authored source and independent exact-fingerprint
+    review'
+  static_checks: 'PASS: selected local metadata/format/source checks with individual
+    evidence scopes'
+  isolated_tests: 'PASS: focused48/48 plus final registered integrity720/720; no live
+    service operations'
+  registered_selected_local_checks: 'PASS: six prior selected CI leaves and separately
+    corrected seventh integrity leaf; no full14 aggregate claim'
 - id: P01.04
   criterion: 54
   work_unit: W59
@@ -35610,8 +36511,24 @@ requirements:
   evidence:
   - DATA-0096
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
-  limit: SOURCE_READY implementation; required exact interpreter gate and broader
-    Git-trust CI result remain unresolved. Operational stages remain separate.
+  limit: SOURCE_READY bounded P01 implementation. Selected existingPython3.14.8 with
+    locked dependencies/seals preflight PASS; six registered CI leaves PASS and corrected
+    exact seventh repository-integrity720tests PASS278.518s exit0, including48/48
+    P01 cases. These source-bound checks are separate executions, not one full14 aggregate
+    or remote CI. Current configuration202/203 leaves one readiness fixture handoff;
+    final P12/operator acceptance and operational axes remain separate. Actual restricted-namespace
+    ambient GitUID denial is not hosted acceptance.
+  historical_environment_block: Initial system Python 3.12.3 mismatched the required
+    version and one other installed 3.14.8 build lacked F_ADD_SEALS; this is not the
+    current selected-toolchain result.
+  source_verification: 'PASS: bounded authored source and independent exact-fingerprint
+    review'
+  static_checks: 'PASS: selected local metadata/format/source checks with individual
+    evidence scopes'
+  isolated_tests: 'PASS: focused48/48 plus final registered integrity720/720; no live
+    service operations'
+  registered_selected_local_checks: 'PASS: six prior selected CI leaves and separately
+    corrected seventh integrity leaf; no full14 aggregate claim'
 - id: P01.05
   criterion: 55
   work_unit: W60
@@ -35629,8 +36546,24 @@ requirements:
   evidence:
   - DATA-0096
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
-  limit: SOURCE_READY implementation; required exact interpreter gate and broader
-    Git-trust CI result remain unresolved. Operational stages remain separate.
+  limit: SOURCE_READY bounded P01 implementation. Selected existingPython3.14.8 with
+    locked dependencies/seals preflight PASS; six registered CI leaves PASS and corrected
+    exact seventh repository-integrity720tests PASS278.518s exit0, including48/48
+    P01 cases. These source-bound checks are separate executions, not one full14 aggregate
+    or remote CI. Current configuration202/203 leaves one readiness fixture handoff;
+    final P12/operator acceptance and operational axes remain separate. Actual restricted-namespace
+    ambient GitUID denial is not hosted acceptance.
+  historical_environment_block: Initial system Python 3.12.3 mismatched the required
+    version and one other installed 3.14.8 build lacked F_ADD_SEALS; this is not the
+    current selected-toolchain result.
+  source_verification: 'PASS: bounded authored source and independent exact-fingerprint
+    review'
+  static_checks: 'PASS: selected local metadata/format/source checks with individual
+    evidence scopes'
+  isolated_tests: 'PASS: focused48/48 plus final registered integrity720/720; no live
+    service operations'
+  registered_selected_local_checks: 'PASS: six prior selected CI leaves and separately
+    corrected seventh integrity leaf; no full14 aggregate claim'
 - id: R26
   route: P01.01
   subject: 시험·언어 앱 제외
@@ -35970,6 +36903,7 @@ ownership:
   section: identity_spaces.data
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  current_followup_sha256: 7b532443623fcd74a051142b24322264ac3c7ad432364af389a321cdac8094e7
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
   before_sha256: 71b9d881337f64c3b788ff5ffb16388f0c41b29fa31b1655ec8dd77e98db9346
   writer: doc-writer
@@ -35984,6 +36918,7 @@ ownership:
     inputs invalidate only this file lease.
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  current_followup_sha256: 4c78623b1b9b745d2d5679b32bf32b138af5381e49e5b57e36cc65a3ad6c2456
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   before_sha256: bd5f2457546b33264241cc3f9dedc52a1bb4514e0c08f6f49d8f6cd5562c9466
   writer: doc-writer
@@ -35998,6 +36933,7 @@ ownership:
     inputs invalidate only this file lease.
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  current_followup_sha256: d051454790444c51b62628c21c77906e49702ac133ba75f9225e1f6f8781d51f
 - path: docs/90.references/data/README.md
   before_sha256: e111ca9118fbf4b1ab595fdd68333900a424d9323380563d5b4976b241fa3981
   writer: doc-writer
@@ -36012,6 +36948,7 @@ ownership:
     inputs invalidate only this file lease.
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  current_followup_sha256: 9565e5a6a3b4e3470d0aababfb5c21b77873eab8dd7bb2593f708e0cb82b86ea
 - path: scripts/operations/workspace-inventory.py
   writer: qa-engineer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -36025,6 +36962,16 @@ ownership:
   fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated here
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  followup_lease:
+    source_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+    before_sha256: 555a868d4c5b1ab795ed06b1777a7c1ef87046a7ad2824d12ff664b84b175fb3
+    writer: /root (qa-engineer integration)
+    scope: P01 renderer context, explicit typed synthetic input contracts and safe
+      error metadata only
+    review: Independent source/security review pending final follow-up fingerprints
+    body_review: PARTIAL for CI files; do not infer whole-file completeness or current-host
+      trust
+  current_followup_sha256: 31ee0f53ba3e93b9d0f4c61ac8ae0cefcbc8cb51c74d2568d752e050cc893a33
 - path: scripts/lib/ops/workspace_inventory.py
   writer: qa-engineer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -36064,6 +37011,16 @@ ownership:
   fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated here
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  followup_lease:
+    source_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+    before_sha256: 4ca52a5adb93e4b27936a9aa40e7fd4dd202efc5930a47ba994720e6845878b0
+    writer: /root (qa-engineer integration)
+    scope: P01 renderer context, explicit typed synthetic input contracts and safe
+      error metadata only
+    review: Independent source/security review pending final follow-up fingerprints
+    body_review: PARTIAL for CI files; do not infer whole-file completeness or current-host
+      trust
+  current_followup_sha256: 48fcd1578ff1eadcc99adee3c5b9a7a815cba55f42593965a27d053fe90d0aee
 - path: scripts/manifest.yaml
   writer: ci-cd-engineer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -36114,6 +37071,16 @@ ownership:
   authority: direct2026-11-01 request and coordinator allocation
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  followup_lease:
+    source_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+    before_sha256: 73758591d89cc5918fd163600d4bba5a1207864d1fc097f4f4010657c52df903
+    writer: /root (qa-engineer integration)
+    scope: P01 renderer context, explicit typed synthetic input contracts and safe
+      error metadata only
+    review: Independent source/security review pending final follow-up fingerprints
+    body_review: PARTIAL for CI files; do not infer whole-file completeness or current-host
+      trust
+  current_followup_sha256: 72e6aabd3c95f2d57dbed7f71a055879248ce2e91a583d9f1914bb3744442ac2
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
   writer: doc-writer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -36126,6 +37093,15 @@ ownership:
   authority: direct2026-11-01 request and coordinator allocation
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  followup_lease:
+    baseline_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+    writer: doc-writer /root/p01_docs
+    scope: Current P01 Task/README result-only admission, typed-input contract, selected-local-check
+      evidence and precise handoff; no historical Task or data.yaml authoring
+    current_followup_sha256: bb6bd352dd59dae33931fa57dad378d9f7d7a86017f35d316bb3f89f079197ba
+    review: PARTIAL authored section receipt; complete false
+    released_at: '2026-11-01T14:18:17.518585+00:00'
+  current_followup_sha256: bb6bd352dd59dae33931fa57dad378d9f7d7a86017f35d316bb3f89f079197ba
 - path: docs/90.references/data/0096-workspace-inventory/README.md
   writer: doc-writer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -36138,6 +37114,15 @@ ownership:
   authority: direct2026-11-01 request and coordinator allocation
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  followup_lease:
+    baseline_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+    writer: doc-writer /root/p01_docs
+    scope: Current P01 Task/README result-only admission, typed-input contract, selected-local-check
+      evidence and precise handoff; no historical Task or data.yaml authoring
+    current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
+    review: PARTIAL authored section receipt; complete false
+    released_at: '2026-11-01T14:18:17.518585+00:00'
+  current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   writer: qa-engineer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -36174,6 +37159,18 @@ ownership:
   authority: direct2026-11-01 request and coordinator allocation
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  followup_lease:
+    source_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+    before_sha256: e566f71a4e4f5ecdf0eb968d4bc63243a48d4a593e36193e55782b4394bcc526
+    writer: /root/p01_ci (ci-cd-engineer)
+    scope: Test-only Git fixture/topology/SARIF isolation and dedicated trusted/untrusted
+      guard matrix; production guard unchanged
+    review: Independent code and security APPROVED the bounded test-only diff; partial
+      scope only, no complete-body or actual-host-trust acceptance.
+    body_review: PARTIAL for CI files; do not infer whole-file completeness or current-host
+      trust
+    current_followup_sha256: 2bbc0dc031c59816f2c043d37d0ffaaa9cc29374136e0dfa818ab753c479bff1
+  current_followup_sha256: 2bbc0dc031c59816f2c043d37d0ffaaa9cc29374136e0dfa818ab753c479bff1
 - path: scripts/lib/ops/_workspace_render.py
   writer: qa-engineer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -36187,6 +37184,50 @@ ownership:
   authority: direct2026-11-01 request and coordinator allocation
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
+  followup_lease:
+    source_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+    before_sha256: f745f8ad8fb9bcac309ec3b59082d597ea7fc5eda3b7a9e7ea69abdcec24c69a
+    writer: /root (qa-engineer integration)
+    scope: P01 renderer context, explicit typed synthetic input contracts and safe
+      error metadata only
+    review: Independent source/security review pending final follow-up fingerprints
+    body_review: PARTIAL for CI files; do not infer whole-file completeness or current-host
+      trust
+  current_followup_sha256: 27cfce645f2a15099081e70a89d94702bb96bc0b7a71e4950691d4b860f30537
+- path: tests/lib/gate/subprocess_support.py
+  writer: ci-cd-engineer
+  acceptance_owner: SPEC-0212-TSK-0040
+  data_owner: UNASSIGNED for operational data
+  operational_acceptance: UNASSIGNED
+  followup_lease:
+    source_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+    before_sha256: 604ef59592299034fc351dd69ad7ea46941a8eed7a9d6a122d3868e9ecf33ee5
+    writer: /root/p01_ci (ci-cd-engineer)
+    scope: Test-only Git fixture/topology/SARIF isolation and dedicated trusted/untrusted
+      guard matrix; production guard unchanged
+    review: Independent code and security APPROVED the bounded test-only diff; partial
+      scope only, no complete-body or actual-host-trust acceptance.
+    body_review: PARTIAL for CI files; do not infer whole-file completeness or current-host
+      trust
+    current_followup_sha256: b5062e111094b7005216424bcc86a08ae5cb1b19bac91e0a2641b12d974fe7a4
+  current_followup_sha256: b5062e111094b7005216424bcc86a08ae5cb1b19bac91e0a2641b12d974fe7a4
+- path: tests/lib/gate/test_ci_gate_adapters.py
+  writer: ci-cd-engineer
+  acceptance_owner: SPEC-0212-TSK-0040
+  data_owner: UNASSIGNED for operational data
+  operational_acceptance: UNASSIGNED
+  followup_lease:
+    source_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+    before_sha256: ba4cc392f78ce837c74f4e9a3d0a3379a09bcbc0b781ff8571227968180d84a4
+    writer: /root/p01_ci (ci-cd-engineer)
+    scope: Test-only Git fixture/topology/SARIF isolation and dedicated trusted/untrusted
+      guard matrix; production guard unchanged
+    review: Independent code and security APPROVED the bounded test-only diff; partial
+      scope only, no complete-body or actual-host-trust acceptance.
+    body_review: PARTIAL for CI files; do not infer whole-file completeness or current-host
+      trust
+    current_followup_sha256: 63d707b448aeaf06feaa86ab435f807c251612df035806ce0ce40eb18ef46bdf
+  current_followup_sha256: 63d707b448aeaf06feaa86ab435f807c251612df035806ce0ce40eb18ef46bdf
 research:
 - id: EX01
   url: https://docs.docker.com/compose/how-tos/profiles/
@@ -37100,6 +38141,134 @@ research:
     backup: NOT_RUN
   limit: Version projection is reused as a source index; no full product research
     or installed state claim.
+- id: FOLLOWUP-COMPOSE-MERGE
+  url: https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/
+  document_version: Current Compose merge documentation
+  retrieved_at: 2026-11-01; exact retrieval time is in coordinator tool transcript
+  recorded_at: '2026-11-01T13:44:08+00:00'
+  retrieval: DIRECT_OFFICIAL_PAGE_BY_COORDINATOR
+  actor: /root coordinator
+  platform: Isolated public Compose copies or Linux/Python controller source tests
+  fact: Override files may be fragments; ordered base files establish relative-path
+    context.
+  decision: ADOPT
+  current_source_difference: Use documented base ordering and the root for root-included
+    leaf overlays; do not diagnose missing root definitions from leaf-only parsing.
+  owner: P01 renderer/CI source writers
+  normal: Correct context and typed synthetic input allow valid declared configurations
+    to render.
+  rejection: Missing required inputs, outside paths, unsupported types and untrusted
+    Git identities remain rejected.
+  recovery: Preserve previous inventory on rejection or concurrent-source change;
+    repeat only under a verified source/input contract.
+  limit: Document consultation is not current host trust, service execution, runtime
+    readiness or operator acceptance.
+- id: FOLLOWUP-COMPOSE-INTERPOLATION
+  url: https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
+  document_version: Current Compose interpolation documentation
+  retrieved_at: 2026-11-01; exact retrieval time is in coordinator tool transcript
+  recorded_at: '2026-11-01T13:44:08+00:00'
+  retrieval: DIRECT_OFFICIAL_PAGE_BY_COORDINATOR
+  actor: /root coordinator
+  platform: Isolated public Compose copies or Linux/Python controller source tests
+  fact: Required-variable expressions fail when missing; interpolation input precedence
+    is separate from service runtime environment.
+  decision: ADOPT
+  current_source_difference: Supply explicit reviewed synthetic variable types for
+    isolated cases, never private operational environment values.
+  owner: P01 renderer/CI source writers
+  normal: Correct context and typed synthetic input allow valid declared configurations
+    to render.
+  rejection: Missing required inputs, outside paths, unsupported types and untrusted
+    Git identities remain rejected.
+  recovery: Preserve previous inventory on rejection or concurrent-source change;
+    repeat only under a verified source/input contract.
+  limit: Document consultation is not current host trust, service execution, runtime
+    readiness or operator acceptance.
+- id: FOLLOWUP-COMPOSE-INCLUDE
+  url: https://docs.docker.com/reference/compose-file/include/
+  document_version: Current Compose include documentation
+  retrieved_at: 2026-11-01; exact retrieval time is in coordinator tool transcript
+  recorded_at: '2026-11-01T13:44:08+00:00'
+  retrieval: DIRECT_OFFICIAL_PAGE_BY_COORDINATOR
+  actor: /root coordinator
+  platform: Isolated public Compose copies or Linux/Python controller source tests
+  fact: Included models resolve paths in their own project context and are incorporated
+    after merge conflict checks.
+  decision: ADOPT
+  current_source_difference: Preserve include path context, refuse boundary escapes
+    and do not assume overrides merge included resources automatically.
+  owner: P01 renderer/CI source writers
+  normal: Correct context and typed synthetic input allow valid declared configurations
+    to render.
+  rejection: Missing required inputs, outside paths, unsupported types and untrusted
+    Git identities remain rejected.
+  recovery: Preserve previous inventory on rejection or concurrent-source change;
+    repeat only under a verified source/input contract.
+  limit: Document consultation is not current host trust, service execution, runtime
+    readiness or operator acceptance.
+- id: FOLLOWUP-PYTHON-FCNTL
+  url: https://docs.python.org/3.14/library/fcntl.html
+  document_version: Retrieved3.14manual resolved to3.14.10 documentation; local selected
+    interpreter3.14.8
+  retrieved_at: 2026-11-01; exact retrieval time is in coordinator tool transcript
+  recorded_at: '2026-11-01T13:44:08+00:00'
+  retrieval: DIRECT_OFFICIAL_PAGE_BY_COORDINATOR
+  actor: /root coordinator
+  platform: Isolated public Compose copies or Linux/Python controller source tests
+  fact: File-sealing constants depend on the platform/build that exposes them.
+  decision: ADOPT
+  current_source_difference: An actual Python3.14.8 build probe, locked dependencies
+    and sealing capability determine whether the registered controller can execute.
+  owner: P01 renderer/CI source writers
+  normal: Correct context and typed synthetic input allow valid declared configurations
+    to render.
+  rejection: Missing required inputs, outside paths, unsupported types and untrusted
+    Git identities remain rejected.
+  recovery: Preserve previous inventory on rejection or concurrent-source change;
+    repeat only under a verified source/input contract.
+  limit: Document consultation is not current host trust, service execution, runtime
+    readiness or operator acceptance.
+- id: FOLLOWUP-LINUX-USER-NAMESPACE
+  url: https://man7.org/linux/man-pages/man7/user_namespaces.7.html
+  document_version: Linux user_namespaces(7), current manual
+  retrieved_at: 2026-11-01; exact retrieval time is in coordinator tool transcript
+  recorded_at: '2026-11-01T13:44:08+00:00'
+  retrieval: DIRECT_OFFICIAL_PAGE_BY_COORDINATOR
+  actor: /root coordinator
+  platform: Isolated public Compose copies or Linux/Python controller source tests
+  fact: Unmapped user IDs can be presented with the overflow UID, commonly65534.
+  decision: ADOPT
+  current_source_difference: Coordinator observed the user1000mapping; namespace mapping
+    is an explanation to test, not proof that the current Git binary satisfies production
+    trust rules.
+  owner: P01 renderer/CI source writers
+  normal: Correct context and typed synthetic input allow valid declared configurations
+    to render.
+  rejection: Missing required inputs, outside paths, unsupported types and untrusted
+    Git identities remain rejected.
+  recovery: Preserve previous inventory on rejection or concurrent-source change;
+    repeat only under a verified source/input contract.
+  limit: Document consultation is not current host trust, service execution, runtime
+    readiness or operator acceptance.
+- id: FOLLOWUP-RENDER-EVIDENCE-REUSE
+  state: NO_CHANGE
+  source: local followup-render-equivalence.json
+  scope: 182 previously measured PASS cases retained with their original timestamps
+  source_fingerprints_equal: true
+  configuration_source_count: 69
+  normalized_argv_environment_transformed_yaml_equal: true
+  comparison_actor: Coordinator using mocked callbacks for equivalence only
+  new_actual_compose_attempts: 21
+  new_results:
+    PASS: 20
+    FAIL: 1
+  combined_evidence:
+    PASS: 202
+    FAIL: 1
+    denominator: 203
+  limit: Mocked equivalence is not Compose acceptance and does not create182newruns;
+    no runtime or readiness PASS.
 coverage_tiers:
 - id: TIER01
   name: Gateway
@@ -38405,3 +39574,1101 @@ handoffs:
     fingerprint_state: INITIAL_SCAN
   fingerprint_limit: Initial scan source bytes; compare current files before any leaf
     edit. Later P01 changes affect only their own listed rows.
+- id: P01-followup-render-01
+  state: IMPLEMENT_GAP
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+  source_sha256: 2cca85768620dda41037f4555f386b53f52115e7e21711443e3aeed8e0ed0a98
+  case_identity:
+    source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    selection: all-profiles
+  classification: LEAF_QA_FIXTURE_SOURCE_GAP
+  cause: fixture-network-override-incompatible-with-current-root
+  corrected_files:
+  - docker-compose.yml
+  - examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: FAIL
+    exit_code: 1
+    diagnostic_code: undefined-network
+    symbol: edge_net
+  synthetic_variable_names:
+  - CRR_CONFIG_DIR
+  - CRR_SECRET_DIR
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: SPEC-0182 generic-fixture historical route; current leaf acceptance
+    writer/owner UNASSIGNED
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: FAIL
+    exit_code: 1
+    observed_at: '2026-11-01T13:42:48.187013+00:00'
+    reason: undefined-network
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+  source_files:
+  - path: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    sha256: 2cca85768620dda41037f4555f386b53f52115e7e21711443e3aeed8e0ed0a98
+  - path: scripts/lib/ops/compose-core-readiness.sh
+    sha256: 0dbdd51a88c37b34521acfe9849895a95fe9d7c4f7cd7a887c6585b8932b3326
+  leaf_handoff:
+    owner: SPEC-0182 retained generic-fixture route; P10/QA routing support; exact
+      current source writer UNASSIGNED
+    source_defect: Top-level networks !override removes networks required by the current
+      documented root+fixture model; config rejects edge_net as undefined.
+    consumer_evidence:
+    - path: scripts/lib/ops/compose-core-readiness.sh
+      line: 469
+      contract: crr_compose uses root then readiness override
+    - path: scripts/lib/ops/compose-core-readiness.sh
+      line: 604
+      contract: render_core_model consumes crr_compose config
+    - path: scripts/manifest.yaml
+      line: 648
+      contract: Registered core-readiness caller route
+    - path: scripts/manifest.yaml
+      line: 868
+      contract: Registered core-readiness helper/consumer route
+    normal: A future leaf fix must render the documented base/fixture composition
+      and preserve exact isolated service/path checks.
+    rejection: Missing required input and out-of-bound path negatives must remain
+      failures; no suppression or daemon invocation.
+    recovery: Revert only the future fixture source delta; preserve current source
+      fingerprints and prior receipts.
+    runtime: NOT_RUN
+    approval: Current P01 follow-up authorizes handoff only; no service recreation
+      or private inputs.
+    historical_route:
+      spec: SPEC-0182
+      plan_line: 154
+      spec_line: 165
+      task: SPEC-0182-TSK-0003
+      task_line: 235
+      meaning: Generic Vault QA fixture is independent of production OpenBao; historical
+        route does not assign a current runtime operator or permit rebuilding accepted
+        production functionality.
+      references:
+      - path: docs/03.specs/0182-home-residual-backlog/plan.md
+        line: 154
+        sha256: 504901bc08976ab2fbdce408e3f7dd7479cba6e8e8ffc8ef4a10142005d0d362
+        review_scope: Cited generic-fixture decision paragraph only, not full body
+      - path: docs/03.specs/0182-home-residual-backlog/spec.md
+        line: 165
+        sha256: 9815a2c8d0425748821da4854b4e4bcd11d8714d351eb47f9400fda7f5608459
+        review_scope: Cited generic-fixture decision paragraph only, not full body
+      - path: docs/03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md
+        line: 235
+        sha256: 4de43912bd599106f1b72fa290f4309db86db9dc4ca39ec0cbb7ead1dc7ec12c
+        review_scope: Cited generic-fixture decision paragraph only, not full body
+    current_runtime_owner: UNASSIGNED
+- id: P01-followup-render-02
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: examples/operations/locust-telemetry/compose.override.yml
+  source_sha256: d139657674eb3144ffed4a5754caebac67878d4b43a30535ce76d8b372d79986
+  case_identity:
+    source: examples/operations/locust-telemetry/compose.override.yml
+    selection: all-profiles
+  classification: P01_HARNESS_GAP
+  cause: base-required-synthetic-inputs-omitted-from-first-corrected-retry
+  corrected_files:
+  - labs/locust.yml
+  - examples/operations/locust-telemetry/compose.override.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: FAIL
+    exit_code: 1
+    diagnostic_code: required-variable
+    symbol: LAB_LOCUST_RESULT_DIR
+  synthetic_variable_names:
+  - QUALITY_GID
+  - QUALITY_LOCUST_IMAGE
+  - QUALITY_MAPPINGS_DIR
+  - QUALITY_MOCK_IMAGE
+  - QUALITY_RESULTS_DIR
+  - QUALITY_SCENARIO_DIR
+  - QUALITY_UID
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:51.017431+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-03
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: examples/operations/postgres-logical-upgrade/docker-compose.yml
+  source_sha256: 7074810932b37971f5347cacc00c539a5bba9ae00e1110235d1747abbf41acb1
+  case_identity:
+    source: examples/operations/postgres-logical-upgrade/docker-compose.yml
+    selection: all-profiles
+  classification: P01_HARNESS_GAP
+  cause: explicit-required-synthetic-input-contract-missing
+  corrected_files:
+  - examples/operations/postgres-logical-upgrade/docker-compose.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names:
+  - IOR_POSTGRES_PASSWORD
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:51.162813+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-04
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: examples/operations/quality-metrics/docker-compose.yml
+  source_sha256: acf096ce617ed9456ede2e86e9faede852f4bd2f5059b8e59a3ac3e97dde43e2
+  case_identity:
+    source: examples/operations/quality-metrics/docker-compose.yml
+    selection: all-profiles
+  classification: P01_HARNESS_GAP
+  cause: explicit-required-synthetic-input-contract-missing
+  corrected_files:
+  - examples/operations/quality-metrics/docker-compose.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names:
+  - METRICS_ALLOY_CONFIG
+  - METRICS_ALLOY_IMAGE
+  - METRICS_ALLOY_TOKEN
+  - METRICS_NETWORK
+  - METRICS_PROBE_IMAGE
+  - METRICS_PROM_CONFIG
+  - METRICS_PROM_IMAGE
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:51.259959+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-05
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: examples/operations/quality-path-guard/docker-compose.yml
+  source_sha256: ecfd47948e42e2d49a67d8edce4a71a0251e6f4e690acae91745b0a022c9e38c
+  case_identity:
+    source: examples/operations/quality-path-guard/docker-compose.yml
+    selection: all-profiles
+  classification: P01_HARNESS_GAP
+  cause: explicit-required-synthetic-input-contract-missing
+  corrected_files:
+  - examples/operations/quality-path-guard/docker-compose.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names:
+  - QUALITY_BACKEND_NETWORK
+  - QUALITY_BACKEND_SUBNET
+  - QUALITY_GUARD_CONFIG
+  - QUALITY_GUARD_IMAGE
+  - QUALITY_MOCK_IMAGE
+  - QUALITY_MOCK_MAPPINGS
+  - QUALITY_RUNNER_NETWORK
+  - QUALITY_RUNNER_SUBNET
+  - QUALITY_RUN_ID
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:51.360415+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-06
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: examples/operations/sample-service-delivery/compose.delivery.override.yml
+  source_sha256: 177206de6122fdfb17c78e3e6c8730cbf0435b29526712ea0fe25cb1295a1b0e
+  case_identity:
+    source: examples/operations/sample-service-delivery/compose.delivery.override.yml
+    selection: all-profiles
+  classification: P01_HARNESS_GAP
+  cause: base-context-and-required-synthetic-input-contract-missing
+  corrected_files:
+  - examples/sample-web-service/docker-compose.yml
+  - examples/operations/sample-service-delivery/compose.delivery.override.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names:
+  - DRE_HOST_PORT
+  - DRE_IMAGE_REF
+  - DRE_ROLE
+  - DRE_TASK_ID
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:51.468370+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-07
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: labs/cassandra.yml
+  source_sha256: 062121983c3a63407d019acac4b4e0d7a2bf219ceb8dc588d23cc5a22842744e
+  case_identity:
+    source: labs/cassandra.yml
+    selection: all-profiles
+  classification: LAB_RUNTIME_EXCLUDED_STATIC_INPUT_RESIDUAL
+  cause: required-synthetic-static-inputs-absent-runtime-out-of-scope
+  corrected_files:
+  - labs/cassandra.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: NOT_RUN
+    exit_code: null
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: LAB documentation owner only; runtime excluded
+  acceptance_owner: LAB static documentation owner
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: OUT_OF_SCOPE
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:51.575736+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-08
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: labs/couchdb.yml
+  source_sha256: 5507f559fa6c5bddfd92f500abfd8f713d900978684ace8ded7d3ab751a6cff2
+  case_identity:
+    source: labs/couchdb.yml
+    selection: all-profiles
+  classification: LAB_RUNTIME_EXCLUDED_STATIC_INPUT_RESIDUAL
+  cause: required-synthetic-static-inputs-absent-runtime-out-of-scope
+  corrected_files:
+  - labs/couchdb.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: NOT_RUN
+    exit_code: null
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: LAB documentation owner only; runtime excluded
+  acceptance_owner: LAB static documentation owner
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: OUT_OF_SCOPE
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:51.689590+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-09
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: labs/kafka-cluster.yml
+  source_sha256: ccd7409c3a00221dfeec30e15e5798bb8b94e6b979124f38059c4ab0d108d1b8
+  case_identity:
+    source: labs/kafka-cluster.yml
+    selection: all-profiles
+  classification: LAB_RUNTIME_EXCLUDED_STATIC_INPUT_RESIDUAL
+  cause: required-synthetic-static-inputs-absent-runtime-out-of-scope
+  corrected_files:
+  - labs/kafka-cluster.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: NOT_RUN
+    exit_code: null
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: LAB documentation owner only; runtime excluded
+  acceptance_owner: LAB static documentation owner
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: OUT_OF_SCOPE
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:51.818725+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-10
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: labs/locust.yml
+  source_sha256: d22669f7cc66b907b8271575e85902297cf40acbbfaa7f90846c06c62dad1672
+  case_identity:
+    source: labs/locust.yml
+    selection: all-profiles
+  classification: LAB_RUNTIME_EXCLUDED_STATIC_INPUT_RESIDUAL
+  cause: required-synthetic-static-inputs-absent-runtime-out-of-scope
+  corrected_files:
+  - labs/locust.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: NOT_RUN
+    exit_code: null
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: LAB documentation owner only; runtime excluded
+  acceptance_owner: LAB static documentation owner
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: OUT_OF_SCOPE
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:51.962225+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-11
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: labs/mongodb.yml
+  source_sha256: 174138ab48f47e024ddbd6e65ef86915590504966754e490e6becad3f9116730
+  case_identity:
+    source: labs/mongodb.yml
+    selection: all-profiles
+  classification: LAB_RUNTIME_EXCLUDED_STATIC_INPUT_RESIDUAL
+  cause: required-synthetic-static-inputs-absent-runtime-out-of-scope
+  corrected_files:
+  - labs/mongodb.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: NOT_RUN
+    exit_code: null
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: LAB documentation owner only; runtime excluded
+  acceptance_owner: LAB static documentation owner
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: OUT_OF_SCOPE
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:52.089729+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-12
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: labs/opensearch-cluster.yml
+  source_sha256: 8624025272a7c053b039c9f13bdccaa0aca62e5529d3b026d0570cafbf26fa21
+  case_identity:
+    source: labs/opensearch-cluster.yml
+    selection: all-profiles
+  classification: LAB_RUNTIME_EXCLUDED_STATIC_INPUT_RESIDUAL
+  cause: required-synthetic-static-inputs-absent-runtime-out-of-scope
+  corrected_files:
+  - labs/opensearch-cluster.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: NOT_RUN
+    exit_code: null
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: LAB documentation owner only; runtime excluded
+  acceptance_owner: LAB static documentation owner
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: OUT_OF_SCOPE
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:52.266723+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-13
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: labs/postgresql-ha.yml
+  source_sha256: cb77bbb524c3a31bddb6b2a9f404afb362e5bd3bf9032b504d36fe1595c208b6
+  case_identity:
+    source: labs/postgresql-ha.yml
+    selection: all-profiles
+  classification: LAB_RUNTIME_EXCLUDED_STATIC_INPUT_RESIDUAL
+  cause: required-synthetic-static-inputs-absent-runtime-out-of-scope
+  corrected_files:
+  - labs/postgresql-ha.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: NOT_RUN
+    exit_code: null
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: LAB documentation owner only; runtime excluded
+  acceptance_owner: LAB static documentation owner
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: OUT_OF_SCOPE
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:52.455145+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-14
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: labs/supabase.yml
+  source_sha256: 05cdaf04e0713cf3c0d5a3a123fa20d4db2ca90f1d29570f7067b65ebf47f4d9
+  case_identity:
+    source: labs/supabase.yml
+    selection: all-profiles
+  classification: LAB_RUNTIME_EXCLUDED_STATIC_INPUT_RESIDUAL
+  cause: required-synthetic-static-inputs-absent-runtime-out-of-scope
+  corrected_files:
+  - labs/supabase.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: NOT_RUN
+    exit_code: null
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: LAB documentation owner only; runtime excluded
+  acceptance_owner: LAB static documentation owner
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: OUT_OF_SCOPE
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:52.668441+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-15
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: labs/valkey-cluster.yml
+  source_sha256: 31fa9cfe0c3ebb70eadbb3616381dce85894934e7a9949090e874c7d58c1416a
+  case_identity:
+    source: labs/valkey-cluster.yml
+    selection: all-profiles
+  classification: LAB_RUNTIME_EXCLUDED_STATIC_INPUT_RESIDUAL
+  cause: required-synthetic-static-inputs-absent-runtime-out-of-scope
+  corrected_files:
+  - labs/valkey-cluster.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: NOT_RUN
+    exit_code: null
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: LAB documentation owner only; runtime excluded
+  acceptance_owner: LAB static documentation owner
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: OUT_OF_SCOPE
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:52.877833+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-16
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: infra/01-gateway/traefik/compose.window-ca.override.yml
+  source_sha256: 8baab5358c7a61280bb9c579693a190cac53ecf765608659bd802b89bf1d4ba1
+  case_identity:
+    source: infra/01-gateway/traefik/docker-compose.yml
+    selection: overlay:infra/01-gateway/traefik/compose.window-ca.override.yml
+  classification: P01_HARNESS_GAP
+  cause: root-included-leaf-lacks-root-network-definitions-in-leaf-only-render
+  corrected_files:
+  - docker-compose.yml
+  - infra/01-gateway/traefik/compose.window-ca.override.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:53.055678+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-17
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+  source_sha256: 8d3f44c55f89fee82c299651073ac91ea94663454e732a7bff98d3adf9d40139
+  case_identity:
+    source: infra/02-auth/oauth2-proxy/docker-compose.yml
+    selection: overlay:infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+  classification: P01_HARNESS_GAP
+  cause: root-included-leaf-lacks-root-network-definitions-in-leaf-only-render
+  corrected_files:
+  - docker-compose.yml
+  - infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:55.640740+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-18
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: infra/04-data/mng-db/docker-compose.n8n-acl.yml
+  source_sha256: b42110814469596b45314551399345957233aa9368aa4c23159a8962f831e19d
+  case_identity:
+    source: infra/04-data/mng-db/docker-compose.yml
+    selection: overlay:infra/04-data/mng-db/docker-compose.n8n-acl.yml
+  classification: P01_HARNESS_GAP
+  cause: root-included-leaf-lacks-root-network-definitions-in-leaf-only-render
+  corrected_files:
+  - docker-compose.yml
+  - infra/04-data/mng-db/docker-compose.n8n-acl.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:42:58.063761+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-19
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+  source_sha256: 61a44e0d9cfbff07742e4cb5b3f4665e55a8514535a2812b8c5a31fc1f81558c
+  case_identity:
+    source: infra/07-workflow/airflow/docker-compose.yml
+    selection: overlay:infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+  classification: P01_HARNESS_GAP
+  cause: root-included-leaf-lacks-root-network-definitions-in-leaf-only-render
+  corrected_files:
+  - docker-compose.yml
+  - infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:43:00.586103+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-20
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
+  source_sha256: 8314933a0d088b4c2610002ee6330eb2d50373698cd16bad0654957f3203a35f
+  case_identity:
+    source: infra/07-workflow/airflow/docker-compose.yml
+    selection: overlay:infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
+  classification: P01_HARNESS_GAP
+  cause: root-context-and-required-synthetic-input-contract-missing
+  corrected_files:
+  - docker-compose.yml
+  - infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names:
+  - OPSFLOW_AIRFLOW_IMAGE
+  - OPSFLOW_CODE_DIR
+  - OPSFLOW_SECRET_DIR
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:43:03.668845+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-render-21
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  baseline_head: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+  observed_at: '2026-11-01'
+  source_path: infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+  source_sha256: 518845be763c76c7132337175bffdb98a63bc11138ed02fa39d8f387196108ef
+  case_identity:
+    source: infra/07-workflow/n8n/docker-compose.yml
+    selection: overlay:infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+  classification: P01_HARNESS_GAP
+  cause: root-included-leaf-lacks-root-network-definitions-in-leaf-only-render
+  corrected_files:
+  - docker-compose.yml
+  - infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+  accepted_scope: Static Compose config only; public source copies and typed synthetic
+    inputs
+  retry_observation:
+    result: PASS
+    exit_code: 0
+    diagnostic_code: null
+    symbol: null
+  synthetic_variable_names: []
+  literal_input_values: NOT_COLLECTED
+  writer: qa-engineer for P01 harness only; readiness fixture leaf writer unassigned
+  acceptance_owner: P01 inventory harness
+  reviewer: Independent source/security review after final fingerprints
+  operational_actor: UNASSIGNED; no operational authority inferred
+  runtime: NOT_RUN
+  restart_conditions: Use exact documented base files and explicit reviewed synthetic
+    input types in isolated public copy; preserve negative required-input test; no
+    service runtime or credential inputs.
+  recovery: Preserve earlier data payload on source-change/refusal/error; revert only
+    the bounded P01 source delta. No service, credential or data restore is claimed.
+  final_followup_matrix:
+    source: local followup-render21.yaml
+    result: PASS
+    exit_code: 0
+    observed_at: '2026-11-01T13:43:06.749839+00:00'
+    reason: null
+    environment: isolated public source copy with explicit typed synthetic inputs
+    runtime: NOT_RUN
+- id: P01-followup-CI-environment
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0040
+  work_unit: W57
+  source_files:
+  - path: tests/lib/gate/subprocess_support.py
+    sha256: b5062e111094b7005216424bcc86a08ae5cb1b19bac91e0a2641b12d974fe7a4
+  - path: tests/lib/gate/test_ci_gate_adapters.py
+    sha256: 63d707b448aeaf06feaa86ab435f807c251612df035806ce0ce40eb18ef46bdf
+  - path: tests/validation/test_ci_gate_plan.py
+    sha256: 2bbc0dc031c59816f2c043d37d0ffaaa9cc29374136e0dfa818ab753c479bff1
+  writer: ci-cd-engineer test surfaces only
+  acceptance_owner: P01 registered validation; no host trust authority
+  synthetic_plan_suite:
+    result: PASS
+    cases: 58
+    scope: Isolated test topology and dedicated trusted/untrusted guard fixtures
+  actual_ambient_adapter_cli:
+    result: DENIED
+    exit_code: 2
+    reason: Direct ambient CLI attempt denied by ci-gate-adapter-environment guard.
+    meaning: CLI exit2 records its ambient environment guard refusal; it does not
+      identify a Git-provenance guard exit code or establish host/controller PASS.
+  registered_local_7_initial:
+    result: FAIL
+    adapter_cases: 2
+  registered_full_gate: NO FULL14 AGGREGATE CLAIM. Six source-bound selected CI leaves
+    PASS; separately corrected exact seventh repository-integrity leaf720/720 PASS;
+    prior failed/mixed-context attempts are historical.
+  production_guard: UNCHANGED
+  review: Independent code and security APPROVED three bounded test-only diffs; focused
+    four-test verification passed. No complete-body or actual host trust acceptance.
+  restart_conditions: No selected CI environment blocker remains. Recheck only source-affecting
+    changes; full14 aggregate, remote CI and actual host/controller acceptance require
+    their own execution and authority.
+  recovery: Revert only scoped test-fixture/source delta; no production Git trust,
+    host configuration, service or credential recovery operation occurred.
+  selected_toolchain:
+    result: PASS
+    python: 3.14.8
+    path: /tmp/hyhome-v28-toolchain-venv/bin/python3.14.8
+    locked_dependencies: verified by CI owner
+    memfd_sealing: preflight PASS
+    historical_missing_build: Resolved for selected toolchain; retained earlier mismatch/no-seals
+      receipts remain historical.
+  ordinary_mixed_runtime_14:
+    result: FAIL
+    scope: Historical broad controller3.14/child3.12 attempt; not the corrected exact
+      seven-leaf route
+    repository_integrity:
+      tests: 653
+      failures: 20
+      errors: 94
+    acceptance: No full aggregate PASS claim
+  exact_registered_seven:
+    started_at: '2026-11-01T13:56:37.966310+00:00'
+    finished_at: '2026-11-01T14:02:42.684591+00:00'
+    controller_version: 3.14.8
+    child_version: 3.14.8
+    status: FAIL
+    exit_code: 1
+    elapsed_seconds: 364.717
+    production_guard_changes: false
+    first_six_leaves: 'PASS: contract45; runner84; adapter38; workflow44; control-plane84
+      tests; CI pre-commit contract.'
+    repository_integrity:
+      tests: 720
+      failures: 5
+      errors: 85
+      result: FAIL
+      cause_attribution: 'Bounded diagnostic: synthetic ThreadingHTTPServer socket
+        bind PermissionError EPERM under restricted execution; missing node from CI
+        sanitized PATH despite ambient nvm26.10.0. No operating-service defect or
+        OpenBao descriptor defect inferred.'
+  targeted_integrity_resolver:
+    result: PASS
+    tests: 720
+    p01_test_statuses: 48/48 ok
+    elapsed_seconds: 278.518
+    exit_code: 0
+    python: 3.14.8
+    node: 26.10.0 existing ambient PATH; no pin acceptance
+    receipt: _workspace/repo-support/analysis/p01/localfollowup-integrity-final.json
+    approval: Root-reviewed automatic scoped escalation approval for ephemeral local
+      loopback/test permission only; normal selected registered leaf/contract-SHA+argv
+      binding, no fake identity
+    operating_services: NOT_RUN
+    host_configuration: UNCHANGED
+    production_guard: UNCHANGED
+    failure_titles: []
+    exception_types: []
+  bounded_diagnostic:
+    openbao_synthetic_tls_setup: Representative setup PermissionError EPERM from socket
+      bind on127.0.0.1; no actual secret or running service involved.
+    javascript_path: CI sanitized PATH omitted existing Node; corrected focused case
+      preserving ambient PATH PASS with Node26.10; no pin acceptance.
+    retirement_plain_fixture: 'Focused case FAIL, first actual reason git_root_check_failed:
+      preexisting /tmp/.git makes temporary fixture inherit ancestor boundary; production/test
+      files unchanged from2fc98, no baseline-PASS inference.'
+    public_catalog_context: Plain focused case PASS while earlier root descriptor-context
+      case FAIL; exact context cause UNCONFIRMED, possible FD propagation only an
+      unproven owner handoff.
+    p01_within_broad_720: 'UNKNOWN: observer did not retain every per-test title;
+      independent48-focused PASS remains separate.'
+  current_disposition: 'Resolved selected CI environment/test residuals: actual720-test
+    registered resolver PASS, including48 P01 tests. No current missing-interpreter,
+    Git-fixture, socket, Node, retirement or catalog handoff remains.'
+  diagnostic_limit: Prior retirement ancestor-Git and possible catalog-FD explanations
+    were incomplete attempt-context attributions, not established current root causes
+    or source defects; final720/720 resolver supersedes these as active handoffs.
+  actual_git_provenance_probe:
+    result: DENIED
+    probe: unmocked_tracked_source_object
+    uid: 65534
+    context: Separate unmocked function probe in the restricted namespace; Git provenance
+      guard refuses observed UID65534. No CLI exit code was recorded for this function-level
+      probe.
+    acceptance: No host/controller trust PASS inferred.

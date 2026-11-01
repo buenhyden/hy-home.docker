@@ -36,6 +36,7 @@ def main(argv=None):
     scanning.add_argument("--curation")
     scanning.add_argument("--reviews")
     scanning.add_argument("--render", action="store_true")
+    scanning.add_argument("--render-inputs")
     scanning.add_argument("--public-path", action="append", default=[])
     comparing = commands.add_parser("compare")
     comparing.add_argument("--root", type=Path, default=Path.cwd())
@@ -47,6 +48,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if args.command == "scan":
+            if args.render_inputs and not args.render:
+                raise InventoryError("Synthetic render inputs require rendering.")
             reviews = load_public(args.root, args.reviews) if args.reviews else []
             outputs = [
                 args.output,
@@ -73,7 +76,12 @@ def main(argv=None):
             public = {**public, **curation}
             validate(public)
             if args.render:
-                public = render_inventory(args.root, public)
+                options = (
+                    {"case_inputs": load_public(args.root, args.render_inputs)}
+                    if args.render_inputs
+                    else {}
+                )
+                public = render_inventory(args.root, public, **options)
             if args.private_output:
                 if (
                     not args.private_output.startswith(

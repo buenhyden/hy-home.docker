@@ -264,7 +264,7 @@ class InventoryTests(unittest.TestCase):
     def test_render_replaces_include_environment_and_secret_file_references(self):
         self.put(
             "docker-compose.yml",
-            "include:\n  - path: infra/child.yml\n    env_file: /never/read/private.env\nservices:\n  app:\n    image: alpine:3\nsecrets:\n  token:\n    file: /never/read/token\n",
+            "include:\n  - path: infra/child.yml\n    env_file: /never/read/private.env\nservices:\n  app:\n    image: alpine:3\n    label_file: /never/read/labels\nsecrets:\n  token:\n    file: /never/read/token\n",
         )
         self.put("infra/child.yml", "services:\n  child:\n    image: alpine:3\n")
         doc = self.scan("docker-compose.yml", "infra/child.yml")[0]
@@ -277,7 +277,136 @@ class InventoryTests(unittest.TestCase):
 
         result = render_inventory(self.root, doc, run=run)
         self.assertGreater(result["coverage"]["render"]["numerator"], 0)
-        self.assertEqual(len(result["compose"]["synthetic_file_inputs"]), 2)
+        self.assertEqual(len(result["compose"]["synthetic_file_inputs"]), 3)
+
+    def test_root_member_overlay_uses_root_context(self):
+        self.put("docker-compose.yml", "include: [infra/compose.yml]\n")
+        self.put("infra/compose.yml", "services: {app: {image: 'alpine:3'}}\n")
+        overlay = "infra/compose.override.yml"
+        self.put(
+            overlay,
+            "x-hyhome-overlay: {version: 1, base: infra/compose.yml}\nservices: {app: {read_only: true}}\n",
+        )
+        doc = self.scan("docker-compose.yml", "infra/compose.yml", overlay)[0]
+
+        def run(command, **kwargs):
+            files = [command[i + 1] for i, arg in enumerate(command) if arg == "-f"]
+            self.assertEqual(files, ["docker-compose.yml", overlay])
+            return subprocess.CompletedProcess(command, 0, b'{"services":{"app":{}}}')
+
+        result = render_inventory(
+            self.root,
+            doc,
+            run=run,
+            only_cases=[("infra/compose.yml", "overlay:" + overlay)],
+        )
+        self.assertEqual(
+            result["compose"]["render_cases"][0]["files"],
+            ["docker-compose.yml", overlay],
+        )
+        for files in (["docker-compose.yml"], [overlay, "docker-compose.yml"]):
+            with (
+                self.subTest(files=files),
+                patch("subprocess.run") as runner,
+                self.assertRaises(InventoryError),
+            ):
+                render_inventory(
+                    self.root,
+                    doc,
+                    case_inputs=[
+                        {
+                            "source": "infra/compose.yml",
+                            "selection": "overlay:" + overlay,
+                            "files": files,
+                        }
+                    ],
+                )
+            runner.assert_not_called()
+
+    def test_explicit_typed_inputs_are_synthetic_and_case_local(self):
+        self.put(
+            "compose.yml",
+            "services: {app: {image: '${FIXTURE_IMAGE:?}', volumes: ['${FIXTURE_DIR:?}:/data']}}\n",
+        )
+        doc = self.scan("compose.yml")[0]
+        inputs = [
+            {
+                "source": "compose.yml",
+                "selection": "all-profiles",
+                "variables": {"FIXTURE_IMAGE": "image", "FIXTURE_DIR": "directory"},
+            }
+        ]
+
+        def run(command, **kwargs):
+            self.assertEqual(
+                kwargs["env"]["FIXTURE_IMAGE"], "example.invalid/p01/fixture:synthetic"
+            )
+            self.assertTrue(
+                Path(kwargs["env"]["FIXTURE_DIR"]).is_relative_to(kwargs["cwd"])
+            )
+            return subprocess.CompletedProcess(command, 0, b'{"services":{"app":{}}}')
+
+        result = render_inventory(self.root, doc, run=run, case_inputs=inputs)
+        self.assertEqual(
+            result["compose"]["synthetic_interpolation_inputs"],
+            [{**inputs[0], "files": ["compose.yml"]}],
+        )
+        self.assertNotIn("example.invalid", json.dumps(result))
+        for invalid in (
+            [{**inputs[0], "variables": {"DOCKER_HOST": "text"}}],
+            [{**inputs[0], "variables": {"UNDECLARED": "text"}}],
+            [{**inputs[0], "variables": {"FIXTURE_IMAGE": "actual-secret-value"}}],
+            [{**inputs[0], "files": ["../outside.yml"]}],
+            [{**inputs[0], "selection": "unknown"}],
+            inputs + inputs,
+        ):
+            with self.subTest(invalid=invalid), self.assertRaises(InventoryError):
+                render_inventory(self.root, doc, run=run, case_inputs=invalid)
+
+        self.put("compose-other.yml", "services: {other: {image: 'alpine:3'}}\n")
+        multiple = self.scan("compose.yml", "compose-other.yml")[0]
+        with patch("subprocess.run") as runner, self.assertRaises(InventoryError):
+            render_inventory(
+                self.root,
+                multiple,
+                case_inputs=[
+                    {
+                        "source": "compose.yml",
+                        "selection": "all-profiles",
+                        "variables": {"UNDECLARED": "text"},
+                    }
+                ],
+            )
+        runner.assert_not_called()
+
+    def test_render_failure_categories_never_copy_diagnostic_values(self):
+        doc = self.render_fixture()
+        for stderr, reason in (
+            (
+                b"error while interpolating services.app.image: required variable PRIVATE is missing a value",
+                "missing-required-interpolation",
+            ),
+            (
+                b"service app refers to undefined network PRIVATE: invalid compose project",
+                "undefined-network",
+            ),
+            (
+                b"service app has neither an image nor a build context specified: invalid compose project PRIVATE",
+                "missing-service-definition",
+            ),
+            (b"UNKNOWN PRIVATE", "configuration-not-rendered"),
+        ):
+            result = render_inventory(
+                self.root,
+                doc,
+                run=lambda *a, diagnostic=stderr, **k: subprocess.CompletedProcess(
+                    a, 1, b"", diagnostic
+                ),
+            )
+            self.assertTrue(
+                all(r["reason"] == reason for r in result["compose"]["render_cases"])
+            )
+            self.assertNotIn("PRIVATE", json.dumps(result))
 
     def test_render_rejects_transitive_external_include_before_any_invocation(self):
         self.put("docker-compose.yml", "include: [infra/child.yml]\n")

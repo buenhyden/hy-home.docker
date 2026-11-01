@@ -1,6 +1,6 @@
 ---
 title: "Workspace Inventory Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -67,6 +67,28 @@ observations, curated dispositions, research and ownership. Private per-path
 metadata and sanitized command receipts stay under local analysis. Secret values,
 authentication bodies, value hashes and raw operational logs are not collected.
 
+### Bounded follow-up admission and writers
+
+The direct follow-up authorizes local diagnosis and correction of the 21 failed
+render cases, CI test-environment recovery and precise leaf-owner handoffs. Its
+starting source is local commit `2fc98e1e2`, recorded clean before this follow-up.
+The earlier normal-hook delivery succeeded in that commit; earlier rejected and
+pending attempts in this record are preserved as dated observations, not current delivery
+state. W56–W60 and criteria 51–55 continue without new identities.
+
+The qa-engineer remains the single writer for inventory renderer/CLI/source tests;
+the ci-cd-engineer owns the bounded test-environment isolation and trust-guard
+matrix; the doc-writer owns only this current Task, DATA-0096 README and local
+curation/review receipts. The coordinator alone regenerates data.yaml and integrates
+the normal-hook commit. Historical Task bodies, production Git trust rules,
+services, host state, secrets and external resources are not changed by this scope.
+
+The follow-up uses public copied Compose inputs and explicitly typed synthetic
+case inputs. No literal input values belong in public evidence. A discovered
+non-P01 service/example defect is handed off with exact source and fingerprints;
+it is not an authorization to recreate a service. Evidence remains pending until
+actual focused tests, rerendering and the registered full gate return their results.
+
 ### Research and acceptance scope readback
 
 The doc-writer directly consulted fifteen official pages: Compose profiles,
@@ -109,8 +131,9 @@ that is preserved as an unsuccessful earlier attempt. After correction, a bounde
 attempt gave 52 PASS, 21 FAIL, one ERROR and 129 NOT_RUN. Resumption checked the
 same 69 configuration fingerprints and retained prior successful receipts; the
 final 203 attempted cases give 182 PASS and 21 FAIL, zero ERROR/NOT_RUN. The
-21 source examples/overlays require exact synthetic inputs or their base context;
-their individual rows remain `TEST_RESIDUAL` and are not hidden as renderer PASS.
+21 source examples/overlays initially lacked exact synthetic inputs or their base
+context. Their initial `TEST_RESIDUAL` receipts are retained as historical evidence;
+the follow-up disposition below replaces their active residual count.
 The root-included base configuration and all 112 explicit root-service cases
 pass. The remaining cases are six examples, nine LAB declarations and six
 standalone infrastructure/ACL-overlay contexts; local render-residuals.json
@@ -142,12 +165,125 @@ public source names, not credentials. The CI test formatting was corrected. The
 P01 projection now names that metadata field `network_reference` instead of
 `network_key`, preserving the existing port parser and values through a narrow
 immutable projection. A regression first reproduced `KeyError`; the corrected
-45-test suite is being rerun. The normal hooks will be retried without a bypass;
-no commit success is recorded yet.
+45-test suite subsequently passed. A later subject-capitalization rejection was
+also corrected; the ordinary hooks then delivered initial commit `2fc98e1e2`.
+These rejected attempts are not the current delivery state.
 
-The registered full local gate remains `BLOCKED`: system Python 3.12.3 differs
-from required 3.14.8, and the installed 3.14.8 build lacks `F_ADD_SEALS`. No bypass
-or substitute hosted-controller success is claimed. Remote CI is NOT_RUN.
+The initial registered full local gate was `BLOCKED`: system Python 3.12.3
+differed from required 3.14.8, and one installed 3.14.8 build lacked
+`F_ADD_SEALS`. The follow-up found an existing different 3.14.8 environment with
+locked dependencies and sealing support; its actual preflight passed. The
+unavailable-build observation no longer describes the selected interpreter.
+Remote CI remains NOT_RUN.
+
+### Follow-up measurements and remaining source defect
+
+The renderer now preserves root context for included sources, uses ordered bases
+for overlays, accepts declared typed synthetic inputs through `--render-inputs`,
+and substitutes an empty copied input for `label_file`. Error receipts use safe
+codes. Initial regressions reproduced three failures and one error, followed by
+the missing-CLI-argument failure. The final 48 focused tests pass with combined
+coverage 92%: inventory 92%, service analysis 91%, renderer 95% and CLI 89%.
+An attempted collection detected a concurrent public-document change and stopped
+before Compose execution; the writers froze tracked inputs before the safe retry.
+No existing payload was replaced by that aborted attempt.
+
+The intermediate diagnostic retry ran 12 cases, with 10 PASS and two FAIL; nine
+LAB cases had not yet been retried at that point. The final affected-case retry
+actually ran all 21 cases, producing 20 PASS and one FAIL. The unchanged 182
+previous successful cases retain their original measured receipts and timestamps.
+Their reuse is supported by equal fingerprints for all 69 configuration sources
+and exact normalized invocation/environment/prepared-YAML equivalence under the
+old and corrected renderer. Those equivalence callbacks were mocked and provide
+no new Compose acceptance. The combined matrix is therefore 202 PASS and one FAIL
+among 203 cases, not 203 new executions. LAB static success still confers no LAB
+runtime authority.
+
+The one remaining `IMPLEMENT_GAP` belongs to
+`examples/operations/compose-core-readiness/compose.core-runtime.override.yml`:
+its `networks: !override` composition leaves `edge_net` undefined with the
+currently documented root and fixture. DATA-0096 records its exact fingerprint,
+the canonical caller `scripts/lib/ops/compose-core-readiness.sh` at lines 469 and
+604, and manifest routes at lines 648 and 868. SPEC-0182's Plan line 154, Spec
+line 165 and Task 0003 line 235 preserve a generic Vault fixture independently of
+production OpenBao. These cited historical decisions route the handoff; they do
+not appoint a current writer or operator. Both remain unassigned until a leaf
+lease is issued. No fixture, service or accepted OpenBao consumer was changed.
+The leaf fix must render the documented composition while preserving fixture
+isolation and required-input refusal; recovery is a scoped source revert.
+
+Five further official consultations by the coordinator cover Compose merge,
+interpolation and include, Python 3.14 fcntl, and Linux user namespaces. The
+Python page resolves to documentation 3.14.10, distinct from selected build
+3.14.8; the real build probe is authoritative. The namespace explanation supports
+the observed overflow UID, not host trust acceptance. Each bounded finding and
+retrieval attribution is retained in the same research ledger.
+
+The CI-plan suite now passes 58 isolated tests, including dedicated trusted and
+untrusted guard fixtures. Three CI test surfaces share an exact Git-identity
+fixture; independent code and security reviews approved those specific diffs.
+Production trust logic is unchanged. An actual ambient adapter CLI invocation
+was DENIED with exit 2 by its ambient environment guard. A separate unmocked
+function-level provenance probe denied Git UID 65534; that probe has no CLI exit
+code. These fail-closed observations are neither unit-test failures nor successful
+host/controller receipts.
+The initial registered seven-leaf run failed two adapter tests; its result remains
+historical. The ordinary fourteen-leaf mixed-runtime attempt ended FAIL; its integrity
+leaf reported 653 tests with 20 failures and 94 errors. The corrected exact
+seven-leaf route then ran once with both controller and children using the real
+Python 3.14.8 environment. Six leaves passed: CI contract 45 tests, runner 84,
+adapter 38, workflow 44, control plane 84, and the CI pre-commit contract. The
+repository-integrity leaf reported 720 tests with five failures and 85 errors,
+so the final registered route is FAIL, exit 1, after 364.717 seconds. Local
+`localfollowup-ci.json` retains the exact selected invocations and timestamps.
+Bounded diagnosis found synthetic `ThreadingHTTPServer` socket binding denied
+with EPERM and Node omitted from the CI agent's sanitized PATH although the
+existing ambient Node 26.10.0 is available. These observations do not establish
+an operating-service or OpenBao descriptor defect. A corrected run of only the
+registered integrity leaf, with real interpreter/Node paths and scoped temporary
+loopback-test permission, was approved by automatic review and started; its
+result was pending at that observation.
+The coordinator verified the exact registered leaf, contract fingerprint and
+argument binding, normal LOCAL preflight and metadata-only observation. This
+approval permits temporary synthetic loopback tests and existing executable
+paths; it changes no operating service, host configuration or production trust. The
+earlier failed receipts remain historical; no permanent environment block,
+baseline debt or unrelated-feature regression is inferred. A focused JavaScript case passed after preserving the ambient Node path; this
+is not Node pin acceptance. A plain retirement fixture still failed its Git-root
+check because preexisting `/tmp/.git` makes the temporary fixture inherit an
+ancestor boundary; its source bytes are unchanged from the follow-up baseline,
+which does not prove a baseline test PASS. A plain catalog case passed while its
+earlier descriptor-context run failed: the exact cause remains unconfirmed, and
+file-descriptor propagation is only a possible owner handoff. The broad observer
+did not retain every test title, so the P01 subset result within those 720 tests
+is unknown; the independent 48-test PASS is separate. No aggregate full-gate
+success follows from isolated tests or the six successful leaves.
+
+### Final registered integrity resolver
+
+The coordinator inspected the exact registered integrity invocation and contract
+fingerprint, preserved the real existing interpreter and ambient executable path,
+and obtained automatic review approval for ephemeral local loopback tests. The
+corrected seventh leaf passed all 720 tests in 278.518 seconds, exit 0, using
+Python 3.14.8 and existing Node 26.10.0. Its metadata observer records every P01
+case as `ok` (48/48), with no failure titles or exception types.
+`localfollowup-integrity-final.json` retains this actual source-bound receipt.
+
+This result resolves the selected CI environment/test residuals, including the
+initial unavailable interpreter/seals, isolated Git fixtures, socket and Node
+contexts, and the retirement/catalog attempt differences. Earlier attribution to
+an ancestor Git directory or possible descriptor propagation was incomplete;
+neither remains an established current source defect or active handoff. Their
+unsuccessful attempts remain historical observations.
+
+The six prior selected CI leaves and the corrected seventh leaf now each have
+actual PASS evidence. They are separate source-bound executions, not one
+successful full fourteen-leaf aggregate or remote CI. The restricted namespace's
+ambient Git UID refusal still describes that context and is not host/controller
+trust acceptance. No production guard, operating service, host configuration or
+credential changed. Independent review approved all seven frozen executable
+source/test files in its exact fingerprint scope. The only current configuration
+residual is the readiness fixture handoff above.
 
 ## Evidence
 
@@ -167,43 +303,66 @@ or substitute hosted-controller success is claimed. Remote CI is NOT_RUN.
 | Document research contracts | 55 | W60 | Metadata, links and Registry checks | Current bounded source unit | PASS | Same actual document checks; external facts remain bounded evidence | required | - |
 | Manifest and P01 selection | 52 | W57 | Manifest checker, 51 manifest tests and 2 selector/mutation tests | Current registration | PASS | verification-summary.json; no full CI-plan PASS claimed | required | - |
 | Broader CI plan | 52 | W57 | Unfiltered CI-plan suite | System Git UID/trust environment | ERROR | 57 cases: 56 PASS, 1 ERROR; exact Git environment needs correction | required | - |
-| Full local boundary gate | 51 | W56 | Registered full local gate | Required Python 3.14.8 with memfd sealing support unavailable | NOT_RUN | BLOCKED; system 3.12.3 mismatch, installed 3.14.8 lacks F_ADD_SEALS | required | - |
-| Full local inventory gate | 52 | W57 | Registered full local gate | Same exact interpreter requirement | NOT_RUN | Same scoped environment block; no bypass | required | - |
-| Full local reuse gate | 53 | W58 | Registered full local gate | Same exact interpreter requirement | NOT_RUN | Same scoped environment block; no bypass | required | - |
-| Full local ownership gate | 54 | W59 | Registered full local gate | Same exact interpreter requirement | NOT_RUN | Same scoped environment block; no bypass | required | - |
-| Full local research gate | 55 | W60 | Registered full local gate | Same exact interpreter requirement | NOT_RUN | Same scoped environment block; no bypass | required | - |
+| Full local boundary gate | 51 | W56 | Registered full local gate | Initial attempt: required interpreter unavailable | NOT_RUN | Historical block: system 3.12.3 mismatch and one 3.14.8 build lacks seals; selected follow-up build preflight later PASS | required | - |
+| Full local inventory gate | 52 | W57 | Registered full local gate | Initial attempt: same interpreter requirement | NOT_RUN | Same historical scoped environment block; no bypass; later selected-build preflight PASS | required | - |
+| Full local reuse gate | 53 | W58 | Registered full local gate | Initial attempt: same interpreter requirement | NOT_RUN | Same historical scoped environment block; no bypass; later selected-build preflight PASS | required | - |
+| Full local ownership gate | 54 | W59 | Registered full local gate | Initial attempt: same interpreter requirement | NOT_RUN | Same historical scoped environment block; no bypass; later selected-build preflight PASS | required | - |
+| Full local research gate | 55 | W60 | Registered full local gate | Initial attempt: same interpreter requirement | NOT_RUN | Same historical scoped environment block; no bypass; later selected-build preflight PASS | required | - |
+| Follow-up inventory verification | 52 | W57 | Unit, integration and CLI boundary/coverage checks | Corrected renderer/CLI and exact test source | PASS | 48 tests; 92% combined coverage, CLI 89%; local follow-up receipts | required | - |
+| Follow-up render disposition | 52 | W57 | Isolated affected-case matrix and bounded old-result reuse | 69 unchanged Compose fingerprints; 21 actual rerenders | PASS | followup-render21.yaml: 20 PASS/1 FAIL; followup-render-equivalence.json: 182 previous measured PASS receipts retained; combined 202/203, one exact leaf IMPLEMENT_GAP | required | - |
+| Follow-up CI plan | 52 | W57 | Unfiltered CI-plan suite | Isolated topology and dedicated trusted/untrusted fixtures; production guard unchanged | PASS | 58 tests; host UID remains separately denied; code/security-approved test-only diffs | required | Broader CI plan |
+| Follow-up official research | 55 | W60 | Direct official-page consultation | Five coordinator-attributed consultations, exact actual-build limit | PASS | DATA-0096 follow-up research; Python docs 3.14.10 distinct from actual 3.14.8 | required | - |
+| Follow-up local boundary gate | 51 | W56 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local boundary gate |
+| Follow-up local inventory gate | 52 | W57 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local inventory gate |
+| Follow-up local reuse gate | 53 | W58 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local reuse gate |
+| Follow-up local ownership gate | 54 | W59 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local ownership gate |
+| Follow-up local research gate | 55 | W60 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local research gate |
+| Final selected boundary checks | 51 | W56 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local boundary gate |
+| Final selected inventory checks | 52 | W57 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local inventory gate |
+| Final selected reuse checks | 53 | W58 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local reuse gate |
+| Final selected ownership checks | 54 | W59 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local ownership gate |
+| Final selected research checks | 55 | W60 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local research gate |
 | Hosted CI | 51 | W56 | Remote CI execution | Local branch | NOT_RUN | No remote publication; applies to all P01 units | optional | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 51 | pending | Initial identity, Boundary verification, Document boundary contracts | SOURCE_READY; required exact local gate remains blocked | SPEC-0212 TSK-0040 |
-| 52 | pending | Inventory verification, Scoped render matrix, Document inventory contracts, Manifest and P01 selection | SOURCE_READY; 21 configuration cases are TEST_RESIDUAL; broader CI error and full gate remain unresolved | SPEC-0212 TSK-0040 |
-| 53 | pending | Acceptance reuse, Document reuse contracts | SOURCE_READY; preserved acceptance does not close the required local gate or operational residuals | SPEC-0212 TSK-0040 |
-| 54 | pending | Ownership verification, Document ownership contracts | SOURCE_READY; source leases are assigned, operator identities remain explicit unknowns and required gate is blocked | SPEC-0212 TSK-0040 |
-| 55 | pending | Official research, Document research contracts | SOURCE_READY for inventory changes; product-specific research residuals and required gate remain explicit | SPEC-0212 TSK-0040 |
+| 51 | pending | Initial identity, Boundary verification, Document boundary contracts, Final selected boundary checks | SOURCE_READY; bounded source checks PASS, final P12/operator acceptance remains separate | SPEC-0212 TSK-0040 |
+| 52 | pending | Inventory verification, Follow-up render disposition, Final selected inventory checks | SOURCE_READY; selected local checks PASS; one readiness fixture is a leaf IMPLEMENT_GAP, no runtime acceptance | SPEC-0212 TSK-0040 |
+| 53 | pending | Acceptance reuse, Document reuse contracts, Final selected reuse checks | SOURCE_READY; scoped historical acceptance preserved; final P12/operator acceptance remains separate | SPEC-0212 TSK-0040 |
+| 54 | pending | Ownership verification, Document ownership contracts, Final selected ownership checks | SOURCE_READY; source leases assigned and reviewed, actual operator identities remain explicit unknowns | SPEC-0212 TSK-0040 |
+| 55 | pending | Official research, Follow-up official research, Final selected research checks | SOURCE_READY for inventory changes; product-specific research and final acceptance scopes remain separate | SPEC-0212 TSK-0040 |
 
 ## Review and Completion
 
 The bounded source, tests, CI registration and reusable ledger are implemented.
-Seven authored source/test fingerprints match the independent APPROVED code review.
+At initial delivery, seven authored source/test fingerprints matched the
+independent APPROVED code review.
 The security recheck found no remaining material issue in its final scoped input
 before the subsequent service-merge serialization fix; do not enlarge that review
-receipt to a later unreviewed change. The coordinator verified all seven final
-code-review fingerprints; a later source edit invalidates its affected receipt.
-The normal-hook local commit remains pending and will be reported from its actual
-result.
+receipt to a later unreviewed change. The coordinator verified all seven initial final
+code-review fingerprints; each follow-up source edit invalidates only its affected
+receipt until separately reviewed. The three current CI test-only diffs have
+separate approved code/security receipts; those receipts do not cover full bodies
+or confer host trust.
+The initial normal-hook local delivery completed as `2fc98e1e2934d3f564e8ef48fcc44bc97768fa57`,
+with clean status and 18 authored fingerprints matching the local completion receipt.
+The follow-up registered integrity leaf initially failed and subsequently passed
+the corrected exact invocation. Local follow-up delivery remains pending the
+ordinary hooks; earlier failed aggregate attempts are not relabeled as PASS.
 
-The final `graphify update .` completed with exit 0 and 27,503 nodes. Missing SQL
-and HCL grammars remain an explicit AST coverage limit; this is not full semantic
-source or document validation.
+The initial AST update completed with exit 0 and 27,503 nodes; the post-delivery
+observation was 27,504. The follow-up `graphify update .` reports exit 0 and 27,519
+nodes (the preceding follow-up observation was 27,518). Missing SQL/HCL grammars remain an explicit AST coverage limit; none of
+these observations constitutes full semantic source or document validation.
 
 Task metadata remains at its required initial `draft` state; that does not classify
-implemented source as absent. All five criteria remain pending because required
-broader CI/local-gate checks are unresolved. No artificial state-only commits or
-remote action is introduced. Final local delivery uses the ordinary hooks; if the
-exact environment prevents that, retain the concrete patch and mark delivery blocked.
+implemented source as absent. All five criteria retain pending final acceptance
+while bounded P01 source and selected local checks are ready. P12 and actual operators retain their separate
+acceptance scopes; no selected local environment blocker remains. No artificial state-only commits or
+remote action is introduced. Final local delivery uses the ordinary hooks and
+retains its actual separate commit result.
 
 Source, static, isolated, historical operator, this execution's direct operation,
 credential rotation, independent restore, remote CI and final acceptance remain
@@ -214,9 +373,9 @@ Historical OpenBao P01 is SPEC-0204; this Task's P01 is workspace inventory.
 
 | Target | Disposition | Current writer/owner | Resume condition and recovery |
 | --- | --- | --- | --- |
-| P01 full local gate | BLOCKED | Coordinator/QA | Provide the exact Python 3.14.8 build and memfd sealing capability; rerun registered gate without weakening it |
-| Broader CI-plan error | BLOCKED | CI owner | Restore the required trusted Git execution environment; rerun the unfiltered 57-case suite |
-| 21 failed configuration cases | TEST_RESIDUAL | Exact leaf writer remains unassigned until path lease; P02–P12 routes in payload | Use each payload case's source fingerprints and supply explicit synthetic inputs/base context; rerun only affected cases |
+| Selected local toolchain | SOURCE_READY | Coordinator/QA | Existing Python 3.14.8 with locked dependencies and memfd sealing passed preflight; original missing-build block is historical; corrected exact integrity leaf720/720 PASS; six prior selected leaves PASS; no full14 aggregate claim |
+| Selected CI validation and actual host trust | SOURCE_READY | CI test writer; actual host operator unassigned | Selected six leaves and corrected seventh720/720 PASS; historical failed attempts retained. Actual ambient restricted-namespace UID65534 refusal does not confer host trust; full14/remote acceptance separate |
+| One readiness configuration defect | IMPLEMENT_GAP | Current leaf writer/operator unassigned; retained SPEC-0182 generic-fixture route | Correct the exact fixture composition under a leaf lease, preserve production OpenBao and isolation, render only affected inputs; source revert only. Earlier 21 residuals are preserved historically; 20 now pass |
 | Current operation, rotation and full independent restore | TEST_RESIDUAL | Actual data owner/operator not inferred | Name consumer, target, approved operator/window, backup and recovery boundary; no P01 runtime mutation |
 | P08 image/package candidates | IMPROVEMENT_CANDIDATE | Future exact image/package writer | Preserve accepted functions; verify installed/image/peer/lock/queue/cache/restore applicability before any update |
 | Spec Package README | NO_CHANGE | doc-writer | No registered package README profile; existing Spec/Plan links and DATA index supply navigation |

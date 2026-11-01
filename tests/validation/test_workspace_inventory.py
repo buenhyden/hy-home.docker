@@ -146,6 +146,35 @@ class WorkspaceCliTests(unittest.TestCase):
                     0,
                 )
 
+            inputs = [
+                {
+                    "source": "docker-compose.yml",
+                    "selection": "all-profiles",
+                    "variables": {},
+                }
+            ]
+            (self.root / "inputs.yaml").write_text(yaml.safe_dump(inputs))
+            with patch.object(
+                module, "render_inventory", side_effect=lambda root, doc, **kwargs: doc
+            ) as renderer:
+                self.assertEqual(
+                    module.main(
+                        [
+                            "scan",
+                            *shared,
+                            "--output",
+                            "typed.yaml",
+                            "--render",
+                            "--render-inputs",
+                            "inputs.yaml",
+                            "--public-path",
+                            "docker-compose.yml",
+                        ]
+                    ),
+                    0,
+                )
+                self.assertEqual(renderer.call_args.kwargs["case_inputs"], inputs)
+
 
 if __name__ == "__main__":
     unittest.main()

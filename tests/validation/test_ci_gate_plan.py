@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 import shutil
+import stat
 import subprocess
 import tempfile
 import unittest
@@ -17,6 +18,7 @@ import yaml
 from scripts.lib.gate import ci_gate_adapters as adapters
 from scripts.lib.gate import ci_gate_contract as contract
 from scripts.validation import ci_gate_runner as runner
+from tests.lib.gate.subprocess_support import root_owned_system_git_fixture
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -1644,8 +1646,43 @@ class CiGateRunnerContractTests(unittest.TestCase):
         self.assertEqual("v24.22.0", captured["TRUSTED_NODE_VERSION"])
         self.assertTrue(captured["TRUSTED_IMAGE_OS"].startswith("LOCAL-"))
 
+    def test_trusted_git_rejects_unsafe_executable_metadata(self) -> None:
+        regular = stat.S_IFREG | 0o755
+        cases = (
+            ("root-owned", "/usr/bin/git", regular, 0, True, True),
+            ("unmapped-owner", "/usr/bin/git", regular, 65534, True, False),
+            ("user-owned", "/tmp/user-git", regular, 1000, True, False),
+            ("group-writable", "/usr/bin/git", regular | stat.S_IWGRP, 0, True, False),
+            ("other-writable", "/usr/bin/git", regular | stat.S_IWOTH, 0, True, False),
+            ("directory", "/usr/bin/git", stat.S_IFDIR | 0o755, 0, True, False),
+            ("not-executable", "/usr/bin/git", regular, 0, False, False),
+            ("relative", "git", regular, 0, True, False),
+            ("parent-traversal", "/usr/bin/../bin/git", regular, 0, True, False),
+        )
+        for label, path, mode, owner, executable, accepted in cases:
+            metadata = os.stat_result((mode, 0, 0, 1, owner, 0, 0, 0, 0, 0))
+            with (
+                self.subTest(case=label),
+                mock.patch.object(pathlib.Path, "stat", return_value=metadata),
+                mock.patch.object(os, "access", return_value=executable),
+            ):
+                environment = {"TRUSTED_GIT_PATH": path}
+                if accepted:
+                    self.assertEqual(path, runner._trusted_git_executable(environment))
+                else:
+                    with self.assertRaisesRegex(runner.GateContractError, "system Git"):
+                        runner._trusted_git_executable(environment)
+        with (
+            mock.patch.object(pathlib.Path, "stat", side_effect=FileNotFoundError),
+            self.assertRaisesRegex(runner.GateContractError, "system Git"),
+        ):
+            runner._trusted_git_executable({"TRUSTED_GIT_PATH": "/missing/git"})
+
     def test_pull_request_identity_is_bound_to_raw_merge_topology(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            root_owned_system_git_fixture(),
+        ):
             repo = self._changed_path_repo(pathlib.Path(directory))
             base = self._git(repo, "rev-parse", "HEAD").stdout.strip()
             initial_branch = self._git(
