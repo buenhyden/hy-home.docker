@@ -1,6 +1,6 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.3.3"
+version: "0.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -296,7 +296,7 @@ Companion 서명과 다른 계약·다른 키입니다.
 
 ```bash
 python3 -I -m publisher.cli attest-queue \
-  --gateway https://blog-export.hy.home.arpa \
+  --gateway "https://blog-export.<DEFAULT_URL>" \
   --auth-header-file <private attest header> --signing-key <private PEM> --key-id <key_id> \
   --state-dir <state> --evidence-dir <evidence>
 ```
@@ -328,9 +328,9 @@ Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만
 
 | 항목 | 값 |
 | --- | --- |
-| HTTPS 기준 주소 | `https://blog-export.hy.home.arpa`(서버 A `192.168.0.13:443`, `*.hy.home.arpa` SAN) |
+| HTTPS 기준 주소 | `https://blog-export.<DEFAULT_URL>`(서버 A `<HOST_LAN_BIND_IP>:443`, `*.<DEFAULT_URL>` SAN). 이 사이트는 `blog-export.hy.home.arpa`, `192.168.0.13` |
 | CA 공개 인증서 | 서버 A의 mkcert 루트 `rootCA.pem` 공개 인증서. 수신기 설정의 CA 파일로 고정하며 지문은 적용 단계에서 운영자가 기록 |
-| 출발지 | Export 조회·ACK는 `192.168.0.22/32`, Attestation은 `192.168.0.13/32` |
+| 출발지 | Export 조회·ACK는 `<BLOG_EXPORT_RECEIVER_IP>/32`, Attestation은 `<HOST_LAN_BIND_IP>/32`(값은 `.env`, Traefik 환경으로 전달). 이 사이트는 `192.168.0.22`, `192.168.0.13` |
 | 인증 | `export_read`, `export_ack` 각각 별도 Bearer 토큰(Gateway에는 SHA-256만 저장) |
 | API·수신기 | Blog-data Resource Export 1.0과 `scripts/ops/receive-hermes-exports.ps1`, 둘 다 `dev` `b372de374ec589b1bec2ff8096ae2f7272461248` |
 | 템플릿 버전 | 각 Manifest의 `template_version`(이미지에 포함된 Resource 템플릿·프로필 레지스트리, `resource-export/3+4b681da87f80`) |

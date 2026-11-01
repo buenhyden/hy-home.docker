@@ -162,12 +162,9 @@ ok "n8n imported and published the committed workflow natively"
 
 # 5. Traefik with the live routes; an SSO stand-in guards everything else.
 mkdir "$work/dynamic"
-sed -e "s#192.168.0.13/32#$lan_ip/32#" -e 's#n8n@docker#n8n-e2e@file#' \
+sed -e 's#n8n@docker#n8n-e2e@file#' \
   "$root/infra/01-gateway/traefik/dynamic/hermes-webhook.yml" >"$work/dynamic/hermes-webhook.yml"
-# One host stands in for both Windows B and the server-A attester here; the
-# per-router source split is asserted by test_export_route.py.
-sed -e "s#192.168.0.22/32#$lan_ip/32#" -e "s#192.168.0.13/32#$lan_ip/32#" \
-  "$root/infra/01-gateway/traefik/dynamic/blog-export.yml" >"$work/dynamic/blog-export.yml"
+cp "$root/infra/01-gateway/traefik/dynamic/blog-export.yml" "$work/dynamic/blog-export.yml"
 # The routes chain the live POL-0013 standard chain; carry exactly its parts.
 python3 - "$root/infra/01-gateway/traefik/dynamic/middleware.yml" "$work/dynamic/standard-chain.yml" <<'PY2'
 import sys, yaml
@@ -195,7 +192,11 @@ http:
         servers: [{url: "http://n8n:5678"}]
 YAML
 chmod -R a+rX "$work/dynamic"
+# The routes read their site values from Traefik's environment, as live. One
+# host stands in for both Windows B and the server-A attester here; the
+# per-router source split is asserted by test_export_route.py.
 docker run -d --name "$id-traefik" --network "$id-edge" -p "$lan_ip::443" \
+  -e DEFAULT_URL=hy.home.arpa -e HOST_LAN_BIND_IP="$lan_ip" -e BLOG_EXPORT_RECEIVER_IP="$lan_ip" \
   -v "$work/dynamic:/dynamic:ro" "$traefik_image" \
   --entrypoints.websecure.address=:443 --providers.file.directory=/dynamic \
   --accesslog=true --accesslog.format=json --log.level=ERROR >/dev/null

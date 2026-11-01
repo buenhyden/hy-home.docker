@@ -452,3 +452,28 @@ class TlsContextTests(unittest.TestCase):
         self.assertEqual(ssl.TLSVersion.TLSv1_2, context.minimum_version)
         self.assertEqual(ssl.CERT_REQUIRED, context.verify_mode)
         self.assertTrue(context.check_hostname)
+
+
+class InternalZoneTests(unittest.TestCase):
+    def zone(self, **env):
+        import os
+        import subprocess
+
+        environ = {k: v for k, v in os.environ.items() if k != "HERMES_INTERNAL_ZONE"}
+        result = subprocess.run(
+            [sys.executable, "-c", "from publisher import source_fetch; print(source_fetch.ZONE)"],
+            cwd=Path(__file__).resolve().parents[1],
+            env={**environ, **env},
+            capture_output=True,
+            check=True,
+            text=True,
+        )  # fmt: skip
+        return result.stdout.strip()
+
+    def test_zone_comes_from_the_environment(self):
+        self.assertEqual(
+            "example.test", self.zone(HERMES_INTERNAL_ZONE="Example.Test.")
+        )
+
+    def test_zone_defaults_to_this_site(self):
+        self.assertEqual("hy.home.arpa", self.zone())

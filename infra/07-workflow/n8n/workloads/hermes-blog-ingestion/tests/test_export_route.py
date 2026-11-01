@@ -5,21 +5,22 @@ import unittest
 from pathlib import Path
 
 import yaml
+from traefik_template import ENV, LIVE, SAMPLE, rendered
 
 WORKLOAD = Path(__file__).resolve().parents[1]
-LIVE = WORKLOAD.parents[3] / "01-gateway/traefik/dynamic"
 ROUTE = LIVE / "blog-export.yml"
-HOST = "Host(`blog-export.hy.home.arpa`)"
+HOST = f"Host(`blog-export.{SAMPLE['DEFAULT_URL']}`)"
 UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"
 STANDARD = "gateway-standard-chain@file"
-WINDOWS, HOST_A = ["192.168.0.22/32"], ["192.168.0.13/32"]
+WINDOWS = [f"{SAMPLE['BLOG_EXPORT_RECEIVER_IP']}/32"]
+HOST_A = [f"{SAMPLE['HOST_LAN_BIND_IP']}/32"]
 
 
 class ExportRouteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.text = ROUTE.read_text(encoding="utf-8")
-        cls.http = yaml.safe_load(cls.text)["http"]
+        cls.http = yaml.safe_load(rendered(cls.text))["http"]
         cls.routers = cls.http["routers"]
         cls.middlewares = cls.http["middlewares"]
 
@@ -36,6 +37,16 @@ class ExportRouteTests(unittest.TestCase):
         # Traefik loads the live directory at once; the workload keeps no copy.
         self.assertTrue(self.text.startswith("# LIVE"))
         self.assertFalse((WORKLOAD / "traefik").exists())
+
+    def test_site_values_come_from_traefik_environment(self):
+        # Hosts and source addresses differ per site; the route names them only
+        # through variables that the Traefik service receives from Compose.
+        names = {m[1] for f in LIVE.glob("*.yml") for m in ENV.finditer(f.read_text())}
+        self.assertEqual(set(SAMPLE), names)
+        compose = yaml.safe_load((LIVE.parent / "docker-compose.yml").read_text())
+        environment = compose["services"]["traefik"]["environment"]
+        for name in names:
+            self.assertEqual(f"${{{name}", str(environment[name])[: len(name) + 2])
 
     def test_exactly_four_routes_to_the_gateway_over_tls(self):
         self.assertEqual(
