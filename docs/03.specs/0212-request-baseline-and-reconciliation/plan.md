@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.32.0"
+version: "1.33.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-01"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -70,6 +70,11 @@ W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
 variable implementation; it does not reopen r10 criteria 11–18.
 
+W56–W60 implement the direct 2026-11-01 P01 request in TSK-0040. The
+existing service, port, Secret and version owners remain canonical. DATA-0096
+is a non-normative current observation consumed by this Task and P02–P12
+handoffs; it does not replace their acceptance contracts.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -129,6 +134,11 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W53 | 48 | Accept the one approved terminal Task `Resolves` correction | W52 | TSK-0037 | RED and GREEN tests, end-to-end check, spec package tests, lint |
 | W54 | 49 | Accept ADR-0050 and archive the Vault ADRs it supersedes | W53 | TSK-0038 | Changed metadata, metadata contracts, links, corpus and archive |
 | W55 | 50 | Record the open Spec reconciliation and promote the OpenTofu documents | W54 | TSK-0039 | Package pull requests, metadata contracts, changed metadata, links |
+| W56 | 51 | Capture actual workspace roots, source identity and safe before/after fingerprints | None | TSK-0040 | Git/non-Git and boundary regression |
+| W57 | 52 | Implement scan/compare/validate and publish independent census denominators | W56 | TSK-0040 | Unit, integration, CLI and isolated render probes |
+| W58 | 53 | Reconcile historical acceptance with current evidence and explicit residuals | W56 | TSK-0040 | Current Task/criterion readback and ledger validation |
+| W59 | 54 | Bind single writers and exact leaf-owner handoffs to current file fingerprints | W56 | TSK-0040 | Lease conflict and ownership validation |
+| W60 | 55 | Recheck official sources and record bounded product applicability | W56 | TSK-0040 | Direct official-source consultation and independent review |
 
 ### Current v30 continuation and delivery
 
@@ -296,6 +306,23 @@ The controller sequences any table/lifecycle/memory amendment after its exact
 consumer impact and compatibility are reviewable; unimplemented targets stay
 pending in TSK-0007 rather than being treated as completed by this Plan.
 
+### Current P01 implementation and ownership
+
+The qa-engineer writes the inventory CLI/library and its tests; the doc-writer
+writes this package amendment, TSK-0040 and DATA-0096; the ci-cd-engineer
+writes the script manifest and existing CI selector registration. The doc-writer
+holds only the DATA-0096 allocation segment of the shared Registry. Each
+shared-file lease records its pre-edit fingerprint locally. Independent reviewers
+read without editing. Unassigned data owners and operational accepters remain
+unknown; P labels confer no account authority.
+
+The CLI supports scan, compare and validate. Public regular source files receive
+SHA-256 fingerprints; private/authentication inputs, binaries, generated files
+and Git internals receive explicit exclusion treatment without content reads.
+Review receipts bind reviewer, time, fingerprint and scope. Publication validates
+before atomic replacement and excludes its own payload from recursive hashing.
+No service starts, host edits, credential actions or remote writes occur here.
+
 ## Verification Plan
 
 Run a value-free source-set audit, actual frontmatter parse and read-only PR
@@ -340,6 +367,14 @@ real provider effectiveness, HOME backup/restore and remote main protection
 remain separate observations. Never create credentials or change managed
 settings to make a source check pass.
 
+P01 adds meaningful Git/non-Git, symlink, duplicate declaration, ownership,
+secret-boundary, stale-review, permission, cancellation and atomic-output probes.
+The new executable code must achieve at least 80% coverage. Manifest/CI selection,
+metadata, links and Registry checks accompany the source unit. Current direct
+operation, credential rotation, independent restore, hosted CI and final operator
+acceptance stay NOT_RUN unless separately observed. Compare the initial and
+final public manifests and review only affected rows after a source change.
+
 ## Risks and Recovery
 
 ### Risks and Rollback
@@ -359,6 +394,9 @@ operator/window, stop condition, and rollback. Missing prerequisites block
 only that dependent operation.
 
 ## Related Documents
+
+- [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
+- [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Spec](spec.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)

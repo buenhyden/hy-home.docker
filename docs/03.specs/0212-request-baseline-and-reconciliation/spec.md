@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.32.0"
+version: "1.33.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-01"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -92,6 +92,12 @@ in TSK-0037. Criterion 49/W54 accepts ADR-0050 and archives the Vault ADRs it
 supersedes, in TSK-0038. Criterion 50/W55 records the open Spec
 reconciliation and the OpenTofu promotion, in TSK-0039.
 
+The direct P01 request of 2026-11-01 adds criteria 51–55 and W56–W60 in
+TSK-0040. These own the current workspace census, bounded evidence reuse,
+single-writer leases and research applicability. The P01 label here is the
+workspace-inventory lane; historical OpenBao P01 remains SPEC-0204.
+Completed Task bodies and criteria 1–50 retain their meaning.
+
 ## Scope
 
 LLM Wiki work is preparation only: documentation, schema, connection contract,
@@ -105,6 +111,41 @@ required READMEs, links, Registry and path checks. Learning applications remain
 excluded, including planning.
 
 ## Contracts
+
+### Current P01 inventory contract (2026-11-01)
+
+This P01 uses the input workspace and current write boundary, not a historical
+repository name, SHA or service total. `scan`, `compare` and `validate` expose
+safe file/service observations, changed or invalidated review rows and schema
+errors. A public record never contains private per-path metadata, authentication
+bodies or secret-derived hashes. External symlinks are recorded without traversal;
+private, binary, generated, inaccessible and Git-internal inputs state their
+exclusion reason. An output excludes its own bytes from recursive fingerprinting.
+
+Each requirement uses exactly one current disposition: `REUSE_ACCEPTED`,
+`SOURCE_READY`, `IMPLEMENT_GAP`, `IMPROVEMENT_CANDIDATE`, `TEST_RESIDUAL`,
+`BLOCKED`, `OUT_OF_SCOPE` or `NO_CHANGE`. Source, static checks, isolated tests,
+historical operator acceptance, this execution's direct operation, credential
+rotation, independent restore, hosted CI and final acceptance are independent
+observations. Missing runtime/private evidence does not block unrelated local
+source work. Historical acceptance is bound to its actual version, actor,
+environment, target, consumer, criterion, date and source receipt.
+
+The source census includes accessible files, separate projects and discovered
+Compose include/extends/overlay/profile relations. List, explicit body review,
+configuration render, runtime and restore have separate denominators and
+numerators. Discovery is not a semantic review receipt or a deployment test.
+All 13 tiers and eight learning domains have an explicit source/consumer and
+adopt/defer/exclude disposition, including subsequently discovered services.
+New learning applications, external projects and LAB runtime implementation
+remain excluded; Wiki remains preparation only.
+
+Only one current writer integrates each changed path or explicit segment. The
+requirement acceptance owner, writer, independent reviewer, data owner and
+operational accepter remain separate fields. Unknown identities stay unknown.
+P02–P12 routes are handoff labels, not user/account authority. DATA-0096 is a
+non-normative observation consumed by TSK-0040 and exact downstream handoffs;
+existing service, port, Secret and version sources remain canonical.
 
 ### Current request scope (historical items 11–30)
 
@@ -466,6 +507,23 @@ hold, authorization and recovery requirements have been established.
 50. TSK-0039 records an owner decision for every open Spec Package and
     promotes the OpenTofu operations documents.
 
+51. P01.01 binds the input workspace boundary, discovered Git and non-Git
+    roots, HEAD and dirty paths to safe file fingerprints without following
+    external symlinks or overwriting user changes.
+52. P01.02 publishes current file, service, connection, tier and learning
+    coverage with separate list, body-review, render, runtime and restore
+    denominators; unreviewed, private and excluded inputs stay explicit.
+53. P01.03 records the eight request dispositions independently from source,
+    tests, historical operator acceptance and current operational evidence;
+    accepted n8n, storage and Storybook scopes and recorded OpenBao/Hermes
+    operational cuts are preserved.
+54. P01.04 assigns a single writer to each actual changed path or segment,
+    separately identifying acceptance owner, reviewer, data owner and operator,
+    and hands service changes to their leaf owners.
+55. P01.05 records directly consulted official sources, version/platform
+    applicability, adoption or deferral and normal/rejection/recovery questions
+    without treating release existence as installation or runtime acceptance.
+
 ## Failure Conditions
 
 Reconciliation fails when a request item has competing acceptance owners,
@@ -481,6 +539,9 @@ its lease, or a destructive/secret/live action proceeds without its named
 target, backup, recovery boundary, and action-specific authorization.
 
 ## Related Documents
+
+- [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
+- [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)

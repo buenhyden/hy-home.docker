@@ -981,6 +981,42 @@ class CiGateRunnerContractTests(unittest.TestCase):
             {item.gate_id for item in ordinary_document},
         )
 
+    def test_workspace_inventory_changes_select_synthetic_regressions_once(
+        self,
+    ) -> None:
+        inputs = (
+            "scripts/operations/workspace-inventory.py",
+            "scripts/lib/ops/workspace_inventory.py",
+            "scripts/lib/ops/_workspace_render.py",
+            "scripts/lib/ops/_workspace_services.py",
+            "tests/lib/ops/test_workspace_inventory.py",
+            "tests/lib/ops/test_workspace_services.py",
+            "tests/validation/test_workspace_inventory.py",
+            "docs/90.references/data/0096-workspace-inventory/data.yaml",
+        )
+        modules = {
+            "tests.lib.ops.test_workspace_inventory",
+            "tests.lib.ops.test_workspace_services",
+            "tests.validation.test_workspace_inventory",
+        }
+        for path in inputs:
+            for context in (
+                runner.ExecutionContext.LOCAL,
+                runner.ExecutionContext.PULL_REQUEST,
+            ):
+                with self.subTest(path=path, context=context):
+                    plan = build_public_plan("changed", context, (path,))
+                    regressions = [
+                        item
+                        for item in plan
+                        if item.gate_id == "leaf.repository-integrity-regressions"
+                    ]
+                    self.assertEqual(1, len(regressions))
+                    self.assertLessEqual(modules, set(regressions[0].argv))
+                    self.assertFalse(
+                        runner.selected_prerequisites(plan, (path,)).docker
+                    )
+
     def test_changed_unit_owners_follow_their_declared_execution_boundary(
         self,
     ) -> None:

@@ -831,6 +831,9 @@
         "tests.validation.test_smtp_lock_inheritance",
         "tests.lib.ops.test_secret_catalog",
         "tests.validation.test_secret_catalog_contract",
+        "tests.lib.ops.test_workspace_inventory",
+        "tests.lib.ops.test_workspace_services",
+        "tests.validation.test_workspace_inventory",
         "tests.lib.ops.test_port_inventory",
         "tests.validation.test_port_contract",
         "tests.lib.ops.test_openbao_consumer_migration",
@@ -1731,6 +1734,21 @@
       },
       {
         "prefixes": [
+          "scripts/operations/workspace-inventory.py",
+          "scripts/lib/ops/workspace_inventory.py",
+          "scripts/lib/ops/_workspace_render.py",
+          "scripts/lib/ops/_workspace_services.py",
+          "tests/lib/ops/test_workspace_inventory.py",
+          "tests/lib/ops/test_workspace_services.py",
+          "tests/validation/test_workspace_inventory.py",
+          "docs/90.references/data/0096-workspace-inventory/"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
           "scripts/lib/ops/port_inventory.py",
           "scripts/operations/port-inventory.py",
           "infra/09-platform-ops/service-integration/",
@@ -2090,6 +2108,21 @@
         "prefixes": [
           "tests/validation/_supabase_smtp_fixture_storage.py",
           "tests/validation/test_supabase_smtp_fixture_storage.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/operations/workspace-inventory.py",
+          "scripts/lib/ops/workspace_inventory.py",
+          "scripts/lib/ops/_workspace_render.py",
+          "scripts/lib/ops/_workspace_services.py",
+          "tests/lib/ops/test_workspace_inventory.py",
+          "tests/lib/ops/test_workspace_services.py",
+          "tests/validation/test_workspace_inventory.py",
+          "docs/90.references/data/0096-workspace-inventory/"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

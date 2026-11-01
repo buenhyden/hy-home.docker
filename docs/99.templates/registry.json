@@ -5219,8 +5219,8 @@
     "data": {
       "prefix": "DATA-",
       "width": 4,
-      "high_water": 95,
-      "next_number": 96,
+      "high_water": 96,
+      "next_number": 97,
       "child_spaces": {}
     },
     "migration": {
