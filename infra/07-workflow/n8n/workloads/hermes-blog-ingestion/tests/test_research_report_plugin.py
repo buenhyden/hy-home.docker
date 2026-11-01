@@ -128,3 +128,23 @@ class SourceQuotesValidationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HandlerResultContractTests(unittest.TestCase):
+    """Hermes' tool registry accepts only a str result (or its multimodal envelope)."""
+
+    def test_rejected_payload_returns_json_string(self):
+        import json
+
+        result = tools.handle_submit_report({"payload": {"schema_version": "0.9"}})
+        self.assertIsInstance(result, str)
+        self.assertEqual(
+            {"ok": False, "error": "invalid_schema_version"}, json.loads(result)
+        )
+
+    def test_args_without_payload_return_json_string(self):
+        import json
+
+        result = tools.handle_submit_report(None)
+        self.assertIsInstance(result, str)
+        self.assertFalse(json.loads(result)["ok"])

@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.1"
+version: "0.5.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1394,6 +1394,19 @@ Built on branch `feat/hermes-trust-adapter`, source and synthetic evidence only:
   16384) and the attester treats HTTP 413 like 401/403; unencodable URLs are permanently
   unverified; IPv4-compatible and NAT64 addresses are refused; the service unit uses
   `StateDirectory` and an empty capability set; the timer no longer sets `Persistent`.
+
+### First real Cron submission — 2026-11-01 08:00 KST
+
+Cron `25674fbc0bf3`, `6eabd835f969` and `8d0925bc571d` ran at 08:04–08:07 and
+delivered email and Telegram, but no report reached the Gateway. Five
+`submit_research_report` calls each failed in about 0.01 s with
+`Tool handler returned unsupported result type: dict`: the Hermes tool registry
+accepts only a `str` result (or its multimodal envelope), and the plugin handler
+returned a dict on every path. Nothing reached the plugin Outbox, Traefik or n8n.
+`hermes plugins doctor` checks discovery, import and registration only, so it
+passed. Fix: the registered handler returns `json.dumps(...)` of the unchanged
+result, plugin 0.2.1, with handler-result contract tests. The installed plugin is
+updated only after merge, and the hash comparison is repeated then.
 
 ## Evidence
 

@@ -141,7 +141,12 @@ def _allowed_url(url: str) -> bool:
     return False
 
 
-def handle_submit_report(args: dict[str, Any], **kwargs) -> dict[str, Any]:
+def handle_submit_report(args: dict[str, Any], **kwargs) -> str:
+    """Hermes tool entry point: the registry accepts only a str result."""
+    return json.dumps(_submit(args), ensure_ascii=False)
+
+
+def _submit(args: dict[str, Any]) -> dict[str, Any]:
     payload = args.get("payload") if isinstance(args, dict) else None
     if not isinstance(payload, dict):
         payload = args if isinstance(args, dict) else {}
