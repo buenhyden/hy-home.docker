@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.6"
+version: "0.5.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1479,6 +1479,46 @@ resource-policy change: `N8N_RUNNERS_GRANT_TOKEN_TTL` (default 120, written as a
 test RED then GREEN. Applying it means recreating n8n, n8n-worker (with
 `docker-compose.ollama-local.yml`) and both runners; that is NOT_RUN until the
 owner approves.
+
+### Cron identity, source quotes and Export credentials — 2026-11-01
+
+Correction to the entry above: Hermes runs cron jobs inside the long-running
+`hermes-gateway.service` process, not in a fresh subprocess, so an installed
+plugin takes effect only after `systemctl --user restart hermes-gateway.service`.
+The 10:16, 10:28 and 10:56 calls ran the 0.2.0 handler loaded at 08:26 (logged
+`unsupported result type: dict`). At 10:56 the model reused the idempotency key
+of the failed 10:18 record, so the plugin answered `idempotency_conflict` and
+sent nothing. The owner restarted the gateway at 11:04 and renamed that record
+to `….failed-403-producer.json` (kept, not deleted). The 11:09 run then reached
+0.2.2 and was refused with `job_not_allowed`: the model wrote a `job_id` other
+than the cron job's own.
+
+Fix: plugin 0.2.3 takes `job_id`, `report_kind`, `run_id` (the execution ID) and
+`idempotency_key` (`<job_id>-<execution_id>`) from
+`ctx.current_cron_execution()`, which the scheduler binds per fire. Hermes
+documents that model output cannot change this value. It reaches tool threads
+through `propagate_context_to_thread`. Outside a cron execution the plugin
+answers `not_a_cron_run` and sends nothing. Evidence: four `CronIdentityTests`
+RED then GREEN; workload suite 299 OK.
+
+Source quotes: the Blog-data handoff requires `source_url` plus 1–3 verbatim
+`source_quotes` per item. The 10:16 report had 9 of 9 URLs and 0 quotes, so every
+item would have been held `SOURCE_UNVERIFIED`. The submission sentence of the
+three cron prompts was replaced through `hermes cron edit` (backup
+`jobs.json.bak-…-pre-source-quotes`): every item carries `source_url` and
+verbatim quotes containing its numbers, dates and proper nouns, a quote that
+cannot be copied verbatim is left out rather than invented, and
+`companion_evidence`, which the plugin rejects, is no longer requested.
+Schedules are unchanged.
+
+Export credentials: the owner generated the `export_read` and `export_ack`
+tokens and gave only their SHA-256. Both were added to the Gateway config as
+separate `producer: "hermes"` entries (a credential holds one non-`read` scope,
+and Export lists are filtered by producer); backup
+`config.json.pre-export-tokens-20261101T020011Z`, validated with the Gateway's
+own `readConfig`, Gateway restarted healthy with `export_enabled:true`. The
+attester keeps its key `hermes-attester-1`. A second verifier key generated
+from the handoff note was not registered and the owner deleted it.
 
 ## Evidence
 

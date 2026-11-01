@@ -135,8 +135,10 @@ class HandlerResultContractTests(unittest.TestCase):
 
     def test_rejected_payload_returns_json_string(self):
         import json
+        from unittest import mock
 
-        result = tools.handle_submit_report({"payload": {"schema_version": "0.9"}})
+        with mock.patch.object(tools, "_CTX", CronRun()):
+            result = tools.handle_submit_report({"payload": {"schema_version": "0.9"}})
         self.assertIsInstance(result, str)
         self.assertEqual(
             {"ok": False, "error": "invalid_schema_version"}, json.loads(result)
@@ -150,50 +152,96 @@ class HandlerResultContractTests(unittest.TestCase):
         self.assertFalse(json.loads(result)["ok"])
 
 
-class ProducerPinTests(unittest.TestCase):
-    """The Gateway token is bound to producer "hermes"; the model must not choose it."""
+class CronRun:
+    """Stands in for Hermes' plugin context during one cron execution."""
 
-    def test_sent_producer_is_pinned(self):
-        import json
-        import tempfile
-        from unittest import mock
+    def __init__(self, job_id="25674fbc0bf3", execution_id="0123456789abcdef"):
+        from types import SimpleNamespace
 
-        sent = []
+        self.run = SimpleNamespace(job_id=job_id, execution_id=execution_id)
 
-        class Response:
-            def __enter__(self):
-                return self
+    def current_cron_execution(self):
+        return self.run
 
-            def __exit__(self, *exc):
-                return False
 
-            def getcode(self):
-                return 201
+def submit(payload, ctx):
+    """Run the handler under ctx with a fake opener; return (result, sent bodies)."""
+    import json
+    import tempfile
+    from unittest import mock
 
-            def read(self):
-                return b'{"persisted": true}'
+    sent = []
 
-        class Opener:
-            def open(self, request, timeout):
-                sent.append(json.loads(request.data))
-                return Response()
+    class Response:
+        def __enter__(self):
+            return self
 
+        def __exit__(self, *exc):
+            return False
+
+        def getcode(self):
+            return 201
+
+        def read(self):
+            return b'{"persisted": true}'
+
+    class Opener:
+        def open(self, request, timeout):
+            sent.append(json.loads(request.data))
+            return Response()
+
+    with (
+        tempfile.TemporaryDirectory() as outbox,
+        mock.patch.object(tools, "_CTX", ctx),
+        mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+        mock.patch.dict(
+            "os.environ",
+            {
+                "RESEARCH_WEBHOOK_URL": "https://gateway.invalid/hook",
+                "RESEARCH_WEBHOOK_SECRET": "synthetic",
+            },
+        ),
+        mock.patch.object(tools.urllib.request, "build_opener", return_value=Opener()),
+    ):
+        result = json.loads(tools.handle_submit_report({"payload": payload}))
+    return result, sent
+
+
+class CronIdentityTests(unittest.TestCase):
+    """Identity fields come from Hermes and the Gateway token, never from the model."""
+
+    def test_identity_fields_are_taken_from_the_cron_run(self):
         payload = make_payload()
-        payload["producer"] = "hermes-cron-devops-brief"
-        with (
-            tempfile.TemporaryDirectory() as outbox,
-            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
-            mock.patch.dict(
-                "os.environ",
-                {
-                    "RESEARCH_WEBHOOK_URL": "https://gateway.invalid/hook",
-                    "RESEARCH_WEBHOOK_SECRET": "synthetic",
-                },
-            ),
-            mock.patch.object(
-                tools.urllib.request, "build_opener", return_value=Opener()
-            ),
-        ):
-            result = json.loads(tools.handle_submit_report({"payload": payload}))
+        payload.update(
+            producer="hermes-cron-devops-brief",
+            job_id="devops-daily-brief",
+            report_kind="news",
+            run_id="2026-11-01T101627Z",
+            idempotency_key="model-chosen",
+        )
+        result, sent = submit(payload, CronRun())
         self.assertTrue(result["ok"], result)
-        self.assertEqual(["hermes"], [body["producer"] for body in sent])
+        self.assertEqual(1, len(sent))
+        self.assertEqual("hermes", sent[0]["producer"])
+        self.assertEqual("25674fbc0bf3", sent[0]["job_id"])
+        self.assertEqual("devops", sent[0]["report_kind"])
+        self.assertEqual("0123456789abcdef", sent[0]["run_id"])
+        self.assertEqual("25674fbc0bf3-0123456789abcdef", sent[0]["idempotency_key"])
+
+    def test_two_runs_of_one_job_do_not_collide(self):
+        _, first = submit(make_payload(), CronRun(execution_id="aaaa"))
+        _, second = submit(make_payload(), CronRun(execution_id="bbbb"))
+        self.assertNotEqual(first[0]["idempotency_key"], second[0]["idempotency_key"])
+
+    def test_outside_a_cron_run_nothing_is_sent(self):
+        for ctx in (None, CronRun(job_id=None)):
+            if ctx is not None:
+                ctx.run = None
+            result, sent = submit(make_payload(), ctx)
+            self.assertEqual({"ok": False, "error": "not_a_cron_run"}, result)
+            self.assertEqual([], sent)
+
+    def test_a_job_outside_the_allowlist_is_refused(self):
+        result, sent = submit(make_payload(), CronRun(job_id="b729b76b4def"))
+        self.assertEqual({"ok": False, "error": "job_not_allowed"}, result)
+        self.assertEqual([], sent)

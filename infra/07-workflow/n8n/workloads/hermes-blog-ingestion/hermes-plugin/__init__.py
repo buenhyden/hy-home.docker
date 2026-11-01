@@ -4,6 +4,7 @@ from . import tools
 
 
 def register(ctx) -> None:
+    tools._CTX = ctx
     ctx.register_tool(
         name="submit_research_report",
         toolset="research_report",
