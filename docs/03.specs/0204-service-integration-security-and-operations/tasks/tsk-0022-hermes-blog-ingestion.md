@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.3"
+version: "0.5.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1427,6 +1427,24 @@ Operations so far on server A: Gateway on `b372` schema 4, workflow
 republished, attester account, key and `attest`+`read` credential created,
 `export_enabled:true`; release install and timer NOT_RUN.
 
+### Attester live on server A — 2026-11-01
+
+After PR #708 merged (`c2825bbe8`), the owner ran the install in a terminal.
+The release archive was `git archive c2825bbe8`, root-owned under `/root`;
+`install.py` and both units were taken from that archive, not the checkout.
+`install.py --role attester --python /usr/bin/python3.12` installed
+`/opt/hermes-attester/releases/c2825bbe8a54c2844d79efeec5c09ee63b2a7658`
+(hash-locked `cffi`, `cryptography`, `pycparser`; pip removed), and
+`/opt/hermes-attester/current` points at it. A manual
+`systemctl start hermes-attester.service` returned
+`{"attested": 0, "held_items": 0, "rejected": 0, "retry": 0, "skipped": 0}`
+with `Result=success`. The Gateway answered, the credential and key loaded, and
+the queue was empty. `hermes-attester.timer` was enabled only after that run
+passed and fires every five minutes. A real item verification, Export `ready`,
+and the Windows pull and ACK remain NOT_RUN until a Cron report arrives.
+Rollback: disable the timer, remove the two units and the `current` link,
+`daemon-reload`. Releases are left in place.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -1457,7 +1475,7 @@ republished, attester account, key and `attest`+`read` credential created,
 | Attester source | 23 | W83 | attestation/2 vectors, SSRF-guarded fetch, item checks, queue attester retry/resend/quarantine, deploy units | Synthetic keys, fixtures and fake fetcher; `publisher.cli attest-queue` replaces `attest` | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Attestation/Export/ACK disposable E2E | 23 | W83 | Item-level attest → ready/held → pull → hash check → ACK, forged, scope, read-route and restart cases | Synthetic tokens and keys, fake fetcher, disposable containers at `b372de374e`; 53 PASS, 0 FAIL | PASS | Item-level attester implementation — 2026-11-01 | required | - |
 | Schema-4 upgrade and restore | 23 | W83 | Previous-pin store backed up, upgraded in place to schema 4, both backups restored | Disposable volumes, `e2e-upgrade.sh` 11/11 | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
-| Production attester | 23 | W83 | Real `hermes-attester` account, key, `attest`+`read` token, `export` block, timer and a real item verification | Not run: image `b372de374e`, schema 4 switch, route pull and account need separate approval | NOT_RUN | Item-level attester implementation — 2026-11-01 | required | - |
+| Production attester | 23 | W83 | Real `hermes-attester` account, key, `attest`+`read` token, `export` block, timer and a real item verification | Account, key, token, `export` block, release `c2825bbe8` and timer live; manual run succeeded on an empty queue; no real item verified yet | NOT_RUN | Item-level attester implementation — 2026-11-01 | required | - |
 | Hermes plugin source handoff | 23 | W83 | Plugin source merged and matched to the installed copy | PR #700 `3727ff0e7`; four files SHA-256 equal to the installed copy; real submission not run | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | Protected-install follow-up slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
 
