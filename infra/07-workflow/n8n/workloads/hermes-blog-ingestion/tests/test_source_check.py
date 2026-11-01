@@ -176,13 +176,26 @@ class ItemCheckTests(unittest.TestCase):
         self.assertEqual([], check("OpenAI", body="OpenAI가 발표"))
         self.assertEqual(["name_not_found"], check("openai", body="OpenAI가 발표"))
 
-    def test_sentence_initial_name_is_checked_but_starters_are_not(self):
-        self.assertEqual(
-            ["name_not_found"], check("beats", body="Nvidia beats estimates")
-        )
-        self.assertEqual([], check("Nvidia beats", body="Nvidia beats estimates"))
-        self.assertEqual([], check("x", body="The company grew. However it rests"))
+    def test_plain_capitalised_first_words_are_not_names(self):
+        # Grammar capitalises a field or sentence start; that is no evidence of a name.
+        for body in (
+            "Centrally discover and govern agents",
+            "Use new visibility fields",
+            "Includes security fixes",
+            "Nvidia beats estimates",
+            "The company grew. However it rests",
+        ):
+            self.assertEqual([], check("x", body=body), body)
+        self.assertEqual([], check("x", title="Fast mode deprecated"))
+
+    def test_mixed_case_first_words_are_still_names(self):
+        self.assertEqual(["name_not_found"], check("x", body="AlloyDB adds insights"))
+        self.assertEqual([], check("AlloyDB", body="AlloyDB adds insights"))
+        self.assertEqual(["name_not_found"], check("x", body="Shipped. OpenAI beats"))
+
+    def test_names_after_the_first_word_are_still_checked(self):
         self.assertEqual(["name_not_found"], check("x", body="Then Apple sued"))
+        self.assertEqual(["name_not_found"], check("beats", body="Nvidia beats Intel"))
 
     def test_required_fields(self):
         self.assertEqual(["field_missing"], check_item(item(source_url=""), Q))
