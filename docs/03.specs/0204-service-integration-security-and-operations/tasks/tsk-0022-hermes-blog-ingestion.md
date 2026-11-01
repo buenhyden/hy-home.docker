@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.5"
+version: "0.5.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1461,6 +1461,24 @@ the worker's JavaScript task runner kept failing to register ("No matching task
 offer", expired grant token, broker 403). Execution 90 timed out and 91 took
 30 s, so the plugin's first two 15 s attempts ended as Traefik 499 before the
 third reached the Gateway.
+
+### Runner cold start — 2026-11-01
+
+Both runner 403s since the container started (10-26 and 11-01) came from the
+first JavaScript task after a long idle. Timeline at 01:17:41: the launcher
+spawned the runner on demand, the runner first reached the broker about 40 s
+later, the 30 s grant token had expired (broker 403), and a second spawn
+registered in 4 s. Measured in the same container with the 0.5 CPU cap: a warm
+start takes 4.6 s wall for 2.3 s CPU, so it is CPU-bound. A cold start also
+reads about 35,000 runner files through overlayfs while the host swaps (5.9 GiB
+of swap in use), and that kernel time counts against the same cap. The default
+15 s idle shutdown makes a once-a-day run start cold every time. Fix with no
+resource-policy change: `N8N_RUNNERS_GRANT_TOKEN_TTL: 120` on main and worker,
+`N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: 0` on both runners (n8n 2.43.6 reads both;
+`task-runner.js:87` treats 0 as no idle shutdown). Evidence: compose contract
+test RED then GREEN. Applying it means recreating n8n, n8n-worker (with
+`docker-compose.ollama-local.yml`) and both runners; that is NOT_RUN until the
+owner approves.
 
 ## Evidence
 

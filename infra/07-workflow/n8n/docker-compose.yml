@@ -32,6 +32,8 @@ x-n8n-common-env: &n8n-common-env
   N8N_NATIVE_PYTHON_RUNNER: true
   N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token
   N8N_RUNNERS_TASK_TIMEOUT: 300
+  # A cold runner start here took ~40 s, past the 30 s default grant.
+  N8N_RUNNERS_GRANT_TOKEN_TTL: 120
 
   N8N_ENCRYPTION_KEY_FILE: /run/secrets/n8n_encryption_key
   N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
@@ -203,6 +205,8 @@ services:
     environment:
       N8N_RUNNERS_TASK_BROKER_URI: http://n8n:${N8N_BROKER_PORT:-5679}
       N8N_RUNNERS_TASK_TIMEOUT: 300
+      # Keep the runner up after its first task; a daily run would otherwise start cold.
+      N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: 0
       N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT: ${N8N_TASK_RUNNER_PORT:-5680}
     entrypoint: [tini, --, /bin/sh, -ec]
     command:
@@ -247,6 +251,8 @@ services:
     environment:
       N8N_RUNNERS_TASK_BROKER_URI: http://n8n-worker:${N8N_BROKER_PORT:-5679}
       N8N_RUNNERS_TASK_TIMEOUT: 300
+      # Keep the runner up after its first task; a daily run would otherwise start cold.
+      N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: 0
       N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT: ${N8N_TASK_RUNNER_PORT:-5680}
     entrypoint: [tini, --, /bin/sh, -ec]
     command:

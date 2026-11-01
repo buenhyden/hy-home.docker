@@ -382,6 +382,16 @@ class RuntimeCompatibilityTests(unittest.TestCase):
             self.assertNotIn("N8N_RUNNER_TASK_TIMEOUT", environment)
             # n8n 2.x logs "Remove this environment variable; it is no longer needed."
             self.assertNotIn("N8N_RUNNERS_ENABLED", environment)
+        # A cold runner start on this host took ~40 s: the broker's 30 s grant
+        # expired (403) and an idle-stopped runner starts cold for each daily run.
+        for name in ("n8n", "n8n-worker"):
+            self.assertEqual(
+                120, services[name]["environment"]["N8N_RUNNERS_GRANT_TOKEN_TTL"]
+            )
+        for name in ("n8n-task-runner", "n8n-task-runner-worker"):
+            self.assertEqual(
+                0, services[name]["environment"]["N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT"]
+            )
 
     def test_n8n_port_aliases_move_the_listeners_they_advertise(self):
         source = (N8N / "docker-compose.yml").read_text(encoding="utf-8")
