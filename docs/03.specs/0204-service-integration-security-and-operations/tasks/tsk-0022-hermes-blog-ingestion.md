@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.10"
+version: "0.5.11"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1608,6 +1608,27 @@ hash check, `hermes plugins doctor`, gateway restart). Both derive the repositor
 path from their own location. `test_deploy_scripts` pins their syntax, the
 absence of site values and that the environment file holds exactly the
 variables the unit and `source_fetch` read; shellcheck passes.
+
+### Environment-driven routes applied — 2026-11-01
+
+The owner added `BLOG_EXPORT_RECEIVER_IP="192.168.0.22"` to `.env` and
+merged PRs #714 and #715 (`db23ea5`). The agent pulled the operator checkout and recreated
+Traefik (`up -d --no-deps --no-build --pull never traefik`, profile `core`); the
+container is healthy on its five networks and carries `DEFAULT_URL`,
+`HOST_LAN_BIND_IP` and `BLOG_EXPORT_RECEIVER_IP`. Checks from server A: Export
+list 403 (source), attestation queue without token 401 (Gateway), another
+Export path 404, webhook POST without token 403 from n8n header auth (access
+log shows the n8n upstream), webhook GET 302 (SSO), Hermes dashboard 302. One
+`n8n@docker does not exist` line appeared at start, before the Docker provider
+loaded. Exposure: the pull made Traefik load the templated files before the
+recreated container had the variables, so the webhook, Export and dashboard
+routes were disabled for about a minute; no Cron submission or B pull fell in
+that window. The runbook now says to recreate Traefik right after such a pull.
+The owner then ran `deploy/install-attester.sh`: release `db23ea5` was already
+installed, so it rewrote `/etc/hermes-attester/environment`
+(`https://blog-export.hy.home.arpa`, `hy.home.arpa`) and the units; the unit
+now reads `EnvironmentFile` and `--gateway ${HERMES_GATEWAY_URL}`, the manual
+run and the next timer run returned `Result=success` on an empty queue.
 
 ## Evidence
 
