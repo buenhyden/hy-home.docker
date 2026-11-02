@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.14"
+version: "0.1.15"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -14,9 +14,11 @@ created: "2026-10-11"
 
 소비자별 이관을 준비하는 값 없는 공개 계약과 합성 검사 경로입니다. 공개 CLI는
 형식과 선택 거부 조건만 검증합니다. 별도 Python API에는 보호 파일과 실제 HTTPS를
-사용하는 제한된 KV-v2 복사 실행기가 있습니다. 현재 실제 catalog 승인 연결과
-운영 실행 입력은 공급되지 않았으며, 실제 이관·소비·복구·삭제·회전 영수증은 없습니다. 실행 증거와 선행 조건은 [문서 인덱스](../../../../docs/README.md)를
-통해 현재 작업에서 확인합니다.
+사용하는 제한된 KV-v2 복사 실행기가 있습니다. 일반 복사 API에 연결할 실제 catalog
+승인 adapter와 현재 운영 입력은 공급되지 않았습니다. 별도 owner 절차로 수행한
+이전 소비자 전환·복구 기록은 [기존 P06 Task](../../../../docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md)에
+있으며 이 API의 새 실행 영수증이 아닙니다. 새 실행의 선행 조건은
+[현재 P06 Task](../../../../docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md)를 따릅니다.
 
 ## Audience
 
@@ -185,9 +187,10 @@ Manifest·QA 등록은 현재 통합 소스를 재사용합니다. 공통 등록
 
 ### 첫 소비자 Grafana 전환 계획
 
-Agent가 렌더링하는 소비자는 Keycloak과 Grafana 관리자 비밀번호 두 개입니다. 둘 다
-아직 저장소 로컬 `./secrets/` 파일을 읽으며 Agent 출력은 소비되지 않습니다. 두 값 모두
-최초 기동 때만 적용되는 bootstrap 값입니다. 첫 소비자는 영향 범위가 작은 Grafana입니다.
+2026-10-27 최초 전환 전에는 Keycloak과 Grafana 관리자 비밀번호 두 개가 저장소 로컬
+`./secrets/` 파일을 읽었습니다. 이후 기존 P06 Task는 두 소비자의 전환·되돌리기·재전환을
+각각 기록합니다. 이는 해당 시각·환경·소비자의 수용이며 지금의 직접 확인은 아닙니다.
+두 값 모두 최초 기동 때만 적용되는 bootstrap 값입니다. 첫 소비자는 Grafana였습니다.
 Grafana는 로그인 화면을 끄고 OIDC를 쓰므로 관리자 비밀번호는 비상 경로에만 쓰입니다.
 
 Compose secret은 저장소 `./secrets/` 아래 실제 파일이어야 하므로(변수·절대·symlink 경로 거부)

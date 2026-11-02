@@ -12,6 +12,13 @@ STORAGE_PATHS = (
     "tests/validation/_supabase_smtp_fixture_storage.py",
     "tests/validation/test_supabase_smtp_fixture_storage.py",
 )
+STRUCTURE_MODULE = "tests.lib.ops.test_secret_structure"
+STRUCTURE_PATHS = (
+    "scripts/operations/secret-structure.py",
+    "scripts/lib/ops/secret_structure.py",
+    "tests/lib/ops/test_secret_structure.py",
+    "tests/validation/test_secret_metadata_sync.py",
+)
 
 
 class SmtpRoutingTests(unittest.TestCase):
@@ -29,6 +36,30 @@ class SmtpRoutingTests(unittest.TestCase):
         ):
             with self.subTest(module=module):
                 self.assertIn(module, argv)
+
+    def test_structure_checks_are_required_for_each_changed_surface(self):
+        argv = self.nodes["leaf.repository-integrity-regressions"]["argv"]
+        self.assertEqual(1, argv.count(STRUCTURE_MODULE))
+        self.assertNotIn("--read-private", argv)
+
+        public = self.contract["public_gate"]
+        for path in STRUCTURE_PATHS:
+            with self.subTest(path=path):
+                self.assertTrue(
+                    any(
+                        path in rule["prefixes"]
+                        and "repository-integrity" in rule["suites"]
+                        for rule in public["changed_path_rules"]
+                    )
+                )
+                self.assertTrue(
+                    any(
+                        path in rule["prefixes"]
+                        and "leaf.repository-integrity-regressions"
+                        in rule["root_gate_ids"]
+                        for rule in public["changed_root_rules"]
+                    )
+                )
 
     def test_only_native_smtp_class_is_optional(self):
         argv = self.nodes["leaf.compose-baseline-regressions"]["argv"]

@@ -7,7 +7,7 @@ import os
 import subprocess
 import tempfile
 import unittest
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
@@ -199,6 +199,173 @@ class SMTPContractTests(unittest.TestCase):
         }
         assert original == untouched
         assert unify(output) == output
+
+    def test_private_snapshot_rejects_oversized_file_without_returning_content(self):
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+            path = Path(directory) / "private"
+            path.write_bytes(b"x" * (2 * 1024 * 1024 + 1))
+            parent = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+            stack.callback(os.close, parent)
+            with self.assertRaises(ContractError):
+                module._snapshot(parent, path.name, stack)
+
+    def test_private_snapshot_rejects_name_rebind_after_last_fstat(self):
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+            path = Path(directory) / "private"
+            path.write_bytes(b"synthetic-original")
+            replacement = Path(directory) / "replacement"
+            replacement.write_bytes(b"synthetic-replacement")
+            parent = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+            stack.callback(os.close, parent)
+            original_fstat = os.fstat
+            inode = path.stat().st_ino
+            observations = 0
+
+            def race(fd):
+                nonlocal observations
+                result = original_fstat(fd)
+                if result.st_ino == inode:
+                    observations += 1
+                    if observations == 2:
+                        os.replace(replacement, path)
+                return result
+
+            with patch.object(module.os, "fstat", side_effect=race):
+                with self.assertRaises(ContractError):
+                    module._snapshot(parent, path.name, stack)
+            self.assertEqual(path.read_bytes(), b"synthetic-replacement")
+
+    def test_private_snapshot_growth_is_bounded_and_redacted(self):
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+            path = Path(directory) / "private"
+            path.write_bytes(b"synthetic-confidential-marker")
+            parent = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+            stack.callback(os.close, parent)
+            original_fdopen = os.fdopen
+            requests = []
+
+            class GrowingReader:
+                def __init__(self, stream):
+                    self.stream = stream
+
+                def __enter__(self):
+                    self.stream.__enter__()
+                    return self
+
+                def __exit__(self, *args):
+                    return self.stream.__exit__(*args)
+
+                def read(self, size=-1):
+                    requests.append(size)
+                    with path.open("ab") as output:
+                        output.write(b"x" * (2 * 1024 * 1024))
+                    return self.stream.read(size)
+
+            def growing_open(fd, mode):
+                return GrowingReader(original_fdopen(fd, mode))
+
+            with patch.object(module.os, "fdopen", side_effect=growing_open):
+                with self.assertRaises(ContractError) as caught:
+                    module._snapshot(parent, path.name, stack)
+            self.assertNotIn("synthetic-confidential-marker", str(caught.exception))
+            self.assertEqual(requests, [2 * 1024 * 1024 + 1])
+
+    def test_private_recheck_rejects_rebind_after_last_fstat(self):
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+            path = Path(directory) / "private"
+            path.write_bytes(b"synthetic-original")
+            replacement = Path(directory) / "replacement"
+            replacement.write_bytes(b"synthetic-replacement")
+            parent = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+            stack.callback(os.close, parent)
+            snapshot = module._snapshot(parent, path.name, stack)
+            original_fstat = os.fstat
+            inode = path.stat().st_ino
+
+            def race(fd):
+                result = original_fstat(fd)
+                if result.st_ino == inode and replacement.exists():
+                    os.replace(replacement, path)
+                return result
+
+            with patch.object(module.os, "fstat", side_effect=race):
+                with self.assertRaises(ContractError):
+                    module._unchanged(parent, path.name, snapshot)
+            self.assertEqual(path.read_bytes(), b"synthetic-replacement")
+
+    def test_dry_run_rejects_canonical_parent_directory_rebind(self):
+        self._prepare()
+        parent = (self.tree / CANONICAL_PATH).parent
+        saved = parent.with_name("original-smtp-directory")
+        original_snapshot = module._snapshot
+
+        def race(parent_fd, name, stack, required=True):
+            result = original_snapshot(parent_fd, name, stack, required=required)
+            if name == "SENSITIVE_ENV_VARS.md":
+                parent.rename(saved)
+                parent.mkdir()
+            return result
+
+        with patch.object(module, "_snapshot", side_effect=race):
+            with self.assertRaises(ContractError):
+                retire(self.tree)
+        self.assertEqual(
+            (saved / Path(CANONICAL_PATH).name).read_bytes(), b"synthetic-password\n"
+        )
+        self.assertTrue((self.tree / OLD_PATH).exists())
+
+    def test_apply_rejects_canonical_parent_rebind_before_mutation(self):
+        self._prepare()
+        parent = (self.tree / CANONICAL_PATH).parent
+        saved = parent.with_name("original-smtp-directory")
+        metadata = self.tree / "secrets/SENSITIVE_ENV_VARS.md"
+        before = metadata.read_bytes()
+
+        def race():
+            parent.rename(saved)
+            parent.mkdir()
+
+        with self.assertRaises(ContractError):
+            apply(self.tree, before_commit=race)
+        self.assertEqual(metadata.read_bytes(), before)
+        self.assertTrue((self.tree / OLD_PATH).exists())
+        self.assertEqual(
+            (saved / Path(CANONICAL_PATH).name).read_bytes(), b"synthetic-password\n"
+        )
+
+    def test_dry_run_rechecks_parent_after_metadata_computation(self):
+        self._prepare()
+        parent = (self.tree / CANONICAL_PATH).parent
+        saved = parent.with_name("original-smtp-directory")
+        original = module.metadata_retired
+
+        def race(data):
+            result = original(data)
+            parent.rename(saved)
+            parent.mkdir()
+            return result
+
+        with patch.object(module, "metadata_retired", side_effect=race):
+            with self.assertRaises(ContractError):
+                retire(self.tree)
+        self.assertTrue((saved / Path(CANONICAL_PATH).name).is_file())
+        self.assertTrue((self.tree / OLD_PATH).is_file())
+
+    def test_dry_run_rechecks_old_absence_after_metadata_computation(self):
+        self._prepare()
+        old = self.tree / OLD_PATH
+        old.unlink()
+        original = module.metadata_retired
+
+        def race(data):
+            result = original(data)
+            old.write_bytes(b"synthetic-new-old-file")
+            return result
+
+        with patch.object(module, "metadata_retired", side_effect=race):
+            with self.assertRaises(ContractError):
+                retire(self.tree)
+        self.assertEqual(old.read_bytes(), b"synthetic-new-old-file")
 
     def test_duplicate_targets_rejected(self):
         self._prepare()

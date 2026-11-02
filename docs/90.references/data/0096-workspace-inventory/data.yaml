@@ -1,11 +1,11 @@
 schema_version: 1
-observed_at: '2026-11-02T11:52:56.169761Z'
+observed_at: '2026-11-02T12:43:19.031705Z'
 workspace:
   path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: e14ebe0fd5e562f8c7557bd9408a1985d9971c5c
+  head: 0a2f7aad418029f0b49645b16ec5a90c86a83a12
   branch: codex/p05-n8n-outbox-recovery
   dirty_paths:
   - status: ' M'
@@ -15,77 +15,53 @@ workspace:
   - status: ' M'
     path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
   - status: ' M'
-    path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
+    path: docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md
   - status: ' M'
-    path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
+    path: docs/05.operations/guides/10-platform-and-backup/0003-env-key-comparison.md
+  - status: ' M'
+    path: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
   - status: ' M'
     path: docs/90.references/data/0096-workspace-inventory/README.md
   - status: ' M'
     path: docs/90.references/data/0096-workspace-inventory/data.yaml
   - status: ' M'
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
+    path: infra/03-security/openbao/consumer-migration/README.md
   - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/README.md
+    path: scripts/lib/ops/smtp_contract.py
   - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/fixtures/README.md
+    path: scripts/lib/ops/smtp_public_source.py
   - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
+    path: scripts/manifest.yaml
   - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md
+    path: tests/lib/ops/test_smtp_contract.py
   - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md
+    path: tests/lib/ops/test_smtp_public_source.py
   - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs
+    path: tests/validation/test_secret_metadata_sync.py
   - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs
-  - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
-  - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/README.md
-  - status: ' M'
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/README.md
-  - status: ' M'
-    path: infra/09-platform-ops/security-updates/build-inputs.json
-  - status: ' M'
-    path: infra/09-platform-ops/security-updates/update-ledger.json
-  - status: ' M'
-    path: tests/validation/test_opsflow_e2e_acceptance.py
+    path: tests/validation/test_smtp_ci_routing.py
   - status: ??
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
   - status: ??
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
+    path: scripts/lib/ops/secret_structure.py
   - status: ??
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/008_checks.sql
+    path: scripts/operations/secret-structure.py
   - status: ??
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs
-  - status: ??
-    path: tests/validation/_p05_opsflow_native.py
-  - status: ??
-    path: tests/validation/_p05_opsflow_recovery.py
-  - status: ??
-    path: tests/validation/_p05_opsflow_registration.py
-  - status: ??
-    path: tests/validation/test_p05_notification_recovery.py
-  - status: ??
-    path: tests/validation/test_p05_opsflow_native.py
-  - status: ??
-    path: tests/validation/test_p05_opsflow_scenario.py
+    path: tests/lib/ops/test_secret_structure.py
   worktrees:
-  - path: /home/hyunyoun/data/hy-home.docker
-    in_boundary: true
+  - in_boundary: true
     access: metadata-only
   submodules: []
   tracked_query: PASS
   root: /home/hyunyoun/data/hy-home.docker
   writable_boundary: /home/hyunyoun/data/hy-home.docker
   private_dirty_count: 0
-  git_observed_at: '2026-11-02T11:58:51.260691+00:00'
 roots:
 - path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: e14ebe0fd5e562f8c7557bd9408a1985d9971c5c
+  head: 0a2f7aad418029f0b49645b16ec5a90c86a83a12
   branch: codex/p05-n8n-outbox-recovery
   dirty_paths: []
   worktrees:
@@ -94,7 +70,7 @@ roots:
   submodules: []
   tracked_query: PASS
   write_boundary: /home/hyunyoun/data/hy-home.docker
-  dirty_count: 30
+  dirty_count: 20
 files:
 - path: .agents/README.md
   tracked: true
@@ -1714,9 +1690,9 @@ files:
 - path: .github/workflow-contract.yml
   tracked: true
   kind: configuration
-  bytes: 86323
+  bytes: 86794
   state: HASHED
-  sha256: 95deb0da017de31f2c07998358c38d31d483ba245e939a2bc3b26f12a828f997
+  sha256: d9041760171b958aafa6dd9e8d32baec80354a327db8ae05a3986db364146ac7
   review:
     path: .github/workflow-contract.yml
     reviewer: p02_residual_code_review + p02_residual_supply_review
@@ -3025,31 +3001,29 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   tracked: true
   kind: document
-  bytes: 41610
+  bytes: 44226
   state: HASHED
-  sha256: 70233035e0222b77907bc3c7f6a332074b5de1be014256571797e675859feec1
+  sha256: c9e457e50f834d6015b96800009786915a69b248be3a32935faa11bfd84113d5
   review:
     path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-    reviewer: /root/p04_docs
-    observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 70233035e0222b77907bc3c7f6a332074b5de1be014256571797e675859feec1
-    scope: P05 changed sections and related source contracts; full unchanged-file
-      body review not claimed
+    reviewer: /root/p06_documents
+    observed_at: '2026-11-02T12:49:37.878423+00:00'
+    sha256: c9e457e50f834d6015b96800009786915a69b248be3a32935faa11bfd84113d5
+    scope: P06 authored sections and related public contracts only
     complete: false
     state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
   tracked: true
   kind: document
-  bytes: 45808
+  bytes: 47216
   state: HASHED
-  sha256: 73a8028ece505acaf85261c0e84985792bc18d85da5a7b45560b360d09b53487
+  sha256: 9241bdfbe34a2a91588a2fe2e991e9da73d09b6917a9c75244569f460c653c12
   review:
     path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-    reviewer: /root/p04_docs
-    observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 73a8028ece505acaf85261c0e84985792bc18d85da5a7b45560b360d09b53487
-    scope: P05 changed sections and related source contracts; full unchanged-file
-      body review not claimed
+    reviewer: /root/p06_documents
+    observed_at: '2026-11-02T12:37:50Z'
+    sha256: 9241bdfbe34a2a91588a2fe2e991e9da73d09b6917a9c75244569f460c653c12
+    scope: P06 authored sections and related public contracts only
     complete: false
     state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0001-request-baseline-and-inventory.md
@@ -3399,7 +3373,7 @@ files:
   review:
     state: UNREVIEWED
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
-  tracked: false
+  tracked: true
   kind: document
   bytes: 49771
   state: HASHED
@@ -3407,10 +3381,24 @@ files:
   review:
     path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
     reviewer: /root/p04_docs
-    observed_at: '2026-11-02T12:10:17.826248+00:00'
-    sha256: a707d142766a22ec7dbc5c2b76f9620f8ea10f72542839f0de2f7bf9f462969a
-    scope: Final authored evidence-only verification report; prior exact Doc review
-      retained; no full-body/corpus inference
+    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    sha256: 1dfb41bf81c621bc52c40b4cd4d0f1031b8c2f7a8dc6cc4eb263648eff21d638
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: STALE
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+  tracked: false
+  kind: document
+  bytes: 25571
+  state: HASHED
+  sha256: 6a5b8218a2745877808a59d012ffea37204a8222e85f2b39ce84526bfa221acf
+  review:
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+    reviewer: /root/p06_documents
+    observed_at: '2026-11-02T13:04:59.591930+00:00'
+    sha256: 6a5b8218a2745877808a59d012ffea37204a8222e85f2b39ce84526bfa221acf
+    scope: P06 authored sections and related public contracts only
     complete: false
     state: PARTIAL
 - path: docs/03.specs/0213-dev-data-and-influx-retirement/plan.md
@@ -4336,11 +4324,17 @@ files:
 - path: docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md
   tracked: true
   kind: document
-  bytes: 5682
+  bytes: 6624
   state: HASHED
-  sha256: 112e22b9e8013606fecd6a0583521ad46c897d7a41c4ce77ebed25cdc57dab38
+  sha256: 8cfb11947350e95b6c66c7873c19173305fbe05b61883b10e2d51b0f5804384a
   review:
-    state: UNREVIEWED
+    path: docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md
+    reviewer: /root/p06_documents
+    observed_at: '2026-11-02T12:37:50Z'
+    sha256: 8cfb11947350e95b6c66c7873c19173305fbe05b61883b10e2d51b0f5804384a
+    scope: P06 authored sections and related public contracts only
+    complete: false
+    state: PARTIAL
 - path: docs/05.operations/guides/04-security-and-secrets/0085-openbao.md
   tracked: true
   kind: document
@@ -4687,11 +4681,17 @@ files:
 - path: docs/05.operations/guides/10-platform-and-backup/0003-env-key-comparison.md
   tracked: true
   kind: document
-  bytes: 4090
+  bytes: 5202
   state: HASHED
-  sha256: f295888e8a1165d3106ba5f22272c5ee40b2dba3c1f4f3ccd78ef831f58277db
+  sha256: 3f6b58174bb1ca301ea6ccf1e6b34068fd182799dc9f3cc84665dc405f1db230
   review:
-    state: UNREVIEWED
+    path: docs/05.operations/guides/10-platform-and-backup/0003-env-key-comparison.md
+    reviewer: /root/p06_documents
+    observed_at: '2026-11-02T12:37:50Z'
+    sha256: 3f6b58174bb1ca301ea6ccf1e6b34068fd182799dc9f3cc84665dc405f1db230
+    scope: P06 authored sections and related public contracts only
+    complete: false
+    state: PARTIAL
 - path: docs/05.operations/guides/10-platform-and-backup/0008-new-service-onboarding.md
   tracked: true
   kind: document
@@ -5894,11 +5894,17 @@ files:
 - path: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
   tracked: true
   kind: document
-  bytes: 6746
+  bytes: 10124
   state: HASHED
-  sha256: 8788554b76834e5a10bf3edb59b9371f88ba0ed1f27fa3b45bcc2d619d2101f5
+  sha256: 99b8c55aa474527c48678c165b065b2d31f46be4bd0d2878f89891ea2a613909
   review:
-    state: UNREVIEWED
+    path: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+    reviewer: /root/p06_documents
+    observed_at: '2026-11-02T12:46:22.397771+00:00'
+    sha256: 99b8c55aa474527c48678c165b065b2d31f46be4bd0d2878f89891ea2a613909
+    scope: P06 authored sections and related public contracts only
+    complete: false
+    state: PARTIAL
 - path: docs/05.operations/runbooks/04-security-and-secrets/README.md
   tracked: true
   kind: document
@@ -6556,22 +6562,21 @@ files:
 - path: docs/90.references/data/0096-workspace-inventory/README.md
   tracked: true
   kind: document
-  bytes: 14635
+  bytes: 15860
   state: HASHED
-  sha256: f26bbfa388598cb48efbc7bbcc6630a1486f06d9160760cdec87faa4851ffc71
+  sha256: afc4861050f9e387283ea99c72303c26c050745fb353272c4ffe1babddf20131
   review:
     path: docs/90.references/data/0096-workspace-inventory/README.md
-    reviewer: /root/p04_docs
-    observed_at: '2026-11-02T11:58:51.260691+00:00'
-    sha256: f26bbfa388598cb48efbc7bbcc6630a1486f06d9160760cdec87faa4851ffc71
-    scope: Final P05 authored evidence/consumer sections; no full unchanged-body/corpus
-      review claim
+    reviewer: /root/p06_documents
+    observed_at: '2026-11-02T12:46:22.397624+00:00'
+    sha256: afc4861050f9e387283ea99c72303c26c050745fb353272c4ffe1babddf20131
+    scope: P06 authored sections and related public contracts only
     complete: false
     state: PARTIAL
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   tracked: true
   kind: configuration
-  bytes: 1298894
+  bytes: 1390577
   state: GENERATED_OUTPUT
 - path: docs/90.references/data/README.md
   tracked: true
@@ -10336,11 +10341,17 @@ files:
 - path: infra/03-security/openbao/consumer-migration/README.md
   tracked: true
   kind: document
-  bytes: 34482
+  bytes: 34883
   state: HASHED
-  sha256: c5b232d6791a600f38720e47af095b4b52b9cc515b3b149a2f716cc1aa1a4b99
+  sha256: a749486e238af81ccde42dfc71403f0c86c4ab1f225da1b7de518b068a7fa240
   review:
-    state: UNREVIEWED
+    path: infra/03-security/openbao/consumer-migration/README.md
+    reviewer: /root/p06_documents
+    observed_at: '2026-11-02T12:37:50Z'
+    sha256: a749486e238af81ccde42dfc71403f0c86c4ab1f225da1b7de518b068a7fa240
+    scope: P06 authored sections and related public contracts only
+    complete: false
+    state: PARTIAL
 - path: infra/03-security/openbao/consumer-migration/oidc-client-secrets.sh
   tracked: true
   kind: code
@@ -12313,7 +12324,7 @@ files:
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
-  tracked: false
+  tracked: true
   kind: code
   bytes: 23579
   state: HASHED
@@ -12328,7 +12339,7 @@ files:
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/008_checks.sql
-  tracked: false
+  tracked: true
   kind: code
   bytes: 15549
   state: HASHED
@@ -13228,7 +13239,7 @@ files:
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs
-  tracked: false
+  tracked: true
   kind: code
   bytes: 10643
   state: HASHED
@@ -16168,20 +16179,28 @@ files:
   sha256: 56f2b24868e9f2647a45ba18640db80d26c25b1dbf6b0098654a9d201f86a419
   review:
     state: UNREVIEWED
+- path: scripts/lib/ops/secret_structure.py
+  tracked: false
+  kind: code
+  bytes: 13285
+  state: HASHED
+  sha256: 0f2cf8e46be62f482f92778a88b3f4f71b4f0702e5a20a8cafaa131507b68f88
+  review:
+    state: UNREVIEWED
 - path: scripts/lib/ops/smtp_contract.py
   tracked: true
   kind: code
-  bytes: 28902
+  bytes: 31573
   state: HASHED
-  sha256: a0f5ef2df330d4b92d1279512c3af8a62c4388f991ef376bfaa5912451cbb002
+  sha256: 3dccd7a476a0c6798557876c97a52c4330be9958cdef30e896ee0336ec0bde54
   review:
     state: UNREVIEWED
 - path: scripts/lib/ops/smtp_public_source.py
   tracked: true
   kind: code
-  bytes: 19542
+  bytes: 20773
   state: HASHED
-  sha256: e84c37702fff817e20356bf38a6df1eacba3ab19509992fa0e08353ce49b79f0
+  sha256: 92b73ca8f39a80e923184075194d5fc0ee19df32b87f674526605783c5732656
   review:
     state: UNREVIEWED
 - path: scripts/lib/ops/storage_write_rate.py
@@ -16249,9 +16268,9 @@ files:
 - path: scripts/manifest.yaml
   tracked: true
   kind: configuration
-  bytes: 47418
+  bytes: 48156
   state: HASHED
-  sha256: 8d703b7601af47d1955154dc7f8e478c2f12023f7c44a4088d17056a5c855ece
+  sha256: cb87cd932ec667f82ae5cf1d1fb4a49312897af4ed2444f7c78a097c61860159
   review:
     path: scripts/manifest.yaml
     reviewer: root_ci_review
@@ -16395,6 +16414,14 @@ files:
   bytes: 289
   state: HASHED
   sha256: 7afe0300f483aa382ae8be8c8d29852dbfe1dd3f90d7ba7fb6cfecdb2792d2db
+  review:
+    state: UNREVIEWED
+- path: scripts/operations/secret-structure.py
+  tracked: false
+  kind: code
+  bytes: 283
+  state: HASHED
+  sha256: 848862f54e5a2dc7b955197d415fcea56ba30f1994ab45caadab1802aa492967
   review:
     state: UNREVIEWED
 - path: scripts/operations/storage-write-rate.py
@@ -17681,12 +17708,20 @@ files:
   sha256: b942a0f97d44c78e3794953f8bfd8fabfc12974a9556deceaba98a953c5a8e01
   review:
     state: UNREVIEWED
+- path: tests/lib/ops/test_secret_structure.py
+  tracked: false
+  kind: test
+  bytes: 19838
+  state: HASHED
+  sha256: 5fdc64ae786d89a3b14babe6619716bce0205ed182c9553dd5205add988a1d70
+  review:
+    state: UNREVIEWED
 - path: tests/lib/ops/test_smtp_contract.py
   tracked: true
   kind: test
-  bytes: 42075
+  bytes: 49195
   state: HASHED
-  sha256: 9d7c47c0edbc2443f77e25356d1f8206db148226b50a6b58bc3437896d99a2a7
+  sha256: 1811aea7d36530c36edfe4a32fdf3f33bd98bda65cec104de75892069ee24ad8
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_smtp_proof.py
@@ -17700,9 +17735,9 @@ files:
 - path: tests/lib/ops/test_smtp_public_source.py
   tracked: true
   kind: test
-  bytes: 15402
+  bytes: 19453
   state: HASHED
-  sha256: e7334d2c2c897a38fec03fde9bfc17afc9613d9a26cac9a5046e7c1809459229
+  sha256: f42fcd23fe7130f1829ee55eded05740543c8aa719c3d0a1b34b01773ef9f72b
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_storage_write_rate.py
@@ -18018,7 +18053,7 @@ files:
   review:
     state: UNREVIEWED
 - path: tests/validation/_p05_opsflow_native.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 25766
   state: HASHED
@@ -18034,7 +18069,7 @@ files:
     complete: false
     state: PARTIAL
 - path: tests/validation/_p05_opsflow_recovery.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 1948
   state: HASHED
@@ -18050,7 +18085,7 @@ files:
     complete: false
     state: PARTIAL
 - path: tests/validation/_p05_opsflow_registration.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 5483
   state: HASHED
@@ -18831,7 +18866,7 @@ files:
   review:
     state: UNREVIEWED
 - path: tests/validation/test_p05_notification_recovery.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 16625
   state: HASHED
@@ -18839,7 +18874,7 @@ files:
   review:
     state: UNREVIEWED
 - path: tests/validation/test_p05_opsflow_native.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 11092
   state: HASHED
@@ -18855,7 +18890,7 @@ files:
     complete: false
     state: PARTIAL
 - path: tests/validation/test_p05_opsflow_scenario.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 31823
   state: HASHED
@@ -19081,9 +19116,9 @@ files:
 - path: tests/validation/test_secret_metadata_sync.py
   tracked: true
   kind: test
-  bytes: 84309
+  bytes: 87537
   state: HASHED
-  sha256: 44c8193ca6d21aa7d835d523275dce79dca0fcc53023c05d2c1b78e521a82e2c
+  sha256: 76fca98d9a85549cbb371c79249e2fe0d8916176ecbf2759a2bb6245f167e800
   review:
     state: UNREVIEWED
 - path: tests/validation/test_service_runtime_compatibility.py
@@ -19120,9 +19155,9 @@ files:
 - path: tests/validation/test_smtp_ci_routing.py
   tracked: true
   kind: test
-  bytes: 4176
+  bytes: 5437
   state: HASHED
-  sha256: e236dfb0704e9468d234c3844c11ec0bc11f28bac9566cc103b5e0c5493fe353
+  sha256: 55632ed20566e4d3d9855c8365d1f7da137976c284ad06bfc4906c85cc114fc3
   review:
     state: UNREVIEWED
 - path: tests/validation/test_smtp_generator.py
@@ -19223,10 +19258,10 @@ files:
     state: UNREVIEWED
 excluded:
   binary: 35
-  code: 131
-  configuration: 458
+  code: 132
+  configuration: 467
   document: 120
-  generated: 38561
+  generated: 38588
   private: 241
 opaque:
   git_directories: 1
@@ -35041,14 +35076,14 @@ compose:
   gaps: []
 coverage:
   files:
-    numerator: 41857
-    denominator: 41857
+    numerator: 41898
+    denominator: 41898
   body_review:
     numerator: 6
-    denominator: 2304
+    denominator: 2308
   body_review_partial:
-    numerator: 80
-    denominator: 2304
+    numerator: 84
+    denominator: 2308
   render:
     numerator: 0
     denominator: 17
@@ -37093,6 +37128,149 @@ requirements:
   evidence:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
   limit: No HOME, actual credential, external delivery or remote mutation.
+- id: P06.01
+  criterion: 76
+  work_unit: W81
+  task_id: SPEC-0212-TSK-0045
+  subject: Public catalog and delivery support
+  state: SOURCE_READY
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0045
+  implementation_writer: Single-writer path leases in current Task
+  source_verification: Public metadata catalog valid; delivery support remains distinct.
+  static_checks: See current Task for exact source, test, review and coverage receipts.
+  isolated_tests: Synthetic only; source-specific results and limits in Task.
+  historical_operator_acceptance: Scoped historical records only; no current equivalence
+    inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+  limit: No private mutation, real issuance/rotation/deletion, operating service or
+    remote changes.
+- id: P06.02
+  criterion: 77
+  work_unit: W82
+  task_id: SPEC-0212-TSK-0045
+  subject: Value-excluded full private metadata structure
+  state: TEST_RESIDUAL
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0045
+  implementation_writer: Single-writer path leases in current Task
+  source_verification: Synthetic tests/security reviewed. Actual read-only env and
+    registry DRIFT; correction is not authorized.
+  static_checks: See current Task for exact source, test, review and coverage receipts.
+  isolated_tests: Synthetic only; source-specific results and limits in Task.
+  historical_operator_acceptance: Scoped historical records only; no current equivalence
+    inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+  limit: No private mutation, real issuance/rotation/deletion, operating service or
+    remote changes.
+- id: P06.03
+  criterion: 78
+  work_unit: W83
+  task_id: SPEC-0212-TSK-0045
+  subject: OpenBao trust, custody and recovery
+  state: REUSE_ACCEPTED
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0045
+  implementation_writer: Single-writer path leases in current Task
+  source_verification: Prior owner and isolated receipts retained at their dated actor/version
+    scope.
+  static_checks: See current Task for exact source, test, review and coverage receipts.
+  isolated_tests: Synthetic only; source-specific results and limits in Task.
+  historical_operator_acceptance: Scoped historical records only; no current equivalence
+    inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+  limit: No private mutation, real issuance/rotation/deletion, operating service or
+    remote changes.
+- id: P06.04
+  criterion: 79
+  work_unit: W84
+  task_id: SPEC-0212-TSK-0045
+  subject: Consumer adoption and n8n handoff
+  state: TEST_RESIDUAL
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0045
+  implementation_writer: Single-writer path leases in current Task
+  source_verification: Selected historical transitions reused; production OpenBao/n8n
+    producer admission and rotation remain separately owned.
+  static_checks: See current Task for exact source, test, review and coverage receipts.
+  isolated_tests: Synthetic only; source-specific results and limits in Task.
+  historical_operator_acceptance: Scoped historical records only; no current equivalence
+    inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+  limit: No private mutation, real issuance/rotation/deletion, operating service or
+    remote changes.
+- id: P06.05
+  criterion: 80
+  work_unit: W85
+  task_id: SPEC-0212-TSK-0045
+  subject: SMTP bounded readers and canonical identity
+  state: SOURCE_READY
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0045
+  implementation_writer: Single-writer path leases in current Task
+  source_verification: SMTP source/contract/proof synthetic tests and independent
+    review; historical alias absent, equality unperformed.
+  static_checks: See current Task for exact source, test, review and coverage receipts.
+  isolated_tests: Synthetic only; source-specific results and limits in Task.
+  historical_operator_acceptance: Scoped historical records only; no current equivalence
+    inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+  limit: No private mutation, real issuance/rotation/deletion, operating service or
+    remote changes.
+- id: P06.06
+  criterion: 81
+  work_unit: W86
+  task_id: SPEC-0212-TSK-0045
+  subject: Secret copy retirement and recovery
+  state: BLOCKED
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0045
+  implementation_writer: Single-writer path leases in current Task
+  source_verification: No new authorized deletion target, complete reader proof or
+    independent recovery acceptance.
+  static_checks: See current Task for exact source, test, review and coverage receipts.
+  isolated_tests: Synthetic only; source-specific results and limits in Task.
+  historical_operator_acceptance: Scoped historical records only; no current equivalence
+    inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+  limit: No private mutation, real issuance/rotation/deletion, operating service or
+    remote changes.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED
@@ -37360,19 +37538,6 @@ ownership:
     body_review: PARTIAL for CI files; do not infer whole-file completeness or current-host
       trust
   current_followup_sha256: 48fcd1578ff1eadcc99adee3c5b9a7a815cba55f42593965a27d053fe90d0aee
-- path: scripts/manifest.yaml
-  writer: ci-cd-engineer
-  acceptance_owner: SPEC-0212-TSK-0040
-  reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security; exact
-    reviewed source scope and remaining limits in Task
-  data_owner: UNASSIGNED for operational data
-  operational_acceptance: UNASSIGNED
-  scope: Inventory implementation/tests or its CI registration only
-  authority: direct2026-11-01 request and coordinator path allocation
-  before_sha256: null
-  fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated here
-  review_scope_limit: No operational authorization or unobserved document acceptance
-    inferred.
 - path: tests/lib/ops/test_workspace_services.py
   writer: qa-engineer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -38067,128 +38232,6 @@ ownership:
     operational_acceptance: UNASSIGNED
     handoff: 36 generated fields were refreshed by operations_catalog.render_service_inventory(ROOT);
       authored narrative, runtime, restore and acceptance claims remain unchanged.
-- path: .github/workflow-contract.yml
-  writer: /root/p03_docs_impl
-  before_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
-  scope: Approved P05 exact Task path/segment lease
-  acceptance_owner: SPEC-0212-TSK-0044
-  reviewer: Independent exact-packet role in Task
-  data_owner: UNASSIGNED for actual operating data
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct approved P05 local plan2026-11-02
-  handoff: Changed input invalidates only dependent rows; no operating authority inferred
-  previous_lease:
-    path: .github/workflow-contract.yml
-    writer: /root/p03_docs_impl
-    before_sha256: 673e4926795605bd4334e4875cb904382eccc5f08b0add0a4f0d30b77b4dcc9a
-    scope: Current P04 approved local slice; exact segment in Task
-    acceptance_owner: SPEC-0212-TSK-0043
-    reviewer: Independent exact-packet role recorded in Task
-    data_owner: UNASSIGNED for operating data; no authority inferred
-    operational_acceptance: UNASSIGNED / NOT_RUN
-    authority: Direct2026-11-02 approved P04 plan
-    handoff: Changed source invalidates this exact lease; operating action needs its
-      own target/recovery authorization
-    previous_lease:
-      path: .github/workflow-contract.yml
-      writer: ci-cd-engineer
-      acceptance_owner: SPEC-0212-TSK-0040
-      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-        exact reviewed source scope and remaining limits in Task
-      data_owner: UNASSIGNED for operational data
-      operational_acceptance: UNASSIGNED
-      scope: Inventory implementation/tests or its CI registration only
-      authority: direct2026-11-01 request and coordinator path allocation
-      before_sha256: null
-      fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated
-        here
-      review_scope_limit: No operational authorization or unobserved document acceptance
-        inferred.
-    current_followup_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
-  current_followup_sha256: 95deb0da017de31f2c07998358c38d31d483ba245e939a2bc3b26f12a828f997
-  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
-- path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-  writer: /root/p04_docs
-  before_sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
-  scope: Approved P05 exact Task path/segment lease
-  acceptance_owner: SPEC-0212-TSK-0044
-  reviewer: Independent exact-packet role in Task
-  data_owner: UNASSIGNED for actual operating data
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct approved P05 local plan2026-11-02
-  handoff: Changed input invalidates only dependent rows; no operating authority inferred
-  previous_lease:
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-    writer: /root/p04_docs
-    before_sha256: 077d5987c6dc0e265a5ee079927bd670b586745fa4105c2d1895dd10577f7a67
-    scope: Current P04 approved local slice; exact segment in Task
-    acceptance_owner: SPEC-0212-TSK-0043
-    reviewer: Independent exact-packet role recorded in Task
-    data_owner: UNASSIGNED for operating data; no authority inferred
-    operational_acceptance: UNASSIGNED / NOT_RUN
-    authority: Direct2026-11-02 approved P04 plan
-    handoff: Changed source invalidates this exact lease; operating action needs its
-      own target/recovery authorization
-    previous_lease:
-      path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-      before_sha256: bd5f2457546b33264241cc3f9dedc52a1bb4514e0c08f6f49d8f6cd5562c9466
-      writer: doc-writer
-      scope: P01 inventory contract and DATA-0096 allocation only
-      acceptance_owner: SPEC-0212-TSK-0040
-      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-        exact reviewed source scope and remaining limits in Task
-      data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-      operational_acceptance: UNASSIGNED
-      authority: direct2026-11-01 P01 implementation request
-      handoff: Release lease after final source fingerprint and independent review;
-        changed inputs invalidate only this file lease.
-      review_scope_limit: No operational authorization or unobserved document acceptance
-        inferred.
-      current_followup_sha256: d051454790444c51b62628c21c77906e49702ac133ba75f9225e1f6f8781d51f
-    current_followup_sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
-  current_followup_sha256: 70233035e0222b77907bc3c7f6a332074b5de1be014256571797e675859feec1
-  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
-- path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-  writer: /root/p04_docs
-  before_sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
-  scope: Approved P05 exact Task path/segment lease
-  acceptance_owner: SPEC-0212-TSK-0044
-  reviewer: Independent exact-packet role in Task
-  data_owner: UNASSIGNED for actual operating data
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct approved P05 local plan2026-11-02
-  handoff: Changed input invalidates only dependent rows; no operating authority inferred
-  previous_lease:
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-    writer: /root/p04_docs
-    before_sha256: 745a0fc75e24cbfbcd134a65e736c3f86b505f6f4d347bcb80d481767e07d767
-    scope: Current P04 approved local slice; exact segment in Task
-    acceptance_owner: SPEC-0212-TSK-0043
-    reviewer: Independent exact-packet role recorded in Task
-    data_owner: UNASSIGNED for operating data; no authority inferred
-    operational_acceptance: UNASSIGNED / NOT_RUN
-    authority: Direct2026-11-02 approved P04 plan
-    handoff: Changed source invalidates this exact lease; operating action needs its
-      own target/recovery authorization
-    previous_lease:
-      path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-      before_sha256: 71b9d881337f64c3b788ff5ffb16388f0c41b29fa31b1655ec8dd77e98db9346
-      writer: doc-writer
-      scope: P01 inventory contract and DATA-0096 allocation only
-      acceptance_owner: SPEC-0212-TSK-0040
-      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-        exact reviewed source scope and remaining limits in Task
-      data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-      operational_acceptance: UNASSIGNED
-      authority: direct2026-11-01 P01 implementation request
-      handoff: Release lease after final source fingerprint and independent review;
-        changed inputs invalidate only this file lease.
-      review_scope_limit: No operational authorization or unobserved document acceptance
-        inferred.
-      current_followup_sha256: 4c78623b1b9b745d2d5679b32bf32b138af5381e49e5b57e36cc65a3ad6c2456
-    current_followup_sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
-  current_followup_sha256: 73a8028ece505acaf85261c0e84985792bc18d85da5a7b45560b360d09b53487
-  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
 - path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
   writer: /root/p04_docs
   before_sha256: 91ec0733f6947887a97253a900cd27a7ddbc0cbc597a3450dcbb74665767e4b2
@@ -38212,54 +38255,6 @@ ownership:
   authority: Direct approved P05 local plan2026-11-02
   handoff: Changed input invalidates only dependent rows; no operating authority inferred
   current_followup_sha256: 2e60027d17661a8fc644cac44e1076783c1581dace2ce95e33b69768e2016744
-  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
-- path: docs/90.references/data/0096-workspace-inventory/README.md
-  writer: /root/p04_docs
-  before_sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
-  scope: Approved P05 exact Task path/segment lease
-  acceptance_owner: SPEC-0212-TSK-0044
-  reviewer: Independent exact-packet role in Task
-  data_owner: UNASSIGNED for actual operating data
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct approved P05 local plan2026-11-02
-  handoff: Changed input invalidates only dependent rows; no operating authority inferred
-  previous_lease:
-    path: docs/90.references/data/0096-workspace-inventory/README.md
-    writer: /root/p04_docs
-    before_sha256: f8cb82887f3e6dcea2dd922f484ad8709a077ed43dcd8b4f2134dcc508a273f3
-    scope: Current P04 approved local slice; exact segment in Task
-    acceptance_owner: SPEC-0212-TSK-0043
-    reviewer: Independent exact-packet role recorded in Task
-    data_owner: UNASSIGNED for operating data; no authority inferred
-    operational_acceptance: UNASSIGNED / NOT_RUN
-    authority: Direct2026-11-02 approved P04 plan
-    handoff: Changed source invalidates this exact lease; operating action needs its
-      own target/recovery authorization
-    previous_lease:
-      path: docs/90.references/data/0096-workspace-inventory/README.md
-      writer: doc-writer
-      acceptance_owner: SPEC-0212-TSK-0040
-      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-        exact reviewed source scope and remaining limits in Task
-      data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-      operational_acceptance: UNASSIGNED
-      before_sha256: null
-      scope: P01 source evidence and consumer navigation
-      authority: direct2026-11-01 request and coordinator allocation
-      review_scope_limit: No operational authorization or unobserved document acceptance
-        inferred.
-      followup_lease:
-        baseline_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
-        writer: doc-writer /root/p01_docs
-        scope: Current P01 Task/README result-only admission, typed-input contract,
-          selected-local-check evidence and precise handoff; no historical Task or
-          data.yaml authoring
-        current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
-        review: PARTIAL authored section receipt; complete false
-        released_at: '2026-11-01T14:18:17.518585+00:00'
-      current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
-    current_followup_sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
-  current_followup_sha256: f26bbfa388598cb48efbc7bbcc6630a1486f06d9160760cdec87faa4851ffc71
   fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
   writer: /root/p04_docs
@@ -38514,49 +38509,6 @@ ownership:
   handoff: Changed input invalidates only dependent rows; no operating authority inferred
   current_followup_sha256: e30c0783cc94eb9d80eb8e5e05c52abb3e52eec5f2b01e7abafc7e8cac626fd9
   fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
-- path: docs/90.references/data/0096-workspace-inventory/data.yaml
-  writer: /root/p04_docs
-  before_sha256: 513a742753ee06d46d172164929faa89c38e0cff96b21f8e003b2118e8b8f195
-  scope: P05 exact Task path/segment lease; scenario test separately issued to SQL
-    writer in QA role
-  acceptance_owner: SPEC-0212-TSK-0044
-  reviewer: Independent scoped exact-packet roles in Task
-  data_owner: UNASSIGNED operating data owner
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Approved2026-11-02 local P05 scope and coordinator path lease
-  handoff: Changed source invalidates affected metadata/review only; no operational
-    authority inferred
-  previous_lease:
-    path: docs/90.references/data/0096-workspace-inventory/data.yaml
-    writer: /root/p04_docs
-    before_sha256: e71b6ca961740e6cd6045202801f6dea88f4e32aa076fb961c2311082d4da895
-    scope: Current P04 approved local slice; exact segment in Task
-    acceptance_owner: SPEC-0212-TSK-0043
-    reviewer: Independent exact-packet role recorded in Task
-    data_owner: UNASSIGNED for operating data; no authority inferred
-    operational_acceptance: UNASSIGNED / NOT_RUN
-    authority: Direct2026-11-02 approved P04 plan
-    handoff: Changed source invalidates this exact lease; operating action needs its
-      own target/recovery authorization
-    previous_lease:
-      path: docs/90.references/data/0096-workspace-inventory/data.yaml
-      writer: qa-engineer
-      acceptance_owner: SPEC-0212-TSK-0040
-      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-        exact reviewed source scope and remaining limits in Task
-      data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-      operational_acceptance: UNASSIGNED
-      before_sha256: null
-      scope: Generated public payload integration from doc-writer curation
-      authority: direct2026-11-01 request and coordinator allocation
-      review_scope_limit: No operational authorization or unobserved document acceptance
-        inferred.
-    current_fingerprint: SELF_OUTPUT_EXCLUDED
-    fingerprint_limit: Generated inventory excludes its own bytes to avoid recursive
-      hashing.
-  fingerprint_observed_at: '2026-11-02T11:52:35.037311+00:00'
-  current_fingerprint: SELF_OUTPUT_EXCLUDED
-  fingerprint_limit: Exclude generated output bytes to avoid recursive hashing.
 - path: tests/validation/_p05_opsflow_native.py
   writer: /root/p04_native
   before_sha256: ABSENT
@@ -38611,6 +38563,484 @@ ownership:
   handoff: Changed source invalidates affected rows only; no operating authority inferred
   fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
   current_followup_sha256: 074291db8db4faed87648f0761c60d7a47a4d08fb7b74e061ea1d718f2146df6
+- path: .github/workflow-contract.yml
+  writer: /root/p06_ci
+  before_sha256: 95deb0da017de31f2c07998358c38d31d483ba245e939a2bc3b26f12a828f997
+  current_followup_sha256: d9041760171b958aafa6dd9e8d32baec80354a327db8ae05a3986db364146ac7
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+  previous_lease:
+    path: .github/workflow-contract.yml
+    writer: /root/p03_docs_impl
+    before_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
+    scope: Approved P05 exact Task path/segment lease
+    acceptance_owner: SPEC-0212-TSK-0044
+    reviewer: Independent exact-packet role in Task
+    data_owner: UNASSIGNED for actual operating data
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct approved P05 local plan2026-11-02
+    handoff: Changed input invalidates only dependent rows; no operating authority
+      inferred
+    previous_lease:
+      path: .github/workflow-contract.yml
+      writer: /root/p03_docs_impl
+      before_sha256: 673e4926795605bd4334e4875cb904382eccc5f08b0add0a4f0d30b77b4dcc9a
+      scope: Current P04 approved local slice; exact segment in Task
+      acceptance_owner: SPEC-0212-TSK-0043
+      reviewer: Independent exact-packet role recorded in Task
+      data_owner: UNASSIGNED for operating data; no authority inferred
+      operational_acceptance: UNASSIGNED / NOT_RUN
+      authority: Direct2026-11-02 approved P04 plan
+      handoff: Changed source invalidates this exact lease; operating action needs
+        its own target/recovery authorization
+      previous_lease:
+        path: .github/workflow-contract.yml
+        writer: ci-cd-engineer
+        acceptance_owner: SPEC-0212-TSK-0040
+        reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+          exact reviewed source scope and remaining limits in Task
+        data_owner: UNASSIGNED for operational data
+        operational_acceptance: UNASSIGNED
+        scope: Inventory implementation/tests or its CI registration only
+        authority: direct2026-11-01 request and coordinator path allocation
+        before_sha256: null
+        fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated
+          here
+        review_scope_limit: No operational authorization or unobserved document acceptance
+          inferred.
+      current_followup_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
+    current_followup_sha256: 95deb0da017de31f2c07998358c38d31d483ba245e939a2bc3b26f12a828f997
+    fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+  writer: /root/p06_documents
+  before_sha256: 70233035e0222b77907bc3c7f6a332074b5de1be014256571797e675859feec1
+  current_followup_sha256: c9e457e50f834d6015b96800009786915a69b248be3a32935faa11bfd84113d5
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+  previous_lease:
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+    writer: /root/p04_docs
+    before_sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
+    scope: Approved P05 exact Task path/segment lease
+    acceptance_owner: SPEC-0212-TSK-0044
+    reviewer: Independent exact-packet role in Task
+    data_owner: UNASSIGNED for actual operating data
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct approved P05 local plan2026-11-02
+    handoff: Changed input invalidates only dependent rows; no operating authority
+      inferred
+    previous_lease:
+      path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+      writer: /root/p04_docs
+      before_sha256: 077d5987c6dc0e265a5ee079927bd670b586745fa4105c2d1895dd10577f7a67
+      scope: Current P04 approved local slice; exact segment in Task
+      acceptance_owner: SPEC-0212-TSK-0043
+      reviewer: Independent exact-packet role recorded in Task
+      data_owner: UNASSIGNED for operating data; no authority inferred
+      operational_acceptance: UNASSIGNED / NOT_RUN
+      authority: Direct2026-11-02 approved P04 plan
+      handoff: Changed source invalidates this exact lease; operating action needs
+        its own target/recovery authorization
+      previous_lease:
+        path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+        before_sha256: bd5f2457546b33264241cc3f9dedc52a1bb4514e0c08f6f49d8f6cd5562c9466
+        writer: doc-writer
+        scope: P01 inventory contract and DATA-0096 allocation only
+        acceptance_owner: SPEC-0212-TSK-0040
+        reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+          exact reviewed source scope and remaining limits in Task
+        data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+        operational_acceptance: UNASSIGNED
+        authority: direct2026-11-01 P01 implementation request
+        handoff: Release lease after final source fingerprint and independent review;
+          changed inputs invalidate only this file lease.
+        review_scope_limit: No operational authorization or unobserved document acceptance
+          inferred.
+        current_followup_sha256: d051454790444c51b62628c21c77906e49702ac133ba75f9225e1f6f8781d51f
+      current_followup_sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
+    current_followup_sha256: 70233035e0222b77907bc3c7f6a332074b5de1be014256571797e675859feec1
+    fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+  writer: /root/p06_documents
+  before_sha256: 73a8028ece505acaf85261c0e84985792bc18d85da5a7b45560b360d09b53487
+  current_followup_sha256: 9241bdfbe34a2a91588a2fe2e991e9da73d09b6917a9c75244569f460c653c12
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+  previous_lease:
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+    writer: /root/p04_docs
+    before_sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
+    scope: Approved P05 exact Task path/segment lease
+    acceptance_owner: SPEC-0212-TSK-0044
+    reviewer: Independent exact-packet role in Task
+    data_owner: UNASSIGNED for actual operating data
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct approved P05 local plan2026-11-02
+    handoff: Changed input invalidates only dependent rows; no operating authority
+      inferred
+    previous_lease:
+      path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+      writer: /root/p04_docs
+      before_sha256: 745a0fc75e24cbfbcd134a65e736c3f86b505f6f4d347bcb80d481767e07d767
+      scope: Current P04 approved local slice; exact segment in Task
+      acceptance_owner: SPEC-0212-TSK-0043
+      reviewer: Independent exact-packet role recorded in Task
+      data_owner: UNASSIGNED for operating data; no authority inferred
+      operational_acceptance: UNASSIGNED / NOT_RUN
+      authority: Direct2026-11-02 approved P04 plan
+      handoff: Changed source invalidates this exact lease; operating action needs
+        its own target/recovery authorization
+      previous_lease:
+        path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+        before_sha256: 71b9d881337f64c3b788ff5ffb16388f0c41b29fa31b1655ec8dd77e98db9346
+        writer: doc-writer
+        scope: P01 inventory contract and DATA-0096 allocation only
+        acceptance_owner: SPEC-0212-TSK-0040
+        reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+          exact reviewed source scope and remaining limits in Task
+        data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+        operational_acceptance: UNASSIGNED
+        authority: direct2026-11-01 P01 implementation request
+        handoff: Release lease after final source fingerprint and independent review;
+          changed inputs invalidate only this file lease.
+        review_scope_limit: No operational authorization or unobserved document acceptance
+          inferred.
+        current_followup_sha256: 4c78623b1b9b745d2d5679b32bf32b138af5381e49e5b57e36cc65a3ad6c2456
+      current_followup_sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
+    current_followup_sha256: 73a8028ece505acaf85261c0e84985792bc18d85da5a7b45560b360d09b53487
+    fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+  writer: /root/p06_documents
+  before_sha256: null
+  current_followup_sha256: 6a5b8218a2745877808a59d012ffea37204a8222e85f2b39ce84526bfa221acf
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md
+  writer: /root/p06_documents
+  before_sha256: 112e22b9e8013606fecd6a0583521ad46c897d7a41c4ce77ebed25cdc57dab38
+  current_followup_sha256: 8cfb11947350e95b6c66c7873c19173305fbe05b61883b10e2d51b0f5804384a
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: docs/05.operations/guides/10-platform-and-backup/0003-env-key-comparison.md
+  writer: /root/p06_documents
+  before_sha256: f295888e8a1165d3106ba5f22272c5ee40b2dba3c1f4f3ccd78ef831f58277db
+  current_followup_sha256: 3f6b58174bb1ca301ea6ccf1e6b34068fd182799dc9f3cc84665dc405f1db230
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  writer: /root/p06_documents
+  before_sha256: 8788554b76834e5a10bf3edb59b9371f88ba0ed1f27fa3b45bcc2d619d2101f5
+  current_followup_sha256: 99b8c55aa474527c48678c165b065b2d31f46be4bd0d2878f89891ea2a613909
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: docs/90.references/data/0096-workspace-inventory/README.md
+  writer: /root/p06_documents
+  before_sha256: f26bbfa388598cb48efbc7bbcc6630a1486f06d9160760cdec87faa4851ffc71
+  current_followup_sha256: afc4861050f9e387283ea99c72303c26c050745fb353272c4ffe1babddf20131
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+  previous_lease:
+    path: docs/90.references/data/0096-workspace-inventory/README.md
+    writer: /root/p04_docs
+    before_sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
+    scope: Approved P05 exact Task path/segment lease
+    acceptance_owner: SPEC-0212-TSK-0044
+    reviewer: Independent exact-packet role in Task
+    data_owner: UNASSIGNED for actual operating data
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct approved P05 local plan2026-11-02
+    handoff: Changed input invalidates only dependent rows; no operating authority
+      inferred
+    previous_lease:
+      path: docs/90.references/data/0096-workspace-inventory/README.md
+      writer: /root/p04_docs
+      before_sha256: f8cb82887f3e6dcea2dd922f484ad8709a077ed43dcd8b4f2134dcc508a273f3
+      scope: Current P04 approved local slice; exact segment in Task
+      acceptance_owner: SPEC-0212-TSK-0043
+      reviewer: Independent exact-packet role recorded in Task
+      data_owner: UNASSIGNED for operating data; no authority inferred
+      operational_acceptance: UNASSIGNED / NOT_RUN
+      authority: Direct2026-11-02 approved P04 plan
+      handoff: Changed source invalidates this exact lease; operating action needs
+        its own target/recovery authorization
+      previous_lease:
+        path: docs/90.references/data/0096-workspace-inventory/README.md
+        writer: doc-writer
+        acceptance_owner: SPEC-0212-TSK-0040
+        reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+          exact reviewed source scope and remaining limits in Task
+        data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+        operational_acceptance: UNASSIGNED
+        before_sha256: null
+        scope: P01 source evidence and consumer navigation
+        authority: direct2026-11-01 request and coordinator allocation
+        review_scope_limit: No operational authorization or unobserved document acceptance
+          inferred.
+        followup_lease:
+          baseline_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+          writer: doc-writer /root/p01_docs
+          scope: Current P01 Task/README result-only admission, typed-input contract,
+            selected-local-check evidence and precise handoff; no historical Task
+            or data.yaml authoring
+          current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
+          review: PARTIAL authored section receipt; complete false
+          released_at: '2026-11-01T14:18:17.518585+00:00'
+        current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
+      current_followup_sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
+    current_followup_sha256: f26bbfa388598cb48efbc7bbcc6630a1486f06d9160760cdec87faa4851ffc71
+    fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/90.references/data/0096-workspace-inventory/data.yaml
+  writer: /root/p06_documents
+  before_sha256: 0e23c6b85c436e6dbceed4108f65bcf8e179e82a0b0299874cdd112a7dccc215
+  current_followup_sha256: null
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+  fingerprint_note: Current generated ledger self-hash excluded to prevent recursion.
+  previous_lease:
+    path: docs/90.references/data/0096-workspace-inventory/data.yaml
+    writer: /root/p04_docs
+    before_sha256: 513a742753ee06d46d172164929faa89c38e0cff96b21f8e003b2118e8b8f195
+    scope: P05 exact Task path/segment lease; scenario test separately issued to SQL
+      writer in QA role
+    acceptance_owner: SPEC-0212-TSK-0044
+    reviewer: Independent scoped exact-packet roles in Task
+    data_owner: UNASSIGNED operating data owner
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Approved2026-11-02 local P05 scope and coordinator path lease
+    handoff: Changed source invalidates affected metadata/review only; no operational
+      authority inferred
+    previous_lease:
+      path: docs/90.references/data/0096-workspace-inventory/data.yaml
+      writer: /root/p04_docs
+      before_sha256: e71b6ca961740e6cd6045202801f6dea88f4e32aa076fb961c2311082d4da895
+      scope: Current P04 approved local slice; exact segment in Task
+      acceptance_owner: SPEC-0212-TSK-0043
+      reviewer: Independent exact-packet role recorded in Task
+      data_owner: UNASSIGNED for operating data; no authority inferred
+      operational_acceptance: UNASSIGNED / NOT_RUN
+      authority: Direct2026-11-02 approved P04 plan
+      handoff: Changed source invalidates this exact lease; operating action needs
+        its own target/recovery authorization
+      previous_lease:
+        path: docs/90.references/data/0096-workspace-inventory/data.yaml
+        writer: qa-engineer
+        acceptance_owner: SPEC-0212-TSK-0040
+        reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+          exact reviewed source scope and remaining limits in Task
+        data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+        operational_acceptance: UNASSIGNED
+        before_sha256: null
+        scope: Generated public payload integration from doc-writer curation
+        authority: direct2026-11-01 request and coordinator allocation
+        review_scope_limit: No operational authorization or unobserved document acceptance
+          inferred.
+      current_fingerprint: SELF_OUTPUT_EXCLUDED
+      fingerprint_limit: Generated inventory excludes its own bytes to avoid recursive
+        hashing.
+    fingerprint_observed_at: '2026-11-02T11:52:35.037311+00:00'
+    current_fingerprint: SELF_OUTPUT_EXCLUDED
+    fingerprint_limit: Exclude generated output bytes to avoid recursive hashing.
+- path: infra/03-security/openbao/consumer-migration/README.md
+  writer: /root/p06_documents
+  before_sha256: c5b232d6791a600f38720e47af095b4b52b9cc515b3b149a2f716cc1aa1a4b99
+  current_followup_sha256: a749486e238af81ccde42dfc71403f0c86c4ab1f225da1b7de518b068a7fa240
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: scripts/lib/ops/secret_structure.py
+  writer: /root/p06_structure
+  before_sha256: null
+  current_followup_sha256: 0f2cf8e46be62f482f92778a88b3f4f71b4f0702e5a20a8cafaa131507b68f88
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: scripts/lib/ops/smtp_contract.py
+  writer: /root/p06_smtp
+  before_sha256: a0f5ef2df330d4b92d1279512c3af8a62c4388f991ef376bfaa5912451cbb002
+  current_followup_sha256: 3dccd7a476a0c6798557876c97a52c4330be9958cdef30e896ee0336ec0bde54
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: scripts/lib/ops/smtp_public_source.py
+  writer: /root/p06_smtp
+  before_sha256: e84c37702fff817e20356bf38a6df1eacba3ab19509992fa0e08353ce49b79f0
+  current_followup_sha256: 92b73ca8f39a80e923184075194d5fc0ee19df32b87f674526605783c5732656
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: scripts/manifest.yaml
+  writer: /root/p06_ci
+  before_sha256: 8d703b7601af47d1955154dc7f8e478c2f12023f7c44a4088d17056a5c855ece
+  current_followup_sha256: cb87cd932ec667f82ae5cf1d1fb4a49312897af4ed2444f7c78a097c61860159
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+  previous_lease:
+    path: scripts/manifest.yaml
+    writer: ci-cd-engineer
+    acceptance_owner: SPEC-0212-TSK-0040
+    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+      exact reviewed source scope and remaining limits in Task
+    data_owner: UNASSIGNED for operational data
+    operational_acceptance: UNASSIGNED
+    scope: Inventory implementation/tests or its CI registration only
+    authority: direct2026-11-01 request and coordinator path allocation
+    before_sha256: null
+    fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated
+      here
+    review_scope_limit: No operational authorization or unobserved document acceptance
+      inferred.
+- path: scripts/operations/secret-structure.py
+  writer: /root/p06_structure
+  before_sha256: null
+  current_followup_sha256: 848862f54e5a2dc7b955197d415fcea56ba30f1994ab45caadab1802aa492967
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: tests/lib/ops/test_secret_structure.py
+  writer: /root/p06_structure
+  before_sha256: null
+  current_followup_sha256: 5fdc64ae786d89a3b14babe6619716bce0205ed182c9553dd5205add988a1d70
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: tests/lib/ops/test_smtp_contract.py
+  writer: /root/p06_smtp
+  before_sha256: 9d7c47c0edbc2443f77e25356d1f8206db148226b50a6b58bc3437896d99a2a7
+  current_followup_sha256: 1811aea7d36530c36edfe4a32fdf3f33bd98bda65cec104de75892069ee24ad8
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: tests/lib/ops/test_smtp_public_source.py
+  writer: /root/p06_smtp
+  before_sha256: e7334d2c2c897a38fec03fde9bfc17afc9613d9a26cac9a5046e7c1809459229
+  current_followup_sha256: f42fcd23fe7130f1829ee55eded05740543c8aa719c3d0a1b34b01773ef9f72b
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: tests/validation/test_secret_metadata_sync.py
+  writer: /root/p06_qa
+  before_sha256: 44c8193ca6d21aa7d835d523275dce79dca0fcc53023c05d2c1b78e521a82e2c
+  current_followup_sha256: 76fca98d9a85549cbb371c79249e2fe0d8916176ecbf2759a2bb6245f167e800
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: tests/validation/test_smtp_ci_routing.py
+  writer: /root/p06_ci
+  before_sha256: e236dfb0704e9468d234c3844c11ec0bc11f28bac9566cc103b5e0c5493fe353
+  current_followup_sha256: 55632ed20566e4d3d9855c8365d1f7da137976c284ad06bfc4906c85cc114fc3
+  scope: Approved P06 exact Task path lease
+  acceptance_owner: SPEC-0212-TSK-0045
+  reviewer: Independent exact-source reviewer in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved local P06 request; private comparison read-only after
+    security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
 research:
 - id: EX01
   url: https://docs.docker.com/compose/how-tos/profiles/
@@ -40252,6 +40682,107 @@ research:
     CLI attempt and teardown guards.
   limit: Internal editor API, not stable public API; future n8n versions require source
     revalidation and actual fixture proof.
+- id: P06-OPENBAO-TEMPLATE
+  url: https://openbao.org/docs/agent-and-proxy/agent/template/
+  document_version: 2.7.x
+  retrieved_at: '2026-11-02T12:37:50Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic survey
+  fact: Template rendering, missing-key, exec, permission and previous-render backup
+    controls; health and consumer use are separate.
+  decision: ADOPT
+  current_source_difference: See TSK-0045 applicability and source evidence; no installed-state
+    inference.
+  owner: P06
+  normal: Apply only within the named version and consumer scope.
+  rejection: Do not infer operational use, private state or permission from public
+    documentation.
+  recovery: Reopen only affected inputs if evidence changes; preserve prior acceptance.
+  limit: No current operating or independent restore result inferred.
+- id: P06-WEBUI
+  url: https://docs.openwebui.com/reference/env-configuration/
+  document_version: current page
+  retrieved_at: '2026-11-02T12:37:50Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic survey
+  fact: Marked configuration may be persisted; current page alone does not prove installed
+    version or stored values.
+  decision: ADOPT
+  current_source_difference: See TSK-0045 applicability and source evidence; no installed-state
+    inference.
+  owner: P06
+  normal: Apply only within the named version and consumer scope.
+  rejection: Do not infer operational use, private state or permission from public
+    documentation.
+  recovery: Reopen only affected inputs if evidence changes; preserve prior acceptance.
+  limit: No current operating or independent restore result inferred.
+- id: P06-AIRFLOW
+  url: https://airflow.apache.org/docs/apache-airflow-providers-celery/stable/configurations-ref.html
+  document_version: provider page 3.26.0
+  retrieved_at: '2026-11-02T12:37:50Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic survey
+  fact: Current provider docs expose broker URL CMD; installed provider compatibility
+    remains separately versioned.
+  decision: ADOPT
+  current_source_difference: See TSK-0045 applicability and source evidence; no installed-state
+    inference.
+  owner: P06
+  normal: Apply only within the named version and consumer scope.
+  rejection: Do not infer operational use, private state or permission from public
+    documentation.
+  recovery: Reopen only affected inputs if evidence changes; preserve prior acceptance.
+  limit: No current operating or independent restore result inferred.
+- id: P06-VALKEY
+  url: https://valkey.io/topics/acl/
+  document_version: current page
+  retrieved_at: '2026-11-02T12:37:50Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic survey
+  fact: Named ACL authentication and command/key restrictions are independent of DB-number
+    selection.
+  decision: ADOPT
+  current_source_difference: See TSK-0045 applicability and source evidence; no installed-state
+    inference.
+  owner: P06
+  normal: Apply only within the named version and consumer scope.
+  rejection: Do not infer operational use, private state or permission from public
+    documentation.
+  recovery: Reopen only affected inputs if evidence changes; preserve prior acceptance.
+  limit: No current operating or independent restore result inferred.
+- id: P06-RESTIC
+  url: https://restic.readthedocs.io/en/stable/050_restore.html
+  document_version: 0.19.1
+  retrieved_at: '2026-11-02T12:37:50Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic survey
+  fact: Restore has an explicit target; in-place interruption and metadata require
+    a separate recovery contract.
+  decision: ADOPT
+  current_source_difference: See TSK-0045 applicability and source evidence; no installed-state
+    inference.
+  owner: P06
+  normal: Apply only within the named version and consumer scope.
+  rejection: Do not infer operational use, private state or permission from public
+    documentation.
+  recovery: Reopen only affected inputs if evidence changes; preserve prior acceptance.
+  limit: No current operating or independent restore result inferred.
+- id: P06-SMTP
+  url: https://www.rfc-editor.org/rfc/rfc5321.html#section-6.1
+  document_version: RFC 5321
+  retrieved_at: '2026-11-02T12:37:50Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic survey
+  fact: SMTP acceptance is not final mailbox delivery or proof of exactly-once behavior.
+  decision: ADOPT
+  current_source_difference: See TSK-0045 applicability and source evidence; no installed-state
+    inference.
+  owner: P06
+  normal: Apply only within the named version and consumer scope.
+  rejection: Do not infer operational use, private state or permission from public
+    documentation.
+  recovery: Reopen only affected inputs if evidence changes; preserve prior acceptance.
+  limit: No current operating or independent restore result inferred.
 coverage_tiers:
 - id: TIER01
   name: Gateway
@@ -43239,3 +43770,82 @@ handoffs:
   - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
     sha256: 8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32
     fingerprint_state: P05_FINAL_SOURCE
+- id: P06-PRIVATE-STRUCTURE
+  acceptance_owner: P06 data owner
+  writer: UNASSIGNED until exact path lease
+  state: TEST_RESIDUAL
+  target: Both private structures returned DRIFT; public reference first locations
+    only.
+  current_fingerprint: Current public input fingerprints and Task receipts
+  change_contract: Separate consumer/source authority and evidence; do not infer permission
+    from history.
+  authority: Approved P06 local source/tests and protected read-only comparison only
+  missing_input: Protected operator review and explicit future private-metadata authorization
+  resume_condition: Confirm named owner, exact target, current evidence and applicable
+    authorization.
+  recovery: Restore no private data in this work; preserve existing files and modes.
+  source_files: []
+- id: P06-OPENBAO-TEMPLATE
+  acceptance_owner: P01/P06 trust owners
+  writer: UNASSIGNED until exact path lease
+  state: TEST_RESIDUAL
+  target: 2.7.x documented missing-key and backup defaults differ from implicit source
+    settings; health behavior and consumer impact need scoped reproduction.
+  current_fingerprint: Current public input fingerprints and Task receipts
+  change_contract: Separate consumer/source authority and evidence; do not infer permission
+    from history.
+  authority: Approved P06 local source/tests and protected read-only comparison only
+  missing_input: Exact installed image, owned synthetic fixture and independent source/consumer
+    review
+  resume_condition: Confirm named owner, exact target, current evidence and applicable
+    authorization.
+  recovery: Keep accepted source and rollback copies; separately authorize any rollout.
+  source_files: []
+- id: P06-N8N-CREDENTIAL
+  acceptance_owner: P05/P06 credential owners
+  writer: UNASSIGNED until exact path lease
+  state: TEST_RESIDUAL
+  target: n8n PostgreSQL and SMTP native credential identities need exact issuer and
+    next-execution refresh contract.
+  current_fingerprint: Current public input fingerprints and Task receipts
+  change_contract: Separate consumer/source authority and evidence; do not infer permission
+    from history.
+  authority: Approved P06 local source/tests and protected read-only comparison only
+  missing_input: Named actual owner, supported native update interface, target and
+    separately approved rotation/recovery
+  resume_condition: Confirm named owner, exact target, current evidence and applicable
+    authorization.
+  recovery: Preserve prior valid credential path, metadata DB and encryption key.
+  source_files: []
+- id: P06-P09-MANIFEST
+  acceptance_owner: P09 retirement owner
+  writer: UNASSIGNED until exact path lease
+  state: TEST_RESIDUAL
+  target: Generic retirement manifest parser strictness requires separate ownership
+    review.
+  current_fingerprint: Current public input fingerprints and Task receipts
+  change_contract: Separate consumer/source authority and evidence; do not infer permission
+    from history.
+  authority: Approved P06 local source/tests and protected read-only comparison only
+  missing_input: Named generic consumer, parser scope and synthetic negative tests
+  resume_condition: Confirm named owner, exact target, current evidence and applicable
+    authorization.
+  recovery: Revert only approved generic parser delta; do not remove protected copies.
+  source_files: []
+- id: P06-SMTP-HISTORY
+  acceptance_owner: SMTP01 / operational accepter
+  writer: UNASSIGNED until exact path lease
+  state: TEST_RESIDUAL
+  target: Canonical SMTP exists and historical alias path was absent; equality was
+    not performed.
+  current_fingerprint: Current public input fingerprints and Task receipts
+  change_contract: Separate consumer/source authority and evidence; do not infer permission
+    from history.
+  authority: Approved P06 local source/tests and protected read-only comparison only
+  missing_input: Named server credential, active senders, backup readers and approved
+    target before any cutover or removal
+  resume_condition: Confirm named owner, exact target, current evidence and applicable
+    authorization.
+  recovery: Preserve canonical credential and valid rollback path; verify server validity
+    separately.
+  source_files: []

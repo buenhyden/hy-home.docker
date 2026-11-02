@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import yaml
 
@@ -166,6 +169,111 @@ class SMTPPublicSourceTests(unittest.TestCase):
         )
         with self.assertRaises(ContractError):
             _validate(self.root)
+
+    def test_fifo_source_is_rejected_without_waiting_for_writer(self):
+        path = self.root / "probe.yml"
+        os.mkfifo(path)
+        source = (
+            "import sys; from scripts.lib.ops.smtp_public_source import read_public_yaml; "
+            "from scripts.lib.ops.smtp_contract import ContractError; "
+            "read_public_yaml(sys.argv[1], 'probe.yml', ContractError)"
+        )
+        try:
+            result = subprocess.run(
+                [sys.executable, "-c", source, str(self.root)],
+                capture_output=True,
+                timeout=3,
+                check=False,
+            )
+        except subprocess.TimeoutExpired:
+            self.fail("public FIFO source blocked instead of being rejected")
+        self.assertNotEqual(result.returncode, 0)
+
+    def test_public_source_rebind_after_last_descriptor_check_is_rejected(self):
+        path = self.root / "probe.yml"
+        path.write_text("services: {}\n")
+        replacement = self.root / "replacement.yml"
+        replacement.write_text("services: {rebound: {}}\n")
+        original_fstat = os.fstat
+        inode = path.stat().st_ino
+        observations = 0
+
+        def race(fd):
+            nonlocal observations
+            result = original_fstat(fd)
+            if result.st_ino == inode:
+                observations += 1
+                if observations == 2:
+                    os.replace(replacement, path)
+            return result
+
+        with patch.object(smtp_public_source.os, "fstat", side_effect=race):
+            with self.assertRaises(ContractError):
+                smtp_public_source.read_public_yaml(
+                    self.root, "probe.yml", ContractError
+                )
+        self.assertEqual(path.read_text(), "services: {rebound: {}}\n")
+
+    def test_public_parent_rebind_during_read_is_rejected(self):
+        parent = self.root / "inputs"
+        parent.mkdir()
+        path = parent / "probe.yml"
+        path.write_text("services: {}\n")
+        saved = self.root / "saved-inputs"
+        original_fstat = os.fstat
+        inode = path.stat().st_ino
+        observations = 0
+
+        def race(fd):
+            nonlocal observations
+            result = original_fstat(fd)
+            if result.st_ino == inode:
+                observations += 1
+                if observations == 2:
+                    parent.rename(saved)
+                    parent.mkdir()
+                    (parent / "probe.yml").write_text("services: {rebound: {}}\n")
+            return result
+
+        with patch.object(smtp_public_source.os, "fstat", side_effect=race):
+            with self.assertRaises(ContractError):
+                smtp_public_source.read_public_yaml(
+                    self.root, "inputs/probe.yml", ContractError
+                )
+        self.assertEqual((saved / "probe.yml").read_text(), "services: {}\n")
+
+    def test_public_source_growth_is_bounded_and_rejected(self):
+        path = self.root / "probe.yml"
+        path.write_text("services: {}\n")
+        original_fdopen = os.fdopen
+        requests = []
+
+        class GrowingReader:
+            def __init__(self, stream):
+                self.stream = stream
+
+            def __enter__(self):
+                self.stream.__enter__()
+                return self
+
+            def __exit__(self, *args):
+                return self.stream.__exit__(*args)
+
+            def read(self, size=-1):
+                requests.append(size)
+                with path.open("ab") as output:
+                    output.write(b"x" * (256 * 1024))
+                return self.stream.read(size)
+
+        def growing_open(fd, mode):
+            return GrowingReader(original_fdopen(fd, mode))
+
+        with patch.object(smtp_public_source.os, "fdopen", side_effect=growing_open):
+            with self.assertRaises(ContractError):
+                smtp_public_source.read_public_yaml(
+                    self.root, "probe.yml", ContractError
+                )
+        self.assertEqual(requests, [256 * 1024 + 1])
 
 
 class SMTPRootPublicSourceTests(unittest.TestCase):

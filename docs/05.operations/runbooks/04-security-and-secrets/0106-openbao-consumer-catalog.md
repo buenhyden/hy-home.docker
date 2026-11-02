@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration and Secret Catalog"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -37,9 +37,52 @@ created: "2026-10-28"
 직접 library를 호출했다는 사실은 실행 승인이 아닙니다. 공개
 `scripts/operations/openbao-consumer-migration.py` CLI는 validate-only이며 production catalog
 adapter·controller factory·runtime copy CLI는 아직 제공하지 않습니다. 실제 private/native copy,
-consumer 렌더·pilot·authority 전환·복구·삭제·회전은
-[P06 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md)의
-별도 입력·검토·수용 전까지 **NOT_RUN**입니다. source/unit 통과로 이 경계를 완료 처리하지 않습니다.
+consumer 렌더·pilot·authority 전환·복구·삭제·회전의 새 실행은 별도 입력·검토·수용
+전까지 **NOT_RUN**입니다. 기존 [P06 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md)는
+2026-10-27–28에 별도 owner 절차로 수행한 선택 소비자의 전환과 되돌리기를 기록합니다.
+이 과거 수용은 일반 copy API의 실행이나 현재 운영 동등성 증거가 아닙니다. source/unit
+통과로 어느 실행 경계도 완료 처리하지 않습니다.
+
+### P06 Read-only Structure and SMTP Checks
+
+현재 작업에서 private 읽기를 허용하고, 합성 값 누출 시험과 독립 보안 검토를
+먼저 통과한 경우에만 운영자가 저장소 루트에서 다음 명령을 실행한다. 두 명령은
+사설 파일을 쓰거나 권한을 바꾸지 않는다. 일반 CI에는 실제 private 입력 대신
+합성 fixture만 사용한다. 현재 작업 경계의 root는 mode 0775이므로 같은 그룹의
+비협조 작성자를 descriptor 재확인만으로 완전히 배제하거나 원자적 snapshot을
+보장하지 않는다. 신뢰된 작성자와 해당 입력의 쓰기 중단을 확인한 뒤 검사한다.
+
+```bash
+python3 scripts/operations/secret-structure.py --root "$PWD" check --read-private
+python3 scripts/operations/secret-structure.py --root "$PWD" smtp-equality --read-private
+```
+
+구조 검사의 `MATCH`/exit 0은 값 이외 구조 일치, `DRIFT`/exit 1은 차이,
+`BLOCKED`/exit 2는 누락·권한·링크·형식·동시 변경 등 안전 거부다. SMTP 검사의
+`EQUAL`/exit 0과 `DIFFERENT`/exit 1은 두 파일의 실제 비교 결과다. 역사 사본이
+없으면 `OLD_ABSENT`, `comparison_performed=false`, exit 2이며 정본 내용도 읽지
+않는다. 이 관측은 값 동일성이나 이번 삭제 성공이 아니다.
+
+값·값 해시·길이·원문과 private 오류 payload는 출력하거나 영수증에 보관하지
+않는다. `DRIFT`, `DIFFERENT`, `OLD_ABSENT` 또는 `BLOCKED`이면 운영 전환이나
+삭제를 진행하지 않는다. 현재 서버 자격·reader·backup·data owner를 확인하고 별도
+권한과 복구 경계를 갖춘 다음 해당 소비자 소유자에게 인계한다. 소스 되돌리기는
+도구 코드만 되돌리며 실제 credential의 서버 유효성 복원을 뜻하지 않는다.
+
+### n8n Native Credential Handoff
+
+기존 선택 업무의 PostgreSQL `opsflow_notifier`와 SMTP는 n8n에 저장된 서로 다른
+Credential이다. [기존 P06 기록](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md)은
+PostgreSQL native 회전의 과거 격리 수용과 두 자격의 OpenBao 전달·갱신 및 SMTP
+회전 미실행을 구분한다. [P05 notifier Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md)는
+합성 Mailpit에서 동일 Credential ID 갱신 후 다음 Worker 실행의 소비와 정지 복원을
+확인했다. Agent 렌더나 파일 교체만으로 n8n DB에 암호화된 Credential이 갱신되지 않는다.
+
+후속 실행 전 owner는 각 실제 자격의 발급자·정본과 승인된 목적지, 보유 Credential ID,
+설치 버전에서 지원하는 권한 있는 갱신 경로, 다음 실행·이전 값 거부 조건, 기존 유효
+경로·폐기 시각 및 DB와 동일 암호화 키의 독립 복원 경계를 지정한다. 전송 중 실행의
+즉시 전환은 가정하지 않는다. 실제 발급·회전·외부 전송은 별도 대상별 승인과 복구
+준비가 필요하며 이 문서는 실행 권한을 부여하지 않는다.
 
 ### P02 Public Catalog Checks
 

@@ -73,12 +73,14 @@ def _identity(info):
 def _directory(root, relative, stack, error):
     if any(part in ("", ".", "..") for part in relative.parts):
         raise error("unsafe_compose_path")
-    fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+    root = Path(root)
+    if not root.is_absolute() or any(part in (".", "..") for part in root.parts):
+        raise error("unsafe_compose_path")
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    fd = os.open(root.anchor, flags)
     stack.callback(os.close, fd)
-    for part in relative.parts:
-        current = os.open(
-            part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=fd
-        )
+    for part in (*root.parts[1:], *relative.parts):
+        current = os.open(part, flags, dir_fd=fd)
         stack.callback(os.close, current)
         fd = current
     return fd
@@ -113,8 +115,6 @@ def _git_tracked(root, relative, error):
 def read_public_yaml(root, relative, error):
     root = Path(root).absolute()
     path = root / relative
-    if not path.exists():
-        return None
     try:
         normalized = path.relative_to(root)
     except ValueError:
@@ -123,13 +123,19 @@ def read_public_yaml(root, relative, error):
         part in ("", ".", "..") for part in normalized.parts
     ):
         raise error("unsafe_compose_path")
-    _git_tracked(root, relative, error)
     with ExitStack() as stack:
-        parent = _directory(root, normalized.parent, stack, error)
+        try:
+            parent = _directory(root, normalized.parent, stack, error)
+            initial = os.stat(normalized.name, dir_fd=parent, follow_symlinks=False)
+        except FileNotFoundError:
+            return None
+        except OSError:
+            raise error("unsafe_compose_path") from None
+        _git_tracked(root, relative, error)
         try:
             fd = os.open(
                 normalized.name,
-                os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
+                os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
                 dir_fd=parent,
             )
         except OSError:
@@ -140,12 +146,30 @@ def read_public_yaml(root, relative, error):
             not stat.S_ISREG(info.st_mode)
             or info.st_nlink != 1
             or info.st_size > MAX_PUBLIC_SOURCE_BYTES
+            or _identity(initial) != _identity(info)
         ):
             raise error("unsafe_compose_path")
         before = _identity(info)
         with os.fdopen(os.dup(fd), "rb") as stream:
-            data = stream.read()
-        if _identity(os.fstat(fd)) != before:
+            data = stream.read(MAX_PUBLIC_SOURCE_BYTES + 1)
+        if len(data) > MAX_PUBLIC_SOURCE_BYTES or _identity(os.fstat(fd)) != before:
+            raise error("concurrent_file_change")
+        try:
+            named = os.stat(normalized.name, dir_fd=parent, follow_symlinks=False)
+            rebound_parent = _directory(root, normalized.parent, stack, error)
+            named_again = os.stat(
+                normalized.name, dir_fd=rebound_parent, follow_symlinks=False
+            )
+            held_parent = os.fstat(parent)
+            resolved_parent = os.fstat(rebound_parent)
+        except OSError:
+            raise error("concurrent_file_change") from None
+        if (
+            _identity(named) != before
+            or _identity(named_again) != before
+            or (held_parent.st_dev, held_parent.st_ino)
+            != (resolved_parent.st_dev, resolved_parent.st_ino)
+        ):
             raise error("concurrent_file_change")
     try:
         document = yaml.load(data, Loader=_PublicComposeLoader)

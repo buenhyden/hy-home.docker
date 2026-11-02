@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.37.0"
+version: "1.38.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -626,6 +626,24 @@ hold, authorization and recovery requirements have been established.
     under the same credential ID on the next execution. P06 retains actual
     producer/secret authority; real delivery, operating credentials and HOME
     rotation or restore are not authorized by local fixture evidence.
+76. P06.01 retains the public secret catalog as the sole metadata authority,
+    validates its generated views and supported delivery contracts, and rejects
+    duplicate or unapproved identities without disclosing secret values.
+77. P06.02 compares complete public and private environment and registry
+    structure with value fields excluded, using protected read-only inputs and
+    rejecting unsafe or ambiguous content without exposing private material.
+78. P06.03 preserves scoped OpenBao trust, custody, snapshot and recovery
+    acceptance, and records current source, actors, versions and residuals
+    separately from unexecuted operation.
+79. P06.04 retains completed consumer transitions and records untransitioned
+    or held consumers and the n8n native credential handoff; a rendered value
+    is not proof of consumer use or authorization for a new copy.
+80. P06.05 retains the SMTP canonical identity and alias, hardens bounded
+    public/private source reads, and records a missing historical copy without
+    claiming equality, deletion or actual consumer cutover.
+81. P06.06 records the reader, backup, custody and recovery evidence for secret
+    retirement candidates. Unknown or unauthorized targets remain held, and
+    no deletion or consumer-zero conclusion follows from absence of runtime.
 
 ## Failure Conditions
 
@@ -648,6 +666,7 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Models, runners and Wiki preparation Task](tasks/tsk-0042-models-runners-wiki.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
 - [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
+- [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)

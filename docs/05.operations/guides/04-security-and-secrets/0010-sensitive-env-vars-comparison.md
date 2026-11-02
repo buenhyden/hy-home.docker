@@ -1,6 +1,6 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "3.4.0"
+version: "3.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -22,7 +22,7 @@ created: "2026-06-04"
 
 대상 독자는 secret registry를 정리하거나 점검하는 운영자와 agent다.
 
-목표는 값을 노출하지 않고 공개/개인 registry의 ID와 env-key 집합을 정확히 일치시키는 것이다.
+목표는 값을 노출하지 않고 공개/개인 registry의 값 외 구조를 비교하고 실제 소비자를 확인하는 것이다.
 
 ## Concepts
 
@@ -74,6 +74,20 @@ bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
 check는 private registry와 `.env` 값을 프로세스 내부에서 읽고 출력하지 않는
 검사이므로 해당 접근 승인이 필요하다. 종료 코드 `0`은 drift 없음, `1`은 drift,
 `2`는 unsafe/ambiguous 입력이다. 쓰기 없음과 개인 값 읽기 없음은 다르다.
+
+전체 구조의 읽기 전용 비교는 합성 누출 시험과 독립 보안 검토 후 다음 명시적
+명령으로 수행한다. 현재 작업에서 사설 읽기가 허용됐는지도 확인한다.
+
+```bash
+python3 scripts/operations/secret-structure.py --root "$PWD" check --read-private
+```
+
+값 칸만 제외하고 ID·열·순서·설명·경로와 주변 문장, 환경변수의 순서·주석을
+비교한다. `MATCH`/exit 0, `DRIFT`/exit 1, 누락·안전·형식 오류의 `BLOCKED`/exit 2를
+구분한다. 이 도구는 private 값을 process 안에서 읽지만 값·값 해시·길이·원문을
+출력하거나 기록하지 않고 파일을 쓰지 않는다. 실제 사설 파일을 읽는 검사는
+CI에 넣지 않으며, 파일 부재를 공개 예제로 대체하지 않는다. 첫 차이의 행 번호는
+공개 예제 기준이므로 private 측 위치나 정확한 원인으로 해석하지 않는다.
 
 두 registry의 ID와 env-key 집합은 정확히 같아야 하며 공개 행마다 실제 소비자,
 초기화 입력 또는 파생값 생성 경로가 있어야 한다. 비활성 서비스도 지원되는

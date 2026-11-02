@@ -1,6 +1,6 @@
 ---
 title: "Workspace Inventory"
-version: "0.5.0"
+version: "0.6.0"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
@@ -14,6 +14,7 @@ parent_ids:
 - "SPEC-0212-TSK-0042"
 - "SPEC-0212-TSK-0043"
 - "SPEC-0212-TSK-0044"
+- "SPEC-0212-TSK-0045"
 created: "2026-11-01"
 observed_at: "2026-11-02"
 ---
@@ -152,6 +153,19 @@ GET/HEAD만을 대상으로 하며, 그 밖의 메서드와 모든 다른 경로
 계약에 따라 처리한다. 이 예외는 2026-12-02에 또는 범위 확대·인증 변경·관련
 보안 권고가 발생하면 다시 검토한다.
 
+[P06 Secret 구조·OpenBao Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md)는
+공개 Secret catalog를 정본으로 재사용하고, 값 제외 구조 검사·SMTP 읽기 경계·
+과거 소비자 수용과 잔여 인계를 기록한다. 실제 `.env`와 로컬 registry는 사용자가
+승인한 읽기 전용 비교 대상이며 값·값 해시·길이·원문은 이 원장에 넣지 않는다.
+합성 누출 시험과 독립 보안 검토 뒤의 실제 비교에서 env와 registry는 각각
+`DRIFT`, 역사 SMTP 사본은 `OLD_ABSENT`/미비교로 관찰됐다. 이후 승인된 무값
+진단의 첫 공개 기준 위치는 env 52행 `PUBLIC_ASSIGNMENT`, registry 18행
+`PUBLIC_TEXT`다. SMTP 부재는 진단 추가 전 보안 승인 소스에서 관측했으며 진단
+추가 후 SMTP 경로를 재실행한 결과는 아니다. 공개 기준 위치는 사설 파일의 행 번호나
+차이 원인을 뜻하지 않는다. 사설 수정을 허용한
+것은 아니며 값 일치·소비 전환·삭제 수용을 뜻하지 않는다. 실제 운영·회전·
+독립 복원·원격 CI·최종 인수는 각각의 별도 기록에 따른다.
+
 [P04 Opsflow Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)는
 기존 Airflow DAG·adapter·DEV 소유권을 재사용하고 연결 인코딩·불량 입력 격리·
 data_version·객체 메타데이터 복원의 차분을 소비한다. 기존 CDC의 `platform_dev`와
@@ -173,8 +187,8 @@ P04 시작 시점의 실제 HEAD는 `6853286dbd73851a6419f7fb5457c53720ba6d98`�
 [P05 notifier Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md)은
 기존 C19/C22의 version·이미지·환경·Criterion별 수용을 재사용하고 현재 재처리·복원
 장벽·STARTTLS·credential 조회의 차분을 소비한다. clean 시작 HEAD는
-`e14ebe0fd5e562f8c7557bd9408a1985d9971c5c`로 관측했으며 현재 branch는
-`codex/p05-n8n-outbox-recovery`다. 과거 수용, 현재 공개 source binding과 실제
+`e14ebe0fd5e562f8c7557bd9408a1985d9971c5c`로 관측했으며 당시 branch는
+`codex/p05-n8n-outbox-recovery`였다. 과거 수용, 공개 source binding과 실제
 private workflow·설치 이미지·운영 자격은 별도 축이다.
 
 SQL007/008은 개별 승인에 한 번의 no-send 추가 claim과 복원 sending의 unknown

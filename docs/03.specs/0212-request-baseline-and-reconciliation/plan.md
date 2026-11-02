@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.37.0"
+version: "1.38.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -101,6 +101,12 @@ P04's TEST_RESIDUAL acceptance remain unchanged. Source, synthetic/owned
 isolated tests and a local logical commit are authorized; HOME services,
 actual credentials, external delivery/repositories and remote integration are not.
 
+W81–W86 implement the approved local P06 plan in TSK-0045. Existing OpenBao
+consumer acceptances and public catalog authority remain scoped to their own
+receipts. Value-free synthetic tests and independently reviewed read-only
+private structural comparison are authorized; private modifications, credential
+issuance, rotation, deletion, service changes and remote integration are not.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -181,10 +187,16 @@ actual credentials, external delivery/repositories and remote integration are no
 | W74 | 69 | Reuse Opsflow quality blocking and reconcile optional analytics smoke versus business publication | W72 | TSK-0043 | Invalid-input/no-publication tests and source-to-consumer evidence |
 | W75 | 70 | Defer a new experiment until actual dataset, time field, target, baseline and owner exist | W71 | TSK-0043 | Explicit missing-input and no-private-inference record |
 | W76 | 71 | Preserve optional Iceberg platform acceptance and document workload deferral and recovery limits | W71 | TSK-0043 | Version-specific maintenance evidence, current consumer and historical receipt mapping |
-| W77 | 72 | Reuse historical C19/C22 queue/schedule acceptance and reconcile current source/image scope | Available current source and historical receipts | TSK-0044 | Exact-version source/consumer readback and bounded regression; current private/live state remains separate |
-| W78 | 73 | Add approval-bound one-shot no-send dead retry, restored-sending quarantine and in-flight recovery barrier | W77; existing SQL001–006 and notifier contracts | TSK-0044 | RED/GREEN SQL/Node/CLI and controlled isolated normal/denial/interruption/recovery cases; preserve history and uncertainty |
+| W77 | 72 | Reuse historical C19/C22 queue/schedule acceptance and reconcile current source/image scope | None | TSK-0044 | Exact-version source/consumer readback and bounded regression; current private/live state remains separate |
+| W78 | 73 | Add approval-bound one-shot no-send dead retry, restored-sending quarantine and in-flight recovery barrier | W77 | TSK-0044 | RED/GREEN SQL/Node/CLI and controlled isolated normal/denial/interruption/recovery cases; preserve history and uncertainty |
 | W79 | 74 | Preserve queue-mode default storage and reject binary input in the selected notifier | W77 | TSK-0044 | Exact-source/default readback and notifier binary-rejection regression; no new storage or binary consumer |
 | W80 | 75 | Add opt-in authenticated Mailpit STARTTLS fixture and next-execution same-ID credential refresh proof | W78 | TSK-0044 | Controlled TLS/auth success/refusal, same-ID refresh, bounded owned rehearsal, independent review and local gates |
+| W81 | 76 | Reconcile catalog, generated views and supported secret delivery contracts without duplicate identities | None | TSK-0045 | Public catalog/generator regressions and value-free source review |
+| W82 | 77 | Implement bounded read-only full environment and registry structure comparison | W81 | TSK-0045 | RED/GREEN CLI, value-redaction, unsafe path and interrupted-read tests |
+| W83 | 78 | Preserve scoped OpenBao trust, custody and recovery acceptance and classify current residuals | None | TSK-0045 | Source/version and historical actor/criterion evidence |
+| W84 | 79 | Reconcile completed/held consumers and hand off n8n credential refresh ownership | W81 | TSK-0045 | Catalog/consumer binding review and synthetic contract regressions |
+| W85 | 80 | Harden bounded SMTP public/private readers and preserve canonical alias semantics | None | TSK-0045 | FIFO/growth/rebind, equality/absence and regression tests |
+| W86 | 81 | Inventory retirement readers and preserve protected recovery copies without deletion | W83–W85 | TSK-0045 | Read-only source evidence, owner/hold and P09 handoff |
 
 ### Current v30 continuation and delivery
 
@@ -371,6 +383,24 @@ No service starts, host edits, credential actions or remote writes occur here.
 
 ## Verification Plan
 
+### Current P06 implementation and ownership
+
+TSK-0045 issues per-path single-writer leases and public fingerprints before
+each edit. The structural tool, SMTP readers, QA helpers, documentation and CI
+registration have separate writers and independent reviewers. The real private
+comparison follows synthetic leak tests and independent security review; it
+never prints or records private bytes, values, value hashes, or lengths.
+Metadata comparison is read-only, preserves ownership and rejects missing,
+ambiguous, unbounded, replaced or linked inputs. SMTP missing historical copy
+is an observation, not a deletion receipt or an equality result.
+
+Reuse historical acceptance only at its recorded version, actor and consumer
+scope. Keep source, static, synthetic/isolated, prior acceptance, direct HOME,
+rotation, independent restore, remote CI and final operator acceptance as
+separate evidence. The existing catalog destination state is not independent
+approval for a new OpenBao copy. n8n producer and native-credential updates are
+handed to their owner; no private mutation or runtime service change is implied.
+
 ### Current P05 implementation and ownership
 
 The documentation writer issues TSK-0044 and per-path baseline fingerprints
@@ -508,6 +538,7 @@ only that dependent operation.
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
 - [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
+- [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Spec](spec.md)
