@@ -1,0 +1,711 @@
+"""Current-artifact P05 fixture; historical v3 native sources remain unchanged."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import re
+import secrets
+import shutil
+import stat
+import subprocess
+from contextlib import contextmanager
+from pathlib import Path
+from unittest import mock
+
+from tests.validation import _opsflow_native_evidence as evidence
+from tests.validation import _opsflow_native_fixture as legacy
+from tests.validation import _opsflow_native_inputs as inputs
+from tests.validation import _p05_opsflow_recovery as recovery
+from tests.validation import _p05_opsflow_registration as registration
+from tests.validation import test_opsflow_native_rehearsal as historical
+from tests.validation._opsflow_native_fixture import RehearsalFailure
+from tests.validation.test_opsflow_database_rehearsal import migration_sql
+
+ROOT = Path(__file__).resolve().parents[2]
+PACKAGE = (
+    ROOT / "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp"
+)
+ANALYSIS = ROOT / "_workspace/repo-support/analysis/p05"
+
+
+def validate_artifact(value, expected_binding, expected_dist):
+    fields = {"reference", "image_id", "base_id", "binding", "dist_sha256"}
+    if (
+        not isinstance(value, dict)
+        or set(value) != fields
+        or value["base_id"] != inputs.N8N_ID
+        or value["binding"] != expected_binding
+        or not isinstance(expected_binding, str)
+        or re.fullmatch(r"[0-9a-f]{64}", expected_binding) is None
+        or value["reference"] != "hy-home/p05-n8n-fixture:" + expected_binding[:12]
+        or not isinstance(value["image_id"], str)
+        or re.fullmatch(r"sha256:[0-9a-f]{64}", value["image_id"]) is None
+        or value["dist_sha256"] != expected_dist
+        or not {"OpsflowSmtp.node.js", "transport.js"} <= set(expected_dist)
+        or any(
+            not isinstance(name, str)
+            or "/" in name
+            or not isinstance(digest, str)
+            or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+            for name, digest in expected_dist.items()
+        )
+    ):
+        raise RehearsalFailure("current fixture artifact binding rejected")
+    return {**value, "dist_sha256": dict(expected_dist)}
+
+
+def public_digest(path, *, read_bytes=False):
+    """Read a stable regular public artifact without following any symlink."""
+    absolute = path.absolute()
+    directory = os.open("/", os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        for component in absolute.parts[1:-1]:
+            selected = os.open(
+                component,
+                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                dir_fd=directory,
+            )
+            os.close(directory)
+            directory = selected
+        descriptor = os.open(
+            absolute.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory
+        )
+    except OSError:
+        raise RehearsalFailure("public artifact path rejected") from None
+    finally:
+        os.close(directory)
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+            raise RehearsalFailure("public artifact identity rejected")
+        digest = hashlib.sha256()
+        chunks = []
+        while block := os.read(descriptor, 65536):
+            digest.update(block)
+            if read_bytes:
+                chunks.append(block)
+        after = os.fstat(descriptor)
+        observed = absolute.stat(follow_symlinks=False)
+
+        def fields(item):
+            return (
+                item.st_dev,
+                item.st_ino,
+                item.st_size,
+                item.st_mtime_ns,
+                item.st_ctime_ns,
+            )
+
+        if fields(before) != fields(after) or fields(after) != fields(observed):
+            raise RehearsalFailure("public artifact changed during collection")
+        return b"".join(chunks) if read_bytes else digest.hexdigest()
+    finally:
+        os.close(descriptor)
+
+
+def runtime_lock():
+    value = json.loads(public_digest(PACKAGE / "package-lock.json", read_bytes=True))
+    selected = {
+        "name": value["name"],
+        "version": value["version"],
+        "lockfileVersion": 3,
+        "requires": True,
+        "packages": {
+            "node_modules/nodemailer": value["packages"]["node_modules/nodemailer"]
+        },
+    }
+    return (json.dumps(selected, sort_keys=True, indent=2) + "\n").encode()
+
+
+def deployment_files():
+    selected = {
+        name: public_digest(PACKAGE / name)
+        for name in ("package.json", "package-lock.json")
+    }
+    selected |= {
+        "dist/" + path.name: public_digest(path)
+        for path in (PACKAGE / "dist").iterdir()
+        if path.is_file()
+    }
+    dependency = PACKAGE / "node_modules/nodemailer"
+    selected |= {
+        "node_modules/nodemailer/" + str(path.relative_to(dependency)): public_digest(
+            path
+        )
+        for path in dependency.rglob("*")
+        if path.is_file()
+    }
+    selected["node_modules/.package-lock.json"] = hashlib.sha256(
+        runtime_lock()
+    ).hexdigest()
+    manifest = "".join(
+        digest + "  " + name + "\n" for name, digest in sorted(selected.items())
+    ).encode()
+    return {**selected, "SHA256SUMS": hashlib.sha256(manifest).hexdigest()}
+
+
+def validate_deployment(rows, expected):
+    if not isinstance(rows, list) or not rows or len(rows) > 1024:
+        raise RehearsalFailure("public deployment metadata rejected")
+    observed, names, directories = {}, set(), 0
+    for row in rows:
+        if not isinstance(row, dict) or row.get("kind") not in {"file", "directory"}:
+            raise RehearsalFailure("public deployment kind rejected")
+        file = row["kind"] == "file"
+        fields = {"name", "kind", "uid", "gid", "mode"} | (
+            {"sha256"} if file else set()
+        )
+        name = row.get("name")
+        if (
+            set(row) != fields
+            or not isinstance(name, str)
+            or name in names
+            or not (name == "opsflow" or name.startswith("opsflow/"))
+            or any(part in {"", ".", ".."} for part in name.split("/"))
+            or any(type(row[key]) is not int for key in ("uid", "gid", "mode"))
+            or row["uid"] != 0
+            or row["gid"] != 0
+            or row["mode"] != (0o644 if file else 0o755)
+        ):
+            raise RehearsalFailure("public deployment identity rejected")
+        names.add(name)
+        if file:
+            observed[name.removeprefix("opsflow/")] = row["sha256"]
+        else:
+            directories += 1
+    if "opsflow" not in names or observed != expected:
+        raise RehearsalFailure("public deployment content rejected")
+    return {"files": len(observed), "directories": directories}
+
+
+def current_binding():
+    source = {path.name: public_digest(path) for path in sorted(PACKAGE.glob("*.ts"))}
+    for name in ("package.json", "package-lock.json", "tsconfig.json"):
+        source[name] = public_digest(PACKAGE / name)
+    dist = {
+        path.name: public_digest(path)
+        for path in sorted((PACKAGE / "dist").iterdir())
+        if path.is_file()
+    }
+    dependency = PACKAGE / "node_modules/nodemailer"
+    dependencies = {
+        "nodemailer/" + str(path.relative_to(dependency)): public_digest(path)
+        for path in sorted(dependency.rglob("*"))
+        if path.is_file()
+    }
+    binding = hashlib.sha256(
+        json.dumps(
+            {
+                "base_id": inputs.N8N_ID,
+                "source": source,
+                "dist": dist,
+                "dependencies": dependencies,
+                "deployment_owner": {"uid": 0, "gid": 0},
+                "runtime_lock_sha256": hashlib.sha256(runtime_lock()).hexdigest(),
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    return binding, dist
+
+
+def local_artifact():
+    value = json.loads((ANALYSIS / "candidate-artifact.json").read_text())
+    binding, dist = current_binding()
+    return validate_artifact(value, binding, dist)
+
+
+class P05Fixture(legacy.NativeFixture):
+    def __init__(self, artifact):
+        binding, dist = current_binding()
+        self.artifact = validate_artifact(artifact, binding, dist)
+        super().__init__()
+        self.receipt["task"] = "SPEC-0212-TSK-0044"
+        self.receipt["candidate"] = {
+            key: self.artifact[key]
+            for key in ("reference", "image_id", "base_id", "binding")
+        }
+        self.smtp_epoch = 1
+
+    def prepare_smtp(self):
+        binary = shutil.which("openssl")
+        if binary is None:
+            raise RehearsalFailure("fixture TLS generator unavailable")
+        commands = (
+            (
+                "req",
+                "-x509",
+                "-newkey",
+                "rsa:2048",
+                "-nodes",
+                "-keyout",
+                "p05-ca.key",
+                "-out",
+                "p05-ca.pem",
+                "-days",
+                "1",
+                "-subj",
+                "/CN=P05 Synthetic CA",
+                "-addext",
+                "basicConstraints=critical,CA:TRUE",
+            ),
+            (
+                "req",
+                "-new",
+                "-newkey",
+                "rsa:2048",
+                "-nodes",
+                "-keyout",
+                "p05-server.key",
+                "-out",
+                "p05-server.csr",
+                "-subj",
+                "/CN=mailpit",
+            ),
+            (
+                "x509",
+                "-req",
+                "-in",
+                "p05-server.csr",
+                "-CA",
+                "p05-ca.pem",
+                "-CAkey",
+                "p05-ca.key",
+                "-CAcreateserial",
+                "-out",
+                "p05-server.pem",
+                "-days",
+                "1",
+                "-extfile",
+                "p05-server.ext",
+            ),
+        )
+        self.private(
+            "p05-server.ext",
+            "subjectAltName=DNS:mailpit\nextendedKeyUsage=serverAuth\n",
+        )
+        for command in commands:
+            subprocess.run(
+                (binary, *command),
+                cwd=self.directory,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=30,
+                check=True,
+            )
+        for name in (
+            "p05-ca.key",
+            "p05-ca.pem",
+            "p05-server.key",
+            "p05-server.csr",
+            "p05-ca.srl",
+            "p05-server.pem",
+        ):
+            path = self.directory / name
+            path.chmod(0o600)
+            item = path.stat(follow_symlinks=False)
+            if (
+                not stat.S_ISREG(item.st_mode)
+                or item.st_nlink != 1
+                or item.st_uid != self.host_uid
+            ):
+                raise RehearsalFailure("fixture TLS file identity rejected")
+            self.files[path] = evidence.PrivateFile(
+                path, item.st_dev, item.st_ino, item.st_uid, item.st_gid, 0o600
+            )
+        self.smtp_values = {epoch: secrets.token_urlsafe(32) for epoch in (1, 2)}
+        self.smtp_files = {
+            epoch: self.private(
+                f"p05-smtp-{epoch}.secret", "p05-capture:" + value + "\n"
+            )
+            for epoch, value in self.smtp_values.items()
+        }
+
+    def _n8n_env(self):
+        return (*super()._n8n_env(), "NODE_EXTRA_CA_CERTS=/run/secrets/p05-ca.pem")
+
+    def start_n8n(self, values):
+        # The historical raw-log custody schema admits exactly its old files.
+        # This TLS fixture keeps only the existing closed readiness facts.
+        def closed_diagnostic(_directory, _files, receipt, _result):
+            receipt["p05_readiness_evidence"] = "CLOSED_FACTS_ONLY"
+
+        with mock.patch.object(
+            evidence, "retain_failure_output", side_effect=closed_diagnostic
+        ):
+            return super().start_n8n(values)
+
+    @contextmanager
+    def bindings(self):
+        selected = {
+            self.artifact["reference"]: self.artifact["image_id"],
+            inputs.PG_ID: inputs.PG_ID,
+            inputs.VALKEY_ID: inputs.VALKEY_ID,
+            inputs.MAILPIT_ID: inputs.MAILPIT_ID,
+            inputs.RUNNER_REF: inputs.RUNNER_ID,
+        }
+        with mock.patch.multiple(
+            legacy,
+            IMAGE_IDS=selected,
+            N8N_REF=self.artifact["reference"],
+            N8N_ID=self.artifact["image_id"],
+            N8N_LABELS={
+                "hyhome.source-binding": self.artifact["binding"],
+                "hyhome.p05.base-id": inputs.N8N_ID,
+                "hyhome.p05.fixture": "1",
+            },
+            PG_REF=inputs.PG_ID,
+            VALKEY_REF=inputs.VALKEY_ID,
+            MAILPIT_REF=inputs.MAILPIT_ID,
+        ):
+            yield
+
+    def verify_prerequisites(self):
+        with self.bindings():
+            super().verify_prerequisites()
+
+    def create(self, role, image, user, networks, **kwargs):
+        translated = {
+            inputs.N8N_REF: self.artifact["reference"],
+            inputs.PG_REF: inputs.PG_ID,
+            inputs.VALKEY_REF: inputs.VALKEY_ID,
+            inputs.MAILPIT_REF: inputs.MAILPIT_ID,
+        }.get(image, image)
+        allowed = {
+            "metadata-pg": inputs.PG_ID,
+            "dev-pg": inputs.PG_ID,
+            "valkey": inputs.VALKEY_ID,
+            "secret-prep": inputs.VALKEY_ID,
+            "main": self.artifact["reference"],
+            "worker": self.artifact["reference"],
+            "capture-probe": self.artifact["reference"],
+            "runner": inputs.RUNNER_REF,
+            "mailpit": inputs.MAILPIT_ID,
+        }
+        if role not in allowed or translated != allowed[role]:
+            raise RehearsalFailure("current fixture role/image combination rejected")
+        if role in {"main", "worker"}:
+            kwargs = {
+                **kwargs,
+                "mounts": (
+                    *kwargs.get("mounts", ()),
+                    inputs.bind_mount(
+                        self.directory / "p05-ca.pem", "/run/secrets/p05-ca.pem"
+                    ),
+                ),
+            }
+        with self.bindings():
+            return super().create(role, translated, user, networks, **kwargs)
+
+    def start_mailpit(self):
+        directory = self.directory / f"mailpit-data-{self.generation}"
+        if not directory.exists():
+            directory.mkdir(mode=0o700)
+            item = directory.stat(follow_symlinks=False)
+            self.mailpit_dirs[directory] = (item.st_dev, item.st_ino)
+        item = directory.stat(follow_symlinks=False)
+        if (
+            self.mailpit_dirs.get(directory) != (item.st_dev, item.st_ino)
+            or stat.S_IMODE(item.st_mode) != 0o700
+            or item.st_uid != self.host_uid
+        ):
+            raise RehearsalFailure("owned SMTP store identity rejected")
+        env = (
+            "MP_DATABASE=/data/mailpit.db",
+            "MP_UI_BIND_ADDR=0.0.0.0:8025",
+            "MP_SMTP_BIND_ADDR=0.0.0.0:1025",
+            "MP_MAX_MESSAGES=32",
+            "MP_SMTP_AUTH_FILE=/run/secrets/smtp-auth",
+            "MP_SMTP_TLS_CERT=/run/secrets/server.pem",
+            "MP_SMTP_REQUIRE_STARTTLS=true",
+            "MP_SMTP_AUTH_ALLOW_INSECURE=false",
+            "MP_SMTP_DISABLE_RDNS=true",
+            "MP_DISABLE_VERSION_CHECK=true",
+        )
+        mounts = (
+            inputs.bind_mount(directory, "/data", readonly=False),
+            inputs.bind_mount(
+                self.smtp_files[self.smtp_epoch], "/run/secrets/smtp-auth"
+            ),
+            inputs.bind_mount(
+                self.directory / "p05-server.pem", "/run/secrets/server.pem"
+            ),
+            inputs.bind_mount(
+                self.directory / "p05-server.key", "/run/secrets/server.key"
+            ),
+        )
+        self.create(
+            "mailpit",
+            inputs.MAILPIT_REF,
+            "1000:1000",
+            ("capture",),
+            env=env,
+            mounts=mounts,
+            command=("--smtp-tls-key=/run/secrets/server.key",),
+        )
+        self.start("mailpit")
+
+    def receipt_json(self):
+        value = json.loads(super().receipt_json())
+        return json.dumps(
+            {
+                **value,
+                "image_id": self.artifact["image_id"],
+                "source_binding": self.artifact["binding"],
+            },
+            sort_keys=True,
+        )
+
+
+PROFILE_API = historical.API_JS.replace(
+    "else if(input.action==='credential_update')",
+    """else if(input.action==='profile'){const w=(await call('/rest/workflows/'+encodeURIComponent(input.workflowId),'GET',undefined,auth)).data;
+const nodes=w.nodes.map(n=>n.type==='n8n-nodes-opsflow.opsflowSmtp'?{...n,parameters:{...n.parameters,captureProfile:'mailpit-starttls-auth-v1'}}:n);
+if(!nodes.some(n=>n.parameters?.captureProfile==='mailpit-starttls-auth-v1'))throw new Error('profile_target_absent');
+const r=await call('/rest/workflows/'+encodeURIComponent(input.workflowId),'PATCH',{name:w.name,nodes,connections:w.connections,settings:w.settings,versionId:w.versionId},auth);out={id:r.data.id};}
+else if(input.action==='credential_update')""",
+)
+PROFILE_API = PROFILE_API.replace(
+    "else if(input.action==='profile')", registration.CREATE_BRANCH
+)
+
+
+class P05Scenario(historical.OpsflowN8nNativeRehearsal):
+    def bind_and_import(self):
+        return registration.register(self)
+
+    def phase(self, name):
+        self.fixture.receipt["phase"] = name
+        print("P05_NATIVE_PHASE " + name, flush=True)
+
+    def setUp(self):
+        self.fixture = P05Fixture(local_artifact())
+        self.secrets = {}
+        self.email = f"owner-{self.fixture.attempt}@opsflow.invalid"
+        self._finished = False
+        self.credential_ids = {}
+        self.execution_ids = []
+        self.published = 0
+        self.stale_notifier = ""
+
+    def api(self, action, **payload):
+        with mock.patch.object(historical, "API_JS", PROFILE_API):
+            return super().api(action, **payload)
+
+    def provision(self):
+        super().provision()
+        sql = historical.PG_WORKLOAD / "sql"
+        for name in ("005_data_version.sql", "007_notification_recovery.sql"):
+            self.fixture.psql(
+                "opsflow_migrator", "opsflow_dev", migration_sql(sql / name)
+            )
+        self.fixture.psql(
+            "p04_audit",
+            "opsflow_dev",
+            "\\set migration_sha256 '"
+            + hashlib.sha256(
+                (sql / "007_notification_recovery.sql").read_bytes()
+            ).hexdigest()
+            + "'\n"
+            + (sql / "008_checks.sql").read_text(),
+        )
+
+    def update_smtp(self, epoch):
+        credential = {
+            "name": "p05-native-smtp",
+            "type": "smtp",
+            "data": {
+                "user": "p05-capture",
+                "password": self.fixture.smtp_values[epoch],
+                "host": "mailpit",
+                "port": 1025,
+                "secure": False,
+                "disableStartTls": False,
+                "hostName": "",
+            },
+        }
+        identifier = self.credential_ids["smtp"]
+        changed = self.api(
+            "credential_update", credentialId=identifier, credential=credential
+        )
+        if str(changed.get("id")) != identifier:
+            raise RehearsalFailure("same credential identity changed")
+
+    def execute(self, workflow, state):
+        execution = self.run_manual(workflow)
+        self.execution_ids.append(execution)
+        self.await_execution(
+            execution, state, "acknowledged" if state == "success" else None
+        )
+        return execution
+
+    def ready_retry(self, run):
+        self.fixture.wait_until(
+            lambda: (
+                self.db_value(
+                    f"SELECT next_attempt_at<=clock_timestamp() FROM ops_flow.outbox WHERE run_id='{run}';"
+                )
+                == "t"
+            ),
+            "retry budget did not become ready",
+            90,
+        )
+
+    def fence(self, workflow):
+        self.fixture.stop("mailpit")
+        row = next(
+            item for item in self.api("workflows")["rows"] if item["id"] == workflow
+        )
+        if row.get("active") is True:
+            self.api("deactivate", workflowId=workflow, versionId=row["versionId"])
+        inactive = (
+            next(
+                item for item in self.api("workflows")["rows"] if item["id"] == workflow
+            )["active"]
+            is False
+        )
+        for role in ("runner", "worker"):
+            self.fixture.stop(role)
+        absent = all(
+            (
+                lambda state: (
+                    state.get("Status") == "exited"
+                    and state.get("Running") is False
+                    and state.get("Pid") == 0
+                )
+            )(self.fixture._verify_owned(self.fixture.containers[role])["State"])
+            for role in ("runner", "worker", "mailpit")
+        )
+        result = self.fixture.exec_result(
+            "main",
+            "node",
+            "-e",
+            recovery.QUEUE_PROBE,
+            input_=json.dumps({"ids": self.execution_ids}),
+        )
+        if result.returncode:
+            raise RehearsalFailure("exact old broker job probe unavailable")
+        observed = json.loads(result.stdout)
+        barrier = {
+            "smtp_egress_held": absent,
+            "workflow_inactive": inactive,
+            "old_execution_ids": list(self.execution_ids),
+            "old_processes_absent": absent,
+            "old_sockets_absent": absent,
+            "old_broker_jobs_absent": observed
+            == {"scanned": True, "matching": 0, "ids": self.execution_ids},
+            "owned_attempt": self.fixture.attempt,
+        }
+        self.fixture.receipt["recovery_barrier"] = recovery.validate_barrier(barrier)
+        self.fixture.receipt["recovery_scope"] = "QUIESCED_ONLY"
+        self.fixture.receipt["live_inflight_interruption"] = "TEST_RESIDUAL"
+
+    def run_scenario(self):
+        f = self.fixture
+        self.phase("preflight")
+        f.verify_prerequisites()
+        self.secrets = f.create_secrets()
+        f.prepare_smtp()
+        f.create_networks()
+        self.phase("postgres_provision")
+        f.start_postgres("metadata-pg", self.secrets["metadata_pg"][1])
+        self.start_dev_cluster()
+        self.provision()
+        self.phase("queue_tls_worker_startup")
+        f.start_valkey(self.secrets["valkey_server"][1])
+        f.start_mailpit()
+        f.start_n8n(self.secrets)
+        f.start_runner(self.secrets["runner"][1])
+        self.phase("workflow_binding")
+        workflow, _name = self.bind_and_import()
+        self.api("profile", workflowId=workflow)
+        self.update_smtp(1)
+        first = self.publish(
+            "hy-home.k8s",
+            hashlib.sha256(b"p05-first").hexdigest(),
+            "2026-11-20T00:00:00Z",
+        )
+        self.phase("first_worker_starttls_delivery")
+        self.execute(workflow, "success")
+        self.wait_state(first, "accepted_by_smtp")
+        self.assertEqual(
+            (True, True, 1),
+            (
+                self.capture(first)["matched"],
+                self.capture(first)["safe"],
+                self.capture(first)["total"],
+            ),
+        )
+        f.receipt["worker_queue_starttls_auth"] = "PASS"
+        self.phase("same_id_credential_refresh")
+        second = self.publish(
+            "hy-home.k8s",
+            hashlib.sha256(b"p05-second").hexdigest(),
+            "2026-11-21T00:00:00Z",
+        )
+        self.update_smtp(2)
+        self.execute(workflow, "error")
+        self.wait_state(second, "unknown")
+        self.assertEqual(1, self.capture(first)["total"])
+        f.receipt["wrong_new_material"] = "PASS"
+        f.stop("mailpit")
+        f.remove("mailpit")
+        f.smtp_epoch = 2
+        f.start_mailpit()
+        refreshed = self.publish(
+            "hy-home.k8s",
+            hashlib.sha256(b"p05-refreshed").hexdigest(),
+            "2026-11-22T00:00:00Z",
+        )
+        self.execute(workflow, "success")
+        self.wait_state(refreshed, "accepted_by_smtp")
+        f.receipt["same_id_next_execution_refresh"] = "PASS"
+        third = self.publish(
+            "hy-home.k8s",
+            hashlib.sha256(b"p05-third").hexdigest(),
+            "2026-11-23T00:00:00Z",
+        )
+        self.update_smtp(1)
+        self.execute(workflow, "error")
+        self.wait_state(third, "unknown")
+        self.assertEqual(2, self.capture(refreshed)["total"])
+        f.receipt["wrong_old_material"] = "PASS"
+        self.update_smtp(2)
+        corrected = self.publish(
+            "hy-home.k8s",
+            hashlib.sha256(b"p05-corrected").hexdigest(),
+            "2026-11-24T00:00:00Z",
+        )
+        self.execute(workflow, "success")
+        self.wait_state(corrected, "accepted_by_smtp")
+        self.fence(workflow)
+        self.phase("owned_restore")
+        self.restore_and_restart()
+        self._session = None
+        fourth = self.publish(
+            "hy-home.k8s",
+            hashlib.sha256(b"p05-restored").hexdigest(),
+            "2026-11-25T00:00:00Z",
+        )
+        self.execute(workflow, "success")
+        self.wait_state(fourth, "accepted_by_smtp")
+        self.assertTrue(self.capture(fourth)["matched"])
+        f.receipt["same_encryption_key_restore"] = "PASS"
+        f.receipt["native"] = "PASS"
+        self.phase("complete")
+
+
+def run_current_rehearsal():
+    if os.environ.get("P05_OPSFLOW_NATIVE") != "1":
+        raise RehearsalFailure("current native opt-in required")
+    scenario = P05Scenario(
+        "test_actual_queue_runner_capture_unknown_reconcile_and_restore"
+    )
+    scenario.setUp()
+    try:
+        scenario.run_scenario()
+    finally:
+        scenario.finish()

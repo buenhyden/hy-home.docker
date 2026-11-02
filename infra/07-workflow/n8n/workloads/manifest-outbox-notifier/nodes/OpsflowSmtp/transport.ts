@@ -39,18 +39,26 @@ export function validateClaim(value: unknown): Claim {
     source: value.source, row_count: value.row_count, lease_token: value.lease_token, lease_until: value.lease_until });
 }
 
-export function transportOptions(value: unknown) {
+export function transportOptions(value: unknown, captureProfile = 'mailpit-plain-v1') {
+  const authenticated = captureProfile === 'mailpit-starttls-auth-v1';
+  const boundedSecret = (item: unknown, limit: number): item is string =>
+    typeof item === 'string' && item.length > 0 && Buffer.byteLength(item, 'utf8') <= limit && !/[\x00-\x1f\x7f]/.test(item);
   if (!record(value) || Object.keys(value).some(key => !CREDENTIAL_KEYS.includes(key)) ||
       value.host !== POLICY.host || value.port !== POLICY.port || value.secure !== false ||
-      value.disableStartTls !== true || value.user !== '' || value.password !== '' ||
+      (!authenticated && captureProfile !== 'mailpit-plain-v1') ||
+      (authenticated ? value.disableStartTls !== false || !boundedSecret(value.user, 256) || !boundedSecret(value.password, 4096)
+        : value.disableStartTls !== true || value.user !== '' || value.password !== '') ||
       (value.hostName !== undefined && value.hostName !== '')) throw new Error('OPSFLOW_INVALID_CREDENTIAL');
-  return Object.freeze({
+  const options = {
     host: POLICY.host, port: POLICY.port, name: 'n8n-opsflow.invalid',
-    secure: false, ignoreTLS: true, pool: false,
+    secure: false, ignoreTLS: !authenticated, pool: false,
     connectionTimeout: POLICY.connectionTimeout, greetingTimeout: POLICY.greetingTimeout,
     socketTimeout: POLICY.socketTimeout, dnsTimeout: POLICY.connectionTimeout,
     disableFileAccess: true, disableUrlAccess: true, logger: false, debug: false,
-  });
+  };
+  return Object.freeze(authenticated ? { ...options, requireTLS: true, opportunisticTLS: false,
+    tls: Object.freeze({ servername: POLICY.host, rejectUnauthorized: true }),
+    auth: Object.freeze({ user: value.user as string, pass: value.password as string }) } : options);
 }
 
 export function messageFor(claim: Claim) {
@@ -105,9 +113,10 @@ function accepted(info: unknown): boolean {
 export async function sendClaim(
   rawClaim: unknown, credential: unknown, signal?: AbortSignal,
   createTransport: TransportFactory = createCaptureTransport,
+  captureProfile = 'mailpit-plain-v1',
 ): Promise<Outcome> {
   const claim = validateClaim(rawClaim);
-  const options = transportOptions(credential);
+  const options = transportOptions(credential, captureProfile);
   const result = (state: Outcome['state']): Outcome => Object.freeze({ run_id: claim.run_id, state });
   const currentLease = () => Date.parse(claim.lease_until) - Date.now() >
     POLICY.totalTimeoutMs + POLICY.ackReserveMs + POLICY.clockSkewReserveMs;

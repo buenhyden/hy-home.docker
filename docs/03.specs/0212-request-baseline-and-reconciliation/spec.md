@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.36.0"
+version: "1.37.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -109,6 +109,12 @@ The direct P04 plan approval of 2026-11-02 adds criteria 66–71 and W71–W76
 in TSK-0043. It repairs the existing Opsflow Airflow path without creating a
 new business stream, database or always-on analytics service. Historical
 SPEC-0204 P04 acceptance remains bound to its original inputs and actors.
+
+The direct P05 plan approval of 2026-11-02 adds criteria 72–75 and W77–W80
+in TSK-0044. It preserves the existing n8n queue/schedule acceptance while
+repairing the selected Opsflow notifier's bounded retry, recovery and isolated
+SMTP credential-refresh contracts. P04's full native residual is not a hidden
+prerequisite for this independent local source and isolated-fixture work.
 
 ## Scope
 
@@ -603,6 +609,24 @@ hold, authorization and recovery requirements have been established.
     one documented recovery boundary; snapshot rollback is not independent
     restore, and no expiry or orphan deletion is authorized.
 
+72. P05.01 preserves the historical C19/C22 n8n queue and schedule acceptance
+    at its original 2.43.6 version, actor and environment scope. Current source,
+    cached-image parity and actual private workflows remain separate evidence;
+    an old accepted record is neither rebuilt nor promoted to a new live PASS.
+73. P05.02 adds one manual no-send dead-notification reprocess per explicit
+    owner approval, preserves attempt/audit history and rejects bulk or implicit
+    retry. Restored sending becomes unknown, and in-flight execution must reach
+    a verified recovery barrier before an independent target resumes. Actual
+    SMTP acceptance uncertainty never becomes proved no-send from capture absence.
+74. P05.03 introduces no binary storage. The selected manifest notifier rejects
+    input.binary, while exact source/image behavior of n8n queue-mode default
+    database storage is recorded independently from private-workflow adoption.
+75. P05.04 adds an explicit optional authenticated isolated Mailpit STARTTLS
+    profile and verifies selected notifier behavior, including refreshed material
+    under the same credential ID on the next execution. P06 retains actual
+    producer/secret authority; real delivery, operating credentials and HOME
+    rotation or restore are not authorized by local fixture evidence.
+
 ## Failure Conditions
 
 Reconciliation fails when a request item has competing acceptance owners,
@@ -623,6 +647,7 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Service connection contracts Task](tasks/tsk-0041-service-connection-contracts.md)
 - [Models, runners and Wiki preparation Task](tasks/tsk-0042-models-runners-wiki.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
+- [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)

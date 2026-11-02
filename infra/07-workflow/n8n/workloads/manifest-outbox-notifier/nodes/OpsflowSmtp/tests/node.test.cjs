@@ -7,26 +7,41 @@ const claim = { id: 1, run_id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 const credential = { host: 'mailpit', port: 1025, secure: false, disableStartTls: true, user: '', password: '', hostName: '' };
 const descriptor = { name: 'Opsflow SMTP Capture', type: 'n8n-nodes-opsflow.opsflowSmtp', typeVersion: 1, position: [0, 0], parameters: {} };
 function context(overrides = {}) {
-  return { getInputData: () => [{ json: { valid: true } }], getNodeParameter: (name, index) => { assert.equal(name, 'claim'); assert.equal(index, 0); return claim; }, getCredentials: async type => { assert.equal(type, 'smtp'); return credential; }, getExecutionCancelSignal: () => undefined, getNode: () => descriptor, ...overrides };
+  return { getInputData: () => [{ json: { valid: true } }], getNodeParameter: (name, index, fallback) => { assert.equal(index, 0); if (name === 'captureProfile') return fallback; assert.equal(name, 'claim'); return claim; }, getCredentials: async type => { assert.equal(type, 'smtp'); return credential; }, getExecutionCancelSignal: () => undefined, getNode: () => descriptor, ...overrides };
 }
 
-test('native node has only closed claim and SMTP credential surface', () => {
+test('native node has closed claim, explicit capture profile and SMTP credential surface', () => {
   const d = new OpsflowSmtp().description;
   assert.equal(d.name, 'opsflowSmtp'); assert.equal(d.version, 1);
   assert.deepEqual(d.credentials, [{ name: 'smtp', required: true }]);
-  assert.equal(d.properties.length, 1); assert.equal(d.properties[0].name, 'claim');
+  assert.equal(d.properties.length, 2); assert.equal(d.properties[0].name, 'claim');
   assert.equal(d.properties[0].type, 'json');
+  assert.equal(d.properties[1].name, 'captureProfile');
+  assert.equal(d.properties[1].default, 'mailpit-plain-v1');
+  assert.deepEqual(d.properties[1].options.map(option => option.value), ['mailpit-plain-v1', 'mailpit-starttls-auth-v1']);
 });
 
 test('native execution obtains smtp credential and forwards abort signal with redacted result', async t => {
   const signal = new AbortController().signal;
-  t.mock.method(transport, 'sendClaim', async (row, cred, cancel) => {
+  t.mock.method(transport, 'sendClaim', async (row, cred, cancel, factory, profile) => {
     assert.deepEqual(row, claim); assert.deepEqual(cred, credential); assert.equal(cancel, signal);
+    assert.equal(factory, undefined); assert.equal(profile, 'mailpit-plain-v1');
     return { run_id: row.run_id, state: 'accepted_by_smtp', extra: 'PRIVATE_DRIVER_MARKER' };
   });
   const result = await OpsflowSmtp.prototype.execute.call(context({ getExecutionCancelSignal: () => signal }));
   assert.deepEqual(result, [[{ json: { run_id: claim.run_id, state: 'accepted_by_smtp' }, pairedItem: { item: 0 } }]]);
   assert.ok(!JSON.stringify(result).includes(claim.lease_token));
+});
+
+test('explicit authenticated node profile reaches the transport without broadening claim input', async t => {
+  t.mock.method(transport, 'sendClaim', async (row, cred, cancel, factory, profile) => {
+    assert.equal(profile, 'mailpit-starttls-auth-v1'); assert.deepEqual(row, claim);
+    return { run_id: row.run_id, state: 'uncertain' };
+  });
+  const result = await OpsflowSmtp.prototype.execute.call(context({
+    getNodeParameter: name => name === 'captureProfile' ? 'mailpit-starttls-auth-v1' : claim,
+  }));
+  assert.equal(result[0][0].json.state, 'uncertain');
 });
 
 test('empty input obtains no claim or credential', async () => {

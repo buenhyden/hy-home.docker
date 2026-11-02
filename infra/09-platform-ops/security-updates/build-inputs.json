@@ -2780,10 +2780,10 @@
     "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
     "checked_at": "2026-10-15T16:35:15.922344+00:00",
     "source_binding": {
-      "checked_at": "2026-11-01T07:13:59.433420+00:00",
-      "source_revision": "caeabf6f197800afd86115a8029a2bf5453ba4ed",
-      "source_state": "Uncommitted Blog-data Gateway image pin to Blog-data dev c05e5b88bae36ae8f5421fd27beada9b1d596a19 (Resource Export 2.0, receiver-side rendering, schema 4 unchanged) in the n8n Compose file on top of this revision; not a current image/build/module/Native acceptance receipt",
-      "input_sha256": "57ad4d23833e8563576b9021ac3b4a8f67f8a2ecb04faefe41225d99cea7707a",
+      "checked_at": "2026-11-02T10:17:50.127809+00:00",
+      "source_revision": "e14ebe0fd5e562f8c7557bd9408a1985d9971c5c",
+      "source_state": "SOURCE_REVIEW_ONLY: approved SPEC-0212-TSK-0044 P05 notifier source and tests are uncommitted on top of this HEAD. Current n8n Compose includes the P02 safe dedicated-Valkey listener/ACL/exporter correction and P03 runner isolation. No current image/build/module/native acceptance is inferred.",
+      "input_sha256": "07b103a9ce739ec565f5f42ef7166feadc71355d276f8fec2bfdfffe135b88e4",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -2800,7 +2800,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "8792a345bd2ead857d108fc2eb100b8be19a9c5012caa5e457829b978b2adcc3"
+          "sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -2812,7 +2812,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
-          "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+          "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
@@ -2828,19 +2828,23 @@
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
-          "sha256": "0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75"
+          "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
           "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
         },
         {
+          "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+          "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+        },
+        {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
-          "sha256": "ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3"
+          "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
-          "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+          "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
@@ -2851,7 +2855,7 @@
           "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
-      "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after moving the Blog-data Gateway pin to dev c05e5b88ba (Resource Export 2.0). Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
+      "meaning": "Current public n8n Compose/build/COPY/custom-node/version-test source binding, including the new authenticated STARTTLS unit test. The predecessor is preserved under historical_source_bindings. P05 changes compiled TypeScript inputs, so the older isolated build/module and C19/C22 acceptance remain bound to their original source, actor, version and environment; this source-only record does not accept a rebuilt image, signature, full-image scan, native queue/workflow, credential rotation, HOME, backup or recovery.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -3846,6 +3850,89 @@
           "full_image_sbom_scan": "NOT_RUN",
           "recovery": "NOT_RUN"
         }
+      },
+      {
+        "archived_at": "2026-11-02T10:17:50.127809+00:00",
+        "source_binding": {
+          "checked_at": "2026-11-01T07:13:59.433420+00:00",
+          "source_revision": "caeabf6f197800afd86115a8029a2bf5453ba4ed",
+          "source_state": "Uncommitted Blog-data Gateway image pin to Blog-data dev c05e5b88bae36ae8f5421fd27beada9b1d596a19 (Resource Export 2.0, receiver-side rendering, schema 4 unchanged) in the n8n Compose file on top of this revision; not a current image/build/module/Native acceptance receipt",
+          "input_sha256": "57ad4d23833e8563576b9021ac3b4a8f67f8a2ecb04faefe41225d99cea7707a",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "8792a345bd2ead857d108fc2eb100b8be19a9c5012caa5e457829b978b2adcc3"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "ecf0bee7e151ee77c0b517739d9cff828e646141ce22929fe1b4a2cb3ef9570f"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "146d22dde82f3d5aab2f3018650c2e8eced9c8559049bffce09aa7fe325b2421"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+            }
+          ],
+          "meaning": "Same existing16 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after moving the Blog-data Gateway pin to dev c05e5b88ba (Resource Export 2.0). Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        },
+        "reason": "Superseded only as the current public source binding by the approved SPEC-0212-TSK-0044 P05 source/test delta and already committed P02/P03 Compose corrections. Historical image/module and C19/C22 acceptance retain their original bindings; no runtime or security acceptance is transferred."
       }
     ],
     "isolated_candidate_build_and_module_smoke": {

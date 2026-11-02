@@ -1,99 +1,92 @@
 schema_version: 1
-observed_at: '2026-11-02T08:47:43.631077Z'
+observed_at: '2026-11-02T11:52:56.169761Z'
 workspace:
   path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 6853286dbd73851a6419f7fb5457c53720ba6d98
-  branch: codex/p04-opsflow-data-path
+  head: e14ebe0fd5e562f8c7557bd9408a1985d9971c5c
+  branch: codex/p05-n8n-outbox-recovery
   dirty_paths:
-  - status: 'M '
+  - status: ' M'
     path: .github/workflow-contract.yml
-  - status: 'M '
+  - status: ' M'
     path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-  - status: 'M '
+  - status: ' M'
     path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-  - status: AM
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
-  - status: 'M '
-    path: docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md
-  - status: 'M '
-    path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
-  - status: 'M '
+  - status: ' M'
+    path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
+  - status: ' M'
+    path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
+  - status: ' M'
     path: docs/90.references/data/0096-workspace-inventory/README.md
-  - status: 'M '
+  - status: ' M'
     path: docs/90.references/data/0096-workspace-inventory/data.yaml
-  - status: 'M '
-    path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
-  - status: 'M '
-    path: infra/07-workflow/airflow/Dockerfile
-  - status: 'A '
-    path: infra/07-workflow/airflow/connection_uri.py
-  - status: 'M '
-    path: infra/07-workflow/airflow/docker-compose.yml
-  - status: 'M '
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/README.md
-  - status: 'M '
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/dags/README.md
-  - status: 'A '
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/005_data_version.sql
-  - status: 'A '
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/006_checks.sql
-  - status: 'M '
+  - status: ' M'
     path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
-  - status: 'M '
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
-  - status: 'M '
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/adapters.py
-  - status: 'M '
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/manifest.py
-  - status: 'M '
-    path: infra/12-analytics/flink/README.md
-  - status: 'M '
-    path: tests/lib/ops/test_opsflow_adapters.py
-  - status: 'M '
-    path: tests/lib/ops/test_opsflow_manifest.py
-  - status: 'A '
-    path: tests/validation/_opsflow_airflow_native_data.py
-  - status: 'M '
-    path: tests/validation/_opsflow_airflow_native_evidence.py
-  - status: 'M '
-    path: tests/validation/_opsflow_airflow_native_fixture.py
-  - status: 'M '
-    path: tests/validation/_opsflow_airflow_native_guards.py
-  - status: 'A '
-    path: tests/validation/_opsflow_airflow_native_scenario.py
-  - status: 'A '
-    path: tests/validation/test_airflow_connection_uri.py
-  - status: 'M '
-    path: tests/validation/test_opsflow_airflow_contract.py
-  - status: 'A '
-    path: tests/validation/test_opsflow_airflow_native_data.py
-  - status: 'M '
-    path: tests/validation/test_opsflow_airflow_native_evidence.py
-  - status: 'M '
-    path: tests/validation/test_opsflow_airflow_native_rehearsal.py
-  - status: 'A '
-    path: tests/validation/test_opsflow_airflow_native_scenario.py
-  - status: 'M '
-    path: tests/validation/test_p02_service_contracts.py
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/README.md
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/fixtures/README.md
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/README.md
+  - status: ' M'
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/README.md
+  - status: ' M'
+    path: infra/09-platform-ops/security-updates/build-inputs.json
+  - status: ' M'
+    path: infra/09-platform-ops/security-updates/update-ledger.json
+  - status: ' M'
+    path: tests/validation/test_opsflow_e2e_acceptance.py
+  - status: ??
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+  - status: ??
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
+  - status: ??
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/008_checks.sql
+  - status: ??
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs
+  - status: ??
+    path: tests/validation/_p05_opsflow_native.py
+  - status: ??
+    path: tests/validation/_p05_opsflow_recovery.py
+  - status: ??
+    path: tests/validation/_p05_opsflow_registration.py
+  - status: ??
+    path: tests/validation/test_p05_notification_recovery.py
+  - status: ??
+    path: tests/validation/test_p05_opsflow_native.py
+  - status: ??
+    path: tests/validation/test_p05_opsflow_scenario.py
   worktrees:
-  - in_boundary: true
+  - path: /home/hyunyoun/data/hy-home.docker
+    in_boundary: true
     access: metadata-only
   submodules: []
   tracked_query: PASS
   root: /home/hyunyoun/data/hy-home.docker
   writable_boundary: /home/hyunyoun/data/hy-home.docker
   private_dirty_count: 0
-  git_observed_at: '2026-11-02T09:17:18.757141+00:00'
+  git_observed_at: '2026-11-02T11:58:51.260691+00:00'
 roots:
 - path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 6853286dbd73851a6419f7fb5457c53720ba6d98
-  branch: codex/p04-opsflow-data-path
+  head: e14ebe0fd5e562f8c7557bd9408a1985d9971c5c
+  branch: codex/p05-n8n-outbox-recovery
   dirty_paths: []
   worktrees:
   - in_boundary: true
@@ -101,7 +94,7 @@ roots:
   submodules: []
   tracked_query: PASS
   write_boundary: /home/hyunyoun/data/hy-home.docker
-  dirty_count: 34
+  dirty_count: 30
 files:
 - path: .agents/README.md
   tracked: true
@@ -1721,9 +1714,9 @@ files:
 - path: .github/workflow-contract.yml
   tracked: true
   kind: configuration
-  bytes: 85464
+  bytes: 86323
   state: HASHED
-  sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
+  sha256: 95deb0da017de31f2c07998358c38d31d483ba245e939a2bc3b26f12a828f997
   review:
     path: .github/workflow-contract.yml
     reviewer: p02_residual_code_review + p02_residual_supply_review
@@ -3032,19 +3025,33 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   tracked: true
   kind: document
-  bytes: 38339
+  bytes: 41610
   state: HASHED
-  sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
+  sha256: 70233035e0222b77907bc3c7f6a332074b5de1be014256571797e675859feec1
   review:
-    state: UNREVIEWED
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 70233035e0222b77907bc3c7f6a332074b5de1be014256571797e675859feec1
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
   tracked: true
   kind: document
-  bytes: 44009
+  bytes: 45808
   state: HASHED
-  sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
+  sha256: 73a8028ece505acaf85261c0e84985792bc18d85da5a7b45560b360d09b53487
   review:
-    state: UNREVIEWED
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 73a8028ece505acaf85261c0e84985792bc18d85da5a7b45560b360d09b53487
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0001-request-baseline-and-inventory.md
   tracked: true
   kind: document
@@ -3384,14 +3391,28 @@ files:
   review:
     state: UNREVIEWED
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
-  tracked: false
+  tracked: true
   kind: document
-  bytes: 32072
+  bytes: 37314
   state: HASHED
   sha256: e9ecc879eb82d8418c59cba9eba7671f2a3651694ca9ecad303c49a0e458e8f1
   review:
     state: UNREVIEWED
-  fingerprint_observed_at: '2026-11-02T09:17:18.757141+00:00'
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+  tracked: false
+  kind: document
+  bytes: 49771
+  state: HASHED
+  sha256: a707d142766a22ec7dbc5c2b76f9620f8ea10f72542839f0de2f7bf9f462969a
+  review:
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T12:10:17.826248+00:00'
+    sha256: a707d142766a22ec7dbc5c2b76f9620f8ea10f72542839f0de2f7bf9f462969a
+    scope: Final authored evidence-only verification report; prior exact Doc review
+      retained; no full-body/corpus inference
+    complete: false
+    state: PARTIAL
 - path: docs/03.specs/0213-dev-data-and-influx-retirement/plan.md
   tracked: true
   kind: document
@@ -4555,11 +4576,18 @@ files:
 - path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
   tracked: true
   kind: document
-  bytes: 21100
+  bytes: 22575
   state: HASHED
-  sha256: 91ec0733f6947887a97253a900cd27a7ddbc0cbc597a3450dcbb74665767e4b2
+  sha256: 6c77a1b4d413781516c447372c1912dc1e128692d985097033afdb5dbc12d50c
   review:
-    state: UNREVIEWED
+    path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 6c77a1b4d413781516c447372c1912dc1e128692d985097033afdb5dbc12d50c
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: docs/05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md
   tracked: true
   kind: document
@@ -6105,11 +6133,18 @@ files:
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
   tracked: true
   kind: document
-  bytes: 58248
+  bytes: 59210
   state: HASHED
-  sha256: 39cf57dd70ccc39ae00c08b36fa0e2db6400d9a843281ecea75b3fbc05894c49
+  sha256: 2e60027d17661a8fc644cac44e1076783c1581dace2ce95e33b69768e2016744
   review:
-    state: UNREVIEWED
+    path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 2e60027d17661a8fc644cac44e1076783c1581dace2ce95e33b69768e2016744
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md
   tracked: true
   kind: document
@@ -6521,15 +6556,22 @@ files:
 - path: docs/90.references/data/0096-workspace-inventory/README.md
   tracked: true
   kind: document
-  bytes: 12072
+  bytes: 14635
   state: HASHED
-  sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
+  sha256: f26bbfa388598cb48efbc7bbcc6630a1486f06d9160760cdec87faa4851ffc71
   review:
-    state: UNREVIEWED
+    path: docs/90.references/data/0096-workspace-inventory/README.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:58:51.260691+00:00'
+    sha256: f26bbfa388598cb48efbc7bbcc6630a1486f06d9160760cdec87faa4851ffc71
+    scope: Final P05 authored evidence/consumer sections; no full unchanged-body/corpus
+      review claim
+    complete: false
+    state: PARTIAL
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   tracked: true
   kind: configuration
-  bytes: 1295984
+  bytes: 1298894
   state: GENERATED_OUTPUT
 - path: docs/90.references/data/README.md
   tracked: true
@@ -6716,7 +6758,7 @@ files:
 - path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
   tracked: true
   kind: document
-  bytes: 444087
+  bytes: 444409
   state: HASHED
   sha256: 9952a7485243ac9e41b4efd3e9d456d7dcf7e0081e83aaa3c03c3c387d3a1f70
   review:
@@ -6729,7 +6771,6 @@ files:
       research body not reviewed.
     complete: false
     state: PARTIAL
-  fingerprint_observed_at: '2026-11-02T09:00:08.300260+00:00'
 - path: docs/90.references/research/0084-github-actions-platform/README.md
   tracked: true
   kind: document
@@ -12092,7 +12133,7 @@ files:
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/airflow/connection_uri.py
-  tracked: false
+  tracked: true
   kind: code
   bytes: 7715
   state: HASHED
@@ -12148,7 +12189,7 @@ files:
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/README.md
   tracked: true
   kind: document
-  bytes: 7318
+  bytes: 7317
   state: HASHED
   sha256: 3bd4a89772e5222879d6d1f77c4610aec612fff1cad5f7eff09c76d8a02f854d
   review:
@@ -12160,7 +12201,6 @@ files:
       changed-diff and source crosscheck is recorded separately in Task.
     complete: true
     state: REVIEWED
-  fingerprint_observed_at: '2026-11-02T09:12:44.140127+00:00'
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
   tracked: true
   kind: configuration
@@ -12257,7 +12297,7 @@ files:
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/005_data_version.sql
-  tracked: false
+  tracked: true
   kind: code
   bytes: 14818
   state: HASHED
@@ -12265,28 +12305,58 @@ files:
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/006_checks.sql
-  tracked: false
+  tracked: true
   kind: code
   bytes: 14494
   state: HASHED
   sha256: 38eb6b22e99e573c40cd1fa920af7a3cc5945d0ce0a53e9d2872983834c0ef76
   review:
     state: UNREVIEWED
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
+  tracked: false
+  kind: code
+  bytes: 23579
+  state: HASHED
+  sha256: 8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32
+  review:
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/008_checks.sql
+  tracked: false
+  kind: code
+  bytes: 15549
+  state: HASHED
+  sha256: f0f39f09341bb0783c10f27c136aea40ff770b2edbbf9ffd37dee618db3d4e77
+  review:
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/008_checks.sql
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: f0f39f09341bb0783c10f27c136aea40ff770b2edbbf9ffd37dee618db3d4e77
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
   tracked: true
   kind: document
-  bytes: 13044
+  bytes: 16745
   state: HASHED
-  sha256: 242a0f32e22ebe898e9accc89171cf8473eaa81463a3c5372a5459711afaf0b4
+  sha256: 9c2913b7ab00ed2a4592a8e74fe58881ca690fdd9ce6edd594a0c0d5aa46039c
   review:
     path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
-    sha256: 242a0f32e22ebe898e9accc89171cf8473eaa81463a3c5372a5459711afaf0b4
     reviewer: /root/p04_docs
-    observed_at: '2026-11-02T08:12:18.635464+00:00'
-    scope: Entire living-document body read by the documentation writer. Independent
-      changed-diff and source crosscheck is recorded separately in Task.
-    complete: true
-    state: REVIEWED
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 9c2913b7ab00ed2a4592a8e74fe58881ca690fdd9ce6edd594a0c0d5aa46039c
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
   tracked: true
   kind: document
@@ -13014,11 +13084,18 @@ files:
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/README.md
   tracked: true
   kind: document
-  bytes: 6978
+  bytes: 7942
   state: HASHED
-  sha256: 12b8a8147c32749d1813480ad09e1ab743c4d4822efd26b879a037e65d64af93
+  sha256: 6fa171347d879e193ed36e71ae85d3905c887ae5bc76c4d87dcd3d95dc579133
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/README.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 6fa171347d879e193ed36e71ae85d3905c887ae5bc76c4d87dcd3d95dc579133
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
   tracked: true
   kind: configuration
@@ -13030,11 +13107,18 @@ files:
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/fixtures/README.md
   tracked: true
   kind: document
-  bytes: 1063
+  bytes: 1243
   state: HASHED
-  sha256: 163bf553d808d1670750ed318d67427a75db3f4b2a70e8be6739da0c0a8f7e48
+  sha256: 0f00659f7077f7f976a296840f2b6f26164f9245d87ca80c92e3b3ae62fd14b7
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/fixtures/README.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 0f00659f7077f7f976a296840f2b6f26164f9245d87ca80c92e3b3ae62fd14b7
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/fixtures/cases.json
   tracked: true
   kind: configuration
@@ -13054,19 +13138,33 @@ files:
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
   tracked: true
   kind: code
-  bytes: 2156
+  bytes: 2655
   state: HASHED
-  sha256: eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146
+  sha256: 53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md
   tracked: true
   kind: document
-  bytes: 8294
+  bytes: 9372
   state: HASHED
-  sha256: d58bef835d50defad7ffcf92a3fe296d6aac1e135ac6cba4d2f6e7f7babbd57a
+  sha256: ffeb447906dd3cc042c2874869ab88613a81f8e4dfbad66ee3b8fd942753014c
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: ffeb447906dd3cc042c2874869ab88613a81f8e4dfbad66ee3b8fd942753014c
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json
   tracked: true
   kind: configuration
@@ -13086,11 +13184,18 @@ files:
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md
   tracked: true
   kind: document
-  bytes: 1834
+  bytes: 2285
   state: HASHED
-  sha256: 887e1b8ea8adc6ae5ec6e20479df4c53e27488204ce466d00605e2f6e7571389
+  sha256: 24bdfe3c56194afad02b5f8d83d476203c7f59df63226ae9ab9ef0cfe0139157
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 24bdfe3c56194afad02b5f8d83d476203c7f59df63226ae9ab9ef0cfe0139157
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs
   tracked: true
   kind: code
@@ -13102,11 +13207,18 @@ files:
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs
   tracked: true
   kind: code
-  bytes: 4163
+  bytes: 5154
   state: HASHED
-  sha256: 0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75
+  sha256: 9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs
   tracked: true
   kind: code
@@ -13115,22 +13227,37 @@ files:
   sha256: 2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633
   review:
     state: UNREVIEWED
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs
+  tracked: false
+  kind: code
+  bytes: 10643
+  state: HASHED
+  sha256: e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4
+  review:
+    state: UNREVIEWED
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs
   tracked: true
   kind: code
-  bytes: 9394
+  bytes: 11348
   state: HASHED
-  sha256: ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3
+  sha256: 3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
   tracked: true
   kind: code
-  bytes: 7670
+  bytes: 8516
   state: HASHED
-  sha256: 7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6
+  sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json
   tracked: true
   kind: configuration
@@ -13158,11 +13285,18 @@ files:
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/README.md
   tracked: true
   kind: document
-  bytes: 1573
+  bytes: 1781
   state: HASHED
-  sha256: 339b32ad60a8a563e204d45313fb71661ba499906a25dcb357da9ccf50cdb752
+  sha256: 04cde9d6477b9270441df3e358f6c084d4c961e230469e87bb21024dca626b52
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/README.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 04cde9d6477b9270441df3e358f6c084d4c961e230469e87bb21024dca626b52
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/__init__.py
   tracked: true
   kind: code
@@ -13190,11 +13324,18 @@ files:
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/README.md
   tracked: true
   kind: document
-  bytes: 1246
+  bytes: 1542
   state: HASHED
-  sha256: 0096ce18bb03d4bd621f59cbeef4e8eabdd762bba16ef3516fe5e5705b9cd98b
+  sha256: 2ea2e4e981b07121864109db6038a8b2a4419d7a1e0a99700b30c0c2513c6a40
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/README.md
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    sha256: 2ea2e4e981b07121864109db6038a8b2a4419d7a1e0a99700b30c0c2513c6a40
+    scope: P05 changed sections and related source contracts; full unchanged-file
+      body review not claimed
+    complete: false
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/manifest-outbox-mailpit.json
   tracked: true
   kind: configuration
@@ -13850,9 +13991,9 @@ files:
 - path: infra/09-platform-ops/security-updates/build-inputs.json
   tracked: true
   kind: configuration
-  bytes: 250404
+  bytes: 255934
   state: HASHED
-  sha256: 0cfecf09cc6765a8253fc3a6eceea8ceb77388c1c158d494e8c525d564fcea91
+  sha256: fd340323c992c9ea572c99f878accf0b2239578088119e063665e77bd43db47d
   review:
     state: UNREVIEWED
 - path: infra/09-platform-ops/security-updates/common-validator-integration.patch
@@ -13914,9 +14055,9 @@ files:
 - path: infra/09-platform-ops/security-updates/update-ledger.json
   tracked: true
   kind: configuration
-  bytes: 1539249
+  bytes: 1544779
   state: HASHED
-  sha256: a25b4092a88dd088a56e97b947bd51f3c5ad206e352edb4fcf57f8e3aa4c1911
+  sha256: 5298c88f3deb5ddecb0fb332694451a0f345b2883ff87c29bff56d4524992afd
   review:
     state: UNREVIEWED
 - path: infra/09-platform-ops/security-updates/vendor-channel-references.json
@@ -17717,7 +17858,7 @@ files:
   review:
     state: UNREVIEWED
 - path: tests/validation/_opsflow_airflow_native_data.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 14383
   state: HASHED
@@ -17749,7 +17890,7 @@ files:
   review:
     state: UNREVIEWED
 - path: tests/validation/_opsflow_airflow_native_scenario.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 27089
   state: HASHED
@@ -17876,6 +18017,54 @@ files:
   sha256: 0c64a7734cbfa0e84efa47c5b2e4a39bea3a028ddc826a59b76e6a64eaf285f8
   review:
     state: UNREVIEWED
+- path: tests/validation/_p05_opsflow_native.py
+  tracked: false
+  kind: test
+  bytes: 25766
+  state: HASHED
+  sha256: a0c99bb5882d2f45ce785d0021116c2c181aabf741eca34c8deeb7a09022911b
+  review:
+    path: tests/validation/_p05_opsflow_native.py
+    reviewer: /root/p04_uri (independent)
+    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    sha256: a0c99bb5882d2f45ce785d0021116c2c181aabf741eca34c8deeb7a09022911b
+    scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
+      and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
+      not inferred
+    complete: false
+    state: PARTIAL
+- path: tests/validation/_p05_opsflow_recovery.py
+  tracked: false
+  kind: test
+  bytes: 1948
+  state: HASHED
+  sha256: bc70d322399f8687d32d3b2191451c3afe0e4de8e448c52bf3bbf38767ef1f84
+  review:
+    path: tests/validation/_p05_opsflow_recovery.py
+    reviewer: /root/p04_uri (independent)
+    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    sha256: bc70d322399f8687d32d3b2191451c3afe0e4de8e448c52bf3bbf38767ef1f84
+    scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
+      and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
+      not inferred
+    complete: false
+    state: PARTIAL
+- path: tests/validation/_p05_opsflow_registration.py
+  tracked: false
+  kind: test
+  bytes: 5483
+  state: HASHED
+  sha256: 074291db8db4faed87648f0761c60d7a47a4d08fb7b74e061ea1d718f2146df6
+  review:
+    path: tests/validation/_p05_opsflow_registration.py
+    reviewer: /root/p04_uri (independent)
+    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    sha256: 074291db8db4faed87648f0761c60d7a47a4d08fb7b74e061ea1d718f2146df6
+    scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
+      and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
+      not inferred
+    complete: false
+    state: PARTIAL
 - path: tests/validation/_sample_delivery_fixtures.py
   tracked: true
   kind: test
@@ -17973,9 +18162,9 @@ files:
   review:
     state: UNREVIEWED
 - path: tests/validation/test_airflow_connection_uri.py
-  tracked: false
+  tracked: true
   kind: test
-  bytes: 16977
+  bytes: 17032
   state: HASHED
   sha256: dcc5345a4f19975c2d62ed83790202d5bb763c44f1178bf902939264ddb798d2
   review:
@@ -17987,9 +18176,6 @@ files:
       identity only. Whole test body and new test execution are not claimed.
     complete: false
     state: PARTIAL
-  fingerprint_observed_at: '2026-11-02T09:12:44.140127+00:00'
-  previous_review:
-    state: UNREVIEWED
 - path: tests/validation/test_ci_gate_execution_context.py
   tracked: true
   kind: test
@@ -18407,7 +18593,7 @@ files:
   review:
     state: UNREVIEWED
 - path: tests/validation/test_opsflow_airflow_native_data.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 15476
   state: HASHED
@@ -18439,7 +18625,7 @@ files:
   review:
     state: UNREVIEWED
 - path: tests/validation/test_opsflow_airflow_native_scenario.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 25237
   state: HASHED
@@ -18457,9 +18643,9 @@ files:
 - path: tests/validation/test_opsflow_e2e_acceptance.py
   tracked: true
   kind: test
-  bytes: 9346
+  bytes: 12525
   state: HASHED
-  sha256: e4880c9e6ec8df61713ed49ef737db5103d410657847042ffd2c3119c8e2155b
+  sha256: 949f3b36110350524598e009e99cc151c156ccf7c7b875265e47c2773c1d694e
   review:
     state: UNREVIEWED
 - path: tests/validation/test_opsflow_native_boundaries.py
@@ -18545,7 +18731,7 @@ files:
 - path: tests/validation/test_p02_service_contracts.py
   tracked: true
   kind: test
-  bytes: 34492
+  bytes: 34547
   state: HASHED
   sha256: 76783c0e6a1bf3079d63237182a8be2fc3f9c8d6d08637f0d27b3a269b349e5d
   review:
@@ -18557,9 +18743,6 @@ files:
       identity only. Whole test body and new test execution are not claimed.
     complete: false
     state: PARTIAL
-  fingerprint_observed_at: '2026-11-02T09:12:44.140127+00:00'
-  previous_review:
-    state: UNREVIEWED
 - path: tests/validation/test_p02_valkey_mount_scope.py
   tracked: true
   kind: test
@@ -18647,6 +18830,46 @@ files:
   sha256: 6fb6f8be8a9ca7fec490cb51c56e8d1d24211dd93d0e0f88ca9f452c0b0855cb
   review:
     state: UNREVIEWED
+- path: tests/validation/test_p05_notification_recovery.py
+  tracked: false
+  kind: test
+  bytes: 16625
+  state: HASHED
+  sha256: dd3a3b6793db29f2103056b643d32f4ec2a9777558eecb530cb77adc688f9ebf
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p05_opsflow_native.py
+  tracked: false
+  kind: test
+  bytes: 11092
+  state: HASHED
+  sha256: e30c0783cc94eb9d80eb8e5e05c52abb3e52eec5f2b01e7abafc7e8cac626fd9
+  review:
+    path: tests/validation/test_p05_opsflow_native.py
+    reviewer: /root/p04_uri (independent)
+    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    sha256: e30c0783cc94eb9d80eb8e5e05c52abb3e52eec5f2b01e7abafc7e8cac626fd9
+    scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
+      and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
+      not inferred
+    complete: false
+    state: PARTIAL
+- path: tests/validation/test_p05_opsflow_scenario.py
+  tracked: false
+  kind: test
+  bytes: 31823
+  state: HASHED
+  sha256: e9d5c6fa93554ed28185ddd99b940a0644dc4d00bb1f85794acc4336c1464d90
+  review:
+    path: tests/validation/test_p05_opsflow_scenario.py
+    reviewer: /root/p04_uri (independent)
+    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    sha256: e9d5c6fa93554ed28185ddd99b940a0644dc4d00bb1f85794acc4336c1464d90
+    scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
+      and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
+      not inferred
+    complete: false
+    state: PARTIAL
 - path: tests/validation/test_perf_db_contract.py
   tracked: true
   kind: test
@@ -19000,11 +19223,11 @@ files:
     state: UNREVIEWED
 excluded:
   binary: 35
-  code: 127
-  configuration: 402
-  document: 112
-  generated: 38194
-  private: 232
+  code: 131
+  configuration: 458
+  document: 120
+  generated: 38561
+  private: 241
 opaque:
   git_directories: 1
   private_git_roots: 0
@@ -34818,14 +35041,14 @@ compose:
   gaps: []
 coverage:
   files:
-    numerator: 41403
-    denominator: 41403
+    numerator: 41857
+    denominator: 41857
   body_review:
-    numerator: 7
-    denominator: 2294
+    numerator: 6
+    denominator: 2304
   body_review_partial:
-    numerator: 57
-    denominator: 2294
+    numerator: 80
+    denominator: 2304
   render:
     numerator: 0
     denominator: 17
@@ -35377,7 +35600,7 @@ connections:
 - id: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts::n8n-sdk:smtp
   source:
     path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
-    sha256: eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146
+    sha256: 53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca
   caller_roles:
   - n8n-custom-node
   provider: null
@@ -35406,7 +35629,7 @@ connections:
 - id: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts::n8n-sdk:policy
   source:
     path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
-    sha256: 7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6
+    sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
   caller_roles:
   - n8n-custom-node
   provider: mailpit
@@ -35869,11 +36092,11 @@ connection_sources:
   kind: compose
   result: no-matching-connection
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
-  sha256: eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146
+  sha256: 53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca
   kind: n8n-node
   result: extracted
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
-  sha256: 7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6
+  sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
   kind: n8n-policy
   result: extracted
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/manifest-outbox-mailpit.json
@@ -36755,6 +36978,121 @@ requirements:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
   limit: Local source and owned isolated tests only; no HOME operation or private
     body inference.
+- id: P05.01
+  criterion: 72
+  work_unit: W77
+  task_id: SPEC-0212-TSK-0044
+  subject: Reuse exact historical C19/C22 queue/schedule acceptance
+  state: REUSE_ACCEPTED
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0044
+  implementation_writer: Exact single-writer path leases in current Task
+  source_verification: 'PASS: scoped source review; exact packet in Task'
+  static_checks: Reviewed source/style PASS. Node97.51line/95.56branch/88.57function%;
+    SQLQA conservative≥83.8028% (native-only78.873%); Pythonnative516/51899.6139%,
+    registration100/10694.3396%, recovery22/2395.6522%. EmbeddedJS/SQL-functioncoverageNOT_MEASURED;
+    Actual metadata/links/catalog/Registry/lifecycle PASS; Node lock audit0/155 after
+    DNS retry; Python audit tool-unavailable NOT_RUN; stagedwrapper pending at evidence
+    freeze; full scopes in Task.
+  isolated_tests: Historical C19/C22 reused only exact scope; current owned6manualqueue
+    executions support current selected consumer, not new schedule/HOME acceptance.
+  historical_operator_acceptance: SCOPED_HISTORY_ONLY C19/C22; current equivalence
+    not inferred
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN; owned isolated restore separate
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+  limit: No HOME, actual credential, external delivery or remote mutation.
+- id: P05.02
+  criterion: 73
+  work_unit: W78
+  task_id: SPEC-0212-TSK-0044
+  subject: Bounded per-approval no-send retry and restored-send quarantine
+  state: TEST_RESIDUAL
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0044
+  implementation_writer: Exact single-writer path leases in current Task
+  source_verification: 'PASS: scoped source review; exact packet in Task'
+  static_checks: Reviewed source/style PASS. Node97.51line/95.56branch/88.57function%;
+    SQLQA conservative≥83.8028% (native-only78.873%); Pythonnative516/51899.6139%,
+    registration100/10694.3396%, recovery22/2395.6522%. EmbeddedJS/SQL-functioncoverageNOT_MEASURED;
+    Actual metadata/links/catalog/Registry/lifecycle PASS; Node lock audit0/155 after
+    DNS retry; Python audit tool-unavailable NOT_RUN; stagedwrapper pending at evidence
+    freeze; full scopes in Task.
+  isolated_tests: SQL14behaviorPASS41.292s; finalownednativePASS747.701s+cleanup/QUIESCED_ONLY;
+    fulloutboxstateequivalence/sameinputreplay/live-inflight TEST_RESIDUAL
+  historical_operator_acceptance: SCOPED_HISTORY_ONLY C19/C22; current equivalence
+    not inferred
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: OwnedpairedDB/metadata+samekeyfreshconsumptionPASS only; same-input
+    replay/priorunknown+accepted/attempt+audit equivalence NOT_RUN; actualHOME NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+  limit: No HOME, actual credential, external delivery or remote mutation.
+- id: P05.03
+  criterion: 74
+  work_unit: W79
+  task_id: SPEC-0212-TSK-0044
+  subject: No binary consumer/storage adoption; exact selected release defaults
+  state: NO_CHANGE
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0044
+  implementation_writer: Exact single-writer path leases in current Task
+  source_verification: 'PASS: scoped source review; exact packet in Task'
+  static_checks: Reviewed source/style PASS. Node97.51line/95.56branch/88.57function%;
+    SQLQA conservative≥83.8028% (native-only78.873%); Pythonnative516/51899.6139%,
+    registration100/10694.3396%, recovery22/2395.6522%. EmbeddedJS/SQL-functioncoverageNOT_MEASURED;
+    Actual metadata/links/catalog/Registry/lifecycle PASS; Node lock audit0/155 after
+    DNS retry; Python audit tool-unavailable NOT_RUN; stagedwrapper pending at evidence
+    freeze; full scopes in Task.
+  isolated_tests: Selected input.binary rejection in Node38PASS; tagged unsetmodequeue→database
+    source proof; no binary feature adoption/runtimeoverride inference.
+  historical_operator_acceptance: SCOPED_HISTORY_ONLY C19/C22; current equivalence
+    not inferred
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN; owned isolated restore separate
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+  limit: No HOME, actual credential, external delivery or remote mutation.
+- id: P05.04
+  criterion: 75
+  work_unit: W80
+  task_id: SPEC-0212-TSK-0044
+  subject: Explicit authenticated STARTTLS and next-execution credential lookup
+  state: SOURCE_READY
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0044
+  implementation_writer: Exact single-writer path leases in current Task
+  source_verification: 'PASS: scoped source review; exact packet in Task'
+  static_checks: Reviewed source/style PASS. Node97.51line/95.56branch/88.57function%;
+    SQLQA conservative≥83.8028% (native-only78.873%); Pythonnative516/51899.6139%,
+    registration100/10694.3396%, recovery22/2395.6522%. EmbeddedJS/SQL-functioncoverageNOT_MEASURED;
+    Actual metadata/links/catalog/Registry/lifecycle PASS; Node lock audit0/155 after
+    DNS retry; Python audit tool-unavailable NOT_RUN; stagedwrapper pending at evidence
+    freeze; full scopes in Task.
+  isolated_tests: PASSfinalnative747.701s+cleanup:actualWorker/Bull/STARTTLSAUTH,wrongnew-old→unknown/noextracapture,sameIDnext-exec,pairedgen2DBmetadata+samekeycredentialreusefreshExec6;
+    prior3ERRORspreserved.
+  historical_operator_acceptance: SCOPED_HISTORY_ONLY C19/C22; current equivalence
+    not inferred
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: PASSownedisolated pairedDB/metadata+samekeycredentialfreshconsumption
+    only; actualHOME NOT_RUN; same-input replay/prior-outbox-state equivalence/live-inflight
+    TEST_RESIDUAL
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+  limit: No HOME, actual credential, external delivery or remote mutation.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED
@@ -36926,6 +37264,21 @@ acceptance_reuse:
   evidence: Frozen completed Task and accepted ADR-0039
   current_limit: Retain platform; defer Opsflow workload adoption. Current runtime/version
     equivalence and independent restore remain separate.
+- id: P05-C19-C22-EXACT-HISTORY
+  state: REUSE_ACCEPTED
+  subject: Historical notifier acceptance only
+  source: docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0013-p05-n8n-outbox-notifier.md
+  criterion: SPEC-0204 C19 accepted2026-10-29; C22 accepted2026-10-30 with owner-approved
+    psql concurrency/retry driver
+  version: n8n2.43.6 / source binding03892eb1a9a4
+  environment: Owned synthetic isolated queue/manual/schedule/quarantine/restart/restoration
+  actor: Recorded trusted owner; no present operating permission inferred
+  target: Native attemptfive image sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153
+  consumer: Selected Opsflow notifier; no general binary workload
+  accepted_at: 2026-10-29 C19;2026-10-30 C22
+  evidence: Formal Criterion Acceptance in preserved completed Task0013
+  current_limit: Current public source and image/private workflow parity separate;
+    new P05 recovery/TLS requires its own tests.
 ownership:
 - path: docs/99.templates/registry.json
   before_sha256: e6f695866d06dd739c436e63f826c327a4c9209b12dfe2681362902b2167f4c2
@@ -37339,89 +37692,6 @@ ownership:
   operational_acceptance: UNASSIGNED
   handoff: P11 is the installation/delivery handoff lane; this source policy cannot
     authorize an external request or identify an operator.
-- path: .github/workflow-contract.yml
-  writer: /root/p03_docs_impl
-  before_sha256: 673e4926795605bd4334e4875cb904382eccc5f08b0add0a4f0d30b77b4dcc9a
-  scope: Current P04 approved local slice; exact segment in Task
-  acceptance_owner: SPEC-0212-TSK-0043
-  reviewer: Independent exact-packet role recorded in Task
-  data_owner: UNASSIGNED for operating data; no authority inferred
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct2026-11-02 approved P04 plan
-  handoff: Changed source invalidates this exact lease; operating action needs its
-    own target/recovery authorization
-  previous_lease:
-    path: .github/workflow-contract.yml
-    writer: ci-cd-engineer
-    acceptance_owner: SPEC-0212-TSK-0040
-    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-      exact reviewed source scope and remaining limits in Task
-    data_owner: UNASSIGNED for operational data
-    operational_acceptance: UNASSIGNED
-    scope: Inventory implementation/tests or its CI registration only
-    authority: direct2026-11-01 request and coordinator path allocation
-    before_sha256: null
-    fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated
-      here
-    review_scope_limit: No operational authorization or unobserved document acceptance
-      inferred.
-  current_followup_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
-- path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-  writer: /root/p04_docs
-  before_sha256: 077d5987c6dc0e265a5ee079927bd670b586745fa4105c2d1895dd10577f7a67
-  scope: Current P04 approved local slice; exact segment in Task
-  acceptance_owner: SPEC-0212-TSK-0043
-  reviewer: Independent exact-packet role recorded in Task
-  data_owner: UNASSIGNED for operating data; no authority inferred
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct2026-11-02 approved P04 plan
-  handoff: Changed source invalidates this exact lease; operating action needs its
-    own target/recovery authorization
-  previous_lease:
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-    before_sha256: bd5f2457546b33264241cc3f9dedc52a1bb4514e0c08f6f49d8f6cd5562c9466
-    writer: doc-writer
-    scope: P01 inventory contract and DATA-0096 allocation only
-    acceptance_owner: SPEC-0212-TSK-0040
-    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-      exact reviewed source scope and remaining limits in Task
-    data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-    operational_acceptance: UNASSIGNED
-    authority: direct2026-11-01 P01 implementation request
-    handoff: Release lease after final source fingerprint and independent review;
-      changed inputs invalidate only this file lease.
-    review_scope_limit: No operational authorization or unobserved document acceptance
-      inferred.
-    current_followup_sha256: d051454790444c51b62628c21c77906e49702ac133ba75f9225e1f6f8781d51f
-  current_followup_sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
-- path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-  writer: /root/p04_docs
-  before_sha256: 745a0fc75e24cbfbcd134a65e736c3f86b505f6f4d347bcb80d481767e07d767
-  scope: Current P04 approved local slice; exact segment in Task
-  acceptance_owner: SPEC-0212-TSK-0043
-  reviewer: Independent exact-packet role recorded in Task
-  data_owner: UNASSIGNED for operating data; no authority inferred
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct2026-11-02 approved P04 plan
-  handoff: Changed source invalidates this exact lease; operating action needs its
-    own target/recovery authorization
-  previous_lease:
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-    before_sha256: 71b9d881337f64c3b788ff5ffb16388f0c41b29fa31b1655ec8dd77e98db9346
-    writer: doc-writer
-    scope: P01 inventory contract and DATA-0096 allocation only
-    acceptance_owner: SPEC-0212-TSK-0040
-    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-      exact reviewed source scope and remaining limits in Task
-    data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-    operational_acceptance: UNASSIGNED
-    authority: direct2026-11-01 P01 implementation request
-    handoff: Release lease after final source fingerprint and independent review;
-      changed inputs invalidate only this file lease.
-    review_scope_limit: No operational authorization or unobserved document acceptance
-      inferred.
-    current_followup_sha256: 4c78623b1b9b745d2d5679b32bf32b138af5381e49e5b57e36cc65a3ad6c2456
-  current_followup_sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
   writer: /root/p04_docs
   before_sha256: ABSENT
@@ -37459,68 +37729,6 @@ ownership:
   handoff: Changed source invalidates this exact lease; operating action needs its
     own target/recovery authorization
   current_followup_sha256: 047f82c59d55413943e8ea6cf419c113cfe52ae9eb687b1bebba6d561447e87e
-- path: docs/90.references/data/0096-workspace-inventory/README.md
-  writer: /root/p04_docs
-  before_sha256: f8cb82887f3e6dcea2dd922f484ad8709a077ed43dcd8b4f2134dcc508a273f3
-  scope: Current P04 approved local slice; exact segment in Task
-  acceptance_owner: SPEC-0212-TSK-0043
-  reviewer: Independent exact-packet role recorded in Task
-  data_owner: UNASSIGNED for operating data; no authority inferred
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct2026-11-02 approved P04 plan
-  handoff: Changed source invalidates this exact lease; operating action needs its
-    own target/recovery authorization
-  previous_lease:
-    path: docs/90.references/data/0096-workspace-inventory/README.md
-    writer: doc-writer
-    acceptance_owner: SPEC-0212-TSK-0040
-    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-      exact reviewed source scope and remaining limits in Task
-    data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-    operational_acceptance: UNASSIGNED
-    before_sha256: null
-    scope: P01 source evidence and consumer navigation
-    authority: direct2026-11-01 request and coordinator allocation
-    review_scope_limit: No operational authorization or unobserved document acceptance
-      inferred.
-    followup_lease:
-      baseline_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
-      writer: doc-writer /root/p01_docs
-      scope: Current P01 Task/README result-only admission, typed-input contract,
-        selected-local-check evidence and precise handoff; no historical Task or data.yaml
-        authoring
-      current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
-      review: PARTIAL authored section receipt; complete false
-      released_at: '2026-11-01T14:18:17.518585+00:00'
-    current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
-  current_followup_sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
-- path: docs/90.references/data/0096-workspace-inventory/data.yaml
-  writer: /root/p04_docs
-  before_sha256: e71b6ca961740e6cd6045202801f6dea88f4e32aa076fb961c2311082d4da895
-  scope: Current P04 approved local slice; exact segment in Task
-  acceptance_owner: SPEC-0212-TSK-0043
-  reviewer: Independent exact-packet role recorded in Task
-  data_owner: UNASSIGNED for operating data; no authority inferred
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct2026-11-02 approved P04 plan
-  handoff: Changed source invalidates this exact lease; operating action needs its
-    own target/recovery authorization
-  previous_lease:
-    path: docs/90.references/data/0096-workspace-inventory/data.yaml
-    writer: qa-engineer
-    acceptance_owner: SPEC-0212-TSK-0040
-    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-      exact reviewed source scope and remaining limits in Task
-    data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-    operational_acceptance: UNASSIGNED
-    before_sha256: null
-    scope: Generated public payload integration from doc-writer curation
-    authority: direct2026-11-01 request and coordinator allocation
-    review_scope_limit: No operational authorization or unobserved document acceptance
-      inferred.
-  current_fingerprint: SELF_OUTPUT_EXCLUDED
-  fingerprint_limit: Generated inventory excludes its own bytes to avoid recursive
-    hashing.
 - path: infra/07-workflow/airflow/Dockerfile
   writer: /root/p04_infra
   before_sha256: afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1
@@ -37606,18 +37814,6 @@ ownership:
   handoff: Changed source invalidates this exact lease; operating action needs its
     own target/recovery authorization
   current_followup_sha256: 38eb6b22e99e573c40cd1fa920af7a3cc5945d0ce0a53e9d2872983834c0ef76
-- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
-  writer: /root/p04_docs
-  before_sha256: 82768f3ee488d0eb4939277689a1d3b0144ebf032fbc272af13ffbe097fb0343
-  scope: Current P04 approved local slice; exact segment in Task
-  acceptance_owner: SPEC-0212-TSK-0043
-  reviewer: Independent exact-packet role recorded in Task
-  data_owner: UNASSIGNED for operating data; no authority inferred
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct2026-11-02 approved P04 plan
-  handoff: Changed source invalidates this exact lease; operating action needs its
-    own target/recovery authorization
-  current_followup_sha256: 242a0f32e22ebe898e9accc89171cf8473eaa81463a3c5372a5459711afaf0b4
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
   writer: /root/p04_docs
   before_sha256: c9bddf6e3dc6b569bb18514487a12e3d36f82480cc7d142e3ded1e46330bf416
@@ -37871,6 +38067,550 @@ ownership:
     operational_acceptance: UNASSIGNED
     handoff: 36 generated fields were refreshed by operations_catalog.render_service_inventory(ROOT);
       authored narrative, runtime, restore and acceptance claims remain unchanged.
+- path: .github/workflow-contract.yml
+  writer: /root/p03_docs_impl
+  before_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  previous_lease:
+    path: .github/workflow-contract.yml
+    writer: /root/p03_docs_impl
+    before_sha256: 673e4926795605bd4334e4875cb904382eccc5f08b0add0a4f0d30b77b4dcc9a
+    scope: Current P04 approved local slice; exact segment in Task
+    acceptance_owner: SPEC-0212-TSK-0043
+    reviewer: Independent exact-packet role recorded in Task
+    data_owner: UNASSIGNED for operating data; no authority inferred
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct2026-11-02 approved P04 plan
+    handoff: Changed source invalidates this exact lease; operating action needs its
+      own target/recovery authorization
+    previous_lease:
+      path: .github/workflow-contract.yml
+      writer: ci-cd-engineer
+      acceptance_owner: SPEC-0212-TSK-0040
+      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+        exact reviewed source scope and remaining limits in Task
+      data_owner: UNASSIGNED for operational data
+      operational_acceptance: UNASSIGNED
+      scope: Inventory implementation/tests or its CI registration only
+      authority: direct2026-11-01 request and coordinator path allocation
+      before_sha256: null
+      fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated
+        here
+      review_scope_limit: No operational authorization or unobserved document acceptance
+        inferred.
+    current_followup_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
+  current_followup_sha256: 95deb0da017de31f2c07998358c38d31d483ba245e939a2bc3b26f12a828f997
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+  writer: /root/p04_docs
+  before_sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  previous_lease:
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+    writer: /root/p04_docs
+    before_sha256: 077d5987c6dc0e265a5ee079927bd670b586745fa4105c2d1895dd10577f7a67
+    scope: Current P04 approved local slice; exact segment in Task
+    acceptance_owner: SPEC-0212-TSK-0043
+    reviewer: Independent exact-packet role recorded in Task
+    data_owner: UNASSIGNED for operating data; no authority inferred
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct2026-11-02 approved P04 plan
+    handoff: Changed source invalidates this exact lease; operating action needs its
+      own target/recovery authorization
+    previous_lease:
+      path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+      before_sha256: bd5f2457546b33264241cc3f9dedc52a1bb4514e0c08f6f49d8f6cd5562c9466
+      writer: doc-writer
+      scope: P01 inventory contract and DATA-0096 allocation only
+      acceptance_owner: SPEC-0212-TSK-0040
+      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+        exact reviewed source scope and remaining limits in Task
+      data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+      operational_acceptance: UNASSIGNED
+      authority: direct2026-11-01 P01 implementation request
+      handoff: Release lease after final source fingerprint and independent review;
+        changed inputs invalidate only this file lease.
+      review_scope_limit: No operational authorization or unobserved document acceptance
+        inferred.
+      current_followup_sha256: d051454790444c51b62628c21c77906e49702ac133ba75f9225e1f6f8781d51f
+    current_followup_sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
+  current_followup_sha256: 70233035e0222b77907bc3c7f6a332074b5de1be014256571797e675859feec1
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+  writer: /root/p04_docs
+  before_sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  previous_lease:
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+    writer: /root/p04_docs
+    before_sha256: 745a0fc75e24cbfbcd134a65e736c3f86b505f6f4d347bcb80d481767e07d767
+    scope: Current P04 approved local slice; exact segment in Task
+    acceptance_owner: SPEC-0212-TSK-0043
+    reviewer: Independent exact-packet role recorded in Task
+    data_owner: UNASSIGNED for operating data; no authority inferred
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct2026-11-02 approved P04 plan
+    handoff: Changed source invalidates this exact lease; operating action needs its
+      own target/recovery authorization
+    previous_lease:
+      path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+      before_sha256: 71b9d881337f64c3b788ff5ffb16388f0c41b29fa31b1655ec8dd77e98db9346
+      writer: doc-writer
+      scope: P01 inventory contract and DATA-0096 allocation only
+      acceptance_owner: SPEC-0212-TSK-0040
+      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+        exact reviewed source scope and remaining limits in Task
+      data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+      operational_acceptance: UNASSIGNED
+      authority: direct2026-11-01 P01 implementation request
+      handoff: Release lease after final source fingerprint and independent review;
+        changed inputs invalidate only this file lease.
+      review_scope_limit: No operational authorization or unobserved document acceptance
+        inferred.
+      current_followup_sha256: 4c78623b1b9b745d2d5679b32bf32b138af5381e49e5b57e36cc65a3ad6c2456
+    current_followup_sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
+  current_followup_sha256: 73a8028ece505acaf85261c0e84985792bc18d85da5a7b45560b360d09b53487
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
+  writer: /root/p04_docs
+  before_sha256: 91ec0733f6947887a97253a900cd27a7ddbc0cbc597a3450dcbb74665767e4b2
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 6c77a1b4d413781516c447372c1912dc1e128692d985097033afdb5dbc12d50c
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
+  writer: /root/p04_docs
+  before_sha256: 39cf57dd70ccc39ae00c08b36fa0e2db6400d9a843281ecea75b3fbc05894c49
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 2e60027d17661a8fc644cac44e1076783c1581dace2ce95e33b69768e2016744
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/90.references/data/0096-workspace-inventory/README.md
+  writer: /root/p04_docs
+  before_sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  previous_lease:
+    path: docs/90.references/data/0096-workspace-inventory/README.md
+    writer: /root/p04_docs
+    before_sha256: f8cb82887f3e6dcea2dd922f484ad8709a077ed43dcd8b4f2134dcc508a273f3
+    scope: Current P04 approved local slice; exact segment in Task
+    acceptance_owner: SPEC-0212-TSK-0043
+    reviewer: Independent exact-packet role recorded in Task
+    data_owner: UNASSIGNED for operating data; no authority inferred
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct2026-11-02 approved P04 plan
+    handoff: Changed source invalidates this exact lease; operating action needs its
+      own target/recovery authorization
+    previous_lease:
+      path: docs/90.references/data/0096-workspace-inventory/README.md
+      writer: doc-writer
+      acceptance_owner: SPEC-0212-TSK-0040
+      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+        exact reviewed source scope and remaining limits in Task
+      data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+      operational_acceptance: UNASSIGNED
+      before_sha256: null
+      scope: P01 source evidence and consumer navigation
+      authority: direct2026-11-01 request and coordinator allocation
+      review_scope_limit: No operational authorization or unobserved document acceptance
+        inferred.
+      followup_lease:
+        baseline_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+        writer: doc-writer /root/p01_docs
+        scope: Current P01 Task/README result-only admission, typed-input contract,
+          selected-local-check evidence and precise handoff; no historical Task or
+          data.yaml authoring
+        current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
+        review: PARTIAL authored section receipt; complete false
+        released_at: '2026-11-01T14:18:17.518585+00:00'
+      current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
+    current_followup_sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
+  current_followup_sha256: f26bbfa388598cb48efbc7bbcc6630a1486f06d9160760cdec87faa4851ffc71
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
+  writer: /root/p04_docs
+  before_sha256: 242a0f32e22ebe898e9accc89171cf8473eaa81463a3c5372a5459711afaf0b4
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  previous_lease:
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
+    writer: /root/p04_docs
+    before_sha256: 82768f3ee488d0eb4939277689a1d3b0144ebf032fbc272af13ffbe097fb0343
+    scope: Current P04 approved local slice; exact segment in Task
+    acceptance_owner: SPEC-0212-TSK-0043
+    reviewer: Independent exact-packet role recorded in Task
+    data_owner: UNASSIGNED for operating data; no authority inferred
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct2026-11-02 approved P04 plan
+    handoff: Changed source invalidates this exact lease; operating action needs its
+      own target/recovery authorization
+    current_followup_sha256: 242a0f32e22ebe898e9accc89171cf8473eaa81463a3c5372a5459711afaf0b4
+  current_followup_sha256: 9c2913b7ab00ed2a4592a8e74fe58881ca690fdd9ce6edd594a0c0d5aa46039c
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/README.md
+  writer: /root/p04_docs
+  before_sha256: 12b8a8147c32749d1813480ad09e1ab743c4d4822efd26b879a037e65d64af93
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 6fa171347d879e193ed36e71ae85d3905c887ae5bc76c4d87dcd3d95dc579133
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/fixtures/README.md
+  writer: /root/p04_docs
+  before_sha256: 163bf553d808d1670750ed318d67427a75db3f4b2a70e8be6739da0c0a8f7e48
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 0f00659f7077f7f976a296840f2b6f26164f9245d87ca80c92e3b3ae62fd14b7
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
+  writer: /root/p04_uri
+  before_sha256: eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md
+  writer: /root/p04_docs
+  before_sha256: d58bef835d50defad7ffcf92a3fe296d6aac1e135ac6cba4d2f6e7f7babbd57a
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: ffeb447906dd3cc042c2874869ab88613a81f8e4dfbad66ee3b8fd942753014c
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md
+  writer: /root/p04_docs
+  before_sha256: 887e1b8ea8adc6ae5ec6e20479df4c53e27488204ce466d00605e2f6e7571389
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 24bdfe3c56194afad02b5f8d83d476203c7f59df63226ae9ab9ef0cfe0139157
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs
+  writer: /root/p04_uri
+  before_sha256: 0da2207bb44cd6845715288494678848151267ed10e301641f9385b165825e75
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs
+  writer: /root/p04_uri
+  before_sha256: ea9fdc5c67fd766f94c6b3f238e53427519281726b55d3786e723efb7ea621e3
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
+  writer: /root/p04_uri
+  before_sha256: 7b685f776d9d0475aa5cb164b9088218353820524a1d82a8b4b47c99433159f6
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/README.md
+  writer: /root/p04_docs
+  before_sha256: 339b32ad60a8a563e204d45313fb71661ba499906a25dcb357da9ccf50cdb752
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 04cde9d6477b9270441df3e358f6c084d4c961e230469e87bb21024dca626b52
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/README.md
+  writer: /root/p04_docs
+  before_sha256: 0096ce18bb03d4bd621f59cbeef4e8eabdd762bba16ef3516fe5e5705b9cd98b
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 2ea2e4e981b07121864109db6038a8b2a4419d7a1e0a99700b30c0c2513c6a40
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/09-platform-ops/security-updates/build-inputs.json
+  writer: /root/p04_infra
+  before_sha256: 0cfecf09cc6765a8253fc3a6eceea8ceb77388c1c158d494e8c525d564fcea91
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: fd340323c992c9ea572c99f878accf0b2239578088119e063665e77bd43db47d
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/09-platform-ops/security-updates/update-ledger.json
+  writer: /root/p04_infra
+  before_sha256: a25b4092a88dd088a56e97b947bd51f3c5ad206e352edb4fcf57f8e3aa4c1911
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 5298c88f3deb5ddecb0fb332694451a0f345b2883ff87c29bff56d4524992afd
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: tests/validation/test_opsflow_e2e_acceptance.py
+  writer: /root/p04_native
+  before_sha256: e4880c9e6ec8df61713ed49ef737db5103d410657847042ffd2c3119c8e2155b
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 949f3b36110350524598e009e99cc151c156ccf7c7b875265e47c2773c1d694e
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+  writer: /root/p04_docs
+  before_sha256: ABSENT
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: a707d142766a22ec7dbc5c2b76f9620f8ea10f72542839f0de2f7bf9f462969a
+  fingerprint_observed_at: '2026-11-02T12:10:17.826248+00:00'
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
+  writer: /root/p04_pipeline
+  before_sha256: ABSENT
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: 8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/008_checks.sql
+  writer: /root/p04_pipeline
+  before_sha256: ABSENT
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: f0f39f09341bb0783c10f27c136aea40ff770b2edbbf9ffd37dee618db3d4e77
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs
+  writer: /root/p04_uri
+  before_sha256: ABSENT
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: tests/validation/test_p05_notification_recovery.py
+  writer: /root/p04_pipeline
+  before_sha256: ABSENT
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: dd3a3b6793db29f2103056b643d32f4ec2a9777558eecb530cb77adc688f9ebf
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: tests/validation/test_p05_opsflow_native.py
+  writer: /root/p04_native
+  before_sha256: ABSENT
+  scope: Approved P05 exact Task path/segment lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent exact-packet role in Task
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct approved P05 local plan2026-11-02
+  handoff: Changed input invalidates only dependent rows; no operating authority inferred
+  current_followup_sha256: e30c0783cc94eb9d80eb8e5e05c52abb3e52eec5f2b01e7abafc7e8cac626fd9
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+- path: docs/90.references/data/0096-workspace-inventory/data.yaml
+  writer: /root/p04_docs
+  before_sha256: 513a742753ee06d46d172164929faa89c38e0cff96b21f8e003b2118e8b8f195
+  scope: P05 exact Task path/segment lease; scenario test separately issued to SQL
+    writer in QA role
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent scoped exact-packet roles in Task
+  data_owner: UNASSIGNED operating data owner
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved2026-11-02 local P05 scope and coordinator path lease
+  handoff: Changed source invalidates affected metadata/review only; no operational
+    authority inferred
+  previous_lease:
+    path: docs/90.references/data/0096-workspace-inventory/data.yaml
+    writer: /root/p04_docs
+    before_sha256: e71b6ca961740e6cd6045202801f6dea88f4e32aa076fb961c2311082d4da895
+    scope: Current P04 approved local slice; exact segment in Task
+    acceptance_owner: SPEC-0212-TSK-0043
+    reviewer: Independent exact-packet role recorded in Task
+    data_owner: UNASSIGNED for operating data; no authority inferred
+    operational_acceptance: UNASSIGNED / NOT_RUN
+    authority: Direct2026-11-02 approved P04 plan
+    handoff: Changed source invalidates this exact lease; operating action needs its
+      own target/recovery authorization
+    previous_lease:
+      path: docs/90.references/data/0096-workspace-inventory/data.yaml
+      writer: qa-engineer
+      acceptance_owner: SPEC-0212-TSK-0040
+      reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+        exact reviewed source scope and remaining limits in Task
+      data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+      operational_acceptance: UNASSIGNED
+      before_sha256: null
+      scope: Generated public payload integration from doc-writer curation
+      authority: direct2026-11-01 request and coordinator allocation
+      review_scope_limit: No operational authorization or unobserved document acceptance
+        inferred.
+    current_fingerprint: SELF_OUTPUT_EXCLUDED
+    fingerprint_limit: Generated inventory excludes its own bytes to avoid recursive
+      hashing.
+  fingerprint_observed_at: '2026-11-02T11:52:35.037311+00:00'
+  current_fingerprint: SELF_OUTPUT_EXCLUDED
+  fingerprint_limit: Exclude generated output bytes to avoid recursive hashing.
+- path: tests/validation/_p05_opsflow_native.py
+  writer: /root/p04_native
+  before_sha256: ABSENT
+  scope: P05 exact Task path/segment lease; scenario test separately issued to SQL
+    writer in QA role
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent scoped exact-packet roles in Task
+  data_owner: UNASSIGNED operating data owner
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved2026-11-02 local P05 scope and coordinator path lease
+  handoff: Changed source invalidates affected metadata/review only; no operational
+    authority inferred
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+  current_followup_sha256: a0c99bb5882d2f45ce785d0021116c2c181aabf741eca34c8deeb7a09022911b
+- path: tests/validation/_p05_opsflow_recovery.py
+  writer: /root/p04_native
+  before_sha256: ABSENT
+  scope: P05 exact Task path/segment lease; scenario test separately issued to SQL
+    writer in QA role
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent scoped exact-packet roles in Task
+  data_owner: UNASSIGNED operating data owner
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved2026-11-02 local P05 scope and coordinator path lease
+  handoff: Changed source invalidates affected metadata/review only; no operational
+    authority inferred
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+  current_followup_sha256: bc70d322399f8687d32d3b2191451c3afe0e4de8e448c52bf3bbf38767ef1f84
+- path: tests/validation/test_p05_opsflow_scenario.py
+  writer: /root/p04_pipeline
+  before_sha256: ABSENT
+  scope: P05 exact Task path/segment lease; scenario test separately issued to SQL
+    writer in QA role
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent scoped exact-packet roles in Task
+  data_owner: UNASSIGNED operating data owner
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved2026-11-02 local P05 scope and coordinator path lease
+  handoff: Changed source invalidates affected metadata/review only; no operational
+    authority inferred
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+  current_followup_sha256: e9d5c6fa93554ed28185ddd99b940a0644dc4d00bb1f85794acc4336c1464d90
+- path: tests/validation/_p05_opsflow_registration.py
+  writer: /root/p04_native
+  before_sha256: ABSENT
+  scope: Approved P05 exact Task lease
+  acceptance_owner: SPEC-0212-TSK-0044
+  reviewer: Independent scoped exact-packet roles in Task
+  data_owner: UNASSIGNED operating data owner
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved local P05 plan and coordinator path lease2026-11-02
+  handoff: Changed source invalidates affected rows only; no operating authority inferred
+  fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
+  current_followup_sha256: 074291db8db4faed87648f0761c60d7a47a4d08fb7b74e061ea1d718f2146df6
 research:
 - id: EX01
   url: https://docs.docker.com/compose/how-tos/profiles/
@@ -39280,6 +40020,238 @@ research:
     runtime here.
   limit: 50mCPU/Python cold-start cost is only a hypothesis; timing root cause/performance
     gain unmeasured.
+- id: P05-N8N-QUEUE
+  url: https://docs.n8n.io/hosting/scaling/queue-mode/
+  document_version: Current generic official documentation
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE_OR_TAG; current P05 execution
+  platform: Public local source and owned synthetic fixture
+  fact: Queue workers use DB and shared encryption key; filesystem binary mode unsupported
+    with queue.
+  decision: ADOPT
+  current_source_difference: See Task0044 exact source packet
+  owner: P05; version/advisory update P08
+  normal: Exact selected contract succeeds in scoped tests.
+  rejection: No generic/latest or source-only evidence promoted to actual native/operational
+    PASS.
+  recovery: Revert only this logical local delta; retain historical acceptance.
+  limit: Do not infer exact selected release defaults from generic page.
+  adoption_scope: Reuse exact existing contract; no rebuild/update implied.
+- id: P05-N8N-BINARY-TAG
+  url: https://raw.githubusercontent.com/n8n-io/n8n/n8n%402.43.6/packages/core/src/binary-data/binary-data.config.ts
+  document_version: Tagged n8n2.43.6
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE_OR_TAG; current P05 execution
+  platform: Public local source and owned synthetic fixture
+  fact: Unset mode resolves queue→database and regular→filesystem; explicit overrides
+    remain possible.
+  decision: ADOPT
+  current_source_difference: See Task0044 exact source packet
+  owner: P05; version/advisory update P08
+  normal: Exact selected contract succeeds in scoped tests.
+  rejection: No generic/latest or source-only evidence promoted to actual native/operational
+    PASS.
+  recovery: Revert only this logical local delta; retain historical acceptance.
+  limit: No new binary consumer/storage; actual image/private overrides uninspected.
+  adoption_scope: Reuse exact existing contract; no rebuild/update implied.
+- id: P05-N8N-BINARY-GENERIC
+  url: https://docs.n8n.io/hosting/configuration/environment-variables/binary-data/
+  document_version: Current generic official page
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE_OR_TAG; current P05 execution
+  platform: Public local source and owned synthetic fixture
+  fact: Generic page says default/default-memory, which differs from selected tagged
+    fallback.
+  decision: DEFER
+  current_source_difference: See Task0044 exact source packet
+  owner: P05; version/advisory update P08
+  normal: Exact selected contract succeeds in scoped tests.
+  rejection: No generic/latest or source-only evidence promoted to actual native/operational
+    PASS.
+  recovery: Revert only this logical local delta; retain historical acceptance.
+  limit: Prefer exact version source for this contract, not latest defaults.
+- id: P05-SMTP
+  url: https://nodemailer.com/smtp
+  document_version: Current official SMTP transport documentation
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE_OR_TAG; current P05 execution
+  platform: Public local source and owned synthetic fixture
+  fact: requireTLS enforces STARTTLS; opportunisticTLS=false rejects downgrade; peer
+    CA/name verification remains enabled.
+  decision: ADOPT
+  current_source_difference: See Task0044 exact source packet
+  owner: P05; version/advisory update P08
+  normal: Exact selected contract succeeds in scoped tests.
+  rejection: No generic/latest or source-only evidence promoted to actual native/operational
+    PASS.
+  recovery: Revert only this logical local delta; retain historical acceptance.
+  limit: Fixed isolated endpoint only; no actual external credential.
+- id: P05-MAILPIT-SMTP
+  url: https://mailpit.axllent.org/docs/configuration/smtp/
+  document_version: Current Mailpit SMTP configuration
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE_OR_TAG; current P05 execution
+  platform: Public local source and owned synthetic fixture
+  fact: SMTP1025 default plain; cert/key enables STARTTLS; REQUIRE_STARTTLS and AUTH_FILE
+    enforce fixture policy.
+  decision: ADOPT
+  current_source_difference: See Task0044 exact source packet
+  owner: P05; version/advisory update P08
+  normal: Exact selected contract succeeds in scoped tests.
+  rejection: No generic/latest or source-only evidence promoted to actual native/operational
+    PASS.
+  recovery: Revert only this logical local delta; retain historical acceptance.
+  limit: Implicit TLS differs from STARTTLS; exact cached fixture compatibility still
+    requires native test.
+- id: P05-HTTP-ADVISORY
+  url: https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh
+  document_version: Official advisory published2026-10-28
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE_OR_TAG; current P05 execution
+  platform: Public local source and owned synthetic fixture
+  fact: Authenticated HTTP nodes can reattach credentials after cross-origin redirects;2.43.6
+    affected.
+  decision: DEFER
+  current_source_difference: See Task0044 exact source packet
+  owner: P05; version/advisory update P08
+  normal: Exact selected contract succeeds in scoped tests.
+  rejection: No generic/latest or source-only evidence promoted to actual native/operational
+    PASS.
+  recovery: Revert only this logical local delta; retain historical acceptance.
+  limit: Selected notifier PG/SMTP does not use this HTTP path; private workflows
+    uninspected. P08 owns version/security update.
+  lookup_limits: 'Independent reviewer: global github.com/advisories GHSA URL404 and
+    API access failed; supplier security/advisories canonical URL succeeded. Failures
+    do not negate verified vendor advisory.'
+- id: P05-NODEMAILER-TAG
+  url: https://raw.githubusercontent.com/nodemailer/nodemailer/v10.1.4/src/smtp-connection/index.ts
+  document_version: Tagged Nodemailer10.1.4
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE_OR_TAG; current P05 execution
+  platform: Public local source and owned synthetic fixture
+  fact: Exact tagged transport source crosschecked with existing package/lock contract.
+  decision: ADOPT
+  current_source_difference: See Task0044 exact source packet
+  owner: P05; version/advisory update P08
+  normal: Exact selected contract succeeds in scoped tests.
+  rejection: No generic/latest or source-only evidence promoted to actual native/operational
+    PASS.
+  recovery: Revert only this logical local delta; retain historical acceptance.
+  limit: Source/version alignment is not rebuilt image or actual installed-node acceptance.
+  adoption_scope: Reuse exact existing contract; no rebuild/update implied.
+- id: P05-LOOKUP-LIMITS
+  url: https://nodemailer.com/smtp/
+  document_version: Lookup failures and canonical source resolution
+  retrieved_at: '2026-11-02'
+  retrieval: 404_WRONG_PATH; corrected exact URL fetched successfully
+  platform: Read-only official web research
+  fact: Initial SMTP trailing-slash URL and guessed n8n config source paths returned404;
+    correct SMTP and tagged packages/core binary-data path succeeded. QA editor DTO
+    guessed path packages/@n8n/api-types/src/workflows/create-workflow.dto.ts also404;
+    no DTO verification claimed.
+  decision: EXCLUDE
+  owner: P05
+  normal: Use verified canonical URLs above.
+  rejection: A wrong-path404 does not prove product unsupported.
+  recovery: Retain failed lookup reason and successful replacement source.
+  limit: No inferred publication year or installed runtime.
+  adoption_scope: Exclude failed guessed URL; use independently verified canonical
+    replacement.
+- id: P05-EDITOR-CREATE
+  url: https://raw.githubusercontent.com/n8n-io/n8n/n8n%402.43.6/packages/cli/src/workflows/workflows.controller.ts
+  document_version: Immutable n8n2.43.6 tagged source
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_TAGGED_SOURCE by QA writer
+  platform: Owned synthetic same-version editor session only
+  fact: Lines92–119 authenticated POST create.
+  decision: ADOPT
+  owner: P05 QA registration helper
+  current_source_difference: Replace60s coldCLI workflow import with same-owner authenticated
+    editor registration while preserving timeout and guards
+  normal: Create inactive workflow and verify ID, owner project and credential references
+    by readback.
+  rejection: Reject missing/foreign owner, invalid route/body, active state and mixed
+    registration identities; do not claim stable public API compatibility.
+  recovery: Keep workflow inactive and fixture-owned resources only; preserve failed
+    CLI attempt and teardown guards.
+  limit: Internal editor API, not stable public API; future n8n versions require source
+    revalidation and actual fixture proof.
+- id: P05-EDITOR-MAPPER
+  url: https://raw.githubusercontent.com/n8n-io/n8n/n8n%402.43.6/packages/cli/src/workflows/workflow-entity-mapper.ts
+  document_version: Immutable n8n2.43.6 tagged source
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_TAGGED_SOURCE by QA writer
+  platform: Owned synthetic same-version editor session only
+  fact: Lines1–31 allowlist excludes active and client relation assignment.
+  decision: ADOPT
+  owner: P05 QA registration helper
+  current_source_difference: Replace60s coldCLI workflow import with same-owner authenticated
+    editor registration while preserving timeout and guards
+  normal: Create inactive workflow and verify ID, owner project and credential references
+    by readback.
+  rejection: Reject missing/foreign owner, invalid route/body, active state and mixed
+    registration identities; do not claim stable public API compatibility.
+  recovery: Keep workflow inactive and fixture-owned resources only; preserve failed
+    CLI attempt and teardown guards.
+  limit: Internal editor API, not stable public API; future n8n versions require source
+    revalidation and actual fixture proof.
+- id: P05-EDITOR-CREATION
+  url: https://raw.githubusercontent.com/n8n-io/n8n/n8n%402.43.6/packages/cli/src/workflows/workflow-creation.service.ts
+  document_version: Immutable n8n2.43.6 tagged source
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_TAGGED_SOURCE by QA writer
+  platform: Owned synthetic same-version editor session only
+  fact: Lines161–183 inactive default and personal-project workflow:create authority.
+  decision: ADOPT
+  owner: P05 QA registration helper
+  current_source_difference: Replace60s coldCLI workflow import with same-owner authenticated
+    editor registration while preserving timeout and guards
+  normal: Create inactive workflow and verify ID, owner project and credential references
+    by readback.
+  rejection: Reject missing/foreign owner, invalid route/body, active state and mixed
+    registration identities; do not claim stable public API compatibility.
+  recovery: Keep workflow inactive and fixture-owned resources only; preserve failed
+    CLI attempt and teardown guards.
+  limit: Internal editor API, not stable public API; future n8n versions require source
+    revalidation and actual fixture proof.
+- id: P05-EDITOR-PROJECT
+  url: https://raw.githubusercontent.com/n8n-io/n8n/n8n%402.43.6/packages/cli/src/controllers/project.controller.ts
+  document_version: Immutable n8n2.43.6 tagged source
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_TAGGED_SOURCE by QA writer
+  platform: Owned synthetic same-version editor session only
+  fact: Lines108–121 authenticated personal-project GET and scope checks.
+  decision: ADOPT
+  owner: P05 QA registration helper
+  current_source_difference: Replace60s coldCLI workflow import with same-owner authenticated
+    editor registration while preserving timeout and guards
+  normal: Create inactive workflow and verify ID, owner project and credential references
+    by readback.
+  rejection: Reject missing/foreign owner, invalid route/body, active state and mixed
+    registration identities; do not claim stable public API compatibility.
+  recovery: Keep workflow inactive and fixture-owned resources only; preserve failed
+    CLI attempt and teardown guards.
+  limit: Internal editor API, not stable public API; future n8n versions require source
+    revalidation and actual fixture proof.
+- id: P05-EDITOR-OWNERSHIP
+  url: https://raw.githubusercontent.com/n8n-io/n8n/n8n%402.43.6/packages/cli/src/services/ownership.service.ts
+  document_version: Immutable n8n2.43.6 tagged source
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_TAGGED_SOURCE by QA writer
+  platform: Owned synthetic same-version editor session only
+  fact: Lines182–225 homeProject from workflow:owner relation.
+  decision: ADOPT
+  owner: P05 QA registration helper
+  current_source_difference: Replace60s coldCLI workflow import with same-owner authenticated
+    editor registration while preserving timeout and guards
+  normal: Create inactive workflow and verify ID, owner project and credential references
+    by readback.
+  rejection: Reject missing/foreign owner, invalid route/body, active state and mixed
+    registration identities; do not claim stable public API compatibility.
+  recovery: Keep workflow inactive and fixture-owned resources only; preserve failed
+    CLI attempt and teardown guards.
+  limit: Internal editor API, not stable public API; future n8n versions require source
+    revalidation and actual fixture proof.
 coverage_tiers:
 - id: TIER01
   name: Gateway
@@ -42108,3 +43080,162 @@ handoffs:
   - path: scripts/lib/ops/_workspace_connection_sources.py
     sha256: e3f8e6e9368d1643d58fcb34951a8bd5f4f9bf76aaf243121eeee98edbbf3e5a
     fingerprint_state: P04_FINAL_SOURCE
+- id: P05-to-P06
+  acceptance_owner: P06
+  writer: UNASSIGNED until receiving exact path lease
+  state: SOURCE_READY
+  target: Credential canonical producer and actual native credential rotation
+  current_fingerprint: Exact source_files SHA256; source updates invalidate affected
+    dependency
+  change_contract: Retain encryption key+metadata alignment; official same-ID update
+    and next-execution behavior; no env-only refresh inference
+  authority: Approved P05 local source/tests only; no HOME, actual credential, external
+    mail or remote mutation
+  missing_input: Actual secret source/issuer, data owner, target, native UI/API support
+    and separately authorized rotation/rollback
+  resume_condition: Confirm exact source, named owner, permitted target, normal/refusal/recovery
+    checks before execution
+  recovery: Preserve outbox/attempt/audit and accepted historical receipts; revert
+    only owned local delta, actual state recovery separately authorized
+  source_files:
+  - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
+    sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
+    fingerprint_state: P05_FINAL_SOURCE
+  - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
+    sha256: 53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca
+    fingerprint_state: P05_FINAL_SOURCE
+- id: P05-to-P08-ADVISORY
+  acceptance_owner: P08
+  writer: UNASSIGNED until receiving exact path lease
+  state: IMPROVEMENT_CANDIDATE
+  target: n8n authenticated HTTP redirect advisory applicability
+  current_fingerprint: Exact source_files SHA256; source updates invalidate affected
+    dependency
+  change_contract: Selected notifier PG/SMTP is outside described HTTP path; affected2.43.6
+    declaration does not inspect private workflows or authorize image update
+  authority: Approved P05 local source/tests only; no HOME, actual credential, external
+    mail or remote mutation
+  missing_input: Exact installed image/dependency/SBOM and named private HTTP-node
+    consumers with target/recovery approval
+  resume_condition: Confirm exact source, named owner, permitted target, normal/refusal/recovery
+    checks before execution
+  recovery: Preserve outbox/attempt/audit and accepted historical receipts; revert
+    only owned local delta, actual state recovery separately authorized
+  source_files:
+  - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
+    sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
+    fingerprint_state: P05_FINAL_SOURCE
+  - path: infra/07-workflow/n8n/docker-compose.yml
+    sha256: 63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e
+    fingerprint_state: P05_FINAL_SOURCE
+- id: P05-to-P08-SUPPLY
+  acceptance_owner: P08
+  writer: UNASSIGNED until receiving exact path lease
+  state: TEST_RESIDUAL
+  target: Source binding vs rebuilt artifact/signature/provenance acceptance
+  current_fingerprint: Exact source_files SHA256; source updates invalidate affected
+    dependency
+  change_contract: Current17-input SOURCE_REVIEW_ONLY parity is accepted only as source
+    metadata; preserve native03892history and current root include_inputs distinction
+  authority: Approved P05 local source/tests only; no HOME, actual credential, external
+    mail or remote mutation
+  missing_input: Exact rebuildable cached base, independent expected publisher/provenance
+    and final artifact target; pip-audit available and applicable Python dependency
+    inventory/independent audit; no Python audit PASS inferred from unchanged lock.
+  resume_condition: Confirm exact source, named owner, permitted target, normal/refusal/recovery
+    checks before execution
+  recovery: Preserve outbox/attempt/audit and accepted historical receipts; revert
+    only owned local delta, actual state recovery separately authorized
+  source_files:
+  - path: infra/09-platform-ops/security-updates/update-ledger.json
+    sha256: 5298c88f3deb5ddecb0fb332694451a0f345b2883ff87c29bff56d4524992afd
+    fingerprint_state: P05_FINAL_SOURCE
+  - path: infra/09-platform-ops/security-updates/build-inputs.json
+    sha256: fd340323c992c9ea572c99f878accf0b2239578088119e063665e77bd43db47d
+    fingerprint_state: P05_FINAL_SOURCE
+- id: P05-to-P12
+  acceptance_owner: P12
+  writer: UNASSIGNED until receiving exact path lease
+  state: TEST_RESIDUAL
+  target: Actual same-outbox Airflow→n8n delivery and recovery seam
+  current_fingerprint: Exact source_files SHA256; source updates invalidate affected
+    dependency
+  change_contract: Offline P12 quarantine/data_version assertions are scoped source
+    tests; do not close P04 full Worker/restore or real external delivery
+  authority: Approved P05 local source/tests only; no HOME, actual credential, external
+    mail or remote mutation
+  missing_input: Named consumer/data/operation owner; coherent producer outbox; exact
+    isolated/operating target and recovery boundary
+  resume_condition: Confirm exact source, named owner, permitted target, normal/refusal/recovery
+    checks before execution
+  recovery: Preserve outbox/attempt/audit and accepted historical receipts; revert
+    only owned local delta, actual state recovery separately authorized
+  source_files:
+  - path: tests/validation/test_opsflow_e2e_acceptance.py
+    sha256: 949f3b36110350524598e009e99cc151c156ccf7c7b875265e47c2773c1d694e
+    fingerprint_state: P05_FINAL_SOURCE
+  - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
+    sha256: 8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32
+    fingerprint_state: P05_FINAL_SOURCE
+- id: P05-to-P03-CI-ADMISSION
+  acceptance_owner: P03 / CI canonical admission owner
+  writer: UNASSIGNED until exact receiving lease
+  state: TEST_RESIDUAL
+  target: leaf.p03-hermes public-execution parity admission
+  current_fingerprint: Exact current public contract/validator/runner source_files
+    metadata
+  change_contract: Read-only changed--explain returns only public-execution-parity
+    FAIL. Same residual recorded P04; current worktree at e14 base is not independently
+    executed clean baseline. Never weaken admission or call this P05/remoteCI PASS.
+  authority: Local read-only CI explanation and handoff only; no hosted CI/remote
+    mutation
+  missing_input: Receiving P03/CI writer and exact canonical selected-validator/internal-admission
+    contract fix
+  resume_condition: Acquire narrow owner lease, reproduce baseline/current difference
+    with proper exact admission, independent review and normal CI route validation
+  recovery: Revert only owned CI admission delta; preserve failure and existing normal
+    gates
+  source_files:
+  - path: .github/workflow-contract.yml
+    sha256: 95deb0da017de31f2c07998358c38d31d483ba245e939a2bc3b26f12a828f997
+    fingerprint_state: P05_FINAL_SOURCE
+  - path: scripts/validation/check-p03-hermes.py
+    sha256: 454e4883ff9253c5b0c8977c2e155b746296d55e593167989262238d81b36d5c
+    fingerprint_state: P05_FINAL_SOURCE
+  - path: scripts/validation/run-ci-gate.py
+    sha256: 9a7a8bdf327fa12efc322bd9553f04a271b7d0c2e1820b8cceeff46d71eee457
+    fingerprint_state: P05_FINAL_SOURCE
+- id: P05-RECOVERY-SEMANTICS-RESIDUAL
+  acceptance_owner: P05 C73 / P12 final semantics
+  writer: UNASSIGNED until next exact owned-QA lease
+  state: TEST_RESIDUAL
+  target: Actual live-inflight interruption and postrestore same-input/prioroutbox
+    semantic equivalence
+  current_fingerprint: Final P05 helper/registration/SQL source_files metadata
+  change_contract: Final native747.701s proves QUIESCED_ONLY pairedDBmetadata+samekey
+    freshExec6. It did not replay same pre-restore input or compare priorunknown/accepted/attempt/audit/nextclaim
+    equivalence. Preserve unknown, no-send approval, original attempts and accepted
+    history.
+  authority: Approved local synthetic QA only; no actual HOME/credentials/external
+    mail/remote actions
+  missing_input: Named bounded QA writer, exact active-send checkpoint and reliable
+    no-send/uncertainty observations, state snapshots and replay assertions; separate
+    data/operating owner for any HOME action
+  resume_condition: Review source and prior failures; one owned cluster, unchanged
+    resource/timeout boundaries, controlled actual in-flight barrier and readback-equivalence
+    assertions before expanding acceptance
+  recovery: Stop only owned producer/polling/worker/socket, preserve outbox/audit
+    and receipts; never bulkreset or infer no-send from captureabsence
+  source_files:
+  - path: tests/validation/_p05_opsflow_native.py
+    sha256: a0c99bb5882d2f45ce785d0021116c2c181aabf741eca34c8deeb7a09022911b
+    fingerprint_state: P05_FINAL_SOURCE
+  - path: tests/validation/_p05_opsflow_recovery.py
+    sha256: bc70d322399f8687d32d3b2191451c3afe0e4de8e448c52bf3bbf38767ef1f84
+    fingerprint_state: P05_FINAL_SOURCE
+  - path: tests/validation/_p05_opsflow_registration.py
+    sha256: 074291db8db4faed87648f0761c60d7a47a4d08fb7b74e061ea1d718f2146df6
+    fingerprint_state: P05_FINAL_SOURCE
+  - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
+    sha256: 8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32
+    fingerprint_state: P05_FINAL_SOURCE

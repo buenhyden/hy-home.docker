@@ -758,6 +758,9 @@
         "tests.validation.test_opsflow_airflow_native_rehearsal",
         "tests.validation.test_opsflow_airflow_native_data",
         "tests.validation.test_opsflow_airflow_native_scenario",
+        "tests.validation.test_p05_notification_recovery",
+        "tests.validation.test_p05_opsflow_native",
+        "tests.validation.test_p05_opsflow_scenario",
         "tests.validation.test_p02_native_contracts",
         "tests.validation.test_p02_oauth_native",
         "tests.validation.test_p02_secret_presentation_native",
@@ -1891,7 +1894,13 @@
           "tests/validation/test_opsflow_airflow_native_quiescence.py",
           "tests/validation/test_opsflow_airflow_native_rehearsal.py",
           "tests/validation/test_opsflow_airflow_native_data.py",
-          "tests/validation/test_opsflow_airflow_native_scenario.py"
+          "tests/validation/test_opsflow_airflow_native_scenario.py",
+          "tests/validation/test_p05_notification_recovery.py",
+          "tests/validation/_p05_opsflow_native.py",
+          "tests/validation/_p05_opsflow_recovery.py",
+          "tests/validation/_p05_opsflow_registration.py",
+          "tests/validation/test_p05_opsflow_native.py",
+          "tests/validation/test_p05_opsflow_scenario.py"
         ],
         "suites": [
           "operations",
@@ -2357,7 +2366,13 @@
           "tests/validation/test_opsflow_airflow_native_quiescence.py",
           "tests/validation/test_opsflow_airflow_native_rehearsal.py",
           "tests/validation/test_opsflow_airflow_native_data.py",
-          "tests/validation/test_opsflow_airflow_native_scenario.py"
+          "tests/validation/test_opsflow_airflow_native_scenario.py",
+          "tests/validation/test_p05_notification_recovery.py",
+          "tests/validation/_p05_opsflow_native.py",
+          "tests/validation/_p05_opsflow_recovery.py",
+          "tests/validation/_p05_opsflow_registration.py",
+          "tests/validation/test_p05_opsflow_native.py",
+          "tests/validation/test_p05_opsflow_scenario.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

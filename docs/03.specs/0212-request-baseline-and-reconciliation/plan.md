@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.36.0"
+version: "1.37.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -95,6 +95,12 @@ and does not change operating services, hosts, real credentials or remote state.
 The dependencies below route available source inputs; a historical Task's
 terminal status is not a hidden prerequisite for this approved local work.
 
+W77–W80 implement the approved local P05 plan in TSK-0044. The existing
+selected Opsflow notifier remains the business consumer; C19/C22 history and
+P04's TEST_RESIDUAL acceptance remain unchanged. Source, synthetic/owned
+isolated tests and a local logical commit are authorized; HOME services,
+actual credentials, external delivery/repositories and remote integration are not.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -175,6 +181,10 @@ terminal status is not a hidden prerequisite for this approved local work.
 | W74 | 69 | Reuse Opsflow quality blocking and reconcile optional analytics smoke versus business publication | W72 | TSK-0043 | Invalid-input/no-publication tests and source-to-consumer evidence |
 | W75 | 70 | Defer a new experiment until actual dataset, time field, target, baseline and owner exist | W71 | TSK-0043 | Explicit missing-input and no-private-inference record |
 | W76 | 71 | Preserve optional Iceberg platform acceptance and document workload deferral and recovery limits | W71 | TSK-0043 | Version-specific maintenance evidence, current consumer and historical receipt mapping |
+| W77 | 72 | Reuse historical C19/C22 queue/schedule acceptance and reconcile current source/image scope | Available current source and historical receipts | TSK-0044 | Exact-version source/consumer readback and bounded regression; current private/live state remains separate |
+| W78 | 73 | Add approval-bound one-shot no-send dead retry, restored-sending quarantine and in-flight recovery barrier | W77; existing SQL001–006 and notifier contracts | TSK-0044 | RED/GREEN SQL/Node/CLI and controlled isolated normal/denial/interruption/recovery cases; preserve history and uncertainty |
+| W79 | 74 | Preserve queue-mode default storage and reject binary input in the selected notifier | W77 | TSK-0044 | Exact-source/default readback and notifier binary-rejection regression; no new storage or binary consumer |
+| W80 | 75 | Add opt-in authenticated Mailpit STARTTLS fixture and next-execution same-ID credential refresh proof | W78 | TSK-0044 | Controlled TLS/auth success/refusal, same-ID refresh, bounded owned rehearsal, independent review and local gates |
 
 ### Current v30 continuation and delivery
 
@@ -361,6 +371,33 @@ No service starts, host edits, credential actions or remote writes occur here.
 
 ## Verification Plan
 
+### Current P05 implementation and ownership
+
+The documentation writer issues TSK-0044 and per-path baseline fingerprints
+before source edits. The SQL writer alone owns new 007/008 SQL plus its tests;
+the Node writer owns OpsflowSmtp and directly required workflow exports/tests;
+the QA writer owns the controlled native fixture and the bounded P12 seam
+compatibility tests. CI registration and P08 source-preparation receipt correction
+have separate writers. No one edits an already issued SQL001–006 or completed
+Task body. P04 full Worker/restore acceptance is not a start condition.
+
+Keep manual no-send reprocessing approval-bound and single-use. Preserve
+attempts, audit provenance and unknown SMTP state; verify both live and restored
+in-flight barriers before replay. Never classify absence of a captured message
+as proof that SMTP did not accept it. Reject binary input in the selected
+notifier and do not add a binary storage service. Use only the optional owned
+Mailpit STARTTLS/auth profile for delivery tests; a controlled native same-ID
+credential update must affect the next execution without replacing the ID.
+
+Perform meaningful RED/GREEN normal, refusal, interruption and recovery tests
+with at least 80% coverage of new executable code. Preflight exact cached images,
+resources, trusted paths and ownership, run one owned cluster at a time and keep
+bounded attempts. Record missing environment and failed stages individually.
+Independent code/security/SQL/IaC/document reviews precede normal local gates,
+graphify freshness, source fingerprint comparison and local logical delivery.
+Operating services, real secrets, external mail, remote CI and P12 final
+acceptance remain NOT_RUN unless separately authorized and observed.
+
 ### Current P04 implementation and ownership
 
 The P04 source writer integrates DAG, adapter and SQL changes. One infrastructure
@@ -470,6 +507,7 @@ only that dependent operation.
 
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
+- [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Spec](spec.md)

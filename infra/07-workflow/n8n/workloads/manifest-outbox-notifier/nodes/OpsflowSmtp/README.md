@@ -1,10 +1,10 @@
 ---
 title: "Opsflow SMTP 개발 캡처 노드"
-version: "0.1.3"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-11-02"
 ---
 
 # Opsflow SMTP 개발 캡처 노드
@@ -21,15 +21,16 @@ P05 작성자, SEC01·P03·P02 담당자와 독립 검토자입니다.
 
 ## Scope
 
-공개 source build와 합성 transport·node API 시험입니다. native import,
-설치 이미지 호환성, DB 소비, 실제 SMTP 캡처, 예약·회전·복구는 `NOT_RUN`입니다.
+공개 source build, 합성 node API와 owned loopback의 실제 Nodemailer STARTTLS 시험입니다.
+과거 C19/C22 native 수용은 당시 범위로 보존합니다. 이번 보완의 n8n Worker·Mailpit native
+실행, 실제 자격 발급·회전과 HOME 복구는 별도 증거이며 source 시험으로 대체하지 않습니다.
 
 ## Structure
 
 - [OpsflowSmtp.node.ts](OpsflowSmtp.node.ts): native credential 조회와 제한된 오류 envelope.
 - [transport.ts](transport.ts): 고정 endpoint·envelope·Message-ID·socket 수명.
 - [package.json](package.json), [lock](package-lock.json), [tsconfig](tsconfig.json): 재현 build 입력.
-- [tests](tests/README.md): 네트워크 없는 합성 시험.
+- [tests](tests/README.md): 합성 경계와 owned loopback STARTTLS 시험.
 
 ## Tech Stack
 
@@ -61,12 +62,21 @@ build·coverage 시험과 전체·production 감사 0건을 확인했습니다. 
 
 ## Configuration
 
-draft P03 대상은 `mailpit:1025`와 합성
-`notifier@opsflow.invalid` → `manifest@opsflow.invalid`입니다.
-host·port는 정확히 일치해야 하며 native SMTP credential의 user/password는
-빈 문자열, secure는 false, disableStartTls는 true, hostName은 빈 문자열 또는
-미지정만 허용합니다. COMM-002 등 실제 SMTP credential은 거부합니다.
-이 개발 캡처 설정은 생산 SMTP 인증·TLS 수용 증거가 아닙니다.
+두 capture profile 모두 `mailpit:1025`와 합성
+`notifier@opsflow.invalid` → `manifest@opsflow.invalid`로 고정됩니다.
+
+| 명시 profile | native SMTP credential 계약 | 전송 정책 |
+| --- | --- | --- |
+| `mailpit-plain-v1` (기본) | user/password 빈 문자열, secure=false, disableStartTls=true | 기존 격리 plain capture 유지 |
+| `mailpit-starttls-auth-v1` (선택) | 비어 있지 않은 user/password, secure=false, disableStartTls=false | STARTTLS 필수, downgrade 금지, 인증서 CA·mailpit 이름 검증 |
+
+Credential은 host·port·secure·disableStartTls·user·password·hostName의 닫힌 허용 집합입니다.
+hostName은 빈 문자열 또는 미지정이며 다른 endpoint·TLS 옵션·CA 경로를 받지 않습니다.
+인증 profile의 user/password는 UTF-8 기준 각각256/4096바이트 이하이고 제어문자는
+거부하며 앞뒤 공백은 바꾸지 않습니다. 합성 fixture CA는 process trust의
+`NODE_EXTRA_CA_CERTS`로만 제공합니다. 임의 CA나 검증 해제를 credential에 넣지 않습니다.
+공개 workflow export의 기본 profile은 유지하고 인증 fixture만 명시 선택합니다.
+이 개발 캡처 profile은 COMM-002 등 실제 SMTP 연결이나 운영 TLS 수용이 아닙니다.
 
 임의 endpoint·CC/BCC·첨부·파일/URL 읽기·header·Code credential 접근을 제공하지 않습니다.
 claim은 native parameter `claim`에 object expression으로 전달하며 문자열 JSON은
@@ -77,9 +87,9 @@ claim은 native parameter `claim`에 object expression으로 전달하며 문자
 `hy-home.docker`, `hy-home.k8s`, `Project-Template`, `blog-data` 중 하나이며
 row_count는 1~5000입니다. id는 양의 safe integer 또는 PostgreSQL bigint 범위의
 정규 십진수 문자열, lease_token은 소문자 UUID입니다. 검토된 SQL hash와
-DB CONNECT·schema USAGE와 세 notifier 함수 EXECUTE만 허용하는 권한 소스는
-상위 소비자 계약에 연결돼 있습니다. table·column·sequence 직접 접근은 거부합니다. 실제 DB 권한·migration
-수용은 `NOT_RUN`이며 이 source 검사만으로 운영 계약을 충족하지 않습니다.
+DB CONNECT·schema USAGE와 검토된 notifier 함수 EXECUTE를 허용하는 권한은
+상위 소비자 계약과 [SQL 정본](../../../../../airflow/workloads/manifest-pipeline/sql/README.md)을 따릅니다. table·column·sequence 직접 접근은 거부합니다. 이번 SQL007/008의 실제 DB 권한·migration
+수용은 별도 격리 증거가 필요하며 source 검사만으로 운영 계약을 충족하지 않습니다.
 
 Message-ID는 `<opsflow.RUN@opsflow.invalid>`이며 fresh claim의 token/id가 바뀌어도
 같은 run에서 안정적입니다. 출력은 `{run_id,state}`뿐입니다.

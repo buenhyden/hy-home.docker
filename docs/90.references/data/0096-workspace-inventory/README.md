@@ -1,6 +1,6 @@
 ---
 title: "Workspace Inventory"
-version: "0.4.0"
+version: "0.5.0"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
@@ -13,6 +13,7 @@ parent_ids:
 - "SPEC-0212-TSK-0041"
 - "SPEC-0212-TSK-0042"
 - "SPEC-0212-TSK-0043"
+- "SPEC-0212-TSK-0044"
 created: "2026-11-01"
 observed_at: "2026-11-02"
 ---
@@ -169,6 +170,35 @@ P04 시작 시점의 실제 HEAD는 `6853286dbd73851a6419f7fb5457c53720ba6d98`�
 구성 실행 결과를 새 실행으로 재사용하지 않으며 과거 결과와 선택형 렌더 증거는
 각 Task에 보존한다.
 
+[P05 notifier Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md)은
+기존 C19/C22의 version·이미지·환경·Criterion별 수용을 재사용하고 현재 재처리·복원
+장벽·STARTTLS·credential 조회의 차분을 소비한다. clean 시작 HEAD는
+`e14ebe0fd5e562f8c7557bd9408a1985d9971c5c`로 관측했으며 현재 branch는
+`codex/p05-n8n-outbox-recovery`다. 과거 수용, 현재 공개 source binding과 실제
+private workflow·설치 이미지·운영 자격은 별도 축이다.
+
+SQL007/008은 개별 승인에 한 번의 no-send 추가 claim과 복원 sending의 unknown
+격리를 제공한다. 관리 함수의 증거 지문은 외부 실행 장벽 attestation이며 SMTP
+fencing이나 capture 부재의 no-send 판정을 대신하지 않는다. 기본 plain capture와
+선택형 인증 STARTTLS 모두 격리된 고정 Mailpit 대상만 허용한다. Node package의
+owned loopback 검사는 실제 n8n Worker/Mailpit·DB native 수용과 구분한다.
+같은 native credential ID의 다음 실행 조회는 P06의 실제 발급·정본·회전과 다르다.
+
+선택 notifier는 binary를 소비하지 않고 신규 저장소를 만들지 않는다. 고정 release
+source의 queue 기본값과 최신 generic 문서의 기본값을 구분하며 실제 override를
+읽었다고 주장하지 않는다. P08의17-input SOURCE_REVIEW_ONLY binding 갱신은
+이전 이력을 보존한 공개 소스 지문 보정이다. 서명·새 이미지 build·HOME 적용·복원
+성공으로 승격하지 않는다. P12 offline quarantine seam 보정도 실제 Airflow→n8n
+종단 수용이나 P04 Worker/복원 잔여를 닫지 않는다.
+
+P05의 최종 owned editor-REST 시험은747.701초와 cleanup PASS로 끝났다. 실제
+Worker/Bull/인증 STARTTLS, 잘못된 old/new 자격의 unknown 보존, 같은 ID의 다음 실행
+갱신과 gen2 DB/metadata+같은 합성 encryption key를 통한 fresh 실행을 확인했다.
+복원은 해당 기록된 범위로만 수용하며 같은 입력 replay·기존 unknown/accepted와
+attempt/audit 동등성·live-inflight 중단은 TEST_RESIDUAL이다. 이전 세 번의 ERROR와
+각 cleanup PASS는 보존한다. 격리 PASS를 실제 운영·P06 발급/회전·외부 배달·원격 CI·
+P12 최종 인수로 옮기지 않는다. P03의 전역 CI admission 잔여도 별도 인계한다.
+
 ## Related Documents
 
 - [범주 색인](../README.md)
@@ -176,6 +206,7 @@ P04 시작 시점의 실제 HEAD는 `6853286dbd73851a6419f7fb5457c53720ba6d98`�
 - [현재 계획](../../../03.specs/0212-request-baseline-and-reconciliation/plan.md)
 - [P02 서비스 연결 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md)
 - [P03 모델·Runner·Wiki 준비 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md)
+- [P05 notifier 복구 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md)
 - [P04 Opsflow 데이터 경로 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)
 
 ## Sources
