@@ -55,7 +55,7 @@ services:
       # OPTIONAL: max concurrent background tasks the worker processes at once
       # (default 5). Set to 1 for sequential processing on single-GPU / local
       # LLM setups to avoid overloading the model with parallel requests.
-      # - OPEN_NOTEBOOK_WORKER_MAX_TASKS=1
+      - OPEN_NOTEBOOK_WORKER_MAX_TASKS=1
       # Ollama (required when running Ollama via Docker, as in this compose file)
       - OLLAMA_API_BASE=http://ollama:${OLLAMA_PORT:-11434}
     volumes:

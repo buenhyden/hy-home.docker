@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Recovery Runbook"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "RUN-0073"
 parent_ids:
@@ -52,6 +52,48 @@ created: "2026-05-17"
    credential 점검이 통과할 때까지 provider/model egress를 비활성화 상태로 유지한다.
 
 ## Procedure
+
+### 모델 등록 계약의 격리 점검
+
+`notebook-models.py`의 `plan`, `apply`, `verify`는 product UI/API 계약을
+점검하기 위한 P03 로컬 도구다. 기본 점검은 읽기 전용 `plan` 또는 `verify`로
+시작한다. 실제 운영 endpoint, 자격 증명, 저장된 모델을 이 명령의 입력으로
+사용하지 않는다.
+
+`scripts/operations/notebook-models.py`는 정책·receipt 처리를
+`scripts/lib/ops/notebook_models.py`에, 제한된 API 전송을
+`scripts/lib/ops/_notebook_models_http.py`에 위임한다. 이 런북은 세 경로의
+런타임 사용 경계를 함께 관리한다.
+
+승인된 격리 fixture에서만 다음과 같이 값 없는 placeholder를 실제 소유한 합성
+대상으로 바꾼다. password file은 단일 link이고 mode `0600`인 보호 파일이어야
+하며, 명령행과 결과에 비밀번호 값을 넣지 않는다.
+
+```bash
+python3 scripts/operations/notebook-models.py plan \
+  --endpoint http://127.0.0.1:<owned-port> \
+  --policy tests/fixtures/p03_models/notebook-model-policy.json \
+  --password-file <owned-0600-single-link-file> \
+  --receipt <owned-output.json>
+
+python3 scripts/operations/notebook-models.py verify \
+  --endpoint http://127.0.0.1:<owned-port> \
+  --policy tests/fixtures/p03_models/notebook-model-policy.json \
+  --password-file <owned-0600-single-link-file> \
+  --receipt <owned-output.json>
+```
+
+`apply`는 위 인수에 `--owned-isolated`를 추가하고 receipt 없이는 거부한다.
+이 flag와 Task 기록은 구조적 제한일 뿐 인증 수단이 아니다. controller는 쓰기
+전에 신뢰할 수 있는 사용자 승인과 정확한 소유 대상 검증을 별도로 수행해야 한다.
+endpoint는 명시 포트가 있는 `http://127.0.0.1:<owned-port>` literal만 허용되며,
+password file을 읽기 전에 검증된다. 이 런북은 이 예시를 실제로 실행한 수용
+증거가 아니다.
+
+충돌·부분 적용·중단 또는 receipt 출력 실패가 발생하면 추가 `apply`를 중지하고
+기존 등록을 읽기 전용으로 대조한다. 지원 API가 null default 복원을 보장한다고
+가정하지 않는다. 복구는 같은 SurrealDB 데이터, `/app/data` SQLite 상태와
+대응하는 encryption key를 함께 갖춘 승인된 격리 복구 절차로만 재개한다.
 
 ### Backup and isolated restore
 

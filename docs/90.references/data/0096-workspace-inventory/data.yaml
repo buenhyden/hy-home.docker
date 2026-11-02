@@ -1,31 +1,117 @@
 schema_version: 1
-observed_at: '2026-11-02T02:56:41.139157Z'
+observed_at: '2026-11-02T07:15:11.325585Z'
 workspace:
   path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 0592303d1f7d96b46019be7a730c115c53cbbcab
-  branch: codex/p02-integration-network-auth-valkey
+  head: ac78f975c9c329e80779611335999282dd198ada
+  branch: codex/p03-model-runner-tool-contracts
   dirty_paths:
   - status: 'M '
     path: .github/workflow-contract.yml
-  - status: MM
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
   - status: 'M '
+    path: docker-compose.yml
+  - status: 'M '
+    path: docs/02.architecture/descriptions/0008-ai-architecture.md
+  - status: 'M '
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+  - status: 'M '
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+  - status: 'A '
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md
+  - status: 'M '
+    path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
+  - status: 'M '
+    path: docs/05.operations/guides/09-ai-and-search/0073-open-notebook.md
+  - status: 'M '
+    path: docs/05.operations/policies/09-ai-and-search/0073-open-notebook.md
+  - status: 'M '
+    path: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  - status: 'M '
+    path: docs/90.references/data/0096-workspace-inventory/README.md
+  - status: MM
     path: docs/90.references/data/0096-workspace-inventory/data.yaml
   - status: 'M '
-    path: scripts/lib/gate/ci_gate_adapters.py
+    path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
   - status: 'M '
-    path: tests/lib/gate/test_ci_gate_adapters.py
+    path: infra/07-workflow/n8n/docker-compose.yml
+  - status: 'A '
+    path: infra/07-workflow/n8n/n8n-task-runners.json
+  - status: 'M '
+    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py
+  - status: 'A '
+    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/webhook_transport.py
+  - status: 'M '
+    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_research_report_plugin.py
+  - status: 'A '
+    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_webhook_transport.py
+  - status: 'M '
+    path: infra/08-ai/open-notebook/docker-compose.yml
+  - status: 'M '
+    path: infra/09-platform-ops/project-registration/wiki-preparation/fixtures/README.md
+  - status: 'A '
+    path: scripts/lib/ops/_notebook_models_http.py
+  - status: 'M '
+    path: scripts/lib/ops/_workspace_connection_sources.py
+  - status: 'A '
+    path: scripts/lib/ops/_workspace_model_connections.py
+  - status: 'A '
+    path: scripts/lib/ops/notebook_models.py
+  - status: 'M '
+    path: scripts/manifest.yaml
+  - status: 'A '
+    path: scripts/operations/notebook-models.py
+  - status: 'A '
+    path: scripts/validation/check-p03-hermes.py
+  - status: 'A '
+    path: tests/fixtures/p03_models/notebook-model-policy.json
   - status: 'M '
     path: tests/lib/gate/test_github_workflow_contract.py
+  - status: 'A '
+    path: tests/lib/gate/test_p03_workflow_contract.py
+  - status: 'A '
+    path: tests/lib/ops/test_notebook_models.py
   - status: 'M '
-    path: tests/validation/test_ci_gate_execution_context.py
-  - status: 'M '
-    path: tests/validation/test_compose_baseline_gates.py
-  - status: 'M '
-    path: tests/validation/test_sec01_next_stable_candidates.py
+    path: tests/lib/ops/test_workspace_connections.py
+  - status: 'A '
+    path: tests/lib/ops/test_workspace_model_connections.py
+  - status: 'A '
+    path: tests/validation/_p03_notebook_effects.py
+  - status: 'A '
+    path: tests/validation/_p03_notebook_native.py
+  - status: 'A '
+    path: tests/validation/_p03_notebook_protocol.py
+  - status: 'A '
+    path: tests/validation/_p03_notebook_readiness.py
+  - status: 'A '
+    path: tests/validation/_p03_owned_docker.py
+  - status: 'A '
+    path: tests/validation/_p03_runner_native_fixture.py
+  - status: 'A '
+    path: tests/validation/_p03_runner_outcomes.py
+  - status: 'A '
+    path: tests/validation/_p03_worker_model_native.py
+  - status: 'A '
+    path: tests/validation/_p03_worker_ollama_fixture.py
+  - status: 'A '
+    path: tests/validation/test_p03_hermes_gate.py
+  - status: 'A '
+    path: tests/validation/test_p03_models_native.py
+  - status: 'A '
+    path: tests/validation/test_p03_notebook_effects.py
+  - status: 'A '
+    path: tests/validation/test_p03_notebook_models.py
+  - status: 'A '
+    path: tests/validation/test_p03_owned_docker.py
+  - status: 'A '
+    path: tests/validation/test_p03_runner_boundaries.py
+  - status: 'A '
+    path: tests/validation/test_p03_runner_consumers.py
+  - status: 'A '
+    path: tests/validation/test_p03_runner_isolation.py
+  - status: 'A '
+    path: tests/validation/test_p03_worker_models.py
   worktrees:
   - in_boundary: true
     access: metadata-only
@@ -39,8 +125,8 @@ roots:
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 0592303d1f7d96b46019be7a730c115c53cbbcab
-  branch: codex/p02-integration-network-auth-valkey
+  head: ac78f975c9c329e80779611335999282dd198ada
+  branch: codex/p03-model-runner-tool-contracts
   dirty_paths: []
   worktrees:
   - in_boundary: true
@@ -48,7 +134,7 @@ roots:
   submodules: []
   tracked_query: PASS
   write_boundary: /home/hyunyoun/data/hy-home.docker
-  dirty_count: 9
+  dirty_count: 52
 files:
 - path: .agents/README.md
   tracked: true
@@ -1668,9 +1754,9 @@ files:
 - path: .github/workflow-contract.yml
   tracked: true
   kind: configuration
-  bytes: 78531
+  bytes: 84302
   state: HASHED
-  sha256: 2cdd5af339d614a6b863679c63a20780df707c411993a45091c1b3a459a975f1
+  sha256: 673e4926795605bd4334e4875cb904382eccc5f08b0add0a4f0d30b77b4dcc9a
   review:
     path: .github/workflow-contract.yml
     reviewer: p02_residual_code_review + p02_residual_supply_review
@@ -1679,7 +1765,7 @@ files:
     scope: Exact SSO interruption optional selector registration only; full-file review
       not claimed
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: .github/workflows/ci-quality.yml
   tracked: true
   kind: configuration
@@ -1907,9 +1993,9 @@ files:
 - path: docker-compose.yml
   tracked: true
   kind: configuration
-  bytes: 18199
+  bytes: 18816
   state: HASHED
-  sha256: 95a797947e7be5954f7673a252170b16d94db562f9552016db73a5eb6f27559c
+  sha256: 44effd451ffd74ba718587ffe7539d18f68c181b8a71debc9fa819bfe1e6b6e3
   review:
     state: UNREVIEWED
 - path: docs/01.requirements/0001-gateway.md
@@ -2427,9 +2513,9 @@ files:
 - path: docs/02.architecture/descriptions/0008-ai-architecture.md
   tracked: true
   kind: document
-  bytes: 7030
+  bytes: 7424
   state: HASHED
-  sha256: 7f3ca0ec588c2e6f176dc795f4b9ec3c213376ff6cb26b205b70a335cbd71ff6
+  sha256: d950f14b4f9dd78d34421039e16e9b8f265cb12bae5451b34420ba55e03bb035
   review:
     state: UNREVIEWED
 - path: docs/02.architecture/descriptions/0009-tooling-architecture.md
@@ -2979,17 +3065,17 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   tracked: true
   kind: document
-  bytes: 32867
+  bytes: 34138
   state: HASHED
-  sha256: 932f3801fb368f8a29a48138a3e1916291fb3ed854cc241548578d734e9f38d7
+  sha256: 077d5987c6dc0e265a5ee079927bd670b586745fa4105c2d1895dd10577f7a67
   review:
     state: UNREVIEWED
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
   tracked: true
   kind: document
-  bytes: 40215
+  bytes: 41843
   state: HASHED
-  sha256: 0c7c1cef4e41dd21590dad7ca8f98f9a05085804b5ccdb4078436be1659f6536
+  sha256: 745a0fc75e24cbfbcd134a65e736c3f86b505f6f4d347bcb80d481767e07d767
   review:
     state: UNREVIEWED
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0001-request-baseline-and-inventory.md
@@ -3322,6 +3408,14 @@ files:
       documents were not re-reviewed.
     complete: false
     state: PARTIAL
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md
+  tracked: true
+  kind: document
+  bytes: 33504
+  state: HASHED
+  sha256: b4fa9fdad3f78413e10d89f0033692a0c2c0c2ddf6427fda1dc0f4db3aeb978b
+  review:
+    state: UNREVIEWED
 - path: docs/03.specs/0213-dev-data-and-influx-retirement/plan.md
   tracked: true
   kind: document
@@ -4485,9 +4579,9 @@ files:
 - path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
   tracked: true
   kind: document
-  bytes: 20864
+  bytes: 21100
   state: HASHED
-  sha256: 4f0470901e2cf5dcdedd82853cca8fd4bebc3610ff368f653604fd3bfe6c53b9
+  sha256: 91ec0733f6947887a97253a900cd27a7ddbc0cbc597a3450dcbb74665767e4b2
   review:
     state: UNREVIEWED
 - path: docs/05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md
@@ -4549,9 +4643,9 @@ files:
 - path: docs/05.operations/guides/09-ai-and-search/0073-open-notebook.md
   tracked: true
   kind: document
-  bytes: 4806
+  bytes: 6022
   state: HASHED
-  sha256: 2eb0e76328fb3cf8eca086d1691de78b3fa8c861095738e658fc9f482ac39956
+  sha256: 783d575a8189db3658cc088e389f372f481f5d617c6517aac654fffb13199748
   review:
     state: UNREVIEWED
 - path: docs/05.operations/guides/09-ai-and-search/0081-comfyui.md
@@ -5325,9 +5419,9 @@ files:
 - path: docs/05.operations/policies/09-ai-and-search/0073-open-notebook.md
   tracked: true
   kind: document
-  bytes: 3808
+  bytes: 4505
   state: HASHED
-  sha256: 1f3db827400860afac528a8795ddaa88f7867e21af79a36247e72640dfb4ef08
+  sha256: 04967945998b6d3031d892c17411f6e16121d5af88b81ce4ee7807421b1222d4
   review:
     state: UNREVIEWED
 - path: docs/05.operations/policies/09-ai-and-search/0081-comfyui.md
@@ -6085,9 +6179,9 @@ files:
 - path: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
   tracked: true
   kind: document
-  bytes: 6233
+  bytes: 8543
   state: HASHED
-  sha256: 4f377f51ac7816cf6ab3c14096022562815aecfed5a4a22b0d7bcece25a92be3
+  sha256: 5809c333e4c0967e8c811028a7716d0d4114817c79e23a4c96fa7f7e5bcc1531
   review:
     state: UNREVIEWED
 - path: docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md
@@ -6437,15 +6531,15 @@ files:
 - path: docs/90.references/data/0096-workspace-inventory/README.md
   tracked: true
   kind: document
-  bytes: 9537
+  bytes: 10262
   state: HASHED
-  sha256: e5b96b5f4de5f163ab4152d578cb411458bb10f98e02aa8b197855faf886728b
+  sha256: f8cb82887f3e6dcea2dd922f484ad8709a077ed43dcd8b4f2134dcc508a273f3
   review:
     state: UNREVIEWED
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   tracked: true
   kind: configuration
-  bytes: 1197287
+  bytes: 1293248
   state: GENERATED_OUTPUT
 - path: docs/90.references/data/README.md
   tracked: true
@@ -6632,9 +6726,9 @@ files:
 - path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
   tracked: true
   kind: document
-  bytes: 444077
+  bytes: 444087
   state: HASHED
-  sha256: 2e92d2bb86a2515591a29fe4c31ef28192933cb40fa3dcee13f95329ab53a6c7
+  sha256: 0a870fd75457a2249e8b14058b0b5b090d09f456aa8599e2d380a64818a528a7
   review:
     path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
     reviewer: root_document_review
@@ -12260,9 +12354,9 @@ files:
 - path: infra/07-workflow/n8n/docker-compose.yml
   tracked: true
   kind: configuration
-  bytes: 14050
+  bytes: 14635
   state: HASHED
-  sha256: afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7
+  sha256: 63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e
   review:
     path: infra/07-workflow/n8n/docker-compose.yml
     reviewer: /root/p02_final_iac_review (iac-reviewer)
@@ -12271,7 +12365,7 @@ files:
     scope: P02 dedicated Valkey mount changed section and cross-file contract; full-file
       review not claimed
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: infra/07-workflow/n8n/docker-entrypoint.dev.sh
   tracked: true
   kind: code
@@ -12286,6 +12380,14 @@ files:
   bytes: 5731
   state: HASHED
   sha256: 19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99
+  review:
+    state: UNREVIEWED
+- path: infra/07-workflow/n8n/n8n-task-runners.json
+  tracked: true
+  kind: configuration
+  bytes: 1831
+  state: HASHED
+  sha256: ea2779cdebf547308c515770d354f6fa7ccf76e7712beff4a3636d307140c6ed
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/n8n/workloads/README.md
@@ -12371,9 +12473,17 @@ files:
 - path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py
   tracked: true
   kind: code
-  bytes: 17380
+  bytes: 18918
   state: HASHED
-  sha256: 213e656473312905f1320b8d53507c26c25b6bf1d739e832972df371f3838843
+  sha256: e4fe7697d717c0a986c6ba4831dfbc5162863bf5f7918df1da5efb4c1e9ea9c2
+  review:
+    state: UNREVIEWED
+- path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/webhook_transport.py
+  tracked: true
+  kind: code
+  bytes: 17031
+  state: HASHED
+  sha256: adb3ab26f7cc37645d345c84c52eb34051c66362626226f8623fe01422a83fad
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/install.py
@@ -12779,9 +12889,9 @@ files:
 - path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_research_report_plugin.py
   tracked: true
   kind: code
-  bytes: 13097
+  bytes: 22404
   state: HASHED
-  sha256: 4918a103e8eec7dbc1bdfce78232e92fe70f10cabcfa37f2510daf40e6ff30cf
+  sha256: c72f2ff2e5dc4f04dc618eeeaf7ee2221ac4077de91fd73dd1b8a0d76ba19b9c
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_route_binding.py
@@ -12822,6 +12932,14 @@ files:
   bytes: 12707
   state: HASHED
   sha256: 6e949e02b69c40afb75d2e438662ebbfe32e1426f159cfbe03ff55a168361022
+  review:
+    state: UNREVIEWED
+- path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_webhook_transport.py
+  tracked: true
+  kind: code
+  bytes: 24912
+  state: HASHED
+  sha256: 971dac2a153d868081b1c670451d921644b4c2dad94292404fb629d486f3bd51
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_workflow.py
@@ -13170,9 +13288,9 @@ files:
 - path: infra/08-ai/open-notebook/docker-compose.yml
   tracked: true
   kind: configuration
-  bytes: 4913
+  bytes: 4911
   state: HASHED
-  sha256: a1d0b2c90982489a48c69198c1c785816246b42cf587fed8b6ac3b71e888b336
+  sha256: 9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d
   review:
     path: infra/08-ai/open-notebook/docker-compose.yml
     reviewer: /root/p02_iac_review (iac-reviewer)
@@ -13181,7 +13299,7 @@ files:
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: infra/08-ai/open-notebook/surrealdb/Dockerfile
   tracked: true
   kind: configuration
@@ -13319,9 +13437,9 @@ files:
 - path: infra/09-platform-ops/project-registration/wiki-preparation/fixtures/README.md
   tracked: true
   kind: document
-  bytes: 1835
+  bytes: 3536
   state: HASHED
-  sha256: 656cfd01d95f186eaaad55bc2a4241fa2db4f434c2f4225a46a1ea115d3775a8
+  sha256: b1d10d6666714e7be810a3324e6a74e1ee3c4fb2f5b574a3e606ba3f97cce183
   review:
     state: UNREVIEWED
 - path: infra/09-platform-ops/project-registration/wiki-preparation/fixtures/artifact.synthetic.txt
@@ -15709,6 +15827,14 @@ files:
   sha256: 27ba7108abfbd539714f81ba5c214e4a3fe2eb443921452fd2414e6e56cbf7d1
   review:
     state: UNREVIEWED
+- path: scripts/lib/ops/_notebook_models_http.py
+  tracked: true
+  kind: code
+  bytes: 7163
+  state: HASHED
+  sha256: 87a16f423e3bdc6e5650f858095f72deb161f6eb90ae98a153134467e622bbaf
+  review:
+    state: UNREVIEWED
 - path: scripts/lib/ops/_openbao_copy_io.py
   tracked: true
   kind: code
@@ -15736,9 +15862,9 @@ files:
 - path: scripts/lib/ops/_workspace_connection_sources.py
   tracked: true
   kind: code
-  bytes: 22832
+  bytes: 24675
   state: HASHED
-  sha256: dfefebaa9a03278669e9db590997d42a4473f428c35e1fa052bd792e2aa8e2bf
+  sha256: e3f8e6e9368d1643d58fcb34951a8bd5f4f9bf76aaf243121eeee98edbbf3e5a
   review:
     path: scripts/lib/ops/_workspace_connection_sources.py
     reviewer: /root/p02_code_review (code-reviewer)
@@ -15746,7 +15872,7 @@ files:
     sha256: dfefebaa9a03278669e9db590997d42a4473f428c35e1fa052bd792e2aa8e2bf
     scope: P02 changed/source-contract; full-file review not claimed
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: scripts/lib/ops/_workspace_connections.py
   tracked: true
   kind: code
@@ -15761,6 +15887,14 @@ files:
     scope: P02 changed/source-contract; full-file review not claimed
     complete: false
     state: PARTIAL
+- path: scripts/lib/ops/_workspace_model_connections.py
+  tracked: true
+  kind: code
+  bytes: 11664
+  state: HASHED
+  sha256: 4fae84b87866e1c3b28d9467b1a1d796da5407d02fa65d1fc5cf630e1bee60c1
+  review:
+    state: UNREVIEWED
 - path: scripts/lib/ops/_workspace_render.py
   tracked: true
   kind: code
@@ -15791,6 +15925,14 @@ files:
   bytes: 6032
   state: HASHED
   sha256: 86179a3d6690a82d50d2c63dbad1f6250f1c50521dd06704370af78af9a95f5f
+  review:
+    state: UNREVIEWED
+- path: scripts/lib/ops/notebook_models.py
+  tracked: true
+  kind: code
+  bytes: 21460
+  state: HASHED
+  sha256: 0f608559560a84973bf344554d8421df95484c90fd46566e042a2eaa075cf922
   review:
     state: UNREVIEWED
 - path: scripts/lib/ops/openbao_consumer_migration.py
@@ -15914,9 +16056,9 @@ files:
 - path: scripts/manifest.yaml
   tracked: true
   kind: configuration
-  bytes: 45608
+  bytes: 47418
   state: HASHED
-  sha256: aa85f837eb340bfa789910a4e3d53601dc43948fae274831b82357db5ea5cd9a
+  sha256: 8d703b7601af47d1955154dc7f8e478c2f12023f7c44a4088d17056a5c855ece
   review:
     path: scripts/manifest.yaml
     reviewer: root_ci_review
@@ -15925,7 +16067,7 @@ files:
     scope: P02 changed CI registration and source assertions; full-file review not
       claimed
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: scripts/operations/agent_memory.py
   tracked: true
   kind: code
@@ -15972,6 +16114,14 @@ files:
   bytes: 33885
   state: HASHED
   sha256: 996034abdf09b1ade18a3e4e91f0ac3d3b7ad058253ecc5c3d99bc8ae1f909bf
+  review:
+    state: UNREVIEWED
+- path: scripts/operations/notebook-models.py
+  tracked: true
+  kind: code
+  bytes: 2909
+  state: HASHED
+  sha256: 13eaef9e4a0613ca9c034b334358249efbb7ab0bdc6aa44799d68f571fc61c10
   review:
     state: UNREVIEWED
 - path: scripts/operations/openbao-consumer-migration.py
@@ -16218,6 +16368,14 @@ files:
   bytes: 1814
   state: HASHED
   sha256: 2698e85eed121bf4f3bc7310134f8db749914067e502eb7d2b97bc555b7dfee9
+  review:
+    state: UNREVIEWED
+- path: scripts/validation/check-p03-hermes.py
+  tracked: true
+  kind: code
+  bytes: 2684
+  state: HASHED
+  sha256: 454e4883ff9253c5b0c8977c2e155b746296d55e593167989262238d81b36d5c
   review:
     state: UNREVIEWED
 - path: scripts/validation/check-project-registration.py
@@ -16796,6 +16954,14 @@ files:
   sha256: 2891ce8c795c2def853bb24ea373e3341b7c113c094b186a0c9f7bd100a539bb
   review:
     state: UNREVIEWED
+- path: tests/fixtures/p03_models/notebook-model-policy.json
+  tracked: true
+  kind: test
+  bytes: 485
+  state: HASHED
+  sha256: dfe205b314113fe3604e25bc0d6101a0338b33bf0a65bf7b45cd605a8c55842f
+  review:
+    state: UNREVIEWED
 - path: tests/fixtures/port-contract/README.md
   tracked: true
   kind: test
@@ -17142,9 +17308,9 @@ files:
 - path: tests/lib/gate/test_github_workflow_contract.py
   tracked: true
   kind: test
-  bytes: 87611
+  bytes: 87798
   state: HASHED
-  sha256: b0ce71bc946221dd5e86efc223eed8d9c4011e1c6851f9c5119e66757b864a7a
+  sha256: f7d076259d9c70f220229720f9534bb8915ffeb730ad9d0d57fe939cda93aed7
   review:
     path: tests/lib/gate/test_github_workflow_contract.py
     reviewer: p02_residual_code_review + p02_residual_supply_review
@@ -17153,7 +17319,15 @@ files:
     scope: Exact SSO optional selector and no-environment-expansion assertions; full-file
       review not claimed
     complete: false
-    state: PARTIAL
+    state: STALE
+- path: tests/lib/gate/test_p03_workflow_contract.py
+  tracked: true
+  kind: test
+  bytes: 6860
+  state: HASHED
+  sha256: e205d8ac5517f988ed6645e4cb9b40498c76eae28e4d8d0e0cfad4a73639c5f6
+  review:
+    state: UNREVIEWED
 - path: tests/lib/hooks/__init__.py
   tracked: true
   kind: test
@@ -17208,6 +17382,14 @@ files:
   bytes: 6768
   state: HASHED
   sha256: 5b5d3d0fc14334645f63b3ebd41e75db4e70187a2ca8053c565286f012edc1a4
+  review:
+    state: UNREVIEWED
+- path: tests/lib/ops/test_notebook_models.py
+  tracked: true
+  kind: test
+  bytes: 23150
+  state: HASHED
+  sha256: 89241a8d24a490a805549419cbab18491a279e68e589164fda40e33a3960881c
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_openbao_consumer_migration.py
@@ -17349,9 +17531,9 @@ files:
 - path: tests/lib/ops/test_workspace_connections.py
   tracked: true
   kind: test
-  bytes: 22730
+  bytes: 22793
   state: HASHED
-  sha256: 261067d2f313e2d501cb331f4649c57039c6e90e842cba112b2f35a809e1e624
+  sha256: 97a18928766714174f33d2ffc29c11c14980b3033c700177d528c4a018e40ef0
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_workspace_inventory.py
@@ -17360,6 +17542,14 @@ files:
   bytes: 23302
   state: HASHED
   sha256: 48fcd1578ff1eadcc99adee3c5b9a7a815cba55f42593965a27d053fe90d0aee
+  review:
+    state: UNREVIEWED
+- path: tests/lib/ops/test_workspace_model_connections.py
+  tracked: true
+  kind: test
+  bytes: 16258
+  state: HASHED
+  sha256: 2f9c84ad0f1fe0135cbde965590c39687bdf847f81b3b404e8df61a8f6116383
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_workspace_services.py
@@ -17544,6 +17734,78 @@ files:
   bytes: 27840
   state: HASHED
   sha256: f369c48fc6efce9b5a6944e906c8de343744314bf7fa5bb3a00a17645a957c49
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_p03_notebook_effects.py
+  tracked: true
+  kind: test
+  bytes: 4405
+  state: HASHED
+  sha256: d9176ce512458a9d5557c1173ce28813f4400377664619f504d65a17953c647e
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_p03_notebook_native.py
+  tracked: true
+  kind: test
+  bytes: 26313
+  state: HASHED
+  sha256: 6c10e57f50edfc9c25f3b9cd97dc609f25ed56eb3aabf15727f6649bc90d1fa6
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_p03_notebook_protocol.py
+  tracked: true
+  kind: test
+  bytes: 3260
+  state: HASHED
+  sha256: 0947f97e8cc611889034e75896f2b19c218f4bde034e114fdc0adc8c69af90b4
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_p03_notebook_readiness.py
+  tracked: true
+  kind: test
+  bytes: 5022
+  state: HASHED
+  sha256: d765e2557659c8e1859f88115873bf1b387f427f972b43e327cc297aecfc56cf
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_p03_owned_docker.py
+  tracked: true
+  kind: test
+  bytes: 17853
+  state: HASHED
+  sha256: ff189c6131e036fc951eeffb3c03ef5a02ebcc988eaf3ae32e8083788874744b
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_p03_runner_native_fixture.py
+  tracked: true
+  kind: test
+  bytes: 28465
+  state: HASHED
+  sha256: 10fbf43307cf72d3a1fff6f42dfe5f32c68ab4466be13e6bd6d27784c0f979b4
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_p03_runner_outcomes.py
+  tracked: true
+  kind: test
+  bytes: 4324
+  state: HASHED
+  sha256: f56803a167a42892ea0fcd0bec8026c1d1f9615ee51ed7f04fe58df76db34fa6
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_p03_worker_model_native.py
+  tracked: true
+  kind: test
+  bytes: 15386
+  state: HASHED
+  sha256: 4ca3f96caf470a2fa68197b14456057784717af0b71e66e0e3fac475802bf9d0
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_p03_worker_ollama_fixture.py
+  tracked: true
+  kind: test
+  bytes: 7374
+  state: HASHED
+  sha256: 0c64a7734cbfa0e84efa47c5b2e4a39bea3a028ddc826a59b76e6a64eaf285f8
   review:
     state: UNREVIEWED
 - path: tests/validation/_sample_delivery_fixtures.py
@@ -18201,6 +18463,78 @@ files:
       not claimed
     complete: false
     state: PARTIAL
+- path: tests/validation/test_p03_hermes_gate.py
+  tracked: true
+  kind: test
+  bytes: 3401
+  state: HASHED
+  sha256: 1801d47c64206d4bd4be5d53cb8118b2b5755f5be0346daa694980389e162b73
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p03_models_native.py
+  tracked: true
+  kind: test
+  bytes: 1572
+  state: HASHED
+  sha256: 4531d811c7a9009bfbcab27a5dea315f47463927da17bee7ac465529efa5849d
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p03_notebook_effects.py
+  tracked: true
+  kind: test
+  bytes: 12058
+  state: HASHED
+  sha256: bd993082e092d9957f5273b69f809d2ae98604a6b1dd5ed50306cde79c521445
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p03_notebook_models.py
+  tracked: true
+  kind: test
+  bytes: 29435
+  state: HASHED
+  sha256: 1ffb1150563b88b9f47cea50ed35e7c6c9a449e879b36f5cd6b4a4dc0105349e
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p03_owned_docker.py
+  tracked: true
+  kind: test
+  bytes: 13592
+  state: HASHED
+  sha256: 87d951002cb5830eb50b989dac558091a30aeb5042a36c2137825629b7e250ee
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p03_runner_boundaries.py
+  tracked: true
+  kind: test
+  bytes: 18537
+  state: HASHED
+  sha256: 120ab7c919d1299b0cca28efebb7f71e743444aea9423fd122f9467150b2a076
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p03_runner_consumers.py
+  tracked: true
+  kind: test
+  bytes: 3226
+  state: HASHED
+  sha256: a75262b0925fe66eecdc242f37098285f2c2a6e1f87d991da265e9ab9d8c316b
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p03_runner_isolation.py
+  tracked: true
+  kind: test
+  bytes: 27275
+  state: HASHED
+  sha256: 06da0caff4c9c9136d3706ba007c77c31df21a07814d5c51adf8f526f89aa008
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p03_worker_models.py
+  tracked: true
+  kind: test
+  bytes: 9510
+  state: HASHED
+  sha256: 6fb6f8be8a9ca7fec490cb51c56e8d1d24211dd93d0e0f88ca9f452c0b0855cb
+  review:
+    state: UNREVIEWED
 - path: tests/validation/test_perf_db_contract.py
   tracked: true
   kind: test
@@ -18553,11 +18887,11 @@ files:
   review:
     state: UNREVIEWED
 excluded:
-  binary: 34
+  binary: 35
   code: 125
-  configuration: 363
+  configuration: 376
   document: 110
-  generated: 38068
+  generated: 38184
   private: 229
 opaque:
   git_directories: 1
@@ -25131,6 +25465,7 @@ services:
   networks:
   - edge_net
   - mng_data_net
+  - n8n_main_runner_net
   - n8n_net
   - obs_net
   ports:
@@ -25152,6 +25487,13 @@ services:
         name: n8n
         network: null
         network_reference: mng_data_net
+        port:
+          state: unknown
+        protocol: tcp
+      - alias_index: null
+        name: n8n
+        network: null
+        network_reference: n8n_main_runner_net
         port:
           state: unknown
         protocol: tcp
@@ -25220,6 +25562,7 @@ services:
   - mng_data_net
   - n8n_blog_ingest_net
   - n8n_net
+  - n8n_worker_runner_net
   ports:
     service: n8n-worker
     listener:
@@ -25246,6 +25589,13 @@ services:
         name: n8n-worker
         network: null
         network_reference: n8n_net
+        port:
+          state: unknown
+        protocol: tcp
+      - alias_index: null
+        name: n8n-worker
+        network: null
+        network_reference: n8n_worker_runner_net
         port:
           state: unknown
         protocol: tcp
@@ -25293,7 +25643,7 @@ services:
   - workflow
   - workflow-n8n
   networks:
-  - n8n_net
+  - n8n_main_runner_net
   ports:
     service: n8n-task-runner
     listener:
@@ -25305,7 +25655,7 @@ services:
       - alias_index: null
         name: n8n-task-runner
         network: null
-        network_reference: n8n_net
+        network_reference: n8n_main_runner_net
         port:
           state: unknown
         protocol: tcp
@@ -25324,9 +25674,9 @@ services:
   secrets:
   - n8n_runner_auth_token
   mounts:
-  - type: volume
-    source: n8n-task-runner-data
-    target: /home/node/.n8n
+  - type: bind
+    source: ./n8n-task-runners.json
+    target: /etc/n8n-task-runners.json
   depends_on:
   - service: n8n
     condition: service_healthy
@@ -25347,7 +25697,7 @@ services:
   - workflow
   - workflow-n8n
   networks:
-  - n8n_net
+  - n8n_worker_runner_net
   ports:
     service: n8n-task-runner-worker
     listener:
@@ -25359,7 +25709,7 @@ services:
       - alias_index: null
         name: n8n-task-runner-worker
         network: null
-        network_reference: n8n_net
+        network_reference: n8n_worker_runner_net
         port:
           state: unknown
         protocol: tcp
@@ -25378,9 +25728,9 @@ services:
   secrets:
   - n8n_runner_auth_token
   mounts:
-  - type: volume
-    source: n8n-task-runner-worker-data
-    target: /home/node/.n8n
+  - type: bind
+    source: ./n8n-task-runners.json
+    target: /etc/n8n-task-runners.json
   depends_on:
   - service: n8n-worker
     condition: service_healthy
@@ -33031,7 +33381,7 @@ services:
 compose:
   sources:
   - path: docker-compose.yml
-    sha256: 95a797947e7be5954f7673a252170b16d94db562f9552016db73a5eb6f27559c
+    sha256: 44effd451ffd74ba718587ffe7539d18f68c181b8a71debc9fa819bfe1e6b6e3
     state: parsed
   - path: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
     sha256: 2cca85768620dda41037f4555f386b53f52115e7e21711443e3aeed8e0ed0a98
@@ -33124,7 +33474,7 @@ compose:
     sha256: e4a3a82a5ce6239718f2da6c7dccacc528266e60080d0aabeeaa576fc71e245c
     state: parsed
   - path: infra/07-workflow/n8n/docker-compose.yml
-    sha256: afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7
+    sha256: 63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e
     state: parsed
   - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
     sha256: 80f11033f1ec282e7967c7a86aec0611ec3eac3f14ba18ec1f222a4a238d1d56
@@ -33142,7 +33492,7 @@ compose:
     sha256: fb0a48715f9cfcdfae34e39281580c28c8c212fe84cd60624edbff5290c38bb5
     state: parsed
   - path: infra/08-ai/open-notebook/docker-compose.yml
-    sha256: a1d0b2c90982489a48c69198c1c785816246b42cf587fed8b6ac3b71e888b336
+    sha256: 9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d
     state: parsed
   - path: infra/08-ai/open-webui/docker-compose.yml
     sha256: 718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b
@@ -34352,21 +34702,2326 @@ compose:
     service: valkey-cluster-exporter
     target: infra/common-optimizations.yml
     target_service: template-infra-readonly-low
-  render_cases: []
+  render_cases:
+  - source: docker-compose.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:37.133817+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:39.245078+00:00'
+    files: &id001
+    - docker-compose.yml
+    - examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    result: FAIL
+    exit_code: 1
+    reason: undefined-network
+  - source: examples/operations/locust-telemetry/compose.override.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:41.745934+00:00'
+    files: &id002
+    - labs/locust.yml
+    - examples/operations/locust-telemetry/compose.override.yml
+    result: PASS
+    exit_code: 0
+    service_count: 3
+  - source: examples/operations/postgres-logical-upgrade/docker-compose.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:41.901768+00:00'
+    files: &id003
+    - examples/operations/postgres-logical-upgrade/docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+  - source: examples/operations/quality-metrics/docker-compose.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:42.023234+00:00'
+    files: &id004
+    - examples/operations/quality-metrics/docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 3
+  - source: examples/operations/quality-path-guard/docker-compose.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:42.143787+00:00'
+    files: &id005
+    - examples/operations/quality-path-guard/docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+  - source: examples/operations/sample-service-delivery/compose.delivery.override.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:42.258000+00:00'
+    files: &id006
+    - examples/sample-web-service/docker-compose.yml
+    - examples/operations/sample-service-delivery/compose.delivery.override.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: examples/sample-web-service/docker-compose.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:42.376349+00:00'
+    files:
+    - examples/sample-web-service/docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: labs/cassandra.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:42.537522+00:00'
+    files: &id007
+    - labs/cassandra.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: labs/couchdb.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:42.725843+00:00'
+    files: &id008
+    - labs/couchdb.yml
+    result: PASS
+    exit_code: 0
+    service_count: 4
+  - source: labs/kafka-cluster.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:42.918677+00:00'
+    files: &id009
+    - labs/kafka-cluster.yml
+    result: PASS
+    exit_code: 0
+    service_count: 5
+  - source: labs/locust.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:43.087139+00:00'
+    files: &id010
+    - labs/locust.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+  - source: labs/mongodb.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:43.228521+00:00'
+    files: &id011
+    - labs/mongodb.yml
+    result: PASS
+    exit_code: 0
+    service_count: 6
+  - source: labs/opensearch-cluster.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:43.394314+00:00'
+    files: &id012
+    - labs/opensearch-cluster.yml
+    result: PASS
+    exit_code: 0
+    service_count: 4
+  - source: labs/postgresql-ha.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:43.554605+00:00'
+    files: &id013
+    - labs/postgresql-ha.yml
+    result: PASS
+    exit_code: 0
+    service_count: 11
+  - source: labs/supabase.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:43.730499+00:00'
+    files: &id014
+    - labs/supabase.yml
+    result: PASS
+    exit_code: 0
+    service_count: 13
+  - source: labs/valkey-cluster.yml
+    selection: all-profiles
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:43.910207+00:00'
+    files: &id015
+    - labs/valkey-cluster.yml
+    result: PASS
+    exit_code: 0
+    service_count: 8
+  - source: infra/01-gateway/traefik/docker-compose.yml
+    selection: overlay:infra/01-gateway/traefik/compose.window-ca.override.yml
+    overlay: infra/01-gateway/traefik/compose.window-ca.override.yml
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:44.068266+00:00'
+    files: &id016
+    - docker-compose.yml
+    - infra/01-gateway/traefik/compose.window-ca.override.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+  - source: infra/02-auth/oauth2-proxy/docker-compose.yml
+    selection: overlay:infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+    overlay: infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:46.292388+00:00'
+    files: &id017
+    - docker-compose.yml
+    - infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+  - source: infra/04-data/mng-db/docker-compose.yml
+    selection: overlay:infra/04-data/mng-db/docker-compose.n8n-acl.yml
+    overlay: infra/04-data/mng-db/docker-compose.n8n-acl.yml
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:48.629383+00:00'
+    files: &id018
+    - docker-compose.yml
+    - infra/04-data/mng-db/docker-compose.n8n-acl.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+  - source: infra/07-workflow/airflow/docker-compose.yml
+    selection: overlay:infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+    overlay: infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:50.951815+00:00'
+    files: &id019
+    - docker-compose.yml
+    - infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+  - source: infra/07-workflow/airflow/docker-compose.yml
+    selection: overlay:infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
+    overlay: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:53.321390+00:00'
+    files: &id020
+    - docker-compose.yml
+    - infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+  - source: infra/07-workflow/n8n/docker-compose.yml
+    selection: overlay:infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+    overlay: infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:55.587548+00:00'
+    files: &id021
+    - docker-compose.yml
+    - infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+  - source: docker-compose.yml
+    selection: overlay:infra/07-workflow/n8n/docker-compose.ollama-local.yml
+    overlay: infra/07-workflow/n8n/docker-compose.ollama-local.yml
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:20:57.816332+00:00'
+    files:
+    - docker-compose.yml
+    - infra/07-workflow/n8n/docker-compose.ollama-local.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+  - source: docker-compose.yml
+    selection: overlay:infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
+    overlay: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:00.081329+00:00'
+    files:
+    - docker-compose.yml
+    - infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
+    result: PASS
+    exit_code: 0
+    service_count: 112
+  - source: docker-compose.yml
+    selection: profile:admin
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:02.611369+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+  - source: docker-compose.yml
+    selection: profile:admin-data
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:04.730983+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: docker-compose.yml
+    selection: profile:admin-logs
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:06.820868+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: docker-compose.yml
+    selection: profile:ai
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:08.848893+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 5
+  - source: docker-compose.yml
+    selection: profile:ai-image
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:11.006159+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: docker-compose.yml
+    selection: profile:ai-llm
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:13.016220+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 4
+  - source: docker-compose.yml
+    selection: profile:alerting
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:15.209351+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 3
+  - source: docker-compose.yml
+    selection: profile:analytics-engineering
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:17.260177+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 6
+  - source: docker-compose.yml
+    selection: profile:api-mock
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:19.451391+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: docker-compose.yml
+    selection: profile:auth
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:21.593764+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+  - source: docker-compose.yml
+    selection: profile:availability
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:23.736431+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: docker-compose.yml
+    selection: profile:backup
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:25.863356+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 3
+  - source: docker-compose.yml
+    selection: profile:batch-metrics
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:27.915092+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 3
+  - source: docker-compose.yml
+    selection: profile:bi
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:29.953250+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 7
+  - source: docker-compose.yml
+    selection: profile:blog-ingestion
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:31.996886+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: docker-compose.yml
+    selection: profile:cdc
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:34.133447+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 9
+  - source: docker-compose.yml
+    selection: profile:contract-testing
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:36.239758+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 6
+  - source: docker-compose.yml
+    selection: profile:core
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:38.356976+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 11
+  - source: docker-compose.yml
+    selection: profile:crawl4ai
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:40.405935+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+  - source: docker-compose.yml
+    selection: profile:data-science
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:42.614526+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 12
+  - source: docker-compose.yml
+    selection: profile:dedicated-valkey
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:44.703385+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 6
+  - source: docker-compose.yml
+    selection: profile:dependency-update
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:46.927056+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: docker-compose.yml
+    selection: profile:dev
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:49.008111+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 18
+  - source: docker-compose.yml
+    selection: profile:dev-data
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:51.106898+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 5
+  - source: docker-compose.yml
+    selection: profile:experience
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:53.122607+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+  - source: docker-compose.yml
+    selection: profile:graph
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:55.187239+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: docker-compose.yml
+    selection: profile:iac
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:57.313122+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 4
+  - source: docker-compose.yml
+    selection: profile:lakehouse
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:21:59.394873+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 11
+  - source: docker-compose.yml
+    selection: profile:local
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:01.436355+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 12
+  - source: docker-compose.yml
+    selection: profile:logs
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:03.551833+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 8
+  - source: docker-compose.yml
+    selection: profile:mail-dev
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:05.573599+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 1
+  - source: docker-compose.yml
+    selection: profile:mail-server
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:07.933699+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+  - source: docker-compose.yml
+    selection: profile:messaging
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:10.129776+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 7
+  - source: docker-compose.yml
+    selection: profile:messaging-admin
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:12.215498+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 5
+  - source: docker-compose.yml
+    selection: profile:messaging-broker
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:14.243506+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 3
+  - source: docker-compose.yml
+    selection: profile:messaging-connect
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:16.304737+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 4
+  - source: docker-compose.yml
+    selection: profile:messaging-rest
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:18.362988+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 4
+  - source: docker-compose.yml
+    selection: profile:messaging-schema
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:20.607106+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 3
+  - source: docker-compose.yml
+    selection: profile:mlops
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:22.846766+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 11
+  - source: docker-compose.yml
+    selection: profile:mng
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:24.925659+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 6
+  - source: docker-compose.yml
+    selection: profile:nginx
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:27.049790+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 6
+  - source: docker-compose.yml
+    selection: profile:notebook
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:29.159767+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 2
+  - source: docker-compose.yml
+    selection: profile:obs
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:31.266440+00:00'
+    files:
+    - docker-compose.yml
+    result: PASS
+    exit_code: 0
+    service_count: 17
+  - source: docker-compose.yml
+    selection: profile:obs-core
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:33.331027+00:00'
+    files:
+    - docker-compose.yml
+    result: ERROR
+    reason: tool-unavailable-timeout-or-invalid-model
+  - source: docker-compose.yml
+    selection: profile:obs-gpu
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044924+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:obs-host
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044944+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:ollama
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044949+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:opensearch
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044952+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:policy-check
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044956+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:profiling
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044959+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:qdrant
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044963+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:quality-results
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044966+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:registry
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044970+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:sast
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044973+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:seaweedfs
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044976+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:secrets
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044979+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:security
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044982+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:storage
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044985+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:storage-seaweedfs
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044989+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:surrealdb
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044992+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:testing
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044995+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:tooling
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.044998+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:tracing
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045001+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:workflow
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045004+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:workflow-airflow
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045007+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: profile:workflow-n8n
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045011+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:airflow-apiserver
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045014+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:airflow-dag-processor
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045017+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:airflow-init
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045021+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:airflow-scheduler
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045024+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:airflow-statsd-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045027+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:airflow-triggerer
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045030+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:airflow-valkey
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045034+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:airflow-valkey-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045037+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:airflow-worker
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045040+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:alertmanager
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045043+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:alloy
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045046+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:backup-sqlite-export
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045050+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:blog-ingestion
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045053+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:cadvisor
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045056+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:comfyui
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045059+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:conftest
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045062+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:crawl4ai
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045065+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:crawl4ai-egress
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045068+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dbt
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045071+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dbt-db-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045074+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dcgm-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045077+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:debezium-db-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045081+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dev-perf-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045084+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dev-pg
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045087+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dev-pg-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045090+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dev-pg-monitor-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045093+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dev-platform-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045097+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dev-valkey
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045100+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dev-valkey-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045103+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:dozzle
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045106+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:flink-jobmanager
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045109+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:flink-taskmanager
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045112+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:flower
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045115+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:gatus
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045118+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:grafana
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045121+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:grafana-db-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045124+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:great-expectations
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045127+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:jupyterlab
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045130+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:k6
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045133+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:kafbat-ui
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045137+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:kafka-1
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045140+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:kafka-connect
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045143+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:kafka-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045146+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:kafka-init
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045149+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:kafka-rest-proxy
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045152+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:keycloak
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045156+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:loki
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045159+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:mailpit
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045162+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:mlflow
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045165+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:mlflow-db-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045168+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:mng-pg
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045171+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:mng-pg-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045174+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:mng-pg-init
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045177+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:mng-pg-monitor-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045181+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:mng-valkey
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045184+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:mng-valkey-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045187+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:n8n
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045190+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:n8n-task-runner
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045193+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:n8n-task-runner-worker
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045196+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:n8n-valkey
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045199+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:n8n-valkey-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045202+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:n8n-worker
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045206+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:neo4j
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045209+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:nginx
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045212+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:node-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045215+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:oauth2-proxy
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045218+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:oauth2-proxy-valkey
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045221+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:oauth2-proxy-valkey-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045224+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:ollama
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045227+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:ollama-exporter
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045231+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:open-webui
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045234+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:open_notebook
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045237+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:openbao
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045240+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:openbao-agent
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045243+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:opensearch
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045246+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:opensearch-dashboards
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045249+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:opentofu
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045252+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:pact-broker
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045255+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:pact-broker-db-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045258+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:prometheus
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045262+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:pushgateway
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045265+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:pyroscope
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045268+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:qdrant
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045272+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:redisinsight
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045275+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:registry
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045278+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:renovate
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045281+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:restic
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045284+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:restic-offsite
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045287+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:schema-registry
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045290+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:seaweedfs-buckets
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045293+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:seaweedfs-filer
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045296+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:seaweedfs-master
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045335+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:seaweedfs-s3
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045339+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:seaweedfs-table-bucket
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045342+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:seaweedfs-volume
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045345+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:sonarqube
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045348+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:spark
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045351+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:stalwart
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045354+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:stalwart-config
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045357+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:storybook
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045361+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:storybook-mcp
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045364+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:superset
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045367+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:superset-db-provision
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045370+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:superset-init
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045373+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:surrealdb
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045376+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:tempo
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045379+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:terrakube-api
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045382+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:terrakube-executor
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045385+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:terrakube-ui
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045388+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:traefik
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045391+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:trino
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045395+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
+  - source: docker-compose.yml
+    selection: service:wiremock
+    overlay: null
+    environment: isolated-public-copy
+    observed_at: '2026-11-02T06:22:35.045398+00:00'
+    files:
+    - docker-compose.yml
+    result: NOT_RUN
+    reason: time-budget
   gaps: []
+  synthetic_file_inputs:
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: docker-compose.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    field: file
+  - source: examples/operations/sample-service-delivery/compose.delivery.override.yml
+    field: env_file
+  - source: examples/sample-web-service/docker-compose.yml
+    field: env_file
+  - source: labs/couchdb.yml
+    field: file
+  - source: labs/couchdb.yml
+    field: file
+  - source: labs/mongodb.yml
+    field: file
+  - source: labs/mongodb.yml
+    field: file
+  - source: labs/opensearch-cluster.yml
+    field: file
+  - source: labs/opensearch-cluster.yml
+    field: file
+  - source: labs/opensearch-cluster.yml
+    field: file
+  - source: labs/opensearch-cluster.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/postgresql-ha.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/supabase.yml
+    field: file
+  - source: labs/valkey-cluster.yml
+    field: file
+  synthetic_interpolation_inputs:
+  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
+    selection: all-profiles
+    files: *id001
+    variables:
+      CRR_CONFIG_DIR: directory
+      CRR_SECRET_DIR: directory
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: examples/operations/locust-telemetry/compose.override.yml
+    selection: all-profiles
+    files: *id002
+    variables:
+      LAB_LOCUST_RESULT_DIR: directory
+      LAB_LOCUST_SCENARIO_DIR: directory
+      QUALITY_GID: integer
+      QUALITY_LOCUST_IMAGE: image
+      QUALITY_MAPPINGS_DIR: directory
+      QUALITY_MOCK_IMAGE: image
+      QUALITY_RESULTS_DIR: directory
+      QUALITY_SCENARIO_DIR: directory
+      QUALITY_UID: integer
+  - source: examples/operations/postgres-logical-upgrade/docker-compose.yml
+    selection: all-profiles
+    files: *id003
+    variables:
+      IOR_POSTGRES_PASSWORD: text
+  - source: examples/operations/quality-metrics/docker-compose.yml
+    selection: all-profiles
+    files: *id004
+    variables:
+      METRICS_ALLOY_CONFIG: file
+      METRICS_ALLOY_IMAGE: image
+      METRICS_ALLOY_TOKEN: file
+      METRICS_NETWORK: text
+      METRICS_PROBE_IMAGE: image
+      METRICS_PROM_CONFIG: file
+      METRICS_PROM_IMAGE: image
+  - source: examples/operations/quality-path-guard/docker-compose.yml
+    selection: all-profiles
+    files: *id005
+    variables:
+      QUALITY_BACKEND_NETWORK: text
+      QUALITY_BACKEND_SUBNET: subnet
+      QUALITY_GUARD_CONFIG: file
+      QUALITY_GUARD_IMAGE: image
+      QUALITY_MOCK_IMAGE: image
+      QUALITY_MOCK_MAPPINGS: directory
+      QUALITY_RUNNER_NETWORK: text
+      QUALITY_RUNNER_SUBNET: subnet
+      QUALITY_RUN_ID: text
+  - source: examples/operations/sample-service-delivery/compose.delivery.override.yml
+    selection: all-profiles
+    files: *id006
+    variables:
+      DRE_HOST_PORT: port
+      DRE_IMAGE_REF: image
+      DRE_ROLE: text
+      DRE_TASK_ID: text
+  - source: labs/cassandra.yml
+    selection: all-profiles
+    files: *id007
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/couchdb.yml
+    selection: all-profiles
+    files: *id008
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/kafka-cluster.yml
+    selection: all-profiles
+    files: *id009
+    variables:
+      LAB_DATA_DIR: directory
+      LAB_KAFKA_CLUSTER_ID: text
+  - source: labs/locust.yml
+    selection: all-profiles
+    files: *id010
+    variables:
+      LAB_LOCUST_RESULT_DIR: directory
+      LAB_LOCUST_SCENARIO_DIR: directory
+  - source: labs/mongodb.yml
+    selection: all-profiles
+    files: *id011
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/opensearch-cluster.yml
+    selection: all-profiles
+    files: *id012
+    variables:
+      LAB_DATA_DIR: directory
+      LAB_OPENSEARCH_CERT_DIR: directory
+      LAB_SECRET_DIR: directory
+  - source: labs/postgresql-ha.yml
+    selection: all-profiles
+    files: *id013
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/supabase.yml
+    selection: all-profiles
+    files: *id014
+    variables:
+      LAB_DATA_DIR: directory
+  - source: labs/valkey-cluster.yml
+    selection: all-profiles
+    files: *id015
+    variables:
+      LAB_DATA_DIR: directory
+  - source: infra/01-gateway/traefik/docker-compose.yml
+    selection: overlay:infra/01-gateway/traefik/compose.window-ca.override.yml
+    files: *id016
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: infra/02-auth/oauth2-proxy/docker-compose.yml
+    selection: overlay:infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+    files: *id017
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: infra/04-data/mng-db/docker-compose.yml
+    selection: overlay:infra/04-data/mng-db/docker-compose.n8n-acl.yml
+    files: *id018
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: infra/07-workflow/airflow/docker-compose.yml
+    selection: overlay:infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+    files: *id019
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+  - source: infra/07-workflow/airflow/docker-compose.yml
+    selection: overlay:infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
+    files: *id020
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
+      OPSFLOW_AIRFLOW_IMAGE: image
+      OPSFLOW_CODE_DIR: directory
+      OPSFLOW_SECRET_DIR: directory
+  - source: infra/07-workflow/n8n/docker-compose.yml
+    selection: overlay:infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+    files: *id021
+    variables:
+      DEFAULT_CERT_DIR: directory
+      DEFAULT_DATA_DIR: directory
+      DEFAULT_MANAGEMENT_DIR: directory
 coverage:
   files:
-    numerator: 41190
-    denominator: 41190
+    numerator: 41351
+    denominator: 41351
   body_review:
     numerator: 0
-    denominator: 2254
+    denominator: 2285
   body_review_partial:
-    numerator: 61
-    denominator: 2254
+    numerator: 55
+    denominator: 2285
   render:
-    numerator: 0
-    denominator: 17
+    numerator: 67
+    denominator: 203
   runtime:
     numerator: 0
     denominator: 112
@@ -34770,13 +37425,13 @@ connections:
   registration:
     level: fixture
     actual_state: UNKNOWN
-- id: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py::n8n-sdk:source-url
+- id: infra/07-workflow/n8n/docker-compose.ollama-local.yml::p03:n8n-worker:ollama-overlay
   source:
-    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py
-    sha256: 213e656473312905f1320b8d53507c26c25b6bf1d739e832972df371f3838843
+    path: infra/07-workflow/n8n/docker-compose.ollama-local.yml
+    sha256: e4a3a82a5ce6239718f2da6c7dccacc528266e60080d0aabeeaa576fc71e245c
   caller_roles:
-  - n8n-workload-client
-  provider: n8n.local
+  - n8n-worker
+  provider: ollama
   port_contract:
     listener:
       state: unknown
@@ -34790,11 +37445,97 @@ connections:
     gateway_backend:
       state: unknown
       port: null
+  auth_kind: none
+  secret_refs: []
+  disposition: deferred
+  reason: network-reachability-not-registration
+  owner: P03
+  registration:
+    level: source-declared
+    actual_state: UNKNOWN
+- id: infra/07-workflow/n8n/docker-compose.yml::p03:n8n-task-runner-worker:broker
+  source:
+    path: infra/07-workflow/n8n/docker-compose.yml
+    sha256: 63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e
+  caller_roles:
+  - n8n-task-runner-worker
+  provider: n8n-worker
+  port_contract:
+    listener:
+      state: unknown
+      port: null
+    service_dns:
+      state: declared
+      port: 5679
+    host_publication:
+      state: unknown
+      port: null
+    gateway_backend:
+      state: unknown
+      port: null
+  auth_kind: credential-reference
+  secret_refs:
+  - n8n_runner_auth_token
+  disposition: adopted
+  reason: external-runner-broker-source
+  owner: P03
+  registration:
+    level: source-declared
+    actual_state: UNKNOWN
+- id: infra/07-workflow/n8n/docker-compose.yml::p03:n8n-task-runner:broker
+  source:
+    path: infra/07-workflow/n8n/docker-compose.yml
+    sha256: 63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e
+  caller_roles:
+  - n8n-task-runner
+  provider: n8n
+  port_contract:
+    listener:
+      state: unknown
+      port: null
+    service_dns:
+      state: declared
+      port: 5679
+    host_publication:
+      state: absent
+      port: null
+    gateway_backend:
+      state: unknown
+      port: null
+  auth_kind: credential-reference
+  secret_refs:
+  - n8n_runner_auth_token
+  disposition: adopted
+  reason: external-runner-broker-source
+  owner: P03
+  registration:
+    level: source-declared
+    actual_state: UNKNOWN
+- id: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py::n8n-sdk:source-url
+  source:
+    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py
+    sha256: e4fe7697d717c0a986c6ba4831dfbc5162863bf5f7918df1da5efb4c1e9ea9c2
+  caller_roles:
+  - n8n-workload-client
+  provider: n8n.hy.home.arpa
+  port_contract:
+    listener:
+      state: unknown
+      port: null
+    service_dns:
+      state: declared
+      port: 443
+    host_publication:
+      state: unknown
+      port: null
+    gateway_backend:
+      state: unknown
+      port: null
   auth_kind: unknown
   secret_refs: []
   disposition: deferred
-  reason: sdk-source-is-not-product-registration
-  owner: P05
+  reason: approved-tool-destination-source
+  owner: P03
   registration:
     level: sdk-only
     actual_state: UNKNOWN
@@ -34882,6 +37623,119 @@ connections:
   owner: P05
   registration:
     level: sdk-only
+    actual_state: UNKNOWN
+- id: infra/08-ai/ollama/docker-compose.yml::p03:ollama-exporter:ollama
+  source:
+    path: infra/08-ai/ollama/docker-compose.yml
+    sha256: fb0a48715f9cfcdfae34e39281580c28c8c212fe84cd60624edbff5290c38bb5
+  caller_roles:
+  - ollama-exporter
+  provider: ollama
+  port_contract:
+    listener:
+      state: unknown
+      port: null
+    service_dns:
+      state: declared
+      port: 11434
+    host_publication:
+      state: unknown
+      port: null
+    gateway_backend:
+      state: unknown
+      port: null
+  auth_kind: none
+  secret_refs: []
+  disposition: adopted
+  reason: model-observability-source
+  owner: P07
+  registration:
+    level: source-declared
+    actual_state: UNKNOWN
+- id: infra/08-ai/open-notebook/docker-compose.yml::p03:open-notebook:ollama-fallback
+  source:
+    path: infra/08-ai/open-notebook/docker-compose.yml
+    sha256: 9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d
+  caller_roles:
+  - open_notebook
+  provider: ollama
+  port_contract:
+    listener:
+      state: unknown
+      port: null
+    service_dns:
+      state: declared
+      port: 11434
+    host_publication:
+      state: unknown
+      port: null
+    gateway_backend:
+      state: unknown
+      port: null
+  auth_kind: none
+  secret_refs: []
+  disposition: deferred
+  reason: environment-fallback-not-registration
+  owner: P03
+  registration:
+    level: source-declared
+    actual_state: UNKNOWN
+- id: infra/08-ai/open-notebook/docker-compose.yml::p03:open-notebook:surrealdb
+  source:
+    path: infra/08-ai/open-notebook/docker-compose.yml
+    sha256: 9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d
+  caller_roles:
+  - open_notebook
+  provider: surrealdb
+  port_contract:
+    listener:
+      state: unknown
+      port: null
+    service_dns:
+      state: declared
+      port: 8000
+    host_publication:
+      state: absent
+      port: null
+    gateway_backend:
+      state: unknown
+      port: null
+  auth_kind: credential-reference
+  secret_refs:
+  - surreal_db_password
+  disposition: adopted
+  reason: notebook-state-provider-source
+  owner: P03
+  registration:
+    level: source-declared
+    actual_state: UNKNOWN
+- id: infra/08-ai/open-webui/docker-compose.yml::p03:open-webui:ollama
+  source:
+    path: infra/08-ai/open-webui/docker-compose.yml
+    sha256: 718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b
+  caller_roles:
+  - open-webui
+  provider: ollama
+  port_contract:
+    listener:
+      state: unknown
+      port: null
+    service_dns:
+      state: declared
+      port: 11434
+    host_publication:
+      state: unknown
+      port: null
+    gateway_backend:
+      state: unknown
+      port: null
+  auth_kind: none
+  secret_refs: []
+  disposition: adopted
+  reason: local-model-provider-source
+  owner: P03
+  registration:
+    level: source-declared
     actual_state: UNKNOWN
 - id: infra/12-analytics/superset/docker-compose.yml::superset-db-provision:postgres:PGHOST
   source:
@@ -34998,9 +37852,65 @@ connections:
   registration:
     level: source-declared
     actual_state: UNKNOWN
+- id: tests/fixtures/p03_models/notebook-model-policy.json::p03:model-policy:embeddinggemma-2:740m
+  source:
+    path: tests/fixtures/p03_models/notebook-model-policy.json
+    sha256: dfe205b314113fe3604e25bc0d6101a0338b33bf0a65bf7b45cd605a8c55842f
+  caller_roles:
+  - open-notebook
+  provider: ollama
+  port_contract:
+    listener:
+      state: unknown
+      port: null
+    service_dns:
+      state: declared
+      port: 11434
+    host_publication:
+      state: unknown
+      port: null
+    gateway_backend:
+      state: unknown
+      port: null
+  auth_kind: credential-reference
+  secret_refs: []
+  disposition: deferred
+  reason: owned-isolated-embedding-model-policy
+  owner: P03
+  registration:
+    level: fixture
+    actual_state: UNKNOWN
+- id: tests/fixtures/p03_models/notebook-model-policy.json::p03:model-policy:gemma4:e2b
+  source:
+    path: tests/fixtures/p03_models/notebook-model-policy.json
+    sha256: dfe205b314113fe3604e25bc0d6101a0338b33bf0a65bf7b45cd605a8c55842f
+  caller_roles:
+  - open-notebook
+  provider: ollama
+  port_contract:
+    listener:
+      state: unknown
+      port: null
+    service_dns:
+      state: declared
+      port: 11434
+    host_publication:
+      state: unknown
+      port: null
+    gateway_backend:
+      state: unknown
+      port: null
+  auth_kind: credential-reference
+  secret_refs: []
+  disposition: deferred
+  reason: owned-isolated-chat-model-policy
+  owner: P03
+  registration:
+    level: fixture
+    actual_state: UNKNOWN
 connection_sources:
 - path: docker-compose.yml
-  sha256: 95a797947e7be5954f7673a252170b16d94db562f9552016db73a5eb6f27559c
+  sha256: 44effd451ffd74ba718587ffe7539d18f68c181b8a71debc9fa819bfe1e6b6e3
   kind: compose
   result: no-matching-connection
 - path: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
@@ -35134,13 +38044,13 @@ connection_sources:
 - path: infra/07-workflow/n8n/docker-compose.ollama-local.yml
   sha256: e4a3a82a5ce6239718f2da6c7dccacc528266e60080d0aabeeaa576fc71e245c
   kind: compose
-  result: no-matching-connection
+  result: extracted
 - path: infra/07-workflow/n8n/docker-compose.yml
-  sha256: afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7
+  sha256: 63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e
   kind: compose
-  result: no-matching-connection
+  result: extracted
 - path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py
-  sha256: 213e656473312905f1320b8d53507c26c25b6bf1d739e832972df371f3838843
+  sha256: e4fe7697d717c0a986c6ba4831dfbc5162863bf5f7918df1da5efb4c1e9ea9c2
   kind: n8n-source-url
   result: extracted
 - path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/workflow.json
@@ -35178,15 +38088,15 @@ connection_sources:
 - path: infra/08-ai/ollama/docker-compose.yml
   sha256: fb0a48715f9cfcdfae34e39281580c28c8c212fe84cd60624edbff5290c38bb5
   kind: compose
-  result: no-matching-connection
+  result: extracted
 - path: infra/08-ai/open-notebook/docker-compose.yml
-  sha256: a1d0b2c90982489a48c69198c1c785816246b42cf587fed8b6ac3b71e888b336
+  sha256: 9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d
   kind: compose
-  result: no-matching-connection
+  result: extracted
 - path: infra/08-ai/open-webui/docker-compose.yml
   sha256: 718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b
   kind: compose
-  result: no-matching-connection
+  result: extracted
 - path: infra/09-platform-ops/opentofu/docker-compose.yml
   sha256: 77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540
   kind: compose
@@ -35267,15 +38177,19 @@ connection_sources:
   sha256: 48abf33e7d9e3222f722107b28adcc258f10d87dc15023babe9ea815243d5262
   kind: compose
   result: no-matching-connection
+- path: tests/fixtures/p03_models/notebook-model-policy.json
+  sha256: dfe205b314113fe3604e25bc0d6101a0338b33bf0a65bf7b45cd605a8c55842f
+  kind: model-policy
+  result: extracted
 connection_gaps:
 - source: infra/06-observability/grafana/provisioning/datasources/datasource.yml
   code: endpoint-unresolved
 connection_coverage:
-  candidate_sources: 67
-  parsed_sources: 67
-  extracted_sources: 10
+  candidate_sources: 68
+  parsed_sources: 68
+  extracted_sources: 16
   unhandled_sources: 1
-  connection_rows: 22
+  connection_rows: 31
 requirements:
 - id: P01.01
   criterion: 51
@@ -35756,6 +38670,131 @@ requirements:
     10 extracted sources and one unhandled source; generated DATA-0096 validates these
     public rows. Final package acceptance remains pending. Superset produces four
     rows, including source-declared Trino whose product registration is UNKNOWN.
+- id: P03.01
+  criterion: 61
+  work_unit: W66
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0042
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0042
+  writer: p03_model_impl / p03_model_resume
+  evidence: Final exact-integer-dimension source packet has independent code review;
+    26/26 production core tests pass and the 76-case source packet is separately security-reviewed
+    with two declared native skips.
+  source_verification: PASS (final independent code review)
+  static_checks: PASS (26/26 production core suite)
+  isolated_tests: PASS (local source/isolated scope)
+  historical_operator_acceptance: NOT_RUN
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: Final review covers CLI 13eaef9e4a0613ca9c034b334358249efbb7ab0bdc6aa44799d68f571fc61c10,
+    core 0f608559560a84973bf344554d8421df95484c90fd46566e042a2eaa075cf922, HTTP 87a16f423e3bdc6e5650f858095f72deb161f6eb90ae98a153134467e622bbaf,
+    policy dfe205b314113fe3604e25bc0d6101a0338b33bf0a65bf7b45cd605a8c55842f and core
+    tests 89241a8d24a490a805549419cbab18491a279e68e589164fda40e33a3960881c. Selected
+    names do not prove model download, real invocation, cost/privacy approval or operator
+    acceptance.
+- id: P03.02
+  criterion: 62
+  work_unit: W67
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0042
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0042
+  writer: p03_model_impl / p03_model_resume
+  evidence: Final exact-integer-dimension registration packet has independent code
+    review; one controlled Worker queue/model native rehearsal passed, while the exact
+    Notebook fixture remains separate.
+  source_verification: PASS (final independent code review)
+  static_checks: PASS (26/26 production core suite)
+  isolated_tests: PASS (synthetic source plus controlled Worker native queue rehearsal)
+  historical_operator_acceptance: NOT_RUN
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: 'The Worker rehearsal used cached pins and controlled Ollama: Main→Valkey→Worker,
+    exact event association and persisted readback passed with zero owned residue.
+    Preserve WebUI identity/RAG/persistence and distinguish this from actual stored
+    Notebook registration, real-model inference, terminal jobs and recovery. The exact
+    Notebook fixture remains NOT_RUN because its pinned SurrealDB digest is absent.'
+- id: P03.03
+  criterion: 63
+  work_unit: W68
+  state: TEST_RESIDUAL
+  task_id: SPEC-0212-TSK-0042
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0042
+  writer: p03_infra_impl / p03_runner_resume
+  evidence: Independent source/static review approved the frozen contract; a prior
+    normal-JS diagnostic passed, while the final full owned rehearsal stopped at an
+    unclassified expected denial before serialized per-scenario evidence.
+  source_verification: PASS (post-fix independent static review)
+  static_checks: 'PASS (current pure-move 22 local cases: 21 PASS plus one native
+    opt-in SKIP)'
+  isolated_tests: ERROR (historical full native rehearsal); current post-fix native
+    NOT_RUN
+  historical_operator_acceptance: NOT_RUN
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: P09 owns common resource originals and P06 token issuance. The full native
+    rehearsal reached the first expected denial, but only class=other/category=unclassified
+    was serialized before strict-gate stop; no JS/Python subresult is promoted to
+    PASS. Later denial/timeout/ancestor/peer/cancel/restart and candidate Compose/HOME
+    execution remain TEST_RESIDUAL.
+- id: P03.04
+  criterion: 64
+  work_unit: W69
+  state: SOURCE_READY
+  task_id: SPEC-0212-TSK-0042
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0042
+  writer: p03_hermes_impl / p03_tool_fix
+  evidence: Corrective transport was independently re-reviewed after the initial parent-termination
+    finding.
+  source_verification: PASS (bounded independent source review)
+  static_checks: PASS (reviewed local source)
+  isolated_tests: PASS (23/23 independent focused cases)
+  historical_operator_acceptance: NOT_RUN
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: The earlier Hermes-only writer receipt does not prove a general tool policy.
+    Adopted scope is narrow Hermes HTTP destination policy, the owned Notebook API
+    fixture, and model HTTP provider validation. Existing HTTP/DB/S3/ SMTP/file tool
+    controls retain their P04/P05/P06 owners and must be catalogued as selected, deferred
+    or excluded without forced consumers. P11 owns Hermes installation/delivery; actual
+    credential/policy, rotation, restore and final acceptance remain NOT_RUN. Loopback
+    denial is deliberate support limitation; same-host policy needs P11 review.
+- id: P03.05
+  criterion: 65
+  work_unit: W70
+  state: REUSE_ACCEPTED
+  task_id: SPEC-0212-TSK-0042
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0042
+  writer: p03_docs_impl / p03_docs_resume
+  evidence: SPEC-0204-TSK-0008 completed offline preparation; six offline document
+    cases and independent Wiki semantic review are complete.
+  source_verification: PASS (completed preparation provenance readback)
+  static_checks: NOT_RUN
+  isolated_tests: NOT_RUN
+  historical_operator_acceptance: RECORDED_SCOPED (offline preparation only)
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: No Wiki product, database, external workspace, client, collector or LAB runtime
+    is created or accepted.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED
@@ -36319,6 +39358,89 @@ ownership:
   operational_acceptance: UNASSIGNED
   handoff: Retain the 600-second historical timeout and modular split results as different
     observations; CI owns the generated DATA update.
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md
+  section: P03 task issuance, evidence and handoffs
+  writer: p03_docs_impl / p03_docs_resume
+  acceptance_owner: SPEC-0212-TSK-0042
+  reviewer: UNASSIGNED pending independent document review
+  data_owner: UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Current fingerprint invalidates only P03 task/curation evidence; implementation
+    receipts remain source-bound.
+- path: docs/02.architecture/descriptions/0008-ai-architecture.md
+  section: local-only provider and current model/storage wording
+  writer: p03_docs_impl / p03_docs_resume
+  acceptance_owner: SPEC-0212-TSK-0042
+  reviewer: UNASSIGNED pending architecture/document review
+  data_owner: UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Architecture text is source-contract documentation; no model presence or
+    GPU result is claimed.
+- path: docs/05.operations/guides/09-ai-and-search/0073-open-notebook.md
+  section: registration and matching restore boundary
+  writer: p03_docs_impl / p03_docs_resume
+  acceptance_owner: SPEC-0212-TSK-0042
+  reviewer: UNASSIGNED pending document review
+  data_owner: Open Notebook data owner UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Product registration/runtime/restore remain distinct pending evidence.
+- path: docs/05.operations/policies/09-ai-and-search/0073-open-notebook.md
+  section: local-only and registration policy boundary
+  writer: p03_docs_impl / p03_docs_resume
+  acceptance_owner: SPEC-0212-TSK-0042
+  reviewer: UNASSIGNED pending policy/document review
+  data_owner: Open Notebook data owner UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: P06 retains secret custody; this policy does not issue or rotate credentials.
+- path: infra/09-platform-ops/project-registration/wiki-preparation/fixtures/README.md
+  section: P03 offline rights/ACL/citation/revocation/no-evidence/failure evaluation
+    mapping
+  writer: p03_docs_impl
+  acceptance_owner: SPEC-0212-TSK-0042
+  reviewer: UNASSIGNED pending independent document review
+  data_owner: Wiki data owner UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Maps completed preparation source only; a future exact Wiki Task owns executable
+    evaluation and runtime acceptance.
+- path: scripts/lib/ops/notebook_models.py; scripts/operations/notebook-models.py;
+    tests/lib/ops/test_notebook_models.py
+  section: P03 model-registration utility and unit tests
+  writer: p03_model_impl / p03_model_resume
+  acceptance_owner: SPEC-0212-TSK-0042
+  reviewer: p03_code_review (bounded production source review)
+  data_owner: Open Notebook data owner UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Synthetic fixtures may prove owned protocol behavior only; actual saved
+    registration and model invocation remain NOT_RUN.
+- path: docker-compose.yml; infra/07-workflow/n8n/docker-compose.yml; infra/07-workflow/n8n/n8n-task-runners.json;
+    infra/08-ai/open-notebook/docker-compose.yml
+  section: P03 Runner and Notebook worker source integration
+  writer: p03_infra_impl / p03_runner_resume
+  acceptance_owner: SPEC-0212-TSK-0042
+  reviewer: UNASSIGNED pending independent IaC/security review
+  data_owner: UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Preserve declared volumes and fixed UID/GID; P09 owns common resource originals
+    and no service operation is implied.
+- path: tests/validation/test_p03_runner_isolation.py
+  section: P03 Runner isolation validation
+  writer: p03_runner_qa / p03_runner_resume
+  acceptance_owner: SPEC-0212-TSK-0042
+  reviewer: UNASSIGNED pending independent QA/security review
+  data_owner: UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Synthetic/isolated result must remain separate from HOME runner execution
+    and credential rotation.
+- path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/webhook_transport.py;
+    infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_webhook_transport.py
+  section: P03 exact-destination Hermes tool policy
+  writer: p03_hermes_impl / p03_tool_fix
+  acceptance_owner: SPEC-0212-TSK-0042
+  reviewer: p03_tool_review (bounded corrective review)
+  data_owner: Hermes data owner UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: P11 is the installation/delivery handoff lane; this source policy cannot
+    authorize an external request or identify an operator.
 research:
 - id: EX01
   url: https://docs.docker.com/compose/how-tos/profiles/
@@ -37486,6 +40608,11 @@ research:
   limit: Official findings are source applicability evidence, not installation or
     runtime proof; license and backup terms outside selected source changes remain
     residual.
+- id: p03-research
+  source: _workspace/repo-support/analysis/p03/research.yaml
+  state: SOURCE_READY
+  limit: Official sources support bounded design decisions only and do not replace
+    version-specific source or isolated evidence.
 coverage_tiers:
 - id: TIER01
   name: Gateway
@@ -39944,3 +43071,38 @@ handoffs:
     evidence together, verify controller gates, and on recovery revert only the input-plus-lock
     delta while preserving original FAIL history/receipt.'
   id: P02-to-P08
+- target: P05
+  state: OUT_OF_SCOPE
+  owner: P05 acceptance owner
+  resume: Consume P03 model-worker facts without creating general queue/notification
+    behavior.
+- target: P06
+  state: OUT_OF_SCOPE
+  owner: P06 acceptance owner
+  resume: Issue or rotate provider/broker credentials only with named data owner and
+    recovery plan.
+- target: P08
+  state: OUT_OF_SCOPE
+  owner: P08 image/lock owner
+  resume: Evaluate runner/notebook/Ollama product/image support and locks as an independent
+    supply-chain change. Registered Storybook npm audit at high threshold exited 0
+    (20 moderate, 0 high/critical) after an initial DNS EAI_AGAIN; no install or fix
+    was performed. Current controller lock fingerprint d05a5fb50e29e3d44587b34abacf2713eaea83c7c88ff84127d9cbfe96a193e2
+    matched same-day P02 pip-audit 2.10.1 inputs with empty dependency diff, but exact
+    reuse still failed 25 findings including filelock 4.2.0 and virtualenv 21.14.8.
+    This is a P08 handoff, not a global audit PASS or dependency update.
+- target: P09
+  state: OUT_OF_SCOPE
+  owner: P09 resource owner
+  resume: Integrate common CPU/memory/PID originals only with measured demand and
+    rollback.
+- target: P11
+  state: OUT_OF_SCOPE
+  owner: P11 Hermes owner
+  resume: Apply exact-destination policy to the actual Hermes installation only after
+    path/credential/operator facts are approved.
+- target: P12
+  state: TEST_RESIDUAL
+  owner: P12 acceptance owner
+  resume: Perform end-to-end model, stored-registration, runner and user-function
+    acceptance only in an approved operating window.

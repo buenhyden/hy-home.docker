@@ -11,8 +11,9 @@ parent_ids:
 - "SPEC-0212"
 - "SPEC-0212-TSK-0040"
 - "SPEC-0212-TSK-0041"
+- "SPEC-0212-TSK-0042"
 created: "2026-11-01"
-observed_at: "2026-11-01"
+observed_at: "2026-11-02"
 ---
 
 # Workspace Inventory
@@ -136,6 +137,12 @@ P02는 같은 공개 자료를 연결 근거로 읽되, `scan --connections`의 
 비밀 URL·토큰·인증 본문·원시 설정 출력은 이 패키지와 로컬 curation 기록 모두에
 넣지 않는다. P03, P04/P05, P06, P07, P08은 각자의 정본과 인수 범위를 유지한다.
 
+[P03 모델·Runner·Wiki 준비 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md)는
+공개 소스 지문과 연결 근거를 소스·격리 증거로만 소비한다. 제어된 Worker native
+경로 1건의 PASS는 제품 등록이나 실제 모델 추론을 뜻하지 않으며, 정확한
+SurrealDB 이미지 부재에 따른 Notebook native와 보정 뒤 Runner native는 `NOT_RUN`으로
+남는다. 운영·복원·원격 CI·최종 인수는 이 자료나 P03의 로컬 증거로 승격되지 않는다.
+
 P02가 선택한 기본 토폴로지는 공유 MNG Valkey다. 이름별 n8n ACL과 전용 broker
 선택 구성은 재사용 대상이며, 자격 발급·회전·운영 queue drain·독립 복원은 P06과
 실제 데이터 소유자에게 남는다. Grafana의 공개 정적 예외는 정확한 두 경로의
@@ -149,6 +156,7 @@ GET/HEAD만을 대상으로 하며, 그 밖의 메서드와 모든 다른 경로
 - [현재 사양](../../../03.specs/0212-request-baseline-and-reconciliation/spec.md)
 - [현재 계획](../../../03.specs/0212-request-baseline-and-reconciliation/plan.md)
 - [P02 서비스 연결 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md)
+- [P03 모델·Runner·Wiki 준비 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md)
 
 ## Sources
 

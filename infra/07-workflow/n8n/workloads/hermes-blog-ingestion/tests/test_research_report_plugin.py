@@ -259,6 +259,213 @@ class HandlerResultContractTests(unittest.TestCase):
         self.assertFalse(json.loads(result)["ok"])
 
 
+class DestinationAuthorityTests(unittest.TestCase):
+    """A trusted setting may select only the one reviewed ingress route."""
+
+    def test_only_the_exact_reviewed_webhook_url_is_allowed(self):
+        approved = "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion"
+        self.assertEqual(tools.APPROVED_WEBHOOK_URL, approved)
+        self.assertTrue(tools._allowed_url(approved))
+        for url in (
+            "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion/",
+            "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion?next=1",
+            "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion#fragment",
+            "https://user@n8n.hy.home.arpa/webhook/hermes-blog-ingestion",
+            "https://n8n.hy.home.arpa:443/webhook/hermes-blog-ingestion",
+            "https://other.example/webhook/hermes-blog-ingestion",
+            "https://n8n.hy.home.arpa/webhook/other",
+            "http://n8n.hy.home.arpa/webhook/hermes-blog-ingestion",
+        ):
+            with self.subTest(url=url):
+                self.assertFalse(tools._allowed_url(url))
+
+    def test_disallowed_url_is_rejected_before_credential_or_network(self):
+        import json
+        import tempfile
+        from unittest import mock
+
+        with (
+            tempfile.TemporaryDirectory() as outbox,
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+            mock.patch.object(
+                tools, "_load_url", return_value="https://other.example/"
+            ),
+            mock.patch.object(
+                tools, "_load_address_policy", return_value="10.250.1.128/32"
+            ),
+            mock.patch.object(tools, "_load_secret") as secret,
+            mock.patch.object(tools.webhook_transport, "post") as post,
+        ):
+            result = json.loads(tools.handle_submit_report({"payload": make_payload()}))
+        self.assertEqual(result, {"ok": False, "error": "disallowed_url"})
+        secret.assert_not_called()
+        post.assert_not_called()
+
+    def test_oversize_request_is_rejected_before_policy_or_credential(self):
+        import json
+        from unittest import mock
+
+        payload = make_payload()
+        payload["source_text"] = "x" * (tools.webhook_transport.MAX_REQUEST_BYTES + 1)
+        payload["source_sha256"] = hashlib.sha256(
+            payload["source_text"].encode()
+        ).hexdigest()
+        with (
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(tools, "_load_address_policy") as policy,
+            mock.patch.object(tools, "_load_secret") as secret,
+            mock.patch.object(tools.webhook_transport, "post") as post,
+        ):
+            result = json.loads(tools.handle_submit_report({"payload": payload}))
+        self.assertEqual(result, {"ok": False, "error": "request_too_large"})
+        policy.assert_not_called()
+        secret.assert_not_called()
+        post.assert_not_called()
+
+
+class AddressPolicyLoaderTests(unittest.TestCase):
+    def test_policy_descriptor_is_closed_when_metadata_read_fails(self):
+        from unittest import mock
+
+        with (
+            mock.patch.dict("os.environ", {}, clear=True),
+            mock.patch.object(tools.os, "open", return_value=77),
+            mock.patch.object(tools.os, "fstat", side_effect=OSError("synthetic")),
+            mock.patch.object(tools.os, "close") as close,
+        ):
+            self.assertEqual(tools._load_address_policy(), "")
+        close.assert_called_once_with(77)
+
+    def test_policy_file_must_be_owned_regular_and_not_group_writable(self):
+        import tempfile
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            policy = root / "policy"
+            policy.write_text("10.250.1.128/32", encoding="utf-8")
+            with (
+                mock.patch.object(tools, "ADDRESS_POLICY_FILE", policy),
+                mock.patch.dict("os.environ", {}, clear=True),
+            ):
+                self.assertEqual(tools._load_address_policy(), "10.250.1.128/32")
+                policy.chmod(0o620)
+                self.assertEqual(tools._load_address_policy(), "")
+                policy.chmod(0o600)
+                policy.unlink()
+                policy.symlink_to(root / "missing")
+                self.assertEqual(tools._load_address_policy(), "")
+
+
+class DeliveryBudgetTests(unittest.TestCase):
+    def run_delivery(self, side_effect, *, monotonic=None):
+        import json
+        import tempfile
+        from unittest import mock
+
+        with (
+            tempfile.TemporaryDirectory() as outbox,
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+            mock.patch.object(tools, "_load_url", return_value=approved_url()),
+            mock.patch.object(
+                tools, "_load_address_policy", return_value="10.250.1.128/32"
+            ),
+            mock.patch.object(tools, "_load_secret", return_value="synthetic"),
+            mock.patch.object(
+                tools.webhook_transport, "post", side_effect=side_effect
+            ) as post,
+            mock.patch.object(tools.time, "sleep") as sleep,
+            mock.patch.object(
+                tools.time,
+                "monotonic",
+                side_effect=monotonic,
+            )
+            if monotonic is not None
+            else mock.patch.object(tools.time, "monotonic", return_value=0),
+        ):
+            result = json.loads(tools.handle_submit_report({"payload": make_payload()}))
+        return result, post, sleep
+
+    def test_retryable_transport_failure_uses_three_bounded_attempts(self):
+        failure = tools.webhook_transport.TransportFailure("timeout", retryable=True)
+        result, post, sleep = self.run_delivery(failure)
+        self.assertEqual(result["error"], "delivery_failed")
+        self.assertEqual(result["error_type"], "timeout")
+        self.assertEqual(post.call_count, 3)
+        self.assertEqual(
+            [call.kwargs["timeout"] for call in post.call_args_list], [15, 15, 15]
+        )
+        self.assertEqual(sleep.call_count, 2)
+
+    def test_non_retryable_transport_failure_is_not_replayed(self):
+        failure = tools.webhook_transport.TransportFailure("tls")
+        result, post, sleep = self.run_delivery(failure)
+        self.assertEqual(result["error_type"], "tls")
+        post.assert_called_once()
+        sleep.assert_not_called()
+
+    def test_retryable_http_status_retries_but_redirect_does_not(self):
+        retry = tools.webhook_transport.Response(503, b"{}", "application/json")
+        result, post, sleep = self.run_delivery(lambda *_args, **_kwargs: retry)
+        self.assertEqual(result["error_type"], "http_503_not_persisted")
+        self.assertEqual(post.call_count, 3)
+        self.assertEqual(sleep.call_count, 2)
+
+        redirect = tools.webhook_transport.Response(302, b"", "text/plain")
+        result, post, sleep = self.run_delivery(lambda *_args, **_kwargs: redirect)
+        self.assertEqual(result["error_type"], "http_302_not_persisted")
+        post.assert_called_once()
+        sleep.assert_not_called()
+
+    def test_invalid_credential_never_starts_transport(self):
+        import json
+        import tempfile
+        from unittest import mock
+
+        with (
+            tempfile.TemporaryDirectory() as outbox,
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+            mock.patch.object(tools, "_load_url", return_value=approved_url()),
+            mock.patch.object(
+                tools, "_load_address_policy", return_value="10.250.1.128/32"
+            ),
+            mock.patch.object(tools, "_load_secret", return_value=""),
+            mock.patch.object(tools.webhook_transport, "post") as post,
+        ):
+            result = json.loads(tools.handle_submit_report({"payload": make_payload()}))
+        self.assertEqual(result, {"ok": False, "error": "invalid_credential"})
+        post.assert_not_called()
+
+    def test_total_deadline_stops_before_a_second_attempt(self):
+        failure = tools.webhook_transport.TransportFailure("timeout", retryable=True)
+        result, post, sleep = self.run_delivery(failure, monotonic=[0, 0, 61])
+        self.assertEqual(result["error_type"], "timeout")
+        post.assert_called_once()
+        sleep.assert_not_called()
+
+    def test_missing_address_policy_is_rejected_before_credential_or_network(self):
+        import json
+        import tempfile
+        from unittest import mock
+
+        with (
+            tempfile.TemporaryDirectory() as outbox,
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+            mock.patch.object(tools, "_load_url", return_value=approved_url()),
+            mock.patch.object(tools, "_load_address_policy", return_value=""),
+            mock.patch.object(tools, "_load_secret") as secret,
+            mock.patch.object(tools.webhook_transport, "post") as post,
+        ):
+            result = json.loads(tools.handle_submit_report({"payload": make_payload()}))
+        self.assertEqual(result, {"ok": False, "error": "missing_address_policy"})
+        secret.assert_not_called()
+        post.assert_not_called()
+
+
 class CronRun:
     """Stands in for Hermes' plugin context during one cron execution."""
 
@@ -272,30 +479,18 @@ class CronRun:
 
 
 def submit(payload, ctx):
-    """Run the handler under ctx with a fake opener; return (result, sent bodies)."""
+    """Run the handler under ctx with a fake transport; return result and bodies."""
     import json
     import tempfile
     from unittest import mock
 
     sent = []
 
-    class Response:
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *exc):
-            return False
-
-        def getcode(self):
-            return 201
-
-        def read(self):
-            return b'{"persisted": true}'
-
-    class Opener:
-        def open(self, request, timeout):
-            sent.append(json.loads(request.data))
-            return Response()
+    def post(url, body, token, policy, *, timeout):
+        sent.append(json.loads(body))
+        return tools.webhook_transport.Response(
+            201, b'{"persisted": true}', "application/json"
+        )
 
     with (
         tempfile.TemporaryDirectory() as outbox,
@@ -304,14 +499,19 @@ def submit(payload, ctx):
         mock.patch.dict(
             "os.environ",
             {
-                "RESEARCH_WEBHOOK_URL": "https://gateway.invalid/hook",
+                "RESEARCH_WEBHOOK_URL": approved_url(),
                 "RESEARCH_WEBHOOK_SECRET": "synthetic",
+                "RESEARCH_WEBHOOK_ALLOWED_CIDRS": "10.250.1.128/32",
             },
         ),
-        mock.patch.object(tools.urllib.request, "build_opener", return_value=Opener()),
+        mock.patch.object(tools.webhook_transport, "post", side_effect=post),
     ):
         result = json.loads(tools.handle_submit_report({"payload": payload}))
     return result, sent
+
+
+def approved_url():
+    return "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion"
 
 
 class CronIdentityTests(unittest.TestCase):

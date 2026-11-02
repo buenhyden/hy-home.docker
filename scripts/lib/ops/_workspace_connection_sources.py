@@ -10,9 +10,19 @@ from urllib.parse import urlsplit
 
 import yaml
 
+from scripts.lib.ops._workspace_model_connections import (
+    MODEL_POLICY_PATH,
+)
+from scripts.lib.ops._workspace_model_connections import (
+    compose_rows as _p03_compose_rows,
+)
+from scripts.lib.ops._workspace_model_connections import (
+    policy_rows as _p03_policy_rows,
+)
 from scripts.lib.ops._workspace_services import _InventoryLoader
 
 NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,255}\Z")
+APPROVED_HERMES_WEBHOOK_URL = "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion"
 DEFAULT = re.compile(r"\$\{[A-Za-z_][A-Za-z0-9_]*:-([^{}$]+)\}")
 FILE_SECRET = re.compile(r"\$__file\{/run/secrets/([A-Za-z0-9][A-Za-z0-9_.-]{0,255})\}")
 PRIVATE_PARTS = {".git", ".aws", ".ssh", "secrets", "sessions", ".agent-work"}
@@ -24,6 +34,7 @@ ALLOWED_KINDS = {
     "n8n-node",
     "n8n-policy",
     "n8n-source-url",
+    "model-policy",
 }
 
 
@@ -44,6 +55,8 @@ class _UniqueLoader(yaml.SafeLoader):
 
 
 def candidate_kind(path: str) -> str | None:
+    if path == MODEL_POLICY_PATH:
+        return "model-policy"
     if path.startswith(
         "infra/06-observability/grafana/provisioning/datasources/"
     ) and path.endswith((".yml", ".yaml")):
@@ -441,6 +454,18 @@ def _compose(doc, source, services, gaps):
         rows.extend(
             _superset_datasource_rows(service_name, service, source, services, gaps)
         )
+    rows.extend(
+        _p03_compose_rows(
+            doc,
+            source,
+            services,
+            gaps,
+            endpoint=_endpoint,
+            environment=_environment,
+            secret_names=_secret_names,
+            row=_row,
+        )
+    )
     return rows
 
 
@@ -639,12 +664,36 @@ def _n8n_policy(text, source, services, gaps):
 
 
 def _n8n_source_url(text, source, services, gaps):
-    match = re.search(
+    approved = re.search(
+        r"^APPROVED_WEBHOOK_URL\s*=\s*['\"]([^'\"\r\n]{1,2048})['\"]\s*$",
+        text,
+        re.MULTILINE,
+    )
+    alias = re.search(
+        r"^WEBHOOK_URL_DEFAULT\s*=\s*APPROVED_WEBHOOK_URL\s*$",
+        text,
+        re.MULTILINE,
+    )
+    fallback = re.search(
         r"^WEBHOOK_URL_DEFAULT\s*=\s*['\"]([^'\"\r\n]{1,2048})['\"]\s*$",
         text,
         re.MULTILINE,
     )
-    provider, port, error = _endpoint(match.group(1) if match else None)
+    approved_alias = bool(
+        approved and alias and approved.group(1) == APPROVED_HERMES_WEBHOOK_URL
+    )
+    if approved and alias and not approved_alias:
+        gaps.append(
+            {
+                "source": source["path"],
+                "code": "endpoint-unresolved",
+            }
+        )
+        return []
+    selected = approved if approved_alias else fallback
+    provider, port, error = _endpoint(selected.group(1) if selected else None)
+    if approved_alias and provider is not None and port is None:
+        port = 443
     if error:
         gaps.append({"source": source["path"], "code": error})
     return (
@@ -659,8 +708,10 @@ def _n8n_source_url(text, source, services, gaps):
                 "unknown",
                 [],
                 "deferred",
-                "sdk-source-is-not-product-registration",
-                "P05",
+                "approved-tool-destination-source"
+                if approved_alias
+                else "sdk-source-is-not-product-registration",
+                "P03" if approved_alias else "P05",
                 "sdk-only",
                 services,
                 "n8n-sdk:source-url",
@@ -691,6 +742,14 @@ def extract_source(kind, raw, source, services, gaps):
             "grafana": _grafana,
             "airflow": _airflow,
             "n8n": _n8n,
+            "model-policy": lambda doc, source, services, gaps: _p03_policy_rows(
+                doc,
+                source,
+                services,
+                gaps,
+                endpoint=_endpoint,
+                row=_row,
+            ),
         }[kind](doc, source, services, gaps)
     except DuplicateSourceKey:
         raise

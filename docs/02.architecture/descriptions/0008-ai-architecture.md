@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
@@ -68,9 +68,16 @@ The system operates as a hybrid structure.
 
 ### AI Agent Architecture
 
-- **Model/Provider Strategy**: Designates local Ollama as the default provider, with a fallback strategy to external APIs (Claude/OpenAI) supported only for important tasks.
+- **Model/Provider Strategy**: Local Ollama is the current P03-authorized
+  source-default path. An Ollama-mediated cloud path and a direct-cloud path
+  are separate future contracts; neither is an automatic fallback or an
+  authorized current egress path. Stored product-provider state was not read
+  and remains `UNKNOWN`.
 - **Tooling Boundary**: The agent uses the Ollama API as its interface and does not directly manipulate model weights or the GPU driver.
-- **Latency / Cost Budget**: Maximizes resource efficiency by minimizing the number of model reloads and using a lightweight embedding model (`qwen3-embedding:0.6b`).
+- **Latency / Cost Budget**: Minimize model reloads within the declared source
+  limits. P03's proposed Notebook registration names `gemma4:e2b` for chat and
+  `embeddinggemma-2:740m` for 768-dimensional embeddings; the declaration does
+  not prove either model is downloaded, registered or functional.
 
 ## Runtime and Deployment
 
@@ -79,7 +86,10 @@ The system operates as a hybrid structure.
 Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
 
 - **Key Entities / Flows**: User Prompt → Open WebUI (RAG Context Enrich) → Ollama (Inference) → Response Streaming.
-- **Storage Strategy**: Large model files (`${DEFAULT_AI_MODEL_DIR}/ollama`) connect directly to the host's large-scale storage through a bind mount.
+- **Storage Strategy**: The Compose declaration owns the Ollama model-store
+  mount and its configured `${DEFAULT_AI_MODEL_DIR}/ollama` target. This
+  architecture document does not assert a bind-mount implementation or a
+  successful model-store recovery.
 - **Data Boundaries**: Open WebUI SQLite, uploads and local Chroma belong to its data volume; Qdrant is not its configured vector backend. ComfyUI declares `/root`-based mounts, but active image `/opt` paths may differ; do not claim coverage until path reconciliation is verified. Open Notebook recovery coordinates app data, SurrealDB and its encryption key. MLflow coordinates PostgreSQL metadata with SeaweedFS artifacts; Jupyter notebooks remain owned by Analytics. Context storage/egress must be checked for the selected consumer.
 
 ### Deployment View

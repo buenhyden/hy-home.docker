@@ -22,7 +22,7 @@ from scripts.lib.ops.port_inventory import project
 from scripts.lib.ops.workspace_inventory import InventoryError, compare, scan
 
 
-class WorkspaceConnectionTests(unittest.TestCase):
+class WorkspaceConnectionFixture:
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(prefix="p02 connections ")
         self.addCleanup(self.tmp.cleanup)
@@ -42,6 +42,8 @@ class WorkspaceConnectionTests(unittest.TestCase):
     def inspect(self, *rows):
         return inspect_connections(self.root, list(rows), services=[])
 
+
+class WorkspaceConnectionTests(WorkspaceConnectionFixture, unittest.TestCase):
     def test_source_handler_api_closes_candidate_and_public_path_boundaries(self):
         self.assertEqual(
             candidate_kind("infra/demo/docker-compose.yml"),

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.34.0"
+version: "1.35.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -82,6 +82,12 @@ shared MNG Valkey as the default and does not reopen the historical secret
 catalog Task. Local source and isolated tests are in scope; operating services,
 host changes, actual secrets, external repositories and remote CI are not.
 
+W66–W70 implement the approved P03 plan in TSK-0042. P03 retains local-only
+model use, narrows model registration, runner and tool-policy source contracts,
+and reuses the completed offline Wiki preparation package. Local source and
+isolated tests are in scope; HOME services, host security settings, actual
+credentials, model downloads, external workspaces and remote CI are not.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -151,6 +157,11 @@ host changes, actual secrets, external repositories and remote CI are not.
 | W63 | 58 | Reconcile DEV/MNG environment and readiness evidence without promoting liveness to function readiness | W61 | TSK-0041 | Environment, readiness and unsupported-variable regressions |
 | W64 | 59 | Retain shared MNG Valkey default and align named ACL, dedicated opt-in and safe secret delivery contracts | W61 | TSK-0041 | Synthetic-secret, ACL and persistence-contract regressions |
 | W65 | 60 | Publish bounded connection evidence and exact P03–P08 handoffs, including the Grafana exception review | W61, W62, W63, W64 | TSK-0041 | Ledger validation, document contracts and independent review |
+| W66 | 61 | Reconcile local-only model actors, endpoint and non-fallback boundaries | W61, W65 | TSK-0042 | Model-route policy and negative-contract tests |
+| W67 | 62 | Add bounded Open Notebook model-registration planning and preserve recovery/registration distinctions | W66 | TSK-0042 | Synthetic API, persistence and conflict/rollback tests |
+| W68 | 63 | Tighten external runner source isolation without changing common resource owners | W61, W64 | TSK-0042 | Runner configuration and synthetic denial tests |
+| W69 | 64 | Bind automation-tool policy to approved destination and bounded requests before credential use | W66 | TSK-0042 | URL/DNS/redirect, budget and authority-negative tests |
+| W70 | 65 | Reuse Wiki preparation and publish P03 evidence axes and leaf-owner handoffs | W66, W67, W68, W69 | TSK-0042 | Wiki contract/evaluation, Task, ledger and independent review |
 
 ### Current v30 continuation and delivery
 

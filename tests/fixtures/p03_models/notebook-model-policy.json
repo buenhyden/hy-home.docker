@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "target": "owned-isolated",
+  "provider": {
+    "name": "ollama",
+    "credential_name": "P03 Local Ollama",
+    "base_url": "http://ollama:11434",
+    "modalities": [
+      "language",
+      "embedding"
+    ]
+  },
+  "models": [
+    {
+      "name": "gemma4:e2b",
+      "type": "language",
+      "default": "chat"
+    },
+    {
+      "name": "embeddinggemma-2:740m",
+      "type": "embedding",
+      "dimensions": 768,
+      "default": "embedding"
+    }
+  ]
+}

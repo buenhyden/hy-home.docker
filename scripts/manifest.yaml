@@ -588,6 +588,18 @@ files:
   disposition: retain
   successor: null
   tests: []
+- path: scripts/lib/ops/_notebook_models_http.py
+  kind: library
+  authority: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/operations/notebook-models.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_p03_notebook_effects.py
+  - tests/validation/test_p03_notebook_models.py
 - path: scripts/lib/ops/_openbao_copy_io.py
   kind: library
   authority: infra/03-security/openbao/consumer-migration/README.md
@@ -644,6 +656,17 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_workspace_connections.py
+- path: scripts/lib/ops/_workspace_model_connections.py
+  kind: library
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/ops/_workspace_connection_sources.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_workspace_model_connections.py
 - path: scripts/lib/ops/_workspace_render.py
   kind: library
   authority: docs/90.references/data/0096-workspace-inventory/README.md
@@ -690,6 +713,19 @@ files:
   successor: null
   tests:
   - tests/lib/hooks/test_agent_memory.py
+- path: scripts/lib/ops/notebook_models.py
+  kind: library
+  authority: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/lib/ops/_notebook_models_http.py
+  - scripts/operations/notebook-models.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_notebook_models.py
+  - tests/validation/test_p03_notebook_models.py
 - path: scripts/lib/ops/openbao_consumer_migration.py
   kind: library
   authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
@@ -947,6 +983,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_mng_pg_immediate_restore_rehearsal.py
+- path: scripts/operations/notebook-models.py
+  kind: operations
+  authority: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_p03_notebook_models.py
 - path: scripts/operations/openbao-consumer-migration.py
   kind: operations
   authority: infra/03-security/openbao/consumer-migration/README.md
@@ -1286,6 +1333,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-p03-hermes.py
+  kind: validator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_p03_hermes_gate.py
 - path: scripts/validation/check-project-registration.py
   kind: validator
   authority: infra/09-platform-ops/project-registration/README.md

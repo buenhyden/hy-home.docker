@@ -163,11 +163,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_p02_oauth_native",
                 "tests.validation.test_p02_secret_presentation_native",
                 "tests.validation.test_p02_valkey_mount_scope",
+                "tests.validation.test_p03_runner_boundaries",
+                "tests.validation.test_p03_runner_consumers",
+                "tests.validation.test_p03_runner_isolation",
             ],
             arguments[1:boundary],
         )
         optional = arguments[boundary + 1 : -1]
-        self.assertEqual(28, len(optional))
+        self.assertEqual(29, len(optional))
         self.assertEqual(len(optional), len(set(optional)))
         self.assertTrue(
             all(scope.rsplit(".", 1)[0] in arguments[1:boundary] for scope in optional)
@@ -327,7 +330,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         boundary = compose_arguments.index("--optional-runtime-skips")
         optional = compose_arguments[boundary + 1 : -1]
         self.assertNotIn(module, optional)
-        self.assertEqual(28, len(optional))
+        self.assertEqual(29, len(optional))
 
     def setUp(self) -> None:
         self.module = load_contract_module()

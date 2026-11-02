@@ -5,15 +5,19 @@ import hashlib
 import json
 import os
 import re
+import stat
 import time
-import urllib.request
 from pathlib import Path
 from typing import Any
 
+import webhook_transport
+
 HERMES_HOME = Path.home() / ".hermes"
 OUTBOX_DIR = HERMES_HOME / "data" / "research-report-outbox"
-WEBHOOK_URL_DEFAULT = "https://n8n.local/webhook/hermes-blog-ingestion"
+APPROVED_WEBHOOK_URL = "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion"
+WEBHOOK_URL_DEFAULT = APPROVED_WEBHOOK_URL
 SECRET_FILE = HERMES_HOME / "secrets" / "research-webhook.secret"
+ADDRESS_POLICY_FILE = HERMES_HOME / "config" / "research-webhook-allowed-cidrs"
 # The Gateway binds the webhook token to this producer; the model does not choose it.
 PRODUCER = "hermes"
 # Hermes' plugin context, bound by register(); it reports the cron run in progress.
@@ -27,6 +31,7 @@ _ALLOWED_JOBS = {
 _IDENTITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 _HTTP_TIMEOUT = 15
+_TOTAL_HTTP_TIMEOUT = 60
 SOURCE_QUOTE_MAX = 500
 SCHEMA_VERSION = "1.0"
 
@@ -50,6 +55,43 @@ def _load_secret() -> str:
     if SECRET_FILE.is_file():
         return SECRET_FILE.read_text().strip()
     return ""
+
+
+def _load_address_policy() -> str:
+    """Load operator policy independently from the model payload and credential."""
+    env_policy = os.environ.get("RESEARCH_WEBHOOK_ALLOWED_CIDRS")
+    if env_policy:
+        return env_policy
+    descriptor = None
+    try:
+        descriptor = os.open(
+            ADDRESS_POLICY_FILE,
+            os.O_RDONLY | os.O_CLOEXEC | getattr(os, "O_NOFOLLOW", 0),
+        )
+        info = os.fstat(descriptor)
+    except OSError:
+        if descriptor is not None:
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+        return ""
+    try:
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.geteuid()
+            or info.st_mode & 0o022
+            or info.st_size > 4096
+        ):
+            return ""
+        with os.fdopen(descriptor, encoding="utf-8") as stream:
+            descriptor = None
+            return stream.read(4097).strip()
+    except (OSError, UnicodeDecodeError):
+        return ""
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
 
 
 def _identity(value: Any) -> bool:
@@ -185,14 +227,11 @@ def _validate(payload: dict[str, Any]) -> str | None:
 
 
 def _allowed_url(url: str) -> bool:
-    from urllib.parse import urlsplit
-
-    parsed = urlsplit(url)
-    if parsed.scheme == "https":
-        return True
-    if parsed.scheme == "http" and parsed.hostname in {"127.0.0.1", "localhost"}:
-        return True
-    return False
+    try:
+        webhook_transport.validate_endpoint(url)
+    except webhook_transport.TransportFailure:
+        return False
+    return True
 
 
 def handle_submit_report(args: dict[str, Any], **kwargs) -> str:
@@ -228,6 +267,8 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
     payload_bytes = json.dumps(
         gateway_payload, ensure_ascii=False, sort_keys=True
     ).encode("utf-8")
+    if len(payload_bytes) > webhook_transport.MAX_REQUEST_BYTES:
+        return {"ok": False, "error": "request_too_large"}
     payload_sha = hashlib.sha256(payload_bytes).hexdigest()
 
     OUTBOX_DIR.mkdir(parents=True, exist_ok=True)
@@ -287,17 +328,22 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
         pass
 
     url = _load_url()
-    if not _allowed_url(url):
+    policy_text = _load_address_policy()
+    try:
+        webhook_transport.validate_endpoint(url)
+        webhook_transport.parse_address_policy(policy_text)
+    except webhook_transport.TransportFailure as exc:
         record["status"] = "failed"
-        record["last_error"] = "disallowed_url"
+        record["last_error"] = exc.reason
         record_path.write_text(json.dumps(record, ensure_ascii=False), encoding="utf-8")
-        return {"ok": False, "error": "disallowed_url"}
+        return {"ok": False, "error": exc.reason}
 
     secret = _load_secret()
-    headers = {
-        "Content-Type": "application/json",
-        "X-Hermes-Ingest-Token": secret,
-    }
+    if not secret or "\r" in secret or "\n" in secret:
+        record["status"] = "failed"
+        record["last_error"] = "invalid_credential"
+        record_path.write_text(json.dumps(record, ensure_ascii=False), encoding="utf-8")
+        return {"ok": False, "error": "invalid_credential"}
     record["url"] = url
 
     attempts = 0
@@ -307,47 +353,46 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
     persisted = False
     retryable_statuses = {429, 500, 502, 503, 504}
     non_retryable = {401, 403, 409, 422}
+    deadline = time.monotonic() + _TOTAL_HTTP_TIMEOUT
     for attempt in range(1, 4):
         attempts = attempt
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            last_error = "timeout"
+            break
         try:
-
-            class NoRedirect(urllib.request.HTTPRedirectHandler):
-                def redirect_request(self, *a, **kw):
-                    return None
-
-            req = urllib.request.Request(
-                url, data=payload_bytes, headers=headers, method="POST"
+            response = webhook_transport.post(
+                url,
+                payload_bytes,
+                secret,
+                policy_text,
+                timeout=min(_HTTP_TIMEOUT, remaining),
             )
-            opener = urllib.request.build_opener(NoRedirect)
-            with opener.open(req, timeout=_HTTP_TIMEOUT) as resp:
-                status_code = resp.getcode()
-                raw = resp.read()
-                try:
-                    response_obj = json.loads(raw.decode("utf-8"))
-                except (json.JSONDecodeError, UnicodeDecodeError):
-                    response_obj = None
-                if (
-                    status_code in (200, 201)
-                    and isinstance(response_obj, dict)
-                    and response_obj.get("persisted") is True
-                ):
-                    persisted = True
-                    break
-                last_error = f"http_{status_code}_not_persisted"
-                if (
-                    status_code in non_retryable
-                    or status_code not in retryable_statuses
-                ):
-                    break
-        except urllib.request.HTTPError as exc:
-            status_code = exc.code
-            last_error = f"http_{exc.code}"
-            if exc.code in non_retryable or exc.code not in retryable_statuses:
+            status_code = response.status
+            try:
+                response_obj = json.loads(response.body.decode("utf-8"))
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                response_obj = None
+            if (
+                status_code in (200, 201)
+                and isinstance(response_obj, dict)
+                and response_obj.get("persisted") is True
+            ):
+                persisted = True
                 break
-        except Exception:
-            last_error = "network_or_timeout"
-        if not persisted:
-            time.sleep(min(2 * attempt, 5))
+            last_error = f"http_{status_code}_not_persisted"
+            if status_code in non_retryable or status_code not in retryable_statuses:
+                break
+        except webhook_transport.TransportFailure as exc:
+            last_error = exc.reason
+            if not exc.retryable:
+                break
+        if not persisted and attempt < 3:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                last_error = "timeout"
+                break
+            time.sleep(min(2 * attempt, 5, remaining))
 
     record["attempts"] = attempts
     record["last_error"] = last_error

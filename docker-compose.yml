@@ -58,6 +58,25 @@ networks:
     ipam:
       config:
         - subnet: 10.250.11.0/24
+  # Each external Code runner shares an internal bridge only with its broker
+  # process. The bridge isolates peers; it is not a per-port firewall on the
+  # paired n8n container (SPEC-0212-TSK-0042).
+  n8n_main_runner_net:
+    name: n8n_main_runner_net
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
+    ipam:
+      config:
+        - subnet: 10.250.22.0/24
+  n8n_worker_runner_net:
+    name: n8n_worker_runner_net
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
+    ipam:
+      config:
+        - subnet: 10.250.23.0/24
   terrakube_net:
     name: terrakube_net
     ipam:

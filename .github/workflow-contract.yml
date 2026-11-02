@@ -759,6 +759,9 @@
         "tests.validation.test_p02_oauth_native",
         "tests.validation.test_p02_secret_presentation_native",
         "tests.validation.test_p02_valkey_mount_scope",
+        "tests.validation.test_p03_runner_boundaries",
+        "tests.validation.test_p03_runner_consumers",
+        "tests.validation.test_p03_runner_isolation",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",
@@ -788,6 +791,7 @@
         "tests.validation.test_p02_native_contracts.GrafanaStaticRouteNativeTests",
         "tests.validation.test_p02_oauth_native.OAuth2ProxyOidcNativeTests",
         "tests.validation.test_p02_secret_presentation_native.ComposeSecretPresentationNativeTests",
+        "tests.validation.test_p03_runner_isolation.P03RunnerNativeRehearsal",
         "-v"
       ],
       "cwd": ".",
@@ -795,6 +799,17 @@
       "timeout_minutes": 10,
       "opaque": true,
       "suite_key": "compose-baseline-regressions"
+    },
+    {
+      "gate_id": "leaf.p03-hermes",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-p03-hermes.py",
+      "argv": [],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "p03-hermes"
     },
     {
       "gate_id": "leaf.release-regressions",
@@ -843,6 +858,14 @@
         "tests.lib.ops.test_workspace_services",
         "tests.validation.test_workspace_inventory",
         "tests.lib.ops.test_workspace_connections",
+        "tests.lib.ops.test_workspace_model_connections",
+        "tests.lib.ops.test_notebook_models",
+        "tests.validation.test_p03_notebook_effects",
+        "tests.validation.test_p03_notebook_models",
+        "tests.validation.test_p03_owned_docker",
+        "tests.validation.test_p03_worker_models",
+        "tests.validation.test_p03_models_native",
+        "tests.validation.test_p03_hermes_gate",
         "tests.validation.test_p02_service_contracts",
         "tests.validation.test_p02_gateway_port_validation",
         "tests.validation.test_p02_prometheus_contracts",
@@ -859,6 +882,9 @@
         "tests.lib.ops.test_root_resource_assessment",
         "tests.validation.test_root_resource_contract",
         "tests.lib.ops.test_storage_write_rate",
+        "--optional-runtime-skips",
+        "tests.validation.test_p03_models_native.NotebookModelsNativeExecutionTests",
+        "tests.validation.test_p03_models_native.WorkerModelQueueNativeTests",
         "-v"
       ],
       "cwd": ".",
@@ -1035,6 +1061,7 @@
       "argv": [
         "run-unittest",
         "tests.lib.gate.test_github_workflow_contract",
+        "tests.lib.gate.test_p03_workflow_contract",
         "-v"
       ],
       "cwd": ".",
@@ -1288,6 +1315,7 @@
         "leaf.release-regressions",
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.repository-integrity-regressions",
+        "leaf.p03-hermes",
         "ci.opsflow-smtp-node-package"
       ]
     },
@@ -1753,11 +1781,64 @@
           "scripts/lib/ops/_workspace_services.py",
           "scripts/lib/ops/_workspace_connection_sources.py",
           "scripts/lib/ops/_workspace_connections.py",
+          "scripts/lib/ops/_workspace_model_connections.py",
           "tests/lib/ops/test_workspace_inventory.py",
           "tests/lib/ops/test_workspace_services.py",
           "tests/lib/ops/test_workspace_connections.py",
+          "tests/lib/ops/test_workspace_model_connections.py",
           "tests/validation/test_workspace_inventory.py",
           "docs/90.references/data/0096-workspace-inventory/"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/operations/notebook-models.py",
+          "scripts/lib/ops/notebook_models.py",
+          "scripts/lib/ops/_notebook_models_http.py",
+          "tests/lib/ops/test_notebook_models.py",
+          "tests/validation/_p03_notebook_effects.py",
+          "tests/validation/_p03_notebook_native.py",
+          "tests/validation/_p03_notebook_protocol.py",
+          "tests/validation/_p03_notebook_readiness.py",
+          "tests/validation/_p03_owned_docker.py",
+          "tests/validation/_p03_worker_ollama_fixture.py",
+          "tests/validation/test_p03_notebook_effects.py",
+          "tests/validation/test_p03_notebook_models.py",
+          "tests/validation/test_p03_owned_docker.py",
+          "tests/validation/test_p03_worker_models.py",
+          "tests/fixtures/p03_models/"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "infra/07-workflow/n8n/n8n-task-runners.json",
+          "tests/validation/_p03_worker_model_native.py",
+          "tests/validation/_p03_runner_native_fixture.py",
+          "tests/validation/_p03_runner_outcomes.py",
+          "tests/validation/test_p03_models_native.py",
+          "tests/validation/test_p03_runner_boundaries.py",
+          "tests/validation/test_p03_runner_consumers.py",
+          "tests/validation/test_p03_runner_isolation.py"
+        ],
+        "suites": [
+          "operations",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/validation/check-p03-hermes.py",
+          "tests/validation/test_p03_hermes_gate.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/webhook_transport.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_research_report_plugin.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_webhook_transport.py"
         ],
         "suites": [
           "repository-integrity"
@@ -2065,6 +2146,56 @@
       },
       {
         "prefixes": [
+          "scripts/operations/notebook-models.py",
+          "scripts/lib/ops/notebook_models.py",
+          "scripts/lib/ops/_notebook_models_http.py",
+          "tests/lib/ops/test_notebook_models.py",
+          "tests/validation/_p03_notebook_effects.py",
+          "tests/validation/_p03_notebook_native.py",
+          "tests/validation/_p03_notebook_protocol.py",
+          "tests/validation/_p03_notebook_readiness.py",
+          "tests/validation/_p03_owned_docker.py",
+          "tests/validation/_p03_worker_ollama_fixture.py",
+          "tests/validation/test_p03_notebook_effects.py",
+          "tests/validation/test_p03_notebook_models.py",
+          "tests/validation/test_p03_owned_docker.py",
+          "tests/validation/test_p03_worker_models.py",
+          "tests/fixtures/p03_models/"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "infra/07-workflow/n8n/n8n-task-runners.json",
+          "tests/validation/_p03_worker_model_native.py",
+          "tests/validation/_p03_runner_native_fixture.py",
+          "tests/validation/_p03_runner_outcomes.py",
+          "tests/validation/test_p03_models_native.py",
+          "tests/validation/test_p03_runner_boundaries.py",
+          "tests/validation/test_p03_runner_consumers.py",
+          "tests/validation/test_p03_runner_isolation.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/validation/check-p03-hermes.py",
+          "tests/validation/test_p03_hermes_gate.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/webhook_transport.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_research_report_plugin.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_webhook_transport.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
           "scripts/validation/check-script-manifest.py",
           "tests/validation/_script_manifest_support.py"
         ],
@@ -2148,9 +2279,11 @@
           "scripts/lib/ops/_workspace_services.py",
           "scripts/lib/ops/_workspace_connection_sources.py",
           "scripts/lib/ops/_workspace_connections.py",
+          "scripts/lib/ops/_workspace_model_connections.py",
           "tests/lib/ops/test_workspace_inventory.py",
           "tests/lib/ops/test_workspace_services.py",
           "tests/lib/ops/test_workspace_connections.py",
+          "tests/lib/ops/test_workspace_model_connections.py",
           "tests/validation/test_workspace_inventory.py",
           "docs/90.references/data/0096-workspace-inventory/"
         ],

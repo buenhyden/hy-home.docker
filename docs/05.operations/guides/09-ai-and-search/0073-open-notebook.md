@@ -1,6 +1,6 @@
 ---
 title: "Open Notebook Usage Guide"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -69,10 +69,28 @@ secret 파일 선언과 shell의 환경변수 전달은 실제 이미지의 모�
 선택한 이미지 식별자·호환성·자격 증명 복호화 결과를 별도 승인된 검증으로 확인한다.
 자원·마운트 설정은 Compose가 소유하며 프로필 분리가 물리적 격리를 뜻하지 않는다.
 
+### P03 모델 등록 경계
+
+P03의 현재 로컬 source 계약은 `gemma4:e2b` chat과
+`embeddinggemma-2:740m` 768차원 embedding 후보를 지정한다. 이는 모델 다운로드,
+Ollama 추론, provider credential, Notebook 저장 등록 또는 사용자 기능 수용 결과가
+아니다. `OLLAMA_API_BASE` 같은 환경 fallback은 저장된 Provider/Credential/Model
+등록 증거로 쓰지 않는다.
+
+지원되는 UI/API로 등록할 때에는 기존 provider, credential과 동일한 모델 연결만
+반복 실행할 수 있다. 다른 credential에 연결된 동명 모델, 중복 레코드 또는 변경된
+사전 상태는 거부하고 전체 provider 동기화나 기존 등록 삭제 후 재생성을 하지 않는다.
+embedding 작업은 terminal job 상태와 저장된 model association을 별도로 확인해야 하며,
+취소 응답·`/health`·SurrealDB health는 그 증거가 아니다.
+
 ### Runbook Handoff
 
 데이터베이스/키/provider 복구와 업그레이드에는
 [runbook](../../runbooks/09-ai-and-search/0073-open-notebook.md)을 사용한다.
+
+복구 수용에는 동일한 SurrealDB 데이터, 앱 SQLite 상태와 대응하는
+`open_notebook_encryption_key`가 함께 필요하다. API가 null 기본값 복원을 지원한다고
+가정하지 않으며, 실제 복구는 별도 승인된 격리 절차의 증거가 있을 때만 기록한다.
 
 ### Traceability
 

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.34.0"
+version: "1.35.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -550,6 +550,28 @@ hold, authorization and recovery requirements have been established.
     Grafana public exception is limited to GET/HEAD for `/favicon.ico` and
     `/robots.txt`; any other method is rejected before the normal route and
     its policy review is due on 2026-12-02.
+61. P03.01 keeps local-only model use as the default, distinguishes local,
+    Ollama-mediated cloud and direct-cloud paths, and records every selected
+    model, actor, credential boundary, network and budget without downloading a
+    model, issuing a credential or treating a route as a successful inference.
+62. P03.02 records the supported Open Notebook registration and recovery
+    contract for `gemma4:e2b` chat and `embeddinggemma-2:740m` 768-dimensional
+    embedding use. It preserves existing WebUI identity, RAG and persistence,
+    rejects conflicting stored registrations, and keeps liveness distinct from
+    stored-model and functional readiness.
+63. P03.03 retains the existing external n8n runners while binding their
+    image/version, token boundary, temporary writable paths, network reach and
+    resource limits to a minimum-privilege source contract. It does not alter
+    shared resource originals, issue secrets or call an isolated source proof a
+    HOME execution.
+64. P03.04 constrains approved automation tools by destination, method,
+    credential, request/response size and retry budget before credential use;
+    it rejects model or retrieved content as an authority to widen those
+    controls and records the unresolved real-installation policy separately.
+65. P03.05 reuses the completed offline Wiki preparation package, adds only
+    current source-to-contract and synthetic-evaluation evidence, and leaves
+    Wiki runtime, database, client, collector, external workspace and LAB
+    runtime uncreated.
 
 ## Failure Conditions
 
@@ -569,6 +591,7 @@ target, backup, recovery boundary, and action-specific authorization.
 
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Service connection contracts Task](tasks/tsk-0041-service-connection-contracts.md)
+- [Models, runners and Wiki preparation Task](tasks/tsk-0042-models-runners-wiki.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)
