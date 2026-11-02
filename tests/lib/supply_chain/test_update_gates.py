@@ -5,6 +5,7 @@ import copy
 import hashlib
 import io
 import json
+import re
 import tempfile
 import unittest
 from datetime import UTC, datetime
@@ -23,6 +24,51 @@ def replay_service_refreshes(initial, refreshes):
         current.difference_update(refresh.get("removed_services", []))
         current.update(refresh.get("added_services", []))
     return current
+
+
+def assert_public_observation_consistency(testcase, report, names):
+    rows = report["observations"]
+    observed = [row for row in rows if row["result"] == "OBSERVED"]
+    failed = [row for row in rows if row["result"] == "ACCESS_FAILED"]
+    testcase.assertEqual(len(rows), len(observed) + len(failed))
+    testcase.assertEqual(len(observed), report["observed_source_count"])
+    testcase.assertEqual(len(failed), report["failed_source_count"])
+    related = {name for row in rows for name in row["related_root_services"]}
+    testcase.assertLessEqual(related, names)
+    testcase.assertEqual(len(related), report["services_with_related_source"])
+    testcase.assertEqual(
+        sorted(names - related), report["services_without_related_source"]
+    )
+    start = datetime.fromisoformat(report["observation_window_start_utc"])
+    end = datetime.fromisoformat(report["observation_window_end_utc"])
+    testcase.assertIsNotNone(start.tzinfo)
+    testcase.assertLessEqual(start, end)
+    for row in rows:
+        checked = datetime.fromisoformat(row["checked_at_utc"])
+        testcase.assertIsNotNone(checked.tzinfo)
+        testcase.assertLessEqual(start, checked)
+        testcase.assertLessEqual(checked, end)
+        freshness = row["source_cache_freshness"]
+        testcase.assertTrue(
+            freshness in {"today", "yesterday", "UNKNOWN"}
+            or re.fullmatch(r"[1-9][0-9]* (?:day|week|month|year)s? ago", freshness)
+        )
+        testcase.assertIs(row["freshness_verified"], False)
+        testcase.assertIs(row["stable_channel_verified"], False)
+        testcase.assertIs(row["oci_availability_verified"], False)
+        if row["result"] == "ACCESS_FAILED":
+            testcase.assertEqual("UNKNOWN", row["source_cache_freshness"])
+            testcase.assertIsNone(row["resolved_url"])
+            testcase.assertIsNone(row["observed_release_tag"])
+        elif "/releases/latest" in row["query_url"]:
+            testcase.assertTrue(row["resolved_url"].startswith("https://github.com/"))
+            testcase.assertIn("/releases/tag/", row["resolved_url"])
+            testcase.assertEqual(
+                row["resolved_url"].split("/releases/tag/", 1)[1],
+                row["observed_release_tag"],
+            )
+        else:
+            testcase.assertIsNone(row["observed_release_tag"])
 
 
 class StableScannerContractTests(unittest.TestCase):
@@ -416,6 +462,70 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         ]
         self.assertEqual({"a", "b"}, replay_service_refreshes({"a", "b"}, refreshes))
 
+    def test_public_lookup_observations_never_promote_unverified_acceptance(self):
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        report = ledger["p08_public_release_observations"]
+        rows = report["observations"]
+        names = {row["service"] for row in ledger["entries"]}
+        assert_public_observation_consistency(self, report, names)
+        for key, value in (
+            ("observed_source_count", -1),
+            ("failed_source_count", -1),
+            ("services_with_related_source", -1),
+            ("services_without_related_source", ["nonexistent"]),
+        ):
+            corrupted = copy.deepcopy(report)
+            corrupted[key] = value
+            with self.subTest(corrupted=key), self.assertRaises(AssertionError):
+                assert_public_observation_consistency(self, corrupted, names)
+        failed_index = next(
+            i for i, row in enumerate(rows) if row["result"] == "ACCESS_FAILED"
+        )
+        general_index = next(
+            i
+            for i, row in enumerate(rows)
+            if row["result"] == "OBSERVED"
+            and "/releases/latest" not in row["query_url"]
+        )
+        for index, field, value in (
+            (0, "checked_at_utc", "2000-01-01T00:00:00Z"),
+            (0, "observed_release_tag", "not-the-resolved-tag"),
+            (0, "related_root_services", ["nonexistent"]),
+            (failed_index, "observed_release_tag", "unavailable"),
+            (general_index, "observed_release_tag", "invented"),
+            (0, "source_cache_freshness", "VERIFIED_WITHIN_24H"),
+            (0, "freshness_verified", True),
+            (0, "stable_channel_verified", True),
+            (0, "oci_availability_verified", True),
+        ):
+            corrupted = copy.deepcopy(report)
+            corrupted["observations"][index][field] = value
+            with (
+                self.subTest(index=index, field=field),
+                self.assertRaises(AssertionError),
+            ):
+                assert_public_observation_consistency(self, corrupted, names)
+        self.assertTrue(rows)
+        self.assertEqual(len(rows), len({row["query_url"] for row in rows}))
+        self.assertEqual(len(ledger["entries"]), report["root_service_denominator"])
+        self.assertEqual(len(rows), report["source_query_denominator"])
+        self.assertFalse(report["verified_external_facts"])
+        self.assertFalse(report["deployed"])
+        for row in rows:
+            with self.subTest(url=row["query_url"]):
+                self.assertTrue(row["query_url"].startswith("https://"))
+                self.assertTrue(row["checked_at_utc"].endswith("Z"))
+                self.assertEqual(
+                    "PUBLIC_SOURCE_OBSERVATION_ONLY", row["evidence_scope"]
+                )
+                self.assertEqual("NOT_SAVED", row["raw_receipt"])
+                self.assertIn(row["result"], {"OBSERVED", "ACCESS_FAILED"})
+
     def test_new_local_source_does_not_inherit_security_or_runtime_acceptance(self):
         root = Path(__file__).resolve().parents[3]
         ledger = json.loads(
@@ -519,6 +629,170 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     self.assertTrue(step["command"])
                 self.assertEqual("NOT_RUN", row["compatibility"])
                 self.assertEqual("NOT_RUN", row["signature"])
+
+    def test_upstream_attestations_do_not_promote_custom_image_or_deployment(self):
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        evidence = ledger["p08_upstream_supply_chain_observations"]
+        self.assertEqual(
+            "https://token.actions.githubusercontent.com",
+            evidence["expected_oidc_issuer"],
+        )
+        kinds = {row["observation_id"] for row in evidence["reported_checks"]}
+        self.assertEqual(
+            {"n8n-signature", "n8n-slsa", "runner-cyclonedx", "runner-openvex"},
+            kinds,
+        )
+        self.assertIs(evidence["custom_image_verified"], False)
+        self.assertIs(evidence["deployment_verified"], False)
+        self.assertEqual("NOT_SAVED", evidence["raw_receipt"])
+        commit = evidence["observed_workflow_commit"]
+        for key in ("official_expected_identity_source", "official_workflow_source"):
+            self.assertIn(f"/blob/{commit}/", evidence[key])
+        n8n = "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d"
+        runner = "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300"
+        expected = {
+            "n8n-signature": (n8n, "signature"),
+            "n8n-slsa": (n8n, "slsaprovenance1"),
+            "runner-cyclonedx": (runner, "cyclonedx"),
+            "runner-openvex": (runner, "openvex"),
+        }
+        for row in evidence["reported_checks"]:
+            self.assertEqual("REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE", row["status"])
+            self.assertEqual("NOT_SAVED", row["raw_receipt"])
+            subject, verification_type = expected[row["observation_id"]]
+            self.assertEqual(subject, row["subject"])
+            self.assertEqual(verification_type, row["verification_type"])
+            self.assertEqual(0, row["reported_exit_code"])
+            argv = row["command_argv"]
+            self.assertEqual(row["subject"], argv[-1])
+            verify_index = argv.index("--output-file") + 2
+            if verification_type == "signature":
+                self.assertEqual("verify", argv[verify_index])
+                self.assertNotIn("--type", argv)
+            else:
+                self.assertEqual("verify-attestation", argv[verify_index])
+                self.assertEqual(verification_type, argv[argv.index("--type") + 1])
+            self.assertEqual(
+                evidence["expected_oidc_issuer"],
+                argv[argv.index("--certificate-oidc-issuer") + 1],
+            )
+            self.assertEqual(
+                evidence["expected_certificate_identity_regexp"],
+                argv[argv.index("--certificate-identity-regexp") + 1],
+            )
+            self.assertFalse(any("insecure-ignore" in arg for arg in argv))
+        self.assertEqual("NOT_REVIEWED", evidence["slsa_builder_and_parameters"])
+        self.assertEqual(
+            "NOT_REVIEWED", evidence["sbom_contents_and_vulnerability_state"]
+        )
+        negatives = evidence["reported_negative_checks"]
+        self.assertEqual(4, len(negatives))
+        self.assertEqual(
+            [10, 1, 1, 1], [row["reported_exit_code"] for row in negatives]
+        )
+        for row in negatives:
+            self.assertEqual("NOT_SAVED", row["raw_receipt"])
+            self.assertEqual(row["subject"], row["command_argv"][-1])
+        followup = evidence["exact_identity_followup"]
+        self.assertEqual("NOT_SAVED", followup["raw_receipt"])
+        self.assertEqual(evidence["expected_oidc_issuer"], followup["oidc_issuer"])
+        self.assertEqual(
+            "https://github.com/n8n-io/n8n/.github/workflows/docker-build-push.yml@refs/heads/release/2.45.7",
+            followup["certificate_identity"],
+        )
+        self.assertEqual("NOT_REVIEWED", followup["slsa_builder_and_parameters"])
+        self.assertEqual(
+            "NOT_REVIEWED", followup["sbom_contents_and_vulnerability_state"]
+        )
+        self.assertIs(followup["custom_image_verified"], False)
+        self.assertIs(followup["deployment_verified"], False)
+        checks = {row["observation_id"]: row for row in followup["reported_checks"]}
+        self.assertEqual(set(expected), set(checks))
+        tool_registry = json.loads(
+            (root / "infra/supply-chain.tool-images.json").read_text()
+        )
+        cosign = next(row for row in tool_registry["tools"] if row["name"] == "cosign")
+        for name, (subject, verification_type) in expected.items():
+            check = checks[name]
+            self.assertEqual(subject, check["subject"])
+            self.assertEqual(verification_type, check["verification_type"])
+            self.assertEqual("REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE", check["status"])
+            self.assertEqual(0, check["reported_exit_code"])
+            self.assertEqual("NOT_SAVED", check["raw_receipt"])
+            argv = check["command_argv"]
+            self.assertEqual(subject, argv[-1])
+            self.assertIn(cosign["repo_digest"], argv)
+            self.assertEqual("/dev/null", argv[argv.index("--output-file") + 1])
+            verify_index = argv.index("--output-file") + 2
+            if verification_type == "signature":
+                self.assertEqual("verify", argv[verify_index])
+                self.assertNotIn("--type", argv)
+            else:
+                self.assertEqual("verify-attestation", argv[verify_index])
+                self.assertEqual(verification_type, argv[argv.index("--type") + 1])
+            self.assertEqual(
+                followup["certificate_identity"],
+                argv[argv.index("--certificate-identity") + 1],
+            )
+            self.assertEqual(
+                followup["oidc_issuer"],
+                argv[argv.index("--certificate-oidc-issuer") + 1],
+            )
+            self.assertNotIn("--certificate-identity-regexp", argv)
+            self.assertFalse(any("insecure-ignore" in arg for arg in argv))
+            self.assertEqual(2, len(check["run_window_utc"]))
+            start, end = (
+                datetime.fromisoformat(value) for value in check["run_window_utc"]
+            )
+            self.assertLess(start, end)
+
+    def test_local_valkey_sbom_is_not_publisher_attestation_or_scan(self):
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        evidence = ledger["p08_valkey_local_sbom_observation"]
+        self.assertEqual(
+            "valkey/valkey@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+            evidence["subject"],
+        )
+        self.assertEqual("LOCALLY_GENERATED", evidence["sbom_origin"])
+        self.assertEqual("REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE", evidence["status"])
+        self.assertEqual("NOT_SAVED", evidence["raw_receipt"])
+        self.assertIs(evidence["publisher_attested"], False)
+        self.assertIs(evidence["publisher_signature_verified"], False)
+        self.assertIs(evidence["publisher_provenance_verified"], False)
+        self.assertEqual("NOT_RUN", evidence["vulnerability_scan"])
+        exported = evidence["export"]["command_argv"]
+        self.assertEqual(evidence["subject"], exported[-1])
+        archive = exported[exported.index("--output") + 1]
+        syft = evidence["syft"]
+        mount = syft["container_command_argv"][
+            syft["container_command_argv"].index("--mount") + 1
+        ]
+        self.assertEqual(
+            f"type=bind,source={archive},target=/input/valkey.tar,readonly", mount
+        )
+        self.assertIn(
+            "docker-archive:/input/valkey.tar", syft["container_command_argv"]
+        )
+        self.assertEqual("bash -o pipefail -c", syft["pipeline_shell"])
+        self.assertEqual("CycloneDX", syft["format"])
+        self.assertEqual("NOT_SAVED", syft["raw_receipt"])
+        self.assertEqual(0, syft["reported_exit_code"])
+        rejected = evidence["rejected_attempts"][0]
+        self.assertEqual(0, rejected["reported_pipeline_exit_code"])
+        self.assertTrue(rejected["status"].startswith("REJECTED:"))
+        self.assertEqual(1, evidence["grype_db_preflight"]["reported_exit_code"])
+        self.assertEqual("DATABASE_MISSING", evidence["grype_db_preflight"]["status"])
+        self.assertEqual("NOT_SAVED", evidence["grype_db_preflight"]["raw_receipt"])
 
     def test_runtime_candidates_report_their_own_upstream_tag(self):
         root = Path(__file__).resolve().parents[3]

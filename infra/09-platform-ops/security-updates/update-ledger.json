@@ -1548,7 +1548,8 @@
           ],
           "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
           "source_activation": "NOT_APPLIED"
-        }
+        },
+        "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
       }
     },
     {
@@ -4408,7 +4409,8 @@
           ],
           "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
           "source_activation": "NOT_APPLIED"
-        }
+        },
+        "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
       }
     },
     {
@@ -8645,7 +8647,8 @@
           ],
           "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
           "source_activation": "NOT_APPLIED"
-        }
+        },
+        "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
       }
     },
     {
@@ -8996,7 +8999,8 @@
         "registry_observed_date": "2026-11-03 Asia/Seoul",
         "registry_reproduction_command": "docker buildx imagetools inspect n8nio/n8n:2.45.7",
         "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
-        "local_artifact_inspection": "NOT_RUN: download interrupted; custom image not built"
+        "local_artifact_inspection": "NOT_RUN: download interrupted; custom image not built",
+        "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
       }
     },
     {
@@ -9210,7 +9214,8 @@
         "registry_observed_date": "2026-11-03 Asia/Seoul",
         "registry_reproduction_command": "docker buildx imagetools inspect n8nio/runners:2.45.7",
         "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
-        "local_artifact_inspection": "NOT_RUN: candidate runner download interrupted"
+        "local_artifact_inspection": "NOT_RUN: candidate runner download interrupted",
+        "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
       }
     },
     {
@@ -9424,7 +9429,8 @@
         "registry_observed_date": "2026-11-03 Asia/Seoul",
         "registry_reproduction_command": "docker buildx imagetools inspect n8nio/runners:2.45.7",
         "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
-        "local_artifact_inspection": "NOT_RUN: candidate runner download interrupted"
+        "local_artifact_inspection": "NOT_RUN: candidate runner download interrupted",
+        "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
       }
     },
     {
@@ -9659,7 +9665,8 @@
           ],
           "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
           "source_activation": "NOT_APPLIED"
-        }
+        },
+        "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
       }
     },
     {
@@ -9989,7 +9996,8 @@
         "registry_observed_date": "2026-11-03 Asia/Seoul",
         "registry_reproduction_command": "docker buildx imagetools inspect n8nio/n8n:2.45.7",
         "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
-        "local_artifact_inspection": "NOT_RUN: download interrupted; custom image not built"
+        "local_artifact_inspection": "NOT_RUN: download interrupted; custom image not built",
+        "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
       }
     },
     {
@@ -10770,7 +10778,8 @@
           ],
           "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
           "source_activation": "NOT_APPLIED"
-        }
+        },
+        "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
       }
     },
     {
@@ -30331,5 +30340,1825 @@
       "meaning": "Fresh official release facts are joined by exact current service identity. Target/source pins, artifact digests, compatibility, signature, SBOM, native and deployment fields remain unchanged; latest mismatches stay visible."
     },
     "current_public_assessment_ref": "release-lookups.json#/root_official_refresh/public_metadata_continuations/1"
+  },
+  "p08_public_release_observations": {
+    "root_service_denominator": 112,
+    "source_query_denominator": 61,
+    "observed_source_count": 60,
+    "failed_source_count": 1,
+    "services_with_related_source": 99,
+    "services_without_related_source": [
+      "airflow-valkey",
+      "blog-ingestion",
+      "dev-valkey",
+      "mng-valkey",
+      "n8n",
+      "n8n-task-runner",
+      "n8n-task-runner-worker",
+      "n8n-valkey",
+      "n8n-worker",
+      "oauth2-proxy-valkey",
+      "ollama-exporter",
+      "storybook",
+      "storybook-mcp"
+    ],
+    "observation_window_start_utc": "2026-11-02T22:15:52Z",
+    "observation_window_end_utc": "2026-11-02T22:16:20Z",
+    "meaning": "Public page observations only. GitHub latest redirects do not establish vendor stable-channel policy, package or OCI availability, artifact identity, security applicability, compatibility, current installation, runtime or recovery. Crawl freshness is as reported by the browsing source; today does not prove a 24-hour freshness bound. General documentation pages do not establish a product version unless a release tag is explicit. The nine Valkey/n8n candidate rows have separate direct release/advisory observations. Other services without a related source in this batch remain unreviewed here.",
+    "verified_external_facts": false,
+    "deployed": false,
+    "observations": [
+      {
+        "query_url": "https://github.com/apache/airflow/releases/latest",
+        "resolved_url": "https://github.com/apache/airflow/releases/tag/3.3.2",
+        "observed_release_tag": "3.3.2",
+        "checked_at_utc": "2026-11-02T22:15:52Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "airflow-apiserver",
+          "airflow-dag-processor",
+          "airflow-init",
+          "airflow-scheduler",
+          "airflow-triggerer",
+          "airflow-worker",
+          "flower"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/oliver006/redis_exporter/releases/latest",
+        "resolved_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
+        "observed_release_tag": "v1.96.0",
+        "checked_at_utc": "2026-11-02T22:15:52Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "airflow-valkey-exporter",
+          "dev-valkey-exporter",
+          "mng-valkey-exporter",
+          "n8n-valkey-exporter",
+          "oauth2-proxy-valkey-exporter"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/seaweedfs/seaweedfs/releases/latest",
+        "resolved_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.52",
+        "observed_release_tag": "4.52",
+        "checked_at_utc": "2026-11-02T22:15:52Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "seaweedfs-filer",
+          "seaweedfs-master",
+          "seaweedfs-s3",
+          "seaweedfs-volume"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/terrakube-io/terrakube/releases/latest",
+        "resolved_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
+        "observed_release_tag": "2.33.3",
+        "checked_at_utc": "2026-11-02T22:15:52Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "terrakube-api",
+          "terrakube-executor",
+          "terrakube-ui"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/openbao/openbao/releases/latest",
+        "resolved_url": "https://github.com/openbao/openbao/releases/tag/v2.7.2",
+        "observed_release_tag": "v2.7.2",
+        "checked_at_utc": "2026-11-02T22:15:53Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "openbao",
+          "openbao-agent"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/restic/restic/releases/latest",
+        "resolved_url": "https://github.com/restic/restic/releases/tag/v0.19.1",
+        "observed_release_tag": "v0.19.1",
+        "checked_at_utc": "2026-11-02T22:15:53Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "restic",
+          "restic-offsite"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/apache/superset/releases/latest",
+        "resolved_url": "https://github.com/apache/superset/releases/tag/6.1.0",
+        "observed_release_tag": "6.1.0",
+        "checked_at_utc": "2026-11-02T22:15:53Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "superset",
+          "superset-init"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/prometheus/alertmanager/releases/latest",
+        "resolved_url": "https://github.com/prometheus/alertmanager/releases/tag/v0.34.2",
+        "observed_release_tag": "v0.34.2",
+        "checked_at_utc": "2026-11-02T22:15:53Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "alertmanager"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/grafana/alloy/releases/latest",
+        "resolved_url": "https://github.com/grafana/alloy/releases/tag/v1.21.3",
+        "observed_release_tag": "v1.21.3",
+        "checked_at_utc": "2026-11-02T22:15:55Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "alloy"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/google/cadvisor/releases/latest",
+        "resolved_url": "https://github.com/google/cadvisor/releases/tag/v0.60.6",
+        "observed_release_tag": "v0.60.6",
+        "checked_at_utc": "2026-11-02T22:15:55Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "cadvisor"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/open-policy-agent/conftest/releases/latest",
+        "resolved_url": "https://github.com/open-policy-agent/conftest/releases/tag/v0.71.1",
+        "observed_release_tag": "v0.71.1",
+        "checked_at_utc": "2026-11-02T22:15:55Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "conftest"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/unclecode/crawl4ai/releases/latest",
+        "resolved_url": "https://github.com/unclecode/crawl4ai/releases/tag/v0.9.5",
+        "observed_release_tag": "v0.9.5",
+        "checked_at_utc": "2026-11-02T22:15:55Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "crawl4ai"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/NVIDIA/dcgm-exporter/releases/latest",
+        "resolved_url": "https://github.com/NVIDIA/dcgm-exporter/releases/tag/4.8.4",
+        "observed_release_tag": "4.8.4",
+        "checked_at_utc": "2026-11-02T22:15:57Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "dcgm-exporter"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/amir20/dozzle/releases/latest",
+        "resolved_url": "https://github.com/amir20/dozzle/releases/tag/v11.4.0",
+        "observed_release_tag": "v11.4.0",
+        "checked_at_utc": "2026-11-02T22:15:57Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "dozzle"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/TwiN/gatus/releases/latest",
+        "resolved_url": "https://github.com/TwiN/gatus/releases/tag/v5.38.0",
+        "observed_release_tag": "v5.38.0",
+        "checked_at_utc": "2026-11-02T22:15:57Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "gatus"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/grafana/grafana/releases/latest",
+        "resolved_url": "https://github.com/grafana/grafana/releases/tag/v13.3.0",
+        "observed_release_tag": "v13.3.0",
+        "checked_at_utc": "2026-11-02T22:15:57Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "grafana"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/fivetran/great_expectations/releases/latest",
+        "resolved_url": "https://github.com/fivetran/great_expectations/releases/tag/1.24.1",
+        "observed_release_tag": "1.24.1",
+        "checked_at_utc": "2026-11-02T22:15:59Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "great-expectations"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/grafana/k6/releases/latest",
+        "resolved_url": "https://github.com/grafana/k6/releases/tag/v2.3.0",
+        "observed_release_tag": "v2.3.0",
+        "checked_at_utc": "2026-11-02T22:15:59Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "k6"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/keycloak/keycloak/releases/latest",
+        "resolved_url": "https://github.com/keycloak/keycloak/releases/tag/26.8.1",
+        "observed_release_tag": "26.8.1",
+        "checked_at_utc": "2026-11-02T22:15:59Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "keycloak"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/grafana/loki/releases/latest",
+        "resolved_url": "https://github.com/grafana/loki/releases/tag/v3.7.9",
+        "observed_release_tag": "v3.7.9",
+        "checked_at_utc": "2026-11-02T22:15:59Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "loki"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/axllent/mailpit/releases/latest",
+        "resolved_url": "https://github.com/axllent/mailpit/releases/tag/v1.33.0",
+        "observed_release_tag": "v1.33.0",
+        "checked_at_utc": "2026-11-02T22:16:01Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "mailpit"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/mlflow/mlflow/releases/latest",
+        "resolved_url": "https://github.com/mlflow/mlflow/releases/tag/v3.17.2",
+        "observed_release_tag": "v3.17.2",
+        "checked_at_utc": "2026-11-02T22:16:01Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "mlflow"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/prometheus/node_exporter/releases/latest",
+        "resolved_url": "https://github.com/prometheus/node_exporter/releases/tag/v1.12.1",
+        "observed_release_tag": "v1.12.1",
+        "checked_at_utc": "2026-11-02T22:16:01Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "node-exporter"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/oauth2-proxy/oauth2-proxy/releases/latest",
+        "resolved_url": "https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.5",
+        "observed_release_tag": "v7.15.5",
+        "checked_at_utc": "2026-11-02T22:16:01Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "oauth2-proxy"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/ollama/ollama/releases/latest",
+        "resolved_url": "https://github.com/ollama/ollama/releases/tag/v0.40.13",
+        "observed_release_tag": "v0.40.13",
+        "checked_at_utc": "2026-11-02T22:16:03Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "ollama"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/open-webui/open-webui/releases/latest",
+        "resolved_url": "https://github.com/open-webui/open-webui/releases/tag/v0.12.5",
+        "observed_release_tag": "v0.12.5",
+        "checked_at_utc": "2026-11-02T22:16:03Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "open-webui"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/lfnovo/open-notebook/releases/latest",
+        "resolved_url": "https://github.com/lfnovo/open-notebook/releases/tag/v1.15.0",
+        "observed_release_tag": "v1.15.0",
+        "checked_at_utc": "2026-11-02T22:16:03Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "open_notebook"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/opensearch-project/OpenSearch/releases/latest",
+        "resolved_url": "https://github.com/opensearch-project/OpenSearch/releases/tag/3.9.0",
+        "observed_release_tag": "3.9.0",
+        "checked_at_utc": "2026-11-02T22:16:03Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "opensearch"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/opensearch-project/OpenSearch-Dashboards/releases/latest",
+        "resolved_url": "https://github.com/opensearch-project/OpenSearch-Dashboards/releases/tag/3.9.0",
+        "observed_release_tag": "3.9.0",
+        "checked_at_utc": "2026-11-02T22:16:05Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "opensearch-dashboards"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/opentofu/opentofu/releases/latest",
+        "resolved_url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.2",
+        "observed_release_tag": "v1.13.2",
+        "checked_at_utc": "2026-11-02T22:16:05Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "opentofu"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/prometheus/prometheus/releases/latest",
+        "resolved_url": "https://github.com/prometheus/prometheus/releases/tag/v3.15.1",
+        "observed_release_tag": "v3.15.1",
+        "checked_at_utc": "2026-11-02T22:16:05Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "prometheus"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/prometheus/pushgateway/releases/latest",
+        "resolved_url": "https://github.com/prometheus/pushgateway/releases/tag/v1.11.4",
+        "observed_release_tag": "v1.11.4",
+        "checked_at_utc": "2026-11-02T22:16:05Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "pushgateway"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/grafana/pyroscope/releases/latest",
+        "resolved_url": "https://github.com/grafana/pyroscope/releases/tag/v2.4.2",
+        "observed_release_tag": "v2.4.2",
+        "checked_at_utc": "2026-11-02T22:16:07Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "pyroscope"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/qdrant/qdrant/releases/latest",
+        "resolved_url": "https://github.com/qdrant/qdrant/releases/tag/v1.20.0",
+        "observed_release_tag": "v1.20.0",
+        "checked_at_utc": "2026-11-02T22:16:07Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "qdrant"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/redis/RedisInsight/releases/latest",
+        "resolved_url": "https://github.com/redis/RedisInsight/releases/tag/3.8.0",
+        "observed_release_tag": "3.8.0",
+        "checked_at_utc": "2026-11-02T22:16:07Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "redisinsight"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/distribution/distribution/releases/latest",
+        "resolved_url": "https://github.com/distribution/distribution/releases/tag/v3.1.2",
+        "observed_release_tag": "v3.1.2",
+        "checked_at_utc": "2026-11-02T22:16:07Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "registry"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/renovatebot/renovate/releases/latest",
+        "resolved_url": "https://github.com/renovatebot/renovate/releases/tag/44.206.1",
+        "observed_release_tag": "44.206.1",
+        "checked_at_utc": "2026-11-02T22:16:09Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "renovate"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/stalwartlabs/stalwart/releases/latest",
+        "resolved_url": "https://github.com/stalwartlabs/stalwart/releases/tag/v1.0.2",
+        "observed_release_tag": "v1.0.2",
+        "checked_at_utc": "2026-11-02T22:16:09Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "stalwart"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/stalwartlabs/cli/releases/latest",
+        "resolved_url": "https://github.com/stalwartlabs/cli/releases/tag/v1.0.14",
+        "observed_release_tag": "v1.0.14",
+        "checked_at_utc": "2026-11-02T22:16:09Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "stalwart-config"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/surrealdb/surrealdb/releases/latest",
+        "resolved_url": "https://github.com/surrealdb/surrealdb/releases/tag/v3.3.5",
+        "observed_release_tag": "v3.3.5",
+        "checked_at_utc": "2026-11-02T22:16:09Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "surrealdb"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/grafana/tempo/releases/latest",
+        "resolved_url": "https://github.com/grafana/tempo/releases/tag/v3.1.1",
+        "observed_release_tag": "v3.1.1",
+        "checked_at_utc": "2026-11-02T22:16:11Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "tempo"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/traefik/traefik/releases/latest",
+        "resolved_url": "https://github.com/traefik/traefik/releases/tag/v3.7.17",
+        "observed_release_tag": "v3.7.17",
+        "checked_at_utc": "2026-11-02T22:16:11Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "traefik"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/trinodb/trino/releases/latest",
+        "resolved_url": "https://github.com/trinodb/trino/releases/tag/484",
+        "observed_release_tag": "484",
+        "checked_at_utc": "2026-11-02T22:16:11Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "trino"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/wiremock/wiremock/releases/latest",
+        "resolved_url": "https://github.com/wiremock/wiremock/releases/tag/3.13.2",
+        "observed_release_tag": "3.13.2",
+        "checked_at_utc": "2026-11-02T22:16:11Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "wiremock"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/prometheus-community/postgres_exporter/releases/latest",
+        "resolved_url": "https://github.com/prometheus-community/postgres_exporter/releases/tag/v0.20.1",
+        "observed_release_tag": "v0.20.1",
+        "checked_at_utc": "2026-11-02T22:16:13Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "dev-pg-exporter",
+          "mng-pg-exporter"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/prometheus/statsd_exporter/releases/latest",
+        "resolved_url": "https://github.com/prometheus/statsd_exporter/releases/tag/v0.31.0",
+        "observed_release_tag": "v0.31.0",
+        "checked_at_utc": "2026-11-02T22:16:13Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "airflow-statsd-exporter"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/YanWenKun/ComfyUI-Docker/releases/latest",
+        "resolved_url": "https://github.com/YanWenKun/ComfyUI-Docker/releases/tag/v6.0",
+        "observed_release_tag": "v6.0",
+        "checked_at_utc": "2026-11-02T22:16:13Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "comfyui"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/kafbat/kafka-ui/releases/latest",
+        "resolved_url": "https://github.com/kafbat/kafka-ui/releases/tag/v1.5.0",
+        "observed_release_tag": "v1.5.0",
+        "checked_at_utc": "2026-11-02T22:16:13Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "kafbat-ui"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/danielqsj/kafka_exporter/releases/latest",
+        "resolved_url": "https://github.com/danielqsj/kafka_exporter/releases/tag/v1.11.0",
+        "observed_release_tag": "v1.11.0",
+        "checked_at_utc": "2026-11-02T22:16:15Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "kafka-exporter"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://github.com/pact-foundation/pact_broker/releases/latest",
+        "resolved_url": "https://github.com/pact-foundation/pact_broker/releases/tag/v2.122.0",
+        "observed_release_tag": "v2.122.0",
+        "checked_at_utc": "2026-11-02T22:16:15Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "pact-broker"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://www.postgresql.org/support/versioning/",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:15Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "dbt-db-provision",
+          "debezium-db-provision",
+          "dev-perf-provision",
+          "dev-pg",
+          "dev-pg-monitor-provision",
+          "dev-platform-provision",
+          "grafana-db-provision",
+          "mlflow-db-provision",
+          "mng-pg",
+          "mng-pg-init",
+          "mng-pg-monitor-provision",
+          "pact-broker-db-provision",
+          "superset-db-provision"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:15Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "kafka-1",
+          "kafka-connect",
+          "kafka-init",
+          "kafka-rest-proxy",
+          "schema-registry"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://www.python.org/downloads/",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:17Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "backup-sqlite-export",
+          "crawl4ai-egress"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://flink.apache.org/downloads/",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:17Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "flink-jobmanager",
+          "flink-taskmanager"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://pypi.org/project/dbt-postgres/",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:17Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "dbt"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:17Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "jupyterlab"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://neo4j.com/deployment-center/",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:19Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "neo4j"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://nginx.org/en/download.html",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:19Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "nginx"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://spark.apache.org/downloads.html",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:19Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "spark"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://www.sonarsource.com/products/sonarqube/downloads/",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:19Z",
+        "source_cache_freshness": "UNKNOWN",
+        "result": "ACCESS_FAILED",
+        "related_root_services": [
+          "sonarqube"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      },
+      {
+        "query_url": "https://raw.githubusercontent.com/aws/aws-cli/v2/CHANGELOG.rst",
+        "resolved_url": null,
+        "observed_release_tag": null,
+        "checked_at_utc": "2026-11-02T22:16:20Z",
+        "source_cache_freshness": "today",
+        "result": "OBSERVED",
+        "related_root_services": [
+          "seaweedfs-buckets",
+          "seaweedfs-table-bucket"
+        ],
+        "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
+        "raw_receipt": "NOT_SAVED",
+        "freshness_verified": false,
+        "stable_channel_verified": false,
+        "oci_availability_verified": false
+      }
+    ]
+  },
+  "p08_upstream_supply_chain_observations": {
+    "reported_by": "/root/p08_security",
+    "official_expected_identity_source": "https://github.com/n8n-io/n8n/blob/01cb29d88764465197742803801c62eff1f71516/security/sca/README.md",
+    "official_workflow_source": "https://github.com/n8n-io/n8n/blob/01cb29d88764465197742803801c62eff1f71516/.github/workflows/docker-build-push.yml",
+    "expected_oidc_issuer": "https://token.actions.githubusercontent.com",
+    "expected_certificate_identity_regexp": "https://github.com/n8n-io/n8n/.github/workflows/.*",
+    "observed_runner_openvex_certificate_identity": "https://github.com/n8n-io/n8n/.github/workflows/docker-build-push.yml@refs/heads/release/2.45.7",
+    "observed_workflow_commit": "01cb29d88764465197742803801c62eff1f71516",
+    "reported_checks": [
+      {
+        "observation_id": "n8n-signature",
+        "subject": "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d",
+        "verification_type": "signature",
+        "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+        "command_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--pull",
+          "never",
+          "--network",
+          "bridge",
+          "--read-only",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--tmpfs",
+          "/tmp:rw,nosuid,nodev,noexec,size=32m",
+          "--user",
+          "65532:65532",
+          "--env",
+          "HOME=/tmp",
+          "--env",
+          "XDG_CACHE_HOME=/tmp/.cache",
+          "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+          "--timeout",
+          "90s",
+          "--output-file",
+          "/dev/null",
+          "verify",
+          "--certificate-oidc-issuer",
+          "https://token.actions.githubusercontent.com",
+          "--certificate-identity-regexp",
+          "https://github.com/n8n-io/n8n/.github/workflows/.*",
+          "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d"
+        ],
+        "reported_exit_code": 0,
+        "run_window_utc": [
+          "2026-11-02T22:18:08.841Z",
+          "2026-11-02T22:18:37.574Z"
+        ],
+        "reported_wall_seconds": 25.814,
+        "raw_receipt": "NOT_SAVED"
+      },
+      {
+        "observation_id": "n8n-slsa",
+        "subject": "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d",
+        "verification_type": "slsaprovenance1",
+        "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+        "command_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--pull",
+          "never",
+          "--network",
+          "bridge",
+          "--read-only",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--tmpfs",
+          "/tmp:rw,nosuid,nodev,noexec,size=32m",
+          "--user",
+          "65532:65532",
+          "--env",
+          "HOME=/tmp",
+          "--env",
+          "XDG_CACHE_HOME=/tmp/.cache",
+          "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+          "--timeout",
+          "90s",
+          "--output-file",
+          "/dev/null",
+          "verify-attestation",
+          "--type",
+          "slsaprovenance1",
+          "--certificate-oidc-issuer",
+          "https://token.actions.githubusercontent.com",
+          "--certificate-identity-regexp",
+          "https://github.com/n8n-io/n8n/.github/workflows/.*",
+          "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d"
+        ],
+        "reported_exit_code": 0,
+        "run_window_utc": [
+          "2026-11-02T22:18:45.271Z",
+          "2026-11-02T22:19:03.381Z"
+        ],
+        "reported_wall_seconds": 15.847,
+        "raw_receipt": "NOT_SAVED"
+      },
+      {
+        "observation_id": "runner-cyclonedx",
+        "subject": "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
+        "verification_type": "cyclonedx",
+        "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+        "command_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--pull",
+          "never",
+          "--network",
+          "bridge",
+          "--read-only",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--tmpfs",
+          "/tmp:rw,nosuid,nodev,noexec,size=32m",
+          "--user",
+          "65532:65532",
+          "--env",
+          "HOME=/tmp",
+          "--env",
+          "XDG_CACHE_HOME=/tmp/.cache",
+          "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+          "--timeout",
+          "90s",
+          "--output-file",
+          "/dev/null",
+          "verify-attestation",
+          "--type",
+          "cyclonedx",
+          "--certificate-oidc-issuer",
+          "https://token.actions.githubusercontent.com",
+          "--certificate-identity-regexp",
+          "https://github.com/n8n-io/n8n/.github/workflows/.*",
+          "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300"
+        ],
+        "reported_exit_code": 0,
+        "run_window_utc": [
+          "2026-11-02T22:18:45.271Z",
+          "2026-11-02T22:19:03.381Z"
+        ],
+        "reported_wall_seconds": 15.195,
+        "raw_receipt": "NOT_SAVED"
+      },
+      {
+        "observation_id": "runner-openvex",
+        "subject": "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
+        "verification_type": "openvex",
+        "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+        "command_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--pull",
+          "never",
+          "--network",
+          "bridge",
+          "--read-only",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--tmpfs",
+          "/tmp:rw,nosuid,nodev,noexec,size=32m",
+          "--user",
+          "65532:65532",
+          "--env",
+          "HOME=/tmp",
+          "--env",
+          "XDG_CACHE_HOME=/tmp/.cache",
+          "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+          "--timeout",
+          "90s",
+          "--output-file",
+          "/dev/null",
+          "verify-attestation",
+          "--type",
+          "openvex",
+          "--certificate-oidc-issuer",
+          "https://token.actions.githubusercontent.com",
+          "--certificate-identity-regexp",
+          "https://github.com/n8n-io/n8n/.github/workflows/.*",
+          "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300"
+        ],
+        "reported_exit_code": 0,
+        "run_window_utc": [
+          "2026-11-02T22:18:08.841Z",
+          "2026-11-02T22:18:37.574Z"
+        ],
+        "reported_wall_seconds": 25.821,
+        "raw_receipt": "NOT_SAVED"
+      }
+    ],
+    "reported_negative_checks": [
+      {
+        "subject": "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
+        "verification_type": "signature",
+        "reported_exit_code": 10,
+        "result": "no signatures found",
+        "run_window_utc": [
+          "2026-11-02T22:18:08.841Z",
+          "2026-11-02T22:18:37.574Z"
+        ],
+        "reported_wall_seconds": 21.0,
+        "command_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--pull",
+          "never",
+          "--network",
+          "bridge",
+          "--read-only",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--tmpfs",
+          "/tmp:rw,nosuid,nodev,noexec,size=32m",
+          "--user",
+          "65532:65532",
+          "--env",
+          "HOME=/tmp",
+          "--env",
+          "XDG_CACHE_HOME=/tmp/.cache",
+          "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+          "--timeout",
+          "90s",
+          "--output-file",
+          "/dev/null",
+          "verify",
+          "--certificate-oidc-issuer",
+          "https://token.actions.githubusercontent.com",
+          "--certificate-identity-regexp",
+          "https://github.com/n8n-io/n8n/.github/workflows/.*",
+          "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300"
+        ],
+        "raw_receipt": "NOT_SAVED"
+      },
+      {
+        "subject": "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
+        "verification_type": "slsaprovenance1",
+        "reported_exit_code": 1,
+        "result": "no matching SLSA predicate; CycloneDX/OpenVEX observed",
+        "run_window_utc": [
+          "2026-11-02T22:17:38.821Z",
+          "2026-11-02T22:17:57.361Z"
+        ],
+        "reported_wall_seconds": 16.28,
+        "command_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--pull",
+          "never",
+          "--network",
+          "bridge",
+          "--read-only",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--tmpfs",
+          "/tmp:rw,nosuid,nodev,noexec,size=32m",
+          "--user",
+          "65532:65532",
+          "--env",
+          "HOME=/tmp",
+          "--env",
+          "XDG_CACHE_HOME=/tmp/.cache",
+          "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+          "--timeout",
+          "90s",
+          "--output-file",
+          "/dev/null",
+          "verify-attestation",
+          "--type",
+          "slsaprovenance1",
+          "--certificate-oidc-issuer",
+          "https://token.actions.githubusercontent.com",
+          "--certificate-identity-regexp",
+          "https://github.com/n8n-io/n8n/.github/workflows/.*",
+          "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300"
+        ],
+        "raw_receipt": "NOT_SAVED"
+      },
+      {
+        "subject": "ghcr.io/n8n-io/n8n@sha256:8e7fd6d66cef92bc0c7c049d456771d9003e9f69f9265c2238ab3f915ddbb080",
+        "verification_type": "cyclonedx",
+        "reported_exit_code": 1,
+        "result": "no matching attestation",
+        "run_window_utc": [
+          "2026-11-02T22:17:38.821Z",
+          "2026-11-02T22:17:57.361Z"
+        ],
+        "reported_wall_seconds": 15.521,
+        "command_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--pull",
+          "never",
+          "--network",
+          "bridge",
+          "--read-only",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--tmpfs",
+          "/tmp:rw,nosuid,nodev,noexec,size=32m",
+          "--user",
+          "65532:65532",
+          "--env",
+          "HOME=/tmp",
+          "--env",
+          "XDG_CACHE_HOME=/tmp/.cache",
+          "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+          "--timeout",
+          "90s",
+          "--output-file",
+          "/dev/null",
+          "verify-attestation",
+          "--type",
+          "cyclonedx",
+          "--certificate-oidc-issuer",
+          "https://token.actions.githubusercontent.com",
+          "--certificate-identity-regexp",
+          "https://github.com/n8n-io/n8n/.github/workflows/.*",
+          "ghcr.io/n8n-io/n8n@sha256:8e7fd6d66cef92bc0c7c049d456771d9003e9f69f9265c2238ab3f915ddbb080"
+        ],
+        "raw_receipt": "NOT_SAVED"
+      },
+      {
+        "subject": "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d",
+        "verification_type": "cyclonedx",
+        "reported_exit_code": 1,
+        "result": "no matching attestation; SLSA predicate observed",
+        "run_window_utc": null,
+        "reported_wall_seconds": null,
+        "command_argv": [
+          "docker",
+          "run",
+          "--rm",
+          "--pull",
+          "never",
+          "--network",
+          "bridge",
+          "--read-only",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--tmpfs",
+          "/tmp:rw,nosuid,nodev,noexec,size=32m",
+          "--user",
+          "65532:65532",
+          "--env",
+          "HOME=/tmp",
+          "--env",
+          "XDG_CACHE_HOME=/tmp/.cache",
+          "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+          "--timeout",
+          "90s",
+          "--output-file",
+          "/dev/null",
+          "verify-attestation",
+          "--type",
+          "cyclonedx",
+          "--certificate-oidc-issuer",
+          "https://token.actions.githubusercontent.com",
+          "--certificate-identity-regexp",
+          "https://github.com/n8n-io/n8n/.github/workflows/.*",
+          "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d"
+        ],
+        "raw_receipt": "NOT_SAVED"
+      }
+    ],
+    "raw_receipt": "NOT_SAVED",
+    "slsa_builder_and_parameters": "NOT_REVIEWED",
+    "sbom_contents_and_vulnerability_state": "NOT_REVIEWED",
+    "scope": "Reported exact upstream GHCR digest signature or attestation verification under documented OIDC identity. Fulcio/Rekor and claims remain enabled. Payloads were discarded; producer/build parameters and full SBOM/VEX semantics were not independently reviewed. GHCR and DockerHub descriptor equality was separately reported and is not established by cosign itself. No claim for upstream single-platform images, locally customized outputs, native acceptance, recovery or operation.",
+    "custom_image_verified": false,
+    "deployment_verified": false,
+    "exact_identity_followup": {
+      "reported_by": "/root/p08_security",
+      "certificate_identity": "https://github.com/n8n-io/n8n/.github/workflows/docker-build-push.yml@refs/heads/release/2.45.7",
+      "oidc_issuer": "https://token.actions.githubusercontent.com",
+      "precedence": "Preferred over, and does not erase, earlier regexp identity observations.",
+      "reported_checks": [
+        {
+          "observation_id": "n8n-signature",
+          "subject": "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d",
+          "verification_type": "signature",
+          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+          "command_argv": [
+            "docker",
+            "run",
+            "--rm",
+            "--pull",
+            "never",
+            "--network",
+            "bridge",
+            "--read-only",
+            "--cap-drop",
+            "ALL",
+            "--security-opt",
+            "no-new-privileges",
+            "--tmpfs",
+            "/tmp:rw,nosuid,nodev,noexec,size=32m",
+            "--user",
+            "65532:65532",
+            "--env",
+            "HOME=/tmp",
+            "--env",
+            "XDG_CACHE_HOME=/tmp/.cache",
+            "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+            "--timeout",
+            "90s",
+            "--output-file",
+            "/dev/null",
+            "verify",
+            "--certificate-oidc-issuer",
+            "https://token.actions.githubusercontent.com",
+            "--certificate-identity",
+            "https://github.com/n8n-io/n8n/.github/workflows/docker-build-push.yml@refs/heads/release/2.45.7",
+            "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d"
+          ],
+          "reported_exit_code": 0,
+          "run_window_utc": [
+            "2026-11-02T22:25:43.834Z",
+            "2026-11-02T22:26:07.668Z"
+          ],
+          "reported_wall_seconds": 18.706,
+          "raw_receipt": "NOT_SAVED"
+        },
+        {
+          "observation_id": "n8n-slsa",
+          "subject": "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d",
+          "verification_type": "slsaprovenance1",
+          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+          "command_argv": [
+            "docker",
+            "run",
+            "--rm",
+            "--pull",
+            "never",
+            "--network",
+            "bridge",
+            "--read-only",
+            "--cap-drop",
+            "ALL",
+            "--security-opt",
+            "no-new-privileges",
+            "--tmpfs",
+            "/tmp:rw,nosuid,nodev,noexec,size=32m",
+            "--user",
+            "65532:65532",
+            "--env",
+            "HOME=/tmp",
+            "--env",
+            "XDG_CACHE_HOME=/tmp/.cache",
+            "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+            "--timeout",
+            "90s",
+            "--output-file",
+            "/dev/null",
+            "verify-attestation",
+            "--type",
+            "slsaprovenance1",
+            "--certificate-oidc-issuer",
+            "https://token.actions.githubusercontent.com",
+            "--certificate-identity",
+            "https://github.com/n8n-io/n8n/.github/workflows/docker-build-push.yml@refs/heads/release/2.45.7",
+            "ghcr.io/n8n-io/n8n@sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d"
+          ],
+          "reported_exit_code": 0,
+          "run_window_utc": [
+            "2026-11-02T22:26:07.668Z",
+            "2026-11-02T22:26:26.619Z"
+          ],
+          "reported_wall_seconds": 16.752,
+          "raw_receipt": "NOT_SAVED"
+        },
+        {
+          "observation_id": "runner-cyclonedx",
+          "subject": "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
+          "verification_type": "cyclonedx",
+          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+          "command_argv": [
+            "docker",
+            "run",
+            "--rm",
+            "--pull",
+            "never",
+            "--network",
+            "bridge",
+            "--read-only",
+            "--cap-drop",
+            "ALL",
+            "--security-opt",
+            "no-new-privileges",
+            "--tmpfs",
+            "/tmp:rw,nosuid,nodev,noexec,size=32m",
+            "--user",
+            "65532:65532",
+            "--env",
+            "HOME=/tmp",
+            "--env",
+            "XDG_CACHE_HOME=/tmp/.cache",
+            "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+            "--timeout",
+            "90s",
+            "--output-file",
+            "/dev/null",
+            "verify-attestation",
+            "--type",
+            "cyclonedx",
+            "--certificate-oidc-issuer",
+            "https://token.actions.githubusercontent.com",
+            "--certificate-identity",
+            "https://github.com/n8n-io/n8n/.github/workflows/docker-build-push.yml@refs/heads/release/2.45.7",
+            "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300"
+          ],
+          "reported_exit_code": 0,
+          "run_window_utc": [
+            "2026-11-02T22:26:30.708Z",
+            "2026-11-02T22:26:46.759Z"
+          ],
+          "reported_wall_seconds": 13.595,
+          "raw_receipt": "NOT_SAVED"
+        },
+        {
+          "observation_id": "runner-openvex",
+          "subject": "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
+          "verification_type": "openvex",
+          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+          "command_argv": [
+            "docker",
+            "run",
+            "--rm",
+            "--pull",
+            "never",
+            "--network",
+            "bridge",
+            "--read-only",
+            "--cap-drop",
+            "ALL",
+            "--security-opt",
+            "no-new-privileges",
+            "--tmpfs",
+            "/tmp:rw,nosuid,nodev,noexec,size=32m",
+            "--user",
+            "65532:65532",
+            "--env",
+            "HOME=/tmp",
+            "--env",
+            "XDG_CACHE_HOME=/tmp/.cache",
+            "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+            "--timeout",
+            "90s",
+            "--output-file",
+            "/dev/null",
+            "verify-attestation",
+            "--type",
+            "openvex",
+            "--certificate-oidc-issuer",
+            "https://token.actions.githubusercontent.com",
+            "--certificate-identity",
+            "https://github.com/n8n-io/n8n/.github/workflows/docker-build-push.yml@refs/heads/release/2.45.7",
+            "ghcr.io/n8n-io/runners@sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300"
+          ],
+          "reported_exit_code": 0,
+          "run_window_utc": [
+            "2026-11-02T22:26:46.759Z",
+            "2026-11-02T22:26:59.535Z"
+          ],
+          "reported_wall_seconds": 10.876,
+          "raw_receipt": "NOT_SAVED"
+        }
+      ],
+      "raw_receipt": "NOT_SAVED",
+      "slsa_builder_and_parameters": "NOT_REVIEWED",
+      "sbom_contents_and_vulnerability_state": "NOT_REVIEWED",
+      "custom_image_verified": false,
+      "deployment_verified": false,
+      "scope": "Upstream exact GHCR index digest signatures/attestations only; claims, Fulcio and Rekor checks reported enabled. Raw payload discarded. Does not establish custom output, actual operation, compatibility, independent recovery, SLSA builder/parameters, SBOM contents or vulnerability status."
+    }
+  },
+  "p08_valkey_local_sbom_observation": {
+    "reported_by": "/root/p08_security",
+    "subject": "valkey/valkey@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+    "platform": "linux/amd64",
+    "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+    "sbom_origin": "LOCALLY_GENERATED",
+    "publisher_attested": false,
+    "publisher_signature_verified": false,
+    "publisher_provenance_verified": false,
+    "vulnerability_scan": "NOT_RUN",
+    "raw_receipt": "NOT_SAVED",
+    "export": {
+      "command_argv": [
+        "rtk",
+        "docker",
+        "image",
+        "save",
+        "--output",
+        "/tmp/p08-valkey-sbom.z7cpzj/valkey.tar",
+        "valkey/valkey@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6"
+      ],
+      "reported_exit_code": 0,
+      "run_window_utc": [
+        "2026-11-02T22:21:39.850Z",
+        "2026-11-02T22:21:46.473Z"
+      ],
+      "reported_wall_seconds": 3.352,
+      "archive_retained": false
+    },
+    "syft": {
+      "container_command_argv": [
+        "rtk",
+        "docker",
+        "run",
+        "--rm",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,noexec,size=64m",
+        "--user",
+        "0:0",
+        "--env",
+        "HOME=/tmp",
+        "--env",
+        "XDG_CACHE_HOME=/tmp/.cache",
+        "--env",
+        "SYFT_CHECK_FOR_APP_UPDATE=false",
+        "--mount",
+        "type=bind,source=/tmp/p08-valkey-sbom.z7cpzj/valkey.tar,target=/input/valkey.tar,readonly",
+        "anchore/syft@sha256:3eb5379ba7b409c3f4069b686110527af0c47df993fa5c10d13e7cf34f49b1aa",
+        "-q",
+        "docker-archive:/input/valkey.tar",
+        "-o",
+        "cyclonedx-json"
+      ],
+      "pipeline": "bash -o pipefail; pipe JSON into jq -c summary selection of bomFormat, specVersion, component count, operating systems and metadata component",
+      "reported_exit_code": 0,
+      "run_window_utc": [
+        "2026-11-02T22:23:22.154Z",
+        "2026-11-02T22:23:39.624Z"
+      ],
+      "reported_wall_seconds": 15.062,
+      "format": "CycloneDX",
+      "format_version": "1.7",
+      "component_count": 716,
+      "os": "Alpine 3.24.3",
+      "config_id": "sha256:6584224993a9d44d66fd73789abb3d25b5a1df0d6709fdacc499bae093826060",
+      "raw_receipt": "NOT_SAVED",
+      "pipeline_jq_argv": [
+        "jq",
+        "-c",
+        "{bomFormat,specVersion,component_count:(.components|length),operating_systems:[.components[]? | select(.type==\"operating-system\") | {name,version}],metadata_component:{name:.metadata.component.name,version:.metadata.component.version,type:.metadata.component.type}}"
+      ],
+      "pipeline_shell": "bash -o pipefail -c"
+    },
+    "grype_db_preflight": {
+      "command_argv": [
+        "timeout",
+        "--signal=KILL",
+        "20s",
+        "rtk",
+        "docker",
+        "run",
+        "--rm",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,noexec,size=64m",
+        "--user",
+        "0:0",
+        "--env",
+        "HOME=/tmp",
+        "--env",
+        "XDG_CACHE_HOME=/tmp/.cache",
+        "--env",
+        "GRYPE_CHECK_FOR_APP_UPDATE=false",
+        "anchore/grype@sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe",
+        "db",
+        "status"
+      ],
+      "status": "DATABASE_MISSING",
+      "reported_exit_code": 1,
+      "run_window_utc": [
+        "2026-11-02T22:23:44.011Z",
+        "2026-11-02T22:23:55.294Z"
+      ],
+      "reported_wall_seconds": 9.007,
+      "raw_receipt": "NOT_SAVED"
+    },
+    "rejected_attempts": [
+      {
+        "run_window_utc": [
+          "2026-11-02T22:21:51.761Z",
+          "2026-11-02T22:22:09.755Z"
+        ],
+        "reported_pipeline_exit_code": 0,
+        "status": "REJECTED: syft archive permission denied; shell pipeline did not use pipefail"
+      },
+      {
+        "run_window_utc": [
+          "2026-11-02T22:22:34.718Z",
+          "2026-11-02T22:22:59.733Z"
+        ],
+        "reported_exit_code": 1,
+        "status": "REJECTED: archive unreadable"
+      },
+      {
+        "run_window_utc": [
+          "2026-11-02T22:23:03.654Z",
+          "2026-11-02T22:23:12.680Z"
+        ],
+        "reported_exit_code": 1,
+        "status": "REJECTED: open archive permission denied"
+      }
+    ],
+    "descriptor_equivalence": "GHCR and Docker Hub candidate index and linux/amd64 descriptors were separately reported equal. This does not verify publisher identity.",
+    "limitations": "Local unsigned SBOM summary reported without raw evidence. No publisher identity/issuer verification contract located; no artifact signature or provenance accepted. Vulnerability database missing; scanner never ran. No native, operational or independent restore acceptance.",
+    "temporary_archive_permission": {
+      "command_argv": [
+        "chmod",
+        "0644",
+        "/tmp/p08-valkey-sbom.z7cpzj/valkey.tar"
+      ],
+      "reported_exit_code": 0,
+      "exact_timestamp": null,
+      "scope": "test-owned public image archive only"
+    },
+    "cleanup": {
+      "steps": [
+        {
+          "command_argv": [
+            "unlink",
+            "/tmp/p08-valkey-sbom.z7cpzj/valkey.tar"
+          ],
+          "reported_exit_code": 0
+        },
+        {
+          "command_argv": [
+            "rmdir",
+            "/tmp/p08-valkey-sbom.z7cpzj"
+          ],
+          "reported_exit_code": 0
+        }
+      ],
+      "raw_receipt": "NOT_SAVED"
+    }
   }
 }

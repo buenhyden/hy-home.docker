@@ -37496,10 +37496,16 @@ requirements:
   acceptance: pending
   acceptance_owner: SPEC-0212-TSK-0047
   implementation_writer: P08 source-ledger writer under current Task lease
-  source_verification: Root census observed 44 Compose inputs and 112 declarations;
-    `blog-ingestion` and affected fingerprint history repaired in public ledger.
+  source_verification: 'Root census observed 44 Compose inputs and 112 declarations;
+    `blog-ingestion` and affected fingerprint history repaired in public ledger. The
+    ledger records 61 PUBLIC_SOURCE_OBSERVATION_ONLY release queries at 2026-11-02T22:15:52Z
+    through 2026-11-02T22:16:20Z: 60 responses/one access failure, 99 mapped root
+    services/13 unmapped, with nine Valkey/n8n services covered by separate candidates.
+    Each observation has freshness_verified, stable_channel_verified and
+    oci_availability_verified false.'
   static_checks: 43/45 scoped ledger and workflow-version-bundle tests PASS with two
-    existing candidate cases SKIP; Ruff PASS. `matches_target_latest` checks submitted
+    existing candidate cases SKIP; public observation regression 37 PASS; Ruff PASS.
+    `matches_target_latest` checks submitted
     target/latest only; `matches_declared_latest` is null because active declarations
     are not inspected. Latest-version gate exit 2 because fresh lookups remain incomplete,
     not because a candidate is known absent.
@@ -37514,8 +37520,9 @@ requirements:
   final_acceptance: NOT_RUN
   evidence:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
-  limit: Compose declaration census is not a completed support, license, latest-version,
-    artifact-signature or operational survey.
+  limit: Raw public receipts are NOT_SAVED. Compose declaration census and release-page
+    observation are not a completed support, license, latest-version, OCI/stable-channel,
+    security applicability, artifact-signature or operational survey.
 - id: P08.02
   criterion: 87
   work_unit: W92
@@ -37588,9 +37595,16 @@ requirements:
   implementation_writer: P08 supply-chain writer under current Task lease
   source_verification: Existing sample-service policy and base/GHCR receipts are
     explicitly non-transferable to Docker Hub or custom service images.
-  static_checks: 'Supply-chain gate exit 2: coverage checked but public ledger incomplete.'
-  isolated_tests: NOT_RUN pending exact digest, publisher identity/key, provenance,
-    SBOM, vulnerability and license material per selected artifact.
+  static_checks: 'Supply-chain gate exit 2: coverage checked but public ledger incomplete.
+    Frozen upstream observation regression: 39 PASS and Ruff PASS.'
+  isolated_tests: 'REPORTED_PASS only at upstream GHCR index digests under exact issuer
+    https://token.actions.githubusercontent.com and exact docker-build-push release/2.45.7
+    identity: n8n image signature plus SLSA v1 at sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d;
+    runners CycloneDX/OpenVEX at sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300.
+    Valkey amd64 artifact has a local, not publisher, Syft CycloneDX 1.7 SBOM
+    (716 components). Runners signature exit10/SLSA
+    exit1, n8n CycloneDX exit1 and Grype offline DB absence exit1 remain negative/BLOCKED.
+    Raw transcript/time/SBOM absent; builder/parameters and SBOM/VEX meaning NOT_REVIEWED.'
   historical_operator_acceptance: Historical source receipts remain bounded and are not
     service artifact verification.
   current_direct_operation: NOT_RUN
@@ -37600,8 +37614,9 @@ requirements:
   final_acceptance: NOT_RUN
   evidence:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
-  limit: Signature/provenance unavailability remains explicit; verification options are
-    never disabled to create PASS.
+  limit: Exact upstream index evidence does not verify custom images, native behavior,
+    compatibility, restore, deployment or runtime. Valkey signing identity/issuer is
+    NOT_ASSESSABLE; verification options are never disabled to create PASS.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED

@@ -233,6 +233,30 @@ sample/base/GHCR artifact 증거를 Docker Hub 또는 custom artifact의 공급�
 전이하지 않는다. Storybook 10.6.3 clean-lock 결과는 별도 Task에 기록하며 실제
 runtime·원격 인증·외부 audit은 이 패키지의 목록으로 승격하지 않는다.
 
+P08 원장은 2026-11-02T22:15:52Z부터 22:16:20Z까지 61개 공개 릴리스 URL을
+관측해 60개 응답과 1개 접근 실패를 기록했다. 기존 source owner/release URL은
+112개 root 서비스 중 99개에 연결되고 13개는 미연결이며, Valkey/n8n 9개 서비스는
+별도 후보 기록으로 대조한다. 원시 영수증은 보관하지 않으며 각 행은
+`PUBLIC_SOURCE_OBSERVATION_ONLY`다. 공개 페이지·tag는 24시간 최신성, OCI
+artifact, 안정 채널, 보안 적용성, 호환·라이선스, 실행·배포 수용의 증거가 아니다.
+각 행의 `freshness_verified`, `stable_channel_verified`,
+`oci_availability_verified`는 모두 `false`다.
+
+별도 upstream 관측은 정확한 GHCR index digest에서만 n8n image signature+SLSA,
+runners CycloneDX+OpenVEX의 보고된 성공을 남긴다. runners image signature/SLSA와
+n8n CycloneDX의 부재·오류는 따로 남으며, Valkey signing identity/issuer는
+`NOT_ASSESSABLE`이다. 명령 transcript·원시 영수증·UTC 창은 보관하지 않았고,
+builder/parameters 및 SBOM/VEX 의미는 검토하지 않았다. 따라서 이 기록은 custom
+image, native 기능, 호환·복원·배포 또는 운영 수용으로 전이되지 않는다.
+
+이후 정확한 OIDC issuer와 certificate identity로 n8n/runners 네 index 관측을
+재검증했다. 고정 Cosign 3.1.3에서 n8n signature/SLSA와 runners CycloneDX/OpenVEX은
+각각 exit 0이었지만, payload는 `/dev/null`로 처리하고 원시 영수증은 보관하지 않았다.
+정확한 시간·digest·identity는 P08 Task와 원장에 결속한다. Valkey amd64는 고정 Syft
+1.54.1로 로컬 CycloneDX 1.7 SBOM(Alpine 3.24.3, 716 components)을 생성했을 뿐
+publisher attestation이 아니다. Grype offline DB 부재(exit 1)로 취약점 scan은
+`BLOCKED`/`NOT_RUN`이며, 네트워크 DB 다운로드는 하지 않았다.
+
 ## Related Documents
 
 - [범주 색인](../README.md)

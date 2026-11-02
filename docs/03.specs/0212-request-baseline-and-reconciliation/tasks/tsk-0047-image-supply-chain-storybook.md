@@ -115,6 +115,17 @@ provenance/SBOM/license evidence. A GHCR image receipt, a base image receipt,
 or the sample-service policy never validates Docker Hub or custom images.
 Absent material is `NOT_RUN` or `BLOCKED`, never a verification PASS.
 
+The frozen upstream observations use Cosign 3.1.3 pinned at
+`sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8`,
+with `--pull never`, read-only filesystem, dropped capabilities and
+no-new-privileges. The exact issuer was
+`https://token.actions.githubusercontent.com`; the exact certificate identity
+was `https://github.com/n8n-io/n8n/.github/workflows/docker-build-push.yml@refs/heads/release/2.45.7`.
+It supersedes the earlier regexp-only observation while preserving that history
+in the ledger. Command payload files are not retained (`/dev/null` was used);
+the sanitized transcript and recorded UTC windows bound, but do not turn these
+into reusable artifact receipts.
+
 The source-ledger gate now separates submission metadata from declaration
 verification. `matches_target_latest` means only that a candidate's version
 format is valid and its submitted target equals submitted latest;
@@ -125,6 +136,17 @@ retains only candidate-ledger completeness semantics. This compatibility change
 is deliberately not source, deployment, registry-artifact or operational
 acceptance.
 
+The supply ledger separately records a bounded public-release observation
+window of `2026-11-02T22:15:52Z`–`2026-11-02T22:16:20Z`: 61 public source
+queries, with 60 responses and one access failure. Ninety-nine of the 112 root
+service rows map to an existing source owner/release URL and thirteen remain
+unmapped; nine Valkey/n8n rows are instead covered by their separate direct
+candidate records. Each row is `PUBLIC_SOURCE_OBSERVATION_ONLY`, retains no raw
+receipt and sets `freshness_verified`, `stable_channel_verified` and
+`oci_availability_verified` to `false`. Public tags and pages do not
+prove OCI availability, stable-channel support, security applicability,
+compatibility, license, runtime or deployment acceptance.
+
 ## Evidence
 
 | Evidence | Criteria | Check | Input | Result | Boundary |
@@ -132,7 +154,9 @@ acceptance.
 | Initial source census | 86 | Root Compose declaration inventory | Public root sources | Observed: 44 inputs, 112 declarations | Source-only observation; separate projects, Dockerfiles and locks have their own denominators |
 | Ledger repair regression | 86 | Public update-ledger/source-binding tests and Ruff | Owned ledger and synthetic records | PASS: 43/45 scoped tests; 2 existing candidate cases SKIP; Ruff PASS. A CLI public fixture demonstrated the new field semantics. `blog-ingestion`, 48 changed-input and 5 prior-stale history rows were retained | Fresh official lookups remain incomplete; not an overall support PASS |
 | Ledger changed-line coverage | 86 | Stdlib trace over new gate execution paths | Five new executable lines; subprocess/existing lines excluded | PASS: 5/5 (100%). `LatestVersionGateTests` plus synthetic CLI: 12 PASS | Broad trace was interrupted during parsing (exit 130); system Python lacks the coverage module |
-| P08 local integration | 86–89 | Update-gates, workflow-version-bundle, P08 routing and workflow contract | Current public P08 source | PASS: 51 tests, 2 skipped; workflow-contract PASS | Does not replace broad selector integration, remote CI or operation |
+| Public release observations | 86 | Release-source mapping in the supply ledger | 61 public queries during the recorded 28-second window | OBSERVED_ONLY: 60 responses, one access failure; 99/112 root services mapped and 13 unmapped; raw receipts not saved. Every row sets freshness/stable-channel/OCI verification false. | No security/compatibility/license/runtime/deployment conclusion; retain missing rows and access failure |
+| Public-observation regression | 86 | Supply-ledger observation and malformed-record rejection suite | Frozen public ledger | PASS: 37 tests and independent review | Validates observation bookkeeping, not release-body or artifact facts |
+| P08 local integration | 86–89 | Update-gates, workflow-version-bundle, P08 routing and workflow contract | Current public P08 source | Earlier packet: 52 total tests, 50 PASS/2 skipped. Final frozen packet: 55 total tests, 53 PASS/2 skipped; workflow-contract and diff check PASS. | Does not replace broad selector integration, remote CI or operation |
 | Latest-version gate | 86 | Current lookup-status gate | Public ledger | Exit 2: no missing/unexpected rows, but fresh lookups incomplete | `ledger_complete: false`; `ready` is ledger completeness only and no candidate is declared current solely from this gate |
 | Supply-chain gate | 89 | Existing gate against public ledger | Public source records | Exit 2: coverage checked, ledger incomplete | Does not prove a service image, signature, provenance or SBOM |
 | Storybook clean lock install | 88 | Offline isolated `npm ci` | Tracked 10.6.3 lock, cached packages | PASS: 550 packages | Local installation was not overwritten |
@@ -142,6 +166,9 @@ acceptance.
 | Documentation and registry checks | 86–89 | Operations catalog, DATA metadata/YAML and changed-document lifecycle validation | Current P08 documents and public DATA | PASS: operations catalog; DATA metadata validator and YAML parse; diff check. `check-document-metadata --mode check-changed` and corpus lifecycle began from explicit baseline but exceeded the local 30-second execution window without a result. | Timed-out document checks are NOT_RUN, not a PASS; rerun in a sufficient local window before final acceptance |
 | Existing CI residuals | 86–89 | Broad CI / exact-selector checks | 145-test public-plan contract | BLOCKED for selector integration: one run of `test_ci_gate_plan` had 7 failures/321 errors and an independent 145-test public-plan review had 8 failures/326 errors, both from existing `leaf.p03-hermes` `ci-gate-public-execution-parity`. That leaf itself had 62 PASS/1 skip. A separate exact-selector list check had one failure. | P03/CI owner must reconcile parity and selector expectation; remote CI is NOT_RUN. Do not relabel either as a P08 leaf failure or mask it with local PASS |
 | Supply-ledger candidate metadata | 86, 87, 89 | Public Valkey/n8n candidate and registry-metadata review | Five Valkey and four n8n selected source rows | Official release/advisory and registry metadata observations corrected; custom-image digest `UNKNOWN`; candidate signature/SBOM/compatibility/native/operation remain NOT_RUN and applicability UNKNOWN | No cross-artifact verification or activation follows |
+| Upstream n8n/runners supply observations | 89 | Exact-identity Cosign verification of exact GHCR index digests | n8n index `sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d`; runners index `sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300` | REPORTED_PASS: n8n signature 22:25:43.834Z–22:26:07.668Z and SLSA v1 22:26:07.668Z–22:26:26.619Z; runners CycloneDX 22:26:30.708Z–22:26:46.759Z and OpenVEX 22:26:46.759Z–22:26:59.535Z, all exit 0. Claims, Rekor inclusion and Fulcio CA were verified; observed runners workflow SHA `01cb29d88764465197742803801c62eff1f71516`. | Raw payload/receipt absent; SLSA builder/source/parameters/materials/level and SBOM/VEX contents/semantics are NOT_REVIEWED. This does not verify `hyhome/n8n`, native behavior, compatibility, restore or deployment. |
+| Upstream supply negative observations | 89 | Exact-subject absence/error observations | runners index image signature and SLSA; n8n index/amd64 CycloneDX | REPORTED_NEGATIVE: runners signature exit 10 and SLSA exit 1; n8n index/amd64 CycloneDX exit 1. Valkey official signing identity/issuer is NOT_ASSESSABLE. | An absent or unreviewed artifact class is not replaced by a different artifact's success. |
+| Valkey local SBOM observation | 89 | Fixed Syft 1.54.1 offline scan of the canonical-ledger exact amd64 candidate | Valkey amd64 artifact | REPORTED_PASS: local CycloneDX 1.7 SBOM, Alpine 3.24.3, 716 components, exit 0. The owned temporary archive was removed. | The canonical supply ledger retains the exact subject. This is locally generated, not a publisher attestation; raw SBOM/receipt is not retained. Earlier permission/pipeline failures are not PASS. Grype had no offline DB (exit 1), so vulnerability scan is BLOCKED/NOT_RUN without a network download. |
 | Valkey candidate isolation | 87 | Reported exact Docker Hub index/amd64 inspect and owned-container proof | Valkey 9.1.3, internal network; shared/default 6379, dedicated/nondefault 16379 and restore 17379; synthetic named ACL and separate cold-copy volume | LIMITED_ISOLATED_PASS (reported summary): server version; named-key allow/other-key+DEL denial; AOF/RDB; current n8n 2.43.6 ioredis LPUSH/RPOP shared roundtrip; current Airflow 3.3.2 redis-client dedicated roundtrip; read-only source-volume cold copy to separate restore volume with restored value/new Airflow queue roundtrip. Static P02/config/URI 69/69 and candidate/mount 13/13 passed; reported owned cleanup left zero residuals. | Raw command log and exact timestamp are not retained in this Task, so this is not independently reproducible evidence. The separate cold-copy volume is a narrow fixture restore, not complete independent backup recovery; Celery/Bull lifecycle, Compose secret/exporter parity and supply-chain verification remain untested. |
 | P08 list refresh recovery | 86 | `workspace-inventory.py scan --connections` then `validate` | Public inputs and a local merged review file reconstructed from 98 retained public review receipts | PASS for list/metadata only: 41,985/41,985 listed files; whole-body 6/2,320 and partial 78/2,320; render 0/17, runtime 0/112 and restore 0/112. The initial P01-only review input was rejected as a replacement because it would have reduced the retained review denominator. The scan was repeated after the final supply-ledger correction with the same result. | This preserves review history in the local input; it is not a semantic, live-runtime or restore result. |
 | n8n candidate preparation | 87, 89 | Exact Main/Runner index and platform lookup followed by bounded pulls | Selected n8n 2.45.7 and Runner candidates | Index/platform lookup PASS; both pulls interrupted at the five-minute boundary (exit 130), leaving only partial cache | Custom build/peer/native Queue/Runner/SMTP/restore and all artifact verification remain NOT_RUN; no source pin activation |
@@ -151,7 +178,7 @@ acceptance.
 
 | Criterion | Acceptance | Decision | Current Owner |
 | --- | --- | --- | --- |
-| 86 | Public inventory and research applicability | IMPLEMENT_GAP: corrected ledger tests do not close incomplete fresh lookups | SPEC-0212 TSK-0047 |
+| 86 | Public inventory and research applicability | IMPLEMENT_GAP: public observations improve source mapping but do not close incomplete fresh lookups, unmapped rows or artifact evidence | SPEC-0212 TSK-0047 |
 | 87 | Valkey/n8n compatibility bundle | IMPROVEMENT_CANDIDATE pending exact source, candidate artifact and isolated/recovery evidence; a deferred n8n update resumes with private-workflow plus SSRF/egress review | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
 | 88 | Storybook 10.6.3 compatibility | SOURCE_READY: isolated lock regression passed; current runtime, remote device and audit remain separate | SPEC-0212 TSK-0047 |
 | 89 | Artifact-specific supply-chain verification | TEST_RESIDUAL: no cross-artifact inference; unavailable material remains explicit | SPEC-0212 TSK-0047 |
