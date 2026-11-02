@@ -746,6 +746,7 @@
         "tests.lib.ops.test_opsflow_adapters",
         "tests.lib.ops.test_opsflow_provision_contract",
         "tests.validation.test_opsflow_airflow_contract",
+        "tests.validation.test_airflow_connection_uri",
         "tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests",
         "tests.validation.test_opsflow_native_boundaries",
         "tests.validation.test_opsflow_native_criterion22",
@@ -755,6 +756,8 @@
         "tests.validation.test_opsflow_airflow_native_evidence",
         "tests.validation.test_opsflow_airflow_native_quiescence",
         "tests.validation.test_opsflow_airflow_native_rehearsal",
+        "tests.validation.test_opsflow_airflow_native_data",
+        "tests.validation.test_opsflow_airflow_native_scenario",
         "tests.validation.test_p02_native_contracts",
         "tests.validation.test_p02_oauth_native",
         "tests.validation.test_p02_secret_presentation_native",
@@ -1870,17 +1873,25 @@
       },
       {
         "prefixes": [
+          "infra/07-workflow/airflow/Dockerfile",
+          "infra/07-workflow/airflow/docker-compose.yml",
+          "infra/07-workflow/airflow/connection_uri.py",
           "infra/07-workflow/airflow/workloads/",
           "tests/lib/ops/test_opsflow_manifest.py",
           "tests/lib/ops/test_opsflow_adapters.py",
           "tests/lib/ops/test_opsflow_provision_contract.py",
           "tests/validation/test_opsflow_airflow_contract.py",
+          "tests/validation/test_airflow_connection_uri.py",
           "tests/validation/_opsflow_airflow_native_guards.py",
           "tests/validation/_opsflow_airflow_native_evidence.py",
           "tests/validation/_opsflow_airflow_native_fixture.py",
+          "tests/validation/_opsflow_airflow_native_data.py",
+          "tests/validation/_opsflow_airflow_native_scenario.py",
           "tests/validation/test_opsflow_airflow_native_evidence.py",
           "tests/validation/test_opsflow_airflow_native_quiescence.py",
-          "tests/validation/test_opsflow_airflow_native_rehearsal.py"
+          "tests/validation/test_opsflow_airflow_native_rehearsal.py",
+          "tests/validation/test_opsflow_airflow_native_data.py",
+          "tests/validation/test_opsflow_airflow_native_scenario.py"
         ],
         "suites": [
           "operations",
@@ -2328,17 +2339,25 @@
       },
       {
         "prefixes": [
+          "infra/07-workflow/airflow/Dockerfile",
+          "infra/07-workflow/airflow/docker-compose.yml",
+          "infra/07-workflow/airflow/connection_uri.py",
           "infra/07-workflow/airflow/workloads/",
           "tests/lib/ops/test_opsflow_manifest.py",
           "tests/lib/ops/test_opsflow_adapters.py",
           "tests/lib/ops/test_opsflow_provision_contract.py",
           "tests/validation/test_opsflow_airflow_contract.py",
+          "tests/validation/test_airflow_connection_uri.py",
           "tests/validation/_opsflow_airflow_native_guards.py",
           "tests/validation/_opsflow_airflow_native_evidence.py",
           "tests/validation/_opsflow_airflow_native_fixture.py",
+          "tests/validation/_opsflow_airflow_native_data.py",
+          "tests/validation/_opsflow_airflow_native_scenario.py",
           "tests/validation/test_opsflow_airflow_native_evidence.py",
           "tests/validation/test_opsflow_airflow_native_quiescence.py",
-          "tests/validation/test_opsflow_airflow_native_rehearsal.py"
+          "tests/validation/test_opsflow_airflow_native_rehearsal.py",
+          "tests/validation/test_opsflow_airflow_native_data.py",
+          "tests/validation/test_opsflow_airflow_native_scenario.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

@@ -6,11 +6,11 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__CORE__AUTH_MANAGER: >-
     airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager
   AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: >-
-    /usr/bin/env bash -c "printf '%s' \"postgresql+psycopg2://airflow:$(tr -d '\r\n' < /run/secrets/airflow_db_password)@mng-pg:$${POSTGRES_PORT}/airflow\""
+    python3 /opt/airflow/bin/connection_uri.py metadata
   AIRFLOW__CELERY__RESULT_BACKEND_CMD: >-
-    /usr/bin/env bash -c "printf '%s' \"db+postgresql+psycopg2://airflow:$(tr -d '\r\n' < /run/secrets/airflow_db_password)@mng-pg:$${POSTGRES_PORT}/airflow\""
+    python3 /opt/airflow/bin/connection_uri.py result
   AIRFLOW__CELERY__BROKER_URL_CMD: >-
-    /usr/bin/env bash -c "printf '%s' \"redis://:$(tr -d '\r\n' < /run/secrets/${AIRFLOW_VALKEY_SECRET:-mng_valkey_password})@${AIRFLOW_VALKEY_HOST:-mng-valkey}:$${VALKEY_PORT}/0\""
+    python3 /opt/airflow/bin/connection_uri.py broker
   AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/airflow_fernet_key
   AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
   AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
@@ -18,6 +18,8 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__API__PORT: '${AIRFLOW_PORT:-8080}'
   POSTGRES_PORT: '${POSTGRES_PORT:-5432}'
   VALKEY_PORT: '${VALKEY_PORT:-6379}'
+  AIRFLOW_VALKEY_HOST: '${AIRFLOW_VALKEY_HOST:-mng-valkey}'
+  AIRFLOW_VALKEY_SECRET: '${AIRFLOW_VALKEY_SECRET:-mng_valkey_password}'
   AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
   AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   AIRFLOW__API__BASE_URL: 'https://airflow.${DEFAULT_URL}'

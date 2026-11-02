@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.35.0"
+version: "1.36.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -104,6 +104,11 @@ contract lane, distinct from SPEC-0204's historical P02 secret catalog Task.
 It preserves accepted consumer scopes and leaves service operation, host
 configuration, credential rotation, external repositories and remote delivery
 outside this local source unit.
+
+The direct P04 plan approval of 2026-11-02 adds criteria 66–71 and W71–W76
+in TSK-0043. It repairs the existing Opsflow Airflow path without creating a
+new business stream, database or always-on analytics service. Historical
+SPEC-0204 P04 acceptance remains bound to its original inputs and actors.
 
 ## Scope
 
@@ -573,6 +578,31 @@ hold, authorization and recovery requirements have been established.
     Wiki runtime, database, client, collector, external workspace and LAB
     runtime uncreated.
 
+66. P04.01 preserves management metadata and DEV business ownership, records
+    the existing initialization and restore boundaries, and changes only
+    demonstrated cross-consumption without creating databases in bulk.
+67. P04.02 repairs the existing Airflow connection commands with one-time
+    credential-component encoding, bounded private-file reads, current MNG
+    listener variables and the fixed DEV listener contract. Invalid bounded
+    manifests are quarantined before publication; the existing raw digest is
+    exposed as data_version without changing run_id or P05 outbox semantics.
+    Independent isolated restore covers roles, schema, objects and metadata,
+    followed by same-input replay without duplicate publication.
+68. P04.03 preserves the existing platform_dev CDC/Avro path and its scoped
+    historical acceptance. Opsflow CDC adoption requires a named consumer,
+    DEV owner, publication, slot, topic, offset and recovery contract; no
+    consumerless standing stream or silent database repointing is introduced.
+69. P04.04 reuses the existing Opsflow quality gate and keeps raw, quarantine
+    and published results distinct. Optional dbt, GX and processing-engine
+    smoke checks are not promoted to business publication or data access.
+70. P04.05 defers a new reproducibility/time-series experiment until its actual
+    dataset/version, time field, target, baseline and data owner are supplied.
+    The public inventory does not imply the absence of private experiments.
+71. P04.06 preserves the accepted optional Iceberg platform while deferring
+    adoption for this workload. Catalog, object metadata and checkpoints have
+    one documented recovery boundary; snapshot rollback is not independent
+    restore, and no expiry or orphan deletion is authorized.
+
 ## Failure Conditions
 
 Reconciliation fails when a request item has competing acceptance owners,
@@ -592,6 +622,7 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Service connection contracts Task](tasks/tsk-0041-service-connection-contracts.md)
 - [Models, runners and Wiki preparation Task](tasks/tsk-0042-models-runners-wiki.md)
+- [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)

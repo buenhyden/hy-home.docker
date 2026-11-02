@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.3.5"
+version: "1.3.6"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "GDE-0094"
 parent_ids:
@@ -100,13 +100,13 @@ REST 카탈로그가 관리한다. Spark는 배치와 테이블 유지보수 엔
 
 ### Identity-specific behavior
 
-`seaweedfs-table-bucket`은 admin 권한으로 policy를 매번 다시 쓰고, namespace/table delete 권한도 scoped identity에 부여한다. Flink JobManager와 TaskManager는 같은 build를 쓰지만 command, heap, slot, health가 다르다. TaskManager에는 healthcheck가 없으므로 JobManager overview와 TaskManager 등록, job checkpoint를 따로 확인한다. Spark는 local one-shot이고 Trino는 인증 없는 single-node SQL이다. Great Expectations는 임시 context로 suite 목록을 표시하는 것이 기본이며 종료 코드 `0`은 통과, `1`은 expectation 실패, `2`는 검사 불가다. Trino username은 권한 제한이 아니다. build의 JAR 중 일부만 checksum으로 고정되며 Hadoop과 Iceberg 기준선 차이는 (미검증)이다. 재생 가능한 증거 없이 Flink checkpoint와 catalog/object를 삭제하지 않는다.
+`seaweedfs-table-bucket`은 admin 권한으로 policy를 매번 다시 쓰고, namespace/table delete 권한도 scoped identity에 부여한다. Flink JobManager와 TaskManager는 같은 build를 쓰지만 command, heap, slot, health가 다르다. JobManager는 `/overview`를 검사하고 TaskManager의 healthcheck는 JobManager `/taskmanagers` 응답에 등록 ID가 있는지 확인한다. 이 검사는 해당 job의 처리·checkpoint·복원 성공을 뜻하지 않으므로 그 결과는 따로 확인한다. Spark는 local one-shot이고 Trino는 인증 없는 single-node SQL이다. Great Expectations는 임시 context로 suite 목록을 표시하는 것이 기본이며 종료 코드 `0`은 통과, `1`은 expectation 실패, `2`는 검사 불가다. Trino username은 권한 제한이 아니다. build의 JAR 중 일부만 checksum으로 고정되며 Hadoop과 Iceberg 기준선 차이는 (미검증)이다. 재생 가능한 증거 없이 Flink checkpoint와 catalog/object를 삭제하지 않는다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
 | `seaweedfs-table-bucket` | table bucket/policy/namespace provisioning job; policy 매번 재작성 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
 | `flink-jobmanager` | session/job coordination; shared checkpoint | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/12-analytics/flink/docker-compose.yml) |
-| `flink-taskmanager` | task execution/slots; shared checkpoint, JM 등록 확인 | 자체 healthcheck 없음; JM taskmanager 등록·job 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/12-analytics/flink/docker-compose.yml) |
+| `flink-taskmanager` | task execution/slots; shared checkpoint, JM 등록 확인 | JM `/taskmanagers` 등록 ID healthcheck; 해당 job·checkpoint·복원은 별도 확인 | [선택·의존·접속·입력·mount](../../../../infra/12-analytics/flink/docker-compose.yml) |
 | `great-expectations` | one-shot list/validate; ephemeral context, DB read 의도 | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../infra/12-analytics/great-expectations/docker-compose.yml) |
 | `spark` | one-shot local SQL; table mutation은 명시 command | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../infra/12-analytics/spark/docker-compose.yml) |
 | `trino` | single-node SQL; username은 인증/권한 경계 아님 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/12-analytics/trino/docker-compose.yml) |

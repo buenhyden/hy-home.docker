@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.35.0"
+version: "1.36.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -88,6 +88,13 @@ and reuses the completed offline Wiki preparation package. Local source and
 isolated tests are in scope; HOME services, host security settings, actual
 credentials, model downloads, external workspaces and remote CI are not.
 
+W71–W76 implement the approved local P04 plan in TSK-0043. Existing Opsflow
+is the only selected business path. The implementation preserves historical
+CDC and Iceberg acceptance, defers a new experiment until actual inputs exist,
+and does not change operating services, hosts, real credentials or remote state.
+The dependencies below route available source inputs; a historical Task's
+terminal status is not a hidden prerequisite for this approved local work.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -162,6 +169,12 @@ credentials, model downloads, external workspaces and remote CI are not.
 | W68 | 63 | Tighten external runner source isolation without changing common resource owners | W61, W64 | TSK-0042 | Runner configuration and synthetic denial tests |
 | W69 | 64 | Bind automation-tool policy to approved destination and bounded requests before credential use | W66 | TSK-0042 | URL/DNS/redirect, budget and authority-negative tests |
 | W70 | 65 | Reuse Wiki preparation and publish P03 evidence axes and leaf-owner handoffs | W66, W67, W68, W69 | TSK-0042 | Wiki contract/evaluation, Task, ledger and independent review |
+| W71 | 66 | Reuse current DEV/MNG ownership and bind source, initialization and restore responsibilities | W56 | TSK-0043 | Ownership/provisioner regression and current-source evidence |
+| W72 | 67 | Repair Airflow URI construction, bounded input quarantine, data_version and metadata-preserving isolated restore | W71 | TSK-0043 | RED/GREEN unit, integration, CLI and actual isolated Worker/restore tests; changed code coverage at least 80% |
+| W73 | 68 | Reconcile current CDC/Avro consumers and preserve the platform_dev acceptance scope | W71 | TSK-0043 | Current connector/provisioner/source readback; explicit Opsflow deferral and resume contract |
+| W74 | 69 | Reuse Opsflow quality blocking and reconcile optional analytics smoke versus business publication | W72 | TSK-0043 | Invalid-input/no-publication tests and source-to-consumer evidence |
+| W75 | 70 | Defer a new experiment until actual dataset, time field, target, baseline and owner exist | W71 | TSK-0043 | Explicit missing-input and no-private-inference record |
+| W76 | 71 | Preserve optional Iceberg platform acceptance and document workload deferral and recovery limits | W71 | TSK-0043 | Version-specific maintenance evidence, current consumer and historical receipt mapping |
 
 ### Current v30 continuation and delivery
 
@@ -348,6 +361,43 @@ No service starts, host edits, credential actions or remote writes occur here.
 
 ## Verification Plan
 
+### Current P04 implementation and ownership
+
+The P04 source writer integrates DAG, adapter and SQL changes. One infrastructure
+writer integrates the Airflow Compose/Dockerfile slice; QA, documentation and CI
+registration have separate writers. TSK-0043 records the pre-edit fingerprint,
+single writer and exact paths before modification. Independent reviewers do not
+edit the reviewed files. Unknown data and operational acceptance owners remain
+unassigned and confer no runtime authority.
+
+Install the small connection URI helper as read-only image content while keeping
+all package and image versions unchanged. Preserve the supported Airflow _CMD
+interface and the existing shared/default and dedicated broker selections.
+Password components are encoded once, literal percent/space is preserved, and
+the explicit single-line UTF-8 reader contract permits at most one terminal LF.
+The current MNG listener variables remain independent from DEV's internal 5432
+and host-published ports. Keep SQL migrations already issued immutable; expose
+data_version through a new migration and preserve P05 outbox interfaces.
+
+Extend the existing owned Celery Worker fixture rather than introducing a new
+workflow. Its Worker uses the actual helper and restricted S3 credentials;
+setup/recovery use a separate identity. Prove normal, rejection, interruption,
+retry/backfill, duplicate/conflict and independent-target restore semantics.
+Object restore includes Content-Type, metadata, tags, size and body; a newly
+issued server ETag/version is not expected to equal the original. Quarantine is
+bounded and fails closed before SQL/outbox publication. Oversized/unreadable
+inputs are not copied into quarantine or reported as successfully preserved.
+
+Preflight the existing tools, exact cached images, trusted UID/temp paths and
+available resources. Use no image downloads, one owned cluster at a time and
+the existing execution budgets. Record timeouts by failing phase. Do not weaken
+filesystem guards or relabel unrelated n8n receipt drift as a P04 pass. Run the
+registered local QA/render/doc/Registry checks and independent code, security,
+SQL/IaC and document review before graphify freshness, final inventory/diff
+comparison and a normal local logical commit. Operating service changes,
+credential rotation, HOME independent restore, remote CI and final P12
+acceptance remain NOT_RUN unless separately authorized and observed.
+
 Run a value-free source-set audit, actual frontmatter parse and read-only PR
 metadata before authoring. Observe the requirement-coverage/exclusion contract
 probe fail on the baseline, then pass after the active-contract edits. Its
@@ -419,6 +469,7 @@ only that dependent operation.
 ## Related Documents
 
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
+- [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Spec](spec.md)

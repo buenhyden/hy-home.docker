@@ -2,20 +2,18 @@
 
 from __future__ import annotations
 
-import base64
 import hashlib
 import json
 import os
-import secrets
 import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
-from tests.validation import _opsflow_airflow_native_evidence as evidence
 from tests.validation import _opsflow_airflow_native_fixture as fixture
 from tests.validation import test_opsflow_database_rehearsal as database
+from tests.validation._opsflow_airflow_native_scenario import PublicationScenario
 
 
 class AirflowNativeBoundaryTests(unittest.TestCase):
@@ -58,8 +56,8 @@ class AirflowNativeBoundaryTests(unittest.TestCase):
             )
 
     def test_resource_budget_and_no_public_or_host_mount_options(self):
-        self.assertEqual(3648, sum(row[0] for row in fixture.CAPS.values()))
-        self.assertEqual(2000, sum(row[1] for row in fixture.CAPS.values()))
+        self.assertEqual(3776, sum(row[0] for row in fixture.CAPS.values()))
+        self.assertEqual(2050, sum(row[1] for row in fixture.CAPS.values()))
         for role in fixture.CAPS:
             options = fixture.create_options(role, "50000:0")
             self.assertIn("--read-only", options)
@@ -194,10 +192,12 @@ class AirflowNativeBoundaryTests(unittest.TestCase):
     def test_empty_cluster_bootstrap_precedes_guarded_project_provision(self):
         scenario = PublicationScenario.__new__(PublicationScenario)
         scenario.f = mock.Mock()
+        scenario.f.receipt = {}
         scenario.postgres = mock.Mock()
         scenario.create_file_backend = mock.Mock()
         scenario.meta_password = scenario.valkey_password = "public-synthetic-only"
         scenario.s3_key = scenario.s3_secret = "public-synthetic-only"
+        scenario.s3_admin_key = scenario.s3_admin_secret = "public-synthetic-admin"
         scenario.source_hashes = {}
         scenario.backends()
         self.assertEqual(
@@ -215,9 +215,10 @@ class AirflowNativeBoundaryTests(unittest.TestCase):
             calls[0].args[1],
         )
         self.assertEqual(database.provision_sql(), calls[1].args[1])
-        self.assertEqual(3, len(scenario.source_hashes))
+        self.assertEqual(4, len(scenario.source_hashes))
         self.assertEqual(
-            ["opsflow_migrator"] * 3, [c.kwargs.get("user") for c in calls[2:]]
+            ["opsflow_migrator"] * 4,
+            [c.kwargs.get("user") for c in calls[2:] if c.kwargs.get("user")],
         )
         for relative, digest in scenario.source_hashes.items():
             self.assertEqual(digest, fixture.sha256(fixture.ROOT / relative))
@@ -228,7 +229,13 @@ class AirflowNativeBoundaryTests(unittest.TestCase):
         scenario.postgres = mock.Mock()
         scenario.create_file_backend = mock.Mock()
         synthetic = "public-synthetic-only"
-        for name in ("valkey_password", "s3_key", "s3_secret"):
+        for name in (
+            "valkey_password",
+            "s3_key",
+            "s3_secret",
+            "s3_admin_key",
+            "s3_admin_secret",
+        ):
             setattr(scenario, name, synthetic)
         scenario.backends(restore=True)
         self.assertEqual(
@@ -414,437 +421,38 @@ class AirflowNativeRehearsal(unittest.TestCase):
             raise failure
 
 
-class PublicationScenario:
-    """Runs frozen repository DAG bytes; no replacement miniature DAG."""
-
-    def __init__(self, owned):
-        self.f = owned
-        self.user = f"{owned.uid}:{owned.gid}"
-        self.meta_password = secrets.token_hex(24)
-        self.valkey_password = secrets.token_hex(24)
-        self.s3_key = "synthetic-" + secrets.token_hex(12)
-        self.s3_secret = secrets.token_hex(24)
-        self.fernet = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode()
-        self.jwt = secrets.token_hex(32)
-        self.raw = (fixture.WORKLOAD / "fixtures/2026-10-10.json").read_bytes()
-        self.digest = hashlib.sha256(self.raw).hexdigest()
-        self.run_id = hashlib.sha256(
-            f"hy-home.docker:{self.digest}".encode()
-        ).hexdigest()
-        self.artifact = f"manifest-validated/hy-home.docker/{self.run_id}.json"
-        self.source_hashes = {}
-        self.f.private("synthetic-input.json", self.raw.decode())
-        self.f.private(
-            "synthetic-secrets.json",
-            json.dumps(
-                {
-                    "metadata": self.meta_password,
-                    "valkey": self.valkey_password,
-                    "s3_key": self.s3_key,
-                    "s3_secret": self.s3_secret,
-                    "fernet": self.fernet,
-                    "jwt": self.jwt,
-                    "ingest": "p04-ingest-synthetic-only",
-                }
-            ),
-        )
-
-    def run(self):
-        self.f.create_networks()
-        self.backends()
-        self.airflow()
-        self.initialize_airflow()
-        self.s3("s.create_bucket(Bucket=b)")
-        self.f.execute(
-            "worker",
-            "python",
-            "-c",
-            fixture.S3_CLIENT
-            + "s.put_object(Bucket=b,Key='manifest-input/hy-home.docker/2026-10-10.json',Body=base64.b64decode("
-            + repr(base64.b64encode(self.raw).decode())
-            + "))",
-            s3_failure_logs=True,
-        )
-        self.f.psql(
-            "dev-pg",
-            "REVOKE EXECUTE ON FUNCTION " + fixture.FUNCTION + " FROM opsflow_ingest;",
-        )
-        self.trigger("synthetic-retry")
-        self.wait_state("synthetic-retry", "up_for_retry")
-        self.assert_database(0)
-        self.object_digest = self.s3(
-            "print(hashlib.sha256(s.get_object(Bucket=b,Key="
-            + repr(self.artifact)
-            + ")['Body'].read()).hexdigest())"
-        ).strip()
-        self.f.psql(
-            "dev-pg",
-            "GRANT EXECUTE ON FUNCTION " + fixture.FUNCTION + " TO opsflow_ingest;",
-        )
-        self.wait_state("synthetic-retry", "success")
-        self.assert_worker("synthetic-retry")
-        row = self.metadata(
-            "SELECT try_number FROM task_instance WHERE run_id='synthetic-retry';"
-        ).strip()
-        if int(row) < 2:
-            raise fixture.RehearsalFailure("Celery retry was not observed")
-        self.assert_database(1)
-        self.trigger("synthetic-replay")
-        self.wait_state("synthetic-replay", "success")
-        self.assert_database(1)
-        self.assert_s3()
-        self.f.receipt["publication"] = {
-            "status": "PASS",
-            "celery_retry_try_number": int(row),
-            "replay": "PASS",
-            "source_sha256": self.source_hashes,
-            "manifest_sha256": self.digest,
-            "artifact_sha256": self.object_digest,
-        }
-        self.recover()
-
-    def postgres(self, role, network, alias):
-        command = fixture.postgres_command(role)
-        self.f.create(role, fixture.PG_ID, "70:70", (network,), command, alias=alias)
-        self.f.start(role)
-        self.f.wait(
-            lambda: (
-                self.f.psql(role, "SELECT 1", "postgres", check=False).returncode == 0
-            ),
-            "isolated PostgreSQL readiness failed",
-        )
-
-    def backends(self, restore=False):
-        self.postgres("metadata-pg", "control", "metadata-pg")
-        self.postgres("dev-pg", "data", "dev-pg")
-        self.f.psql(
-            "dev-pg",
-            "\\set reviewed_connect_consumers 'reviewed'\n"
-            + database.CLUSTER_CONNECT.read_text(),
-            database="postgres",
-        )
-        if not restore:
-            self.f.psql(
-                "metadata-pg",
-                "CREATE ROLE airflow LOGIN PASSWORD '"
-                + self.meta_password
-                + "';CREATE DATABASE airflow OWNER airflow;",
-                database="postgres",
-            )
-            self.f.psql("dev-pg", database.provision_sql(), database="postgres")
-            for name in (
-                "001_opsflow.sql",
-                "003_business_date.sql",
-                "004_notification_quarantine.sql",
+@unittest.skipUnless(
+    any(key.startswith("OPSFLOW_AIRFLOW_NATIVE_") for key in os.environ),
+    "exact cached image and isolated serial runtime required",
+)
+class AirflowStoragePermissionRehearsal(unittest.TestCase):
+    def test_actual_storage_principal_denial_and_positive_access(self):
+        owned = fixture.AirflowFixture()
+        owned.work_deadline = min(owned.work_deadline, owned.started + 180)
+        owned.deadline = min(owned.deadline, owned.started + 300)
+        owned.client.deadline = owned.work_deadline
+        failure = None
+        try:
+            owned.prerequisites()
+            owned.probe()
+            PublicationScenario(owned).storage_permission_rehearsal()
+        except BaseException as error:
+            failure = error
+        finally:
+            for finalize in (
+                owned.cleanup,
+                lambda: print(json.dumps(owned.receipt, sort_keys=True)),
             ):
-                source = fixture.WORKLOAD / "sql" / name
-                self.source_hashes[str(source.relative_to(fixture.ROOT))] = (
-                    fixture.sha256(source)
-                )
-                self.f.psql(
-                    "dev-pg", database.migration_sql(source), user="opsflow_migrator"
-                )
-        self.create_file_backend(
-            "valkey",
-            fixture.VALKEY_ID,
-            "999:999",
-            ("control",),
-            "/data/valkey.conf",
-            'bind 0.0.0.0\nprotected-mode yes\nport 6379\nsave ""\nappendonly no\nmaxmemory 32mb\nrequirepass '
-            + self.valkey_password
-            + "\n",
-            ("valkey-server", "/data/valkey.conf"),
-        )
-        identity = {
-            "name": "synthetic-fixture",
-            "credentials": [{"accessKey": self.s3_key, "secretKey": self.s3_secret}],
-            "actions": "Admin Read Write List Tagging".split(),
-        }
-        s3_config = json.dumps({"identities": [identity]})
-        self.create_file_backend(
-            "s3",
-            fixture.S3_ID,
-            "65532:65532",
-            ("data",),
-            "/data/s3.json",
-            s3_config,
-            fixture.S3_SERVER_COMMAND,
-            alias="seaweedfs-s3",
-        )
-
-    def create_file_backend(
-        self, role, image, user, networks, path, contents, command, alias=None
-    ):
-        fixture.stage_file_backend(
-            self.f, role, image, user, networks, path, contents, command, alias
-        )
-
-    def airflow(self):
-        commands = {
-            "api": "airflow api-server --apps execution -w 1".split(),
-            "scheduler": ["airflow", "scheduler"],
-            "processor": ["airflow", "dag-processor"],
-            "worker": "airflow celery worker -c 1 --without-mingle --without-gossip -s".split(),
-        }
-        env = fixture.airflow_environment()
-        files = self.worker_files()
-        for role in fixture.AF_ROLES:
-            networks = ("control", "data") if role == "worker" else ("control",)
-            self.f.create(
-                role,
-                fixture.AIRFLOW_ID,
-                self.user,
-                networks,
-                ("python", "-c", fixture.WAIT.format(command=repr(commands[role]))),
-                alias="airflow-apiserver" if role == "api" else role,
-                env=env,
-            )
-            self.f.start(role)
-            self.f.put(
-                role,
-                files
-                if role == "worker"
-                else {
-                    k: v for k, v in files.items() if not k.startswith("/run/opsflow/")
-                },
-            )
-
-    def worker_files(self):
-        pg = json.loads("""{"host":"dev-pg","port":5432,"dbname":"opsflow_dev","user":"opsflow_ingest",
-"password":"p04-ingest-synthetic-only","connect_timeout":5,"statement_timeout_ms":10000,
-"lock_timeout_ms":5000,"sslmode":"disable","sslrootcert":null}""")
-        s3 = {
-            **json.loads("""{"endpoint_url":"http://seaweedfs-s3:8333","bucket":"opsflow-dev","region":"us-east-1",
-"addressing_style":"path","ca_bundle":null,"connect_timeout":2,"read_timeout":3,
-"endpoint_contract":"seaweedfs-s3-internal-v1"}"""),
-            "access_key_id": self.s3_key,
-            "secret_access_key": self.s3_secret,
-        }
-        uri = (
-            "postgresql+psycopg2://airflow:"
-            + self.meta_password
-            + "@metadata-pg:5432/airflow"
-        )
-        files = {
-            "/run/opsflow/pg.json": json.dumps(pg),
-            "/run/opsflow/s3.json": json.dumps(s3),
-            "/run/airflow-fixture/database": uri,
-            "/run/airflow-fixture/result": uri.replace(
-                "postgresql+psycopg2", "db+postgresql"
-            ),
-            "/run/airflow-fixture/broker": "redis://:"
-            + self.valkey_password
-            + "@valkey:6379/0",
-            "/run/airflow-fixture/fernet": self.fernet,
-            "/run/airflow-fixture/jwt": self.jwt,
-            "/run/airflow-fixture/simple-passwords.json": "{}",
-        }
-        paths = [
-            fixture.WORKLOAD / "dags/source_manifest_ingest.py",
-            *sorted((fixture.WORKLOAD / "workflow_lib").glob("*.py")),
-        ]
-        for path in paths:
-            destination = "/opt/airflow/dags/" + (
-                path.name if path.parent.name == "dags" else "workflow_lib/" + path.name
-            )
-            files[destination] = path.read_text()
-            self.source_hashes[str(path.relative_to(fixture.ROOT))] = fixture.sha256(
-                path
-            )
-        return files
-
-    def cli(self, *args):
-        return self.f.execute("scheduler", "airflow", *args)
-
-    def initialize_airflow(self, restored=False):
-        self.cli("db", "check") if restored else self.cli("db", "migrate")
-        if not restored:
-            self.cli("pools", "set", "manifest_ingest", "1", "synthetic fixture")
-        for role in fixture.AF_ROLES:
-            self.f.put(role, {"/tmp/fixture-ready": "ready"})
-        self.f.wait(
-            lambda: (
-                self.metadata(
-                    "SELECT count(*) FROM dag WHERE dag_id='source_manifest_ingest';"
-                ).strip()
-                == "1"
-            ),
-            "frozen DAG was not registered",
-            seconds=120,
-        )
-        self.cli("dags", "unpause", "source_manifest_ingest")
-        self.f.wait(
-            lambda: (
-                self.f.exec_result(
-                    "worker", "python", "-c", fixture.S3_CLIENT + "s.list_buckets()"
-                ).returncode
-                == 0
-            ),
-            "isolated S3 unavailable",
-        )
-        if not restored:
-            self.f.configure_s3()
-
-    def metadata(self, sql):
-        return self.f.psql("metadata-pg", sql, database="airflow").stdout
-
-    def trigger(self, run):
-        self.cli(
-            "dags",
-            "trigger",
-            "-r",
-            run,
-            "-c",
-            '{"source":"hy-home.docker","business_date":"2026-10-10"}',
-            "source_manifest_ingest",
-        )
-
-    def wait_state(self, run, state):
-        query = (
-            "SELECT state FROM task_instance WHERE dag_id='source_manifest_ingest' AND task_id='validate_store_publish' AND run_id='"
-            + run
-            + "';"
-        )
-        self.f.wait(
-            lambda: self.metadata(query).strip() == state,
-            "actual Celery task did not reach " + state,
-            seconds=180,
-        )
-        if state == "success":
-            self.f.wait(
-                lambda: (
-                    self.metadata(
-                        "SELECT state FROM dag_run WHERE dag_id='source_manifest_ingest' AND run_id='"
-                        + run
-                        + "';"
-                    ).strip()
-                    == "success"
-                ),
-                "DagRun did not reach terminal success",
-                seconds=30,
-            )
-
-    def assert_worker(self, run):
-        row = self.metadata(
-            "SELECT hostname||':'||coalesce(external_executor_id,'') FROM task_instance WHERE run_id='"
-            + run
-            + "';"
-        ).strip()
-        hostname = self.f.containers["worker"].name
-        if not row.startswith(hostname + ":") or not row.removeprefix(hostname + ":"):
-            raise fixture.RehearsalFailure(
-                "actual Celery executor/worker identity missing"
-            )
-        self.f.receipt["worker_identity"] = {
-            "hostname": hostname,
-            "executor": "CeleryExecutor",
-            "task_external_executor_id_present": True,
-        }
-
-    def s3(self, code):
-        return self.f.execute("worker", "python", "-c", fixture.S3_CLIENT + code)
-
-    def assert_database(self, expected):
-        sql = "SELECT (SELECT count(*) FROM ops_flow.runs)||':'||(SELECT count(*) FROM ops_flow.outbox)||':'||(SELECT count(*) FROM ops_flow.current_runs);"
-        if self.f.psql("dev-pg", sql).stdout.strip() != ":".join([str(expected)] * 3):
-            raise fixture.RehearsalFailure("manifest/outbox idempotency violated")
-
-    def assert_s3(self):
-        code = (
-            "items=s.list_objects_v2(Bucket=b).get('Contents',[]); assert sorted(x['Key'] for x in items)=="
-            + repr(["manifest-input/hy-home.docker/2026-10-10.json", self.artifact])
-            + "; print(hashlib.sha256(s.get_object(Bucket=b,Key="
-            + repr(self.artifact)
-            + ")['Body'].read()).hexdigest())"
-        )
-        if self.s3(code).strip() != self.object_digest:
-            raise fixture.RehearsalFailure("S3 readback changed")
-
-    def recover(self):
-        for role in ("scheduler", "processor", "api"):
-            self.f.stop(role)
-        if (
-            self.metadata(
-                "SELECT count(*) FROM dag_run WHERE state IN ('queued','running');"
-            ).strip()
-            != "0"
-        ):
-            raise fixture.RehearsalFailure("metadata writers not quiesced")
-        evidence.inspect_celery_idle(self.f)
-        snapshots = json.loads(
-            self.s3(
-                "print(json.dumps({x['Key']:base64.b64encode(s.get_object(Bucket=b,Key=x['Key'])[\"Body\"].read()).decode() for x in s.list_objects_v2(Bucket=b).get('Contents',[])}))"
-            )
-        )
-        self.f.stop("worker")
-        meta = self.f.dump("metadata-pg", "airflow")
-        dev = self.f.dump("dev-pg", "opsflow_dev")
-        roles = {role: self.f.dump_roles(role) for role in ("metadata-pg", "dev-pg")}
-        s3_path = self.f.private("s3-snapshot.json", json.dumps(snapshots))
-        for role in reversed(tuple(self.f.containers)):
-            self.f.remove(role)
-        self.f.generation += 1
-        self.backends(restore=True)
-        for role, path in roles.items():
-            self.f.restore_roles(role, path)
-        self.f.psql(
-            "metadata-pg",
-            "ALTER ROLE airflow PASSWORD '" + self.meta_password + "';",
-            database="postgres",
-        )
-        for kind in ("migrator", "ingest", "notifier", "reader"):
-            self.f.psql(
-                "dev-pg",
-                "ALTER ROLE opsflow_"
-                + kind
-                + " PASSWORD 'p04-"
-                + kind
-                + "-synthetic-only';",
-                database="postgres",
-            )
-        self.f.restore("metadata-pg", meta)
-        self.f.restore("dev-pg", dev)
-        self.airflow()
-        # Install objects before releasing scheduler/worker processes.
-        self.f.wait(
-            lambda: (
-                self.f.exec_result(
-                    "worker", "python", "-c", fixture.S3_CLIENT + "s.list_buckets()"
-                ).returncode
-                == 0
-            ),
-            "replacement S3 unavailable",
-        )
-        self.f.configure_s3()
-        self.s3("s.create_bucket(Bucket=b)")
-        if fixture.private_identity(s3_path) != self.f.files[s3_path]:
-            raise fixture.RehearsalFailure("S3 snapshot changed")
-        for key, encoded in json.loads(s3_path.read_text()).items():
-            self.s3(
-                "s.put_object(Bucket=b,Key="
-                + repr(key)
-                + ",Body=base64.b64decode("
-                + repr(encoded)
-                + "))"
-            )
-        self.initialize_airflow(restored=True)
-        self.assert_database(1)
-        self.assert_s3()
-        self.trigger("synthetic-restored-replay")
-        self.wait_state("synthetic-restored-replay", "success")
-        self.assert_worker("synthetic-restored-replay")
-        self.assert_database(1)
-        self.assert_s3()
-        self.f.receipt["recovery"] = {
-            "status": "PASS",
-            "metadata": "serial empty physical PG18.6",
-            "dev": "serial empty physical PG18.6",
-            "s3": "serial empty SeaweedFS",
-            "worker_replay": "PASS",
-            "home": "NOT_RUN",
-            "timescaledb": "NOT_RUN",
-            "oidc": "NOT_RUN",
-        }
+                try:
+                    finalize()
+                except BaseException as error:
+                    if failure is None or (
+                        isinstance(failure, Exception)
+                        and not isinstance(error, Exception)
+                    ):
+                        failure = error
+        if failure is not None:
+            raise failure
 
 
 if __name__ == "__main__":

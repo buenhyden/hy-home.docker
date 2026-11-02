@@ -335,20 +335,66 @@ class ManagementDataPortContractTests(unittest.TestCase):
         )
 
     def test_airflow_uses_declared_management_postgres_and_valkey_ports(self) -> None:
-        environment = _compose("infra/07-workflow/airflow/docker-compose.yml")[
-            "x-airflow-common-env"
-        ]
-        for key in (
-            "AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD",
-            "AIRFLOW__CELERY__RESULT_BACKEND_CMD",
-        ):
-            self.assertIn("mng-pg:$${POSTGRES_PORT}", environment[key])
-        self.assertIn(
-            "${AIRFLOW_VALKEY_HOST:-mng-valkey}:$${VALKEY_PORT}",
-            environment["AIRFLOW__CELERY__BROKER_URL_CMD"],
-        )
-        self.assertEqual("${POSTGRES_PORT:-5432}", environment["POSTGRES_PORT"])
-        self.assertEqual("${VALKEY_PORT:-6379}", environment["VALKEY_PORT"])
+        import importlib.util
+        import io
+        import shlex
+        from urllib.parse import unquote, urlsplit
+
+        source = ROOT / "infra/07-workflow/airflow/connection_uri.py"
+        spec = importlib.util.spec_from_file_location("airflow_connection_uri", source)
+        helper = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(helper)
+        with tempfile.TemporaryDirectory(prefix="p04-rendered-uri-") as temporary:
+            secrets = Path(temporary)
+            password = " p04-synthetic @:/?#%40+ 한글 "  # gitleaks:allow -- synthetic fixture; never deployed
+            for name in ("airflow_db_password", "mng_valkey_password"):
+                path = secrets / name
+                path.write_text(password, encoding="utf-8")
+                path.chmod(0o600)
+            for pg_port, valkey_port in ((5432, 6379), (55432, 16379)):
+                rendered = _render_root(
+                    {"POSTGRES_PORT": str(pg_port), "VALKEY_PORT": str(valkey_port)}
+                )
+                environment = rendered["airflow-worker"]["environment"]
+                for key, mode, host, port in (
+                    (
+                        "AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD",
+                        "metadata",
+                        "mng-pg",
+                        pg_port,
+                    ),
+                    (
+                        "AIRFLOW__CELERY__RESULT_BACKEND_CMD",
+                        "result",
+                        "mng-pg",
+                        pg_port,
+                    ),
+                    (
+                        "AIRFLOW__CELERY__BROKER_URL_CMD",
+                        "broker",
+                        "mng-valkey",
+                        valkey_port,
+                    ),
+                ):
+                    command = shlex.split(environment[key])
+                    self.assertEqual(
+                        ["python3", "/opt/airflow/bin/connection_uri.py", mode], command
+                    )
+                    output, errors = io.StringIO(), io.StringIO()
+                    self.assertEqual(
+                        0,
+                        helper.main(
+                            command[2:],
+                            environment=environment,
+                            secrets_dir=secrets,
+                            stdout=output,
+                            stderr=errors,
+                        ),
+                    )
+                    parsed = urlsplit(output.getvalue())
+                    self.assertEqual((host, port), (parsed.hostname, parsed.port))
+                    self.assertEqual(password, unquote(parsed.password))
+                    self.assertEqual("", errors.getvalue())
 
     def test_oauth2_proxy_uses_declared_management_valkey_port(self) -> None:
         environment = _environment(

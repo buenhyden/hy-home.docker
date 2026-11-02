@@ -99,6 +99,17 @@ class Container:
     networks: tuple[str, ...]
 
 
+class AirflowDockerBoundary(DockerClientBoundary):
+    def _remaining_timeout(self):
+        timeout = super()._remaining_timeout()
+        if self.cleanup_deadline is None:
+            return timeout
+        # Reuse the already measured native fixture cleanup policy: forced
+        # removal took 3.9/6.1s on this host, beyond the shared 2.4s call cap.
+        # The existing absolute cleanup deadline remains authoritative.
+        return min(10.0, self.cleanup_deadline - time.monotonic())
+
+
 class AirflowFixture:
     def __init__(self):
         validate_target(os.environ)
@@ -122,7 +133,7 @@ class AirflowFixture:
         try:
             config = self.directory / "docker-config"
             config.mkdir(mode=0o700)
-            self.client = DockerClientBoundary(
+            self.client = AirflowDockerBoundary(
                 binary=Path("/usr/bin/docker"),
                 socket_path=Path("/var/run/docker.sock"),
                 config_dir=config,
@@ -503,6 +514,8 @@ class AirflowFixture:
             "ON_ERROR_STOP=1",
             "-U",
             user,
+            "-p",
+            "55432" if role == "metadata-pg" else "5432",
             "-d",
             database,
             input_=sql,
@@ -570,6 +583,8 @@ class AirflowFixture:
             "-ceu",
             "pg_dump -Fc --create -U p04_audit -d "
             + database
+            + " -p "
+            + ("55432" if role == "metadata-pg" else "5432")
             + " > /tmp/dump; base64 /tmp/dump",
         )
         if not 0 < len(raw) <= 1024 * 1024:
@@ -578,7 +593,14 @@ class AirflowFixture:
 
     def dump_roles(self, role):
         raw = self.execute(
-            role, "pg_dumpall", "--roles-only", "--no-role-passwords", "-U", "p04_audit"
+            role,
+            "pg_dumpall",
+            "--roles-only",
+            "--no-role-passwords",
+            "-U",
+            "p04_audit",
+            "-p",
+            "55432" if role == "metadata-pg" else "5432",
         )
         expected = (
             {"p04_audit", "airflow"}
@@ -611,7 +633,9 @@ class AirflowFixture:
             role,
             "sh",
             "-ceu",
-            "base64 -d > /tmp/restore; pg_restore --exit-on-error --create -U p04_audit -d postgres /tmp/restore",
+            "base64 -d > /tmp/restore; pg_restore --exit-on-error --create -U p04_audit -d postgres -p "
+            + ("55432" if role == "metadata-pg" else "5432")
+            + " /tmp/restore",
             input_=path.read_text(),
         )
 

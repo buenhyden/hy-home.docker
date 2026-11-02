@@ -15,6 +15,7 @@ from typing import Any, Protocol
 MAX_BYTES = 1024 * 1024
 MAX_RECORDS = 5000
 MAX_DEPTH = 32
+QUARANTINE_REASONS = frozenset(("manifest_invalid", "partition_mismatch"))
 FORBIDDEN_SEGMENTS = frozenset(
     ("secret", "secrets", "password", "passwords", "credentials", "tokens")
 )
@@ -53,6 +54,10 @@ class Store(Protocol):
 
     def put_verified(self, key: str, body: bytes) -> None:
         """Upload/reuse exact bytes and read them back before returning."""
+        ...
+
+    def put_quarantine(self, key: str, body: bytes, reason: str) -> None:
+        """Preserve exact bounded rejected bytes and fixed metadata immutably."""
         ...
 
 
@@ -221,17 +226,44 @@ def _external(operation, code: str):
         raise ContractError(code) from None
 
 
+def quarantine_key(source: str, business_date: str, raw: bytes) -> str:
+    object_key(source, business_date)
+    if not isinstance(raw, bytes) or len(raw) > MAX_BYTES:
+        raise ContractError("input_size")
+    digest = hashlib.sha256(raw).hexdigest()
+    return f"manifest-quarantine/{source}/{business_date}/{digest}.json"
+
+
+def _validated_input(store: Store, raw: bytes, source: str, business_date: str):
+    # Oversized/unreadable inputs are never copied into another storage area.
+    key = quarantine_key(source, business_date, raw)
+    failure = None
+    reason = "manifest_invalid"
+    try:
+        manifest = parse_manifest(raw)
+        if (
+            manifest.source != source
+            or manifest.captured_at.date().isoformat() != business_date
+        ):
+            reason = "partition_mismatch"
+            raise ContractError(reason)
+    except ContractError as error:
+        failure = str(error)
+    if failure is not None:
+        _external(
+            lambda: store.put_quarantine(key, raw, reason),
+            "quarantine_verification_failed",
+        )
+        raise ContractError(failure)
+    return manifest
+
+
 def ingest(
     store: Store, db: Publisher, source: str, business_date: str
 ) -> dict[str, str | int]:
     key = object_key(source, business_date)
     raw = _external(lambda: store.read_input(key), "input_read_failed")
-    manifest = parse_manifest(raw)
-    if (
-        manifest.source != source
-        or manifest.captured_at.date().isoformat() != business_date
-    ):
-        raise ContractError("partition_mismatch")
+    manifest = _validated_input(store, raw, source, business_date)
     identifier = run_id(source, raw)
     digest = hashlib.sha256(raw).hexdigest()
     artifact = f"manifest-validated/{source}/{identifier}.json"
@@ -245,4 +277,9 @@ def ingest(
         "replayed",
     ):
         raise ContractError("publication_status")
-    return {"run_id": identifier, "status": status, "records": len(manifest.records)}
+    return {
+        "run_id": identifier,
+        "data_version": digest,
+        "status": status,
+        "records": len(manifest.records),
+    }

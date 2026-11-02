@@ -1,6 +1,6 @@
 ---
 title: "Workspace Inventory"
-version: "0.3.0"
+version: "0.4.0"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
@@ -12,6 +12,7 @@ parent_ids:
 - "SPEC-0212-TSK-0040"
 - "SPEC-0212-TSK-0041"
 - "SPEC-0212-TSK-0042"
+- "SPEC-0212-TSK-0043"
 created: "2026-11-01"
 observed_at: "2026-11-02"
 ---
@@ -112,13 +113,13 @@ rtk python3 scripts/operations/workspace-inventory.py scan --root . --output _wo
 누락 입력을 임의의 운영 값으로 채우거나, 실제 예제의 결함을 검사기 성공으로
 바꾸지 않는다. 사례의 안전한 오류 코드와 후속 작성자·재개 조건을 따로 남긴다.
 
-이번 후속 검사는 이전 성공 182건의 원래 실행 시각과 결과를 보존하고, 영향받은
+P01의 역사 후속 검사는 이전 성공 182건의 원래 실행 시각과 결과를 보존하고, 영향받은
 21건만 다시 실행해 20건 성공·1건 실패를 기록했다. 같은 69개 구성 소스 지문과
 정규화한 호출·준비 입력의 동등성 확인은 이전 결과 재사용의 근거이며 새 구성
 실행 성공이 아니다. 합계는 203건 중 202건 성공이고, 남은 준비 상태 예제의
 망 정의 결함은 정확한 소스·작성권·재개 조건과 함께 별도 인계한다.
 
-선택된 로컬 검사 여섯 묶음과 수정 후 일곱 번째 무결성 검사 720건은 각각
+P01에서 선택된 로컬 검사 여섯 묶음과 수정 후 일곱 번째 무결성 검사 720건은 각각
 실제 통과했으며, 마지막 검사에서 P01 48건도 모두 통과했다. 이전 환경별 실패는
 이력으로 보존한다. 별도 실행한 이 결과를 전체 14개 검사 일괄 통과·원격 CI·
 실제 호스트 신뢰·서비스 운영 인수로 확대하지 않는다.
@@ -150,6 +151,24 @@ GET/HEAD만을 대상으로 하며, 그 밖의 메서드와 모든 다른 경로
 계약에 따라 처리한다. 이 예외는 2026-12-02에 또는 범위 확대·인증 변경·관련
 보안 권고가 발생하면 다시 검토한다.
 
+[P04 Opsflow Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)는
+기존 Airflow DAG·adapter·DEV 소유권을 재사용하고 연결 인코딩·불량 입력 격리·
+data_version·객체 메타데이터 복원의 차분을 소비한다. 기존 CDC의 `platform_dev`와
+Opsflow의 `opsflow_dev`는 다른 소유권 계약이며 임의로 연결하지 않는다. dbt/GX와
+선택형 분석 엔진의 연결 시험은 업무 게시 완료가 아니다. Iceberg 플랫폼의 과거
+수용은 보존하고 이번 workload 채택은 보류한다. 새 실험은 실제 데이터·시간 필드·
+목표·기준선·소유자 입력까지 보류하며 사설 notebook의 존재나 내용을 추정하지 않는다.
+
+P04 시작 시점의 실제 HEAD는 `6853286dbd73851a6419f7fb5457c53720ba6d98`이고
+작업트리는 깨끗했다. 이 값과 이전 P03의 pre-commit 관측을 구분한다. 최종 목록은
+소스 동결 뒤 다시 수집하며, 해시 계산을 본문 검토나 제품 기능 인수로 집계하지 않는다.
+격리 대상 복원과 실제 HOME 복원, 운영·회전·원격 CI·최종 인수는 독립 결과다.
+공개 `coverage.runtime`과 `coverage.restore`는 원장에 선언된 실제 서비스의 이번
+운영·복원 관측 분모다. 합성 fixture의 별도 컨테이너 실행·복원 결과는 해당 Task의
+격리 증거로 기록하며 이 분자에 더하지 않는다. `--render` 없는 목록 갱신은 이전
+구성 실행 결과를 새 실행으로 재사용하지 않으며 과거 결과와 선택형 렌더 증거는
+각 Task에 보존한다.
+
 ## Related Documents
 
 - [범주 색인](../README.md)
@@ -157,6 +176,7 @@ GET/HEAD만을 대상으로 하며, 그 밖의 메서드와 모든 다른 경로
 - [현재 계획](../../../03.specs/0212-request-baseline-and-reconciliation/plan.md)
 - [P02 서비스 연결 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md)
 - [P03 모델·Runner·Wiki 준비 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md)
+- [P04 Opsflow 데이터 경로 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)
 
 ## Sources
 

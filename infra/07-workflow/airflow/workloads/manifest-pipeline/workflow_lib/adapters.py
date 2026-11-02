@@ -6,6 +6,7 @@ import. Error messages expose stable codes and retain no driver exception chain.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -17,7 +18,7 @@ from pathlib import PurePosixPath
 from types import MappingProxyType
 from urllib.parse import urlsplit
 
-from .manifest import MAX_BYTES, ContractError
+from .manifest import MAX_BYTES, QUARANTINE_REASONS, ContractError, quarantine_key
 from .tls import pin_ca
 
 PRIVATE_DIRECTORY = "/run/opsflow"
@@ -498,7 +499,7 @@ class S3Store:
         if failed:
             raise DependencyError("s3_close_failed")
 
-    def _read(self, key, head):
+    def _read(self, key, head, *, attributes=None):
         if not isinstance(head, dict) or type(head.get("ContentLength")) is not int:
             raise DependencyError("s3_metadata_invalid")
         if head["ContentLength"] < 0 or head["ContentLength"] > MAX_BYTES:
@@ -516,6 +517,11 @@ class S3Store:
             raise ContractError("input_size")
         if len(raw) != head["ContentLength"] or response.get("ETag") != etag:
             raise DependencyError("s3_read_changed")
+        if attributes is not None and any(
+            head.get(name) != value or response.get(name) != value
+            for name, value in attributes.items()
+        ):
+            raise DependencyError("s3_metadata_changed")
         return raw
 
     def read_input(self, key):
@@ -529,15 +535,16 @@ class S3Store:
 
         return _task_action(read, "s3_input_failed")
 
-    def _create(self, key, body):
+    def _create(self, key, body, *, content_type="application/json", metadata=None):
         failed = False
         try:
             self.client.put_object(
                 Bucket=self.bucket,
                 Key=key,
                 Body=body,
-                ContentType="application/json",
+                ContentType=content_type,
                 IfNoneMatch="*",
+                **({"Metadata": metadata} if metadata is not None else {}),
             )
         except Exception as error:
             failed = _driver_code(error) not in {
@@ -563,6 +570,40 @@ class S3Store:
                 raise DependencyError("s3_verify_failed")
 
         return _task_action(write, "s3_output_failed")
+
+    def put_quarantine(self, key, body, reason):
+        """Conditionally preserve rejected bytes with exact fixed-code metadata.
+
+        S3 PutObject IfNoneMatch prevents overwrite; Head/GetObject metadata and
+        bytes must agree before a rejected input is considered preserved.
+        https://docs.aws.amazon.com/boto3/latest/reference/services/s3/client/put_object.html
+        """
+        _key(key, "manifest-quarantine")
+        parts = key.split("/")
+        if (
+            len(parts) != 4
+            or not isinstance(reason, str)
+            or reason not in QUARANTINE_REASONS
+            or key != quarantine_key(parts[1], parts[2], body)
+        ):
+            raise ContractError("quarantine_contract")
+        metadata = {
+            "reason": reason,
+            "data-version": hashlib.sha256(body).hexdigest(),
+        }
+        attributes = {"ContentType": "application/octet-stream", "Metadata": metadata}
+
+        def write():
+            head = _head(self.client, self.bucket, key)
+            if head is None:
+                self._create(
+                    key, body, content_type=attributes["ContentType"], metadata=metadata
+                )
+                head = _head(self.client, self.bucket, key)
+            if head is None or self._read(key, head, attributes=attributes) != body:
+                raise DependencyError("s3_quarantine_verify_failed")
+
+        return _task_action(write, "s3_quarantine_failed")
 
 
 @dataclass(frozen=True, repr=False)

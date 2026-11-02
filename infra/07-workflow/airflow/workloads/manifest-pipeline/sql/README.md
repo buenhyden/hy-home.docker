@@ -1,10 +1,10 @@
 ---
 title: "Manifest Publication SQL"
-version: "0.2.2"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-11-02"
 ---
 
 # Manifest Publication SQL
@@ -26,6 +26,10 @@ Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 
 - [004_notification_quarantine.sql](004_notification_quarantine.sql): 만료·불확실 통지의 version 3 격리와 운영자 대조.
 - [003_business_date.sql](003_business_date.sql): 같은 source의 UTC 업무일 중복을
   거부하는 version 2 migration.
+
+- [005_data_version.sql](005_data_version.sql): reader view 끝에 원본 SHA-256인
+  `data_version`을 추가하는 version 4 migration.
+- [006_checks.sql](006_checks.sql): version 4 receipt·shape·역할/ACL과 reader view의 읽기 전용 검사.
 
 ## Usage
 
@@ -99,9 +103,9 @@ outbox를 보존한 채, 검토된 backup을 별도의 빈 workload 복구 대�
 
 ### P05 draft interface
 
-현재 source version은 3입니다. 여섯 인자 `publish_manifest`와 여섯 claim 필드를
+현재 source version은 4입니다. 여섯 인자 `publish_manifest`와 여섯 claim 필드를
 유지하며 불확실 통지의 retry 의미는 아래 격리 계약으로 바꿉니다. SQL·보안 검토 뒤 파일 hash를
-고정하며, P05의 실제 소비자 검토와 native 수용은 아직 NOT_RUN입니다.
+고정하며, 이번 version 4의 P05 실제 소비자 검토와 native 수용은 NOT_RUN입니다.
 
 | 호출 | 입력 | 결과 |
 | --- | --- | --- |
@@ -127,7 +131,7 @@ caller 입력을 실제 Git 내용 인증으로 취급하지 않습니다.
 
 Ack는 SMTP acceptance만 기록하며 실제 배달을 보장하지 않습니다. 안정된
 run-derived Message-ID, at-least-once 중복 불확실성과 accepted event 복원 정합은
-P05와 별도 native 검증에서 확인합니다. 현재 P05 소비자 검토와 native는 NOT_RUN입니다.
+P05와 별도 native 검증에서 확인합니다. 이번 version 4의 P05 소비자 검토와 native는 NOT_RUN이며 과거 수용은 보존합니다.
 
 ### Version 3 notification quarantine
 
@@ -157,6 +161,25 @@ Runtime에는 이 table의 직접 쓰기 권한이 없으며 신뢰된 owner의 
 unknown을 유지합니다. 실제 no-send가 확인되어도 다섯 번 상한에
 도달한 건은 dead로 남습니다. Runtime notifier에는 대조 권한이 없습니다.
 독립 복원 뒤 unknown·accepted 상태와 claim 결과를 확인한 후 polling을 허용합니다.
+
+### Version 4 data version and checks
+
+기존 `001`–`004` 파일은 변경하지 않습니다. 새 독립 대상의 검토한 순서는
+`001` → `002` 검사 → `003` → `002` 검사 → `004` → `005` → `006` 검사입니다.
+각 migration은 자신의 정확한 SHA-256을 `migration_sha256`으로 받습니다.
+`002`는 version 1/2의 보존된 검사이며 3/4의 최종 검사로 실행하지 않습니다.
+`006`은 `005`의 SHA-256을 받아 version 4 receipt와 실제 fingerprint를 대조합니다.
+합성 게시나 통지 쓰기를 하지 않는 읽기 전용 transaction이며 ROLLBACK으로 끝납니다.
+이 검사의 성공은 실제 Worker 게시나 독립 복원 성공이 아닙니다.
+
+`005`는 명시적으로 owner로 전환한 기존 migrator만 수용하고, 고정된 version 3
+receipt와 현재 schema fingerprint가 다르면 DDL 전에 실패합니다. 이전 migration
+장부를 유지하고 version 4 행을 추가합니다. `published_documents`의 기존 열·owner·
+grant를 보존한 채 마지막 열에 `runs.raw_sha256 AS data_version`을 추가합니다.
+`publish_manifest`, claim/ack/retry/unknown/reconcile 함수와 outbox는 유지합니다.
+P05의 역사 version 3 영수증을 version 4 수용으로 고쳐 쓰지 않으며 실제 소비자의
+현재 호환과 수용은 [P04 Task](../../../../../../docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)에서
+별도 인계합니다. 소스 revert는 실행한 schema rollback이 아닙니다.
 
 ## Related Documents
 

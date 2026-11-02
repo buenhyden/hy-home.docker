@@ -1,117 +1,83 @@
 schema_version: 1
-observed_at: '2026-11-02T07:15:11.325585Z'
+observed_at: '2026-11-02T08:47:43.631077Z'
 workspace:
   path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: ac78f975c9c329e80779611335999282dd198ada
-  branch: codex/p03-model-runner-tool-contracts
+  head: 6853286dbd73851a6419f7fb5457c53720ba6d98
+  branch: codex/p04-opsflow-data-path
   dirty_paths:
   - status: 'M '
     path: .github/workflow-contract.yml
   - status: 'M '
-    path: docker-compose.yml
-  - status: 'M '
-    path: docs/02.architecture/descriptions/0008-ai-architecture.md
-  - status: 'M '
     path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   - status: 'M '
     path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-  - status: 'A '
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md
+  - status: AM
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
   - status: 'M '
-    path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
+    path: docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md
   - status: 'M '
-    path: docs/05.operations/guides/09-ai-and-search/0073-open-notebook.md
-  - status: 'M '
-    path: docs/05.operations/policies/09-ai-and-search/0073-open-notebook.md
-  - status: 'M '
-    path: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+    path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
   - status: 'M '
     path: docs/90.references/data/0096-workspace-inventory/README.md
-  - status: MM
+  - status: 'M '
     path: docs/90.references/data/0096-workspace-inventory/data.yaml
   - status: 'M '
     path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
   - status: 'M '
-    path: infra/07-workflow/n8n/docker-compose.yml
+    path: infra/07-workflow/airflow/Dockerfile
   - status: 'A '
-    path: infra/07-workflow/n8n/n8n-task-runners.json
+    path: infra/07-workflow/airflow/connection_uri.py
   - status: 'M '
-    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py
-  - status: 'A '
-    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/webhook_transport.py
+    path: infra/07-workflow/airflow/docker-compose.yml
   - status: 'M '
-    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_research_report_plugin.py
-  - status: 'A '
-    path: infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_webhook_transport.py
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/README.md
   - status: 'M '
-    path: infra/08-ai/open-notebook/docker-compose.yml
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/dags/README.md
+  - status: 'A '
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/005_data_version.sql
+  - status: 'A '
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/006_checks.sql
   - status: 'M '
-    path: infra/09-platform-ops/project-registration/wiki-preparation/fixtures/README.md
-  - status: 'A '
-    path: scripts/lib/ops/_notebook_models_http.py
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
   - status: 'M '
-    path: scripts/lib/ops/_workspace_connection_sources.py
-  - status: 'A '
-    path: scripts/lib/ops/_workspace_model_connections.py
-  - status: 'A '
-    path: scripts/lib/ops/notebook_models.py
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
   - status: 'M '
-    path: scripts/manifest.yaml
-  - status: 'A '
-    path: scripts/operations/notebook-models.py
-  - status: 'A '
-    path: scripts/validation/check-p03-hermes.py
-  - status: 'A '
-    path: tests/fixtures/p03_models/notebook-model-policy.json
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/adapters.py
   - status: 'M '
-    path: tests/lib/gate/test_github_workflow_contract.py
-  - status: 'A '
-    path: tests/lib/gate/test_p03_workflow_contract.py
-  - status: 'A '
-    path: tests/lib/ops/test_notebook_models.py
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/manifest.py
   - status: 'M '
-    path: tests/lib/ops/test_workspace_connections.py
+    path: infra/12-analytics/flink/README.md
+  - status: 'M '
+    path: tests/lib/ops/test_opsflow_adapters.py
+  - status: 'M '
+    path: tests/lib/ops/test_opsflow_manifest.py
   - status: 'A '
-    path: tests/lib/ops/test_workspace_model_connections.py
+    path: tests/validation/_opsflow_airflow_native_data.py
+  - status: 'M '
+    path: tests/validation/_opsflow_airflow_native_evidence.py
+  - status: 'M '
+    path: tests/validation/_opsflow_airflow_native_fixture.py
+  - status: 'M '
+    path: tests/validation/_opsflow_airflow_native_guards.py
   - status: 'A '
-    path: tests/validation/_p03_notebook_effects.py
+    path: tests/validation/_opsflow_airflow_native_scenario.py
   - status: 'A '
-    path: tests/validation/_p03_notebook_native.py
+    path: tests/validation/test_airflow_connection_uri.py
+  - status: 'M '
+    path: tests/validation/test_opsflow_airflow_contract.py
   - status: 'A '
-    path: tests/validation/_p03_notebook_protocol.py
+    path: tests/validation/test_opsflow_airflow_native_data.py
+  - status: 'M '
+    path: tests/validation/test_opsflow_airflow_native_evidence.py
+  - status: 'M '
+    path: tests/validation/test_opsflow_airflow_native_rehearsal.py
   - status: 'A '
-    path: tests/validation/_p03_notebook_readiness.py
-  - status: 'A '
-    path: tests/validation/_p03_owned_docker.py
-  - status: 'A '
-    path: tests/validation/_p03_runner_native_fixture.py
-  - status: 'A '
-    path: tests/validation/_p03_runner_outcomes.py
-  - status: 'A '
-    path: tests/validation/_p03_worker_model_native.py
-  - status: 'A '
-    path: tests/validation/_p03_worker_ollama_fixture.py
-  - status: 'A '
-    path: tests/validation/test_p03_hermes_gate.py
-  - status: 'A '
-    path: tests/validation/test_p03_models_native.py
-  - status: 'A '
-    path: tests/validation/test_p03_notebook_effects.py
-  - status: 'A '
-    path: tests/validation/test_p03_notebook_models.py
-  - status: 'A '
-    path: tests/validation/test_p03_owned_docker.py
-  - status: 'A '
-    path: tests/validation/test_p03_runner_boundaries.py
-  - status: 'A '
-    path: tests/validation/test_p03_runner_consumers.py
-  - status: 'A '
-    path: tests/validation/test_p03_runner_isolation.py
-  - status: 'A '
-    path: tests/validation/test_p03_worker_models.py
+    path: tests/validation/test_opsflow_airflow_native_scenario.py
+  - status: 'M '
+    path: tests/validation/test_p02_service_contracts.py
   worktrees:
   - in_boundary: true
     access: metadata-only
@@ -120,13 +86,14 @@ workspace:
   root: /home/hyunyoun/data/hy-home.docker
   writable_boundary: /home/hyunyoun/data/hy-home.docker
   private_dirty_count: 0
+  git_observed_at: '2026-11-02T09:17:18.757141+00:00'
 roots:
 - path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: ac78f975c9c329e80779611335999282dd198ada
-  branch: codex/p03-model-runner-tool-contracts
+  head: 6853286dbd73851a6419f7fb5457c53720ba6d98
+  branch: codex/p04-opsflow-data-path
   dirty_paths: []
   worktrees:
   - in_boundary: true
@@ -134,7 +101,7 @@ roots:
   submodules: []
   tracked_query: PASS
   write_boundary: /home/hyunyoun/data/hy-home.docker
-  dirty_count: 52
+  dirty_count: 34
 files:
 - path: .agents/README.md
   tracked: true
@@ -1754,9 +1721,9 @@ files:
 - path: .github/workflow-contract.yml
   tracked: true
   kind: configuration
-  bytes: 84302
+  bytes: 85464
   state: HASHED
-  sha256: 673e4926795605bd4334e4875cb904382eccc5f08b0add0a4f0d30b77b4dcc9a
+  sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
   review:
     path: .github/workflow-contract.yml
     reviewer: p02_residual_code_review + p02_residual_supply_review
@@ -3065,17 +3032,17 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   tracked: true
   kind: document
-  bytes: 34138
+  bytes: 38339
   state: HASHED
-  sha256: 077d5987c6dc0e265a5ee079927bd670b586745fa4105c2d1895dd10577f7a67
+  sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
   review:
     state: UNREVIEWED
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
   tracked: true
   kind: document
-  bytes: 41843
+  bytes: 44009
   state: HASHED
-  sha256: 745a0fc75e24cbfbcd134a65e736c3f86b505f6f4d347bcb80d481767e07d767
+  sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
   review:
     state: UNREVIEWED
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0001-request-baseline-and-inventory.md
@@ -3416,6 +3383,15 @@ files:
   sha256: b4fa9fdad3f78413e10d89f0033692a0c2c0c2ddf6427fda1dc0f4db3aeb978b
   review:
     state: UNREVIEWED
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
+  tracked: false
+  kind: document
+  bytes: 32072
+  state: HASHED
+  sha256: e9ecc879eb82d8418c59cba9eba7671f2a3651694ca9ecad303c49a0e458e8f1
+  review:
+    state: UNREVIEWED
+  fingerprint_observed_at: '2026-11-02T09:17:18.757141+00:00'
 - path: docs/03.specs/0213-dev-data-and-influx-retirement/plan.md
   tracked: true
   kind: document
@@ -4883,11 +4859,18 @@ files:
 - path: docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md
   tracked: true
   kind: document
-  bytes: 13181
+  bytes: 13344
   state: HASHED
-  sha256: 9ed76e3227b9de44c10774efea74539b5a231f4b14a63ecf98ee87a887e6e33b
+  sha256: ef7035ed2e94371aa3d4aea39b09f41f8c513ed9dbb8da12973cbac273eda739
   review:
-    state: UNREVIEWED
+    path: docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md
+    sha256: ef7035ed2e94371aa3d4aea39b09f41f8c513ed9dbb8da12973cbac273eda739
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T08:12:18.635479+00:00'
+    scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and source crosscheck is recorded separately in Task.
+    complete: true
+    state: REVIEWED
 - path: docs/05.operations/guides/13-analytics-and-data-quality/0097-superset.md
   tracked: true
   kind: document
@@ -6107,11 +6090,18 @@ files:
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
   tracked: true
   kind: document
-  bytes: 16703
+  bytes: 18813
   state: HASHED
-  sha256: 8fbc612aa2fefa790d99b90fe052e9be90ccf2b9f2b5db4dd5c66e40be070db5
+  sha256: 047f82c59d55413943e8ea6cf419c113cfe52ae9eb687b1bebba6d561447e87e
   review:
-    state: UNREVIEWED
+    path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
+    sha256: 047f82c59d55413943e8ea6cf419c113cfe52ae9eb687b1bebba6d561447e87e
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T08:12:18.635473+00:00'
+    scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and source crosscheck is recorded separately in Task.
+    complete: true
+    state: REVIEWED
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
   tracked: true
   kind: document
@@ -6531,15 +6521,15 @@ files:
 - path: docs/90.references/data/0096-workspace-inventory/README.md
   tracked: true
   kind: document
-  bytes: 10262
+  bytes: 12072
   state: HASHED
-  sha256: f8cb82887f3e6dcea2dd922f484ad8709a077ed43dcd8b4f2134dcc508a273f3
+  sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
   review:
     state: UNREVIEWED
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   tracked: true
   kind: configuration
-  bytes: 1293248
+  bytes: 1295984
   state: GENERATED_OUTPUT
 - path: docs/90.references/data/README.md
   tracked: true
@@ -6728,16 +6718,18 @@ files:
   kind: document
   bytes: 444087
   state: HASHED
-  sha256: 0a870fd75457a2249e8b14058b0b5b090d09f456aa8599e2d380a64818a528a7
+  sha256: 9952a7485243ac9e41b4efd3e9d456d7dcf7e0081e83aaa3c03c3c387d3a1f70
   review:
     path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
-    reviewer: root_document_review
-    observed_at: '2026-11-02T00:34:54Z'
-    sha256: 125c4cbd90f6ee72a9d11859519c361832788b0eb8a6d68d4b822de7e79bf281
-    scope: P02 generated catalog cells reviewed inside current-service-inventory markers;
-      full-file review not claimed
+    sha256: 9952a7485243ac9e41b4efd3e9d456d7dcf7e0081e83aaa3c03c3c387d3a1f70
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T09:00:08.300260+00:00'
+    scope: Seven generated Airflow Env cells read and compared with current public
+      selectors; CI renderer and independent diff review separately recorded. Remaining
+      research body not reviewed.
     complete: false
-    state: STALE
+    state: PARTIAL
+  fingerprint_observed_at: '2026-11-02T09:00:08.300260+00:00'
 - path: docs/90.references/research/0084-github-actions-platform/README.md
   tracked: true
   kind: document
@@ -12071,9 +12063,9 @@ files:
 - path: infra/07-workflow/airflow/Dockerfile
   tracked: true
   kind: configuration
-  bytes: 2703
+  bytes: 2893
   state: HASHED
-  sha256: afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1
+  sha256: 3cf83481bbfb8ea5a2e0f1f016075b69cd429b08655cb10acf5b4c53ef61bff5
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/airflow/README.md
@@ -12097,6 +12089,14 @@ files:
   bytes: 3549
   state: HASHED
   sha256: 04d9859170b05b969ec0e8b8e48002f4a3230af4e5455606f4dc4db4c6e867cc
+  review:
+    state: UNREVIEWED
+- path: infra/07-workflow/airflow/connection_uri.py
+  tracked: false
+  kind: code
+  bytes: 7715
+  state: HASHED
+  sha256: 27a7501cfeb112ba92f2d6a1e66ab69c9f87a32299e5ffe80cea2afe4010f309
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/airflow/constraints-upstream-3.3.2-python3.13.txt
@@ -12125,9 +12125,9 @@ files:
 - path: infra/07-workflow/airflow/docker-compose.yml
   tracked: true
   kind: configuration
-  bytes: 19352
+  bytes: 19150
   state: HASHED
-  sha256: b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9
+  sha256: 621bcf244286dc784c0004ef2b51a3af8fca93b1b483f28fe1340cd54df3fc9b
   review:
     path: infra/07-workflow/airflow/docker-compose.yml
     reviewer: /root/p02_final_iac_review (iac-reviewer)
@@ -12136,7 +12136,7 @@ files:
     scope: P02 dedicated Valkey mount changed section and cross-file contract; full-file
       review not claimed
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: infra/07-workflow/airflow/workloads/README.md
   tracked: true
   kind: document
@@ -12148,11 +12148,19 @@ files:
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/README.md
   tracked: true
   kind: document
-  bytes: 7290
+  bytes: 7318
   state: HASHED
-  sha256: 1df27b56127964f8e326d2e06c38af4661f10280478f80f5032cc1d03fa7fa71
+  sha256: 3bd4a89772e5222879d6d1f77c4610aec612fff1cad5f7eff09c76d8a02f854d
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/README.md
+    sha256: 3bd4a89772e5222879d6d1f77c4610aec612fff1cad5f7eff09c76d8a02f854d
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T09:07:52.952274+00:00'
+    scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and source crosscheck is recorded separately in Task.
+    complete: true
+    state: REVIEWED
+  fingerprint_observed_at: '2026-11-02T09:12:44.140127+00:00'
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
   tracked: true
   kind: configuration
@@ -12164,11 +12172,18 @@ files:
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/dags/README.md
   tracked: true
   kind: document
-  bytes: 893
+  bytes: 998
   state: HASHED
-  sha256: 3747d1d6e510047c9b9b4525ff602c2540b0f8c15c0177fb49d9f8fe85415c81
+  sha256: 8b53fb1e250b04f0cd8ede22b1e88e1bf56abc99b10d4063d2f21394aa024663
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/dags/README.md
+    sha256: 8b53fb1e250b04f0cd8ede22b1e88e1bf56abc99b10d4063d2f21394aa024663
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T08:12:18.635471+00:00'
+    scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and source crosscheck is recorded separately in Task.
+    complete: true
+    state: REVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/dags/source_manifest_ingest.py
   tracked: true
   kind: code
@@ -12241,22 +12256,52 @@ files:
   sha256: ad8176d875b75c15d0e7bfc21c1cb67cd5b31240a4901bccec5b8bb0d931bde9
   review:
     state: UNREVIEWED
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/005_data_version.sql
+  tracked: false
+  kind: code
+  bytes: 14818
+  state: HASHED
+  sha256: 85eb63d22f2967ac84996f561a14ca3433e429eaf55a597d294478e21dfe00c2
+  review:
+    state: UNREVIEWED
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/006_checks.sql
+  tracked: false
+  kind: code
+  bytes: 14494
+  state: HASHED
+  sha256: 38eb6b22e99e573c40cd1fa920af7a3cc5945d0ce0a53e9d2872983834c0ef76
+  review:
+    state: UNREVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
   tracked: true
   kind: document
-  bytes: 11204
+  bytes: 13044
   state: HASHED
-  sha256: 82768f3ee488d0eb4939277689a1d3b0144ebf032fbc272af13ffbe097fb0343
+  sha256: 242a0f32e22ebe898e9accc89171cf8473eaa81463a3c5372a5459711afaf0b4
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
+    sha256: 242a0f32e22ebe898e9accc89171cf8473eaa81463a3c5372a5459711afaf0b4
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T08:12:18.635464+00:00'
+    scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and source crosscheck is recorded separately in Task.
+    complete: true
+    state: REVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
   tracked: true
   kind: document
-  bytes: 1038
+  bytes: 1897
   state: HASHED
-  sha256: c9bddf6e3dc6b569bb18514487a12e3d36f82480cc7d142e3ded1e46330bf416
+  sha256: 1d704d7fb97a1aaff11960c6c0a1d0a3ba0228465dbe0783f0aa028ffa8c157d
   review:
-    state: UNREVIEWED
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
+    sha256: 1d704d7fb97a1aaff11960c6c0a1d0a3ba0228465dbe0783f0aa028ffa8c157d
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T08:12:18.635468+00:00'
+    scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and source crosscheck is recorded separately in Task.
+    complete: true
+    state: REVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/__init__.py
   tracked: true
   kind: code
@@ -12268,17 +12313,17 @@ files:
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/adapters.py
   tracked: true
   kind: code
-  bytes: 22176
+  bytes: 24050
   state: HASHED
-  sha256: 9cf420222aa3d90e1db8507130afa04242e3a9a469283871e3ca19c678a4cbf5
+  sha256: 60ef4a0841bb1cc13918902b1b302abcbcf17bcdadf7b0a62dacc021fb2e05ff
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/manifest.py
   tracked: true
   kind: code
-  bytes: 7817
+  bytes: 9132
   state: HASHED
-  sha256: ef19e0093b990c6b8400b29f234877e9d6f346a38440f3a181c37aa5cd744b60
+  sha256: df479fb44437052bcb55a6b90703f8d803c242a93801501e1105a8bb408d71d1
   review:
     state: UNREVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/tls.py
@@ -14347,11 +14392,18 @@ files:
 - path: infra/12-analytics/flink/README.md
   tracked: true
   kind: document
-  bytes: 7042
+  bytes: 7117
   state: HASHED
-  sha256: 66188ca2620666a84b95bf6e0c5657f3c68e241cba18b13cc2e3b1a9999a54fb
+  sha256: cc46241065c585a7c27c2cd64b3cde1446a0efcffb7a3a2fe033746c33fd8a39
   review:
-    state: UNREVIEWED
+    path: infra/12-analytics/flink/README.md
+    sha256: cc46241065c585a7c27c2cd64b3cde1446a0efcffb7a3a2fe033746c33fd8a39
+    reviewer: /root/p04_docs
+    observed_at: '2026-11-02T08:12:18.635476+00:00'
+    scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and source crosscheck is recorded separately in Task.
+    complete: true
+    state: REVIEWED
 - path: infra/12-analytics/flink/docker-compose.yml
   tracked: true
   kind: configuration
@@ -17435,17 +17487,17 @@ files:
 - path: tests/lib/ops/test_opsflow_adapters.py
   tracked: true
   kind: test
-  bytes: 25117
+  bytes: 30344
   state: HASHED
-  sha256: a92a26c8e761459f43df98749e791f8e1072b9374e0729b0fc0c43d9ecd73e6d
+  sha256: d8e8d1c462aa5ab7cd78eca810c4d591dadea96af41360ea1bdf4f9d9114fba3
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_opsflow_manifest.py
   tracked: true
   kind: test
-  bytes: 13168
+  bytes: 16259
   state: HASHED
-  sha256: 73ca024a75fe2f9b5b48c5907c60d2df2b77f5df7f6f74e1d51636e1d5502087
+  sha256: 3ac40edeab2f832673ff331cefe0611fec2628268b2d5316d328842af9ab2f01
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_opsflow_provision_contract.py
@@ -17664,28 +17716,44 @@ files:
   sha256: 810690feb85deb3305d22511bc709665af48579208a7916051672b880f278aa4
   review:
     state: UNREVIEWED
+- path: tests/validation/_opsflow_airflow_native_data.py
+  tracked: false
+  kind: test
+  bytes: 14383
+  state: HASHED
+  sha256: 4fd2ae9eb92101e726f2d61b2b917ff5df9f852ae3dbd91fd2cda317983489bc
+  review:
+    state: UNREVIEWED
 - path: tests/validation/_opsflow_airflow_native_evidence.py
   tracked: true
   kind: test
-  bytes: 6906
+  bytes: 7055
   state: HASHED
-  sha256: bc9cf5e4b53f1e44d302944825bc19665969ec7eae1c59dceb237d769fa47571
+  sha256: 0320961a085dd1c48c00d859e2aad7c1953b0833440faa0d22cbac2e95b9b826
   review:
     state: UNREVIEWED
 - path: tests/validation/_opsflow_airflow_native_fixture.py
   tracked: true
   kind: test
-  bytes: 31981
+  bytes: 32855
   state: HASHED
-  sha256: 43f1ae528442669c2fbe53234117d016f8f28104c9c44876ab7d2957a0f68688
+  sha256: 0a9a74cc1f63998adc020d5900be28e416386d3fae9a99c9a20a280c9fa1c616
   review:
     state: UNREVIEWED
 - path: tests/validation/_opsflow_airflow_native_guards.py
   tracked: true
   kind: test
-  bytes: 21682
+  bytes: 22209
   state: HASHED
-  sha256: 87968dcb0cab174db4f822b3879e4369ca167b00ed298229ef8d644cecb51d36
+  sha256: c52de9d0485a5f20eba6212df5e92834b23dafed993dbe69c39bd3e2e6e8c864
+  review:
+    state: UNREVIEWED
+- path: tests/validation/_opsflow_airflow_native_scenario.py
+  tracked: false
+  kind: test
+  bytes: 27089
+  state: HASHED
+  sha256: b4aada9cdc9b1c0a041b273f9488e63ae76a68f4a1326cd77e2953db4b4f8791
   review:
     state: UNREVIEWED
 - path: tests/validation/_opsflow_evidence_redaction.py
@@ -17903,6 +17971,24 @@ files:
   state: HASHED
   sha256: 1fb3ce5be9843d6b620c97333b59bf69e849ef6de917c41a1d7e9c289987f209
   review:
+    state: UNREVIEWED
+- path: tests/validation/test_airflow_connection_uri.py
+  tracked: false
+  kind: test
+  bytes: 16977
+  state: HASHED
+  sha256: dcc5345a4f19975c2d62ed83790202d5bb763c44f1178bf902939264ddb798d2
+  review:
+    path: tests/validation/test_airflow_connection_uri.py
+    sha256: dcc5345a4f19975c2d62ed83790202d5bb763c44f1178bf902939264ddb798d2
+    reviewer: /root/p04_uri; independent /root/p04_pipeline
+    observed_at: '2026-11-02T09:12:44.140127+00:00'
+    scope: Two approved synthetic-fixture inline comment deltas and executable-AST
+      identity only. Whole test body and new test execution are not claimed.
+    complete: false
+    state: PARTIAL
+  fingerprint_observed_at: '2026-11-02T09:12:44.140127+00:00'
+  previous_review:
     state: UNREVIEWED
 - path: tests/validation/test_ci_gate_execution_context.py
   tracked: true
@@ -18315,17 +18401,25 @@ files:
 - path: tests/validation/test_opsflow_airflow_contract.py
   tracked: true
   kind: test
-  bytes: 25541
+  bytes: 25662
   state: HASHED
-  sha256: edcd82bfa9aca8dab15ceac18764bea92764357f8738512d485357ae1d35b88b
+  sha256: 21638ef53750ff897301bf5c94da4e9811ebb2caaf55f6436b88fb619d59b71c
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_opsflow_airflow_native_data.py
+  tracked: false
+  kind: test
+  bytes: 15476
+  state: HASHED
+  sha256: 9c9b0519ab6e8d54f34a1f84c16b7cad23e2f3cfc062495d4bf66eb8a29bae79
   review:
     state: UNREVIEWED
 - path: tests/validation/test_opsflow_airflow_native_evidence.py
   tracked: true
   kind: test
-  bytes: 35565
+  bytes: 37765
   state: HASHED
-  sha256: b8ee80b352e5c3f056596ec8e4693c5c007ede0b755fdcb266da9a3d156121f6
+  sha256: 6034e59c67df30b13c6203d9f55625fbf633abb441001ab623f4dac0c5f0e205
   review:
     state: UNREVIEWED
 - path: tests/validation/test_opsflow_airflow_native_quiescence.py
@@ -18339,9 +18433,17 @@ files:
 - path: tests/validation/test_opsflow_airflow_native_rehearsal.py
   tracked: true
   kind: test
-  bytes: 35176
+  bytes: 20037
   state: HASHED
-  sha256: 3311383f4ad3a11c6f32be4f18992ebd7a03d0a86355a78d2b6f5598e427691f
+  sha256: 345017e759de14d7601cfc00bd2dcbe7f759edca02817b897490b9a946a6b045
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_opsflow_airflow_native_scenario.py
+  tracked: false
+  kind: test
+  bytes: 25237
+  state: HASHED
+  sha256: df3278151b38ad907c1ff883a9948d3ee86c6341997c4fa2289f1e487ccdf6ef
   review:
     state: UNREVIEWED
 - path: tests/validation/test_opsflow_database_rehearsal.py
@@ -18443,10 +18545,20 @@ files:
 - path: tests/validation/test_p02_service_contracts.py
   tracked: true
   kind: test
-  bytes: 32468
+  bytes: 34492
   state: HASHED
-  sha256: b15238120e8e40b1eb49a9f603a1f540c56933e8d32621a030f8398b4a523dec
+  sha256: 76783c0e6a1bf3079d63237182a8be2fc3f9c8d6d08637f0d27b3a269b349e5d
   review:
+    path: tests/validation/test_p02_service_contracts.py
+    sha256: 76783c0e6a1bf3079d63237182a8be2fc3f9c8d6d08637f0d27b3a269b349e5d
+    reviewer: /root/p04_uri; independent /root/p04_pipeline
+    observed_at: '2026-11-02T09:12:44.140127+00:00'
+    scope: Two approved synthetic-fixture inline comment deltas and executable-AST
+      identity only. Whole test body and new test execution are not claimed.
+    complete: false
+    state: PARTIAL
+  fingerprint_observed_at: '2026-11-02T09:12:44.140127+00:00'
+  previous_review:
     state: UNREVIEWED
 - path: tests/validation/test_p02_valkey_mount_scope.py
   tracked: true
@@ -18888,11 +19000,11 @@ files:
     state: UNREVIEWED
 excluded:
   binary: 35
-  code: 125
-  configuration: 376
-  document: 110
-  generated: 38184
-  private: 229
+  code: 127
+  configuration: 402
+  document: 112
+  generated: 38194
+  private: 232
 opaque:
   git_directories: 1
   private_git_roots: 0
@@ -33462,7 +33574,7 @@ compose:
     sha256: 4fd046bdce5bc5dc6c58a3b28355929e19911c45a43e6bfea0229e5791ef214b
     state: parsed
   - path: infra/07-workflow/airflow/docker-compose.yml
-    sha256: b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9
+    sha256: 621bcf244286dc784c0004ef2b51a3af8fca93b1b483f28fe1340cd54df3fc9b
     state: parsed
   - path: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
     sha256: 8314933a0d088b4c2610002ee6330eb2d50373698cd16bad0654957f3203a35f
@@ -34702,2326 +34814,21 @@ compose:
     service: valkey-cluster-exporter
     target: infra/common-optimizations.yml
     target_service: template-infra-readonly-low
-  render_cases:
-  - source: docker-compose.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:37.133817+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 112
-  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:39.245078+00:00'
-    files: &id001
-    - docker-compose.yml
-    - examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    result: FAIL
-    exit_code: 1
-    reason: undefined-network
-  - source: examples/operations/locust-telemetry/compose.override.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:41.745934+00:00'
-    files: &id002
-    - labs/locust.yml
-    - examples/operations/locust-telemetry/compose.override.yml
-    result: PASS
-    exit_code: 0
-    service_count: 3
-  - source: examples/operations/postgres-logical-upgrade/docker-compose.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:41.901768+00:00'
-    files: &id003
-    - examples/operations/postgres-logical-upgrade/docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 2
-  - source: examples/operations/quality-metrics/docker-compose.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:42.023234+00:00'
-    files: &id004
-    - examples/operations/quality-metrics/docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 3
-  - source: examples/operations/quality-path-guard/docker-compose.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:42.143787+00:00'
-    files: &id005
-    - examples/operations/quality-path-guard/docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 2
-  - source: examples/operations/sample-service-delivery/compose.delivery.override.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:42.258000+00:00'
-    files: &id006
-    - examples/sample-web-service/docker-compose.yml
-    - examples/operations/sample-service-delivery/compose.delivery.override.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: examples/sample-web-service/docker-compose.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:42.376349+00:00'
-    files:
-    - examples/sample-web-service/docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: labs/cassandra.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:42.537522+00:00'
-    files: &id007
-    - labs/cassandra.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: labs/couchdb.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:42.725843+00:00'
-    files: &id008
-    - labs/couchdb.yml
-    result: PASS
-    exit_code: 0
-    service_count: 4
-  - source: labs/kafka-cluster.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:42.918677+00:00'
-    files: &id009
-    - labs/kafka-cluster.yml
-    result: PASS
-    exit_code: 0
-    service_count: 5
-  - source: labs/locust.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:43.087139+00:00'
-    files: &id010
-    - labs/locust.yml
-    result: PASS
-    exit_code: 0
-    service_count: 2
-  - source: labs/mongodb.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:43.228521+00:00'
-    files: &id011
-    - labs/mongodb.yml
-    result: PASS
-    exit_code: 0
-    service_count: 6
-  - source: labs/opensearch-cluster.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:43.394314+00:00'
-    files: &id012
-    - labs/opensearch-cluster.yml
-    result: PASS
-    exit_code: 0
-    service_count: 4
-  - source: labs/postgresql-ha.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:43.554605+00:00'
-    files: &id013
-    - labs/postgresql-ha.yml
-    result: PASS
-    exit_code: 0
-    service_count: 11
-  - source: labs/supabase.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:43.730499+00:00'
-    files: &id014
-    - labs/supabase.yml
-    result: PASS
-    exit_code: 0
-    service_count: 13
-  - source: labs/valkey-cluster.yml
-    selection: all-profiles
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:43.910207+00:00'
-    files: &id015
-    - labs/valkey-cluster.yml
-    result: PASS
-    exit_code: 0
-    service_count: 8
-  - source: infra/01-gateway/traefik/docker-compose.yml
-    selection: overlay:infra/01-gateway/traefik/compose.window-ca.override.yml
-    overlay: infra/01-gateway/traefik/compose.window-ca.override.yml
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:44.068266+00:00'
-    files: &id016
-    - docker-compose.yml
-    - infra/01-gateway/traefik/compose.window-ca.override.yml
-    result: PASS
-    exit_code: 0
-    service_count: 112
-  - source: infra/02-auth/oauth2-proxy/docker-compose.yml
-    selection: overlay:infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
-    overlay: infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:46.292388+00:00'
-    files: &id017
-    - docker-compose.yml
-    - infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
-    result: PASS
-    exit_code: 0
-    service_count: 112
-  - source: infra/04-data/mng-db/docker-compose.yml
-    selection: overlay:infra/04-data/mng-db/docker-compose.n8n-acl.yml
-    overlay: infra/04-data/mng-db/docker-compose.n8n-acl.yml
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:48.629383+00:00'
-    files: &id018
-    - docker-compose.yml
-    - infra/04-data/mng-db/docker-compose.n8n-acl.yml
-    result: PASS
-    exit_code: 0
-    service_count: 112
-  - source: infra/07-workflow/airflow/docker-compose.yml
-    selection: overlay:infra/07-workflow/airflow/docker-compose.monitor-acl.yml
-    overlay: infra/07-workflow/airflow/docker-compose.monitor-acl.yml
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:50.951815+00:00'
-    files: &id019
-    - docker-compose.yml
-    - infra/07-workflow/airflow/docker-compose.monitor-acl.yml
-    result: PASS
-    exit_code: 0
-    service_count: 112
-  - source: infra/07-workflow/airflow/docker-compose.yml
-    selection: overlay:infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
-    overlay: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:53.321390+00:00'
-    files: &id020
-    - docker-compose.yml
-    - infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
-    result: PASS
-    exit_code: 0
-    service_count: 112
-  - source: infra/07-workflow/n8n/docker-compose.yml
-    selection: overlay:infra/07-workflow/n8n/docker-compose.monitor-acl.yml
-    overlay: infra/07-workflow/n8n/docker-compose.monitor-acl.yml
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:55.587548+00:00'
-    files: &id021
-    - docker-compose.yml
-    - infra/07-workflow/n8n/docker-compose.monitor-acl.yml
-    result: PASS
-    exit_code: 0
-    service_count: 112
-  - source: docker-compose.yml
-    selection: overlay:infra/07-workflow/n8n/docker-compose.ollama-local.yml
-    overlay: infra/07-workflow/n8n/docker-compose.ollama-local.yml
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:20:57.816332+00:00'
-    files:
-    - docker-compose.yml
-    - infra/07-workflow/n8n/docker-compose.ollama-local.yml
-    result: PASS
-    exit_code: 0
-    service_count: 112
-  - source: docker-compose.yml
-    selection: overlay:infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
-    overlay: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:00.081329+00:00'
-    files:
-    - docker-compose.yml
-    - infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
-    result: PASS
-    exit_code: 0
-    service_count: 112
-  - source: docker-compose.yml
-    selection: profile:admin
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:02.611369+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 2
-  - source: docker-compose.yml
-    selection: profile:admin-data
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:04.730983+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: docker-compose.yml
-    selection: profile:admin-logs
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:06.820868+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: docker-compose.yml
-    selection: profile:ai
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:08.848893+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 5
-  - source: docker-compose.yml
-    selection: profile:ai-image
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:11.006159+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: docker-compose.yml
-    selection: profile:ai-llm
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:13.016220+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 4
-  - source: docker-compose.yml
-    selection: profile:alerting
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:15.209351+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 3
-  - source: docker-compose.yml
-    selection: profile:analytics-engineering
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:17.260177+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 6
-  - source: docker-compose.yml
-    selection: profile:api-mock
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:19.451391+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: docker-compose.yml
-    selection: profile:auth
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:21.593764+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 2
-  - source: docker-compose.yml
-    selection: profile:availability
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:23.736431+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: docker-compose.yml
-    selection: profile:backup
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:25.863356+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 3
-  - source: docker-compose.yml
-    selection: profile:batch-metrics
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:27.915092+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 3
-  - source: docker-compose.yml
-    selection: profile:bi
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:29.953250+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 7
-  - source: docker-compose.yml
-    selection: profile:blog-ingestion
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:31.996886+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: docker-compose.yml
-    selection: profile:cdc
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:34.133447+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 9
-  - source: docker-compose.yml
-    selection: profile:contract-testing
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:36.239758+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 6
-  - source: docker-compose.yml
-    selection: profile:core
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:38.356976+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 11
-  - source: docker-compose.yml
-    selection: profile:crawl4ai
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:40.405935+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 2
-  - source: docker-compose.yml
-    selection: profile:data-science
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:42.614526+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 12
-  - source: docker-compose.yml
-    selection: profile:dedicated-valkey
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:44.703385+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 6
-  - source: docker-compose.yml
-    selection: profile:dependency-update
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:46.927056+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: docker-compose.yml
-    selection: profile:dev
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:49.008111+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 18
-  - source: docker-compose.yml
-    selection: profile:dev-data
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:51.106898+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 5
-  - source: docker-compose.yml
-    selection: profile:experience
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:53.122607+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 2
-  - source: docker-compose.yml
-    selection: profile:graph
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:55.187239+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: docker-compose.yml
-    selection: profile:iac
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:57.313122+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 4
-  - source: docker-compose.yml
-    selection: profile:lakehouse
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:21:59.394873+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 11
-  - source: docker-compose.yml
-    selection: profile:local
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:01.436355+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 12
-  - source: docker-compose.yml
-    selection: profile:logs
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:03.551833+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 8
-  - source: docker-compose.yml
-    selection: profile:mail-dev
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:05.573599+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 1
-  - source: docker-compose.yml
-    selection: profile:mail-server
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:07.933699+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 2
-  - source: docker-compose.yml
-    selection: profile:messaging
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:10.129776+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 7
-  - source: docker-compose.yml
-    selection: profile:messaging-admin
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:12.215498+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 5
-  - source: docker-compose.yml
-    selection: profile:messaging-broker
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:14.243506+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 3
-  - source: docker-compose.yml
-    selection: profile:messaging-connect
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:16.304737+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 4
-  - source: docker-compose.yml
-    selection: profile:messaging-rest
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:18.362988+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 4
-  - source: docker-compose.yml
-    selection: profile:messaging-schema
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:20.607106+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 3
-  - source: docker-compose.yml
-    selection: profile:mlops
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:22.846766+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 11
-  - source: docker-compose.yml
-    selection: profile:mng
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:24.925659+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 6
-  - source: docker-compose.yml
-    selection: profile:nginx
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:27.049790+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 6
-  - source: docker-compose.yml
-    selection: profile:notebook
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:29.159767+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 2
-  - source: docker-compose.yml
-    selection: profile:obs
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:31.266440+00:00'
-    files:
-    - docker-compose.yml
-    result: PASS
-    exit_code: 0
-    service_count: 17
-  - source: docker-compose.yml
-    selection: profile:obs-core
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:33.331027+00:00'
-    files:
-    - docker-compose.yml
-    result: ERROR
-    reason: tool-unavailable-timeout-or-invalid-model
-  - source: docker-compose.yml
-    selection: profile:obs-gpu
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044924+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:obs-host
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044944+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:ollama
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044949+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:opensearch
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044952+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:policy-check
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044956+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:profiling
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044959+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:qdrant
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044963+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:quality-results
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044966+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:registry
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044970+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:sast
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044973+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:seaweedfs
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044976+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:secrets
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044979+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:security
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044982+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:storage
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044985+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:storage-seaweedfs
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044989+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:surrealdb
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044992+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:testing
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044995+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:tooling
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.044998+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:tracing
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045001+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:workflow
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045004+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:workflow-airflow
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045007+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: profile:workflow-n8n
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045011+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:airflow-apiserver
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045014+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:airflow-dag-processor
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045017+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:airflow-init
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045021+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:airflow-scheduler
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045024+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:airflow-statsd-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045027+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:airflow-triggerer
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045030+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:airflow-valkey
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045034+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:airflow-valkey-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045037+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:airflow-worker
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045040+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:alertmanager
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045043+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:alloy
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045046+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:backup-sqlite-export
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045050+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:blog-ingestion
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045053+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:cadvisor
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045056+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:comfyui
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045059+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:conftest
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045062+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:crawl4ai
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045065+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:crawl4ai-egress
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045068+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dbt
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045071+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dbt-db-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045074+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dcgm-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045077+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:debezium-db-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045081+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dev-perf-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045084+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dev-pg
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045087+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dev-pg-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045090+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dev-pg-monitor-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045093+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dev-platform-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045097+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dev-valkey
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045100+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dev-valkey-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045103+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:dozzle
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045106+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:flink-jobmanager
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045109+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:flink-taskmanager
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045112+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:flower
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045115+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:gatus
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045118+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:grafana
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045121+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:grafana-db-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045124+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:great-expectations
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045127+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:jupyterlab
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045130+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:k6
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045133+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:kafbat-ui
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045137+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:kafka-1
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045140+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:kafka-connect
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045143+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:kafka-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045146+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:kafka-init
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045149+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:kafka-rest-proxy
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045152+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:keycloak
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045156+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:loki
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045159+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:mailpit
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045162+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:mlflow
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045165+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:mlflow-db-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045168+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:mng-pg
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045171+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:mng-pg-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045174+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:mng-pg-init
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045177+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:mng-pg-monitor-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045181+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:mng-valkey
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045184+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:mng-valkey-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045187+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:n8n
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045190+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:n8n-task-runner
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045193+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:n8n-task-runner-worker
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045196+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:n8n-valkey
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045199+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:n8n-valkey-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045202+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:n8n-worker
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045206+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:neo4j
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045209+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:nginx
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045212+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:node-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045215+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:oauth2-proxy
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045218+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:oauth2-proxy-valkey
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045221+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:oauth2-proxy-valkey-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045224+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:ollama
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045227+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:ollama-exporter
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045231+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:open-webui
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045234+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:open_notebook
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045237+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:openbao
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045240+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:openbao-agent
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045243+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:opensearch
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045246+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:opensearch-dashboards
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045249+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:opentofu
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045252+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:pact-broker
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045255+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:pact-broker-db-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045258+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:prometheus
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045262+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:pushgateway
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045265+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:pyroscope
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045268+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:qdrant
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045272+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:redisinsight
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045275+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:registry
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045278+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:renovate
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045281+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:restic
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045284+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:restic-offsite
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045287+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:schema-registry
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045290+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:seaweedfs-buckets
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045293+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:seaweedfs-filer
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045296+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:seaweedfs-master
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045335+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:seaweedfs-s3
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045339+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:seaweedfs-table-bucket
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045342+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:seaweedfs-volume
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045345+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:sonarqube
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045348+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:spark
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045351+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:stalwart
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045354+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:stalwart-config
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045357+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:storybook
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045361+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:storybook-mcp
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045364+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:superset
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045367+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:superset-db-provision
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045370+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:superset-init
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045373+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:surrealdb
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045376+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:tempo
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045379+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:terrakube-api
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045382+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:terrakube-executor
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045385+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:terrakube-ui
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045388+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:traefik
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045391+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:trino
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045395+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
-  - source: docker-compose.yml
-    selection: service:wiremock
-    overlay: null
-    environment: isolated-public-copy
-    observed_at: '2026-11-02T06:22:35.045398+00:00'
-    files:
-    - docker-compose.yml
-    result: NOT_RUN
-    reason: time-budget
+  render_cases: []
   gaps: []
-  synthetic_file_inputs:
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: docker-compose.yml
-    field: file
-  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    field: file
-  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    field: file
-  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    field: file
-  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    field: file
-  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    field: file
-  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    field: file
-  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    field: file
-  - source: examples/operations/sample-service-delivery/compose.delivery.override.yml
-    field: env_file
-  - source: examples/sample-web-service/docker-compose.yml
-    field: env_file
-  - source: labs/couchdb.yml
-    field: file
-  - source: labs/couchdb.yml
-    field: file
-  - source: labs/mongodb.yml
-    field: file
-  - source: labs/mongodb.yml
-    field: file
-  - source: labs/opensearch-cluster.yml
-    field: file
-  - source: labs/opensearch-cluster.yml
-    field: file
-  - source: labs/opensearch-cluster.yml
-    field: file
-  - source: labs/opensearch-cluster.yml
-    field: file
-  - source: labs/postgresql-ha.yml
-    field: file
-  - source: labs/postgresql-ha.yml
-    field: file
-  - source: labs/postgresql-ha.yml
-    field: file
-  - source: labs/postgresql-ha.yml
-    field: file
-  - source: labs/postgresql-ha.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/supabase.yml
-    field: file
-  - source: labs/valkey-cluster.yml
-    field: file
-  synthetic_interpolation_inputs:
-  - source: examples/operations/compose-core-readiness/compose.core-runtime.override.yml
-    selection: all-profiles
-    files: *id001
-    variables:
-      CRR_CONFIG_DIR: directory
-      CRR_SECRET_DIR: directory
-      DEFAULT_CERT_DIR: directory
-      DEFAULT_DATA_DIR: directory
-      DEFAULT_MANAGEMENT_DIR: directory
-  - source: examples/operations/locust-telemetry/compose.override.yml
-    selection: all-profiles
-    files: *id002
-    variables:
-      LAB_LOCUST_RESULT_DIR: directory
-      LAB_LOCUST_SCENARIO_DIR: directory
-      QUALITY_GID: integer
-      QUALITY_LOCUST_IMAGE: image
-      QUALITY_MAPPINGS_DIR: directory
-      QUALITY_MOCK_IMAGE: image
-      QUALITY_RESULTS_DIR: directory
-      QUALITY_SCENARIO_DIR: directory
-      QUALITY_UID: integer
-  - source: examples/operations/postgres-logical-upgrade/docker-compose.yml
-    selection: all-profiles
-    files: *id003
-    variables:
-      IOR_POSTGRES_PASSWORD: text
-  - source: examples/operations/quality-metrics/docker-compose.yml
-    selection: all-profiles
-    files: *id004
-    variables:
-      METRICS_ALLOY_CONFIG: file
-      METRICS_ALLOY_IMAGE: image
-      METRICS_ALLOY_TOKEN: file
-      METRICS_NETWORK: text
-      METRICS_PROBE_IMAGE: image
-      METRICS_PROM_CONFIG: file
-      METRICS_PROM_IMAGE: image
-  - source: examples/operations/quality-path-guard/docker-compose.yml
-    selection: all-profiles
-    files: *id005
-    variables:
-      QUALITY_BACKEND_NETWORK: text
-      QUALITY_BACKEND_SUBNET: subnet
-      QUALITY_GUARD_CONFIG: file
-      QUALITY_GUARD_IMAGE: image
-      QUALITY_MOCK_IMAGE: image
-      QUALITY_MOCK_MAPPINGS: directory
-      QUALITY_RUNNER_NETWORK: text
-      QUALITY_RUNNER_SUBNET: subnet
-      QUALITY_RUN_ID: text
-  - source: examples/operations/sample-service-delivery/compose.delivery.override.yml
-    selection: all-profiles
-    files: *id006
-    variables:
-      DRE_HOST_PORT: port
-      DRE_IMAGE_REF: image
-      DRE_ROLE: text
-      DRE_TASK_ID: text
-  - source: labs/cassandra.yml
-    selection: all-profiles
-    files: *id007
-    variables:
-      LAB_DATA_DIR: directory
-  - source: labs/couchdb.yml
-    selection: all-profiles
-    files: *id008
-    variables:
-      LAB_DATA_DIR: directory
-  - source: labs/kafka-cluster.yml
-    selection: all-profiles
-    files: *id009
-    variables:
-      LAB_DATA_DIR: directory
-      LAB_KAFKA_CLUSTER_ID: text
-  - source: labs/locust.yml
-    selection: all-profiles
-    files: *id010
-    variables:
-      LAB_LOCUST_RESULT_DIR: directory
-      LAB_LOCUST_SCENARIO_DIR: directory
-  - source: labs/mongodb.yml
-    selection: all-profiles
-    files: *id011
-    variables:
-      LAB_DATA_DIR: directory
-  - source: labs/opensearch-cluster.yml
-    selection: all-profiles
-    files: *id012
-    variables:
-      LAB_DATA_DIR: directory
-      LAB_OPENSEARCH_CERT_DIR: directory
-      LAB_SECRET_DIR: directory
-  - source: labs/postgresql-ha.yml
-    selection: all-profiles
-    files: *id013
-    variables:
-      LAB_DATA_DIR: directory
-  - source: labs/supabase.yml
-    selection: all-profiles
-    files: *id014
-    variables:
-      LAB_DATA_DIR: directory
-  - source: labs/valkey-cluster.yml
-    selection: all-profiles
-    files: *id015
-    variables:
-      LAB_DATA_DIR: directory
-  - source: infra/01-gateway/traefik/docker-compose.yml
-    selection: overlay:infra/01-gateway/traefik/compose.window-ca.override.yml
-    files: *id016
-    variables:
-      DEFAULT_CERT_DIR: directory
-      DEFAULT_DATA_DIR: directory
-      DEFAULT_MANAGEMENT_DIR: directory
-  - source: infra/02-auth/oauth2-proxy/docker-compose.yml
-    selection: overlay:infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
-    files: *id017
-    variables:
-      DEFAULT_CERT_DIR: directory
-      DEFAULT_DATA_DIR: directory
-      DEFAULT_MANAGEMENT_DIR: directory
-  - source: infra/04-data/mng-db/docker-compose.yml
-    selection: overlay:infra/04-data/mng-db/docker-compose.n8n-acl.yml
-    files: *id018
-    variables:
-      DEFAULT_CERT_DIR: directory
-      DEFAULT_DATA_DIR: directory
-      DEFAULT_MANAGEMENT_DIR: directory
-  - source: infra/07-workflow/airflow/docker-compose.yml
-    selection: overlay:infra/07-workflow/airflow/docker-compose.monitor-acl.yml
-    files: *id019
-    variables:
-      DEFAULT_CERT_DIR: directory
-      DEFAULT_DATA_DIR: directory
-      DEFAULT_MANAGEMENT_DIR: directory
-  - source: infra/07-workflow/airflow/docker-compose.yml
-    selection: overlay:infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
-    files: *id020
-    variables:
-      DEFAULT_CERT_DIR: directory
-      DEFAULT_DATA_DIR: directory
-      DEFAULT_MANAGEMENT_DIR: directory
-      OPSFLOW_AIRFLOW_IMAGE: image
-      OPSFLOW_CODE_DIR: directory
-      OPSFLOW_SECRET_DIR: directory
-  - source: infra/07-workflow/n8n/docker-compose.yml
-    selection: overlay:infra/07-workflow/n8n/docker-compose.monitor-acl.yml
-    files: *id021
-    variables:
-      DEFAULT_CERT_DIR: directory
-      DEFAULT_DATA_DIR: directory
-      DEFAULT_MANAGEMENT_DIR: directory
 coverage:
   files:
-    numerator: 41351
-    denominator: 41351
+    numerator: 41403
+    denominator: 41403
   body_review:
-    numerator: 0
-    denominator: 2285
+    numerator: 7
+    denominator: 2294
   body_review_partial:
-    numerator: 55
-    denominator: 2285
+    numerator: 57
+    denominator: 2294
   render:
-    numerator: 67
-    denominator: 203
+    numerator: 0
+    denominator: 17
   runtime:
     numerator: 0
     denominator: 112
@@ -38022,7 +35829,7 @@ connection_sources:
   kind: compose
   result: no-matching-connection
 - path: infra/07-workflow/airflow/docker-compose.yml
-  sha256: b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9
+  sha256: 621bcf244286dc784c0004ef2b51a3af8fca93b1b483f28fe1340cd54df3fc9b
   kind: compose
   result: no-matching-connection
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
@@ -38795,6 +36602,159 @@ requirements:
   final_acceptance: NOT_RUN
   limit: No Wiki product, database, external workspace, client, collector or LAB runtime
     is created or accepted.
+- id: P04.01
+  criterion: 66
+  work_unit: W71
+  task_id: SPEC-0212-TSK-0043
+  subject: Preserve management/DEV ownership and initialization boundaries
+  state: REUSE_ACCEPTED
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0043
+  implementation_writer: p04_pipeline / p04_uri / p04_infra by exact Task path lease
+  source_verification: 'PASS: bounded source and independent exact-packet review;
+    see Task'
+  static_checks: 'PASS: focused source/style and two public synthetic Airflow model
+    cases; final document integration checks recorded separately in Task'
+  isolated_tests: 'PASS: current 80-case parser/adapter/provision/contract regression
+    supports this source scope; no current HOME proof'
+  historical_operator_acceptance: SCOPED_HISTORY_ONLY; see acceptance_reuse and Task
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN; isolated fixture restore is separate
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
+  limit: Local source and owned isolated tests only; no HOME operation or private
+    body inference.
+- id: P04.02
+  criterion: 67
+  work_unit: W72
+  task_id: SPEC-0212-TSK-0043
+  subject: Repair existing Worker connection, quarantine, version and isolated recovery
+  state: TEST_RESIDUAL
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0043
+  implementation_writer: p04_pipeline / p04_uri / p04_infra by exact Task path lease
+  source_verification: 'PASS: bounded source and independent exact-packet review;
+    see Task'
+  static_checks: 'PASS: focused source/style and two public synthetic Airflow model
+    cases; final document integration checks recorded separately in Task'
+  isolated_tests: UNIT/CLI PASS; full native FAIL582.770s; narrow S3 ERROR190.468s
+    before matrices; cleanup narrow PASS. Corrected policy, Worker business result
+    and independent recovery remain NOT_RUN.
+  historical_operator_acceptance: NOT_INFERRED
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN; isolated fixture restore is separate
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
+  limit: Measured Python line coverage URI95.210%, new manifest96.97%/adapters100%,
+    native data96.33% and scenario98.1413%; not branch or embedded-program/runtime
+    proof. Resume with owned initialization-phase timing under unchanged bounds; no
+    third runtime this unit.
+- id: P04.03
+  criterion: 68
+  work_unit: W73
+  task_id: SPEC-0212-TSK-0043
+  subject: Preserve consumer-bound platform_dev CDC; defer Opsflow adoption
+  state: SOURCE_READY
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0043
+  implementation_writer: p04_pipeline / p04_uri / p04_infra by exact Task path lease
+  source_verification: 'PASS: bounded source and independent exact-packet review;
+    see Task'
+  static_checks: 'PASS: focused source/style and two public synthetic Airflow model
+    cases; final document integration checks recorded separately in Task'
+  isolated_tests: NOT_RUN this P04 execution; historical scoped acceptance or explicit
+    user deferral retained
+  historical_operator_acceptance: SCOPED_HISTORY_ONLY; see acceptance_reuse and Task
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN; isolated fixture restore is separate
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
+  limit: Local source and owned isolated tests only; no HOME operation or private
+    body inference.
+- id: P04.04
+  criterion: 69
+  work_unit: W74
+  task_id: SPEC-0212-TSK-0043
+  subject: Reuse Opsflow quality gate; distinguish optional engine smoke
+  state: SOURCE_READY
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0043
+  implementation_writer: p04_pipeline / p04_uri / p04_infra by exact Task path lease
+  source_verification: 'PASS: bounded source and independent exact-packet review;
+    see Task'
+  static_checks: 'PASS: focused source/style and two public synthetic Airflow model
+    cases; final document integration checks recorded separately in Task'
+  isolated_tests: 'PASS: current 80-case parser/adapter/provision/contract regression
+    supports this source scope; no current HOME proof'
+  historical_operator_acceptance: NOT_INFERRED
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN; isolated fixture restore is separate
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
+  limit: Local source and owned isolated tests only; no HOME operation or private
+    body inference.
+- id: P04.05
+  criterion: 70
+  work_unit: W75
+  task_id: SPEC-0212-TSK-0043
+  subject: Defer a new experiment until real input and owner contract
+  state: BLOCKED
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0043
+  implementation_writer: p04_pipeline / p04_uri / p04_infra by exact Task path lease
+  source_verification: 'PASS: bounded source and independent exact-packet review;
+    see Task'
+  static_checks: 'PASS: focused source/style and two public synthetic Airflow model
+    cases; final document integration checks recorded separately in Task'
+  isolated_tests: NOT_RUN this P04 execution; historical scoped acceptance or explicit
+    user deferral retained
+  historical_operator_acceptance: NOT_INFERRED
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN; isolated fixture restore is separate
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
+  limit: Local source and owned isolated tests only; no HOME operation or private
+    body inference.
+- id: P04.06
+  criterion: 71
+  work_unit: W76
+  task_id: SPEC-0212-TSK-0043
+  subject: Preserve optional Iceberg acceptance; defer this workload adoption
+  state: REUSE_ACCEPTED
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0043
+  implementation_writer: p04_pipeline / p04_uri / p04_infra by exact Task path lease
+  source_verification: 'PASS: bounded source and independent exact-packet review;
+    see Task'
+  static_checks: 'PASS: focused source/style and two public synthetic Airflow model
+    cases; final document integration checks recorded separately in Task'
+  isolated_tests: NOT_RUN this P04 execution; historical scoped acceptance or explicit
+    user deferral retained
+  historical_operator_acceptance: SCOPED_HISTORY_ONLY; see acceptance_reuse and Task
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN; isolated fixture restore is separate
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
+  limit: Local source and owned isolated tests only; no HOME operation or private
+    body inference.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED
@@ -38933,6 +36893,39 @@ acceptance_reuse:
   handoff: P12 owns final semantic/E2E acceptance.
   p02_scope: Hermes operational receipts remain historical, scoped evidence.
   p02_handoff: P12 owns final semantic/E2E acceptance.
+- id: P04-CDC-ISOLATED-HISTORY
+  state: REUSE_ACCEPTED
+  subject: Historical platform_dev CDC/Avro isolated rehearsal only
+  source: docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0005-cross-tier-contracts-second-round.md
+  criterion: SPEC-0204 W15 CDC stream rehearsal
+  version: Frozen commit 619c984cb; equivalence to current pins not inferred
+  environment: Owned internal-network synthetic dev-pg/Kafka/Schema Registry/Connect
+    rehearsal
+  actor: Recorded historical executor; no new operator authentication
+  target: platform_dev app and heartbeat publication, slot, topic, Avro schema/offset
+  consumer: Historical registry-decoding test consumer; not a current Opsflow business
+    consumer
+  accepted_at: Historical Task date; no new run time invented
+  evidence: 260-second snapshot/stream/schema-v2/restart offset/heartbeat LSN PASS
+  current_limit: Current source remains SOURCE_READY; actual registration/live offset
+    restore/business end-to-end remains NOT_RUN
+- id: P04-ICEBERG-PLATFORM-HISTORY
+  state: REUSE_ACCEPTED
+  subject: Accepted optional platform architecture and original lakehouse runtime
+    scope
+  source: docs/98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0008-storage-security-lakehouse-convergence.md
+  criterion: SPEC-0180 S12-S15 acceptance; ADR-0039 remains accepted
+  version: 2026-09-24 accepted source packet; current later pins not revalidated by
+    that history
+  environment: Recorded owner-approved operating checkout on 2026-09-24
+  actor: Recorded owner/operator; no new operational authority inferred
+  target: SeaweedFS table bucket/catalog, shared lakehouse identity and Flink checkpoints
+  consumer: Spark list; Flink batch/checkpointed stream; Trino 23-row readback; GX
+    three checks
+  accepted_at: '2026-09-24'
+  evidence: Frozen completed Task and accepted ADR-0039
+  current_limit: Retain platform; defer Opsflow workload adoption. Current runtime/version
+    equivalence and independent restore remain separate.
 ownership:
 - path: docs/99.templates/registry.json
   before_sha256: e6f695866d06dd739c436e63f826c327a4c9209b12dfe2681362902b2167f4c2
@@ -38950,36 +36943,6 @@ ownership:
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
   current_followup_sha256: 7b532443623fcd74a051142b24322264ac3c7ad432364af389a321cdac8094e7
-- path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-  before_sha256: 71b9d881337f64c3b788ff5ffb16388f0c41b29fa31b1655ec8dd77e98db9346
-  writer: doc-writer
-  scope: P01 inventory contract and DATA-0096 allocation only
-  acceptance_owner: SPEC-0212-TSK-0040
-  reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security; exact
-    reviewed source scope and remaining limits in Task
-  data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-  operational_acceptance: UNASSIGNED
-  authority: direct2026-11-01 P01 implementation request
-  handoff: Release lease after final source fingerprint and independent review; changed
-    inputs invalidate only this file lease.
-  review_scope_limit: No operational authorization or unobserved document acceptance
-    inferred.
-  current_followup_sha256: 4c78623b1b9b745d2d5679b32bf32b138af5381e49e5b57e36cc65a3ad6c2456
-- path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-  before_sha256: bd5f2457546b33264241cc3f9dedc52a1bb4514e0c08f6f49d8f6cd5562c9466
-  writer: doc-writer
-  scope: P01 inventory contract and DATA-0096 allocation only
-  acceptance_owner: SPEC-0212-TSK-0040
-  reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security; exact
-    reviewed source scope and remaining limits in Task
-  data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-  operational_acceptance: UNASSIGNED
-  authority: direct2026-11-01 P01 implementation request
-  handoff: Release lease after final source fingerprint and independent review; changed
-    inputs invalidate only this file lease.
-  review_scope_limit: No operational authorization or unobserved document acceptance
-    inferred.
-  current_followup_sha256: d051454790444c51b62628c21c77906e49702ac133ba75f9225e1f6f8781d51f
 - path: docs/90.references/data/README.md
   before_sha256: e111ca9118fbf4b1ab595fdd68333900a424d9323380563d5b4976b241fa3981
   writer: doc-writer
@@ -39057,19 +37020,6 @@ ownership:
   fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated here
   review_scope_limit: No operational authorization or unobserved document acceptance
     inferred.
-- path: .github/workflow-contract.yml
-  writer: ci-cd-engineer
-  acceptance_owner: SPEC-0212-TSK-0040
-  reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security; exact
-    reviewed source scope and remaining limits in Task
-  data_owner: UNASSIGNED for operational data
-  operational_acceptance: UNASSIGNED
-  scope: Inventory implementation/tests or its CI registration only
-  authority: direct2026-11-01 request and coordinator path allocation
-  before_sha256: null
-  fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated here
-  review_scope_limit: No operational authorization or unobserved document acceptance
-    inferred.
 - path: tests/lib/ops/test_workspace_services.py
   writer: qa-engineer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -39125,39 +37075,6 @@ ownership:
     review: PARTIAL authored section receipt; complete false
     released_at: '2026-11-01T14:18:17.518585+00:00'
   current_followup_sha256: bb6bd352dd59dae33931fa57dad378d9f7d7a86017f35d316bb3f89f079197ba
-- path: docs/90.references/data/0096-workspace-inventory/README.md
-  writer: doc-writer
-  acceptance_owner: SPEC-0212-TSK-0040
-  reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security; exact
-    reviewed source scope and remaining limits in Task
-  data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-  operational_acceptance: UNASSIGNED
-  before_sha256: null
-  scope: P01 source evidence and consumer navigation
-  authority: direct2026-11-01 request and coordinator allocation
-  review_scope_limit: No operational authorization or unobserved document acceptance
-    inferred.
-  followup_lease:
-    baseline_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
-    writer: doc-writer /root/p01_docs
-    scope: Current P01 Task/README result-only admission, typed-input contract, selected-local-check
-      evidence and precise handoff; no historical Task or data.yaml authoring
-    current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
-    review: PARTIAL authored section receipt; complete false
-    released_at: '2026-11-01T14:18:17.518585+00:00'
-  current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
-- path: docs/90.references/data/0096-workspace-inventory/data.yaml
-  writer: qa-engineer
-  acceptance_owner: SPEC-0212-TSK-0040
-  reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security; exact
-    reviewed source scope and remaining limits in Task
-  data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
-  operational_acceptance: UNASSIGNED
-  before_sha256: null
-  scope: Generated public payload integration from doc-writer curation
-  authority: direct2026-11-01 request and coordinator allocation
-  review_scope_limit: No operational authorization or unobserved document acceptance
-    inferred.
 - path: tests/validation/_script_manifest_support.py
   writer: ci-cd-engineer
   acceptance_owner: SPEC-0212-TSK-0040
@@ -39273,14 +37190,6 @@ ownership:
   data_owner: '@buenhyden metadata owner'
   operational_acceptance: UNASSIGNED
   handoff: Public metadata only; data.yaml generation is coordinator-owned.
-- path: tests/validation/test_p02_service_contracts.py
-  section: synthetic and contract checks
-  writer: p02_contract_tests
-  acceptance_owner: SPEC-0212-TSK-0041
-  reviewer: bounded QA/security review recorded; full-file review is not claimed
-  data_owner: UNASSIGNED
-  operational_acceptance: UNASSIGNED
-  handoff: Test result scope must remain separate from service operation.
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
   section: P02 evidence and handoffs (historical p02_docs_impl; current residual follow-up)
   writer: p02_residual_docs
@@ -39302,17 +37211,6 @@ ownership:
   operational_acceptance: UNASSIGNED
   handoff: API `/health` is liveness/startup only; DB, provider, model registration
     and product readiness remain P03/operations evidence.
-- path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
-  section: marker-bounded generated service inventory
-  writer: p02_docs_impl
-  acceptance_owner: SPEC-0212-TSK-0041
-  reviewer: root_document_review, 2026-11-02T01:08:26Z, complete:false, three P02
-    changed generated mount cells only; no blocker. The prior 36-cell review at 2026-11-02T00:34:54Z
-    is retained as history.
-  data_owner: UNASSIGNED
-  operational_acceptance: UNASSIGNED
-  handoff: 36 generated fields were refreshed by operations_catalog.render_service_inventory(ROOT);
-    authored narrative, runtime, restore and acceptance claims remain unchanged.
 - path: scripts/hardening/check-all-hardening.sh
   section: OAuth2 Proxy shared Valkey assertion
   writer: p02_ci_impl
@@ -39441,6 +37339,538 @@ ownership:
   operational_acceptance: UNASSIGNED
   handoff: P11 is the installation/delivery handoff lane; this source policy cannot
     authorize an external request or identify an operator.
+- path: .github/workflow-contract.yml
+  writer: /root/p03_docs_impl
+  before_sha256: 673e4926795605bd4334e4875cb904382eccc5f08b0add0a4f0d30b77b4dcc9a
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  previous_lease:
+    path: .github/workflow-contract.yml
+    writer: ci-cd-engineer
+    acceptance_owner: SPEC-0212-TSK-0040
+    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+      exact reviewed source scope and remaining limits in Task
+    data_owner: UNASSIGNED for operational data
+    operational_acceptance: UNASSIGNED
+    scope: Inventory implementation/tests or its CI registration only
+    authority: direct2026-11-01 request and coordinator path allocation
+    before_sha256: null
+    fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated
+      here
+    review_scope_limit: No operational authorization or unobserved document acceptance
+      inferred.
+  current_followup_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+  writer: /root/p04_docs
+  before_sha256: 077d5987c6dc0e265a5ee079927bd670b586745fa4105c2d1895dd10577f7a67
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  previous_lease:
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+    before_sha256: bd5f2457546b33264241cc3f9dedc52a1bb4514e0c08f6f49d8f6cd5562c9466
+    writer: doc-writer
+    scope: P01 inventory contract and DATA-0096 allocation only
+    acceptance_owner: SPEC-0212-TSK-0040
+    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+      exact reviewed source scope and remaining limits in Task
+    data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+    operational_acceptance: UNASSIGNED
+    authority: direct2026-11-01 P01 implementation request
+    handoff: Release lease after final source fingerprint and independent review;
+      changed inputs invalidate only this file lease.
+    review_scope_limit: No operational authorization or unobserved document acceptance
+      inferred.
+    current_followup_sha256: d051454790444c51b62628c21c77906e49702ac133ba75f9225e1f6f8781d51f
+  current_followup_sha256: 28b67cb3df6a4f77310ef374f2f378b7eac2dfc5f8fe2628b538389f298c373b
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+  writer: /root/p04_docs
+  before_sha256: 745a0fc75e24cbfbcd134a65e736c3f86b505f6f4d347bcb80d481767e07d767
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  previous_lease:
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+    before_sha256: 71b9d881337f64c3b788ff5ffb16388f0c41b29fa31b1655ec8dd77e98db9346
+    writer: doc-writer
+    scope: P01 inventory contract and DATA-0096 allocation only
+    acceptance_owner: SPEC-0212-TSK-0040
+    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+      exact reviewed source scope and remaining limits in Task
+    data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+    operational_acceptance: UNASSIGNED
+    authority: direct2026-11-01 P01 implementation request
+    handoff: Release lease after final source fingerprint and independent review;
+      changed inputs invalidate only this file lease.
+    review_scope_limit: No operational authorization or unobserved document acceptance
+      inferred.
+    current_followup_sha256: 4c78623b1b9b745d2d5679b32bf32b138af5381e49e5b57e36cc65a3ad6c2456
+  current_followup_sha256: 1a118c18e6d84f5961d2821078e119ece994bf4e981417b8f17a87afd933de69
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md
+  writer: /root/p04_docs
+  before_sha256: ABSENT
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: e9ecc879eb82d8418c59cba9eba7671f2a3651694ca9ecad303c49a0e458e8f1
+  fingerprint_observed_at: '2026-11-02T09:17:18.757141+00:00'
+- path: docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md
+  writer: /root/p04_docs
+  before_sha256: 9ed76e3227b9de44c10774efea74539b5a231f4b14a63ecf98ee87a887e6e33b
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: ef7035ed2e94371aa3d4aea39b09f41f8c513ed9dbb8da12973cbac273eda739
+- path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
+  writer: /root/p04_docs
+  before_sha256: 8fbc612aa2fefa790d99b90fe052e9be90ccf2b9f2b5db4dd5c66e40be070db5
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 047f82c59d55413943e8ea6cf419c113cfe52ae9eb687b1bebba6d561447e87e
+- path: docs/90.references/data/0096-workspace-inventory/README.md
+  writer: /root/p04_docs
+  before_sha256: f8cb82887f3e6dcea2dd922f484ad8709a077ed43dcd8b4f2134dcc508a273f3
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  previous_lease:
+    path: docs/90.references/data/0096-workspace-inventory/README.md
+    writer: doc-writer
+    acceptance_owner: SPEC-0212-TSK-0040
+    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+      exact reviewed source scope and remaining limits in Task
+    data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+    operational_acceptance: UNASSIGNED
+    before_sha256: null
+    scope: P01 source evidence and consumer navigation
+    authority: direct2026-11-01 request and coordinator allocation
+    review_scope_limit: No operational authorization or unobserved document acceptance
+      inferred.
+    followup_lease:
+      baseline_commit: 2fc98e1e2934d3f564e8ef48fcc44bc97768fa57
+      writer: doc-writer /root/p01_docs
+      scope: Current P01 Task/README result-only admission, typed-input contract,
+        selected-local-check evidence and precise handoff; no historical Task or data.yaml
+        authoring
+      current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
+      review: PARTIAL authored section receipt; complete false
+      released_at: '2026-11-01T14:18:17.518585+00:00'
+    current_followup_sha256: 73f9d5bf6fb33d0ad4ed2ab078a0b338fb6c100f8b684aaba760a07552787699
+  current_followup_sha256: 7838371b55998c38ab77cdfb08d6ce75263cc8300f5546f1133d07606b2da138
+- path: docs/90.references/data/0096-workspace-inventory/data.yaml
+  writer: /root/p04_docs
+  before_sha256: e71b6ca961740e6cd6045202801f6dea88f4e32aa076fb961c2311082d4da895
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  previous_lease:
+    path: docs/90.references/data/0096-workspace-inventory/data.yaml
+    writer: qa-engineer
+    acceptance_owner: SPEC-0212-TSK-0040
+    reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
+      exact reviewed source scope and remaining limits in Task
+    data_owner: '@buenhyden metadata owner; operational data ownership not inferred'
+    operational_acceptance: UNASSIGNED
+    before_sha256: null
+    scope: Generated public payload integration from doc-writer curation
+    authority: direct2026-11-01 request and coordinator allocation
+    review_scope_limit: No operational authorization or unobserved document acceptance
+      inferred.
+  current_fingerprint: SELF_OUTPUT_EXCLUDED
+  fingerprint_limit: Generated inventory excludes its own bytes to avoid recursive
+    hashing.
+- path: infra/07-workflow/airflow/Dockerfile
+  writer: /root/p04_infra
+  before_sha256: afc44a2c14f8937193eabecf00f1433bbf0bbac349b6172335ada81a758319f1
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 3cf83481bbfb8ea5a2e0f1f016075b69cd429b08655cb10acf5b4c53ef61bff5
+- path: infra/07-workflow/airflow/connection_uri.py
+  writer: /root/p04_uri
+  before_sha256: ABSENT
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 27a7501cfeb112ba92f2d6a1e66ab69c9f87a32299e5ffe80cea2afe4010f309
+- path: infra/07-workflow/airflow/docker-compose.yml
+  writer: /root/p04_infra
+  before_sha256: b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 621bcf244286dc784c0004ef2b51a3af8fca93b1b483f28fe1340cd54df3fc9b
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/README.md
+  writer: /root/p04_docs
+  before_sha256: 1df27b56127964f8e326d2e06c38af4661f10280478f80f5032cc1d03fa7fa71
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 3bd4a89772e5222879d6d1f77c4610aec612fff1cad5f7eff09c76d8a02f854d
+  fingerprint_observed_at: '2026-11-02T09:12:44.140127+00:00'
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/dags/README.md
+  writer: /root/p04_docs
+  before_sha256: 3747d1d6e510047c9b9b4525ff602c2540b0f8c15c0177fb49d9f8fe85415c81
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 8b53fb1e250b04f0cd8ede22b1e88e1bf56abc99b10d4063d2f21394aa024663
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/005_data_version.sql
+  writer: /root/p04_pipeline
+  before_sha256: ABSENT
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 85eb63d22f2967ac84996f561a14ca3433e429eaf55a597d294478e21dfe00c2
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/006_checks.sql
+  writer: /root/p04_pipeline
+  before_sha256: ABSENT
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 38eb6b22e99e573c40cd1fa920af7a3cc5945d0ce0a53e9d2872983834c0ef76
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
+  writer: /root/p04_docs
+  before_sha256: 82768f3ee488d0eb4939277689a1d3b0144ebf032fbc272af13ffbe097fb0343
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 242a0f32e22ebe898e9accc89171cf8473eaa81463a3c5372a5459711afaf0b4
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
+  writer: /root/p04_docs
+  before_sha256: c9bddf6e3dc6b569bb18514487a12e3d36f82480cc7d142e3ded1e46330bf416
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 1d704d7fb97a1aaff11960c6c0a1d0a3ba0228465dbe0783f0aa028ffa8c157d
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/adapters.py
+  writer: /root/p04_pipeline
+  before_sha256: 9cf420222aa3d90e1db8507130afa04242e3a9a469283871e3ca19c678a4cbf5
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 60ef4a0841bb1cc13918902b1b302abcbcf17bcdadf7b0a62dacc021fb2e05ff
+- path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/manifest.py
+  writer: /root/p04_pipeline
+  before_sha256: ef19e0093b990c6b8400b29f234877e9d6f346a38440f3a181c37aa5cd744b60
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: df479fb44437052bcb55a6b90703f8d803c242a93801501e1105a8bb408d71d1
+- path: infra/12-analytics/flink/README.md
+  writer: /root/p04_docs
+  before_sha256: 66188ca2620666a84b95bf6e0c5657f3c68e241cba18b13cc2e3b1a9999a54fb
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: cc46241065c585a7c27c2cd64b3cde1446a0efcffb7a3a2fe033746c33fd8a39
+- path: tests/lib/ops/test_opsflow_adapters.py
+  writer: /root/p04_pipeline
+  before_sha256: a92a26c8e761459f43df98749e791f8e1072b9374e0729b0fc0c43d9ecd73e6d
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: d8e8d1c462aa5ab7cd78eca810c4d591dadea96af41360ea1bdf4f9d9114fba3
+- path: tests/lib/ops/test_opsflow_manifest.py
+  writer: /root/p04_pipeline
+  before_sha256: 73ca024a75fe2f9b5b48c5907c60d2df2b77f5df7f6f74e1d51636e1d5502087
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 3ac40edeab2f832673ff331cefe0611fec2628268b2d5316d328842af9ab2f01
+- path: tests/validation/_opsflow_airflow_native_data.py
+  writer: /root/p04_native
+  before_sha256: ABSENT
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 4fd2ae9eb92101e726f2d61b2b917ff5df9f852ae3dbd91fd2cda317983489bc
+- path: tests/validation/_opsflow_airflow_native_evidence.py
+  writer: /root/p04_native
+  before_sha256: bc9cf5e4b53f1e44d302944825bc19665969ec7eae1c59dceb237d769fa47571
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 0320961a085dd1c48c00d859e2aad7c1953b0833440faa0d22cbac2e95b9b826
+- path: tests/validation/_opsflow_airflow_native_fixture.py
+  writer: /root/p04_native
+  before_sha256: 43f1ae528442669c2fbe53234117d016f8f28104c9c44876ab7d2957a0f68688
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 0a9a74cc1f63998adc020d5900be28e416386d3fae9a99c9a20a280c9fa1c616
+- path: tests/validation/_opsflow_airflow_native_guards.py
+  writer: /root/p04_native
+  before_sha256: 87968dcb0cab174db4f822b3879e4369ca167b00ed298229ef8d644cecb51d36
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: c52de9d0485a5f20eba6212df5e92834b23dafed993dbe69c39bd3e2e6e8c864
+- path: tests/validation/_opsflow_airflow_native_scenario.py
+  writer: /root/p04_native
+  before_sha256: ABSENT
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: b4aada9cdc9b1c0a041b273f9488e63ae76a68f4a1326cd77e2953db4b4f8791
+- path: tests/validation/test_airflow_connection_uri.py
+  writer: /root/p04_uri
+  before_sha256: ABSENT
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: dcc5345a4f19975c2d62ed83790202d5bb763c44f1178bf902939264ddb798d2
+  fingerprint_observed_at: '2026-11-02T09:12:44.140127+00:00'
+- path: tests/validation/test_opsflow_airflow_contract.py
+  writer: /root/p04_pipeline
+  before_sha256: edcd82bfa9aca8dab15ceac18764bea92764357f8738512d485357ae1d35b88b
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 21638ef53750ff897301bf5c94da4e9811ebb2caaf55f6436b88fb619d59b71c
+- path: tests/validation/test_opsflow_airflow_native_data.py
+  writer: /root/p04_native
+  before_sha256: ABSENT
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 9c9b0519ab6e8d54f34a1f84c16b7cad23e2f3cfc062495d4bf66eb8a29bae79
+- path: tests/validation/test_opsflow_airflow_native_evidence.py
+  writer: /root/p04_native
+  before_sha256: b8ee80b352e5c3f056596ec8e4693c5c007ede0b755fdcb266da9a3d156121f6
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 6034e59c67df30b13c6203d9f55625fbf633abb441001ab623f4dac0c5f0e205
+- path: tests/validation/test_opsflow_airflow_native_rehearsal.py
+  writer: /root/p04_native
+  before_sha256: 3311383f4ad3a11c6f32be4f18992ebd7a03d0a86355a78d2b6f5598e427691f
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: 345017e759de14d7601cfc00bd2dcbe7f759edca02817b897490b9a946a6b045
+- path: tests/validation/test_opsflow_airflow_native_scenario.py
+  writer: /root/p04_uri
+  before_sha256: ABSENT
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  current_followup_sha256: df3278151b38ad907c1ff883a9948d3ee86c6341997c4fa2289f1e487ccdf6ef
+- path: tests/validation/test_p02_service_contracts.py
+  writer: /root/p04_uri
+  before_sha256: b15238120e8e40b1eb49a9f603a1f540c56933e8d32621a030f8398b4a523dec
+  scope: Current P04 approved local slice; exact segment in Task
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: Independent exact-packet role recorded in Task
+  data_owner: UNASSIGNED for operating data; no authority inferred
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Direct2026-11-02 approved P04 plan
+  handoff: Changed source invalidates this exact lease; operating action needs its
+    own target/recovery authorization
+  previous_lease:
+    path: tests/validation/test_p02_service_contracts.py
+    section: synthetic and contract checks
+    writer: p02_contract_tests
+    acceptance_owner: SPEC-0212-TSK-0041
+    reviewer: bounded QA/security review recorded; full-file review is not claimed
+    data_owner: UNASSIGNED
+    operational_acceptance: UNASSIGNED
+    handoff: Test result scope must remain separate from service operation.
+  current_followup_sha256: 76783c0e6a1bf3079d63237182a8be2fc3f9c8d6d08637f0d27b3a269b349e5d
+  section: ManagementDataPortContractTests.test_airflow_uses_declared_management_postgres_and_valkey_ports
+    only
+  fingerprint_observed_at: '2026-11-02T09:12:44.140127+00:00'
+- path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
+  section: current-service-inventory generated block; seven Airflow Env cells only
+  writer: /root/p03_docs_impl
+  before_sha256: 0a870fd75457a2249e8b14058b0b5b090d09f456aa8599e2d380a64818a528a7
+  current_followup_sha256: 9952a7485243ac9e41b4efd3e9d456d7dcf7e0081e83aaa3c03c3c387d3a1f70
+  fingerprint_observed_at: '2026-11-02T09:00:08.300260+00:00'
+  acceptance_owner: SPEC-0212-TSK-0043
+  reviewer: /root/p04_uri narrow independent diff review
+  data_owner: UNASSIGNED for operating data
+  operational_acceptance: NOT_RUN
+  authority: Approved P04 source/derived catalog alignment; original CI projection
+    lease
+  previous_leases:
+  - path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
+    section: marker-bounded generated service inventory
+    writer: p02_docs_impl
+    acceptance_owner: SPEC-0212-TSK-0041
+    reviewer: root_document_review, 2026-11-02T01:08:26Z, complete:false, three P02
+      changed generated mount cells only; no blocker. The prior 36-cell review at
+      2026-11-02T00:34:54Z is retained as history.
+    data_owner: UNASSIGNED
+    operational_acceptance: UNASSIGNED
+    handoff: 36 generated fields were refreshed by operations_catalog.render_service_inventory(ROOT);
+      authored narrative, runtime, restore and acceptance claims remain unchanged.
 research:
 - id: EX01
   url: https://docs.docker.com/compose/how-tos/profiles/
@@ -40613,6 +39043,243 @@ research:
   state: SOURCE_READY
   limit: Official sources support bounded design decisions only and do not replace
     version-specific source or isolated evidence.
+- id: P04-AIRFLOW-CMD
+  url: https://airflow.apache.org/docs/apache-airflow/3.3.2/howto/set-config.html
+  document_version: 3.3.2
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: Database sql_alchemy_conn, celery broker_url and result_backend support _CMD.
+  decision: ADOPT
+  current_source_difference: Replace raw interpolation with bounded helper, preserve
+    supported interface.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: Source pin 3.3.2; installed image/build acceptance separate.
+- id: P04-ER08
+  url: https://airflow.apache.org/docs/apache-airflow-providers-celery/3.24.1/configurations-ref.html
+  document_version: 3.24.1 requested
+  retrieved_at: '2026-11-02'
+  retrieval: FAILED_LOOKUP
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: Version-specific provider page was not accessible via the lookup tool.
+  decision: DEFER
+  current_source_difference: Use core 3.3.2 _CMD contract and current source; provider
+    runtime behavior needs exact installed test.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: Do not infer unsupported status from lookup failure.
+- id: P04-SQLALCHEMY-URL
+  url: https://docs.sqlalchemy.org/en/20/core/engines.html#escaping-special-characters-such-as-signs-in-passwords
+  document_version: page 2.0.55; constrained source 2.0.52
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: String URLs require encoding special password characters.
+  decision: ADOPT
+  current_source_difference: Encode password once, preserve literal percent/space
+    and parse roundtrip.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: Same 2.0 family; page does not prove exact installed package behavior.
+- id: P04-ER09
+  url: https://docs.celeryq.dev/en/stable/getting-started/backends-and-brokers/redis.html
+  document_version: 5.6.3 matches constrained source
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: Redis broker URL contains credential, host, port and DB; visibility timeout
+    affects redelivery.
+  decision: ADOPT
+  current_source_difference: Exercise actual helper, reserved characters and selected
+    nondefault broker port.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: No queue durability or live retry/restore acceptance from documentation.
+- id: P04-EX04
+  url: https://docs.docker.com/engine/storage/bind-mounts/
+  document_version: current page
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: Bind mounts expose host paths and are writable unless read_only; daemon host
+    owns source boundary.
+  decision: ADOPT
+  current_source_difference: Keep owned fixture, public source and read-only helper
+    contract separate from private mounts.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: A separate project/profile alone is not isolation.
+- id: P04-EX07
+  url: https://www.postgresql.org/docs/18/logical-replication-restrictions.html
+  document_version: PostgreSQL 18; source 18.6
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: Logical replication does not copy schema/DDL or sequences and is not a complete
+    backup.
+  decision: ADOPT
+  current_source_difference: Recover roles/extensions/schema/data and separate offset
+    state; do not label CDC as full restore.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: Current operator and HOME recovery remain NOT_RUN.
+- id: P04-EX08
+  url: https://debezium.io/documentation/reference/3.6/connectors/postgresql.html
+  document_version: 3.6 family; source 3.6.3.Final; latest page is 3.7
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: PostgreSQL connector snapshots then streams row changes; configured slot,
+    source privileges and WAL recovery are coupled.
+  decision: ADOPT
+  current_source_difference: Preserve platform_dev provisioner/connector and explicit
+    publication; no Opsflow repoint without consumer.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: Historical isolated Avro/offset PASS does not prove current business consumer
+    or live slot restore.
+- id: P04-EX10
+  url: https://iceberg.apache.org/docs/1.11.0/maintenance/
+  document_version: 1.11.0 matches selected jar; latest is 1.12.0
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: Snapshot expiration and orphan deletion affect retained files and time travel.
+  decision: ADOPT
+  current_source_difference: Keep optional platform accepted scope, defer workload
+    adoption and destructive maintenance.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: Catalog/object/checkpoint recovery is separate from snapshot rollback.
+- id: P04-EX11
+  url: https://restic.readthedocs.io/en/stable/050_restore.html
+  document_version: stable page; exact Restic runtime not selected for this fixture
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: Restore targets and selection must be explicit; current P04 fixture restores
+    DB/S3 independently.
+  decision: DEFER
+  current_source_difference: Retain production backup/Restic operation with owning
+    recovery Task.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: No Restic binary execution, installed-version equivalence or HOME restore
+    claimed.
+- id: P04-EX12
+  url: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html
+  document_version: 1.9.1 matches constrained source
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: Time-ordered folds prevent training on future samples relative to evaluation.
+  decision: DEFER
+  current_source_difference: Await actual dataset/version, time field, target, baseline
+    and owner; create no toy experiment.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: No private notebook bodies inspected; temporal split alone does not prove
+    all leakage absent.
+- id: P04-DOCKER-COPY
+  url: https://docs.docker.com/reference/dockerfile/#copy---chown---chmod
+  document_version: current Dockerfile reference
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: COPY supports numeric ownership and mode for image content.
+  decision: ADOPT
+  current_source_difference: Install helper root:root mode0444 without package or
+    image-version update.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: Read-only file mode is not immutable execution; exact new image build remains
+    separate.
+- id: P04-S3-METADATA
+  url: https://docs.aws.amazon.com/boto3/latest/reference/services/s3/client/head_object.html
+  document_version: page 1.43.123; constrained source 1.43.75
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux local source and synthetic isolated test; no HOME operation
+  fact: HEAD returns object size, content type and user metadata independently of
+    body.
+  decision: ADOPT
+  current_source_difference: Preserve logical metadata and tags with body in isolated
+    restore; compare new server IDs only as provenance.
+  owner: P04
+  normal: Verify exact selected helper/fixture behavior before claiming local acceptance.
+  rejection: Reject stronger version, privacy, authorization or runtime claims than
+    the receipt supports.
+  recovery: Preserve prior receipt and recheck only the changed source/consumer scope.
+  limit: Exact cached SeaweedFS policy/tag compatibility requires actual fixture evidence.
+- id: P04-SIGPIPE
+  url: https://docs.python.org/3.13/library/signal.html#note-on-sigpipe
+  document_version: Python3.13
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_PAGE; URI writer and independent reviewer
+  platform: Local synthetic process only
+  fact: A closed stdout pipe can trigger a second interpreter flush; handling must
+    include shutdown behavior.
+  decision: ADOPT
+  current_source_difference: Actual child exit120 RED corrected to exit1 and fixed
+    stderr, independently re-reviewed.
+  owner: P04
+  normal: Fresh-process closed-pipe regression succeeds with fixed error only.
+  rejection: Do not infer actual provider or image validation from process behavior.
+  recovery: Restore only this logical helper delta with its tests.
+  limit: No actual credential/output capture.
+- id: P04-SEAWEED-PRINCIPAL
+  url: https://github.com/seaweedfs/seaweedfs/blob/4.48/weed/s3api/auth_credentials.go
+  document_version: SeaweedFS tagged4.48
+  retrieved_at: '2026-11-02'
+  retrieval: DIRECT_OFFICIAL_TAGGED_SOURCE; native author and independent reviewer
+  platform: Exact cached owned S3 fixture, not HOME
+  fact: Static identity principal ARN is generated before account assignment and uses
+    default account000000000000; policy identity111111111111 mismatches.
+  decision: ADOPT
+  current_source_difference: Fixture principal matches tagged static identity; source/unit
+    correction is reviewed.
+  owner: P04
+  normal: Corrected policy matrices require a future actual bounded run.
+  rejection: The narrow retry timed out before matrices, so no corrected-policy runtime
+    PASS is inferred.
+  recovery: Keep firstFAIL and narrowERROR plus retained evidence; do not run third
+    runtime here.
+  limit: 50mCPU/Python cold-start cost is only a hypothesis; timing root cause/performance
+    gain unmeasured.
 coverage_tiers:
 - id: TIER01
   name: Gateway
@@ -40643,11 +39310,17 @@ coverage_tiers:
     actual consumer and leaf acceptance
   source_files:
   - path: infra/01-gateway/nginx/docker-compose.yml
-    sha256: d719e16568e1d898bfc0978c405910e118b3bb58cf7f09dfe6615610546624bb
+    sha256: f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e
+    previous_sha256: d719e16568e1d898bfc0978c405910e118b3bb58cf7f09dfe6615610546624bb
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/01-gateway/traefik/compose.window-ca.override.yml
     sha256: 8baab5358c7a61280bb9c579693a190cac53ecf765608659bd802b89bf1d4ba1
+    previous_sha256: 8baab5358c7a61280bb9c579693a190cac53ecf765608659bd802b89bf1d4ba1
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/01-gateway/traefik/docker-compose.yml
-    sha256: a20d9d4be78de3af9a918322f0284b68ddbbf2995027c0f5c175133820091e7d
+    sha256: 4b0c9a0d170c721bed25000a1b3f34ee2711b309edd2f78b063cc4dc995dde0b
+    previous_sha256: a20d9d4be78de3af9a918322f0284b68ddbbf2995027c0f5c175133820091e7d
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
 - id: TIER02
   name: Auth
   source_directory: infra/02-auth
@@ -40682,11 +39355,17 @@ coverage_tiers:
     actual consumer and leaf acceptance
   source_files:
   - path: infra/02-auth/keycloak/docker-compose.yml
-    sha256: 4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547
+    sha256: bda416f399d071abc554db5251b67e0e2228e98608cd80c0bb078e20792f9707
+    previous_sha256: 4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
-    sha256: 8d3f44c55f89fee82c299651073ac91ea94663454e732a7bff98d3adf9d40139
+    sha256: ff7196466cb9ec8cc4900680406ab68b22193a894c04f32825f45d183bb2cde4
+    previous_sha256: 8d3f44c55f89fee82c299651073ac91ea94663454e732a7bff98d3adf9d40139
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/02-auth/oauth2-proxy/docker-compose.yml
-    sha256: b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3
+    sha256: 6a3bbb2dd657e2a975b2c7da1e8e7297acc599f7f18c9baf8e90c040cb4bd22a
+    previous_sha256: b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
 - id: TIER03
   name: Security
   source_directory: infra/03-security
@@ -40716,6 +39395,8 @@ coverage_tiers:
   source_files:
   - path: infra/03-security/openbao/docker-compose.yml
     sha256: f8eac484b704836fb06ff1b435d405213d0449c311df32863ea53a22ffeed638
+    previous_sha256: f8eac484b704836fb06ff1b435d405213d0449c311df32863ea53a22ffeed638
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
 - id: TIER04
   name: Data
   source_directory: infra/04-data
@@ -40790,20 +39471,39 @@ coverage_tiers:
   source_files:
   - path: infra/04-data/dev-db/docker-compose.yml
     sha256: 95415facc07ab7aa4798c570871c61fa3adcead9de566a3345c313af6a7253fc
+    previous_sha256: 95415facc07ab7aa4798c570871c61fa3adcead9de566a3345c313af6a7253fc
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/04-data/mng-db/docker-compose.n8n-acl.yml
     sha256: b42110814469596b45314551399345957233aa9368aa4c23159a8962f831e19d
+    previous_sha256: b42110814469596b45314551399345957233aa9368aa4c23159a8962f831e19d
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/04-data/mng-db/docker-compose.yml
-    sha256: c840fc410ae8728f833db68802264b551d998b487cb3098bf9ffeb273c8bdee7
+    sha256: b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471
+    previous_sha256: c840fc410ae8728f833db68802264b551d998b487cb3098bf9ffeb273c8bdee7
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/04-data/neo4j/docker-compose.yml
     sha256: 7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64
+    previous_sha256: 7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/04-data/opensearch/docker-compose.yml
     sha256: 3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068
+    previous_sha256: 3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/04-data/qdrant/docker-compose.yml
     sha256: 845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf
+    previous_sha256: 845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/04-data/redisinsight/docker-compose.yml
-    sha256: 1e2aae21929c1ba22fd3a18856d99ff9dcbef93bb500ade703505659867fd961
+    sha256: 90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a
+    previous_sha256: 1e2aae21929c1ba22fd3a18856d99ff9dcbef93bb500ade703505659867fd961
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/04-data/seaweedfs/docker-compose.yml
     sha256: c70174e82d61607f7562e52e0a73a423e41ddc79f5f52f6ef598c69483346f53
+    previous_sha256: c70174e82d61607f7562e52e0a73a423e41ddc79f5f52f6ef598c69483346f53
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
+  p04_assessment: Reuse current DEV/MNG ownership for existing Opsflow; no new DB
+    or operating change.
+  p04_task: SPEC-0212-TSK-0043
 - id: TIER05
   name: Messaging
   source_directory: infra/05-messaging
@@ -40845,6 +39545,10 @@ coverage_tiers:
   source_files:
   - path: infra/05-messaging/kafka/docker-compose.yml
     sha256: 352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984
+    previous_sha256: 352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
+  p04_assessment: Retain platform_dev CDC; no selected Opsflow stream consumer.
+  p04_task: SPEC-0212-TSK-0043
 - id: TIER06
   name: Observability
   source_directory: infra/06-observability
@@ -40897,9 +39601,13 @@ coverage_tiers:
     actual consumer and leaf acceptance
   source_files:
   - path: infra/06-observability/docker-compose.yml
-    sha256: 7300c76c56cd07dd965c84b08e524a723d14c20c9d6a5338722c259ec09560a7
+    sha256: 555bbb09e3e05f1b9de005c2d7210a9931eceb6552f5855a7d524ac14d6d4aa4
+    previous_sha256: 7300c76c56cd07dd965c84b08e524a723d14c20c9d6a5338722c259ec09560a7
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/06-observability/dozzle/docker-compose.yml
     sha256: 9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436
+    previous_sha256: 9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
 - id: TIER07
   name: Workflow
   source_directory: infra/07-workflow
@@ -40973,19 +39681,36 @@ coverage_tiers:
     actual consumer and leaf acceptance
   source_files:
   - path: infra/07-workflow/airflow/docker-compose.monitor-acl.yml
-    sha256: 61a44e0d9cfbff07742e4cb5b3f4665e55a8514535a2812b8c5a31fc1f81558c
+    sha256: 4fd046bdce5bc5dc6c58a3b28355929e19911c45a43e6bfea0229e5791ef214b
+    previous_sha256: 61a44e0d9cfbff07742e4cb5b3f4665e55a8514535a2812b8c5a31fc1f81558c
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/07-workflow/airflow/docker-compose.yml
-    sha256: bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835
+    sha256: 621bcf244286dc784c0004ef2b51a3af8fca93b1b483f28fe1340cd54df3fc9b
+    previous_sha256: bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
     sha256: 8314933a0d088b4c2610002ee6330eb2d50373698cd16bad0654957f3203a35f
+    previous_sha256: 8314933a0d088b4c2610002ee6330eb2d50373698cd16bad0654957f3203a35f
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/07-workflow/n8n/docker-compose.monitor-acl.yml
-    sha256: 518845be763c76c7132337175bffdb98a63bc11138ed02fa39d8f387196108ef
+    sha256: ccb9299ec3b39dcde079aa8c8feed789cd41bdc9cbea975749d18b6bd91e8dec
+    previous_sha256: 518845be763c76c7132337175bffdb98a63bc11138ed02fa39d8f387196108ef
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/07-workflow/n8n/docker-compose.ollama-local.yml
     sha256: e4a3a82a5ce6239718f2da6c7dccacc528266e60080d0aabeeaa576fc71e245c
+    previous_sha256: e4a3a82a5ce6239718f2da6c7dccacc528266e60080d0aabeeaa576fc71e245c
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/07-workflow/n8n/docker-compose.yml
-    sha256: 8792a345bd2ead857d108fc2eb100b8be19a9c5012caa5e457829b978b2adcc3
+    sha256: 63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e
+    previous_sha256: 8792a345bd2ead857d108fc2eb100b8be19a9c5012caa5e457829b978b2adcc3
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
     sha256: 80f11033f1ec282e7967c7a86aec0611ec3eac3f14ba18ec1f222a4a238d1d56
+    previous_sha256: 80f11033f1ec282e7967c7a86aec0611ec3eac3f14ba18ec1f222a4a238d1d56
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
+  p04_assessment: Current Opsflow P04 source/quality path; actual Worker/publication/recovery
+    remains TEST_RESIDUAL; P05 notification separate.
+  p04_task: SPEC-0212-TSK-0043
 - id: TIER08
   name: Models and related tools
   source_directory: infra/08-ai
@@ -41031,16 +39756,28 @@ coverage_tiers:
   source_files:
   - path: infra/08-ai/comfyui/docker-compose.yml
     sha256: f603ed35a889029a1eee9071d26c0de3e650e7fe8c4e18226e0778998a81827e
+    previous_sha256: f603ed35a889029a1eee9071d26c0de3e650e7fe8c4e18226e0778998a81827e
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/08-ai/crawl4ai/docker-compose.yml
     sha256: c5f39f53255c7c02ee6eacddc8b3d5935f87b431e606523ef63386a0d50c5d88
+    previous_sha256: c5f39f53255c7c02ee6eacddc8b3d5935f87b431e606523ef63386a0d50c5d88
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/08-ai/mlflow/docker-compose.yml
     sha256: b376aa8baa055254f9fc6038a6fc36f7a8a7a2eab3e4f8bcd017170181b27540
+    previous_sha256: b376aa8baa055254f9fc6038a6fc36f7a8a7a2eab3e4f8bcd017170181b27540
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/08-ai/ollama/docker-compose.yml
     sha256: fb0a48715f9cfcdfae34e39281580c28c8c212fe84cd60624edbff5290c38bb5
+    previous_sha256: fb0a48715f9cfcdfae34e39281580c28c8c212fe84cd60624edbff5290c38bb5
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/08-ai/open-notebook/docker-compose.yml
-    sha256: 780ebabe132c9c3c82041c2ce91fa11d78463e2c4abb6c8b9cc4a1c72f6998e4
+    sha256: 9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d
+    previous_sha256: 780ebabe132c9c3c82041c2ce91fa11d78463e2c4abb6c8b9cc4a1c72f6998e4
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/08-ai/open-webui/docker-compose.yml
-    sha256: 831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53
+    sha256: 718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b
+    previous_sha256: 831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
 - id: TIER09
   name: Platform Ops
   source_directory: infra/09-platform-ops
@@ -41084,14 +39821,24 @@ coverage_tiers:
   source_files:
   - path: infra/09-platform-ops/opentofu/docker-compose.yml
     sha256: 77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540
+    previous_sha256: 77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/09-platform-ops/registry/docker-compose.yml
     sha256: ee186d89e880c81fc93346c70771f59898f76d1b85fa4fd86353e1d834a89a3c
+    previous_sha256: ee186d89e880c81fc93346c70771f59898f76d1b85fa4fd86353e1d834a89a3c
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/09-platform-ops/renovate/docker-compose.yml
     sha256: e51da00556f4daa005f9cf96c2febc18c67e78a1a1ccbdb687139f726684aa2f
+    previous_sha256: e51da00556f4daa005f9cf96c2febc18c67e78a1a1ccbdb687139f726684aa2f
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/09-platform-ops/restic/docker-compose.yml
     sha256: bd7244aa6c65a2dd37cb0a51798bf166bb25c2795039e7c70f3caf393d94625a
+    previous_sha256: bd7244aa6c65a2dd37cb0a51798bf166bb25c2795039e7c70f3caf393d94625a
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/09-platform-ops/terrakube/docker-compose.yml
-    sha256: 49b086010504cc2f4a62983e658f5df3313019d47ae888e3381cbcc3c9037e81
+    sha256: 9b812e0c04256d9f3f2144835d46b07b44f0c4ca6c42cc058a1512bbd97ca3ae
+    previous_sha256: 49b086010504cc2f4a62983e658f5df3313019d47ae888e3381cbcc3c9037e81
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
 - id: TIER10
   name: Communication
   source_directory: infra/10-communication
@@ -41121,6 +39868,8 @@ coverage_tiers:
   source_files:
   - path: infra/10-communication/stalwart/docker-compose.yml
     sha256: 3b781b282bcb7cd2c43852dd77f4ef457de1b71cd4a0eb8a11ce49dbdc0ec3fa
+    previous_sha256: 3b781b282bcb7cd2c43852dd77f4ef457de1b71cd4a0eb8a11ce49dbdc0ec3fa
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
 - id: TIER11
   name: Quality
   source_directory: infra/11-quality
@@ -41160,16 +39909,28 @@ coverage_tiers:
   source_files:
   - path: infra/11-quality/conftest/docker-compose.yml
     sha256: e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7
+    previous_sha256: e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/11-quality/k6/docker-compose.yml
     sha256: 584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757
+    previous_sha256: 584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/11-quality/mailpit/docker-compose.yml
     sha256: b5c0110557e5e8c82e12224cbfd9152b6a6186ba431fcd930f8a1774b6c41b76
+    previous_sha256: b5c0110557e5e8c82e12224cbfd9152b6a6186ba431fcd930f8a1774b6c41b76
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/11-quality/pact-broker/docker-compose.yml
     sha256: c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619
+    previous_sha256: c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/11-quality/sonarqube/docker-compose.yml
     sha256: b126d7aefbe4846ee6b5f883f64582ce5c8561684370671805cf5ea7d1467b3c
+    previous_sha256: b126d7aefbe4846ee6b5f883f64582ce5c8561684370671805cf5ea7d1467b3c
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/11-quality/wiremock/docker-compose.yml
     sha256: 37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241
+    previous_sha256: 37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
 - id: TIER12
   name: Analytics
   source_directory: infra/12-analytics
@@ -41217,18 +39978,35 @@ coverage_tiers:
   source_files:
   - path: infra/12-analytics/dbt/docker-compose.yml
     sha256: 7e8148601f9e60410c40e39cb19e431ad8ceabd7a0075ed1ac0aa7cde05de13b
+    previous_sha256: 7e8148601f9e60410c40e39cb19e431ad8ceabd7a0075ed1ac0aa7cde05de13b
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/12-analytics/flink/docker-compose.yml
     sha256: 1392ea2fd3940c84578adeb2443f3af9d45f2296b5a29fb1610707101b99a88f
+    previous_sha256: 1392ea2fd3940c84578adeb2443f3af9d45f2296b5a29fb1610707101b99a88f
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/12-analytics/great-expectations/docker-compose.yml
     sha256: 57895faf9051375ae61956ce9be3ed294b436556bbeb5badf8bf69e77a7b70d5
+    previous_sha256: 57895faf9051375ae61956ce9be3ed294b436556bbeb5badf8bf69e77a7b70d5
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/12-analytics/jupyterlab/docker-compose.yml
     sha256: fa6b255010f7eb4012677c00ea31c549aef40bb3dba8aa563b3411547749751a
+    previous_sha256: fa6b255010f7eb4012677c00ea31c549aef40bb3dba8aa563b3411547749751a
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/12-analytics/spark/docker-compose.yml
     sha256: eeb983b22d99fde28ac4bd134926bdea9d334abffdc55ff6b9d6f514670b76cf
+    previous_sha256: eeb983b22d99fde28ac4bd134926bdea9d334abffdc55ff6b9d6f514670b76cf
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/12-analytics/superset/docker-compose.yml
     sha256: 36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb
+    previous_sha256: 36e1aab1e9e071acfd5b01587d3c8ea5b1a4b93c45df991939436e7cca4748fb
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
   - path: infra/12-analytics/trino/docker-compose.yml
     sha256: 400d4ad8784ee51cd9559f746418e520579ca0b508485c6119ad7939ea3ca7b4
+    previous_sha256: 400d4ad8784ee51cd9559f746418e520579ca0b508485c6119ad7939ea3ca7b4
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
+  p04_assessment: Preserve accepted optional Iceberg platform; no new Opsflow engine
+    adoption or experiment without actual input.
+  p04_task: SPEC-0212-TSK-0043
 - id: TIER13
   name: Experience
   source_directory: infra/13-experience
@@ -41257,6 +40035,8 @@ coverage_tiers:
   source_files:
   - path: infra/13-experience/storybook/docker-compose.yml
     sha256: 48abf33e7d9e3222f722107b28adcc258f10d87dc15023babe9ea815243d5262
+    previous_sha256: 48abf33e7d9e3222f722107b28adcc258f10d87dc15023babe9ea815243d5262
+    fingerprint_state: CURRENT_PUBLIC_METADATA_ONLY
 coverage_learning:
 - id: LEARN01
   name: Backend
@@ -41324,6 +40104,9 @@ coverage_learning:
     app/LAB runtime.
   recovery: Resume only with named dataset/consumer, scoped test and independent recovery
     evidence.
+  p04_assessment: Existing Opsflow source, quality and bounded replay/recovery contracts;
+    native residual explicit.
+  p04_task: SPEC-0212-TSK-0043
 - id: LEARN05
   name: Data science
   source_path: infra/12-analytics
@@ -41341,6 +40124,9 @@ coverage_learning:
     app/LAB runtime.
   recovery: Resume only with named dataset/consumer, scoped test and independent recovery
     evidence.
+  p04_assessment: User defers until actual dataset/version, time field, target, baseline
+    and owner; no private notebook inference.
+  p04_task: SPEC-0212-TSK-0043
 - id: LEARN06
   name: Other
   source_path: infra/08-ai
@@ -42069,6 +40855,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-03
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42112,6 +40899,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-04
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42161,6 +40949,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-05
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42212,6 +41001,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-06
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42259,6 +41049,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-07
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42301,6 +41092,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-08
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42343,6 +41135,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-09
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42385,6 +41178,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-10
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42427,6 +41221,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-11
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42469,6 +41264,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-12
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42511,6 +41307,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-13
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42553,6 +41350,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-14
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42595,6 +41393,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-15
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42637,6 +41436,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-16
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42680,6 +41480,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-17
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42723,6 +41524,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-18
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42766,6 +41568,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-19
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42809,6 +41612,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-20
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42855,6 +41659,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-render-21
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -42898,6 +41703,7 @@ handoffs:
     reason: null
     environment: isolated public source copy with explicit typed synthetic inputs
     runtime: NOT_RUN
+  source_files: []
 - id: P01-followup-CI-environment
   state: SOURCE_READY
   task_id: SPEC-0212-TSK-0040
@@ -43021,6 +41827,7 @@ handoffs:
   owner: P03 acceptance owner
   resume: Consume a generated connection row before product/model registration proof.
   id: P02-to-P03
+  source_files: []
 - target: P04
   state: TEST_RESIDUAL
   owner: P04 acceptance owner
@@ -43029,6 +41836,7 @@ handoffs:
     using a synthetic credential before encoding changes; preserve the current file
     for rollback. The previous 0bbb7e… fingerprint is dated pre-freeze history only.
   id: P02-to-P04
+  source_files: []
 - target: P05
   state: TEST_RESIDUAL
   owner: P05/P08 acceptance owners
@@ -43038,6 +41846,7 @@ handoffs:
     (exit 1, two failures, unchanged inputs) records the starting point. Rerun `UpdateEvidencePackageTests.test_current_root_census_excludes_relocated_lab_history`
     only after that transaction. P02 must not alter the service or invent provenance.
   id: P02-to-P05
+  source_files: []
 - target: P06
   state: OUT_OF_SCOPE
   owner: P06 acceptance owner
@@ -43048,11 +41857,13 @@ handoffs:
     an overbroad mount, with PublicSecretSchemaTests 21/21 PASS; P02 does not mutate
     secrets.
   id: P02-to-P06
+  source_files: []
 - target: P07
   state: OUT_OF_SCOPE
   owner: P07 acceptance owner
   resume: Measurement work waits for selected topology and consumer proof.
   id: P02-to-P07
+  source_files: []
 - target: P08
   state: IMPROVEMENT_CANDIDATE
   owner: P08 image/advisory owner
@@ -43071,16 +41882,19 @@ handoffs:
     evidence together, verify controller gates, and on recovery revert only the input-plus-lock
     delta while preserving original FAIL history/receipt.'
   id: P02-to-P08
+  source_files: []
 - target: P05
   state: OUT_OF_SCOPE
   owner: P05 acceptance owner
   resume: Consume P03 model-worker facts without creating general queue/notification
     behavior.
+  source_files: []
 - target: P06
   state: OUT_OF_SCOPE
   owner: P06 acceptance owner
   resume: Issue or rotate provider/broker credentials only with named data owner and
     recovery plan.
+  source_files: []
 - target: P08
   state: OUT_OF_SCOPE
   owner: P08 image/lock owner
@@ -43091,18 +41905,206 @@ handoffs:
     matched same-day P02 pip-audit 2.10.1 inputs with empty dependency diff, but exact
     reuse still failed 25 findings including filelock 4.2.0 and virtualenv 21.14.8.
     This is a P08 handoff, not a global audit PASS or dependency update.
+  source_files: []
 - target: P09
   state: OUT_OF_SCOPE
   owner: P09 resource owner
   resume: Integrate common CPU/memory/PID originals only with measured demand and
     rollback.
+  source_files: []
 - target: P11
   state: OUT_OF_SCOPE
   owner: P11 Hermes owner
   resume: Apply exact-destination policy to the actual Hermes installation only after
     path/credential/operator facts are approved.
+  source_files: []
 - target: P12
   state: TEST_RESIDUAL
   owner: P12 acceptance owner
   resume: Perform end-to-end model, stored-registration, runner and user-function
     acceptance only in an approved operating window.
+  source_files: []
+- id: P04-to-P02
+  acceptance_owner: P02
+  writer: UNASSIGNED until exact receiving path lease
+  state: TEST_RESIDUAL
+  target: Airflow management listener/credential-pair provider contract
+  current_fingerprint: Exact source_files[] SHA-256 at P04 source freeze; changes
+    invalidate affected target only
+  change_contract: Keep MNG PG/broker variables and approved host-secret pairs; any
+    supplier reader/listener change is separate from consumer URI quoting.
+  authority: Direct P04 local implementation only; no HOME/credential/remote authority
+  missing_input: Named receiving writer, data/operating owner, exact target and separately
+    approved runtime recovery boundary
+  resume_condition: Read the final source and scoped evidence; confirm actual consumer,
+    one writer and target-specific authorization before action
+  recovery: Revert only the new local delta; real data/credential recovery follows
+    the separately reviewed contract
+  source_files:
+  - path: infra/07-workflow/airflow/docker-compose.yml
+    sha256: 621bcf244286dc784c0004ef2b51a3af8fca93b1b483f28fe1340cd54df3fc9b
+    fingerprint_state: P04_FINAL_SOURCE
+  - path: infra/07-workflow/airflow/connection_uri.py
+    sha256: 27a7501cfeb112ba92f2d6a1e66ab69c9f87a32299e5ffe80cea2afe4010f309
+    fingerprint_state: P04_FINAL_SOURCE
+- id: P04-to-P03
+  acceptance_owner: P03/P02/P06
+  writer: UNASSIGNED until exact receiving path lease
+  state: TEST_RESIDUAL
+  target: Future MLflow/Jupyter machine identity
+  current_fingerprint: Exact source_files[] SHA-256 at P04 source freeze; changes
+    invalidate affected target only
+  change_contract: Browser SSO and allowed Host validation do not authenticate SDK
+    calls; require named experiment consumer and scoped artifact permissions before
+    adoption.
+  authority: Direct P04 local implementation only; no HOME/credential/remote authority
+  missing_input: Named receiving writer, data/operating owner, exact target and separately
+    approved runtime recovery boundary
+  resume_condition: Read the final source and scoped evidence; confirm actual consumer,
+    one writer and target-specific authorization before action
+  recovery: Revert only the new local delta; real data/credential recovery follows
+    the separately reviewed contract
+  source_files:
+  - path: infra/08-ai/mlflow/docker-compose.yml
+    sha256: b376aa8baa055254f9fc6038a6fc36f7a8a7a2eab3e4f8bcd017170181b27540
+    fingerprint_state: P04_FINAL_SOURCE
+  - path: infra/12-analytics/jupyterlab/docker-compose.yml
+    sha256: fa6b255010f7eb4012677c00ea31c549aef40bb3dba8aa563b3411547749751a
+    fingerprint_state: P04_FINAL_SOURCE
+- id: P04-to-P05
+  acceptance_owner: P05
+  writer: UNASSIGNED until exact receiving path lease
+  state: TEST_RESIDUAL
+  target: Version-4 reader extension and unchanged notification interface
+  current_fingerprint: Exact source_files[] SHA-256 at P04 source freeze; changes
+    invalidate affected target only
+  change_contract: Consume new data_version column without changing existing functions/outbox.
+    Preserve historical schema-version-3 source-review receipt; review v4 before new
+    P05 native acceptance. P04 outbox state is not real SMTP delivery.
+  authority: Direct P04 local implementation only; no HOME/credential/remote authority
+  missing_input: Named receiving writer, data/operating owner, exact target and separately
+    approved runtime recovery boundary
+  resume_condition: Read the final source and scoped evidence; confirm actual consumer,
+    one writer and target-specific authorization before action
+  recovery: Revert only the new local delta; real data/credential recovery follows
+    the separately reviewed contract
+  source_files:
+  - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/005_data_version.sql
+    sha256: 85eb63d22f2967ac84996f561a14ca3433e429eaf55a597d294478e21dfe00c2
+    fingerprint_state: P04_FINAL_SOURCE
+  - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/006_checks.sql
+    sha256: 38eb6b22e99e573c40cd1fa920af7a3cc5945d0ce0a53e9d2872983834c0ef76
+    fingerprint_state: P04_FINAL_SOURCE
+- id: P04-to-P06
+  acceptance_owner: P06
+  writer: UNASSIGNED until exact receiving path lease
+  state: TEST_RESIDUAL
+  target: Actual Opsflow and Airflow secret bindings
+  current_fingerprint: Exact source_files[] SHA-256 at P04 source freeze; changes
+    invalidate affected target only
+  change_contract: Public opsflow password_secrets:null remains pending. Issue/bind
+    through canonical authority only; single-line framing and supported broker controls
+    must match provider.
+  authority: Direct P04 local implementation only; no HOME/credential/remote authority
+  missing_input: Named receiving writer, data/operating owner, exact target and separately
+    approved runtime recovery boundary
+  resume_condition: Read the final source and scoped evidence; confirm actual consumer,
+    one writer and target-specific authorization before action
+  recovery: Revert only the new local delta; real data/credential recovery follows
+    the separately reviewed contract
+  source_files:
+  - path: infra/04-data/dev-db/pg/provision/opsflow.json
+    sha256: df4a32efe1c0acf14f822781b910825da05eec63b510911c67ae049fd00a1754
+    fingerprint_state: P04_FINAL_SOURCE
+  - path: infra/07-workflow/airflow/connection_uri.py
+    sha256: 27a7501cfeb112ba92f2d6a1e66ab69c9f87a32299e5ffe80cea2afe4010f309
+    fingerprint_state: P04_FINAL_SOURCE
+- id: P04-to-P07
+  acceptance_owner: P07
+  writer: UNASSIGNED until exact receiving path lease
+  state: TEST_RESIDUAL
+  target: CDC slot/WAL and consumer-lag evidence
+  current_fingerprint: Exact source_files[] SHA-256 at P04 source freeze; changes
+    invalidate affected target only
+  change_contract: Keep heartbeat/slot/offset coupled to actual source/consumer; absence
+    of current per-slot WAL observation is not monitoring PASS.
+  authority: Direct P04 local implementation only; no HOME/credential/remote authority
+  missing_input: Named receiving writer, data/operating owner, exact target and separately
+    approved runtime recovery boundary
+  resume_condition: Read the final source and scoped evidence; confirm actual consumer,
+    one writer and target-specific authorization before action
+  recovery: Revert only the new local delta; real data/credential recovery follows
+    the separately reviewed contract
+  source_files:
+  - path: infra/05-messaging/kafka/connect/debezium/postgres-connector.json
+    sha256: 17c0203cf3c2babcdf28097b870e8ff86fd97b5363ea2b49d4f15e6b221ef5b6
+    fingerprint_state: P04_FINAL_SOURCE
+  - path: infra/05-messaging/kafka/connect/debezium/provisioning/dev-pg.sql
+    sha256: f9816f52b6ea226d51a53149a427dbe93806765a0b8c0e6212a0e11666f385fe
+    fingerprint_state: P04_FINAL_SOURCE
+- id: P04-to-P08
+  acceptance_owner: P08/SEC01
+  writer: UNASSIGNED until exact receiving path lease
+  state: TEST_RESIDUAL
+  target: Airflow helper image build and supply-chain residual
+  current_fingerprint: Exact source_files[] SHA-256 at P04 source freeze; changes
+    invalidate affected target only
+  change_contract: Pinned upstream base absent locally; no pull/new build performed.
+    Cached-image source injection is isolated behavior evidence, not new image/signature/SBOM/advisory
+    acceptance. Retain Valkey security-update ownership.
+  authority: Direct P04 local implementation only; no HOME/credential/remote authority
+  missing_input: Named receiving writer, data/operating owner, exact target and separately
+    approved runtime recovery boundary
+  resume_condition: Read the final source and scoped evidence; confirm actual consumer,
+    one writer and target-specific authorization before action
+  recovery: Revert only the new local delta; real data/credential recovery follows
+    the separately reviewed contract
+  source_files:
+  - path: infra/07-workflow/airflow/Dockerfile
+    sha256: 3cf83481bbfb8ea5a2e0f1f016075b69cd429b08655cb10acf5b4c53ef61bff5
+    fingerprint_state: P04_FINAL_SOURCE
+  - path: infra/07-workflow/airflow/connection_uri.py
+    sha256: 27a7501cfeb112ba92f2d6a1e66ab69c9f87a32299e5ffe80cea2afe4010f309
+    fingerprint_state: P04_FINAL_SOURCE
+- id: P04-to-P12
+  acceptance_owner: P12
+  writer: UNASSIGNED until exact receiving path lease
+  state: TEST_RESIDUAL
+  target: Actual Worker/business consumer and independent HOME recovery acceptance
+  current_fingerprint: Exact source_files[] SHA-256 at P04 source freeze; changes
+    invalidate affected target only
+  change_contract: Use exact reviewed source/isolated receipts; actual data owner,
+    HOME target, role/metadata backup, operator/window, restored workflow and real
+    SMTP effect remain separate. No service recreation or real credential action authorized.
+  authority: Direct P04 local implementation only; no HOME/credential/remote authority
+  missing_input: Named receiving writer, data/operating owner, exact target and separately
+    approved runtime recovery boundary
+  resume_condition: Read the final source and scoped evidence; confirm actual consumer,
+    one writer and target-specific authorization before action
+  recovery: Revert only the new local delta; real data/credential recovery follows
+    the separately reviewed contract
+  source_files:
+  - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/005_data_version.sql
+    sha256: 85eb63d22f2967ac84996f561a14ca3433e429eaf55a597d294478e21dfe00c2
+    fingerprint_state: P04_FINAL_SOURCE
+  - path: tests/validation/test_opsflow_airflow_native_rehearsal.py
+    sha256: 345017e759de14d7601cfc00bd2dcbe7f759edca02817b897490b9a946a6b045
+    fingerprint_state: P04_FINAL_SOURCE
+- id: P04-to-P01
+  acceptance_owner: P01
+  writer: UNASSIGNED until exact parser path lease
+  state: IMPROVEMENT_CANDIDATE
+  target: Known Airflow helper command public connection metadata
+  current_fingerprint: Final public source SHA-256 only
+  change_contract: Old and new Compose both extracted zero _CMD rows; no P04 regression.
+    Future allowlisted parser may extract metadata/result/broker helper plus public
+    host/port/secret-reference selectors. Never execute helper or read private credentials.
+  authority: Local metadata handoff only; no runtime/credential/remote permission
+  missing_input: Named parser writer and semantic extraction regression fixtures
+  resume_condition: Acquire narrow parser lease and test public declarations, rejection
+    and invalidation without product-registration claims
+  recovery: Revert only the parser projection delta
+  source_files:
+  - path: scripts/lib/ops/_workspace_connection_sources.py
+    sha256: e3f8e6e9368d1643d58fcb34951a8bd5f4f9bf76aaf243121eeee98edbbf3e5a
+    fingerprint_state: P04_FINAL_SOURCE
