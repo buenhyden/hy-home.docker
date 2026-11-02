@@ -26,6 +26,7 @@ class RetirementCliTests(unittest.TestCase):
         self.root = self.base / "synthetic-host"
         self.target = self.root / "secrets/db/legacy-app/unused.txt"
         self.target.parent.mkdir(parents=True)
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         self.target.write_text("synthetic-secret-value-do-not-print")
         relative = self.target.relative_to(self.root)
         self.row = {
@@ -107,16 +108,25 @@ class RetirementCliTests(unittest.TestCase):
         self.assertFalse(json.loads(result.stdout)["applied"])
         self.assertTrue(self.target.exists())
 
-    def test_apply_and_idempotent_apply(self):
+    def test_apply_then_absent_unverified_blocks_retry(self):
         result = self.run_cli("--apply")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout)["entries"][0]["result"], "deleted")
         self.assertFalse(self.target.exists())
         again = self.run_cli("--apply")
-        self.assertEqual(again.returncode, 0, again.stderr)
-        self.assertEqual(
-            json.loads(again.stdout)["entries"][0]["result"], "already-absent"
+        self.assertEqual(again.returncode, 2)
+        inspection = self.run_cli()
+        self.assertEqual(inspection.returncode, 2)
+        self.assertIn(
+            "absent-unverified", json.loads(inspection.stdout)["entries"][0]["reasons"]
         )
+
+    def test_empty_and_duplicate_json_manifest_rejected_without_leaking(self):
+        for body in [b'{"entries":[]}', b'{"entries":[],"entries":[]}']:
+            self.manifest.write_bytes(body)
+            result = self.run_cli()
+            self.assertEqual(result.returncode, 2)
+            self.assertTrue(self.target.exists())
 
     def test_unknown_consumer_blocks_with_nonzero_exit(self):
         self.document["entries"][0]["checked"]["runtime"] = False
@@ -139,6 +149,68 @@ class RetirementCliTests(unittest.TestCase):
         self.assertEqual(self.run_cli().returncode, 2)
         os.mkfifo(self.manifest, 0o600)
         self.assertEqual(self.run_cli().returncode, 2)
+
+    def test_deep_and_invalid_utf8_manifests_never_leak_traceback(self):
+        for payload in [b"[" * 1100 + b"]" * 1100, b'{"entries":["\xff"]}']:
+            with self.subTest(kind=payload[:1]):
+                self.manifest.write_bytes(payload)
+                result = self.run_cli()
+                self.assertEqual(2, result.returncode)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertNotIn(str(self.base), result.stderr)
+                self.assertTrue(self.target.exists())
+
+    def test_unknown_nested_fields_are_rejected(self):
+        for group in ["identity", "checked", "evidence", "maintenance"]:
+            with self.subTest(group=group):
+                self.write_manifest()
+                doc = json.loads(self.manifest.read_text())
+                selected = (
+                    doc["maintenance"]
+                    if group == "maintenance"
+                    else doc["entries"][0][group]
+                )
+                selected["unexpected"] = "synthetic-only"
+                self.manifest.write_text(json.dumps(doc))
+                result = self.run_cli()
+                self.assertEqual(2, result.returncode)
+                self.assertTrue(self.target.exists())
+
+    def test_parser_recursion_failure_is_sanitized(self):
+        stdout, stderr = StringIO(), StringIO()
+        with (
+            patch.object(
+                retirement.json,
+                "loads",
+                side_effect=RecursionError("synthetic-secret-value-do-not-print"),
+            ),
+            redirect_stdout(stdout),
+            redirect_stderr(stderr),
+        ):
+            code = retirement.main(
+                ["--root", str(self.root), "--manifest", str(self.manifest)]
+            )
+        self.assertEqual(2, code)
+        self.assertNotIn("synthetic-secret-value-do-not-print", stderr.getvalue())
+        self.assertTrue(self.target.exists())
+
+    def test_output_failure_during_inspection_preserves_target(self):
+        actual_print = print
+
+        def fail_stdout(*args, **kwargs):
+            if kwargs.get("file") is sys.stderr:
+                return actual_print(*args, **kwargs)
+            raise BrokenPipeError("synthetic-secret-value-do-not-print")
+
+        with (
+            patch("builtins.print", side_effect=fail_stdout),
+            redirect_stderr(StringIO()),
+        ):
+            code = retirement.main(
+                ["--root", str(self.root), "--manifest", str(self.manifest)]
+            )
+        self.assertEqual(2, code)
+        self.assertTrue(self.target.exists())
 
     def test_main_partial_receipt_is_structured_and_nonzero(self):
         rows = [

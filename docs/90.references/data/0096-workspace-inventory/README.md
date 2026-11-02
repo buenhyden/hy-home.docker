@@ -1,6 +1,6 @@
 ---
 title: "Workspace Inventory"
-version: "0.7.0"
+version: "0.8.0"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
@@ -17,6 +17,7 @@ parent_ids:
 - "SPEC-0212-TSK-0045"
 - "SPEC-0212-TSK-0046"
 - "SPEC-0212-TSK-0047"
+- "SPEC-0212-TSK-0048"
 created: "2026-11-01"
 observed_at: "2026-11-02"
 ---
@@ -257,6 +258,18 @@ image, native 기능, 호환·복원·배포 또는 운영 수용으로 전이�
 publisher attestation이 아니다. Grype offline DB 부재(exit 1)로 취약점 scan은
 `BLOCKED`/`NOT_RUN`이며, 네트워크 DB 다운로드는 하지 않았다.
 
+[P09 역할·자원·퇴역 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md)는
+이 자료의 공개 service·consumer·profile 선언만으로 15개 역할 비교를 수행한다.
+선언은 현재 실행·사용량·데이터 소유자·복구 완료의 증거가 아니며, 알 수 없는 행은
+`UNKNOWN`으로 남긴다. SPEC-0246 C1–C6의 저장소 배치는 기존 수용 범위에서 재사용한다.
+새 저장소 이동·리밋 변경·서비스 통합·실제 삭제는 별도의 대상·권한·복구 조건이
+확인될 때만 재개한다.
+
+P09는 보존된 98개 검토 receipt를 입력으로 공개 `scan` 뒤 `validate`를 실행했다.
+그 controls source freeze 후 최종 로컬 결과는 파일 42,018/42,018, 전체 본문 6/2,322, 부분 본문 78/2,322,
+렌더 0/17, 실행 0/112, 복원 0/112이다. 이 새 목록/메타데이터 관측은 본문·구성·운영·복원
+수용이 아니며, 공개 정본 `data.yaml` 교체는 최종 source 동결 뒤 별도 비교에서만 한다.
+
 ## Related Documents
 
 - [범주 색인](../README.md)
@@ -267,6 +280,7 @@ publisher attestation이 아니다. Grype offline DB 부재(exit 1)로 취약점
 - [P05 notifier 복구 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md)
 - [P07 관측 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md)
 - [P08 이미지·공급망·Storybook Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md)
+- [P09 역할·자원·퇴역 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md)
 - [P04 Opsflow 데이터 경로 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)
 
 ## Sources

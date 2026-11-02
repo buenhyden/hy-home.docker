@@ -89,6 +89,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(
             [
                 "tests.validation.test_compose_baseline_gates",
+                "tests.validation.test_p09_compose_controls",
                 "tests.validation.test_dev_data_boundary",
                 "tests.validation.test_dev_pg_provision",
                 "tests.validation.test_dev_valkey_acl",

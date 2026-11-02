@@ -32,11 +32,19 @@ class RootResourceContractTests(unittest.TestCase):
     def test_tracked_fixtures_produce_exact_blockers_and_cli_refusal(self) -> None:
         expected = {
             "idle-unknown.synthetic.json": [
+                "CANONICAL_REGISTRY_MISMATCH",
+                "CURRENT_SOURCE_MISMATCH",
+                "EFFECTIVE_CONTROLS_UNVERIFIED",
+                "RECEIPT_UNVERIFIED",
                 "SYNTHETIC_EVIDENCE",
                 "UNKNOWN_FACTS",
                 "IDLE_ONLY_LOWERING",
             ],
             "identity-budget-mismatch.synthetic.json": [
+                "CANONICAL_REGISTRY_MISMATCH",
+                "CURRENT_SOURCE_MISMATCH",
+                "EFFECTIVE_CONTROLS_UNVERIFIED",
+                "RECEIPT_UNVERIFIED",
                 "SYNTHETIC_EVIDENCE",
                 "SOURCE_DEPLOYED_MISMATCH",
                 "CONTRADICTORY_FACTS",

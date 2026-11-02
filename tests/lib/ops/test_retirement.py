@@ -2,6 +2,7 @@
 
 import json
 import os
+import shlex
 import subprocess
 import tempfile
 import unittest
@@ -21,6 +22,7 @@ class RetirementTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         self.path = self.root / "secrets/db/legacy-app/unused.txt"
         self.path.parent.mkdir(parents=True)
         self.path.write_text("synthetic")
@@ -57,7 +59,7 @@ class RetirementTests(unittest.TestCase):
             retirement.apply_plan(self.root, [row], NOW)
         self.assertTrue(self.path.exists())
 
-    def test_actual_delete_and_idempotent_retry(self):
+    def test_actual_delete_and_retry_without_prior_evidence_is_blocked(self):
         untouched = deepcopy(self.row)
         self.assertTrue(
             retirement.inspect_plan(self.root, [self.row], NOW)[0]["eligible"]
@@ -66,19 +68,21 @@ class RetirementTests(unittest.TestCase):
             retirement.apply_plan(self.root, [self.row], NOW)[0]["result"], "deleted"
         )
         self.assertFalse(self.path.exists())
-        self.assertEqual(
-            retirement.apply_plan(self.root, [self.row], NOW)[0]["result"],
-            "already-absent",
-        )
+        result = retirement.inspect_plan(self.root, [self.row], NOW)[0]
+        self.assertFalse(result["eligible"])
+        self.assertIn("absent-unverified", result["reasons"])
+        with self.assertRaises(ValueError):
+            retirement.apply_plan(self.root, [self.row], NOW)
         self.assertEqual(self.row, untouched)
 
     def test_retry_after_empty_parent_rmdir(self):
         retirement.apply_plan(self.root, [self.row], NOW)
         self.path.parent.rmdir()
-        self.assertEqual(
-            retirement.apply_plan(self.root, [self.row], NOW)[0]["result"],
-            "already-absent",
-        )
+        result = retirement.inspect_plan(self.root, [self.row], NOW)[0]
+        self.assertFalse(result["eligible"])
+        self.assertIn("absent-unverified", result["reasons"])
+        with self.assertRaises(ValueError):
+            retirement.apply_plan(self.root, [self.row], NOW)
 
     def test_unknown_evidence_blocks_every_axis(self):
         for axis in retirement.CHECKS:
@@ -187,7 +191,7 @@ class RetirementTests(unittest.TestCase):
                 )
 
     def test_input_validation_and_duplicate_targets(self):
-        for rows in [[self.row, self.row], [None], {}, [self.row] * 4097]:
+        for rows in [[], [self.row, self.row], [None], {}, [self.row] * 4097]:
             with self.subTest(kind=type(rows).__name__), self.assertRaises(ValueError):
                 retirement.inspect_plan(self.root, rows, NOW)
         with self.assertRaises(ValueError):
@@ -268,7 +272,7 @@ class RetirementTests(unittest.TestCase):
     def test_whole_batch_preflight_and_same_parent_success(self):
         second = self.path.with_name("second.txt")
         second.write_text("synthetic")
-        rows = [self.receipt(self.path), self.receipt(second)]
+        rows = [self.receipt(self.path), {**self.receipt(second), "id": "TEST-002"}]
         bad = {**rows[1], "consumers": ["cold-start"]}
         with self.assertRaises(ValueError):
             retirement.apply_plan(self.root, [rows[0], bad], NOW)
@@ -354,7 +358,10 @@ class RetirementTests(unittest.TestCase):
         ]
         for path in paths[1:]:
             path.write_text("synthetic")
-        rows = [self.receipt(path) for path in paths]
+        rows = [
+            {**self.receipt(path), "id": f"TEST-{number:03d}"}
+            for number, path in enumerate(paths, start=1)
+        ]
         unlink = os.unlink
 
         def fail_second(name, *, dir_fd=None):
@@ -401,17 +408,36 @@ class RetirementTests(unittest.TestCase):
 
     def test_absent_target_reappearing_after_preflight_blocks_batch(self):
         self.path.unlink()
-        original = retirement.inspect_plan
+        result = retirement.inspect_plan(self.root, [self.row], NOW)[0]
+        self.assertIn("absent-unverified", result["reasons"])
+        with self.assertRaises(ValueError):
+            retirement.apply_plan(self.root, [self.row], NOW)
+        self.assertFalse(self.path.exists())
 
-        def recreate(*args, **kwargs):
-            result = original(*args, **kwargs)
-            self.path.write_text("new active material")
-            return result
-
-        with patch.object(retirement, "inspect_plan", side_effect=recreate):
-            with self.assertRaises(ValueError):
-                retirement.apply_plan(self.root, [self.row], NOW)
+    def test_duplicate_ids_with_distinct_paths_are_rejected(self):
+        second = self.path.with_name("second.txt")
+        second.write_text("synthetic")
+        rows = [self.receipt(self.path), self.receipt(second)]
+        with self.assertRaisesRegex(ValueError, "duplicate_material_id"):
+            retirement.inspect_plan(self.root, rows, NOW)
         self.assertTrue(self.path.exists())
+        self.assertTrue(second.exists())
+
+    def test_unknown_receipt_fields_are_rejected(self):
+        with self.assertRaisesRegex(ValueError, "invalid_entry"):
+            retirement.inspect_plan(self.root, [{**self.row, "extra": True}], NOW)
+        self.assertTrue(self.path.exists())
+
+    def test_absent_receipt_without_identity_is_never_eligible(self):
+        self.path.unlink()
+        row = {
+            key: value
+            for key, value in self.row.items()
+            if key not in {"identity", "parents"}
+        }
+        result = retirement.inspect_plan(self.root, [row], NOW)[0]
+        self.assertFalse(result["eligible"])
+        self.assertIn("absent-unverified", result["reasons"])
 
     def test_replacement_during_unlink_is_never_success(self):
         unlink = os.unlink
@@ -591,6 +617,34 @@ class RetirementTests(unittest.TestCase):
                 ):
                     self.assert_blocked(self.row)
 
+    def test_tracking_does_not_execute_caller_path_git(self):
+        subprocess.run(
+            ["git", "-C", str(self.root), "add", "--", self.row["path"]], check=True
+        )
+        self.row = self.receipt(self.path)
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            marker = directory / "called"
+            shim = directory / "git"
+            shim.write_text(
+                "#!/bin/sh\n"
+                f"printf called > {shlex.quote(str(marker))}\n"
+                f"if [ \"$3\" = rev-parse ]; then printf '%s\\n' {shlex.quote(str(self.root))}; exit 0; fi\n"
+                "exit 1\n"
+            )
+            shim.chmod(0o700)
+            with patch.dict(os.environ, {"PATH": str(directory)}):
+                result = retirement.inspect_plan(self.root, [self.row], NOW)[0]
+            self.assertFalse(result["eligible"])
+            self.assertIn("git_tracked_target", result["reasons"])
+            self.assertFalse(marker.exists())
+
+    def test_missing_trusted_git_fails_closed(self):
+        with patch.object(retirement.subprocess, "run", side_effect=FileNotFoundError):
+            with self.assertRaises((ValueError, OSError)):
+                retirement.inspect_plan(self.root, [self.row], NOW)
+        self.assertTrue(self.path.exists())
+
     def test_review_nested_repository_root_is_refused(self):
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         nested = self.root / "nested"
@@ -676,6 +730,87 @@ class RetirementTests(unittest.TestCase):
             with patch.object(retirement.os, "read", side_effect=mutate):
                 with self.assertRaises(ValueError):
                     retirement.load_manifest(self.root, path)
+
+    def test_manifest_rejects_empty_duplicates_and_non_utf8(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.manifest(Path(tmp))
+            cases = [
+                b'{"entries": []}',
+                b'{"entries": [], "entries": [{}]}',
+                b'{"entries": [{"id":"TEST-001","id":"TEST-002"}]}',
+                b'{"entries": [], "unexpected": true}',
+                json.dumps({"entries": [self.row]}).encode("utf-16"),
+                b'{"entries": ["\xff"]}',
+            ]
+            for raw in cases:
+                path.write_bytes(raw)
+                with (
+                    self.subTest(prefix=raw[:16]),
+                    self.assertRaises((ValueError, UnicodeError)),
+                ):
+                    retirement.load_manifest(self.root, path)
+
+    def test_manifest_rejects_duplicate_ids_and_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.manifest(Path(tmp))
+            second = self.path.with_name("second.txt")
+            second.write_text("synthetic")
+            for row in [
+                self.row,
+                {**self.row, "path": second.relative_to(self.root).as_posix()},
+            ]:
+                path.write_text(json.dumps({"entries": [self.row, row]}))
+                with self.assertRaises(ValueError):
+                    retirement.load_manifest(self.root, path)
+
+    def test_manifest_loops_on_short_reads_and_rejects_early_eof(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.manifest(Path(tmp))
+            real_read = os.read
+            with patch.object(
+                retirement.os,
+                "read",
+                side_effect=lambda fd, size: real_read(fd, min(size, 7)),
+            ):
+                result = retirement.load_manifest(self.root, path)
+            self.assertEqual(result["entries"][0]["id"], self.row["id"])
+            with patch.object(retirement.os, "read", return_value=b""):
+                with self.assertRaises(ValueError):
+                    retirement.load_manifest(self.root, path)
+
+    def test_manifest_rebinding_during_read_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.manifest(Path(tmp))
+            real_read = os.read
+
+            def replace(fd, length):
+                raw = real_read(fd, length)
+                path.rename(path.with_name("old.json"))
+                path.write_bytes(raw)
+                path.chmod(0o600)
+                return raw
+
+            with patch.object(retirement.os, "read", side_effect=replace):
+                with self.assertRaises(ValueError):
+                    retirement.load_manifest(self.root, path)
+
+    def test_manifest_directory_permission_change_during_read_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            parent = Path(tmp)
+            path = self.manifest(parent)
+            real_read = os.read
+
+            def loosen(fd, length):
+                body = real_read(fd, length)
+                parent.chmod(0o755)
+                return body
+
+            try:
+                with patch.object(retirement.os, "read", side_effect=loosen):
+                    with self.assertRaises(ValueError):
+                        retirement.load_manifest(self.root, path)
+            finally:
+                parent.chmod(0o700)
 
 
 if __name__ == "__main__":

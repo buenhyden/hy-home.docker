@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.40.0"
+version: "1.41.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -120,6 +120,13 @@ scope. Local source, bounded owned isolation and the exact declared Prometheus
 image pull are authorized; HOME changes, actual secrets and external alert
 delivery are not. Historical P07 resource work belongs to SPEC-0218.
 
+W95–W98 implement the approved local P09 plan in TSK-0048. The Task records
+consumer-backed role dispositions, source-bound common-control and resource
+evidence, accepted storage placement and protected retirement input handling.
+It preserves current default and optional configurations. It does not authorize
+service operation, host configuration, storage migration, actual deletion,
+Secret access or remote integration.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -218,6 +225,10 @@ delivery are not. Historical P07 resource work belongs to SPEC-0218.
 | W92 | 87 | Evaluate selected Valkey 9.1.3 and n8n 2.45.7 compatibility bundles without promoting a candidate to operation | W91 | TSK-0047 | Pin/consumer/source checks and bounded isolated ACL, queue, restore and runner regressions |
 | W93 | 88 | Preserve Storybook 10.6.3 and verify its tracked lock in a clean isolated installation | W91 | TSK-0047 | Isolated install, lint/typecheck/build and scoped UI/MCP/OIDC regression evidence |
 | W94 | 89 | Bind selected artifact verification to its exact subject and document unavailable signing or provenance material | W91, W92 | TSK-0047 | Per-artifact publisher, digest, identity/key, provenance/SBOM/license evidence and residual handoff |
+| W95 | 90 | Record the fifteen current role comparisons with public-source/consumer evidence and explicit unknowns | None | TSK-0048 | DATA-0096 role rows, preserved historical decisions and no deletion inference |
+| W96 | 91 | Preserve common controls while binding base/overlay provenance and measurement inputs to canonical sources | W95 | TSK-0048 | RED/GREEN synthetic overlay, exception and canonical-binding checks; runtime remains separate |
+| W97 | 92 | Reuse accepted C1–C6 placement and record only measured drift as a future candidate | W95 | TSK-0048 | Read-only current-source comparison and explicit no-migration boundary |
+| W98 | 93 | Reject unsafe or incomplete retirement manifests without creating an eligible deletion target | W95 | TSK-0048 | RED/GREEN manifest parser and owned-fixture rejection checks; apply remains blocked |
 
 ### Current v30 continuation and delivery
 

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.40.0"
+version: "1.41.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -122,6 +122,14 @@ compatibility lane. It is distinct from the completed SPEC-0204 P08
 operations-document-layout Task: its historical scope and accepted records are
 preserved, while this Task owns only source, selected candidate and isolated
 evidence within its explicitly declared boundaries.
+
+The direct P09 plan approval of 2026-11-03 adds criteria 90–93 and W95–W98
+in TSK-0048. It is the current role-disposition, common-control, resource
+evidence and retirement-input lane, distinct from SPEC-0204's historical P09
+Wiki-preparation Task. It preserves SPEC-0218 common-control and SPEC-0246
+C1–C6 acceptance at their recorded scopes. Local source and synthetic checks
+are authorized; service operation, host changes, storage moves, actual
+deletion, Secret access and remote integration are not.
 
 ## Scope
 
@@ -678,6 +686,20 @@ hold, authorization and recovery requirements have been established.
     digest and available provenance/SBOM/license evidence. A base-image or
     sample-service receipt never proves a custom or unrelated image; unavailable
     material remains an explicit residual.
+90. P09.01 records all fifteen requested role comparisons against current public
+    declarations and named consumers, retaining distinct functions and marking
+    unobserved use, ownership and cost as unknown rather than inferring removal.
+91. P09.02 preserves the existing common-control source and exception registry
+    while making base/overlay provenance and canonical measurement binding
+    explicit. A short host observation is not capacity, resource-limit, RPO or
+    RTO acceptance.
+92. P09.03 reuses the accepted SPEC-0246 C1–C6 storage placement. Read-only
+    current-source comparison may identify drift, but does not re-run a move,
+    change a host setting or reopen C6 merely because the observation environment
+    has a read-only mount.
+93. P09.04 hardens only the retirement manifest's public input handling. No
+    candidate is eligible from disabled state, missing traffic or a missing path;
+    Secret and protected recovery material remain under their existing owners.
 
 ## Failure Conditions
 

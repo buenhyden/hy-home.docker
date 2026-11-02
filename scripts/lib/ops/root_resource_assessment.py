@@ -15,6 +15,7 @@ import math
 import os
 import re
 import stat
+import subprocess
 from pathlib import Path
 from typing import NoReturn
 
@@ -28,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = (
     ROOT / "infra/09-platform-ops/resource-optimization/measurement.schema.json"
 )
+REGISTRY_PATH = ROOT / "infra/common-optimizations.exceptions.json"
 MAX_INPUT_BYTES = 256 * 1024
 MAX_DEPTH = 32
 MAX_NODES = 8192
@@ -449,7 +451,7 @@ def _contradictory(document: dict[str, object], today: dt.date) -> bool:
 
 
 def _controls(
-    document: dict[str, object], today: dt.date
+    document: dict[str, object], today: dt.date, registry: dict[str, object] | None
 ) -> tuple[dict[str, object], list[str]]:
     selected = document["controls"]
     service_name = document["target"]["service"]
@@ -463,8 +465,96 @@ def _controls(
             roots,
         )
     }
-    findings = compose_controls.check(selected["registry"], models, today)
+    findings = compose_controls.check(
+        registry if registry is not None else {"controls": {}, "exceptions": []},
+        models,
+        today,
+    )
     return deviations, findings
+
+
+def _canonical_sources() -> tuple[dict, str, list[str], dict, str]:
+    """Load public canonical inputs without opening env, secrets or the daemon."""
+    from scripts.lib.supply_chain.latest_version_gate import expected_from_root
+
+    registry, registry_digest = _read_document(REGISTRY_PATH)
+    compose_controls.validate_registry(registry)
+    names, inventory = expected_from_root(ROOT)
+    environment = {
+        "PATH": "/usr/bin:/bin",
+        "LC_ALL": "C",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_OPTIONAL_LOCKS": "0",
+    }
+    revision = subprocess.run(
+        ["/usr/bin/git", "-C", str(ROOT), "rev-parse", "--verify", "HEAD"],
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=5,
+        check=False,
+    )
+    head = revision.stdout.strip()
+    if revision.returncode != 0 or not re.fullmatch(r"[a-f0-9]{40}", head):
+        raise ValueError("source_revision_unavailable")
+    return registry, registry_digest, names, inventory, head
+
+
+def _canonical_binding(
+    document: dict[str, object],
+) -> tuple[dict, list[str], dict | None]:
+    """Bind public source identity and registry projection; not runtime evidence."""
+    result = {
+        "registry_sha256": None,
+        "source_manifest_sha256": None,
+        "current_head": None,
+        "effective_controls_verified": False,
+        "receipt_verified": False,
+    }
+    try:
+        from scripts.lib.document_governance.operations_catalog import _compose_mapping
+
+        canonical, digest, names, inventory, head = _canonical_sources()
+        service = document["target"]["service"]
+        source = document["source"]
+        projection = {
+            key: canonical[key]
+            for key in ("schema_version", "policy_id", "template_source", "controls")
+        }
+        projection["exceptions"] = [
+            row
+            for row in canonical["exceptions"]
+            if row["scope"] == "root" and row["service"] == service
+        ]
+        inputs = {item["path"]: item["sha256"] for item in inventory["input_files"]}
+        result.update(
+            registry_sha256=digest,
+            source_manifest_sha256=inventory["input_manifest_sha256"],
+            current_head=head,
+        )
+        blockers = []
+        if projection != document["controls"]["registry"]:
+            blockers.append("CANONICAL_REGISTRY_MISMATCH")
+        path = source["compose_file"]
+        if (
+            service not in names
+            or path not in inputs
+            or source["compose_file_sha256"] != inputs[path]
+            or source["repository_sha"] != head
+            or service not in (_compose_mapping(ROOT, Path(path)).get("services") or {})
+        ):
+            blockers.append("CURRENT_SOURCE_MISMATCH")
+        return result, blockers, projection
+    except (
+        ImportError,
+        OSError,
+        ValueError,
+        KeyError,
+        TypeError,
+        subprocess.SubprocessError,
+    ):
+        return result, ["CANONICAL_INPUT_UNAVAILABLE"], None
 
 
 def _required_not_applicable(document: dict[str, object]) -> bool:
@@ -497,8 +587,15 @@ def evaluate(
     observation_date = today or dt.date.today()
     if type(observation_date) is not dt.date:
         raise PublicInputError("INVALID_DOCUMENT")
-    control_deviations, control_findings = _controls(document, observation_date)
-    blockers: list[str] = []
+    binding, binding_blockers, canonical_registry = _canonical_binding(document)
+    control_deviations, control_findings = _controls(
+        document, observation_date, canonical_registry
+    )
+    blockers: list[str] = [
+        *binding_blockers,
+        "EFFECTIVE_CONTROLS_UNVERIFIED",
+        "RECEIPT_UNVERIFIED",
+    ]
     synthetic = (
         document["evidence_kind"] == "synthetic"
         or document["provenance"]["method"] == "synthetic"
@@ -530,6 +627,7 @@ def evaluate(
         "blockers": blockers,
         "control_deviations": control_deviations,
         "control_findings": control_findings,
+        "canonical_binding": binding,
         "evidence_scope": "SOURCE/UNIT/STATIC",
         "synthetic": synthetic,
         "runtime_acceptance": False,

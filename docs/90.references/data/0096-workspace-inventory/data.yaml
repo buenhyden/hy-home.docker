@@ -37617,6 +37617,110 @@ requirements:
   limit: Exact upstream index evidence does not verify custom images, native behavior,
     compatibility, restore, deployment or runtime. Valkey signing identity/issuer is
     NOT_ASSESSABLE; verification options are never disabled to create PASS.
+- id: P09.01
+  criterion: 90
+  work_unit: W95
+  task_id: SPEC-0212-TSK-0048
+  subject: Current public role dispositions and consumer-backed retention
+  state: SOURCE_READY
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0048
+  implementation_writer: P09 documentation writer under current Task lease
+  source_verification: Fifteen comparisons are mapped to public declarations and named
+    consumers where present. Post-controls-freeze P09 local scan/validate using 98 retained review receipts
+    listed 42,018/42,018 files; whole body 6/2,322, partial 78/2,322, render 0/17,
+    runtime 0/112 and restore 0/112. Unknown owner, use, cost and recovery facts remain
+    UNKNOWN.
+  static_checks: Pending final DATA and documentation checks.
+  isolated_tests: NOT_RUN; role documentation is not runtime proof.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md
+  limit: Disabled profile, absent traffic or a missing current source does not establish
+    consumer-zero or deletion eligibility.
+- id: P09.02
+  criterion: 91
+  work_unit: W96
+  task_id: SPEC-0212-TSK-0048
+  subject: Common-control overlay provenance and canonical resource evidence
+  state: SOURCE_READY
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0048
+  implementation_writer: P09 common-control/resource writers under exact path leases
+  source_verification: Existing common-control source, exception registry and synthetic
+    measurement contract are reused; no new exception or resource limit is authorized.
+  static_checks: 'PASS: latest controls30/30 skip0, independent security18/18 and
+    public-copy root+8 overlays+9 LAB CLI18 scopes/1,062 instances/0 findings and
+    stdlib trace 335/364 added executable lines (92.0%, subprocess excluded) at
+    controls SHA256 d9e901e08f7f037d70e8b692902f5f60363c4d6417f6b3ce49bb273dc2a5fbdb
+    (test SHA256 2b53691ac5cde8f5795635f4e6ce84beb4a82e17a85b200f8f9d518e431e68c8).
+    Earlier controls26/security14 are history, not latest. Resource packet: 35 tests and changed execution trace
+    81/82 (98.8%). The binding verifies canonical registry/service/Compose/HEAD inputs;
+    it does not authenticate effective settings or a runtime receipt.'
+  isolated_tests: NOT_RUN
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md
+  limit: Effective controls and receipt remain EFFECTIVE_CONTROLS_UNVERIFIED and
+    RECEIPT_UNVERIFIED/BLOCKED. Short host observations do not prove capacity, peak,
+    RPO/RTO, energy budget or an accepted runtime limit.
+- id: P09.03
+  criterion: 92
+  work_unit: W97
+  task_id: SPEC-0212-TSK-0048
+  subject: Accepted host storage placement reuse
+  state: REUSE_ACCEPTED
+  acceptance: pending
+  acceptance_owner: SPEC-0246-TSK-0001
+  implementation_writer: P09 documentation writer for read-only mapping only
+  source_verification: C1-C6 stay bound to SPEC-0246 owner acceptance and its recorded
+    storage source/measurement evidence.
+  static_checks: Pending current-source documentation checks only.
+  isolated_tests: NOT_RUN
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0246-host-storage-tiering/tasks/tsk-0001-host-storage-tiering.md
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md
+  limit: No host move, C6 regression, current recovery result or operational acceptance
+    follows from this read-only comparison.
+- id: P09.04
+  criterion: 93
+  work_unit: W98
+  task_id: SPEC-0212-TSK-0048
+  subject: Retirement manifest input protection without deletion
+  state: SOURCE_READY
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0048
+  implementation_writer: P09 retirement writer under exact path lease
+  source_verification: No new target is confirmed. Existing protected recovery and Secret
+    boundaries remain outside this generic parser change.
+  static_checks: 'PASS: final 135 focused tests including SMTP/lock and trusted-git
+    PATH-shim rejection; changed executable-line trace 86/88 (97.7%). Independent
+    security focused packet: 66 PASS. Earlier 133-test/77-of-79 packet is preserved
+    as prior-fingerprint history.'
+  isolated_tests: NOT_RUN
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md
+  limit: Apply remains blocked. Writer stop, separate target approval and post-output-failure
+    operator verification are required; hostile unlink race remains; owner/evidence text
+    is not authorization.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED

@@ -685,6 +685,7 @@
       "argv": [
         "run-unittest",
         "tests.validation.test_compose_baseline_gates",
+        "tests.validation.test_p09_compose_controls",
         "tests.validation.test_dev_data_boundary",
         "tests.validation.test_dev_pg_provision",
         "tests.validation.test_dev_valkey_acl",
@@ -866,6 +867,7 @@
         "tests.validation.test_p07_quality_metrics",
         "tests.validation.test_p07_ci_routing",
         "tests.validation.test_p08_ci_routing",
+        "tests.validation.test_p09_ci_routing",
         "tests.lib.ops.test_workspace_inventory",
         "tests.lib.ops.test_workspace_services",
         "tests.validation.test_workspace_inventory",
@@ -1639,6 +1641,8 @@
           "scripts/validation/check-conftest-policy.sh",
           "scripts/validation/check-supply-chain-policy.py",
           "scripts/validation/compose_controls.py",
+          "infra/common-optimizations.yml",
+          "infra/common-optimizations.exceptions.json",
           "scripts/validation/check-template-security-baseline.sh",
           "scripts/validation/validate-docker-compose.sh",
           "tests/lib/supply_chain/",
@@ -1646,6 +1650,8 @@
           "tests/validation/test_supply_chain_secure_output.py",
           "tests/validation/test_supply_chain_wrapper.py",
           "tests/validation/test_p08_ci_routing.py",
+          "tests/validation/test_p09_compose_controls.py",
+          "tests/validation/test_p09_ci_routing.py",
           "tests/validation/test_compose_baseline_gates.py",
           "tests/validation/test_dev_data_boundary.py",
           "tests/validation/test_dev_pg_provision.py",
@@ -1987,6 +1993,17 @@
           "tests/lib/ops/test_storage_write_rate.py",
           "tests/lib/ops/test_root_resource_assessment.py",
           "tests/validation/test_root_resource_contract.py"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/retire_materials.py",
+          "scripts/operations/retire-materials.py",
+          "tests/lib/ops/test_retirement.py",
+          "tests/validation/test_retirement_cli.py"
         ],
         "suites": [
           "repository-integrity"
@@ -2479,6 +2496,18 @@
       },
       {
         "prefixes": [
+          "scripts/validation/compose_controls.py",
+          "infra/common-optimizations.yml",
+          "infra/common-optimizations.exceptions.json",
+          "tests/validation/test_p09_compose_controls.py",
+          "tests/validation/test_p09_ci_routing.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
           "infra/09-platform-ops/resource-optimization/",
           "scripts/lib/ops/root_resource_assessment.py",
           "scripts/operations/root-resource-assessment.py",
@@ -2487,6 +2516,18 @@
           "tests/lib/ops/test_storage_write_rate.py",
           "tests/lib/ops/test_root_resource_assessment.py",
           "tests/validation/test_root_resource_contract.py"
+        ],
+        "root_gate_ids": [
+          "leaf.local-script-manifest",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/retire_materials.py",
+          "scripts/operations/retire-materials.py",
+          "tests/lib/ops/test_retirement.py",
+          "tests/validation/test_retirement_cli.py"
         ],
         "root_gate_ids": [
           "leaf.local-script-manifest",

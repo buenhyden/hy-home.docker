@@ -4,7 +4,7 @@ version: "0.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-11-03"
 layer: "operations"
 artifact_id: "POL-0102"
 created: "2026-10-27"
@@ -58,6 +58,15 @@ created: "2026-10-27"
 ## Exceptions
 
 없음. 새 저장소를 SSD로 옮기려면 위 조건의 측정값과 소유자 결정을 해당 Task에 기록한다.
+
+### Current reconciliation boundary
+
+2026-11-03 P09는 이 정책과 SPEC-0246 C1–C6의 기록을 읽기 전용으로 대조한다.
+그 작업의 Docker root metadata와 짧은 사용량 표본은 현재 배치·실행 상태를 바꾸거나
+용량, RPO/RTO, 피크 또는 에너지 예산을 수용하는 근거가 아니다. 관측 환경의 read-only
+mount 표시는 호스트 mount 실패로 해석하지 않는다. Prometheus·Tempo SSD 및
+Loki·Alloy·Pyroscope와 containerd/Docker/BuildKit HDD의 수용된 배치는 새로운 측정된
+drift와 명시적 소유자 승인이 없는 한 유지한다.
 
 ### Review Cadence
 
