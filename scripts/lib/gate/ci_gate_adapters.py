@@ -305,6 +305,68 @@ def _validate_unittest_skips(output: bytes, scopes: tuple[str, ...]) -> None:
         )
 
 
+def _validate_unittest_summary(output: bytes) -> None:
+    summaries = re.findall(rb"(?m)^Ran ([0-9]+) tests? in [0-9.]+s$", output)
+    if len(summaries) != 1 or int(summaries[0]) == 0:
+        raise AdapterError(
+            "ci-gate-adapter-test-count",
+            "the required unittest gate must execute at least one test",
+        )
+
+
+def _emit_unittest_payload(stdout: bytes, stderr: bytes) -> None:
+    sys.stdout.write(stdout.decode("utf-8", errors="replace"))
+    sys.stdout.flush()
+    sys.stderr.write(stderr.decode("utf-8", errors="replace"))
+    sys.stderr.flush()
+
+
+def _run_unittest_selectors(
+    root: pathlib.Path,
+    modules: tuple[str, ...],
+    optional_scopes: tuple[str, ...],
+    environ: Mapping[str, str],
+) -> int:
+    captured = {"stdout": 0, "stderr": 0}
+    returncode = 0
+    for module in modules:
+        marker = f"ci-gate-adapter: starting unittest selector {module}\n"
+        captured["stdout"] += len(marker.encode("ascii"))
+        if captured["stdout"] > _MAX_CAPTURE_BYTES:
+            raise AdapterError(
+                "ci-gate-adapter-output",
+                "the adapter output is invalid",
+            )
+        sys.stdout.write(marker)
+        sys.stdout.flush()
+        result = _run_child(
+            ("python3", "-m", "unittest", module, "-v"),
+            root=root,
+            environ=environ,
+            capture_output=True,
+        )
+        stdout = result.stdout or b""
+        stderr = result.stderr or b""
+        captured["stdout"] += len(stdout)
+        captured["stderr"] += len(stderr)
+        if any(size > _MAX_CAPTURE_BYTES for size in captured.values()):
+            raise AdapterError(
+                "ci-gate-adapter-output",
+                "the adapter output is invalid",
+            )
+        _emit_unittest_payload(stdout, stderr)
+        if result.returncode != 0:
+            if returncode == 0:
+                returncode = _returncode(result)
+            continue
+        _validate_unittest_summary(stderr)
+        module_scopes = tuple(
+            scope for scope in optional_scopes if scope.rpartition(".")[0] == module
+        )
+        _validate_unittest_skips(stderr, module_scopes)
+    return returncode
+
+
 def admits_adapter_invocation(argv: tuple[str, ...], context: str) -> bool:
     """Return whether this adapter invocation is admitted in `context`."""
 
@@ -355,25 +417,9 @@ def _dispatch_adapter(
         return _check_shell_syntax(canonical_root, environ)
     if command == "run-unittest":
         modules, optional_scopes = _unittest_arguments(arguments)
-        result = _run_child(
-            ("python3", "-m", "unittest", *modules, "-v"),
-            root=canonical_root,
-            environ=environ,
-            capture_output=True,
+        return _run_unittest_selectors(
+            canonical_root, modules, optional_scopes, environ
         )
-        sys.stdout.write((result.stdout or b"").decode("utf-8", errors="replace"))
-        sys.stderr.write((result.stderr or b"").decode("utf-8", errors="replace"))
-        if result.returncode == 0:
-            summaries = re.findall(
-                rb"(?m)^Ran ([0-9]+) tests? in [0-9.]+s$", result.stderr
-            )
-            if len(summaries) != 1 or int(summaries[0]) == 0:
-                raise AdapterError(
-                    "ci-gate-adapter-test-count",
-                    "the required unittest gate must execute at least one test",
-                )
-            _validate_unittest_skips(result.stderr, optional_scopes)
-        return _returncode(result)
     if command == "run-npm":
         npm_arguments = _npm_arguments(arguments)
         return _returncode(

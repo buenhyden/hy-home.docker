@@ -1,173 +1,31 @@
 schema_version: 1
-observed_at: '2026-11-02T01:34:47.543809Z'
+observed_at: '2026-11-02T02:56:41.139157Z'
 workspace:
   path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: b79cbb9f3f49af8cd0e654c2ca1c4b9ea7632af0
+  head: 0592303d1f7d96b46019be7a730c115c53cbbcab
   branch: codex/p02-integration-network-auth-valkey
   dirty_paths:
   - status: 'M '
-    path: .env.example
-  - status: 'M '
     path: .github/workflow-contract.yml
-  - status: 'M '
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-  - status: 'M '
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-  - status: 'M '
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
-  - status: 'A '
+  - status: MM
     path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
-  - status: 'M '
-    path: docs/05.operations/guides/02-gateway-and-networking/0011-nginx.md
-  - status: 'M '
-    path: docs/05.operations/guides/02-gateway-and-networking/0013-traefik.md
-  - status: 'M '
-    path: docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md
-  - status: 'M '
-    path: docs/05.operations/guides/07-observability/0045-prometheus.md
-  - status: 'M '
-    path: docs/05.operations/guides/09-ai-and-search/0073-open-notebook.md
-  - status: 'M '
-    path: docs/05.operations/policies/03-identity-and-access/0079-application-auth-integration.md
-  - status: 'M '
-    path: docs/90.references/data/0096-workspace-inventory/README.md
   - status: 'M '
     path: docs/90.references/data/0096-workspace-inventory/data.yaml
   - status: 'M '
-    path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
+    path: scripts/lib/gate/ci_gate_adapters.py
   - status: 'M '
-    path: infra/01-gateway/nginx/README.md
-  - status: 'M '
-    path: infra/01-gateway/nginx/config/nginx.conf
-  - status: 'A '
-    path: infra/01-gateway/nginx/config/upstreams.conf.template
-  - status: 'M '
-    path: infra/01-gateway/nginx/docker-compose.yml
-  - status: 'A '
-    path: infra/01-gateway/nginx/scripts/validate-upstream-ports.sh
-  - status: 'M '
-    path: infra/01-gateway/traefik/README.md
-  - status: 'M '
-    path: infra/01-gateway/traefik/docker-compose.yml
-  - status: 'M '
-    path: infra/01-gateway/traefik/dynamic/middleware.yml
-  - status: 'M '
-    path: infra/02-auth/keycloak/README.md
-  - status: 'M '
-    path: infra/02-auth/keycloak/docker-compose.yml
-  - status: 'M '
-    path: infra/02-auth/oauth2-proxy/README.md
-  - status: 'M '
-    path: infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
-  - status: 'M '
-    path: infra/02-auth/oauth2-proxy/docker-compose.yml
-  - status: 'M '
-    path: infra/04-data/mng-db/README.md
-  - status: 'M '
-    path: infra/04-data/mng-db/docker-compose.yml
-  - status: 'M '
-    path: infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh
-  - status: AM
-    path: infra/04-data/mng-db/valkey/scripts/start-dedicated.sh
-  - status: 'M '
-    path: infra/04-data/mng-db/valkey/scripts/start.sh
-  - status: 'M '
-    path: infra/04-data/redisinsight/docker-compose.yml
-  - status: 'M '
-    path: infra/06-observability/docker-compose.yml
-  - status: 'M '
-    path: infra/06-observability/gatus/README.md
-  - status: 'M '
-    path: infra/06-observability/gatus/config/config.oidc.yaml
-  - status: 'M '
-    path: infra/06-observability/gatus/config/config.yaml
-  - status: 'M '
-    path: infra/06-observability/grafana/README.md
-  - status: 'M '
-    path: infra/06-observability/grafana/provisioning/datasources/datasource.yml
-  - status: 'M '
-    path: infra/06-observability/prometheus/README.md
-  - status: 'M '
-    path: infra/06-observability/prometheus/config/prometheus.dev.yml
-  - status: 'M '
-    path: infra/06-observability/prometheus/config/prometheus.yml
-  - status: 'M '
-    path: infra/06-observability/prometheus/scripts/start.sh
-  - status: 'M '
-    path: infra/07-workflow/airflow/README.md
-  - status: 'M '
-    path: infra/07-workflow/airflow/docker-compose.monitor-acl.yml
-  - status: 'M '
-    path: infra/07-workflow/airflow/docker-compose.yml
-  - status: 'M '
-    path: infra/07-workflow/n8n/README.md
-  - status: 'M '
-    path: infra/07-workflow/n8n/docker-compose.monitor-acl.yml
-  - status: 'M '
-    path: infra/07-workflow/n8n/docker-compose.yml
-  - status: 'M '
-    path: infra/08-ai/open-notebook/README.md
-  - status: 'M '
-    path: infra/08-ai/open-notebook/docker-compose.yml
-  - status: 'M '
-    path: infra/08-ai/open-webui/README.md
-  - status: 'M '
-    path: infra/08-ai/open-webui/docker-compose.yml
-  - status: 'M '
-    path: infra/09-platform-ops/terrakube/README.md
-  - status: 'M '
-    path: infra/09-platform-ops/terrakube/docker-compose.yml
-  - status: 'M '
-    path: scripts/hardening/check-all-hardening.sh
-  - status: 'M '
-    path: scripts/lib/document_governance/spec_packages.py
-  - status: 'A '
-    path: scripts/lib/ops/_workspace_connection_sources.py
-  - status: 'A '
-    path: scripts/lib/ops/_workspace_connections.py
-  - status: 'M '
-    path: scripts/lib/ops/workspace_inventory.py
-  - status: 'M '
-    path: scripts/manifest.yaml
-  - status: 'M '
-    path: scripts/operations/workspace-inventory.py
-  - status: 'M '
-    path: tests/lib/document_governance/metadata/test_reference.py
-  - status: 'M '
-    path: tests/lib/document_governance/test_generation7.py
-  - status: 'M '
-    path: tests/lib/document_governance/test_references.py
+    path: tests/lib/gate/test_ci_gate_adapters.py
   - status: 'M '
     path: tests/lib/gate/test_github_workflow_contract.py
-  - status: 'A '
-    path: tests/lib/ops/test_workspace_connections.py
   - status: 'M '
-    path: tests/validation/test_ci_gate_plan.py
+    path: tests/validation/test_ci_gate_execution_context.py
   - status: 'M '
     path: tests/validation/test_compose_baseline_gates.py
   - status: 'M '
-    path: tests/validation/test_dev_data_boundary.py
-  - status: 'A '
-    path: tests/validation/test_p02_gateway_port_validation.py
-  - status: 'A '
-    path: tests/validation/test_p02_native_contracts.py
-  - status: 'A '
-    path: tests/validation/test_p02_oauth_native.py
-  - status: 'A '
-    path: tests/validation/test_p02_prometheus_contracts.py
-  - status: 'A '
-    path: tests/validation/test_p02_secret_presentation_native.py
-  - status: 'A '
-    path: tests/validation/test_p02_service_contracts.py
-  - status: 'A '
-    path: tests/validation/test_p02_valkey_mount_scope.py
-  - status: 'M '
-    path: tests/validation/test_service_wiring_contracts.py
-  - status: 'M '
-    path: tests/validation/test_workspace_inventory.py
+    path: tests/validation/test_sec01_next_stable_candidates.py
   worktrees:
   - in_boundary: true
     access: metadata-only
@@ -181,7 +39,7 @@ roots:
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: b79cbb9f3f49af8cd0e654c2ca1c4b9ea7632af0
+  head: 0592303d1f7d96b46019be7a730c115c53cbbcab
   branch: codex/p02-integration-network-auth-valkey
   dirty_paths: []
   worktrees:
@@ -190,7 +48,7 @@ roots:
   submodules: []
   tracked_query: PASS
   write_boundary: /home/hyunyoun/data/hy-home.docker
-  dirty_count: 80
+  dirty_count: 9
 files:
 - path: .agents/README.md
   tracked: true
@@ -1810,15 +1668,16 @@ files:
 - path: .github/workflow-contract.yml
   tracked: true
   kind: configuration
-  bytes: 78441
+  bytes: 78531
   state: HASHED
-  sha256: 46c15badd836003aff16c6da43eb810a030225c9ec2011eb89952e05ccb6ae87
+  sha256: 2cdd5af339d614a6b863679c63a20780df707c411993a45091c1b3a459a975f1
   review:
     path: .github/workflow-contract.yml
-    reviewer: p02_code_review
-    observed_at: '2026-11-02T01:12:52Z'
-    sha256: 46c15badd836003aff16c6da43eb810a030225c9ec2011eb89952e05ccb6ae87
-    scope: P02 changed CI registration reviewed; full-file review not claimed
+    reviewer: p02_residual_code_review + p02_residual_supply_review
+    observed_at: '2026-11-02T02:22:28Z'
+    sha256: 2cdd5af339d614a6b863679c63a20780df707c411993a45091c1b3a459a975f1
+    scope: Exact SSO interruption optional selector registration only; full-file review
+      not claimed
     complete: false
     state: PARTIAL
 - path: .github/workflows/ci-quality.yml
@@ -3448,11 +3307,21 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
   tracked: true
   kind: document
-  bytes: 24816
+  bytes: 46234
   state: HASHED
-  sha256: a3c68290ef67ddc46db6a36bc9452387be72fbd225c4d61a95c0bae096f2a8dc
+  sha256: 08a1f1511a0ee0465fb1ef1531bf694ca918edd8c2360b844641b2d1c2cb8ba7
   review:
-    state: UNREVIEWED
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
+    reviewer: root workflow-supervisor
+    observed_at: '2026-11-02T11:40:35+09:00'
+    sha256: 08a1f1511a0ee0465fb1ef1531bf694ca918edd8c2360b844641b2d1c2cb8ba7
+    scope: Independent review of this follow-up Task diff only; PASS. The approved
+      registered-broad-leaf Result-cell correction from FAIL (handoff) to FAIL and
+      the root-approved hook-compatibility-only SSO evidence rebind are included;
+      the Location handoff remains intact. Historical full Task body and unrelated
+      documents were not re-reviewed.
+    complete: false
+    state: PARTIAL
 - path: docs/03.specs/0213-dev-data-and-influx-retirement/plan.md
   tracked: true
   kind: document
@@ -6576,7 +6445,7 @@ files:
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   tracked: true
   kind: configuration
-  bytes: 1195328
+  bytes: 1197287
   state: GENERATED_OUTPUT
 - path: docs/90.references/data/README.md
   tracked: true
@@ -15780,11 +15649,18 @@ files:
 - path: scripts/lib/gate/ci_gate_adapters.py
   tracked: true
   kind: code
-  bytes: 47664
+  bytes: 49107
   state: HASHED
-  sha256: 70ec5712a2d7d389d68255012abde10cc1005d2c2ab025be072694600495f4b4
+  sha256: d5a5a26e3a085db9e00f749a28c1e7f1d5cadbae86d0b0cc49fcc9d88f15342b
   review:
-    state: UNREVIEWED
+    path: scripts/lib/gate/ci_gate_adapters.py
+    reviewer: p02_residual_code_review + p02_residual_supply_review
+    observed_at: '2026-11-02T02:22:28Z'
+    sha256: d5a5a26e3a085db9e00f749a28c1e7f1d5cadbae86d0b0cc49fcc9d88f15342b
+    scope: P02 selector checkpointing, bounds and timeout cleanup diff; full-file
+      review not claimed
+    complete: false
+    state: PARTIAL
 - path: scripts/lib/gate/ci_gate_contract.py
   tracked: true
   kind: code
@@ -17235,11 +17111,18 @@ files:
 - path: tests/lib/gate/test_ci_gate_adapters.py
   tracked: true
   kind: test
-  bytes: 76967
+  bytes: 80961
   state: HASHED
-  sha256: 63d707b448aeaf06feaa86ab435f807c251612df035806ce0ce40eb18ef46bdf
+  sha256: 6677b8eb9c7046a80e91ea3ae31c0d0a825d443fb2b2a31ab2203af7a37a3b34
   review:
-    state: UNREVIEWED
+    path: tests/lib/gate/test_ci_gate_adapters.py
+    reviewer: p02_residual_code_review + p02_residual_supply_review
+    observed_at: '2026-11-02T02:22:28Z'
+    sha256: 6677b8eb9c7046a80e91ea3ae31c0d0a825d443fb2b2a31ab2203af7a37a3b34
+    scope: P02 adapter progress, output-bound and failure-semantics tests; full-file
+      review not claimed
+    complete: false
+    state: PARTIAL
 - path: tests/lib/gate/test_ci_gate_contract.py
   tracked: true
   kind: test
@@ -17259,16 +17142,16 @@ files:
 - path: tests/lib/gate/test_github_workflow_contract.py
   tracked: true
   kind: test
-  bytes: 86886
+  bytes: 87611
   state: HASHED
-  sha256: 6e2c504c7d746aa2a38b1e5d584eb27e0415fb465d6ca96f8f2507d7013eba2a
+  sha256: b0ce71bc946221dd5e86efc223eed8d9c4011e1c6851f9c5119e66757b864a7a
   review:
     path: tests/lib/gate/test_github_workflow_contract.py
-    reviewer: p02_code_review
-    observed_at: '2026-11-02T01:12:52Z'
-    sha256: 6e2c504c7d746aa2a38b1e5d584eb27e0415fb465d6ca96f8f2507d7013eba2a
-    scope: P02 changed workflow selector expectation reviewed; full-file review not
-      claimed
+    reviewer: p02_residual_code_review + p02_residual_supply_review
+    observed_at: '2026-11-02T02:22:28Z'
+    sha256: b0ce71bc946221dd5e86efc223eed8d9c4011e1c6851f9c5119e66757b864a7a
+    scope: Exact SSO optional selector and no-environment-expansion assertions; full-file
+      review not claimed
     complete: false
     state: PARTIAL
 - path: tests/lib/hooks/__init__.py
@@ -17762,11 +17645,18 @@ files:
 - path: tests/validation/test_ci_gate_execution_context.py
   tracked: true
   kind: test
-  bytes: 104597
+  bytes: 109349
   state: HASHED
-  sha256: 5834d4efe291611a12ea61c1a9a42826055c0190faa4a1bdff8141dd91e0b97e
+  sha256: 881e059414bc9911949ad41c6d2e832470179a880a1a736ec79980337b2d6c3b
   review:
-    state: UNREVIEWED
+    path: tests/validation/test_ci_gate_execution_context.py
+    reviewer: p02_residual_code_review + p02_residual_supply_review
+    observed_at: '2026-11-02T02:22:28Z'
+    sha256: 881e059414bc9911949ad41c6d2e832470179a880a1a736ec79980337b2d6c3b
+    scope: P02 outer-timeout checkpoint and process-group cleanup regression; full-file
+      review not claimed
+    complete: false
+    state: PARTIAL
 - path: tests/validation/test_ci_gate_model.py
   tracked: true
   kind: test
@@ -17792,11 +17682,22 @@ files:
 - path: tests/validation/test_compose_baseline_gates.py
   tracked: true
   kind: test
-  bytes: 253843
+  bytes: 280624
   state: HASHED
-  sha256: d8319ca2f44ea1259e0f376941a93bde11370f43942ba94ccbdd8b25bef5babf
+  sha256: 2470477aafad41d441472c5e08c72eab628e0d6e93d321eaf720b55522944b3f
   review:
-    state: UNREVIEWED
+    path: tests/validation/test_compose_baseline_gates.py
+    reviewer: /root/p02_residual_ci/gitleaks_delta_review (code-reviewer); /root/p02_residual_ci/gitleaks_delta_security
+      (security-auditor)
+    observed_at: '2026-11-02T11:54:56+09:00'
+    sha256: 2470477aafad41d441472c5e08c72eab628e0d6e93d321eaf720b55522944b3f
+    scope: 'Hook-compatibility-only local run-ID binding delta: focused 2/2 PASS in
+      0.002 seconds, Ruff, gitleaks and diff check PASS; code review at 2026-11-02T11:54:53+09:00
+      and security review at 2026-11-02T11:54:56+09:00 found no findings. b565 cleanup
+      proof and e537 runtime evidence remain historical, separately source-bound.
+      Full-file, HOME, remote-CI and operational acceptance are not claimed.'
+    complete: false
+    state: PARTIAL
 - path: tests/validation/test_compose_core_readiness.py
   tracked: true
   kind: test
@@ -18471,11 +18372,19 @@ files:
 - path: tests/validation/test_sec01_next_stable_candidates.py
   tracked: true
   kind: test
-  bytes: 10253
+  bytes: 15840
   state: HASHED
-  sha256: 47ad9fdb73812aa4aa0810b6ac111148590a12205f8f996ec5f761a50f48b58d
+  sha256: f3231f6c5a45dc9b402ad7574e4edb0dec93c07e770e5b4c8ee7ef6dd4f6fb23
   review:
-    state: UNREVIEWED
+    path: tests/validation/test_sec01_next_stable_candidates.py
+    reviewer: code-reviewer (/root/p02_residual_code_review)
+    observed_at: '2026-11-02T11:23:50+09:00'
+    sha256: f3231f6c5a45dc9b402ad7574e4edb0dec93c07e770e5b4c8ee7ef6dd4f6fb23
+    scope: 'P02 exporter regression packet only: default/nondefault rendered argv,
+      DEV fixed-port, secret-not-in-argv and retained image/ACL/OAuth/Tempo assertions;
+      no findings. Full-file and wider residual review not claimed.'
+    complete: false
+    state: PARTIAL
 - path: tests/validation/test_sec01_next_tool_candidates.py
   tracked: true
   kind: test
@@ -18646,10 +18555,10 @@ files:
 excluded:
   binary: 34
   code: 125
-  configuration: 357
-  document: 109
-  generated: 38059
-  private: 227
+  configuration: 363
+  document: 110
+  generated: 38068
+  private: 229
 opaque:
   git_directories: 1
   private_git_roots: 0
@@ -34447,13 +34356,13 @@ compose:
   gaps: []
 coverage:
   files:
-    numerator: 41172
-    denominator: 41172
+    numerator: 41190
+    denominator: 41190
   body_review:
     numerator: 0
     denominator: 2254
   body_review_partial:
-    numerator: 55
+    numerator: 61
     denominator: 2254
   render:
     numerator: 0
@@ -35762,18 +35671,26 @@ requirements:
   acceptance: pending
   acceptance_owner: SPEC-0212-TSK-0041
   writer: p02_infra_impl
-  evidence: Authentication boundary regression; Full SSO exact-class rehearsal
+  evidence: Authentication boundary regression; historical Full SSO NOT_RUN; isolated
+    full SSO rerun at a fingerprinted fixture
   source_verification: PASS (bounded P02 source)
   static_checks: PASS (bounded P02 route contract)
-  isolated_tests: PASS (verifier and Traefik method only; full SSO NOT_RUN)
+  isolated_tests: PASS (verifier, Traefik method, historical da5d64a registered module
+    135 total/104 PASS/31 skips, e537 source full browser 302/JSON 401/member login-logout/nonmember
+    403 plus hard-timeout cleanup, b5657575 cleanup-only source-equivalent static/security
+    proof, and current 2470477a hook-compatibility-only 2/2 proof; final broad leaf
+    is separately recorded with one P05/P08 provenance failure)
   historical_operator_acceptance: NOT_RUN
   current_direct_operation: NOT_RUN
   credential_rotation: NOT_RUN
   independent_restore: NOT_RUN
   remote_ci: NOT_RUN
   final_acceptance: NOT_RUN
-  limit: Controlled OIDC verifier proof is limited to ID-token validation and may
-    not be promoted to a Keycloak client or API token result.
+  limit: The retained full-SSO NOT_RUN and the separate isolated rerun are distinct
+    observations. The proof is SsoRehearsalTests' synthetic realm only; shared SsoStack
+    Storybook/TLS issuer native variants remain NOT_RUN unless separately evidenced.
+    Neither establishes a stored Keycloak client, actual API-token flow, HOME operation,
+    rotation, restore, remote CI or final acceptance.
 - id: P02.03
   criterion: 58
   work_unit: W63
@@ -35802,18 +35719,21 @@ requirements:
   acceptance: pending
   acceptance_owner: SPEC-0212-TSK-0041
   writer: p02_infra_impl
-  evidence: Valkey contract regression; Native secret-presentation contract
+  evidence: Valkey contract regression; Native secret-presentation contract; corrected
+    dynamic exporter argv regression
   source_verification: PASS (bounded P02 source)
   static_checks: PASS (bounded P02 contract/hardening source)
-  isolated_tests: PASS (synthetic ACL and native secret presentation)
+  isolated_tests: PASS (synthetic ACL, native secret presentation, and default/nondefault
+    dynamic exporter argv regression)
   historical_operator_acceptance: RECORDED_SCOPED (named n8n ACL topology reuse only)
   current_direct_operation: NOT_RUN
   credential_rotation: NOT_RUN
   independent_restore: NOT_RUN
   remote_ci: NOT_RUN
   final_acceptance: NOT_RUN
-  limit: Shared MNG Valkey source/isolated evidence is recorded; no P02 credential
-    issue, rotation, queue drain or restore is claimed.
+  limit: Shared MNG Valkey source/isolated evidence is recorded; the prior four literal
+    exporter-argv failures are historical and the corrected test proves no running
+    exporter. No P02 credential issue, rotation, queue drain or restore is claimed.
 - id: P02.05
   criterion: 60
   work_unit: W65
@@ -35855,15 +35775,15 @@ acceptance_reuse:
     source binding 03892eb1a9a4
   consumer: opsflow notifier queue, schedule, claim/retry/dead-letter, PostgreSQL
     credential and paired restore
-  scope: C19 narrowed manual scope plus seven C22 fields; concurrent claims and retry
-    driven in psql by owner decision
+  scope: Accepted n8n C19/C22 remains bounded to its recorded version, actor, target
+    and criterion.
   residual:
   - SMTP credential rotation
   - response loss after SMTP acceptance
   - exactly-once delivery not claimed
   - HOME 2.41.6 upgrade and current installed-image security receipt
   current_direct_verification: NOT_RUN
-  handoff: P05/P06/P08/P12 preserve accepted fields and open only exact residuals
+  handoff: P05 retains consumer behavior; P02 changes do not rebuild it.
   p02_scope: Accepted n8n C19/C22 remains bounded to its recorded version, actor,
     target and criterion.
   p02_handoff: P05 retains consumer behavior; P02 changes do not rebuild it.
@@ -35888,12 +35808,11 @@ acceptance_reuse:
   version: Exact source and measurements are bound by the cited Task; no new deployed-version
     observation
   consumer: containerd, Docker/BuildKit, model and observability stores
-  scope: C1–C6 accepted including POL-0102 and Prometheus/Tempo SSD placement; HDD
-    Loki/Alloy/Pyroscope retained
+  scope: Accepted storage C1-C6 stays outside P02 connection changes.
   residual:
   - new measured drift/performance/energy or independent recovery only
   current_direct_verification: NOT_RUN
-  handoff: P09 reuses placement and accepted cleanup; no repeated move
+  handoff: Preserve existing storage and restore boundaries.
   p02_scope: Accepted storage C1-C6 stays outside P02 connection changes.
   p02_handoff: Preserve existing storage and restore boundaries.
 - id: reuse-storybook-c1-c5
@@ -35916,13 +35835,12 @@ acceptance_reuse:
   version: Current package.json declares Storybook core/framework/addons/MCP 10.6.3;
     historical W4 prose 10.6.1 is not a current pin
   consumer: authenticated administrator UI and read-only docs MCP
-  scope: Build/images, shared UI states/accessibility, OAuth/MCP tool calls, exports
-    and documents accepted
+  scope: Accepted Storybook C1-C5 remains unrelated to P02.
   residual:
   - 10.6.5 candidate compatibility, lock/install/UI/accessibility/authentication regression
     if changed
   current_direct_verification: NOT_RUN
-  handoff: P08 incremental package bundle only; P12 final changed-scope regression
+  handoff: P08 owns any later package change.
   p02_scope: Accepted Storybook C1-C5 remains unrelated to P02.
   p02_handoff: P08 owns any later package change.
 - id: preserve-openbao-consumer-receipts
@@ -35940,14 +35858,13 @@ acceptance_reuse:
   version: Source fingerprint binds the receipt; current private KV/runtime not re-read
   consumer: dozzle, gatus, open-webui, oauth2-proxy, kafbat-ui, airflow-apiserver;
     earlier Grafana/Keycloak consumers retained
-  scope: Ten DEPLOYED plans, ten rendered outputs and six named cutovers are different
-    classifications and not summed
+  scope: Recorded OpenBao consumer cuts remain narrower than global acceptance.
   residual:
   - IAM-004 opensearch-dashboards and IAM-013 superset shared-consumer holds
   - per-secret reauthentication/rotation/independent restore
   - old-copy retirement and global C20 acceptance
   current_direct_verification: NOT_RUN
-  handoff: P06 preserves deployed/consumed cuts without promoting global C20
+  handoff: P06 owns custody, rotation and consumer migration.
   p02_scope: Recorded OpenBao consumer cuts remain narrower than global acceptance.
   p02_handoff: P06 owns custody, rotation and consumer migration.
 - id: preserve-hermes-operational-receipts
@@ -35967,16 +35884,14 @@ acceptance_reuse:
     plugin0.2.5 source
   consumer: Hermes direct webhook, independent item attester, Gateway storage, Windows
     export receiver
-  scope: Two Export1.0 ACK201 and acknowledged state; SQLite online backup restored
-    into independent empty volume; Export2.0 switch and isolated53/53 are separate
-    facts
+  scope: Hermes operational receipts remain historical, scoped evidence.
   residual:
   - new normal verified real Export2.0 item to Windows render/ACK
   - Windows schedule, interruption/retry and full-user-function restore
   - plugin source versus installed/new report acceptance
   - publisher key trust is separate from attester; correct held stays held
   current_direct_verification: NOT_RUN
-  handoff: P11 preserves receipts; P12 final semantic/E2E acceptance remains separate
+  handoff: P12 owns final semantic/E2E acceptance.
   p02_scope: Hermes operational receipts remain historical, scoped evidence.
   p02_handoff: P12 owns final semantic/E2E acceptance.
 ownership:
@@ -36328,11 +36243,13 @@ ownership:
   operational_acceptance: UNASSIGNED
   handoff: Test result scope must remain separate from service operation.
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
-  section: P02 evidence and handoffs
-  writer: p02_docs_impl
+  section: P02 evidence and handoffs (historical p02_docs_impl; current residual follow-up)
+  writer: p02_residual_docs
   acceptance_owner: SPEC-0212-TSK-0041
-  reviewer: 13 complete:false README/document changed-section reviews recorded; full-file
-    review is not claimed
+  reviewer: root workflow-supervisor independently reviewed this follow-up Task diff
+    at 2026-11-02T11:40:35+09:00 against SHA-256 08a1f1511a0ee0465fb1ef1531bf694ca918edd8c2360b844641b2d1c2cb8ba7,
+    PASS, complete:false; historical full Task body was not re-reviewed. The 13 existing
+    README/document changed-section reviews remain separately scoped.
   data_owner: '@buenhyden metadata owner'
   operational_acceptance: UNASSIGNED
   handoff: Current document fingerprint invalidates only this evidence scope.
@@ -36350,8 +36267,9 @@ ownership:
   section: marker-bounded generated service inventory
   writer: p02_docs_impl
   acceptance_owner: SPEC-0212-TSK-0041
-  reviewer: root_document_review, 2026-11-02T00:34:54Z, complete:false, P02 changed
-    generated catalog cells only; no blocker
+  reviewer: root_document_review, 2026-11-02T01:08:26Z, complete:false, three P02
+    changed generated mount cells only; no blocker. The prior 36-cell review at 2026-11-02T00:34:54Z
+    is retained as history.
   data_owner: UNASSIGNED
   operational_acceptance: UNASSIGNED
   handoff: 36 generated fields were refreshed by operations_catalog.render_service_inventory(ROOT);
@@ -36360,11 +36278,47 @@ ownership:
   section: OAuth2 Proxy shared Valkey assertion
   writer: p02_ci_impl
   acceptance_owner: SPEC-0212-TSK-0041
-  reviewer: root_ci_review, 2026-11-01T22:59:14Z, 4 complete:false changed-section
-    records; no Important/Critical finding, full-file review not claimed
+  reviewer: p02_code_review, 2026-11-02T01:12:52Z, complete:false current CI registration
+    and mount/wiring changed-section review; no findings, full-file review not claimed.
+    Prior root_ci_review records are retained as history.
   data_owner: UNASSIGNED
   operational_acceptance: UNASSIGNED
   handoff: Keep assertion aligned with source transport contract.
+- path: tests/validation/test_sec01_next_stable_candidates.py
+  section: P02 dynamic Valkey exporter argv regression
+  writer: p02_residual_exporter_tests
+  acceptance_owner: SPEC-0212-TSK-0041
+  reviewer: code-reviewer (/root/p02_residual_code_review), 2026-11-02T11:23:50+09:00,
+    f3231f6c… focused 2/2 and full module 12/12 PASS; full-file review is not claimed
+  data_owner: UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Current test renders default and nondefault ports and uses only synthetic
+    wrapper inputs; it does not change exporter images, secrets or runtime.
+- path: tests/validation/test_compose_baseline_gates.py
+  section: P02 isolated full SSO and interruption cleanup fixture
+  writer: p02_residual_sso
+  acceptance_owner: SPEC-0212-TSK-0041
+  reviewer: Current 2470477a hook-compatibility-only delta has focused 2/2, Ruff,
+    gitleaks and diff-check PASS plus independent code/security reviews at 2026-11-02T11:54:53+09:00/11:54:56+09:00;
+    it changes only synthetic run-ID local binding. b5657575 retains static/default
+    16 PASS + 1 registered SKIP and cleanup-only code/security proof; e537 retains
+    the traced runtime proof. The final broad leaf emitted 75/75 selector summaries
+    with 1,234 executed PASS, one workflow-version-bundle P05/P08 failure and 95 declared
+    skips. Historical da5d64a receipt remains independently scoped.
+  data_owner: UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Isolated test evidence must not be promoted to HOME SSO, stored-client,
+    rotation, restore, remote-CI or final-acceptance evidence.
+- path: scripts/lib/gate/ci_gate_adapters.py
+  section: P02 modular selected-leaf checkpointing
+  writer: p02_residual_ci
+  acceptance_owner: SPEC-0212-TSK-0041
+  reviewer: Current changed-section CI review is recorded separately; full-file review
+    is not claimed
+  data_owner: UNASSIGNED
+  operational_acceptance: UNASSIGNED
+  handoff: Retain the 600-second historical timeout and modular split results as different
+    observations; CI owns the generated DATA update.
 research:
 - id: EX01
   url: https://docs.docker.com/compose/how-tos/profiles/
@@ -37515,6 +37469,23 @@ research:
       are recorded above, within their stated limited scopes.
   limit: Residual official product support, license, backup, and full-stack Keycloak
     evidence is not promoted to current runtime acceptance.
+- id: p02-research
+  source: _workspace/repo-support/analysis/p02/research.yaml
+  state: SOURCE_READY
+  official_facts:
+  - url: https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.5
+    fact: Official v7.15.5 asset checksum matched the verifier artifact; verifier-only
+      negative token evidence does not establish stored Keycloak client or API access-token
+      acceptance.
+  - url: https://raw.githubusercontent.com/lfnovo/open-notebook/v1.15.0/api/main.py
+    fact: Startup includes database ping/migration work while API /health is limited
+      liveness/startup evidence, not model or product readiness.
+  - url: https://raw.githubusercontent.com/azbuilder/terrakube/2.33.2/api/src/main/resources/application.properties
+    fact: Declared DatasourcePort defaults to 5432; P02 changed source configuration
+      only and did not operate or deploy Terrakube.
+  limit: Official findings are source applicability evidence, not installation or
+    runtime proof; license and backup terms outside selected source changes remain
+    residual.
 coverage_tiers:
 - id: TIER01
   name: Gateway
@@ -39926,7 +39897,7 @@ handoffs:
 - target: P04
   state: TEST_RESIDUAL
   owner: P04 acceptance owner
-  source: infra/07-workflow/airflow/docker-compose.yml SHA-256 90126c84bba02b24b499e4a6c1dc012e7147070adaad83b824a757daf40c8e2e
+  source: infra/07-workflow/airflow/docker-compose.yml SHA-256 b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9
   resume: Reproduce URI special-character handling with the actual Celery provider
     using a synthetic credential before encoding changes; preserve the current file
     for rollback. The previous 0bbb7e… fingerprint is dated pre-freeze history only.
@@ -39934,21 +39905,21 @@ handoffs:
 - target: P05
   state: TEST_RESIDUAL
   owner: P05/P08 acceptance owners
-  resume: 'Preserve accepted C19/C22 and consume declared endpoint/ACL facts only.
-    Leaf12 ran 266 cases with 265 PASS/1 FAIL: add a truthful ledger identity/image/provenance
-    entry or change the owned declaration with evidence, then rerun `UpdateEvidencePackageTests.test_current_root_census_excludes_relocated_lab_history`;
-    P02 must not alter the service or invent provenance.'
+  resume: Preserve accepted C19/C22 and consume declared endpoint/ACL facts only.
+    The truthful blog-ingestion ledger identity/image/provenance and current root-census
+    reconciliation remain owned evidence; durable P02 confirmation receipt `supply-residual-rerun.json`
+    (exit 1, two failures, unchanged inputs) records the starting point. Rerun `UpdateEvidencePackageTests.test_current_root_census_excludes_relocated_lab_history`
+    only after that transaction. P02 must not alter the service or invent provenance.
   id: P02-to-P05
 - target: P06
-  state: TEST_RESIDUAL
+  state: OUT_OF_SCOPE
   owner: P06 acceptance owner
   resume: Credential issuance or rotation requires a named target, data owner and
     recovery boundary. P02 permits synthetic group-readable 0440/0640 or runtime-999-owned
     0400/0600 presentation only, and rejects 0444/0644/symlinks/hardlinks; actual
-    issuance remains NOT_RUN. Scoped repository-integrity residuals require P06 to
-    reconcile the 12-pair reader/secret grant cross-product and rerun `PublicSecretSchemaTests.test_optional_activation_keeps_base_grants_and_records_closed_provenance`,
-    `test_conditional_coverage_never_replaces_base_or_direct_grants`, and `test_literal_secret_references_are_declared_granted_and_registered`;
-    rollback only P06 grant metadata/mount reconciliation. P02 does not mutate secrets.
+    issuance remains NOT_RUN. The earlier grant finding was corrected by P02 narrowing
+    an overbroad mount, with PublicSecretSchemaTests 21/21 PASS; P02 does not mutate
+    secrets.
   id: P02-to-P06
 - target: P07
   state: OUT_OF_SCOPE
@@ -39958,10 +39929,18 @@ handoffs:
 - target: P08
   state: IMPROVEMENT_CANDIDATE
   owner: P08 image/advisory owner
-  resume: Evaluate declared Valkey 9.1.2 against 9.1.3 advisory, compatibility and
+  resume: 'Evaluate declared Valkey 9.1.2 against 9.1.3 advisory, compatibility and
     rollback before image work. Jointly with P05, own the leaf12 ledger/provenance
     residual; rollback only the owning ledger/declaration delta. P08 also owns the
     scoped repository-integrity SEC01 n8n source-binding hash refresh from 8792a345…
-    to 68c037a5…; rerun `WorkflowVersionBundleTests.test_n8n_source_receipt_does_not_reuse_previous_native_acceptance`
-    and nested SEC01 routing afterward. P02 does not alter that provenance.
+    to afe7eabe…; rerun `WorkflowVersionBundleTests.test_n8n_source_receipt_does_not_reuse_previous_native_acceptance`
+    and nested SEC01 routing afterward. P02 does not alter that provenance. Official
+    pip-audit 2.10.1 against unchanged `scripts/requirements-controller.lock` failed
+    with 25 findings: filelock 4.2.0 has 17 and virtualenv 21.14.8 has eight, seven
+    reporting 21.14.9 and CVE-2026-113713 reporting 21.14.10; compatibility-reviewed
+    21.14.10 is the minimum candidate covering all virtualenv IDs. The report states
+    4 High/12 Medium/9 Low and no Critical; P02-specific reachability remains unestablished.
+    P08 must update canonical dependency input manifest(s), generated lock and appended
+    evidence together, verify controller gates, and on recovery revert only the input-plus-lock
+    delta while preserving original FAIL history/receipt.'
   id: P02-to-P08

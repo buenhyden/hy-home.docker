@@ -642,6 +642,120 @@ class DescriptorExecutionTests(unittest.TestCase):
         self._assert_runner_finalizes_every_adapter_result()
         self._assert_timeout_terminates_child_and_grandchild_process_group()
 
+    def test_unittest_timeout_preserves_only_completed_selector_output(self) -> None:
+        adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
+        evidence_source = pathlib.Path(evidence.__file__).read_text(encoding="utf-8")
+        self.add_entrypoint(
+            "scripts/lib/gate/ci_gate_adapters.py",
+            adapter_source,
+        )
+        self.add_entrypoint(
+            "scripts/lib/gate/ci_gate_evidence.py",
+            evidence_source,
+            mode=0o644,
+        )
+        self.add_entrypoint("tests/__init__.py", "", mode=0o644)
+        self.add_entrypoint("tests/lib/__init__.py", "", mode=0o644)
+        self.add_entrypoint(
+            "tests/lib/test_ci_progress_complete.py",
+            "import unittest\n"
+            "class Complete(unittest.TestCase):\n"
+            "    def test_complete(self):\n"
+            "        print('completed-selector-payload', flush=True)\n",
+            mode=0o644,
+        )
+        ready_path = self.root / "active.ready"
+        active_source = (
+            "import os,pathlib,subprocess,sys,time,unittest\n"
+            "class Active(unittest.TestCase):\n"
+            "    def test_active(self):\n"
+            "        child=subprocess.Popen([sys.executable,'-c','import time; time.sleep(60)'])\n"
+            f"        with open({str(ready_path)!r},'w',encoding='ascii') as stream:\n"
+            "            stream.write(f'{os.getpid()} {child.pid}\\n')\n"
+            "            stream.flush()\n"
+            "        print('unvalidated-active-payload', flush=True)\n"
+            "        time.sleep(60)\n"
+        )
+        self.add_entrypoint(
+            "tests/lib/test_ci_progress_active.py",
+            active_source,
+            mode=0o644,
+        )
+        output_path = self.root / "adapter-output.txt"
+        harness = (
+            "#!/usr/bin/env python3\n"
+            "import os,sys\n"
+            "from scripts.lib.gate import ci_gate_adapters as adapters\n"
+            "descriptor=os.open(sys.argv[1],os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)\n"
+            "os.dup2(descriptor,1); os.dup2(descriptor,2); os.close(descriptor)\n"
+            "raise SystemExit(adapters.main([\n"
+            "    'run-unittest',\n"
+            "    'tests.lib.test_ci_progress_complete',\n"
+            "    'tests.lib.test_ci_progress_active',\n"
+            "    '-v',\n"
+            "]))\n"
+        )
+        self.add_entrypoint("scripts/validation/progress-harness.py", harness)
+        os.mkfifo(ready_path)
+        ready_fd = os.open(ready_path, os.O_RDONLY | os.O_NONBLOCK)
+        result: list[int | BaseException] = []
+        invocation = dataclasses.replace(
+            _invocation(
+                "leaf.unittest-progress",
+                "scripts/validation/progress-harness.py",
+            ),
+            argv=(str(output_path),),
+            timeout_seconds=2,
+        )
+
+        def execute() -> None:
+            try:
+                result.append(
+                    runner.execute_execution_plan(
+                        self.root,
+                        (invocation,),
+                        {"PATH": os.environ.get("PATH", os.defpath)},
+                    )
+                )
+            except BaseException as error:
+                result.append(error)
+
+        worker = threading.Thread(target=execute)
+        pidfds: list[int] = []
+        try:
+            worker.start()
+            ready_poll = select.poll()
+            ready_poll.register(ready_fd, select.POLLIN)
+            self.assertTrue(ready_poll.poll(5000))
+            pids = tuple(
+                int(value) for value in os.read(ready_fd, 128).decode("ascii").split()
+            )
+            self.assertEqual(2, len(pids))
+            pidfds = [os.pidfd_open(pid) for pid in pids]
+            worker.join(timeout=10)
+            self.assertFalse(worker.is_alive())
+            self.assertEqual([124], result)
+            output = output_path.read_text(encoding="utf-8")
+            self.assertIn("completed-selector-payload", output)
+            self.assertIn(
+                "ci-gate-adapter: starting unittest selector "
+                "tests.lib.test_ci_progress_active",
+                output,
+            )
+            self.assertNotIn("unvalidated-active-payload", output)
+            for pidfd in pidfds:
+                exit_poll = select.poll()
+                exit_poll.register(pidfd, select.POLLIN)
+                self.assertTrue(exit_poll.poll(1000))
+        finally:
+            for pidfd in pidfds:
+                try:
+                    signal.pidfd_send_signal(pidfd, signal.SIGKILL)
+                except OSError:
+                    pass
+                os.close(pidfd)
+            os.close(ready_fd)
+
     def test_executor_exception_always_cleans_home(self) -> None:
         created = self.root / "executor-home"
 

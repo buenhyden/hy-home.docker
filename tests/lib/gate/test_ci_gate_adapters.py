@@ -13,6 +13,8 @@ import stat
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 import tomllib
 import unittest
 from collections.abc import Mapping
@@ -426,6 +428,95 @@ class CiGateAdapterTests(unittest.TestCase):
         self.assertEqual(1, errors.getvalue().count("Ran 1 test in"))
         self.assertIn("\nOK\n", errors.getvalue())
 
+    def test_run_unittest_streams_progress_before_child_exit(self) -> None:
+        package = self.root / "tests/lib"
+        package.mkdir(parents=True)
+        (self.root / "tests/__init__.py").write_text("")
+        (package / "__init__.py").write_text("")
+        (package / "test_gate_fixture.py").write_text(
+            "import time\nimport unittest\n"
+            "class Fixture(unittest.TestCase):\n"
+            "    def test_progress(self):\n"
+            "        print('gate-progress-marker', flush=True)\n"
+            "        time.sleep(0.5)\n"
+        )
+        output, errors = io.StringIO(), io.StringIO()
+        result: list[int] = []
+
+        def invoke() -> None:
+            result.append(
+                adapters.run_adapter(
+                    self.root,
+                    ("run-unittest", "tests.lib.test_gate_fixture", "-v"),
+                    {"PATH": "/usr/bin"},
+                )
+            )
+
+        with (
+            mock.patch.object(sys, "stdout", output),
+            mock.patch.object(sys, "stderr", errors),
+        ):
+            worker = threading.Thread(target=invoke)
+            worker.start()
+            deadline = time.monotonic() + 1.0
+            selector_marker = (
+                "ci-gate-adapter: starting unittest selector "
+                "tests.lib.test_gate_fixture"
+            )
+            while selector_marker not in output.getvalue():
+                if time.monotonic() >= deadline:
+                    break
+                time.sleep(0.01)
+            self.assertIn(selector_marker, output.getvalue())
+            self.assertNotIn("gate-progress-marker", output.getvalue())
+            self.assertTrue(worker.is_alive())
+            worker.join(timeout=2.0)
+
+        self.assertFalse(worker.is_alive())
+        self.assertEqual([0], result)
+        self.assertIn("gate-progress-marker", output.getvalue())
+        self.assertEqual(1, errors.getvalue().count("Ran 1 test in"))
+
+    def test_run_unittest_bounds_aggregate_output_and_preserves_failure(self) -> None:
+        module_one = "tests.validation.test_one"
+        module_two = "tests.validation.test_two"
+        summary = b"Ran 1 test in 0.001s\n\nOK\n"
+        marker = f"ci-gate-adapter: starting unittest selector {module_one}\n"
+        recorder = ChildRecorder()
+        with (
+            mock.patch.object(adapters, "_run_child", side_effect=recorder),
+            mock.patch.object(adapters, "_MAX_CAPTURE_BYTES", len(marker) - 1),
+            self.assertRaises(adapters.AdapterError) as marker_error,
+        ):
+            adapters.run_adapter(
+                self.root,
+                ("run-unittest", module_one, "-v"),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual("ci-gate-adapter-output", marker_error.exception.code)
+        self.assertEqual([], recorder.calls)
+
+        too_much = b"x" * (adapters._MAX_CAPTURE_BYTES // 2 + 1)
+        with self.assertRaises(adapters.AdapterError) as caught:
+            self.run_with_recorder(
+                ("run-unittest", module_one, module_two, "-v"),
+                results=[
+                    subprocess.CompletedProcess((), 0, too_much, summary),
+                    subprocess.CompletedProcess((), 0, too_much, summary),
+                ],
+            )
+        self.assertEqual("ci-gate-adapter-output", caught.exception.code)
+
+        code, recorder = self.run_with_recorder(
+            ("run-unittest", module_one, module_two, "-v"),
+            results=[
+                subprocess.CompletedProcess((), 7, b"", b"failed\n"),
+                subprocess.CompletedProcess((), 0, b"", summary),
+            ],
+        )
+        self.assertEqual(7, code)
+        self.assertEqual(2, len(recorder.calls))
+
     def test_optional_runtime_skip_grammar_is_closed(self) -> None:
         module = "tests.lib.test_fixture"
         scope = module + ".Runtime"
@@ -561,15 +652,23 @@ class CiGateAdapterTests(unittest.TestCase):
         )
         self.assertEqual(0, result)
         self.assertEqual(
-            (
-                "python3",
-                "-m",
-                "unittest",
-                "tests.validation.test_one",
-                "tests.validation.test_two.case",
-                "-v",
-            ),
-            recorder.calls[0][0],
+            [
+                (
+                    "python3",
+                    "-m",
+                    "unittest",
+                    "tests.validation.test_one",
+                    "-v",
+                ),
+                (
+                    "python3",
+                    "-m",
+                    "unittest",
+                    "tests.validation.test_two.case",
+                    "-v",
+                ),
+            ],
+            [call[0] for call in recorder.calls],
         )
         self._assert_run_child_bounds_stdout_and_stderr_before_returning()
         self._assert_run_child_normalizes_spawn_error_without_payload()

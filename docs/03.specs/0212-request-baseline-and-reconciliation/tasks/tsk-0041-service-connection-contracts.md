@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.15"
+version: "0.1.16"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -82,6 +82,42 @@ consumer behavior, P06 owns secret issuance and custody, P07 owns observations,
 and P08 owns the Valkey update/advisory decision. A service source change stays
 under the infra lease even when those owners receive a handoff.
 
+### 2026-11-02 residual follow-up lease
+
+At `2026-11-02T10:40:48+09:00`, the direct user request authorizes a local
+cause analysis of three retained residuals: the full SSO class not run, the
+broad Compose-baseline aggregate timing out at 600 seconds, and the
+supply-chain fixture failure. The follow-up starts from clean commit
+`0592303d1f7d96b46019be7a730c115c53cbbcab`; it neither reclassifies the
+earlier observations nor authorizes a HOME service, host, credential, external
+repository, remote-CI or dependency-lock change.
+
+| Scope | Writer | Review role | Local objective and stop boundary |
+| --- | --- | --- | --- |
+| Full SSO isolated fixture, helpers and exact baseline-gate test | `p02_residual_sso` | independent code/security review | Find the bounded first-start cause; fix and rerun only a synthetic, isolated class when it is a P02 source/test defect. Stop before a HOME Keycloak/OAuth2 Proxy or stored client. |
+| Exporter candidate assertion regression | `p02_residual_exporter_tests` | independent code review | Correct only the stale literal exporter-argv contract in `tests/validation/test_sec01_next_stable_candidates.py`; prove default and nondefault dynamic ports while preserving image/security invariants. |
+| CI selector, runner plan, DATA generation, integration and normal commit | `p02_residual_ci` | independent CI review | Determine why the broad aggregate exceeded its 600-second budget; make a bounded local orchestration correction only when the cause belongs to P02. Do not treat selected P02 PASS results as the aggregate result. |
+| Supply-chain fixture and ownership classification | `p02_residual_supply_review` | independent security review | Read the exact fixture failure and its declared inputs. It may not mutate an image declaration, provenance ledger, controller lock or service. |
+| This Task, P02 curation and owner handoffs | `p02_residual_docs` | independent document review | Record commands, input/output fingerprints, time, exit status, recovery and the separate source/static/isolated/history/current-operation/rotation/restore/remote-CI/final-acceptance axes. DATA generation remains `p02_residual_ci`-owned. |
+
+The work-unit mapping remains unchanged: W61 provides the selected port-source
+context, W62 owns the SSO class, W63/W64 delimit readiness and synthetic
+Valkey evidence, and W65 owns the bounded ledger, review and handoff record.
+The prior historical operation evidence stays historical; direct operation,
+credential rotation, independent restore, remote CI and final acceptance stay
+`NOT_RUN` unless their separately authorized owners execute them.
+
+The follow-up uses the official [Keycloak container guidance](https://www.keycloak.org/server/containers)
+and [configuration reference](https://www.keycloak.org/server/configuration),
+retrieved on 2026-11-02, only for the observed distinction between a `kc.sh`
+build and an optimized start. The matching test image's tracked `26.7.4-0`
+runtime help must be verified before applying that guidance; the current pages
+do not establish a version-support claim. The CI child-process change is
+bounded by Python's [subprocess](https://docs.python.org/3.14/library/subprocess.html)
+and [unittest](https://docs.python.org/3.14/library/unittest.html) semantics:
+the implementation records completed child output only, bounds captured bytes,
+and preserves a timeout as a timeout rather than synthesizing a test result.
+
 ### Contract decisions and residual boundaries
 
 P02 reconciles four port locations separately: process listener, service DNS,
@@ -103,8 +139,16 @@ remain explicitly routed to their owning task.
 | Port contract regression | 56 | W61 | Focused isolated source/configuration suites | Public changed Compose inputs, listed in local P02 hash packet | PASS | `p02_infra_impl`: contract suite 24/24; port/renderer suite 20/20; root and monitor-overlay rendering selected 57 Traefik/55 Nginx services | required | - |
 | Authentication boundary regression | 57 | W62 | Controlled loopback OAuth2 Proxy ID-token verifier and isolated Traefik method check (bounded scope) | Official v7.15.5 asset, checksum and synthetic signed tokens | PASS | `_workspace/repo-support/analysis/p02/oauth2-proxy-oidc-native-20261102.txt`, 2026-11-02T07:23:00+09:00, 2 methods pass; isolated Traefik method check, 1 method passes; stored Keycloak client and API access-token acceptance excluded | required | - |
 | Full SSO exact-class rehearsal | 57 | W62 | Browser 302, JSON 401 and group-denial 403 full-stack class | Matching Keycloak test image | NOT_RUN | `_workspace/repo-support/analysis/p02/sso-rehearsal-residual-20261102.txt`: first-start provider build exceeded 300 seconds; cleanup passed. Resume with a pre-built matching Keycloak test image or bounded `kc.sh` build preparation | required | - |
+| Full SSO exact-class rehearsal, isolated rerun | 57 | W62 | Synthetic Keycloak 26.7.4-0 fixture with separately bounded preparation and optimized start | Cached base (`--pull never`), synthetic realm/users and no HOME client or credential | PASS | `tests/validation/test_compose_baseline_gates.py` SHA-256 `da5d64a34c63cccff58312a81e506525ceadcbec88ae8771a4889e8e400c2590`; full authentication 3/3 passes in 235.019 seconds (preparation 129.004, start 37.966): browser 302, JSON 401, member login/logout and nonmember 403. This receipt is bound to that exact source fingerprint and is not transferred to a later cleanup fix. The prior NOT_RUN observation remains historical. | required | - |
+| Full SSO interruption cleanup, isolated rerun | 57 | W62 | Runner-style hard-timeout cancellation of the same synthetic fixture | Cached base, labelled temporary resources, no HOME target | PASS | Same `da5d64a…` fixture: native interruption 1/1 passes in 17.378 seconds after exact parent recovery; container, network and image residue count is zero. Static ownership tests are 9 PASS and one opt-in SKIP. Independent code review found no open defect at this fingerprint. The receipt is not evidence for a later source fingerprint. | required | - |
+| Full SSO source-equivalent runtime proof | 57 | W62 | Synthetic Keycloak fixture, bounded preparation and optimized start | e537 source, cached base, synthetic realm/users and no HOME target | PASS | `tests/validation/test_compose_baseline_gates.py` source SHA-256 `e537232d3147d62d122ea4d5c2822fe421f1502f439b715d9bd4f97edb9d8b76`: traced authentication 3/3 passes in 272.773 seconds (preparation 169.443, start 36.078), and native hard-timeout cleanup 1/1 passes in 25.719 seconds. Browser 302, JSON 401, member login/logout, nonmember 403, teardown and owned residue zero are isolated-only evidence. Main added executable coverage is 85.46%. | required | - |
+| Final SSO cleanup-only source proof | 57 | W62 | Static/default fixture contract and immutable-ID postcondition | Final b565 source; static contract plus separately recorded prior owned-digest/residue proof | PASS | `tests/validation/test_compose_baseline_gates.py` SHA-256 `b565757557918244acd0321acb76b08b7624ee8537e6aadf9ae6be4c3d664ecd`: static/default 16/16 passes (0.613 seconds independent security run), 1 registered optional skip, focused cleanup-delta coverage 80.65%, and a separately recorded prior immutable-ID absence/residue-zero proof. The b565 delta is cleanup-only and SOURCE_EQUIVALENT to the e537 runtime packet, not a direct b565 runtime run. Independent code review passed at 2026-11-02T11:27:55+09:00; security review found no Critical, High or Medium finding. | required | - |
+| SSO hook-compatibility-only delta | 57 | W62 | Identical synthetic run ID bound to a local variable before test call | Current `2470477a…` test source; no fixture, runtime or assertion-contract change | PASS | `tests/validation/test_compose_baseline_gates.py` SHA-256 `2470477aafad41d441472c5e08c72eab628e0d6e93d321eaf720b55522944b3f`: focused 2/2 passes in 0.002 seconds; Ruff, gitleaks and diff check pass. Independent code review (`/root/p02_residual_ci/gitleaks_delta_review`, 2026-11-02T11:54:53+09:00) and security review (`/root/p02_residual_ci/gitleaks_delta_security`, 2026-11-02T11:54:56+09:00) found no issue. This is a hook-compatible call-expression refactor only; e537 runtime and b565 cleanup proof remain separately source-bound. | required | - |
+| Registered SSO module and runner selection | 57 | W62 | Frozen module through the corrected selector adapter | Declared opt-in selection only; no new allowed environment key | PASS | 135 total cases at historical `da5d64a…`: 104 PASS and 31 exact declared skips in 43.275 seconds; independent CI code/security review, gate contract 45/45, plan 60/60 and validator checks pass. This is local registered-selection evidence only. | required | - |
+| Registered broad Compose baseline leaf | 60 | W65 | `leaf.compose-baseline-regressions` through the corrected per-selector adapter | 75 unique registered selectors; unchanged 600-second budget | FAIL | Exit 1 in 250.959 seconds, with 1,330 discovered cases, 95 declared skips, 1,234 executed PASS, one FAIL and no ERROR. The only failure is `WorkflowVersionBundleTests.test_n8n_source_receipt_does_not_reuse_previous_native_acceptance`: stored n8n `8792a345…` differs from current `afe7eabe…`; P05/P08 owns that provenance receipt transaction. `_workspace/repo-support/analysis/p02/broad-leaf-final.log` is the sanitized local log. This replaces neither operational nor remote-CI evidence. | required | - |
 | Environment and readiness regression | 58 | W63 | Focused isolated source/configuration suites (source/isolated scope) | Public changed Compose inputs | PASS | `p02_infra_impl`: contract suite 24/24 and port/renderer suite 20/20; Open Notebook `/health` remains limited liveness/startup evidence | required | - |
 | Valkey contract regression | 59 | W64 | Synthetic ACL, secret-delivery and topology source checks (source/isolated scope) | Synthetic values only | PASS | `p02_infra_impl`: contract suite 24/24; hardening suite reports ALL PASS | required | - |
+| Exporter candidate assertion regression, corrected | 59 | W64 | Rendered Compose and synthetic exporter wrapper checks | Default 6379 and nondefault 16379; synthetic secret only | PASS | `tests/validation/test_sec01_next_stable_candidates.py` SHA-256 `f3231f6c5a45dc9b402ad7574e4edb0dec93c07e770e5b4c8ee7ef6dd4f6fb23`: focused 2/2 and full module 12/12 pass. It verifies exact host/port argv while the password remains environment-only. The prior four literal-argv failures remain historical. | required | - |
 | Native secret-presentation contract | 59 | W64 | Synthetic Compose secret ownership and permission modes | Cached image and synthetic secret only | PASS | `_workspace/repo-support/analysis/p02/compose-secret-native-20261102.txt`, 2026-11-01T22:56:55.947414+00:00; `test_p02_secret_presentation_native.py` SHA-256 `97faf10b437f6ba89ed7c1141a455f7d77574d74096ebe01478440cf8b678e1e`; 1 test, 4 modes, 74.684s | required | - |
 | Connection ledger and handoff validation | 60 | W65 | Public extractor and handoff curation (bounded public-source scope) | 67 public sources, 22 connection rows, 1 explicit unknown gap; 10 extracted sources and 1 unhandled source | PASS | Frozen helper `dfefebaa…`, test `261067…`; 50 tests pass with main branch 86%, helper 85% and combined 87%; Superset has four rows, including source-declared Trino with actual registration `UNKNOWN`; generated DATA-0096 records 22 rows and validates | required | - |
 | Current direct operation C56 | 56 | W61 | HOME service operation | No approved target/operator/window | NOT_RUN | Out of this local source unit | optional | - |
@@ -124,7 +168,7 @@ remain explicitly routed to their owning task.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 56 | pending | Port contract regression | SOURCE_READY: corrected source passes selected contract/render suites; direct operation, restore and remote CI remain separate | SPEC-0212 TSK-0041 |
-| 57 | pending | Authentication boundary regression, Full SSO exact-class rehearsal | SOURCE_READY: current OAuth2 Proxy verifier rejects wrong issuer, audience and expiry without a session cookie, and an isolated Traefik method check passes. This is not a Keycloak stored-client, API access-token, browser 302/JSON 401 or group-denial 403 full-stack result | SPEC-0212 TSK-0041 |
+| 57 | pending | Authentication boundary regression, Full SSO exact-class rehearsal | SOURCE_READY: current OAuth2 Proxy verifier rejects wrong issuer, audience and expiry without a session cookie, an isolated Traefik method check passes, and the synthetic `SsoRehearsalTests` realm covers browser 302, JSON 401, permitted-user login/logout and nonmember 403. The shared `SsoStack` Storybook/TLS issuer native variants were not run in this follow-up; existing Storybook operating acceptance remains reused only within its recorded scope. This is not a stored Keycloak client, real API access-token, HOME operation, rotation, restore or remote-CI result. | SPEC-0212 TSK-0041 |
 | 58 | pending | Environment and readiness regression | SOURCE_READY: corrected source passes isolated checks; liveness, dependency initialization and product readiness remain separate | SPEC-0212 TSK-0041 |
 | 59 | pending | Valkey contract regression | SOURCE_READY: selected shared-MNG/default and opt-in topology source checks pass; credential issue, rotation, queue drain and restore remain unexecuted | SPEC-0212 TSK-0041 |
 | 60 | pending | Connection ledger and handoff validation | SOURCE_READY: 67-source census yields 22 connection rows, one explicit unknown gap, 10 extracted sources and one unhandled source; generated DATA-0096 is validated, while broader metadata/QA and final acceptance remain separate | SPEC-0212 TSK-0041 |
@@ -155,7 +199,122 @@ ten-minute budget (exit 124) without a captured module result, so unrelated
 modules remain unproven. It is not a P02 feature failure and is not promoted
 from the P02-owned selected slice: 58/58 pass in 38.607 seconds (service
 contracts 24, Prometheus 3, gateway 3, service wiring 20, datastore scrape
-labels 5 and route-auth contracts 3).
+labels 5 and route-auth contracts 3). A workload/budget mismatch was only an
+initial hypothesis. The later split measurement includes a deliberately
+aborted 300.105-second selector and does not establish that the ten-minute
+budget is inadequate.
+
+The residual follow-up located a local orchestration defect, then corrected it
+without changing the mandatory selector set or the 600-second policy. The old
+adapter ran all 75 registered selectors (1,312 discovered cases) in one Python
+child and emitted captured stdout/stderr only after child completion. Its
+outer timeout therefore killed the process group at 600 seconds and discarded
+the active module's diagnostic output. The updated adapter runs one child per
+registered selector, writes a safe selector breadcrumb before spawn, emits
+only completed child payloads, bounds aggregate stdout/stderr (including
+markers) to 1 MiB, preserves zero-case and optional-skip validation, retains
+the first nonzero result, withholds active-child payload at an outer timeout,
+and cleans up child and grandchild processes. Its SHA-256 is
+`d5a5a26e3a085db9e00f749a28c1e7f1d5cadbae86d0b0cc49fcc9d88f15342b`;
+the adapter and execution-context regressions are
+`6677b8eb9c7046a80e91ea3ae31c0d0a825d443fb2b2a31ab2203af7a37a3b34` and
+`881e059414bc9911949ad41c6d2e832470179a880a1a736ec79980337b2d6c3b`.
+Independent code and security reviews each passed 41 focused cases (3.275 and
+3.823 seconds respectively); this is a partial review of the orchestration
+change.
+
+The modular measurement attributed all 75 selectors separately, with a split
+wall sum of 479.213 seconds. It is not an uninterrupted aggregate PASS:
+62 selectors passed and 13 were nonzero. The slowest passing selectors were
+`openbao_agent_contract` (50.834 seconds), `compose_baseline_gates` (44.969),
+`service_wiring` (22.004), `openbao_tls` (9.175), `infra_tier` (7.202) and
+`lab_isolation` (6.527). `tests.validation.test_crawl4ai_egress` timed out at
+300.105 seconds because
+`AddressRuleTests.test_pin_refuses_ports_literals_mixed_answers_and_integer_forms`
+stalls in its asyncio `getaddrinfo` executor: the isolated
+`system_resolve('2130706433')` exceeds five seconds while synchronous
+`socket.getaddrinfo` returns immediately. Its owner/environment classification
+is provisional until the scoped unsandboxed reproduction; it is not treated as
+a P02 source failure. The other nonzero selectors are `locust_telemetry`,
+`storybook_image`, `crawl4ai_adapter`, `datastore_observation_rehearsal`,
+`datastore_rehearsal_boundary`, `openbao_protected_maintenance`,
+`openbao_token_operations`, `openbao_raft_snapshot`,
+`sec01_next_stable_candidates`, `workflow_version_bundle`,
+`opsflow_adapters` and `opsflow_airflow_contract`. Resume their own
+owner/environment classification and investigation from their completed
+checkpoints; do not
+extend the ten-minute policy or present the split measurement as a green broad
+aggregate. Rollback restores only the three orchestration files and preserves
+both the original exit-124 observation and its completed selector checkpoints.
+
+The scoped valid-local-context rerun resolves the provisional execution-context
+classification: the exact Crawl4AI method passed in 0.006 seconds and its
+module recorded 15 PASS and six declared opt-in skips in 1.556 seconds. The
+then-current valid-context recheck had ten PASS results and two failures:
+`sec01_next_stable_candidates` (four subtests) and
+`workflow_version_bundle` (one failure). The former was an initial P02
+test-contract failure, not a P08 residual; its later P02 correction is
+recorded below. Only the latter remains the current P05/P08 provenance
+residual.
+The valid-context default-leaf attribution is about 180.7 seconds, below the
+unchanged ten-minute budget. The frozen historical `da5d64a…` SSO module then
+recorded 135 total cases in 43.275 seconds: 104 PASS and 31 exact declared
+skips. CI registration's independent
+code/security reviews passed, as did the gate contract (45), plan (60) and
+validator checks. These results validate the P02 runner correction and its
+registered isolated SSO path; they do not turn the original interrupted broad
+run into an uninterrupted aggregate PASS.
+
+The persistent valid-context failures split by actual ownership. The four
+`NextStableCandidates` subtest failures are a P02-owned test-contract gap, not
+a P08 handoff: the literal assertion rejects P02's legitimate quoted dynamic
+exporter argument. `p02_residual_exporter_tests` owns only
+`tests/validation/test_sec01_next_stable_candidates.py`; it subsequently added
+meaningful default/nondefault argv coverage while preserving image and security
+invariants. The corrected SHA `f3231f6c5a45dc9b402ad7574e4edb0dec93c07e770e5b4c8ee7ef6dd4f6fb23`
+passed focused 2/2 and full-module 12/12 checks and received a narrow
+independent code review. The original four-failure receipt remains dated RED
+history.
+
+`tests/validation/test_sec01_next_stable_candidates.py` SHA-256
+`47ad9fdb73812aa4aa0810b6ac111148590a12205f8f996ec5f761a50f48b58d`
+has four failing subtests for OAuth2 Proxy
+(`6a3bbb2dd657e2a975b2c7da1e8e7297acc599f7f18c9baf8e90c040cb4bd22a`),
+MNG DB (`b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471`),
+Airflow (`b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9`)
+and n8n (`afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7`).
+It expects a literal `-redis.addr=redis://` in `service["command"][0]`, while
+the current safety wrapper supplies a quoted dynamic
+`-redis.addr="redis://…:$$port"`; this is a stale P02 assertion, not a
+P02 runtime failure or a supply-manifest change. The separate P05/P08 handoff
+is
+`tests/validation/test_workflow_version_bundle.py` SHA-256
+`c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2`,
+where stored n8n Compose `8792a345bd2ead857d108fc2eb100b8be19a9c5012caa5e457829b978b2adcc3`
+does not equal current `afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7`.
+P08 must update the canonical manifest/receipt transaction and its test
+together; P02 does not edit those sources.
+
+The P02 assertion correction is frozen at test SHA-256
+`f3231f6c5a45dc9b402ad7574e4edb0dec93c07e770e5b4c8ee7ef6dd4f6fb23`.
+It renders each Compose configuration at the default `6379` and nondefault
+`16379` ports, executes synthetic exporter wrappers, checks exact host/port
+argv and verifies that a password remains environment-only. Its focused run
+passed 2/2 and the full module passed 12/12. This does not erase the original
+four-failure observation or prove a running exporter.
+
+The final registered `leaf.compose-baseline-regressions` run confirmed the
+adapter correction under the unchanged 600-second budget: it exited 1 after
+250.959 seconds, rather than exit 124, and emitted all 75 unique selector
+summaries. It discovered 1,330 cases, declared 95 skips, executed 1,234 PASS
+cases and had one failure with no ERROR. That single failure is the n8n
+source-receipt mismatch owned by P05/P08; it is not an SSO, exporter, port or
+CI-adapter defect. The sanitized log was born at
+`2026-11-02T11:29:04.153+09:00` and last modified at
+`2026-11-02T11:33:15.112+09:00` at
+`_workspace/repo-support/analysis/p02/broad-leaf-final.log`. This is a
+registered local leaf result, not current operation, credential rotation,
+restore, remote CI or final acceptance.
 
 The restricted repository-integrity run reported 767 tests with 9 failures and
 77 errors. Its scoped-permission rerun completed 767 tests in 305.595 seconds
@@ -285,11 +444,54 @@ failed in 48.488 seconds. The test
 baseline SHA-256 values
 `060dc243c5061c820636dab9429ea3b61505ae013d2c543fe026c783ac538f4e` and
 `a25b4092a88dd088a56e97b947bd51f3c5ad206e352edb4fcf57f8e3aa4c1911`.
+
+The follow-up exact bounded command was
+`rtk proxy /tmp/hyhome-v28-toolchain-venv/bin/python -m unittest tests.lib.supply_chain.test_update_gates.UpdateEvidencePackageTests.test_current_root_census_excludes_relocated_lab_history tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests.test_n8n_source_receipt_does_not_reuse_previous_native_acceptance -v`.
+It exited 1 after 1.966299674 seconds with two tests and two failures; the
+execution timestamp and durable raw-log path were not recorded. The first
+failure is not the only cause: the current root has 112 expected services and
+the ledger has 111, because `blog-ingestion` has no truthful ledger entry.
+Separately, both the root and ledger enumerate 44 include inputs, but 13
+stored digests are stale. The current root input manifest is
+`8ccf45441658f551de44e723af512bdd19666fce17b57654e78efdab684858df`.
+
+| Input path | Stored SHA-256 | Current SHA-256 | Attribution |
+| --- | --- | --- | --- |
+| `docker-compose.yml` | `20b72108463e4883b4bed328507021a152436fd4a04fe163fe2bf26f9f18f411` | `95a797947e7be5954f7673a252170b16d94db562f9552016db73a5eb6f27559c` | Pre-existing root residual |
+| `infra/01-gateway/nginx/docker-compose.yml` | `d719e16568e1d898bfc0978c405910e118b3bb58cf7f09dfe6615610546624bb` | `f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e` | P02 change |
+| `infra/01-gateway/traefik/docker-compose.yml` | `478c42e90ac88dcb49fee1e236836afe110d143bea4560206b8a4d30a54e6841` | `4b0c9a0d170c721bed25000a1b3f34ee2711b309edd2f78b063cc4dc995dde0b` | Pre-existing stale input plus P02 change |
+| `infra/02-auth/keycloak/docker-compose.yml` | `4f54b5785bedf3f21046ba1abe91e3800302109cdede4b5baa9e371e4482e547` | `bda416f399d071abc554db5251b67e0e2228e98608cd80c0bb078e20792f9707` | P02 change |
+| `infra/02-auth/oauth2-proxy/docker-compose.yml` | `b3dda3d3640c9e46ab59ee21168237956b04586fbadd5e5936d11d73af2cdeb3` | `6a3bbb2dd657e2a975b2c7da1e8e7297acc599f7f18c9baf8e90c040cb4bd22a` | P02 change |
+| `infra/04-data/mng-db/docker-compose.yml` | `c840fc410ae8728f833db68802264b551d998b487cb3098bf9ffeb273c8bdee7` | `b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471` | P02 change |
+| `infra/04-data/redisinsight/docker-compose.yml` | `1e2aae21929c1ba22fd3a18856d99ff9dcbef93bb500ade703505659867fd961` | `90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a` | P02 change |
+| `infra/06-observability/docker-compose.yml` | `7300c76c56cd07dd965c84b08e524a723d14c20c9d6a5338722c259ec09560a7` | `555bbb09e3e05f1b9de005c2d7210a9931eceb6552f5855a7d524ac14d6d4aa4` | P02 change |
+| `infra/07-workflow/airflow/docker-compose.yml` | `bba69bb08a7536c5e84e11302cb2fb518b781d1ecefba46d7c8dc78c8d4ad835` | `b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9` | P02 change |
+| `infra/07-workflow/n8n/docker-compose.yml` | `da77261cc68f3bf989ad571b93aa4c4d82872e7b9b44e1fc4f024e45bb71fe36` | `afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7` | Pre-existing stale input plus P02 change |
+| `infra/08-ai/open-notebook/docker-compose.yml` | `780ebabe132c9c3c82041c2ce91fa11d78463e2c4abb6c8b9cc4a1c72f6998e4` | `a1d0b2c90982489a48c69198c1c785816246b42cf587fed8b6ac3b71e888b336` | P02 change |
+| `infra/08-ai/open-webui/docker-compose.yml` | `831db636e40aad5be4f9805dfef81b91fc104693f1c790bc3625acc633065a53` | `718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b` | P02 change |
+| `infra/09-platform-ops/terrakube/docker-compose.yml` | `49b086010504cc2f4a62983e658f5df3313019d47ae888e3381cbcc3c9037e81` | `9b812e0c04256d9f3f2144835d46b07b44f0c4ca6c42cc058a1512bbd97ca3ae` | P02 change |
+
 P05/P08 owns resumption: add a truthful ledger identity/image/provenance entry
-or change the owned declaration with evidence, then rerun that exact method.
-Rollback affects only that owning ledger/declaration delta. P02 must not alter
-the service, invent provenance or operate a runtime; the parsed
-`services.blog-ingestion` declaration is unchanged from baseline.
+and expected service for `blog-ingestion`, then reconcile the root input set as
+one owned provenance transaction before rerunning the exact methods. This is
+not a blind hash replacement: the 12 P02-changed Compose inputs must be
+distinguished from the root pre-existing residual, while Traefik and n8n have
+both earlier and P02 deltas. Rollback affects only that owning
+ledger/declaration transaction. P02 must not alter the service, invent
+provenance or operate a runtime; the parsed `services.blog-ingestion`
+declaration is unchanged from baseline.
+
+The later durable bounded recheck preserves the same result without changing
+its inputs: it started `2026-11-02T02:34:59.646222+00:00`, ended
+`2026-11-02T02:35:00.712717+00:00`, exited 1 after 1.066466 seconds, and
+reported two failures with no errors. Its value-free receipt is
+`_workspace/repo-support/analysis/p02/supply-residual-rerun.json` SHA-256
+`6cd886baa61573b33ace9d790e41a075e093aef1db3a3cc15da23d604fab43d3`; the
+sanitized log SHA-256 is
+`d31635fa415210ebd58cb22603a0696de60319e02841c5cdfbad4135b99cd783`.
+The four test/ledger/build-input source fingerprints are byte-identical before
+and after the run. This durable receipt supplements, and does not erase, the
+earlier timestamp-unrecorded 1.966299674-second observation.
 
 ## Handoff
 
@@ -297,10 +499,10 @@ the service, invent provenance or operate a runtime; the parsed
 | --- | --- | --- | --- |
 | P03 product/model registration | OUT_OF_SCOPE | P03 acceptance owner | Consume the exact P02 connection row; product-side registration and function proof remain separate |
 | P04 Airflow URI encoding and native Celery behavior | TEST_RESIDUAL | P04 acceptance owner | Current frozen `infra/07-workflow/airflow/docker-compose.yml` SHA-256 `b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9` has `_CMD` DSNs that interpolate passwords. Reproduce special-URI-character handling against the actual Celery provider before an encoding change; use a synthetic credential and preserve the current file before rollback. P02 changes only transport ports. The former `0bbb7e…` fingerprint is a dated pre-freeze observation, not current evidence. |
-| P05 n8n consumer behavior | TEST_RESIDUAL | P05/P08 acceptance owners | Consume listener, MNG endpoint and Valkey ACL evidence; preserve accepted historical C19/C22 scope. The actual leaf12 supply-chain failure requires a truthful ledger identity/image/provenance entry or an owned declaration change before its exact method is rerun. |
+| P05 n8n consumer behavior | TEST_RESIDUAL | P05/P08 acceptance owners | Consume listener, MNG endpoint and Valkey ACL evidence; preserve accepted historical C19/C22 scope. Jointly add the truthful `blog-ingestion` identity/image/provenance and expected-service record, reconcile current root inputs and rerun the two recorded fail-closed methods. Do not fabricate vendor/native completion or operate the service. |
 | P06 secret custody and issuance | OUT_OF_SCOPE | P06 acceptance owner | Issue or rotate only with actual secret owner, target and recovery boundary. P02's synthetic presentation contract permits group-readable `0440`/`0640` where the service has the group, or runtime-`999` owned `0400`/`0600`; it rejects `0444`, `0644`, symlinks and hardlinks. The earlier grant finding was corrected in P02 by narrowing an overbroad mount; P06 custody, issuance and rotation remain unexecuted. P02 records no value and does not issue a credential. |
 | P07 observations | OUT_OF_SCOPE | P07 acceptance owner | Add measurements only after selected source topology and consumer evidence are stable |
-| P08 Valkey 9.1.3 advisory, supply-chain provenance and dependency audit | IMPROVEMENT_CANDIDATE | P08 image/advisory owner | Assess declared 9.1.2 against the official advisory, client compatibility and rollback before any image update. Jointly with P05, own the leaf12 truthful ledger/provenance repair and rollback boundary. Refresh the n8n source-binding transaction, then rerun `WorkflowVersionBundleTests.test_n8n_source_receipt_does_not_reuse_previous_native_acceptance` and its nested SEC01 route check; rollback only that owned receipt transaction. Own the failed controller dependency transaction: update canonical dependency input manifest(s), generated lock and appended evidence together; verify affected controller gates. Recovery reverts only the input-plus-lock delta and preserves the original FAIL receipt/history. |
+| P08 Valkey 9.1.3 advisory, supply-chain provenance and dependency audit | IMPROVEMENT_CANDIDATE | P08 image/advisory owner | Assess declared 9.1.2 against the official advisory, client compatibility and rollback before any image update. Jointly with P05, own the blog identity/provenance and 13-input reconciliation transaction above. Archive the old n8n binding aggregate `57ad4d23833e8563576b9021ac3b4a8f67f8a2ecb04faefe41225d99cea7707a` and stored Compose `8792a345bd2ead857d108fc2eb100b8be19a9c5012caa5e457829b978b2adcc3`; mirror the current source-only aggregate `f791262bbd771759c5157b1c3c63e8993e8ca8d24f685d55dcd0f492b5933ca2` and Compose `afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7` across `update-ledger.json` and `build-inputs.json` on source base `0592303d1f7d96b46019be7a730c115c53cbbcab`. Then rerun `WorkflowVersionBundleTests.test_n8n_source_receipt_does_not_reuse_previous_native_acceptance` and its nested SEC01 route check. Signature, SBOM, Native, HOME operation and recovery evidence remain `NOT_RUN`. Rollback only the owned receipt transaction. Own the failed controller dependency transaction: update canonical dependency input manifest(s), generated lock and appended evidence together; verify affected controller gates. Recovery reverts only the input-plus-lock delta and preserves the original FAIL receipt/history. |
 
 ## Related Documents
 
