@@ -387,7 +387,7 @@ check_02_auth() {
 
   check_contains "$oauth_full_compose" "service: template-infra-readonly-med" "root-active oauth2-proxy compose template mismatch"
   check_contains "$oauth_full_compose" 'dockerfile: ${OAUTH2_PROXY_DOCKERFILE:-dev.Dockerfile}' "root-active oauth2-proxy must default to the dev Dockerfile"
-  check_contains "$oauth_full_compose" 'OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:6379' "root-active oauth2-proxy must default to the shared valkey"
+  check_contains "$oauth_full_compose" 'OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:${VALKEY_PORT:-6379}' "root-active oauth2-proxy must follow the shared valkey listener contract"
   check_contains "$oauth_full_compose" "- mng_valkey_password" "root-active oauth2-proxy mng valkey secret missing"
   check_contains "$oauth_full_compose" "traefik.http.routers.oauth2-proxy.middlewares: gateway-standard-chain@file" "root-active oauth2-proxy gateway chain mismatch"
   check_service_network "$oauth_full_compose" "oauth2-proxy" "edge_net"
@@ -635,6 +635,9 @@ check_08_ai() {
   # admin CIDR allowlist instead of shared SSO; see POL-0073.
   check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file" "open-notebook middleware chain mismatch"
   check_contains "$open_notebook_compose" "127.0.0.1:\${OPEN_NOTEBOOK_API_URL:-5055}:5055" "open-notebook API host port must stay loopback-bound"
+  check_contains "$open_notebook_compose" "- 8502" "open-notebook web listener must stay fixed at 8502"
+  check_contains "$open_notebook_compose" "traefik.http.services.open-notebook.loadbalancer.server.port: '8502'" "open-notebook gateway backend must stay fixed at 8502"
+  check_not_contains "$open_notebook_compose" "OPEN_NOTEBOOK_WEB_URL" "open-notebook does not support a configurable web listener"
   check_contains "$open_notebook_compose" "condition: service_healthy" "open-notebook health-gated dependency missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_PASSWORD_FILE=/run/secrets/open_notebook_password" "open-notebook password secret file missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE=/run/secrets/open_notebook_encryption_key" "open-notebook encryption key secret file missing"

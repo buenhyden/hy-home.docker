@@ -101,6 +101,12 @@ Airflow internal JWT:
 | Broker | `mng-valkey` or `airflow-valkey` |
 | Secret | DB/Fernet/JWT/Keycloak client |
 | Health | `/api/v2/monitor/health` |
+| Port contract | API listener·execution API URL·health·Traefik은 `${AIRFLOW_PORT:-8080}`; MNG DB는 `${POSTGRES_PORT:-5432}`; 공유/전용 broker는 `${VALKEY_PORT:-6379}` |
+
+선택형 전용 broker는 보호된 tmpfs ACL을 원자적으로 렌더한 뒤 한 listener
+포트로 시작합니다. health는 `REDISCLI_AUTH`, exporter는 `REDIS_PASSWORD`를
+사용해 비밀번호를 프로세스 argv에 포함하지 않습니다. monitor ACL overlay는
+동일 시작 wrapper에 최소 관측 계정만 추가합니다.
 
 ### SEC01 업데이트 검증 경계
 

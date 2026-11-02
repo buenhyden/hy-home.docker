@@ -38,6 +38,12 @@ Lifecycle: **HOME**. 운영 통제와 복구는 [documentation index](../../../d
 
 프로필: `availability / obs / dev`. 루트 Compose가 이 정의를 include하지만 include 자체만으로는 서비스가 시작되지 않습니다. 네트워크는 `edge_net`과 `obs_net`입니다. 비공개 값을 출력하지 않고 [공개 환경 변수 키](../../../.env.example)와 [시크릿 참조](../../../secrets/README.md)를 검토합니다.
 
+내부 상태 대상은 Provider의 실제 listener를 따릅니다. Keycloak readiness는
+`${KEYCLOAK_MANAGEMENT_PORT:-9000}`, OAuth2 Proxy ping은
+`${OAUTH2_PROXY_PORT:-4180}`, 관리 PostgreSQL·Valkey는 각각
+`${POSTGRES_PORT:-5432}`·`${VALKEY_PORT:-6379}`를 사용합니다. 이 제한된 probe는
+DNS·전송·프로세스 준비 증거이며 로그인이나 데이터 기능 완료를 대신하지 않습니다.
+
 기밀 클라이언트 ID는 `home-gatus`이며 정확한 콜백은
 `https://status.<domain>/authorization-code/callback`입니다. 클라이언트
 시크릿은 엔트리포인트가 Docker Secret에서 읽습니다. Gatus는

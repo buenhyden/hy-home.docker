@@ -37,6 +37,7 @@ def main(argv=None):
     scanning.add_argument("--reviews")
     scanning.add_argument("--render", action="store_true")
     scanning.add_argument("--render-inputs")
+    scanning.add_argument("--connections", action="store_true")
     scanning.add_argument("--public-path", action="append", default=[])
     comparing = commands.add_parser("compare")
     comparing.add_argument("--root", type=Path, default=Path.cwd())
@@ -60,6 +61,7 @@ def main(argv=None):
                 public_paths=args.public_path,
                 excluded_outputs=outputs,
                 reviews=reviews,
+                connections=args.connections,
             )
             curation = load_public(args.root, args.curation) if args.curation else {}
             allowed = {

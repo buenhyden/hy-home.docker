@@ -32,6 +32,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/validation/test_p02_service_contracts.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/hooks/agent-event-hook.sh
   kind: hook
@@ -621,6 +622,28 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_secret_catalog.py
+- path: scripts/lib/ops/_workspace_connection_sources.py
+  kind: library
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/ops/_workspace_connections.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_workspace_connections.py
+- path: scripts/lib/ops/_workspace_connections.py
+  kind: library
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/ops/workspace_inventory.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_workspace_connections.py
 - path: scripts/lib/ops/_workspace_render.py
   kind: library
   authority: docs/90.references/data/0096-workspace-inventory/README.md

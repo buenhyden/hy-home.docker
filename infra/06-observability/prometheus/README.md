@@ -56,6 +56,9 @@ infra/06-observability/prometheus/
   `expected_state` 레이블을 붙입니다. 지표 이름(`pg_*`, `redis_*`)은 바꾸지 않습니다.
   DEV 대상은 `scripts/start.sh`가 시작할 때 `PROMETHEUS_DEV_DATA_EXPECTED`(`on`|`off`) 값으로
   `/etc/prometheus/targets/`에 렌더링하며, 그 밖의 값이면 Prometheus가 시작하지 않습니다.
+  같은 시작 스크립트는 `OPENBAO_PORT`와 `KEYCLOAK_MANAGEMENT_PORT`를 십진수
+  `1..65535`로 검증한 뒤 OpenBao와 Keycloak file-SD 대상을 원자적으로 교체합니다.
+  잘못된 포트는 기존 대상 파일을 보존한 채 시작을 거부합니다.
   DEV를 일부러 내릴 때는 `.env`의 이 값을 `off`로 바꾸고 Prometheus를 재생성합니다. 그동안 DEV
   대상은 계속 수집되지만 장애 경보는 울리지 않고, `off`인데 1시간 넘게 응답하면 선언을 고치라는
   경고가 납니다.

@@ -64,7 +64,8 @@ keycloak/
 | Database | `mng-pg` |
 | Network | `edge_net`, `mng_data_net`, `obs_net` |
 | Public Host | `keycloak.${DEFAULT_URL}` |
-| Health | management 포트 `/health/ready` |
+| Listener | 앱 `${KEYCLOAK_PORT:-8080}`, management `${KEYCLOAK_MANAGEMENT_PORT:-9000}` |
+| Health | management 포트 `${KEYCLOAK_MANAGEMENT_PORT:-9000}/health/ready` |
 | Secrets | `keycloak_db_password`, `keycloak_admin_password` 또는 OpenBao Agent 출력(`KEYCLOAK_ADMIN_PASSWORD_FILE`) |
 
 ## Application Client Matrix

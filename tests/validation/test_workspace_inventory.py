@@ -13,6 +13,9 @@ from unittest.mock import patch
 
 import yaml
 
+from scripts.lib.document_governance.operations_catalog import (
+    OperationsAuthorityError,
+)
 from scripts.lib.ops._workspace_render import render_inventory
 
 CLI = Path(__file__).resolve().parents[2] / "scripts/operations/workspace-inventory.py"
@@ -79,6 +82,74 @@ class WorkspaceCliTests(unittest.TestCase):
             result = self.run_cli("scan", *args)
             self.assertEqual(result.returncode, 2)
             self.assertEqual((self.root / "out.yaml").read_text(), "previous")
+
+    def test_scan_connections_is_opt_in_and_value_minimizing(self):
+        relative = "infra/07-workflow/airflow/workloads/demo/fixtures/pg-connection.example.json"
+        source = self.root / relative
+        source.parent.mkdir(parents=True)
+        source.write_text('{"host":"dev-pg","port":5432,"password":"PRIVATE_MARKER"}')
+        plain = self.run_cli(
+            "scan", "--output", "plain.yaml", "--public-path", relative
+        )
+        self.assertEqual(plain.returncode, 0, plain.stderr)
+        self.assertNotIn(
+            "connections", yaml.safe_load((self.root / "plain.yaml").read_text())
+        )
+
+        result = self.run_cli(
+            "scan",
+            "--output",
+            "connections.yaml",
+            "--connections",
+            "--public-path",
+            relative,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        document = yaml.safe_load((self.root / "connections.yaml").read_text())
+        self.assertEqual(document["connections"][0]["provider"], "dev-pg")
+        self.assertEqual(
+            document["connections"][0]["registration"]["actual_state"], "UNKNOWN"
+        )
+        self.assertNotIn("PRIVATE_MARKER", (self.root / "connections.yaml").read_text())
+        self.assertEqual(
+            self.run_cli("validate", "--input", "connections.yaml").returncode, 0
+        )
+
+    def test_connection_read_boundary_failure_is_fixed_and_preserves_output(self):
+        relative = "infra/07-workflow/airflow/workloads/demo/fixtures/pg-connection.example.json"
+        source = self.root / relative
+        source.parent.mkdir(parents=True)
+        source.write_text('{"host":"dev-pg","port":5432}')
+        (self.root / "connections.yaml").write_text("previous")
+        spec = importlib.util.spec_from_file_location("workspace_inventory_cli", CLI)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        stderr = io.StringIO()
+        with (
+            patch(
+                "scripts.lib.ops._workspace_connections.read_bounded_regular",
+                side_effect=OperationsAuthorityError(
+                    "read-failed", "PRIVATE_SOURCE_PATH"
+                ),
+            ),
+            redirect_stdout(io.StringIO()),
+            redirect_stderr(stderr),
+        ):
+            result = module.main(
+                [
+                    "scan",
+                    "--root",
+                    str(self.root),
+                    "--output",
+                    "connections.yaml",
+                    "--connections",
+                    "--public-path",
+                    relative,
+                ]
+            )
+        self.assertEqual(result, 2)
+        self.assertEqual((self.root / "connections.yaml").read_text(), "previous")
+        self.assertNotIn("PRIVATE_SOURCE_PATH", stderr.getvalue())
 
     def test_bad_arguments_and_yaml_do_not_echo_input_values(self):
         bad = self.run_cli("validate", "--SENSITIVE_ARGUMENT")

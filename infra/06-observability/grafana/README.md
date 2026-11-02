@@ -108,6 +108,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 - 대시보드 보유 현황과 서비스별 매핑은 아래 Service Coverage와 Dashboard Sources 표가 기준이며, `tests/validation/test_compose_baseline_gates.py`의 대시보드 계약 테스트가 표와 파일을 대조합니다.
 - Keycloak 그룹 `/admins`, `/editors`, `/viewers`는 각각 Grafana `Admin`, `Editor`, `Viewer`로 매핑됩니다. OAuth role mapping은 strict이므로 역할이 없는 사용자의 `Viewer` fallback을 보장하지 않습니다. 일반 조직 기본 역할과 OAuth 수용 조건을 구분합니다.
 - `grafana_admin_password`와 `grafana_client_secret`은 Docker Secret 파일 참조를 통해 주입됩니다.
+- 공개 예외는 `/favicon.ico`와 `/robots.txt`의 `GET`/`HEAD`에만 priority 200으로 적용됩니다. 같은 경로의 다른 메서드는 priority 201의 `noop@internal` 라우터가 종료하며, 두 라우터 모두 기존 `gateway-standard-chain@file`의 `100 req/s`, burst `200` 제한을 사용합니다. 이 예외의 재검토일은 2026-12-02입니다.
 
 ### Service Coverage
 

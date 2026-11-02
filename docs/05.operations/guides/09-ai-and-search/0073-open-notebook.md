@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Usage Guide"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "GDE-0073"
 parent_ids:
@@ -49,8 +49,9 @@ Laboratory Operator와 `@buenhyden`이 OPTIONAL 노트북 워크스페이스를 
   포트에 도달한다. UI 라우트는 admin CIDR 허용목록과 Open Notebook 비밀번호를
   사용한다. 소유자 커밋 `b90b74837`가 공유 SSO를 제거했으므로 이 라우트에는
   게이트웨이 identity나 그룹 검사가 적용되지 않는다.
-- 디렉터리 health는 마운트 가용성만 증명할 뿐 DB, provider, 모델, 노트북 기능은
-  증명하지 않는다.
+- API `5055`의 `/health`는 제한된 앱 API 생존·기동 상태만 확인한다. DB 마이그레이션,
+  provider·모델 준비, 저장된 모델 등록과 노트북 기능은 별도 증거가 필요하다. 디렉터리
+  health 역시 마운트 가용성만 증명한다.
 
 ## Usage
 

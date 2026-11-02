@@ -755,6 +755,10 @@
         "tests.validation.test_opsflow_airflow_native_evidence",
         "tests.validation.test_opsflow_airflow_native_quiescence",
         "tests.validation.test_opsflow_airflow_native_rehearsal",
+        "tests.validation.test_p02_native_contracts",
+        "tests.validation.test_p02_oauth_native",
+        "tests.validation.test_p02_secret_presentation_native",
+        "tests.validation.test_p02_valkey_mount_scope",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",
@@ -780,6 +784,9 @@
         "tests.validation.test_workflow_version_bundle.WorkflowCandidateRehearsalTests",
         "tests.validation.test_opsflow_native_rehearsal.OpsflowN8nNativeRehearsal",
         "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowNativeRehearsal",
+        "tests.validation.test_p02_native_contracts.GrafanaStaticRouteNativeTests",
+        "tests.validation.test_p02_oauth_native.OAuth2ProxyOidcNativeTests",
+        "tests.validation.test_p02_secret_presentation_native.ComposeSecretPresentationNativeTests",
         "-v"
       ],
       "cwd": ".",
@@ -834,6 +841,11 @@
         "tests.lib.ops.test_workspace_inventory",
         "tests.lib.ops.test_workspace_services",
         "tests.validation.test_workspace_inventory",
+        "tests.lib.ops.test_workspace_connections",
+        "tests.validation.test_p02_service_contracts",
+        "tests.validation.test_p02_gateway_port_validation",
+        "tests.validation.test_p02_prometheus_contracts",
+        "tests.validation.test_p02_valkey_mount_scope",
         "tests.lib.ops.test_port_inventory",
         "tests.validation.test_port_contract",
         "tests.lib.ops.test_openbao_consumer_migration",
@@ -1738,10 +1750,24 @@
           "scripts/lib/ops/workspace_inventory.py",
           "scripts/lib/ops/_workspace_render.py",
           "scripts/lib/ops/_workspace_services.py",
+          "scripts/lib/ops/_workspace_connection_sources.py",
+          "scripts/lib/ops/_workspace_connections.py",
           "tests/lib/ops/test_workspace_inventory.py",
           "tests/lib/ops/test_workspace_services.py",
+          "tests/lib/ops/test_workspace_connections.py",
           "tests/validation/test_workspace_inventory.py",
           "docs/90.references/data/0096-workspace-inventory/"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/validation/test_p02_service_contracts.py",
+          "tests/validation/test_p02_gateway_port_validation.py",
+          "tests/validation/test_p02_prometheus_contracts.py",
+          "tests/validation/test_p02_valkey_mount_scope.py"
         ],
         "suites": [
           "repository-integrity"
@@ -2119,10 +2145,35 @@
           "scripts/lib/ops/workspace_inventory.py",
           "scripts/lib/ops/_workspace_render.py",
           "scripts/lib/ops/_workspace_services.py",
+          "scripts/lib/ops/_workspace_connection_sources.py",
+          "scripts/lib/ops/_workspace_connections.py",
           "tests/lib/ops/test_workspace_inventory.py",
           "tests/lib/ops/test_workspace_services.py",
+          "tests/lib/ops/test_workspace_connections.py",
           "tests/validation/test_workspace_inventory.py",
           "docs/90.references/data/0096-workspace-inventory/"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/validation/test_p02_service_contracts.py",
+          "tests/validation/test_p02_gateway_port_validation.py",
+          "tests/validation/test_p02_prometheus_contracts.py",
+          "tests/validation/test_p02_valkey_mount_scope.py",
+          "infra/01-gateway/nginx/",
+          "infra/01-gateway/traefik/",
+          "infra/02-auth/keycloak/",
+          "infra/02-auth/oauth2-proxy/",
+          "infra/04-data/mng-db/",
+          "infra/06-observability/docker-compose.yml",
+          "infra/06-observability/prometheus/",
+          "infra/07-workflow/airflow/",
+          "infra/07-workflow/n8n/",
+          "infra/08-ai/open-notebook/",
+          "infra/08-ai/open-webui/"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

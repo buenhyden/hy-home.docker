@@ -126,7 +126,7 @@ class Generation7EvidenceTests(unittest.TestCase):
 
     def test_legacy_failure_projection_preserves_every_observed_cell(self):
         legacy = task(
-            "| Broken | 1 | W1 | Integration | candidate A | FAIL | receipt | - |\n",
+            "| Broken | 1 | W1 | Integration | candidate A | FAIL | receipt | Historical failure |\n",
             "| 1 | pending | - | - |\n| 2 | pending | - | - |\n",
         )
         before = module.SpecPackage(
@@ -139,6 +139,134 @@ class Generation7EvidenceTests(unittest.TestCase):
                 (before,), (after,), generation6_registry(), load_registry()
             ),
         )
+
+    def test_failed_observation_identity_excludes_only_resolves(self):
+        registry = load_registry()
+        path = pathlib.PurePosixPath(
+            "docs/03.specs/0212-request-baseline-and-reconciliation/tasks/"
+            "tsk-0040-workspace-inventory.md"
+        )
+        corrections = (
+            ("Follow-up local boundary gate", "51", "W56", "Full local boundary gate"),
+            (
+                "Follow-up local inventory gate",
+                "52",
+                "W57",
+                "Full local inventory gate",
+            ),
+            ("Follow-up local reuse gate", "53", "W58", "Full local reuse gate"),
+            (
+                "Follow-up local ownership gate",
+                "54",
+                "W59",
+                "Full local ownership gate",
+            ),
+            ("Follow-up local research gate", "55", "W60", "Full local research gate"),
+        )
+
+        def evidence_rows(resolves):
+            return "\n".join(
+                "| "
+                + " | ".join(
+                    (
+                        name,
+                        criterion,
+                        work_unit,
+                        "Registered full local gate",
+                        "Actual Python 3.14.8 controller/children",
+                        "FAIL",
+                        "localfollowup-ci.json: route exit1",
+                        "required",
+                        resolves.get(name, old),
+                    )
+                )
+                + " |"
+                for name, criterion, work_unit, old in corrections
+            )
+
+        header = """## Evidence
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+"""
+        source = dataclasses.replace(
+            task("", ""),
+            path=path,
+            body=header + evidence_rows({}) + "\n",
+        )
+        corrected = dataclasses.replace(
+            source,
+            body=header + evidence_rows({name: "-" for name, *_ in corrections}) + "\n",
+        )
+        before = module.SpecPackage(
+            path.parent,
+            "0212",
+            "request-baseline-and-reconciliation",
+            SPEC,
+            PLAN,
+            (source,),
+            (),
+        )
+        after = dataclasses.replace(before, tasks=(corrected,))
+        self.assertEqual(
+            (),
+            module._failed_observation_findings(
+                (before,), (after,), registry, registry
+            ),
+        )
+
+        first_name, *_ = corrections[0]
+        first_row = next(
+            line
+            for line in corrected.body.splitlines()
+            if line.startswith(f"| {first_name} |")
+        )
+
+        def replace_cell(index, value):
+            cells = [cell.strip() for cell in first_row.strip("|").split("|")]
+            cells[index] = value
+            replacement = "| " + " | ".join(cells) + " |"
+            return corrected.body.replace(first_row, replacement, 1)
+
+        invalid = {"deleted": corrected.body.replace(first_row + "\n", "", 1)}
+        protected = (
+            "changed-evidence",
+            "changed-criteria",
+            "changed-work-unit",
+            "changed-check",
+            "changed-input",
+            "changed-result",
+            "changed-location",
+            "changed-required",
+        )
+        invalid.update(
+            {
+                name: replace_cell(index, f"different-{index}")
+                for index, name in enumerate(protected)
+            }
+        )
+        for case, body in invalid.items():
+            with self.subTest(case=case):
+                changed = dataclasses.replace(corrected, body=body)
+                changed_package = dataclasses.replace(before, tasks=(changed,))
+                self.assertTrue(
+                    module._failed_observation_findings(
+                        (before,), (changed_package,), registry, registry
+                    )
+                )
+
+    def test_nonpass_row_still_cannot_resolve_an_observation(self):
+        invalid = current_task("FAIL")
+        invalid = dataclasses.replace(
+            invalid,
+            body=invalid.body.replace(
+                "| FAIL | receipt | required | - |",
+                "| FAIL | receipt | required | Historical failure |",
+                1,
+            ),
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "only a PASS row"):
+            self.contract(invalid)
 
     def test_multi_item_task_round_trips_through_a_committed_base(self):
         text = """---

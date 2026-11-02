@@ -295,16 +295,24 @@ services:
       n8n_net: {}
     secrets:
       - n8n_valkey_password
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     restart: unless-stopped
     volumes:
       - n8n-valkey-data:/data:rw
-    command: >
-      sh -c ' valkey-server --requirepass "$$(cat /run/secrets/n8n_valkey_password)" --appendonly yes --port 6379 '
+      - ../../04-data/mng-db/valkey/scripts/start-dedicated.sh:/usr/local/lib/hy-home/valkey/start-dedicated.sh:ro
+      - ../../04-data/mng-db/valkey/scripts/render-monitor-acl.sh:/usr/local/lib/hy-home/valkey/render-monitor-acl.sh:ro
+    tmpfs:
+      - /run/valkey:rw,noexec,nosuid,nodev,mode=0700,uid=999,gid=999
+    command:
+      - /bin/sh
+      - /usr/local/lib/hy-home/valkey/start-dedicated.sh
+      - /run/secrets/n8n_valkey_password
+      - /run/valkey/users.acl
     expose:
       - '${VALKEY_PORT:-6379}'
-      - '${VALKEY_BUS_PORT:-16379}'
     healthcheck:
-      test: [ 'CMD-SHELL', 'valkey-cli -a $$(cat /run/secrets/n8n_valkey_password) ping | grep PONG' ]
+      test: [ 'CMD-SHELL', 'REDISCLI_AUTH=$$(cat /run/secrets/n8n_valkey_password); export REDISCLI_AUTH; valkey-cli --no-auth-warning -h 127.0.0.1 -p "$${VALKEY_PORT}" ping | grep -qx PONG' ]
       interval: 15s
       timeout: 30s
       retries: 5
@@ -340,15 +348,22 @@ services:
     restart: unless-stopped
     secrets:
       - n8n_valkey_password
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     entrypoint:
       - /bin/sh
       - -c
     command:
       - |
-        export VALKEY_PASSWORD=$$(cat /run/secrets/n8n_valkey_password | tr -d '\n')
+        set -eu
+        port=$${VALKEY_PORT}
+        case "$$port" in ''|*[!0-9]*) exit 1 ;; esac
+        [ "$${#port}" -le 5 ] && [ "$$port" -ge 1 ] && [ "$$port" -le 65535 ] || exit 1
+        REDIS_PASSWORD=$$(cat /run/secrets/n8n_valkey_password)
+        [ -n "$$REDIS_PASSWORD" ] || exit 1
+        export REDIS_PASSWORD
         exec /redis_exporter \
-          -redis.addr=redis://n8n-valkey:${VALKEY_PORT:-6379} \
-          -redis.password="$$VALKEY_PASSWORD" \
+          -redis.addr="redis://n8n-valkey:$$port" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
       n8n-valkey: { condition: service_healthy, required: false }

@@ -77,8 +77,9 @@ n8n Runbook의 「선택형 공유 Valkey 계정과 Local Ollama」 절을 확�
 PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포트를
 게시하고, Valkey는 루트 `VALKEY_MNG_HOST_PORT` 키로
 `HOST_LAN_BIND_IP`(기본값 `192.168.0.13`)에 게시합니다. exporter는
-내부용입니다. PostgreSQL은
-`pg_isready`를, Valkey는 인증된 `PING`을, exporter는 HTTP 헬스 체크를
+내부용입니다. PostgreSQL 서버 listener, `pg_isready`, pgBackRest와 MNG 소비자는
+`${POSTGRES_PORT:-5432}`를 사용합니다. 공유 Valkey의 서버·검사·소비자는
+`${VALKEY_PORT:-6379}`를 사용합니다. PostgreSQL은 `pg_isready`를, Valkey는 인증된 `PING`을, exporter는 HTTP 헬스 체크를
 사용하며 init은 완료 여부로 게이트됩니다. `pg/init-scripts/init_users_dbs.sql`은
 기본 role/database 초기화를 소유하며 optional-capability secret은 절대 읽지
 않습니다. `pg/provision/run-feature-provision.sh`는 feature 소유 job

@@ -67,10 +67,10 @@ open-notebook/
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-notebook/docker-compose.yml` 경로로 루트 include가 활성화됨 |
 | Networks | `ai_net`, `edge_net` |
 | Volumes | `open-notebook-data:/app/data`, `surrealdb-data:/mydata` |
-| Ports | Loopback 전용 API 포트 `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055`; Traefik은 `expose`를 통한 내부 web 포트 `${OPEN_NOTEBOOK_WEB_URL:-8502}`을 대상으로 함; SurrealDB 내부 포트 `8000`은 `expose`로 노출 |
+| Ports | Loopback 호스트 게시값 `OPEN_NOTEBOOK_API_URL`은 내부 API `5055`에만 연결됨; 내부 web listener와 Traefik backend는 제품 고정 `8502`; SurrealDB 내부 포트 `8000`은 `expose`로 노출 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-notebook.rule`, `traefik.http.routers.open-notebook.entrypoints`, `traefik.http.routers.open-notebook.tls`, `traefik.http.middlewares.open-notebook-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.open-notebook.middlewares`, `traefik.http.services.open-notebook.loadbalancer.server.port` |
 | Secret refs | 이름: `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key`; 마운트: `/run/secrets/surreal_db_password`, `/run/secrets/open_notebook_password`, `/run/secrets/open_notebook_encryption_key` |
-| Healthcheck | `surrealdb`와 `open_notebook`에 Compose 헬스체크가 선언되어 있음 |
+| Healthcheck | `open_notebook`은 제한된 Python 요청으로 `127.0.0.1:5055/health`의 HTTP 200을 검사함. 이는 API/startup readiness이며 DB·모델 등록·사용자 기능 완료 증거가 아님 |
 | Operations | Guide (`docs/05.operations/guides/0073-open-notebook.md`), Policy (`docs/05.operations/policies/0073-open-notebook.md`), Runbook (`docs/05.operations/runbooks/0073-open-notebook.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `08-ai` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `notebook` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
@@ -110,13 +110,13 @@ open-notebook/
 | `SURREALDB_DATABASE` | Yes | `open_notebook` | 네임스페이스 내 데이터베이스명 |
 | `DEFAULT_URL` | Yes | `open_notebook` | Traefik 라우팅용 기본 도메인 |
 | `DEFAULT_MANAGEMENT_DIR` | Yes | Global | 영속 바인드 마운트용 기본 호스트 디렉터리 |
-| `OPEN_NOTEBOOK_API_URL` | No | `open_notebook` | API용 loopback 호스트 포트 (기본값: 5055) |
-| `OPEN_NOTEBOOK_WEB_URL` | No | `open_notebook` | Web UI 내부 포트 (기본값: 8502) |
+| `OPEN_NOTEBOOK_API_URL` | No | `open_notebook` | API용 loopback 호스트 게시 포트 (기본값: 5055); 내부 listener를 변경하지 않음 |
 | `ADMIN_UI_ALLOWED_CIDRS` | No | Traefik | admin 엔드포인트용 IP allowlist |
 
 ### Traefik Routing
 
 Open Notebook은 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`, `large-body@file`을 사용해 `websecure`에서 Traefik으로 라우팅됩니다. 공유 SSO는 의도적으로 없으며(소유자 결정, 커밋 `b90b74837`) 접근은 CIDR allowlist와 Open Notebook 비밀번호로 제어합니다.
+내부 API `5055`와 web `8502`는 Open Notebook v1.15.0의 제품 계약이라 override하지 않습니다. Ollama endpoint 정합성은 저장된 모델 등록 완료로 집계하지 않습니다.
 
 ### Database Compatibility
 

@@ -8,27 +8,28 @@ services:
   oauth2-proxy-valkey:
     secrets:
       - oauth2_valkey_monitor_password
-    volumes:
-      - ./infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh:/usr/local/bin/render-monitor-acl.sh:ro
-    tmpfs:
-      - /run/valkey:rw,noexec,nosuid,nodev,mode=0700,uid=999,gid=999
     command:
       - /bin/sh
-      - -ec
-      - |
-        /bin/sh /usr/local/bin/render-monitor-acl.sh /run/secrets/oauth2_valkey_password /run/secrets/oauth2_valkey_monitor_password /run/valkey/users.acl
-        exec valkey-server --aclfile /run/valkey/users.acl --appendonly yes --port 6379
+      - /usr/local/lib/hy-home/valkey/start-dedicated.sh
+      - /run/secrets/oauth2_valkey_password
+      - /run/valkey/users.acl
+      - /run/secrets/oauth2_valkey_monitor_password
   oauth2-proxy-valkey-exporter:
     secrets: !override
       - oauth2_valkey_monitor_password
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     command:
       - |
         set -eu
+        port=$${VALKEY_PORT}
+        case "$$port" in ''|*[!0-9]*) exit 1 ;; esac
+        [ "$${#port}" -le 5 ] && [ "$$port" -ge 1 ] && [ "$$port" -le 65535 ] || exit 1
         REDIS_PASSWORD=$$(cat /run/secrets/oauth2_valkey_monitor_password)
         [ -n "$$REDIS_PASSWORD" ] || exit 1
         export REDIS_PASSWORD
         exec /redis_exporter \
-          -redis.addr=redis://oauth2-proxy-valkey:6379 \
+          -redis.addr="redis://oauth2-proxy-valkey:$$port" \
           -redis.user=monitor \
           -config-command=- \
           -set-client-name=false \

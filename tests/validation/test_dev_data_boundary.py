@@ -250,10 +250,26 @@ class DatastoreScrapeLabelTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(
                 sorted(p.name for p in directory.iterdir()),
-                ["dev-pg-exporter.yml", "dev-valkey-exporter.yml", "openbao.yml"],
+                [
+                    "dev-pg-exporter.yml",
+                    "dev-valkey-exporter.yml",
+                    "keycloak.yml",
+                    "openbao.yml",
+                ],
             )
             openbao = yaml.safe_load((directory / "openbao.yml").read_text())[0]
             self.assertEqual(["openbao:8200"], openbao["targets"])
+            keycloak = yaml.safe_load((directory / "keycloak.yml").read_text())[0]
+            self.assertEqual(["keycloak:9000"], keycloak["targets"])
+            self.assertEqual(
+                {
+                    "cluster": "hy-home",
+                    "namespace": "hy-home",
+                    "domain": "auth",
+                    "container": "keycloak",
+                },
+                keycloak["labels"],
+            )
             for name, scope, engine in DATASTORE_JOBS:
                 if scope != "dev":
                     continue

@@ -2527,8 +2527,10 @@ SSO_SUBNET, SSO_TRAEFIK_IP = "10.250.199.0/24", "10.250.199.2"
 
 
 def _sso_docker(*args, check=True, timeout=180, **kw):
-    return subprocess.run(["docker", *args], capture_output=True, text=True,
-                          check=check, timeout=timeout, **kw)  # fmt: skip
+    environment = {"HOME": "/tmp", "PATH": "/usr/bin:/bin"}
+    return subprocess.run(["docker", "--host", "unix:///var/run/docker.sock", *args],
+                          capture_output=True, text=True, check=check,
+                          timeout=timeout, env=environment, **kw)  # fmt: skip
 
 
 def _sso_image(compose, service):
@@ -2682,11 +2684,19 @@ class SsoStack:
     @classmethod
     def setUpClass(cls):
         cls.tag = f"hysso{os.getpid()}"
-        cls.proxy_image = f"hy-home/oauth2-proxy:rehearsal-{cls.tag}"
-        _sso_docker("build", "-q", "-t", cls.proxy_image, "-f",
-                    str(ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"),
-                    str(ROOT / "infra/02-auth/oauth2-proxy"), timeout=900)  # fmt: skip
-        cls.addClassCleanup(_sso_docker, "image", "rm", cls.proxy_image, check=False)
+        external_proxy_image = os.environ.get("HYHOME_SSO_PROXY_IMAGE")
+        if external_proxy_image:
+            cls.proxy_image = external_proxy_image
+            cls.proxy_args = ["--config=/etc/oauth2-proxy.cfg"]
+        else:
+            cls.proxy_image = f"hy-home/oauth2-proxy:rehearsal-{cls.tag}"
+            cls.proxy_args = []
+            _sso_docker("build", "-q", "-t", cls.proxy_image, "-f",
+                        str(ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"),
+                        str(ROOT / "infra/02-auth/oauth2-proxy"), timeout=900)  # fmt: skip
+            cls.addClassCleanup(
+                _sso_docker, "image", "rm", cls.proxy_image, check=False
+            )
         cls.tmp = Path(tempfile.mkdtemp(prefix="hysso"))
         cls.addClassCleanup(shutil.rmtree, cls.tmp, True)
         (cls.tmp / "dynamic").mkdir()
@@ -2720,12 +2730,22 @@ class SsoStack:
             cls.addClassCleanup(
                 _sso_docker, "rm", "-f", f"{cls.tag}-{name}", check=False
             )
-        net = ["--network", cls.tag]
+        net = [
+            "--network",
+            cls.tag,
+            "--cpus",
+            "2",
+            "--memory",
+            "2g",
+            "--pids-limit",
+            "512",
+        ]
         # Traefik first, so no dynamic address takes its fixed one.
         _sso_docker("run", "-d", "--name", f"{cls.tag}-traefik", *net, "--ip", SSO_TRAEFIK_IP,
                "--network-alias", "app.hy.test", "--network-alias", "auth.hy.test",
                "--network-alias", "storybook.hy.test",
                "--network-alias", "storybook-mcp.hy.test", "--network-alias", "keycloak.hy.test",
+               "-e", "OAUTH2_PROXY_PORT=4180",
                "-v", f"{cls.tmp}/dynamic:/dynamic:ro", "-v", f"{cls.tmp}/tls:/tls:ro", _sso_image("infra/01-gateway/traefik/docker-compose.yml", "traefik"),
                "--entrypoints.websecure.address=:443", "--providers.file.directory=/dynamic",
                "--log.level=ERROR")  # fmt: skip
@@ -2761,7 +2781,7 @@ class SsoStack:
                *args, "-v", f"{SSO_PROXY_CFG}:/etc/oauth2-proxy.cfg:ro",
                "-v", f"{cls.tmp}/secrets/client:/run/secrets/oauth2_proxy_client_secret:ro",
                "-v", f"{cls.tmp}/secrets/cookie:/run/secrets/oauth2_proxy_cookie_secret:ro",
-               "-v", f"{cls.tmp}/tls:/tls:ro", cls.proxy_image)  # fmt: skip
+               "-v", f"{cls.tmp}/tls:/tls:ro", cls.proxy_image, *cls.proxy_args)  # fmt: skip
         cls.wait(
             cls.fetch_ok("http://oauth2-proxy:4180/ping"), "oauth2-proxy", tries=60
         )
@@ -5653,6 +5673,7 @@ ROUTES_WITHOUT_SSO = {
     "storybook-mcp": "oauth-bearer",
     # Two static files (favicon, robots.txt)
     "grafana-static": "static-only",
+    "grafana-static-deny": "terminal-method-denial",
     # Exact-path machine routes (traefik/dynamic/hermes-webhook.yml, blog-export.yml)
     "hermes-blog-ingestion-webhook": "n8n-header-auth-and-ip-allowlist",
     "blog-export-read": "gateway-bearer-and-ip-allowlist",
@@ -5761,10 +5782,16 @@ class RouteAuthContractTests(unittest.TestCase):
         middlewares = yaml.safe_load(path.read_text(encoding="utf-8"))["http"][
             "middlewares"
         ]
-        self.assertEqual(
-            "http://oauth2-proxy:4180/",
-            middlewares["sso-auth"]["forwardAuth"]["address"],
+        address = middlewares["sso-auth"]["forwardAuth"]["address"]
+        self.assertTrue(
+            address.startswith(
+                'http://oauth2-proxy:{{- $p := env "OAUTH2_PROXY_PORT" -}}'
+            )
         )
+        self.assertIn('6553[0-5])$" $p -}}', address)
+        self.assertIn('{{ fail "invalid OAUTH2_PROXY_PORT" }}', address)
+        self.assertTrue(address.endswith("/"))
+        self.assertNotIn("oauth2-proxy:4180", address)
         errors = middlewares["sso-errors"]["errors"]
         self.assertEqual(["403"], errors["status"])
         self.assertNotIn("statusRewrites", errors)

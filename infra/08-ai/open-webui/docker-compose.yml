@@ -27,6 +27,7 @@ services:
     entrypoint:
       - /usr/local/bin/open-webui-oidc-entrypoint.sh
     environment:
+      PORT: ${OLLAMA_WEBUI_PORT:-8080}
       OLLAMA_BASE_URL: http://ollama:${OLLAMA_PORT:-11434}
       RAG_EMBEDDING_ENGINE: ollama
       # The image leaves WEBUI_SECRET_KEY empty, so start.sh keeps a generated key
@@ -81,7 +82,7 @@ services:
       ollama:
         condition: service_healthy
     healthcheck:
-      test: [ 'CMD-SHELL', 'curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health || exit 1' ]
+      test: [ 'CMD-SHELL', 'curl -f "http://localhost:$${PORT}/health" || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 5

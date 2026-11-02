@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.33.0"
+version: "1.34.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-02"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -97,6 +97,13 @@ TSK-0040. These own the current workspace census, bounded evidence reuse,
 single-writer leases and research applicability. The P01 label here is the
 workspace-inventory lane; historical OpenBao P01 remains SPEC-0204.
 Completed Task bodies and criteria 1–50 retain their meaning.
+
+The direct P02 request of 2026-11-02 adds criteria 56–60 and W61–W65 in
+TSK-0041. It is the current service connection, authentication and Valkey
+contract lane, distinct from SPEC-0204's historical P02 secret catalog Task.
+It preserves accepted consumer scopes and leaves service operation, host
+configuration, credential rotation, external repositories and remote delivery
+outside this local source unit.
 
 ## Scope
 
@@ -523,6 +530,26 @@ hold, authorization and recovery requirements have been established.
 55. P01.05 records directly consulted official sources, version/platform
     applicability, adoption or deferral and normal/rejection/recovery questions
     without treating release existence as installation or runtime acceptance.
+56. P02.01 records and reconciles the caller network, DNS, listener, service
+    DNS, host-published and gateway backend ports for selected public source
+    contracts without widening networks or publishing a new host port.
+57. P02.02 preserves the distinct browser, application and machine identity
+    boundaries, records issuer, audience, redirect and expiry rejection scope,
+    and constrains direct backend access without presenting static routes as
+    a fresh login or authorization result.
+58. P02.03 records DEV/MNG environment and readiness contracts independently
+    from process liveness, initialization, dependencies and product function;
+    unsupported variables, empty paths and unobserved product registration
+    remain explicit residuals.
+59. P02.04 retains shared MNG Valkey as the default topology, reuses named
+    n8n ACL and dedicated-broker opt-in contracts, and records safe secret
+    delivery and persistence/recovery boundaries without issuing or rotating
+    credentials.
+60. P02.05 publishes selected connection evidence and hands P03–P08 exact
+    residuals by fingerprint, writer, test and recovery boundary. The approved
+    Grafana public exception is limited to GET/HEAD for `/favicon.ico` and
+    `/robots.txt`; any other method is rejected before the normal route and
+    its policy review is due on 2026-12-02.
 
 ## Failure Conditions
 
@@ -541,6 +568,7 @@ target, backup, recovery boundary, and action-specific authorization.
 ## Related Documents
 
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
+- [Service connection contracts Task](tasks/tsk-0041-service-connection-contracts.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)

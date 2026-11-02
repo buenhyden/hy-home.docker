@@ -1,15 +1,16 @@
 ---
 title: "Workspace Inventory"
-version: "0.2.0"
+version: "0.3.0"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-02"
 layer: "references"
 artifact_id: "DATA-0096"
 parent_ids:
 - "SPEC-0212"
 - "SPEC-0212-TSK-0040"
+- "SPEC-0212-TSK-0041"
 created: "2026-11-01"
 observed_at: "2026-11-01"
 ---
@@ -128,11 +129,26 @@ rtk python3 scripts/operations/workspace-inventory.py scan --root . --output _wo
 소비자·증거 수준·단일 작성자와 재개 조건을 인계받는다. 이 연결은 운영 권한을
 부여하거나 후속 업무의 완료를 선행 조건으로 만들지 않는다.
 
+P02는 같은 공개 자료를 연결 근거로 읽되, `scan --connections`의 새 공개 추출
+결과가 검증·생성되기 전에는 기존 서비스 행을 제품 내부 등록이나 운영 연결의
+증거로 승격하지 않는다. P02의 결과는 호출 주체, provider, 네 종류의 포트,
+인증 방식, 설정 지문, 채택 판단과 제품 등록 증거 수준을 값 없이 기록한다.
+비밀 URL·토큰·인증 본문·원시 설정 출력은 이 패키지와 로컬 curation 기록 모두에
+넣지 않는다. P03, P04/P05, P06, P07, P08은 각자의 정본과 인수 범위를 유지한다.
+
+P02가 선택한 기본 토폴로지는 공유 MNG Valkey다. 이름별 n8n ACL과 전용 broker
+선택 구성은 재사용 대상이며, 자격 발급·회전·운영 queue drain·독립 복원은 P06과
+실제 데이터 소유자에게 남는다. Grafana의 공개 정적 예외는 정확한 두 경로의
+GET/HEAD만을 대상으로 하며, 그 밖의 메서드와 모든 다른 경로는 인증/라우팅
+계약에 따라 처리한다. 이 예외는 2026-12-02에 또는 범위 확대·인증 변경·관련
+보안 권고가 발생하면 다시 검토한다.
+
 ## Related Documents
 
 - [범주 색인](../README.md)
 - [현재 사양](../../../03.specs/0212-request-baseline-and-reconciliation/spec.md)
 - [현재 계획](../../../03.specs/0212-request-baseline-and-reconciliation/plan.md)
+- [P02 서비스 연결 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md)
 
 ## Sources
 

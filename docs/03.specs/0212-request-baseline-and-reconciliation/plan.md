@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.33.0"
+version: "1.34.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-02"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -75,6 +75,13 @@ existing service, port, Secret and version owners remain canonical. DATA-0096
 is a non-normative current observation consumed by this Task and P02–P12
 handoffs; it does not replace their acceptance contracts.
 
+W61–W65 implement the direct 2026-11-02 P02 request in TSK-0041. The
+infrastructure writer integrates all `infra/` changes; tool code, contract
+tests, documentation and CI registration have separate writers. P02 retains
+shared MNG Valkey as the default and does not reopen the historical secret
+catalog Task. Local source and isolated tests are in scope; operating services,
+host changes, actual secrets, external repositories and remote CI are not.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -139,6 +146,11 @@ handoffs; it does not replace their acceptance contracts.
 | W58 | 53 | Reconcile historical acceptance with current evidence and explicit residuals | W56 | TSK-0040 | Current Task/criterion readback and ledger validation |
 | W59 | 54 | Bind single writers and exact leaf-owner handoffs to current file fingerprints | W56 | TSK-0040 | Lease conflict and ownership validation |
 | W60 | 55 | Recheck official sources and record bounded product applicability | W56 | TSK-0040 | Direct official-source consultation and independent review |
+| W61 | 56 | Reconcile selected caller, DNS, listener, service-DNS, host and gateway port contracts | W56 | TSK-0041 | Focused source and isolated Compose/route contracts |
+| W62 | 57 | Preserve browser, application and machine authentication boundaries and direct-backend protections | W61 | TSK-0041 | Negative route and controlled OIDC contract tests |
+| W63 | 58 | Reconcile DEV/MNG environment and readiness evidence without promoting liveness to function readiness | W61 | TSK-0041 | Environment, readiness and unsupported-variable regressions |
+| W64 | 59 | Retain shared MNG Valkey default and align named ACL, dedicated opt-in and safe secret delivery contracts | W61 | TSK-0041 | Synthetic-secret, ACL and persistence-contract regressions |
+| W65 | 60 | Publish bounded connection evidence and exact P03–P08 handoffs, including the Grafana exception review | W61, W62, W63, W64 | TSK-0041 | Ledger validation, document contracts and independent review |
 
 ### Current v30 continuation and delivery
 

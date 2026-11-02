@@ -328,7 +328,7 @@ def _walk(root):
     return sorted(entries), sorted(git_roots), opaque, errors
 
 
-def scan(root, *, public_paths=(), excluded_outputs=(), reviews=()):
+def scan(root, *, public_paths=(), excluded_outputs=(), reviews=(), connections=False):
     """Enumerate all accessible entries; open only selected, nonprivate sources."""
     root = Path(root).absolute()
     _require(root.is_dir() and root.resolve() == root, "Workspace boundary refused.")
@@ -461,6 +461,16 @@ def scan(root, *, public_paths=(), excluded_outputs=(), reviews=()):
             },
         },
     }
+    if connections:
+        from scripts.lib.ops._workspace_connections import (
+            ConnectionInventoryError,
+            inspect_connections,
+        )
+
+        try:
+            doc.update(inspect_connections(root, public, services=services))
+        except ConnectionInventoryError:
+            raise InventoryError("Connection inventory failed.") from None
     validate(doc)
     return doc, {
         "schema_version": 1,
@@ -560,6 +570,25 @@ def validate(doc):
         leases.add(scope)
     for row in doc.get("requirements", []):
         _require(row.get("state") in STATES)
+    connection_keys = {
+        "connections",
+        "connection_sources",
+        "connection_gaps",
+        "connection_coverage",
+    }
+    _require(not (connection_keys & set(doc)) or connection_keys <= set(doc))
+    if connection_keys <= set(doc):
+        from scripts.lib.ops._workspace_connections import (
+            ConnectionInventoryError,
+            validate_connections,
+        )
+
+        try:
+            validate_connections(
+                {key: doc[key] for key in connection_keys}, public_files=doc["files"]
+            )
+        except ConnectionInventoryError:
+            raise InventoryError("Invalid connection metadata.") from None
     return True
 
 
@@ -582,11 +611,25 @@ def compare(before, after):
         p for p in old.keys() & new.keys() if identity(old[p]) != identity(new[p])
     )
     removed = sorted(old.keys() - new.keys())
+    old_connections = {row["id"]: row for row in before.get("connections", [])}
+    new_connections = {row["id"]: row for row in after.get("connections", [])}
+    changed_connections = sorted(
+        identity
+        for identity in old_connections.keys() & new_connections.keys()
+        if old_connections[identity] != new_connections[identity]
+    )
+    removed_connections = sorted(old_connections.keys() - new_connections.keys())
     return {
         "added": sorted(new.keys() - old.keys()),
         "removed": removed,
         "changed": changed,
         "invalidated_reviews": sorted(set(changed + removed)),
+        "added_connections": sorted(new_connections.keys() - old_connections.keys()),
+        "removed_connections": removed_connections,
+        "changed_connections": changed_connections,
+        "invalidated_connections": sorted(
+            set(changed_connections + removed_connections)
+        ),
         "head_changed": before.get("workspace", {}).get("head")
         != after.get("workspace", {}).get("head"),
     }

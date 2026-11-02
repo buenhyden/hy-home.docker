@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.6.2"
+version: "0.6.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -45,7 +45,8 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
   통과시킨다. 그룹을 넓히는 것은 owner 승인이 필요한 변경이다.
 - 모든 Traefik HTTP router는 SSO chain을 쓰거나, guide의 Route Authentication
   Matrix에 대체 인증을 명시한다. 인증 없는 route와 TCP route는 두지 않는다
-  (`RouteAuthContractTests`).
+  (`RouteAuthContractTests`). 아래에 기록한 Grafana 정적 예외만 이 규칙의 범위를
+  제한한다.
 - Open WebUI, Gatus, Terrakube의 ForwardAuth 제거는 Task 0004의 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
 - Compose 기반 OIDC client secret은 Docker Secret으로 주입한다. OpenBao native
   OIDC secret은 승인된 절차로 auth backend에 저장한다. 비밀값은 공개 설정에 넣지 않는다.
@@ -69,17 +70,21 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 
 ### Source nonconformance and ownership
 
-운영 책임자는 @buenhyden이다. 현재 `grafana-static` source는 Grafana host의
-`/favicon.ico`와 `/robots.txt` exact path를 middleware 없이 공개하며 Method
-제한도 없다. Guide의 기존 static-only 표와 이름 allowlist 검사는 위 무인증 금지
-통제의 승인 예외를 증명하지 않는다. 통제는 유지하고 승인 provenance가 없는
-현재 구현 불일치는 별도 정책/구현 결정으로 해결한다. source와 테스트를 이 문서
-변경으로 수정했다고 주장하지 않으며 route 확대는 허용하지 않는다.
-LAN/TLS 도달 경계, 전체 chain 우회와 이름 검사 한계는
+운영 책임자는 @buenhyden이다. 2026-11-02 사용자 승인에 따라
+`grafana-static`은 Grafana host의 `/favicon.ico`와 `/robots.txt` GET/HEAD만
+SSO 인증 예외로 허용하며 `gateway-standard-chain@file`은 유지한다. 다른 메서드는 더 높은 우선순위의
+`grafana-static-deny` router가 `noop@internal`으로 종료하여 일반
+Grafana router로 우회하지 못하게 하고 `418`을 반환해야 한다. 이 예외는 Grafana
+RBAC, 다른 경로, 다른 host 또는 다른 method로 넓어지지 않는다.
+
+리스크는 인증 없는 응답이 두 정적 경로에 남는 것이다. 기존 초당 100회, burst
+200의 서비스 rate limit은 유지하며 사용자별 제한으로 표현하지 않는다. 이 예외는
+2026-12-02에 재검토하고, 경로·메서드 범위 확대, 인증 체인 변경 또는 관련 보안
+권고가 있으면 즉시 종료 또는 재승인한다. source와 테스트를 이 문서 변경만으로
+수정 또는 통과했다고 주장하지 않으며, 정적 계약은 Grafana 접근·로그인·권한·backend
+호출의 운영 검증이 아니다. LAN/TLS 도달 경계와 제한의 구현 증거는
 [Guide의 source 한계](../../guides/03-identity-and-access/0079-application-auth-integration.md)에
-기록한다. 기존 Task0008 S18 의도는 더 강한 Spec/Policy 요구를 변경하는 명시적
-owner 예외가 아니므로, 새 예외가 필요하면 정확한 범위·위험·만료/종료·검증을
-포함한 owner 판단을 먼저 기록한다.
+기록한다.
 공통 Secret 보존·runtime 변경 승인은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md)과
 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)을 적용한다.
 

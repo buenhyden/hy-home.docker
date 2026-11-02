@@ -1,10 +1,10 @@
 ---
 title: "Workspace Inventory Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-02"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0040"
 parent_ids:
@@ -312,16 +312,16 @@ residual is the readiness fixture handoff above.
 | Follow-up render disposition | 52 | W57 | Isolated affected-case matrix and bounded old-result reuse | 69 unchanged Compose fingerprints; 21 actual rerenders | PASS | followup-render21.yaml: 20 PASS/1 FAIL; followup-render-equivalence.json: 182 previous measured PASS receipts retained; combined 202/203, one exact leaf IMPLEMENT_GAP | required | - |
 | Follow-up CI plan | 52 | W57 | Unfiltered CI-plan suite | Isolated topology and dedicated trusted/untrusted fixtures; production guard unchanged | PASS | 58 tests; host UID remains separately denied; code/security-approved test-only diffs | required | Broader CI plan |
 | Follow-up official research | 55 | W60 | Direct official-page consultation | Five coordinator-attributed consultations, exact actual-build limit | PASS | DATA-0096 follow-up research; Python docs 3.14.10 distinct from actual 3.14.8 | required | - |
-| Follow-up local boundary gate | 51 | W56 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local boundary gate |
-| Follow-up local inventory gate | 52 | W57 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local inventory gate |
-| Follow-up local reuse gate | 53 | W58 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local reuse gate |
-| Follow-up local ownership gate | 54 | W59 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local ownership gate |
-| Follow-up local research gate | 55 | W60 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | Full local research gate |
-| Final selected boundary checks | 51 | W56 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local boundary gate |
-| Final selected inventory checks | 52 | W57 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local inventory gate |
-| Final selected reuse checks | 53 | W58 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local reuse gate |
-| Final selected ownership checks | 54 | W59 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local ownership gate |
-| Final selected research checks | 55 | W60 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | Follow-up local research gate |
+| Follow-up local boundary gate | 51 | W56 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | - |
+| Follow-up local inventory gate | 52 | W57 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | - |
+| Follow-up local reuse gate | 53 | W58 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | - |
+| Follow-up local ownership gate | 54 | W59 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | - |
+| Follow-up local research gate | 55 | W60 | Registered full local gate | Actual Python 3.14.8 controller/children; exact seven selected leaf vectors | FAIL | localfollowup-ci.json: six leaves PASS; repository integrity720 tests/5 failures/85 errors; route exit1; no full aggregate acceptance | required | - |
+| Final selected boundary checks | 51 | W56 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | - |
+| Final selected inventory checks | 52 | W57 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | - |
+| Final selected reuse checks | 53 | W58 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | - |
+| Final selected ownership checks | 54 | W59 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | - |
+| Final selected research checks | 55 | W60 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | - |
 | Hosted CI | 51 | W56 | Remote CI execution | Local branch | NOT_RUN | No remote publication; applies to all P01 units | optional | - |
 
 ## Criterion Acceptance

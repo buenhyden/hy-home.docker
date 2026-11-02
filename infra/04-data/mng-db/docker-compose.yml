@@ -50,7 +50,7 @@ services:
     expose:
       - '${VALKEY_PORT:-6379}'
     healthcheck:
-      test: [ 'CMD-SHELL', 'REDISCLI_AUTH=$$(tr -d "\r\n" </run/secrets/mng_valkey_password) valkey-cli --no-auth-warning -h 127.0.0.1 -p ${VALKEY_PORT:-6379} ping | grep -qx PONG' ]
+      test: [ 'CMD-SHELL', 'REDISCLI_AUTH=$$(tr -d "\r\n" </run/secrets/mng_valkey_password) valkey-cli --no-auth-warning -h 127.0.0.1 -p "$${MNG_VALKEY_PORT}" ping | grep -qx PONG' ]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -78,10 +78,16 @@ services:
     # process environment, never argv; CONFIG, CLIENT SETNAME and the latency
     # histogram are switched off so no wider grant is needed (SPEC-0224).
     entrypoint: ['/bin/sh', '-c']
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     command:
       - |
+        set -eu
+        port=$${VALKEY_PORT}
+        case "$$port" in ''|*[!0-9]*) exit 1 ;; esac
+        [ "$${#port}" -le 5 ] && [ "$$port" -ge 1 ] && [ "$$port" -le 65535 ] || exit 1
         export REDIS_PASSWORD="$$(tr -d '\n' < /run/secrets/mng_valkey_monitor_password)"
-        exec /redis_exporter -redis.addr=redis://mng-valkey:${VALKEY_PORT:-6379} -redis.user=mngmonitor -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121} -config-command=- -set-client-name=false -exclude-latency-histogram-metrics
+        exec /redis_exporter -redis.addr="redis://mng-valkey:$$port" -redis.user=mngmonitor -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121} -config-command=- -set-client-name=false -exclude-latency-histogram-metrics
     secrets:
       - mng_valkey_monitor_password
     healthcheck:
@@ -137,13 +143,17 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/mng_postgres_password
       POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
       POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
+      POSTGRES_PORT: '${POSTGRES_PORT:-5432}'
       PGDATA: /var/lib/postgresql/data/pgdata
       # pgBackRest connects through the local socket as the bootstrap superuser;
       # the repository passphrase arrives through the include path, not env.
       PGBACKREST_PG1_USER: ${POSTGRES_DEFAULT_USER}
+      PGBACKREST_PG1_PORT: ${POSTGRES_PORT:-5432}
       PGBACKREST_CONFIG_INCLUDE_PATH: /tmp/pgbackrest/conf.d
     command:
       - postgres
+      - -c
+      - port=${POSTGRES_PORT:-5432}
       - -c
       - wal_level=logical
 
@@ -181,7 +191,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: [ 'CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"' ]
+      test: [ 'CMD-SHELL', 'pg_isready -h 127.0.0.1 -p "$${POSTGRES_PORT}" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"' ]
       interval: 15s
       timeout: 10s
       retries: 5

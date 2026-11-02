@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "GDE-0011"
 parent_ids:
@@ -54,8 +54,9 @@ Traefik의 `core`/`dev`/`local`과 같은 호스트의 80/443을 함께 점유�
 공통 기동은 [시스템 Guide](../01-common/0099-system-operations.md#selection-and-readiness)를 따른다.
 
 Compose가 기다리는 것은 `seaweedfs-s3`의 `service_healthy`뿐이다. 설정은
-`oauth2-proxy:4180`, `keycloak:8080`도 참조하므로 DNS·network·인증 의존성이
-별도로 필요하다. `nginx` profile만으로 이 인증 서비스가 준비되지는 않는다.
+`oauth2-proxy:${OAUTH2_PROXY_PORT:-4180}`, `keycloak:${KEYCLOAK_PORT:-8080}`도
+참조하므로 DNS·network·인증 의존성이 별도로 필요하다. `nginx` profile만으로 이
+인증 서비스가 준비되지는 않는다.
 현재 `/keycloak/`은 prefix를 제거하지 않고 전달하지만 Keycloak은 host 기반
 issuer를 사용한다. 경로 호환성은 미검증이며 정상 OIDC 진입점으로 단정하지 않는다.
 

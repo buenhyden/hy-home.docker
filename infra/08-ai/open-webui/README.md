@@ -55,11 +55,11 @@ open-webui/
 | --- | --- |
 | Purpose | `08-ai`의 Open WebUI 서비스 leaf; 서비스: `open-webui`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Config files | `docker-compose.yml`, `docker-entrypoint.sh` |
-| Config values | env 키: `OLLAMA_BASE_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`; 프로필: `ai` |
+| Config values | env 키: `PORT`, `OLLAMA_BASE_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`; 프로필: `ai` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Networks | `ai_net`, `edge_net` |
 | Volumes | `open-webui:/app/backend/data:rw`, `open-webui` |
-| Ports | 선언되지 않음 |
+| Ports | 내부 listener·health·Traefik이 `${OLLAMA_WEBUI_PORT:-8080}`을 함께 사용하며 호스트에는 게시하지 않음 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-webui.rule`, `traefik.http.routers.open-webui.entrypoints`, `traefik.http.routers.open-webui.tls`, `traefik.http.services.open-webui.loadbalancer.server.port`, `traefik.http.routers.open-webui.middlewares` |
 | Secret refs | `openwebui_oidc_client_secret`; root:root 0600 호스트 파일 |
 | Healthcheck | `open-webui`에 Compose 헬스체크가 선언되어 있음 |

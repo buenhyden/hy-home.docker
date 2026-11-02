@@ -24,6 +24,7 @@ services:
       DEFAULT_URL: ${DEFAULT_URL}
       HOST_LAN_BIND_IP: ${HOST_LAN_BIND_IP:-192.168.0.13}
       BLOG_EXPORT_RECEIVER_IP: ${BLOG_EXPORT_RECEIVER_IP:-192.168.0.22}
+      OAUTH2_PROXY_PORT: ${OAUTH2_PROXY_PORT:-4180}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - type: bind

@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -59,7 +59,8 @@ limiter는 라우터·TCP peer별 bucket(100 req/s, burst 200)이고 bucket을 �
 route에 chain 이름이 있다는 사실이나 하드닝 문자열 검사 통과는 HOME 적용 증거가 아니다. 근거는 소스와
 [선언 릴리스 계열의 Chain 동작](https://doc.traefik.io/traefik/v3.7/reference/routing-configuration/http/middlewares/chain/)이다.
 
-`sso-auth`는 `http://oauth2-proxy:4180/`(static upstream)을 호출하며 성공 시 사용자·
+`sso-auth`는 `http://oauth2-proxy:${OAUTH2_PROXY_PORT:-4180}/`(서비스 DNS와 listener
+변수를 따르는 upstream)을 호출하며 성공 시 사용자·
 이메일·preferred username 헤더만 앱에 전달한다. 공통 체인은 Authorization이나
 access token을 전달하지 않는다. session이 없으면 브라우저는 Keycloak으로 가는
 302를, `Accept: application/json` 요청은 401을 받는다. `sso-errors`는 **403만**

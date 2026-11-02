@@ -1,5 +1,5 @@
 #!/bin/sh
-# Optional dedicated broker monitor ACL; no arbitrary user or rule input.
+# Dedicated broker ACL renderer; no arbitrary user or rule input.
 set -eu
 
 fail() {
@@ -7,10 +7,19 @@ fail() {
   exit 1
 }
 
-[ "$#" -eq 3 ] || fail
-default_secret=$1
-monitor_secret=$2
-acl_file=$3
+case "$#" in
+  2)
+    default_secret=$1
+    monitor_secret=
+    acl_file=$2
+    ;;
+  3)
+    default_secret=$1
+    monitor_secret=$2
+    acl_file=$3
+    ;;
+  *) fail ;;
+esac
 case "$acl_file" in /*/users.acl) ;; *) fail ;; esac
 parent=${acl_file%/*}
 [ -d "$parent" ] || fail
@@ -49,15 +58,20 @@ EOF
 
 # All credential checks precede creating or replacing any ACL output.
 default_hash=$(hash_secret "$default_secret") || fail
-monitor_hash=$(hash_secret "$monitor_secret") || fail
-[ "$default_hash" != "$monitor_hash" ] || fail
+monitor_hash=
+if [ -n "$monitor_secret" ]; then
+  monitor_hash=$(hash_secret "$monitor_secret") || fail
+  [ "$default_hash" != "$monitor_hash" ] || fail
+fi
 umask 077
 tmp_file=$(mktemp "$parent/users.acl.XXXXXXXX") || fail
 trap 'rm -f "$tmp_file"' 0
 trap 'rm -f "$tmp_file"; exit 1' 1 2 3 15
 {
   printf 'user default reset on #%s ~* &* +@all\n' "$default_hash"
-  printf 'user monitor reset on #%s resetkeys resetchannels -@all +ping +info +command|info +slowlog|len +commandlog|len\n' "$monitor_hash"
+  if [ -n "$monitor_hash" ]; then
+    printf 'user monitor reset on #%s resetkeys resetchannels -@all +ping +info +command|info +slowlog|len +commandlog|len\n' "$monitor_hash"
+  fi
 } > "$tmp_file"
 chmod 600 "$tmp_file"
 mv -f "$tmp_file" "$acl_file"

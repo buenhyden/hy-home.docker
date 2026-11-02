@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.4.6"
+version: "1.4.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -177,7 +177,10 @@ host port는 publish되지 않는다. hy-home.k8s는 External Secrets를 통해 
 
 #### Keycloak Observation
 
-Prometheus는 현재 config에서 `domain: "auth"` label로 `keycloak:9000`을 scrape한다.
+Prometheus는 현재 config에서 `domain: "auth"` label로
+`keycloak:${KEYCLOAK_MANAGEMENT_PORT:-9000}`을 scrape한다. 이 관리 listener는
+Keycloak application listener와 다르며, 기본값이 `9000`이라는 선언은 현재 scrape
+성공이나 Keycloak 전체 준비 상태를 뜻하지 않는다.
 
 ### Source-backed operating contract
 
