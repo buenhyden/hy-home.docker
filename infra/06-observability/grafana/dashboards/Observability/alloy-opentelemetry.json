@@ -509,6 +509,44 @@
           "unit": "s"
         }
       }
+    },
+    {
+      "id": 1,
+      "title": "Quality remote-write pending samples",
+      "type": "timeseries",
+      "datasource": "${datasource}",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 50
+      },
+      "targets": [
+        {
+          "expr": "sum by(instance) (prometheus_remote_storage_samples_pending{job=\"alloy\",component_id=\"prometheus.remote_write.local_prometheus\"})",
+          "refId": "A",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Quality remote-write failures",
+      "type": "timeseries",
+      "datasource": "${datasource}",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 50
+      },
+      "targets": [
+        {
+          "expr": "sum by(instance) (increase(prometheus_remote_storage_samples_failed_total{job=\"alloy\",component_id=\"prometheus.remote_write.local_prometheus\"}[5m]))",
+          "refId": "A",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
     }
   ],
   "refresh": "30s",

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.38.0"
+version: "1.39.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -644,6 +644,18 @@ hold, authorization and recovery requirements have been established.
 81. P06.06 records the reader, backup, custody and recovery evidence for secret
     retirement candidates. Unknown or unauthorized targets remain held, and
     no deletion or consumer-zero conclusion follows from absence of runtime.
+82. P07.01 closes explicit producer selections over required dependencies and
+    existing companions, without implying profile siblings start automatically
+    or issuing an operational start.
+83. P07.02 distinguishes independently expected scrape targets, exporter and
+    backend status, missing and stale observations, and their dashboard and
+    alert evidence without promoting scrape success to functional readiness.
+84. P07.03 preserves the authenticated quality OTLP metrics path and separate
+    trace and log paths while verifying pinned Alloy delivery signals with an
+    owned isolated Prometheus and bounded failure/recovery tests.
+85. P07.04 records selection-aware expected targets, intentional stops and
+    missing inventory separately, preserving existing DEV on/off semantics and
+    deferring unowned workflow-specific freshness contracts.
 
 ## Failure Conditions
 
@@ -667,6 +679,7 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
 - [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
 - [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
+- [Exporter and observability contracts Task](tasks/tsk-0046-exporter-observability.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)

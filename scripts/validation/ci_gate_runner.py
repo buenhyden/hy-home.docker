@@ -139,6 +139,7 @@ class GateInvocation:
 class SelectedPrerequisites:
     node: bool
     docker: bool
+    compose: bool = False
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -718,7 +719,8 @@ def selected_prerequisites(
         or pathlib.PurePosixPath(path).name.startswith("Dockerfile.")
         for path in changed_paths
     )
-    return SelectedPrerequisites(node=node, docker=docker)
+    compose = "leaf.repository-integrity-regressions" in gate_ids
+    return SelectedPrerequisites(node=node, docker=docker, compose=compose)
 
 
 def _context_validator_argv(
@@ -1515,6 +1517,7 @@ def main(argv: list[str] | None = None) -> int:
                 seed_execution_evidence(root, plan, execution_environment, evidence)
             print(f"node={'true' if prerequisites.node else 'false'}")
             print(f"docker={'true' if prerequisites.docker else 'false'}")
+            print(f"compose={'true' if prerequisites.compose else 'false'}")
             return 0
         if context is ExecutionContext.LOCAL and (
             mismatch := local_toolchain_mismatch(root)

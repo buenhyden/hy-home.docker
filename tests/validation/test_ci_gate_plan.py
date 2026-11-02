@@ -1340,7 +1340,11 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     "scripts/lib/gate/ci_gate_adapters.py",
                 )
                 self.assertEqual(
-                    runner.SelectedPrerequisites(node=True, docker=False),
+                    runner.SelectedPrerequisites(
+                        node=True,
+                        docker=False,
+                        compose=gate_id == "leaf.repository-integrity-regressions",
+                    ),
                     runner.selected_prerequisites((invocation,), ()),
                 )
 
@@ -1561,7 +1565,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 runner.main(["--profile", "changed", "--requirements"]),
             )
         execute.assert_not_called()
-        self.assertEqual("node=false\ndocker=false\n", stdout.getvalue())
+        self.assertEqual("node=false\ndocker=false\ncompose=false\n", stdout.getvalue())
 
     def test_requirements_seeds_authenticated_evidence_before_reporting(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1820,7 +1824,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     0,
                     runner.main(["--profile", "changed", "--requirements"]),
                 )
-            self.assertEqual("node=false\ndocker=false\n", stdout.getvalue())
+            self.assertEqual(
+                "node=false\ndocker=false\ncompose=false\n", stdout.getvalue()
+            )
 
             poisoned = {
                 **environment,

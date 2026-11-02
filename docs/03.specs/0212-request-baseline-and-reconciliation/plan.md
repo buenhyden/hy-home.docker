@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.38.0"
+version: "1.39.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -107,6 +107,12 @@ receipts. Value-free synthetic tests and independently reviewed read-only
 private structural comparison are authorized; private modifications, credential
 issuance, rotation, deletion, service changes and remote integration are not.
 
+W87–W90 implement the approved local P07 plan in TSK-0046. Existing SPEC-0224
+datastore and SPEC-0214 quality-OTLP acceptance is reused at its recorded
+scope. Local source, bounded owned isolation and the exact declared Prometheus
+image pull are authorized; HOME changes, actual secrets and external alert
+delivery are not. Historical P07 resource work belongs to SPEC-0218.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -197,6 +203,10 @@ issuance, rotation, deletion, service changes and remote integration are not.
 | W84 | 79 | Reconcile completed/held consumers and hand off n8n credential refresh ownership | W81 | TSK-0045 | Catalog/consumer binding review and synthetic contract regressions |
 | W85 | 80 | Harden bounded SMTP public/private readers and preserve canonical alias semantics | None | TSK-0045 | FIFO/growth/rebind, equality/absence and regression tests |
 | W86 | 81 | Inventory retirement readers and preserve protected recovery copies without deletion | W83–W85 | TSK-0045 | Read-only source evidence, owner/hold and P09 handoff |
+| W87 | 82 | Implement source-bound producer companion selection and guarded operator start planning | None | TSK-0046 | RED/GREEN source closure, safe CLI and start-stub tests |
+| W88 | 83 | Add selection-bound expected scrape, backend and freshness signals with dashboards and alert rules | W87 | TSK-0046 | Synthetic configuration, promtool rules and isolated metrics checks |
+| W89 | 84 | Reuse authenticated OTLP and test pinned Alloy delivery and outage recovery | None | TSK-0046 | Existing quality regressions and owned isolated Alloy/Prometheus proof |
+| W90 | 85 | Bind HOME/profile expected-state and recovery handoffs without changing operating resources | W87, W88, W89 | TSK-0046 | Selection on/off, absent inventory, owner review and scoped evidence |
 
 ### Current v30 continuation and delivery
 
@@ -539,6 +549,7 @@ only that dependent operation.
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
 - [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
 - [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
+- [Exporter and observability contracts Task](tasks/tsk-0046-exporter-observability.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Spec](spec.md)

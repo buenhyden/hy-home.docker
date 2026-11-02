@@ -1065,6 +1065,20 @@ def _workflow_projection_findings(
                     )
                 )
             fixed_shell = "/usr/bin/bash --noprofile --norc -eo pipefail {0}"
+            compose_step = {
+                "name": "Verify selected Compose CLI prerequisite",
+                "if": "steps.prerequisites.outputs.compose == 'true'",
+                "shell": fixed_shell,
+                "run": "/usr/bin/docker compose version",
+            }
+            if steps_by_name.get(compose_step["name"]) != compose_step:
+                findings.append(
+                    _finding(
+                        "workflow-gate-execution-context-invalid",
+                        path,
+                        "candidate Compose CLI prerequisite must match the audited step",
+                    )
+                )
             for name in (
                 "Capture trusted pull request context",
                 "Capture trusted uv context",

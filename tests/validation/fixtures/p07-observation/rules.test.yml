@@ -1,0 +1,194 @@
+rule_files:
+  - alert_rules.local.selection.yml
+evaluation_interval: 1m
+tests:
+  - name: no-selection-marker
+    interval: 1m
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: ObservationSelectionMissing
+        exp_alerts:
+          - exp_labels: {severity: warning}
+            exp_annotations:
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              summary: Observation selection is unavailable
+              description: Generate and apply a complete source-bound observation selection.
+  - name: expected-target-absent
+    interval: 1m
+    input_series:
+      - series: 'hyhome_expected_selection_info'
+        values: '1+0x10'
+      - series: 'hyhome_expected_scrape_targets{job="example"}'
+        values: '2+0x10'
+      - series: 'up{job="example",instance="one",expected_state="on"}'
+        values: '1+0x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ObservationTargetsMissing
+        exp_alerts:
+          - exp_labels: {job: example, severity: warning}
+            exp_annotations:
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              summary: Expected scrape targets are missing for example
+  - name: idle-is-not-backlog
+    interval: 1m
+    input_series:
+      - series: 'prometheus_remote_storage_samples_pending{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus",url="test"}'
+        values: '0+0x10'
+      - series: 'prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus",url="test"}'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: AlloyQualityRemoteWriteNeverSent
+        exp_alerts: []
+  - name: queued-never-sent
+    interval: 1m
+    input_series:
+      - series: 'prometheus_remote_storage_samples_pending{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus",url="test"}'
+        values: '1+0x10'
+      - series: 'prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus",url="test"}'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: AlloyQualityRemoteWriteNeverSent
+        exp_alerts:
+          - exp_labels: {instance: a, severity: warning}
+            exp_annotations: {summary: Alloy has queued quality samples with no successful send, runbook_url: "https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md"}
+  - name: fully-missing-and-recovery
+    interval: 1m
+    input_series:
+      - series: 'hyhome_expected_selection_info'
+        values: '1+0x12'
+      - series: 'hyhome_expected_scrape_targets{job="example"}'
+        values: '1+0x12'
+      - series: 'up{job="example",instance="one",expected_state="on"}'
+        values: '_x7 1+0x5'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ObservationTargetsMissing
+        exp_alerts:
+          - exp_labels: {job: example, severity: warning}
+            exp_annotations:
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              summary: Expected scrape targets are missing for example
+      - eval_time: 9m
+        alertname: ObservationTargetsMissing
+        exp_alerts: []
+  - name: zero-selected-not-missing
+    interval: 1m
+    input_series:
+      - series: 'hyhome_expected_scrape_targets{job="optional"}'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ObservationTargetsMissing
+        exp_alerts: []
+  - name: backend-metric-missing
+    interval: 1m
+    input_series:
+      - series: 'up{job="manage-postgres",instance="p",expected_state="on"}'
+        values: '1+0x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ObservationPostgresBackendMetricMissing
+        exp_alerts:
+          - exp_labels: {job: manage-postgres, instance: p, expected_state: "on", severity: warning}
+            exp_annotations:
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              summary: PostgreSQL exporter backend status is missing
+  - name: backend-zero-is-present
+    interval: 1m
+    input_series:
+      - series: 'up{job="manage-postgres",instance="p",expected_state="on"}'
+        values: '1+0x10'
+      - series: 'pg_up{job="manage-postgres",instance="p",expected_state="on"}'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ObservationPostgresBackendMetricMissing
+        exp_alerts: []
+  - name: partial-selection-invalid
+    interval: 1m
+    input_series:
+      - series: 'hyhome_expected_selection_info'
+        values: '1+0x5'
+      - series: 'hyhome_expected_jobs_total'
+        values: '1+0x5'
+      - series: 'hyhome_expected_job_info{job="example"}'
+        values: '1+0x5'
+      - series: 'hyhome_expected_scrape_interval_seconds{job="example"}'
+        values: '30+0x5'
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: ObservationSelectionInvalid
+        exp_alerts:
+          - exp_labels: {severity: warning}
+            exp_annotations:
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              summary: Observation selection is incomplete
+          - exp_labels: {job: example, severity: warning}
+            exp_annotations:
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              summary: Observation selection is incomplete
+  - name: old-timestamps-but-sending
+    interval: 1m
+    input_series:
+      - series: 'prometheus_remote_storage_samples_pending{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus"}'
+        values: '2+0x8'
+      - series: 'prometheus_remote_storage_samples_total{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus"}'
+        values: '0+10x8'
+      - series: 'prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus"}'
+        values: '1+0x8'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: AlloyQualityRemoteWriteBacklog
+        exp_alerts: []
+  - name: pending-without-send-progress
+    interval: 1m
+    input_series:
+      - series: 'prometheus_remote_storage_samples_pending{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus",expected_state="on"}'
+        values: '2+0x8'
+      - series: 'prometheus_remote_storage_samples_total{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus",expected_state="on"}'
+        values: '5+0x8'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: AlloyQualityRemoteWriteBacklog
+        exp_alerts:
+          - exp_labels: {instance: a, severity: warning}
+            exp_annotations:
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              summary: Alloy quality metric delivery is stalled
+  - name: progress-stops-at-two-minutes
+    interval: 1m
+    input_series:
+      - series: 'prometheus_remote_storage_samples_pending{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus"}'
+        values: '2+0x8'
+      - series: 'prometheus_remote_storage_samples_total{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus"}'
+        values: '0 10 20 20 20 20 20 20 20'
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: AlloyQualityRemoteWriteBacklog
+        exp_alerts: []
+      - eval_time: 4m
+        alertname: AlloyQualityRemoteWriteBacklog
+        exp_alerts:
+          - exp_labels: {instance: a, severity: warning}
+            exp_annotations:
+              runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+              summary: Alloy quality metric delivery is stalled
+  - name: alloy-off-suppresses-backlog
+    interval: 1m
+    input_series:
+      - series: 'prometheus_remote_storage_samples_pending{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus",expected_state="off"}'
+        values: '1+0x7'
+      - series: 'prometheus_remote_storage_samples_total{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus",expected_state="off"}'
+        values: '0+0x7'
+      - series: 'prometheus_remote_storage_samples_failed_total{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus",expected_state="off"}'
+        values: '0+1x7'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: AlloyQualityRemoteWriteBacklog
+        exp_alerts: []
+      - eval_time: 5m
+        alertname: AlloyQualityRemoteWriteFailed
+        exp_alerts: []

@@ -5,7 +5,7 @@ groups:
   - name: keycloak_alerts
     rules:
       - alert: KeycloakDown
-        expr: up{job="keycloak"} == 0
+        expr: up{job="keycloak",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical

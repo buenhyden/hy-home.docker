@@ -54,7 +54,7 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0043-loki.md'
 
       - alert: GrafanaAlloyDown
-        expr: up{job="alloy"} == 0
+        expr: up{job="alloy",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical
@@ -65,7 +65,7 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0040-alloy.md'
 
       - alert: TempoDown
-        expr: up{job="tempo"} == 0
+        expr: up{job="tempo",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical

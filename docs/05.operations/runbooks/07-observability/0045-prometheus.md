@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Readiness and Recovery Runbook"
-version: "1.3.0"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "RUN-0045"
 parent_ids:
@@ -47,6 +47,28 @@ created: "2026-05-17"
 `prometheus`의 선택 config, rule 파일과 세 secret mount가 준비되어야 한다. `node-exporter`의 textfile host 경로는 자동 생성되지 않으며 `dcgm-exporter`는 호환되는 GPU runtime이 필요하다. DCGM에는 Compose healthcheck가 없으므로 수집 target과 지원 metric을 확인한다. 두 exporter는 자체 데이터 백업이나 별도 사용자 자격 증명 회전 대상이 아니다. exporter 교체·중지는 관측 공백과 label 연속성을 검토하고 Prometheus TSDB 복구와 구분한다.
 
 ## Procedure
+
+### 선택 계획의 운영 경계
+
+`scripts/operations/compose-start.py plan`으로 선택과 companion을 먼저 검토한다.
+운영 진입점은 `scripts/operations/compose-start.py`다.
+`scripts/lib/ops/compose_start.py`는 그 진입점의 선택 계획과 실행 검증을,
+`scripts/lib/ops/compose_observation.py`는 계획에 결속된 기대 관측 설정 생성을
+담당한다. 운영자는 라이브러리를 직접 호출하지 않고 CLI를 통해 진입한다.
+명령 도움말은 `python3 scripts/operations/compose-start.py plan --help`로 확인한다.
+생성된 계획은 운영 승인이나 실제 기동 결과가 아니다. 운영자가 별도 승인과 복구
+준비를 확인한 뒤에만 `up --plan`을 사용할 수 있으며, 명령은 대상 서비스를 재생성할
+수 있다. 변경된 입력이나 DEV 기대 상태 충돌은 실행하지 말고 계획부터 다시 만든다.
+단일 대상 시작은 전체 기대 목록의 대체 수단이 아니다. 대상이 사라진 경우 기대
+목록 자체, scrape, backend 및 표본의 나이를 별개로 진단한다.
+
+설정 변경의 복구는 이전 계획과 이전 설정을 함께 보존하고 이 런북의 기존 검증·
+rollback 절차를 따른다. 정적 파일의 성공은 live reload나 알림 수신을 보장하지 않는다.
+계획에 결속된 공개 기대 설정은 `/tmp/hyhome-p07-<uid>/<plan fingerprint>`에
+생성될 수 있다. `/tmp` 정리나 재부팅으로 이 경로가 사라지면 원래 계획과 공개
+입력의 일치를 다시 검증하여 재생성하고, 컨테이너 재시작 전에 참조 경로가 존재하는지
+확인한다. 소유자·권한 오류나 변경된 계획을 무시하지 않는다. Compose 원본 경로의
+그룹 쓰기 권한과 Docker가 경로를 여는 시점의 신뢰 경계는 별도 검토가 필요하다.
 
 ### Execution Boundary
 

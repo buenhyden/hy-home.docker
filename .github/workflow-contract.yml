@@ -861,6 +861,10 @@
         "tests.lib.ops.test_secret_catalog",
         "tests.validation.test_secret_catalog_contract",
         "tests.lib.ops.test_secret_structure",
+        "tests.lib.ops.test_compose_start",
+        "tests.lib.ops.test_compose_observation",
+        "tests.validation.test_p07_quality_metrics",
+        "tests.validation.test_p07_ci_routing",
         "tests.lib.ops.test_workspace_inventory",
         "tests.lib.ops.test_workspace_services",
         "tests.validation.test_workspace_inventory",
@@ -1776,6 +1780,26 @@
       },
       {
         "prefixes": [
+          "scripts/operations/compose-start.py",
+          "scripts/lib/ops/compose_start.py",
+          "scripts/lib/ops/compose_observation.py",
+          "tests/lib/ops/test_compose_start.py",
+          "tests/lib/ops/test_compose_observation.py",
+          "tests/validation/test_p07_quality_metrics.py",
+          "tests/validation/test_p07_ci_routing.py",
+          "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md",
+          "tests/validation/fixtures/p07-observation/rules.test.yml",
+          "tests/validation/fixtures/p07-observation/dashboards.test.yml",
+          "examples/operations/quality-metrics/acceptance.py",
+          "examples/operations/quality-metrics/docker-compose.yml"
+        ],
+        "suites": [
+          "operations",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
           "tests/validation/_supabase_smtp_fixture_storage.py",
           "tests/validation/test_supabase_smtp_fixture_storage.py"
         ],
@@ -2286,6 +2310,25 @@
           "infra/03-security/openbao/secret-catalog.schema.json",
           "tests/lib/ops/test_secret_catalog.py",
           "tests/validation/test_secret_catalog_contract.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/operations/compose-start.py",
+          "scripts/lib/ops/compose_start.py",
+          "scripts/lib/ops/compose_observation.py",
+          "tests/lib/ops/test_compose_start.py",
+          "tests/lib/ops/test_compose_observation.py",
+          "tests/validation/test_p07_quality_metrics.py",
+          "tests/validation/test_p07_ci_routing.py",
+          "docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md",
+          "tests/validation/fixtures/p07-observation/rules.test.yml",
+          "tests/validation/fixtures/p07-observation/dashboards.test.yml",
+          "examples/operations/quality-metrics/acceptance.py",
+          "examples/operations/quality-metrics/docker-compose.yml"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

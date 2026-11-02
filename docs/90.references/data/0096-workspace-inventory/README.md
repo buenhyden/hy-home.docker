@@ -1,6 +1,6 @@
 ---
 title: "Workspace Inventory"
-version: "0.6.0"
+version: "0.7.0"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
@@ -15,6 +15,7 @@ parent_ids:
 - "SPEC-0212-TSK-0043"
 - "SPEC-0212-TSK-0044"
 - "SPEC-0212-TSK-0045"
+- "SPEC-0212-TSK-0046"
 created: "2026-11-01"
 observed_at: "2026-11-02"
 ---
@@ -213,6 +214,12 @@ attempt/audit 동등성·live-inflight 중단은 TEST_RESIDUAL이다. 이전 세
 각 cleanup PASS는 보존한다. 격리 PASS를 실제 운영·P06 발급/회전·외부 배달·원격 CI·
 P12 최종 인수로 옮기지 않는다. P03의 전역 CI admission 잔여도 별도 인계한다.
 
+[P07 관측 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md)는
+공개 선택 계획과 기대 대상의 근거를 소비한다. SPEC-0224의 DB 관측과 SPEC-0214의
+인증 OTLP에 관한 과거 수용은 해당 기록의 환경과 범위에서만 재사용한다. 이번
+소스·격리 시험과 실제 서비스 기동, 운영 재적재, 실제 알림, 독립 복원 및 원격 CI는
+각각 별도로 기록한다. Opsflow 업무 신선도는 데이터와 업무 소유자에게 인계한다.
+
 ## Related Documents
 
 - [범주 색인](../README.md)
@@ -221,6 +228,7 @@ P12 최종 인수로 옮기지 않는다. P03의 전역 CI admission 잔여도 �
 - [P02 서비스 연결 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md)
 - [P03 모델·Runner·Wiki 준비 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md)
 - [P05 notifier 복구 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md)
+- [P07 관측 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md)
 - [P04 Opsflow 데이터 경로 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)
 
 ## Sources

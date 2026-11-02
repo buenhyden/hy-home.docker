@@ -30,7 +30,7 @@ services:
     pids_limit: 128
     restart: 'no'
     tmpfs: ['/tmp:rw,nosuid,nodev,size=128m,uid=1000,gid=1000']
-    command: [run, --stability.level=experimental, --storage.path=/tmp/alloy, /etc/alloy/metrics.alloy]
+    command: [run, --stability.level=experimental, --storage.path=/tmp/alloy, '--server.http.listen-addr=0.0.0.0:12345', '--disable-reporting=true', /etc/alloy/metrics.alloy]
     volumes:
       - type: bind
         source: ${METRICS_ALLOY_CONFIG:?extracted source config required}

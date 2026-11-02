@@ -1,0 +1,80 @@
+rule_files: []
+evaluation_interval: 1m
+tests:
+- name: changed-dashboard-expressions
+  interval: 1m
+  input_series:
+  - series: hyhome_expected_scrape_targets{job="manage-postgres"}
+    values: 1+0x4
+  - series: up{job="manage-postgres",instance="p",expected_state="on"}
+    values: 1+0x4
+  - series: pg_up{job="manage-postgres",instance="p"}
+    values: 1+0x4
+  - series: up{job="mng-valkey-exporter",instance="v",expected_state="on"}
+    values: 1+0x4
+  - series: redis_up{job="mng-valkey-exporter",instance="v"}
+    values: 1+0x4
+  - series: prometheus_remote_storage_samples_pending{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus"}
+    values: 3+0x4
+  - series: prometheus_remote_storage_samples_failed_total{job="alloy",instance="a",component_id="prometheus.remote_write.local_prometheus"}
+    values: 0+0x4
+  promql_expr_test:
+  - expr: hyhome_expected_scrape_targets
+    eval_time: 2m
+    exp_samples:
+    - labels: 'hyhome_expected_scrape_targets{job="manage-postgres"}'
+      value: 1
+  - expr: count by(job) (up)
+    eval_time: 2m
+    exp_samples:
+    - labels: '{job="manage-postgres"}'
+      value: 1
+    - labels: '{job="mng-valkey-exporter"}'
+      value: 1
+  - expr: time() - timestamp(up{expected_state="on"})
+    eval_time: 2m
+    exp_samples:
+    - labels: '{job="manage-postgres",instance="p",expected_state="on"}'
+      value: 0
+    - labels: '{job="mng-valkey-exporter",instance="v",expected_state="on"}'
+      value: 0
+  - expr: sum by(instance) (prometheus_remote_storage_samples_pending{job="alloy",component_id="prometheus.remote_write.local_prometheus"})
+    eval_time: 2m
+    exp_samples:
+    - labels: '{instance="a"}'
+      value: 3
+  - expr: sum by(instance) (increase(prometheus_remote_storage_samples_failed_total{job="alloy",component_id="prometheus.remote_write.local_prometheus"}[5m]))
+    eval_time: 2m
+    exp_samples:
+    - labels: '{instance="a"}'
+      value: 0
+  - expr: up{job=~"manage-postgres|dev-pg-exporter"}
+    eval_time: 2m
+    exp_samples:
+    - labels: up{job="manage-postgres",instance="p",expected_state="on"}
+      value: 1
+  - expr: pg_up{job=~"manage-postgres|dev-pg-exporter"}
+    eval_time: 2m
+    exp_samples:
+    - labels: pg_up{job="manage-postgres",instance="p"}
+      value: 1
+  - expr: time() - timestamp(pg_up{job=~"manage-postgres|dev-pg-exporter"})
+    eval_time: 2m
+    exp_samples:
+    - labels: '{job="manage-postgres",instance="p"}'
+      value: 0
+  - expr: up{job=~".*valkey-exporter"}
+    eval_time: 2m
+    exp_samples:
+    - labels: up{job="mng-valkey-exporter",instance="v",expected_state="on"}
+      value: 1
+  - expr: redis_up{job=~".*valkey-exporter"}
+    eval_time: 2m
+    exp_samples:
+    - labels: redis_up{job="mng-valkey-exporter",instance="v"}
+      value: 1
+  - expr: time() - timestamp(redis_up{job=~".*valkey-exporter"})
+    eval_time: 2m
+    exp_samples:
+    - labels: '{job="mng-valkey-exporter",instance="v"}'
+      value: 0

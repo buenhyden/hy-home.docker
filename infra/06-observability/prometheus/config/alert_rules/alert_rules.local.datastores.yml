@@ -8,7 +8,7 @@ groups:
       # db_scope로 MNG와 DEV를 나눕니다. exporter 자체의 다운은
       # datastore_observation 그룹이 다룹니다(SPEC-0224).
       - alert: ValkeyDown
-        expr: redis_up{db_scope="mng"} == 0
+        expr: redis_up{db_scope="mng",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical
@@ -59,7 +59,7 @@ groups:
   - name: postgres_alerts
     rules:
       - alert: PostgresDown
-        expr: pg_up{db_scope="mng"} == 0
+        expr: pg_up{db_scope="mng",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical
@@ -93,7 +93,7 @@ groups:
 
       - alert: PostgresqlExporterError
         # A database outage also sets this; PostgresDown reports that case.
-        expr: pg_exporter_last_scrape_error{db_scope="mng"} > 0 unless on (instance) pg_up{db_scope="mng"} == 0
+        expr: pg_exporter_last_scrape_error{db_scope="mng",expected_state!="off"} > 0 unless on (instance) pg_up{db_scope="mng",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical
@@ -164,7 +164,7 @@ groups:
   - name: datastore_observation
     rules:
       - alert: MngDatastoreExporterDown
-        expr: up{db_scope="mng"} == 0
+        expr: up{db_scope="mng",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical
@@ -198,10 +198,10 @@ groups:
 
       - alert: DatastoreScrapeTargetMissing
         expr: |
-          absent(up{job="manage-postgres"})
-          or absent(up{job="mng-valkey-exporter"})
-          or absent(up{job="dev-pg-exporter"})
-          or absent(up{job="dev-valkey-exporter"})
+          (absent(up{job="manage-postgres"}) unless on(job) (hyhome_expected_scrape_targets == 0))
+          or (absent(up{job="mng-valkey-exporter"}) unless on(job) (hyhome_expected_scrape_targets == 0))
+          or (absent(up{job="dev-pg-exporter"}) unless on(job) (hyhome_expected_scrape_targets == 0))
+          or (absent(up{job="dev-valkey-exporter"}) unless on(job) (hyhome_expected_scrape_targets == 0))
         for: 10m
         labels:
           severity: warning
@@ -242,7 +242,7 @@ groups:
     rules:
 
       - alert: QdrantDown
-        expr: up{job="qdrant"} == 0
+        expr: up{job="qdrant",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical
@@ -281,7 +281,7 @@ groups:
     rules:
 
       - alert: SeaweedFSS3Down
-        expr: up{job="seaweedfs-s3"} == 0
+        expr: up{job="seaweedfs-s3",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical
@@ -292,7 +292,7 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0024-seaweedfs.md'
 
       - alert: SeaweedFSNodeMetricsDown
-        expr: up{job=~"seaweedfs-(master|volume|filer)"} == 0
+        expr: up{job=~"seaweedfs-(master|volume|filer)",expected_state!="off"} == 0
         for: 5m
         labels:
           severity: warning

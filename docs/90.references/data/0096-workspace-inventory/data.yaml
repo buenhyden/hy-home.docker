@@ -1,53 +1,89 @@
 schema_version: 1
-observed_at: '2026-11-02T12:43:19.031705Z'
+observed_at: '2026-11-02T14:27:20.163615Z'
 workspace:
   path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 0a2f7aad418029f0b49645b16ec5a90c86a83a12
+  head: 169c1b62f9a29738dde587b584418f9e93b78029
   branch: codex/p05-n8n-outbox-recovery
   dirty_paths:
-  - status: ' M'
+  - status: 'M '
     path: .github/workflow-contract.yml
-  - status: ' M'
+  - status: 'M '
+    path: .github/workflows/ci-quality.yml
+  - status: 'M '
     path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-  - status: ' M'
+  - status: 'M '
     path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-  - status: ' M'
-    path: docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md
-  - status: ' M'
-    path: docs/05.operations/guides/10-platform-and-backup/0003-env-key-comparison.md
-  - status: ' M'
-    path: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
-  - status: ' M'
+  - status: 'A '
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
+  - status: 'M '
+    path: docs/05.operations/guides/07-observability/0045-prometheus.md
+  - status: 'M '
+    path: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  - status: 'M '
     path: docs/90.references/data/0096-workspace-inventory/README.md
-  - status: ' M'
+  - status: 'M '
     path: docs/90.references/data/0096-workspace-inventory/data.yaml
-  - status: ' M'
-    path: infra/03-security/openbao/consumer-migration/README.md
-  - status: ' M'
-    path: scripts/lib/ops/smtp_contract.py
-  - status: ' M'
-    path: scripts/lib/ops/smtp_public_source.py
-  - status: ' M'
+  - status: 'M '
+    path: examples/operations/quality-metrics/acceptance.py
+  - status: 'M '
+    path: examples/operations/quality-metrics/docker-compose.yml
+  - status: 'M '
+    path: infra/06-observability/grafana/dashboards/Infrastructure/postgresql.json
+  - status: 'M '
+    path: infra/06-observability/grafana/dashboards/Infrastructure/redis.json
+  - status: 'M '
+    path: infra/06-observability/grafana/dashboards/Observability/alloy-opentelemetry.json
+  - status: 'M '
+    path: infra/06-observability/grafana/dashboards/Observability/prometheus-overview.json
+  - status: 'M '
+    path: infra/06-observability/prometheus/README.md
+  - status: 'M '
+    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.auth.yml
+  - status: 'M '
+    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.datastores.yml
+  - status: 'M '
+    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.gateway.yml
+  - status: 'M '
+    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.observability.yml
+  - status: 'M '
+    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.prometheus.yml
+  - status: 'A '
+    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.selection.yml
+  - status: 'M '
+    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.openbao.yml
+  - status: 'M '
+    path: infra/06-observability/prometheus/scripts/start.sh
+  - status: 'M '
+    path: scripts/lib/gate/github_workflow_contract.py
+  - status: AM
+    path: scripts/lib/ops/compose_observation.py
+  - status: AM
+    path: scripts/lib/ops/compose_start.py
+  - status: 'M '
     path: scripts/manifest.yaml
-  - status: ' M'
-    path: tests/lib/ops/test_smtp_contract.py
-  - status: ' M'
-    path: tests/lib/ops/test_smtp_public_source.py
-  - status: ' M'
-    path: tests/validation/test_secret_metadata_sync.py
-  - status: ' M'
-    path: tests/validation/test_smtp_ci_routing.py
-  - status: ??
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
-  - status: ??
-    path: scripts/lib/ops/secret_structure.py
-  - status: ??
-    path: scripts/operations/secret-structure.py
-  - status: ??
-    path: tests/lib/ops/test_secret_structure.py
+  - status: AM
+    path: scripts/operations/compose-start.py
+  - status: 'M '
+    path: scripts/validation/ci_gate_runner.py
+  - status: 'M '
+    path: tests/lib/gate/test_github_workflow_contract.py
+  - status: AM
+    path: tests/lib/ops/test_compose_observation.py
+  - status: AM
+    path: tests/lib/ops/test_compose_start.py
+  - status: 'A '
+    path: tests/validation/fixtures/p07-observation/dashboards.test.yml
+  - status: 'A '
+    path: tests/validation/fixtures/p07-observation/rules.test.yml
+  - status: MM
+    path: tests/validation/test_ci_gate_plan.py
+  - status: AM
+    path: tests/validation/test_p07_ci_routing.py
+  - status: 'A '
+    path: tests/validation/test_p07_quality_metrics.py
   worktrees:
   - in_boundary: true
     access: metadata-only
@@ -61,7 +97,7 @@ roots:
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 0a2f7aad418029f0b49645b16ec5a90c86a83a12
+  head: 169c1b62f9a29738dde587b584418f9e93b78029
   branch: codex/p05-n8n-outbox-recovery
   dirty_paths: []
   worktrees:
@@ -70,7 +106,7 @@ roots:
   submodules: []
   tracked_query: PASS
   write_boundary: /home/hyunyoun/data/hy-home.docker
-  dirty_count: 20
+  dirty_count: 38
 files:
 - path: .agents/README.md
   tracked: true
@@ -1690,9 +1726,9 @@ files:
 - path: .github/workflow-contract.yml
   tracked: true
   kind: configuration
-  bytes: 86794
+  bytes: 88709
   state: HASHED
-  sha256: d9041760171b958aafa6dd9e8d32baec80354a327db8ae05a3986db364146ac7
+  sha256: 29af64b8ff4f9c2f9422c0a6d1f713c28fa3727afd0c4408ca927fb6bb3b5d2d
   review:
     path: .github/workflow-contract.yml
     reviewer: p02_residual_code_review + p02_residual_supply_review
@@ -1705,9 +1741,9 @@ files:
 - path: .github/workflows/ci-quality.yml
   tracked: true
   kind: configuration
-  bytes: 14172
+  bytes: 14395
   state: HASHED
-  sha256: ad52087a7938c9bf05b71964ea0f3b80801e7dfe140ef00f3fee9cdd09d020e1
+  sha256: 6f9633b0f92640014a3651986f2215fa4e5c76b07f9ea7e4bd4d152d67e82e21
   review:
     state: UNREVIEWED
 - path: .github/workflows/greetings.yml
@@ -3001,9 +3037,9 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   tracked: true
   kind: document
-  bytes: 44226
+  bytes: 45459
   state: HASHED
-  sha256: c9e457e50f834d6015b96800009786915a69b248be3a32935faa11bfd84113d5
+  sha256: 966505ded3110267940801a43f2d9c2770ace7b50c6cf7cf98033dc694d4a3b8
   review:
     path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
     reviewer: /root/p06_documents
@@ -3011,13 +3047,13 @@ files:
     sha256: c9e457e50f834d6015b96800009786915a69b248be3a32935faa11bfd84113d5
     scope: P06 authored sections and related public contracts only
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
   tracked: true
   kind: document
-  bytes: 47216
+  bytes: 48165
   state: HASHED
-  sha256: 9241bdfbe34a2a91588a2fe2e991e9da73d09b6917a9c75244569f460c653c12
+  sha256: dfdf3f8cb764d2fc3c0fa54c668afb198754cf6d4a8160e9cdcab536a7cc892e
   review:
     path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
     reviewer: /root/p06_documents
@@ -3025,7 +3061,7 @@ files:
     sha256: 9241bdfbe34a2a91588a2fe2e991e9da73d09b6917a9c75244569f460c653c12
     scope: P06 authored sections and related public contracts only
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0001-request-baseline-and-inventory.md
   tracked: true
   kind: document
@@ -3388,7 +3424,7 @@ files:
     complete: false
     state: STALE
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
-  tracked: false
+  tracked: true
   kind: document
   bytes: 25571
   state: HASHED
@@ -3401,6 +3437,14 @@ files:
     scope: P06 authored sections and related public contracts only
     complete: false
     state: PARTIAL
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
+  tracked: true
+  kind: document
+  bytes: 18866
+  state: HASHED
+  sha256: 7b684a121ad75a929a7a0afebe48f7c53b796fe89cf46cb5e1cd856a01eb664c
+  review:
+    state: UNREVIEWED
 - path: docs/03.specs/0213-dev-data-and-influx-retirement/plan.md
   tracked: true
   kind: document
@@ -4498,9 +4542,9 @@ files:
 - path: docs/05.operations/guides/07-observability/0045-prometheus.md
   tracked: true
   kind: document
-  bytes: 17007
+  bytes: 18221
   state: HASHED
-  sha256: e897316e99b088c5edea7ec58b76d349b4b6bf53189cf1fd046e8fd33f8cb951
+  sha256: 66ae842be7b0acad3e2cfd6fa3bc214d476761e1ef69ca17777305461676a7d7
   review:
     state: UNREVIEWED
 - path: docs/05.operations/guides/07-observability/0046-pushgateway.md
@@ -6068,9 +6112,9 @@ files:
 - path: docs/05.operations/runbooks/07-observability/0045-prometheus.md
   tracked: true
   kind: document
-  bytes: 15345
+  bytes: 17207
   state: HASHED
-  sha256: 437475e2c36b41ff384d45f2f19bc4f90f0edc75635797021801ffcf05115ecd
+  sha256: 3f2874c147cacd211f21d0d9b39aba3776aa6a463d857173a748b525bfb4d263
   review:
     state: UNREVIEWED
 - path: docs/05.operations/runbooks/07-observability/0046-pushgateway.md
@@ -6562,9 +6606,9 @@ files:
 - path: docs/90.references/data/0096-workspace-inventory/README.md
   tracked: true
   kind: document
-  bytes: 15860
+  bytes: 16560
   state: HASHED
-  sha256: afc4861050f9e387283ea99c72303c26c050745fb353272c4ffe1babddf20131
+  sha256: 0298d87567b8c9bdf74949b6d9204643902bcf866761c3463548a5999c5fe9cf
   review:
     path: docs/90.references/data/0096-workspace-inventory/README.md
     reviewer: /root/p06_documents
@@ -6572,11 +6616,11 @@ files:
     sha256: afc4861050f9e387283ea99c72303c26c050745fb353272c4ffe1babddf20131
     scope: P06 authored sections and related public contracts only
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   tracked: true
   kind: configuration
-  bytes: 1390577
+  bytes: 1403871
   state: GENERATED_OUTPUT
 - path: docs/90.references/data/README.md
   tracked: true
@@ -9465,17 +9509,17 @@ files:
 - path: examples/operations/quality-metrics/acceptance.py
   tracked: true
   kind: code
-  bytes: 21709
+  bytes: 27439
   state: HASHED
-  sha256: c33dc16138ed9732510ab25cd9b7b354f68185b4b979d060dd1f56129b88ffe5
+  sha256: 8c516bed6ef71bece492e8edb6bd105a155a663f84cd5a802ee5d424c3f30536
   review:
     state: UNREVIEWED
 - path: examples/operations/quality-metrics/docker-compose.yml
   tracked: true
   kind: configuration
-  bytes: 2062
+  bytes: 2133
   state: HASHED
-  sha256: acf096ce617ed9456ede2e86e9faede852f4bd2f5059b8e59a3ac3e97dde43e2
+  sha256: e17f06e0883cf05348fae01b07bf822c5c370879006aadf3d8e7abab35a1b316
   review:
     state: UNREVIEWED
 - path: examples/operations/quality-metrics/executor_stage.py
@@ -11608,9 +11652,9 @@ files:
 - path: infra/06-observability/grafana/dashboards/Infrastructure/postgresql.json
   tracked: true
   kind: configuration
-  bytes: 74222
+  bytes: 75248
   state: HASHED
-  sha256: 42e0cb7c9ea7f25dfe3e2755e806ab8b61626b012692c49dff91d5e49095b301
+  sha256: 2071a95cc576f8d0ac98b730242829ba5745f9d6ab4cb29534bbf4e46d38cce6
   review:
     state: UNREVIEWED
 - path: infra/06-observability/grafana/dashboards/Infrastructure/qdrant-overview.json
@@ -11624,9 +11668,9 @@ files:
 - path: infra/06-observability/grafana/dashboards/Infrastructure/redis.json
   tracked: true
   kind: configuration
-  bytes: 43463
+  bytes: 44555
   state: HASHED
-  sha256: 47c101f29ab78d500a04b987d7d064de4698bb5294091ced841eb36d9d492fdc
+  sha256: 4f8c14800f05563143f64691cd18fb36f105a7bfeed0be42141ec7971da3210b
   review:
     state: UNREVIEWED
 - path: infra/06-observability/grafana/dashboards/Infrastructure/schema-registry.json
@@ -11672,9 +11716,9 @@ files:
 - path: infra/06-observability/grafana/dashboards/Observability/alloy-opentelemetry.json
   tracked: true
   kind: configuration
-  bytes: 17949
+  bytes: 18994
   state: HASHED
-  sha256: 8f863ae4b622b7242469cb2a9a052e2779f71e3ce04a5d83f6d9d36c9fc9d109
+  sha256: 40269e58186017808104940e81d7ae15713e83cb00303c8cfa782b49a85a5e11
   review:
     state: UNREVIEWED
 - path: infra/06-observability/grafana/dashboards/Observability/alloy-resources.json
@@ -11736,9 +11780,9 @@ files:
 - path: infra/06-observability/grafana/dashboards/Observability/prometheus-overview.json
   tracked: true
   kind: configuration
-  bytes: 20192
+  bytes: 21262
   state: HASHED
-  sha256: e63da9ccb8fb74c9955a567a66887bfcff1e237def9c85bf20e4a73c8ab0d391
+  sha256: c5bedc4d1c9a4fa3f70dc89a70696e6b810a52eabb7a8c594b4402e7299660ac
   review:
     state: UNREVIEWED
 - path: infra/06-observability/grafana/dashboards/Observability/pyroscope.json
@@ -11887,9 +11931,9 @@ files:
 - path: infra/06-observability/prometheus/README.md
   tracked: true
   kind: document
-  bytes: 7037
+  bytes: 7435
   state: HASHED
-  sha256: 973eab93e575e331371877f2ac910568c52189982829cee473a18e4c885e411f
+  sha256: e6d08bed48a16947141ee2d2649fe6972e2d4cf8939a47d1829314dc7c565395
   review:
     path: infra/06-observability/prometheus/README.md
     reviewer: root_document_review
@@ -11898,7 +11942,7 @@ files:
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.keycloak.yml
   tracked: true
   kind: configuration
@@ -11910,25 +11954,25 @@ files:
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.auth.yml
   tracked: true
   kind: configuration
-  bytes: 675
+  bytes: 697
   state: HASHED
-  sha256: ed1b30e0e9c2df62a77581543aaf262605d9400d005dc07bd5f6487d1d005896
+  sha256: b5a102f7913627ea32f5393a70ab8334b086024fc63e5a194c61ab07623bf88b
   review:
     state: UNREVIEWED
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.datastores.yml
   tracked: true
   kind: configuration
-  bytes: 16898
+  bytes: 17294
   state: HASHED
-  sha256: d85b4a16e682702e7493984e6036727a6f909aa3d4f7afb7c2f192122930857c
+  sha256: 67dee63fbe016512029307640fb0a600989042efa69f5c979924c73df3bd7a3f
   review:
     state: UNREVIEWED
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.gateway.yml
   tracked: true
   kind: configuration
-  bytes: 2066
+  bytes: 2088
   state: HASHED
-  sha256: ff9508bb6c1f59b597a827937981c023d79eda8a94b0a0d058d3c9a90e633b5d
+  sha256: ec952f4755b9442afb0005b419effba7e2f381bbc2ef25ba04607042787d6bab
   review:
     state: UNREVIEWED
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.gpu.yml
@@ -11958,17 +12002,17 @@ files:
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.observability.yml
   tracked: true
   kind: configuration
-  bytes: 4215
+  bytes: 4259
   state: HASHED
-  sha256: ff6b4b55f135b2d3cc5fe4f61ed63dafbd72f3a86044167b0a80cb8df381cf7f
+  sha256: 2130412b5f48d7423136650919f9a321c04f03649b5a265507c336c68ad493ec
   review:
     state: UNREVIEWED
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.prometheus.yml
   tracked: true
   kind: configuration
-  bytes: 6868
+  bytes: 6912
   state: HASHED
-  sha256: 1234879f3992378def9718686309e420102fd78f61c781df67e1dbf9118626d4
+  sha256: 220e2fb647192a00041c59aa8d315bf8b14630740809687d78af516138357a54
   review:
     state: UNREVIEWED
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.search.yml
@@ -11979,12 +12023,20 @@ files:
   sha256: 669c8d680d9cc399053de653895d189cd93771c8b2a22f1589c63adce4d5d830
   review:
     state: UNREVIEWED
+- path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.selection.yml
+  tracked: true
+  kind: configuration
+  bytes: 6594
+  state: HASHED
+  sha256: 36f033ffc1ec5905900ef41869f12fff2511776d64f7bc76c0f1fa9bbf4d7a7b
+  review:
+    state: UNREVIEWED
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.openbao.yml
   tracked: true
   kind: configuration
-  bytes: 4845
+  bytes: 4889
   state: HASHED
-  sha256: 9dc8fdb670ff84f11afd905f42f4365dfdc234051a1f998f75049197b060bc4d
+  sha256: 4128f409e7d4e4e2ee830f360337a4a3e0b64f74c5a32a7b15d3c0bf40e47eab
   review:
     state: UNREVIEWED
 - path: infra/06-observability/prometheus/config/alert_rules/recording_rules.loki-mixin.yml
@@ -12036,9 +12088,9 @@ files:
 - path: infra/06-observability/prometheus/scripts/start.sh
   tracked: true
   kind: code
-  bytes: 2357
+  bytes: 2705
   state: HASHED
-  sha256: 8d9aace1b919285f21df4033c2b83b7068014f5bc3b9b9c36733d53354998997
+  sha256: f09e2a28b10bbab110eb7e17232c7be67a706fb90ca0e3c684e420be4f184dd3
   review:
     path: infra/06-observability/prometheus/scripts/start.sh
     reviewer: /root/p02_iac_review (iac-reviewer)
@@ -12047,7 +12099,7 @@ files:
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: infra/06-observability/pushgateway/README.md
   tracked: true
   kind: document
@@ -16002,9 +16054,9 @@ files:
 - path: scripts/lib/gate/github_workflow_contract.py
   tracked: true
   kind: code
-  bytes: 63300
+  bytes: 63940
   state: HASHED
-  sha256: 55da38f8ea9b476328d4058fb70d6a61ca8d87b2e60f323c072ed560b8ce3e9b
+  sha256: 603591f577819036c2e48a16a75c7857fc6eddf89ca18e2d19c2225f92286358
   review:
     state: UNREVIEWED
 - path: scripts/lib/hardening-lib.sh
@@ -16123,6 +16175,22 @@ files:
   sha256: 0dbdd51a88c37b34521acfe9849895a95fe9d7c4f7cd7a887c6585b8932b3326
   review:
     state: UNREVIEWED
+- path: scripts/lib/ops/compose_observation.py
+  tracked: true
+  kind: code
+  bytes: 18245
+  state: HASHED
+  sha256: c907e5330c0056730d59436d7e540d0fbd49f51664e67ddf798630192bee832c
+  review:
+    state: UNREVIEWED
+- path: scripts/lib/ops/compose_start.py
+  tracked: true
+  kind: code
+  bytes: 16639
+  state: HASHED
+  sha256: fc498b823e9d9d673e889b198fee022aeecccfe0c77d2c50611ec50d806f789d
+  review:
+    state: UNREVIEWED
 - path: scripts/lib/ops/memory_sources.py
   tracked: true
   kind: code
@@ -16180,7 +16248,7 @@ files:
   review:
     state: UNREVIEWED
 - path: scripts/lib/ops/secret_structure.py
-  tracked: false
+  tracked: true
   kind: code
   bytes: 13285
   state: HASHED
@@ -16268,9 +16336,9 @@ files:
 - path: scripts/manifest.yaml
   tracked: true
   kind: configuration
-  bytes: 48156
+  bytes: 49147
   state: HASHED
-  sha256: cb87cd932ec667f82ae5cf1d1fb4a49312897af4ed2444f7c78a097c61860159
+  sha256: 8ba009b5e3bd6aec416b14481b3a80ac8c0d68166b040635f83b72f74b8c807b
   review:
     path: scripts/manifest.yaml
     reviewer: root_ci_review
@@ -16302,6 +16370,14 @@ files:
   bytes: 4477
   state: HASHED
   sha256: 4365d5095e9cd145b9fab9be83901615332633b23f7db095ca212bcf5af98e82
+  review:
+    state: UNREVIEWED
+- path: scripts/operations/compose-start.py
+  tracked: true
+  kind: code
+  bytes: 1984
+  state: HASHED
+  sha256: 158400ceb07ab438253338ebe319bb913d8e340863b42b2b1b576c3fac01682c
   review:
     state: UNREVIEWED
 - path: scripts/operations/gen-secrets.sh
@@ -16417,7 +16493,7 @@ files:
   review:
     state: UNREVIEWED
 - path: scripts/operations/secret-structure.py
-  tracked: false
+  tracked: true
   kind: code
   bytes: 283
   state: HASHED
@@ -16649,9 +16725,9 @@ files:
 - path: scripts/validation/ci_gate_runner.py
   tracked: true
   kind: code
-  bytes: 89909
+  bytes: 90095
   state: HASHED
-  sha256: 1ede12027e6fc1da2ca56a48ca0a44b7fec418a318e298acd20be74841ca998a
+  sha256: b328902049d88133a93d9974939899aab7b090b81d846ab790bb553ea1c37cb2
   review:
     state: UNREVIEWED
 - path: scripts/validation/compose_controls.py
@@ -17528,9 +17604,9 @@ files:
 - path: tests/lib/gate/test_github_workflow_contract.py
   tracked: true
   kind: test
-  bytes: 87798
+  bytes: 88060
   state: HASHED
-  sha256: f7d076259d9c70f220229720f9534bb8915ffeb730ad9d0d57fe939cda93aed7
+  sha256: 2feb600436ab0a7a4b533ac46cba496ba582c870ecf6f5c2c95f63d9eeffd319
   review:
     path: tests/lib/gate/test_github_workflow_contract.py
     reviewer: p02_residual_code_review + p02_residual_supply_review
@@ -17594,6 +17670,22 @@ files:
   bytes: 35191
   state: HASHED
   sha256: 0e4797b1ce88633d7753995a6d117195d68cebec0b8138fcdeea10584087fd8f
+  review:
+    state: UNREVIEWED
+- path: tests/lib/ops/test_compose_observation.py
+  tracked: true
+  kind: test
+  bytes: 10868
+  state: HASHED
+  sha256: 1afe1366f6b91964b3e592f32cf6c090c812c20a37176ae61fd74885897c0c67
+  review:
+    state: UNREVIEWED
+- path: tests/lib/ops/test_compose_start.py
+  tracked: true
+  kind: test
+  bytes: 18038
+  state: HASHED
+  sha256: 3b98cee67e2c054d72198075a4b681be4b790c50c33a32781da85f8660a8f58b
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_n8n_outbox_workflow.py
@@ -17709,7 +17801,7 @@ files:
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_secret_structure.py
-  tracked: false
+  tracked: true
   kind: test
   bytes: 19838
   state: HASHED
@@ -18140,6 +18232,22 @@ files:
   sha256: 07fae52c6b675890a606a21784e150421329b0eef0b4ba83967eeccecddc4a0f
   review:
     state: UNREVIEWED
+- path: tests/validation/fixtures/p07-observation/dashboards.test.yml
+  tracked: true
+  kind: test
+  bytes: 2947
+  state: HASHED
+  sha256: af288730e3259e22e7b463cee2af3eec0b308407f80e315b2217aaf3e1192388
+  review:
+    state: UNREVIEWED
+- path: tests/validation/fixtures/p07-observation/rules.test.yml
+  tracked: true
+  kind: test
+  bytes: 9298
+  state: HASHED
+  sha256: 9e2064f13a2eaf367931ce6d22c2aa8574aedc90cf240b08ec63739806233850
+  review:
+    state: UNREVIEWED
 - path: tests/validation/lifecycle/__init__.py
   tracked: true
   kind: test
@@ -18237,9 +18345,9 @@ files:
 - path: tests/validation/test_ci_gate_plan.py
   tracked: true
   kind: test
-  bytes: 101351
+  bytes: 101566
   state: HASHED
-  sha256: 4798f34350767ab35bffae92f5357c4db5f952dd55199b01f6ae7c30f24296d4
+  sha256: ce67522ada1c6bc8a075bc3be36dc7a27cba7337182337486296919f08f3279a
   review:
     path: tests/validation/test_ci_gate_plan.py
     reviewer: p02_code_review
@@ -18247,7 +18355,7 @@ files:
     sha256: 4798f34350767ab35bffae92f5357c4db5f952dd55199b01f6ae7c30f24296d4
     scope: P02 changed CI selector assertions reviewed; full-file review not claimed
     complete: false
-    state: PARTIAL
+    state: STALE
 - path: tests/validation/test_compose_baseline_gates.py
   tracked: true
   kind: test
@@ -18905,6 +19013,22 @@ files:
       not inferred
     complete: false
     state: PARTIAL
+- path: tests/validation/test_p07_ci_routing.py
+  tracked: true
+  kind: test
+  bytes: 6365
+  state: HASHED
+  sha256: b46f93cd6e5b11a7f0c3374e9c3c12ae31bc90ab8022e307937c4a2fa71fbe70
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p07_quality_metrics.py
+  tracked: true
+  kind: test
+  bytes: 5267
+  state: HASHED
+  sha256: fcd27af940e4f17ed5ba5f1d35dd9468b7267c1cd52b8cabac240a99019cd92e
+  review:
+    state: UNREVIEWED
 - path: tests/validation/test_perf_db_contract.py
   tracked: true
   kind: test
@@ -19259,9 +19383,9 @@ files:
 excluded:
   binary: 35
   code: 132
-  configuration: 467
+  configuration: 472
   document: 120
-  generated: 38588
+  generated: 38637
   private: 241
 opaque:
   git_directories: 1
@@ -33763,7 +33887,7 @@ compose:
     sha256: 7074810932b37971f5347cacc00c539a5bba9ae00e1110235d1747abbf41acb1
     state: parsed
   - path: examples/operations/quality-metrics/docker-compose.yml
-    sha256: acf096ce617ed9456ede2e86e9faede852f4bd2f5059b8e59a3ac3e97dde43e2
+    sha256: e17f06e0883cf05348fae01b07bf822c5c370879006aadf3d8e7abab35a1b316
     state: parsed
   - path: examples/operations/quality-path-guard/docker-compose.yml
     sha256: ecfd47948e42e2d49a67d8edce4a71a0251e6f4e690acae91745b0a022c9e38c
@@ -35076,14 +35200,14 @@ compose:
   gaps: []
 coverage:
   files:
-    numerator: 41898
-    denominator: 41898
+    numerator: 41963
+    denominator: 41963
   body_review:
     numerator: 6
-    denominator: 2308
+    denominator: 2319
   body_review_partial:
-    numerator: 84
-    denominator: 2308
+    numerator: 78
+    denominator: 2319
   render:
     numerator: 0
     denominator: 17
@@ -35991,7 +36115,7 @@ connection_sources:
   kind: compose
   result: no-matching-connection
 - path: examples/operations/quality-metrics/docker-compose.yml
-  sha256: acf096ce617ed9456ede2e86e9faede852f4bd2f5059b8e59a3ac3e97dde43e2
+  sha256: e17f06e0883cf05348fae01b07bf822c5c370879006aadf3d8e7abab35a1b316
   kind: compose
   result: no-matching-connection
 - path: examples/operations/quality-path-guard/docker-compose.yml
@@ -37271,6 +37395,98 @@ requirements:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
   limit: No private mutation, real issuance/rotation/deletion, operating service or
     remote changes.
+- id: P07.01
+  criterion: 82
+  work_unit: W87
+  task_id: SPEC-0212-TSK-0046
+  subject: Companion startup selection
+  state: TEST_RESIDUAL
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0046
+  implementation_writer: Single-writer leases in current Task
+  source_verification: See current Task for source and changed-input scope.
+  static_checks: See current Task for actual checks and limitations.
+  isolated_tests: See current Task for actual isolated results and limits.
+  historical_operator_acceptance: SPEC-0224 and SPEC-0214 recorded scopes only; current
+    equivalence not inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
+  limit: No operating service, host, actual credential, alert delivery or remote integration
+    change.
+- id: P07.02
+  criterion: 83
+  work_unit: W88
+  task_id: SPEC-0212-TSK-0046
+  subject: Expected target and freshness
+  state: TEST_RESIDUAL
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0046
+  implementation_writer: Single-writer leases in current Task
+  source_verification: See current Task for source and changed-input scope.
+  static_checks: See current Task for actual checks and limitations.
+  isolated_tests: See current Task for actual isolated results and limits.
+  historical_operator_acceptance: SPEC-0224 and SPEC-0214 recorded scopes only; current
+    equivalence not inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
+  limit: No operating service, host, actual credential, alert delivery or remote integration
+    change.
+- id: P07.03
+  criterion: 84
+  work_unit: W89
+  task_id: SPEC-0212-TSK-0046
+  subject: Authenticated OTLP delivery
+  state: TEST_RESIDUAL
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0046
+  implementation_writer: Single-writer leases in current Task
+  source_verification: See current Task for source and changed-input scope.
+  static_checks: See current Task for actual checks and limitations.
+  isolated_tests: See current Task for actual isolated results and limits.
+  historical_operator_acceptance: SPEC-0224 and SPEC-0214 recorded scopes only; current
+    equivalence not inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
+  limit: No operating service, host, actual credential, alert delivery or remote integration
+    change.
+- id: P07.04
+  criterion: 85
+  work_unit: W90
+  task_id: SPEC-0212-TSK-0046
+  subject: Optional target expectations and recovery
+  state: TEST_RESIDUAL
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0046
+  implementation_writer: Single-writer leases in current Task
+  source_verification: See current Task for source and changed-input scope.
+  static_checks: See current Task for actual checks and limitations.
+  isolated_tests: See current Task for actual isolated results and limits.
+  historical_operator_acceptance: SPEC-0224 and SPEC-0214 recorded scopes only; current
+    equivalence not inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
+  limit: No operating service, host, actual credential, alert delivery or remote integration
+    change.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED
@@ -38563,60 +38779,6 @@ ownership:
   handoff: Changed source invalidates affected rows only; no operating authority inferred
   fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
   current_followup_sha256: 074291db8db4faed87648f0761c60d7a47a4d08fb7b74e061ea1d718f2146df6
-- path: .github/workflow-contract.yml
-  writer: /root/p06_ci
-  before_sha256: 95deb0da017de31f2c07998358c38d31d483ba245e939a2bc3b26f12a828f997
-  current_followup_sha256: d9041760171b958aafa6dd9e8d32baec80354a327db8ae05a3986db364146ac7
-  scope: Approved P06 exact Task path lease
-  acceptance_owner: SPEC-0212-TSK-0045
-  reviewer: Independent exact-source reviewer in Task
-  data_owner: UNASSIGNED for actual operating data
-  operational_acceptance: UNASSIGNED / NOT_RUN
-  authority: Direct approved local P06 request; private comparison read-only after
-    security review
-  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
-  previous_lease:
-    path: .github/workflow-contract.yml
-    writer: /root/p03_docs_impl
-    before_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
-    scope: Approved P05 exact Task path/segment lease
-    acceptance_owner: SPEC-0212-TSK-0044
-    reviewer: Independent exact-packet role in Task
-    data_owner: UNASSIGNED for actual operating data
-    operational_acceptance: UNASSIGNED / NOT_RUN
-    authority: Direct approved P05 local plan2026-11-02
-    handoff: Changed input invalidates only dependent rows; no operating authority
-      inferred
-    previous_lease:
-      path: .github/workflow-contract.yml
-      writer: /root/p03_docs_impl
-      before_sha256: 673e4926795605bd4334e4875cb904382eccc5f08b0add0a4f0d30b77b4dcc9a
-      scope: Current P04 approved local slice; exact segment in Task
-      acceptance_owner: SPEC-0212-TSK-0043
-      reviewer: Independent exact-packet role recorded in Task
-      data_owner: UNASSIGNED for operating data; no authority inferred
-      operational_acceptance: UNASSIGNED / NOT_RUN
-      authority: Direct2026-11-02 approved P04 plan
-      handoff: Changed source invalidates this exact lease; operating action needs
-        its own target/recovery authorization
-      previous_lease:
-        path: .github/workflow-contract.yml
-        writer: ci-cd-engineer
-        acceptance_owner: SPEC-0212-TSK-0040
-        reviewer: code-reviewer /root/p01_review; security-auditor /root/p01_security;
-          exact reviewed source scope and remaining limits in Task
-        data_owner: UNASSIGNED for operational data
-        operational_acceptance: UNASSIGNED
-        scope: Inventory implementation/tests or its CI registration only
-        authority: direct2026-11-01 request and coordinator path allocation
-        before_sha256: null
-        fingerprint_receipt: coordinator/CI writer local lease receipt; not fabricated
-          here
-        review_scope_limit: No operational authorization or unobserved document acceptance
-          inferred.
-      current_followup_sha256: ef6cfd4fab3b1674a822ef80a742dd75aa6e24889615d36e2c7432318153dae4
-    current_followup_sha256: 95deb0da017de31f2c07998358c38d31d483ba245e939a2bc3b26f12a828f997
-    fingerprint_observed_at: '2026-11-02T11:58:51.260691+00:00'
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   writer: /root/p06_documents
   before_sha256: 70233035e0222b77907bc3c7f6a332074b5de1be014256571797e675859feec1
@@ -39040,6 +39202,61 @@ ownership:
   operational_acceptance: UNASSIGNED / NOT_RUN
   authority: Direct approved local P06 request; private comparison read-only after
     security review
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: scripts/operations/compose-start.py
+  writer: /root/p07_launcher
+  before_sha256: ABSENT
+  scope: Approved P07 exact Task path lease; all additional paths and baselines in
+    Task
+  acceptance_owner: SPEC-0212-TSK-0046
+  reviewer: Independent exact-source reviewer
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved local P07 work and isolated fixture only
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: scripts/lib/ops/compose_start.py
+  writer: /root/p07_launcher
+  before_sha256: ABSENT
+  scope: Approved P07 exact Task path lease; all additional paths and baselines in
+    Task
+  acceptance_owner: SPEC-0212-TSK-0046
+  reviewer: Independent exact-source reviewer
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved local P07 work and isolated fixture only
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: scripts/lib/ops/compose_observation.py
+  writer: /root/p07_observability
+  before_sha256: ABSENT
+  scope: Approved P07 exact Task path lease; all additional paths and baselines in
+    Task
+  acceptance_owner: SPEC-0212-TSK-0046
+  reviewer: Independent exact-source reviewer
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved local P07 work and isolated fixture only
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: examples/operations/quality-metrics/acceptance.py
+  writer: /root/p07_qa
+  before_sha256: c33dc16138ed9732510ab25cd9b7b354f68185b4b979d060dd1f56129b88ffe5
+  scope: Approved P07 exact Task path lease; all additional paths and baselines in
+    Task
+  acceptance_owner: SPEC-0212-TSK-0046
+  reviewer: Independent exact-source reviewer
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved local P07 work and isolated fixture only
+  handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
+- path: .github/workflow-contract.yml
+  writer: /root/p07_ci
+  before_sha256: d9041760171b958aafa6dd9e8d32baec80354a327db8ae05a3986db364146ac7
+  scope: Approved P07 exact Task path lease; all additional paths and baselines in
+    Task
+  acceptance_owner: SPEC-0212-TSK-0046
+  reviewer: Independent exact-source reviewer
+  data_owner: UNASSIGNED for actual operating data
+  operational_acceptance: UNASSIGNED / NOT_RUN
+  authority: Approved local P07 work and isolated fixture only
   handoff: Changed source invalidates dependent evidence; no runtime authority inferred.
 research:
 - id: EX01
@@ -40782,6 +40999,62 @@ research:
   rejection: Do not infer operational use, private state or permission from public
     documentation.
   recovery: Reopen only affected inputs if evidence changes; preserve prior acceptance.
+  limit: No current operating or independent restore result inferred.
+- id: P07-COMPOSE-PROFILES
+  url: https://docs.docker.com/compose/how-tos/profiles/
+  document_version: current
+  retrieved_at: '2026-11-02T14:03:46Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic fixture
+  fact: Explicit target starts its dependencies, not unrelated profile siblings.
+  decision: ADOPT
+  current_source_difference: See TSK-0046 source and individual test results.
+  owner: P07
+  normal: Apply to identified version and consumer.
+  rejection: Do not infer actual runtime acceptance or authorization.
+  recovery: Restore preceding selected configuration and revalidate affected evidence.
+  limit: No current operating or independent restore result inferred.
+- id: P07-COMPOSE-READY
+  url: https://docs.docker.com/compose/how-tos/startup-order/
+  document_version: current
+  retrieved_at: '2026-11-02T14:03:46Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic fixture
+  fact: Running and healthy dependency conditions are distinct.
+  decision: ADOPT
+  current_source_difference: See TSK-0046 source and individual test results.
+  owner: P07
+  normal: Apply to identified version and consumer.
+  rejection: Do not infer actual runtime acceptance or authorization.
+  recovery: Restore preceding selected configuration and revalidate affected evidence.
+  limit: No current operating or independent restore result inferred.
+- id: P07-ALLOY-REMOTE
+  url: https://grafana.com/docs/alloy/v1.20/reference/components/prometheus/prometheus.remote_write/
+  document_version: '1.20'
+  retrieved_at: '2026-11-02T14:03:46Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic fixture
+  fact: Remote-write queue and delivery signals need pinned-image verification.
+  decision: ADOPT
+  current_source_difference: See TSK-0046 source and individual test results.
+  owner: P07
+  normal: Apply to identified version and consumer.
+  rejection: Do not infer actual runtime acceptance or authorization.
+  recovery: Restore preceding selected configuration and revalidate affected evidence.
+  limit: No current operating or independent restore result inferred.
+- id: P07-PROMTOOL
+  url: https://prometheus.io/docs/prometheus/latest/configuration/unit_testing_rules/
+  document_version: current
+  retrieved_at: '2026-11-02T14:03:46Z'
+  retrieval: DIRECT_OFFICIAL_PAGE
+  platform: Linux public source and synthetic fixture
+  fact: Rule tests provide synthetic evaluation rather than live reload.
+  decision: ADOPT
+  current_source_difference: See TSK-0046 source and individual test results.
+  owner: P07
+  normal: Apply to identified version and consumer.
+  rejection: Do not infer actual runtime acceptance or authorization.
+  recovery: Restore preceding selected configuration and revalidate affected evidence.
   limit: No current operating or independent restore result inferred.
 coverage_tiers:
 - id: TIER01
@@ -43849,3 +44122,20 @@ handoffs:
   recovery: Preserve canonical credential and valid rollback path; verify server validity
     separately.
   source_files: []
+- id: P07-OPSFLOW-FRESHNESS
+  acceptance_owner: P04/P05 data and workflow owners
+  writer: UNASSIGNED until exact path lease
+  state: TEST_RESIDUAL
+  target: Opsflow application completion cadence and freshness alert
+  current_fingerprint: See current Task for input and source fingerprints
+  change_contract: Define measured workload cadence, failure behavior and recovery
+    with actual data owner before enabling an application alert.
+  authority: P07 local selection and observability source/tests only
+  missing_input: Actual workload schedule, completion semantics, owner and authorized
+    evidence
+  resume_condition: Named data and operational owners agree on workload contract and
+    safe validation.
+  recovery: Preserve existing alerting and restore previous rules and expected-target
+    settings.
+  source_files:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md

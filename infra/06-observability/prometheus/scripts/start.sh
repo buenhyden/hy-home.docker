@@ -18,6 +18,14 @@ case "$state" in
     ;;
 esac
 
+# A full-plan overlay declares the expected DEV state without changing it.
+# Legacy starts without an overlay retain the original contract.
+declared=${P07_DECLARED_DEV_EXPECTED:-}
+if [ -n "$declared" ] && [ "$declared" != "$state" ]; then
+  printf '%s\n' 'prometheus: declared DEV selection conflicts with configured expectation' >&2
+  exit 64
+fi
+
 valid_port() {
   case "$1" in '' | *[!0-9]*) return 1 ;; esac
   [ "${#1}" -le 5 ] && [ "$1" -ge 1 ] && [ "$1" -le 65535 ]
