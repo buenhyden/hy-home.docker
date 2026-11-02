@@ -17,6 +17,14 @@ NOW = datetime(2026, 10, 10, 10, tzinfo=UTC)
 DIGEST = "sha256:" + "a" * 64
 
 
+def replay_service_refreshes(initial, refreshes):
+    current = set(initial)
+    for refresh in refreshes:
+        current.difference_update(refresh.get("removed_services", []))
+        current.update(refresh.get("added_services", []))
+    return current
+
+
 class StableScannerContractTests(unittest.TestCase):
     def test_current_readiness_binds_exact_registry_and_tool_identities(self):
         root = Path(__file__).resolve().parents[3]
@@ -117,6 +125,35 @@ class LatestVersionGateTests(unittest.TestCase):
         self.assertTrue(result["ready"])
         self.assertFalse(result["deployed"])
         self.assertFalse(result["verified_external_facts"])
+
+    def test_candidate_match_never_proves_current_source_declaration(self):
+        row = dict(latest_row(), current_declared="openbao/openbao:2.6.2")
+        result = evaluate([row], ["openbao"], NOW)
+        self.assertTrue(result["ready"])
+        self.assertTrue(result["entries"][0]["matches_target_latest"])
+        self.assertIsNone(result["entries"][0]["matches_declared_latest"])
+        self.assertIn("submitted target", result["meaning"].lower())
+
+    def test_unknown_source_and_mismatching_target_never_prove_declaration(self):
+        for declared in (None, "UNKNOWN", "openbao/openbao:2.7.1"):
+            row = dict(latest_row(), current_declared=declared, target_version="2.6.2")
+            result = evaluate([row], ["openbao"], NOW)
+            with self.subTest(declared=declared):
+                self.assertFalse(result["ready"])
+                self.assertFalse(result["entries"][0]["matches_target_latest"])
+                self.assertIsNone(result["entries"][0]["matches_declared_latest"])
+
+    def test_matching_target_does_not_hide_stale_or_invalid_evidence(self):
+        for field, value in (
+            ("checked_at", "2026-10-08T10:00:00+00:00"),
+            ("release_url", "not-https"),
+            ("channel", "unknown"),
+        ):
+            result = evaluate([dict(latest_row(), **{field: value})], ["openbao"], NOW)
+            with self.subTest(field=field):
+                self.assertTrue(result["entries"][0]["matches_target_latest"])
+                self.assertFalse(result["entries"][0]["evidence_complete"])
+                self.assertFalse(result["ready"])
 
     def test_missing_unexpected_and_version_mismatch(self):
         row = latest_row()
@@ -317,6 +354,12 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     service.get("image", "UNKNOWN"), row["current_declared"]
                 )
                 self.assertEqual(service.get("build"), row["build_source"])
+                self.assertEqual(
+                    hashlib.sha256(
+                        (root / row["compose_file"]).read_bytes()
+                    ).hexdigest(),
+                    row["source_input_sha256"],
+                )
 
     def test_current_root_supplier_references_resolve_without_acceptance_promotion(
         self,
@@ -351,25 +394,131 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         old_census = ledger["historical_root_census"]
         old_inputs = {row["path"] for row in old_census["include_inputs"]}
         current_inputs = {row["path"] for row in inventory["input_files"]}
-        self.assertEqual(
-            {"infra/04-data/supabase/docker-compose.yml"}, old_inputs - current_inputs
-        )
-        self.assertFalse(current_inputs - old_inputs)
-        self.assertEqual(len(old_inputs), len(current_inputs) + 1)
+        self.assertIn("infra/04-data/supabase/docker-compose.yml", old_inputs)
+        self.assertNotIn("infra/04-data/supabase/docker-compose.yml", current_inputs)
         historical_services = {row["service"] for row in historical}
+        initial = set(old_census["expected_services"]) - historical_services
         self.assertEqual(
-            set(old_census["expected_services"]) - set(expected), historical_services
+            set(expected), replay_service_refreshes(initial, ledger["source_refreshes"])
         )
+        self.assertLessEqual(historical_services, set(old_census["expected_services"]))
         self.assertEqual(len(historical_services), len(historical))
-        self.assertFalse(set(expected) & historical_services)
-        self.assertEqual(
-            len(old_census["expected_services"]), len(expected) + len(historical)
-        )
         for row in historical:
             self.assertEqual("lab", row["current_scope"])
             self.assertEqual("labs/supabase.yml", row["current_compose_file"])
             self.assertEqual("root", row["original_root_row"]["scope"])
             self.assertEqual(row["service"], row["original_root_row"]["service"])
+
+    def test_service_refresh_history_supports_removal_and_readdition(self):
+        refreshes = [
+            {"removed_services": ["b"], "added_services": ["c"]},
+            {"removed_services": ["c"], "added_services": ["b"]},
+        ]
+        self.assertEqual({"a", "b"}, replay_service_refreshes({"a", "b"}, refreshes))
+
+    def test_new_local_source_does_not_inherit_security_or_runtime_acceptance(self):
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        rows = [row for row in ledger["entries"] if row["service"] == "blog-ingestion"]
+        self.assertEqual(1, len(rows))
+        row = rows[0]
+        self.assertEqual("NOT_RUN", row["deployment"])
+        self.assertEqual("NOT_RUN", row["signature"])
+        self.assertEqual("NOT_RUN", row["sbom_scan"])
+        self.assertEqual("NOT_OBSERVED", row["runtime_presence"])
+        self.assertEqual("UNKNOWN", row["latest_version"])
+        self.assertEqual("BLOCKED", row["disposition"])
+        for field in (
+            "target_index_digest",
+            "target_manifest_digest",
+            "target_config_digest",
+        ):
+            with self.subTest(field=field):
+                self.assertEqual("UNKNOWN", row[field])
+        for field in ("compatibility", "backup", "rollback", "native_test"):
+            with self.subTest(field=field):
+                self.assertEqual("NOT_RUN", row[field])
+        self.assertTrue(row["supplier_lookup_blocker"])
+
+    def test_selected_security_candidates_are_current_without_promoting_acceptance(
+        self,
+    ):
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        by_name = {row["service"]: row for row in ledger["entries"]}
+        groups = (
+            (
+                [
+                    "airflow-valkey",
+                    "dev-valkey",
+                    "mng-valkey",
+                    "n8n-valkey",
+                    "oauth2-proxy-valkey",
+                ],
+                "9.1.3",
+                "GHSA-f4q9-j22m-xqq9",
+            ),
+            (
+                ["n8n", "n8n-worker", "n8n-task-runner", "n8n-task-runner-worker"],
+                "2.45.7",
+                "GHSA-prmc-fg87-r4gh",
+            ),
+        )
+        for names, version, advisory in groups:
+            for name in names:
+                with self.subTest(service=name):
+                    row = by_name[name]
+                    self.assertEqual(version, row["latest_version"])
+                    self.assertEqual(version, row["target_version"])
+                    self.assertTrue(
+                        any(advisory in url for url in row["advisory_urls"])
+                    )
+                    self.assertEqual("NOT_RUN", row["deployment"])
+                    self.assertEqual("NOT_RUN", row["compatibility"])
+                    self.assertEqual("NOT_RUN", row["native_test"])
+                    self.assertEqual("NOT_RUN", row["signature"])
+                    self.assertEqual("NOT_RUN", row["sbom_scan"])
+                    self.assertIn("p08_previous_release_assessment", row)
+                    self.assertIn("p08_candidate_assessment", row)
+
+    def test_valkey_candidate_pull_receipt_is_not_promoted_from_self_report(self):
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        names = {
+            "airflow-valkey",
+            "dev-valkey",
+            "mng-valkey",
+            "n8n-valkey",
+            "oauth2-proxy-valkey",
+        }
+        rows = [row for row in ledger["entries"] if row["service"] in names]
+        self.assertEqual(names, {row["service"] for row in rows})
+        for row in rows:
+            with self.subTest(service=row["service"]):
+                receipt = row["p08_candidate_assessment"]["local_artifact_inspection"]
+                self.assertEqual(
+                    "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE", receipt["status"]
+                )
+                self.assertEqual("NOT_SAVED", receipt["raw_receipt"])
+                self.assertIsNone(receipt["exact_timestamp"])
+                self.assertEqual(2, len(receipt["steps"]))
+                for step in receipt["steps"]:
+                    self.assertIsNone(step["exit_code"])
+                    self.assertTrue(step["command"])
+                self.assertEqual("NOT_RUN", row["compatibility"])
+                self.assertEqual("NOT_RUN", row["signature"])
 
     def test_runtime_candidates_report_their_own_upstream_tag(self):
         root = Path(__file__).resolve().parents[3]
@@ -482,6 +631,35 @@ class IndependentInventoryTests(unittest.TestCase):
 
 
 class GateCLITests(unittest.TestCase):
+    def test_cli_reports_target_match_without_claiming_source_declaration(self):
+        from scripts.lib.supply_chain import latest_version_gate
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            leaf = root / "infra/service/docker-compose.yml"
+            leaf.parent.mkdir(parents=True)
+            leaf.write_text("services:\n  openbao:\n    image: openbao/openbao:2.6.2\n")
+            (root / "docker-compose.yml").write_text(
+                "include:\n  - infra/service/docker-compose.yml\n"
+            )
+            path = root / "submitted.json"
+            row = dict(latest_row(), checked_at=datetime.now(UTC).isoformat())
+            path.write_text(json.dumps({"entries": [row]}))
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                self.assertEqual(
+                    0,
+                    latest_version_gate.main(
+                        ["--input", str(path), "--repo-root", str(root)]
+                    ),
+                )
+            result = json.loads(output.getvalue())
+            self.assertTrue(result["ready"])
+            self.assertTrue(result["entries"][0]["matches_target_latest"])
+            self.assertIsNone(result["entries"][0]["matches_declared_latest"])
+            self.assertFalse(result["deployed"])
+            self.assertFalse(result["verified_external_facts"])
+
     def test_cli_valid_and_invalid_inputs_do_not_echo_payload(self):
         from scripts.lib.supply_chain import latest_version_gate, security_update_gate
 

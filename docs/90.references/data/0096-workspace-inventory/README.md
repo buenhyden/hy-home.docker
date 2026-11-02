@@ -4,7 +4,7 @@ version: "0.7.0"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-03"
 layer: "references"
 artifact_id: "DATA-0096"
 parent_ids:
@@ -16,6 +16,7 @@ parent_ids:
 - "SPEC-0212-TSK-0044"
 - "SPEC-0212-TSK-0045"
 - "SPEC-0212-TSK-0046"
+- "SPEC-0212-TSK-0047"
 created: "2026-11-01"
 observed_at: "2026-11-02"
 ---
@@ -220,6 +221,18 @@ P12 최종 인수로 옮기지 않는다. P03의 전역 CI admission 잔여도 �
 소스·격리 시험과 실제 서비스 기동, 운영 재적재, 실제 알림, 독립 복원 및 원격 CI는
 각각 별도로 기록한다. Opsflow 업무 신선도는 데이터와 업무 소유자에게 인계한다.
 
+[P08 이미지·공급망·Storybook Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md)는
+이 자료의 공개 image/build/lock 목록을 조사 분모와 source binding으로만 소비한다.
+기존 관측의 루트 Compose 44개 입력과 112개 선언을 P08 시작 분모로 재사용하며,
+소스 동결 후 새 관측으로 갱신한다. 이 목록은 전체 이미지·패키지의 공식
+최신성·지원·라이선스·호환·복원·서명/provenance 조사가 완료됐다는 뜻이 아니다.
+`blog-ingestion` 원장 행, 48개 변경 입력 영향 행과 기존 5개 stale 행의 이력은
+보존한다. 최신성 조회가 미완료이면 해당 gate는 `exit 2`/`ledger_complete: false`로
+남는다. Valkey 9.1.3과 n8n 2.45.7은 개별 source/격리/복원 증거가 필요한 후보이며,
+sample/base/GHCR artifact 증거를 Docker Hub 또는 custom artifact의 공급망 PASS로
+전이하지 않는다. Storybook 10.6.3 clean-lock 결과는 별도 Task에 기록하며 실제
+runtime·원격 인증·외부 audit은 이 패키지의 목록으로 승격하지 않는다.
+
 ## Related Documents
 
 - [범주 색인](../README.md)
@@ -229,6 +242,7 @@ P12 최종 인수로 옮기지 않는다. P03의 전역 CI admission 잔여도 �
 - [P03 모델·Runner·Wiki 준비 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md)
 - [P05 notifier 복구 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md)
 - [P07 관측 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md)
+- [P08 이미지·공급망·Storybook Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md)
 - [P04 Opsflow 데이터 경로 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)
 
 ## Sources

@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.39.0"
+version: "1.40.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-03"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -115,6 +115,13 @@ in TSK-0044. It preserves the existing n8n queue/schedule acceptance while
 repairing the selected Opsflow notifier's bounded retry, recovery and isolated
 SMTP credential-refresh contracts. P04's full native residual is not a hidden
 prerequisite for this independent local source and isolated-fixture work.
+
+The direct P08 plan approval of 2026-11-03 adds criteria 86–89 and W91–W94
+in TSK-0047. It is the current image, package, supply-chain and Storybook
+compatibility lane. It is distinct from the completed SPEC-0204 P08
+operations-document-layout Task: its historical scope and accepted records are
+preserved, while this Task owns only source, selected candidate and isolated
+evidence within its explicitly declared boundaries.
 
 ## Scope
 
@@ -656,6 +663,21 @@ hold, authorization and recovery requirements have been established.
 85. P07.04 records selection-aware expected targets, intentional stops and
     missing inventory separately, preserving existing DEV on/off semantics and
     deferring unowned workflow-specific freshness contracts.
+86. P08.01 inventories current declared images, build bases and package locks,
+    binds them to official candidate and advisory applicability, and records
+    missing lookup or artifact evidence without treating it as a current
+    support, signature or runtime result.
+87. P08.02 evaluates the selected Valkey 9.1.3 and n8n 2.45.7 compatibility
+    bundles with their actual consumers, pins and recovery boundaries. It does
+    not generalize a cluster-only Valkey advisory to non-cluster instances or
+    activate a candidate lacking its required source and isolated proof.
+88. P08.03 preserves Storybook 10.6.3 and its accepted UI scope while checking
+    the tracked lock in a clean isolated installation. Local installation,
+    remote-device and current-runtime observations remain distinct.
+89. P08.04 binds each selected artifact to its own publisher, identity or key,
+    digest and available provenance/SBOM/license evidence. A base-image or
+    sample-service receipt never proves a custom or unrelated image; unavailable
+    material remains an explicit residual.
 
 ## Failure Conditions
 
@@ -680,6 +702,7 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
 - [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
 - [Exporter and observability contracts Task](tasks/tsk-0046-exporter-observability.md)
+- [Image, supply-chain and Storybook compatibility Task](tasks/tsk-0047-image-supply-chain-storybook.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)

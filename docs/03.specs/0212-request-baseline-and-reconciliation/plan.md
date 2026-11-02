@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.39.0"
+version: "1.40.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-03"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -100,6 +100,13 @@ selected Opsflow notifier remains the business consumer; C19/C22 history and
 P04's TEST_RESIDUAL acceptance remain unchanged. Source, synthetic/owned
 isolated tests and a local logical commit are authorized; HOME services,
 actual credentials, external delivery/repositories and remote integration are not.
+
+W91–W94 implement the approved local P08 plan in TSK-0047. The Task inventories
+the current public image and package source, evaluates only selected Valkey and
+n8n candidates, and rechecks the tracked Storybook lock in isolation. It does
+not authorize operating services, host changes, actual credentials, external
+delivery, remote integration, LAB runtime or an inference from a base/sample
+artifact receipt to a different artifact.
 
 W81–W86 implement the approved local P06 plan in TSK-0045. Existing OpenBao
 consumer acceptances and public catalog authority remain scoped to their own
@@ -207,6 +214,10 @@ delivery are not. Historical P07 resource work belongs to SPEC-0218.
 | W88 | 83 | Add selection-bound expected scrape, backend and freshness signals with dashboards and alert rules | W87 | TSK-0046 | Synthetic configuration, promtool rules and isolated metrics checks |
 | W89 | 84 | Reuse authenticated OTLP and test pinned Alloy delivery and outage recovery | None | TSK-0046 | Existing quality regressions and owned isolated Alloy/Prometheus proof |
 | W90 | 85 | Bind HOME/profile expected-state and recovery handoffs without changing operating resources | W87, W88, W89 | TSK-0046 | Selection on/off, absent inventory, owner review and scoped evidence |
+| W91 | 86 | Reconcile public image, build-base and package-lock inventory with official candidates and advisory applicability | None | TSK-0047 | Source census, lookup-status and source-binding tests; unavailable lookups remain explicit |
+| W92 | 87 | Evaluate selected Valkey 9.1.3 and n8n 2.45.7 compatibility bundles without promoting a candidate to operation | W91 | TSK-0047 | Pin/consumer/source checks and bounded isolated ACL, queue, restore and runner regressions |
+| W93 | 88 | Preserve Storybook 10.6.3 and verify its tracked lock in a clean isolated installation | W91 | TSK-0047 | Isolated install, lint/typecheck/build and scoped UI/MCP/OIDC regression evidence |
+| W94 | 89 | Bind selected artifact verification to its exact subject and document unavailable signing or provenance material | W91, W92 | TSK-0047 | Per-artifact publisher, digest, identity/key, provenance/SBOM/license evidence and residual handoff |
 
 ### Current v30 continuation and delivery
 

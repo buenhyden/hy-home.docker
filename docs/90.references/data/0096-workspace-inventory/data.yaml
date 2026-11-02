@@ -37487,6 +37487,121 @@ requirements:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
   limit: No operating service, host, actual credential, alert delivery or remote integration
     change.
+- id: P08.01
+  criterion: 86
+  work_unit: W91
+  task_id: SPEC-0212-TSK-0047
+  subject: Public image/package inventory and official applicability
+  state: IMPLEMENT_GAP
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0047
+  implementation_writer: P08 source-ledger writer under current Task lease
+  source_verification: Root census observed 44 Compose inputs and 112 declarations;
+    `blog-ingestion` and affected fingerprint history repaired in public ledger.
+  static_checks: 43/45 scoped ledger and workflow-version-bundle tests PASS with two
+    existing candidate cases SKIP; Ruff PASS. `matches_target_latest` checks submitted
+    target/latest only; `matches_declared_latest` is null because active declarations
+    are not inspected. Latest-version gate exit 2 because fresh lookups remain incomplete,
+    not because a candidate is known absent.
+  isolated_tests: NOT_RUN for the full image/package estate; ledger tests do not prove
+    installed artifact or runtime compatibility.
+  historical_operator_acceptance: Historical records retain their original version,
+    environment and consumer scope only.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
+  limit: Compose declaration census is not a completed support, license, latest-version,
+    artifact-signature or operational survey.
+- id: P08.02
+  criterion: 87
+  work_unit: W92
+  task_id: SPEC-0212-TSK-0047
+  subject: Selected Valkey and n8n compatibility candidates
+  state: IMPROVEMENT_CANDIDATE
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0047
+  implementation_writer: P08 candidate writer under current Task lease
+  source_verification: Five Valkey and four n8n candidate rows have official release/
+    advisory and registry metadata observations. Valkey GHSA-f4q9-j22m-xqq9 is
+    cluster-conditional; n8n private workflow applicability remains uninspected;
+    custom-image digest and applicability are UNKNOWN.
+  static_checks: Candidate source and exact artifact evidence remain in current Task.
+  isolated_tests: LIMITED_ISOLATED_PASS (reported summary only) for Valkey 9.1.3 named
+    ACL/AOF/RDB plus current n8n ioredis shared-6379 and Airflow redis-client dedicated-
+    16379 roundtrips, then read-only cold-copy source volume to separate restore volume
+    at 17379. Static P02/config/URI 69/69 and candidate/mount 13/13 passed. Raw command
+    log/timestamp is not retained here. n8n/Runner pulls exceeded five minutes and exited
+    130 with partial cache; Celery/Bull, Compose secret/exporter, signature/provenance/
+    SBOM and complete independent backup recovery remain NOT_RUN.
+  historical_operator_acceptance: Existing C19/C22 and P02 topology acceptance retain
+    their recorded version/actor/environment scope; no current equivalence inferred.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
+  limit: No service recreation, actual credential use, cluster exposure inference or
+    activation without exact candidate, consumer and recovery evidence. Same-volume
+    restart is not independent restore and does not prove shared/dedicated Compose,
+    listener variation, queue-client compatibility or independent backup recovery.
+- id: P08.03
+  criterion: 88
+  work_unit: W93
+  task_id: SPEC-0212-TSK-0047
+  subject: Storybook 10.6.3 isolated lock compatibility
+  state: SOURCE_READY
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0047
+  implementation_writer: P08 Storybook writer under current Task lease
+  source_verification: Tracked lock declares 10.6.3; the local 10.6.2 installation is
+    a separate observation.
+  static_checks: 'PASS in clean offline install: lint/typecheck and Storybook/Next/MCP
+    builds; 9/9 synthetic auth/MCP, 14/14 browser including 320px, static image 7/7,
+    and synthetic renderToString Button/AsyncState six-state checks.'
+  isolated_tests: PASS only for the owned clean copy. HTTP SSR request, remote-device
+    authentication and npm audit are NOT_RUN; audit lookup failed with DNS EAI_AGAIN.
+  historical_operator_acceptance: Existing Storybook acceptance remains scoped to its
+    recorded source/version/actor and is not current runtime acceptance.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
+  limit: Isolated clean-lock proof does not establish deployed UI, remote login or an
+    external registry audit result.
+- id: P08.04
+  criterion: 89
+  work_unit: W94
+  task_id: SPEC-0212-TSK-0047
+  subject: Exact-artifact supply-chain verification
+  state: TEST_RESIDUAL
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0047
+  implementation_writer: P08 supply-chain writer under current Task lease
+  source_verification: Existing sample-service policy and base/GHCR receipts are
+    explicitly non-transferable to Docker Hub or custom service images.
+  static_checks: 'Supply-chain gate exit 2: coverage checked but public ledger incomplete.'
+  isolated_tests: NOT_RUN pending exact digest, publisher identity/key, provenance,
+    SBOM, vulnerability and license material per selected artifact.
+  historical_operator_acceptance: Historical source receipts remain bounded and are not
+    service artifact verification.
+  current_direct_operation: NOT_RUN
+  credential_rotation: NOT_RUN
+  independent_restore: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  evidence:
+  - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
+  limit: Signature/provenance unavailability remains explicit; verification options are
+    never disabled to create PASS.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED
