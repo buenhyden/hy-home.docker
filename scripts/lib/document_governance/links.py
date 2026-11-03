@@ -1590,6 +1590,32 @@ def _command_blocks(text: str) -> Iterable[tuple[int, tuple[str, ...]]]:
             buffer = []
 
 
+def _task_status(node: DocumentNode, registry) -> object:
+    """A Task's lifecycle status, derived from its items when it has them.
+
+    A multi-item Task declares no frontmatter status; its status is the item
+    summary Stage 03 validation derives. An unreadable item table yields no
+    status, so the Task stays checked rather than exempt.
+    """
+
+    status = node.metadata.get("status")
+    if status is not None:
+        return status
+    from scripts.lib.document_governance import spec_packages
+
+    try:
+        body = frontmatter_record_from_text(node.path.as_posix(), node.text).body
+        rows = spec_packages._execution_item_rows(body, registry, node.path)
+    except (FrontmatterError, spec_packages.SpecPackageError):
+        return None
+    if not rows:
+        return None
+    return spec_packages._item_status_summary(
+        [row[4] for row in rows],
+        frozenset(registry.lifecycle_terminal_statuses.get("task", ())),
+    )
+
+
 def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
     """Report a fenced command that names a repository path nothing resolves.
 
@@ -1611,13 +1637,14 @@ def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
 
     root = graph.repo_root
     surfaces = {entry.name for entry in root.iterdir()} if root.is_dir() else set()
-    terminal_task_statuses = load_registry().lifecycle_terminal_statuses["task"]
+    registry = load_registry()
+    terminal_task_statuses = registry.lifecycle_terminal_statuses["task"]
     findings: list[LinkFinding] = []
     for node in graph.nodes:
         # The Registry path profile, not a self-declared `type`, makes a Task.
         if (
             classify_path(node.path.as_posix()) == "task"
-            and node.metadata.get("status") in terminal_task_statuses
+            and _task_status(node, registry) in terminal_task_statuses
         ):
             continue
         for start, lines in _command_blocks(node.text):
