@@ -174,4 +174,4 @@ remain independent results.
 - [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
 - [Common profile policy](../../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
 - [Host storage placement policy](../../../05.operations/policies/10-platform-and-backup/0102-host-storage-placement.md)
-- [SPEC-0246 storage Task](../../0246-host-storage-tiering/tasks/tsk-0001-host-storage-tiering.md)
+- SPEC-0246 storage Task

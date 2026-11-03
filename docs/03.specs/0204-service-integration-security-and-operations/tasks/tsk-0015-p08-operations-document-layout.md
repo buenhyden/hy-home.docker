@@ -911,5 +911,5 @@ Remote push/PR/hosted CI is NOT_RUN unless actually executed in an adopted lane.
 - [P10 Task 0016 final QA receipt](tsk-0016-p10-opsflow-acceptance.md)
 - [Completed P00 Task](../../0212-request-baseline-and-reconciliation/tasks/tsk-0003-active-contract-and-exclusions.md)
 - [Operations documentation navigation](../../../05.operations/README.md)
-- [Stage05 refresh owner](../../0227-stage05-format-refresh/spec.md)
+- Stage05 refresh owner
 - [Request routing](../../0212-request-baseline-and-reconciliation/spec.md)
