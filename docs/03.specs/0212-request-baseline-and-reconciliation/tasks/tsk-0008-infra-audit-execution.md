@@ -532,7 +532,7 @@ The U1receipt SHA256 is
 F23summary SHA256 is
 `101145d4d913db740d6ae10b4bb7f69d5fe7678cab639152a8fb244ea2b1db26`.
 Their reviewed local durable retention index is
-`_workspace/repo-support/valkey-native-evidence/2026-10-27-f4698d1e/copy-index.json`, SHA256
+`_workspace/valkey-native-evidence/2026-10-27-f4698d1e/copy-index.json`, SHA256
 `3348145686719aa8a3404943acd2767546ce20e6c813661764f3ecc8e3a8c21f`.
 Its three fixed copies do not establish production source adoption. Baseline
 dedicated exporters retain application/admin authority until optional monitor
@@ -568,7 +568,7 @@ or unmodified-production/HOME/installation/owner-window acceptance is claimed.
 The parent verified all55working/committed inputs and HEAD stable after all
 three separate processes. Bao minimized evidence is retained in the exact seven-file
 plan-v2 copy set indexed at
-`_workspace/repo-support/openbao-native-evidence/2026-10-27-f4698d1e/index.json`, SHA256
+`_workspace/openbao-native-evidence/2026-10-27-f4698d1e/index.json`, SHA256
 `c74af01811bcf2df74d6aca18915c431967e849926d056969a677a405daa99d5`.
 All seven pre/post hashes, directory/file modes0700/0600 and exclusive/nofollow
 checks PASS; no raw, private or unlisted files were copied. This evidence index
