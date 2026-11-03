@@ -107,9 +107,14 @@ progress under the approved parents. Hosted CI has not run.
   removed from the Registry and the frontmatter schema (M3).
 - REQ-0026 (3.0.0) and AD-0030 (3.0.0) describe summarize-and-delete; REQ-0026
   retired its Tombstone namespace, immutable capture and one-capture-record
-  items. Proposed ADR-0051 supersedes ADR-0037 decision items 5 to 10, recorded in
-  prose on both sides because typed supersession would mark all of ADR-0037
-  superseded (I3, I4).
+  items. ADR-0051 supersedes ADR-0037 decision items 4 to 10 and the last
+  sentence of decision 1, recorded in prose on both sides because typed
+  supersession would mark all of ADR-0037 superseded (I3, I4, N2).
+- Every top-level identity space now records `reserved_history`, including
+  operations subjects, incidents, research, audits, data, migrations, and
+  Tombstones (N3). The dead `archive_disposition_model` switch is removed (m4).
+- Occupancy reads the tracked inventory with `git ls-files -z` and fails closed
+  when it cannot (m2).
 - The pre-commit `frozen_archive_payloads` anchor now names only the
   `completed/`, `superseded/` and `retired/` roots, matching the Registry
   after the `frozen-legacy-status` exception was removed.
@@ -179,9 +184,10 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 - SPEC-0204-TSK-0001 still carries `branch_integration_receipts`; the field is
   parsed but inert, and its schema entry can go with the completed Spec package
   phase.
-- ADR-0051 is `proposed`; accepting it is the owner's decision. ADR-0037
-  decision item 4 (Retention Catalog assessments) also depends on Stage 98 but
-  was outside the I4 scope of items 5 to 10.
+- The owner decided to accept ADR-0051, but the changed-document check rejects
+  a new ADR that does not enter as `proposed`; no Task event or CI override can
+  carry that transition. ADR-0051 therefore lands as `proposed` and moves to
+  `accepted` in the first change after it merges, as ADR-0050 did.
 - Review items M4 and M5 are recorded as open, as directed.
 - The archive-record metadata vocabulary in `metadata/profile.py` and the
   archive profiles stay as scheme definitions; remove them in the legacy and
@@ -203,6 +209,11 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 | E5 | 4 | W5 | gate-and-ci-routing | `tests/lib/gate` discovery, CI routing and CI gate plan under uv Python | FAIL | 283 tests: the gate evidence module needs `fcntl.F_ADD_SEALS`; two descendant-cleanup subtests under load; frozen payload agreement | required | - |
 | E6 | 4 | W5 | gate-evidence | `tests.lib.gate.test_ci_gate_evidence` with system python3 | PASS | 21 tests OK | required | - |
 | E7 | 4 | W5 | governance-unit-tests | the identity recovery subtest and Script Manifest tests after their fixes | PASS | all passed in a 60-test targeted rerun | required | E4 |
+| E8 | 4 | W5 | metadata-active | `check-document-metadata.py --mode check-active` | PASS | 497 selected, zero violations | required | - |
+| E9 | 4 | W5 | metadata-changed | `--mode check-changed --base-ref a879f2b64` | PASS | 355 selected, zero violations | required | - |
+| E10 | 2 | W1 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref a879f2b64` | PASS | zero violations; occupancy zero | required | - |
+| E11 | 4 | W5 | manifest-and-renderer | `check-script-manifest.py`; provider renderer `--check` | PASS | manifest valid; renderer drift 0 | required | - |
+| E12 | 4 | W5 | staged-precommit | `run-ci-precommit.sh --mode local-staged` before each commit | PASS | no failing hook after fixing two MD032 blank lines and formatting | required | - |
 | E13 | 4 | W5 | gate-and-ci-routing | frozen payload agreement and descendant cleanup after fixes, uv Python; gate evidence passes under system python3 in E6 | PASS | all passed in the same 60-test targeted rerun | required | E5 |
 | E14 | 3 | W3 | metadata-changed | review fix: ADR-0034, 0039, 0040, 0042, 0044 and AD-0030 no longer claim Stage 98 preservation; pre-commit ruff comment updated | PASS | check-changed base a879f2b64: 357 selected, zero violations | required | - |
 | E15 | 3 | W3 | document-links | alignment after the review fix | PASS | zero failures and warnings; corpus lifecycle and occupancy zero | required | - |
@@ -216,11 +227,18 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 | E23 | 3 | W3 | document-links | alignment | PASS | 954 documents, 8342 links, zero failures and warnings | required | - |
 | E24 | 4 | W5 | manifest-and-renderer | Script Manifest; provider renderer `--check` | PASS | manifest valid; drift 0 | required | - |
 | E25 | 4 | W5 | hosted-ci | GitHub Actions on the pushed head | NOT_RUN | not observed from this worktree | required | - |
-| E8 | 4 | W5 | metadata-active | `check-document-metadata.py --mode check-active` | PASS | 497 selected, zero violations | required | - |
-| E9 | 4 | W5 | metadata-changed | `--mode check-changed --base-ref a879f2b64` | PASS | 355 selected, zero violations | required | - |
-| E10 | 2 | W1 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref a879f2b64` | PASS | zero violations; occupancy zero | required | - |
-| E11 | 4 | W5 | manifest-and-renderer | `check-script-manifest.py`; provider renderer `--check` | PASS | manifest valid; renderer drift 0 | required | - |
-| E12 | 4 | W5 | staged-precommit | `run-ci-precommit.sh --mode local-staged` before each commit | PASS | no failing hook after fixing two MD032 blank lines and formatting | required | - |
+| E26 | 4 | W5 | governance-unit-tests | PR #723 re-review fixes, quiet tree: every `tests/lib/document_governance` module, `tests/validation/lifecycle`, Script Manifest | FAIL | spec packages 88 OK; links, operations catalog, metadata validator, generations 285 OK; registry, requirements, identity, architecture 181 OK; metadata, lifecycle, references, taxonomy, manifest 274 with 1 error from a bare REQ-0026 child identity in the narrowed FR-0003 | required | - |
+| E27 | 4 | W5 | governance-unit-tests | the metadata, lifecycle, references, taxonomy and manifest batch rerun in full after that fix | PASS | 274 tests OK | required | E26 |
+| E28 | 4 | W5 | gate-and-ci-routing | `tests/lib/gate` (includes workflow-contract tests), CI routing and CI gate plan under uv Python | FAIL | 283 tests: the gate evidence module needs `fcntl.F_ADD_SEALS` | required | - |
+| E29 | 4 | W5 | gate-and-ci-routing | `tests.lib.gate.test_ci_gate_evidence` with `/usr/bin/python3` | PASS | 21 tests OK | required | E28 |
+| E30 | 4 | W5 | metadata-changed | `check-changed --base-ref origin/main` with ADR-0051 `accepted` | FAIL | invalid-initial-status: a new ADR must start at proposed | required | - |
+| E31 | 4 | W5 | metadata-changed | `check-changed --base-ref origin/main` with ADR-0051 `proposed` | PASS | 372 selected, zero violations | required | E30 |
+| E32 | 4 | W5 | metadata-active | `check-active` | PASS | 497 selected, zero violations | required | - |
+| E33 | 2 | W1 | corpus-lifecycle | `--base-ref origin/main` | PASS | zero violations; occupancy zero | required | - |
+| E34 | 3 | W3 | document-links | alignment | PASS | 954 documents, 8343 links, zero failures and warnings | required | - |
+| E35 | 4 | W5 | manifest-and-renderer | Script Manifest; provider renderer `--check` | PASS | manifest valid; drift 0 | required | - |
+| E36 | 4 | W5 | staged-precommit | `run-ci-precommit.sh --mode local-staged` before each re-review commit | PASS | no failing hook | required | - |
+| E37 | 4 | W5 | hosted-ci | GitHub Actions on the new head | NOT_RUN | not observed from this worktree; the coordinator reported CI passing on 42809b561 | required | - |
 
 ## Criterion Acceptance
 
@@ -235,9 +253,10 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 
 Local checks are recorded above. The coordinator approved the test deletions
 and repointing listed in Test changes. Independent review of PR #723 requested
-changes (I1 to I6, M1 to M6); they are addressed in this branch, with M4 and M5
-recorded as open. Hosted CI has not been observed, and no criterion is accepted
-yet.
+changes (I1 to I6, M1 to M6), and its re-review requested N1 to N4 and m1 to m6;
+all are addressed in this branch, with M4 and M5 recorded as open and ADR-0051
+acceptance deferred to the change after merge. Hosted CI for the new head has
+not been observed, and no criterion is accepted yet.
 
 ## Related Documents
 
