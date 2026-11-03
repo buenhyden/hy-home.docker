@@ -322,11 +322,9 @@ list 안의 등록된 angle-bracket 토큰을 재귀적으로 탐지하며, 날�
 값을 드러내지 않고 정규화합니다.
 
 `scripts/validation/check-document-corpus-lifecycle.py`는 lifecycle 전용
-companion입니다. 등록된 게이트에서 도달할 수 있는 모드는
-정확히 네 개입니다: `--mode check-public`, `--mode check-contract`,
-`--mode check-promoted`, 그리고 모든 tombstone의 `commit:path`가 정상적인 Git
-blob으로 해석되는지 다시 증명하는 `--mode check-recovery`입니다. 그 외의
-`--mode` 값은 argparse 오류입니다. parser, contract, Git, path, redaction,
+companion입니다. mode 없이 한 경로만 실행하며 Spec Package lifecycle 결과와
+active stage 점유 결과를 함께 보고합니다. Stage 98 기록은 검증하지 않습니다.
+`--mode` 인자는 없으며 argparse 오류가 됩니다. parser, contract, Git, path, redaction,
 내부 안전성 실패는 여전히 fail-closed로 처리됩니다. 집중 인벤토리는
 `python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py' -v`로
 실행합니다. 실행 가능한 테스트 인벤토리는 `tests/validation/lifecycle/` 아래

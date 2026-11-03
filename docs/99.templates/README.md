@@ -170,8 +170,10 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
   `scripts/lib/document_governance/references.py`가 그 분류를 실행합니다.
 - Tombstone은 `identity_relation: inherited`를 사용합니다: `artifact_id`는
   `tomb-{retired_artifact_id}`입니다. 네 자리 파일명은 Registry의
-  `tombstone` space에서 별도의 단조 증가 발급을 사용합니다. Stage 98 기록은
-  어떤 gate도 검증하지 않으므로 이 규칙은 작성·검토 기준입니다.
+  `tombstone` space에서 별도의 단조 증가 발급을 사용하며, identity 발급 검사가
+  Stage 98 경로의 Tombstone·Migration ID도 발급된 번호로 세므로 `high_water`
+  규칙은 그대로 적용됩니다. Tombstone 본문 계약은 어떤 gate도 검증하지 않는
+  작성·검토 기준입니다.
 - Incident 번호는 연도 partition마다 다시 시작하므로, 연도는 경로뿐
   아니라 identity에도 속합니다.
 - 안정적인 package ID는 등록된 접두사와 대소문자를 유지합니다.

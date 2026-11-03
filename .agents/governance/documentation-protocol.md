@@ -150,9 +150,9 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
     `# doc-paths: illustrative`, so the exemption is visible to the reader
     instead of hidden in a predicate. `leaf.docs-traceability` enforces this
     through the `commands` mode of `check-document-links.py`. Operator-created
-    files under `secrets/` and preserved bodies under `docs/98.archive/` are
-    outside the check: the first are untracked by design and the second are
-    supposed to name what the tree has since dropped.
+    files under `secrets/` and everything under `docs/98.archive/` are outside
+    the check: the first are untracked by design and Stage 98 is history that
+    no gate validates.
 
 #### Document language
 
@@ -355,8 +355,8 @@ record that names it.
 | `tombstones/` | Nothing | The retired route, its successor or absence, and the reason | no |
 | `migrations/` | Nothing | The moved scope and its current owner, as `MIG-####` | no |
 
-Citability is the repository's explicit use policy, enforced by the Registry's
-ordered rules; a directory name alone does not establish authority. Captured
+Citability is the repository's explicit use policy and a review rule, not an
+automated check; a directory name alone does not establish authority. Captured
 completion or incident resolution remains historical evidence. Current rules
 cite their current owner.
 
@@ -410,7 +410,8 @@ historical record valid at its original revision, but missing, mismatched, or
 revoked current authorization blocks a pending or new removal. Automatic
 authentication and revocation enforcement are unsupported unless separately
 observed through a native provider capability. Partial deletion, renaming,
-rewriting, and deletion of the capture row are rejected. Keep the catalog and
+rewriting, and deletion of the capture row are not permitted; review, not a
+gate, enforces this. Keep the catalog and
 capture envelope and route discovery to them, not a missing payload. Restoration
 is a separately explained recovery into a current owner, not silent resurrection
 of frozen authority.
@@ -485,8 +486,9 @@ investigate, not permission to delete.
 Record the authoring obligations and consumer cutover in the current Task's
 promotion receipt. A withdrawal's Retention Catalog row carries the withdrawal
 reason, and a sealed Tombstone that already carries it in `Reason` keeps it.
-Verification compares each unit against the single source commit/path in its
-capture envelope. Captures already present at cutover
+No gate compares a unit against its capture envelope; the rules below describe
+what a reviewer checks against the single source commit/path in it. Captures
+already present at cutover
 `be949f338056ee05ca139ea72403576aa18f21d8` retain their legacy comparison:
 member set, Git modes, body bytes, and only the registered lifecycle-field
 allowances. Older rows without provable identity remain explicit verification
@@ -497,8 +499,8 @@ frontmatter. Prepare closure, promotion, and links at the original path before
 freezing; without an authorized commit boundary, report the prepared result
 rather than inventing a source commit. Never reformat legacy bodies or envelopes.
 
-Validate the selected worktree, index, or commit explicitly. Retained-unit
-history detects deletion of both a unit and its catalog row. A recorded SHA is
+A reviewer states the worktree, index, or commit examined. No automated check
+detects deletion of a retained unit and its catalog row. A recorded SHA is
 not reachability: missing history or objects is an unverifiable result, not
 success. Raw object identity and checkout representation are separate checks;
 attributes, encoding, and line-ending conversions can change the latter. Report
