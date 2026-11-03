@@ -47,10 +47,11 @@ scoped operation after recoverability and consumer checks.
 2026-10-13, replaces decision 1 except its last sentence, and the
 completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
 the completed Spec's PASS receipt, and that completion receipts are checked
-before moving. [ADR-0051](0051-summarize-and-delete-retirement.md), whose
-acceptance the owner decided on 2026-11-03, replaces decision items 4 to 10 and
-the last sentence of decision 1.
-Decisions 1 (otherwise), 2, and 3 stay in force.
+before moving. [ADR-0051](0051-summarize-and-delete-retirement.md), pending its
+acceptance (decided by the owner on 2026-11-03), supersedes decision items 4 to
+10 and the last sentence of decision 1. Decision 1 is therefore fully replaced
+by ADR-0048 and ADR-0051; decisions 2 and 3 stay in force except their
+completion-receipt clauses.
 
 ## Decision Drivers
 
@@ -150,11 +151,12 @@ Decisions 1 (otherwise), 2, and 3 stay in force.
 
 ### Traceability
 
-- **Partially superseded**: decision items 4 to 10 and the last sentence of
-  decision 1 are superseded by
-  [ADR-0051](0051-summarize-and-delete-retirement.md), because Stage 98 holds no
-  records and retirement summarizes then deletes. Decisions 1 (otherwise), 2,
-  and 3 remain this decision. The decision body above is kept as accepted.
+- **Partially superseded**: pending acceptance of
+  [ADR-0051](0051-summarize-and-delete-retirement.md), it supersedes decision
+  items 4 to 10 and the last sentence of decision 1, because Stage 98 holds no
+  records and retirement summarizes then deletes. With ADR-0048, decision 1 is
+  fully replaced; decisions 2 and 3 remain this decision except their
+  completion-receipt clauses. The decision body above is kept as accepted.
 
 - [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)

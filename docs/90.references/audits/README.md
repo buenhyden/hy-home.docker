@@ -1,6 +1,6 @@
 ---
 title: "Audit Packages"
-version: "2.0.2"
+version: "2.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -21,7 +21,7 @@ Stage 90 authority boundary와 package lifecycle 규칙은
 
 ## Scope
 
-이 README는 현재 audit package 경로와 보존된 audit route를 안내합니다. 평가의
+이 README는 현재 audit package 경로와 은퇴한 package의 번호 기록을 안내합니다. 평가의
 finding과 후속 조치는 해당 package 또는 이를 소유하는 Stage 03 Task에 남습니다.
 
 SPEC-0158이 이 범주를 은퇴시켰습니다. 현재 tree가 Stage 90 package 집합을

@@ -70,9 +70,10 @@ preservation model has no records left to govern.
 
 This decision supersedes ADR-0037 decision items 4 to 10 and the last sentence
 of its decision 1 ("Whole-package disposition still requires approval and
-preserves every member"). ADR-0037 items 1 (except that sentence), 2, and 3,
-covering package waiting, Task cancellation, and terminality, are not changed
-by this record.
+preserves every member"). ADR-0048 already replaced the rest of decision 1,
+so decision 1 is fully replaced. ADR-0037 decisions 2 and 3, covering Task
+cancellation and terminality, are not changed by this record; ADR-0048 already
+replaced their completion-receipt clauses.
 
 ## Consequences
 

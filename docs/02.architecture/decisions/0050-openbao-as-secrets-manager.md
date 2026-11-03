@@ -58,7 +58,8 @@ implementation of consumer secret rendering.
 ## Consequences
 
 This record supersedes ADR-0003 and ADR-0018. The owner accepted it on
-2026-10-29, and both move to the superseded archive. The Vault-era
+2026-10-29. Both were later deleted; their numbers are reserved in the Registry
+and their bodies are in version history. The Vault-era
 auto-unseal and remote-audit deferral recorded in ADR-0018 was never decided
 and is not carried here; ADR-0042 owns the seal question. This record changes
 no runtime behavior and claims no data migration, recovery or deployment result.

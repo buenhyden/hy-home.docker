@@ -91,8 +91,8 @@ Adopt the following location model after an independent design review.
   grant execution approval to access operational input.
 - Detailed Requirement, Architecture, Spec/Plan/Task, and Operations documents
   stay in the existing docs. Stage 90 is non-authoritative evidence. Stage 98
-  was the preserved record per ADR-0031; under ADR-0051 it holds no records,
-  and version history keeps removed bodies.
+  was the preserved record per ADR-0031; it now holds no records (ADR-0051,
+  pending acceptance), and version history keeps removed bodies.
 - Remove the old common directory from current reading, generation, linking,
   and fallback targets. Old paths in frozen records and regression-test
   strings are classified as history/negative examples.

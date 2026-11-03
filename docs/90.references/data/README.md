@@ -1,6 +1,6 @@
 ---
 title: "Data Packages"
-version: "2.1.1"
+version: "2.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -21,7 +21,7 @@ Stage 90 authority boundary와 package lifecycle 규칙은
 
 ## Scope
 
-이 README는 현재 data package 경로와 보존된 data route를 안내합니다. dataset의
+이 README는 현재 data package 경로와 은퇴한 package의 번호 기록을 안내합니다. dataset의
 사실과 consumer 관계는 해당 package와 canonical consumer가 소유합니다.
 
 현재 tree가 package 집합을 정의합니다: package는 README가 존재하고 자신의
