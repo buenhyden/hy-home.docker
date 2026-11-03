@@ -52,9 +52,9 @@ absent incoming links cannot by themselves authorize deletion.
 - [ADR-0037 Package waiting and Task cancellation](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
 - ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
-- REQ-0026-FR-0008, FR-0012, and NFR-0007 were retired by SPEC-0249: they
-  required a Tombstone namespace, immutable Stage 98 captures, and one capture
-  record per unit, and Stage 98 no longer holds records.
+- SPEC-0249 retired three earlier items, whose numbers stay reserved in the
+  Registry: a Tombstone namespace rule, immutable Stage 98 captures, and one
+  capture record per unit. Stage 98 no longer holds records.
 
 ## Requirements
 
