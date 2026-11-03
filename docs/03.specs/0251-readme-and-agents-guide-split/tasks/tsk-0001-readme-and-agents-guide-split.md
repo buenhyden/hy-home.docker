@@ -177,6 +177,10 @@ progress under the approved parents. Hosted CI has not run.
 | E22 | 2 | W3 | labeler-governance-glob | `.github/labeler.yml` `area/governance` glob `AGENTS.md` to `**/AGENTS.md`, user-approved 2026-11-04, revision fe917496f | PASS | CI routing 84 tests OK; GitHub workflow contract PASS; staged yamllint passed | required | - |
 | E23 | 4 | W4 | independent-review | review 1 of the branch, commits through dff9ddf53 | FAIL | changes requested: I1 to I5 and M1 to M14, no Critical; resolved by the review-fix commits bb0a9da3e to 95ad5ab2b and recorded in Decisions | required | - |
 | E24 | 4 | W4 | independent-review | re-review 2 of PR #728 at c37ff4e11 | FAIL | changes requested: N1 to N3, Minor N4 to N7; resolved in this change (SHA map, evidence rerun, Registry result pointer, README audience cleanup, open issues) and awaiting re-review | required | - |
+| E25 | 2, 3 | W3 | document-entrypoint | `entrypoint` and `commands` modes, revision fd8de6704, compared with main cb7c324d3 | FAIL | 9 entrypoint and 2 commands findings, identical on main cb7c324d3; pre-existing baseline debt, not caused by this change | required | - |
+| E26 | 4 | W2 | governance-unit-tests | `tests/lib/document_governance` discovery, revision fd8de6704, quiet tree | PASS | 768 tests OK | required | - |
+| E27 | 4 | W4 | review-fix-gates | revision fd8de6704: metadata check-changed and check-active, corpus lifecycle, links alignment/navigation/language/traceability, Script Manifest, renderer `--check`, agent governance contract | PASS | 72 and 497 selected with zero violations; lifecycle and occupancy zero; renderer drift 0; contract zero failures | required | - |
+| E28 | 4 | W4 | validation-suites | CI routing and surface ownership, revision fd8de6704 | PASS | 92 tests OK | required | - |
 
 ## Criterion Acceptance
 
