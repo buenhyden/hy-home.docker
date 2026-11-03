@@ -233,7 +233,7 @@ P12 최종 인수로 옮기지 않는다. P03의 전역 CI admission 잔여도 �
 보존한다. 최신성 조회가 미완료이면 해당 gate는 `exit 2`/`ledger_complete: false`로
 남는다. Valkey 9.1.3과 n8n 2.45.7은 개별 source/격리/복원 증거가 필요한 후보이며,
 sample/base/GHCR artifact 증거를 Docker Hub 또는 custom artifact의 공급망 PASS로
-전이하지 않는다. Storybook 10.6.3 clean-lock 결과는 별도 Task에 기록하며 실제
+전이하지 않는다. Storybook 10.6.3 clean-lock 결과는 별도 Task에 기록하며 실제 <!-- runtime-version-exception: history — dated clean-lock observation; the Task is the evidence authority, not a runtime selection. -->
 runtime·원격 인증·외부 audit은 이 패키지의 목록으로 승격하지 않는다.
 
 P08 원장은 2026-11-02T22:15:52Z부터 22:16:20Z까지 61개 공개 릴리스 URL을
@@ -257,8 +257,8 @@ image, native 기능, 호환·복원·배포 또는 운영 수용으로 전이�
 서비스 런타임 pin이나 이미지 선택 근거가 아니다. 고정 Cosign 3.1.3에서 n8n signature/SLSA와 runners CycloneDX/OpenVEX은
 각각 exit 0이었지만, payload는 `/dev/null`로 처리하고 원시 영수증은 보관하지 않았다.
 정확한 시간·digest·identity는 P08 Task와 원장에 결속한다. Valkey amd64는 고정 Syft
-1.54.1로 로컬 CycloneDX 1.7 SBOM(Alpine 3.24.3, 716 components)을 생성했을 뿐
-publisher attestation이 아니다. Grype offline DB 부재(exit 1)로 취약점 scan은
+1.54.1로 로컬 CycloneDX 1.7 SBOM(Alpine 3.24.3, 716 components)을 생성했을 뿐 <!-- runtime-version-exception: history — dated local SBOM-tool observation; it is not a runtime pin or publisher attestation. -->
+publisher attestation이 아니다. 현재 runtime source는 [기술 버전 정본](../../../../infra/tech-stack.versions.json)에 남는다. Grype offline DB 부재(exit 1)로 취약점 scan은
 `BLOCKED`/`NOT_RUN`이며, 네트워크 DB 다운로드는 하지 않았다.
 
 [P09 역할·자원·퇴역 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md)는
