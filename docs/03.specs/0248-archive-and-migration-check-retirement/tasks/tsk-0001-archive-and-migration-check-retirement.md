@@ -140,6 +140,7 @@ templates under `docs/99.templates/templates/archive/`.
 | E10 | 4 | W5 | script-manifest | worktree before new files were staged | FAIL | three path-untracked and tests-untracked failures for the new occupancy module and tests | required | - |
 | E11 | 4 | W5 | script-manifest | after the code commit staged the new files | PASS | script manifest is valid | required | E10 |
 | E12 | 4 | W5 | staged-precommit | `run-ci-precommit.sh --mode local-staged` before each commit | PASS | no failing hook | required | - |
+| E13 | 4 | W5 | post-rebase-checks | branch rebased onto origin/main 355e8caa1 (PR #720 merged) | PASS | metadata check-changed selected 8 zero violations; corpus lifecycle and occupancy zero; link alignment, Script Manifest PASS; 415 surface, manifest, workflow-contract, CI gate plan, lifecycle, archive reader, operations catalog and Spec package tests OK | required | - |
 
 ## Criterion Acceptance
 
