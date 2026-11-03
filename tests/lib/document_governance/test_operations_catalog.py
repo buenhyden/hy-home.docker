@@ -3314,5 +3314,15 @@ implementation_services:
         self.assertIn("service-guide-source", self._codes(root))
 
 
+class CurrentOwnerLookupTests(unittest.TestCase):
+    def test_an_unavailable_owner_inventory_is_a_value_error(self) -> None:
+        failure = subprocess.CalledProcessError(128, ["ls-files"])
+        with mock.patch.object(
+            operations_catalog.subprocess, "run", side_effect=failure
+        ):
+            with self.assertRaises(ValueError):
+                operations_catalog._current_owner(ROOT, "SPEC-0248")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -426,21 +426,15 @@ def _validate_repository_contracts(
                     )
                 )
         spec_root = root / "docs/03.specs"
-        spec_package_authority = (
-            root
-            / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-        )
-        if spec_package_authority.is_file():
+        # Current Stage 03 alone decides whether Spec Package validation runs;
+        # no Stage 98 record gates it (SPEC-0248).
+        if spec_root.exists() or spec_root.is_symlink():
             try:
                 historical_context = HistoricalSpecSnapshotContext()
-                spec_packages = (
-                    load_spec_packages(
-                        spec_root,
-                        registry=active_registry,
-                        _historical_context=historical_context,
-                    )
-                    if spec_root.exists() or spec_root.is_symlink()
-                    else ()
+                spec_packages = load_spec_packages(
+                    spec_root,
+                    registry=active_registry,
+                    _historical_context=historical_context,
                 )
                 spec_lifecycle = validate_repository_spec_package_lifecycle_details(
                     root,

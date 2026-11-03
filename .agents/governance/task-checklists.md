@@ -65,7 +65,7 @@ No exception is granted here; a separately authorized operation follows [Approva
       removal. A missing, mismatched, or revoked current source blocks the
       operation. No gate validates Stage 98 records, so this check is a review
       step, not an automated one.
-- [ ] Distinguish worktree, index, commit, and historical-link checks, and report
+- [ ] Distinguish the worktree, index, and commit a review examined, and report
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.
 

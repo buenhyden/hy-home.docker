@@ -1539,6 +1539,7 @@
           "docs/02.architecture/",
           "docs/03.specs/",
           "docs/90.references/",
+          "docs/98.archive/",
           "docs/99.templates/"
         ],
         "suites": [

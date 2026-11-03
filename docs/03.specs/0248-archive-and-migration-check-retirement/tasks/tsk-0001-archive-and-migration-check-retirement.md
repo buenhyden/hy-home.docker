@@ -72,8 +72,12 @@ progress under the approved parents. Hosted CI has not run.
   the archive provenance check on manifest archive targets.
 - Tests and gates: the archive, assessment, catalog, snapshot, recovery and
   promoted suites, archive-only cases in the link, reference, lifecycle and
-  validator suites, their workflow-contract selectors, and `docs/98.archive/`
-  in the document suite path trigger.
+  validator suites, and their workflow-contract selectors. The first change
+  also removed `docs/98.archive/` from the document suite path trigger; review
+  restored it (see the Kept list).
+- Lifecycle contract: the `check-promoted` and `check-recovery` mode names and
+  the archive, promoted-manifest and archived-blob finding codes that nothing
+  can emit any more.
 - Legacy: the code-based legacy deficit allowance
   (`missing-required-key`, `replacement-free-supersession`, `stale-active`
   with `MIGRATION_TYPED_KEYS` and `APPROVED_MIGRATION_PATHS`), whose inventory
@@ -86,13 +90,23 @@ progress under the approved parents. Hosted CI has not run.
   `lifecycle/occupancy.py` and still run from the corpus lifecycle route.
 - The incident corrective-owner lookup moved into `operations_catalog.py`.
 - `spec_packages._recorded_retirements` now uses
-  `archive.recorded_retired_paths`, a lenient reader that grants no exemption
-  for a record it cannot parse.
+  `archive.recorded_retired_paths`, and the Stage 01 gap reader uses the same
+  `archive.sealed_tombstone` contract: `type: archive/tombstone`,
+  `status: sealed`, a safe retired path and a recovery commit OID. A retired
+  path also needs a blob proof at that commit. A record failing the contract
+  grants no exemption.
+- The Spec Package contract no longer depends on the 0003 ledger existing.
+- `docs/98.archive/` stays in the document suite path trigger, so an
+  archive-only change still runs the current checks that read Stage 98.
 
 ### Remaining Stage 98 readers
 
-Each reader below is read-only and raises no archive finding. The next phase,
-which removes the Stage 98 bodies, must replace or drop each one first.
+Each reader below is read-only. The next phase, which removes the Stage 98
+bodies, must replace or drop each one first. Three of them deliberately stay
+fail-closed on a malformed record until then: the 0003 ledger verifier behind
+`build_current_manifest`, `architecture.load_preserved_architecture_documents`,
+and `spec_packages._load_preserved_spec_packages`. An edit to those records can
+therefore still fail a current check.
 
 | Reader | Files read | Used by | Replacement before body removal |
 | --- | --- | --- | --- |
@@ -100,9 +114,8 @@ which removes the Stage 98 bodies, must replace or drop each one first.
 | `metadata/lifecycle._task5_move_body_sources` and `_task5_moved_body_baseline` | `migrations/0001-sdlc-taxonomy-convergence.md` | changed-body baseline for documents moved by mig-0001 | drop; every mig-0001 move is long merged |
 | `archive_migration_0003._migration_document` | `migrations/0003-workspace-governance-simplification.md`, `retired/90.references/data/0067-foundation/data.yaml` | `metadata/profile.build_current_manifest` keeps retired SPEC IDs resolvable | inline the retired SPEC ID map into a tracked Stage 99 input |
 | `archive_migration_0003._approved_migration_document` | the 0003 ledger at its approved commit | `identity_history` rename rows and high-water bootstrap | read the ledger from Git history only, or inline the rows |
-| `metadata/reference.py` Spec lifecycle gate | existence of `migrations/0003-workspace-governance-simplification.md` | enables Spec Package lifecycle validation | remove the existence condition; otherwise lifecycle validation silently stops |
-| `archive.recorded_retired_paths` | `tombstones/*/*.md`, `retention-catalog.md`, `retired/` | `spec_packages._recorded_retirements` | record retired Stage 03 paths in a tracked input, or drop the exemption |
-| `requirements._tombstoned_requirement_ids` | `tombstones/01.requirements/` | Stage 01 numbering gaps | move the gap list to the Registry `reserved_history` |
+| `archive.recorded_retired_paths` (sealed contract and blob proof) | `tombstones/*/*.md`, `retention-catalog.md`, `retired/` | `spec_packages._recorded_retirements` | record retired Stage 03 paths in a tracked input, or drop the exemption |
+| `requirements._tombstoned_requirement_ids` (sealed contract) | `tombstones/01.requirements/` | Stage 01 numbering gaps | move the gap list to the Registry `reserved_history` |
 | `spec_packages._load_preserved_spec_packages("completed")` | `completed/03.specs/` | branch-integration receipts | drop or read from Git history |
 | `requirement_recovery` | `completed/03.specs/0180-home-dev-convergence/tasks/` | requirement allocation recovery | inline the recovered decisions |
 | `architecture.load_preserved_architecture_documents` | `superseded/02.architecture/` | ADR supersession predecessors | resolve predecessors from Git history or the Registry |
@@ -114,6 +127,15 @@ structure and scheme stay defined by `docs/98.archive/README.md`, the Registry
 `common.archive_retention` block, `archive_disposition_model`, the `migration`,
 `tombstone`, `archive-retention-catalog` and `archive-record-*` profiles, and the
 templates under `docs/99.templates/templates/archive/`.
+
+### Forward dependencies for the archive-file deletion phase
+
+- M3: removing `active-archive-link` lets a current document add a new link
+  into Stage 98. Those links become broken targets when the bodies go; repoint
+  or remove them in that phase.
+- M4: Stage 98 records are no longer validated, but they still feed
+  `build_current_manifest`, so their identities remain available to parent
+  resolution of current records. Replace that input before the bodies go.
 
 ### Legacy and deprecated backlog
 
@@ -141,6 +163,15 @@ templates under `docs/99.templates/templates/archive/`.
 | E11 | 4 | W5 | script-manifest | after the code commit staged the new files | PASS | script manifest is valid | required | E10 |
 | E12 | 4 | W5 | staged-precommit | `run-ci-precommit.sh --mode local-staged` before each commit | PASS | no failing hook | required | - |
 | E13 | 4 | W5 | post-rebase-checks | branch rebased onto origin/main 355e8caa1 (PR #720 merged) | PASS | metadata check-changed selected 8 zero violations; corpus lifecycle and occupancy zero; link alignment, Script Manifest PASS; 415 surface, manifest, workflow-contract, CI gate plan, lifecycle, archive reader, operations catalog and Spec package tests OK | required | - |
+| E14 | 4 | W5 | gate-and-manifest-tests | the E5 selector named `tests.lib.gate.test_p03_workflow_contract`, which exists only after PR #720; reran after the rebase onto 355e8caa1 | PASS | the module loads and passes in E13 and E16 | required | E5 |
+| E15 | 1, 2 | W2 | governance-library-leaf | all 16 modules of `leaf.document-governance-library-regressions` after the review fixes for I2 and M1 | PASS | 633 tests OK | required | - |
+| E16 | 4 | W5 | lifecycle-metadata-gate-suites | lifecycle (4 modules), metadata reference, lifecycle, heading and profile, surface ownership, Script Manifest, workflow contracts (github, p03, p11), CI gate plan, CI routing and validator entrypoints after I1 | FAIL | 416 tests: 4 OpenAPI fixture failures, because Spec Package validation now ran in fixtures with no Stage 03 or Registry history | required | - |
+| E17 | 4 | W5 | lifecycle-metadata-gate-suites | metadata reference, github workflow contract, CI gate plan and surface ownership after gating Spec validation on current Stage 03 | PASS | 138 tests OK | required | E16 |
+| E18 | 4 | W5 | gate-evidence | `tests.lib.gate.test_ci_gate_evidence` with system python3, because the uv Python lacks `fcntl.F_ADD_SEALS` | PASS | 21 tests OK | required | - |
+| E19 | 1 | W3 | document-commands | links `commands` mode after the archive module removal | FAIL | 8 failures: 6 in completed SPEC-0209-TSK-0001 naming removed archive modules, and 2 for ignored `_workspace` files absent from this worktree | required | - |
+| E20 | 1 | W3 | document-commands | after exempting terminal Task bodies; links, owner lookup and lifecycle contract tests | PASS | 105 tests OK; commands mode down to the 2 `_workspace` findings from PR #720, which depend on ignored local files and are not caused by this change | required | E19 |
+| E21 | 1, 2 | W2 | corpus-lifecycle-and-links | after the review fixes | PASS | corpus lifecycle zero; occupancy zero; link alignment PASS; Script Manifest PASS | required | - |
+| E22 | 4 | W5 | metadata-changed | final tree after the review fixes, base origin/main 355e8caa1 | PASS | selected 8, zero violations, zero legacy exceptions | required | - |
 
 ## Criterion Acceptance
 
@@ -153,8 +184,10 @@ templates under `docs/99.templates/templates/archive/`.
 
 ## Review and Completion
 
-Local checks are recorded above. Independent review and hosted CI have not
-run, and no criterion is accepted yet.
+Local checks are recorded above. Independent review of PR #721 requested
+changes (I1–I6, M1–M5); they are addressed in this branch and recorded in the
+Evidence table, with M3 and M4 kept as forward dependencies. Hosted CI for the
+corrected head has not run, and no criterion is accepted yet.
 
 ## Related Documents
 

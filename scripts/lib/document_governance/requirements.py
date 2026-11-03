@@ -12,7 +12,6 @@ import stat
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
-    read_frontmatter_values,
 )
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
@@ -758,17 +757,19 @@ def _tombstoned_requirement_ids(
         if tombstone_root is not None
         else pathlib.Path(stage_root).parent.parent / _REQUIREMENT_TOMBSTONES
     )
+    from scripts.lib.document_governance.archive import sealed_tombstone
+
     if not root.is_dir():
         return frozenset()
     retired: set[str] = set()
     for entry in sorted(root.iterdir()):
-        if entry.is_symlink() or not entry.is_file() or entry.suffix != ".md":
+        if entry.suffix != ".md":
             continue
-        try:
-            values = read_frontmatter_values(entry)
-        except (OSError, UnicodeError, FrontmatterError):
+        # Only a Tombstone that meets the minimal sealed contract explains a gap.
+        record = sealed_tombstone(entry)
+        if record is None:
             continue
-        artifact_id = values.get("artifact_id")
+        artifact_id = record[0].get("artifact_id")
         if isinstance(artifact_id, str) and artifact_id.startswith("tomb-REQ-"):
             retired.add(artifact_id.removeprefix("tomb-"))
     return frozenset(retired)
