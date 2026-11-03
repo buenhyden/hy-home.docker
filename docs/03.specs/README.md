@@ -81,8 +81,9 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0246 | [호스트 저장소 계층화](./0246-host-storage-tiering/) | Docker 저장소 종류별 SSD·HDD 배치 정책: containerd 이미지 저장소는 HDD, Ollama 모델은 SSD, 빌드 캐시 한도와 미사용 이미지의 registry 보관 |
 | SPEC-0247 | [Hermes 후보 오프라인 검증](./0247-offline-hermes-candidate-validator/) | 후보 JSON의 식별자·상태·출처 해시·비공개 차단 경계를 로컬에서 검사하고 게시 승인과 분리 |
 | SPEC-0248 | [Archive·migration 검사 폐기](./0248-archive-and-migration-check-retirement/) | Stage 98 기록과 migration ledger를 검증하던 gate를 삭제하고 현재 검사가 쓰는 읽기 전용 loader와 legacy 허용만 남겨 목록으로 관리 |
+| SPEC-0249 | [Stage 98 archive 삭제](./0249-stage98-archive-deletion/) | Stage 98 기록을 01·02 문서에 요약하고 삭제하며, 폐기 번호를 Registry `reserved_history`로 옮기고 archive를 읽던 검사를 제거 |
 
-처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
+처분된 package는 Stage 98 README에서 찾습니다.
 package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
 규칙대로 읽을 때 계산하며 표나 frontmatter에 적지 않습니다. 새 lifecycle
 상태도, 처분 승인도 아닙니다.
