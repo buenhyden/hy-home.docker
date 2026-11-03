@@ -9,7 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE_PATH = ROOT / "scripts/validation/check-p11-hermes.py"
@@ -204,6 +204,88 @@ class P11HermesGateTests(unittest.TestCase):
 
     def test_rejects_arguments_without_running_tests(self) -> None:
         self.assertEqual(2, self.module.main(["unexpected"]))
+
+    def test_reads_exact_pins_from_the_workload_lock(self) -> None:
+        pins = self.module.locked_requirements()
+
+        self.assertIn("cryptography", pins)
+        self.assertTrue(all(version[0].isdigit() for version in pins.values()))
+
+    def test_locked_versions_must_all_match_to_run_in_process(self) -> None:
+        pins = {"cryptography": "46.0.7", "cffi": "2.1.1"}
+        installed = {"cryptography": "46.0.7", "cffi": "2.1.1"}
+
+        self.assertTrue(
+            self.module.locked_requirements_present(pins, version=installed.__getitem__)
+        )
+        installed["cffi"] = "2.0.0"
+        self.assertFalse(
+            self.module.locked_requirements_present(pins, version=installed.__getitem__)
+        )
+
+        def missing(_name: str) -> str:
+            raise self.module.importlib.metadata.PackageNotFoundError
+
+        self.assertFalse(self.module.locked_requirements_present(pins, version=missing))
+
+    def test_workload_environment_installs_only_the_hashed_lock_then_reruns(
+        self,
+    ) -> None:
+        calls: list[tuple[list[str], dict]] = []
+        controller_sites: list[str] = []
+
+        def runner(argv, **kwargs):
+            calls.append((list(argv), kwargs))
+            if len(calls) == 3:  # the child: the .pth must already exist
+                venv = pathlib.Path(argv[0]).parents[1]
+                (pth,) = venv.glob("lib/python*/site-packages/*.pth")
+                controller_sites.extend(pth.read_text().split())
+            return subprocess.CompletedProcess(argv, 0, "", "")
+
+        self.assertEqual(
+            0,
+            self.module.run_in_workload_environment(
+                runner=runner, stream=io.StringIO()
+            ),
+        )
+        (create, _), (install, _), (child, child_kwargs) = calls
+        self.assertEqual([sys.executable, "-m", "venv"], create[:3])
+        venv_python = str(pathlib.Path(create[3]) / "bin/python")
+        self.assertEqual(venv_python, install[0])
+        self.assertIn("--require-hashes", install)
+        self.assertIn("--no-deps", install)
+        self.assertIn("--only-binary=:all:", install)
+        self.assertEqual(str(self.module.HERMES_LOCK), install[-1])
+        self.assertEqual([venv_python, str(MODULE_PATH)], child)
+        self.assertEqual("1", child_kwargs["env"][self.module.CHILD_MARKER])
+        # The controller's packages stay importable after the locked ones.
+        self.assertEqual(self.module.controller_site_paths(), controller_sites)
+
+    def test_failed_workload_install_stops_before_running_tests(self) -> None:
+        calls: list[list[str]] = []
+
+        def runner(argv, **_kwargs):
+            calls.append(list(argv))
+            code = 1 if "install" in argv else 0
+            return subprocess.CompletedProcess(argv, code, "", "")
+
+        stream = io.StringIO()
+        self.assertEqual(
+            1, self.module.run_in_workload_environment(runner=runner, stream=stream)
+        )
+        self.assertEqual(2, len(calls))
+        self.assertIn("install failed", stream.getvalue())
+
+    def test_child_without_the_locked_versions_fails_closed(self) -> None:
+        with (
+            patch.dict(self.module.os.environ, {self.module.CHILD_MARKER: "1"}),
+            patch.object(
+                self.module, "locked_requirements_present", return_value=False
+            ),
+            patch.object(self.module, "run_in_workload_environment") as bootstrap,
+        ):
+            self.assertEqual(1, self.module.main([]))
+        bootstrap.assert_not_called()
 
     def test_rejects_a_missing_test_directory(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
