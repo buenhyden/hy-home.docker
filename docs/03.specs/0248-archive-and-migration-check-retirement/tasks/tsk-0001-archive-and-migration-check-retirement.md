@@ -173,6 +173,8 @@ templates under `docs/99.templates/templates/archive/`.
 | E21 | 1, 2 | W2 | corpus-lifecycle-and-links | after the review fixes | PASS | corpus lifecycle zero; occupancy zero; link alignment PASS; Script Manifest PASS | required | - |
 | E22 | 4 | W5 | metadata-changed | final tree after the review fixes, base origin/main 355e8caa1 | PASS | selected 8, zero violations, zero legacy exceptions | required | - |
 | E23 | 4 | W5 | hosted-ci | CI Quality Gates run 41595209280 on head a879f2b64 | PASS | candidate-quality success; main-security skipped by its trigger | required | - |
+| E24 | 4 | W5 | full-suite-comparison | `tests/lib` and `tests/validation` discovery on a879f2b64 against main ec8555d09, system python3 | FAIL | lib 1053 tests, validation 2179; every failure also fails on main (15 secret metadata sync, 1 SMTP, 3 loader errors, 1 identity history) except 11 that read live `docs/03.specs` while a commit landed mid-run, and one lifecycle public test broken by the E23 row shape, since corrected | required | - |
+| E25 | 4 | W5 | quiet-tree-rerun | `test_spec_packages`, `test_requirements`, lifecycle `test_public` on the corrected tree with no concurrent writes | PASS | 122 tests OK; corpus lifecycle zero; metadata check-changed selected 7, zero violations | required | - |
 
 ## Criterion Acceptance
 
