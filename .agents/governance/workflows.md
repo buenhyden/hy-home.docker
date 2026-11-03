@@ -90,7 +90,7 @@ when required evidence is unavailable.
 
 Evidence is value-free and sanitized. Never record auth files, credentials,
 private keys, raw logs, secret values, shell history, or tokens. Historical
-citations and archive records preserve provenance only; they cannot authorize a
+citations and version history preserve provenance only; they cannot authorize a
 current operation.
 
 ### SDLC Workflow

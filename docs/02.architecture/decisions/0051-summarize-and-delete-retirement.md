@@ -1,8 +1,8 @@
 ---
 title: "Summarize-and-Delete Retirement"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-11-03"
 layer: "architecture"
@@ -17,10 +17,12 @@ created: "2026-11-03"
 
 ## Context
 
-[ADR-0037](0037-package-disposition-wait-and-task-cancellation.md) decision items
-5 to 10 made Stage 98 (`docs/98.archive/`) a preserved record: history-only
-removal approvals, legacy capture generations, snapshot and object verification,
-an ordered citation policy, frozen outbound links, and whole-unit preservation.
+[ADR-0037](0037-package-disposition-wait-and-task-cancellation.md) made Stage 98
+(`docs/98.archive/`) a preserved record: the last sentence of decision 1 required
+whole-package preservation, and decision items 4 to 10 set Retention Catalog
+assessments, history-only removal approvals, legacy capture generations,
+snapshot and object verification, an ordered citation policy, frozen outbound
+links, and whole-unit preservation.
 SPEC-0248 then stopped every gate from validating Stage 98, and the user directed
 that the archive files be deleted, that their still-current substance move into
 Stage 01 and Stage 02, and that retired numbers be kept as a minimal list. The
@@ -66,9 +68,11 @@ preservation model has no records left to govern.
 6. Current documents do not link into Stage 98 or name a retired identity in a
    typed reference; prose may name it to explain lineage.
 
-This decision supersedes decision items 5 to 10 of ADR-0037. ADR-0037 items 1 to
-4 (package waiting, Task cancellation, and assessment vocabulary) are not
-changed by this record.
+This decision supersedes ADR-0037 decision items 4 to 10 and the last sentence
+of its decision 1 ("Whole-package disposition still requires approval and
+preserves every member"). ADR-0037 items 1 (except that sentence), 2, and 3,
+covering package waiting, Task cancellation, and terminality, are not changed
+by this record.
 
 ## Consequences
 
@@ -89,7 +93,7 @@ reserved-number rule for Stage 03; the Requirement loader enforces it for Stage
 
 ### Follow-up
 
-Accepting this record is the owner's decision. Completed Spec packages in Stage
+The owner accepted this record on 2026-11-03. Completed Spec packages in Stage
 03 are retired under it in the next phase.
 
 ## Related Documents

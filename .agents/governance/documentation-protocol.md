@@ -329,12 +329,14 @@ A retired document is summarized and deleted, not preserved. Its still-current
 meaning goes to the Traceability section of the owning Stage 01 requirement or
 Stage 02 description or decision, and the original file is removed. Version
 history is the record of the removed body. Stage 98 (`docs/98.archive/`) holds
-no records: only its README remains, describing the disposition scheme. No gate
-validates Stage 98, and the README is checked like any other README.
+no records: only its README remains, describing the disposition scheme. The
+only Stage 98 check is corpus lifecycle occupancy, which fails on any tracked
+file there other than the README; the README is checked like any other README.
 
 Retired artifact numbers live in the Registry. Each top-level identity space
 keeps `reserved_history`, the sorted list of numbers that no current document
-carries; a reserved number is never issued again. Stage 01 numbering is dense,
+carries; a reserved number is never issued again, and the allocation check
+rejects dropping one. Stage 01 numbering is dense,
 so a Requirement gap is legitimate exactly when its number is reserved, and a
 Stage 03 package removal is recorded exactly when its Spec number is reserved.
 

@@ -1,10 +1,10 @@
 ---
 title: "Audit Packages"
-version: "2.0.1"
+version: "2.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-03"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -63,12 +63,6 @@ guide로 옮겨졌습니다. 본문은 Git 이력에 있으며 그 번호는 Reg
 `reserved_history`가 보관합니다.
 
 ## Usage
-
-### Usage
-
-### Supersession Ledgers
-
-Migration 0003이 과거 경로 복구를 기록합니다.
 
 ### Usage
 

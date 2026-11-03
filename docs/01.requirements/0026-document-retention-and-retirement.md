@@ -1,6 +1,6 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.0.0"
+version: "3.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -64,12 +64,15 @@ absent incoming links cannot by themselves authorize deletion.
   size may trigger review but never determine automatic removal.
 - **REQ-0026-FR-0002**: Retiring a package or standalone document summarizes its
   still-current substance into its Stage 01 or Stage 02 owner's Traceability,
-  deletes the original in the same change, and adds its number to the Registry
-  `reserved_history`. Version history is the record of the removed body.
-- **REQ-0026-FR-0003**: Registered checks reject a removal whose number is not
-  reserved, regardless of incoming links, and reject dropping a number from
-  `reserved_history`. A copy of the removed document anywhere, including Stage
-  98, never stands in for the reserved number.
+  deletes the original in the same change, and, as an authoring rule, adds its
+  number to its identity space's Registry `reserved_history`. Version history is
+  the record of the removed body.
+- **REQ-0026-FR-0003**: Registered checks reject a Stage 01 gap or a Stage 03
+  package removal whose number is not reserved, regardless of incoming links;
+  a copy of the removed document anywhere, including Stage 98, never stands in
+  for the reserved number. For every identity space, they reject dropping a
+  number from `reserved_history`. Other standalone removals rely on the
+  authoring rule in FR-0002.
 - **REQ-0026-FR-0004**: Still-current obligations, decisions, structure, and
   procedures move to their canonical governance, Stage 01, 02, or 05 owner before
   their source is retired.
@@ -122,7 +125,8 @@ absent incoming links cannot by themselves authorize deletion.
 - A Stage 03 removal or Stage 01 gap passes only when its number is reserved in
   the checked tree's Registry; an archive copy or a branch receipt does not
   substitute.
-- Dropping a number from `reserved_history` fails against the trusted base.
+- Dropping a number from any identity space's `reserved_history` fails against
+  the trusted base.
 - Any tracked file under `docs/98.archive/` other than its README fails the
   corpus lifecycle occupancy check.
 - No current document links into Stage 98 or names a retired identity in a typed

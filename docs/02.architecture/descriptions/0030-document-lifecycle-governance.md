@@ -41,7 +41,7 @@ access, and remote integration remain separately authorized actions.
 ### Traceability
 
 - [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
-- ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
+- ADR-0030, ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
 - [ADR-0037 Package waiting and Task cancellation](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [ADR-0051 Summarize-and-delete retirement](../decisions/0051-summarize-and-delete-retirement.md)
 - [Documentation protocol](../../../.agents/governance/documentation-protocol.md)

@@ -89,7 +89,7 @@ docs/02.architecture/decisions/
   채택한 accepted decision. ADR-0036을 대체하며 SPEC-0179가 구현·검증을 소유한다.
   처분 대기를 다룬 결정 1(마지막 문장 제외)과 결정 2·3의 완료 receipt 조항은 ADR-0048이
   대체하고, 취소 기록·terminal Plan·terminality 규칙은 그대로 유지된다.
-  결정 5~10은 ADR-0051이 대체한다.
+  결정 4~10과 결정 1의 마지막 문장은 ADR-0051이 대체한다.
 - [`ADR-0038`](./0038-selective-native-oidc-for-native-auth-apps.md):
   Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native
   OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는
@@ -132,7 +132,8 @@ docs/02.architecture/decisions/
   OpenBao와 `openbao-agent`를 secrets manager로 채택하며 ADR-0003, ADR-0018을 supersede한 accepted decision.
 - [`ADR-0051`](./0051-summarize-and-delete-retirement.md):
   은퇴 문서를 01·02 문서에 요약한 뒤 삭제하고 Git 이력을 기록으로 삼으며, 폐기 번호를
-  Registry `reserved_history`에 두는 proposed decision. ADR-0037 결정 5~10을 대체한다.
+  Registry `reserved_history`에 두는 accepted decision. ADR-0037 결정 4~10과 결정 1의
+  마지막 문장을 대체한다.
 
 ## Usage
 

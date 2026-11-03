@@ -222,7 +222,7 @@ verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴
 ## Related Documents
 
 - [Operations index](../../README.md)
-- Specification
+- Specification: SPEC-0094 (retired)
 - [Usage guide](../../guides/01-common/0004-harness-agent-first-engineering.md)
 - [Operations policy](../../policies/01-common/0004-harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../../../.agents/README.md)

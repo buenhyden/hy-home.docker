@@ -1,6 +1,6 @@
 ---
 title: "98.archive"
-version: "3.0.0"
+version: "3.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -27,8 +27,8 @@ Stage 98은 활성 스테이지를 떠난 문서의 처분 체계를 정의합�
 
 - 소유: Stage 98의 처분 분류와 폴더 체계 설명
 - 비소유: 처분 정책, 경로와 profile 계약, 폐기 번호 목록
-- 어떤 gate도 Stage 98을 검증하지 않으며, 이 README는 다른 README와 같은 문서 검사를
-  받습니다.
+- Stage 98에 대한 검사는 corpus lifecycle의 occupancy 검사 하나뿐이며, README가 아닌
+  tracked 파일이 있으면 실패합니다. 이 README는 다른 README와 같은 문서 검사를 받습니다.
 
 ### Audience
 

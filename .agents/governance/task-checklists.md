@@ -54,7 +54,7 @@ No exception is granted here; a separately authorized operation follows [Approva
 - [ ] Inspect `git diff --check`, status, and the exact task-owned diff.
 - [ ] Record pass, fail, baseline debt, skipped checks, recovery, and review separately.
 - [ ] Record final criterion acceptance before disposition. A Stage 03 package
-      may wait once it is [ready for archive review](sdlc.md#sequence);
+      may wait once it is [ready for removal review](sdlc.md#sequence);
       cancelled criteria do not waive remaining Spec acceptance evidence, and
       only a `not-required` decision closes a criterion without PASS.
 - [ ] Before removing a retired document, summarize its still-current meaning

@@ -108,9 +108,10 @@ main-push security remains a post-merge observation.
 - Retire one-time QA in this order: transfer a continuing guarantee to its
   current owner; remove callers and registration; remove exclusive helpers,
   fixtures and tests; preserve useful actual results in existing Task/history.
-- Stage 98 (`docs/98.archive/`) holds no records and no gate validates it; no
-  archive integrity, retention, recovery, Tombstone, migration-ledger or
-  archive-link check exists. Retired numbers come from the Registry
+- Stage 98 (`docs/98.archive/`) holds no records. Its only check is corpus
+  lifecycle occupancy, which fails on any tracked file there other than the
+  README; no archive integrity, retention, recovery, Tombstone, migration-ledger
+  or archive-link check exists. Retired numbers come from the Registry
   `reserved_history`, never from archive files.
 - Shared implementation libraries under `scripts/lib/` and executable QA
   owners retain meaningful test evidence. A nonmutating companion library

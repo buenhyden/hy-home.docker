@@ -90,9 +90,9 @@ Adopt the following location model after an independent design review.
   execution configuration, and the script manifest. This relocation does not
   grant execution approval to access operational input.
 - Detailed Requirement, Architecture, Spec/Plan/Task, and Operations documents
-  stay in the existing docs. Stage 90 is non-authoritative evidence, and Stage
-  98 is the preserved record per ADR-0031. Git history is the recovery/identity
-  basis for preserved bodies, not a substitute for Task bodies.
+  stay in the existing docs. Stage 90 is non-authoritative evidence. Stage 98
+  was the preserved record per ADR-0031; under ADR-0051 it holds no records,
+  and version history keeps removed bodies.
 - Remove the old common directory from current reading, generation, linking,
   and fallback targets. Old paths in frozen records and regression-test
   strings are classified as history/negative examples.
@@ -120,8 +120,8 @@ Adopt the following location model after an independent design review.
 - [Agent governance requirement](../../01.requirements/0024-agent-governance-standardization.md)
 - [Canonical adapter architecture](../descriptions/0027-agent-governance-canonical-adapter.md)
 - [Shared agent memory decision](0049-shared-agent-memory-store.md)
-- Predecessor authority decision
-- Preserved-record decision
-- Owning specification
-- Current plan
+- Predecessor authority decision: ADR-0029 (retired)
+- Preserved-record decision: ADR-0031 (retired)
+- Owning specification: SPEC-0173 (retired)
+- Plan: SPEC-0173-PLAN-0001 (retired)
 - **Superseded decisions**: ADR-0027 defined the Stage 00 canonical adapter model, and ADR-0029 replaced it with a separated workspace governance authority model. This decision replaces ADR-0029.
