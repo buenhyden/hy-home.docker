@@ -2111,83 +2111,6 @@ class PostToolFormattingOwnershipTests(unittest.TestCase):
                             return argument
         raise AssertionError("no shellcheck severity is registered")
 
-    def test_every_text_mutator_excludes_the_same_frozen_payloads(self) -> None:
-        """Three mutators exclude these bytes; they must not drift apart.
-
-        `.pre-commit-config.yaml` declares the boundary once as an anchor, and
-        the PostToolUse hook reads that declaration. An explicit
-        `markdownlint-cli2 --fix` rewrites files and cannot read a YAML anchor
-        from another file, so it
-        restates the boundary in its own ignore list. This compares the two by
-        what they select rather than by how they spell it.
-        """
-
-        anchor = re.search(
-            r"^\s*exclude:\s*&frozen_archive_payloads\s+'(?P<pattern>[^']+)'\s*$",
-            (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8"),
-            re.M,
-        )
-        self.assertIsNotNone(anchor, "the frozen payload anchor is missing")
-        frozen = re.compile(anchor.group("pattern"))
-
-        ignores = yaml.safe_load(
-            (ROOT / ".markdownlint-cli2.yaml").read_text(encoding="utf-8")
-        )["ignores"]
-
-        def markdownlint_ignores(relative: str) -> bool:
-            return any(
-                relative.startswith(entry) if entry.endswith("/") else relative == entry
-                for entry in ignores
-            )
-
-        tracked = subprocess.run(
-            ["git", "ls-files", "-z", "docs/98.archive"],
-            cwd=ROOT,
-            capture_output=True,
-            check=True,
-        ).stdout.decode("utf-8")
-        documents = [item for item in tracked.split("\0") if item.endswith(".md")]
-        self.assertTrue(documents, "the archive holds no tracked Markdown")
-
-        disagreements = [
-            relative
-            for relative in documents
-            if bool(frozen.search(relative)) != markdownlint_ignores(relative)
-        ]
-        self.assertEqual([], disagreements)
-
-        # The Registry is the source of what is frozen: every unmanaged archive
-        # record profile and every frozen legacy status path. The anchor must
-        # select exactly those tracked files.
-        registry = json.loads(
-            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
-        )
-        record_roots = tuple(
-            profile["path_pattern"].split("{", 1)[0]
-            for profile in registry["profiles"]
-            if profile.get("frontmatter_policy") == "unmanaged"
-            and profile["path_pattern"].startswith("docs/98.archive/")
-        )
-        legacy = {
-            path
-            for profile in registry["profiles"]
-            for exception in profile.get("exceptions", ())
-            if exception.get("kind") == "frozen-legacy-status"
-            for path in exception["paths"]
-        }
-        # SPEC-0249 removed the frozen-legacy-status exception; only the
-        # unmanaged archive profiles still define the frozen set.
-        self.assertTrue(record_roots, "the Registry declares no frozen set")
-        self.assertEqual(
-            [],
-            [
-                relative
-                for relative in documents
-                if bool(frozen.search(relative))
-                != (relative.startswith(record_roots) or relative in legacy)
-            ],
-        )
-
     def test_pre_commit_registers_no_shell_formatting_owner(self) -> None:
         """A shell formatter absent from the owner does not govern the repository."""
 
@@ -2265,58 +2188,6 @@ class PostToolFormattingOwnershipTests(unittest.TestCase):
                 self.assertEqual(0, result.returncode, result.stdout + result.stderr)
                 self.assertEqual(expected, (repo / "note.md").read_bytes())
 
-    def test_post_tool_mutator_honors_the_declared_frozen_boundary(self) -> None:
-        """The boundary is read from the owner, not restated in this hook."""
-
-        with tempfile.TemporaryDirectory() as directory:
-            repo = self._repo(directory)
-            (repo / ".pre-commit-config.yaml").write_text(
-                "repos:\n"
-                "  - repo: local\n"
-                "    hooks:\n"
-                "      - id: trailing-whitespace\n"
-                "        exclude: &frozen_archive_payloads '^frozen/'\n",
-                encoding="utf-8",
-            )
-            payload = "text with trailing space   \nno final newline"
-            for relative in ("frozen/preserved.md", "active/normalized.md"):
-                target = repo / relative
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_text(payload, encoding="utf-8")
-
-            frozen = repo / "frozen/preserved.md"
-            active = repo / "active/normalized.md"
-            before = frozen.read_bytes()
-
-            self.assertEqual(0, self._run(repo, "frozen/preserved.md").returncode)
-            self.assertEqual(0, self._run(repo, "active/normalized.md").returncode)
-
-            self.assertEqual(before, frozen.read_bytes())
-            self.assertEqual(
-                "text with trailing space\nno final newline\n",
-                active.read_text(encoding="utf-8"),
-            )
-
-    def test_post_tool_rejects_an_owner_without_the_frozen_anchor(self) -> None:
-        """A registered owner that declares no boundary fails closed."""
-
-        with tempfile.TemporaryDirectory() as directory:
-            repo = self._repo(directory)
-            (repo / ".pre-commit-config.yaml").write_text(
-                "repos:\n  - repo: local\n    hooks:\n      - id: trailing-whitespace\n",
-                encoding="utf-8",
-            )
-            target = repo / "active/document.md"
-            target.parent.mkdir(parents=True)
-            target.write_text("text   \n", encoding="utf-8")
-            before = target.read_bytes()
-
-            result = self._run(repo, "active/document.md")
-
-            self.assertNotEqual(0, result.returncode)
-            self.assertIn("frozen_archive_payloads", result.stderr)
-            self.assertEqual(before, target.read_bytes())
-
 
 class RequestPrecedenceContractTests(unittest.TestCase):
     def test_request_precedence_clauses_are_enforced(self) -> None:
@@ -2372,7 +2243,9 @@ class ReadOnlyCommitStyleTests(unittest.TestCase):
             ("check-trailing-whitespace", "trailing-whitespace"),
         ):
             self.assertEqual(["text"], hooks[checked]["types"])
-            self.assertEqual(hooks[formatter]["exclude"], hooks[checked]["exclude"])
+            self.assertEqual(
+                hooks[formatter].get("exclude"), hooks[checked].get("exclude")
+            )
         self.assertIn("diff", hooks["check-trailing-whitespace"]["exclude_types"])
         self.assertNotIn("diff", hooks["check-end-of-file"].get("exclude_types", []))
 

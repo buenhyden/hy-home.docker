@@ -62,51 +62,6 @@ if [[ -z "$CHANGED_PATH_TEXT" ]]; then
 fi
 mapfile -t CHANGED_PATHS <<<"$CHANGED_PATH_TEXT"
 
-# `.pre-commit-config.yaml` names every registered text mutator and the frozen
-# archive payloads they must not rewrite. This hook performs the same
-# trailing-whitespace and final-newline normalization, so it reads that one
-# owner instead of restating the boundary. An owner that exists but declares no
-# anchor is a misconfiguration and fails closed; an absent owner registers no
-# mutator at all and therefore excludes nothing.
-FROZEN_PAYLOAD_PATTERN="$(
-  python3 - .pre-commit-config.yaml <<'PY'
-from __future__ import annotations
-
-import pathlib
-import re
-import sys
-
-path = pathlib.Path(sys.argv[1])
-if not path.is_file():
-    raise SystemExit(0)
-
-try:
-    text = path.read_text(encoding="utf-8")
-except OSError as error:
-    raise SystemExit(f"ERROR: formatting owner is unreadable: {error}") from error
-
-match = re.search(
-    r"^\s*exclude:\s*&frozen_archive_payloads\s+'(?P<pattern>[^']+)'\s*$",
-    text,
-    re.M,
-)
-if match is None:
-    raise SystemExit(
-        "ERROR: .pre-commit-config.yaml declares no frozen_archive_payloads anchor"
-    )
-
-pattern = match.group("pattern")
-try:
-    re.compile(pattern)
-except re.error as error:
-    raise SystemExit(
-        f"ERROR: frozen_archive_payloads is not a regular expression: {error}"
-    ) from error
-
-print(pattern)
-PY
-)"
-
 EXISTING_CHANGED_FILES=()
 SHELL_STYLE_FILES=()
 YAML_STYLE_FILES=()
@@ -114,22 +69,16 @@ JSON_SYNTAX_FILES=()
 
 format_text_file_basics() {
   local file="$1"
-  local frozen_pattern="$2"
-  local mode="$3"
-  python3 - "$file" "$frozen_pattern" "$mode" <<'PY'
+  local mode="$2"
+  python3 - "$file" "$mode" <<'PY'
 from __future__ import annotations
 
 import io
 import pathlib
-import re
 import sys
 
 path = pathlib.Path(sys.argv[1])
 if not path.is_file():
-    raise SystemExit(0)
-
-frozen_pattern = sys.argv[2]
-if frozen_pattern and re.search(frozen_pattern, path.as_posix()):
     raise SystemExit(0)
 
 data = path.read_bytes()
@@ -157,7 +106,7 @@ new_data = b"".join(strip_line(line) for line in io.BytesIO(data).readlines())
 if new_data and not new_data.endswith((b"\n", b"\r")):
     new_data += b"\n"
 if new_data != data:
-    if sys.argv[3] == "check":
+    if sys.argv[2] == "check":
         raise SystemExit(
             f"{path}: trailing whitespace or a missing final newline; "
             "fix it, or run post-tool-validate.sh --write"
@@ -172,9 +121,9 @@ for rel in "${CHANGED_PATHS[@]}"; do
     case "$rel" in
     *.md | *.sh | *.yml | *.yaml | *.json)
       if [[ "$check_only" -eq 0 ]]; then
-        format_text_file_basics "$rel" "$FROZEN_PAYLOAD_PATTERN" write
+        format_text_file_basics "$rel" write
       else
-        format_text_file_basics "$rel" "$FROZEN_PAYLOAD_PATTERN" check
+        format_text_file_basics "$rel" check
       fi
       ;;
     esac
