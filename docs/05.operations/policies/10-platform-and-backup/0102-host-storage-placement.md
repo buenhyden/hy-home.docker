@@ -78,7 +78,7 @@ drift와 명시적 소유자 승인이 없는 한 유지한다.
 - 같은 번호 `0102`의 Guide/Runbook은 없다.
 - 근거와 수용 기록: SPEC-0246(삭제됨, 번호는 Registry `reserved_history`, 본문은 Git history)의
   C1–C6은 모두 소유자가 수용했다.
-  - C1(2026-10-19): containerd 이전 뒤 이미지 목록, 컨테이너 집합, health, k3d node가 이전 전 snapshot과 같았다.
+  - C1(2026-10-19): containerd 이전 뒤 이미지 목록, health, k3d node가 이전 전 snapshot과 같았다.
   - C2: Ollama가 SSD 경로에서 같은 model 목록을 제공하고, 첫 load가 318.4초에서 55.9초로 줄었다.
   - C3: build-cache 하한을 정하고, 보관한 이미지는 digest로 검증했으며, inventory상 소유자 없는 volume·container만 지웠다.
   - C4: 실행 중인 registry image digest가 Compose pin과 같았다.

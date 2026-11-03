@@ -22,7 +22,7 @@ Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않
 
 ## Scope
 
-- 포함: 진행 중인 변경, 검증이 끝나 보관 승인을 기다리는 package의
+- 포함: 진행 중인 변경, 검증이 끝나 삭제 승인을 기다리는 package의
   Spec·Plan·Task와 Spec이 직접 소유하는 실행 가능한 contract.
 - 제외: 운영 절차, 감사·조사 데이터, 이미 삭제된 package의 본문, 이전 경로의
   복제본과 redirect. 운영·참조 자료는 각 Stage의 현재 owner가 소유합니다.
@@ -53,7 +53,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0250 | [완료 Spec package 삭제](./0250-finished-spec-package-deletion/) | 모든 문서가 terminal인 Spec package를 삭제하고 번호를 Registry `reserved_history`에 예약하며, 현재 문서의 링크를 일반 텍스트로 바꿈 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
-package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
+package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
 규칙대로 읽을 때 계산하며 표나 frontmatter에 적지 않습니다. 새 lifecycle
 상태도, 처분 승인도 아닙니다.
 

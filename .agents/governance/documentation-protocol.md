@@ -357,10 +357,9 @@ A Stage 03 package is deleted when it is
 [ready for removal review](sdlc.md#sequence) and its removal is approved, once
 the meaning a current document still depends on sits in its owner. A user
 instruction to delete completed packages approves that batch, and the deleting
-Task records the approval and each package's criterion state. An older Task format that predates the typed Criterion Acceptance table counts
-when it records every criterion as PASS or accepted and leaves no required
-non-PASS observation unresolved. Its
-Spec number joins the Registry `reserved_history`, current links to it become
+Task records the approval and each package's criterion state. The SDLC
+readiness rule also covers Task formats older than the typed Criterion
+Acceptance table. Its Spec number joins the Registry `reserved_history`, current links to it become
 plain text, and version history keeps the body. A package with any
 non-terminal Task stays, with its completed Tasks. A terminal Task body stays
 immutable while its package exists, so a link it holds into a package deleted

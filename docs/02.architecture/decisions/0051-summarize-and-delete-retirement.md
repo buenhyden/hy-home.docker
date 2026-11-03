@@ -73,7 +73,9 @@ of its decision 1 ("Whole-package disposition still requires approval and
 preserves every member"). ADR-0048 already replaced the rest of decision 1,
 so decision 1 is fully replaced. ADR-0037 decisions 2 and 3, covering Task
 cancellation and terminality, are not changed by this record; ADR-0048 already
-replaced their completion-receipt clauses.
+replaced their completion-receipt clauses. It also supersedes the archive and
+preservation wording of ADR-0048 decision 4; the readiness conditions there
+stay.
 
 ## Consequences
 

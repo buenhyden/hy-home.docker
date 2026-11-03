@@ -453,9 +453,8 @@ TLS 검사를 끄지 않는다). owner 행에는 로그인된 browser나 Keycloa
 | Valkey 도달 불가 | 모든 SSO route | `oauth2-proxy`만 `mng_data_net`에서 분리하고 cookie가 있을 때와 없을 때 각각 SSO route를 요청한 뒤 다시 연결 | fail-closed: cookie 유무와 관계없이 upstream content 비노출 | owner 승인 후 agent 또는 owner |
 | Native OIDC 로그인 상태의 동작 | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | 로그인하고 role mapping을 확인한 뒤 logout | 각 app이 자체 client와 role mapping을 적용하며 Proxy allowlist는 적용되지 않음 | owner |
 
-아직 대기 중인 owner 행을 포함한 각 행의 결과는
-SPEC-0182 Task 0003의
-Verification Evidence와 Work Log에 기록되어 있다.
+당시 대기 중이던 owner 행을 포함한 각 행의 결과는 삭제된
+SPEC-0182 Task 0003에 기록되었고 Git history에 남아 있다.
 
 ### Scope and current limitations
 
