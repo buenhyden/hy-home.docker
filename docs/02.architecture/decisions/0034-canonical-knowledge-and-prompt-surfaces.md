@@ -56,9 +56,9 @@ or remote branch protection.
 
 - Transition this decision from `proposed` to `accepted` only after SPEC-0175
   records the contract, registry, and suite evidence for the implemented roots.
-  Discharged. SPEC-0175 recorded that evidence and was completed and preserved
-  under docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/,
-  and this decision has read `accepted` since. The instruction above is kept
+  Discharged. SPEC-0175 recorded that evidence and was completed; its number
+  is reserved in the Registry and its body is in version history, and this
+  decision has read `accepted` since. The instruction above is kept
   verbatim rather than rewritten, because what it required and the fact that it
   was met are two different records. Noted by SPEC-0176; the decision body is
   unchanged.

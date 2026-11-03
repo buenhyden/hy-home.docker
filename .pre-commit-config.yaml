@@ -64,9 +64,8 @@ repos:
 
   # --- 3. Python Formatting and Linting ---
   # Both hooks carry the same `files` selector. `ruff format` also reformats
-  # Python fenced in Markdown, and a direct `ruff format .` was observed to
-  # rewrite a frozen archive body under `docs/98.archive/retired/`. This
-  # selector is what keeps either hook off every non-Python file.
+  # Python fenced in Markdown, so this selector keeps either hook off every
+  # non-Python file.
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.12
     hooks:

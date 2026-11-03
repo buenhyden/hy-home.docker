@@ -164,6 +164,9 @@ symlink, directory), `test_a_malformed_reserved_history_grants_no_retirement`
 - The archive-record metadata vocabulary in `metadata/profile.py` and the
   archive profiles stay as scheme definitions; remove them in the legacy and
   deprecated phase if no record type needs them.
+- The `frozen_archive_payloads` pre-commit exclude now matches no tracked file.
+  It is kept because `scripts/hooks/post-tool-validate.sh` requires the anchor
+  and its hook tests read it; removing it is a hook change for a later phase.
 - The commands check reports two `_workspace` paths in the frozen DATA-0096
   README; they come from PR #720 and depend on ignored local files.
 
@@ -174,13 +177,16 @@ symlink, directory), `test_a_malformed_reserved_history_grants_no_retirement`
 | E1 | 3 | W3 | document-links | alignment mode after the reference cleanup | PASS | 950 documents, 8325 links, zero failures | required | - |
 | E2 | 3 | W3 | document-commands | commands mode | FAIL | 2 findings for ignored `_workspace` files that PR #720 documents; not caused by this change | required | - |
 | E3 | 4 | W5 | governance-unit-tests | four batches while the tree was being edited and committed | FAIL | spec packages 91: 8 failures and 6 errors; registry group 182: 2 failures; links group 287: 2 failures; metadata and lifecycle group 270: 3 failures. Causes: tests of removed archive paths, and Stage 03 changing under the reconciliation tests during commits | required | - |
-| E4 | 4 | W5 | governance-unit-tests | final quiet-tree run of all `tests/lib/document_governance` modules, `tests/validation/lifecycle` and the Script Manifest tests | FAIL | spec packages 91 OK; links, operations catalog, metadata validator and generations 286 OK; registry, requirements, identity and architecture 182 with 1 subtest failure; metadata, lifecycle, references, taxonomy and manifest 271 with 1 failure | required | E3 |
+| E4 | 4 | W5 | governance-unit-tests | final quiet-tree run of all `tests/lib/document_governance` modules, `tests/validation/lifecycle` and the Script Manifest tests | FAIL | spec packages 91 OK; links, operations catalog, metadata validator and generations 286 OK; registry, requirements, identity and architecture 182 with 1 subtest failure; metadata, lifecycle, references, taxonomy and manifest 271 with 1 failure; supersedes E3 | required | - |
 | E5 | 4 | W5 | gate-and-ci-routing | `tests/lib/gate` discovery, CI routing and CI gate plan under uv Python | FAIL | 283 tests: the gate evidence module needs `fcntl.F_ADD_SEALS`; two descendant-cleanup subtests under load; frozen payload agreement | required | - |
-| E6 | 4 | W5 | gate-evidence | `tests.lib.gate.test_ci_gate_evidence` with system python3 | PASS | 21 tests OK | required | E5 |
-| E7 | 4 | W5 | targeted-reruns | identity recovery subtest, Script Manifest tests, frozen payload agreement and descendant cleanup after fixes | PASS | 60 tests OK | required | E4, E5 |
+| E6 | 4 | W5 | gate-evidence | `tests.lib.gate.test_ci_gate_evidence` with system python3 | PASS | 21 tests OK | required | - |
+| E7 | 4 | W5 | governance-unit-tests | the identity recovery subtest and Script Manifest tests after their fixes | PASS | all passed in a 60-test targeted rerun | required | E4 |
+| E13 | 4 | W5 | gate-and-ci-routing | frozen payload agreement and descendant cleanup after fixes, uv Python; gate evidence passes under system python3 in E6 | PASS | all passed in the same 60-test targeted rerun | required | E5 |
+| E14 | 3 | W3 | metadata-changed | review fix: ADR-0034, 0039, 0040, 0042, 0044 and AD-0030 no longer claim Stage 98 preservation; pre-commit ruff comment updated | PASS | check-changed base a879f2b64: 357 selected, zero violations | required | - |
+| E15 | 3 | W3 | document-links | alignment after the review fix | PASS | zero failures and warnings; corpus lifecycle and occupancy zero | required | - |
 | E8 | 4 | W5 | metadata-active | `check-document-metadata.py --mode check-active` | PASS | 497 selected, zero violations | required | - |
 | E9 | 4 | W5 | metadata-changed | `--mode check-changed --base-ref a879f2b64` | PASS | 355 selected, zero violations | required | - |
-| E10 | 1, 2 | W5 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref a879f2b64` | PASS | zero violations; occupancy zero | required | - |
+| E10 | 2 | W1 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref a879f2b64` | PASS | zero violations; occupancy zero | required | - |
 | E11 | 4 | W5 | manifest-and-renderer | `check-script-manifest.py`; provider renderer `--check` | PASS | manifest valid; renderer drift 0 | required | - |
 | E12 | 4 | W5 | staged-precommit | `run-ci-precommit.sh --mode local-staged` before each commit | PASS | no failing hook after fixing two MD032 blank lines and formatting | required | - |
 

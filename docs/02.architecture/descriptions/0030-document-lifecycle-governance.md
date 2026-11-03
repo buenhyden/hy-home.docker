@@ -67,11 +67,10 @@ remain separately authorized actions.
 - Registered metadata, document-link, and corpus-lifecycle entrypoints expose
   these judgments through gate profiles. `metadata/heading.py` enforces the
   Registry's section contracts so authored declarations and checks agree.
-- `docs/98.archive/retention-catalog.md` owns unit capture rows and optional
-  current assessments. The Archive README routes discovery without duplicating
-  that catalog. Capture classes are completed, superseded, retired, and
-  resolved; Tombstones and Migrations hold routes rather than original bodies.
-  Disposition directories are created on first use.
+- A retired document is summarized into its Stage 01 or Stage 02 owner and
+  deleted. Its number stays in the Registry `reserved_history`, and version
+  history holds its body. Stage 98 holds only a README describing the
+  disposition scheme.
 
 ## Runtime and Deployment
 

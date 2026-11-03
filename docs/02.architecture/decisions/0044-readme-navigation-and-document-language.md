@@ -105,10 +105,9 @@ Structure tokens keep their form in every language. These are required
 headings, paths, identifiers, commands, and metadata keys. The body validator
 judges prose outside those tokens.
 
-**Ledger separation.** The Retention Catalog moves from
-`docs/98.archive/README.md` to `docs/98.archive/retention-catalog.md`. It gets
-its own profile, and its table header is kept byte-exact. The Stage 98 README
-becomes a router.
+**Ledger separation.** The Retention Catalog left the Stage 98 README, which
+became a router. SPEC-0249 later deleted the catalog with every Stage 98
+record; retired numbers now live in the Registry `reserved_history`.
 
 **Index ownership.** The Stage 03 index links package directories rather than
 `spec.md`, `plan.md`, or Tasks. The Registry `template_roles` map is the only

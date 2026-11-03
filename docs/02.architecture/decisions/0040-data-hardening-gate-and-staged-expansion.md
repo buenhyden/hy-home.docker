@@ -82,7 +82,7 @@ regressions.
 
 ## Related Documents
 
-- **Superseded ADR**: `ADR-0019` (preserved under `docs/98.archive/superseded/`)
+- **Superseded ADR**: `ADR-0019` (number reserved in the Registry; body in version history)
 - **Architecture Description**: [0019-data-optimization-hardening-architecture.md](../descriptions/0019-data-optimization-hardening-architecture.md)
 - **Requirements**: [0004-data.md](../../01.requirements/0004-data.md)
 - **Related ADR**: [ADR-0004](0004-postgresql-ha-patroni.md), [ADR-0039](0039-analytics-engines-after-lakehouse-convergence.md)
