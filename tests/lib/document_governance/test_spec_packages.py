@@ -3194,13 +3194,8 @@ Narrative after the registered table.
                 ),
             )
 
-    def test_preserved_package_is_not_a_retirement(self) -> None:
-        """Completion and withdrawal are different events with different records.
-
-        A package moved to the archive keeps every document, so demanding a
-        Tombstone for it would record a withdrawal that never happened. A
-        package that leaves without being preserved still needs one.
-        """
+    def test_only_a_reserved_number_records_a_package_removal(self) -> None:
+        """A completed package that leaves Stage 03 needs its number reserved."""
 
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
@@ -3218,13 +3213,13 @@ Narrative after the registered table.
             after_stage.mkdir(parents=True, exist_ok=True)
             before = spec_packages.load_spec_packages(before_stage)
             after = spec_packages.load_spec_packages(after_stage)
-            preserved = frozenset(
+            retired = frozenset(
                 {pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")}
             )
             self.assertEqual(
                 (),
                 spec_packages.validate_spec_package_lifecycle(
-                    before, after, preserved_paths=preserved
+                    before, after, retired_paths=retired
                 ),
             )
             self.assertEqual(
@@ -3237,14 +3232,68 @@ Narrative after the registered table.
                 },
             )
 
-    def test_lifecycle_validator_accepts_injected_disposition_sets(self) -> None:
+    def test_lifecycle_validator_accepts_injected_retirements(self) -> None:
         spec_packages = _spec_packages_module()
         signature = inspect.signature(spec_packages.validate_spec_package_lifecycle)
-        # Both disposition path sets are caller-injected facts in the public API.
+        # The reserved removal set is a caller-injected fact in the public API.
         self.assertEqual(
-            ["previous", "current", "retired_paths", "preserved_paths", "registry"],
+            ["previous", "current", "retired_paths", "registry"],
             list(signature.parameters),
         )
+
+    def test_an_archive_copy_does_not_record_an_unreserved_removal(self) -> None:
+        """A terminal copy under Stage 98 is not a substitute for a reserved number."""
+
+        import json
+
+        from scripts.lib.document_governance.registry import DEFAULT_REGISTRY
+
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+            raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+            raw["identity_spaces"]["spec"]["reserved_history"] = []
+            registry_path = root / "docs/99.templates/registry.json"
+            registry_path.parent.mkdir(parents=True)
+            registry_path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+            stage = root / "docs/03.specs"
+            package = _write_package(
+                stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
+            )
+            subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+            subprocess.run(
+                (
+                    "git",
+                    "-c",
+                    "user.name=Spec Fixture",
+                    "-c",
+                    "user.email=spec@example.invalid",
+                    "commit",
+                    "-qm",
+                    "baseline",
+                ),
+                cwd=root,
+                check=True,
+            )
+            copy = root / "docs/98.archive/superseded/03.specs" / package.name
+            copy.parent.mkdir(parents=True)
+            shutil.copytree(package, copy)
+            shutil.rmtree(package)
+            findings = spec_packages.validate_repository_spec_package_lifecycle(
+                root,
+                spec_packages.load_spec_packages(stage),
+                base_ref="HEAD",
+            )
+            self.assertIn(
+                "package-retirement-unrecorded",
+                {finding.code for finding in findings},
+            )
 
     def test_public_repository_validator_enforces_snapshot_lifecycle(self) -> None:
         spec_packages = _spec_packages_module()
@@ -3279,142 +3328,26 @@ Narrative after the registered table.
                 {finding.code for finding in findings},
             )
 
-    def test_current_receipt_carrier_rejects_a_ready_task(self) -> None:
+    def test_a_branch_integration_receipt_grants_no_removal(self) -> None:
+        """The handoff is gone: a receipt never stands in for a reserved number."""
+
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             stage, commit, _ = _branch_handoff_fixture(root)
-            task = stage / "0002-target/tasks/tsk-0001-implement.md"
-            _set_status(task, "in-progress", "ready")
             findings = spec_packages.validate_repository_spec_package_lifecycle(
                 root,
                 spec_packages.load_spec_packages(stage),
                 base_ref=commit,
             )
-            self.assertIn(
-                "branch-integration-receipt-invalid",
-                {finding.code for finding in findings},
+            codes = {finding.code for finding in findings}
+            self.assertIn("package-retirement-unrecorded", codes)
+            self.assertFalse(
+                any(code.startswith("branch-integration-receipt") for code in codes)
             )
 
-    def test_divergent_branch_handoff_matches_completed_identity_across_slugs(
-        self,
-    ) -> None:
+    def test_an_unsafe_receipt_path_is_rejected_at_load(self) -> None:
         spec_packages = _spec_packages_module()
-        for mutation in ("uncommitted", "modified"):
-            with (
-                self.subTest(mutation=mutation),
-                tempfile.TemporaryDirectory() as directory,
-            ):
-                root = pathlib.Path(directory)
-                stage, commit, _ = _branch_handoff_fixture(
-                    root,
-                    completed_slug="other-lineage",
-                    completed_record=(
-                        "uncommitted" if mutation == "uncommitted" else "committed"
-                    ),
-                )
-                completed = root / "docs/98.archive/completed/03.specs"
-                if mutation == "modified":
-                    with (completed / "0001-other-lineage/spec.md").open(
-                        "a", encoding="utf-8"
-                    ) as file:
-                        file.write("\nmodified\n")
-                findings = spec_packages.validate_repository_spec_package_lifecycle(
-                    root,
-                    spec_packages.load_spec_packages(stage),
-                    base_ref=commit,
-                )
-                self.assertIn(
-                    "branch-integration-receipt-invalid",
-                    {finding.code for finding in findings},
-                )
-
-    def test_divergent_branch_handoff_requires_exactly_one_receipt_carrier(
-        self,
-    ) -> None:
-        spec_packages = _spec_packages_module()
-        for carrier, expected in (
-            ("missing", "branch-integration-receipt-required"),
-            ("current", "branch-integration-receipt-duplicate"),
-        ):
-            with (
-                self.subTest(carrier=carrier),
-                tempfile.TemporaryDirectory() as directory,
-            ):
-                root = pathlib.Path(directory)
-                stage, commit, receipt = _branch_handoff_fixture(root, carrier=carrier)
-                if carrier == "current":
-                    archived_target = _write_package(
-                        root / "docs/98.archive/completed/03.specs",
-                        number="0002",
-                        slug="target",
-                        spec_status="completed",
-                        plan=True,
-                        plan_status="completed",
-                        task=True,
-                        task_status="completed",
-                    )
-                    _set_frontmatter_value(
-                        archived_target / "tasks/tsk-0001-implement.md",
-                        "branch_integration_receipts",
-                        [receipt],
-                    )
-                findings = spec_packages.validate_repository_spec_package_lifecycle(
-                    root,
-                    spec_packages.load_spec_packages(stage),
-                    base_ref=commit,
-                )
-                codes = {finding.code for finding in findings}
-                if carrier == "missing":
-                    self.assertIn(expected, codes)
-                else:
-                    # The archived carrier is gone; the handoff must still fail.
-                    self.assertTrue(
-                        any(
-                            code.startswith("branch-integration-receipt")
-                            for code in codes
-                        ),
-                        codes,
-                    )
-
-    def test_divergent_branch_handoff_rejects_invalid_receipt_bindings(self) -> None:
-        spec_packages = _spec_packages_module()
-        cases = {
-            "wrong-base": {"source_commit": "f" * 40},
-            "wrong-source-path": {
-                "source_package_path": "docs/03.specs/0003-not-source"
-            },
-            "wrong-source-id": {"source_artifact_id": "SPEC-0003"},
-            "wrong-preserved-path": {
-                "preserved_package_path": (
-                    "docs/98.archive/superseded/03.specs/0003-not-source"
-                )
-            },
-            "wrong-target-path": {
-                "target_package_path": "docs/03.specs/0003-not-target"
-            },
-            "wrong-target-id": {"target_artifact_id": "SPEC-0003"},
-            "same-source-target-id": {"target_artifact_id": "SPEC-0001"},
-        }
-        for label, updates in cases.items():
-            with (
-                self.subTest(case=label),
-                tempfile.TemporaryDirectory() as directory,
-            ):
-                root = pathlib.Path(directory)
-                stage, commit, _ = _branch_handoff_fixture(
-                    root,
-                    receipt_updates=updates,
-                )
-                findings = spec_packages.validate_repository_spec_package_lifecycle(
-                    root,
-                    spec_packages.load_spec_packages(stage),
-                    base_ref=commit,
-                )
-                self.assertIn(
-                    "branch-integration-receipt-invalid",
-                    {finding.code for finding in findings},
-                )
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             stage, _, _ = _branch_handoff_fixture(
@@ -3423,135 +3356,6 @@ Narrative after the registered table.
             )
             with self.assertRaisesRegex(spec_packages.SpecPackageError, "unsafe"):
                 spec_packages.load_spec_packages(stage)
-
-    def test_divergent_branch_handoff_rejects_missing_completed_origin_and_inactive_target(
-        self,
-    ) -> None:
-        spec_packages = _spec_packages_module()
-        for mutation in (
-            "missing-completed-origin",
-            "uncommitted-completed-origin",
-            "modified-completed-origin",
-            "inactive-target",
-            "archived-target-missing-evidence",
-        ):
-            with (
-                self.subTest(mutation=mutation),
-                tempfile.TemporaryDirectory() as directory,
-            ):
-                root = pathlib.Path(directory)
-                stage, commit, _ = _branch_handoff_fixture(
-                    root,
-                    carrier=(
-                        "completed"
-                        if mutation == "archived-target-missing-evidence"
-                        else "current"
-                    ),
-                    completed_record=(
-                        "uncommitted"
-                        if mutation == "uncommitted-completed-origin"
-                        else "committed"
-                    ),
-                )
-                if mutation == "missing-completed-origin":
-                    shutil.rmtree(
-                        root / "docs/98.archive/completed/03.specs/0001-source"
-                    )
-                elif mutation == "modified-completed-origin":
-                    completed_spec = (
-                        root / "docs/98.archive/completed/03.specs/0001-source/spec.md"
-                    )
-                    with completed_spec.open("a", encoding="utf-8") as file:
-                        file.write("\nmodified\n")
-                elif mutation == "inactive-target":
-                    target = stage / "0002-target"
-                    _set_status(target / "spec.md", "in-progress", "approved")
-                    _set_status(target / "plan.md", "in-progress", "approved")
-                    _set_status(
-                        target / "tasks/tsk-0001-implement.md",
-                        "in-progress",
-                        "completed",
-                    )
-                    _set_review_rows(
-                        target / "tasks/tsk-0001-implement.md",
-                        (("1", "accepted", "Fixture review."),),
-                    )
-                elif mutation == "archived-target-missing-evidence":
-                    task = (
-                        root / "docs/98.archive/completed/03.specs/0002-target/"
-                        "tasks/tsk-0001-implement.md"
-                    )
-                    text = task.read_text(encoding="utf-8")
-                    task.write_text(
-                        text.replace(
-                            "| 1 | W1 | PASS: focused check | N/A: local validation only |\n",
-                            "",
-                        ),
-                        encoding="utf-8",
-                    )
-                findings = spec_packages.validate_repository_spec_package_lifecycle(
-                    root,
-                    spec_packages.load_spec_packages(stage),
-                    base_ref=commit,
-                )
-                codes = {finding.code for finding in findings}
-                if mutation == "archived-target-missing-evidence":
-                    self.assertTrue(
-                        any(
-                            code.startswith("branch-integration-receipt")
-                            for code in codes
-                        ),
-                        codes,
-                    )
-                else:
-                    self.assertIn("branch-integration-receipt-invalid", codes)
-
-    def test_divergent_branch_handoff_requires_exact_safe_package_bytes(self) -> None:
-        spec_packages = _spec_packages_module()
-        for mutation in (
-            "changed",
-            "missing",
-            "extra",
-            "outside-symlink",
-            "non-regular",
-            "oversized",
-        ):
-            with (
-                self.subTest(mutation=mutation),
-                tempfile.TemporaryDirectory() as directory,
-            ):
-                root = pathlib.Path(directory)
-                stage, commit, _ = _branch_handoff_fixture(root)
-                preserved = root / "docs/98.archive/superseded/03.specs/0001-source"
-                if mutation == "changed":
-                    with (preserved / "spec.md").open("a", encoding="utf-8") as file:
-                        file.write("\nchanged\n")
-                elif mutation == "missing":
-                    (preserved / "plan.md").unlink()
-                elif mutation == "extra":
-                    (preserved / "extra.md").write_text("extra\n", encoding="utf-8")
-                elif mutation == "outside-symlink":
-                    outside = root / "outside"
-                    outside.mkdir()
-                    (outside / "spec.md").write_text("outside\n", encoding="utf-8")
-                    shutil.rmtree(preserved)
-                    preserved.symlink_to(outside, target_is_directory=True)
-                elif mutation == "non-regular":
-                    (preserved / "spec.md").unlink()
-                    os.mkfifo(preserved / "spec.md")
-                else:
-                    (preserved / "spec.md").write_bytes(
-                        b"x" * (spec_packages.MAX_SPEC_FILE_BYTES + 1)
-                    )
-                findings = spec_packages.validate_repository_spec_package_lifecycle(
-                    root,
-                    spec_packages.load_spec_packages(stage),
-                    base_ref=commit,
-                )
-                self.assertIn(
-                    "branch-integration-receipt-invalid",
-                    {finding.code for finding in findings},
-                )
 
     def _retirement_fixture(self, root: pathlib.Path, mutate=None):
         """Write the repository Registry, optionally mutated, under `root`."""

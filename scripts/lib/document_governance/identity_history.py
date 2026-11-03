@@ -755,12 +755,19 @@ def validate_allocation_transition(
         )
         spaces = raw["identity_spaces"]
         high_water = {}
+        base_reserved: dict[str, frozenset[int]] = {}
         for name in registry.identity_spaces:
             space = spaces[name]
             mark = space["high_water"]
             if type(mark) is not int or mark < 0 or space["next_number"] != mark + 1:
                 raise ValueError("invalid allocation")
             high_water[name] = mark
+            reserved = space.get("reserved_history", [])
+            if not isinstance(reserved, list) or any(
+                type(number) is not int for number in reserved
+            ):
+                raise ValueError("invalid reserved history")
+            base_reserved[name] = frozenset(reserved)
     except (KeyError, TypeError, ValueError) as error:
         raise IdentityHistoryError(
             "allocation predecessor Registry is invalid"
@@ -1125,6 +1132,15 @@ def validate_allocation_transition(
                     "identity-allocation-regression",
                     f"identity_spaces.{name}",
                     "allocation cannot move below its trusted predecessor",
+                )
+            )
+        # A retired number stays retired: reserved_history only grows.
+        if not base_reserved[name] <= frozenset(space.reserved_history):
+            findings.append(
+                RegistryFinding(
+                    "identity-reserved-history-dropped",
+                    f"identity_spaces.{name}",
+                    "reserved_history cannot drop a number its predecessor reserved",
                 )
             )
         issued_before = previous.get(name, set()) | merged_issuance.get(name, set())

@@ -1,8 +1,10 @@
-"""Active-stage occupancy runs without the Stage 98 archive gate."""
+"""Active-stage occupancy, including the empty Stage 98 rule."""
 
 import contextlib
 import io
 import pathlib
+import subprocess
+import tempfile
 import unittest
 
 from scripts.lib.document_governance.lifecycle import occupancy
@@ -20,6 +22,27 @@ class OccupancyTests(unittest.TestCase):
             code = occupancy.run(ROOT)
         self.assertEqual(0, code)
         self.assertIn("active stage occupancy: violations=0", output.getvalue())
+
+    def test_any_tracked_stage_98_file_but_its_readme_is_a_violation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            archive = root / "docs/98.archive"
+            (archive / "superseded/03.specs/0245-x").mkdir(parents=True)
+            (archive / "README.md").write_text("# 98.archive\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            self.assertEqual((), occupancy.validate_active_stage_occupancy(root))
+
+            record = archive / "superseded/03.specs/0245-x/spec.md"
+            record.write_text("---\nstatus: superseded\n---\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            self.assertEqual(
+                (
+                    "docs/98.archive/superseded/03.specs/0245-x/spec.md: "
+                    "Stage 98 holds no records",
+                ),
+                occupancy.validate_active_stage_occupancy(root),
+            )
 
     def test_stage_03_membership_comes_from_the_registry(self) -> None:
         self.assertEqual(

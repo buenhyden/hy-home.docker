@@ -74,7 +74,6 @@
       "runtime",
       "identity_recovery",
       "identity_recovery_decisions",
-      "requirement_allocation_recovery_decisions",
       "branch_integration_receipts",
       "cancellation",
       "archive_authorizations",
@@ -1090,7 +1089,6 @@
         "cancellation",
         "completed_at",
         "identity_recovery_decisions",
-        "requirement_allocation_recovery_decisions",
         "branch_integration_receipts",
         "archive_authorizations"
       ],

@@ -735,6 +735,23 @@ def parse_requirement_package(
     return package
 
 
+def _root_reserved_requirements(stage_root: pathlib.Path) -> tuple[int, ...]:
+    """Reserved Requirement numbers from the checked root's own Registry.
+
+    Like Stage 03 removals, a gap is explained only by the tree under check: a
+    missing, symlinked, unreadable or invalid Registry reserves nothing.
+    """
+
+    from scripts.lib.document_governance import registry as registry_module
+
+    path = stage_root.parent.parent / "docs/99.templates/registry.json"
+    try:
+        space = registry_module.load_registry(path).identity_spaces.get("requirement")
+    except (registry_module.RegistryError, OSError, ValueError):
+        return ()
+    return space.reserved_history if space is not None else ()
+
+
 def load_requirement_packages(
     stage_root: pathlib.Path,
     *,
@@ -790,7 +807,12 @@ def load_requirement_packages(
     }
     # Dense numbering: a retired package leaves a gap the Registry records.
     retired_package_ids = {
-        f"REQ-{number:04d}" for number in requirement_space.reserved_history
+        f"REQ-{number:04d}"
+        for number in (
+            requirement_space.reserved_history
+            if registry is not None
+            else _root_reserved_requirements(stage_root)
+        )
     }
     if retired_package_ids & set(package_ids):
         raise RequirementPackageError(

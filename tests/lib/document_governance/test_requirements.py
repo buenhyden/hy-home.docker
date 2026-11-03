@@ -768,6 +768,22 @@ class RequirementPackageTests(unittest.TestCase):
                 registry=dataclasses.replace(registry, identity_spaces=spaces),
             )
 
+    def test_gaps_are_explained_only_by_the_checked_roots_registry(self) -> None:
+        from scripts.lib.document_governance.registry import DEFAULT_REGISTRY
+
+        requirements = _requirements_module()
+        with tempfile.TemporaryDirectory() as raw_root:
+            root = pathlib.Path(raw_root)
+            stage = root / "docs/01.requirements"
+            shutil.copytree(ROOT / "docs/01.requirements", stage)
+            # No Registry of its own: the retired gaps are unexplained.
+            with self.assertRaises(requirements.RequirementPackageError):
+                requirements.load_requirement_packages(stage)
+            registry = root / "docs/99.templates/registry.json"
+            registry.parent.mkdir(parents=True)
+            registry.write_bytes(DEFAULT_REGISTRY.read_bytes())
+            requirements.load_requirement_packages(stage)
+
     def test_current_specs_reference_declared_requirement_child_ids(self) -> None:
         requirements = _requirements_module()
         packages = requirements.load_requirement_packages(ROOT / "docs/01.requirements")

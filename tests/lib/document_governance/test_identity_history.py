@@ -175,6 +175,40 @@ class IdentityHistoryTests(unittest.TestCase):
                     base,
                 )
 
+    def test_reserved_history_cannot_drop_a_number(self) -> None:
+        from scripts.lib.document_governance import registry as registry_module
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            source = root / "docs/99.templates/registry.json"
+            source.parent.mkdir(parents=True)
+            source.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "registry")
+            base = self._git(root, "rev-parse", "HEAD").strip()
+            registry = load_registry()
+
+            def codes(candidate):
+                return {
+                    item.code
+                    for item in identity_history.validate_allocation_transition(
+                        root, candidate, {}, base
+                    )
+                }
+
+            self.assertNotIn("identity-reserved-history-dropped", codes(registry))
+            spaces = dict(registry.identity_spaces)
+            spaces["adr"] = dataclasses.replace(
+                spaces["adr"], reserved_history=spaces["adr"].reserved_history[1:]
+            )
+            dropped = dataclasses.replace(
+                registry, identity_spaces=MappingProxyType(spaces)
+            )
+            self.assertIn("identity-reserved-history-dropped", codes(dropped))
+
     def test_generic_allocation_rejects_retired_reuse_and_requires_atomic_advance(
         self,
     ) -> None:
