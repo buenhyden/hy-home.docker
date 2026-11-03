@@ -100,6 +100,14 @@ draft recorded.` and no longer looks like frontmatter.
 | `test_stage_01_to_03_lifecycles_offer_no_legacy_status` | Added |
 | `test_a_legacy_status_in_stage_01_or_02_is_an_invalid_status` | Added: each legacy status on a Requirement, AD, and ADR yields `invalid-status` |
 | Four lifecycle expectation tests and the profile map test | Updated to the narrowed lifecycles; `migration` and `tombstone` left the profile map |
+| `test_loads_frozen_canonical_documents_and_validates_graph` | Loads a plain accepted ADR; it no longer builds a superseded pair |
+| `test_a_legacy_status_fails_closed_at_load` | Added: the architecture loader rejects `superseded`, `deprecated`, and `retired` |
+| `test_dangling_and_asymmetric_supersession_are_reported`, `test_cyclic_supersession_is_reported` | Deleted: their fixtures need a `superseded` status the loader now rejects; the graph rules keep their direct-construction tests |
+| `test_metadata_cli_rejects_a_legacy_architecture_status` | Was `test_metadata_cli_rejects_ineffective_supersession_successor`; now asserts the CLI rejects a `superseded` ADR |
+| `SealedSectionShapeTests`, `test_a_sealed_shape_is_not_held_to_the_required_order` | Deleted with the sealed section shape mechanism, which only archive route records used |
+| Frozen exemption path `docs/98.archive/retired/...` | Dropped from the heading exemption test: no archive profile classifies it |
+| `test_a_stage_98_anchor_is_no_longer_admitted` | Was `test_registered_archive_anchor_remains_admitted`; a Stage 98 anchor is now unadmitted |
+| `test_every_text_mutator_excludes_the_same_frozen_payloads` | The Registry defines no frozen set, so the anchor must select no tracked file |
 
 ### Open issues
 
@@ -108,6 +116,14 @@ draft recorded.` and no longer looks like frontmatter.
   `common.archive_source_prefixes` remain; no current profile uses them, and
   removing them is a separate validator change.
 - The `migration` and `tombstone` identity spaces keep their reserved numbers.
+- `architecture.py` and `metadata/reference.py` keep the supersession graph
+  code; it can no longer receive an edge from a Stage 02 document.
+- The `frozen_archive_payloads` pre-commit anchor and its reader in
+  `scripts/hooks/post-tool-validate.sh` remain and select no file; removing
+  them is a hook change for the QA and CI/CD cleanup phase.
+- The `sealed` status and `sealed-record` lifecycle are removed with the
+  archive profiles; `_registered_section_findings` keeps an unused
+  `changed_boundary` parameter.
 - Operational, reference, and governance lifecycles still offer `deprecated`,
   `superseded`, and `retired`; the user's rule names Stage 01 to 03 only.
 

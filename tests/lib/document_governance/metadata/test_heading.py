@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import dataclasses
 import json
 import os
 import pathlib
@@ -617,7 +616,6 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         paths = (
             "docs/99.templates/templates/runtime/claude-agent.template.md",
             "docs/03.specs/0001-example/contracts/openapi.yaml",
-            "docs/98.archive/retired/03.specs/0001-example/spec.md",
             generated,
         )
         for relative in paths:
@@ -733,21 +731,6 @@ class RegistrySchemaBoundaryTests(unittest.TestCase):
         self.assertTrue(any("exceptions" in error.path for error in errors))
 
 
-_ROUTE_SECTIONS = ("Retired Path", "Successor", "Reason", "Traceability")
-_SEALED_SECTIONS = (
-    "Retired Path",
-    "Replacement",
-    "Reason",
-    "Recovery Commit",
-    "Traceability",
-)
-_TOMBSTONE_PROFILE = {
-    "required_sections": list(_ROUTE_SECTIONS),
-    "optional_sections": ["Related Documents"],
-    "sealed_section_shapes": [list(_SEALED_SECTIONS)],
-}
-
-
 _RUNBOOK_PROFILE = {
     "required_sections": [
         "Overview",
@@ -841,18 +824,6 @@ class SectionStructureTests(unittest.TestCase):
         self.assertIn("body-heading-missing", codes)
         self.assertNotIn("body-heading-order", codes)
 
-    def test_a_sealed_shape_is_not_held_to_the_required_order(self) -> None:
-        profile = {
-            **_RUNBOOK_PROFILE,
-            "sealed_section_shapes": [["Procedure", "Overview", "Related Documents"]],
-        }
-        body = self.body(
-            "## Procedure\n\n내용.",
-            "## Overview\n\n내용.",
-            "## Related Documents\n\n내용.",
-        )
-        self.assertNotIn("body-heading-order", self.codes(body, profile))
-
     def test_multi_line_comments_hide_text_until_they_close(self) -> None:
         empty = self.sections_with(3, "## Verification\n\n<!--\nnot content\n-->")
         self.assertEqual(["body-section-empty"], self.codes(empty))
@@ -895,136 +866,6 @@ class SectionStructureTests(unittest.TestCase):
             if profile.get("ordered_sections") and profile.get("nonempty_sections")
         }
         self.assertTrue({"guide", "policy", "runbook"} <= flagged)
-
-
-class SealedSectionShapeTests(unittest.TestCase):
-    """A sealed section shape is admitted for a record present at the base only.
-
-    The changed check subtracts the base record's deficits from the current
-    record's, so a sealed-shape deficit raised only at the changed boundary
-    cancels for a record the base already held and remains for an added one.
-    """
-
-    _NEW_SHAPE = _ROUTE_SECTIONS
-    _SEALED_SHAPE = _SEALED_SECTIONS
-
-    def codes(self, headings: tuple[str, ...], changed_boundary: bool) -> list[str]:
-        record = metadata.Record(
-            pathlib.Path("docs/98.archive/tombstones/01.requirements/0001-example.md"),
-            {"artifact_type": "tombstone", "status": "sealed"},
-            "tombstone",
-            frontmatter_present=True,
-        )
-        body = body_with_headings(*(f"## {heading}" for heading in headings))
-        return [
-            finding.code
-            for finding in heading_module._registered_section_findings(
-                record, body, _TOMBSTONE_PROFILE, changed_boundary
-            )
-        ]
-
-    def test_the_new_shape_passes_at_every_boundary(self) -> None:
-        for changed_boundary in (False, True):
-            with self.subTest(changed_boundary=changed_boundary):
-                self.assertEqual([], self.codes(self._NEW_SHAPE, changed_boundary))
-
-    def test_a_sealed_shape_is_a_deficit_only_at_the_changed_boundary(self) -> None:
-        self.assertEqual([], self.codes(self._SEALED_SHAPE, False))
-        self.assertEqual(["body-sealed-shape"], self.codes(self._SEALED_SHAPE, True))
-
-    def test_a_shape_matching_neither_is_still_reported(self) -> None:
-        self.assertIn(
-            "body-heading-missing", self.codes(("Retired Path", "Reason"), False)
-        )
-
-    def test_a_migration_keeps_its_sealed_shape_the_same_way(self) -> None:
-        profile = {
-            "required_sections": [
-                "Purpose",
-                "Moved Scope",
-                "Current Owner",
-                "Approval",
-                "Traceability",
-            ],
-            "optional_sections": ["Related Documents"],
-            "sealed_section_shapes": [
-                [
-                    "Purpose",
-                    "Authority Change",
-                    "Path Mapping",
-                    "Recovery",
-                    "Approval",
-                    "Traceability",
-                ]
-            ],
-        }
-        record = metadata.Record(
-            pathlib.Path("docs/98.archive/migrations/0004-example.md"),
-            {"artifact_type": "migration", "status": "sealed"},
-            "migration",
-            frontmatter_present=True,
-        )
-        for headings, changed_boundary, expected in (
-            (profile["required_sections"], True, []),
-            (profile["sealed_section_shapes"][0], False, []),
-            (profile["sealed_section_shapes"][0], True, ["body-sealed-shape"]),
-        ):
-            with self.subTest(headings=headings[1], changed=changed_boundary):
-                body = body_with_headings(*(f"## {name}" for name in headings))
-                self.assertEqual(
-                    expected,
-                    [
-                        finding.code
-                        for finding in heading_module._registered_section_findings(
-                            record, body, profile, changed_boundary
-                        )
-                    ],
-                )
-
-    def test_sealed_shapes_are_registered(self) -> None:
-        """The route profiles keep their sealed section shapes as scheme definitions."""
-
-        from scripts.lib.document_governance.registry import load_registry
-
-        registry = load_registry()
-        for profile_id in ("tombstone", "migration"):
-            with self.subTest(profile=profile_id):
-                shapes = registry.profiles[profile_id]["sealed_section_shapes"]
-                self.assertTrue(shapes)
-                self.assertTrue(all(shape for shape in shapes))
-
-    def test_the_changed_check_rejects_only_an_added_sealed_shape_record(self) -> None:
-        """End to end through the base subtraction, with a shape registered."""
-
-        registry = metadata.load_registry()
-        profile = {
-            **registry.profiles["tombstone"],
-            "required_sections": self._NEW_SHAPE,
-            "sealed_section_shapes": (self._SEALED_SHAPE,),
-        }
-        adapted_registry = dataclasses.replace(
-            registry,
-            profiles={**registry.profiles, "tombstone": profile},
-        )
-        profiles = metadata.build_registry_profiles(adapted_registry)
-        record = metadata.Record(
-            pathlib.Path("docs/98.archive/tombstones/01.requirements/0001-example.md"),
-            {"artifact_type": "tombstone", "status": "sealed"},
-            "tombstone",
-            frontmatter_present=True,
-        )
-        body = body_with_headings(*(f"## {name}" for name in self._SEALED_SHAPE))
-
-        def codes(base_record: object, base_text: str | None) -> list[str]:
-            return [
-                finding.code
-                for finding in heading_module._introduced_body_findings(
-                    record, body, base_record, base_text, profiles
-                )
-            ]
-
-        self.assertIn("body-sealed-shape", codes(None, None))
-        self.assertNotIn("body-sealed-shape", codes(record, body))
 
 
 class RuntimeRequiredImageInputTests(unittest.TestCase):
