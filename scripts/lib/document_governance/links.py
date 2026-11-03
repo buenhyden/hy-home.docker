@@ -1610,16 +1610,25 @@ def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
     flag, or an unrelated word with a slash is not read as a path. `secrets/`
     is excluded because those files are created by the operator and are
     untracked by design, and Stage 98 under `docs/98.archive/` is history that
-    no check validates. A block whose paths are illustrative rather than
-    runnable declares that on its own first line with the stated marker, which
-    keeps the exemption visible in the document instead of in a predicate.
+    no check validates. A terminal Task is excluded too: its body is immutable
+    execution evidence, so it may name a script a later change retired and it
+    cannot be edited to satisfy a check. A block whose paths are illustrative
+    rather than runnable declares that on its own first line with the stated
+    marker, which keeps the exemption visible in the document instead of in a
+    predicate.
     """
 
     root = graph.repo_root
     surfaces = {entry.name for entry in root.iterdir()} if root.is_dir() else set()
+    terminal_task_statuses = load_registry().lifecycle_terminal_statuses["task"]
     findings: list[LinkFinding] = []
     for node in graph.nodes:
         if node.path.as_posix().startswith(_ARCHIVE_PREFIX):
+            continue
+        if (
+            node.metadata.get("type") == "sdlc/task"
+            and node.metadata.get("status") in terminal_task_statuses
+        ):
             continue
         for start, lines in _command_blocks(node.text):
             if any(line.strip() == _ILLUSTRATIVE_COMMAND_MARKER for line in lines):

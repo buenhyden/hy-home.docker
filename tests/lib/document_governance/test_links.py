@@ -2388,6 +2388,23 @@ class FencedCommandPathTests(unittest.TestCase):
         self.assertEqual("README.md:2", findings[0].path)
         self.assertIn("scripts/gone.sh", findings[0].message)
 
+    def test_only_a_terminal_task_body_may_name_a_retired_script(self) -> None:
+        task = (
+            "---\ntitle: Fixture\ntype: sdlc/task\nstatus: {status}\n---\n"
+            "# Fixture\n\n```bash\nbash scripts/gone.sh\n```\n"
+        )
+        for status, expected in (("completed", 0), ("in-progress", 1)):
+            with self.subTest(status=status):
+                findings = self._findings(
+                    {
+                        "scripts/keep.sh": "",
+                        "docs/03.specs/0001-a/tasks/tsk-0001-a.md": task.format(
+                            status=status
+                        ),
+                    }
+                )
+                self.assertEqual(expected, len(findings))
+
     def test_operator_created_secret_files_are_not_repository_artifacts(self) -> None:
         findings = self._findings(
             {
