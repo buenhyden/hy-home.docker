@@ -1,4 +1,8 @@
-"""Minimal Stage 98 inventory and fail-closed Git recovery authority."""
+"""Read-only Stage 98 loaders that current, non-archive checks still use.
+
+No function here validates Stage 98; SPEC-0248 lists every caller and the
+replacement each needs before the archive bodies are removed.
+"""
 
 from __future__ import annotations
 
@@ -14,6 +18,10 @@ from typing import Any
 import yaml
 
 from scripts.lib.document_governance.frontmatter import safe_load_unique
+from scripts.lib.document_governance.git_provenance import (
+    recovery_commit_is_valid,
+    verify_recovery_blobs_batch,
+)
 from scripts.lib.document_governance.registry import (
     ARCHIVE_MODEL_ADOPTED,
     PRESERVED_DISPOSITIONS,
@@ -29,7 +37,6 @@ from scripts.lib.document_governance.registry import (
 MAX_DOCUMENT_BYTES = 1_048_576
 MAX_ARCHIVE_ENTRIES = 512
 MAX_ARCHIVE_BYTES = 32 * 1024 * 1024
-MAX_ROOT_ENTRIES = 8
 _MIGRATION_FIELDS = frozenset(
     {
         "schema_version",
@@ -44,9 +51,6 @@ _MIGRATION_FIELDS = frozenset(
 )
 
 
-# A tombstone inherits the retired document's identity under a `tomb-` prefix.
-# Retired paths that predate four-digit identity fall back to the archive
-# sequence number carried by the tombstone filename.
 def recover_legacy_parent_identities(root: pathlib.Path) -> set[str]:
     """Recover pre-taxonomy Spec/Plan/Task parents from the frozen ledger."""
 
@@ -85,20 +89,6 @@ def recover_legacy_parent_identities(root: pathlib.Path) -> set[str]:
             role = "plan" if execution_match.group(1) == "plans" else "task"
             identities.add(f"{role}:{execution_match.group(2)}")
     return identities
-
-
-# The pre-catalog layout put the document kind in the directory, so the two
-# markers above were enough to tell a policy from a runbook. The catalog layout
-# puts the kind in the filename and the number in the package, so a retired
-# catalog triple would otherwise inherit `GDE` for all three of its members and
-# lose which artifact each tombstone records.
-# The role layout (ADR-0043) names the kind by directory and the artifact number
-# by filename, so both parts of the identity come from the path itself.
-@dataclasses.dataclass(frozen=True, order=True)
-class ArchiveFinding:
-    code: str
-    path: str
-    detail: str = ""
 
 
 def _safe_path(value: object) -> pathlib.PurePosixPath | None:
@@ -373,12 +363,6 @@ def _code_value(value: str) -> str:
     return match.group(1)
 
 
-# The route shape names a route for an outside consumer: no recovery commit and
-# no body to pair with. It is admitted only once the model is adopted.
-_STAGE_03_PREFIX = "docs/03.specs/"
-_STAGE_03_MEMBER_PROFILES = ("spec", "plan", "task")
-
-
 _ARCHIVE_PREFIX = "docs/98.archive/"
 # The catalog is its own record so the Stage 98 README can stay a router
 # (SPEC-0179 Archive 3.0.0); its header and rows are unchanged by the move.
@@ -530,7 +514,7 @@ def _catalog_cells(line: str) -> tuple[str, ...]:
 
 def _catalog_rows(
     text: str,
-) -> tuple[tuple[RetentionCatalogRow, ...], list[ArchiveFinding]]:
+) -> tuple[RetentionCatalogRow, ...]:
     contract = _catalog_registry().common["archive_retention"]
     header = tuple(contract["capture_columns"])
     section = re.search(
@@ -538,7 +522,7 @@ def _catalog_rows(
         text,
     )
     if section is None:
-        return (), [ArchiveFinding("catalog-missing", _CATALOG_RECORD)]
+        return ()
     lines = [
         line.strip()
         for line in section.group(1).splitlines()
@@ -549,16 +533,12 @@ def _catalog_rows(
         or _catalog_cells(lines[0]) != header
         or _CATALOG_SEPARATOR.fullmatch(re.sub(r"\s", "", lines[1])) is None
     ):
-        return (), [ArchiveFinding("catalog-header-invalid", _CATALOG_RECORD)]
-    rows: list[RetentionCatalogRow] = []
-    findings: list[ArchiveFinding] = []
-    for line in lines[2:]:
-        cells = _catalog_cells(line)
-        if len(cells) != len(header):
-            findings.append(ArchiveFinding("catalog-row-malformed", _CATALOG_RECORD))
-            continue
-        rows.append(RetentionCatalogRow(*cells))
-    return tuple(rows), findings
+        return ()
+    return tuple(
+        RetentionCatalogRow(*cells)
+        for line in lines[2:]
+        if len(cells := _catalog_cells(line)) == len(header)
+    )
 
 
 def _code_span(value: str) -> str | None:
@@ -665,7 +645,7 @@ def retention_catalog_records(root: pathlib.Path) -> frozenset[str]:
     """Return the archive-relative units the Retention Catalog has a row for."""
 
     text = _catalog_index_text(pathlib.Path(root))
-    rows, _ = _catalog_rows(text) if text is not None else ((), [])
+    rows = _catalog_rows(text) if text is not None else ()
     return frozenset(
         record for row in rows if (record := _code_span(row.record)) is not None
     )
@@ -689,28 +669,58 @@ def retention_catalog_retirements(
     return frozenset(origins)
 
 
+def sealed_tombstone(
+    path: pathlib.Path,
+) -> tuple[dict[str, Any], pathlib.PurePosixPath, str] | None:
+    """Return a Tombstone's metadata, retired path and recovery commit, or None.
+
+    This is the minimal contract a Tombstone must meet before it grants a
+    current exemption: `type: archive/tombstone`, `status: sealed`, a safe
+    `Retired Path`, and a `Recovery Commit` that is one exact commit OID.
+    Anything else grants nothing and raises nothing.
+    """
+
+    if path.is_symlink() or not path.is_file():
+        return None
+    try:
+        metadata, body = _frontmatter(path.read_text(encoding="utf-8"))
+        retired = _safe_path(_code_value(_section(body, "Retired Path")))
+        commit = _code_value(_section(body, "Recovery Commit"))
+    except (OSError, UnicodeError, ValueError):
+        return None
+    if (
+        metadata.get("type") != "archive/tombstone"
+        or metadata.get("status") != "sealed"
+        or retired is None
+        or not recovery_commit_is_valid(commit)
+    ):
+        return None
+    return metadata, retired, commit
+
+
 def recorded_retired_paths(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
     """Return the origin paths Stage 98 records as approved retirements.
 
-    A Tombstone with a `Recovery Commit` section records a withdrawal, and once
-    the archive disposition model is adopted a Retention Catalog row for a
-    `retired/` unit records one too. This is a lenient reader, not a validator:
-    a record that does not parse grants no exemption and raises nothing.
+    A sealed Tombstone (see `sealed_tombstone`) records a withdrawal only when
+    its retired path is a regular blob at its recovery commit; once the archive
+    disposition model is adopted a Retention Catalog row for a `retired/` unit
+    records one too. This is a reader, not a validator: a record that fails
+    its contract or its blob proof grants no exemption and raises nothing.
     """
 
     root = pathlib.Path(root)
+    candidates = [
+        (retired, commit)
+        for path in sorted((root / _ARCHIVE_PREFIX / "tombstones").glob("*/*.md"))
+        if (record := sealed_tombstone(path)) is not None
+        for _, retired, commit in (record,)
+    ]
     recorded: set[pathlib.PurePosixPath] = set()
-    for path in sorted((root / _ARCHIVE_PREFIX / "tombstones").glob("*/*.md")):
-        if path.is_symlink() or not path.is_file():
-            continue
-        try:
-            _, body = _frontmatter(path.read_text(encoding="utf-8"))
-            _section(body, "Recovery Commit")
-            retired = _safe_path(_code_value(_section(body, "Retired Path")))
-        except (OSError, UnicodeError, ValueError):
-            continue
-        if retired is not None:
-            recorded.add(retired)
+    try:
+        proofs = verify_recovery_blobs_batch(candidates, repo_root=root)
+    except (OSError, ValueError):
+        proofs = ()
+    recorded.update(proof.path for proof in proofs if proof.is_regular_blob)
     if archive_disposition_model(root) == ARCHIVE_MODEL_ADOPTED:
         try:
             recorded |= retention_catalog_retirements(root)
