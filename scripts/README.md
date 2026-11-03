@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.3"
+version: "1.5.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 created: "2026-02-21"
 ---
 

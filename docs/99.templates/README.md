@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.3.2"
+version: "2.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 layer: "templates"
 ---
 
@@ -100,8 +100,7 @@ canonical Markdown artifact의 `type`이 해당 Registry-classified profile type
 domain, subject, stage, governance, generated, repository-support
 Markdown에도 적용됩니다. `absent`는 Markdown frontmatter를 쓰지 않는
 실행 가능한 machine contract 전용입니다. `unmanaged`는 지원되지 않는
-fallback과 등록된 frozen archive payload를 포괄하며, 둘 다 현재 작성
-대상이 아닙니다.
+fallback을 포괄하며, 현재 작성 대상이 아닙니다.
 
 ### Local r10 Role Forms
 
