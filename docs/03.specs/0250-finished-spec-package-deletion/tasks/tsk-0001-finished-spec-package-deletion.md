@@ -199,6 +199,12 @@ against `d6b535503` reported zero violations.
 | E15 | 3 | W3 | document-commands | commands mode on `09dccfe0c` | FAIL | 2 findings for ignored `_workspace` files that DATA-0096 documents since PR #720; not caused by this change | required | - |
 | E16 | 1 | W2 | corpus-lifecycle | `--base-ref origin/main` on `09dccfe0c` | PASS | corpus lifecycle zero; occupancy zero | required | - |
 | E17 | 4 | W5 | manifest-and-renderer | Script Manifest; provider renderer `--check` on `09dccfe0c` | PASS | manifest valid; renderer drift 0 | required | - |
+| E18 | 3 | W1 | link-exemption-tests | `tests.lib.document_governance.test_links` on `f715cfdaf`, including the 4 `RetiredPackageLinkTests` | PASS | 105 tests OK | required | - |
+| E19 | 4 | W5 | governance-unit-tests | `tests.lib.document_governance.test_spec_packages` on `f715cfdaf` | PASS | 88 tests OK | required | - |
+| E20 | 2 | W3 | metadata-changed | `check-changed --base-ref origin/main` on `f715cfdaf` | PASS | 141 selected, zero violations | required | - |
+| E21 | 2 | W3 | metadata-active | `check-active` on `f715cfdaf` | PASS | 497 selected, zero violations | required | - |
+| E22 | 1 | W2 | corpus-lifecycle | `--base-ref origin/main` on `f715cfdaf` | PASS | corpus lifecycle zero; occupancy zero | required | - |
+| E23 | 3 | W3 | document-links | alignment on `f715cfdaf` | PASS | zero failures and warnings | required | - |
 
 ## Criterion Acceptance
 
