@@ -1,6 +1,6 @@
 ---
 title: "Documentation, Governance, QA and CI Contract Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 owner: "@buenhyden"
 updated: "2026-11-03"
@@ -34,6 +34,13 @@ The observed starting revision is `43f112eb5452767f5ab56f95335ef59fb4ab743c`. Lo
 | P10.03 | W101 | Hook and canonical governance wording | hook-developer, rules-engineer | in-progress | Native provider delivery is unrun |
 | P10.04 | W102 | Local result lifecycle and residual handoff | doc-writer | in-progress | Remote CI and operation are unauthorized |
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0049 | draft | ready | #inputs-and-authorization |
+| SPEC-0212-TSK-0049 | ready | in-progress | #work-log |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -57,7 +64,7 @@ The observed starting revision is `43f112eb5452767f5ab56f95335ef59fb4ab743c`. Lo
 | 96 | pending | Hook and governance local regressions | Local regressions are reported; native provider delivery is separate and unrun. | SPEC-0212 TSK-0049 |
 | 97 | pending | Evidence lifecycle and remote boundary | Existing lifecycle machinery is reused; remote CI and operational acceptance remain unrun. | SPEC-0212 TSK-0049 |
 
-## Cross-package header handoff
+### Cross-package header handoff
 
 The following active or blocked Tasks retain the prior eight-column Evidence
 header (without `Required`). They caused the remaining corpus
@@ -68,19 +75,19 @@ review each Task's criterion/status contract, normalize its table together with
 the required evidence-result domain, and run that package's metadata and
 lifecycle checks.
 
-| Target | Package writer | Current state | Resume condition |
-| --- | --- | --- | --- |
-| SPEC-0204-TSK-0001 | SPEC-0204 package writer (`@buenhyden` attribution) | blocked | Confirm blocked criterion ownership, migrate Evidence to generation 7, then run package validators. |
-| SPEC-0204-TSK-0005 | SPEC-0204 package writer (`@buenhyden` attribution) | in-progress | Preserve cross-tier evidence and normalize its active Evidence contract before validation. |
-| SPEC-0204-TSK-0006 | SPEC-0204 package writer (`@buenhyden` attribution) | blocked | Preserve OpenBao block/recovery evidence; migrate only after its blocked contract is reviewed. |
-| SPEC-0204-TSK-0007 | SPEC-0204 package writer (`@buenhyden` attribution) | draft | Confirm retirement ownership and authorization boundary, then normalize the draft table. |
-| SPEC-0204-TSK-0010 | SPEC-0204 package writer (`@buenhyden` attribution) | in-progress | Preserve Secret catalog evidence and value-exclusion boundary while migrating the table. |
-| SPEC-0204-TSK-0011 | SPEC-0204 package writer (`@buenhyden` attribution) | in-progress | Preserve P03 integration evidence and normalize with its criterion-to-work-unit mapping. |
-| SPEC-0204-TSK-0012 | SPEC-0204 package writer (`@buenhyden` attribution) | in-progress | Preserve Airflow pipeline evidence and normalize its active table before package validation. |
-| SPEC-0204-TSK-0014 | SPEC-0204 package writer (`@buenhyden` attribution) | in-progress | Preserve OpenBao consumer migration and residuals; then migrate the table. |
-| SPEC-0204-TSK-0015 | SPEC-0204 package writer (`@buenhyden` attribution) | in-progress | Preserve operations-layout history and normalize the in-progress Evidence table. |
-| SPEC-0204-TSK-0016 | SPEC-0204 package writer (`@buenhyden` attribution) | in-progress | Preserve Opsflow acceptance boundaries and normalize the current table. |
-| SPEC-0218-TSK-0002 | SPEC-0218 package writer (`@buenhyden` attribution) | in-progress | Review root-resource criterion ownership, migrate the active table, then validate SPEC-0218. |
+Affected Task entries (target, package writer, current state and resume condition). The `@buenhyden` package-writer labels for SPEC-0204 and SPEC-0218 are frontmatter attribution only, never operating authority.
+
+- `SPEC-0204-TSK-0001` — `blocked`; the SPEC-0204 package writer must confirm blocked criterion ownership, migrate Evidence to generation 7, then run package validators.
+- `SPEC-0204-TSK-0005` — `in-progress`; preserve cross-tier evidence and normalize its active Evidence contract before validation.
+- `SPEC-0204-TSK-0006` — `blocked`; preserve OpenBao block/recovery evidence and migrate only after its blocked contract is reviewed.
+- `SPEC-0204-TSK-0007` — `draft`; confirm retirement ownership and authorization boundary, then normalize the draft table.
+- `SPEC-0204-TSK-0010` — `in-progress`; preserve the Secret catalog evidence and value-exclusion boundary while migrating the table.
+- `SPEC-0204-TSK-0011` — `in-progress`; preserve P03 integration evidence and normalize with its criterion-to-work-unit mapping.
+- `SPEC-0204-TSK-0012` — `in-progress`; preserve Airflow pipeline evidence and normalize its active table before package validation.
+- `SPEC-0204-TSK-0014` — `in-progress`; preserve OpenBao consumer migration and residuals, then migrate the table.
+- `SPEC-0204-TSK-0015` — `in-progress`; preserve operations-layout history and normalize the in-progress Evidence table.
+- `SPEC-0204-TSK-0016` — `in-progress`; preserve Opsflow acceptance boundaries and normalize the current table.
+- `SPEC-0218-TSK-0002` — `in-progress`; review root-resource criterion ownership, migrate the active table, then validate SPEC-0218.
 
 ## Review and Completion
 
