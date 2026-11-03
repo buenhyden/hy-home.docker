@@ -41,7 +41,6 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | ID | Package | 목적 |
 | --- | --- | --- |
 | SPEC-0204 | [서비스 연동·보안·운영](./0204-service-integration-security-and-operations/) | 공통 서비스 호환성·외부 연결·백업 경계의 승인용 계약 |
-| SPEC-0208 | [Stage 99 frontmatter·Task 수명주기](./0208-stage99-frontmatter-and-task-lifecycle/) | Stage 99 완료 증거와 Task 수명주기 기록의 기계 계약 |
 | SPEC-0209 | [0209-common-document-contract-adoption/](./0209-common-document-contract-adoption/) | 공통 문서 계약의 Registry, 현재 문서, 소비자 정합화 |
 | SPEC-0212 | [요청 기준선·정합화](./0212-request-baseline-and-reconciliation/) | 2026-10-07 요청의 기준선, 서비스 키 인벤토리, 충돌 지도, 후속 package 순서 |
 | SPEC-0218 | [공통 control·예외](./0218-common-controls-and-exceptions/) | root·LAB 모든 서비스의 최종 control을 정확한 예외와 대조, secret group·capability·PID 예산 정리 |
@@ -82,8 +81,9 @@ package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/
 5. acceptance 대응과 승격 기록은 현재 Task에 남기고 Stage 01·02·05의 오래
    유지할 갱신을 연결하거나 갱신이 필요 없는 이유를 적습니다.
 6. metadata, lifecycle, 링크, 구현 정합성, 등록된 gate profile을 검증합니다.
-7. 승격과 acceptance 검증이 끝나 Spec·Plan·모든 Task가 terminal이 되면, 현재 문서가
-   여전히 기대는 의미를 01·02 owner에 요약한 뒤 package를 삭제하고 Spec 번호를
+7. 승격과 acceptance 검증으로 package가 removal review 준비 상태가 되고 삭제가
+   승인되면, 현재 문서가 여전히 기대는 의미를 01·02 owner에 요약한 뒤 package를
+   삭제하고 Spec 번호를
    `reserved_history`에 추가합니다. clarify, analyze, 구현, 검증 순서는
    [SDLC](../../.agents/governance/sdlc.md)를 따릅니다.
 
@@ -97,15 +97,20 @@ package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/
   `Evidence` 한 곳에 기록합니다.
 - Spec·Plan 상태는 승인 권한만 기록합니다. 실행 상태는 Task가, 수용 판정은
   Task의 `Criterion Acceptance` 표가 소유합니다.
-- Spec·Plan·모든 Task가 terminal인 package는 삭제합니다. Spec 번호는
+- removal review 준비가 되고 삭제가 승인된 package는 삭제합니다. 준비 상태는
+  모든 criterion이 accepted 또는 `not-required`인 상태이며, typed Criterion
+  Acceptance 표가 없는 이전 형식은 모든 criterion이 PASS·accepted이고 해결되지
+  않은 required non-PASS가 없으면 준비로 봅니다. 완료 package를 지우라는 사용자
+  지시가 그 묶음의 승인이며, 삭제하는 Task가 승인과 package별 criterion 상태를
+  기록합니다. Spec 번호는
   Registry `reserved_history`에 추가하고, 현재 문서의 링크는 일반 텍스트로
   바꾸며, 본문은 Git history가 기록합니다. 하나라도 terminal이 아닌 Task가
   있으면 package와 그 완료된 Task는 남깁니다. Stage 98로 옮기지 않습니다.
 - terminal Task 본문은 package가 남아 있는 동안 고치지 않습니다. 그 본문이
   나중에 삭제된 package를 가리키는 링크는 고치지 않으며, 링크 검사는 번호가
   예약된 package를 향한 그런 링크만 허용합니다.
-- lifecycle generation 이전 proof를 지닌 package(SPEC-0208, SPEC-0209,
-  SPEC-0231)는 현재 terminal Task가 그 proof에 기대는 동안 삭제하지 않습니다.
+- lifecycle generation 이전 proof를 지닌 package(SPEC-0209, SPEC-0231)는 현재
+  terminal Task가 그 proof에 기대는 동안 삭제하지 않습니다.
   철회와 완료의 처분 기록은
   [문서 보존 정책](../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)을
   따릅니다.

@@ -83,9 +83,12 @@ absent incoming links cannot by themselves authorize deletion.
   Spec, Plan, and Task terminal sets. A package is ready for removal review
   when its Spec and Plan are approved (or validly cancelled or superseded),
   every Task or Execution Item is terminal, every numbered Spec criterion is
-  accepted or `not-required`, and no `FAIL` is unresolved. Readiness is
-  derived and never stored. A ready package with an approved Spec may wait in
-  Stage 03. In an unfinished package, completed and validly cancelled Tasks may
+  accepted or `not-required`, and no `FAIL` is unresolved; an older Task
+  format without the typed Criterion Acceptance table counts when it records
+  every criterion as PASS or accepted. Readiness is derived and never stored.
+  A ready package with an approved Spec may wait in Stage 03 until its removal
+  is approved, then is deleted with its number reserved. A terminal Task's link
+  into a deleted package whose number is reserved is not a link failure. In an unfinished package, completed and validly cancelled Tasks may
   remain but a terminal Plan may not. A cancelled or superseded Spec keeps no
   member in the active stage. Other stages keep per-document disposition rules.
   Cancellation records a reason, approver, valid approval date, and criterion
