@@ -11,7 +11,7 @@ from collections.abc import Callable, Mapping
 from typing import Any
 from urllib.parse import urlsplit
 
-MODEL_POLICY_PATH = "tests/fixtures/p03_models/notebook-model-policy.json"
+MODEL_POLICY_PATH = "infra/08-ai/open-notebook/config/notebook-model-policy.json"
 
 
 def _networks(service: object) -> set[str]:

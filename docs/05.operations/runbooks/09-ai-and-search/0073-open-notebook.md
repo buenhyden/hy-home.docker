@@ -72,13 +72,13 @@ created: "2026-05-17"
 ```bash
 python3 scripts/operations/notebook-models.py plan \
   --endpoint http://127.0.0.1:<owned-port> \
-  --policy tests/fixtures/p03_models/notebook-model-policy.json \
+  --policy infra/08-ai/open-notebook/config/notebook-model-policy.json \
   --password-file <owned-0600-single-link-file> \
   --receipt <owned-output.json>
 
 python3 scripts/operations/notebook-models.py verify \
   --endpoint http://127.0.0.1:<owned-port> \
-  --policy tests/fixtures/p03_models/notebook-model-policy.json \
+  --policy infra/08-ai/open-notebook/config/notebook-model-policy.json \
   --password-file <owned-0600-single-link-file> \
   --receipt <owned-output.json>
 ```

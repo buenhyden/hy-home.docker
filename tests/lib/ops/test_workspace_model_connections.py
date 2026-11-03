@@ -139,7 +139,7 @@ networks:
 
     def test_p03_model_policy_fixture_is_a_reference_not_stored_registration(self):
         policy = self.put(
-            "tests/fixtures/p03_models/notebook-model-policy.json",
+            "infra/08-ai/open-notebook/config/notebook-model-policy.json",
             json.dumps(
                 {
                     "schema_version": 1,
@@ -209,7 +209,7 @@ networks:
             ],
         }
         wrong_host = self.put(
-            "tests/fixtures/p03_models/notebook-model-policy.json",
+            "infra/08-ai/open-notebook/config/notebook-model-policy.json",
             json.dumps(base),
         )
         result = self.inspect(wrong_host)
@@ -218,7 +218,7 @@ networks:
 
         base["provider"]["base_url"] = "http://user:PRIVATE@ollama:11434"
         credential_url = self.put(
-            "tests/fixtures/p03_models/notebook-model-policy.json",
+            "infra/08-ai/open-notebook/config/notebook-model-policy.json",
             json.dumps(base),
         )
         result = self.inspect(credential_url)
@@ -229,7 +229,9 @@ networks:
         )
         self.assertNotIn("PRIVATE", json.dumps(result))
         self.assertIsNone(
-            candidate_kind("tests/fixtures/p03_models/notebook-model-policy-copy.json")
+            candidate_kind(
+                "infra/08-ai/open-notebook/config/notebook-model-policy-copy.json"
+            )
         )
 
         for invalid_url in (
@@ -241,7 +243,7 @@ networks:
             with self.subTest(invalid_url=invalid_url):
                 base["provider"]["base_url"] = invalid_url
                 invalid = self.put(
-                    "tests/fixtures/p03_models/notebook-model-policy.json",
+                    "infra/08-ai/open-notebook/config/notebook-model-policy.json",
                     json.dumps(base),
                 )
                 result = self.inspect(invalid)
@@ -312,7 +314,7 @@ networks:
         for index, candidate in enumerate(candidates):
             with self.subTest(index=index):
                 row = self.put(
-                    "tests/fixtures/p03_models/notebook-model-policy.json",
+                    "infra/08-ai/open-notebook/config/notebook-model-policy.json",
                     json.dumps(candidate),
                 )
                 result = self.inspect(row)
@@ -345,7 +347,7 @@ networks:
         with self.assertRaisesRegex(ValueError, "invalid model policy"):
             policy_rows(
                 document,
-                {"path": "tests/fixtures/p03_models/notebook-model-policy.json"},
+                {"path": "infra/08-ai/open-notebook/config/notebook-model-policy.json"},
                 [],
                 [],
                 endpoint=lambda _: ("ollama", 11434, None),

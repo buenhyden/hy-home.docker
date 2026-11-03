@@ -40,7 +40,7 @@ from tests.validation._p03_owned_docker import NativeFixtureError
 
 ROOT = Path(__file__).resolve().parents[2]
 CLI = ROOT / "scripts/operations/notebook-models.py"
-FIXTURE_POLICY = ROOT / "tests/fixtures/p03_models/notebook-model-policy.json"
+FIXTURE_POLICY = ROOT / "infra/08-ai/open-notebook/config/notebook-model-policy.json"
 
 
 class _ApiState:

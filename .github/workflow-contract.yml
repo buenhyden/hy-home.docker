@@ -1893,7 +1893,7 @@
           "tests/validation/test_p03_notebook_models.py",
           "tests/validation/test_p03_owned_docker.py",
           "tests/validation/test_p03_worker_models.py",
-          "tests/fixtures/p03_models/"
+          "infra/08-ai/open-notebook/config/notebook-model-policy.json"
         ],
         "suites": [
           "repository-integrity"
@@ -2279,7 +2279,7 @@
           "tests/validation/test_p03_notebook_models.py",
           "tests/validation/test_p03_owned_docker.py",
           "tests/validation/test_p03_worker_models.py",
-          "tests/fixtures/p03_models/"
+          "infra/08-ai/open-notebook/config/notebook-model-policy.json"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

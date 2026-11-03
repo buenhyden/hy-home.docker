@@ -155,7 +155,7 @@ class ModelPolicyTests(unittest.TestCase):
     def test_public_fixture_is_the_reviewed_policy(self):
         fixture = (
             Path(__file__).resolve().parents[3]
-            / "tests/fixtures/p03_models/notebook-model-policy.json"
+            / "infra/08-ai/open-notebook/config/notebook-model-policy.json"
         )
 
         self.assertEqual(json.loads(fixture.read_text(encoding="utf-8")), POLICY)

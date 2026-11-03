@@ -209,9 +209,15 @@ class P03WorkflowContractTests(unittest.TestCase):
         registry = gate_contract.parse_gate_registry(
             document, ".github/workflow-contract.yml"
         )
+        policy = "infra/08-ai/open-notebook/config/notebook-model-policy.json"
+        suites = gate_contract.select_public_suites(public, "changed", (policy,))
+        self.assertIn("repository-integrity", suites)
+        self.assertIn(
+            "leaf.repository-integrity-regressions",
+            gate_contract.public_root_gate_ids(public, suites, changed_paths=(policy,)),
+        )
         for path in (
             "scripts/operations/notebook-models.py",
-            "tests/fixtures/p03_models/notebook-model-policy.json",
             "tests/validation/_p03_notebook_effects.py",
             "tests/validation/_p03_notebook_protocol.py",
             "tests/validation/_p03_notebook_readiness.py",
