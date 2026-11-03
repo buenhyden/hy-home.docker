@@ -3113,6 +3113,28 @@ class FolderAgentGuidePlacementTests(unittest.TestCase):
         self.assertEqual(registered, guides)
         self.assertEqual("en", profile["language"])
 
+    def test_stage_loaders_require_a_regular_folder_guide(self) -> None:
+        from scripts.lib.document_governance.architecture import (
+            ArchitectureDocumentError,
+            load_architecture_documents,
+        )
+        from scripts.lib.document_governance.requirements import (
+            RequirementPackageError,
+            load_requirement_packages,
+        )
+
+        for stage, loader, error in (
+            ("01.requirements", load_requirement_packages, RequirementPackageError),
+            ("02.architecture", load_architecture_documents, ArchitectureDocumentError),
+        ):
+            with self.subTest(stage=stage), tempfile.TemporaryDirectory() as temp:
+                copy = pathlib.Path(temp) / stage
+                shutil.copytree(ROOT / "docs" / stage, copy)
+                (copy / "AGENTS.md").unlink()
+                (copy / "AGENTS.md").symlink_to(ROOT / "docs" / stage / "AGENTS.md")
+                with self.assertRaisesRegex(error, "regular non-symlink"):
+                    loader(copy, registry=load_registry())
+
 
 class ProfileLanguageTests(unittest.TestCase):
     """SPEC-0184 rule 4: every prose profile declares its language."""

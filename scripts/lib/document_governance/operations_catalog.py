@@ -2356,6 +2356,15 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
         )
     else:
         require_tracked(OPERATIONS_ROOT / "README.md")
+    root_guide = root_by_name.get("AGENTS.md")
+    if root_guide is not None and not root_guide.is_regular:
+        findings.append(
+            _finding(
+                "operations-root-guide-invalid",
+                OPERATIONS_ROOT / "AGENTS.md",
+                "regular AGENTS.md required",
+            )
+        )
     template = root / "docs/99.templates/templates/operations/release.template.md"
     if template.exists() or template.is_symlink():
         findings.append(

@@ -772,7 +772,11 @@ def load_requirement_packages(
         )
     paths: list[pathlib.Path] = []
     for entry in sorted(stage_root.iterdir(), key=lambda item: item.name):
-        if entry.name in {"README.md", "AGENTS.md"}:
+        if entry.name == "README.md":
+            continue
+        if entry.name == "AGENTS.md":
+            # The folder guide must be a regular file, like every Stage 01 entry.
+            _read_regular_utf8(entry)
             continue
         if entry.suffix.lower() in _EXECUTABLE_SUFFIXES:
             raise RequirementPackageError(
