@@ -65,6 +65,17 @@ class OccupancyTests(unittest.TestCase):
                 occupancy.validate_active_stage_occupancy(pathlib.Path(directory)),
             )
 
+    def test_a_missing_git_binary_fails_closed(self) -> None:
+        from unittest import mock
+
+        with mock.patch.object(
+            occupancy.subprocess, "run", side_effect=FileNotFoundError("git")
+        ):
+            self.assertEqual(
+                ("docs: tracked file inventory is unavailable",),
+                occupancy.validate_active_stage_occupancy(ROOT),
+            )
+
     def test_stage_03_membership_comes_from_the_registry(self) -> None:
         self.assertEqual(
             "docs/03.specs/0001-example",

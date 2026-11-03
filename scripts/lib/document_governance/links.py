@@ -38,8 +38,6 @@ _DOC_ROOT = "docs"
 # Stage directories are numbered by construction, so the pattern keeps matching
 # a stage that is added or removed without a second list to keep in step.
 _STAGE_DIRECTORY = re.compile(rf"^{_DOC_ROOT}/[0-9]{{2}}\.[^/]+(?:/|$)")
-# Stage 98 is history and is not validated: its outbound links, bodies and
-# README shapes are skipped.
 _ROOT_PREFIXES = (
     ".agents/",
     "docs/",

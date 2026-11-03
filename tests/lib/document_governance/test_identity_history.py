@@ -209,6 +209,22 @@ class IdentityHistoryTests(unittest.TestCase):
             )
             self.assertIn("identity-reserved-history-dropped", codes(dropped))
 
+            live_adr = registry.identity_spaces["adr"].reserved_history[0]
+            live = {
+                item.code
+                for item in identity_history.validate_allocation_transition(
+                    root,
+                    registry,
+                    {
+                        f"docs/02.architecture/decisions/{live_adr:04d}-x.md": (
+                            f"ADR-{live_adr:04d}"
+                        )
+                    },
+                    base,
+                )
+            }
+            self.assertIn("identity-reserved-history-live", live)
+
     def test_generic_allocation_rejects_retired_reuse_and_requires_atomic_advance(
         self,
     ) -> None:

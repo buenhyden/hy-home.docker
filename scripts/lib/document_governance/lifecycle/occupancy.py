@@ -64,12 +64,15 @@ def validate_active_stage_occupancy(
     )
 
     root = pathlib.Path(root)
-    listing = subprocess.run(
-        ["git", "ls-files", "-z", "docs"],
-        cwd=root,
-        capture_output=True,
-        check=False,
-    )
+    try:
+        listing = subprocess.run(
+            ["git", "ls-files", "-z", "docs"],
+            cwd=root,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:  # git is missing or cannot start
+        return ("docs: tracked file inventory is unavailable",)
     if listing.returncode != 0:
         # Without the tracked inventory no Stage 98 or Stage 03 rule can hold.
         return ("docs: tracked file inventory is unavailable",)

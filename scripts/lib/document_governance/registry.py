@@ -41,7 +41,6 @@ FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
 # profile.
 PRESERVED_RECORD_PREFIX = "docs/98.archive/"
 PRESERVED_DISPOSITIONS = ("completed", "superseded", "retired", "resolved")
-# The retention class the model adds. Before adoption no check admits it.
 # Roots a document may have been retired from, mirroring the registry's
 # `archive_source_prefixes`. `docs/` is the implicit default.
 LEGACY_ARCHIVE_SOURCE_ROOTS = frozenset({"archive/"})

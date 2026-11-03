@@ -99,7 +99,8 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
     """Validate the complete current document-corpus lifecycle in one route.
 
     It emits the Spec Package lifecycle findings and active-stage occupancy.
-    Stage 98 archive records are history and are not validated here.
+    The occupancy rule is the only Stage 98 check: any tracked file there other
+    than its README is a violation.
     """
 
     parser = _parser()

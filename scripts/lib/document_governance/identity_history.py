@@ -1143,6 +1143,15 @@ def validate_allocation_transition(
                     "reserved_history cannot drop a number its predecessor reserved",
                 )
             )
+        # A reserved number is retired: no current document may carry it.
+        if frozenset(space.reserved_history) & observed.get(name, set()):
+            findings.append(
+                RegistryFinding(
+                    "identity-reserved-history-live",
+                    f"identity_spaces.{name}",
+                    "reserved_history names a number a current document carries",
+                )
+            )
         issued_before = previous.get(name, set()) | merged_issuance.get(name, set())
         added = observed.get(name, set()) - issued_before
         if any(number <= mark for number in added):
