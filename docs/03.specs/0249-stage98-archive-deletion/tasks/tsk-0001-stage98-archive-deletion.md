@@ -185,10 +185,14 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
   parsed but inert, and its schema entry can go with the completed Spec package
   phase.
 - The owner decided to accept ADR-0051, but the changed-document check rejects
-  a new ADR that does not enter as `proposed`; no Task event or CI override can
-  carry that transition. ADR-0051 therefore lands as `proposed` and moves to
-  `accepted` in the first change after it merges, as ADR-0050 did.
-- Review items M4 and M5 are recorded as open, as directed.
+  a new ADR that does not enter as `proposed`. ADR-0051 landed as `proposed` in
+  #723 and changed to `accepted` in the follow-up change, as ADR-0049 did.
+- Review item M4 is resolved in the follow-up change: the `commands` check now
+  derives a multi-item Task's status from its Execution Items, so a Task whose
+  items are all terminal is exempt and an unreadable item table stays checked.
+- Review item M5 is resolved in the follow-up change: an ordinary allocation
+  transition across a merge reads each blob once, and the test fails when the
+  blob cache is disabled.
 - `operations-subject` stood at high-water 102 while RUN-0103 to RUN-0106 were
   already issued; it is now 106. No check caught it because the identity
   scanner maps the `GUIDE-`, `POLICY-` and `RUNBOOK-` prefixes while issued
@@ -264,6 +268,8 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 | E48 | 4 | W5 | hosted-ci | GitHub Actions on the final head | NOT_RUN | not observed from this worktree | required | - |
 | E49 | 4 | W5 | operations-prefix-scan | identity history tests, metadata check-changed `--base-ref origin/main`, registry and requirements tests, corpus lifecycle after the prefix table change | PASS | 29 identity tests OK; check-changed 372 selected, 0 violations; registry and requirements OK; lifecycle and occupancy 0 | required | - |
 | E50 | 4 | W5 | hosted-ci-prior-head | CI Quality Gates run 41637977928 on d80fddbac | PASS | candidate-quality success; main-security skipped | required | - |
+| E51 | 4 | W5 | follow-up-m4 | `FencedCommandPathTests` with a multi-item Task whose items are all terminal or one in progress | PASS | 9 tests OK; the all-terminal case reported a finding before the change | required | - |
+| E52 | 4 | W5 | follow-up-m5 | `test_ordinary_allocation_transition_reads_each_blob_once`, also run with the blob cache disabled | PASS | OK with the cache; fails with the cache disabled | required | - |
 
 ## Criterion Acceptance
 
@@ -280,8 +286,8 @@ Local checks are recorded above. The coordinator approved the test deletions
 and repointing listed in Test changes. Independent review of PR #723 requested
 changes (I1 to I6, M1 to M6), and its re-review requested N1 to N4 and m1 to m6;
 all are addressed in this branch, as are the final re-review items 1 to 8,
-with M4 and M5 recorded as open and ADR-0051 acceptance deferred to the change
-after merge. Hosted CI for the new head has
+with ADR-0051 acceptance, M4 and M5 resolved in the follow-up change after
+merge. Hosted CI for the new head has
 not been observed, and no criterion is accepted yet.
 
 ## Related Documents

@@ -1,10 +1,10 @@
 ---
 title: "Canonical Agent Governance Home"
-version: "1.0.5"
+version: "1.0.6"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-03"
 layer: "architecture"
 artifact_id: "ADR-0032"
 parent_ids:
@@ -91,8 +91,7 @@ Adopt the following location model after an independent design review.
   grant execution approval to access operational input.
 - Detailed Requirement, Architecture, Spec/Plan/Task, and Operations documents
   stay in the existing docs. Stage 90 is non-authoritative evidence. Stage 98
-  was the preserved record per ADR-0031; it now holds no records (ADR-0051,
-  pending acceptance), and version history keeps removed bodies.
+  was the preserved record per ADR-0031; it now holds no records (ADR-0051), and version history keeps removed bodies.
 - Remove the old common directory from current reading, generation, linking,
   and fallback targets. Old paths in frozen records and regression-test
   strings are classified as history/negative examples.

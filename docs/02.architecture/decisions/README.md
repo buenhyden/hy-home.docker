@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.8"
+version: "1.6.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 layer: "architecture"
 ---
 
@@ -132,8 +132,8 @@ docs/02.architecture/decisions/
   OpenBao와 `openbao-agent`를 secrets manager로 채택하며 ADR-0003, ADR-0018을 supersede한 accepted decision.
 - [`ADR-0051`](./0051-summarize-and-delete-retirement.md):
   은퇴 문서를 01·02 문서에 요약한 뒤 삭제하고 Git 이력을 기록으로 삼으며, 폐기 번호를
-  Registry `reserved_history`에 두는 decision. 소유자가 2026-11-03에 채택을 결정했고, 새 ADR은
-  proposed로 시작해야 하므로 다음 변경에서 accepted가 됩니다. ADR-0037 결정 4~10과 결정 1의
+  Registry `reserved_history`에 두는 decision. 소유자가 2026-11-03에 채택을 결정해, SPEC-0249 병합 직후
+  accepted가 된 decision. ADR-0037 결정 4~10과 결정 1의
   마지막 문장을 대체한다.
 
 ## Usage

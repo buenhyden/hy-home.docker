@@ -1,6 +1,6 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -151,7 +151,7 @@ completion-receipt clauses.
 
 ### Traceability
 
-- **Partially superseded**: pending acceptance of
+- **Partially superseded**:
   [ADR-0051](0051-summarize-and-delete-retirement.md), it supersedes decision
   items 4 to 10 and the last sentence of decision 1, because Stage 98 holds no
   records and retirement summarizes then deletes. With ADR-0048, decision 1 is
