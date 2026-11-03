@@ -189,6 +189,14 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
   carry that transition. ADR-0051 therefore lands as `proposed` and moves to
   `accepted` in the first change after it merges, as ADR-0050 did.
 - Review items M4 and M5 are recorded as open, as directed.
+- `operations-subject` stood at high-water 102 while RUN-0103 to RUN-0106 were
+  already issued; it is now 106. No check caught it because the identity
+  scanner maps the `GUIDE-`, `POLICY-` and `RUNBOOK-` prefixes while issued
+  operations identities use `GDE-`, `POL-` and `RUN-`, so operations numbers are
+  never observed by allocation or by the new reserved-but-live check. Fixing
+  the prefix map is left for a separate change.
+- The final evidence rows name revision b8832d8ee or ef6046cc9; the Task-only
+  commit that records them changes no checked code or Registry data.
 - The archive-record metadata vocabulary in `metadata/profile.py` and the
   archive profiles stay as scheme definitions; remove them in the legacy and
   deprecated phase if no record type needs them.
@@ -227,18 +235,29 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 | E23 | 3 | W3 | document-links | alignment | PASS | 954 documents, 8342 links, zero failures and warnings | required | - |
 | E24 | 4 | W5 | manifest-and-renderer | Script Manifest; provider renderer `--check` | PASS | manifest valid; drift 0 | required | - |
 | E25 | 4 | W5 | hosted-ci | GitHub Actions on the pushed head | NOT_RUN | not observed from this worktree | required | - |
-| E26 | 4 | W5 | governance-unit-tests | PR #723 re-review fixes, quiet tree: every `tests/lib/document_governance` module, `tests/validation/lifecycle`, Script Manifest | FAIL | spec packages 88 OK; links, operations catalog, metadata validator, generations 285 OK; registry, requirements, identity, architecture 181 OK; metadata, lifecycle, references, taxonomy, manifest 274 with 1 error from a bare REQ-0026 child identity in the narrowed FR-0003 | required | - |
-| E27 | 4 | W5 | governance-unit-tests | the metadata, lifecycle, references, taxonomy and manifest batch rerun in full after that fix | PASS | 274 tests OK | required | E26 |
-| E28 | 4 | W5 | gate-and-ci-routing | `tests/lib/gate` (includes workflow-contract tests), CI routing and CI gate plan under uv Python | FAIL | 283 tests: the gate evidence module needs `fcntl.F_ADD_SEALS` | required | - |
-| E29 | 4 | W5 | gate-and-ci-routing | `tests.lib.gate.test_ci_gate_evidence` with `/usr/bin/python3` | PASS | 21 tests OK | required | E28 |
+| E26 | 4 | W5 | governance-unit-tests | PR #723 re-review fixes, quiet tree: every `tests/lib/document_governance` module, `tests/validation/lifecycle`, Script Manifest (revision dc6b0a9eb, with the FR-0003 fix applied during the run; ADR-0051 `accepted`) | FAIL | spec packages 88 OK; links, operations catalog, metadata validator, generations 285 OK; registry, requirements, identity, architecture 181 OK; metadata, lifecycle, references, taxonomy, manifest 274 with 1 error from a bare REQ-0026 child identity in the narrowed FR-0003 | required | - |
+| E27 | 4 | W5 | governance-unit-tests | the metadata, lifecycle, references, taxonomy and manifest batch rerun in full after that fix (revision fb75f9955; ADR-0051 `accepted`) | PASS | 274 tests OK | required | E26 |
+| E28 | 4 | W5 | gate-and-ci-routing | `tests/lib/gate` (includes workflow-contract tests), CI routing and CI gate plan under uv Python (revision dc6b0a9eb; ADR-0051 `accepted`) | FAIL | 283 tests: the gate evidence module needs `fcntl.F_ADD_SEALS` | required | - |
+| E29 | 4 | W5 | gate-and-ci-routing | `tests.lib.gate.test_ci_gate_evidence` with `/usr/bin/python3` (revision dc6b0a9eb; ADR-0051 `accepted`) | PASS | 21 tests OK | required | E28 |
 | E30 | 4 | W5 | metadata-changed | `check-changed --base-ref origin/main` with ADR-0051 `accepted` | FAIL | invalid-initial-status: a new ADR must start at proposed | required | - |
 | E31 | 4 | W5 | metadata-changed | `check-changed --base-ref origin/main` with ADR-0051 `proposed` | PASS | 372 selected, zero violations | required | E30 |
 | E32 | 4 | W5 | metadata-active | `check-active` | PASS | 497 selected, zero violations | required | - |
 | E33 | 2 | W1 | corpus-lifecycle | `--base-ref origin/main` | PASS | zero violations; occupancy zero | required | - |
-| E34 | 3 | W3 | document-links | alignment | PASS | 954 documents, 8343 links, zero failures and warnings | required | - |
-| E35 | 4 | W5 | manifest-and-renderer | Script Manifest; provider renderer `--check` | PASS | manifest valid; drift 0 | required | - |
+| E34 | 3 | W3 | document-links | alignment (revision fb75f9955; ADR-0051 `accepted`) | PASS | 954 documents, 8343 links, zero failures and warnings | required | - |
+| E35 | 4 | W5 | manifest-and-renderer | Script Manifest; provider renderer `--check` (revision fb75f9955; ADR-0051 `accepted`) | PASS | manifest valid; drift 0 | required | - |
 | E36 | 4 | W5 | staged-precommit | `run-ci-precommit.sh --mode local-staged` before each re-review commit | PASS | no failing hook | required | - |
 | E37 | 4 | W5 | hosted-ci | GitHub Actions on the new head | NOT_RUN | not observed from this worktree; the coordinator reported CI passing on 42809b561 | required | - |
+| E38 | 4 | W5 | governance-unit-tests | final re-review fixes, revision b8832d8ee (ADR-0051 `proposed`), quiet tree: every `tests/lib/document_governance` module, `tests/validation/lifecycle`, Script Manifest | FAIL | spec packages 88 OK; links, operations catalog, metadata validator, generations 285 OK; metadata, lifecycle, references, taxonomy, manifest 275 OK; registry, requirements, identity, architecture 181 with 2 failures: two allocation fixtures reused the now-reserved SPEC-0104 | required | - |
+| E39 | 4 | W5 | governance-unit-tests | registry, requirements, identity and architecture batch rerun in full at ef6046cc9 after repointing those fixtures | PASS | 181 tests OK | required | E38 |
+| E40 | 4 | W5 | gate-and-ci-routing | `tests/lib/gate` (includes workflow-contract tests), CI routing and CI gate plan under uv Python, revision b8832d8ee | FAIL | 283 tests: the gate evidence module needs `fcntl.F_ADD_SEALS` | required | - |
+| E41 | 4 | W5 | gate-and-ci-routing | `tests.lib.gate.test_ci_gate_evidence` with `/usr/bin/python3`, revision b8832d8ee | PASS | 21 tests OK | required | E40 |
+| E42 | 4 | W5 | metadata-changed | `check-changed --base-ref origin/main`, revision b8832d8ee, ADR-0051 `proposed` | PASS | 372 selected, zero violations | required | - |
+| E43 | 4 | W5 | metadata-active | `check-active`, revision b8832d8ee | PASS | 497 selected, zero violations | required | - |
+| E44 | 2 | W1 | corpus-lifecycle | `--base-ref origin/main`, revision b8832d8ee | PASS | zero violations; occupancy zero | required | - |
+| E45 | 3 | W3 | document-links | alignment, revision b8832d8ee | PASS | 954 documents, 8343 links, zero failures and warnings | required | - |
+| E46 | 4 | W5 | manifest-and-renderer | Script Manifest and provider renderer `--check`, revision b8832d8ee | PASS | manifest valid; drift 0 | required | - |
+| E47 | 4 | W5 | staged-precommit | `run-ci-precommit.sh --mode local-staged` before each final re-review commit | PASS | no failing hook | required | - |
+| E48 | 4 | W5 | hosted-ci | GitHub Actions on the final head | NOT_RUN | not observed from this worktree | required | - |
 
 ## Criterion Acceptance
 
@@ -254,8 +273,9 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 Local checks are recorded above. The coordinator approved the test deletions
 and repointing listed in Test changes. Independent review of PR #723 requested
 changes (I1 to I6, M1 to M6), and its re-review requested N1 to N4 and m1 to m6;
-all are addressed in this branch, with M4 and M5 recorded as open and ADR-0051
-acceptance deferred to the change after merge. Hosted CI for the new head has
+all are addressed in this branch, as are the final re-review items 1 to 8,
+with M4 and M5 recorded as open and ADR-0051 acceptance deferred to the change
+after merge. Hosted CI for the new head has
 not been observed, and no criterion is accepted yet.
 
 ## Related Documents
