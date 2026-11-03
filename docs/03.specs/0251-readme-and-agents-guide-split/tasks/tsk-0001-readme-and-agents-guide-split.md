@@ -145,6 +145,11 @@ progress under the approved parents. Hosted CI has not run.
 | E14 | 1 | W1 | agent-governance-and-renderer | contract check and renderer `--check`, revision 20da707ba | PASS | zero failures; providers 2, drift 0 | required | - |
 | E15 | 4 | W2 | governance-unit-tests | `tests/lib/document_governance` discovery, revision 4d4fefc26, quiet tree | PASS | 763 tests OK; metadata check-changed 25 and check-active 497 selected with zero violations; Script Manifest and link alignment PASS | required | E10 |
 | E16 | 4 | W4 | hosted-ci | GitHub Actions | NOT_RUN | branch not pushed | required | - |
+| E17 | 2, 3 | W3 | document-entrypoint | `entrypoint` mode, revision c113796e9, compared with main c5ec612ff | FAIL | 9 findings, identical on main: `infra` READMEs link Stage 03 Task bodies; pre-existing baseline debt, not caused by this change | required | - |
+| E18 | 2, 3 | W3 | document-commands | `commands` mode, revision c113796e9 | FAIL | 2 findings for ignored `_workspace` paths in the DATA-0096 README, carried since PR #720; pre-existing baseline debt, not caused by this change | required | - |
+| E19 | 4 | W2 | governance-unit-tests | `tests/lib/document_governance` discovery after the review fixes, revision c113796e9, quiet tree | PASS | 768 tests OK | required | - |
+| E20 | 4 | W4 | review-fix-gates | revision c113796e9: metadata check-changed and check-active, corpus lifecycle, links alignment/navigation/language/traceability, operations catalog, Script Manifest, renderer `--check`, agent governance contract | PASS | 26 and 497 selected with zero violations; lifecycle and occupancy zero; renderer drift 0; contract zero failures | required | - |
+| E21 | 4 | W4 | validation-suites | CI routing, surface ownership and `tests/validation/lifecycle`, revision c113796e9 | PASS | 92 and 20 tests OK | required | - |
 
 ## Criterion Acceptance
 
