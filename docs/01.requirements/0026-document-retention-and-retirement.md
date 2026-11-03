@@ -72,7 +72,7 @@ absent incoming links cannot by themselves authorize deletion.
   a copy of the removed document anywhere, including Stage 98, never stands in
   for the reserved number. For every identity space, they reject dropping a
   number from `reserved_history`. Other standalone removals rely on the
-  authoring rule in FR-0002.
+  retirement authoring rule above.
 - **REQ-0026-FR-0004**: Still-current obligations, decisions, structure, and
   procedures move to their canonical governance, Stage 01, 02, or 05 owner before
   their source is retired.
