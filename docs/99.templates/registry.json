@@ -21,7 +21,6 @@
       "mitigated",
       "resolved",
       "published",
-      "sealed",
       "review",
       "open",
       "closed"
@@ -3635,22 +3634,6 @@
       "terminal_statuses": [
         "superseded",
         "retired"
-      ]
-    },
-    "sealed-record": {
-      "initial_status": "draft",
-      "statuses": [
-        "draft",
-        "sealed"
-      ],
-      "transitions": {
-        "draft": [
-          "sealed"
-        ],
-        "sealed": []
-      },
-      "terminal_statuses": [
-        "sealed"
       ]
     },
     "contract": {
