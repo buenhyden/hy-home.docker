@@ -124,19 +124,6 @@ class HistoricalSpecSnapshotContext:
 
 
 @dataclasses.dataclass(frozen=True)
-class BranchIntegrationReceipt:
-    """One typed handoff for an exact divergent historical package."""
-
-    source_commit: str
-    source_package_path: pathlib.PurePosixPath
-    source_artifact_id: str
-    preserved_package_path: pathlib.PurePosixPath
-    target_package_path: pathlib.PurePosixPath
-    target_artifact_id: str
-    disposition: str
-
-
-@dataclasses.dataclass(frozen=True)
 class SpecDocument:
     """One immutable registered Markdown member of a Spec Package."""
 
@@ -146,7 +133,6 @@ class SpecDocument:
     status: str
     parent_ids: tuple[str, ...]
     body: str = ""
-    branch_integration_receipts: tuple[BranchIntegrationReceipt, ...] = ()
     cancellation: object = None
     source_text: str = ""
     items: tuple[tuple[str, ...], ...] = ()
@@ -525,66 +511,6 @@ def _string_tuple(value: object, field: str) -> tuple[str, ...]:
     return value
 
 
-_RECEIPT_FIELDS = frozenset(
-    {
-        "source_commit",
-        "source_package_path",
-        "source_artifact_id",
-        "preserved_package_path",
-        "target_package_path",
-        "target_artifact_id",
-        "disposition",
-    }
-)
-
-
-def _branch_integration_receipts(
-    value: object,
-) -> tuple[BranchIntegrationReceipt, ...]:
-    if value is None:
-        return ()
-    if not isinstance(value, tuple) or not value:
-        raise SpecPackageError(
-            "branch_integration_receipts must be a non-empty receipt list"
-        )
-    receipts: list[BranchIntegrationReceipt] = []
-    for item in value:
-        if not isinstance(item, Mapping) or set(item) != _RECEIPT_FIELDS:
-            raise SpecPackageError("branch integration receipt shape is invalid")
-        if not all(isinstance(item[field], str) and item[field] for field in item):
-            raise SpecPackageError("branch integration receipt values must be strings")
-        if _RECOVERY_COMMIT.fullmatch(item["source_commit"]) is None:
-            raise SpecPackageError(
-                "branch integration receipt source_commit must be a full object ID"
-            )
-        if any(
-            not _safe_repository_path(item[field])
-            for field in (
-                "source_package_path",
-                "preserved_package_path",
-                "target_package_path",
-            )
-        ):
-            raise SpecPackageError("branch integration receipt path is unsafe")
-        if item["disposition"] != "historical-superseded":
-            raise SpecPackageError("branch integration receipt disposition is invalid")
-        receipt = BranchIntegrationReceipt(
-            source_commit=item["source_commit"],
-            source_package_path=pathlib.PurePosixPath(item["source_package_path"]),
-            source_artifact_id=item["source_artifact_id"],
-            preserved_package_path=pathlib.PurePosixPath(
-                item["preserved_package_path"]
-            ),
-            target_package_path=pathlib.PurePosixPath(item["target_package_path"]),
-            target_artifact_id=item["target_artifact_id"],
-            disposition=item["disposition"],
-        )
-        if receipt in receipts:
-            raise SpecPackageError("branch integration receipt is duplicated")
-        receipts.append(receipt)
-    return tuple(receipts)
-
-
 def _allowed_statuses(
     registry: DocumentRegistry,
     profile_id: str,
@@ -660,11 +586,6 @@ def _parse_document(
             f"{relative} status is outside the {profile_id} lifecycle: {status!r}"
         )
     parent_ids = _string_tuple(record.metadata.get("parent_ids"), "parent_ids")
-    receipts = (
-        _branch_integration_receipts(record.metadata.get("branch_integration_receipts"))
-        if profile_id == "task"
-        else ()
-    )
     return (
         SpecDocument(
             relative,
@@ -673,7 +594,6 @@ def _parse_document(
             status,
             parent_ids,
             body=record.body,
-            branch_integration_receipts=receipts,
             cancellation=record.metadata.get("cancellation"),
             source_text=text,
             items=items,
@@ -3522,11 +3442,6 @@ def _snapshot_document(
     parent_ids = tuple(parent for parent in parents if isinstance(parent, str))
     if len(parent_ids) != len(parents):
         raise SpecPackageError(f"base Spec Package parents are malformed: {path}")
-    receipts = (
-        _branch_integration_receipts(record.metadata.get("branch_integration_receipts"))
-        if profile_id == "task"
-        else ()
-    )
     return SpecDocument(
         path,
         profile_id,
@@ -3534,7 +3449,6 @@ def _snapshot_document(
         status,
         parent_ids,
         body=record.body,
-        branch_integration_receipts=receipts,
         cancellation=record.metadata.get("cancellation"),
         source_text=text,
         items=items,

@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Architecture Description"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "AD-0011"
 parent_ids:
@@ -45,6 +45,13 @@ The former Laboratory capabilities now reside in their owning Data, Observabilit
 - [Dozzle operations](../../05.operations/guides/07-observability/0072-dozzle.md)
 - [Open Notebook operations](../../05.operations/guides/09-ai-and-search/0073-open-notebook.md)
 - [RedisInsight operations](../../05.operations/guides/05-databases-and-storage/0076-redisinsight.md)
+- Retired ADR-0011 (number reserved in the Registry; body in version history)
+  selected Homer, Portainer, RedisInsight, Dozzle and Open Notebook with SurrealDB
+  for the former `11-laboratory` tier, and recorded that the Docker socket
+  exposure needs SSO access control. It was deprecated on 2026-10-29 when
+  SPEC-0197 removed that tier and deleted on 2026-11-04. RedisInsight, Dozzle and
+  Open Notebook with SurrealDB remain current under this description; Homer and
+  Portainer have no current service.
 
 ## Structure
 
@@ -91,7 +98,6 @@ The root project includes five package leaves across four tiers and seven servic
 ## Related Documents
 
 - [Laboratory requirement](../../01.requirements/0012-laboratory.md)
-- [Laboratory decision](../decisions/0011-laboratory-services.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the
 [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

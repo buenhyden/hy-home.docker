@@ -3346,17 +3346,6 @@ Narrative after the registered table.
                 any(code.startswith("branch-integration-receipt") for code in codes)
             )
 
-    def test_an_unsafe_receipt_path_is_rejected_at_load(self) -> None:
-        spec_packages = _spec_packages_module()
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            stage, _, _ = _branch_handoff_fixture(
-                root,
-                receipt_updates={"source_package_path": "docs/03.specs/../0001-source"},
-            )
-            with self.assertRaisesRegex(spec_packages.SpecPackageError, "unsafe"):
-                spec_packages.load_spec_packages(stage)
-
     def _retirement_fixture(self, root: pathlib.Path, mutate=None):
         """Write the repository Registry, optionally mutated, under `root`."""
 

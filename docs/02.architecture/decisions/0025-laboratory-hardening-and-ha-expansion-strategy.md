@@ -1,10 +1,10 @@
 ---
 title: "Laboratory Hardening and HA Expansion Strategy"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "ADR-0025"
 parent_ids:
@@ -78,4 +78,4 @@ The laboratory tier greatly affects operator productivity but provides UIs with 
 - **PRD**: [../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
 - **Architecture Description**: [../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md](../descriptions/0025-laboratory-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](../descriptions/0011-laboratory-architecture.md)
-- **Related ADR**: [ADR-0011](0011-laboratory-services.md)
+- **Related ADR**: ADR-0011 (retired; summarized in AD-0011 Traceability)

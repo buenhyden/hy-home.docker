@@ -53,7 +53,8 @@ docs/02.architecture/decisions/
 
 ### Current Inventory
 
-- `ADR-0001`부터 `ADR-0011`: 기본 tier와 service selection decisions.
+- `ADR-0001`부터 `ADR-0010`: 기본 tier와 service selection decisions. `ADR-0011`은
+  삭제되었고 번호는 Registry `reserved_history`에 남아 있습니다.
 - `ADR-0015`, `ADR-0019`: ADR-0039, ADR-0040이 각각 supersede한 analytics engine과
   04-data hardening decisions.
 - `ADR-0016`부터 `ADR-0026`(0019 제외): analytics, hardening, HA와 network decisions.
@@ -150,8 +151,9 @@ docs/02.architecture/decisions/
 2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.
 3. 새 ADR은 [`decision.template.md`](../../99.templates/templates/architecture/decision.template.md)를 사용한다.
 4. 선택, alternatives, rationale와 consequences를 보존한다.
-5. 이전 결정을 대체하면 stable `supersedes` metadata와 양방향 문서 링크로
-   supersession을 명시한다.
+5. 이전 결정을 대체하면 새 ADR의 Traceability에 대체한 내용을 요약하고, 이전
+   ADR은 삭제한 뒤 번호를 Registry `reserved_history`에 둔다. `supersedes`,
+   `superseded_by` metadata와 `deprecated`·`superseded` 상태는 쓰지 않는다.
 
 ### Documentation Standards
 
