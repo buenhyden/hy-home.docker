@@ -63,8 +63,8 @@ No exception is granted here; a separately authorized operation follows [Approva
       original-revision structural record, hold, consumer cutover, recoverability,
       and a separately current trusted-operator authorization for any pending
       removal. A missing, mismatched, or revoked current source blocks the
-      operation; archive-record validation is not authentication. Test missing and
-      mismatched record integrity in fixtures unless actual removal is authorized.
+      operation. No gate validates Stage 98 records, so this check is a review
+      step, not an automated one.
 - [ ] Distinguish worktree, index, commit, and historical-link checks, and report
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.

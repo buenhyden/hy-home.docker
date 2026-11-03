@@ -220,26 +220,3 @@ class CurrentSpecRelationTests(unittest.TestCase):
         )
 
         self.assertIn("invalid-parent-type", {finding.code for finding in findings})
-
-    def test_legacy_archive_route_type_requires_source_binding(self) -> None:
-        profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
-        record = metadata.Record(
-            pathlib.Path("docs/98.archive/migrations/9999-example.md"),
-            {
-                "artifact_id": "MIG-9999",
-                "type": "archive/migration",
-                "status": "completed",
-                "parent_ids": ["SPEC-0001"],
-            },
-            "migration",
-            frontmatter_present=True,
-        )
-        manifest = metadata.build_manifest([record])
-
-        unbound = metadata.validate_record(record, profiles, manifest)
-        bound = metadata.validate_record(
-            record, profiles, manifest, source_bound_legacy_type=True
-        )
-
-        self.assertIn("type-mismatch", {finding.code for finding in unbound})
-        self.assertNotIn("type-mismatch", {finding.code for finding in bound})

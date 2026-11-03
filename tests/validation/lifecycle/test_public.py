@@ -95,7 +95,7 @@ class CurrentPublicContractTests(unittest.TestCase):
             "check-contract",
             "--wave",
             "forbidden",
-            "--profiles",
+            "--registry",
             "/missing/profiles.yaml",
             "--contract",
             "/missing/contract.yaml",
@@ -161,4 +161,4 @@ class CurrentPublicContractTests(unittest.TestCase):
             self.assertEqual(0, lifecycle.main([]))
         rendered = output.getvalue()
         self.assertIn("document corpus lifecycle:", rendered)
-        self.assertIn("archive recovery:", rendered)
+        self.assertIn("active stage occupancy:", rendered)

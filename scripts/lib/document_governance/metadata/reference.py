@@ -34,7 +34,6 @@ from scripts.lib.document_governance.identity_history import (
 from scripts.lib.document_governance.metadata.heading import (
     _introduced_body_findings,
     _machine_template_findings,
-    _native_migration_compaction_witness,
     _runtime_version_findings,
     extract_markdown_headings,
     validate_body_contract,
@@ -52,14 +51,12 @@ from scripts.lib.document_governance.metadata.identity import (
 )
 from scripts.lib.document_governance.metadata.lifecycle import (
     _governance_moved_body_baseline,
-    _is_legacy_archive_route_type,
     _legacy_exception_evidence,
     _link_target_neutral_text,
     _operations_moved_body_baseline,
     _record_from_text,
     _task5_move_body_sources,
     _task5_moved_body_baseline,
-    _task10_archive_moved_body_baseline,
     _text_at_ref,
     collect_records,
     collect_records_at_ref,
@@ -119,7 +116,6 @@ from scripts.lib.document_governance.spec_packages import (
     SpecPackageError,
     _bounded_git,
     load_spec_packages,
-    resolve_contract_migration_source,
     resolve_lifecycle_base,
     validate_repository_spec_package_lifecycle_details,
 )
@@ -136,7 +132,6 @@ class _GenerationBindings:
         default_factory=lambda: MappingProxyType({})
     )
     frozen_terminal_tasks: frozenset[str] = frozenset()
-    source_bound_legacy_types: frozenset[str] = frozenset()
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -146,11 +141,6 @@ class _GenerationBindings:
         )
         object.__setattr__(
             self, "frozen_terminal_tasks", frozenset(self.frozen_terminal_tasks)
-        )
-        object.__setattr__(
-            self,
-            "source_bound_legacy_types",
-            frozenset(self.source_bound_legacy_types),
         )
 
 
@@ -347,29 +337,6 @@ def _generation_task_body_baseline(
     )
 
 
-def _source_bound_legacy_archive_types(
-    root: pathlib.Path,
-    records: Sequence[Record],
-    profiles: dict[str, object],
-    revision: str,
-) -> frozenset[str]:
-    """Admit archive aliases only for the same identity, metadata and raw blob."""
-
-    source_records = collect_selected_records_at_ref(
-        root, profiles, [record.path.as_posix() for record in records], revision
-    )
-    return frozenset(
-        record.path.as_posix()
-        for record in records
-        if (source := source_records.get(record.path.as_posix())) is not None
-        and source.artifact_type == record.artifact_type
-        and isinstance(record.metadata.get("artifact_id"), str)
-        and source.metadata.get("artifact_id") == record.metadata.get("artifact_id")
-        and source.metadata == record.metadata
-        and _source_blob_matches_worktree(root, record.path, revision)
-    )
-
-
 def _workspace_inventory_findings() -> list[Finding]:
     if (
         any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES)
@@ -416,7 +383,6 @@ def _validate_repository_contracts(
     frozen_terminal_tasks: set[str] = set()
     tracked_markdown = _tracked_repository_markdown(root)
     registry_native = isinstance(profiles.get("_registry"), DocumentRegistry)
-    source_bound_legacy_types: set[str] = set()
 
     if registry_native:
         active_registry = profiles.get("_registry")
@@ -496,37 +462,6 @@ def _validate_repository_contracts(
                 actual_lifecycle_normalizations.update(
                     spec_lifecycle.actual_normalizations
                 )
-                alias_candidates = tuple(
-                    record
-                    for record in records
-                    if isinstance(
-                        expected_type := active_registry.profiles.get(
-                            record.artifact_type, {}
-                        ).get("type"),
-                        str,
-                    )
-                    and _is_legacy_archive_route_type(record, expected_type)
-                )
-                alias_revision = spec_lifecycle.generation_source
-                if (
-                    alias_candidates
-                    and alias_revision is None
-                    and active_registry.common.get("lifecycle_generation") in {5, 6, 7}
-                ):
-                    try:
-                        alias_revision = resolve_contract_migration_source(
-                            root, spec_packages, active_registry
-                        )
-                    except SpecPackageError as error:
-                        findings.append(
-                            Finding("docs/03.specs", "spec-package-invalid", str(error))
-                        )
-                if alias_candidates and alias_revision is not None:
-                    source_bound_legacy_types.update(
-                        _source_bound_legacy_archive_types(
-                            root, alias_candidates, profiles, alias_revision
-                        )
-                    )
                 if spec_lifecycle.generation_source is not None:
                     generation_revision = spec_lifecycle.generation_source
                     migration_contract = active_registry.common.get(
@@ -701,9 +636,6 @@ def _validate_repository_contracts(
                     ),
                     unchanged_generation_statuses=unchanged_generation_statuses,
                     enforce_initial_status=transition_ref is not None,
-                    source_bound_legacy_type=(
-                        record.path.as_posix() in source_bound_legacy_types
-                    ),
                 )
                 if finding.severity == "error"
             )
@@ -926,7 +858,6 @@ def _validate_repository_contracts(
             generation_revision,
             MappingProxyType(dict(unchanged_generation_statuses)),
             frozenset(frozen_terminal_tasks),
-            frozenset(source_bound_legacy_types),
         ),
     )
 
@@ -1463,11 +1394,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
     parser.add_argument(
         "--registry",
-        "--profiles",
         dest="profiles",
         type=pathlib.Path,
         default=DEFAULT_PROFILES,
-        help="Stage 99 registry (legacy --profiles remains a transition alias)",
+        help="Stage 99 registry",
     )
     parser.add_argument("--output", type=pathlib.Path)
     parser.add_argument(
@@ -1819,7 +1749,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
     base_records: list[Record] = []
-    verified_task10_move_targets: set[str] = set()
     if base.merge_base:
         try:
             base_records = collect_records_at_ref(root, profiles, base.merge_base)
@@ -1845,16 +1774,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             if governance_record is not None and governance_text is not None:
                 base_records_by_path[path_text] = governance_record
                 governance_move_texts[path_text] = governance_text
-                continue
-            moved_record, _ = _task10_archive_moved_body_baseline(
-                root,
-                pathlib.Path(path_text),
-                profiles,
-                base.merge_base,
-            )
-            if moved_record is not None:
-                base_records_by_path[path_text] = moved_record
-                verified_task10_move_targets.add(path_text)
     try:
         records = collect_records(
             root,
@@ -1914,11 +1833,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             profiles,
             manifest,
             transition_overrides=transition_overrides,
-            migration_compaction_witness=(
-                _native_migration_compaction_witness(root, record, base.merge_base)
-                if args.mode == "check-changed"
-                else None
-            ),
             enforce_initial_status=args.mode == "check-changed",
             actual_lifecycle_transitions=actual_lifecycle_transitions,
             actual_lifecycle_normalizations=actual_lifecycle_normalizations,
@@ -1926,9 +1840,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 actual_lifecycle_normalization_sources
             ),
             unchanged_generation_statuses=generation_bindings.unchanged_statuses,
-            source_bound_legacy_type=(
-                record.path.as_posix() in generation_bindings.source_bound_legacy_types
-            ),
         )
         for record in records
     }
@@ -1983,22 +1894,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 base_text = generation_text
             if base_text is None:
                 base_text = _text_at_ref(root, record.path, base.merge_base)
-            if (
-                base_text is not None
-                and current_text != base_text
-                and _link_target_neutral_text(current_text)
-                == _link_target_neutral_text(base_text)
-            ):
-                link_only_changes.add(path_text)
-            if base_record is None or base_text is None:
-                moved_record, moved_text = _task10_archive_moved_body_baseline(
-                    root,
-                    record.path,
-                    profiles,
-                    base.merge_base,
-                )
-                base_record = moved_record or base_record
-                base_text = moved_text or base_text
             if (
                 base_text is not None
                 and current_text != base_text
@@ -2084,7 +1979,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 changed_body_findings.get(path, []),
                 path in link_only_changes,
                 task5_legacy_parent_ids,
-                path in verified_task10_move_targets,
             )
         )
         is not None

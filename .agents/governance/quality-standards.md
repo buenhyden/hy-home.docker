@@ -108,9 +108,10 @@ main-push security remains a post-merge observation.
 - Retire one-time QA in this order: transfer a continuing guarantee to its
   current owner; remove callers and registration; remove exclusive helpers,
   fixtures and tests; preserve useful actual results in existing Task/history.
-  Do not delete generic archive integrity or proof readers needed for preserved
-  bytes merely because their inputs are historical. Hold/recovery conditions
-  remain owned by the retention contract.
+- Stage 98 (`docs/98.archive/`) is history and no gate validates it: no
+  archive integrity, retention, recovery, tombstone, migration-ledger or
+  archive-link check runs. Only read-only loaders that a current, non-archive
+  check needs (lineage, identity allocation, recorded retirements) may read it.
 - Shared implementation libraries under `scripts/lib/` and executable QA
   owners retain meaningful test evidence. A nonmutating companion library
   outside that shared surface may be retained through a proven current
@@ -289,7 +290,7 @@ providers; Task evidence names each input, result, acceptance and unexecuted lan
 | Gate/workflow/style controller | Selected local-only selection, trust, failure and cleanup regressions | Actual workflow/contract validators; exact hosted job/event evidence |
 | Docker/Compose/service configuration | Relevant syntax/render/hardening feedback | Selected configuration checks; live HOME/smoke/restore only for a named exact target |
 | Commit/changelog/release implementation | Commitizen and SemVer/changelog/draft-asset regression | PR candidate checks; release publication only for its approved exact version |
-| Historical QA retirement | Caller/registration closure and continuing-owner proof | Applicable current document/archive/runner checks; frozen bytes preserved |
+| Historical QA retirement | Caller/registration closure and continuing-owner proof | Applicable current document/runner checks |
 | Remote setting or high-risk runtime | Concrete approved target, before-state and recovery | Actual read-back or runtime receipt; source-only evidence is insufficient |
 
 A PASS check is not criterion acceptance, authorization, integration or runtime

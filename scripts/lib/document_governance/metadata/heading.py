@@ -15,9 +15,6 @@ from collections.abc import Mapping, Sequence
 from markdown_it import MarkdownIt
 
 from scripts.lib.document_governance.frontmatter import (
-    parse_frontmatter_text as _parse_frontmatter_text,
-)
-from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
 from scripts.lib.document_governance.language import language_mismatch
@@ -1770,42 +1767,3 @@ def _introduced_body_findings(
         )
         for (code, safe_label, severity), count in sorted(safe_counts.items())
     ]
-
-
-def _native_migration_compaction_witness(
-    root: pathlib.Path,
-    record: Record,
-    base_ref: str | None,
-) -> Record | None:
-    """Bind the frozen historical ledger to its verified native compact state."""
-
-    if (
-        not base_ref
-        or record.path.as_posix()
-        != "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-        or record.previous_status != "archived"
-        or record.artifact_type != "migration"
-        or record.metadata.get("type") != "archive/migration"
-        or record.metadata.get("artifact_id") != "MIG-0003"
-        or record.metadata.get("status") != "completed"
-    ):
-        return None
-    from scripts.lib.document_governance import archive, archive_migration_0003
-
-    try:
-        previous = archive_migration_0003.HistoricalDocument(
-            root, base_ref, record.path.as_posix()
-        ).read_bytes()
-        if (
-            hashlib.sha256(previous).hexdigest()
-            != archive_migration_0003.FROZEN_MIGRATION_SHA256
-        ):
-            return None
-        if archive_migration_0003._migration_document(root)["schema_version"] != 3:
-            return None
-        current = archive._read_regular(root / record.path).decode("utf-8")
-        if _parse_frontmatter_text(current) != record.metadata:
-            return None
-    except ValueError:
-        return None
-    return record

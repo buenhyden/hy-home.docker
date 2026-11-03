@@ -141,10 +141,9 @@ class ActiveStageScopeTests(unittest.TestCase):
     """Current scan scopes and native provider paths name existing surfaces."""
 
     def active_scopes(self) -> tuple[tuple[str, tuple[str, ...]], ...]:
-        from scripts.lib.document_governance import links, metadata_validator
+        from scripts.lib.document_governance import metadata_validator
 
         return (
-            ("links._ACTIVE_STAGE_PREFIXES", links._ACTIVE_STAGE_PREFIXES),
             (
                 "metadata_validator.TARGET_MARKDOWN_PREFIXES",
                 metadata_validator.TARGET_MARKDOWN_PREFIXES,

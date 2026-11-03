@@ -9,12 +9,11 @@ general archive module holds no value that belongs to one past migration.
 
 from __future__ import annotations
 
-import collections
 import copy
 import hashlib
 import pathlib
 import re
-from collections.abc import Iterable, Mapping
+from collections.abc import Mapping
 from typing import Any
 
 import yaml
@@ -22,7 +21,6 @@ import yaml
 from scripts.lib.document_governance import archive
 from scripts.lib.document_governance.git_provenance import (
     HistoricalDocument,
-    read_archived_metadata_batch,
     recovery_commit_is_valid,
     verify_recovery_blobs_batch,
 )
@@ -40,9 +38,6 @@ HISTORICAL_SESSION_SPECS = {
     "docs/03.specs/0091-workspace-doc-consistency-2026-05/spec.md": "SPEC-0091",
     "docs/03.specs/0092-workspace-consistency-2026-05b/spec.md": "SPEC-0092",
 }
-TASK10_BASELINE_COMMIT = "f259c139fb7da166609029cdd3657de87e639f6b"
-TASK10_FIRST_ROW = "mig-0003-r0566"
-TASK10_LAST_ROW = "mig-0003-r0840"
 _TASK10_ROW_FIELDS = frozenset(
     {
         "row_id",
@@ -276,167 +271,3 @@ def _migration_document(root: pathlib.Path) -> dict[str, Any]:
                 "Migration 0003 recovery must resolve to an existing regular Git blob"
             )
     return document
-
-
-def migration_rows_for_task(
-    root: pathlib.Path, task: int
-) -> tuple[dict[str, Any], ...]:
-    """Select native rows using the reviewed historical ownership, not invented fields."""
-
-    document = _migration_document(root)
-    approved = _approved_migration_document(root)
-    sources = {
-        row["source_path"] for row in approved["rows"] if row["owner_task"] == task
-    }
-    return tuple(row for row in document["rows"] if row["source_path"] in sources)
-
-
-def task10_rows(root: pathlib.Path) -> tuple[dict[str, Any], ...]:
-    rows = migration_rows_for_task(root, 10)
-    if rows and "row_id" not in rows[0]:
-        # Native compact fields were checked against the approved mapping and
-        # every recovery blob by the shared loader; no execution fields invented.
-        if len(rows) != 275:
-            raise ValueError("Task 10 compact selection is incomplete")
-        return rows
-    expected_row_ids = tuple(f"mig-0003-r{number:04d}" for number in range(566, 841))
-    if (
-        len(rows) != 275
-        or tuple(row.get("row_id") for row in rows) != expected_row_ids
-        or rows[0].get("row_id") != TASK10_FIRST_ROW
-        or rows[-1].get("row_id") != TASK10_LAST_ROW
-    ):
-        raise ValueError(
-            "Task 10 Migration row range is not the approved 275-row selection"
-        )
-    for row in rows:
-        source = archive._safe_path(row.get("source_path"))
-        target_value = row.get("target_path")
-        target = None if target_value is None else archive._safe_path(target_value)
-        action = row.get("action")
-        consumers = row.get("active_consumers")
-        if (
-            source is None
-            or not source.as_posix().startswith("docs/98.archive/")
-            or action not in {"rename", "delete"}
-            or (action == "rename" and target is None)
-            or (action == "delete" and target_value is not None)
-            or (
-                target is not None
-                and not target.as_posix().startswith("docs/98.archive/")
-            )
-            or row.get("owner_task") != 10
-            or row.get("source_kind") not in {"tracked", "planned-output"}
-            or (
-                row.get("source_kind") == "tracked"
-                and row.get("source_owner_task") is not None
-            )
-            or (
-                row.get("source_kind") == "planned-output"
-                and row.get("source_owner_task") != 1
-            )
-            or not isinstance(consumers, list)
-            or any(archive._safe_path(consumer) is None for consumer in consumers)
-            or (
-                row.get("artifact_id") is not None
-                and (
-                    not isinstance(row.get("artifact_id"), str)
-                    or not row.get("artifact_id")
-                )
-            )
-            or row.get("status") not in {"planned", "completed"}
-        ):
-            raise ValueError("Task 10 Migration row semantics are invalid")
-    return rows
-
-
-def _legacy_change_recoveries(
-    root: pathlib.Path,
-    sources: Iterable[pathlib.PurePosixPath],
-) -> dict[pathlib.PurePosixPath, archive.RecoveryReference]:
-    selected = tuple(sources)
-    metadata = {
-        item.source: archive.RecoveryReference(item.archived_commit, item.archived_from)
-        for item in read_archived_metadata_batch(
-            selected,
-            TASK10_BASELINE_COMMIT,
-            repo_root=root,
-        )
-    }
-    missing = set(selected) - set(metadata)
-    if missing != archive.APPROVED_BASELINE_RECOVERY_PATHS:
-        unexpected = ", ".join(path.as_posix() for path in sorted(missing))
-        raise ValueError(f"unapproved missing legacy recovery metadata: {unexpected}")
-    return {
-        source: metadata.get(
-            source, archive.RecoveryReference(TASK10_BASELINE_COMMIT, source)
-        )
-        for source in selected
-    }
-
-
-def load_task10_recovery_references(
-    root: pathlib.Path,
-) -> tuple[archive.RecoveryReference, ...]:
-    change_rows = [
-        row
-        for row in task10_rows(root)
-        if row.get("action") == "delete"
-        and str(row.get("source_path", "")).startswith("docs/98.archive/changes/")
-    ]
-    sources = tuple(
-        pathlib.PurePosixPath(str(row["source_path"])) for row in change_rows
-    )
-    recoveries = _legacy_change_recoveries(root, sources)
-    references = [recoveries[source] for source in sources]
-    inventory = archive.load_archive(root / "docs/98.archive")
-    references.extend(
-        item.recovery for item in inventory.tombstones if item.recovery is not None
-    )
-    return tuple(references)
-
-
-def load_task10_preservation_decisions(
-    root: pathlib.Path,
-) -> tuple[archive.PreservationDecision, ...]:
-    change_rows = [
-        row
-        for row in task10_rows(root)
-        if row.get("action") == "delete"
-        and str(row.get("source_path", "")).startswith("docs/98.archive/changes/")
-    ]
-    sources = tuple(
-        pathlib.PurePosixPath(str(row["source_path"])) for row in change_rows
-    )
-    recoveries = _legacy_change_recoveries(root, sources)
-    grouped: dict[pathlib.PurePosixPath, list[archive.RecoveryReference]] = (
-        collections.defaultdict(list)
-    )
-    for source in sources:
-        grouped[source.parent].append(recoveries[source])
-    decisions = [
-        archive.PreservationDecision(
-            "git-only",
-            packet,
-            None,
-            "Completed change evidence is recovered from Git; no active body copy is retained.",
-            sorted(recoveries)[0],
-            "approved",
-        )
-        for packet, recoveries in sorted(grouped.items())
-    ]
-    for tombstone in archive.load_archive(root / "docs/98.archive").tombstones:
-        if tombstone.recovery is None:
-            # A route-shape Tombstone records a route, not a preservation decision.
-            continue
-        decisions.append(
-            archive.PreservationDecision(
-                "minimal-tombstone",
-                tombstone.path,
-                tombstone.replacement,
-                tombstone.reason,
-                tombstone.recovery,
-                "approved",
-            )
-        )
-    return tuple(decisions)

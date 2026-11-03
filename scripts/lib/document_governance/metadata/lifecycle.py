@@ -32,12 +32,9 @@ from scripts.lib.document_governance.metadata.identity import (
     _tracked_markdown,
 )
 from scripts.lib.document_governance.metadata.profile import (
-    APPROVED_MIGRATION_PATHS,
     EXPECTED_ARCHIVE_DISPOSITIONS,
     EXPECTED_PRESERVATION_CLASSES,
     EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS,
-    LEGACY_EXCEPTION_CODES,
-    MIGRATION_TYPED_KEYS,
     TARGET_MARKDOWN_FILES,
     TARGET_MARKDOWN_PREFIXES,
     TYPED_EXAMPLE_FIXTURE_PARENT_IDS,
@@ -105,27 +102,17 @@ def _expected_document_type(profile_id: str) -> str:
         return profile_id
 
 
-def _is_legacy_archive_route_type(record: Record, expected_type: str) -> bool:
-    return (
-        expected_type == "archive/route"
-        and record.artifact_type in {"migration", "tombstone"}
-        and record.metadata.get("type") == f"archive/{record.artifact_type}"
-    )
-
-
 def validate_record(
     record: Record,
     profiles: dict[str, object],
     manifest: dict[str, pathlib.Path],
     transition_overrides: Mapping[tuple[str, str, str], TransitionOverride]
     | None = None,
-    migration_compaction_witness: Record | None = None,
     enforce_initial_status: bool = False,
     actual_lifecycle_transitions: Set[tuple[str, str, str]] | None = None,
     actual_lifecycle_normalizations: Set[tuple[str, str, str]] | None = None,
     actual_lifecycle_normalization_sources: Mapping[str, str] | None = None,
     unchanged_generation_statuses: Mapping[str, str] | None = None,
-    source_bound_legacy_type: bool = False,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -135,14 +122,10 @@ def validate_record(
         return []
     raw_profile = profile_map.get(record.artifact_type)
     registry = profiles.get("_registry")
-    if (
-        isinstance(raw_profile, dict)
-        and raw_profile.get("frontmatter_policy") == "unmanaged"
-        and record.path.as_posix().startswith(PRESERVED_RECORD_PREFIX)
-    ):
-        # A preserved record is history, not an authoring target. It satisfied
-        # its contract while it was live, and judging it against the current
-        # one would force edits to the record it exists to preserve.
+    if record.path.as_posix().startswith(PRESERVED_RECORD_PREFIX):
+        # Stage 98 is history, not an authoring target, and no gate validates
+        # it. Judging an archive record against the current contract would
+        # force edits to the record it exists to preserve.
         return []
     profile_label = record.artifact_type
     if not isinstance(raw_profile, dict):
@@ -428,7 +411,6 @@ def validate_record(
             and override_key not in (actual_lifecycle_transitions or ())
             and override_key not in (actual_lifecycle_normalizations or ())
             and not actual_normalization_transition
-            and record != migration_compaction_witness
         ):
             findings.append(
                 _finding(
@@ -464,13 +446,7 @@ def validate_record(
     )
     expected_type = _expected_document_type(expected_profile)
     if declared_type is not None:
-        if not isinstance(declared_type, str) or (
-            declared_type != expected_type
-            and not (
-                source_bound_legacy_type
-                and _is_legacy_archive_route_type(record, expected_type)
-            )
-        ):
+        if not isinstance(declared_type, str) or declared_type != expected_type:
             findings.append(
                 _finding(
                     record,
@@ -1687,8 +1663,15 @@ def _legacy_exception_evidence(
     body_findings: Sequence[Finding],
     link_only_change: bool,
     task5_legacy_parent_ids: set[str],
-    approved_structural_move: bool = False,
 ) -> tuple[int, int] | None:
+    """Excuse base-existing metadata deficits on a link-only change.
+
+    This is the only remaining legacy metadata allowance. It excuses a deficit
+    a changed document already had at the base when the change only rewrites
+    link destinations, or when the new deficit is an unresolved parent proven
+    by the mig-0001 ledger. SPEC-0248-TSK-0001 records its inventory; remove it
+    once that inventory stays zero (no changed document needs it).
+    """
     if record.parse_error or base_record is None:
         return None
     metadata_preserved = record.metadata == base_record.metadata
@@ -1713,31 +1696,9 @@ def _legacy_exception_evidence(
         }
         if not link_only_change or not new_deficits <= proven_parent_deficits:
             return None
-    if approved_structural_move:
-        return len(current_deficits), len(base_deficits)
     if link_only_change:
         return len(current_deficits), len(base_deficits)
-    if record.path.as_posix() in APPROVED_MIGRATION_PATHS:
-        return None
-    if record.artifact_type in {
-        "readme",
-        "generated",
-        "template-source",
-        "governance",
-        "archive",
-        "unsupported",
-    }:
-        return None
-    if MIGRATION_TYPED_KEYS & set(base_record.metadata) or MIGRATION_TYPED_KEYS & set(
-        record.metadata
-    ):
-        return None
-    if any(
-        finding.code not in LEGACY_EXCEPTION_CODES
-        for finding in [*base_errors, *current_errors]
-    ):
-        return None
-    return len(current_deficits), len(base_deficits)
+    return None
 
 
 MARKDOWN_LINK_TARGET = re.compile(r"(?<!!)(?<!\\)\[([^\]\n]+)\]\([^)\n]+\)")
@@ -1804,30 +1765,6 @@ def _task5_moved_body_baseline(
     if shown.returncode != 0:
         return None, None
     return _record_from_text(target, shown.stdout, profiles=profiles), shown.stdout
-
-
-_TASK10_ARCHIVE_MOVE_SOURCES = {
-    "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md": "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
-    "docs/98.archive/migrations/0002-operations-catalog-convergence.md": "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md",
-    "docs/98.archive/migrations/0003-workspace-governance-simplification.md": "docs/98.archive/migrations/mig-0003-workspace-governance-simplification.md",
-}
-
-
-def _task10_archive_moved_body_baseline(
-    root: pathlib.Path,
-    target: pathlib.Path,
-    profiles: dict[str, object],
-    base_ref: str | None,
-) -> tuple[Record | None, str | None]:
-    """Read one exact prefix-removal source for the approved Stage 98 move."""
-
-    legacy = _TASK10_ARCHIVE_MOVE_SOURCES.get(target.as_posix())
-    if legacy is None:
-        return None, None
-    legacy_text = _text_at_ref(root, pathlib.Path(legacy), base_ref)
-    if legacy_text is None:
-        return None, None
-    return _record_from_text(target, legacy_text, profiles=profiles), legacy_text
 
 
 def _declares_execution_items(record: Record, common: Mapping[str, object]) -> bool:

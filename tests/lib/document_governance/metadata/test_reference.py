@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import contextlib
-import dataclasses
 import io
 import json
 import pathlib
@@ -13,20 +12,12 @@ import tempfile
 import unittest
 from unittest import mock
 
-from scripts.lib.document_governance import archive as archive_authority
-from scripts.lib.document_governance.lifecycle.recovery import (
-    run as run_recovery,
-)
 from scripts.lib.document_governance.metadata import reference as reference_module
 from scripts.lib.document_governance.metadata.heading import (
     extract_markdown_headings,
 )
 from scripts.lib.document_governance.metadata.profile import (
     classify_registered_path,
-)
-from scripts.lib.document_governance.registry import (
-    PRESERVED_DISPOSITIONS,
-    preserved_origin_path,
 )
 from tests.lib.document_governance.metadata._support import (
     ROOT,
@@ -79,7 +70,7 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
                     [
                         "--root",
                         str(root),
-                        "--profiles",
+                        "--registry",
                         str(ROOT / "docs/99.templates/registry.json"),
                         "--mode",
                         "report",
@@ -96,7 +87,7 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
                     [
                         "--root",
                         str(root),
-                        "--profiles",
+                        "--registry",
                         str(ROOT / "docs/99.templates/registry.json"),
                         "--mode",
                         "check-active",
@@ -231,60 +222,6 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             self.assertEqual(1, result)
             self.assertIn("index-member-unlisted", output.getvalue())
 
-    def test_changed_mode_propagates_source_bound_legacy_types(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root, registry = self.fixture(directory)
-            source_bound_path = (
-                "docs/99.templates/templates/archive/migration.template.md"
-            )
-            generation_bindings = reference_module._GenerationBindings(
-                source_bound_legacy_types=frozenset({source_bound_path})
-            )
-            with (
-                mock.patch.object(
-                    reference_module,
-                    "_validate_repository_contracts",
-                    return_value=(
-                        [],
-                        frozenset(),
-                        frozenset(),
-                        generation_bindings,
-                    ),
-                ),
-                mock.patch.object(
-                    reference_module, "collect_records_at_ref", return_value=[]
-                ),
-                mock.patch.object(
-                    reference_module,
-                    "validate_record",
-                    return_value=[],
-                ) as validate_record,
-            ):
-                result = reference_module.main(
-                    [
-                        "--root",
-                        str(root),
-                        "--registry",
-                        str(registry),
-                        "--mode",
-                        "check-changed",
-                        "--base-ref",
-                        "HEAD",
-                    ]
-                )
-
-            source_bound_calls = [
-                call
-                for call in validate_record.call_args_list
-                if call.args[0].path.as_posix() == source_bound_path
-            ]
-            self.assertEqual(0, result)
-            self.assertEqual(1, len(source_bound_calls))
-            self.assertIs(
-                True,
-                source_bound_calls[0].kwargs.get("source_bound_legacy_type"),
-            )
-
     def test_contracts_share_exact_baseline_and_historical_input_context(self) -> None:
         profiles = current_profiles()
         previous = {
@@ -356,79 +293,6 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 packages.call_args.kwargs["_historical_context"],
                 validate.call_args.kwargs["_historical_context"],
             )
-
-    def test_historical_archive_alias_requires_identity_metadata_and_raw_bytes(
-        self,
-    ) -> None:
-        profiles = current_profiles()
-        relative = pathlib.Path("docs/98.archive/migrations/0001-example.md")
-        text = (
-            "---\nartifact_id: MIG-0001\ntype: archive/migration\n"
-            "status: sealed\n---\n# Historical Migration\n"
-        )
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            path = root / relative
-            path.parent.mkdir(parents=True)
-            path.write_bytes(text.encode())
-            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-            subprocess.run(["git", "add", "."], cwd=root, check=True)
-            subprocess.run(
-                [
-                    "git",
-                    "-c",
-                    "user.name=Fixture",
-                    "-c",
-                    "user.email=fixture@example.invalid",
-                    "commit",
-                    "-qm",
-                    "source",
-                ],
-                cwd=root,
-                check=True,
-            )
-            revision = subprocess.check_output(
-                ["git", "rev-parse", "HEAD"], cwd=root, text=True
-            ).strip()
-            record = metadata._record_from_text(relative, text, profiles=profiles)
-            expected = frozenset({relative.as_posix()})
-            self.assertEqual(
-                expected,
-                reference_module._source_bound_legacy_archive_types(
-                    root, (record,), profiles, revision
-                ),
-            )
-            for key, value in (("artifact_id", "MIG-0002"), ("status", "draft")):
-                with self.subTest(changed_metadata=key):
-                    changed = dataclasses.replace(
-                        record, metadata={**record.metadata, key: value}
-                    )
-                    self.assertEqual(
-                        frozenset(),
-                        reference_module._source_bound_legacy_archive_types(
-                            root, (changed,), profiles, revision
-                        ),
-                    )
-            with mock.patch.object(
-                reference_module, "collect_selected_records_at_ref", return_value={}
-            ):
-                self.assertEqual(
-                    frozenset(),
-                    reference_module._source_bound_legacy_archive_types(
-                        root, (record,), profiles, revision
-                    ),
-                )
-            for payload in (
-                (text + "Changed body.\n").encode(),
-                text.replace("\n", "\r\n").encode(),
-            ):
-                path.write_bytes(payload)
-                self.assertEqual(
-                    frozenset(),
-                    reference_module._source_bound_legacy_archive_types(
-                        root, (record,), profiles, revision
-                    ),
-                )
 
     def test_terminal_task_body_baseline_requires_exact_generation_blob(self) -> None:
         profiles = current_profiles()
@@ -1195,82 +1059,28 @@ class IndexMembershipTests(unittest.TestCase):
                 )
                 self.assertEqual([], findings)
 
-    def test_every_registered_index_governs_at_least_one_package(self) -> None:
-        """A rule that enumerates nothing passes without checking anything."""
+    def test_registered_indexes_govern_live_packages(self) -> None:
+        """A rule that enumerates nothing passes without checking anything.
+
+        An index may be empty once its last package is retired, so non-vacuity
+        is asserted across the indexes, not per index. Stage 98 is not counted.
+        """
 
         registry = metadata.load_registry()
         self.assertTrue(registry.indexes)
+        governed_total = 0
         for index_path, member_profile in registry.indexes.items():
             with self.subTest(index=index_path):
                 self.assertTrue((ROOT / index_path).is_file())
-                governed = [
-                    path
+                governed_total += sum(
+                    1
                     for path in (ROOT / index_path).parent.rglob("*.md")
                     if classify_registered_path(
                         path.relative_to(ROOT).as_posix(), registry
                     )
                     == member_profile
-                ]
-                governed.extend(
-                    self._preserved_members(registry, index_path, member_profile)
                 )
-                self.assertTrue(governed, f"{index_path} governs no document")
-
-    @staticmethod
-    def _preserved_members(
-        registry: object, index_path: str, member_profile: str
-    ) -> list[pathlib.Path]:
-        """Members an index still governs after preservation moved their bodies.
-
-        An active stage empties out when its last package completes, which is a
-        real state and not a vacuous rule: Stage 03 holds no package exactly
-        when no change is in flight. Preservation moves the body without ending
-        the governance relation, so the index's own listing still routes to
-        every one of them. Count them by the path they were moved from.
-        """
-
-        stage_dir = pathlib.PurePosixPath(index_path).parent
-        found: list[pathlib.Path] = []
-        for disposition in PRESERVED_DISPOSITIONS:
-            root = ROOT / "docs/98.archive" / disposition
-            if not root.is_dir():
-                continue
-            for path in root.rglob("*.md"):
-                origin = preserved_origin_path(path.relative_to(ROOT).as_posix())
-                if origin is None:
-                    continue
-                if not origin.startswith(f"{stage_dir}/"):
-                    continue
-                if classify_registered_path(origin, registry) == member_profile:
-                    found.append(path)
-        # A Git-history-only unit keeps its capture row for discovery, so the
-        # index still governs the members its source object names.
-        from scripts.lib.document_governance.archive_assessments import (
-            assessment_lookup,
-            capture_sources,
-        )
-
-        sources = capture_sources(ROOT)
-        for unit, row in assessment_lookup(ROOT).items():
-            if row.availability != "git-history-only" or unit not in sources:
-                continue
-            revision, origin = sources[unit]
-            if not f"{origin}/".startswith(f"{stage_dir}/"):
-                continue
-            listed = subprocess.run(
-                ["git", "ls-tree", "-r", "--name-only", revision, "--", origin],
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                check=True,
-                timeout=30,
-            ).stdout.split()
-            found.extend(
-                pathlib.Path(member)
-                for member in listed
-                if classify_registered_path(member, registry) == member_profile
-            )
-        return found
+        self.assertGreater(governed_total, 0)
 
 
 class ReadmeSectionProfileTests(unittest.TestCase):
@@ -1324,38 +1134,6 @@ class GloballyForbiddenKeyTests(unittest.TestCase):
 
     def test_an_undeclared_key_keeps_the_other_code(self) -> None:
         self.assertEqual(["type-inappropriate-key"], self._codes("bogus_key"))
-
-
-class ArchiveContractDiagnosticTests(unittest.TestCase):
-    """An archive contract violation must name the document, not be an error."""
-
-    def _corrupted_root(self, directory: str) -> pathlib.Path:
-        root = pathlib.Path(directory)
-        shutil.copytree(ROOT / "docs/98.archive", root / "docs/98.archive")
-        victim = next((root / "docs/98.archive/tombstones").rglob("*.md"))
-        victim.write_text(
-            victim.read_text(encoding="utf-8")
-            + "\n## Original Body\n\nA retired body copied into the pointer.\n",
-            encoding="utf-8",
-        )
-        self.relative = victim.relative_to(root).as_posix()
-        return root
-
-    def test_violation_is_reported_with_its_path(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = self._corrupted_root(directory)
-            stream = io.StringIO()
-            with contextlib.redirect_stdout(stream):
-                code = run_recovery(root)
-        output = stream.getvalue()
-        self.assertEqual(1, code, output)
-        self.assertIn("archive-contract-invalid", output)
-        self.assertIn(self.relative, output)
-
-    def test_intact_archive_still_loads(self) -> None:
-        inventory = archive_authority.load_archive(ROOT / "docs/98.archive")
-        self.assertTrue(inventory.tombstones)
-        self.assertTrue(inventory.migrations)
 
 
 class TemplateRoutingTests(unittest.TestCase):

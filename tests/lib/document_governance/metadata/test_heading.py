@@ -14,6 +14,7 @@ from unittest.mock import patch
 
 from jsonschema import Draft202012Validator
 
+from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 from scripts.lib.document_governance.metadata import heading as heading_module
 from scripts.lib.document_governance.registry import classify_path
 from tests.lib.document_governance.metadata._support import (
@@ -440,7 +441,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         cls.template_path = pathlib.Path(
             "docs/99.templates/templates/specs/spec.template.md"
         )
-        cls.template_values = heading_module._parse_frontmatter_text(
+        cls.template_values = parse_frontmatter_text(
             (ROOT / cls.template_path).read_text(encoding="utf-8")
         )
 
@@ -468,9 +469,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         path = pathlib.Path(
             "docs/99.templates/templates/operations/incident.template.md"
         )
-        values = heading_module._parse_frontmatter_text(
-            (ROOT / path).read_text(encoding="utf-8")
-        )
+        values = parse_frontmatter_text((ROOT / path).read_text(encoding="utf-8"))
         self.assertEqual(
             self.profiles["common"]["template_placeholders"]["occurred_at"],
             values["occurred_at"],
@@ -486,9 +485,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         path = pathlib.Path(
             "docs/99.templates/templates/common/readme-stage.template.md"
         )
-        values = heading_module._parse_frontmatter_text(
-            (ROOT / path).read_text(encoding="utf-8")
-        )
+        values = parse_frontmatter_text((ROOT / path).read_text(encoding="utf-8"))
         self.assertEqual(
             self.profiles["common"]["template_placeholders"]["layer"], values["layer"]
         )
@@ -588,7 +585,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         text = (ROOT / path).read_text(encoding="utf-8")
         record = metadata.Record(
             path,
-            heading_module._parse_frontmatter_text(text),
+            parse_frontmatter_text(text),
             classify_path(path.as_posix(), self.profiles["_registry"]),
             frontmatter_present=True,
         )
