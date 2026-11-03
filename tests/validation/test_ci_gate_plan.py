@@ -524,7 +524,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         )
 
     def test_document_links_are_local_only_for_changed_and_full_plans(self) -> None:
-        paths = ("docs/03.specs/0211-qa-delivery-rationalization/spec.md",)
+        paths = ("docs/03.specs/0001-example/spec.md",)
         local_changed = build_public_plan(
             "changed", runner.ExecutionContext.LOCAL, paths
         )
@@ -689,7 +689,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         document_plan = build_public_plan(
             "changed",
             runner.ExecutionContext.LOCAL,
-            ("docs/03.specs/0211-qa-scope-and-delivery-rationalization/spec.md",),
+            ("docs/03.specs/0001-example/spec.md",),
         )
         self.assertEqual(
             ("leaf.local-candidate-preflight", "leaf.docs-traceability"),
@@ -980,7 +980,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         ordinary_document = build_public_plan(
             "changed",
             runner.ExecutionContext.PULL_REQUEST,
-            ("docs/03.specs/0211-qa-delivery-rationalization/spec.md",),
+            ("docs/03.specs/0001-example/spec.md",),
         )
         self.assertNotIn(
             "leaf.release-regressions",
@@ -1318,7 +1318,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
 
         self.assertEqual(
             runner.SelectedPrerequisites(node=False, docker=False),
-            requirements(("docs/03.specs/0211-example/spec.md",)),
+            requirements(("docs/03.specs/0001-example/spec.md",)),
         )
         self.assertEqual(
             runner.SelectedPrerequisites(node=False, docker=False),

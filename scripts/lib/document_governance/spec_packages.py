@@ -59,18 +59,6 @@ _RECONCILIATION_HEADERS = (
     "Evidence",
 )
 _FORBIDDEN_PACKAGE_ROLES = frozenset({"design.md", "tests.md", "task.md"})
-# Owner-approved one-off corrections of a terminal Task, by path: the Evidence
-# row name, its Resolves cell before, and the cell after. Nothing else changes.
-_TERMINAL_TASK_RESOLVES_CORRECTIONS: Mapping[str, tuple[tuple[str, str, str], ...]] = {
-    "docs/03.specs/0211-qa-scope-and-delivery-rationalization/tasks/"
-    "tsk-0002-hosted-contract-and-tier13-hardening.md": (
-        (
-            "Final hosted candidate recovery",
-            "Final hosted candidate",
-            "First hosted candidate RED, Hosted retry, Final hosted candidate",
-        ),
-    ),
-}
 _CONTRACT_PROFILES = {
     "openapi.yaml": "openapi-contract",
     "schema.graphql": "graphql-contract",
@@ -2933,7 +2921,16 @@ def _v7_historical_admission(
 ]:
     root = stage_root.parent.parent
     revision = previous_generation_revision(root, 7)
-    sources = _load_base_spec_packages(root, base_ref=revision, context=context)
+    # Only a package still in the tree can admit a Task; a deleted one's
+    # number is reserved instead, so its historical tables are not re-read.
+    current_packages = {package.spec.path.parent for package in packages}
+    sources = tuple(
+        package
+        for package in _load_base_spec_packages(
+            root, base_ref=revision, context=context
+        )
+        if package.spec.path.parent in current_packages
+    )
     source_registry = load_registry_at_revision(revision, root=root)
     source_historical, source_pairs = _v6_historical_admission(
         stage_root, sources, source_registry, context, historical, historical_pairs
@@ -4130,24 +4127,10 @@ def _terminal_task_migration_matches(before: SpecDocument, task: SpecDocument) -
         for key, value in current_record.metadata.items()
         if key not in {"parent_ids", "updated"}
     }
-    corrected = before_record.body
-    corrections = _TERMINAL_TASK_RESOLVES_CORRECTIONS.get(before.path.as_posix(), ())
-    for name, old, new in corrections:
-        corrected = _corrected_resolves(corrected, name, old, new)
-    return before_metadata == current_metadata and current_record.body in {
-        before_record.body,
-        corrected,
-    }
-
-
-def _corrected_resolves(body: str, name: str, old: str, new: str) -> str:
-    """Replace the Resolves cell of the one named Evidence row."""
-
-    lines = body.split("\n")
-    for index, line in enumerate(lines):
-        if line.startswith(f"| {name} |") and line.endswith(f"| {old} |"):
-            lines[index] = line[: -len(f"{old} |")] + f"{new} |"
-    return "\n".join(lines)
+    return (
+        before_metadata == current_metadata
+        and current_record.body == before_record.body
+    )
 
 
 def _mainline_historical_terminal_tasks(
