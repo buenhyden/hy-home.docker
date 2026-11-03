@@ -1,6 +1,6 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.2"
+version: "1.5.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -23,7 +23,6 @@ created: "2026-02-21"
 - Operators
 - Developers
 - Documentation Writers
-- AI Agents
 
 ## Scope
 
@@ -493,6 +492,7 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 
 ## Related Documents
 
+- [에이전트 작업 규칙](AGENTS.md)
 - [🤖 Agent Governance](../AGENTS.md)
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
 - 📘 Runbooks (`docs/05.operations/runbooks/README.md`)

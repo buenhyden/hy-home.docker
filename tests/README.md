@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-11-03"
 created: "2026-02-21"
 ---
 
@@ -26,7 +26,6 @@ created: "2026-02-21"
 - Developers
 - QA Engineers
 - Operators
-- AI Agents
 
 ## Scope
 
@@ -114,6 +113,7 @@ PASS로 대체하지 않습니다. 정확한 mode·argv는 canonical `--explain`
 
 ## Related Documents
 
+- [에이전트 작업 규칙](AGENTS.md)
 - [Root README](../README.md)
 - [Scripts README](../scripts/README.md)
 - [Documentation protocol](../.agents/governance/documentation-protocol.md)

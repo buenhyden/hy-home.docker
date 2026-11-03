@@ -1,10 +1,10 @@
 ---
 title: "Operations"
-version: "2.2.0"
+version: "2.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-03"
 layer: "operations"
 ---
 
@@ -29,7 +29,6 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 - 개발자
 - SREs
 - 보안 담당자
-- AI 에이전트
 
 ## Scope
 
@@ -132,6 +131,7 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 
 ## Related Documents
 
+- [에이전트 작업 규칙](AGENTS.md)
 - [Docs index](../README.md)
 - [Requirements](../01.requirements/README.md)
 - [Architecture](../02.architecture/README.md)

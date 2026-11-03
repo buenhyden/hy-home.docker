@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.3.1"
+version: "2.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-11-03"
 layer: "templates"
 ---
 
@@ -237,5 +237,6 @@ active로 유지됩니다. `registry.json`이 모든 진입 상태, edge, termin
 
 ## Related Documents
 
+- [에이전트 작업 규칙](AGENTS.md)
 - [Template catalog](./templates/README.md)
 - [Canonical agent governance home ADR](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
