@@ -33,9 +33,10 @@ becomes its owner.
   `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
   before running them.
 - Never run `pre-commit run` directly. Use
-  `scripts/validation/run-ci-precommit.sh --mode local-staged` before a commit;
-  `scripts/validation/run-agent-precommit-all-files.sh` is the only approved
-  all-files entry.
+  `scripts/validation/run-ci-precommit.sh --mode local-staged` before a commit.
+  An all-files run follows the
+  [execution boundary](../.agents/governance/quality-standards.md#4-execution-boundary)
+  and its `scripts/validation/run-agent-precommit-all-files.sh` route.
 - Generated provider surfaces under `.claude/` and `.codex/` come from
   `scripts/operations/provider_surface_renderer.py`; re-render them, never
   hand-edit them.
@@ -55,7 +56,8 @@ becomes its owner.
   [`test-authoring`](../.agents/skills/test-authoring/SKILL.md).
 - Hook rule: [`warn-pre-commit-manual`](../.agents/governance/hooks/hookify.warn-pre-commit-manual.md).
 - Native hooks: `.claude/hooks/` and `.codex/hooks.json` call
-  `scripts/hooks/agent-event-hook.sh` and `scripts/hooks/post-tool-validate.sh`.
+  `scripts/hooks/agent-event-hook.sh`, which calls
+  `scripts/hooks/post-tool-validate.sh` for post-edit validation.
 - Provider loading: [Claude adapter](../.claude/provider.md),
   [Codex adapter](../.codex/provider.md).
 

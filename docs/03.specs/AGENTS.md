@@ -32,13 +32,15 @@ procedures belong to Stage 01, Stage 02 and Stage 05.
   Allocate the next Spec number from the Registry `spec` space and advance its
   high-water mark in the same change.
 - Record each check as an Evidence row with an honest `PASS`, `FAIL`,
-  `BLOCKED` or `NOT_RUN` result and the revision it examined. A row `Resolves`
-  only an earlier row with the same Check and Work Unit.
+  `BLOCKED` or `NOT_RUN` result and the revision it examined. What a row may
+  `Resolve` is defined by the [SDLC](../../.agents/governance/sdlc.md#sequence)
+  and the Registry `evidence_columns` contract.
 - Never edit the body of a terminal Task. Record a later correction in the
   current Task instead.
-- A removed package is summarized into its Stage 01 or Stage 02 owner, deleted,
-  and its number added to the Registry `reserved_history`; it never moves to
-  Stage 98.
+- Remove a package only as the
+  [retirement preconditions](../../.agents/governance/documentation-protocol.md#retirement-preconditions)
+  and the [SDLC](../../.agents/governance/sdlc.md#sequence) readiness and
+  approval sequence define it.
 - Write prose in English, per the profile `language`.
 
 ## Canonical References

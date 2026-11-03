@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.10"
+version: "1.6.11"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 layer: "architecture"
 ---
 
@@ -143,7 +143,6 @@ docs/02.architecture/decisions/
 - System Architects
 - Developers
 - Reviewers
-- AI Agents
 
 ### Authoring Flow
 
@@ -164,6 +163,7 @@ docs/02.architecture/decisions/
 
 ## Related Documents
 
+- [에이전트 작업 규칙](../AGENTS.md)
 - [Architecture](../README.md)
 - [Architecture Descriptions](../descriptions/README.md)
 - [Product Requirements](../../01.requirements/README.md)

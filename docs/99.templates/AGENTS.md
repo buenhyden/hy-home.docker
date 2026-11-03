@@ -27,9 +27,10 @@ README. A change here changes what every governed document must look like.
   and a corpus re-check, not a document-only review.
 - Keep `registry.json` byte-stable apart from the intended change; it is
   written as two-space JSON with a trailing newline.
-- Every profile needs its `template_roles`, `transitions` and
-  `archive_retention.disposition_entry_statuses` entries, and every non-docs
-  path it owns must be listed in `scripts/lib/document_governance/registry.py`.
+- Every profile needs its `transitions` and
+  `archive_retention.disposition_entry_statuses` entries; a profile with a
+  template also needs a `template_roles` entry. A non-docs path a profile owns
+  must be listed in `scripts/lib/document_governance/registry.py`.
 - Identity spaces are append-only: never lower a `high_water` mark or drop a
   number from `reserved_history`.
 - Templates keep `{{UPPER_SNAKE_CASE}}` placeholders and author-prompt

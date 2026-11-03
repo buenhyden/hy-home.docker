@@ -30,12 +30,12 @@ operating procedures belong to Stage 01, Stage 03 and Stage 05.
   and an ADR from
   [`decision.template.md`](../99.templates/templates/architecture/decision.template.md),
   under the `architecture-description` and `adr` profiles.
-- A new ADR enters as `proposed`; the metadata check rejects any other
-  initial status. Record the owner's acceptance in the ADR body and change the
-  status in the first change after the ADR merges.
-- Supersede an accepted ADR with a new one; do not rewrite an accepted
-  decision body. Record a partial supersession in the older ADR's
-  Traceability prose.
+- A new ADR enters as `proposed`, the initial status of the
+  `architecture-decision` lifecycle in the [Registry](../99.templates/registry.json);
+  the [SDLC](../../.agents/governance/sdlc.md) owns the ADR states.
+- Supersede an accepted ADR only through a separately approved new ADR with
+  explicit `supersedes` metadata and links in both directions; do not rewrite
+  an accepted decision body.
 - Keep the root to `README.md`, `AGENTS.md`, `descriptions/` and `decisions/`;
   the Stage 02 loader rejects any other root entry.
 - Change a Description or ADR in place; do not add a replacement or redirect

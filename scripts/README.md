@@ -493,7 +493,6 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 ## Related Documents
 
 - [에이전트 작업 규칙](AGENTS.md)
-- [🤖 Agent Governance](../AGENTS.md)
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
 - 📘 Runbooks (`docs/05.operations/runbooks/README.md`)
 - [Public Suite Ownership Manifest](manifest.yaml)

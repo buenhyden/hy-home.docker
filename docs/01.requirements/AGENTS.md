@@ -29,7 +29,8 @@ procedures are out of scope; they belong to Stage 02, Stage 03 and Stage 05.
 - Create a package from the Requirement template
   [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)
   under the Registry `requirements-package` profile: `type:
-  sdlc/requirement`, `artifact_id: REQ-####`, required `parent_ids: []`.
+  sdlc/requirement`, `artifact_id: REQ-####`; `parent_ids` is optional and,
+  when present, records only Registry-required structural relations.
 - Change an existing package in place. Do not add a parallel PRD, SRS,
   interface-requirement or compatibility file.
 - Write child IDs in full (`REQ-####-FR-####`, `REQ-####-NFR-####`,
@@ -64,8 +65,9 @@ procedures are out of scope; they belong to Stage 02, Stage 03 and Stage 05.
 
 - `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`
 - `python3 scripts/validation/check-document-links.py --mode alignment`
-- `python3 scripts/validation/check-document-corpus-lifecycle.py`, which
-  rejects a numbering gap that `reserved_history` does not record.
+- `python3 scripts/validation/check-document-corpus-lifecycle.py`
+- The metadata check above loads Stage 01 and rejects a package or child
+  numbering gap that `reserved_history` does not record.
 - `python3 scripts/validation/run-ci-gate.py --profile changed --explain` shows
   the selected checks without running them.
 
