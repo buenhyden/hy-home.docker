@@ -132,7 +132,7 @@ Restic이 아니라 다시 pull하거나 다시 빌드하는 것이고, RPO는 "
 
 | Archive | Source evidence | 복구 |
 | --- | --- | --- |
-| upstream 이미지 11개 | `alpine:3.22`, `couchdb:3.5.2`, `curlimages/curl:8.22.0`, `ghcr.io/hadolint/hadolint:v2.14.0`, `ghcr.io/zalando/spilo-17:4.0-p3`, `haproxy:3.4.4`, `mongo-express:1-18-alpine3.19`, `openpolicyagent/conftest:v0.70.1`, `opensearchproject/opensearch-dashboards:3.8.0`, `quay.io/coreos/etcd:v3.7.1`, `sonarqube:26.9.0.129388-community` (2026-10 SSD 이전 때 multi-platform index가 single-platform manifest로 저장된 이미지) | 같은 태그를 다시 pull한다. image ID는 원래와 다르다 |
+| upstream 이미지 11개 | `alpine:3.22`, `couchdb:3.5.2`, `curlimages/curl:8.22.0`, `ghcr.io/hadolint/hadolint:v2.14.0`, `ghcr.io/zalando/spilo-17:4.0-p3`, `haproxy:3.4.4`, `mongo-express:1-18-alpine3.19`, `openpolicyagent/conftest:v0.70.1`, `opensearchproject/opensearch-dashboards:3.8.0`, `quay.io/coreos/etcd:v3.7.1`, `sonarqube:26.9.0.129388-community` (2026-10 SSD 이전 때 multi-platform index가 single-platform manifest로 저장된 이미지) <!-- runtime-version-exception: history — tags re-pulled after the 2026-10 SSD move, not the current Compose pins --> | 같은 태그를 다시 pull한다. image ID는 원래와 다르다 |
 | `hy-home/storybook`, `hy-home/storybook-mcp` | 태그가 source commit이다(RUN-0101) | 그 commit에서 다시 빌드한다 |
 | `hy-home/dbt-postgres` | 추적되는 Dockerfile(SPEC-0180 TSK-0007) | 다시 빌드한다 |
 | `hy-home/stalwart-config` | 보관한 태그를 만든 Git 이력의 Compose와 Dockerfile | 이력 commit에서 다시 빌드한다. 현재 pin은 다른 버전이다 |

@@ -179,6 +179,19 @@ against `d6b535503` reported zero violations.
 | E2 | 3 | W3 | document-links | alignment mode after the reference cleanup | PASS | 850 documents, 7904 links, zero failures and warnings | required | - |
 | E3 | 2 | W3 | metadata-changed | `check-changed --base-ref origin/chore/delete-stage98-archive` before this package | PASS | selected 124, zero violations | required | - |
 | E4 | 3 | W1 | link-exemption-tests | `RetiredPackageLinkTests` | PASS | 2 tests OK; failed with the exemption disabled | required | - |
+| E5 | 4 | W5 | governance-unit-tests | full `tests/lib/document_governance` discovery on pre-rebase `a6e8bcdc1` | FAIL | 765 tests, 1 failure: the package directory carried the status word "completed" in its index row | required | - |
+| E6 | 4 | W5 | governance-unit-tests | the coordinator's pre-rebase discovery on `97f292ce5`, after the rename | PASS | 761 tests OK, as reported by the coordinator | required | E5 |
+| E7 | 4 | W5 | lifecycle-and-ci-plan | pre-rebase `a6e8bcdc1`: `tests/validation/lifecycle`, `tests/lib/gate`, CI gate plan, CI routing and validator entrypoints | PASS | 16, 139 and 150 tests OK | required | - |
+| E8 | 4 | W5 | governance-unit-tests | full `tests/lib/document_governance` discovery on rebased `09dccfe0c`, quiet tree | PASS | 765 tests OK | required | - |
+| E9 | 4 | W5 | lifecycle-and-ci-plan | `tests/validation/lifecycle`, `test_ci_gate_plan`, `test_agent_governance_ci_routing` on `09dccfe0c` | FAIL | lifecycle 20 OK; CI plan and routing 144 with 1 failure: the `git` subtest of the descendant-cleanup test under the parallel run | required | - |
+| E10 | 4 | W5 | lifecycle-and-ci-plan | the descendant-cleanup test alone on `09dccfe0c` | PASS | 1 test OK | required | E9 |
+| E11 | 4 | W5 | gate-evidence | `tests.lib.gate.test_ci_gate_evidence` with system python3 on `09dccfe0c` | PASS | 21 tests OK | required | - |
+| E12 | 2 | W3 | metadata-active | `check-active` on `09dccfe0c` | FAIL | 497 selected, 1 violation: `runtime-version-literal` for the POL-0021 image list | required | - |
+| E13 | 2 | W3 | metadata-active | `check-active` after marking that list as a history exception | PASS | 497 selected, zero violations | required | E12 |
+| E14 | 3 | W3 | document-links | alignment on `09dccfe0c` | PASS | zero failures and warnings | required | - |
+| E15 | 3 | W3 | document-commands | commands mode on `09dccfe0c` | FAIL | 2 findings for ignored `_workspace` files that DATA-0096 documents since PR #720; not caused by this change | required | - |
+| E16 | 1 | W2 | corpus-lifecycle | `--base-ref origin/main` on `09dccfe0c` | PASS | corpus lifecycle zero; occupancy zero | required | - |
+| E17 | 4 | W5 | manifest-and-renderer | Script Manifest; provider renderer `--check` on `09dccfe0c` | PASS | manifest valid; renderer drift 0 | required | - |
 
 ## Criterion Acceptance
 
