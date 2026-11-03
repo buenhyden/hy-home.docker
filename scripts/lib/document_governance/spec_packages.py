@@ -5866,12 +5866,10 @@ def _failed_observation_findings(
                 continue
             rows = _v6_evidence_rows(task, task.evidence_registry or registry)
             for row in failed:
-                candidates = (
-                    rows
-                    if len(row) == 9
-                    else tuple(candidate[:7] + candidate[-1:] for candidate in rows)
-                )
-                if row not in candidates:
+                observation_width = 8 if len(row) == 9 else 7
+                expected = row[:observation_width]
+                candidates = tuple(candidate[:observation_width] for candidate in rows)
+                if expected not in candidates:
                     findings.append(
                         SpecPackageFinding(
                             "failed-observation-changed",

@@ -119,7 +119,7 @@ healthcheck:
 Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OAuth2 Proxy에 위임합니다.
 
 1. Entrypoint: `websecure`(포트 443).
-2. Middleware: `sso-auth@file` -> `http://oauth2-proxy:4180/`. session이 없으면 브라우저는 Keycloak으로 302, `Accept: application/json` 요청은 401을 받습니다.
+2. Middleware: `sso-auth@file` -> `http://oauth2-proxy:${OAUTH2_PROXY_PORT:-4180}/`. 동적 설정은 Traefik 컨테이너에 전달된 `OAUTH2_PROXY_PORT`를 `1..65535` 정규식으로 제한해 이 주소를 렌더하며, 부적합한 값은 유효한 backend URL이 되지 않습니다. session이 없으면 브라우저는 Keycloak으로 302, `Accept: application/json` 요청은 401을 받습니다.
 3. Error page: `sso-errors@file`은 403만 `/oauth2/sign_in` 응답으로 바꿉니다. 401은 machine client에게 그대로 전달합니다.
 
 ## Validation

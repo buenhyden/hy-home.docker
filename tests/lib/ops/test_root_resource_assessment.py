@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -161,17 +162,121 @@ def valid_document(*, evidence_kind: str = "measurement") -> dict[str, object]:
         },
     }
     document["metrics"]["throughput_per_second"]["value"] = 20.0
+    path = "infra/01-gateway/traefik/docker-compose.yml"
+    digest = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
+    revision = subprocess.check_output(
+        ["git", "-C", str(ROOT), "rev-parse", "--verify", "HEAD"], text=True
+    ).strip()
+    registry = json.loads(
+        (ROOT / "infra/common-optimizations.exceptions.json").read_text()
+    )
+    projection = {
+        key: registry[key]
+        for key in ("schema_version", "policy_id", "template_source", "controls")
+    }
+    projection["exceptions"] = [
+        row
+        for row in registry["exceptions"]
+        if row["scope"] == "root" and row["service"] == "traefik"
+    ]
+    document["target"]["service"] = "traefik"
+    document["source"].update(
+        repository_sha=revision, compose_file=path, compose_file_sha256=digest
+    )
+    document["deployed"].update(repository_sha=revision, compose_file_sha256=digest)
+    document["controls"].update(compose_file=path, registry=projection)
     return document
 
 
+def source_bound_document() -> dict[str, object]:
+    """Build a public synthetic claim bound to a real checked-in service."""
+    return valid_document()
+
+
+class CanonicalBindingTests(unittest.TestCase):
+    def test_bound_public_source_discloses_limits_and_fingerprints(self) -> None:
+        result = assessment.evaluate(source_bound_document(), today=date(2026, 10, 11))
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertEqual(
+            ["EFFECTIVE_CONTROLS_UNVERIFIED", "RECEIPT_UNVERIFIED"],
+            result["blockers"],
+        )
+        self.assertEqual(
+            hashlib.sha256(
+                (ROOT / "infra/common-optimizations.exceptions.json").read_bytes()
+            ).hexdigest(),
+            result["canonical_binding"]["registry_sha256"],
+        )
+        self.assertEqual(64, len(result["canonical_binding"]["source_manifest_sha256"]))
+        self.assertFalse(result["canonical_binding"]["effective_controls_verified"])
+        self.assertFalse(result["canonical_binding"]["receipt_verified"])
+        self.assertFalse(result["runtime_acceptance"])
+        self.assertFalse(result["mutation_authorized"])
+
+    def test_caller_claims_do_not_authenticate_effective_controls_or_receipt(
+        self,
+    ) -> None:
+        document = source_bound_document()
+        document["controls"]["effective_service"]["cpus"] = "99"
+        document["source"]["effective_config_sha256"] = "1" * 64
+        document["deployed"]["effective_config_sha256"] = "1" * 64
+        document["provenance"]["receipt_sha256"] = "2" * 64
+        result = assessment.evaluate(document, today=date(2026, 10, 11))
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertIn("EFFECTIVE_CONTROLS_UNVERIFIED", result["blockers"])
+        self.assertIn("RECEIPT_UNVERIFIED", result["blockers"])
+
+    def test_forged_registry_and_stale_source_are_blocked(self) -> None:
+        for change, blocker in (
+            ("registry", "CANONICAL_REGISTRY_MISMATCH"),
+            ("source", "CURRENT_SOURCE_MISMATCH"),
+            ("service", "CURRENT_SOURCE_MISMATCH"),
+            ("revision", "CURRENT_SOURCE_MISMATCH"),
+        ):
+            with self.subTest(change=change):
+                document = source_bound_document()
+                if change == "registry":
+                    document["controls"]["registry"]["controls"]["gpu"] = "forged"
+                elif change == "source":
+                    document["source"]["compose_file_sha256"] = "0" * 64
+                elif change == "service":
+                    document["target"]["service"] = "not-a-current-service"
+                else:
+                    document["source"]["repository_sha"] = "0" * 40
+                result = assessment.evaluate(document, today=date(2026, 10, 11))
+                self.assertEqual("BLOCKED", result["status"])
+                self.assertIn(blocker, result["blockers"])
+
+    def test_unavailable_canonical_inputs_fail_closed(self) -> None:
+        document = source_bound_document()
+        with mock.patch.object(
+            assessment, "_canonical_sources", side_effect=OSError, create=True
+        ):
+            result = assessment.evaluate(document, today=date(2026, 10, 11))
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertIn("CANONICAL_INPUT_UNAVAILABLE", result["blockers"])
+
+    def test_unavailable_git_revision_does_not_expose_subprocess_output(self) -> None:
+        document = source_bound_document()
+        failed = subprocess.CompletedProcess([], 1, "sensitive-marker", "private")
+        with mock.patch.object(assessment.subprocess, "run", return_value=failed):
+            result = assessment.evaluate(document, today=date(2026, 10, 11))
+        self.assertIn("CANONICAL_INPUT_UNAVAILABLE", result["blockers"])
+        self.assertNotIn("sensitive-marker", json.dumps(result))
+        self.assertNotIn("private", json.dumps(result))
+
+
 class AssessmentTests(unittest.TestCase):
-    def test_complete_measurement_is_reviewable_but_never_authorizes_mutation(
+    def test_complete_measurement_remains_blocked_without_independent_evidence(
         self,
     ) -> None:
         result = assessment.evaluate(valid_document(), today=date(2026, 10, 11))
 
-        self.assertEqual("REVIEWABLE", result["status"])
-        self.assertEqual([], result["blockers"])
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertEqual(
+            ["EFFECTIVE_CONTROLS_UNVERIFIED", "RECEIPT_UNVERIFIED"],
+            result["blockers"],
+        )
         self.assertFalse(result["mutation_authorized"])
         self.assertEqual("SOURCE/UNIT/STATIC", result["evidence_scope"])
         self.assertFalse(result["runtime_acceptance"])
@@ -189,7 +294,13 @@ class AssessmentTests(unittest.TestCase):
 
         self.assertEqual("BLOCKED", result["status"])
         self.assertEqual(
-            ["SYNTHETIC_EVIDENCE", "UNKNOWN_FACTS", "IDLE_ONLY_LOWERING"],
+            [
+                "EFFECTIVE_CONTROLS_UNVERIFIED",
+                "RECEIPT_UNVERIFIED",
+                "SYNTHETIC_EVIDENCE",
+                "UNKNOWN_FACTS",
+                "IDLE_ONLY_LOWERING",
+            ],
             result["blockers"],
         )
 
@@ -202,7 +313,12 @@ class AssessmentTests(unittest.TestCase):
         result = assessment.evaluate(candidate, today=date(2026, 10, 11))
 
         self.assertEqual(
-            ["SOURCE_DEPLOYED_MISMATCH", "CONTRADICTORY_FACTS"],
+            [
+                "EFFECTIVE_CONTROLS_UNVERIFIED",
+                "RECEIPT_UNVERIFIED",
+                "SOURCE_DEPLOYED_MISMATCH",
+                "CONTRADICTORY_FACTS",
+            ],
             result["blockers"],
         )
 
@@ -469,9 +585,9 @@ class LoaderTests(unittest.TestCase):
                 check=False,
             )
 
-        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
         output = json.loads(result.stdout)
-        self.assertEqual("REVIEWABLE", output["status"])
+        self.assertEqual("BLOCKED", output["status"])
         self.assertNotIn(os.fspath(path), result.stdout + result.stderr)
 
     def test_parent_symlink_is_rejected(self) -> None:

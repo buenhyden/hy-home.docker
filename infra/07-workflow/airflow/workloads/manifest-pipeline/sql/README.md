@@ -1,17 +1,17 @@
 ---
 title: "Manifest Publication SQL"
-version: "0.2.2"
+version: "0.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-11-02"
 ---
 
 # Manifest Publication SQL
 
 ## Overview
 
-P04 단독 소유의 versioned publication/outbox migration 초안입니다.
+기존 P04 게시 계약과 현재 P05 관리 복구의 versioned publication/outbox migration입니다.
 SQL 파일 존재는 실제 migration·권한·복구 수용을 뜻하지 않습니다.
 
 ## Scope
@@ -26,6 +26,12 @@ Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 
 - [004_notification_quarantine.sql](004_notification_quarantine.sql): 만료·불확실 통지의 version 3 격리와 운영자 대조.
 - [003_business_date.sql](003_business_date.sql): 같은 source의 UTC 업무일 중복을
   거부하는 version 2 migration.
+
+- [005_data_version.sql](005_data_version.sql): reader view 끝에 원본 SHA-256인
+  `data_version`을 추가하는 version 4 migration.
+- [006_checks.sql](006_checks.sql): version 4 receipt·shape·역할/ACL과 reader view의 읽기 전용 검사.
+- [007_notification_recovery.sql](007_notification_recovery.sql): version 5 개별 no-send 재처리와 복원 sending 격리.
+- [008_checks.sql](008_checks.sql): version 5 receipt·shape·관리 함수 ACL의 읽기 전용 검사.
 
 ## Usage
 
@@ -97,11 +103,11 @@ outbox를 보존한 채, 검토된 backup을 별도의 빈 workload 복구 대�
 재검증합니다. 운영 데이터가 있는 대상에서 version 2 index나 장부 행을 임의로
 제거하지 않으며 MNG DB reset, 공유 volume 삭제, 전체 stack restart를 하지 않습니다.
 
-### P05 draft interface
+### P05 source interface
 
-현재 source version은 3입니다. 여섯 인자 `publish_manifest`와 여섯 claim 필드를
+현재 source version은 5입니다. 여섯 인자 `publish_manifest`와 여섯 claim 필드를
 유지하며 불확실 통지의 retry 의미는 아래 격리 계약으로 바꿉니다. SQL·보안 검토 뒤 파일 hash를
-고정하며, P05의 실제 소비자 검토와 native 수용은 아직 NOT_RUN입니다.
+고정하며, 현재 v5 소스 검토와 실제 PostgreSQL/native 검증 결과는 Task0044에서 별도 기록합니다.
 
 | 호출 | 입력 | 결과 |
 | --- | --- | --- |
@@ -112,10 +118,12 @@ outbox를 보존한 채, 검토된 backup을 별도의 빈 workload 복구 대�
 | `retry_not_sent_notification` | id, lease_token | SMTP 미시작이 증명된 유효 lease의 retry/dead 여부 boolean |
 | `unknown_notification` | id, lease_token | 현재 token의 불확실 전송 격리 여부 boolean |
 | `reconcile_notification` | id, result, evidence SHA256 | 검토한 운영자 대조·attempt별 이력 기록 여부 boolean |
+| `requeue_dead_notification` | id, 현재 attempt, request UUID, 승인 증거 SHA256 | 개별 승인에 한 번의 추가 claim 허용 여부 boolean |
+| `quarantine_restored_notification` | id, 현재 attempt, request UUID, 복원 장벽 증거 SHA256 | sending의 unknown 격리 여부 boolean |
 | `published_documents` / `delivery_status` | reader SELECT | 승인된 현재 문서 / 제한된 통지 장부 |
 
-Lease는 10분이고 ack·no-send retry는 만료·stale token을 거부합니다. 최대 다섯 번 claim 후 dead로
-종료하며 retry delay는 30×2^attempt seconds, 상한 900초입니다. 역사적 게시에는
+Lease는 10분이고 ack·no-send retry는 만료·stale token을 거부합니다. 기본 다섯 번 claim 후 dead로
+종료하며, v5의 개별 no-send 추가 승인만 해당 건의 한 번을 더 허용합니다. 자동 retry delay는 30×2^attempt seconds, 상한 900초입니다. 역사적 게시에는
 새 outbox를 만들지 않고 기존 run의 최초 게시 결과를 유지합니다. 같은 source와
 captured_at의 다른 입력 및 같은 source·UTC 업무일의 다른 입력은 전체 역사에서
 거부합니다.
@@ -127,7 +135,7 @@ caller 입력을 실제 Git 내용 인증으로 취급하지 않습니다.
 
 Ack는 SMTP acceptance만 기록하며 실제 배달을 보장하지 않습니다. 안정된
 run-derived Message-ID, at-least-once 중복 불확실성과 accepted event 복원 정합은
-P05와 별도 native 검증에서 확인합니다. 현재 P05 소비자 검토와 native는 NOT_RUN입니다.
+P05와 별도 native 검증에서 확인합니다. 현재 v5의 실제 소비자/복원 인수는 별도이며 과거 v3 C19/C22 수용은 보존합니다.
 
 ### Version 3 notification quarantine
 
@@ -157,6 +165,61 @@ Runtime에는 이 table의 직접 쓰기 권한이 없으며 신뢰된 owner의 
 unknown을 유지합니다. 실제 no-send가 확인되어도 다섯 번 상한에
 도달한 건은 dead로 남습니다. Runtime notifier에는 대조 권한이 없습니다.
 독립 복원 뒤 unknown·accepted 상태와 claim 결과를 확인한 후 polling을 허용합니다.
+
+### Version 4 data version and checks
+
+기존 `001`–`004` 파일은 변경하지 않습니다. 새 독립 대상의 검토한 순서는
+`001` → `002` 검사 → `003` → `002` 검사 → `004` → `005` → `006` 검사입니다.
+각 migration은 자신의 정확한 SHA-256을 `migration_sha256`으로 받습니다.
+`002`는 version 1/2의 보존된 검사이며 3/4의 최종 검사로 실행하지 않습니다.
+`006`은 `005`의 SHA-256을 받아 version 4 receipt와 실제 fingerprint를 대조합니다.
+합성 게시나 통지 쓰기를 하지 않는 읽기 전용 transaction이며 ROLLBACK으로 끝납니다.
+이 검사의 성공은 실제 Worker 게시나 독립 복원 성공이 아닙니다.
+
+`005`는 명시적으로 owner로 전환한 기존 migrator만 수용하고, 고정된 version 3
+receipt와 현재 schema fingerprint가 다르면 DDL 전에 실패합니다. 이전 migration
+장부를 유지하고 version 4 행을 추가합니다. `published_documents`의 기존 열·owner·
+grant를 보존한 채 마지막 열에 `runs.raw_sha256 AS data_version`을 추가합니다.
+`publish_manifest`, claim/ack/retry/unknown/reconcile 함수와 outbox는 유지합니다.
+P05의 역사 version 3 영수증을 version 4 수용으로 고쳐 쓰지 않으며 실제 소비자의
+현재 호환과 수용은 [P04 Task](../../../../../../docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)에서
+별도 인계합니다. 소스 revert는 실행한 schema rollback이 아닙니다.
+
+### Version 5 operator recovery and checks
+
+기존001–006은 그대로 보존합니다. 검토한 빈 격리 대상에서는 version 4의 위 순서 뒤
+`007`과 자신의 SHA256을 적용하고 `008`에 `007`의 SHA256을 제공합니다. `007`은
+session_user=`opsflow_migrator`, current_user=`opsflow_owner`, DB=`opsflow_dev`와
+고정된 v4 receipt/현재 fingerprint를 먼저 검증합니다. `008`은 읽기 전용 transaction과
+ROLLBACK으로 끝나며 실제 재처리·SMTP·복원 검증을 대신하지 않습니다. v4용 `006`을
+v5의 최종 검사로 실행하지 않습니다. 운영 적용 권한은 이 문서로 부여하지 않습니다.
+
+두 관리 함수는 `(bigint id, integer current_attempt, uuid request_id, text evidence_sha256)`를
+받습니다. 0이 아닌 request UUID와 정제된 비밀 없는 개별 승인/장벽 기록의 SHA256이
+필요합니다. `opsflow_migrator` session에서 명시적으로 `SET ROLE opsflow_owner`한
+관리 context로 호출합니다. Migrator membership은 INHERIT=false·SET=true이고 schema
+USAGE를 runtime에만 부여하므로 role 전환 없이 직접 호출할 수 있다고 가정하지 않습니다.
+PUBLIC·runtime 세 역할에는 관리 함수 권한이 없습니다. 함수는 고정 search_path의
+SECURITY DEFINER이며 원래 session_user도 검사합니다. 이 절차를 위해 grant를 넓히지 않습니다.
+
+`requeue_dead_notification`은 dead·현재 attempt·소진된 attempt_limit과
+`smtp_not_started` 또는 같은 attempt의 `not_sent` 대조를 모두 확인합니다. attempt를
+초기화하지 않고 attempt_limit만 현재 attempt+1로 늘려 retry에 둡니다. 감사 행과 변경은
+한 transaction입니다. 같은 request/인수 replay는 추가 허용량 없이 true이고 다른 인수·
+경합·동일 attempt의 중복 승인은 거부합니다. 기본 자동 retry 상한은 바뀌지 않습니다.
+
+`quarantine_restored_notification`은 현재 sending을 lease 만료 여부와 무관하게
+unknown으로 옮기고 `restored_delivery_unknown`을 남깁니다. 승인된 외부 복원 장벽은
+호출자가 먼저 확인해야 합니다. 이 함수는 실행 중 SMTP socket을 중지하는 fencing도,
+no-send 판정도, 추가 retry 허가도 아닙니다. capture 부재·lease 만료·프로세스 재기동만으로
+old execution의 송신 가능성을 제거했다고 판단하지 않습니다.
+
+`notification_recovery_audit`는 request/outbox/attempt/action/증거 지문/관리 session actor와
+시각을 보존합니다. 같은 요청의 idempotency와 outbox 행 잠금은 DB 의미 검증 대상이며,
+source 검사만으로 실제 경합·권한·복원을 PASS로 기록하지 않습니다. 복원 시 기존
+attempt·reconciliation·audit·accepted/unknown 상태를 함께 보존하고 새 claim을 대조합니다.
+실패하면 polling을 멈춘 채 근거를 보존합니다. source revert는 실행된 schema rollback이
+아니며 기존 장부/행을 삭제해 되돌리지 않습니다.
 
 ## Related Documents
 

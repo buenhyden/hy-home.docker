@@ -37,7 +37,7 @@ services:
       RI_REDIS_ALIAS1: DEV / dev-valkey
       RI_REDIS_USERNAME1: devinspector
       RI_REDIS_HOST2: mng-valkey
-      RI_REDIS_PORT2: '6379'
+      RI_REDIS_PORT2: '${VALKEY_PORT:-6379}'
       RI_REDIS_DB2: '0'
       RI_REDIS_ALIAS2: MNG / mng-valkey
       RI_REDIS_USERNAME2: mnginspector

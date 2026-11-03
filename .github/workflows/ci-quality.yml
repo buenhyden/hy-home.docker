@@ -140,6 +140,10 @@ jobs:
         if: steps.prerequisites.outputs.docker == 'true'
         shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
         run: docker version
+      - name: Verify selected Compose CLI prerequisite
+        if: steps.prerequisites.outputs.compose == 'true'
+        shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
+        run: /usr/bin/docker compose version
       - name: Run changed candidate validation
         env:
           TRUSTED_EVENT_NAME: ${{ steps.trusted-context.outputs.event-name }}

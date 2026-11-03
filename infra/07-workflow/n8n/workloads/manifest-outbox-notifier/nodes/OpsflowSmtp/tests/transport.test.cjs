@@ -12,6 +12,35 @@ const claim = Object.freeze({
 });
 const credential = Object.freeze({ host: 'mailpit', port: 1025, secure: false, disableStartTls: true, user: '', password: '', hostName: '' });
 
+test('explicit authenticated capture requires verified STARTTLS at the same closed destination', () => {
+  const value = { ...credential, disableStartTls: false, user: 'synthetic-capture', password: require('node:crypto').randomBytes(24).toString('hex') };
+  const options = transportOptions(value, 'mailpit-starttls-auth-v1');
+  assert.equal(options.host, 'mailpit');
+  assert.equal(options.port, 1025);
+  assert.equal(options.secure, false);
+  assert.equal(options.requireTLS, true);
+  assert.equal(options.ignoreTLS, false);
+  assert.equal(options.opportunisticTLS, false);
+  assert.deepEqual(options.tls, { servername: 'mailpit', rejectUnauthorized: true });
+  assert.deepEqual(options.auth, { user: value.user, pass: value.password });
+  assert.equal(options.disableFileAccess, true);
+  assert.equal(options.disableUrlAccess, true);
+});
+
+test('authenticated profile refuses downgrade, endpoint overrides and malformed credentials before transport', async () => {
+  const value = { ...credential, disableStartTls: false, user: 'synthetic-capture', password: require('node:crypto').randomBytes(24).toString('hex') };
+  const changes = [{ user: '' }, { password: '' }, { user: null }, { password: 1 }, { user: 'x\n' }, { password: 'x\0' },
+    { user: 'x'.repeat(257) }, { password: 'x'.repeat(4097) }, { disableStartTls: true }, { secure: true },
+    { host: 'stalwart' }, { port: 25 }, { hostName: 'other' }, { tls: { rejectUnauthorized: false } }, { proxy: 'http://outside.invalid' }];
+  for (const changed of changes) {
+    let opened = 0;
+    await assert.rejects(sendClaim(claim, { ...value, ...changed }, undefined, () => { opened++; }, 'mailpit-starttls-auth-v1'), /^Error: OPSFLOW_INVALID_CREDENTIAL$/);
+    assert.equal(opened, 0);
+  }
+  assert.throws(() => transportOptions(credential, 'mailpit-unknown-v1'), /^Error: OPSFLOW_INVALID_CREDENTIAL$/);
+  assert.throws(() => transportOptions(value), /^Error: OPSFLOW_INVALID_CREDENTIAL$/);
+});
+
 test('restricted send accepts only expected recipient and strips driver payload', async () => {
   const sent = [];
   const result = await sendClaim(claim, credential, undefined, (options) => {

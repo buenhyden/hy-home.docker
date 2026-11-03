@@ -58,7 +58,7 @@ terrakube/
 | --- | --- |
 | Purpose | `09-platform-ops`의 Terrakube IaC Automation Platform 서비스 leaf; 서비스: `terrakube-api`, `terrakube-ui`, `terrakube-executor`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-platform-ops/terrakube/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Config files | `docker-compose.yml` |
-| Config values | env 키: `ApiDataSourceType`, `DatasourceHostname`, `DatasourceDatabase`, `DatasourceUser`, `DatasourcePassword_FILE`, `GroupValidationType`, `UserValidationType`, `AuthenticationValidationType` 외 다수; 프로필: `iac` |
+| Config values | env 키: `ApiDataSourceType`, `DatasourceHostname`, `DatasourcePort`, `DatasourceDatabase`, `DatasourceUser`, `DatasourcePassword_FILE`, `GroupValidationType`, `UserValidationType`, `AuthenticationValidationType` 외 다수; 프로필: `iac`. Terrakube 2.33.2의 지원되는 `DatasourcePort`가 `${POSTGRES_PORT:-5432}`를 받음 |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-platform-ops/terrakube/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Networks | `edge_net`, `mng_data_net`, `object_net`, `terrakube_net` |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock` |

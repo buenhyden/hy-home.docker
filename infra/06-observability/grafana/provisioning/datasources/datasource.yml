@@ -124,7 +124,7 @@ datasources:
   - name: n8n DB
     type: grafana-postgresql-datasource
     uid: n8n-db
-    url: mng-pg:5432
+    url: mng-pg:${POSTGRES_PORT}
     user: ${GRAFANA_DB_READER_USER}
     jsonData:
       database: n8n
@@ -139,7 +139,7 @@ datasources:
   - name: Airflow DB
     type: grafana-postgresql-datasource
     uid: airflow-db
-    url: mng-pg:5432
+    url: mng-pg:${POSTGRES_PORT}
     user: ${GRAFANA_DB_READER_USER}
     jsonData:
       database: airflow

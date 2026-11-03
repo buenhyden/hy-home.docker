@@ -1,0 +1,110 @@
+groups:
+  - name: selection-observation
+    rules:
+      - alert: ObservationSelectionMissing
+        expr: absent(hyhome_expected_selection_info)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "Observation selection is unavailable"
+          description: "Generate and apply a complete source-bound observation selection."
+      - alert: ObservationSelectionInvalid
+        expr: |
+          absent(hyhome_expected_jobs_total) and hyhome_expected_selection_info
+          or (count(hyhome_expected_job_info) or vector(0)) != scalar(hyhome_expected_jobs_total)
+          or (hyhome_expected_job_info unless on(job) hyhome_expected_scrape_targets)
+          or (hyhome_expected_job_info unless on(job) hyhome_expected_scrape_interval_seconds)
+          or (count(hyhome_expected_scrape_targets) or vector(0)) != scalar(hyhome_expected_jobs_total)
+          or (count(hyhome_expected_scrape_interval_seconds) or vector(0)) != scalar(hyhome_expected_jobs_total)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "Observation selection is incomplete"
+      - alert: ObservationTargetsMissing
+        expr: |
+          (hyhome_expected_scrape_targets > 0 unless on(job) count by(job) (up))
+          or (hyhome_expected_scrape_targets > on(job) count by(job) (up))
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "Expected scrape targets are missing for {{ $labels.job }}"
+      - alert: ObservationSamplesStale
+        expr: |
+          time() - timestamp(up{expected_state="on"})
+          > on(job) group_left clamp_min(3 * hyhome_expected_scrape_interval_seconds, 120)
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "Scrape samples are stale for {{ $labels.job }}"
+      - alert: ObservationPostgresBackendMetricMissing
+        expr: |
+          up{job=~"manage-postgres|dev-pg-exporter",expected_state="on"} == 1
+          unless on(job, instance) pg_up
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "PostgreSQL exporter backend status is missing"
+      - alert: ObservationValkeyBackendMetricMissing
+        expr: |
+          up{job=~"mng-valkey-exporter|dev-valkey-exporter|airflow-valkey-exporter|n8n-valkey-exporter|oauth2-proxy-valkey-exporter",expected_state="on"} == 1
+          unless on(job, instance) redis_up
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "Valkey exporter backend status is missing"
+      - alert: AlloyQualityRemoteWriteBacklog
+        expr: |
+          (sum by(instance) (prometheus_remote_storage_samples_pending{job="alloy",component_id="prometheus.remote_write.local_prometheus",expected_state!="off"}) > 0)
+          and on(instance)
+          (sum by(instance) (increase(prometheus_remote_storage_samples_total{job="alloy",component_id="prometheus.remote_write.local_prometheus",expected_state!="off"}[150s])) == 0)
+          and on(instance)
+          count by(instance) (prometheus_remote_storage_samples_total{job="alloy",component_id="prometheus.remote_write.local_prometheus",expected_state!="off"} offset 2m)
+          and on(instance)
+          (time() - max by(instance) (timestamp(prometheus_remote_storage_samples_total{job="alloy",component_id="prometheus.remote_write.local_prometheus",expected_state!="off"})) < 90)
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "Alloy quality metric delivery is stalled"
+      - alert: AlloyQualityRemoteWriteProgressMetricMissing
+        expr: |
+          (sum by(instance) (prometheus_remote_storage_samples_pending{job="alloy",component_id="prometheus.remote_write.local_prometheus",expected_state!="off"}) > 0)
+          unless on(instance)
+          count by(instance) (prometheus_remote_storage_samples_total{job="alloy",component_id="prometheus.remote_write.local_prometheus",expected_state!="off"})
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "Alloy quality delivery progress metric is missing"
+      - alert: AlloyQualityRemoteWriteNeverSent
+        expr: |
+          (sum by(instance) (prometheus_remote_storage_samples_pending{job="alloy",component_id="prometheus.remote_write.local_prometheus",expected_state!="off"}) > 0)
+          unless on(instance)
+          (max by(instance) (prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job="alloy",component_id="prometheus.remote_write.local_prometheus",expected_state!="off"}) > 0)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "Alloy has queued quality samples with no successful send"
+      - alert: AlloyQualityRemoteWriteFailed
+        expr: |
+          sum by(instance) (increase(prometheus_remote_storage_samples_failed_total{job="alloy",component_id="prometheus.remote_write.local_prometheus",expected_state!="off"}[5m])) > 0
+        labels:
+          severity: warning
+        annotations:
+          runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
+          summary: "Alloy quality samples were permanently rejected"

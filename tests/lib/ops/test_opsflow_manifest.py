@@ -66,6 +66,14 @@ class SyntheticStore:
             raise ContractError("storage_readback")
         self.events.append(("verified", key))
 
+    def put_quarantine(self, key, raw, reason):
+        self.events.append(("quarantine", key, reason))
+        if self.fail == "quarantine":
+            raise OSError("synthetic-private-payload")
+        prior = self.objects.setdefault(key, (raw, reason))
+        if prior != (raw, reason):
+            raise ContractError("quarantine_conflict")
+
 
 class SyntheticPublisher:
     def __init__(self, events):
@@ -82,6 +90,67 @@ class SyntheticPublisher:
 
 
 class ManifestTests(unittest.TestCase):
+    def test_data_version_is_exact_raw_digest_without_changing_run_identity(self):
+        raw = body()
+        result = ingest(
+            SyntheticStore(raw, []),
+            SyntheticPublisher([]),
+            "hy-home.docker",
+            "2026-10-10",
+        )
+        self.assertEqual(result["data_version"], hashlib.sha256(raw).hexdigest())
+        self.assertEqual(result["run_id"], run_id("hy-home.docker", raw))
+
+    def test_invalid_bounded_input_is_quarantined_without_publication(self):
+        for raw, reason, error in (
+            (b"invalid", "manifest_invalid", "invalid_json"),
+            (b"", "manifest_invalid", "input_size"),
+            (
+                body(captured_at="2026-10-11T00:00:00Z"),
+                "partition_mismatch",
+                "partition_mismatch",
+            ),
+        ):
+            with self.subTest(reason=reason, error=error):
+                events = []
+                store, db = SyntheticStore(raw, events), SyntheticPublisher(events)
+                digest = hashlib.sha256(raw).hexdigest()
+                key = f"manifest-quarantine/hy-home.docker/2026-10-10/{digest}.json"
+                for _ in range(2):
+                    with self.assertRaisesRegex(ContractError, f"^{error}$"):
+                        ingest(store, db, "hy-home.docker", "2026-10-10")
+                self.assertEqual(store.objects, {key: (raw, reason)})
+                self.assertFalse(db.ledger)
+                self.assertEqual(
+                    [e[0] for e in events], ["read", "quarantine", "read", "quarantine"]
+                )
+
+    def test_quarantine_failure_redacts_and_keeps_database_empty(self):
+        store, db = SyntheticStore(b"invalid", []), SyntheticPublisher([])
+        store.fail = "quarantine"
+        with self.assertRaisesRegex(
+            ContractError, "^quarantine_verification_failed$"
+        ) as caught:
+            ingest(store, db, "hy-home.docker", "2026-10-10")
+        self.assertFalse(db.ledger)
+        self.assertNotIn(
+            "synthetic-private-payload",
+            "".join(traceback.format_exception(caught.exception)),
+        )
+
+    def test_oversized_or_unreadable_input_is_never_copied(self):
+        for raw, failure, error in (
+            (b"x" * (module.MAX_BYTES + 1), None, "input_size"),
+            (b"invalid", "read", "input_read_failed"),
+            (None, None, "input_size"),
+        ):
+            store, db = SyntheticStore(raw, []), SyntheticPublisher([])
+            store.fail = failure
+            with self.assertRaisesRegex(ContractError, f"^{error}$"):
+                ingest(store, db, "hy-home.docker", "2026-10-10")
+            self.assertFalse(store.objects)
+            self.assertFalse(db.ledger)
+
     def test_invalid_input_rejected(self):
         with self.assertRaises(ValueError):
             parse_manifest(b"not-json")
@@ -290,7 +359,7 @@ class ManifestTests(unittest.TestCase):
         events = []
         store, db = SyntheticStore(body(), events), SyntheticPublisher(events)
         result = ingest(store, db, "hy-home.docker", "2026-10-10")
-        self.assertEqual(set(result), {"run_id", "status", "records"})
+        self.assertEqual(set(result), {"run_id", "data_version", "status", "records"})
         self.assertEqual(result["records"], 1)
         self.assertEqual(result["status"], "published")
         self.assertEqual(

@@ -85,6 +85,7 @@ services:
       # on|off: whether the dev-data profile is meant to run (SPEC-0224).
       PROMETHEUS_DEV_DATA_EXPECTED: ${PROMETHEUS_DEV_DATA_EXPECTED:-on}
       OPENBAO_PORT: ${OPENBAO_PORT:-8200}
+      KEYCLOAK_MANAGEMENT_PORT: ${KEYCLOAK_MANAGEMENT_PORT:-9000}
     volumes:
       - ./prometheus/config/${PROMETHEUS_CONFIG_FILE:-prometheus.dev.yml}:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/scripts:/usr/local/libexec/prometheus:ro
@@ -385,6 +386,7 @@ services:
       # Read-only login for the n8n and Airflow SQL dashboards (SPEC-0193);
       # created by grafana-db-provision, password from the Docker secret.
       GRAFANA_DB_READER_USER: ${GRAFANA_DB_READER_USER:-grafana_reader}
+      POSTGRES_PORT: '${POSTGRES_PORT:-5432}'
       # Traces to Alloy's OTLP receiver at a 10% sample, and pprof on 6060 for
       # Alloy's pyroscope.scrape; 6060 is not published (SPEC-0193).
       GF_TRACING_OPENTELEMETRY_OTLP_ADDRESS: alloy:4317
@@ -429,11 +431,18 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.grafana-static.rule: Host(`grafana.${DEFAULT_URL}`) && (Path(`/favicon.ico`) || Path(`/robots.txt`))
+      traefik.http.routers.grafana-static.rule: Host(`grafana.${DEFAULT_URL}`) && (Path(`/favicon.ico`) || Path(`/robots.txt`)) && (Method(`GET`) || Method(`HEAD`))
       traefik.http.routers.grafana-static.entrypoints: websecure
       traefik.http.routers.grafana-static.tls: true
       traefik.http.routers.grafana-static.priority: 200
       traefik.http.routers.grafana-static.service: grafana-svc
+      traefik.http.routers.grafana-static.middlewares: gateway-standard-chain@file
+      traefik.http.routers.grafana-static-deny.rule: Host(`grafana.${DEFAULT_URL}`) && (Path(`/favicon.ico`) || Path(`/robots.txt`)) && !(Method(`GET`) || Method(`HEAD`))
+      traefik.http.routers.grafana-static-deny.entrypoints: websecure
+      traefik.http.routers.grafana-static-deny.tls: true
+      traefik.http.routers.grafana-static-deny.priority: 201
+      traefik.http.routers.grafana-static-deny.service: noop@internal
+      traefik.http.routers.grafana-static-deny.middlewares: gateway-standard-chain@file
 
       traefik.http.routers.grafana.rule: Host(`grafana.${DEFAULT_URL}`)
       traefik.http.routers.grafana.entrypoints: websecure
@@ -619,6 +628,10 @@ services:
       OPENBAO_PORT: '${OPENBAO_PORT:-8200}'
       GATUS_OPENBAO_CA_PATH: /etc/ssl/certs/openbao-ca.pem
       GATUS_LOG_LEVEL: INFO
+      KEYCLOAK_MANAGEMENT_PORT: '${KEYCLOAK_MANAGEMENT_PORT:-9000}'
+      OAUTH2_PROXY_PORT: '${OAUTH2_PROXY_PORT:-4180}'
+      POSTGRES_PORT: '${POSTGRES_PORT:-5432}'
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
       DEFAULT_URL: '${DEFAULT_URL}'
       GATUS_OIDC_ALLOWED_SUBJECT: '${GATUS_OIDC_ALLOWED_SUBJECT}'
       # P06: set GATUS_CLIENT_SECRET_FILE under /run/openbao/gatus; unset rolls back.

@@ -344,6 +344,16 @@ class DeadlineTests(unittest.TestCase):
 
 
 class OutcomeTests(unittest.TestCase):
+    def test_unsupported_content_encoding_is_rejected(self):
+        connect, _ = connector(http(200, b"compressed", Content_Encoding="gzip"))
+        refused(
+            self,
+            "https://example.com/",
+            "content_encoding",
+            resolve=resolver(),
+            connect=connect,
+        )
+
     def test_body_over_2_mib(self):
         connect, _ = connector(http(200, b"a" * (2 * 1024 * 1024 + 1)))
         refused(
@@ -461,7 +471,7 @@ class InternalZoneTests(unittest.TestCase):
 
         environ = {k: v for k, v in os.environ.items() if k != "HERMES_INTERNAL_ZONE"}
         result = subprocess.run(
-            [sys.executable, "-c", "from publisher import source_fetch; print(source_fetch.ZONE)"],
+            [sys.executable, "-c", "import os, sys; sys.path.insert(0, os.getcwd()); from publisher import source_fetch; print(source_fetch.ZONE)"],
             cwd=Path(__file__).resolve().parents[1],
             env={**environ, **env},
             capture_output=True,

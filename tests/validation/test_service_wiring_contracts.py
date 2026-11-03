@@ -44,8 +44,11 @@ class N8nValkeyExporterTests(unittest.TestCase):
             timeout=120,
         )
         services = json.loads(rendered.stdout)["services"]
-        command = " ".join(services["n8n-valkey-exporter"]["command"])
-        self.assertIn("-redis.addr=redis://n8n-valkey:6379", command)
+        exporter = services["n8n-valkey-exporter"]
+        command = " ".join(exporter["command"])
+        self.assertEqual("6379", str(exporter["environment"]["VALKEY_PORT"]))
+        self.assertIn("port=$${VALKEY_PORT}", command)
+        self.assertIn("redis://n8n-valkey:$$port", command)
         self.assertIn("n8n-valkey", services)
 
 
@@ -486,17 +489,30 @@ class DedicatedValkeyMonitorTests(unittest.TestCase):
             ):
                 self.assertEqual(old.get(key), new.get(key), (broker, key))
             self.assertTrue(all(v in new["volumes"] for v in old["volumes"]))
-            renderer_mount = next(
-                v
+            script_mounts = {
+                v["target"]: v
                 for v in new["volumes"]
-                if v["target"] == "/usr/local/bin/render-monitor-acl.sh"
-            )
-            self.assertEqual(str(self.renderer), renderer_mount["source"])
-            self.assertTrue(renderer_mount["read_only"])
+                if Path(v["target"]).parent == Path("/usr/local/lib/hy-home/valkey")
+            }
+            expected_targets = {
+                f"/usr/local/lib/hy-home/valkey/{name}"
+                for name in ("start-dedicated.sh", "render-monitor-acl.sh")
+            }
+            self.assertEqual(expected_targets, set(script_mounts))
+            for target, mount in script_mounts.items():
+                self.assertEqual(
+                    str(self.renderer.parent / Path(target).name), mount["source"]
+                )
+                self.assertTrue(mount["read_only"])
             self.assertIn(
-                "--aclfile /run/valkey/users.acl --appendonly yes --port 6379",
+                "/usr/local/lib/hy-home/valkey/start-dedicated.sh",
                 " ".join(new["command"]),
             )
+            self.assertEqual("6379", str(new["environment"]["VALKEY_PORT"]))
+            health = " ".join(new["healthcheck"]["test"])
+            self.assertIn('-p "$${VALKEY_PORT}"', health)
+            self.assertIn("REDISCLI_AUTH", health)
+            self.assertNotIn(" -a ", health)
             exporter = broker + "-exporter"
             old, new = base["services"][exporter], selected["services"][exporter]
             self.assertEqual([monitor], [s["source"] for s in new["secrets"]])

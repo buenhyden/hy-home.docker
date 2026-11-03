@@ -37,7 +37,7 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'
 
       - alert: OpenBaoMetricsScrapeFailing
-        expr: up{job="openbao"} == 0
+        expr: up{job="openbao",expected_state!="off"} == 0
         for: 10m
         labels:
           severity: warning
@@ -65,7 +65,7 @@ groups:
       # window outlasts the Agent's 5-minute maximum auth retry backoff, so a
       # long outage keeps the alert firing instead of flapping.
       - alert: OpenBaoAgentMetricsScrapeFailing
-        expr: up{job="openbao-agent"} == 0
+        expr: up{job="openbao-agent",expected_state!="off"} == 0
         for: 10m
         labels:
           severity: warning

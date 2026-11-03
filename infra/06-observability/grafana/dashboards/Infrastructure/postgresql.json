@@ -3042,6 +3042,49 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "id": 75,
+      "title": "PostgreSQL scrape and backend",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 58
+      },
+      "targets": [
+        {
+          "expr": "up{job=~\"manage-postgres|dev-pg-exporter\"}",
+          "refId": "A",
+          "legendFormat": "{{job}} {{instance}}"
+        },
+        {
+          "expr": "pg_up{job=~\"manage-postgres|dev-pg-exporter\"}",
+          "refId": "B",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "title": "PostgreSQL backend age (seconds)",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 58
+      },
+      "targets": [
+        {
+          "expr": "time() - timestamp(pg_up{job=~\"manage-postgres|dev-pg-exporter\"})",
+          "refId": "A",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
     }
   ],
   "refresh": "10s",

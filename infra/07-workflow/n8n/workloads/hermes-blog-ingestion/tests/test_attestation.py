@@ -1,6 +1,7 @@
 """Blog-data attestation/2: vector parity, body shape, key custody, outcomes."""
 
 import base64
+import errno
 import hashlib
 import json
 import os
@@ -195,7 +196,19 @@ class KeyCustodyTests(unittest.TestCase):
         if not foreign:
             self.skipTest("no supplementary group to test with")
         self.path.chmod(0o440)
-        os.chown(self.path, -1, foreign[0])
+        selected = None
+        for group in foreign:
+            try:
+                os.chown(self.path, -1, group)
+            except OSError as error:
+                if error.errno in {errno.EINVAL, errno.EPERM}:
+                    continue
+                raise
+            if self.path.stat().st_gid == group:
+                selected = group
+                break
+        if selected is None:
+            self.skipTest("no mapped supplementary group supports chown")
         with self.assertRaises(attestation.AttestationError):
             attestation.load_signing_key(self.path)
         # Owner-only stays valid whatever the group.

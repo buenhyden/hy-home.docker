@@ -30,7 +30,9 @@ services:
     environment:
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
-      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:6379
+      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:${VALKEY_PORT:-6379}
+      - OAUTH2_PROXY_PORT=${OAUTH2_PROXY_PORT:-4180}
+      - OAUTH2_PROXY_HTTP_ADDRESS=0.0.0.0:${OAUTH2_PROXY_PORT:-4180}
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
       # P06: overrides client_secret_file in oauth2-proxy.cfg; unset rolls back.
       - OAUTH2_PROXY_CLIENT_SECRET_FILE=${OAUTH2_PROXY_CLIENT_SECRET_FILE:-/run/secrets/oauth2_proxy_client_secret}
@@ -70,7 +72,7 @@ services:
       obs_net: {}
       mng_data_net: {}
     healthcheck:
-      test: [ 'CMD-SHELL', 'wget -qO- http://127.0.0.1:${OAUTH2_PROXY_PORT:-4180}/ping >/dev/null 2>&1 || exit 1' ]
+      test: [ 'CMD-SHELL', 'wget -qO- "http://127.0.0.1:$${OAUTH2_PROXY_PORT}/ping" >/dev/null 2>&1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -90,18 +92,26 @@ services:
     user: '999:999'
     secrets:
       - oauth2_valkey_password
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     networks:
       mng_data_net: {}
     restart: unless-stopped
     volumes:
-      # 공통 valkey.conf
       - oauth2-proxy-valkey-data:/data
-    command: >
-      sh -c ' valkey-server --requirepass "$(cat /run/secrets/oauth2_valkey_password)" --appendonly yes --port 6379 '
+      - ../../04-data/mng-db/valkey/scripts/start-dedicated.sh:/usr/local/lib/hy-home/valkey/start-dedicated.sh:ro
+      - ../../04-data/mng-db/valkey/scripts/render-monitor-acl.sh:/usr/local/lib/hy-home/valkey/render-monitor-acl.sh:ro
+    tmpfs:
+      - /run/valkey:rw,noexec,nosuid,nodev,mode=0700,uid=999,gid=999
+    command:
+      - /bin/sh
+      - /usr/local/lib/hy-home/valkey/start-dedicated.sh
+      - /run/secrets/oauth2_valkey_password
+      - /run/valkey/users.acl
     expose:
       - '${VALKEY_PORT:-6379}'
     healthcheck:
-      test: [ 'CMD-SHELL', 'V_PASS=$$(cat /run/secrets/oauth2_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p ${VALKEY_PORT:-6379} ping | grep PONG' ]
+      test: [ 'CMD-SHELL', 'REDISCLI_AUTH=$$(cat /run/secrets/oauth2_valkey_password); export REDISCLI_AUTH; valkey-cli --no-auth-warning -h 127.0.0.1 -p "$${VALKEY_PORT}" ping | grep -qx PONG' ]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -135,20 +145,23 @@ services:
     restart: unless-stopped
     secrets:
       - oauth2_valkey_password
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     entrypoint:
       - /bin/sh
       - -c
     command:
       - |
-        echo "Reading password from secret..."
-        export VALKEY_PASSWORD=$(cat /run/secrets/oauth2_valkey_password | tr -d '\n')
-
-        echo "Starting Valkey Exporter..."
-        # -redis.password-file 대신 -redis.password 사용
+        set -eu
+        port=$${VALKEY_PORT}
+        case "$$port" in ''|*[!0-9]*) exit 1 ;; esac
+        [ "$${#port}" -le 5 ] && [ "$$port" -ge 1 ] && [ "$$port" -le 65535 ] || exit 1
+        REDIS_PASSWORD=$$(cat /run/secrets/oauth2_valkey_password)
+        [ -n "$$REDIS_PASSWORD" ] || exit 1
+        export REDIS_PASSWORD
         exec /redis_exporter \
-          -redis.addr=redis://oauth2-proxy-valkey:6379 \
-          -redis.password="$$VALKEY_PASSWORD" \
-          -web.listen-address=:${VALKEY_EXPORTER_PORT}
+          -redis.addr="redis://oauth2-proxy-valkey:$$port" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
       # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       oauth2-proxy-valkey:

@@ -1,6 +1,9 @@
 """SEC01 candidate source and synthetic wrapper evidence; runtime stays NOT_RUN."""
 
 import json
+import os
+import re
+import shutil
 import subprocess
 import tempfile
 import tomllib
@@ -11,12 +14,37 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 EXPORTER = "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
-CONSUMERS = (
-    "infra/02-auth/oauth2-proxy/docker-compose.yml",
-    "infra/04-data/mng-db/docker-compose.yml",
-    "infra/04-data/dev-db/docker-compose.yml",
-    "infra/07-workflow/airflow/docker-compose.yml",
-    "infra/07-workflow/n8n/docker-compose.yml",
+EXPORTERS = (
+    (
+        "infra/02-auth/oauth2-proxy/docker-compose.yml",
+        "oauth2-proxy-valkey-exporter",
+        "oauth2-proxy-valkey",
+        True,
+    ),
+    (
+        "infra/04-data/mng-db/docker-compose.yml",
+        "mng-valkey-exporter",
+        "mng-valkey",
+        True,
+    ),
+    (
+        "infra/04-data/dev-db/docker-compose.yml",
+        "dev-valkey-exporter",
+        "dev-valkey",
+        False,
+    ),
+    (
+        "infra/07-workflow/airflow/docker-compose.yml",
+        "airflow-valkey-exporter",
+        "airflow-valkey",
+        True,
+    ),
+    (
+        "infra/07-workflow/n8n/docker-compose.yml",
+        "n8n-valkey-exporter",
+        "n8n-valkey",
+        True,
+    ),
 )
 
 
@@ -26,7 +54,7 @@ def load(path):
 
 class NextStableCandidates(unittest.TestCase):
     def test_all_owned_exporters_use_same_immutable_alpine_candidate(self):
-        for path in CONSUMERS:
+        for path, exporter_name, host, variable_port in EXPORTERS:
             with self.subTest(path=path):
                 exporters = [
                     service
@@ -35,13 +63,122 @@ class NextStableCandidates(unittest.TestCase):
                 ]
                 self.assertEqual(len(exporters), 1)
                 service = exporters[0]
+                self.assertEqual(service, load(path)["services"][exporter_name])
                 self.assertEqual(service["image"], EXPORTER)
                 self.assertEqual(service["entrypoint"], ["/bin/sh", "-c"])
-                self.assertIn("exec /redis_exporter", service["command"][0])
-                self.assertIn("-redis.addr=redis://", service["command"][0])
-                self.assertIn("-web.listen-address=:", service["command"][0])
+                command = service["command"][0]
+                self.assertIn("exec /redis_exporter", command)
+                if variable_port:
+                    self.assertIn("port=$${VALKEY_PORT}", command)
+                    self.assertIn(f'redis://{host}:$$port"', command)
+                else:
+                    self.assertIn(f"-redis.addr=redis://{host}:6379", command)
+                self.assertIn("-web.listen-address=:", command)
+                self.assertNotIn("-redis.password=", command)
                 self.assertTrue(service["secrets"])
                 self.assertIn("/metrics", " ".join(service["healthcheck"]["test"]))
+
+    @unittest.skipUnless(shutil.which("docker"), "docker compose CLI not available")
+    def test_rendered_exporter_argv_tracks_listener_without_secret_argv(self):
+        for selected_port in ("6379", "16379"):
+            with tempfile.TemporaryDirectory(
+                prefix="sec01-exporter-render-"
+            ) as directory:
+                temporary = Path(directory)
+                env_file = temporary / "public.env"
+                env_file.write_bytes(
+                    (ROOT / ".env.example").read_bytes()
+                    + f"\nVALKEY_PORT={selected_port}\n".encode("ascii")
+                )
+                result = subprocess.run(
+                    [
+                        "docker",
+                        "compose",
+                        "--project-directory",
+                        str(ROOT),
+                        "--env-file",
+                        str(env_file),
+                        "-f",
+                        str(ROOT / "docker-compose.yml"),
+                        "--profile",
+                        "dedicated-valkey",
+                        "--profile",
+                        "mng",
+                        "--profile",
+                        "dev-data",
+                        "config",
+                        "--format",
+                        "json",
+                    ],
+                    cwd=ROOT,
+                    env={
+                        "COMPOSE_DISABLE_ENV_FILE": "1",
+                        "DOCKER_CONFIG": str(temporary / "docker-config"),
+                        "DOCKER_HOST": f"unix://{temporary / 'no-daemon.sock'}",
+                        "LC_ALL": "C",
+                        "PATH": os.environ["PATH"],
+                    },
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    timeout=120,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                services = json.loads(result.stdout)["services"]
+
+                secret = temporary / "synthetic-secret"
+                secret.write_text("synthetic-only\n", encoding="ascii")
+                executable = temporary / "redis_exporter"
+                executable.write_text(
+                    "#!/usr/bin/python3\n"
+                    "import json, os, sys\n"
+                    "print(json.dumps({'password_in_env': "
+                    "os.environ.get('REDIS_PASSWORD') == 'synthetic-only', "
+                    "'args': sys.argv[1:]}))\n",
+                    encoding="ascii",
+                )
+                executable.chmod(0o700)
+
+                for _, exporter_name, host, variable_port in EXPORTERS:
+                    with self.subTest(port=selected_port, exporter=exporter_name):
+                        service = services[exporter_name]
+                        command = " ".join(service["command"])
+                        command = command.replace("/redis_exporter", str(executable))
+                        command = re.sub(
+                            r"/run/secrets/[A-Za-z0-9_]+", str(secret), command
+                        ).replace("$$", "$")
+                        environment = {
+                            "LC_ALL": "C",
+                            "PATH": "/usr/bin:/bin",
+                            **{
+                                key: str(value)
+                                for key, value in service.get("environment", {}).items()
+                            },
+                        }
+                        wrapped = subprocess.run(
+                            ["/bin/sh", "-c", command],
+                            cwd=ROOT,
+                            env=environment,
+                            capture_output=True,
+                            text=True,
+                            check=False,
+                            timeout=5,
+                        )
+                        self.assertEqual(0, wrapped.returncode, wrapped.stderr)
+                        evidence = json.loads(wrapped.stdout)
+                        expected_port = selected_port if variable_port else "6379"
+                        self.assertIn(
+                            f"-redis.addr=redis://{host}:{expected_port}",
+                            evidence["args"],
+                        )
+                        self.assertTrue(evidence["password_in_env"])
+                        self.assertNotIn("synthetic-only", " ".join(evidence["args"]))
+                        self.assertFalse(
+                            any(
+                                arg.startswith("-redis.password")
+                                for arg in evidence["args"]
+                            )
+                        )
 
     def test_restricted_monitor_acl_options_remain(self):
         for family in ("mng-db", "dev-db"):

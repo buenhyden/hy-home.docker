@@ -1,10 +1,10 @@
 ---
 title: "Data Packages"
-version: "2.0.1"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-01"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -32,7 +32,11 @@ Tombstone을 기록하는 같은 변경에서 제거되어 은퇴합니다. 은�
 
 ## Structure
 
-이 범주는 package를 보유하지 않습니다.
+현재 패키지는 다음과 같습니다.
+
+| Path | Purpose |
+| --- | --- |
+| [워크스페이스 조사 원장](0096-workspace-inventory/README.md) | 현재 파일·서비스 분모, 증거 수준, 작성권과 후속 인계 |
 
 열세 개 package가 2026-09-10에 은퇴했습니다. SPEC-0173은 이 범주가 따르는
 규칙을 명시합니다: Stage 90 데이터는 "현재 consumer가 존재하는 동안만

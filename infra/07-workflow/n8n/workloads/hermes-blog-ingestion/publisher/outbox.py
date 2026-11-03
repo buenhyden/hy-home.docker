@@ -15,6 +15,7 @@ from types import SimpleNamespace
 
 from . import trust
 from .files import InputError, open_directory
+from .gateway_receipt import valid_gateway_report_id
 
 TRANSITIONS = {
     "awaiting_contract": {"pending", "failed"},
@@ -32,11 +33,6 @@ class OutboxError(ValueError):
 
 def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
-
-
-def valid_gateway_report_id(value):
-    """Accept only the published Gateway receipt identifier format."""
-    return isinstance(value, str) and re.fullmatch(r"[a-f0-9-]{36}", value) is not None
 
 
 def _snapshot_digest(snapshot):

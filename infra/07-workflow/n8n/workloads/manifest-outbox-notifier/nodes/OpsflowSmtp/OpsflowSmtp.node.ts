@@ -11,7 +11,11 @@ export class OpsflowSmtp implements INodeType {
     inputs: [NodeConnectionTypes.Main], outputs: [NodeConnectionTypes.Main],
     credentials: [{ name: 'smtp', required: true }],
     properties: [{ displayName: 'Closed Claim', name: 'claim', type: 'json', default: '{}',
-      required: true, description: 'Validated closed claim object from the native Postgres node' }],
+      required: true, description: 'Validated closed claim object from the native Postgres node' },
+    { displayName: 'Capture Profile', name: 'captureProfile', type: 'options', default: 'mailpit-plain-v1',
+      options: [{ name: 'Mailpit Plain Capture', value: 'mailpit-plain-v1' },
+        { name: 'Mailpit Verified STARTTLS and Authentication', value: 'mailpit-starttls-auth-v1' }],
+      description: 'Explicit isolated capture policy; endpoint and recipients remain fixed' }],
   };
 
   async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -23,7 +27,8 @@ export class OpsflowSmtp implements INodeType {
       let credential: unknown;
       try { credential = await this.getCredentials('smtp'); }
       catch { throw new Error('OPSFLOW_CREDENTIAL_UNAVAILABLE'); }
-      const outcome = await sendClaim(claim, credential, this.getExecutionCancelSignal());
+      const profile = this.getNodeParameter('captureProfile', 0, 'mailpit-plain-v1') as string;
+      const outcome = await sendClaim(claim, credential, this.getExecutionCancelSignal(), undefined, profile);
       return [[{ json: { run_id: outcome.run_id, state: outcome.state }, pairedItem: { item: 0 } }]];
     } catch (error) {
       const allowed = ['OPSFLOW_INVALID_INPUT', 'OPSFLOW_INVALID_CLAIM', 'OPSFLOW_INVALID_CREDENTIAL', 'OPSFLOW_CREDENTIAL_UNAVAILABLE'];

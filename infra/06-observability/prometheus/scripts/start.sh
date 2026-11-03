@@ -18,12 +18,29 @@ case "$state" in
     ;;
 esac
 
-port=${OPENBAO_PORT:-8200}
-case "$port" in '' | *[!0-9]*) exit 64 ;; esac
-[ "${#port}" -le 5 ] && [ "$port" -ge 1 ] && [ "$port" -le 65535 ] || exit 64
+# A full-plan overlay declares the expected DEV state without changing it.
+# Legacy starts without an overlay retain the original contract.
+declared=${P07_DECLARED_DEV_EXPECTED:-}
+if [ -n "$declared" ] && [ "$declared" != "$state" ]; then
+  printf '%s\n' 'prometheus: declared DEV selection conflicts with configured expectation' >&2
+  exit 64
+fi
+
+valid_port() {
+  case "$1" in '' | *[!0-9]*) return 1 ;; esac
+  [ "${#1}" -le 5 ] && [ "$1" -ge 1 ] && [ "$1" -le 65535 ]
+}
+
+openbao_port=${OPENBAO_PORT:-8200}
+keycloak_port=${KEYCLOAK_MANAGEMENT_PORT-9000}
+valid_port "$openbao_port" || exit 64
+valid_port "$keycloak_port" || exit 64
 
 dir=${PROMETHEUS_TARGETS_DIR:-/etc/prometheus/targets}
 mkdir -p "$dir"
+tmp=
+trap '[ -z "$tmp" ] || rm -f -- "$tmp"' 0
+trap '[ -z "$tmp" ] || rm -f -- "$tmp"; exit 1' 1 2 3 15
 
 render() {
   # $1 job and file name, $2 target, $3 db_engine. Written beside the final
@@ -39,6 +56,7 @@ render() {
     "    db_engine: \"$3\"" \
     "    expected_state: \"$state\"" > "$tmp"
   mv -f "$tmp" "$dir/$1.yml"
+  tmp=
 }
 
 render dev-pg-exporter dev-pg-exporter:9187 postgresql
@@ -46,11 +64,24 @@ render dev-valkey-exporter dev-valkey-exporter:9121 valkey
 
 tmp=$(mktemp "$dir/.openbao.XXXXXX")
 printf '%s\n' \
-  "- targets: [\"openbao:$port\"]" \
+  "- targets: [\"openbao:$openbao_port\"]" \
   '  labels:' \
   '    cluster: "hy-home"' \
   '    namespace: "hy-home"' \
   '    domain: "security"' > "$tmp"
 mv -f "$tmp" "$dir/openbao.yml"
+tmp=
+
+tmp=$(mktemp "$dir/.keycloak.XXXXXX")
+printf '%s\n' \
+  "- targets: [\"keycloak:$keycloak_port\"]" \
+  '  labels:' \
+  '    cluster: "hy-home"' \
+  '    namespace: "hy-home"' \
+  '    domain: "auth"' \
+  '    container: "keycloak"' > "$tmp"
+mv -f "$tmp" "$dir/keycloak.yml"
+tmp=
+trap - 0 1 2 3 15
 
 exec "${PROMETHEUS_BIN:-/bin/prometheus}" "$@"

@@ -32,6 +32,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/validation/test_p02_service_contracts.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/hooks/agent-event-hook.sh
   kind: hook
@@ -587,6 +588,18 @@ files:
   disposition: retain
   successor: null
   tests: []
+- path: scripts/lib/ops/_notebook_models_http.py
+  kind: library
+  authority: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/operations/notebook-models.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_p03_notebook_effects.py
+  - tests/validation/test_p03_notebook_models.py
 - path: scripts/lib/ops/_openbao_copy_io.py
   kind: library
   authority: infra/03-security/openbao/consumer-migration/README.md
@@ -621,6 +634,63 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_secret_catalog.py
+- path: scripts/lib/ops/_workspace_connection_sources.py
+  kind: library
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/ops/_workspace_connections.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_workspace_connections.py
+- path: scripts/lib/ops/_workspace_connections.py
+  kind: library
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/ops/workspace_inventory.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_workspace_connections.py
+- path: scripts/lib/ops/_workspace_model_connections.py
+  kind: library
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/ops/_workspace_connection_sources.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_workspace_model_connections.py
+- path: scripts/lib/ops/_workspace_render.py
+  kind: library
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/lib/ops/workspace_inventory.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_workspace_inventory.py
+  - tests/validation/test_workspace_inventory.py
+- path: scripts/lib/ops/_workspace_services.py
+  kind: library
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - docs/90.references/data/0096-workspace-inventory/README.md
+  - scripts/lib/ops/workspace_inventory.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_workspace_services.py
 - path: scripts/lib/ops/compose-core-readiness.sh
   kind: library
   authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
@@ -632,6 +702,28 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_compose_core_readiness.py
+- path: scripts/lib/ops/compose_observation.py
+  kind: library
+  authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/lib/ops/compose_start.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_compose_observation.py
+- path: scripts/lib/ops/compose_start.py
+  kind: library
+  authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/operations/compose-start.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_compose_start.py
 - path: scripts/lib/ops/memory_sources.py
   kind: library
   authority: .agents/governance/environment-constraints.md
@@ -643,6 +735,19 @@ files:
   successor: null
   tests:
   - tests/lib/hooks/test_agent_memory.py
+- path: scripts/lib/ops/notebook_models.py
+  kind: library
+  authority: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/lib/ops/_notebook_models_http.py
+  - scripts/operations/notebook-models.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_notebook_models.py
+  - tests/validation/test_p03_notebook_models.py
 - path: scripts/lib/ops/openbao_consumer_migration.py
   kind: library
   authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
@@ -707,6 +812,17 @@ files:
   tests:
   - tests/lib/ops/test_secret_catalog.py
   - tests/validation/test_secret_catalog_contract.py
+- path: scripts/lib/ops/secret_structure.py
+  kind: library
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/secret-structure.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_secret_structure.py
 - path: scripts/lib/ops/smtp_contract.py
   kind: library
   authority: docs/05.operations/runbooks/15-labs/0029-supabase.md
@@ -771,6 +887,18 @@ files:
   successor: null
   tests:
   - tests/validation/test_wiki_preparation_contracts.py
+- path: scripts/lib/ops/workspace_inventory.py
+  kind: library
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - docs/90.references/data/0096-workspace-inventory/README.md
+  - scripts/operations/workspace-inventory.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_workspace_inventory.py
 - path: scripts/lib/supply_chain/grype_db_seed.py
   kind: validator
   authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md
@@ -851,6 +979,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_config_mount_hashes.py
+- path: scripts/operations/compose-start.py
+  kind: operations
+  authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/07-observability/0045-prometheus.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_compose_start.py
 - path: scripts/operations/gen-secrets.sh
   kind: operations
   authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md
@@ -888,6 +1027,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_mng_pg_immediate_restore_rehearsal.py
+- path: scripts/operations/notebook-models.py
+  kind: operations
+  authority: docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_p03_notebook_models.py
 - path: scripts/operations/openbao-consumer-migration.py
   kind: operations
   authority: infra/03-security/openbao/consumer-migration/README.md
@@ -1004,6 +1154,17 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_secret_catalog.py
+- path: scripts/operations/secret-structure.py
+  kind: operations
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_secret_structure.py
 - path: scripts/operations/storage-write-rate.py
   kind: operations
   authority: infra/09-platform-ops/resource-optimization/README.md
@@ -1061,6 +1222,17 @@ files:
   tests:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/operations/workspace-inventory.py
+  kind: operations
+  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - docs/90.references/data/0096-workspace-inventory/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_workspace_inventory.py
 - path: scripts/requirements-controller.lock
   kind: dependency-manifest
   authority: .github/workflow-contract.yml
@@ -1216,6 +1388,28 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-p03-hermes.py
+  kind: validator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_p03_hermes_gate.py
+- path: scripts/validation/check-p11-hermes.py
+  kind: validator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_p11_hermes_gate.py
 - path: scripts/validation/check-project-registration.py
   kind: validator
   authority: infra/09-platform-ops/project-registration/README.md
@@ -1317,6 +1511,7 @@ files:
   successor: null
   tests:
   - tests/validation/test_compose_baseline_gates.py
+  - tests/validation/test_p09_compose_controls.py
 - path: scripts/validation/run-agent-precommit-all-files.sh
   kind: runner
   authority: .agents/governance/quality-standards.md

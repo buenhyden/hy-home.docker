@@ -6,32 +6,51 @@
 # export is restored again. Synthetic tokens and keys only; no network, no live
 # container, volume, path or secret. Removes everything it creates on exit.
 # Needs Docker and gh access to the private Blog-data repository.
-# Usage: tests/e2e-upgrade.sh [previous-blog-data-commit]
+# Usage: tests/e2e-upgrade.sh [--cache-only] [previous-blog-data-commit]
 set -euo pipefail
+cache_only=0
+if [[ ${1:-} == --cache-only ]]; then cache_only=1; shift; fi
+if (( $# > 1 )); then echo 'usage: e2e-upgrade.sh [--cache-only] [previous-commit]' >&2; exit 2; fi
+if (( cache_only )); then
+  export DOCKER_HOST=unix:///var/run/docker.sock
+  unset DOCKER_CONTEXT
+fi
 workload=$(cd "$(dirname "$0")/.." && pwd)
 root=$(git -C "$workload" rev-parse --show-toplevel)
 compose=$root/infra/07-workflow/n8n/docker-compose.yml
 new=$(sed -n 's#.*image: hy-home/blog-ingestion:\([0-9a-f]\{40\}\)$#\1#p' "$compose")
 # The previous pin: Gateway before attestation/2, DB schema 3.
 old=${1:-a43d824334e636ddeab034982b36c0700a9d8f93}
-id=e2e-up-$(od -An -N4 -tx1 /dev/urandom | tr -d ' \n')
+id=e2e-up-$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')
 work=$(mktemp -d)
 pass=0
 cleanup() {
-  docker rm -f "$id-old" "$id-new" "$id-restored" "$id-again" >/dev/null 2>&1 || true
-  docker volume rm "$id-a" "$id-b" "$id-c" >/dev/null 2>&1 || true
+  local name
+  for name in "$id-old" "$id-new" "$id-restored" "$id-again"; do cleanup_owned container "$name" "$id"; done
+  for name in "$id-a" "$id-b" "$id-c"; do cleanup_owned container "$id-init-$name" "$id"; done
+  for name in "$id-a" "$id-b" "$id-c"; do cleanup_owned volume "$name" "$id"; done
   rm -rf "$work"
 }
-trap cleanup EXIT
 ok() { pass=$((pass + 1)); echo "PASS $*"; }
 fail() { echo "FAIL $*"; exit 1; }
 hex() { od -An -N"$1" -tx1 /dev/urandom | tr -d ' \n'; }
 
 # shellcheck source=gateway-image.sh
 . "$workload/tests/gateway-image.sh"
-for commit in "$old" "$new"; do
-  build_gateway_image "$commit" "$work/src-$commit" "hy-home/blog-ingestion-e2e:$commit"
-done
+trap cleanup EXIT
+pull_flag=()
+if (( cache_only )); then
+  # Resolve before creating any Docker resource and execute immutable IDs.
+  old_image=$(gateway_cached_image "$old") || exit 1
+  new_image=$(gateway_cached_image "$new") || exit 1
+  pull_flag=(--pull never)
+else
+  for commit in "$old" "$new"; do
+    build_gateway_image "$commit" "$work/src-$commit" "hy-home/blog-ingestion-e2e:$commit"
+  done
+  old_image=hy-home/blog-ingestion-e2e:$old
+  new_image=hy-home/blog-ingestion-e2e:$new
+fi
 
 ingest=$(hex 24)
 attest=$(hex 24)
@@ -79,9 +98,10 @@ PY
 chmod 0644 "$work"/config-*.json "$work"/devops.json "$work"/quoted.json
 
 volume() { # volume <name> [store-file]: data/, backup/ and both configs, owned by 10001
-  docker volume create "$1" >/dev/null
-  docker run --rm --user 0 --network none --entrypoint sh -v "$1:/v" -v "$work:/in:ro" \
-    "hy-home/blog-ingestion-e2e:$new" -c '
+  docker volume create --label "hyhome.hermes-e2e=$id" "$1" >/dev/null
+  [[ $(docker volume inspect --format '{{index .Labels "hyhome.hermes-e2e"}}' "$1") == "$id" ]] || fail 'volume ownership mismatch'
+  docker run "${pull_flag[@]}" --rm --name "$id-init-$1" --label "hyhome.hermes-e2e=$id" --user 0 --network none --entrypoint sh -v "$1:/v" -v "$work:/in:ro" \
+    "$new_image" -c '
       set -e
       mkdir /v/data /v/backup
       cp /in/config-old.json /in/config-new.json /v/
@@ -100,13 +120,13 @@ req() { # req <container> <method> <path> <token> [body-file] -> "status json"
       .then(async (r) => console.log(r.status + " " + (await r.text())), () => console.log("000 {}"));
   ' "$2" "$3" "$4" <"${5:-/dev/null}" 2>/dev/null || echo "000 {}"
 }
-serve() { # serve <container> <volume> <commit> <config>
-  docker run -d --name "$1" --network none --user 10001:10001 --read-only --cap-drop ALL \
+serve() { # serve <container> <volume> <image> <config>
+  docker run "${pull_flag[@]}" -d --name "$1" --label "hyhome.hermes-e2e=$id" --network none --user 10001:10001 --read-only --cap-drop ALL \
     --security-opt no-new-privileges:true \
     --mount "type=volume,src=$2,dst=/data,volume-subpath=data" \
     --mount "type=volume,src=$2,dst=/backup,volume-subpath=backup" \
     --mount "type=volume,src=$2,dst=/run/config.json,volume-subpath=$4,readonly" \
-    "hy-home/blog-ingestion-e2e:$3" serve --config /run/config.json >/dev/null
+    "$3" serve --config /run/config.json >/dev/null
   for _ in $(seq 30); do
     [ "$(req "$1" GET /v1/summary x | cut -d' ' -f1)" = 401 ] && return
     sleep 1
@@ -130,7 +150,7 @@ backup() { # backup <container> <name>: online backup with that container's imag
 
 # 1. The previous pin writes a schema-3 store and takes an online backup.
 volume "$id-a"
-serve "$id-old" "$id-a" "$old" config-old.json
+serve "$id-old" "$id-a" "$old_image" config-old.json
 answer=$(req "$id-old" POST /v1/ingestions "$ingest" "$work/devops.json")
 expect 201 "previous Gateway persists a report" "$answer" 'b["persisted"] is True'
 report_id=$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["id"])' "${answer#* }")
@@ -141,7 +161,7 @@ ok "online backup of the schema-3 store"
 docker stop "$id-old" >/dev/null
 
 # 2. The current pin upgrades that store in place; receipts survive.
-serve "$id-new" "$id-a" "$new" config-new.json
+serve "$id-new" "$id-a" "$new_image" config-new.json
 [ "$(schema "$id-new")" = 4 ] || fail "store was not upgraded to schema 4"
 ok "current Gateway upgrades the store to DB schema 4"
 expect 200 "upgraded store keeps the receipt" "$(req "$id-new" GET "/v1/ingestions/$report_id" "$ingest")"
@@ -180,14 +200,14 @@ ok "online backup of the schema-4 store with an export"
 
 # 3. The schema-3 backup restores into a fresh volume and upgrades there too.
 volume "$id-b" schema3.sqlite3
-serve "$id-restored" "$id-b" "$new" config-new.json
+serve "$id-restored" "$id-b" "$new_image" config-new.json
 [ "$(schema "$id-restored")" = 4 ] || fail "restored schema-3 backup was not upgraded"
 expect 200 "restored schema-3 backup keeps the receipt" \
   "$(req "$id-restored" GET "/v1/ingestions/$report_id" "$ingest")"
 
 # 4. The schema-4 backup restores with its export and manifest intact.
 volume "$id-c" schema4.sqlite3
-serve "$id-again" "$id-c" "$new" config-new.json
+serve "$id-again" "$id-c" "$new_image" config-new.json
 expect 200 "restored schema-4 backup keeps the ready export" \
   "$(req "$id-again" GET "/v1/exports/$export_id" "$read")" 'b["state"] == "ready" and b["files"]'
 echo "RESULT $pass PASS, 0 FAIL (blog-data $old -> $new)"

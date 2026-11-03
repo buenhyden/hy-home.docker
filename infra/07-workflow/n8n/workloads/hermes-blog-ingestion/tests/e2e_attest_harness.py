@@ -3,7 +3,7 @@
 Test only. The throwaway Traefik serves a self-signed certificate, so the
 reader's opener and the sender here skip verification; production code
 (`GatewayReader`, `HttpTransport`) keeps the system CA store and has no switch.
-Usage: e2e_attest_harness.py <config.json> run|resend|forge ...
+Usage: e2e_attest_harness.py <config.json> run|restore-check|resend|forge ...
 """
 
 import base64
@@ -87,8 +87,14 @@ def fetcher(url):
 
 reader = attester.GatewayReader(f"https://{HOST}:{cfg['port']}", auth, opener=opener)
 command = sys.argv[2]
-if command == "run":
+if command in ("run", "restore-check"):
     key = attestation.load_signing_key(cfg["key"])
+    if command == "restore-check":
+        # Force a synthetic queue replay to prove restored terminal state does
+        # not send again, even when the real queue no longer lists the reports.
+        if not sys.argv[3:]:
+            raise ValueError("restore-check requires report IDs")
+        reader.queue = lambda: iter(sys.argv[3:])
     print(json.dumps(attester.run(
         reader, send, key_id="attest-e2e", key=key,
         state_dir=work / "state", evidence_dir=work / "evidence", fetcher=fetcher,

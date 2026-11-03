@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Operations Policy"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "POL-0073"
 parent_ids:
@@ -44,6 +44,12 @@ provider 자격 증명, 암호화 키가 하나의 복구 경계를 이룬다.
   승격 전에 마이그레이션과 자격 증명 복호화를 테스트한다.
 - 제거 전에 콘텐츠/provider 자격 증명을 내보내거나 명시적으로 폐기한다.
   데이터베이스와 앱 볼륨 삭제는 별개의 파괴적 작업이다.
+- 현재 기본 provider 경로는 local-only Ollama다. Ollama-mediated cloud와 direct
+  cloud는 별도 credential, 허용 목적, network 및 비용 계약을 요구하며 자동 fallback
+  이나 동일 instance의 `OLLAMA_NO_CLOUD=1` 예외로 도입하지 않는다.
+- 저장된 모델 등록은 지원되는 product UI/API를 사용한다. 환경 fallback, healthcheck,
+  DB online 또는 디렉터리 존재로 저장된 모델·provider·embedding 기능을 수용하지
+  않는다. 다른 credential과 충돌하는 동명 등록은 보존하고 거부한다.
 
 ## Exceptions
 
@@ -70,7 +76,8 @@ API를 광범위하게 노출하거나, 키를 소스에 저장하거나, 대응
 ## Verification
 
 UI/앱 인증, API 경계, DB 준비 상태, 키 복호화, 하나의 합성 노트북을
-검증하며, provider 접근은 별도로 승인된 경우에만 검증한다.
+검증하며, provider 접근은 별도로 승인된 경우에만 검증한다. 모델 기능은 저장된
+연결, terminal embedding job, 입력/응답 및 재시작 후 보존을 별도로 검증한다.
 
 ## Related Documents
 

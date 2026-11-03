@@ -23,6 +23,9 @@ services:
     environment:
       ApiDataSourceType: POSTGRESQL
       DatasourceHostname: ${POSTGRES_MNG_HOSTNAME}
+      # Terrakube 2.33.2 application.properties maps this supported property
+      # to io.terrakube.api.plugin.datasource.databasePort.
+      DatasourcePort: ${POSTGRES_PORT:-5432}
       DatasourceDatabase: terrakube
       DatasourceUser: ${TERRAKUBE_DB_USERNAME}
       DatasourcePassword_FILE: /run/secrets/terrakube_db_password

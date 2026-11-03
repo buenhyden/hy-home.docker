@@ -5,7 +5,7 @@ groups:
   - name: gateway_alerts
     rules:
       - alert: TraefikDown
-        expr: up{job="traefik"} == 0
+        expr: up{job="traefik",expected_state!="off"} == 0
         for: 2m
         labels:
           severity: critical

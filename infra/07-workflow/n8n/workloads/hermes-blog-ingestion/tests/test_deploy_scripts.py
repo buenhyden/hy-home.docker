@@ -59,12 +59,19 @@ class CronPromptTests(unittest.TestCase):
         self.prompt = (DEPLOY / "research-submission-prompt.txt").read_text()
 
     def test_prompt_names_the_fields_the_tool_sets_and_accepts(self):
-        set_by_tool = {"producer", "job_id", "run_id", "report_kind", "idempotency_key"}
-        sentence = re.search(r"The tool sets (.*?) from this cron run", self.prompt)[1]
-        self.assertEqual(set_by_tool, set(re.findall(r"[a-z_]+", sentence)) - {"and"})
-        asked = re.search(r"exactly these fields: (.*?)\. ", self.prompt)[1]
-        expected = self.tools._FIELDS - set_by_tool - {"fire_id", "companion_evidence"}
-        self.assertEqual(expected, set(re.findall(r"[a-z][a-z_0-9]+", asked)) - {"and"})
+        parameters = self.tools.SUBMIT_RESEARCH_REPORT_SCHEMA["parameters"]
+        self.assertIn("exactly payload and source_receipts", self.prompt)
+        self.assertEqual(set(parameters["properties"]), {"payload", "source_receipts"})
+        self.assertIn('payload has schema_version "1.0" and items', self.prompt)
+        self.assertIn("exactly item_id and source_url", self.prompt)
+        for trusted in (
+            "identity",
+            "timestamps",
+            "source text",
+            "source digest",
+            "idempotency key",
+        ):
+            self.assertIn(trusted, self.prompt)
         item = re.search(r"Each item has exactly (.*?)\.", self.prompt)[1]
         self.assertEqual(
             self.tools._ITEM_FIELDS, set(re.findall(r"[a-z_]+", item)) - {"and"}

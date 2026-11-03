@@ -20,6 +20,7 @@ from tests.validation._opsflow_airflow_native_guards import (
 from tests.validation._opsflow_evidence_redaction import redact_text
 
 REGISTRY_KEYS = frozenset("metadata valkey s3_key s3_secret fernet jwt ingest".split())
+ADMIN_KEYS = frozenset(("s3_admin_key", "s3_admin_secret"))
 
 CELERY_IDLE = """import contextlib,json,sys
 with contextlib.redirect_stdout(sys.stderr):
@@ -57,7 +58,7 @@ def _generated_secrets(owned):
         value = json.loads(body, object_pairs_hook=_unique_object)
         if (
             not isinstance(value, dict)
-            or set(value) != REGISTRY_KEYS
+            or set(value) not in (REGISTRY_KEYS, REGISTRY_KEYS | ADMIN_KEYS)
             or any(
                 not isinstance(item, str) or not 4 <= len(item) <= 512
                 for item in value.values()
@@ -119,7 +120,11 @@ def capture_failure(owned, role, args, result, *, s3_log_capture=None):
 def capture_s3_upload_failure(owned, role, args, result):
     if "command_failure" in owned.receipt:
         return
-    if role != "worker" or len(args) != 3 or tuple(args[:2]) != ("python", "-c"):
+    if (
+        role not in {"worker", "storage-admin"}
+        or len(args) != 3
+        or tuple(args[:2]) != ("python", "-c")
+    ):
         raise RehearsalFailure("initial upload context scope rejected")
     previous, cancellation = owned.client.deadline, None
     owned.client.deadline = min(previous, time.monotonic() + 5)

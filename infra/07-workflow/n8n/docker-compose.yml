@@ -37,6 +37,7 @@ x-n8n-common-env: &n8n-common-env
 
   N8N_ENCRYPTION_KEY_FILE: /run/secrets/n8n_encryption_key
   N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
+  N8N_BLOCK_ENV_ACCESS_IN_NODE: true
   OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: true
 
 volumes:
@@ -52,6 +53,8 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_WORKFLOW_DIR}/n8n-valkey
+  # Detached rollback/data identities. The read-only runners no longer mount
+  # these paths; keeping the declarations does not delete existing host data.
   n8n-task-runner-data:
     driver: local
     driver_opts:
@@ -125,6 +128,7 @@ services:
     networks:
       edge_net: {}
       n8n_net: {}
+      n8n_main_runner_net: {}
       mng_data_net: {}
       obs_net: {}
     healthcheck:
@@ -173,6 +177,7 @@ services:
       - n8n_runner_auth_token
     networks:
       n8n_net: {}
+      n8n_worker_runner_net: {}
       mng_data_net: {}
       # Production webhook executions run here; the only Gateway peer.
       n8n_blog_ingest_net: {}
@@ -196,15 +201,17 @@ services:
     image: n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf
     container_name: n8n-task-runner
     hostname: n8n-task-runner
+    user: '1000:1000'
     group_add:
       - '${SECRETS_GID:-1000}'
-    read_only: false
+    read_only: true
     depends_on:
       n8n: { condition: service_healthy }
       n8n-valkey: { condition: service_healthy, required: false }
     environment:
       N8N_RUNNERS_TASK_BROKER_URI: http://n8n:${N8N_BROKER_PORT:-5679}
       N8N_RUNNERS_TASK_TIMEOUT: 300
+      N8N_RUNNERS_MAX_CONCURRENCY: 1
       # Keep the runner up after its first task; a daily run would otherwise start cold.
       N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: 0
       N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT: ${N8N_TASK_RUNNER_PORT:-5680}
@@ -219,9 +226,11 @@ services:
     expose:
       - ${N8N_TASK_RUNNER_PORT:-5680}
     volumes:
-      - n8n-task-runner-data:/home/node/.n8n:rw
+      - ./n8n-task-runners.json:/etc/n8n-task-runners.json:ro
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777,uid=1000,gid=1000
     networks:
-      n8n_net: {}
+      n8n_main_runner_net: {}
     secrets:
       - n8n_runner_auth_token
     healthcheck:
@@ -243,14 +252,16 @@ services:
     image: n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf
     container_name: n8n-task-runner-worker
     hostname: n8n-task-runner-worker
+    user: '1000:1000'
     group_add:
       - '${SECRETS_GID:-1000}'
-    read_only: false
+    read_only: true
     depends_on:
       n8n-worker: { condition: service_healthy }
     environment:
       N8N_RUNNERS_TASK_BROKER_URI: http://n8n-worker:${N8N_BROKER_PORT:-5679}
       N8N_RUNNERS_TASK_TIMEOUT: 300
+      N8N_RUNNERS_MAX_CONCURRENCY: 1
       # Keep the runner up after its first task; a daily run would otherwise start cold.
       N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: 0
       N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT: ${N8N_TASK_RUNNER_PORT:-5680}
@@ -263,13 +274,15 @@ services:
         export N8N_RUNNERS_AUTH_TOKEN
         exec /usr/local/bin/task-runner-launcher javascript python
     networks:
-      n8n_net: {}
+      n8n_worker_runner_net: {}
     expose:
       - ${N8N_TASK_RUNNER_PORT:-5680}
     secrets:
       - n8n_runner_auth_token
     volumes:
-      - n8n-task-runner-worker-data:/home/node/.n8n:rw
+      - ./n8n-task-runners.json:/etc/n8n-task-runners.json:ro
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777,uid=1000,gid=1000
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${N8N_TASK_RUNNER_PORT:-5680}/healthz || exit 1' ]
       interval: 30s
@@ -295,16 +308,24 @@ services:
       n8n_net: {}
     secrets:
       - n8n_valkey_password
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     restart: unless-stopped
     volumes:
       - n8n-valkey-data:/data:rw
-    command: >
-      sh -c ' valkey-server --requirepass "$$(cat /run/secrets/n8n_valkey_password)" --appendonly yes --port 6379 '
+      - ../../04-data/mng-db/valkey/scripts/start-dedicated.sh:/usr/local/lib/hy-home/valkey/start-dedicated.sh:ro
+      - ../../04-data/mng-db/valkey/scripts/render-monitor-acl.sh:/usr/local/lib/hy-home/valkey/render-monitor-acl.sh:ro
+    tmpfs:
+      - /run/valkey:rw,noexec,nosuid,nodev,mode=0700,uid=999,gid=999
+    command:
+      - /bin/sh
+      - /usr/local/lib/hy-home/valkey/start-dedicated.sh
+      - /run/secrets/n8n_valkey_password
+      - /run/valkey/users.acl
     expose:
       - '${VALKEY_PORT:-6379}'
-      - '${VALKEY_BUS_PORT:-16379}'
     healthcheck:
-      test: [ 'CMD-SHELL', 'valkey-cli -a $$(cat /run/secrets/n8n_valkey_password) ping | grep PONG' ]
+      test: [ 'CMD-SHELL', 'REDISCLI_AUTH=$$(cat /run/secrets/n8n_valkey_password); export REDISCLI_AUTH; valkey-cli --no-auth-warning -h 127.0.0.1 -p "$${VALKEY_PORT}" ping | grep -qx PONG' ]
       interval: 15s
       timeout: 30s
       retries: 5
@@ -340,15 +361,22 @@ services:
     restart: unless-stopped
     secrets:
       - n8n_valkey_password
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     entrypoint:
       - /bin/sh
       - -c
     command:
       - |
-        export VALKEY_PASSWORD=$$(cat /run/secrets/n8n_valkey_password | tr -d '\n')
+        set -eu
+        port=$${VALKEY_PORT}
+        case "$$port" in ''|*[!0-9]*) exit 1 ;; esac
+        [ "$${#port}" -le 5 ] && [ "$$port" -ge 1 ] && [ "$$port" -le 65535 ] || exit 1
+        REDIS_PASSWORD=$$(cat /run/secrets/n8n_valkey_password)
+        [ -n "$$REDIS_PASSWORD" ] || exit 1
+        export REDIS_PASSWORD
         exec /redis_exporter \
-          -redis.addr=redis://n8n-valkey:${VALKEY_PORT:-6379} \
-          -redis.password="$$VALKEY_PASSWORD" \
+          -redis.addr="redis://n8n-valkey:$$port" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
       n8n-valkey: { condition: service_healthy, required: false }

@@ -310,7 +310,9 @@ fi
         rows = c22.parse_race(result.stdout, 4)
         c22.race_winners(rows, {5})
 
-    @unittest.skipUnless(SHELL and NODE, "sh and node required")
+
+@unittest.skipUnless(SHELL and NODE, "sh and node required")
+class Criterion22NodeRuntimeTests(unittest.TestCase):
     def test_credential_probe_reports_match_and_fails_closed_on_a_wrong_key(self):
         stub = r"""#!/bin/sh
 for arg in "$@"; do case "$arg" in --output=*) out=${arg#--output=};; esac; done

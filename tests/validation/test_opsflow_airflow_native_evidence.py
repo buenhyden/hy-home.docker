@@ -110,7 +110,7 @@ for raw in ['{}', '{"locations":[{"locationPrefix":"/buckets/other","volumeGrowt
             for method in tree.body[0].body
             if isinstance(method, ast.FunctionDef)
         }
-        for method in ("initialize_airflow", "recover"):
+        for method in ("storage_ready", "recover"):
             with self.subTest(method=method):
                 self.assertEqual(1, len(callers[method]))
 
@@ -587,6 +587,49 @@ for raw in ['{}', '{"locations":[{"locationPrefix":"/buckets/other","volumeGrowt
 
 
 class AirflowUploadContextTests(unittest.TestCase):
+    def test_storage_administrator_failure_retains_redacted_original_context(self):
+        from tests.validation import _opsflow_airflow_native_evidence as evidence
+
+        with tempfile.TemporaryDirectory() as directory:
+            f, values = self.owned(directory)
+            values.update(
+                s3_admin_key="synthetic-admin-key-0123456789",
+                s3_admin_secret="synthetic-admin-secret-0123456789",
+            )
+            registry = f.directory / "synthetic-secrets.json"
+            registry.unlink()
+            f.private(registry.name, json.dumps(values))
+            f.client.run_result.return_value = self.result(
+                0, "bounded server context", ""
+            )
+            f.exec_result.return_value = self.result(
+                7, values["s3_admin_key"], values["s3_admin_secret"]
+            )
+            with self.assertRaises(fixture.RehearsalFailure):
+                f.execute(
+                    "storage-admin",
+                    "python",
+                    "-c",
+                    "public-command",
+                    s3_failure_logs=True,
+                )
+            fact = f.receipt["command_failure"]
+            self.assertEqual(
+                ("storage-admin", 7, True),
+                (fact["role"], fact["exit_code"], fact["capture_complete"]),
+            )
+            self.assertEqual("COMPLETE", fact["s3_log_capture"])
+            output = (f.directory / "failure-stderr.txt").read_text()
+            self.assertIn("bounded server context", output)
+            self.assertNotIn(values["s3_admin_secret"], output)
+            with self.assertRaises(fixture.RehearsalFailure):
+                evidence.capture_s3_upload_failure(
+                    SimpleNamespace(receipt={}),
+                    "scheduler",
+                    ("python", "-c", "public-command"),
+                    self.result(),
+                )
+
     @staticmethod
     def owned(directory):
         f = AirflowNativeEvidenceTests.base_owned(directory)
@@ -698,18 +741,22 @@ class AirflowUploadContextTests(unittest.TestCase):
                 self.assertFalse(f.receipt["command_failure"]["capture_complete"])
 
     def test_only_initial_full_upload_opts_into_server_context(self):
-        import inspect
-
         from tests.validation.test_opsflow_airflow_native_rehearsal import (
             PublicationScenario,
         )
 
-        source = inspect.getsource(PublicationScenario.run)
-        self.assertEqual(1, source.count("s3_failure_logs=True"))
-        self.assertEqual(
-            1, inspect.getsource(PublicationScenario).count("s3_failure_logs=True")
+        scenario = PublicationScenario.__new__(PublicationScenario)
+        scenario.f, scenario.s3 = mock.Mock(), mock.Mock()
+        scenario.install_input(b"synthetic-invalid")
+        scenario.f.execute.assert_not_called()
+        scenario.s3.assert_called_once()
+        scenario.install_input(b"synthetic-valid", capture_context=True)
+        self.assertEqual("storage-admin", scenario.f.execute.call_args.args[0])
+        self.assertTrue(scenario.f.execute.call_args.kwargs["s3_failure_logs"])
+        self.assertIn(
+            "manifest-input/hy-home.docker/2026-10-10.json",
+            scenario.f.execute.call_args.args[3],
         )
-        self.assertIn("manifest-input/hy-home.docker/2026-10-10.json", source)
 
     def test_success_has_no_additional_docker_calls(self):
         with tempfile.TemporaryDirectory() as directory:

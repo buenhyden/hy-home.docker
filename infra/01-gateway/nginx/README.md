@@ -44,7 +44,10 @@ Nginx 컴포넌트는 `01-gateway` tier의 전용 프록시로, 복잡한 경로
 ```text
 nginx/
 ├── config/
-│   └── nginx.conf    # 주 설정 파일(upstream, server, location)
+│   ├── nginx.conf                 # 주 설정 파일(server, location)
+│   └── upstreams.conf.template    # 선택형 upstream 포트 템플릿
+├── scripts/
+│   └── validate-upstream-ports.sh # envsubst 전 포트 경계 검증
 ├── docker-compose.yml # 서비스 정의와 볼륨
 └── README.md          # 이 파일
 ```
@@ -54,11 +57,11 @@ nginx/
 | Field | Evidence |
 | --- | --- |
 | Purpose | `01-gateway`의 Nginx Proxy 서비스 leaf; services: `nginx`; 루트 include는 항상 활성이고 `nginx` profile이 서비스를 선택하며 여전히 루트 네트워크 컨텍스트에 의존함 |
-| Config files | `docker-compose.yml`, `config`, `config/nginx.conf` |
-| Config values | profiles: `nginx` |
+| Config files | `docker-compose.yml`, `config/nginx.conf`, `config/upstreams.conf.template` |
+| Config values | profiles: `nginx`; upstream ports: `OAUTH2_PROXY_PORT`, `KEYCLOAK_PORT` |
 | Compose linkage | 루트 [docker-compose.yml](../../../docker-compose.yml)이 이 파일을 무조건 include하고 `nginx` profile이 서비스를 선택함; 파일 단독 검증에도 루트 네트워크와 백엔드 의존성에 대한 명시적 컨텍스트가 필요함 |
 | Networks | `edge_net`, `object_net` |
-| Volumes | `./config/nginx.conf:/etc/nginx/nginx.conf:ro`, `${DEFAULT_CERT_DIR}/{cert.pem,key.pem,rootCA.pem}`을 각각 `/etc/nginx/certs/{cert.pem,key.pem,rootCA.pem}`에 읽기 전용 mount |
+| Volumes | `./config/nginx.conf:/etc/nginx/nginx.conf:ro`, `./config/upstreams.conf.template:/etc/nginx/templates/upstreams.conf.template:ro`, `${DEFAULT_CERT_DIR}/{cert.pem,key.pem,rootCA.pem}`을 각각 `/etc/nginx/certs/{cert.pem,key.pem,rootCA.pem}`에 읽기 전용 mount; 렌더 결과는 `/etc/nginx/conf.d` tmpfs에만 기록 |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | 선언되지 않음 |
 | Secret refs | 선언되지 않음 |
@@ -84,6 +87,8 @@ nginx/
 ### Core Files
 
 - `config/nginx.conf`: 라우팅 로직, SSO 통합, 버퍼 최적화를 정의합니다.
+- `config/upstreams.conf.template`: 선택형 Nginx 모드의 OAuth2 Proxy와 Keycloak 내부 포트를 Compose 변수에 맞춥니다.
+- `scripts/validate-upstream-ports.sh`: 두 upstream 포트가 십진수 `1..65535`인지 확인한 뒤 공식 `/docker-entrypoint.sh`와 envsubst 흐름을 실행합니다.
 - `docker-compose.yml`: 인증서와 설정 파일을 컨테이너에 마운트합니다.
 
 ### Docker Healthcheck

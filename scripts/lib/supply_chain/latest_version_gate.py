@@ -104,7 +104,13 @@ def evaluate(rows, expected_services, now=None):
             {
                 "service": name,
                 "missing": missing,
-                "matches_declared_latest": not missing,
+                "matches_target_latest": bool(
+                    _version(target) and _version(latest) and target == latest
+                ),
+                "evidence_complete": not missing,
+                # This evaluator never derives a version from Compose or a
+                # custom build; a submitted candidate is not a declaration.
+                "matches_declared_latest": None,
             }
         )
     absent, unexpected = sorted(expected - seen), sorted(seen - expected)
@@ -117,7 +123,7 @@ def evaluate(rows, expected_services, now=None):
         "entries": entries,
         "deployed": False,
         "verified_external_facts": False,
-        "meaning": "Submitted ledger completeness only; vendor facts, scans and deployment require separate verification.",
+        "meaning": "Submitted target ledger completeness only; current declaration, vendor facts, scans and deployment require separate verification.",
     }
 
 

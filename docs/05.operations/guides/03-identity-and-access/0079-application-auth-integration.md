@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.7.6"
+version: "0.7.7"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -175,8 +175,11 @@ PKCE를 기준으로 설계하고, password grant나 implicit flow를 편의상 
 `keycloak-oidc`, S256, Redis 프로토콜의 Valkey 세션을 사용한다.
 `allowed_groups = ["/admins"]`이므로 Keycloak `/admins` 그룹 구성원만 SSO route를
 통과한다(owner 결정 2026-09-24). 다른 realm 사용자는 앱에 도달하지 못한다.
-`sso-errors`는401만302로 바꾸며403은 유지한다. 따라서403을 모두 redirect로 설명하지 않는다. 거부는 OAuth2 Proxy 로그의 그룹 거부 기록과 로그인 흐름 끝의 Proxy 오류
-화면으로 확인한다.
+브라우저의 세션 없는 요청은 OAuth2 Proxy가 Keycloak 로그인으로 302를 시작하고,
+`Accept: application/json` 요청은 401을 유지한다. `sso-errors` middleware는
+ForwardAuth가 반환한 403을 오류 응답으로 가로챈다. OAuth2 Proxy callback에서
+발생하는 `/admins` group 거부 403은 이 gateway middleware 결과와 별도이며,
+그룹 거부 로그와 callback 흐름 끝의 Proxy 오류 화면으로 확인한다.
 `groups` claim은 Kafbat이 `/admins`를 매핑하는 것과 같은 전체 경로 형식이다.
 native OIDC route는 이 allowlist를 거치지 않으므로 각 앱의 역할 매핑이 따로
 권한을 정한다. 새 그룹에 SSO route를 열려면 이 설정과 POL-0079를 함께 바꾼다.
@@ -423,7 +426,7 @@ TCP router는 두지 않는다.
 | `hermes-blog-ingestion-webhook` | n8n 헤더 인증; `POST /webhook/hermes-blog-ingestion` 정확한 경로만, 출발지 `192.168.0.13/32` |
 | `blog-export-read`, `blog-export-ack`, `blog-attestation` | Blog-data Gateway 단일 범위 Bearer(`export_read`, `export_ack`, `attest`); 정확한 경로·메서드만, 출발지 `192.168.0.22/32`(Export)와 `192.168.0.13/32`(Attestation) |
 | `blog-attestation-read` | Blog-data Gateway Bearer(`attest` 범위 credential이 읽기도 겸함); `GET /v1/attestation-queue`와 `GET /v1/ingestions/{uuid}/request` 정확한 경로만, 출발지 `192.168.0.13/32` |
-| `grafana-static` | 인증 없음: 정확히 `/favicon.ico`와 `/robots.txt` 경로만 해당; Method matcher 없음; 소유자의 해결을 기다리는 policy 미준수 상태 |
+| `grafana-static` | SSO 인증 예외: 정확히 `/favicon.ico`와 `/robots.txt`의 GET/HEAD만 해당하며 `gateway-standard-chain@file`은 유지한다. 다른 메서드는 더 높은 우선순위의 `grafana-static-deny` router가 `noop@internal`으로 종료해 일반 Grafana router로 우회하지 못하며 `418`을 반환한다. 기존 Grafana RBAC는 바꾸지 않는다. |
 
 2026-09-24(SPEC-0180 S18)에 identity 확인 없이 application에 도달하던 route 네 개의
 허점을 막았다. `qdrant`(HOME, API key 없음)와 Kafka의 `kafka-rest`, `schema-registry` API에
@@ -442,9 +445,9 @@ TLS 검사를 끄지 않는다). owner 행에는 로그인된 browser나 Keycloa
 | Behaviour | Routers covered | Method | Expected | Performer |
 | --- | --- | --- | --- | --- |
 | Cookie 없음, SSO route | 이 matrix에 기록된 `sso-auth` router 19개: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `jupyter`, `kafka-connect`, `kafka-rest`, `loki`, `mlflow`, `n8n`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/`(`/favicon.ico`는 `redisinsight-static`용) | upstream content가 노출되지 않고 응답이 Keycloak authorization endpoint를 가리킴 | agent |
-| Cookie 없음, API client | `alloy`(`Accept: application/json`), `prometheus`(`/api/v1/status/buildinfo`) | credential 없이 GET | 과거 기대값은 `401`이었으나 현재 `sso-errors`는 401→302로 바꾸므로 선택한 route/status와 upstream content 비노출을 각각 기록함 | agent |
+| Cookie 없음, API client | `alloy`(`Accept: application/json`), `prometheus`(`/api/v1/status/buildinfo`) | credential 없이 GET | 401을 유지하고 upstream content를 노출하지 않음 | agent |
 | Session 없음, native OIDC | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | `/`, app login 경로, API 경로 하나에 GET | Keycloak이나 app login 페이지에서 로그인이 시작되고 API는 거부함 | agent |
-| `/admins` 밖의 사용자 | 모든 SSO route | `/admins` 밖의 realm 사용자로 로그인하고 SSO route에 접속 | 거부됨: OAuth2 Proxy가 group 거부를 log에 남기고 Proxy 오류 페이지에서 flow가 끝남(현재 `sso-errors`는 `403`을 유지) | owner |
+| `/admins` 밖의 사용자 | 모든 SSO route | `/admins` 밖의 realm 사용자로 로그인하고 SSO route에 접속 | 거부됨: OAuth2 Proxy callback group 거부가 log와 Proxy 오류 화면으로 끝남. 이는 gateway `sso-errors`가 ForwardAuth 403을 가로채는 경우와 별도임 | owner |
 | Logout | 모든 SSO route | 로그인 후 `https://auth.hy.home.arpa/oauth2/sign_out`에 접속하고 SSO route에 다시 접속 | Proxy cookie가 삭제되고 다음 요청은 다시 Keycloak으로 이동함(Keycloak SSO가 prompt 없이 다시 로그인할 수 있음) | owner |
 | Role 제거 | 모든 SSO route | 로그인 후 Keycloak의 `/admins`에서 사용자를 제거하고 `cookie_refresh`(1h)를 기다리거나 logout 후 다시 로그인 | session refresh 이후 접근 거부 | owner |
 | Valkey 도달 불가 | 모든 SSO route | `oauth2-proxy`만 `mng_data_net`에서 분리하고 cookie가 있을 때와 없을 때 각각 SSO route를 요청한 뒤 다시 연결 | fail-closed: cookie 유무와 관계없이 upstream content 비노출 | owner 승인 후 agent 또는 owner |
@@ -462,18 +465,17 @@ Verification Evidence와 Work Log에 기록되어 있다.
 설치 버전이나 모든 앱 로그인 결과를 대신하지 않는다. 새 전환은 해당 owning
 Guide의 실제 Compose/build와 그 릴리스 공식 근거를 다시 확인해야 한다.
 
-`grafana-static`은 실제 source에 middleware 없이 있는 두 exact path다. 검증기는
-예외 router 이름을 허용하지만 [POL-0079](../../policies/03-identity-and-access/0079-application-auth-integration.md)의
-무인증 금지 요구가 자동 면제되는 것은 아니다. 정책 승인 근거가 확정되기 전에는
-구현 미준수로 유지하고 route를 확대하지 않는다. method 제한도 선언되어 있지 않다.
-현재 rule은 `Host(grafana.${DEFAULT_URL})`의 `/favicon.ico` 또는 `/robots.txt`
-exact Path, priority200, `grafana-svc`이며 LAN 주소의 TLS gateway를 통한다.
-모든 HTTP method에서 표준 middleware chain 전체를 건너뛰지만 upstream 응답이나
-민감한 정보 노출은 관찰하지 않았다. 이름 allowlist 검사는 host/path/service/priority와
-method 범위를 고정하지 않는다. 완료된 SPEC0180 Task0008 S18의 “open by design”
-기록은 더 강한 Spec/Policy 금지와 충돌하며 별도 만료·종료 조건을 갖춘 owner 예외가
-확인되지 않았다. 구현 보호/제거 또는 정확한 범위·위험·종료·검증을 기록한 owner
-정책 결정이 필요하며, exact-rule 회귀 검사는 별도 구현 변경에 속한다.
+`grafana-static`은 2026-11-02 사용자 승인에 따른 제한된 공개 예외다. 정확한
+`Host(grafana.${DEFAULT_URL})`의 `/favicon.ico` 또는 `/robots.txt` GET/HEAD만
+SSO 인증만 예외이며 `gateway-standard-chain@file`은 유지한다. 다른 메서드는 더 높은 우선순위의
+`grafana-static-deny` router가 `noop@internal`으로 종료해 일반 Grafana
+router로 우회하지 못하게 하고 `418`을 반환한다. 기존 Grafana RBAC는 바꾸지 않는다.
+
+정책 소유자는 `@buenhyden`이며, 리스크는 인증 없는 응답이 두 정적 경로에 남는
+것이다. 기존 rate limit은 사용자별 제한이 아닌 서비스 보호 설정인 초당 100회,
+burst 200을 유지한다. 2026-12-02에 재검토하고, 경로/메서드 범위 확대, 인증 체인
+변경 또는 관련 보안 권고가 있으면 즉시 종료 또는 재승인한다. 이 정적 소스 계약은
+실제 Grafana 접근·로그인·권한·backend 호출의 새 운영 검증을 의미하지 않는다.
 
 ### 서비스별 정적 검증
 

@@ -322,7 +322,12 @@ class AirflowContractTests(unittest.TestCase):
         def ingest(store, publisher, source, day):
             if ingest_failure:
                 raise RuntimeError("synthetic-driver-canary")
-            return {"run_id": "a" * 64, "status": "published", "records": 1}
+            return {
+                "run_id": "a" * 64,
+                "data_version": "b" * 64,
+                "status": "published",
+                "records": 1,
+            }
 
         manifest.ingest = ingest
         package = types.ModuleType("workflow_lib")
@@ -349,7 +354,7 @@ class AirflowContractTests(unittest.TestCase):
                 ("store", "exit"),
             ],
         )
-        self.assertEqual(set(result), {"run_id", "status", "records"})
+        self.assertEqual(set(result), {"run_id", "data_version", "status", "records"})
 
     def test_task_sanitizes_driver_failure_before_airflow_records_it(self):
         with self.assertRaises(RuntimeError) as caught:

@@ -1643,6 +1643,55 @@
       ],
       "title": "Total Time Spent by Command / sec",
       "type": "timeseries"
+    },
+    {
+      "id": 25,
+      "title": "Valkey scrape and backend",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 43
+      },
+      "targets": [
+        {
+          "expr": "up{job=~\".*valkey-exporter\"}",
+          "refId": "A",
+          "legendFormat": "{{job}} {{instance}}"
+        },
+        {
+          "expr": "redis_up{job=~\".*valkey-exporter\"}",
+          "refId": "B",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "title": "Valkey backend age (seconds)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 43
+      },
+      "targets": [
+        {
+          "expr": "time() - timestamp(redis_up{job=~\".*valkey-exporter\"})",
+          "refId": "A",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
     }
   ],
   "refresh": "",

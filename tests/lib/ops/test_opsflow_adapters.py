@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib
 import io
 import json
@@ -307,6 +308,7 @@ class EventsDouble:
 class S3Double:
     def __init__(self):
         self.objects = {}
+        self.metadata = {}
         self.requests = []
         self.bodies = []
         self.failure = None
@@ -321,7 +323,11 @@ class S3Double:
             raise S3Error(self.failure)
         if kwargs["Key"] not in self.objects:
             raise S3Error("NoSuchKey")
-        return {"ContentLength": len(self.objects[kwargs["Key"]]), "ETag": '"fixed"'}
+        return {
+            "ContentLength": len(self.objects[kwargs["Key"]]),
+            "ETag": '"fixed"',
+            **self.metadata.get(kwargs["Key"], {}),
+        }
 
     def get_object(self, **kwargs):
         self.requests.append(("get", kwargs))
@@ -331,10 +337,14 @@ class S3Double:
             raise S3Error("NoSuchKey")
         body = Body(b"corrupted" if self.corrupt else self.objects[kwargs["Key"]])
         self.bodies.append(body)
-        return {"Body": body, "ETag": '"fixed"'}
+        return {"Body": body, "ETag": '"fixed"', **self.metadata.get(kwargs["Key"], {})}
 
     def put_object(self, **kwargs):
         self.requests.append(("put", kwargs))
+        self.metadata[kwargs["Key"]] = {
+            "ContentType": kwargs.get("ContentType"),
+            "Metadata": dict(kwargs.get("Metadata", {})),
+        }
         if self.race:
             self.objects[kwargs["Key"]] = kwargs["Body"]
             raise S3Error("PreconditionFailed")
@@ -361,6 +371,113 @@ class ObjectAdapter(unittest.TestCase):
         self.addCleanup(self.modules.stop)
         self.store = adapters.S3Store(s3_config())
         self.addCleanup(self.store.close)
+
+    def quarantine_key(self, body=b"invalid"):
+        return (
+            "manifest-quarantine/hy-home.docker/2026-10-10/"
+            + hashlib.sha256(body).hexdigest()
+            + ".json"
+        )
+
+    def test_quarantine_verifies_exact_bytes_metadata_and_immutable_replay(self):
+        raw = b"invalid"
+        key = self.quarantine_key(raw)
+        self.store.put_quarantine(key, raw, "manifest_invalid")
+        self.assertEqual(self.client.objects[key], raw)
+        self.assertEqual(
+            self.client.metadata[key],
+            {
+                "ContentType": "application/octet-stream",
+                "Metadata": {
+                    "reason": "manifest_invalid",
+                    "data-version": hashlib.sha256(raw).hexdigest(),
+                },
+            },
+        )
+        self.store.put_quarantine(key, raw, "manifest_invalid")
+        puts = [request for kind, request in self.client.requests if kind == "put"]
+        self.assertEqual(len(puts), 1)
+        self.assertEqual(puts[0]["IfNoneMatch"], "*")
+        self.assertTrue(all(stream.closed for stream in self.client.bodies))
+
+    def test_quarantine_allows_empty_but_rejects_unbound_key_reason_and_size(self):
+        self.store.put_quarantine(self.quarantine_key(b""), b"", "manifest_invalid")
+        raw = b"invalid"
+        for key, body, reason in (
+            ("manifest-validated/x.json", raw, "manifest_invalid"),
+            (self.quarantine_key(), raw, "input-payload-canary"),
+            (self.quarantine_key(), b"changed", "manifest_invalid"),
+            (
+                self.quarantine_key().replace("2026-10-10", "2026-02-30"),
+                raw,
+                "manifest_invalid",
+            ),
+            (self.quarantine_key(), b"x" * (1048576 + 1), "manifest_invalid"),
+            (self.quarantine_key(), "not-bytes", "manifest_invalid"),
+        ):
+            with (
+                self.subTest(reason=reason),
+                self.assertRaises(ContractError) as caught,
+            ):
+                self.store.put_quarantine(key, body, reason)
+            self.assertNotIn("input-payload-canary", str(caught.exception))
+
+    def test_quarantine_rejects_conflicting_bytes_reason_and_content_type(self):
+        raw, key = b"invalid", self.quarantine_key()
+        self.store.put_quarantine(key, raw, "manifest_invalid")
+        for field, value in (
+            ("ContentType", "application/json"),
+            (
+                "Metadata",
+                {
+                    "reason": "partition_mismatch",
+                    "data-version": hashlib.sha256(raw).hexdigest(),
+                },
+            ),
+            ("Metadata", {"reason": "manifest_invalid", "data-version": "0" * 64}),
+        ):
+            original = self.client.metadata[key]
+            self.client.metadata[key] = dict(original, **{field: value})
+            with self.assertRaises(adapters.DependencyError):
+                self.store.put_quarantine(key, raw, "manifest_invalid")
+            self.client.metadata[key] = original
+        self.client.objects[key] = b"changed"
+        with self.assertRaises(adapters.DependencyError):
+            self.store.put_quarantine(key, raw, "manifest_invalid")
+        self.assertEqual(self.client.objects[key], b"changed")
+
+    def test_quarantine_driver_failures_are_redacted_without_overwrite(self):
+        for operation in ("head_object", "put_object"):
+            with patch.object(
+                self.client, operation, side_effect=S3Error("AccessDenied")
+            ):
+                with self.assertRaises(adapters.DependencyError) as caught:
+                    self.store.put_quarantine(
+                        self.quarantine_key(), b"invalid", "manifest_invalid"
+                    )
+            self.assertNotIn("sensitive-driver-canary", str(caught.exception))
+            self.assertIsNone(caught.exception.__context__)
+
+    def test_quarantine_conditional_race_requires_a_verified_winner(self):
+        self.client.race = True
+        key = self.quarantine_key()
+        self.store.put_quarantine(key, b"invalid", "manifest_invalid")
+        self.assertEqual(self.client.objects[key], b"invalid")
+        missing_key = self.quarantine_key(b"other")
+        with patch.object(
+            self.client, "put_object", side_effect=S3Error("PreconditionFailed")
+        ):
+            with self.assertRaises(adapters.DependencyError):
+                self.store.put_quarantine(missing_key, b"other", "manifest_invalid")
+        response = {
+            "Body": Body(b"invalid"),
+            "ETag": '"fixed"',
+            "ContentType": "application/octet-stream",
+            "Metadata": {},
+        }
+        with patch.object(self.client, "get_object", return_value=response):
+            with self.assertRaises(adapters.DependencyError):
+                self.store.put_quarantine(key, b"invalid", "manifest_invalid")
 
     def test_https_uses_sealed_ca_disables_proxy_and_closes_deterministically(self):
         with tempfile.TemporaryDirectory() as temporary:

@@ -36,14 +36,14 @@ endpoints:
 
   - name: Keycloak
     group: core
-    url: http://keycloak:9000/health/ready
+    url: http://keycloak:${KEYCLOAK_MANAGEMENT_PORT}/health/ready
     interval: 30s
     conditions:
       - '[STATUS] == 200'
 
   - name: OAuth2 Proxy
     group: core
-    url: http://oauth2-proxy:4180/ping
+    url: http://oauth2-proxy:${OAUTH2_PROXY_PORT}/ping
     interval: 30s
     conditions:
       - '[STATUS] == 200'
@@ -57,14 +57,14 @@ endpoints:
 
   - name: Management PostgreSQL
     group: data
-    url: tcp://mng-pg:5432
+    url: tcp://mng-pg:${POSTGRES_PORT}
     interval: 30s
     conditions:
       - '[CONNECTED] == true'
 
   - name: Management Valkey
     group: data
-    url: tcp://mng-valkey:6379
+    url: tcp://mng-valkey:${VALKEY_PORT}
     interval: 30s
     conditions:
       - '[CONNECTED] == true'

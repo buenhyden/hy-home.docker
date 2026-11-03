@@ -88,7 +88,13 @@ class OpsflowAcceptanceSeams(unittest.TestCase):
         ).hexdigest()
         artifact = "manifest-validated/" + self.source + "/" + expected_id + ".json"
         self.assertEqual(
-            result, {"run_id": expected_id, "status": "published", "records": 1}
+            result,
+            {
+                "run_id": expected_id,
+                "data_version": expected_digest,
+                "status": "published",
+                "records": 1,
+            },
         )
         self.assertEqual(self.connection.params[1:3], (expected_id, expected_digest))
         self.assertEqual(self.connection.params[-1], artifact)
@@ -100,6 +106,7 @@ class OpsflowAcceptanceSeams(unittest.TestCase):
         self.assertEqual(puts[0]["IfNoneMatch"], "*")
         row = builder.validate_claim([self.claim(result)])
         self.assertEqual(row["run_id"], expected_id)
+        self.assertNotIn("data_version", row)
         self.assertEqual(
             builder.evaluate_outcome(
                 [row], {"run_id": expected_id, "state": "accepted_by_smtp"}, True, False
@@ -156,14 +163,84 @@ class OpsflowAcceptanceSeams(unittest.TestCase):
                     payload["records"][0]["path"] = case["value"]
                 else:
                     payload[case["field"]] = case["value"]
-                self.client.objects[self.key] = json.dumps(payload).encode()
+                raw = json.dumps(payload).encode()
+                digest = hashlib.sha256(raw).hexdigest()
+                quarantine = (
+                    f"manifest-quarantine/{self.source}/{self.day}/{digest}.json"
+                )
+                # Each rejection starts with a separate input object. A prior
+                # case's preserved quarantine is not this case's evidence.
+                self.client.objects = {self.key: raw}
+                self.client.metadata = {}
+                self.client.requests = []
+                self.client.bodies = []
                 with self.assertRaisesRegex(
                     parser.ContractError, "^" + case["error"] + "$"
                 ):
                     self.ingest()
                 self.connect.assert_not_called()
-                self.assertFalse(any(kind == "put" for kind, _ in self.client.requests))
-                self.assertEqual(set(self.client.objects), {self.key})
+                self.assertFalse(self.connection.committed)
+                self.assertFalse(hasattr(self.connection, "query"))
+                self.assertEqual(self.client.objects, {self.key: raw, quarantine: raw})
+                self.assertFalse(
+                    any(
+                        key.startswith("manifest-validated/")
+                        for key in self.client.objects
+                    )
+                )
+                puts = [
+                    request for kind, request in self.client.requests if kind == "put"
+                ]
+                self.assertEqual(len(puts), 1)
+                self.assertEqual(puts[0]["Key"], quarantine)
+                self.assertEqual(puts[0]["IfNoneMatch"], "*")
+                self.assertEqual(
+                    self.client.metadata[quarantine],
+                    {
+                        "ContentType": "application/octet-stream",
+                        "Metadata": {
+                            "reason": "partition_mismatch"
+                            if case["error"] == "partition_mismatch"
+                            else "manifest_invalid",
+                            "data-version": digest,
+                        },
+                    },
+                )
+                self.assertTrue(all(stream.closed for stream in self.client.bodies))
+                with self.assertRaisesRegex(
+                    parser.ContractError, "^" + case["error"] + "$"
+                ):
+                    self.ingest()
+                self.assertEqual(
+                    len(
+                        [
+                            request
+                            for kind, request in self.client.requests
+                            if kind == "put"
+                        ]
+                    ),
+                    1,
+                )
+                self.connect.assert_not_called()
+
+    def test_failed_quarantine_never_starts_validation_or_sql_publication(self):
+        payload = json.loads(self.raw)
+        payload["records"][0]["path"] = "docs/../rejected.md"
+        raw = json.dumps(payload).encode()
+        self.client.objects = {self.key: raw}
+        with patch.object(
+            self.client,
+            "put_object",
+            side_effect=driver_fixtures.S3Error("AccessDenied"),
+        ):
+            with self.assertRaisesRegex(
+                parser.ContractError, "^quarantine_verification_failed$"
+            ):
+                self.ingest()
+        self.assertEqual(self.client.objects, {self.key: raw})
+        self.connect.assert_not_called()
+        self.assertFalse(self.connection.committed)
+        self.assertFalse(hasattr(self.connection, "query"))
 
     def test_notification_ack_loss_and_wrong_receipt_never_claim_success(self):
         result = self.ingest()

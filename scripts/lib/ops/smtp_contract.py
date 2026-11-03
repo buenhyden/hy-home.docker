@@ -30,6 +30,7 @@ LAB_SUPABASE_PATH = "labs/supabase.yml"
 ALIAS_HEADER = b"| Retired ID | Canonical ID |\n| --- | --- |\n"
 ALIAS_ROW = b"| COMM-003 | COMM-002 |\n"
 MAX_PROOF_BYTES = 32_768
+MAX_PRIVATE_INPUT_BYTES = 2 * 1024 * 1024
 PROOF_OPERATION = "retire-supabase-smtp"
 PROOF_TARGET = "COMM-003"
 PROOF_KEYS = frozenset(
@@ -188,12 +189,18 @@ def _identity(info):
 
 def _directory(root, relative, stack):
     """Walk and retain directory descriptors; never follow symlink parents."""
-    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-    if any(path.is_symlink() for path in (Path(root), *Path(root).parents)):
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    root = Path(root)
+    relative = Path(relative)
+    if (
+        not root.is_absolute()
+        or relative.is_absolute()
+        or any(part in (".", "..") for part in (*root.parts, *relative.parts))
+    ):
         raise ContractError("unsafe_root_path")
-    fd = os.open(root, flags)
+    fd = os.open(root.anchor, flags)
     stack.callback(os.close, fd)
-    for part in Path(relative).parts:
+    for part in (*root.parts[1:], *relative.parts):
         fd = os.open(part, flags, dir_fd=fd)
         stack.callback(os.close, fd)
     return fd
@@ -308,20 +315,42 @@ def _snapshot(parent, name, stack, required=True):
     info = os.fstat(fd)
     if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
         raise ContractError("unsafe_file_type")
+    if info.st_size > MAX_PRIVATE_INPUT_BYTES:
+        raise ContractError("unsafe_file_size")
     with os.fdopen(os.dup(fd), "rb") as stream:
-        content = stream.read()
-    if _identity(info) != _identity(os.fstat(fd)):
+        content = stream.read(MAX_PRIVATE_INPUT_BYTES + 1)
+    if len(content) > MAX_PRIVATE_INPUT_BYTES or _identity(info) != _identity(
+        os.fstat(fd)
+    ):
+        raise ContractError("concurrent_file_change")
+    try:
+        named = os.stat(name, dir_fd=parent, follow_symlinks=False)
+    except OSError:
+        raise ContractError("concurrent_file_change") from None
+    if _identity(info) != _identity(named):
         raise ContractError("concurrent_file_change")
     return (fd, _identity(info), content)
 
 
 def _unchanged(parent, name, snapshot):
-    if _identity(os.stat(name, dir_fd=parent, follow_symlinks=False)) != snapshot[1]:
-        raise ContractError("concurrent_file_change")
+    try:
+        if (
+            _identity(os.stat(name, dir_fd=parent, follow_symlinks=False))
+            != snapshot[1]
+        ):
+            raise ContractError("concurrent_file_change")
+    except OSError:
+        raise ContractError("concurrent_file_change") from None
     os.lseek(snapshot[0], 0, os.SEEK_SET)
     with os.fdopen(os.dup(snapshot[0]), "rb") as stream:
-        current = stream.read()
+        current = stream.read(MAX_PRIVATE_INPUT_BYTES + 1)
     if current != snapshot[2] or _identity(os.fstat(snapshot[0])) != snapshot[1]:
+        raise ContractError("concurrent_file_change")
+    try:
+        named = os.stat(name, dir_fd=parent, follow_symlinks=False)
+    except OSError:
+        raise ContractError("concurrent_file_change") from None
+    if _identity(named) != snapshot[1]:
         raise ContractError("concurrent_file_change")
 
 
@@ -683,6 +712,32 @@ def _retirement_inputs(root, stack):
     )
 
 
+def _verify_parent_bindings(root, inputs, *, include_old=True):
+    canonical_parent, _, metadata_parent, _, old_superparent, old_parent, _ = inputs
+    expected = [
+        (Path(CANONICAL_PATH).parent, canonical_parent),
+        (Path("secrets"), metadata_parent),
+    ]
+    if include_old:
+        expected.extend(
+            [
+                (Path(OLD_PATH).parent.parent, old_superparent),
+                (Path(OLD_PATH).parent, old_parent),
+            ]
+        )
+    with ExitStack() as stack:
+        for path, held in expected:
+            if held is None:
+                continue
+            try:
+                current = _directory(root, path, stack)
+                before, after = os.fstat(held), os.fstat(current)
+            except OSError:
+                raise ContractError("concurrent_directory_change") from None
+            if (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino):
+                raise ContractError("concurrent_directory_change")
+
+
 def _inputs_unchanged(
     canonical_parent, canonical, metadata_parent, metadata, old_parent, old
 ):
@@ -702,17 +757,21 @@ def _retire_name(root, proof, verifier, stack, inputs, updated, on_mutation):
         old_parent,
         old,
     ) = inputs
+    _verify_parent_bindings(root, inputs)
     _unchanged(canonical_parent, Path(CANONICAL_PATH).name, canonical)
     verifier(root, proof)
+    _verify_parent_bindings(root, inputs)
     if old:
         _unchanged(old_parent, Path(OLD_PATH).name, old)
         _quarantine_remove(old_parent, Path(OLD_PATH).name, old, on_mutation)
     _old_absent(root, stack)
     verifier(root, proof)
+    _verify_parent_bindings(root, inputs)
     if old_parent is not None:
         _remove_empty_directory(old_superparent, Path(OLD_PATH).parent.name, old_parent)
     _old_absent(root, stack)
     _metadata_matches(metadata_parent, updated, stack)
+    _verify_parent_bindings(root, inputs, include_old=False)
 
 
 def retire(
@@ -730,6 +789,9 @@ def retire(
             stack.enter_context(retirement_lock(root))
         inputs = _retirement_inputs(root, stack)
         _, canonical, metadata_parent, metadata, _, old_parent, old = inputs
+        _verify_parent_bindings(root, inputs)
+        if old is None:
+            _old_absent(root, stack)
         updated = metadata_retired(metadata[2])
         equal = old[2] == canonical[2] if old else None
         if equal is False:
@@ -741,13 +803,20 @@ def retire(
             "applied": False,
         }
         if not apply or not pending:
+            _verify_parent_bindings(root, inputs)
+            _inputs_unchanged(*inputs[:4], old_parent, old)
+            if old is None:
+                _old_absent(root, stack)
+            _verify_parent_bindings(root, inputs)
             return (1 if pending else 0), summary
         if proof is None:
             raise ContractError("audit_receipt_required")
         verifier(root, proof)
+        _verify_parent_bindings(root, inputs)
         _inputs_unchanged(*inputs[:4], old_parent, old)
         if before_commit:
             before_commit()
+        _verify_parent_bindings(root, inputs)
         _inputs_unchanged(*inputs[:4], old_parent, old)
         if updated != metadata[2]:
             _publish_metadata(metadata_parent, metadata, updated, on_mutation)

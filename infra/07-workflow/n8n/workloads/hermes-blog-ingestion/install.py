@@ -23,8 +23,8 @@ WORKLOAD = "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/"
 # Publisher modules only: producer-side code (signing, fetching) never ships here.
 MODULES = (
     "__init__", "candidates", "cli", "delivery", "evidence", "files",
-    "gateway_adapter", "gateway_transport", "http_transport", "outbox",
-    "policy", "trust",
+    "gateway_adapter", "gateway_receipt", "gateway_transport", "http_transport", "outbox",
+    "policy", "private_records", "trust",
 )  # fmt: skip
 # The attester runs as its own account from its own prefix; only its release
 # carries the signing and source-fetching modules.

@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 import shutil
+import stat
 import subprocess
 import tempfile
 import unittest
@@ -17,6 +18,7 @@ import yaml
 from scripts.lib.gate import ci_gate_adapters as adapters
 from scripts.lib.gate import ci_gate_contract as contract
 from scripts.validation import ci_gate_runner as runner
+from tests.lib.gate.subprocess_support import root_owned_system_git_fixture
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -468,6 +470,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
+                "leaf.p03-hermes",
+                "leaf.p11-hermes",
             },
             ids,
         )
@@ -498,6 +502,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
+                "leaf.p03-hermes",
+                "leaf.p11-hermes",
             },
             ids,
         )
@@ -981,6 +987,111 @@ class CiGateRunnerContractTests(unittest.TestCase):
             {item.gate_id for item in ordinary_document},
         )
 
+    def test_workspace_inventory_changes_select_synthetic_regressions_once(
+        self,
+    ) -> None:
+        inputs = (
+            "scripts/operations/workspace-inventory.py",
+            "scripts/lib/ops/workspace_inventory.py",
+            "scripts/lib/ops/_workspace_render.py",
+            "scripts/lib/ops/_workspace_services.py",
+            "tests/lib/ops/test_workspace_inventory.py",
+            "tests/lib/ops/test_workspace_services.py",
+            "tests/validation/test_workspace_inventory.py",
+            "docs/90.references/data/0096-workspace-inventory/data.yaml",
+        )
+        modules = {
+            "tests.lib.ops.test_workspace_inventory",
+            "tests.lib.ops.test_workspace_services",
+            "tests.validation.test_workspace_inventory",
+        }
+        for path in inputs:
+            for context in (
+                runner.ExecutionContext.LOCAL,
+                runner.ExecutionContext.PULL_REQUEST,
+            ):
+                with self.subTest(path=path, context=context):
+                    plan = build_public_plan("changed", context, (path,))
+                    regressions = [
+                        item
+                        for item in plan
+                        if item.gate_id == "leaf.repository-integrity-regressions"
+                    ]
+                    self.assertEqual(1, len(regressions))
+                    self.assertLessEqual(modules, set(regressions[0].argv))
+                    self.assertFalse(
+                        runner.selected_prerequisites(plan, (path,)).docker
+                    )
+
+    def test_p02_connection_contract_changes_select_mandatory_regressions_once(
+        self,
+    ) -> None:
+        inputs = (
+            "scripts/lib/ops/_workspace_connection_sources.py",
+            "scripts/lib/ops/_workspace_connections.py",
+            "tests/lib/ops/test_workspace_connections.py",
+            "tests/validation/test_p02_service_contracts.py",
+            "tests/validation/test_p02_gateway_port_validation.py",
+            "tests/validation/test_p02_prometheus_contracts.py",
+            "tests/validation/test_p02_valkey_mount_scope.py",
+            "infra/01-gateway/nginx/scripts/validate-upstream-ports.sh",
+            "infra/02-auth/keycloak/docker-compose.yml",
+            "infra/04-data/mng-db/docker-compose.yml",
+            "infra/06-observability/docker-compose.yml",
+            "infra/06-observability/prometheus/scripts/start.sh",
+            "infra/07-workflow/airflow/docker-compose.yml",
+            "infra/08-ai/open-notebook/docker-compose.yml",
+        )
+        modules = {
+            "tests.lib.ops.test_workspace_connections",
+            "tests.validation.test_p02_service_contracts",
+            "tests.validation.test_p02_gateway_port_validation",
+            "tests.validation.test_p02_prometheus_contracts",
+            "tests.validation.test_p02_valkey_mount_scope",
+        }
+        opt_in_modules = {
+            "tests.validation.test_p02_native_contracts",
+            "tests.validation.test_p02_oauth_native",
+            "tests.validation.test_p02_secret_presentation_native",
+        }
+        for path in inputs:
+            for context in (
+                runner.ExecutionContext.LOCAL,
+                runner.ExecutionContext.PULL_REQUEST,
+            ):
+                with self.subTest(path=path, context=context):
+                    plan = build_public_plan("changed", context, (path,))
+                    regressions = [
+                        item
+                        for item in plan
+                        if item.gate_id == "leaf.repository-integrity-regressions"
+                    ]
+                    self.assertEqual(1, len(regressions))
+                    self.assertLessEqual(modules, set(regressions[0].argv))
+                    self.assertTrue(opt_in_modules.isdisjoint(regressions[0].argv))
+                    self.assertEqual((), regressions[0].allowed_env_keys)
+                    if not path.startswith("infra/"):
+                        self.assertFalse(
+                            runner.selected_prerequisites(plan, (path,)).docker
+                        )
+
+    def test_p02_native_contracts_are_registered_as_explicit_local_opt_ins(
+        self,
+    ) -> None:
+        plan = build_public_plan("full", runner.ExecutionContext.LOCAL, ())
+        invocation = next(
+            item for item in plan if item.gate_id == "leaf.compose-baseline-regressions"
+        )
+        marker = invocation.argv.index("--optional-runtime-skips")
+        optional_selectors = {
+            "tests.validation.test_p02_native_contracts.GrafanaStaticRouteNativeTests",
+            "tests.validation.test_p02_oauth_native.OAuth2ProxyOidcNativeTests",
+            "tests.validation.test_p02_secret_presentation_native.ComposeSecretPresentationNativeTests",
+        }
+        self.assertTrue(optional_selectors.isdisjoint(invocation.argv[:marker]))
+        self.assertLessEqual(optional_selectors, set(invocation.argv[marker + 1 :]))
+        self.assertEqual((), invocation.allowed_env_keys)
+
     def test_changed_unit_owners_follow_their_declared_execution_boundary(
         self,
     ) -> None:
@@ -1218,7 +1329,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             requirements(("projects/storybook/nextjs/package.json",)),
         )
         self.assertEqual(
-            runner.SelectedPrerequisites(node=True, docker=True),
+            runner.SelectedPrerequisites(node=True, docker=True, compose=True),
             requirements(("infra/01-gateway/docker-compose.yml",)),
         )
 
@@ -1233,7 +1344,11 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     "scripts/lib/gate/ci_gate_adapters.py",
                 )
                 self.assertEqual(
-                    runner.SelectedPrerequisites(node=True, docker=False),
+                    runner.SelectedPrerequisites(
+                        node=True,
+                        docker=False,
+                        compose=gate_id == "leaf.repository-integrity-regressions",
+                    ),
                     runner.selected_prerequisites((invocation,), ()),
                 )
 
@@ -1454,7 +1569,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 runner.main(["--profile", "changed", "--requirements"]),
             )
         execute.assert_not_called()
-        self.assertEqual("node=false\ndocker=false\n", stdout.getvalue())
+        self.assertEqual("node=false\ndocker=false\ncompose=false\n", stdout.getvalue())
 
     def test_requirements_seeds_authenticated_evidence_before_reporting(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1608,8 +1723,43 @@ class CiGateRunnerContractTests(unittest.TestCase):
         self.assertEqual("v24.22.0", captured["TRUSTED_NODE_VERSION"])
         self.assertTrue(captured["TRUSTED_IMAGE_OS"].startswith("LOCAL-"))
 
+    def test_trusted_git_rejects_unsafe_executable_metadata(self) -> None:
+        regular = stat.S_IFREG | 0o755
+        cases = (
+            ("root-owned", "/usr/bin/git", regular, 0, True, True),
+            ("unmapped-owner", "/usr/bin/git", regular, 65534, True, False),
+            ("user-owned", "/tmp/user-git", regular, 1000, True, False),
+            ("group-writable", "/usr/bin/git", regular | stat.S_IWGRP, 0, True, False),
+            ("other-writable", "/usr/bin/git", regular | stat.S_IWOTH, 0, True, False),
+            ("directory", "/usr/bin/git", stat.S_IFDIR | 0o755, 0, True, False),
+            ("not-executable", "/usr/bin/git", regular, 0, False, False),
+            ("relative", "git", regular, 0, True, False),
+            ("parent-traversal", "/usr/bin/../bin/git", regular, 0, True, False),
+        )
+        for label, path, mode, owner, executable, accepted in cases:
+            metadata = os.stat_result((mode, 0, 0, 1, owner, 0, 0, 0, 0, 0))
+            with (
+                self.subTest(case=label),
+                mock.patch.object(pathlib.Path, "stat", return_value=metadata),
+                mock.patch.object(os, "access", return_value=executable),
+            ):
+                environment = {"TRUSTED_GIT_PATH": path}
+                if accepted:
+                    self.assertEqual(path, runner._trusted_git_executable(environment))
+                else:
+                    with self.assertRaisesRegex(runner.GateContractError, "system Git"):
+                        runner._trusted_git_executable(environment)
+        with (
+            mock.patch.object(pathlib.Path, "stat", side_effect=FileNotFoundError),
+            self.assertRaisesRegex(runner.GateContractError, "system Git"),
+        ):
+            runner._trusted_git_executable({"TRUSTED_GIT_PATH": "/missing/git"})
+
     def test_pull_request_identity_is_bound_to_raw_merge_topology(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            root_owned_system_git_fixture(),
+        ):
             repo = self._changed_path_repo(pathlib.Path(directory))
             base = self._git(repo, "rev-parse", "HEAD").stdout.strip()
             initial_branch = self._git(
@@ -1678,7 +1828,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     0,
                     runner.main(["--profile", "changed", "--requirements"]),
                 )
-            self.assertEqual("node=false\ndocker=false\n", stdout.getvalue())
+            self.assertEqual(
+                "node=false\ndocker=false\ncompose=false\n", stdout.getvalue()
+            )
 
             poisoned = {
                 **environment,

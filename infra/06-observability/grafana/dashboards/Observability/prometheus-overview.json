@@ -726,6 +726,55 @@
       ],
       "title": "Stage Duration",
       "type": "timeseries"
+    },
+    {
+      "id": 16,
+      "title": "Expected and discovered targets",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "targets": [
+        {
+          "expr": "hyhome_expected_scrape_targets",
+          "refId": "A",
+          "legendFormat": "{{job}} {{instance}}"
+        },
+        {
+          "expr": "count by(job) (up)",
+          "refId": "B",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "title": "Scrape sample age (seconds)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "$datasource"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 40
+      },
+      "targets": [
+        {
+          "expr": "time() - timestamp(up{expected_state=\"on\"})",
+          "refId": "A",
+          "legendFormat": "{{job}} {{instance}}"
+        }
+      ]
     }
   ],
   "schemaVersion": 39,

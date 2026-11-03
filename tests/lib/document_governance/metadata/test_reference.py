@@ -773,6 +773,11 @@ The fixture is intentionally in progress.
                 ROOT / "scripts/lib/document_governance/spec_packages.py",
                 root / "scripts/lib/document_governance/spec_packages.py",
             )
+            corrected_task = pathlib.Path(
+                "docs/03.specs/0212-request-baseline-and-reconciliation/tasks/"
+                "tsk-0040-workspace-inventory.md"
+            )
+            shutil.copy2(ROOT / corrected_task, root / corrected_task)
             staged = subprocess.run(
                 ("git", "-C", str(root), "add", "--all"),
                 capture_output=True,

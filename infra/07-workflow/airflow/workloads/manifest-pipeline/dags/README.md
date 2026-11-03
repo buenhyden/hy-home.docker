@@ -1,10 +1,10 @@
 ---
 title: "Manifest Pipeline DAG"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-11-02"
 ---
 
 # Manifest Pipeline DAG
@@ -25,7 +25,8 @@ updated: "2026-10-11"
 ## Usage
 
 현재 기본은 paused·schedule None입니다. Task 실행에서만 ingest 설정을 읽고
-XCom에는 run ID·status·행수만 전달합니다. 예외는 고정된 실패 코드로 제한합니다.
+XCom에는 run ID·원본 SHA-256인 data_version·status·행수만 전달합니다.
+원본 payload·객체 메타데이터·자격은 전달하지 않으며 예외는 고정된 실패 코드로 제한합니다.
 
 ## Related Documents
 

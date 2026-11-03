@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.4.6"
+version: "1.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -40,6 +40,22 @@ created: "2026-05-10"
 Repository checkout과 `infra/06-observability/docker-compose.yml`, `infra/06-observability/prometheus/config/prometheus.yml`을 읽을 권한이 필요하다. 실행 중인 서비스를 볼 때는 `obs` profile과 `prometheus` container에 대한 읽기 전용 점검 권한이면 충분하다. Docker Secret 값은 열람하지 않고, 문서에는 secret ID와 file reference만 적는다.
 
 ## Usage
+
+### 선택 계획과 기대 대상
+
+`scripts/operations/compose-start.py plan`은 공개 Compose와 companion 정책을
+기준으로 전체 선택 또는 특정 대상을 계획한다. 계획은 승인이나 기동이 아니다.
+전체 선택의 기대 대상, scrape 성공, backend 상태와 최신 수집 시각은 각각 확인한다.
+단일 대상 계획으로 전체 기대 대상을 덮어쓰지 않는다. 생성된 계획 적용과 복구
+경계는 [RUN-0045](../../runbooks/07-observability/0045-prometheus.md)를 따른다.
+기존 DEV 의도 설정 `PROMETHEUS_DEV_DATA_EXPECTED=on|off`와 전체 선택이 충돌하면
+자동으로 값을 바꾸지 않고 원인을 확인한다. 과거 수용이나 정적 규칙 검증은
+실제 운영 재적재·경보 전달의 증거가 아니다.
+`ObservationSamplesStale`은 수집 간격의 세 배와 120초 중 큰 신선도 기준을
+초과한 뒤 1분 유예가 지속될 때 발화한다. 따라서 기준을 넘은 즉시 경보가
+발생한다고 해석하지 않는다.
+생성된 기대 설정의 임시 경로는 재부팅이나 정리로 사라질 수 있다. 재생성과
+컨테이너 재시작 전 경로 확인은 연결된 runbook을 따른다.
 
 ### Normal use
 
@@ -177,7 +193,10 @@ host port는 publish되지 않는다. hy-home.k8s는 External Secrets를 통해 
 
 #### Keycloak Observation
 
-Prometheus는 현재 config에서 `domain: "auth"` label로 `keycloak:9000`을 scrape한다.
+Prometheus는 현재 config에서 `domain: "auth"` label로
+`keycloak:${KEYCLOAK_MANAGEMENT_PORT:-9000}`을 scrape한다. 이 관리 listener는
+Keycloak application listener와 다르며, 기본값이 `9000`이라는 선언은 현재 scrape
+성공이나 Keycloak 전체 준비 상태를 뜻하지 않는다.
 
 ### Source-backed operating contract
 

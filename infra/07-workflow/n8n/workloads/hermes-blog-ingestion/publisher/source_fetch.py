@@ -228,6 +228,11 @@ def _get(host, port, ip, target, connect, deadline, monotonic):
         content_type = response.getheader("Content-Type", "")
         if status >= 300:
             return status, location, content_type, b""
+        # We request identity encoding; hashing compressed transfer bytes would
+        # misrepresent the decoded response-body contract.
+        encoding = response.getheader("Content-Encoding", "").strip().lower()
+        if encoding not in ("", "identity"):
+            raise FetchFailure("content_encoding")
         length = response.getheader("Content-Length")
         if length and length.isdigit() and int(length) > MAX_BYTES:
             raise FetchFailure("size")

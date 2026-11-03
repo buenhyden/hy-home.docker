@@ -1,25 +1,28 @@
 ---
 title: "독립 매니페스트 outbox 통지"
-version: "0.1.2"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-11-02"
 ---
 
 # 독립 매니페스트 outbox 통지
 
 ## Overview
 
-P04의 DEV 매니페스트 게시 outbox에서 한 건을 claim하고 제한된 Mailpit에
-캡처하는 n8n 소비자입니다. 현재 산출물은 공개 소스와 합성 시험이며 workflow는
-비활성입니다. Task0017에서 고정한 production 이미지의 실제 custom node 로딩은 ISOLATED PASS이나
-후속 전체 native 실행도 main readiness에서 ERROR였습니다. migration 완료와 해당 실행의
-cleanup PASS를 확인했지만 업무 import·capture·예약·회전·복구의 성공 증거는 없습니다.
+DEV 매니페스트 게시 outbox에서 한 건을 claim하고 제한된 Mailpit에 캡처하는
+n8n 소비자입니다. 공개 workflow는 비활성을 유지합니다. SPEC-0204의 C19/C22는
+선택 이미지와 당시 격리 queue·수동/예약·불확실 전송·복원 범위에서 수용됐습니다.
+이전 readiness 실패도 이력으로 보존하며 이후 수용을 취소하는 근거로 쓰지 않습니다.
+현재 P05의 수동 재처리·복원 장벽·인증 STARTTLS 보완은 별도
+[SPEC-0212 Task0044](../../../../../docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md)가 기록합니다.
+과거 수용은 현재 이미지·사설 workflow·HOME 운영의 독립 PASS가 아닙니다.
 
 ## Scope
 
-SQL·migration·DB role·dead requeue는 P04가 단독 소유합니다.
+기존 게시 SQL·데이터 소유권은 P04 계약을 재사용합니다. 현재 P05의 신규 SQL007/008은
+지정 SQL 작성자가 통합하며 발급된001–006은 보존합니다.
 [소비자 계약](outbox-contract.json)은 P04 Task의 독립 SQL·보안 검토와 일치하는
 v1 commit·migration hash를 연결합니다. `reviewed`는 이 소스 인터페이스의 상태입니다.
 P04 source SQL의 여섯 claim 필드를 조회하며 `lease_until`은 서버에서 UTC millisecond
@@ -68,9 +71,19 @@ SQL004의 legacy retry도 격리하므로 구버전 workflow가 불확실 전송
 실제 SMTP 시작 전 취소만 새 no-send retry 함수로 제한합니다. 기록이 실패하면 불확실한
 sending을 유지하고 만료 뒤 격리합니다. 오래된 SMTP node에서 재개하지 않습니다.
 
-dead 복구는 원인·수락/불확실 증거 확인 후 P04의 검토된 함수와 지정 operator role로
-해당 건만 requeue하고 새 claim합니다. 직접 table UPDATE나 전체 상태 reset은 금지합니다.
-rollback은 이 workflow의 polling 중지·inactive·선택 실행 조정과 outbox 보존입니다.
+dead 복구는 SQL007의 `requeue_dead_notification(id,attempt,request_id,evidence_sha256)`만
+사용합니다. 현재 attempt의 no-send 증거와 개별 승인마다 한 번의 추가 claim을 허용하고
+기존 attempt·대조·감사 이력을 보존합니다. 같은 요청의 재호출은 허용량을 늘리지 않습니다.
+직접 table UPDATE나 전체 상태 reset은 금지합니다. 관리 함수는 migrator session에서
+명시적으로 `SET ROLE opsflow_owner`한 context로 호출하며 runtime notifier에는 권한이 없습니다. 정확한 권한·오류·적용 순서는
+[SQL 계약](../../../airflow/workloads/manifest-pipeline/sql/README.md)을 따릅니다.
+
+복원 전 입력·polling을 중지하고 전송 가능한 실행·worker·socket을 drain/종료한 증거를
+확보합니다. 복원된 sending은 lease가 남아 있어도
+`quarantine_restored_notification`으로 unknown에 격리한 뒤 재개합니다.
+함수는 외부 장벽의 증거 지문을 기록할 뿐 SMTP fencing이나 미전송을 증명하지 않습니다.
+SMTP capture 부재만으로 no-send를 판단하지 않습니다. rollback은 이 workflow의 polling
+중지·inactive·선택 실행 조정과 outbox·audit 보존이며 실제 schema 복구와 구분합니다.
 
 ### Lease와 대조 조건
 
@@ -83,22 +96,19 @@ exactly-once 보장이 아닙니다. Unknown은 SQL owner의 capture/증거 대�
 
 ## Validation
 
-합성 시험은 실제 DB claim·SMTP capture·native n8n 동작을 증명하지 않습니다.
-명시 선택자와 고정 캐시 이미지가 없으면 `OpsflowN8nNativeRehearsal`은 기본 skip입니다.
-실행 명령·직렬 lock·자원·capture·cleanup 조건은
-[워크플로 Runbook 탐색](../../../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의
-RUN-0053을 따릅니다. 첫 전체 시험의 자동 cleanup FAIL과 후속 정확한 대상의
-reconciliation PASS는 별도로 보존합니다. 별도 SQL 논리 dump/restore PASS를 n8n
-metadata·encryption-key 복원 또는 HOME 복구로 확대하지 않습니다. Airflow가 게시한
-같은 outbox 데이터를 실제로 인계하는 통합 시험은 남아 있습니다.
-native 실행은 연결된 P04 SQL과 실제 게시 인계, SEC01의 설치 이미지·node 호환성,
-P02 credential 분류, P03 endpoint·실행 worker·접근 경계가 확정된 뒤 진행합니다.
-먼저 inactive import와 manual capture를 확인하고 이후 1분 polling 하나만 활성화합니다.
-두 notifier 경쟁·lease 만료·outage·응답/ack 유실·dead·restart·공식 credential 회전과
-빈 격리 대상에 metadata DB와 동일 encryption key를 함께 복원하는 시험이 남아 있습니다.
-각 운영 작업의 정확한 대상·효과·backup·cleanup·rollback은 Task에 먼저 기록합니다.
+합성 시험과 owned loopback STARTTLS 시험은 실제 n8n Worker·DB·Mailpit native 실행과
+구분합니다. 신규 실행 결과·독립 검토·실행 환경·잔여는 Task0044에 기록하며,
+SPEC-0204의 C19/C22 수용은 당시 version·환경·Criterion 범위로 재사용합니다.
+P04의 현재 Worker/독립 복원 잔여가 P05 독립 fixture의 숨은 시작 조건은 아닙니다.
+실제 Airflow가 게시한 같은 outbox를 n8n에 인계하는 P12 종단 수용은 별도입니다.
+
+기존 native 실행 명령·직렬 lock·자원·capture·cleanup 조건은 RUN-0053을 따릅니다.
+새 인증 profile은 명시적 선택이며 실제 비밀 발급·운영 회전·외부 송신을 허용하지 않습니다.
+metadata DB와 같은 encryption key의 일관된 복원, 진행 중 전송의 장벽, accepted/unknown
+상태와 다음 claim 결과를 각각 대조합니다. SQL-only dump/restore를 전체 서비스 복원으로
+승격하지 않습니다. 실행하지 않은 운영·원격 CI·최종 P12 인수는 NOT_RUN입니다.
 
 ## Related Documents
 
 - [워크로드 목록](../README.md)
-- [Spec Package 탐색](../../../../../docs/03.specs/README.md): P05 정본은 SPEC-0204-TSK-0013, P04 정본은 SPEC-0204-TSK-0012입니다.
+- [Spec Package 탐색](../../../../../docs/03.specs/README.md): 과거 수용은 SPEC-0204-TSK-0013, 현재 P05 보완은 SPEC-0212-TSK-0044가 소유합니다.

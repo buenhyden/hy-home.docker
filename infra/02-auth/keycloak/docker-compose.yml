@@ -72,6 +72,8 @@ services:
       KEYCLOAK_ADMIN_PASSWORD_FILE: ${KEYCLOAK_ADMIN_PASSWORD_FILE:-/run/secrets/keycloak_admin_password}
       KC_HOSTNAME: keycloak.${DEFAULT_URL}
       KC_HTTP_ENABLED: 'true'
+      KC_HTTP_PORT: ${KEYCLOAK_PORT:-8080}
+      KC_HTTP_MANAGEMENT_PORT: ${KEYCLOAK_MANAGEMENT_PORT:-9000}
       KC_PROXY_HEADERS: xforwarded
       KC_METRICS_ENABLED: 'true'
       # Series the Keycloak troubleshooting and capacity dashboards and the
@@ -109,7 +111,7 @@ services:
       traefik.http.routers.keycloak.middlewares: gateway-standard-chain@file
       traefik.http.services.keycloak.loadbalancer.server.port: ${KEYCLOAK_PORT:-8080}
     healthcheck:
-      test: [ 'CMD-SHELL', "exec 3<>/dev/tcp/127.0.0.1/${KEYCLOAK_MANAGEMENT_PORT:-9000}; printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; cat <&3 | grep -Eq '\"status\"[[:space:]]*:[[:space:]]*\"UP\"' && exit 0 || exit 1" ]
+      test: [ 'CMD-SHELL', "exec 3<>/dev/tcp/127.0.0.1/\"$${KC_HTTP_MANAGEMENT_PORT}\"; printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; cat <&3 | grep -Eq '\"status\"[[:space:]]*:[[:space:]]*\"UP\"' && exit 0 || exit 1" ]
       interval: 15s
       timeout: 30s
       retries: 5

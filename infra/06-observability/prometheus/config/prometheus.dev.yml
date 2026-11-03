@@ -145,13 +145,8 @@ scrape_configs:
           domain: "gateway"
 
   - job_name: "keycloak"
-    static_configs:
-      - targets: ["keycloak:9000"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "auth"
-          container: "keycloak"
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/keycloak.yml"]
 
   - job_name: "oauth2-proxy"
     static_configs:

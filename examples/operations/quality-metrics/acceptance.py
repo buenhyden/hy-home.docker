@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -29,6 +30,84 @@ STAGE_TAGS = {
     "mock": "wiremock/wiremock:3.13.2-alpine",
 }
 DASHBOARD = ROOT / "infra/06-observability/grafana/dashboards/Infrastructure/k6.json"
+ALLOY_METRICS = (
+    "prometheus_remote_storage_samples_pending",
+    "prometheus_remote_storage_samples_failed_total",
+    "prometheus_remote_storage_queue_highest_sent_timestamp_seconds",
+)
+PANEL_TITLES = {
+    "Observability/prometheus-overview.json": (
+        "Expected and discovered targets",
+        "Scrape sample age (seconds)",
+    ),
+    "Observability/alloy-opentelemetry.json": (
+        "Quality remote-write pending samples",
+        "Quality remote-write failures",
+    ),
+    "Infrastructure/postgresql.json": (
+        "PostgreSQL scrape and backend",
+        "PostgreSQL backend age (seconds)",
+    ),
+    "Infrastructure/redis.json": (
+        "Valkey scrape and backend",
+        "Valkey backend age (seconds)",
+    ),
+}
+SYNTHETIC_SERVER = """\
+from http.server import BaseHTTPRequestHandler, HTTPServer
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = b'hyhome_expected_scrape_targets{job="manage-postgres"} 1\\npg_up 1\\nredis_up 1\\n'
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain; version=0.0.4")
+        self.end_headers()
+        self.wfile.write(body)
+    def log_message(self, *args): pass
+HTTPServer(("0.0.0.0", 18080), Handler).serve_forever()
+"""
+
+
+def dashboard_panel_queries():
+    root = ROOT / "infra/06-observability/grafana/dashboards"
+    result = []
+    for path, titles in PANEL_TITLES.items():
+        stack = list(json.loads((root / path).read_text())["panels"])
+        found = set()
+        while stack:
+            panel = stack.pop()
+            stack.extend(panel.get("panels", []))
+            title = panel.get("title")
+            if title in titles:
+                if title in found:
+                    raise ValueError("duplicate dashboard panel")
+                found.add(title)
+                result.extend((title, target["expr"]) for target in panel["targets"])
+        if found != set(titles):
+            raise ValueError("missing dashboard panel")
+    if len(result) != 11:
+        raise ValueError("unexpected dashboard query count")
+    return result
+
+
+def validate_dashboard_queries(query, queries):
+    for title, expr in queries:
+        rows = query(expr)
+        if not rows or any(not math.isfinite(float(row["value"][1])) for row in rows):
+            raise AssertionError("dashboard expression produced no finite values")
+        values = [float(row["value"][1]) for row in rows]
+        if (
+            "scrape and backend" in title or title == "Expected and discovered targets"
+        ) and any(value != 1 for value in values):
+            raise AssertionError(
+                "dashboard expression disagrees with synthetic targets"
+            )
+        if any(value < 0 for value in values):
+            raise AssertionError("dashboard expression produced a negative value")
+        if query(f"({expr}) and on() (vector(0) == 1)"):
+            raise AssertionError(
+                "dashboard expression did not preserve an empty vector"
+            )
+    return len(queries)
 
 
 def dashboard_expressions(dashboard):
@@ -63,15 +142,57 @@ otelcol.receiver.otlp "synthetic" {
     )
 
 
+def prometheus_config():
+    """Scrape Alloy only inside the synthetic metrics network."""
+    return (
+        "global:\n"
+        "  scrape_interval: 1s\n"
+        "scrape_configs:\n"
+        "  - job_name: alloy\n"
+        "    static_configs:\n"
+        '      - targets: ["alloy:12345"]\n'
+        "  - job_name: manage-postgres\n"
+        "    honor_labels: true\n"
+        "    static_configs:\n"
+        '      - targets: ["probe:18080"]\n'
+        '        labels: {expected_state: "on"}\n'
+        "  - job_name: mng-valkey-exporter\n"
+        "    honor_labels: true\n"
+        "    static_configs:\n"
+        '      - targets: ["probe:18080"]\n'
+        '        labels: {expected_state: "on"}\n'
+    )
+
+
+def alloy_observation(query):
+    """Return only known metric names and public label names, never label values."""
+    observed = {}
+    for name in ALLOY_METRICS:
+        rows = query(name + '{job="alloy"}')
+        if not rows:
+            raise AssertionError("Alloy self-observation metric missing: " + name)
+        keys = set()
+        for row in rows:
+            labels = row["metric"]
+            if labels.get("job") != "alloy" or not math.isfinite(
+                float(row["value"][1])
+            ):
+                raise AssertionError("Alloy self-observation result invalid")
+            keys.update(labels)
+        observed[name] = sorted(keys)
+    return observed
+
+
 def command(args, **kwargs):
     kwargs.setdefault("env", {"PATH": os.environ["PATH"], "HOME": os.environ["HOME"]})
-    result = subprocess.run(
-        args, capture_output=True, text=True, timeout=60, check=False, **kwargs
-    )
-    if result.returncode:
-        raise RuntimeError(
-            f"command failed ({result.returncode}): {args[:4]}: {result.stderr[-1500:]}"
+    try:
+        result = subprocess.run(
+            args, capture_output=True, text=True, timeout=60, check=False, **kwargs
         )
+    except (OSError, subprocess.TimeoutExpired):
+        raise RuntimeError("command failed (output withheld)") from None
+    if result.returncode:
+        raise RuntimeError(f"command failed ({result.returncode}; output withheld)")
     return result.stdout
 
 
@@ -180,8 +301,13 @@ def payload(
     }
 
 
+class SafeArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.exit(2, "invalid fixture arguments\n")
+
+
 def main():
-    parser = argparse.ArgumentParser()
+    parser = SafeArgumentParser()
     for role in TAGS:
         parser.add_argument(f"--{role}-image", required=True)
     parser.add_argument("--source", type=Path, default=SOURCE)
@@ -262,7 +388,7 @@ def main():
     env["METRICS_ALLOY_TOKEN"] = str(token_file)
     configs = {
         "ALLOY": alloy_config,
-        "PROM": "global:\n  scrape_interval: 1s\nscrape_configs: []\n",
+        "PROM": prometheus_config(),
     }
     for role, text in configs.items():
         path = scratch / (role.lower() + ".config")
@@ -316,6 +442,7 @@ def main():
         )
         compose("up", "-d", "--pull", "never")
         probe = compose("ps", "-q", "probe").strip()
+        command(["docker", "exec", "-d", probe, "python", "-c", SYNTHETIC_SERVER])
 
         def request(op):
             if op["kind"] == "send":
@@ -371,6 +498,33 @@ def main():
                 if time.monotonic() > deadline:
                     raise
                 time.sleep(1)
+        # Wait for at least one real Prometheus scrape; only label names are
+        # emitted, because even diagnostic labels can contain private data.
+        deadline = time.monotonic() + 35
+        while True:
+            try:
+                observation = alloy_observation(query)
+                break
+            except AssertionError:
+                if time.monotonic() >= deadline:
+                    raise
+                time.sleep(1)
+        print(
+            json.dumps({"alloy_self_metrics": observation}, sort_keys=True), flush=True
+        )
+        deadline = time.monotonic() + 35
+        while True:
+            try:
+                count = validate_dashboard_queries(query, dashboard_panel_queries())
+                break
+            except AssertionError:
+                if time.monotonic() >= deadline:
+                    raise
+                time.sleep(1)
+        print(
+            f"PASS evaluated {count} dashboard expressions and empty vectors",
+            flush=True,
+        )
         start = time.time_ns() - 2_000_000_000
         timestamp = start + 1_000_000_000
         cases = [

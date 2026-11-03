@@ -276,6 +276,15 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 
 ### Optional service disposition
 
+#### Current-source reconciliation (P09, 2026-11-03)
+
+이 표는 현재 공개 Compose와 당시 host 관찰을 함께 읽는 운영 안내이며, 삭제 권한이나
+현재 운영 성공의 정본이 아니다. P09는 15개 역할 비교에서 현재 source와 named consumer를
+확인할 수 있는 행만 채택 근거로 사용하고, 소비자·소유자·보존 또는 복구 근거가 없는 행은
+`UNKNOWN`으로 남긴다. 역사 ADR 본문은 보존한다. 특히 ADR-0005의 RabbitMQ, ADR-0006의
+MinIO 및 ADR-0010의 MailHog 표기는 당시 결정 문맥이며, 현행 source의 Kafka/SeaweedFS/Mailpit
+선택을 대체하거나 현재 설치·전이 의존성 부재를 증명하지 않는다.
+
 2026-10-08 host 관찰은 `docker ps`의 `hy-home-infra` 서비스 목록이며 이후 상태를
 보장하지 않는다. "미실행"은 그 시점 관찰이다. 비용은 `.env.example`로 렌더링한 root의
 선언 상한(CPU 합계 / 메모리 MiB 합계)이며 측정값이 아니다. 보존 데이터는 그 그룹의

@@ -42,6 +42,15 @@ def load_contract_module():
 
 
 class GithubWorkflowContractTests(unittest.TestCase):
+    def test_p10_document_contract_is_a_required_repository_regression(self) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        nodes = {node["gate_id"]: node for node in document["gate_nodes"]}
+        arguments = nodes["leaf.repository-integrity-regressions"]["argv"]
+        module = "tests.validation.test_p10_document_contract"
+        boundary = arguments.index("--optional-runtime-skips")
+        self.assertEqual(1, arguments[1:boundary].count(module))
+        self.assertNotIn(module, arguments[boundary + 1 : -1])
+
     def test_datastore_boundary_checks_are_required_and_routed(self) -> None:
         document = gate_contract.load_contract_document(ROOT)
         gate = next(
@@ -89,6 +98,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(
             [
                 "tests.validation.test_compose_baseline_gates",
+                "tests.validation.test_p09_compose_controls",
                 "tests.validation.test_dev_data_boundary",
                 "tests.validation.test_dev_pg_provision",
                 "tests.validation.test_dev_valkey_acl",
@@ -150,6 +160,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.lib.ops.test_opsflow_adapters",
                 "tests.lib.ops.test_opsflow_provision_contract",
                 "tests.validation.test_opsflow_airflow_contract",
+                "tests.validation.test_airflow_connection_uri",
                 "tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests",
                 "tests.validation.test_opsflow_native_boundaries",
                 "tests.validation.test_opsflow_native_criterion22",
@@ -159,11 +170,22 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_opsflow_airflow_native_evidence",
                 "tests.validation.test_opsflow_airflow_native_quiescence",
                 "tests.validation.test_opsflow_airflow_native_rehearsal",
+                "tests.validation.test_opsflow_airflow_native_data",
+                "tests.validation.test_opsflow_airflow_native_scenario",
+                "tests.validation.test_p05_notification_recovery",
+                "tests.validation.test_p05_opsflow_native",
+                "tests.validation.test_p05_opsflow_scenario",
+                "tests.validation.test_p02_native_contracts",
+                "tests.validation.test_p02_oauth_native",
+                "tests.validation.test_p02_secret_presentation_native",
+                "tests.validation.test_p03_runner_boundaries",
+                "tests.validation.test_p03_runner_consumers",
+                "tests.validation.test_p03_runner_isolation",
             ],
             arguments[1:boundary],
         )
         optional = arguments[boundary + 1 : -1]
-        self.assertEqual(24, len(optional))
+        self.assertEqual(32, len(optional))
         self.assertEqual(len(optional), len(set(optional)))
         self.assertTrue(
             all(scope.rsplit(".", 1)[0] in arguments[1:boundary] for scope in optional)
@@ -179,8 +201,66 @@ class GithubWorkflowContractTests(unittest.TestCase):
         for selector in (
             "tests.validation.test_opsflow_native_rehearsal.OpsflowN8nNativeRehearsal",
             "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowNativeRehearsal",
+            "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowStoragePermissionRehearsal",
+            "tests.validation.test_opsflow_native_criterion22.Criterion22NodeRuntimeTests",
+            "tests.validation.test_p05_opsflow_native.P05NativeRehearsal",
         ):
             self.assertIn(selector, optional)
+        self.assertEqual([], gate["allowed_env_keys"])
+
+    def test_p04_p05_required_selectors_are_unique_and_explicitly_routed(
+        self,
+    ) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        nodes = {node["gate_id"]: node for node in document["gate_nodes"]}
+        arguments = nodes["leaf.compose-baseline-regressions"]["argv"]
+        boundary = arguments.index("--optional-runtime-skips")
+        required = arguments[1:boundary]
+        optional = arguments[boundary + 1 : -1]
+        selectors = (
+            "tests.validation.test_airflow_connection_uri",
+            "tests.validation.test_opsflow_airflow_native_data",
+            "tests.validation.test_opsflow_airflow_native_scenario",
+            "tests.validation.test_p05_notification_recovery",
+            "tests.validation.test_p05_opsflow_native",
+            "tests.validation.test_p05_opsflow_scenario",
+        )
+        public = gate_contract.parse_public_gate_contract(document)
+        registry = gate_contract.parse_gate_registry(
+            document, ".github/workflow-contract.yml"
+        )
+        for selector in selectors:
+            path = selector.replace(".", "/") + ".py"
+            with self.subTest(selector=selector):
+                self.assertEqual(1, required.count(selector))
+                self.assertNotIn(selector, optional)
+                suites = gate_contract.select_public_suites(public, "changed", (path,))
+                self.assertIn("operations", suites)
+                self.assertIn("repository-integrity", suites)
+                roots = gate_contract.public_root_gate_ids(
+                    public, suites, changed_paths=(path,)
+                )
+                expanded = gate_contract.expand_public_gate_ids(registry, roots)
+                self.assertEqual(1, expanded.count("leaf.compose-baseline-regressions"))
+                self.assertEqual(
+                    1, expanded.count("leaf.repository-integrity-regressions")
+                )
+
+    def test_sso_interruption_rehearsal_is_an_exact_local_optional_scope(self) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        gate = next(
+            node
+            for node in document["gate_nodes"]
+            if node["gate_id"] == "leaf.compose-baseline-regressions"
+        )
+        arguments = gate["argv"]
+        boundary = arguments.index("--optional-runtime-skips")
+        scope = (
+            "tests.validation.test_compose_baseline_gates."
+            "SsoInterruptionCleanupNativeTests"
+        )
+        self.assertNotIn(scope, arguments[:boundary])
+        self.assertEqual(1, arguments[boundary + 1 :].count(scope))
         self.assertEqual([], gate["allowed_env_keys"])
 
     def test_openbao_opt_in_skips_preserve_required_static_checks(self) -> None:
@@ -306,7 +386,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         boundary = compose_arguments.index("--optional-runtime-skips")
         optional = compose_arguments[boundary + 1 : -1]
         self.assertNotIn(module, optional)
-        self.assertEqual(24, len(optional))
+        self.assertEqual(32, len(optional))
 
     def setUp(self) -> None:
         self.module = load_contract_module()
@@ -648,6 +728,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 '"$TRUSTED_UV_PATH" pip install --python "$TRUSTED_PYTHON_PATH" --require-hashes -r scripts/requirements-controller.lock',
                 '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
                 "docker version",
+                "/usr/bin/docker compose version",
                 '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed',
             },
             set(run_values),
@@ -1209,6 +1290,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "candidate-quality",
                     "Verify selected Docker prerequisite",
                     "steps.prerequisites.outputs.docker == 'true'",
+                ),
+                (
+                    "candidate-quality",
+                    "Verify selected Compose CLI prerequisite",
+                    "steps.prerequisites.outputs.compose == 'true'",
                 ),
             ],
             conditioned_steps,

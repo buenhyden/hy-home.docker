@@ -34,5 +34,8 @@ RUN test "${AIRFLOW_VERSION}" = 3.3.2 && test "${PYTHON_VERSION}" = 3.13 && \
     python -c 'import sys; from importlib.metadata import version; assert sys.version_info[:2] == tuple(map(int, sys.argv[1].split("."))); assert version("apache-airflow") == sys.argv[2]; assert version("apache-airflow-providers-keycloak") == sys.argv[3]; assert version("apache-airflow-providers-common-compat") == sys.argv[4]; assert version("apache-airflow-providers-celery") == sys.argv[5]' \
       "${PYTHON_VERSION}" "${AIRFLOW_VERSION}" "${KEYCLOAK_PROVIDER_VERSION}" "${COMMON_COMPAT_PROVIDER_VERSION}" "${CELERY_PROVIDER_VERSION}"
 
+# The supported _CMD readers call this read-only, dependency-free URI renderer.
+COPY --chown=0:0 --chmod=0444 infra/07-workflow/airflow/connection_uri.py /opt/airflow/bin/connection_uri.py
+
 # Install dependencies during image build; runtime pip changes are unsupported.
 ENV _PIP_ADDITIONAL_REQUIREMENTS=

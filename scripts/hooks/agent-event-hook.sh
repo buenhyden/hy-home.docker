@@ -322,10 +322,9 @@ changed_count = len([line for line in changed.splitlines() if line.strip()]) if 
 
 msg = f"""Session ending — governance reminder:
 
-- Update the active co-located Stage 03 Task named by the current bootstrap/spec context before this session closes.
-- Record changed files, verification evidence, and any residual risk or open gap.
+- If this session changed the repository and an active co-located Stage 03 Task exists, update that Task before this session closes with changed files, verification evidence, and any residual risk or open gap.
 - When repository-modifying work is complete, create small Conventional Commits by logical unit before the final response unless the user explicitly asked not to commit, the work is incomplete, or required checks/approvals are missing.
-- Stage only task-owned files or hunks, and leave unrelated untracked files untouched.
+- Stage only files or hunks whose current-task ownership is verified, and leave unrelated changes untouched.
 
 Current state:
 - Branch: `{branch}`
@@ -415,10 +414,11 @@ PY
 import os
 paths = os.fdopen(3, encoding="utf-8").read().removesuffix("\n")
 reason = (
-    "Repository-modifying work still has uncommitted task-owned changes. "
+    "Git-visible changes remain, and Git status does not prove who owns them. "
     "Before the final response, inspect the diff, run the relevant checks, "
-    "stage only task-owned files or hunks, and create small Conventional "
-    "Commits by logical unit. Leave unrelated untracked paths untouched. "
+    "stage only files or hunks whose current-task ownership is verified, and "
+    "create small Conventional Commits by logical unit. Leave unrelated "
+    "changes untouched. "
     "If this stop is intentionally an incomplete handoff, record the reason "
     "and set AGENT_ALLOW_UNCOMMITTED_STOP=1 for that stop attempt."
 )
@@ -655,8 +655,8 @@ msg = f"""Context compaction imminent — state snapshot:
 
 Before compaction, ensure:
 - Current tracked, staged, and untracked state is preserved without hiding unrelated work.
-- The active co-located Stage 03 Task named by the current bootstrap/spec context reflects current progress.
-- Any in-flight plan or decision is recorded in that Task or its governing Spec/Plan."""
+- If this session changed the repository and an active co-located Stage 03 Task exists, update that Task to reflect current progress.
+- When that condition applies, record any in-flight plan or decision in the active Task or its governing Spec/Plan."""
 
 # PreCompact accepts no hookSpecificOutput in either provider, and neither adds
 # its output to the model's context. Show the snapshot to the user; SessionStart

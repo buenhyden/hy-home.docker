@@ -53,6 +53,27 @@ DIR_FIELDS = ("dev", "ino", "mode", "ctime_ns")
 DIR_FLAGS = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
 FILE_FLAGS = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK
 MAX_MANIFEST = 1024 * 1024
+TRUSTED_GIT = "/usr/bin/git"
+MANIFEST_FIELDS = frozenset({"entries", "maintenance"})
+ENTRY_FIELDS = frozenset(
+    {
+        "id",
+        "path",
+        "scope",
+        "kind",
+        "identity",
+        "parents",
+        "decision",
+        "reviewed_at",
+        "owner",
+        "evidence_ref",
+        "checked",
+        "evidence",
+        "consumers",
+        "recovery_required",
+        "maintenance",
+    }
+)
 
 
 def _snapshot(info, fields):
@@ -92,7 +113,7 @@ def _check_external_ancestor(fd, forbidden_identity):
 
 
 def _allowed(row):
-    if not isinstance(row, dict):
+    if not isinstance(row, dict) or set(row) - ENTRY_FIELDS:
         raise ValueError("invalid_entry")
     name, identifier = row.get("path"), row.get("id")
     if not isinstance(name, str) or not isinstance(identifier, str):
@@ -219,10 +240,15 @@ def _tracked(root, path):
     if not git_boundary:
         return False
     environment = {
-        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/nonexistent",
+        "LC_ALL": "C",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_OPTIONAL_LOCKS": "0",
     }
     top = subprocess.run(
-        ["git", "-C", str(root), "rev-parse", "--show-toplevel"],
+        [TRUSTED_GIT, "-C", str(root), "rev-parse", "--show-toplevel"],
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
         text=True,
@@ -232,7 +258,7 @@ def _tracked(root, path):
     if top.returncode != 0 or Path(top.stdout.strip()) != root:
         raise ValueError("git_root_check_failed")
     result = subprocess.run(
-        ["git", "-C", str(root), "ls-files", "--error-unmatch", "--", str(path)],
+        [TRUSTED_GIT, "-C", str(root), "ls-files", "--error-unmatch", "--", str(path)],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         check=False,
@@ -266,12 +292,16 @@ def _reasons(row, now):
     if row.get("recovery_required") is not False:
         missing.append("recovery_dependency")
     checked, evidence = row.get("checked", {}), row.get("evidence", {})
-    if not isinstance(checked, dict) or any(
-        checked.get(key) is not True for key in CHECKS
+    if (
+        not isinstance(checked, dict)
+        or any(checked.get(key) is not True for key in CHECKS)
+        or set(checked) != CHECKS
     ):
         missing.append("consumer_checks")
-    if not isinstance(evidence, dict) or any(
-        not _text(evidence.get(key)) for key in CHECKS
+    if (
+        not isinstance(evidence, dict)
+        or any(not _text(evidence.get(key)) for key in CHECKS)
+        or set(evidence) != CHECKS
     ):
         missing.append("consumer_evidence_refs")
     if not _text(row.get("owner")) or not _text(row.get("evidence_ref")):
@@ -281,6 +311,8 @@ def _reasons(row, now):
     maintenance = row.get("maintenance", {})
     if (
         not isinstance(maintenance, dict)
+        or set(maintenance)
+        != {"writers_stopped", "owner", "reviewed_at", "evidence_ref"}
         or maintenance.get("writers_stopped") is not True
         or not _text(maintenance.get("evidence_ref"))
         or not _text(maintenance.get("owner"))
@@ -301,20 +333,26 @@ def inspect_plan(root: Path, rows: list, now=None):
         not isinstance(now, datetime)
         or now.tzinfo is None
         or not isinstance(rows, list)
+        or not rows
         or len(rows) > 4096
     ):
         raise ValueError("invalid_input")
-    seen, result = set(), []
+    seen, seen_ids, result = set(), set(), []
     for row in rows:
         path = _allowed(row)
         if str(path) in seen:
             raise ValueError("duplicate_target")
         seen.add(str(path))
+        if row["id"] in seen_ids:
+            raise ValueError("duplicate_material_id")
+        seen_ids.add(row["id"])
         missing = _reasons(row, now)
         if _tracked(root, path):
             missing.append("git_tracked_target")
         actual, parents = _observe(root, path)
-        if actual is not None:
+        if actual is None:
+            missing.append("absent-unverified")
+        else:
             if actual != row.get("identity"):
                 missing.append("file_identity_changed")
             if parents != row.get("parents"):
@@ -387,6 +425,31 @@ def retirement_lock(root: Path, *, with_fd: bool = False, with_binding: bool = F
         os.close(root_fd)
 
 
+def _unique_json_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate_manifest_key")
+        result[key] = value
+    return result
+
+
+def _invalid_json_constant(_value):
+    raise ValueError("invalid_manifest")
+
+
+def _read_manifest(file_fd, info):
+    chunks = bytearray()
+    while len(chunks) <= MAX_MANIFEST:
+        block = os.read(file_fd, min(65536, MAX_MANIFEST + 1 - len(chunks)))
+        if not block:
+            break
+        chunks.extend(block)
+    if len(chunks) > MAX_MANIFEST or len(chunks) != info.st_size:
+        raise ValueError("manifest_changed")
+    return bytes(chunks)
+
+
 def load_manifest(root: Path, path: Path):
     root_path, root_fd = _exact_root(root)
     root_info = os.fstat(root_fd)
@@ -400,6 +463,7 @@ def load_manifest(root: Path, path: Path):
     try:
         if not _private_info(os.fstat(parent_fd), 0o700):
             raise ValueError("unsafe_manifest_directory")
+        before = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
         file_fd = os.open(path.name, FILE_FLAGS, dir_fd=parent_fd)
         info = os.fstat(file_fd)
         if (
@@ -407,22 +471,63 @@ def load_manifest(root: Path, path: Path):
             or info.st_nlink != 1
             or not _private_info(info, 0o600)
             or info.st_size > MAX_MANIFEST
+            or _snapshot(before, FILE_FIELDS) != _snapshot(info, FILE_FIELDS)
         ):
             raise ValueError("unsafe_manifest_file")
-        raw = os.read(file_fd, MAX_MANIFEST + 1)
-        if len(raw) > MAX_MANIFEST or _snapshot(
-            os.fstat(file_fd), FILE_FIELDS
-        ) != _snapshot(info, FILE_FIELDS):
+        raw = _read_manifest(file_fd, info)
+        after = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
+        _, reopened_parent_fd = _exact_root(
+            path.parent, forbidden_identity=root_identity
+        )
+        try:
+            original_parent = os.fstat(parent_fd)
+            reopened_parent = os.fstat(reopened_parent_fd)
+            same_parent = (
+                _private_info(original_parent, 0o700)
+                and _private_info(reopened_parent, 0o700)
+                and (original_parent.st_dev, original_parent.st_ino)
+                == (reopened_parent.st_dev, reopened_parent.st_ino)
+            )
+        finally:
+            os.close(reopened_parent_fd)
+        if (
+            not same_parent
+            or _snapshot(after, FILE_FIELDS) != _snapshot(info, FILE_FIELDS)
+            or _snapshot(os.fstat(file_fd), FILE_FIELDS) != _snapshot(info, FILE_FIELDS)
+        ):
             raise ValueError("manifest_changed")
-        document = json.loads(raw)
-        if not isinstance(document, dict) or not isinstance(
-            document.get("entries"), list
+        try:
+            document = json.loads(
+                raw.decode("utf-8"),
+                object_pairs_hook=_unique_json_object,
+                parse_constant=_invalid_json_constant,
+            )
+        except (UnicodeError, ValueError, RecursionError):
+            raise ValueError("invalid_manifest") from None
+        if (
+            not isinstance(document, dict)
+            or set(document) - MANIFEST_FIELDS
+            or not isinstance(document.get("entries"), list)
+            or not document["entries"]
+            or len(document["entries"]) > 4096
+            or (
+                "maintenance" in document
+                and not isinstance(document["maintenance"], dict)
+            )
         ):
             raise ValueError("invalid_manifest")
         entries = []
+        seen_ids, seen_paths = set(), set()
         for row in document["entries"]:
-            if not isinstance(row, dict):
+            if not isinstance(row, dict) or set(row) - ENTRY_FIELDS:
                 raise ValueError("invalid_entry")
+            material_path = _allowed(row)
+            if row["id"] in seen_ids:
+                raise ValueError("duplicate_material_id")
+            if str(material_path) in seen_paths:
+                raise ValueError("duplicate_target")
+            seen_ids.add(row["id"])
+            seen_paths.add(str(material_path))
             entries.append(
                 {
                     **row,

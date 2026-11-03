@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.3.5"
+version: "1.3.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-02"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -58,6 +58,34 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
   [Authorization bootstrap](../../guides/03-identity-and-access/0079-application-auth-integration.md#authorization-bootstrap)의
   `create-permissions`를 다시 실행하고, 로그인한 사용자로 Pools, DAGs, Assets,
   HITL 화면이 `403` 없이 열리는지 확인했는가? (inc-2026-0002)
+
+### 연결 주소와 Secret reader 계약
+
+현재 소스의 metadata DB·Celery result backend·broker `_CMD`는 이미지 안의
+`/opt/airflow/bin/connection_uri.py`를 호출한다. 비밀번호는 보호된 regular
+file에서 최대 4096바이트로 읽으며 경로 symlink·불안정한 파일·허용하지 않는
+권한·빈값을 거부한다. 단일행 UTF-8의 종단 LF 한 개만 파일 구분자로 제거하고
+앞뒤 공백·리터럴 `%`·DB의 CR/TAB은 값으로 보존해 비밀번호 부분을 한 번만
+인코딩한다. 중간 LF·NUL·잘못된 UTF-8은 거부하고 broker는 기존 ACL 계약대로
+제어문자도 거부한다. 종단 LF를 실제 값으로 사용하는 자격은 이 reader의 지원
+대상이 아니며 임의 trim이나 비밀 재발급으로 맞추지 않는다.
+
+MNG PG는 `POSTGRES_PORT`, broker는 `VALKEY_PORT`를 사용한다. 지원되는
+broker 쌍은 `mng-valkey`/`mng_valkey_password` 또는
+`airflow-valkey`/`airflow_valkey_password`다. Profile만 바꾸거나 다른 host와
+secret을 조합하면 전환으로 인정하지 않는다. DEV의 내부 listener `5432`와
+호스트 공개 포트는 이 관리 연결과 별개다.
+
+Helper의 성공 출력은 `_CMD` 소비용 연결 주소다. 단독 출력, 전체 config 목록,
+연결값 조회나 디버그 출력을 증거로 수집하지 않는다. 실패 시 고정 오류와 종료
+상태만 남기고 파일 참조·권한·선택 쌍·포트의 구조를 값 없이 확인한다. 소스의
+회귀는 `python3 -m unittest tests.validation.test_airflow_connection_uri`로
+합성 입력만 사용해 확인한다. 실제 mount 권한·새 이미지 빌드·운영 연결은 이
+시험의 PASS와 별도다. 공급자 reader와 자격 계약 변경은 P02/P06에 인계한다.
+
+이 소스 변경을 되돌릴 때에는 helper와 세 `_CMD` 설정을 같은 차분으로 되돌린다.
+실제 이미지 교체·컨테이너 재생성은 drain·backup·복구 조건을 갖춘 별도 승인
+대상이다. 로컬 revert가 운영 DB·자격·queue 상태를 복구한 것으로 기록하지 않는다.
 
 ### 시나리오 0: Keycloak 인증 또는 TLS 실패
 

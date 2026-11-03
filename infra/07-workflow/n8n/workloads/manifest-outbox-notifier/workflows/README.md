@@ -1,10 +1,10 @@
 ---
 title: "비활성 통지 workflow"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-11-02"
 ---
 
 # 비활성 통지 workflow
@@ -15,7 +15,10 @@ updated: "2026-10-11"
 
 ## Scope
 
-`active:false`와 credential placeholder를 유지합니다. 실제 import·manual·예약 실행은 NOT_RUN입니다.
+`active:false`와 credential placeholder를 유지합니다. 과거 import·manual·예약 수용은 SPEC-0204 C19/C22의
+당시 범위로 보존합니다. 이번 P05 변경의 실제 실행 수용은 Task0044에서 별도 기록합니다.
+기본 capture profile은 `mailpit-plain-v1`이며 인증 fixture만
+`mailpit-starttls-auth-v1`을 명시 선택합니다. 공개 JSON을 운영 활성화하지 않습니다.
 
 ## Structure
 

@@ -1,0 +1,210 @@
+---
+title: "Image, Supply-Chain and Storybook Compatibility Task"
+version: "0.1.0"
+type: "sdlc/task"
+status: "draft"
+owner: "@buenhyden"
+updated: "2026-11-03"
+layer: "specs"
+artifact_id: "SPEC-0212-TSK-0047"
+parent_ids:
+- "SPEC-0212-PLAN-0001"
+created: "2026-11-03"
+---
+
+# Image, Supply-Chain and Storybook Compatibility Task
+
+## Overview
+
+### Objective
+
+Implement the approved local P08 source and isolated compatibility work:
+reconcile the public image/package ledger, evaluate selected Valkey 9.1.3 and
+n8n 2.45.7 candidates, preserve and recheck Storybook 10.6.3, and bind supply
+chain evidence to the exact artifact it concerns. This is not the historical
+SPEC-0204 P08 operations-document-layout Task; neither its accepted records
+nor its ownership are reopened.
+
+## Inputs and Authorization
+
+The direct P08 plan authorizes local source changes, bounded candidate artifact
+preparation, synthetic and isolated validation, independent review, graph
+refresh and a normal local logical commit. It excludes operating services,
+host changes, actual credentials, external mail, remote integration, LAB
+runtime and external repositories. Existing user changes remain preserved.
+
+The observed clean starting HEAD is
+`c9c497056f194b34b84df4297a0ad8016e5ced06`. The root Compose census of 44
+inputs and 112 service declarations is a source observation, not a fixed
+acceptance target. The supplied `dependencies` package was not found, so this
+Task cannot claim a complete historical crosscheck.
+
+Governing inputs are REQ-0027, AD-0031, SPEC-0212 and its Plan, P02 Valkey
+topology, P03 Runner policy and P05 queue/notifier recovery boundaries. The
+historic SPEC-0204 P08 task concerns operations-document layout only. Existing
+C19/C22, Storybook and OpenBao records retain their recorded version, actor,
+environment, consumer and date scope.
+
+## Work Log
+
+### Single-writer leases
+
+Writers preserve one integration writer per path. Acceptance owner, writer,
+reviewer, data owner and operational accepter are separate; agent labels do
+not grant operational authority. Data owner and operational accepter are
+UNASSIGNED unless a leaf contract names them.
+
+| Scope | Single writer | Independent review | Boundary |
+| --- | --- | --- | --- |
+| Public update ledger, source-binding records and their direct tests | `/root/p08_supply` | independent security/code reviewer | `infra/09-platform-ops/security-updates/` and owned supply-chain tests only |
+| Valkey/n8n candidate declarations, shared Compose/build inputs and directly related checks | `/root/p08_candidates` | independent IaC/security reviewer | Current non-LAB source; preserve P02/P03/P05 contracts and no service operation |
+| Storybook isolated regression evidence and project-local compatibility changes | `/root/p08_storybook` | independent code/security reviewer | `projects/storybook/nextjs` and direct tests only; no remote-device acceptance |
+| SPEC-0212, this Task, DATA-0096 and P08 research narrative | `/root/p08_docs` | independent document reviewer | Current Task/spec/plan/data documentation; preserve completed Task bodies |
+| CI or manifest registration | assigned CI writer | independent CI reviewer | No selector weakening; P03 parity residual remains independent |
+
+Public document baseline SHA-256 values are SPEC
+`dfdf3f8cb764d2fc3c0fa54c668afb198754cf6d4a8160e9cdcab536a7cc892e`, Plan
+`966505ded3110267940801a43f2d9c2770ace7b50c6cf7cf98033dc694d4a3b8`, DATA
+README `0298d87567b8c9bdf74949b6d9204643902bcf866761c3463548a5999c5fe9cf`
+and DATA payload
+`eea4d87d069450239481900951d5889eedf1eca7b320cde660e76fa0b562e060`.
+This Task was absent at that baseline. Those hashes are source identity only,
+not runtime, artifact or credential evidence.
+
+### Current dispositions
+
+| Item | Criterion | Work Unit | Initial disposition | Current boundary |
+| --- | --- | --- | --- | --- |
+| P08.01 | 86 | W91 | IMPLEMENT_GAP | Public ledger omitted `blog-ingestion`; source fingerprints and candidate lookup status require reconciliation |
+| P08.02 | 87 | W92 | IMPROVEMENT_CANDIDATE | Valkey 9.1.3 and n8n 2.45.7 are selected candidates; source/isolated proof and recovery evidence decide activation |
+| P08.03 | 88 | W93 | REUSE_ACCEPTED | Storybook 10.6.3 remains selected; the local 10.6.2 installation is not tracked-lock evidence |
+| P08.04 | 89 | W94 | TEST_RESIDUAL | Existing sample-service receipts cannot prove actual service/custom image signatures or provenance |
+
+### Official applicability and safety boundaries
+
+On 2026-11-03, the official [Valkey 9.1.3 release](https://github.com/valkey-io/valkey/releases/tag/9.1.3)
+and GHSA-f4q9-j22m-xqq9 were read as an update candidate. The advisory is
+conditional on cluster mode; source declarations for shared MNG, DEV and
+dedicated broker must not be labelled vulnerable merely from their 9.1.2
+version. P02 owns topology and consumer/ACL contracts; this Task owns the
+version/advisory decision and evidence.
+
+The official [n8n 2.45.7 release](https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7)
+and [GHSA-prmc-fg87-r4gh](https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh)
+identify a fixed release family for a credential cross-origin redirect issue.
+Public Hermes source fixes its internal endpoint and disables redirects, while
+private workflow applicability remains uninspected. The exact n8n 2.45.7
+source declares `n8n-workflow` 2.45.4; Main, Worker, Runner, custom image and
+peer/lock evidence form one bundle. A registry image, platform, signature or
+recovery gap keeps the candidate unactivated. The tracked Compose source does
+not declare `N8N_SSRF_PROTECTION_ENABLED`; that is a source observation, not a
+claim about effective runtime setting or exposure. A deferred n8n decision
+requires private-workflow and SSRF/egress review before any activation.
+
+The tracked Storybook lock declares 10.6.3. Its clean isolated installation
+is distinct from the local 10.6.2 installation and from prior remote-device
+acceptance. The official [upgrade guidance](https://storybook.js.org/docs/releases/upgrading)
+and releases 10.6.4/10.6.5 were consulted as compatibility inputs. No current
+consumer-specific reason to adopt either later patch is recorded here.
+
+Per-artifact verification follows the official [Sigstore verification
+guidance](https://docs.sigstore.dev/cosign/verifying/verify/) and [SLSA
+artifact-verification guidance](https://slsa.dev/spec/v1.2/verifying-artifacts).
+Every subject needs its own digest plus publisher/identity-or-key and available
+provenance/SBOM/license evidence. A GHCR image receipt, a base image receipt,
+or the sample-service policy never validates Docker Hub or custom images.
+Absent material is `NOT_RUN` or `BLOCKED`, never a verification PASS.
+
+The frozen upstream observations use Cosign 3.1.3 pinned at
+`sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8`,
+with `--pull never`, read-only filesystem, dropped capabilities and
+no-new-privileges. The exact issuer was
+`https://token.actions.githubusercontent.com`; the exact certificate identity
+was `https://github.com/n8n-io/n8n/.github/workflows/docker-build-push.yml@refs/heads/release/2.45.7`.
+It supersedes the earlier regexp-only observation while preserving that history
+in the ledger. Command payload files are not retained (`/dev/null` was used);
+the sanitized transcript and recorded UTC windows bound, but do not turn these
+into reusable artifact receipts.
+
+The source-ledger gate now separates submission metadata from declaration
+verification. `matches_target_latest` means only that a candidate's version
+format is valid and its submitted target equals submitted latest;
+`evidence_complete` means the submitted freshness/stable-channel/release-URL
+material is complete. `matches_declared_latest` is `null`, rather than the old
+boolean, because that gate does not inspect the active declaration. `ready`
+retains only candidate-ledger completeness semantics. This compatibility change
+is deliberately not source, deployment, registry-artifact or operational
+acceptance.
+
+The supply ledger separately records a bounded public-release observation
+window of `2026-11-02T22:15:52Z`–`2026-11-02T22:16:20Z`: 61 public source
+queries, with 60 responses and one access failure. Ninety-nine of the 112 root
+service rows map to an existing source owner/release URL and thirteen remain
+unmapped; nine Valkey/n8n rows are instead covered by their separate direct
+candidate records. Each row is `PUBLIC_SOURCE_OBSERVATION_ONLY`, retains no raw
+receipt and sets `freshness_verified`, `stable_channel_verified` and
+`oci_availability_verified` to `false`. Public tags and pages do not
+prove OCI availability, stable-channel support, security applicability,
+compatibility, license, runtime or deployment acceptance.
+
+## Evidence
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Initial source census | 86 | W91 | Root Compose declaration inventory | Public root sources | PASS | Observed 44 inputs and 112 declarations; this is source-only, and separate projects, Dockerfiles and locks keep independent denominators. | required | - |
+| Ledger repair regression | 86 | W91 | Public update-ledger/source-binding tests and Ruff | Owned ledger and synthetic records | PASS | 43/45 scoped tests, 2 existing candidate skips and Ruff passed; `blog-ingestion`, 48 changed-input and 5 prior-stale rows were retained. Fresh lookups remain incomplete. | required | - |
+| Ledger changed-line coverage | 86 | W91 | Stdlib trace over new gate paths | Five new executable lines | PASS | 5/5 (100%); `LatestVersionGateTests` plus synthetic CLI 12 pass. Broad trace was interrupted (exit 130) and system Python lacks coverage. | required | - |
+| Public release observation bookkeeping | 86 | W91 | Incomplete-observation bookkeeping | 61 public queries in 28 seconds | PASS | All 61 outcomes were recorded: 60 responses, one access failure; 99/112 mapped and 13 unmapped. Raw receipts were not saved; freshness, stable-channel and OCI fields are false. | required | - |
+| Public-observation regression | 86 | W91 | Observation and malformed-record rejection suite | Frozen public ledger | PASS | 37 tests and independent review passed; this validates bookkeeping only, not release-body or artifact facts. | required | - |
+| P08 local integration | 86 | W91 | Update gates, workflow bundle, routing and contract checks | Current public P08 source | PASS | Earlier packet had 52 tests (50 pass/2 skip); frozen packet had 55 (53 pass/2 skip), with workflow contract and diff check passing. This does not replace broad selector integration, remote CI or operation. | required | - |
+| P08 CI routing | 86 | W91 | P08 routing and workflow contract checks | Current P08 selector source | PASS | Six routing checks and workflow contract passed; the separate broad CI failure remains recorded under its own criterion row. | required | - |
+| Documentation and registry checks | 86 | W91 | Catalog, DATA metadata/YAML and diff checks | Current P08 documents and public DATA | PASS | Catalog, DATA metadata/YAML and diff checks passed. Metadata and corpus lifecycle are separate P10 validator results and are not implied by this source check. | required | - |
+| Latest-version gate | 86 | W91 | Lookup-status gate | Public ledger | FAIL | Exit 2: no missing/unexpected rows, but fresh lookups are incomplete; `ledger_complete` is false. | required | - |
+| P08 list refresh recovery | 86 | W91 | Inventory scan then validate | Public inputs and 98 retained review receipts | PASS | 41,985/41,985 files listed; whole-body 6/2,320, partial 78/2,320, render 0/17, runtime/restore 0/112. Metadata/listing only. | required | - |
+| Valkey candidate isolation | 87 | W92 | Owned candidate isolation | Valkey 9.1.3, synthetic ACL and cold-copy volume | PASS | Reported ACL denial, AOF/RDB and shared/dedicated roundtrips passed; this is a narrow fixture restore, not complete recovery or Compose parity. | required | - |
+| n8n candidate preparation | 87 | W92 | Main/Runner index and platform lookup | n8n 2.45.7 candidates | PASS | Exact index/platform lookup passed; this is source/artifact metadata only. | required | - |
+| n8n candidate bounded pulls | 87 | W92 | Bounded candidate pull | n8n 2.45.7 candidates | CANCELLED | Both pulls stopped at the five-minute boundary (exit 130); custom build, peer, Queue, Runner, SMTP and restore remain unrun. | required | - |
+| Supply-ledger candidate metadata | 87 | W92 | Candidate and registry-metadata review | Five Valkey and four n8n source rows | PASS | Release/advisory and registry observations were corrected; this is not candidate signature, SBOM, compatibility, native or operational evidence. | required | - |
+| Candidate runtime and artifact verification | 87 | W92 | Isolated runtime and per-artifact review | Selected candidates | NOT_RUN | Custom-image digest is unknown; candidate signature, SBOM, compatibility, native and operation evidence remains unrun or unknown. | required | - |
+| Storybook clean lock install | 88 | W93 | Offline isolated `npm ci` | Tracked 10.6.3 lock and cached packages | PASS | 550 packages installed; local installation was not overwritten. | required | - |
+| Storybook isolated regressions | 88 | W93 | Lint/typecheck/build and synthetic UI/auth checks | Isolated copy and synthetic credentials | PASS | lint/typecheck/build; auth/MCP 9/9; browser 14/14 including 320px; static image 7/7; six Button/AsyncState render states. Remote auth is not run. | required | - |
+| Storybook audit | 88 | W93 | `npm audit` | Isolated dependency metadata | ERROR | DNS `EAI_AGAIN`; this does not establish absence of advisories. | required | - |
+| Supply-chain gate | 89 | W94 | Existing gate against public ledger | Public source records | FAIL | Exit 2: coverage checked but ledger incomplete; it does not prove an image, signature, provenance or SBOM. | required | - |
+| Upstream n8n/runners supply observations | 89 | W94 | Exact-identity Cosign observation | Exact GHCR index digests | PASS | Reported n8n signature/SLSA and runners CycloneDX/OpenVEX exit 0; raw receipts absent and unreviewed SLSA/SBOM semantics do not verify custom image, native behavior, restore or deployment. | required | - |
+| Upstream supply negative observations | 89 | W94 | Exact-subject absence/error observation | Runners image/SLSA and n8n CycloneDX | FAIL | Runners signature exit 10, SLSA exit 1 and n8n CycloneDX exit 1; Valkey signing identity/issuer was not assessable. | required | - |
+| Valkey local SBOM observation | 89 | W94 | Offline Syft scan | Canonical amd64 candidate | PASS | CycloneDX 1.7 SBOM, Alpine 3.24.3 and 716 components, exit 0. Locally generated SBOM is not publisher attestation; Grype lacked offline DB. | required | - |
+| Selected candidate verification | 89 | W94 | Registry artifact and bounded isolated test review | Candidate writer packet | NOT_RUN | Valkey functional isolation is narrow; n8n and per-artifact verification are incomplete, so no deployment or rollback conclusion follows. | required | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 86 | pending | Ledger repair regression, Latest-version gate | Public observations improve source mapping but incomplete fresh lookups, unmapped rows and artifact evidence remain. | SPEC-0212 TSK-0047 |
+| 87 | pending | Valkey candidate isolation, n8n candidate preparation | Exact source, candidate artifact and isolated/recovery evidence remain incomplete; deferred n8n work also needs private-workflow and SSRF/egress review. | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
+| 88 | pending | Storybook clean lock install, Storybook isolated regressions, Storybook audit | Isolated lock regression passed; current runtime, remote device and audit remain separate. | SPEC-0212 TSK-0047 |
+| 89 | pending | Supply-chain gate, Selected candidate verification | No cross-artifact inference; unavailable signing, provenance and SBOM material remains explicit. | SPEC-0212 TSK-0047 |
+
+## Review and Completion
+
+Before final acceptance, refresh DATA-0096 only after source changes freeze;
+compare its start/end fingerprint, preserve changed-review invalidation and
+record only the affected observations. Run documentation, registry, relevant
+QA and CI selector checks without converting a local check into hosted CI.
+Run `graphify update .` after the final source diff. Independent code,
+security, IaC and document reviewers report their own evidence without
+editing another writer's lease.
+
+Current operation, credential rotation, independent restore, remote CI and
+final operational acceptance are `NOT_RUN` unless separately evidenced and
+authorized. Candidate image activation and any host/service recreation remain
+outside this Task's local source evidence.
+
+## Related Documents
+
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- [P02 service connection Task](tsk-0041-service-connection-contracts.md)
+- [P03 models and Runner Task](tsk-0042-models-runners-wiki.md)
+- [P05 notifier recovery Task](tsk-0044-opsflow-notifier-recovery.md)
+- [Historic P08 operations-document-layout Task](../../0204-service-integration-security-and-operations/tasks/tsk-0015-p08-operations-document-layout.md)

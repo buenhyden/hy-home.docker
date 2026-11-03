@@ -64,6 +64,7 @@ oauth2-proxy/
 | Session | 기본값은 공유 `mng-valkey` |
 | Dedicated session | `dedicated-valkey` 아래의 `oauth2-proxy-valkey` |
 | Health | `/ping` |
+| Listener | `0.0.0.0:${OAUTH2_PROXY_PORT:-4180}`; health, Traefik, ForwardAuth가 같은 포트를 사용 |
 | OIDC client | `home-proxy-client` |
 | Issuer | `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm` |
 
@@ -127,7 +128,7 @@ Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 �
 ```bash
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 02-auth
-docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:4180/ping
+docker compose --profile auth exec oauth2-proxy sh -c 'wget -qO- "http://127.0.0.1:$OAUTH2_PROXY_PORT/ping"'
 ```
 
 ## Troubleshooting
@@ -140,8 +141,10 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 
 ### 선택형 전용 Valkey 관측 계정
 
-기본 `dedicated-valkey` 설정의 exporter는 여전히 기본 애플리케이션 비밀번호와
-관리 권한을 공유합니다. 별도 계정을 준비한 뒤 루트에서
+기본 `dedicated-valkey` 설정의 exporter는 기본 애플리케이션 계정을 사용하지만
+비밀번호를 argv로 전달하지 않습니다. broker는 보호된 tmpfs ACL을 원자적으로
+렌더하고 `${VALKEY_PORT:-6379}` 하나를 listener·health·exporter에 사용합니다.
+별도 계정을 준비한 뒤 루트에서
 루트 파일 뒤에 Airflow, n8n, OAuth2 Proxy의 `docker-compose.monitor-acl.yml`을
 각각 `-f`로 명시하면 세 전용 broker/exporter 쌍에만 최소 관측 ACL을 적용합니다.
 서비스별 `monitor_password.txt` 파일 경로는 루트 Secret 선언과 공개 카탈로그가
@@ -156,6 +159,14 @@ exporter의 선택적 SLOWLOG GET 거부는 상세 지표 부재로 기록하고
 관측 파일은 의도한 UID/보조 GID가 읽을 수 있는 안전한 단일 파일이어야 하고,
 broker는 자신의 기본/관측 비밀번호가 같은 경우 시작을 거부합니다. 서로 다른
 서비스 간 비밀번호 분리·회전은 별도 운영 인수입니다.
+
+로컬 Compose의 file-backed Secret은 호스트 파일 메타데이터를 그대로 사용합니다.
+Airflow, n8n, OAuth2 Proxy 전용 broker의 Secret은 읽기 전용 단일 파일이어야 하며,
+`0440`/`0640`이면 GID가 `${SECRETS_GID:-1000}`이어야 합니다. 또는 `0400`/`0600`이면
+소유 UID가 broker 런타임 UID `999`여야 합니다. `0444`/`0644`, 쓰기 가능한 그룹·전체
+권한, symlink와 hardlink는 renderer가 거부합니다. P06이 발급·소유권·모드를 맡고,
+P02는 이 파일을 발급하거나 권한을 변경하지 않습니다. Compose의 Secret `mode`로
+file-backed 호스트 권한을 재매핑할 수 있다고 가정하지 않습니다.
 
 공개 합성 렌더링과 ACL 파일 검사는 실제 채택·수집·앱 queue/session·AOF·회전·복구를
 대신하지 않습니다. 실제 실행은 고정 이미지·정확한 대상·정리/복구 경계 검토 후

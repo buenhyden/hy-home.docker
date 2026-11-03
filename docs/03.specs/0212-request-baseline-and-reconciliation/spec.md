@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.32.0"
+version: "1.42.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -92,6 +92,58 @@ in TSK-0037. Criterion 49/W54 accepts ADR-0050 and archives the Vault ADRs it
 supersedes, in TSK-0038. Criterion 50/W55 records the open Spec
 reconciliation and the OpenTofu promotion, in TSK-0039.
 
+The direct P01 request of 2026-11-01 adds criteria 51–55 and W56–W60 in
+TSK-0040. These own the current workspace census, bounded evidence reuse,
+single-writer leases and research applicability. The P01 label here is the
+workspace-inventory lane; historical OpenBao P01 remains SPEC-0204.
+Completed Task bodies and criteria 1–50 retain their meaning.
+
+The direct P02 request of 2026-11-02 adds criteria 56–60 and W61–W65 in
+TSK-0041. It is the current service connection, authentication and Valkey
+contract lane, distinct from SPEC-0204's historical P02 secret catalog Task.
+It preserves accepted consumer scopes and leaves service operation, host
+configuration, credential rotation, external repositories and remote delivery
+outside this local source unit.
+
+The direct P04 plan approval of 2026-11-02 adds criteria 66–71 and W71–W76
+in TSK-0043. It repairs the existing Opsflow Airflow path without creating a
+new business stream, database or always-on analytics service. Historical
+SPEC-0204 P04 acceptance remains bound to its original inputs and actors.
+
+The direct P05 plan approval of 2026-11-02 adds criteria 72–75 and W77–W80
+in TSK-0044. It preserves the existing n8n queue/schedule acceptance while
+repairing the selected Opsflow notifier's bounded retry, recovery and isolated
+SMTP credential-refresh contracts. P04's full native residual is not a hidden
+prerequisite for this independent local source and isolated-fixture work.
+
+The direct P08 plan approval of 2026-11-03 adds criteria 86–89 and W91–W94
+in TSK-0047. It is the current image, package, supply-chain and Storybook
+compatibility lane. It is distinct from the completed SPEC-0204 P08
+operations-document-layout Task: its historical scope and accepted records are
+preserved, while this Task owns only source, selected candidate and isolated
+evidence within its explicitly declared boundaries.
+
+The direct P09 plan approval of 2026-11-03 adds criteria 90–93 and W95–W98
+in TSK-0048. It is the current role-disposition, common-control, resource
+evidence and retirement-input lane, distinct from SPEC-0204's historical P09
+Wiki-preparation Task. It preserves SPEC-0218 common-control and SPEC-0246
+C1–C6 acceptance at their recorded scopes. Local source and synthetic checks
+are authorized; service operation, host changes, storage moves, actual
+deletion, Secret access and remote integration are not.
+
+The direct P10 plan approval of 2026-11-03 adds criteria 94–97 and W99–W102
+in TSK-0049. It normalizes current generation-7 documentation contracts,
+repairs registered local CI/QA routes and aligns governance wording without
+reopening completed Task bodies or presenting local checks as operational or
+remote acceptance.
+
+The direct P11 plan approval of 2026-11-03 adds criteria 98–102 and W103–W107
+in TSK-0050. It hardens the current Hermes source evidence, durable direct
+submission and Attester replay boundaries without reopening SPEC-0204's
+historical Gateway, Attester timer, Export 1.0 ACK or backup receipts. It
+preserves Export 2.0 as the selected contract while leaving a new Windows B
+ACK, scheduled delivery and operational restore as separate unrun work.
+
 ## Scope
 
 LLM Wiki work is preparation only: documentation, schema, connection contract,
@@ -105,6 +157,41 @@ required READMEs, links, Registry and path checks. Learning applications remain
 excluded, including planning.
 
 ## Contracts
+
+### Current P01 inventory contract (2026-11-01)
+
+This P01 uses the input workspace and current write boundary, not a historical
+repository name, SHA or service total. `scan`, `compare` and `validate` expose
+safe file/service observations, changed or invalidated review rows and schema
+errors. A public record never contains private per-path metadata, authentication
+bodies or secret-derived hashes. External symlinks are recorded without traversal;
+private, binary, generated, inaccessible and Git-internal inputs state their
+exclusion reason. An output excludes its own bytes from recursive fingerprinting.
+
+Each requirement uses exactly one current disposition: `REUSE_ACCEPTED`,
+`SOURCE_READY`, `IMPLEMENT_GAP`, `IMPROVEMENT_CANDIDATE`, `TEST_RESIDUAL`,
+`BLOCKED`, `OUT_OF_SCOPE` or `NO_CHANGE`. Source, static checks, isolated tests,
+historical operator acceptance, this execution's direct operation, credential
+rotation, independent restore, hosted CI and final acceptance are independent
+observations. Missing runtime/private evidence does not block unrelated local
+source work. Historical acceptance is bound to its actual version, actor,
+environment, target, consumer, criterion, date and source receipt.
+
+The source census includes accessible files, separate projects and discovered
+Compose include/extends/overlay/profile relations. List, explicit body review,
+configuration render, runtime and restore have separate denominators and
+numerators. Discovery is not a semantic review receipt or a deployment test.
+All 13 tiers and eight learning domains have an explicit source/consumer and
+adopt/defer/exclude disposition, including subsequently discovered services.
+New learning applications, external projects and LAB runtime implementation
+remain excluded; Wiki remains preparation only.
+
+Only one current writer integrates each changed path or explicit segment. The
+requirement acceptance owner, writer, independent reviewer, data owner and
+operational accepter remain separate fields. Unknown identities stay unknown.
+P02–P12 routes are handoff labels, not user/account authority. DATA-0096 is a
+non-normative observation consumed by TSK-0040 and exact downstream handoffs;
+existing service, port, Secret and version sources remain canonical.
 
 ### Current request scope (historical items 11–30)
 
@@ -466,6 +553,195 @@ hold, authorization and recovery requirements have been established.
 50. TSK-0039 records an owner decision for every open Spec Package and
     promotes the OpenTofu operations documents.
 
+51. P01.01 binds the input workspace boundary, discovered Git and non-Git
+    roots, HEAD and dirty paths to safe file fingerprints without following
+    external symlinks or overwriting user changes.
+52. P01.02 publishes current file, service, connection, tier and learning
+    coverage with separate list, body-review, render, runtime and restore
+    denominators; unreviewed, private and excluded inputs stay explicit.
+53. P01.03 records the eight request dispositions independently from source,
+    tests, historical operator acceptance and current operational evidence;
+    accepted n8n, storage and Storybook scopes and recorded OpenBao/Hermes
+    operational cuts are preserved.
+54. P01.04 assigns a single writer to each actual changed path or segment,
+    separately identifying acceptance owner, reviewer, data owner and operator,
+    and hands service changes to their leaf owners.
+55. P01.05 records directly consulted official sources, version/platform
+    applicability, adoption or deferral and normal/rejection/recovery questions
+    without treating release existence as installation or runtime acceptance.
+56. P02.01 records and reconciles the caller network, DNS, listener, service
+    DNS, host-published and gateway backend ports for selected public source
+    contracts without widening networks or publishing a new host port.
+57. P02.02 preserves the distinct browser, application and machine identity
+    boundaries, records issuer, audience, redirect and expiry rejection scope,
+    and constrains direct backend access without presenting static routes as
+    a fresh login or authorization result.
+58. P02.03 records DEV/MNG environment and readiness contracts independently
+    from process liveness, initialization, dependencies and product function;
+    unsupported variables, empty paths and unobserved product registration
+    remain explicit residuals.
+59. P02.04 retains shared MNG Valkey as the default topology, reuses named
+    n8n ACL and dedicated-broker opt-in contracts, and records safe secret
+    delivery and persistence/recovery boundaries without issuing or rotating
+    credentials.
+60. P02.05 publishes selected connection evidence and hands P03–P08 exact
+    residuals by fingerprint, writer, test and recovery boundary. The approved
+    Grafana public exception is limited to GET/HEAD for `/favicon.ico` and
+    `/robots.txt`; any other method is rejected before the normal route and
+    its policy review is due on 2026-12-02.
+61. P03.01 keeps local-only model use as the default, distinguishes local,
+    Ollama-mediated cloud and direct-cloud paths, and records every selected
+    model, actor, credential boundary, network and budget without downloading a
+    model, issuing a credential or treating a route as a successful inference.
+62. P03.02 records the supported Open Notebook registration and recovery
+    contract for `gemma4:e2b` chat and `embeddinggemma-2:740m` 768-dimensional
+    embedding use. It preserves existing WebUI identity, RAG and persistence,
+    rejects conflicting stored registrations, and keeps liveness distinct from
+    stored-model and functional readiness.
+63. P03.03 retains the existing external n8n runners while binding their
+    image/version, token boundary, temporary writable paths, network reach and
+    resource limits to a minimum-privilege source contract. It does not alter
+    shared resource originals, issue secrets or call an isolated source proof a
+    HOME execution.
+64. P03.04 constrains approved automation tools by destination, method,
+    credential, request/response size and retry budget before credential use;
+    it rejects model or retrieved content as an authority to widen those
+    controls and records the unresolved real-installation policy separately.
+65. P03.05 reuses the completed offline Wiki preparation package, adds only
+    current source-to-contract and synthetic-evaluation evidence, and leaves
+    Wiki runtime, database, client, collector, external workspace and LAB
+    runtime uncreated.
+
+66. P04.01 preserves management metadata and DEV business ownership, records
+    the existing initialization and restore boundaries, and changes only
+    demonstrated cross-consumption without creating databases in bulk.
+67. P04.02 repairs the existing Airflow connection commands with one-time
+    credential-component encoding, bounded private-file reads, current MNG
+    listener variables and the fixed DEV listener contract. Invalid bounded
+    manifests are quarantined before publication; the existing raw digest is
+    exposed as data_version without changing run_id or P05 outbox semantics.
+    Independent isolated restore covers roles, schema, objects and metadata,
+    followed by same-input replay without duplicate publication.
+68. P04.03 preserves the existing platform_dev CDC/Avro path and its scoped
+    historical acceptance. Opsflow CDC adoption requires a named consumer,
+    DEV owner, publication, slot, topic, offset and recovery contract; no
+    consumerless standing stream or silent database repointing is introduced.
+69. P04.04 reuses the existing Opsflow quality gate and keeps raw, quarantine
+    and published results distinct. Optional dbt, GX and processing-engine
+    smoke checks are not promoted to business publication or data access.
+70. P04.05 defers a new reproducibility/time-series experiment until its actual
+    dataset/version, time field, target, baseline and data owner are supplied.
+    The public inventory does not imply the absence of private experiments.
+71. P04.06 preserves the accepted optional Iceberg platform while deferring
+    adoption for this workload. Catalog, object metadata and checkpoints have
+    one documented recovery boundary; snapshot rollback is not independent
+    restore, and no expiry or orphan deletion is authorized.
+
+72. P05.01 preserves the historical C19/C22 n8n queue and schedule acceptance
+    at its original 2.43.6 version, actor and environment scope. Current source,
+    cached-image parity and actual private workflows remain separate evidence;
+    an old accepted record is neither rebuilt nor promoted to a new live PASS.
+73. P05.02 adds one manual no-send dead-notification reprocess per explicit
+    owner approval, preserves attempt/audit history and rejects bulk or implicit
+    retry. Restored sending becomes unknown, and in-flight execution must reach
+    a verified recovery barrier before an independent target resumes. Actual
+    SMTP acceptance uncertainty never becomes proved no-send from capture absence.
+74. P05.03 introduces no binary storage. The selected manifest notifier rejects
+    input.binary, while exact source/image behavior of n8n queue-mode default
+    database storage is recorded independently from private-workflow adoption.
+75. P05.04 adds an explicit optional authenticated isolated Mailpit STARTTLS
+    profile and verifies selected notifier behavior, including refreshed material
+    under the same credential ID on the next execution. P06 retains actual
+    producer/secret authority; real delivery, operating credentials and HOME
+    rotation or restore are not authorized by local fixture evidence.
+76. P06.01 retains the public secret catalog as the sole metadata authority,
+    validates its generated views and supported delivery contracts, and rejects
+    duplicate or unapproved identities without disclosing secret values.
+77. P06.02 compares complete public and private environment and registry
+    structure with value fields excluded, using protected read-only inputs and
+    rejecting unsafe or ambiguous content without exposing private material.
+78. P06.03 preserves scoped OpenBao trust, custody, snapshot and recovery
+    acceptance, and records current source, actors, versions and residuals
+    separately from unexecuted operation.
+79. P06.04 retains completed consumer transitions and records untransitioned
+    or held consumers and the n8n native credential handoff; a rendered value
+    is not proof of consumer use or authorization for a new copy.
+80. P06.05 retains the SMTP canonical identity and alias, hardens bounded
+    public/private source reads, and records a missing historical copy without
+    claiming equality, deletion or actual consumer cutover.
+81. P06.06 records the reader, backup, custody and recovery evidence for secret
+    retirement candidates. Unknown or unauthorized targets remain held, and
+    no deletion or consumer-zero conclusion follows from absence of runtime.
+82. P07.01 closes explicit producer selections over required dependencies and
+    existing companions, without implying profile siblings start automatically
+    or issuing an operational start.
+83. P07.02 distinguishes independently expected scrape targets, exporter and
+    backend status, missing and stale observations, and their dashboard and
+    alert evidence without promoting scrape success to functional readiness.
+84. P07.03 preserves the authenticated quality OTLP metrics path and separate
+    trace and log paths while verifying pinned Alloy delivery signals with an
+    owned isolated Prometheus and bounded failure/recovery tests.
+85. P07.04 records selection-aware expected targets, intentional stops and
+    missing inventory separately, preserving existing DEV on/off semantics and
+    deferring unowned workflow-specific freshness contracts.
+86. P08.01 inventories current declared images, build bases and package locks,
+    binds them to official candidate and advisory applicability, and records
+    missing lookup or artifact evidence without treating it as a current
+    support, signature or runtime result.
+87. P08.02 evaluates the selected Valkey 9.1.3 and n8n 2.45.7 compatibility
+    bundles with their actual consumers, pins and recovery boundaries. It does
+    not generalize a cluster-only Valkey advisory to non-cluster instances or
+    activate a candidate lacking its required source and isolated proof.
+88. P08.03 preserves Storybook 10.6.3 and its accepted UI scope while checking
+    the tracked lock in a clean isolated installation. Local installation,
+    remote-device and current-runtime observations remain distinct.
+89. P08.04 binds each selected artifact to its own publisher, identity or key,
+    digest and available provenance/SBOM/license evidence. A base-image or
+    sample-service receipt never proves a custom or unrelated image; unavailable
+    material remains an explicit residual.
+90. P09.01 records all fifteen requested role comparisons against current public
+    declarations and named consumers, retaining distinct functions and marking
+    unobserved use, ownership and cost as unknown rather than inferring removal.
+91. P09.02 preserves the existing common-control source and exception registry
+    while making base/overlay provenance and canonical measurement binding
+    explicit. A short host observation is not capacity, resource-limit, RPO or
+    RTO acceptance.
+92. P09.03 reuses the accepted SPEC-0246 C1–C6 storage placement. Read-only
+    current-source comparison may identify drift, but does not re-run a move,
+    change a host setting or reopen C6 merely because the observation environment
+    has a read-only mount.
+93. P09.04 hardens only the retirement manifest's public input handling. No
+    candidate is eligible from disabled state, missing traffic or a missing path;
+    Secret and protected recovery material remain under their existing owners.
+94. P10.01 normalizes only current generation-7 evidence and acceptance records,
+    preserving completed bodies and recording metadata/corpus validator failures
+    as residuals rather than rewriting archives or declaring completion.
+95. P10.02 registers existing P03 public validation and P04/P05 required
+    selectors in every declared local context without admission weakening or
+    converting local plan evidence into remote CI acceptance.
+96. P10.03 aligns hook and governance wording to active repository-changing work
+    while retaining fail-closed approval, Secret protection and required checks.
+97. P10.04 preserves the registered result lifecycle for pass, fail, cancellation
+    and not-run states, keeping local, operational and remote acceptance separate.
+98. P11.01 requires every new direct Hermes report to reference a collector-issued,
+    execution-bound source receipt. The scheduled instant, response bytes digest,
+    final URL and collector call identifier are evidence only; they neither add a
+    Publisher signature nor replace the independent Attester decision.
+99. P11.02 verifies direct Gateway receipts with the exact response contract and
+    persists uncertain/corrupt local submission state fail-closed. A local request
+    binding and Gateway durable receipt remain distinct from server-side source
+    binding and final Windows delivery.
+100. P11.03 preserves the selected Export 2.0 schema and separates its synthetic
+     ACK fixture from the two historical Export 1.0 Windows ACKs. A new item,
+     real Windows B receive/ACK and scheduled delivery require their own evidence.
+101. P11.04 permits only bounded source and owned isolated replay/backup tests for
+     the Attester and direct outbox. Corrupt, mixed, incomplete or unverifiable
+     records remain held; restore never authorizes automatic resend of uncertain
+     delivery.
+102. P11.05 records the five independent Hermes trust boundaries and the exact
+     external Windows handoff. Live routes, credentials, service restart, remote
+     CI and external repository changes remain outside this local Task.
+
 ## Failure Conditions
 
 Reconciliation fails when a request item has competing acceptance owners,
@@ -481,6 +757,19 @@ its lease, or a destructive/secret/live action proceeds without its named
 target, backup, recovery boundary, and action-specific authorization.
 
 ## Related Documents
+
+- [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
+- [Service connection contracts Task](tasks/tsk-0041-service-connection-contracts.md)
+- [Models, runners and Wiki preparation Task](tasks/tsk-0042-models-runners-wiki.md)
+- [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
+- [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
+- [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
+- [Exporter and observability contracts Task](tasks/tsk-0046-exporter-observability.md)
+- [Image, supply-chain and Storybook compatibility Task](tasks/tsk-0047-image-supply-chain-storybook.md)
+- [Role, resource and retirement Task](tasks/tsk-0048-role-resource-retirement.md)
+- [Documentation, governance, QA and CI Task](tasks/tsk-0049-document-governance-qa-ci.md)
+- [Hermes provenance, trust and export Task](tasks/tsk-0050-hermes-provenance-trust-export.md)
+- [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)

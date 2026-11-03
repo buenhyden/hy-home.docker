@@ -472,7 +472,16 @@ class OutboxTests(unittest.TestCase):
             body_sha256=row["body_sha256"],
             persisted=True,
         )
-        for bad in (None, "", "x" * 36, "a" * 35, "a" * 37, "A" * 36, 123):
+        for bad in (
+            None,
+            "",
+            "-" * 36,
+            "x" * 36,
+            "a" * 35,
+            "a" * 37,
+            "A" * 36,
+            123,
+        ):
             with self.subTest(bad=bad), self.assertRaises(OutboxError):
                 box.transition(
                     key,

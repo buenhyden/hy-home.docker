@@ -6,15 +6,20 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__CORE__AUTH_MANAGER: >-
     airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager
   AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: >-
-    /usr/bin/env bash -c "printf '%s' \"postgresql+psycopg2://airflow:$(tr -d '\r\n' < /run/secrets/airflow_db_password)@mng-pg:5432/airflow\""
+    python3 /opt/airflow/bin/connection_uri.py metadata
   AIRFLOW__CELERY__RESULT_BACKEND_CMD: >-
-    /usr/bin/env bash -c "printf '%s' \"db+postgresql+psycopg2://airflow:$(tr -d '\r\n' < /run/secrets/airflow_db_password)@mng-pg:5432/airflow\""
+    python3 /opt/airflow/bin/connection_uri.py result
   AIRFLOW__CELERY__BROKER_URL_CMD: >-
-    /usr/bin/env bash -c "printf '%s' \"redis://:$(tr -d '\r\n' < /run/secrets/${AIRFLOW_VALKEY_SECRET:-mng_valkey_password})@${AIRFLOW_VALKEY_HOST:-mng-valkey}:6379/0\""
+    python3 /opt/airflow/bin/connection_uri.py broker
   AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/airflow_fernet_key
   AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
   AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
-  AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
+  AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:${AIRFLOW_PORT:-8080}/execution/'
+  AIRFLOW__API__PORT: '${AIRFLOW_PORT:-8080}'
+  POSTGRES_PORT: '${POSTGRES_PORT:-5432}'
+  VALKEY_PORT: '${VALKEY_PORT:-6379}'
+  AIRFLOW_VALKEY_HOST: '${AIRFLOW_VALKEY_HOST:-mng-valkey}'
+  AIRFLOW_VALKEY_SECRET: '${AIRFLOW_VALKEY_SECRET:-mng_valkey_password}'
   AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
   AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   AIRFLOW__API__BASE_URL: 'https://airflow.${DEFAULT_URL}'
@@ -149,7 +154,7 @@ services:
           /etc/ssl/certs/hy-home-rootCA.pem \
           > /tmp/hy-home-ca-bundle.pem
 
-        exec airflow api-server --proxy-headers
+        exec airflow api-server --proxy-headers --port "$${AIRFLOW__API__PORT}"
     networks:
       edge_net: {}
       airflow_net: {}
@@ -460,20 +465,28 @@ services:
     user: '999:999'
     secrets:
       - airflow_valkey_password
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     networks:
       airflow_net: {}
     restart: unless-stopped
     volumes:
       - airflow-valkey-data:/data:rw
+      - ../../04-data/mng-db/valkey/scripts/start-dedicated.sh:/usr/local/lib/hy-home/valkey/start-dedicated.sh:ro
+      - ../../04-data/mng-db/valkey/scripts/render-monitor-acl.sh:/usr/local/lib/hy-home/valkey/render-monitor-acl.sh:ro
+    tmpfs:
+      - /run/valkey:rw,noexec,nosuid,nodev,mode=0700,uid=999,gid=999
     labels:
       <<: *tier-label
-    command: >
-      sh -c 'valkey-server --requirepass "$$(cat /run/secrets/airflow_valkey_password)" --appendonly yes --port 6379'
+    command:
+      - /bin/sh
+      - /usr/local/lib/hy-home/valkey/start-dedicated.sh
+      - /run/secrets/airflow_valkey_password
+      - /run/valkey/users.acl
     expose:
       - '${VALKEY_PORT:-6379}'
-      - '${VALKEY_BUS_PORT:-16379}'
     healthcheck:
-      test: [ 'CMD-SHELL', 'V_PASS=$$(cat /run/secrets/airflow_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG' ]
+      test: [ 'CMD-SHELL', 'REDISCLI_AUTH=$$(cat /run/secrets/airflow_valkey_password); export REDISCLI_AUTH; valkey-cli --no-auth-warning -h 127.0.0.1 -p "$${VALKEY_PORT}" ping | grep -qx PONG' ]
       interval: 15s
       timeout: 30s
       retries: 5
@@ -506,15 +519,22 @@ services:
     restart: unless-stopped
     secrets:
       - airflow_valkey_password
+    environment:
+      VALKEY_PORT: '${VALKEY_PORT:-6379}'
     entrypoint:
       - /bin/sh
       - -c
     command:
       - |
-        export VALKEY_PASSWORD=$$(cat /run/secrets/airflow_valkey_password | tr -d '\n')
+        set -eu
+        port=$${VALKEY_PORT}
+        case "$$port" in ''|*[!0-9]*) exit 1 ;; esac
+        [ "$${#port}" -le 5 ] && [ "$$port" -ge 1 ] && [ "$$port" -le 65535 ] || exit 1
+        REDIS_PASSWORD=$$(cat /run/secrets/airflow_valkey_password)
+        [ -n "$$REDIS_PASSWORD" ] || exit 1
+        export REDIS_PASSWORD
         exec /redis_exporter \
-          -redis.addr=redis://airflow-valkey:${VALKEY_PORT} \
-          -redis.password="$$VALKEY_PASSWORD" \
+          -redis.addr="redis://airflow-valkey:$$port" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
       airflow-valkey:

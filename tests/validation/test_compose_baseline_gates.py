@@ -14,14 +14,17 @@ import json
 import os
 import re
 import shutil
+import signal
 import sqlite3
 import subprocess
+import sys
 import tempfile
 import time
 import unittest
 import uuid
 from pathlib import Path
 from typing import ClassVar
+from unittest import mock
 
 from scripts.lib.document_governance.operations_catalog import (
     _ComposeLoader,
@@ -2527,8 +2530,10 @@ SSO_SUBNET, SSO_TRAEFIK_IP = "10.250.199.0/24", "10.250.199.2"
 
 
 def _sso_docker(*args, check=True, timeout=180, **kw):
-    return subprocess.run(["docker", *args], capture_output=True, text=True,
-                          check=check, timeout=timeout, **kw)  # fmt: skip
+    environment = {"HOME": "/tmp", "PATH": "/usr/bin:/bin"}
+    return subprocess.run(["docker", "--host", "unix:///var/run/docker.sock", *args],
+                          capture_output=True, text=True, check=check,
+                          timeout=timeout, env=environment, **kw)  # fmt: skip
 
 
 def _sso_image(compose, service):
@@ -2536,6 +2541,297 @@ def _sso_image(compose, service):
 
     spec = yaml.safe_load((ROOT / compose).read_text())["services"][service]
     return spec["image"]
+
+
+def _sso_keycloak_build_args(tag, run_id, base_image):
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/@:+-]{0,254}", base_image):
+        raise ValueError("invalid Keycloak image reference")
+    if not re.fullmatch(r"[0-9a-f]{32}", run_id):
+        raise ValueError("invalid SSO run id")
+    return [
+        "run",
+        "--pull",
+        "never",
+        "--name",
+        f"{tag}-keycloak-build",
+        "--network",
+        "none",
+        "--label",
+        "hyhome.test-scope=p02-sso",
+        "--label",
+        f"hyhome.test-run={run_id}",
+        "--cpus",
+        "2",
+        "--memory",
+        "2g",
+        "--pids-limit",
+        "512",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        base_image,
+        "build",
+    ]
+
+
+def _sso_keycloak_start_args(*, tls_issuer):
+    hostname = (
+        ["--hostname=https://keycloak.hy.test", "--proxy-headers=xforwarded"]
+        if tls_issuer
+        else ["--hostname=http://keycloak:8080"]
+    )
+    return [
+        "start",
+        "--optimized",
+        "--http-enabled=true",
+        "--import-realm",
+        "--http-port=8080",
+        *hostname,
+    ]
+
+
+def _sso_run_tag(pid, run_id):
+    if not isinstance(pid, int) or pid <= 0:
+        raise ValueError("invalid SSO process id")
+    if not re.fullmatch(r"[0-9a-f]{32}", run_id):
+        raise ValueError("invalid SSO run id")
+    return f"hysso{pid}-{run_id[:12]}"
+
+
+def _sso_container_state(name):
+    state = _sso_docker(
+        "inspect",
+        "--format",
+        "{{.State.Status}} {{.State.Running}} {{.State.ExitCode}} {{.State.OOMKilled}}",
+        name,
+        check=False,
+    )
+    value = state.stdout.strip()
+    if state.returncode != 0 or not re.fullmatch(
+        r"[a-z]+ (?:true|false) [0-9]+ (?:true|false)", value
+    ):
+        return "unavailable"
+    return value
+
+
+def _sso_owned_container_names(tag):
+    return tuple(
+        f"{tag}-{suffix}"
+        for suffix in (
+            "keycloak-build",
+            "keycloak",
+            "upstream",
+            "proxy",
+            "traefik",
+            "client",
+            "storybook",
+            "storybook-mcp",
+        )
+    )
+
+
+def _sso_cleanup_owned(tag, run_id, images, *, verify=True):
+    containers = _sso_owned_container_names(tag)
+    for container in containers:
+        _sso_remove_owned("container", container, run_id)
+    _sso_remove_owned("network", tag, run_id)
+    for image in images:
+        _sso_remove_owned("image", image, run_id)
+    if not verify:
+        return
+    residue = _sso_owned_residue(tag, images)
+    if residue:
+        raise AssertionError(
+            "SSO fixture cleanup left owned resources: " + ", ".join(residue)
+        )
+
+
+def _sso_owned_residue(tag, images):
+    containers = _sso_owned_container_names(tag)
+    residue = []
+    for container in containers:
+        if not _sso_resource_absent("container", container):
+            residue.append(f"container:{container}")
+    if not _sso_resource_absent("network", tag):
+        residue.append(f"network:{tag}")
+    for image in images:
+        if not _sso_resource_absent("image", image):
+            residue.append(f"image:{image}")
+    return tuple(residue)
+
+
+def _sso_resource_absent(kind, name):
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/@:+-]{0,254}", name):
+        raise ValueError("invalid SSO resource name")
+    if kind == "container":
+        args = ("container", "ls", "-a", "--filter", f"name=^/{name}$")
+        output = name
+        output_format = "{{.Names}}"
+    elif kind == "network":
+        args = ("network", "ls", "--filter", f"name=^{name}$")
+        output = name
+        output_format = "{{.Name}}"
+    elif kind == "image":
+        args = ("image", "ls", "--filter", f"reference={name}")
+        output = name
+        output_format = "{{.Repository}}:{{.Tag}}"
+    else:
+        raise ValueError("unsupported SSO resource kind")
+    result = _sso_docker(
+        *args,
+        "--format",
+        output_format,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise AssertionError(
+            f"unable to verify SSO {kind} cleanup (exit={result.returncode})"
+        )
+    rows = tuple(line for line in result.stdout.splitlines() if line)
+    if any(row != output for row in rows):
+        raise AssertionError(f"unexpected SSO {kind} cleanup verification output")
+    return not rows
+
+
+def _sso_resource_labels(kind, name):
+    label_path = ".Labels" if kind == "network" else ".Config.Labels"
+    result = _sso_docker(
+        kind,
+        "inspect",
+        "--format",
+        f'{{{{index {label_path} "hyhome.test-scope"}}}} '
+        f'{{{{index {label_path} "hyhome.test-run"}}}}',
+        name,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise AssertionError(
+            f"unable to verify SSO {kind} ownership (exit={result.returncode})"
+        )
+    labels = tuple(result.stdout.strip().split())
+    if len(labels) != 2:
+        raise AssertionError(f"invalid SSO {kind} ownership metadata")
+    return labels
+
+
+def _sso_owned_resource_id(kind, name, run_id):
+    label_path = ".Labels" if kind == "network" else ".Config.Labels"
+    fields = (
+        "{{.Id}}|"
+        f'{{{{index {label_path} "hyhome.test-scope"}}}}|'
+        f'{{{{index {label_path} "hyhome.test-run"}}}}'
+    )
+    if kind == "image":
+        fields += "|{{json .RepoTags}}|{{json .RepoDigests}}"
+    result = _sso_docker(kind, "inspect", "--format", fields, name, check=False)
+    if result.returncode != 0:
+        raise AssertionError(
+            f"unable to verify SSO {kind} ownership (exit={result.returncode})"
+        )
+    parts = result.stdout.strip().split("|", 4)
+    expected_parts = 5 if kind == "image" else 3
+    if len(parts) != expected_parts or parts[1:3] != ["p02-sso", run_id]:
+        raise AssertionError(f"refusing to remove non-owned SSO {kind}")
+    resource_id = parts[0]
+    if not re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", resource_id):
+        raise AssertionError(f"invalid SSO {kind} immutable id")
+    if kind == "image":
+        try:
+            tags, digests = json.loads(parts[3]), json.loads(parts[4])
+        except json.JSONDecodeError as error:
+            raise AssertionError("invalid SSO image ownership metadata") from error
+        repository = name.rsplit(":", 1)[0]
+        owned_digest = re.compile(rf"{re.escape(repository)}@sha256:[0-9a-f]{{64}}")
+        if (
+            tags != [name]
+            or not isinstance(digests, (list, type(None)))
+            or len(digests or []) > 1
+            or any(not owned_digest.fullmatch(digest) for digest in (digests or []))
+        ):
+            raise AssertionError("refusing to remove shared SSO image")
+    return resource_id
+
+
+def _sso_remove_owned(kind, name, run_id):
+    if _sso_resource_absent(kind, name):
+        return
+    resource_id = _sso_owned_resource_id(kind, name, run_id)
+    command = (
+        ("rm", "-f", resource_id)
+        if kind == "container"
+        else ("network", "rm", resource_id)
+        if kind == "network"
+        else ("image", "rm", resource_id)
+    )
+    removed = _sso_docker(*command, check=False, timeout=60)
+    if removed.returncode != 0:
+        if _sso_resource_absent(kind, name) and (
+            kind != "image" or _sso_image_id_absent(resource_id)
+        ):
+            return
+        raise AssertionError(
+            f"unable to remove owned SSO {kind} (exit={removed.returncode})"
+        )
+    if kind == "image" and not _sso_image_id_absent(resource_id):
+        raise AssertionError("owned SSO image immutable id remains after cleanup")
+
+
+def _sso_image_id_absent(resource_id):
+    normalized = resource_id.removeprefix("sha256:")
+    if not re.fullmatch(r"[0-9a-f]{64}", normalized):
+        raise ValueError("invalid SSO image immutable id")
+    result = _sso_docker(
+        "image", "ls", "-a", "--no-trunc", "--format", "{{.ID}}", check=False
+    )
+    if result.returncode != 0:
+        raise AssertionError(
+            f"unable to verify SSO image id cleanup (exit={result.returncode})"
+        )
+    rows = tuple(line.removeprefix("sha256:") for line in result.stdout.splitlines())
+    if any(not re.fullmatch(r"[0-9a-f]{64}", row) for row in rows):
+        raise AssertionError("unexpected SSO image id cleanup verification output")
+    return normalized not in rows
+
+
+def _sso_interrupt_handler(tag, run_id, images):
+    def cleanup(signum, _frame):
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        _sso_cleanup_owned(tag, run_id, images, verify=True)
+        if signum == signal.SIGINT:
+            raise KeyboardInterrupt
+        raise SystemExit(128 + signum)
+
+    return cleanup
+
+
+def _sso_restore_handlers(previous):
+    for signum, handler in previous.items():
+        signal.signal(signum, handler)
+
+
+def _sso_recover_interrupted_process(process, tag, run_id, images, *, grace=0.25):
+    hard_kill_sent = False
+    exit_code = process.poll()
+    residue = ()
+    try:
+        if exit_code is None:
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            time.sleep(grace)
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+                hard_kill_sent = True
+            except ProcessLookupError:
+                pass
+            exit_code = process.wait(timeout=10)
+        residue = _sso_owned_residue(tag, images)
+        return exit_code, hard_kill_sent, residue
+    finally:
+        _sso_cleanup_owned(tag, run_id, images, verify=True)
 
 
 SSO_REALM = {
@@ -2669,6 +2965,312 @@ print(json.dumps(out))
 """
 
 
+def _sso_scenario_summary(mode, result):
+    if mode == "anonymous":
+        return {
+            "mode": mode,
+            "browser_status": result["text/html"]["status"],
+            "json_status": result["application/json"]["status"],
+        }
+    return {
+        "mode": mode,
+        "callback_status": result["callback"],
+        "app_status": result["app"]["status"],
+        "after_sign_out_status": result["after_sign_out"]["status"],
+    }
+
+
+class SsoFixtureContractTests(unittest.TestCase):
+    def test_keycloak_build_and_start_are_separate_bounded_stages(self):
+        base = _sso_image("infra/02-auth/keycloak/docker-compose.yml", "keycloak")
+        run_id = "0123456789abcdef" * 2
+
+        build = _sso_keycloak_build_args("hysso-contract", run_id, base)
+        start = _sso_keycloak_start_args(tls_issuer=False)
+
+        self.assertEqual("run", build[0])
+        self.assertIn("hysso-contract-keycloak-build", build)
+        self.assertIn("hyhome.test-scope=p02-sso", build)
+        self.assertIn(f"hyhome.test-run={run_id}", build)
+        self.assertIn("never", build)
+        self.assertIn("none", build)
+        self.assertIn("2", build)
+        self.assertIn("2g", build)
+        self.assertIn("512", build)
+        self.assertIn("ALL", build)
+        self.assertIn("no-new-privileges", build)
+        self.assertEqual([base, "build"], build[-2:])
+        self.assertEqual("start", start[0])
+        self.assertIn("--optimized", start)
+        self.assertIn("--http-enabled=true", start)
+        self.assertNotIn("start-dev", start)
+
+    def test_keycloak_build_rejects_an_injected_base_reference(self):
+        with self.assertRaisesRegex(ValueError, "Keycloak image reference"):
+            _sso_keycloak_build_args(
+                "hysso-contract", "0123456789abcdef" * 2, "trusted\nRUN unsafe"
+            )
+
+    def test_wait_attributes_a_value_free_failure_to_the_requested_stage(self):
+        diagnostics = subprocess.CompletedProcess(
+            [], 0, stdout="exited false 1 false\n", stderr=""
+        )
+
+        with (
+            mock.patch(f"{__name__}._sso_docker", return_value=diagnostics) as docker,
+            mock.patch(f"{__name__}.time.sleep"),
+            self.assertRaises(AssertionError) as failure,
+        ):
+
+            class Fixture(SsoStack):
+                tag = "hysso-contract"
+
+            Fixture.wait(lambda: False, "keycloak", tries=1)
+
+        docker.assert_called_once_with(
+            "inspect",
+            "--format",
+            "{{.State.Status}} {{.State.Running}} {{.State.ExitCode}} {{.State.OOMKilled}}",
+            "hysso-contract-keycloak",
+            check=False,
+        )
+        self.assertIn("keycloak not ready", str(failure.exception))
+        self.assertIn("state=exited false 1 false", str(failure.exception))
+
+    def test_interrupt_cleanup_uses_only_exact_owned_resources(self):
+        images = ("hy-home/keycloak:rehearsal-hysso-contract",)
+        handler = _sso_interrupt_handler(
+            "hysso-contract", "0123456789abcdef" * 2, images
+        )
+
+        with (
+            mock.patch(f"{__name__}._sso_cleanup_owned") as cleanup,
+            mock.patch(f"{__name__}.signal.signal") as set_signal,
+            self.assertRaisesRegex(SystemExit, "143"),
+        ):
+            handler(signal.SIGTERM, None)
+
+        cleanup.assert_called_once_with(
+            "hysso-contract", "0123456789abcdef" * 2, images, verify=True
+        )
+        self.assertEqual(2, set_signal.call_count)
+
+    def test_cleanup_verification_fails_closed_when_inspect_is_unavailable(self):
+        for stdout in ("", "[]\n"):
+            with self.subTest(stdout=stdout):
+                unavailable = subprocess.CompletedProcess(
+                    [], 125, stdout=stdout, stderr="private"
+                )
+                with (
+                    mock.patch(f"{__name__}._sso_docker", return_value=unavailable),
+                    self.assertRaisesRegex(
+                        AssertionError,
+                        "unable to verify SSO container cleanup.*exit=125",
+                    ),
+                ):
+                    _sso_owned_residue("hysso-contract", ())
+
+    def test_network_cleanup_uses_the_network_name_formatter(self):
+        listed = subprocess.CompletedProcess(
+            [], 0, stdout="hysso-contract\n", stderr=""
+        )
+        with mock.patch(f"{__name__}._sso_docker", return_value=listed) as docker:
+            self.assertFalse(_sso_resource_absent("network", "hysso-contract"))
+
+        docker.assert_called_once_with(
+            "network",
+            "ls",
+            "--filter",
+            "name=^hysso-contract$",
+            "--format",
+            "{{.Name}}",
+            check=False,
+        )
+
+    def test_cleanup_refuses_a_same_name_resource_with_other_ownership(self):
+        immutable_id = "a" * 64
+        run_id = "0123456789abcdef" * 2
+        inspect = subprocess.CompletedProcess(
+            [],
+            0,
+            stdout=f"{immutable_id}|p02-sso|other-run\n",
+            stderr="",
+        )
+        with (
+            mock.patch(f"{__name__}._sso_resource_absent", return_value=False),
+            mock.patch(f"{__name__}._sso_docker", return_value=inspect) as docker,
+            self.assertRaisesRegex(
+                AssertionError, "refusing to remove non-owned SSO container"
+            ),
+        ):
+            _sso_remove_owned("container", "hysso-contract-keycloak", run_id)
+        docker.assert_called_once()
+
+    def test_cleanup_accepts_an_owned_resource_removed_by_the_child_race(self):
+        immutable_id = "a" * 64
+        run_id = "0123456789abcdef" * 2
+        removed = subprocess.CompletedProcess([], 1, stdout="", stderr="private")
+        with (
+            mock.patch(
+                f"{__name__}._sso_resource_absent", side_effect=(False, True)
+            ) as absent,
+            mock.patch(f"{__name__}._sso_owned_resource_id", return_value=immutable_id),
+            mock.patch(f"{__name__}._sso_docker", return_value=removed) as docker,
+        ):
+            _sso_remove_owned("container", "hysso-contract-keycloak", run_id)
+
+        self.assertEqual(2, absent.call_count)
+        docker.assert_called_once_with(
+            "rm", "-f", immutable_id, check=False, timeout=60
+        )
+
+    def test_cleanup_refuses_an_owned_image_with_shared_tags_or_digests(self):
+        run_id = "0123456789abcdef" * 2
+        image = "hy-home/keycloak:rehearsal-hysso-contract"
+        immutable_id = "a" * 64
+        for tags, digests in (
+            ([image, "hy-home/keycloak:other"], []),
+            ([image], ["other/keycloak@sha256:" + "b" * 64]),
+        ):
+            with self.subTest(tags=tags, digests=digests):
+                inspect = subprocess.CompletedProcess(
+                    [],
+                    0,
+                    stdout=(
+                        f"{immutable_id}|p02-sso|{run_id}|"
+                        f"{json.dumps(tags)}|{json.dumps(digests)}\n"
+                    ),
+                    stderr="",
+                )
+                with (
+                    mock.patch(f"{__name__}._sso_docker", return_value=inspect),
+                    self.assertRaisesRegex(
+                        AssertionError, "refusing to remove shared SSO image"
+                    ),
+                ):
+                    _sso_owned_resource_id("image", image, run_id)
+
+    def test_cleanup_accepts_the_single_local_commit_digest(self):
+        run_id = "0123456789abcdef" * 2
+        image = "hy-home/keycloak:rehearsal-hysso-contract"
+        immutable_id = "a" * 64
+        inspect = subprocess.CompletedProcess(
+            [],
+            0,
+            stdout=(
+                f"{immutable_id}|p02-sso|{run_id}|{json.dumps([image])}|"
+                f"{json.dumps(['hy-home/keycloak@sha256:' + 'b' * 64])}\n"
+            ),
+            stderr="",
+        )
+        with mock.patch(f"{__name__}._sso_docker", return_value=inspect):
+            self.assertEqual(
+                immutable_id, _sso_owned_resource_id("image", image, run_id)
+            )
+
+    def test_image_cleanup_rejects_a_remaining_digest_or_immutable_id(self):
+        run_id = "0123456789abcdef" * 2
+        image = "hy-home/keycloak:rehearsal-hysso-contract"
+        immutable_id = "a" * 64
+        removed = subprocess.CompletedProcess([], 0, stdout="", stderr="")
+        with (
+            mock.patch(f"{__name__}._sso_resource_absent", return_value=False),
+            mock.patch(f"{__name__}._sso_owned_resource_id", return_value=immutable_id),
+            mock.patch(f"{__name__}._sso_docker", return_value=removed),
+            mock.patch(f"{__name__}._sso_image_id_absent", return_value=False),
+            self.assertRaisesRegex(AssertionError, "immutable id remains"),
+        ):
+            _sso_remove_owned("image", image, run_id)
+
+    def test_image_id_absence_requires_a_successful_exact_id_list(self):
+        immutable_id = "a" * 64
+        listed = subprocess.CompletedProcess(
+            [], 0, stdout=f"sha256:{immutable_id}\n", stderr=""
+        )
+        with mock.patch(f"{__name__}._sso_docker", return_value=listed) as docker:
+            self.assertFalse(_sso_image_id_absent(immutable_id))
+
+        docker.assert_called_once_with(
+            "image",
+            "ls",
+            "-a",
+            "--no-trunc",
+            "--format",
+            "{{.ID}}",
+            check=False,
+        )
+
+    def test_run_tag_includes_controller_run_id(self):
+        run_id = "0123456789abcdef" * 2
+
+        self.assertEqual("hysso42-0123456789ab", _sso_run_tag(42, run_id))
+
+    def test_parent_recovery_cleans_when_process_group_disappears(self):
+        process = mock.Mock(pid=42)
+        process.poll.return_value = None
+        process.wait.return_value = 143
+        images = ("hy-home/keycloak:rehearsal-hysso-contract",)
+
+        with (
+            mock.patch(
+                f"{__name__}.os.killpg",
+                side_effect=(ProcessLookupError, ProcessLookupError),
+            ),
+            mock.patch(f"{__name__}.time.sleep"),
+            mock.patch(f"{__name__}._sso_owned_residue", return_value=images),
+            mock.patch(f"{__name__}._sso_cleanup_owned") as cleanup,
+        ):
+            result = _sso_recover_interrupted_process(
+                process, "hysso-contract", "0123456789abcdef" * 2, images
+            )
+
+        self.assertEqual((143, False, images), result)
+        cleanup.assert_called_once_with(
+            "hysso-contract", "0123456789abcdef" * 2, images, verify=True
+        )
+
+    def test_parent_recovery_cleans_when_process_wait_fails(self):
+        process = mock.Mock(pid=42)
+        process.poll.return_value = None
+        process.wait.side_effect = subprocess.TimeoutExpired("synthetic", 10)
+        images = ("hy-home/keycloak:rehearsal-hysso-contract",)
+
+        with (
+            mock.patch(f"{__name__}.os.killpg"),
+            mock.patch(f"{__name__}.time.sleep"),
+            mock.patch(f"{__name__}._sso_cleanup_owned") as cleanup,
+            self.assertRaises(subprocess.TimeoutExpired),
+        ):
+            _sso_recover_interrupted_process(
+                process, "hysso-contract", "0123456789abcdef" * 2, images
+            )
+
+        cleanup.assert_called_once_with(
+            "hysso-contract", "0123456789abcdef" * 2, images, verify=True
+        )
+
+    def test_scenario_summary_excludes_auth_payload(self):
+        result = {
+            "callback": 302,
+            "app": {"status": 200, "body": "private-user-id"},
+            "after_sign_out": {"status": 302},
+            "cookies": {"session": "private-cookie"},
+        }
+
+        summary = _sso_scenario_summary("alice", result)
+
+        self.assertEqual(
+            {
+                "mode": "alice",
+                "callback_status": 302,
+                "app_status": 200,
+                "after_sign_out_status": 302,
+            },
+            summary,
+        )
+        self.assertNotIn("private", json.dumps(summary))
+
+
 class SsoStack:
     """Traefik, oauth2-proxy and Keycloak on an internal network: synthetic
     realm, two users and the tracked middleware and proxy config."""
@@ -2681,14 +3283,71 @@ class SsoStack:
 
     @classmethod
     def setUpClass(cls):
-        cls.tag = f"hysso{os.getpid()}"
-        cls.proxy_image = f"hy-home/oauth2-proxy:rehearsal-{cls.tag}"
-        _sso_docker("build", "-q", "-t", cls.proxy_image, "-f",
-                    str(ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"),
-                    str(ROOT / "infra/02-auth/oauth2-proxy"), timeout=900)  # fmt: skip
-        cls.addClassCleanup(_sso_docker, "image", "rm", cls.proxy_image, check=False)
+        cls.run_id = os.environ.get("HYHOME_SSO_RUN_ID", uuid.uuid4().hex)
+        if not re.fullmatch(r"[0-9a-f]{32}", cls.run_id):
+            raise ValueError("invalid SSO run id")
+        cls.tag = _sso_run_tag(os.getpid(), cls.run_id)
+        external_proxy_image = os.environ.get("HYHOME_SSO_PROXY_IMAGE")
+        if external_proxy_image:
+            cls.proxy_image = external_proxy_image
+            cls.proxy_args = ["--config=/etc/oauth2-proxy.cfg"]
+        else:
+            cls.proxy_image = f"hy-home/oauth2-proxy:rehearsal-{cls.tag}"
+            cls.proxy_args = []
+        cls.keycloak_image = f"hy-home/keycloak:rehearsal-{cls.tag}"
+        owned_images = (cls.keycloak_image,) + (
+            () if external_proxy_image else (cls.proxy_image,)
+        )
+        previous_handlers = {
+            signum: signal.getsignal(signum)
+            for signum in (signal.SIGINT, signal.SIGTERM)
+        }
+        interrupt_handler = _sso_interrupt_handler(cls.tag, cls.run_id, owned_images)
+        for signum in previous_handlers:
+            signal.signal(signum, interrupt_handler)
+        cls.addClassCleanup(_sso_restore_handlers, previous_handlers)
+        cls.addClassCleanup(
+            _sso_cleanup_owned, cls.tag, cls.run_id, owned_images, verify=True
+        )
+        if not external_proxy_image:
+            _sso_docker("build", "--label", "hyhome.test-scope=p02-sso",
+                        "--label", f"hyhome.test-run={cls.run_id}",
+                        "-q", "-t", cls.proxy_image, "-f",
+                        str(ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"),
+                        str(ROOT / "infra/02-auth/oauth2-proxy"), timeout=900)  # fmt: skip
         cls.tmp = Path(tempfile.mkdtemp(prefix="hysso"))
         cls.addClassCleanup(shutil.rmtree, cls.tmp, True)
+        keycloak_base = _sso_image(
+            "infra/02-auth/keycloak/docker-compose.yml", "keycloak"
+        )
+        keycloak_builder = f"{cls.tag}-keycloak-build"
+        prepare_started = time.monotonic()
+        build = _sso_docker(
+            *_sso_keycloak_build_args(cls.tag, cls.run_id, keycloak_base),
+            check=False,
+            timeout=900,
+        )
+        if build.returncode != 0:
+            raise AssertionError(
+                f"Keycloak image preparation failed (exit={build.returncode})"
+            )
+        commit = _sso_docker(
+            "commit",
+            "--change",
+            "LABEL hyhome.test-scope=p02-sso",
+            "--change",
+            f"LABEL hyhome.test-run={cls.run_id}",
+            keycloak_builder,
+            cls.keycloak_image,
+            check=False,
+            timeout=180,
+        )
+        if commit.returncode != 0:
+            raise AssertionError(
+                f"Keycloak image capture failed (exit={commit.returncode})"
+            )
+        _sso_remove_owned("container", keycloak_builder, cls.run_id)
+        cls.keycloak_prepare_seconds = time.monotonic() - prepare_started
         (cls.tmp / "dynamic").mkdir()
         shutil.copy(SSO_MIDDLEWARE, cls.tmp / "dynamic/middleware.yml")
         (cls.tmp / "dynamic/routers.yml").write_text(cls.ROUTERS)
@@ -2714,34 +3373,65 @@ class SsoStack:
         (cls.tmp / "secrets/cookie").write_text(os.urandom(16).hex())
         for path in [cls.tmp, *cls.tmp.rglob("*")]:
             path.chmod(0o755 if path.is_dir() else 0o644)
-        _sso_docker("network", "create", "--internal", "--subnet", SSO_SUBNET, cls.tag)
-        cls.addClassCleanup(_sso_docker, "network", "rm", cls.tag, check=False)
-        for name in ("keycloak", "upstream", "proxy", "traefik", "client", "storybook"):
-            cls.addClassCleanup(
-                _sso_docker, "rm", "-f", f"{cls.tag}-{name}", check=False
-            )
-        net = ["--network", cls.tag]
+        _sso_docker(
+            "network",
+            "create",
+            "--internal",
+            "--label",
+            "hyhome.test-scope=p02-sso",
+            "--label",
+            f"hyhome.test-run={cls.run_id}",
+            "--subnet",
+            SSO_SUBNET,
+            cls.tag,
+        )
+        net = [
+            "--pull",
+            "never",
+            "--network",
+            cls.tag,
+            "--label",
+            "hyhome.test-scope=p02-sso",
+            "--label",
+            f"hyhome.test-run={cls.run_id}",
+            "--cpus",
+            "2",
+            "--memory",
+            "2g",
+            "--pids-limit",
+            "512",
+        ]
         # Traefik first, so no dynamic address takes its fixed one.
         _sso_docker("run", "-d", "--name", f"{cls.tag}-traefik", *net, "--ip", SSO_TRAEFIK_IP,
                "--network-alias", "app.hy.test", "--network-alias", "auth.hy.test",
                "--network-alias", "storybook.hy.test",
                "--network-alias", "storybook-mcp.hy.test", "--network-alias", "keycloak.hy.test",
+               "-e", "OAUTH2_PROXY_PORT=4180",
                "-v", f"{cls.tmp}/dynamic:/dynamic:ro", "-v", f"{cls.tmp}/tls:/tls:ro", _sso_image("infra/01-gateway/traefik/docker-compose.yml", "traefik"),
                "--entrypoints.websecure.address=:443", "--providers.file.directory=/dynamic",
                "--log.level=ERROR")  # fmt: skip
+        keycloak_start_started = time.monotonic()
         _sso_docker("run", "-d", "--name", f"{cls.tag}-keycloak", *net, "--network-alias", "keycloak",
                "-e", "KC_BOOTSTRAP_ADMIN_USERNAME=admin",
                "-e", "KC_BOOTSTRAP_ADMIN_PASSWORD=synthetic-admin",
                "-v", f"{cls.tmp}/import:/opt/keycloak/data/import:ro",
-               _sso_image("infra/02-auth/keycloak/docker-compose.yml", "keycloak"),
-               "start-dev", "--import-realm", "--http-port=8080",
-               *(["--hostname=https://keycloak.hy.test", "--proxy-headers=xforwarded"]
-                 if cls.TLS_ISSUER else ["--hostname=http://keycloak:8080"]))  # fmt: skip
+               cls.keycloak_image, *_sso_keycloak_start_args(tls_issuer=cls.TLS_ISSUER))  # fmt: skip
         _sso_docker("run", "-d", "--name", f"{cls.tag}-upstream", *net, "--network-alias", "upstream",
                "python:3.13.15-alpine", "python", "-c", SSO_UPSTREAM)  # fmt: skip
         _sso_docker("run", "-d", "--name", f"{cls.tag}-client", *net,
                "python:3.13.15-alpine", "sleep", "infinity")  # fmt: skip
-        cls.wait(cls.fetch_ok("http://keycloak:8080/realms/r"), "keycloak", tries=150)
+        cls.wait(cls.fetch_ok("http://keycloak:8080/realms/r"), "keycloak", tries=60)
+        cls.keycloak_start_seconds = time.monotonic() - keycloak_start_started
+        print(
+            "sso_fixture "
+            + json.dumps(
+                {
+                    "keycloak_prepare_seconds": round(cls.keycloak_prepare_seconds, 3),
+                    "keycloak_start_seconds": round(cls.keycloak_start_seconds, 3),
+                },
+                sort_keys=True,
+            )
+        )
         cls.add_group_mapper()
         # The tracked config; only deployment-specific values are replaced.
         env = {
@@ -2761,9 +3451,12 @@ class SsoStack:
                *args, "-v", f"{SSO_PROXY_CFG}:/etc/oauth2-proxy.cfg:ro",
                "-v", f"{cls.tmp}/secrets/client:/run/secrets/oauth2_proxy_client_secret:ro",
                "-v", f"{cls.tmp}/secrets/cookie:/run/secrets/oauth2_proxy_cookie_secret:ro",
-               "-v", f"{cls.tmp}/tls:/tls:ro", cls.proxy_image)  # fmt: skip
+               "-v", f"{cls.tmp}/tls:/tls:ro", cls.proxy_image, *cls.proxy_args)  # fmt: skip
         cls.wait(
-            cls.fetch_ok("http://oauth2-proxy:4180/ping"), "oauth2-proxy", tries=60
+            cls.fetch_ok("http://oauth2-proxy:4180/ping"),
+            "oauth2-proxy",
+            tries=60,
+            log_container="proxy",
         )
 
     @classmethod
@@ -2805,22 +3498,22 @@ class SsoStack:
         _sso_docker("exec", f"{cls.tag}-keycloak", "bash", "-c", script)
 
     @classmethod
-    def wait(cls, probe, what, tries=60):
+    def wait(cls, probe, what, tries=60, log_container=None):
         for _ in range(tries):
             if probe():
                 return
             time.sleep(2)
-        logs = _sso_docker("logs", "--tail", "20", f"{cls.tag}-proxy", check=False)
-        raise AssertionError(
-            f"{what} not ready\n{logs.stdout[-2000:]}{logs.stderr[-2000:]}"
-        )
+        container = log_container or what
+        state = _sso_container_state(f"{cls.tag}-{container}")
+        raise AssertionError(f"{what} not ready; state={state}")
 
     def browse(self, mode, *paths):
         out = _sso_docker("exec", f"{self.tag}-client", "python", "-c", SSO_CLIENT, mode, *paths,
                      check=False, timeout=120)  # fmt: skip
         self.assertEqual(0, out.returncode, out.stderr[-2000:])
-        print(mode, out.stdout.strip())
-        return json.loads(out.stdout)
+        result = json.loads(out.stdout)
+        print("sso_scenario " + json.dumps(_sso_scenario_summary(mode, result)))
+        return result
 
 
 @unittest.skipUnless(
@@ -2859,6 +3552,69 @@ class SsoRehearsalTests(SsoStack, unittest.TestCase):
         self.assertEqual(403, out["callback"], out)
         self.assertNotIn("__Secure-sso-cookie", out["cookies"])
         self.assertNotEqual(200, out["app"]["status"])
+
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_SSO_INTERRUPTION_REHEARSAL") == "1",
+    "set HYHOME_SSO_INTERRUPTION_REHEARSAL=1 to verify exact SSO interruption cleanup",
+)
+class SsoInterruptionCleanupNativeTests(unittest.TestCase):
+    def test_runner_style_hard_timeout_has_exact_parent_recovery(self):
+        proxy_image = os.environ.get("HYHOME_SSO_PROXY_IMAGE")
+        self.assertTrue(proxy_image, "a cached exact OAuth2 Proxy image is required")
+        run_id = uuid.uuid4().hex
+        environment = {
+            "PATH": os.environ["PATH"],
+            "PYTHONUNBUFFERED": "1",
+            "HYHOME_SSO_REHEARSAL": "1",
+            "HYHOME_SSO_PROXY_IMAGE": proxy_image,
+            "HYHOME_SSO_RUN_ID": run_id,
+        }
+        process = subprocess.Popen(
+            [
+                sys.executable,
+                "-m",
+                "unittest",
+                "tests.validation.test_compose_baseline_gates.SsoRehearsalTests",
+            ],
+            cwd=ROOT,
+            env=environment,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+        tag = _sso_run_tag(process.pid, run_id)
+        images = (f"hy-home/keycloak:rehearsal-{tag}",)
+
+        def recover():
+            _sso_recover_interrupted_process(process, tag, run_id, images)
+
+        self.addCleanup(recover)
+        deadline = time.monotonic() + 60
+        builder = f"{tag}-keycloak-build"
+        while time.monotonic() < deadline:
+            if process.poll() is not None:
+                self.fail(
+                    f"SSO child exited before interruption point (exit={process.returncode})"
+                )
+            if not _sso_resource_absent("container", builder):
+                break
+            time.sleep(0.2)
+        else:
+            self.fail(
+                "Keycloak build stage did not become observable within 60 seconds"
+            )
+
+        self.assertEqual(
+            ("p02-sso", run_id), _sso_resource_labels("container", builder)
+        )
+        exit_code, hard_kill_sent, residue = _sso_recover_interrupted_process(
+            process, tag, run_id, images
+        )
+        self.assertTrue(hard_kill_sent, "SSO process group exited before hard timeout")
+        self.assertIn(exit_code, (143, -signal.SIGKILL, -signal.SIGTERM))
+        self.assertNotEqual((), residue)
+        self.assertEqual((), _sso_owned_residue(tag, images))
 
 
 # Runs inside the client container: password-grant tokens from a rehearsal-only
@@ -2955,7 +3711,9 @@ class StorybookIngressRehearsalTests(SsoStack, unittest.TestCase):
         super().setUpClass()
         # The Compose runtime controls: unprivileged, read-only, tmpfs only.
         _sso_docker("run", "-d", "--name", f"{cls.tag}-storybook", "--network", cls.tag,
-                    "--network-alias", "storybook", "--pull=never", "--read-only",
+                    "--network-alias", "storybook", "--pull=never",
+                    "--label", "hyhome.test-scope=p02-sso",
+                    "--label", f"hyhome.test-run={cls.run_id}", "--read-only",
                     "--tmpfs", "/tmp", "--tmpfs", "/run", "--user", service["user"],
                     "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
                     cls.image)  # fmt: skip
@@ -2998,7 +3756,9 @@ class StorybookIngressRehearsalTests(SsoStack, unittest.TestCase):
         )
         _sso_docker("exec", f"{cls.tag}-keycloak", "bash", "-c", script)
         _sso_docker("run", "-d", "--name", f"{cls.tag}-storybook-mcp", "--network", cls.tag,
-                    "--network-alias", "storybook-mcp", "--pull=never", "--read-only",
+                    "--network-alias", "storybook-mcp", "--pull=never",
+                    "--label", "hyhome.test-scope=p02-sso",
+                    "--label", f"hyhome.test-run={cls.run_id}", "--read-only",
                     "--tmpfs", "/tmp", "--user", mcp["user"], "--cap-drop", "ALL",
                     "--security-opt", "no-new-privileges:true",
                     "-e", f"STORYBOOK_MCP_RESOURCE={cls.resource}",
@@ -3007,9 +3767,6 @@ class StorybookIngressRehearsalTests(SsoStack, unittest.TestCase):
                     "-e", f"STORYBOOK_MCP_READER_GROUP={group}",
                     "-e", "NODE_EXTRA_CA_CERTS=/tls/ca.pem",
                     "-v", f"{cls.tmp}/tls/ca.pem:/tls/ca.pem:ro", cls.mcp_image)  # fmt: skip
-        cls.addClassCleanup(
-            _sso_docker, "rm", "-f", f"{cls.tag}-storybook-mcp", check=False
-        )
         cls.wait(lambda: "listening" in _sso_docker(
             "logs", f"{cls.tag}-storybook-mcp", check=False).stdout, "storybook-mcp", tries=30)  # fmt: skip
 
@@ -5653,6 +6410,7 @@ ROUTES_WITHOUT_SSO = {
     "storybook-mcp": "oauth-bearer",
     # Two static files (favicon, robots.txt)
     "grafana-static": "static-only",
+    "grafana-static-deny": "terminal-method-denial",
     # Exact-path machine routes (traefik/dynamic/hermes-webhook.yml, blog-export.yml)
     "hermes-blog-ingestion-webhook": "n8n-header-auth-and-ip-allowlist",
     "blog-export-read": "gateway-bearer-and-ip-allowlist",
@@ -5761,10 +6519,16 @@ class RouteAuthContractTests(unittest.TestCase):
         middlewares = yaml.safe_load(path.read_text(encoding="utf-8"))["http"][
             "middlewares"
         ]
-        self.assertEqual(
-            "http://oauth2-proxy:4180/",
-            middlewares["sso-auth"]["forwardAuth"]["address"],
+        address = middlewares["sso-auth"]["forwardAuth"]["address"]
+        self.assertTrue(
+            address.startswith(
+                'http://oauth2-proxy:{{- $p := env "OAUTH2_PROXY_PORT" -}}'
+            )
         )
+        self.assertIn('6553[0-5])$" $p -}}', address)
+        self.assertIn('{{ fail "invalid OAUTH2_PROXY_PORT" }}', address)
+        self.assertTrue(address.endswith("/"))
+        self.assertNotIn("oauth2-proxy:4180", address)
         errors = middlewares["sso-errors"]["errors"]
         self.assertEqual(["403"], errors["status"])
         self.assertNotIn("statusRewrites", errors)
@@ -5843,8 +6607,11 @@ class SeaweedfsS3MetricsContractTests(unittest.TestCase):
             )
         )
         exprs = [r.get("expr", "") for g in rules["groups"] for r in g["rules"]]
-        self.assertIn('up{job="seaweedfs-s3"} == 0', exprs)
-        self.assertIn('up{job=~"seaweedfs-(master|volume|filer)"} == 0', exprs)
+        self.assertIn('up{job="seaweedfs-s3",expected_state!="off"} == 0', exprs)
+        self.assertIn(
+            'up{job=~"seaweedfs-(master|volume|filer)",expected_state!="off"} == 0',
+            exprs,
+        )
         self.assertTrue(any("node_filesystem_avail_bytes" in e for e in exprs))
 
 

@@ -113,9 +113,33 @@ def lab_compose_sources(root=ROOT):
 def env_assignments(text):
     result = {}
     for line in text.splitlines():
-        match = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", line)
-        if match:
-            result[match[1]] = match[2]
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        match = re.fullmatch(r"\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)", line)
+        if not match:
+            raise ValueError("unparseable environment line")
+        key, value = match.groups()
+        if key in result:
+            raise ValueError("duplicate environment key")
+        if (len(value) - len(value.rstrip("\\"))) % 2:
+            raise ValueError("continued environment assignment")
+        candidate = value.lstrip()
+        if candidate.startswith(('"', "'")):
+            quote, escaped, closing = candidate[0], False, None
+            for index, character in enumerate(candidate[1:], 1):
+                if quote == '"' and character == "\\" and not escaped:
+                    escaped = True
+                    continue
+                if character == quote and not escaped:
+                    closing = index
+                    break
+                escaped = False
+            if closing is None:
+                raise ValueError("multiline environment assignment")
+            tail = candidate[closing + 1 :].strip()
+            if tail and not tail.startswith("#"):
+                raise ValueError("ambiguous environment assignment")
+        result[key] = value
     return result
 
 
@@ -169,12 +193,11 @@ def environment_contract(compose_texts, env_text, supplemental_ids=HTPASSWD_ID_I
 
 
 def registry_rows(text):
-    result = {}
-    for line in text.splitlines():
-        cells = [cell.strip().strip("*" + chr(96)).strip() for cell in line.split("|")]
-        if len(cells) == 10 and re.fullmatch(r"[A-Z][A-Z0-9_-]*-[0-9]+", cells[1]):
-            result[cells[1]] = {"env": cells[5], "path": cells[6]}
-    return result
+    rows = secret_catalog.parse_public_table(text.encode("utf-8"))["entries"]
+    return {
+        row["id"]: {"env": row["env_key"] or "-", "path": row["source_path"] or "-"}
+        for row in rows
+    }
 
 
 def literal_secret_names(text):
@@ -203,6 +226,60 @@ def service_grants(service):
         }
     except ContractError:
         raise AssertionError("duplicate or invalid secret grant") from None
+
+
+class PublicMetadataHelperTests(unittest.TestCase):
+    """The public scanners must not erase malformed or repeated evidence."""
+
+    registry = (
+        "| **COMM-002** | O | PW | (비어있음) | - | "
+        "secrets/communication/smtp/smtp_password.txt | 2026-10-03 | SMTP |\n"
+        "\n| Retired ID | Canonical ID |\n| --- | --- |\n"
+        "| COMM-003 | COMM-002 |\n"
+    )
+
+    def test_environment_duplicate_and_malformed_lines_are_rejected(self):
+        for text in (
+            "SAMPLE=first\nSAMPLE=second\n",
+            "SAMPLE=first\nSAMPLE=first\n",
+            "SAMPLE=first\nnot-an-assignment\n",
+            'SAMPLE="unterminated\n',
+            'SAMPLE="valid"extra\n',
+            "SAMPLE=continued\\\n",
+        ):
+            with self.subTest(case=text):
+                with self.assertRaises(ValueError):
+                    env_assignments(text)
+
+    def test_registry_duplicate_and_malformed_rows_are_rejected(self):
+        row = self.registry.splitlines()[0]
+        for text in (
+            "",
+            self.registry + row + "\n",
+            self.registry + "| BAD-001 | X |\n",
+            self.registry
+            + "| **BAD-001** | X | Token | literal | - | - | 2026-10-03 | Test |\n",
+        ):
+            with self.subTest(case=text):
+                with self.assertRaises(ValueError):
+                    registry_rows(text)
+
+    def test_valid_synthetic_metadata_preserves_existing_contracts(self):
+        self.assertEqual(
+            {"FIRST": '"literal # value" # comment', "SECOND": "${FIRST}"},
+            env_assignments(
+                ' # section\n export FIRST="literal # value" # comment\nSECOND=${FIRST}\n'
+            ),
+        )
+        self.assertEqual(
+            {
+                "COMM-002": {
+                    "env": "-",
+                    "path": "secrets/communication/smtp/smtp_password.txt",
+                }
+            },
+            registry_rows(self.registry),
+        )
 
 
 class SMTPSecretContractTests(unittest.TestCase):
@@ -736,7 +813,10 @@ class ComposeSchemaTagTests(unittest.TestCase):
             home = "secrets:\n  smtp_password:\n    file: ./secrets/communication/smtp/smtp_password.txt\n"
             lab = "secrets:\n  smtp_password:\n    file: ../secrets/communication/smtp/smtp_password.txt\n"
             found = secret_contract(
-                root, {"docker-compose.yml": home, "labs/supabase.yml": lab}, "", set()
+                root,
+                {"docker-compose.yml": home, "labs/supabase.yml": lab},
+                PublicMetadataHelperTests.registry,
+                set(),
             )
             self.assertEqual({"smtp_password"}, found["declarations"])
             self.assertEqual(
@@ -755,7 +835,10 @@ class ComposeSchemaTagTests(unittest.TestCase):
                 with self.subTest(route=route, text=text):
                     with self.assertRaises(AssertionError):
                         secret_contract(
-                            root, {"docker-compose.yml": home, route: text}, "", set()
+                            root,
+                            {"docker-compose.yml": home, route: text},
+                            PublicMetadataHelperTests.registry,
+                            set(),
                         )
 
     def test_compose_tags_preserve_values_and_references_without_unsafe_loading(self):
@@ -1756,7 +1839,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         )
 
         registry = (
-            self.registry_text + "\n| **TEST-999** | X | Token | (empty) | - | "
+            self.registry_text + "\n| **TEST-999** | X | Token | (비어있음) | - | "
             "secrets/security/unmapped.txt | 2026-09-20 | Mutation probe |\n"
         )
         contract = self.scoped_secret_contract(self.compose_texts, registry)

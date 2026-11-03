@@ -304,7 +304,8 @@ class StagingTests(unittest.TestCase):
         args = [
             sys.executable,
             "-c",
-            "import runpy, sys; import publisher.candidates as c; "
+            "import os, runpy, sys; sys.path.insert(0, os.getcwd()); "
+            "import publisher.candidates as c; "
             "c.REVIEWED_SHA256 = sys.argv.pop(1); "
             "runpy.run_module('publisher.cli', run_name='__main__')",
             self.validator_sha,
@@ -335,8 +336,9 @@ class StagingTests(unittest.TestCase):
         status = subprocess.run(
             [
                 sys.executable,
-                "-m",
-                "publisher.cli",
+                "-c",
+                "import os, runpy, sys; sys.path.insert(0, os.getcwd()); "
+                "runpy.run_module('publisher.cli', run_name='__main__')",
                 "status",
                 "--outbox",
                 str(self.root / "private" / "outbox.sqlite"),
@@ -415,7 +417,8 @@ class StagingTests(unittest.TestCase):
         args = [
             sys.executable,
             "-c",
-            "import runpy, sys; import publisher.candidates as c; "
+            "import os, runpy, sys; sys.path.insert(0, os.getcwd()); "
+            "import publisher.candidates as c; "
             "c.REVIEWED_SHA256 = sys.argv.pop(1); "
             "runpy.run_module('publisher.cli', run_name='__main__')",
             self.validator_sha,

@@ -1,10 +1,10 @@
 ---
 title: "독립 통지 합성 fixture"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-11-02"
 ---
 
 # 독립 통지 합성 fixture
@@ -25,7 +25,9 @@ UUID·run ID·주소는 합성이며 운영 token이나 credential이 아닙니�
 
 전용 Python 상태 시험과 제한된 SMTP node 시험에서 사용합니다. malformed·다중 claim·header injection·
 수락 목록·timeout·취소와 원문 오류 누출도 각각 부정 사례로 검사합니다.
-lease 만료·동시 claim·attempt cap/dead·공식 requeue는 실제 P04 계약 이후 native 시험에서 검증합니다.
+lease 만료·동시 claim·attempt cap/dead·공식 requeue는 실제 SQL/native 시험에서 별도
+검증합니다. SQL007은 개별 승인마다 한 번의 no-send 추가 claim과 복원 sending의 unknown
+격리를 제공하지만 이 fixture 목록 자체가 실제 SQL·SMTP 검증은 아닙니다.
 
 ## Related Documents
 

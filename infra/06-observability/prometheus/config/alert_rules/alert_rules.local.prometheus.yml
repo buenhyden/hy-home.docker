@@ -25,7 +25,7 @@ groups:
       # [What] All Targets Missing / 모든 타겟 다운
       - alert: PrometheusAllTargetsMissing
         expr: sum by (job)
-          (up{job=~"prometheus|alertmanager|traefik|cadvisor|alloy"}) == 0
+          (up{job=~"prometheus|alertmanager|traefik|cadvisor|alloy",expected_state!="off"}) == 0
         for: 3m
         labels:
           severity: critical
@@ -37,7 +37,7 @@ groups:
 
       # [What] Infra Targets Missing (Optional Tier) / 인프라 잡 타겟 다운(옵션)
       - alert: PrometheusInfraTargetsMissing
-        expr: sum by (job) (up{job=~"loki|manage-postgres|mng-valkey-exporter|n8n-monitor|airflow-monitor|flower|qdrant|seaweedfs-s3|keycloak|oauth2-proxy|grafana|pyroscope|gatus|registry|ollama-exporter|node-exporter|dcgm-exporter"})
+        expr: sum by (job) (up{job=~"loki|manage-postgres|mng-valkey-exporter|n8n-monitor|airflow-monitor|flower|qdrant|seaweedfs-s3|keycloak|oauth2-proxy|grafana|pyroscope|gatus|registry|ollama-exporter|node-exporter|dcgm-exporter",expected_state!="off"})
           == 0
         for: 10m
         labels:

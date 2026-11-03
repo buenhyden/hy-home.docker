@@ -1,10 +1,10 @@
 ---
 title: "통지 workflow 생성 도구"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-11-02"
 ---
 
 # 통지 workflow 생성 도구
@@ -35,7 +35,9 @@ python infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/build_work
 
 출력 경로는 명시적으로 지정하며 `--check`는 drift를 보고하고 파일을 수정하지 않습니다.
 검증된 P04 SHA·interface version·review 인계는 소비자 계약에 별도로 연결합니다.
-DB timeout·취소는 아직 미확정이며 workflow의 120초 timeout만으로 socket 취소를 주장하지 않습니다.
+workflow의 120초 timeout만으로 socket 취소를 주장하지 않습니다. 제한된 SMTP node가
+소유 socket을 취소·정리하며, 실제 DB cancellation과 Worker 동작은 별도 native 증거입니다.
+현재 P05는 기본 plain export를 유지하고 인증 capture profile을 fixture에서만 명시 선택합니다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.32.0"
+version: "1.42.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -70,6 +70,76 @@ W24 adds the independent `INFRA-P0` routing snapshot for requirements 11–32.
 It freezes common boundaries before `INFRA-P1` data/secret/recovery work or any
 variable implementation; it does not reopen r10 criteria 11–18.
 
+W56–W60 implement the direct 2026-11-01 P01 request in TSK-0040. The
+existing service, port, Secret and version owners remain canonical. DATA-0096
+is a non-normative current observation consumed by this Task and P02–P12
+handoffs; it does not replace their acceptance contracts.
+
+W61–W65 implement the direct 2026-11-02 P02 request in TSK-0041. The
+infrastructure writer integrates all `infra/` changes; tool code, contract
+tests, documentation and CI registration have separate writers. P02 retains
+shared MNG Valkey as the default and does not reopen the historical secret
+catalog Task. Local source and isolated tests are in scope; operating services,
+host changes, actual secrets, external repositories and remote CI are not.
+
+W66–W70 implement the approved P03 plan in TSK-0042. P03 retains local-only
+model use, narrows model registration, runner and tool-policy source contracts,
+and reuses the completed offline Wiki preparation package. Local source and
+isolated tests are in scope; HOME services, host security settings, actual
+credentials, model downloads, external workspaces and remote CI are not.
+
+W71–W76 implement the approved local P04 plan in TSK-0043. Existing Opsflow
+is the only selected business path. The implementation preserves historical
+CDC and Iceberg acceptance, defers a new experiment until actual inputs exist,
+and does not change operating services, hosts, real credentials or remote state.
+The dependencies below route available source inputs; a historical Task's
+terminal status is not a hidden prerequisite for this approved local work.
+
+W77–W80 implement the approved local P05 plan in TSK-0044. The existing
+selected Opsflow notifier remains the business consumer; C19/C22 history and
+P04's TEST_RESIDUAL acceptance remain unchanged. Source, synthetic/owned
+isolated tests and a local logical commit are authorized; HOME services,
+actual credentials, external delivery/repositories and remote integration are not.
+
+W91–W94 implement the approved local P08 plan in TSK-0047. The Task inventories
+the current public image and package source, evaluates only selected Valkey and
+n8n candidates, and rechecks the tracked Storybook lock in isolation. It does
+not authorize operating services, host changes, actual credentials, external
+delivery, remote integration, LAB runtime or an inference from a base/sample
+artifact receipt to a different artifact.
+
+W99–W102 implement the approved local P10 plan in TSK-0049. The Task
+normalizes current generation-7 documentation contracts, registers existing
+local CI/QA routes and aligns governance wording to active repository changes.
+It does not rewrite completed history, weaken admission, operate services,
+access credentials, transmit externally or run remote CI.
+
+W103–W107 implement the approved local P11 plan in TSK-0050. The Task adds
+receipt-bound Hermes source collection and bounded durable replay/restore
+guards, while recording the current five trust boundaries. It preserves rather
+than re-runs SPEC-0204's historical Gateway/Attester/Export 1.0 receipts;
+Windows B, live scheduling, actual credentials, routes and remote CI remain
+outside the authorized local source and owned-isolation scope.
+
+W81–W86 implement the approved local P06 plan in TSK-0045. Existing OpenBao
+consumer acceptances and public catalog authority remain scoped to their own
+receipts. Value-free synthetic tests and independently reviewed read-only
+private structural comparison are authorized; private modifications, credential
+issuance, rotation, deletion, service changes and remote integration are not.
+
+W87–W90 implement the approved local P07 plan in TSK-0046. Existing SPEC-0224
+datastore and SPEC-0214 quality-OTLP acceptance is reused at its recorded
+scope. Local source, bounded owned isolation and the exact declared Prometheus
+image pull are authorized; HOME changes, actual secrets and external alert
+delivery are not. Historical P07 resource work belongs to SPEC-0218.
+
+W95–W98 implement the approved local P09 plan in TSK-0048. The Task records
+consumer-backed role dispositions, source-bound common-control and resource
+evidence, accepted storage placement and protected retirement input handling.
+It preserves current default and optional configurations. It does not authorize
+service operation, host configuration, storage migration, actual deletion,
+Secret access or remote integration.
+
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -129,6 +199,58 @@ variable implementation; it does not reopen r10 criteria 11–18.
 | W53 | 48 | Accept the one approved terminal Task `Resolves` correction | W52 | TSK-0037 | RED and GREEN tests, end-to-end check, spec package tests, lint |
 | W54 | 49 | Accept ADR-0050 and archive the Vault ADRs it supersedes | W53 | TSK-0038 | Changed metadata, metadata contracts, links, corpus and archive |
 | W55 | 50 | Record the open Spec reconciliation and promote the OpenTofu documents | W54 | TSK-0039 | Package pull requests, metadata contracts, changed metadata, links |
+| W56 | 51 | Capture actual workspace roots, source identity and safe before/after fingerprints | None | TSK-0040 | Git/non-Git and boundary regression |
+| W57 | 52 | Implement scan/compare/validate and publish independent census denominators | W56 | TSK-0040 | Unit, integration, CLI and isolated render probes |
+| W58 | 53 | Reconcile historical acceptance with current evidence and explicit residuals | W56 | TSK-0040 | Current Task/criterion readback and ledger validation |
+| W59 | 54 | Bind single writers and exact leaf-owner handoffs to current file fingerprints | W56 | TSK-0040 | Lease conflict and ownership validation |
+| W60 | 55 | Recheck official sources and record bounded product applicability | W56 | TSK-0040 | Direct official-source consultation and independent review |
+| W61 | 56 | Reconcile selected caller, DNS, listener, service-DNS, host and gateway port contracts | W56 | TSK-0041 | Focused source and isolated Compose/route contracts |
+| W62 | 57 | Preserve browser, application and machine authentication boundaries and direct-backend protections | W61 | TSK-0041 | Negative route and controlled OIDC contract tests |
+| W63 | 58 | Reconcile DEV/MNG environment and readiness evidence without promoting liveness to function readiness | W61 | TSK-0041 | Environment, readiness and unsupported-variable regressions |
+| W64 | 59 | Retain shared MNG Valkey default and align named ACL, dedicated opt-in and safe secret delivery contracts | W61 | TSK-0041 | Synthetic-secret, ACL and persistence-contract regressions |
+| W65 | 60 | Publish bounded connection evidence and exact P03–P08 handoffs, including the Grafana exception review | W61, W62, W63, W64 | TSK-0041 | Ledger validation, document contracts and independent review |
+| W66 | 61 | Reconcile local-only model actors, endpoint and non-fallback boundaries | W61, W65 | TSK-0042 | Model-route policy and negative-contract tests |
+| W67 | 62 | Add bounded Open Notebook model-registration planning and preserve recovery/registration distinctions | W66 | TSK-0042 | Synthetic API, persistence and conflict/rollback tests |
+| W68 | 63 | Tighten external runner source isolation without changing common resource owners | W61, W64 | TSK-0042 | Runner configuration and synthetic denial tests |
+| W69 | 64 | Bind automation-tool policy to approved destination and bounded requests before credential use | W66 | TSK-0042 | URL/DNS/redirect, budget and authority-negative tests |
+| W70 | 65 | Reuse Wiki preparation and publish P03 evidence axes and leaf-owner handoffs | W66, W67, W68, W69 | TSK-0042 | Wiki contract/evaluation, Task, ledger and independent review |
+| W71 | 66 | Reuse current DEV/MNG ownership and bind source, initialization and restore responsibilities | W56 | TSK-0043 | Ownership/provisioner regression and current-source evidence |
+| W72 | 67 | Repair Airflow URI construction, bounded input quarantine, data_version and metadata-preserving isolated restore | W71 | TSK-0043 | RED/GREEN unit, integration, CLI and actual isolated Worker/restore tests; changed code coverage at least 80% |
+| W73 | 68 | Reconcile current CDC/Avro consumers and preserve the platform_dev acceptance scope | W71 | TSK-0043 | Current connector/provisioner/source readback; explicit Opsflow deferral and resume contract |
+| W74 | 69 | Reuse Opsflow quality blocking and reconcile optional analytics smoke versus business publication | W72 | TSK-0043 | Invalid-input/no-publication tests and source-to-consumer evidence |
+| W75 | 70 | Defer a new experiment until actual dataset, time field, target, baseline and owner exist | W71 | TSK-0043 | Explicit missing-input and no-private-inference record |
+| W76 | 71 | Preserve optional Iceberg platform acceptance and document workload deferral and recovery limits | W71 | TSK-0043 | Version-specific maintenance evidence, current consumer and historical receipt mapping |
+| W77 | 72 | Reuse historical C19/C22 queue/schedule acceptance and reconcile current source/image scope | None | TSK-0044 | Exact-version source/consumer readback and bounded regression; current private/live state remains separate |
+| W78 | 73 | Add approval-bound one-shot no-send dead retry, restored-sending quarantine and in-flight recovery barrier | W77 | TSK-0044 | RED/GREEN SQL/Node/CLI and controlled isolated normal/denial/interruption/recovery cases; preserve history and uncertainty |
+| W79 | 74 | Preserve queue-mode default storage and reject binary input in the selected notifier | W77 | TSK-0044 | Exact-source/default readback and notifier binary-rejection regression; no new storage or binary consumer |
+| W80 | 75 | Add opt-in authenticated Mailpit STARTTLS fixture and next-execution same-ID credential refresh proof | W78 | TSK-0044 | Controlled TLS/auth success/refusal, same-ID refresh, bounded owned rehearsal, independent review and local gates |
+| W81 | 76 | Reconcile catalog, generated views and supported secret delivery contracts without duplicate identities | None | TSK-0045 | Public catalog/generator regressions and value-free source review |
+| W82 | 77 | Implement bounded read-only full environment and registry structure comparison | W81 | TSK-0045 | RED/GREEN CLI, value-redaction, unsafe path and interrupted-read tests |
+| W83 | 78 | Preserve scoped OpenBao trust, custody and recovery acceptance and classify current residuals | None | TSK-0045 | Source/version and historical actor/criterion evidence |
+| W84 | 79 | Reconcile completed/held consumers and hand off n8n credential refresh ownership | W81 | TSK-0045 | Catalog/consumer binding review and synthetic contract regressions |
+| W85 | 80 | Harden bounded SMTP public/private readers and preserve canonical alias semantics | None | TSK-0045 | FIFO/growth/rebind, equality/absence and regression tests |
+| W86 | 81 | Inventory retirement readers and preserve protected recovery copies without deletion | W83–W85 | TSK-0045 | Read-only source evidence, owner/hold and P09 handoff |
+| W87 | 82 | Implement source-bound producer companion selection and guarded operator start planning | None | TSK-0046 | RED/GREEN source closure, safe CLI and start-stub tests |
+| W88 | 83 | Add selection-bound expected scrape, backend and freshness signals with dashboards and alert rules | W87 | TSK-0046 | Synthetic configuration, promtool rules and isolated metrics checks |
+| W89 | 84 | Reuse authenticated OTLP and test pinned Alloy delivery and outage recovery | None | TSK-0046 | Existing quality regressions and owned isolated Alloy/Prometheus proof |
+| W90 | 85 | Bind HOME/profile expected-state and recovery handoffs without changing operating resources | W87, W88, W89 | TSK-0046 | Selection on/off, absent inventory, owner review and scoped evidence |
+| W91 | 86 | Reconcile public image, build-base and package-lock inventory with official candidates and advisory applicability | None | TSK-0047 | Source census, lookup-status and source-binding tests; unavailable lookups remain explicit |
+| W92 | 87 | Evaluate selected Valkey 9.1.3 and n8n 2.45.7 compatibility bundles without promoting a candidate to operation | W91 | TSK-0047 | Pin/consumer/source checks and bounded isolated ACL, queue, restore and runner regressions |
+| W93 | 88 | Preserve Storybook 10.6.3 and verify its tracked lock in a clean isolated installation | W91 | TSK-0047 | Isolated install, lint/typecheck/build and scoped UI/MCP/OIDC regression evidence |
+| W94 | 89 | Bind selected artifact verification to its exact subject and document unavailable signing or provenance material | W91, W92 | TSK-0047 | Per-artifact publisher, digest, identity/key, provenance/SBOM/license evidence and residual handoff |
+| W95 | 90 | Record the fifteen current role comparisons with public-source/consumer evidence and explicit unknowns | None | TSK-0048 | DATA-0096 role rows, preserved historical decisions and no deletion inference |
+| W96 | 91 | Preserve common controls while binding base/overlay provenance and measurement inputs to canonical sources | W95 | TSK-0048 | RED/GREEN synthetic overlay, exception and canonical-binding checks; runtime remains separate |
+| W97 | 92 | Reuse accepted C1–C6 placement and record only measured drift as a future candidate | W95 | TSK-0048 | Read-only current-source comparison and explicit no-migration boundary |
+| W98 | 93 | Reject unsafe or incomplete retirement manifests without creating an eligible deletion target | W95 | TSK-0048 | RED/GREEN manifest parser and owned-fixture rejection checks; apply remains blocked |
+| W99 | 94 | Normalize current document evidence and acceptance contracts without rewriting historical archives | None | TSK-0049 | Generation-7 document contract and sequential metadata/corpus/link checks; failures remain explicit |
+| W100 | 95 | Register existing P03 public validation and correct required P04/P05 selector expectations | W99 | TSK-0049 | Public plan/parity and exact selector tests in registered contexts |
+| W101 | 96 | Align hook and governance wording with active repository-change scope while preserving fail-closed admission | W99 | TSK-0049 | Synthetic payload and temporary-Git-fixture regressions |
+| W102 | 97 | Preserve result lifecycle and record local QA/CI residuals without upgrading them to remote acceptance | W99–W101 | TSK-0049 | EvidenceStore lifecycle and explicit NOT_RUN remote/operational outcomes |
+| W103 | 98 | Bind new report items to persisted collector receipts and scheduled execution identity without granting producer-signature authority | None | TSK-0050 | RED/GREEN collector, receipt binding, source-quality and SSRF/interrupt regressions |
+| W104 | 99 | Validate exact Gateway durable receipts and preserve corrupt or uncertain direct-submission records without implicit replay | W103 | TSK-0050 | Direct outbox, receipt-contract, concurrency and response-loss regressions |
+| W105 | 100 | Preserve selected Export 2.0 and distinguish synthetic ACK from recorded Export 1.0 Windows ACKs | W104 | TSK-0050 | Isolated Export 2.0 manifest/fixture contract; external Windows acceptance remains NOT_RUN |
+| W106 | 101 | Bind Attester retry and SQLite backup/restore to one report's stored evidence and state | W104 | TSK-0050 | Mixed-record, tamper, interruption, concurrent replay and owned backup/restore regressions |
+| W107 | 102 | Publish current trust-boundary, route and external-receiver handoffs without mutating watched routes | W103–W106 | TSK-0050 | Documentation/readme/runbook checks, offline gate and explicit operational/remote residuals |
 
 ### Current v30 continuation and delivery
 
@@ -296,7 +418,106 @@ The controller sequences any table/lifecycle/memory amendment after its exact
 consumer impact and compatibility are reviewable; unimplemented targets stay
 pending in TSK-0007 rather than being treated as completed by this Plan.
 
+### Current P01 implementation and ownership
+
+The qa-engineer writes the inventory CLI/library and its tests; the doc-writer
+writes this package amendment, TSK-0040 and DATA-0096; the ci-cd-engineer
+writes the script manifest and existing CI selector registration. The doc-writer
+holds only the DATA-0096 allocation segment of the shared Registry. Each
+shared-file lease records its pre-edit fingerprint locally. Independent reviewers
+read without editing. Unassigned data owners and operational accepters remain
+unknown; P labels confer no account authority.
+
+The CLI supports scan, compare and validate. Public regular source files receive
+SHA-256 fingerprints; private/authentication inputs, binaries, generated files
+and Git internals receive explicit exclusion treatment without content reads.
+Review receipts bind reviewer, time, fingerprint and scope. Publication validates
+before atomic replacement and excludes its own payload from recursive hashing.
+No service starts, host edits, credential actions or remote writes occur here.
+
 ## Verification Plan
+
+### Current P06 implementation and ownership
+
+TSK-0045 issues per-path single-writer leases and public fingerprints before
+each edit. The structural tool, SMTP readers, QA helpers, documentation and CI
+registration have separate writers and independent reviewers. The real private
+comparison follows synthetic leak tests and independent security review; it
+never prints or records private bytes, values, value hashes, or lengths.
+Metadata comparison is read-only, preserves ownership and rejects missing,
+ambiguous, unbounded, replaced or linked inputs. SMTP missing historical copy
+is an observation, not a deletion receipt or an equality result.
+
+Reuse historical acceptance only at its recorded version, actor and consumer
+scope. Keep source, static, synthetic/isolated, prior acceptance, direct HOME,
+rotation, independent restore, remote CI and final operator acceptance as
+separate evidence. The existing catalog destination state is not independent
+approval for a new OpenBao copy. n8n producer and native-credential updates are
+handed to their owner; no private mutation or runtime service change is implied.
+
+### Current P05 implementation and ownership
+
+The documentation writer issues TSK-0044 and per-path baseline fingerprints
+before source edits. The SQL writer alone owns new 007/008 SQL plus its tests;
+the Node writer owns OpsflowSmtp and directly required workflow exports/tests;
+the QA writer owns the controlled native fixture and the bounded P12 seam
+compatibility tests. CI registration and P08 source-preparation receipt correction
+have separate writers. No one edits an already issued SQL001–006 or completed
+Task body. P04 full Worker/restore acceptance is not a start condition.
+
+Keep manual no-send reprocessing approval-bound and single-use. Preserve
+attempts, audit provenance and unknown SMTP state; verify both live and restored
+in-flight barriers before replay. Never classify absence of a captured message
+as proof that SMTP did not accept it. Reject binary input in the selected
+notifier and do not add a binary storage service. Use only the optional owned
+Mailpit STARTTLS/auth profile for delivery tests; a controlled native same-ID
+credential update must affect the next execution without replacing the ID.
+
+Perform meaningful RED/GREEN normal, refusal, interruption and recovery tests
+with at least 80% coverage of new executable code. Preflight exact cached images,
+resources, trusted paths and ownership, run one owned cluster at a time and keep
+bounded attempts. Record missing environment and failed stages individually.
+Independent code/security/SQL/IaC/document reviews precede normal local gates,
+graphify freshness, source fingerprint comparison and local logical delivery.
+Operating services, real secrets, external mail, remote CI and P12 final
+acceptance remain NOT_RUN unless separately authorized and observed.
+
+### Current P04 implementation and ownership
+
+The P04 source writer integrates DAG, adapter and SQL changes. One infrastructure
+writer integrates the Airflow Compose/Dockerfile slice; QA, documentation and CI
+registration have separate writers. TSK-0043 records the pre-edit fingerprint,
+single writer and exact paths before modification. Independent reviewers do not
+edit the reviewed files. Unknown data and operational acceptance owners remain
+unassigned and confer no runtime authority.
+
+Install the small connection URI helper as read-only image content while keeping
+all package and image versions unchanged. Preserve the supported Airflow _CMD
+interface and the existing shared/default and dedicated broker selections.
+Password components are encoded once, literal percent/space is preserved, and
+the explicit single-line UTF-8 reader contract permits at most one terminal LF.
+The current MNG listener variables remain independent from DEV's internal 5432
+and host-published ports. Keep SQL migrations already issued immutable; expose
+data_version through a new migration and preserve P05 outbox interfaces.
+
+Extend the existing owned Celery Worker fixture rather than introducing a new
+workflow. Its Worker uses the actual helper and restricted S3 credentials;
+setup/recovery use a separate identity. Prove normal, rejection, interruption,
+retry/backfill, duplicate/conflict and independent-target restore semantics.
+Object restore includes Content-Type, metadata, tags, size and body; a newly
+issued server ETag/version is not expected to equal the original. Quarantine is
+bounded and fails closed before SQL/outbox publication. Oversized/unreadable
+inputs are not copied into quarantine or reported as successfully preserved.
+
+Preflight the existing tools, exact cached images, trusted UID/temp paths and
+available resources. Use no image downloads, one owned cluster at a time and
+the existing execution budgets. Record timeouts by failing phase. Do not weaken
+filesystem guards or relabel unrelated n8n receipt drift as a P04 pass. Run the
+registered local QA/render/doc/Registry checks and independent code, security,
+SQL/IaC and document review before graphify freshness, final inventory/diff
+comparison and a normal local logical commit. Operating service changes,
+credential rotation, HOME independent restore, remote CI and final P12
+acceptance remain NOT_RUN unless separately authorized and observed.
 
 Run a value-free source-set audit, actual frontmatter parse and read-only PR
 metadata before authoring. Observe the requirement-coverage/exclusion contract
@@ -340,6 +561,14 @@ real provider effectiveness, HOME backup/restore and remote main protection
 remain separate observations. Never create credentials or change managed
 settings to make a source check pass.
 
+P01 adds meaningful Git/non-Git, symlink, duplicate declaration, ownership,
+secret-boundary, stale-review, permission, cancellation and atomic-output probes.
+The new executable code must achieve at least 80% coverage. Manifest/CI selection,
+metadata, links and Registry checks accompany the source unit. Current direct
+operation, credential rotation, independent restore, hosted CI and final operator
+acceptance stay NOT_RUN unless separately observed. Compare the initial and
+final public manifests and review only affected rows after a source change.
+
 ## Risks and Recovery
 
 ### Risks and Rollback
@@ -359,6 +588,13 @@ operator/window, stop condition, and rollback. Missing prerequisites block
 only that dependent operation.
 
 ## Related Documents
+
+- [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
+- [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
+- [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
+- [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
+- [Exporter and observability contracts Task](tasks/tsk-0046-exporter-observability.md)
+- [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Spec](spec.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)

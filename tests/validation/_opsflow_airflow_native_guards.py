@@ -37,7 +37,8 @@ def postgres_command(role):
         "printf '%s\\n' '"
         + rules[role]
         + "' >> /var/lib/postgresql/18/docker/pg_hba.conf; "
-        "exec postgres -D /var/lib/postgresql/18/docker -c listen_addresses='*' -c unix_socket_directories=/var/run/postgresql -c max_connections=40 -c shared_buffers=32MB",
+        "exec postgres -D /var/lib/postgresql/18/docker -c listen_addresses='*' -c unix_socket_directories=/var/run/postgresql -c max_connections=40 -c shared_buffers=32MB -p "
+        + ("55432" if role == "metadata-pg" else "5432"),
     )
 
 
@@ -204,7 +205,12 @@ def airflow_runtime_identity(value):
 
 
 def network_alias(role):
-    return {"api": "airflow-apiserver", "s3": "seaweedfs-s3"}.get(role, role)
+    return {
+        "api": "airflow-apiserver",
+        "s3": "seaweedfs-s3",
+        "metadata-pg": "mng-pg",
+        "valkey": "mng-valkey",
+    }.get(role, role)
 
 
 def ordinary_networks_match(state, actual, expected):
@@ -242,6 +248,7 @@ CAPS = {
     "scheduler": (512, 300, 256),
     "processor": (512, 250, 256),
     "worker": (1024, 650, 256),
+    "storage-admin": (128, 50, 64),
 }
 
 
@@ -304,12 +311,14 @@ def create_options(role, user):
         "valkey": (("/data", 16),),
         "s3": (("/data", 192),),
     }.get(role, ())
-    if role in ("api", "scheduler", "processor", "worker", "probe"):
+    if role in ("api", "scheduler", "processor", "worker", "probe", "storage-admin"):
         locations = (
             ("/opt/airflow/dags", 8),
             ("/opt/airflow/logs", 32),
             ("/run/opsflow", 1),
             ("/run/airflow-fixture", 1),
+            ("/run/secrets", 1),
+            ("/opt/airflow/bin", 1),
         )
     for target, size in locations:
         args += [
@@ -321,6 +330,13 @@ def create_options(role, user):
 
 def validate_airflow_environment(assignment):
     if assignment == "AIRFLOW_CONFIG=/tmp/airflow.cfg":
+        return
+    if assignment in {
+        "POSTGRES_PORT=55432",
+        "VALKEY_PORT=6389",
+        "AIRFLOW_VALKEY_HOST=mng-valkey",
+        "AIRFLOW_VALKEY_SECRET=mng_valkey_password",
+    }:
         return
     key, _, _value = assignment.partition("=")
     if not key.startswith("AIRFLOW__") or key.endswith(("_PASSWORD", "_TOKEN", "_KEY")):
@@ -335,6 +351,8 @@ def safe_exception(error):
         "PermissionError",
         "OSError",
         "TimeoutError",
+        "TimeoutExpired",
+        "CalledProcessError",
         "ValueError",
         "KeyError",
         "JSONDecodeError",
