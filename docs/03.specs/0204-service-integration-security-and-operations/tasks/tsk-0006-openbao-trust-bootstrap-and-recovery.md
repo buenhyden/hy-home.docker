@@ -3285,7 +3285,7 @@ B2 and B3 projection SHA256 values are respectively
 and `89f2e72e8dba09019420922484795e02c759564b7775d74f045a99704a15ea96`.
 The separately reviewed fixed local retention allowlist copied seven public
 source/hash artifacts and minimized projections to the ignored
-`_workspace/openbao-native-evidence/2026-10-27-f4698d1e` evidence area.
+`_workspace/repo-support/openbao-native-evidence/2026-10-27-f4698d1e` evidence area.
 Every source and destination hash matched; new directories use mode 0700 and
 files mode 0600, with no overwrite or unlisted copy. The local index SHA256 is
 `c74af01811bcf2df74d6aca18915c431967e849926d056969a677a405daa99d5`.

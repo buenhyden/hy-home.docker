@@ -6063,7 +6063,7 @@
         "durable-history-minimal-f469-v2.json": "12cafa65a2bb0844290b03b64cfdd87058696790516be1f9f139ed637a89d100"
       },
       "local_minimized_evidence_retention": {
-        "repository_relative_index": "_workspace/openbao-native-evidence/2026-10-27-f4698d1e/index.json",
+        "repository_relative_index": "_workspace/repo-support/openbao-native-evidence/2026-10-27-f4698d1e/index.json",
         "index_sha256": "c74af01811bcf2df74d6aca18915c431967e849926d056969a677a405daa99d5",
         "allowlisted_files": 7,
         "all_source_and_destination_hashes_match": true,

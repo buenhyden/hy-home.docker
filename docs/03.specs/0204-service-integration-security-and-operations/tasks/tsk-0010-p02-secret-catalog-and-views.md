@@ -932,12 +932,12 @@ workspace boundary. The reviewed plan snapshot remains
 `71e7233de2864a2910fee2ada026d6254264c3140540803f6f518486ef5a7443`.
 No Bao-only authority was borrowed. The retained regular files are:
 
-- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/facts/u1-isolated-client-safe.json`
-- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/facts/f23-isolated-collectors-safe.json`
-- `_workspace/valkey-native-evidence/2026-10-27-f4698d1e/reproduction/u1-f23-source15-parity.json`
+- `_workspace/repo-support/valkey-native-evidence/2026-10-27-f4698d1e/facts/u1-isolated-client-safe.json`
+- `_workspace/repo-support/valkey-native-evidence/2026-10-27-f4698d1e/facts/f23-isolated-collectors-safe.json`
+- `_workspace/repo-support/valkey-native-evidence/2026-10-27-f4698d1e/reproduction/u1-f23-source15-parity.json`
 
 The minimal copy index is
-`_workspace/valkey-native-evidence/2026-10-27-f4698d1e/copy-index.json`, SHA256
+`_workspace/repo-support/valkey-native-evidence/2026-10-27-f4698d1e/copy-index.json`, SHA256
 `3348145686719aa8a3404943acd2767546ce20e6c813661764f3ecc8e3a8c21f`.
 It binds all three exact source/destination hashes, byte counts, modes and UID.
 Owned canonical directory handles and no-follow opens were used; only new child
