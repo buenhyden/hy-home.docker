@@ -13,7 +13,7 @@ import unittest
 from unittest import mock
 
 import scripts.lib.document_governance.registry as registry_module
-from scripts.lib.document_governance import metadata_validator, requirement_recovery
+from scripts.lib.document_governance import metadata_validator
 from scripts.lib.document_governance.metadata_validator import (
     Record,
     _parse_frontmatter_text,
@@ -29,8 +29,6 @@ from scripts.lib.document_governance.registry import (
     _declares_provider_binding,
     _path_patterns_overlap,
     classify_path,
-    declares_frozen_legacy_record,
-    declares_frozen_legacy_status,
     document_type,
     load_registry,
     resolve_template_placeholders,
@@ -1522,30 +1520,6 @@ class DocumentRegistryTests(unittest.TestCase):
             registry.transitions["incident"]["mitigated"],
         )
 
-    def test_frozen_legacy_status_exception_is_exact(self) -> None:
-        registry = load_registry()
-        profile = registry.profiles["migration"]
-        paths = profile["exceptions"][0]["paths"]
-
-        self.assertEqual(3, len(paths))
-        for path in paths:
-            with self.subTest(path=path):
-                self.assertTrue(
-                    declares_frozen_legacy_status(profile, path, "completed")
-                )
-                self.assertTrue(declares_frozen_legacy_record(profile, path))
-                self.assertFalse(declares_frozen_legacy_status(profile, path, "sealed"))
-        self.assertFalse(
-            declares_frozen_legacy_status(
-                profile, "docs/98.archive/migrations/0004-future.md", "completed"
-            )
-        )
-        self.assertFalse(
-            declares_frozen_legacy_record(
-                profile, "docs/98.archive/migrations/0004-future.md"
-            )
-        )
-
     def test_static_generated_outputs_match_the_manifest_owners(self) -> None:
         from scripts.lib.document_governance.references import (
             generated_reference_owners,
@@ -1734,7 +1708,6 @@ class DocumentRegistryTests(unittest.TestCase):
     ) -> None:
         from scripts.lib.document_governance import (
             architecture,
-            archive,
             identity_history,
             requirements,
             spec_packages,
@@ -1752,7 +1725,6 @@ class DocumentRegistryTests(unittest.TestCase):
         readers = (
             lambda path: registry_module._read_regular_file(path, 1024),
             architecture._read_regular_utf8,
-            archive._read_regular,
             identity_history._read_identity_source,
             requirements._read_regular_utf8,
             read_spec,
@@ -3119,64 +3091,6 @@ class DocumentRegistryTests(unittest.TestCase):
         )
 
 
-class RequirementRecoveryBoundaryTests(unittest.TestCase):
-    def test_regular_reader_preserves_utf8_and_crlf_bytes(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            payload = "First\r\n한글\r\n".encode()
-            (root / "body.md").write_bytes(payload)
-            self.assertEqual(
-                payload,
-                requirement_recovery._regular_text(root, "body.md").encode("utf-8"),
-            )
-
-    def test_regular_reader_rejects_links_directories_and_oversized_files(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            (root / "body.md").write_bytes(b"body\n")
-            (root / "linked.md").symlink_to("body.md")
-            (root / "nested").mkdir()
-            (root / "nested/body.md").write_bytes(b"body\n")
-            (root / "linked-parent").symlink_to("nested", target_is_directory=True)
-            (root / "oversized.md").write_bytes(b"x" * 17)
-            with mock.patch.object(requirement_recovery, "LIMIT", 16):
-                for path in (
-                    "linked.md",
-                    "linked-parent/body.md",
-                    "nested",
-                    "oversized.md",
-                ):
-                    with self.subTest(path=path), self.assertRaises(ValueError):
-                        requirement_recovery._regular_text(root, path)
-
-    def test_public_recovery_rejects_missing_or_invalid_proof_as_registry_error(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-            with self.assertRaises(RegistryError) as missing:
-                requirement_recovery.recover_pinned_requirement_baseline(
-                    "HEAD", root=root
-                )
-            self.assertIsInstance(missing.exception.__cause__, ValueError)
-            task = root / "docs/03.specs/0001-example/tasks/tsk-0001-example.md"
-            task.parent.mkdir(parents=True)
-            task.write_text(
-                "---\ntype: sdlc/task\nstatus: draft\n"
-                "artifact_id: SPEC-0001-TSK-0001\n"
-                f"{requirement_recovery.FIELD}: []\n---\n"
-            )
-            subprocess.run(["git", "add", "docs"], cwd=root, check=True)
-            with self.assertRaises(RegistryError) as invalid:
-                requirement_recovery.recover_pinned_requirement_baseline(
-                    "HEAD", root=root
-                )
-            self.assertIsInstance(invalid.exception.__cause__, ValueError)
-
-
 class ProfileLanguageTests(unittest.TestCase):
     """SPEC-0184 rule 4: every prose profile declares its language."""
 
@@ -3621,41 +3535,14 @@ class RegistryIndexContractTests(unittest.TestCase):
 
 
 class ArchiveDispositionModelTests(unittest.TestCase):
-    """The Stage 98 model switch is a Registry fact bound to ADR-0035."""
+    """The Stage 98 model switch is a Registry fact that followed ADR-0035."""
 
-    def test_switch_is_bound_to_the_adr_0035_decision_in_both_directions(
-        self,
-    ) -> None:
-        """`adopted` is the acceptance of ADR-0035, and `transition` is its absence.
+    def test_adopted_switch_follows_the_retired_adr_0035(self) -> None:
+        """ADR-0035 was accepted, then superseded and deleted; its number is reserved."""
 
-        The decision is found by identity in Stage 02 or Stage 98, so the
-        binding still holds once ADR-0035 is itself superseded and preserved.
-        """
-
-        from scripts.lib.document_governance.frontmatter import (
-            read_frontmatter_values,
-        )
-
-        model = load_registry().common.get("archive_disposition_model")
-        candidates = [
-            *sorted((ROOT / "docs/02.architecture/decisions").glob("*.md")),
-            *sorted(
-                (ROOT / "docs/98.archive").glob("*/02.architecture/decisions/*.md")
-            ),
-        ]
-        statuses = [
-            values.get("status")
-            for path in candidates
-            if path.name != "README.md"
-            and (values := read_frontmatter_values(path)).get("artifact_id")
-            == "ADR-0035"
-        ]
-        self.assertEqual(1, len(statuses), "ADR-0035 must exist exactly once")
-        if model == "adopted":
-            self.assertIn(statuses[0], {"accepted", "superseded"})
-        else:
-            self.assertEqual("transition", model)
-            self.assertEqual("proposed", statuses[0])
+        registry = load_registry()
+        self.assertEqual("adopted", registry.common.get("archive_disposition_model"))
+        self.assertIn(35, registry.identity_spaces["adr"].reserved_history)
 
     def test_switch_value_is_required_and_closed(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))

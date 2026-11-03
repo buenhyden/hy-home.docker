@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import contextlib
-import io
 import pathlib
 import subprocess
 import tempfile
 import unittest
-from unittest import mock
 
 from scripts.lib.document_governance.metadata_validator import (
     _write_or_check_output,
@@ -71,120 +68,6 @@ class LabDocumentSelectionTests(unittest.TestCase):
 
 
 class FourDigitDocumentIdentityTests(unittest.TestCase):
-    def test_retired_spec_lineage_is_relation_only_and_requires_real_recovery(
-        self,
-    ) -> None:
-        from scripts.lib.document_governance import metadata_validator as metadata
-        from scripts.lib.document_governance.metadata import reference
-
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            source = "docs/03.specs/0153-example/spec.md"
-            path = root / source
-            path.parent.mkdir(parents=True)
-            path.write_text(
-                "---\nartifact_id: SPEC-0153\nartifact_type: spec\nstatus: completed\nsupersedes: [SPEC-0136]\n---\n# Recovered\n",
-                encoding="utf-8",
-            )
-            for args in (
-                ("init", "-q"),
-                ("add", "."),
-                (
-                    "-c",
-                    "user.name=Fixture",
-                    "-c",
-                    "user.email=fixture@example.invalid",
-                    "commit",
-                    "-qm",
-                    "recoverable spec",
-                ),
-            ):
-                subprocess.run(
-                    ["git", *args], cwd=root, check=True, capture_output=True
-                )
-            commit = subprocess.run(
-                ["git", "rev-parse", "HEAD"],
-                cwd=root,
-                check=True,
-                capture_output=True,
-                text=True,
-            ).stdout.strip()
-            path.unlink()
-            migration_path = (
-                root
-                / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-            )
-            migration_path.parent.mkdir(parents=True)
-            migration_path.write_text("fixture boundary", encoding="utf-8")
-            row = {
-                "source_path": source,
-                "artifact_id": "SPEC-0153",
-                "action": "delete",
-                "target_path": None,
-                "recovery_commit": commit,
-            }
-            record = metadata.Record(
-                pathlib.Path("docs/03.specs/0136-original/spec.md"),
-                {"artifact_id": "SPEC-0136", "superseded_by": "SPEC-0153"},
-                "spec",
-            )
-            # Native compact selection has its own real-905 integration test;
-            # this injects only that parsed boundary, not Git/blob recovery.
-            with mock.patch(
-                "scripts.lib.document_governance.archive_migration_0003._migration_document",
-                return_value={"schema_version": 3, "rows": [row]},
-            ):
-                manifest = metadata.build_current_manifest(root, [record])
-                self.assertNotIn("SPEC-0153", manifest)
-                self.assertEqual(
-                    "retired",
-                    manifest.relation_records_by_id["SPEC-0153"].metadata["status"],
-                )
-                self.assertEqual(
-                    ["SPEC-0136"],
-                    manifest.relation_records_by_id["SPEC-0153"].metadata["supersedes"],
-                )
-                row["recovery_commit"] = "0" * 40
-                with self.assertRaises(metadata.ProfileError):
-                    metadata.build_current_manifest(root, [record])
-                stderr = io.StringIO()
-                with (
-                    mock.patch.object(
-                        reference, "collect_records", return_value=[record]
-                    ),
-                    contextlib.redirect_stderr(stderr),
-                ):
-                    result = metadata.main(
-                        [
-                            "--root",
-                            str(root),
-                            "--registry",
-                            str(PROFILES),
-                            "--mode",
-                            "check-active",
-                        ]
-                    )
-                self.assertEqual(2, result)
-                self.assertIn(
-                    "configuration-error: retired Spec lineage recovery is invalid",
-                    stderr.getvalue(),
-                )
-                self.assertNotIn("Traceback", stderr.getvalue())
-                row.update(recovery_commit=commit, artifact_id="SPEC-0152")
-                record.metadata["superseded_by"] = "SPEC-0152"
-                with self.assertRaises(metadata.ProfileError):
-                    metadata.build_current_manifest(root, [record])
-            with mock.patch(
-                "scripts.lib.document_governance.archive_migration_0003._migration_document",
-                return_value={"schema_version": 3, "rows": []},
-            ):
-                self.assertNotIn(
-                    "SPEC-0152",
-                    metadata.build_current_manifest(
-                        root, [record]
-                    ).relation_records_by_id,
-                )
-
     def test_full_repository_contracts_reaches_active_record_validation(self) -> None:
         from scripts.lib.document_governance import metadata_validator as metadata
 

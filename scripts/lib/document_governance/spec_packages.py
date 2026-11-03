@@ -3358,7 +3358,7 @@ def validate_spec_package_lifecycle(
                 SpecPackageFinding(
                     "package-retirement-unrecorded",
                     f"docs/03.specs/{name}",
-                    "retirement requires one Stage 98 Tombstone",
+                    "retirement requires the Spec number in the Registry reserved_history",
                 )
             )
     return tuple(findings)
@@ -5413,34 +5413,6 @@ def _standard_preserved_package_path(
     return pathlib.PurePosixPath("docs/98.archive", disposition, *origin.parts[1:])
 
 
-def _load_preserved_spec_packages(
-    root: pathlib.Path,
-    disposition: str,
-    registry: DocumentRegistry,
-) -> tuple[SpecPackage, ...]:
-    stage = root / f"docs/98.archive/{disposition}/03.specs"
-    try:
-        metadata = os.lstat(stage)
-    except FileNotFoundError:
-        return ()
-    except OSError as error:
-        raise SpecPackageError(
-            f"cannot inspect {disposition} Spec archive: {error}"
-        ) from error
-    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISDIR(metadata.st_mode):
-        raise SpecPackageError(
-            f"{disposition} Spec archive must be a non-symlink directory"
-        )
-    # Historical archives include records created before completion receipts
-    # became mandatory; current packages still enforce that authoring gate.
-    return load_spec_packages(
-        stage,
-        registry=registry,
-        _completion_evidence=False,
-        _current_contracts=False,
-    )
-
-
 def _archive_receipt_carriers(
     completed: Sequence[SpecPackage],
 ) -> tuple[_ReceiptCarrier, ...]:
@@ -6041,7 +6013,8 @@ def validate_repository_spec_package_lifecycle_details(
         source_registry_contract or registry,
         migration_source=source_packages,
     )
-    completed = _load_preserved_spec_packages(root, "completed", registry)
+    # Stage 98 holds no preserved packages; version history is the record.
+    completed: tuple[SpecPackage, ...] = ()
     ordinary_preserved = _ordinary_preserved_paths(
         root,
         previous,
@@ -6061,7 +6034,7 @@ def validate_repository_spec_package_lifecycle_details(
     lifecycle_findings = validate_spec_package_lifecycle(
         previous,
         current,
-        retired_paths=_recorded_retirements(root),
+        retired_paths=_recorded_retirements(previous, registry),
         preserved_paths=ordinary_preserved | branch_preserved,
         registry=registry,
     )
@@ -6109,12 +6082,16 @@ def validate_repository_spec_package_lifecycle(
     ).findings
 
 
-def _recorded_retirements(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
-    """Stage 98 withdrawal records are the tracked record of an approved retirement."""
+def _recorded_retirements(
+    previous: Sequence[SpecPackage], registry: DocumentRegistry
+) -> frozenset[pathlib.PurePosixPath]:
+    """A removed package is recorded when the Registry reserves its number."""
 
-    from scripts.lib.document_governance.archive import recorded_retired_paths
-
-    return recorded_retired_paths(root)
+    space = registry.identity_spaces.get("spec")
+    reserved = frozenset(space.reserved_history) if space is not None else frozenset()
+    return frozenset(
+        package.spec.path for package in previous if int(package.number) in reserved
+    )
 
 
 def resolve_lifecycle_base(root: pathlib.Path, explicit: str | None = None) -> str:

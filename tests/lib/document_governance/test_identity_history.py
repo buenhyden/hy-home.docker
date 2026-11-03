@@ -158,63 +158,22 @@ class IdentityHistoryTests(unittest.TestCase):
             source,
         )
 
-    def test_allocation_transition_reads_each_blob_once(self) -> None:
+    def test_predecessor_without_a_registry_fails_closed(self) -> None:
         with pinned_lineage_root() as root:
-            self._test_allocation_transition_reads_each_blob_once(root)
-
-    def _test_allocation_transition_reads_each_blob_once(
-        self, root: pathlib.Path
-    ) -> None:
-        from scripts.lib.document_governance.archive_migration_0003 import (
-            _approved_migration_document,
-        )
-
-        base = _approved_migration_document(root)["baseline_commit"]
-        real = identity_history._run_git
-        blobs: list[str] = []
-
-        def counting(root_arg, args, **kwargs):
-            if tuple(args[:2]) == ("cat-file", "blob"):
-                blobs.append(args[2])
-            return real(root_arg, args, **kwargs)
-
-        with mock.patch.object(identity_history, "_run_git", counting):
-            identity_history.validate_allocation_transition(
-                root,
-                load_registry(),
-                {"docs/03.specs/0008-workflow/spec.md": "SPEC-0008"},
-                base,
+            base = self._git(root, "rev-list", "--max-parents=0", "HEAD").split()[0]
+            self.assertEqual(
+                "",
+                self._git(
+                    root, "ls-tree", base, "--", "docs/99.templates/registry.json"
+                ),
             )
-        self.assertEqual(len(blobs), len(set(blobs)))
-
-    def test_approved_pre_introduction_base_preserves_existing_identity(self) -> None:
-        with pinned_lineage_root() as root:
-            self._test_approved_pre_introduction_base_preserves_existing_identity(root)
-
-    def _test_approved_pre_introduction_base_preserves_existing_identity(
-        self, root: pathlib.Path
-    ) -> None:
-        from scripts.lib.document_governance.archive_migration_0003 import (
-            _approved_migration_document,
-        )
-
-        approved = _approved_migration_document(root)
-        base = approved["baseline_commit"]
-        self.assertEqual(
-            "",
-            self._git(root, "ls-tree", base, "--", "docs/99.templates/registry.json"),
-        )
-        current = {"docs/03.specs/0008-workflow/spec.md": "SPEC-0008"}
-        self.assertEqual(
-            (),
-            identity_history.validate_allocation_transition(
-                root, load_registry(), current, base
-            ),
-        )
-        with self.assertRaises(IdentityHistoryError):
-            identity_history.validate_allocation_transition(
-                root, load_registry(), current, "0" * 40
-            )
+            with self.assertRaisesRegex(IdentityHistoryError, "lacks a Registry"):
+                identity_history.validate_allocation_transition(
+                    root,
+                    load_registry(),
+                    {"docs/03.specs/0008-workflow/spec.md": "SPEC-0008"},
+                    base,
+                )
 
     def test_generic_allocation_rejects_retired_reuse_and_requires_atomic_advance(
         self,

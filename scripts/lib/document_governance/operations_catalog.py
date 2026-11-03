@@ -5,6 +5,7 @@ from __future__ import annotations
 import dataclasses
 import datetime as dt
 import errno
+import functools
 import json
 import os
 import pathlib
@@ -1979,16 +1980,42 @@ def _current_owner(root: pathlib.Path, value: str) -> bool:
     )
 
 
+@functools.lru_cache(maxsize=1)
+def _incident_identifiers() -> tuple[re.Pattern[str], re.Pattern[str], re.Pattern[str]]:
+    """Any artifact ID, an Incident ID, and the Incident/Postmortem record IDs."""
+
+    from scripts.lib.document_governance.registry import (
+        artifact_identifier_regex,
+        load_registry,
+    )
+
+    profiles = load_registry().profiles
+    identifiers = artifact_identifier_regex(
+        tuple(
+            pattern
+            for profile in profiles.values()
+            if isinstance(pattern := profile.get("artifact_id_pattern"), str)
+        )
+    )
+    incident = artifact_identifier_regex(
+        (str(profiles["incident"]["artifact_id_pattern"]),)
+    )
+    # An Incident and its Postmortem are the record, never its corrective owner.
+    records = artifact_identifier_regex(
+        tuple(
+            str(profiles[name]["artifact_id_pattern"])
+            for name in ("incident", "postmortem")
+        )
+    )
+    return identifiers, incident, records
+
+
 def _incident_closure_findings(
     root: pathlib.Path,
     packet: pathlib.PurePosixPath,
     documents: Mapping[str, tuple[Mapping, str]],
     contract: Mapping,
 ) -> tuple[CatalogFinding, ...]:
-    from scripts.lib.document_governance.archive import (
-        _catalog_contract,
-        _names_are_valid,
-    )
     from scripts.lib.document_governance.spec_packages import _contract_section
 
     incident, _ = documents.get("incident", ({}, ""))
@@ -2007,10 +2034,10 @@ def _incident_closure_findings(
         section = _corrective_action_section(
             body, str(contract["corrective_section"]), _contract_section
         )
+        identifiers, incident_id, incident_records = _incident_identifiers()
         names = str(incident.get("artifact_id", "")) + " " + section
-        valid = _names_are_valid(root, "resolved", names)
+        valid = incident_id.search(names) is not None
         if valid and re.search(r"no corrective action:\s*\S", section) is None:
-            _, identifiers, _, incident_records = _catalog_contract()
             candidates = identifiers.findall(incident_records.sub(" ", section))
             candidates += re.findall(r"`(docs/[^`]+)`", section)
             valid = any(_current_owner(root, candidate) for candidate in candidates)

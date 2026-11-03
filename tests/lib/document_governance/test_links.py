@@ -415,9 +415,7 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
                 {finding.code for finding in graph.input_findings},
             )
 
-    def test_hidden_governance_links_are_checked_but_frozen_history_is_preserved(
-        self,
-    ) -> None:
+    def test_hidden_governance_and_stage98_links_are_checked(self) -> None:
         from scripts.lib.document_governance.links import (
             build_document_graph,
             check_alignment,
@@ -443,8 +441,13 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
                 set(bodies), {path.relative_to(root).as_posix() for path in paths}
             )
             findings = check_alignment(build_document_graph(paths, repo_root=root))
-            self.assertEqual(1, len(findings))
-            self.assertEqual(".agents/governance/bootstrap.md:2", findings[0].path)
+            self.assertEqual(
+                [
+                    ".agents/governance/bootstrap.md:2",
+                    "docs/98.archive/superseded/02.architecture/decisions/0029-old.md:1",
+                ],
+                sorted(finding.path for finding in findings),
+            )
 
     def test_exited_git_process_requires_complete_successful_drains(self) -> None:
         from scripts.lib.document_governance import git_provenance
@@ -2208,29 +2211,6 @@ class NavigationModeTests(unittest.TestCase):
             "navigation-label-mismatch", self._codes("# X\n\n[`c/`](a/README.md)\n")
         )
 
-    def test_frozen_archive_readme_is_not_judged(self) -> None:
-        from scripts.lib.document_governance.links import (
-            build_document_graph,
-            run_mode,
-        )
-
-        files = {
-            "docs/98.archive/completed/p/README.md": "# P\n\n[s](a/spec.md)\n",
-            "docs/98.archive/completed/p/a/spec.md": "# S\n",
-        }
-        with tempfile.TemporaryDirectory() as temp:
-            root = pathlib.Path(temp)
-            for relative, text in files.items():
-                path = root / relative
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_text(text, encoding="utf-8")
-            track_repository(root)
-            findings = run_mode(
-                "navigation",
-                build_document_graph([root / name for name in files], repo_root=root),
-            )
-        self.assertEqual([], [f for f in findings if f.code.startswith("navigation")])
-
     def test_untracked_tree_is_reported_not_passed(self) -> None:
         from scripts.lib.document_governance.links import (
             build_document_graph,
@@ -2405,6 +2385,16 @@ class FencedCommandPathTests(unittest.TestCase):
                 )
                 self.assertEqual(expected, len(findings))
 
+    def test_a_self_declared_task_outside_the_task_path_is_not_exempt(self) -> None:
+        body = (
+            "---\ntitle: Fixture\ntype: sdlc/task\nstatus: completed\n---\n"
+            "# Fixture\n\n```bash\nbash scripts/gone.sh\n```\n"
+        )
+        findings = self._findings(
+            {"scripts/keep.sh": "", "docs/03.specs/0001-a/notes.md": body}
+        )
+        self.assertEqual(1, len(findings))
+
     def test_operator_created_secret_files_are_not_repository_artifacts(self) -> None:
         findings = self._findings(
             {
@@ -2431,18 +2421,6 @@ class FencedCommandPathTests(unittest.TestCase):
             "\n```bash\n# see scripts/also-gone.sh for detail\n```\n"
         )
         self.assertEqual([], self._findings({"scripts/keep.sh": "", "README.md": body}))
-
-    def test_preserved_archive_bodies_are_not_scanned(self) -> None:
-        body = "```bash\nbash scripts/gone.sh\n```\n"
-        findings = self._findings(
-            {
-                "scripts/keep.sh": "",
-                "docs/98.archive/retired/05.operations/old.md": body,
-                "docs/98.archive/completed/03.specs/0001-x/spec.md": body,
-                "docs/98.archive/superseded/03.specs/0002-y/spec.md": body,
-            }
-        )
-        self.assertEqual([], findings)
 
     def test_placeholder_tokens_are_not_treated_as_paths(self) -> None:
         body = "```bash\nbash scripts/${NAME}.sh docs/<slug>/spec.md tests/*.py\n```\n"

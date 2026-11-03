@@ -416,31 +416,13 @@ def _path_accepts_identity(path: str, identity: str) -> bool:
     return False
 
 
-_PRESERVED_DECISION_TASK = re.compile(
-    r"docs/98\.archive/completed/03\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*"
-    r"/tasks/tsk-[0-9]{4}-[a-z0-9][a-z0-9-]*\.md"
-)
-
-
 def _is_decision_task(path: str, identity: str, registry: DocumentRegistry) -> bool:
-    """Accept a current Task, or one preserved whole after completion.
-
-    Completion moves a package to the archive with every Task, so the Task that
-    recorded a recovery decision keeps carrying it there. Without this, the
-    retention policy and identity recovery cannot both hold. A superseded or
-    retired Task is withdrawn authority and is not a decision owner.
-    """
+    """A recovery decision is owned by a current Stage 03 Task."""
 
     from scripts.lib.document_governance.registry import classify_path
 
-    if classify_path(path, registry) == "task":
-        return _path_accepts_identity(path, identity)
-    upper = identity.upper()
-    return (
-        _PRESERVED_DECISION_TASK.fullmatch(path) is not None
-        and classify_path(path, registry) == "archive-record-completed"
-        and upper.startswith("SPEC-")
-        and "-TSK-" in upper
+    return classify_path(path, registry) == "task" and _path_accepts_identity(
+        path, identity
     )
 
 
@@ -762,91 +744,27 @@ def validate_allocation_transition(
         if isinstance(identity, str) and _path_accepts_identity(origin, identity):
             _record(identity, previous)
     registry_oid = entries.get("docs/99.templates/registry.json")
-    # Exact reviewed renames preserve identity even when the predecessor's
-    # migrated envelope had not yet acquired its canonical artifact_id.
-    migration_path = (
-        root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-    )
-    if migration_path.exists():
-        from scripts.lib.document_governance.archive_migration_0003 import (
-            _approved_migration_document,
-        )
-
-        try:
-            approved_selection = _approved_migration_document(root)
-            require_ancestor(
-                approved_selection["baseline_commit"],
-                "HEAD",
-                "approved migration baseline",
-            )
-            for row in approved_selection["rows"]:
-                target = row.get("target_path")
-                identity = row.get("artifact_id")
-                if (
-                    row.get("action") == "rename"
-                    and isinstance(identity, str)
-                    and (row["source_path"] in entries or target in entries)
-                    and current.get(target) == identity
-                ):
-                    _record(identity, previous)
-        except (KeyError, ValueError) as error:
-            raise IdentityHistoryError(
-                "identity-preserving mapping cannot be verified"
-            ) from error
     if registry_oid is None:
-        # Only the reviewed pre-introduction lineage can bootstrap a Registry.
-        from scripts.lib.document_governance.archive_migration_0003 import (
-            _approved_migration_document,
+        # Every supported base already carries the Registry.
+        raise IdentityHistoryError("allocation predecessor lacks a Registry")
+    try:
+        from scripts.lib.document_governance.registry import _unique_object
+
+        raw = json.loads(
+            git("cat-file", "blob", registry_oid), object_pairs_hook=_unique_object
         )
-
-        try:
-            approved = _approved_migration_document(root)
-            approved_base = approved["baseline_commit"]
-            require_ancestor(base_commit, approved_base, "allocation predecessor")
-            require_ancestor(approved_base, "HEAD", "approved migration baseline")
-            prior_registry = git(
-                "log",
-                "--format=%H",
-                "-1",
-                base_commit,
-                "--",
-                "docs/99.templates/registry.json",
-            ).strip()
-            if prior_registry:
-                raise IdentityHistoryError("a removed Registry cannot bootstrap again")
-            historical = collect_issued_identities(
-                root, refs=(base_commit,), include_current=False
-            )
-            high_water = {
-                name: historical.high_water(name) for name in registry.identity_spaces
-            }
-        except (KeyError, ValueError) as error:
-            raise IdentityHistoryError(
-                "allocation bootstrap lacks approved lineage"
-            ) from error
-    else:
-        try:
-            from scripts.lib.document_governance.registry import _unique_object
-
-            raw = json.loads(
-                git("cat-file", "blob", registry_oid), object_pairs_hook=_unique_object
-            )
-            spaces = raw["identity_spaces"]
-            high_water = {}
-            for name in registry.identity_spaces:
-                space = spaces[name]
-                mark = space["high_water"]
-                if (
-                    type(mark) is not int
-                    or mark < 0
-                    or space["next_number"] != mark + 1
-                ):
-                    raise ValueError("invalid allocation")
-                high_water[name] = mark
-        except (KeyError, TypeError, ValueError) as error:
-            raise IdentityHistoryError(
-                "allocation predecessor Registry is invalid"
-            ) from error
+        spaces = raw["identity_spaces"]
+        high_water = {}
+        for name in registry.identity_spaces:
+            space = spaces[name]
+            mark = space["high_water"]
+            if type(mark) is not int or mark < 0 or space["next_number"] != mark + 1:
+                raise ValueError("invalid allocation")
+            high_water[name] = mark
+    except (KeyError, TypeError, ValueError) as error:
+        raise IdentityHistoryError(
+            "allocation predecessor Registry is invalid"
+        ) from error
 
     observed: dict[str, set[int]] = {}
     candidate_current: dict[str, str] = {}

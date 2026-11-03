@@ -14,7 +14,6 @@ from scripts.lib.document_governance.frontmatter import (
     frontmatter_record_from_text,
 )
 from scripts.lib.document_governance.registry import (
-    PRESERVED_DISPOSITIONS,
     DocumentRegistry,
     document_type,
     load_registry,
@@ -358,45 +357,6 @@ def load_architecture_documents(
         )
         raise ArchitectureDocumentError(f"duplicate architecture identity: {duplicate}")
     return documents
-
-
-def load_preserved_architecture_documents(
-    archive_root: pathlib.Path,
-    *,
-    registry: DocumentRegistry | None = None,
-) -> tuple[ArchitectureDocument, ...]:
-    """Load Stage 02 documents preserved under the archive.
-
-    A superseded document leaves the decision log but keeps its identity, so
-    the successor that names it must still resolve. Without this the archive
-    boundary turns every completed supersession into a dangling reference.
-    """
-
-    archive_root = pathlib.Path(archive_root)
-    active_registry = load_registry() if registry is None else registry
-    _validate_registry_contract(active_registry)
-    paths: list[pathlib.Path] = []
-    for disposition in PRESERVED_DISPOSITIONS:
-        for directory in ("descriptions", "decisions"):
-            child_root = archive_root / disposition / "02.architecture" / directory
-            if not child_root.is_dir():
-                continue
-            for entry in sorted(child_root.iterdir(), key=lambda item: item.name):
-                if entry.name == "README.md" or not entry.is_file():
-                    continue
-                pattern = (
-                    _DESCRIPTION_PATH if directory == "descriptions" else _DECISION_PATH
-                )
-                if pattern.fullmatch(entry.name) is None:
-                    continue
-                paths.append(entry)
-                if len(paths) > MAX_ARCHITECTURE_DOCUMENTS:
-                    raise ArchitectureDocumentError(
-                        "the preserved architecture set exceeds its document limit"
-                    )
-    return tuple(
-        parse_architecture_document(path, registry=active_registry) for path in paths
-    )
 
 
 def _cycle_nodes(edges: Mapping[str, tuple[str, ...]]) -> frozenset[str]:

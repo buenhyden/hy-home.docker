@@ -425,10 +425,6 @@ class RequirementPackageTests(unittest.TestCase):
                 if source_path.name == "README.md":
                     continue
                 shutil.copyfile(source_path, stage / source_path.name)
-            tombstones = root / "tombstones"
-            shutil.copytree(
-                ROOT / "docs/98.archive/tombstones/01.requirements", tombstones
-            )
             (stage / "0003-security.md").write_text(reintroduced, encoding="utf-8")
             with self.subTest(surface="stage-load"):
                 with self.assertRaisesRegex(
@@ -439,7 +435,6 @@ class RequirementPackageTests(unittest.TestCase):
                         registry=candidate_registry,
                         trusted_requirement_baseline=baseline,
                         allow_requirement_allocation_transition=True,
-                        tombstone_root=tombstones,
                     )
 
     def test_candidate_allocation_transition_requires_trusted_baseline(self) -> None:
@@ -487,12 +482,6 @@ class RequirementPackageTests(unittest.TestCase):
             for source_path in (ROOT / "docs/01.requirements").glob("*.md"):
                 if source_path.name != "README.md":
                     shutil.copyfile(source_path, stage / source_path.name)
-            # The copied stage inherits the real corpus's retirement gaps, so it
-            # inherits the Tombstones that explain them too.
-            tombstones = root / "tombstones"
-            shutil.copytree(
-                ROOT / "docs/98.archive/tombstones/01.requirements", tombstones
-            )
             with self.subTest(surface="stage-load"):
                 with self.assertRaisesRegex(ValueError, "package.*high-water|regress"):
                     requirements.load_requirement_packages(
@@ -500,7 +489,6 @@ class RequirementPackageTests(unittest.TestCase):
                         registry=candidate_registry,
                         trusted_requirement_baseline=baseline,
                         allow_requirement_allocation_transition=True,
-                        tombstone_root=tombstones,
                     )
 
             child_spaces = dict(requirement.child_spaces)
@@ -526,7 +514,6 @@ class RequirementPackageTests(unittest.TestCase):
                         registry=advanced_registry,
                         trusted_requirement_baseline=baseline,
                         allow_requirement_allocation_transition=True,
-                        tombstone_root=tombstones,
                     )
             self._write_package(
                 stage,
@@ -538,7 +525,6 @@ class RequirementPackageTests(unittest.TestCase):
                 registry=advanced_registry,
                 trusted_requirement_baseline=baseline,
                 allow_requirement_allocation_transition=True,
-                tombstone_root=tombstones,
             )
             self.assertEqual(f"REQ-{current + 1:04d}", packages[-1].artifact_id)
 
@@ -738,48 +724,49 @@ class RequirementPackageTests(unittest.TestCase):
                 ):
                     requirements.parse_requirement_package(path, registry=registry)
 
-    def test_live_and_tombstoned_packages_together_cover_the_canonical_run(
+    def test_live_and_reserved_packages_together_cover_the_canonical_run(
         self,
     ) -> None:
-        """A retired Requirement leaves a gap, and its Tombstone explains it."""
+        """A retired Requirement leaves a gap the Registry reserves."""
 
         from scripts.lib.document_governance.registry import load_registry
 
         requirements = _requirements_module()
         stage = ROOT / "docs/01.requirements"
         packages = requirements.load_requirement_packages(stage)
-        high_water = load_registry().identity_spaces["requirement"].high_water
-        retired = requirements._tombstoned_requirement_ids(stage)
+        space = load_registry().identity_spaces["requirement"]
+        retired = {f"REQ-{number:04d}" for number in space.reserved_history}
         live = {package.artifact_id for package in packages}
 
         self.assertEqual(
-            {f"REQ-{number:04d}" for number in range(1, high_water + 1)},
+            {f"REQ-{number:04d}" for number in range(1, space.high_water + 1)},
             live | retired,
         )
         self.assertEqual(set(), live & retired)
         self.assertFalse(tuple(stage.glob("prd-*.md")))
 
-    def test_an_unexplained_gap_fails_while_a_tombstoned_one_passes(self) -> None:
+    def test_an_unreserved_gap_fails_while_a_reserved_one_passes(self) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+
         requirements = _requirements_module()
-        stage = ROOT / "docs/01.requirements"
-        retired = sorted(requirements._tombstoned_requirement_ids(stage))
-        self.assertTrue(retired, "this fixture needs at least one retired Requirement")
-
+        registry = load_registry()
+        space = registry.identity_spaces["requirement"]
         with tempfile.TemporaryDirectory() as raw_root:
-            root = pathlib.Path(raw_root)
-            copied_stage = root / "docs/01.requirements"
-            copied_stage.parent.mkdir(parents=True)
-            shutil.copytree(stage, copied_stage)
-            tombstones = root / "docs/98.archive/tombstones/01.requirements"
-            shutil.copytree(
-                ROOT / "docs/98.archive/tombstones/01.requirements", tombstones
-            )
-
-            requirements.load_requirement_packages(copied_stage)
-
-            next(tombstones.iterdir()).unlink()
+            copied_stage = pathlib.Path(raw_root) / "docs/01.requirements"
+            shutil.copytree(ROOT / "docs/01.requirements", copied_stage)
+            removed = sorted(copied_stage.glob("0001-*.md"))[0]
+            removed.unlink()
             with self.assertRaises(requirements.RequirementPackageError):
-                requirements.load_requirement_packages(copied_stage)
+                requirements.load_requirement_packages(copied_stage, registry=registry)
+            reserved = dataclasses.replace(
+                space, reserved_history=tuple(sorted({1, *space.reserved_history}))
+            )
+            spaces = dict(registry.identity_spaces)
+            spaces["requirement"] = reserved
+            requirements.load_requirement_packages(
+                copied_stage,
+                registry=dataclasses.replace(registry, identity_spaces=spaces),
+            )
 
     def test_current_specs_reference_declared_requirement_child_ids(self) -> None:
         requirements = _requirements_module()

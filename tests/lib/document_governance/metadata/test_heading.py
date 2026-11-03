@@ -1255,15 +1255,12 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                     [], self.findings(self.POINTER + "ExampleDB health: " + endpoint)
                 )
 
-    def test_frozen_archive_and_nonruntime_guides_are_outside_scope(self) -> None:
-        for path in (
-            "docs/98.archive/legacy/README.md",
-            "docs/05.operations/guides/0001-editing.md",
-        ):
-            with self.subTest(path=path):
-                self.assertEqual([], self.findings("Document revision 7.8.9", path))
+    def test_nonruntime_guides_are_outside_scope(self) -> None:
         self.assertEqual(
-            [], self.findings("ExampleDB 3.9.8", "docs/98.archive/legacy/README.md")
+            [],
+            self.findings(
+                "Document revision 7.8.9", "docs/05.operations/guides/0001-editing.md"
+            ),
         )
 
     def test_operation_component_slug_uses_authored_source_authority(self) -> None:

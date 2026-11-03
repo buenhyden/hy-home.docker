@@ -735,53 +735,12 @@ def parse_requirement_package(
     return package
 
 
-_REQUIREMENT_TOMBSTONES = pathlib.PurePosixPath(
-    "docs/98.archive/tombstones/01.requirements"
-)
-
-
-def _tombstoned_requirement_ids(
-    stage_root: pathlib.Path, tombstone_root: pathlib.Path | None = None
-) -> frozenset[str]:
-    """Return the Requirement identities Stage 98 records as retired.
-
-    Stage 01 numbering is dense, so a retired Requirement leaves a gap. The
-    gap is legitimate exactly when a Tombstone explains it, which is what the
-    Tombstone exists to do; without this the coverage rule made Stage 01 the
-    one stage that could never retire a document, contradicting the `living`
-    lifecycle's own `retired` status and the retention policy.
-    """
-
-    root = (
-        pathlib.Path(tombstone_root)
-        if tombstone_root is not None
-        else pathlib.Path(stage_root).parent.parent / _REQUIREMENT_TOMBSTONES
-    )
-    from scripts.lib.document_governance.archive import sealed_tombstone
-
-    if not root.is_dir():
-        return frozenset()
-    retired: set[str] = set()
-    for entry in sorted(root.iterdir()):
-        if entry.suffix != ".md":
-            continue
-        # Only a Tombstone that meets the minimal sealed contract explains a gap.
-        record = sealed_tombstone(entry)
-        if record is None:
-            continue
-        artifact_id = record[0].get("artifact_id")
-        if isinstance(artifact_id, str) and artifact_id.startswith("tomb-REQ-"):
-            retired.add(artifact_id.removeprefix("tomb-"))
-    return frozenset(retired)
-
-
 def load_requirement_packages(
     stage_root: pathlib.Path,
     *,
     registry: DocumentRegistry | None = None,
     trusted_requirement_baseline: RequirementAllocationBaseline | None = None,
     allow_requirement_allocation_transition: bool = False,
-    tombstone_root: pathlib.Path | None = None,
 ) -> tuple[RequirementPackage, ...]:
     """Load the bounded Stage 01 corpus and reject executable contract payloads."""
 
@@ -829,7 +788,10 @@ def load_requirement_packages(
     expected_package_ids = {
         f"REQ-{number:04d}" for number in range(1, requirement_space.high_water + 1)
     }
-    retired_package_ids = _tombstoned_requirement_ids(stage_root, tombstone_root)
+    # Dense numbering: a retired package leaves a gap the Registry records.
+    retired_package_ids = {
+        f"REQ-{number:04d}" for number in requirement_space.reserved_history
+    }
     if retired_package_ids & set(package_ids):
         raise RequirementPackageError(
             "a Requirement cannot be both live and recorded as retired"

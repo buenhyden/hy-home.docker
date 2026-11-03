@@ -3638,79 +3638,36 @@ Narrative after the registered table.
                     {finding.code for finding in findings},
                 )
 
-    def test_ordinary_preservation_requires_terminal_archive_metadata(self) -> None:
+    def test_a_removal_is_recorded_only_by_a_reserved_spec_number(self) -> None:
+        import dataclasses
+        import types
+
         spec_packages = _spec_packages_module()
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
-            stage = root / "docs/03.specs"
-            source = _write_package(stage, plan=True, task=True)
-            subprocess.run(("git", "add", "-A"), cwd=root, check=True)
-            subprocess.run(
-                (
-                    "git",
-                    "-c",
-                    "user.name=Spec Fixture",
-                    "-c",
-                    "user.email=spec@example.invalid",
-                    "commit",
-                    "-qm",
-                    "baseline",
-                ),
-                cwd=root,
-                check=True,
+        registry = spec_packages.load_registry()
+        space = registry.identity_spaces["spec"]
+        reserved = space.reserved_history[0]
+        free = space.high_water
+        self.assertNotIn(free, space.reserved_history)
+
+        def package(number: int):
+            path = pathlib.PurePosixPath(f"docs/03.specs/{number:04d}-x/spec.md")
+            return types.SimpleNamespace(
+                number=f"{number:04d}", spec=types.SimpleNamespace(path=path)
             )
-            mirror = root / "docs/98.archive/completed/03.specs/0001-example"
-            mirror.parent.mkdir(parents=True)
-            shutil.copytree(source, mirror)
-            shutil.rmtree(source)
-            findings = spec_packages.validate_repository_spec_package_lifecycle(
-                root,
-                spec_packages.load_spec_packages(stage),
-                base_ref="HEAD",
-            )
-            self.assertIn(
-                "package-retirement-unrecorded",
-                {finding.code for finding in findings},
-            )
-            _set_status(mirror / "spec.md", "in-progress", "completed")
-            _set_status(mirror / "plan.md", "in-progress", "completed")
-            _set_status(
-                mirror / "tasks/tsk-0001-implement.md",
-                "in-progress",
-                "completed",
-            )
-            task = mirror / "tasks/tsk-0001-implement.md"
-            _set_review_rows(task, (("1", "accepted", "Fixture review."),))
-            task.write_text(
-                task.read_text(encoding="utf-8").replace(
-                    "| 1 | W1 | PASS | N/A: local validation only |",
-                    "| 1 | W1 | PASS: focused check | N/A: local validation only |",
-                    1,
-                ),
-                encoding="utf-8",
-            )
-            receipt = "| 1 | W1 | PASS: focused check | N/A: local validation only |\n"
-            task_body = task.read_text(encoding="utf-8")
-            task.write_text(task_body.replace(receipt, ""), encoding="utf-8")
-            findings = spec_packages.validate_repository_spec_package_lifecycle(
-                root,
-                spec_packages.load_spec_packages(stage),
-                base_ref="HEAD",
-            )
-            self.assertIn(
-                "package-retirement-unrecorded",
-                {finding.code for finding in findings},
-            )
-            task.write_text(task_body, encoding="utf-8")
-            self.assertEqual(
-                (),
-                spec_packages.validate_repository_spec_package_lifecycle(
-                    root,
-                    spec_packages.load_spec_packages(stage),
-                    base_ref="HEAD",
-                ),
-            )
+
+        previous = (package(reserved), package(free))
+        self.assertEqual(
+            frozenset({previous[0].spec.path}),
+            spec_packages._recorded_retirements(previous, registry),
+        )
+        spaces = dict(registry.identity_spaces)
+        spaces["spec"] = dataclasses.replace(space, reserved_history=())
+        self.assertEqual(
+            frozenset(),
+            spec_packages._recorded_retirements(
+                previous, dataclasses.replace(registry, identity_spaces=spaces)
+            ),
+        )
 
     def test_bounded_git_streams_both_pipes_and_reaps_on_failure(self) -> None:
         spec_packages = _spec_packages_module()
