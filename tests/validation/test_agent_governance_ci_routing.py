@@ -100,6 +100,24 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         self.assertEqual(root_tool_paths, set(matching_rules))
         self.assertEqual({("repository-integrity",)}, set(matching_rules.values()))
 
+    def test_a_folder_agent_guide_change_selects_agent_governance(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        registry = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        profile = next(
+            item for item in registry["profiles"] if item["id"] == "folder-agent-guide"
+        )
+        guides = (profile["path_pattern"], *profile["additional_paths"])
+        for guide in guides:
+            with self.subTest(guide=guide):
+                self.assertIn(
+                    "agent-governance",
+                    contract.select_public_suites(public, "changed", (guide,)),
+                )
+
     def test_memory_sources_uses_the_focused_agent_governance_route(self) -> None:
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
