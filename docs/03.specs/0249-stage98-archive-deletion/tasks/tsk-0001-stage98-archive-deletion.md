@@ -94,8 +94,22 @@ progress under the approved parents. Hosted CI has not run.
   the root under check and fails closed when that file is missing, a symlink,
   unreadable or invalid; before this a fixture root inherited this
   repository's reserved numbers.
-- The completed-archive receipt carrier of branch integration was deleted;
-  only a current Stage 03 Task carries a receipt.
+- The branch-integration handoff and the ordinary-preservation exemption were
+  deleted with their Stage 98 tree readers (I1). A Stage 03 removal is
+  legitimate only when its Spec number is reserved; `branch_integration_receipts`
+  is still parsed, and a malformed or unsafe receipt still fails at load, but a
+  receipt grants nothing.
+- Corpus occupancy fails on any tracked file under `docs/98.archive/` other than
+  its README (I1).
+- Stage 01 gaps read the checked root's Registry when no Registry is passed
+  (M2), and a top-level `reserved_history` cannot drop a number its trusted base
+  reserved (M1). The unread `requirement_allocation_recovery_decisions` field was
+  removed from the Registry and the frontmatter schema (M3).
+- REQ-0026 (3.0.0) and AD-0030 (3.0.0) describe summarize-and-delete; REQ-0026
+  retired its Tombstone namespace, immutable capture and one-capture-record
+  items. Proposed ADR-0051 supersedes ADR-0037 decision items 5 to 10, recorded in
+  prose on both sides because typed supersession would mark all of ADR-0037
+  superseded (I3, I4).
 - The pre-commit `frozen_archive_payloads` anchor now names only the
   `completed/`, `superseded/` and `retired/` roots, matching the Registry
   after the `frozen-legacy-status` exception was removed.
@@ -140,27 +154,35 @@ Repointed tests keep their fixture and assert the new fail-closed result.
 | `test_links`: hidden governance links | repointed | Stage 98 links are now checked | no |
 | `test_links`: self-declared Task outside the Task path | added | N4 negative case | yes |
 | `metadata/test_heading`: archive README runtime exemption | narrowed | exemption removed | no |
-| `test_spec_packages`: ordinary preservation | replaced | preservation flow removed | yes |
+| `test_spec_packages`: ordinary preservation | replaced | first replaced while the preservation exemption still read Stage 98 (the earlier "preservation flow removed" note was inaccurate); I1 then deleted that exemption, and the test became `test_only_a_reserved_number_records_a_package_removal` | yes |
 | `test_spec_packages`: unsafe catalog retirement | deleted | catalog reader removed; replaced by the Registry-file test | yes |
 | `test_spec_packages`: catalog row retirement | deleted | Retention Catalog removed | no |
 | `test_spec_packages`: positive handoff via either carrier; blocked current carrier; matching completed identity (`none`, `ambiguous`) | deleted | completed-archive carrier removed; `ambiguous` replaced by the reserved-number tests | `ambiguous` yes |
-| `test_spec_packages`: duplicate carrier; archived target without evidence | repointed | must still be rejected by any receipt finding | yes |
-| `test_spec_packages`: ready current carrier | kept as its own test | rejection still holds | yes |
+| `test_spec_packages`: ready carrier, completed identity, duplicate carrier, invalid bindings, missing origin, exact package bytes | deleted (I1) | the handoff validator was deleted; replaced by `test_a_branch_integration_receipt_grants_no_removal`, and the unsafe-path case kept as `test_an_unsafe_receipt_path_is_rejected_at_load` | yes |
+| `test_spec_packages`: injected disposition sets signature | repointed | `preserved_paths` removed | no |
+| `test_generation6`: ready base enters the completed archive | deleted (I1) | `_ordinary_preserved_paths` removed | no |
 | `test_agent_governance_ci_routing`: frozen payload agreement | repointed | requires only the unmanaged archive profile roots | no |
 
 Added fail-closed tests: `test_a_removal_is_recorded_only_by_a_reserved_spec_number`,
 `test_a_root_without_its_own_valid_registry_grants_no_retirement` (missing,
 symlink, directory), `test_a_malformed_reserved_history_grants_no_retirement`
 (unsorted, out of range, not an integer),
-`test_a_number_reserved_in_another_space_does_not_retire_a_spec`, and
-`test_a_typed_reference_to_a_reserved_only_identity_is_unresolved`.
+`test_a_number_reserved_in_another_space_does_not_retire_a_spec`,
+`test_a_typed_reference_to_a_reserved_only_identity_is_unresolved`, and after
+the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
+(I2), `test_any_tracked_stage_98_file_but_its_readme_is_a_violation` (I1),
+`test_gaps_are_explained_only_by_the_checked_roots_registry` (M2), and
+`test_reserved_history_cannot_drop_a_number` (M1).
 
 ### Open issues
 
-- The branch-integration receipt still needs a same-identity completed record,
-  which can no longer exist, so every handoff is rejected. Its remaining
-  rejection tests pass but no longer isolate their specific check. Redesign or
-  remove the handoff in the completed Spec package phase.
+- SPEC-0204-TSK-0001 still carries `branch_integration_receipts`; the field is
+  parsed but inert, and its schema entry can go with the completed Spec package
+  phase.
+- ADR-0051 is `proposed`; accepting it is the owner's decision. ADR-0037
+  decision item 4 (Retention Catalog assessments) also depends on Stage 98 but
+  was outside the I4 scope of items 5 to 10.
+- Review items M4 and M5 are recorded as open, as directed.
 - The archive-record metadata vocabulary in `metadata/profile.py` and the
   archive profiles stay as scheme definitions; remove them in the legacy and
   deprecated phase if no record type needs them.
@@ -184,6 +206,16 @@ symlink, directory), `test_a_malformed_reserved_history_grants_no_retirement`
 | E13 | 4 | W5 | gate-and-ci-routing | frozen payload agreement and descendant cleanup after fixes, uv Python; gate evidence passes under system python3 in E6 | PASS | all passed in the same 60-test targeted rerun | required | E5 |
 | E14 | 3 | W3 | metadata-changed | review fix: ADR-0034, 0039, 0040, 0042, 0044 and AD-0030 no longer claim Stage 98 preservation; pre-commit ruff comment updated | PASS | check-changed base a879f2b64: 357 selected, zero violations | required | - |
 | E15 | 3 | W3 | document-links | alignment after the review fix | PASS | zero failures and warnings; corpus lifecycle and occupancy zero | required | - |
+| E16 | 4 | W5 | governance-unit-tests | PR #723 review fixes, quiet tree: all `tests/lib/document_governance` modules, `tests/validation/lifecycle`, Script Manifest | FAIL | spec packages 88 OK; links, operations catalog, metadata validator, generations 285 OK; registry, requirements, identity, architecture 184 OK; metadata, lifecycle, references, taxonomy, manifest 272 with 1 failure and 1 error from a bare REQ-0026 child identity | required | - |
+| E17 | 4 | W5 | governance-unit-tests | after naming the retired REQ-0026 items in words and committing | PASS | metadata profile and repository contract tests OK in a 32-test rerun | required | E16 |
+| E18 | 4 | W5 | gate-and-ci-routing | `tests/lib/gate` (includes workflow-contract tests), CI routing and CI gate plan under uv Python | FAIL | 283 tests: the gate evidence module needs `fcntl.F_ADD_SEALS`; one descendant-cleanup subtest under load | required | - |
+| E19 | 4 | W5 | gate-and-ci-routing | descendant cleanup alone; gate evidence with `/usr/bin/python3` | PASS | descendant test OK alone; gate evidence 21 OK | required | E18 |
+| E20 | 4 | W5 | metadata-changed | `check-changed --base-ref origin/main` | PASS | 371 selected, zero violations after fixing ADR-0051 parent order | required | - |
+| E21 | 4 | W5 | metadata-active | `check-active` | PASS | 497 selected, zero violations | required | - |
+| E22 | 2 | W1 | corpus-lifecycle | `--base-ref origin/main` | PASS | zero violations; occupancy zero | required | - |
+| E23 | 3 | W3 | document-links | alignment | PASS | 954 documents, 8342 links, zero failures and warnings | required | - |
+| E24 | 4 | W5 | manifest-and-renderer | Script Manifest; provider renderer `--check` | PASS | manifest valid; drift 0 | required | - |
+| E25 | 4 | W5 | hosted-ci | GitHub Actions on the pushed head | NOT_RUN | not observed from this worktree | required | - |
 | E8 | 4 | W5 | metadata-active | `check-document-metadata.py --mode check-active` | PASS | 497 selected, zero violations | required | - |
 | E9 | 4 | W5 | metadata-changed | `--mode check-changed --base-ref a879f2b64` | PASS | 355 selected, zero violations | required | - |
 | E10 | 2 | W1 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref a879f2b64` | PASS | zero violations; occupancy zero | required | - |
@@ -202,8 +234,10 @@ symlink, directory), `test_a_malformed_reserved_history_grants_no_retirement`
 ## Review and Completion
 
 Local checks are recorded above. The coordinator approved the test deletions
-and repointing listed in Test changes. Independent review and hosted CI have
-not run, and no criterion is accepted yet.
+and repointing listed in Test changes. Independent review of PR #723 requested
+changes (I1 to I6, M1 to M6); they are addressed in this branch, with M4 and M5
+recorded as open. Hosted CI has not been observed, and no criterion is accepted
+yet.
 
 ## Related Documents
 

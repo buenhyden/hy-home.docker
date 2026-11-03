@@ -8,8 +8,8 @@ updated: "2026-11-03"
 layer: "architecture"
 artifact_id: "ADR-0051"
 parent_ids:
-- "AD-0030"
 - "REQ-0026"
+- "AD-0030"
 created: "2026-11-03"
 ---
 
