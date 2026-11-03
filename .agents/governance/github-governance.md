@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.7.0"
+version: "1.7.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 ---
 
 # GitHub Governance Policy
@@ -183,6 +183,9 @@ implicitly.
 - Instruction authority lives in repo-local assets only:
   - root shims: `AGENTS.md`, `CLAUDE.md`
   - governance SSoT: `.agents/`
+  - folder agent guides: the `AGENTS.md` files the Registry
+    `folder-agent-guide` profile lists, ranked below canonical governance and
+    routing only, per the [documentation protocol](documentation-protocol.md#readme-and-agentsmd)
   - runtime controls: `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, `.claude/skills/`
   - Codex runtime hooks: `.codex/hooks.json`
 - GitHub is used here for repository protection, PR workflow, and Actions execution; it is not the canonical home of agent instruction policy.

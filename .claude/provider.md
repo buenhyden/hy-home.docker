@@ -22,7 +22,8 @@ Load the active Spec Package and current Task when repository state changes.
 Read the selected canonical role and procedure before acting.
 Claude Code loads `CLAUDE.md` files, not `AGENTS.md`, so it does not read a
 folder `AGENTS.md` on its own. The bootstrap step that requires reading the
-folder guide before changing a file there is what brings it into context; no
+nearest ancestor folder guide before changing a file is what brings it into
+context; no
 folder `CLAUDE.md` pointer is added, because it would be a second copy of the
 same route.
 `.agents/knowledge/` and `.agents/prompts/` are canonical categories read

@@ -24,7 +24,7 @@ read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
 Codex documents that it merges `AGENTS.md` files from the repository root down
 to the working directory, so a folder guide joins its context when Codex works
 there. That merge has not been observed in this repository; the bootstrap step
-that requires reading the folder guide applies either way.
+that requires reading the nearest ancestor folder guide applies either way.
 
 ## Native Controls
 

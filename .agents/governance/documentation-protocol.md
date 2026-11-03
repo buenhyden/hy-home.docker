@@ -226,11 +226,10 @@ A folder carries `README.md` and `AGENTS.md` together only when an agent
 changing files there needs folder-specific working rules that no single
 canonical owner already routes: a stage with its own templates, identities and
 lifecycle, a surface with protected or generated files, or registered checks
-that the folder owns. Every other folder carries `README.md` only. The current
-pairs are `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`,
-`docs/05.operations/`, `docs/90.references/`, `docs/99.templates/`, `infra/`,
-`scripts/` and `tests/`; the Registry `folder-agent-guide` profile lists the
-same paths, and adding a pair means adding its path there. Root `AGENTS.md` and
+that the folder owns. Every other folder carries `README.md` only. The Registry
+`folder-agent-guide` profile's `path_pattern` and `additional_paths` are the
+only list of folders that carry a guide; adding one means adding its path
+there, and a test keeps the tracked guides equal to that list. Root `AGENTS.md` and
 `CLAUDE.md` stay the entry shims that [bootstrap](bootstrap.md) defines and are
 not folder guides. A folder whose only agent rule is "never handle a secret
 value", such as `secrets/`, keeps `README.md` only, because
@@ -244,8 +243,9 @@ that apply to the folder. Verification names only registered commands that
 exist. The guide routes and summarizes; it never copies a policy body, and
 when a summary and its owner disagree, the owner wins and the guide is
 corrected. Under [authority and precedence](bootstrap.md#authority-and-precedence)
-it is routing text below canonical governance: it grants no tool, path,
-permission or approval. A README does not carry an
+it is routing only, ranked with roles and skills: it never overrides canonical
+governance or Stage contracts, and it grants no tool, path, permission or
+approval. An agent reads the nearest ancestor guide of the file it changes. A README does not carry an
 `AI Agent Guidance` section or other agent-directed instructions; it points to
 its folder `AGENTS.md` instead.
 
