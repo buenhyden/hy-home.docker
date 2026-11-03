@@ -1,89 +1,47 @@
 schema_version: 1
-observed_at: '2026-11-02T14:27:20.163615Z'
+observed_at: '2026-11-03T00:13:16.521181Z'
 workspace:
   path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 169c1b62f9a29738dde587b584418f9e93b78029
+  head: 43f112eb5452767f5ab56f95335ef59fb4ab743c
   branch: codex/p05-n8n-outbox-recovery
   dirty_paths:
   - status: 'M '
-    path: .github/workflow-contract.yml
+    path: .agents/governance/hooks/hookify.require-logical-commits-before-stop.md
   - status: 'M '
-    path: .github/workflows/ci-quality.yml
+    path: .agents/governance/task-checklists.md
+  - status: 'M '
+    path: .github/workflow-contract.yml
   - status: 'M '
     path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   - status: 'M '
     path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-  - status: 'A '
+  - status: 'M '
     path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
   - status: 'M '
-    path: docs/05.operations/guides/07-observability/0045-prometheus.md
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
   - status: 'M '
-    path: docs/05.operations/runbooks/07-observability/0045-prometheus.md
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md
+  - status: AM
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0049-document-governance-qa-ci.md
   - status: 'M '
     path: docs/90.references/data/0096-workspace-inventory/README.md
-  - status: 'M '
+  - status: MM
     path: docs/90.references/data/0096-workspace-inventory/data.yaml
   - status: 'M '
-    path: examples/operations/quality-metrics/acceptance.py
-  - status: 'M '
-    path: examples/operations/quality-metrics/docker-compose.yml
-  - status: 'M '
-    path: infra/06-observability/grafana/dashboards/Infrastructure/postgresql.json
-  - status: 'M '
-    path: infra/06-observability/grafana/dashboards/Infrastructure/redis.json
-  - status: 'M '
-    path: infra/06-observability/grafana/dashboards/Observability/alloy-opentelemetry.json
-  - status: 'M '
-    path: infra/06-observability/grafana/dashboards/Observability/prometheus-overview.json
-  - status: 'M '
-    path: infra/06-observability/prometheus/README.md
-  - status: 'M '
-    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.auth.yml
-  - status: 'M '
-    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.datastores.yml
-  - status: 'M '
-    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.gateway.yml
-  - status: 'M '
-    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.observability.yml
-  - status: 'M '
-    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.prometheus.yml
-  - status: 'A '
-    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.selection.yml
-  - status: 'M '
-    path: infra/06-observability/prometheus/config/alert_rules/alert_rules.openbao.yml
-  - status: 'M '
-    path: infra/06-observability/prometheus/scripts/start.sh
-  - status: 'M '
-    path: scripts/lib/gate/github_workflow_contract.py
-  - status: AM
-    path: scripts/lib/ops/compose_observation.py
-  - status: AM
-    path: scripts/lib/ops/compose_start.py
-  - status: 'M '
-    path: scripts/manifest.yaml
-  - status: AM
-    path: scripts/operations/compose-start.py
-  - status: 'M '
-    path: scripts/validation/ci_gate_runner.py
+    path: scripts/hooks/agent-event-hook.sh
   - status: 'M '
     path: tests/lib/gate/test_github_workflow_contract.py
-  - status: AM
-    path: tests/lib/ops/test_compose_observation.py
-  - status: AM
-    path: tests/lib/ops/test_compose_start.py
-  - status: 'A '
-    path: tests/validation/fixtures/p07-observation/dashboards.test.yml
-  - status: 'A '
-    path: tests/validation/fixtures/p07-observation/rules.test.yml
-  - status: MM
+  - status: 'M '
+    path: tests/lib/gate/test_p03_workflow_contract.py
+  - status: 'M '
+    path: tests/validation/test_agent_governance_ci_routing.py
+  - status: 'M '
     path: tests/validation/test_ci_gate_plan.py
-  - status: AM
-    path: tests/validation/test_p07_ci_routing.py
   - status: 'A '
-    path: tests/validation/test_p07_quality_metrics.py
+    path: tests/validation/test_p10_document_contract.py
   worktrees:
   - in_boundary: true
     access: metadata-only
@@ -97,7 +55,7 @@ roots:
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 169c1b62f9a29738dde587b584418f9e93b78029
+  head: 43f112eb5452767f5ab56f95335ef59fb4ab743c
   branch: codex/p05-n8n-outbox-recovery
   dirty_paths: []
   worktrees:
@@ -106,7 +64,7 @@ roots:
   submodules: []
   tracked_query: PASS
   write_boundary: /home/hyunyoun/data/hy-home.docker
-  dirty_count: 38
+  dirty_count: 17
 files:
 - path: .agents/README.md
   tracked: true
@@ -239,9 +197,9 @@ files:
 - path: .agents/governance/hooks/hookify.require-logical-commits-before-stop.md
   tracked: true
   kind: document
-  bytes: 1554
+  bytes: 1818
   state: HASHED
-  sha256: e3c80a3689c2167702d35136005410eb0226d91bbb14896fc9e10af3679f1dfb
+  sha256: 79bac11072d519f822fb1a5917601b6c791f5c8c844f9a0cc76192e5ae2ec1d6
   review:
     state: UNREVIEWED
 - path: .agents/governance/hooks/hookify.warn-branch-naming.md
@@ -407,9 +365,9 @@ files:
 - path: .agents/governance/task-checklists.md
   tracked: true
   kind: document
-  bytes: 3314
+  bytes: 3421
   state: HASHED
-  sha256: 15355d699c90a1740ecd2057f33aafebd5fe1b193d35d8353781c83ea220e58a
+  sha256: 75032c901b17a66b860a76c2bf61e5b3855393944b221465ed31a46721959646
   review:
     state: UNREVIEWED
 - path: .agents/governance/workflows.md
@@ -1635,12 +1593,12 @@ files:
   state: HASHED
   sha256: 50482e3a2fa6a14adfe0eded86d2a839c87bace430062da7c114efca040bbcbb
   review:
-    path: .env.example
+    sha256: 50482e3a2fa6a14adfe0eded86d2a839c87bace430062da7c114efca040bbcbb
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 50482e3a2fa6a14adfe0eded86d2a839c87bace430062da7c114efca040bbcbb
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: .env.example
     complete: false
     state: PARTIAL
 - path: .gitattributes
@@ -1726,16 +1684,16 @@ files:
 - path: .github/workflow-contract.yml
   tracked: true
   kind: configuration
-  bytes: 88709
+  bytes: 90761
   state: HASHED
-  sha256: 29af64b8ff4f9c2f9422c0a6d1f713c28fa3727afd0c4408ca927fb6bb3b5d2d
+  sha256: f9862cf06bfef0dfb69d996a5b41e277bf74a759a5ea2156aebae527cbbe247d
   review:
-    path: .github/workflow-contract.yml
+    sha256: 2cdd5af339d614a6b863679c63a20780df707c411993a45091c1b3a459a975f1
     reviewer: p02_residual_code_review + p02_residual_supply_review
     observed_at: '2026-11-02T02:22:28Z'
-    sha256: 2cdd5af339d614a6b863679c63a20780df707c411993a45091c1b3a459a975f1
     scope: Exact SSO interruption optional selector registration only; full-file review
       not claimed
+    path: .github/workflow-contract.yml
     complete: false
     state: STALE
 - path: .github/workflows/ci-quality.yml
@@ -3037,29 +2995,29 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   tracked: true
   kind: document
-  bytes: 45459
+  bytes: 49311
   state: HASHED
-  sha256: 966505ded3110267940801a43f2d9c2770ace7b50c6cf7cf98033dc694d4a3b8
+  sha256: 0ea6ac5de3675ef94e4219050cb1d94939d32578898a94ccb76e128b2e92e4dd
   review:
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
+    sha256: c9e457e50f834d6015b96800009786915a69b248be3a32935faa11bfd84113d5
     reviewer: /root/p06_documents
     observed_at: '2026-11-02T12:49:37.878423+00:00'
-    sha256: c9e457e50f834d6015b96800009786915a69b248be3a32935faa11bfd84113d5
     scope: P06 authored sections and related public contracts only
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
     complete: false
     state: STALE
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
   tracked: true
   kind: document
-  bytes: 48165
+  bytes: 52559
   state: HASHED
-  sha256: dfdf3f8cb764d2fc3c0fa54c668afb198754cf6d4a8160e9cdcab536a7cc892e
+  sha256: 87e7d52a7165ad9a0bd9dc37cb93b4c2cdedf29c696e9a59964bd2d9787aae36
   review:
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
+    sha256: 9241bdfbe34a2a91588a2fe2e991e9da73d09b6917a9c75244569f460c653c12
     reviewer: /root/p06_documents
     observed_at: '2026-11-02T12:37:50Z'
-    sha256: 9241bdfbe34a2a91588a2fe2e991e9da73d09b6917a9c75244569f460c653c12
     scope: P06 authored sections and related public contracts only
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
     complete: false
     state: STALE
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0001-request-baseline-and-inventory.md
@@ -3381,15 +3339,15 @@ files:
   state: HASHED
   sha256: 08a1f1511a0ee0465fb1ef1531bf694ca918edd8c2360b844641b2d1c2cb8ba7
   review:
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
+    sha256: 08a1f1511a0ee0465fb1ef1531bf694ca918edd8c2360b844641b2d1c2cb8ba7
     reviewer: root workflow-supervisor
     observed_at: '2026-11-02T11:40:35+09:00'
-    sha256: 08a1f1511a0ee0465fb1ef1531bf694ca918edd8c2360b844641b2d1c2cb8ba7
     scope: Independent review of this follow-up Task diff only; PASS. The approved
       registered-broad-leaf Result-cell correction from FAIL (handoff) to FAIL and
       the root-approved hook-compatibility-only SSO evidence rebind are included;
       the Location handoff remains intact. Historical full Task body and unrelated
       documents were not re-reviewed.
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
     complete: false
     state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md
@@ -3415,12 +3373,12 @@ files:
   state: HASHED
   sha256: a707d142766a22ec7dbc5c2b76f9620f8ea10f72542839f0de2f7bf9f462969a
   review:
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
+    sha256: 1dfb41bf81c621bc52c40b4cd4d0f1031b8c2f7a8dc6cc4eb263648eff21d638
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:52:35.037311+00:00'
-    sha256: 1dfb41bf81c621bc52c40b4cd4d0f1031b8c2f7a8dc6cc4eb263648eff21d638
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
     complete: false
     state: STALE
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
@@ -3430,19 +3388,43 @@ files:
   state: HASHED
   sha256: 6a5b8218a2745877808a59d012ffea37204a8222e85f2b39ce84526bfa221acf
   review:
-    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
+    sha256: 6a5b8218a2745877808a59d012ffea37204a8222e85f2b39ce84526bfa221acf
     reviewer: /root/p06_documents
     observed_at: '2026-11-02T13:04:59.591930+00:00'
-    sha256: 6a5b8218a2745877808a59d012ffea37204a8222e85f2b39ce84526bfa221acf
     scope: P06 authored sections and related public contracts only
+    path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
     complete: false
     state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
   tracked: true
   kind: document
-  bytes: 18866
+  bytes: 18556
   state: HASHED
-  sha256: 7b684a121ad75a929a7a0afebe48f7c53b796fe89cf46cb5e1cd856a01eb664c
+  sha256: c0f52c2dc0ba6defa779e51d7322698da0bd899acc1c0877f568598aa70e0bac
+  review:
+    state: UNREVIEWED
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
+  tracked: true
+  kind: document
+  bytes: 17422
+  state: HASHED
+  sha256: ed9006822265407b51887c88f8b26f320deed9180dac7f8673b8df8cadf303c5
+  review:
+    state: UNREVIEWED
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md
+  tracked: true
+  kind: document
+  bytes: 14040
+  state: HASHED
+  sha256: 1d991ee7f15aa945e299ea814389cb1637feae886c97093b03252cb3698deaa5
+  review:
+    state: UNREVIEWED
+- path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0049-document-governance-qa-ci.md
+  tracked: true
+  kind: document
+  bytes: 9185
+  state: HASHED
+  sha256: 2f9dc2f2a48504bd1461c749276645d9584213e5d57ec5fbd8243db466320a7f
   review:
     state: UNREVIEWED
 - path: docs/03.specs/0213-dev-data-and-influx-retirement/plan.md
@@ -4372,11 +4354,11 @@ files:
   state: HASHED
   sha256: 8cfb11947350e95b6c66c7873c19173305fbe05b61883b10e2d51b0f5804384a
   review:
-    path: docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md
+    sha256: 8cfb11947350e95b6c66c7873c19173305fbe05b61883b10e2d51b0f5804384a
     reviewer: /root/p06_documents
     observed_at: '2026-11-02T12:37:50Z'
-    sha256: 8cfb11947350e95b6c66c7873c19173305fbe05b61883b10e2d51b0f5804384a
     scope: P06 authored sections and related public contracts only
+    path: docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md
     complete: false
     state: PARTIAL
 - path: docs/05.operations/guides/04-security-and-secrets/0085-openbao.md
@@ -4618,12 +4600,12 @@ files:
   state: HASHED
   sha256: 6c77a1b4d413781516c447372c1912dc1e128692d985097033afdb5dbc12d50c
   review:
-    path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
+    sha256: 6c77a1b4d413781516c447372c1912dc1e128692d985097033afdb5dbc12d50c
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 6c77a1b4d413781516c447372c1912dc1e128692d985097033afdb5dbc12d50c
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
     complete: false
     state: PARTIAL
 - path: docs/05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md
@@ -4729,11 +4711,11 @@ files:
   state: HASHED
   sha256: 3f6b58174bb1ca301ea6ccf1e6b34068fd182799dc9f3cc84665dc405f1db230
   review:
-    path: docs/05.operations/guides/10-platform-and-backup/0003-env-key-comparison.md
+    sha256: 3f6b58174bb1ca301ea6ccf1e6b34068fd182799dc9f3cc84665dc405f1db230
     reviewer: /root/p06_documents
     observed_at: '2026-11-02T12:37:50Z'
-    sha256: 3f6b58174bb1ca301ea6ccf1e6b34068fd182799dc9f3cc84665dc405f1db230
     scope: P06 authored sections and related public contracts only
+    path: docs/05.operations/guides/10-platform-and-backup/0003-env-key-comparison.md
     complete: false
     state: PARTIAL
 - path: docs/05.operations/guides/10-platform-and-backup/0008-new-service-onboarding.md
@@ -4935,12 +4917,12 @@ files:
   state: HASHED
   sha256: ef7035ed2e94371aa3d4aea39b09f41f8c513ed9dbb8da12973cbac273eda739
   review:
-    path: docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md
     sha256: ef7035ed2e94371aa3d4aea39b09f41f8c513ed9dbb8da12973cbac273eda739
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T08:12:18.635479+00:00'
     scope: Entire living-document body read by the documentation writer. Independent
       changed-diff and source crosscheck is recorded separately in Task.
+    path: docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md
     complete: true
     state: REVIEWED
 - path: docs/05.operations/guides/13-analytics-and-data-quality/0097-superset.md
@@ -5106,9 +5088,9 @@ files:
 - path: docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md
   tracked: true
   kind: document
-  bytes: 45482
+  bytes: 46193
   state: HASHED
-  sha256: 301ef8e1c3c182a9bd30735e914acdbd0a3ac87cd9bdaf78d764446d36bef7e3
+  sha256: 2b83418eae974479c813314a46cfd4873c9f3b1a105f1f4a5e9e6ce0d6df7c6c
   review:
     state: UNREVIEWED
 - path: docs/05.operations/policies/01-common/README.md
@@ -5586,9 +5568,9 @@ files:
 - path: docs/05.operations/policies/10-platform-and-backup/0102-host-storage-placement.md
   tracked: true
   kind: document
-  bytes: 5197
+  bytes: 5810
   state: HASHED
-  sha256: 777fa434675077bf1bc7ecd827ecc90ec67b6d891d0195a0b5a68a9de3d1a7a6
+  sha256: c8045c55c7cea910cb500ee5f0d2fb2309a90309185bc6fc76f9c026c57ce945
   review:
     state: UNREVIEWED
 - path: docs/05.operations/policies/10-platform-and-backup/README.md
@@ -5942,11 +5924,11 @@ files:
   state: HASHED
   sha256: 99b8c55aa474527c48678c165b065b2d31f46be4bd0d2878f89891ea2a613909
   review:
-    path: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
+    sha256: 99b8c55aa474527c48678c165b065b2d31f46be4bd0d2878f89891ea2a613909
     reviewer: /root/p06_documents
     observed_at: '2026-11-02T12:46:22.397771+00:00'
-    sha256: 99b8c55aa474527c48678c165b065b2d31f46be4bd0d2878f89891ea2a613909
     scope: P06 authored sections and related public contracts only
+    path: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
     complete: false
     state: PARTIAL
 - path: docs/05.operations/runbooks/04-security-and-secrets/README.md
@@ -6172,12 +6154,12 @@ files:
   state: HASHED
   sha256: 047f82c59d55413943e8ea6cf419c113cfe52ae9eb687b1bebba6d561447e87e
   review:
-    path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
     sha256: 047f82c59d55413943e8ea6cf419c113cfe52ae9eb687b1bebba6d561447e87e
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T08:12:18.635473+00:00'
     scope: Entire living-document body read by the documentation writer. Independent
       changed-diff and source crosscheck is recorded separately in Task.
+    path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
     complete: true
     state: REVIEWED
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
@@ -6187,12 +6169,12 @@ files:
   state: HASHED
   sha256: 2e60027d17661a8fc644cac44e1076783c1581dace2ce95e33b69768e2016744
   review:
-    path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
+    sha256: 2e60027d17661a8fc644cac44e1076783c1581dace2ce95e33b69768e2016744
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 2e60027d17661a8fc644cac44e1076783c1581dace2ce95e33b69768e2016744
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
     complete: false
     state: PARTIAL
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md
@@ -6606,21 +6588,21 @@ files:
 - path: docs/90.references/data/0096-workspace-inventory/README.md
   tracked: true
   kind: document
-  bytes: 16560
+  bytes: 21616
   state: HASHED
-  sha256: 0298d87567b8c9bdf74949b6d9204643902bcf866761c3463548a5999c5fe9cf
+  sha256: 19728acfca3948ac81a6334c25154c78b98cb8147fea02934d941e4b62ca9ab7
   review:
-    path: docs/90.references/data/0096-workspace-inventory/README.md
+    sha256: afc4861050f9e387283ea99c72303c26c050745fb353272c4ffe1babddf20131
     reviewer: /root/p06_documents
     observed_at: '2026-11-02T12:46:22.397624+00:00'
-    sha256: afc4861050f9e387283ea99c72303c26c050745fb353272c4ffe1babddf20131
     scope: P06 authored sections and related public contracts only
+    path: docs/90.references/data/0096-workspace-inventory/README.md
     complete: false
     state: STALE
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   tracked: true
   kind: configuration
-  bytes: 1403871
+  bytes: 1416390
   state: GENERATED_OUTPUT
 - path: docs/90.references/data/README.md
   tracked: true
@@ -6629,11 +6611,11 @@ files:
   state: HASHED
   sha256: 9565e5a6a3b4e3470d0aababfb5c21b77873eab8dd7bb2593f708e0cb82b86ea
   review:
-    path: docs/90.references/data/README.md
+    sha256: 9565e5a6a3b4e3470d0aababfb5c21b77873eab8dd7bb2593f708e0cb82b86ea
     reviewer: /root/p01_docs (doc-writer)
     observed_at: '2026-11-01T14:18:17.518585+00:00'
-    sha256: 9565e5a6a3b4e3470d0aababfb5c21b77873eab8dd7bb2593f708e0cb82b86ea
     scope: Authored inventory consumer navigation, schema limits and refresh boundary
+    path: docs/90.references/data/README.md
     complete: false
     state: PARTIAL
 - path: docs/90.references/research/0002-agentic-engineering-research-pack/README.md
@@ -6811,13 +6793,13 @@ files:
   state: HASHED
   sha256: 9952a7485243ac9e41b4efd3e9d456d7dcf7e0081e83aaa3c03c3c387d3a1f70
   review:
-    path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
     sha256: 9952a7485243ac9e41b4efd3e9d456d7dcf7e0081e83aaa3c03c3c387d3a1f70
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T09:00:08.300260+00:00'
     scope: Seven generated Airflow Env cells read and compared with current public
       selectors; CI renderer and independent diff review separately recorded. Remaining
       research body not reviewed.
+    path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
     complete: false
     state: PARTIAL
 - path: docs/90.references/research/0084-github-actions-platform/README.md
@@ -9011,11 +8993,11 @@ files:
   state: HASHED
   sha256: 7b532443623fcd74a051142b24322264ac3c7ad432364af389a321cdac8094e7
   review:
-    path: docs/99.templates/registry.json
+    sha256: 7b532443623fcd74a051142b24322264ac3c7ad432364af389a321cdac8094e7
     reviewer: /root/p01_docs (doc-writer)
     observed_at: '2026-11-01T14:18:17.518585+00:00'
-    sha256: 7b532443623fcd74a051142b24322264ac3c7ad432364af389a321cdac8094e7
     scope: DATA-0096 allocation segment only; no other Registry field changed
+    path: docs/99.templates/registry.json
     complete: false
     state: PARTIAL
 - path: docs/99.templates/templates/README.md
@@ -9721,12 +9703,12 @@ files:
   state: HASHED
   sha256: a7f5d9aa01511780188ee21bf7f80dc10471d7497b29e667570f2aaf7b21e2a3
   review:
-    path: infra/01-gateway/nginx/README.md
+    sha256: a7f5d9aa01511780188ee21bf7f80dc10471d7497b29e667570f2aaf7b21e2a3
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: a7f5d9aa01511780188ee21bf7f80dc10471d7497b29e667570f2aaf7b21e2a3
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/01-gateway/nginx/README.md
     complete: false
     state: PARTIAL
 - path: infra/01-gateway/nginx/config/nginx.conf
@@ -9736,12 +9718,12 @@ files:
   state: HASHED
   sha256: 9bb8a9141ab42d0571d08eb2ecac8784051c53f4ffe09a042a56f6be5b34d2a6
   review:
-    path: infra/01-gateway/nginx/config/nginx.conf
+    sha256: 9bb8a9141ab42d0571d08eb2ecac8784051c53f4ffe09a042a56f6be5b34d2a6
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 9bb8a9141ab42d0571d08eb2ecac8784051c53f4ffe09a042a56f6be5b34d2a6
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/01-gateway/nginx/config/nginx.conf
     complete: false
     state: PARTIAL
 - path: infra/01-gateway/nginx/config/upstreams.conf.template
@@ -9751,12 +9733,12 @@ files:
   state: HASHED
   sha256: d30a4347ac053f95fa745a09bbda69276b712f8285d85028c0d246d2ec7a0ae0
   review:
-    path: infra/01-gateway/nginx/config/upstreams.conf.template
+    sha256: d30a4347ac053f95fa745a09bbda69276b712f8285d85028c0d246d2ec7a0ae0
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: d30a4347ac053f95fa745a09bbda69276b712f8285d85028c0d246d2ec7a0ae0
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/01-gateway/nginx/config/upstreams.conf.template
     complete: false
     state: PARTIAL
 - path: infra/01-gateway/nginx/docker-compose.yml
@@ -9766,12 +9748,12 @@ files:
   state: HASHED
   sha256: f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e
   review:
-    path: infra/01-gateway/nginx/docker-compose.yml
+    sha256: f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/01-gateway/nginx/docker-compose.yml
     complete: false
     state: PARTIAL
 - path: infra/01-gateway/nginx/scripts/validate-upstream-ports.sh
@@ -9781,12 +9763,12 @@ files:
   state: HASHED
   sha256: eac970b4b846236e643ab405df3e51894c5647e84c5e46ef8e8eb5430e55bd48
   review:
-    path: infra/01-gateway/nginx/scripts/validate-upstream-ports.sh
+    sha256: eac970b4b846236e643ab405df3e51894c5647e84c5e46ef8e8eb5430e55bd48
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: eac970b4b846236e643ab405df3e51894c5647e84c5e46ef8e8eb5430e55bd48
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/01-gateway/nginx/scripts/validate-upstream-ports.sh
     complete: false
     state: PARTIAL
 - path: infra/01-gateway/traefik/README.md
@@ -9796,12 +9778,12 @@ files:
   state: HASHED
   sha256: c241d3c89d0ba3278e30f3516f199303034a9dfb3ce1aa05416061d4b250091e
   review:
-    path: infra/01-gateway/traefik/README.md
+    sha256: c241d3c89d0ba3278e30f3516f199303034a9dfb3ce1aa05416061d4b250091e
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: c241d3c89d0ba3278e30f3516f199303034a9dfb3ce1aa05416061d4b250091e
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/01-gateway/traefik/README.md
     complete: false
     state: PARTIAL
 - path: infra/01-gateway/traefik/compose.window-ca.override.yml
@@ -9835,12 +9817,12 @@ files:
   state: HASHED
   sha256: 4b0c9a0d170c721bed25000a1b3f34ee2711b309edd2f78b063cc4dc995dde0b
   review:
-    path: infra/01-gateway/traefik/docker-compose.yml
+    sha256: 4b0c9a0d170c721bed25000a1b3f34ee2711b309edd2f78b063cc4dc995dde0b
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 4b0c9a0d170c721bed25000a1b3f34ee2711b309edd2f78b063cc4dc995dde0b
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/01-gateway/traefik/docker-compose.yml
     complete: false
     state: PARTIAL
 - path: infra/01-gateway/traefik/dynamic/README.md
@@ -9882,12 +9864,12 @@ files:
   state: HASHED
   sha256: b80318176fc13d584ab049d1716bc90a4b0130f79a692c8ad2b7de2799e3230a
   review:
-    path: infra/01-gateway/traefik/dynamic/middleware.yml
+    sha256: b80318176fc13d584ab049d1716bc90a4b0130f79a692c8ad2b7de2799e3230a
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: b80318176fc13d584ab049d1716bc90a4b0130f79a692c8ad2b7de2799e3230a
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/01-gateway/traefik/dynamic/middleware.yml
     complete: false
     state: PARTIAL
 - path: infra/01-gateway/traefik/dynamic/tls.yaml
@@ -9921,12 +9903,12 @@ files:
   state: HASHED
   sha256: 1b69df95ca0fa6f4c053af681cec148883c45cc11aa58ecc77ca5a736cb1debb
   review:
-    path: infra/02-auth/keycloak/README.md
+    sha256: 1b69df95ca0fa6f4c053af681cec148883c45cc11aa58ecc77ca5a736cb1debb
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: 1b69df95ca0fa6f4c053af681cec148883c45cc11aa58ecc77ca5a736cb1debb
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/02-auth/keycloak/README.md
     complete: false
     state: PARTIAL
 - path: infra/02-auth/keycloak/docker-compose.yml
@@ -9936,12 +9918,12 @@ files:
   state: HASHED
   sha256: bda416f399d071abc554db5251b67e0e2228e98608cd80c0bb078e20792f9707
   review:
-    path: infra/02-auth/keycloak/docker-compose.yml
+    sha256: bda416f399d071abc554db5251b67e0e2228e98608cd80c0bb078e20792f9707
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: bda416f399d071abc554db5251b67e0e2228e98608cd80c0bb078e20792f9707
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/02-auth/keycloak/docker-compose.yml
     complete: false
     state: PARTIAL
 - path: infra/02-auth/oauth2-proxy/Dockerfile
@@ -9959,12 +9941,12 @@ files:
   state: HASHED
   sha256: 7439974f3c49aa6a8462a2e0d7fbb8a298d9798a3abb5348c79cf87e692d1065
   review:
-    path: infra/02-auth/oauth2-proxy/README.md
+    sha256: 7439974f3c49aa6a8462a2e0d7fbb8a298d9798a3abb5348c79cf87e692d1065
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: 7439974f3c49aa6a8462a2e0d7fbb8a298d9798a3abb5348c79cf87e692d1065
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/02-auth/oauth2-proxy/README.md
     complete: false
     state: PARTIAL
 - path: infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg
@@ -9990,12 +9972,12 @@ files:
   state: HASHED
   sha256: ff7196466cb9ec8cc4900680406ab68b22193a894c04f32825f45d183bb2cde4
   review:
-    path: infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
+    sha256: ff7196466cb9ec8cc4900680406ab68b22193a894c04f32825f45d183bb2cde4
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: ff7196466cb9ec8cc4900680406ab68b22193a894c04f32825f45d183bb2cde4
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml
     complete: false
     state: PARTIAL
 - path: infra/02-auth/oauth2-proxy/docker-compose.yml
@@ -10005,12 +9987,12 @@ files:
   state: HASHED
   sha256: 6a3bbb2dd657e2a975b2c7da1e8e7297acc599f7f18c9baf8e90c040cb4bd22a
   review:
-    path: infra/02-auth/oauth2-proxy/docker-compose.yml
+    sha256: 6a3bbb2dd657e2a975b2c7da1e8e7297acc599f7f18c9baf8e90c040cb4bd22a
     reviewer: /root/p02_final_iac_review (iac-reviewer)
     observed_at: '2026-11-02T01:08:32Z'
-    sha256: 6a3bbb2dd657e2a975b2c7da1e8e7297acc599f7f18c9baf8e90c040cb4bd22a
     scope: P02 dedicated Valkey mount changed section and cross-file contract; full-file
       review not claimed
+    path: infra/02-auth/oauth2-proxy/docker-compose.yml
     complete: false
     state: PARTIAL
 - path: infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh
@@ -10389,11 +10371,11 @@ files:
   state: HASHED
   sha256: a749486e238af81ccde42dfc71403f0c86c4ab1f225da1b7de518b068a7fa240
   review:
-    path: infra/03-security/openbao/consumer-migration/README.md
+    sha256: a749486e238af81ccde42dfc71403f0c86c4ab1f225da1b7de518b068a7fa240
     reviewer: /root/p06_documents
     observed_at: '2026-11-02T12:37:50Z'
-    sha256: a749486e238af81ccde42dfc71403f0c86c4ab1f225da1b7de518b068a7fa240
     scope: P06 authored sections and related public contracts only
+    path: infra/03-security/openbao/consumer-migration/README.md
     complete: false
     state: PARTIAL
 - path: infra/03-security/openbao/consumer-migration/oidc-client-secrets.sh
@@ -10843,12 +10825,12 @@ files:
   state: HASHED
   sha256: 4612a746466040a422c065041c1fd73ea3794343b576dfee5f404ce1c2d70cbc
   review:
-    path: infra/04-data/mng-db/README.md
+    sha256: 4612a746466040a422c065041c1fd73ea3794343b576dfee5f404ce1c2d70cbc
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: 4612a746466040a422c065041c1fd73ea3794343b576dfee5f404ce1c2d70cbc
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/04-data/mng-db/README.md
     complete: false
     state: PARTIAL
 - path: infra/04-data/mng-db/docker-compose.n8n-acl.yml
@@ -10866,12 +10848,12 @@ files:
   state: HASHED
   sha256: b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471
   review:
-    path: infra/04-data/mng-db/docker-compose.yml
+    sha256: b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/04-data/mng-db/docker-compose.yml
     complete: false
     state: PARTIAL
 - path: infra/04-data/mng-db/pg/backup/Dockerfile
@@ -10945,12 +10927,12 @@ files:
   state: HASHED
   sha256: 4d3a484d65d423f666e309c77bda039a24f40740b75ea9f34bcfabc3328bb5e8
   review:
-    path: infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh
+    sha256: 4d3a484d65d423f666e309c77bda039a24f40740b75ea9f34bcfabc3328bb5e8
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 4d3a484d65d423f666e309c77bda039a24f40740b75ea9f34bcfabc3328bb5e8
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh
     complete: false
     state: PARTIAL
 - path: infra/04-data/mng-db/valkey/scripts/start-dedicated.sh
@@ -10960,12 +10942,12 @@ files:
   state: HASHED
   sha256: fb985ae4cd0b9d99baab168bb993714682faf01a1b455385b63a3833b09144a3
   review:
-    path: infra/04-data/mng-db/valkey/scripts/start-dedicated.sh
+    sha256: fb985ae4cd0b9d99baab168bb993714682faf01a1b455385b63a3833b09144a3
     reviewer: root_changed_line_review
     observed_at: '2026-11-02T01:33:53Z'
-    sha256: fb985ae4cd0b9d99baab168bb993714682faf01a1b455385b63a3833b09144a3
     scope: P02 shellcheck SC1007 correction and complete 39-line wrapper reviewed;
       full-file acceptance not claimed
+    path: infra/04-data/mng-db/valkey/scripts/start-dedicated.sh
     complete: false
     state: PARTIAL
 - path: infra/04-data/mng-db/valkey/scripts/start.sh
@@ -10975,12 +10957,12 @@ files:
   state: HASHED
   sha256: 379d4a592d85e694e1a8ff22fa3ad5b9f34625435eec7b29774476608b2e13ed
   review:
-    path: infra/04-data/mng-db/valkey/scripts/start.sh
+    sha256: 379d4a592d85e694e1a8ff22fa3ad5b9f34625435eec7b29774476608b2e13ed
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 379d4a592d85e694e1a8ff22fa3ad5b9f34625435eec7b29774476608b2e13ed
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/04-data/mng-db/valkey/scripts/start.sh
     complete: false
     state: PARTIAL
 - path: infra/04-data/neo4j/README.md
@@ -11150,12 +11132,12 @@ files:
   state: HASHED
   sha256: 90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a
   review:
-    path: infra/04-data/redisinsight/docker-compose.yml
+    sha256: 90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/04-data/redisinsight/docker-compose.yml
     complete: false
     state: PARTIAL
 - path: infra/04-data/redisinsight/scripts/start.sh
@@ -11373,12 +11355,12 @@ files:
   state: HASHED
   sha256: 555bbb09e3e05f1b9de005c2d7210a9931eceb6552f5855a7d524ac14d6d4aa4
   review:
-    path: infra/06-observability/docker-compose.yml
+    sha256: 555bbb09e3e05f1b9de005c2d7210a9931eceb6552f5855a7d524ac14d6d4aa4
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 555bbb09e3e05f1b9de005c2d7210a9931eceb6552f5855a7d524ac14d6d4aa4
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/06-observability/docker-compose.yml
     complete: false
     state: PARTIAL
 - path: infra/06-observability/dozzle/README.md
@@ -11412,12 +11394,12 @@ files:
   state: HASHED
   sha256: 450cd8472ffb09f592408082be875811d660e8dce11a85b17fb11c151fa16bf7
   review:
-    path: infra/06-observability/gatus/README.md
+    sha256: 450cd8472ffb09f592408082be875811d660e8dce11a85b17fb11c151fa16bf7
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: 450cd8472ffb09f592408082be875811d660e8dce11a85b17fb11c151fa16bf7
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/06-observability/gatus/README.md
     complete: false
     state: PARTIAL
 - path: infra/06-observability/gatus/config/config.oidc.yaml
@@ -11427,12 +11409,12 @@ files:
   state: HASHED
   sha256: 40e2ffa9df3355ddec2fb7dd62dea175f664173acd55e296dbf02147529d7449
   review:
-    path: infra/06-observability/gatus/config/config.oidc.yaml
+    sha256: 40e2ffa9df3355ddec2fb7dd62dea175f664173acd55e296dbf02147529d7449
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 40e2ffa9df3355ddec2fb7dd62dea175f664173acd55e296dbf02147529d7449
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/06-observability/gatus/config/config.oidc.yaml
     complete: false
     state: PARTIAL
 - path: infra/06-observability/gatus/config/config.yaml
@@ -11442,12 +11424,12 @@ files:
   state: HASHED
   sha256: 1b15a5ee06b379add3dbced471299bb8b85fcd91c3872362b57bd62a5d19ede0
   review:
-    path: infra/06-observability/gatus/config/config.yaml
+    sha256: 1b15a5ee06b379add3dbced471299bb8b85fcd91c3872362b57bd62a5d19ede0
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 1b15a5ee06b379add3dbced471299bb8b85fcd91c3872362b57bd62a5d19ede0
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/06-observability/gatus/config/config.yaml
     complete: false
     state: PARTIAL
 - path: infra/06-observability/gatus/docker-entrypoint.sh
@@ -11473,12 +11455,12 @@ files:
   state: HASHED
   sha256: afef7bc555191575453d8e1c2a4c8f467f74fa5faf41b52a4204168bd4e4ae37
   review:
-    path: infra/06-observability/grafana/README.md
+    sha256: afef7bc555191575453d8e1c2a4c8f467f74fa5faf41b52a4204168bd4e4ae37
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: afef7bc555191575453d8e1c2a4c8f467f74fa5faf41b52a4204168bd4e4ae37
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/06-observability/grafana/README.md
     complete: false
     state: PARTIAL
 - path: infra/06-observability/grafana/dashboards/Applications/airflow-db.json
@@ -11872,12 +11854,12 @@ files:
   state: HASHED
   sha256: 3bbec59bac556c90cff5904970cc839cd86a3b5524606edf5c5105c903127299
   review:
-    path: infra/06-observability/grafana/provisioning/datasources/datasource.yml
+    sha256: 3bbec59bac556c90cff5904970cc839cd86a3b5524606edf5c5105c903127299
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 3bbec59bac556c90cff5904970cc839cd86a3b5524606edf5c5105c903127299
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/06-observability/grafana/provisioning/datasources/datasource.yml
     complete: false
     state: PARTIAL
 - path: infra/06-observability/grafana/provisioning/db/mng-pg.sql
@@ -11935,12 +11917,12 @@ files:
   state: HASHED
   sha256: e6d08bed48a16947141ee2d2649fe6972e2d4cf8939a47d1829314dc7c565395
   review:
-    path: infra/06-observability/prometheus/README.md
+    sha256: 973eab93e575e331371877f2ac910568c52189982829cee473a18e4c885e411f
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: 973eab93e575e331371877f2ac910568c52189982829cee473a18e4c885e411f
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/06-observability/prometheus/README.md
     complete: false
     state: STALE
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.keycloak.yml
@@ -12062,12 +12044,12 @@ files:
   state: HASHED
   sha256: 0fbe5cf591ffb703f33df6a7682e219cb18985b052fae9a9183a590ae88caead
   review:
-    path: infra/06-observability/prometheus/config/prometheus.dev.yml
+    sha256: 0fbe5cf591ffb703f33df6a7682e219cb18985b052fae9a9183a590ae88caead
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 0fbe5cf591ffb703f33df6a7682e219cb18985b052fae9a9183a590ae88caead
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/06-observability/prometheus/config/prometheus.dev.yml
     complete: false
     state: PARTIAL
 - path: infra/06-observability/prometheus/config/prometheus.yml
@@ -12077,12 +12059,12 @@ files:
   state: HASHED
   sha256: 0fbe5cf591ffb703f33df6a7682e219cb18985b052fae9a9183a590ae88caead
   review:
-    path: infra/06-observability/prometheus/config/prometheus.yml
+    sha256: 0fbe5cf591ffb703f33df6a7682e219cb18985b052fae9a9183a590ae88caead
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 0fbe5cf591ffb703f33df6a7682e219cb18985b052fae9a9183a590ae88caead
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/06-observability/prometheus/config/prometheus.yml
     complete: false
     state: PARTIAL
 - path: infra/06-observability/prometheus/scripts/start.sh
@@ -12092,12 +12074,12 @@ files:
   state: HASHED
   sha256: f09e2a28b10bbab110eb7e17232c7be67a706fb90ca0e3c684e420be4f184dd3
   review:
-    path: infra/06-observability/prometheus/scripts/start.sh
+    sha256: 8d9aace1b919285f21df4033c2b83b7068014f5bc3b9b9c36733d53354998997
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 8d9aace1b919285f21df4033c2b83b7068014f5bc3b9b9c36733d53354998997
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/06-observability/prometheus/scripts/start.sh
     complete: false
     state: STALE
 - path: infra/06-observability/pushgateway/README.md
@@ -12179,12 +12161,12 @@ files:
   state: HASHED
   sha256: 35680bf165c2804b52a9244082062eac465fa4e4e5ffc9b2ee7de5fb152b1469
   review:
-    path: infra/07-workflow/airflow/README.md
+    sha256: 35680bf165c2804b52a9244082062eac465fa4e4e5ffc9b2ee7de5fb152b1469
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: 35680bf165c2804b52a9244082062eac465fa4e4e5ffc9b2ee7de5fb152b1469
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/07-workflow/airflow/README.md
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/airflow/config/statsd_mapping.yml
@@ -12218,12 +12200,12 @@ files:
   state: HASHED
   sha256: 4fd046bdce5bc5dc6c58a3b28355929e19911c45a43e6bfea0229e5791ef214b
   review:
-    path: infra/07-workflow/airflow/docker-compose.monitor-acl.yml
+    sha256: 4fd046bdce5bc5dc6c58a3b28355929e19911c45a43e6bfea0229e5791ef214b
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 4fd046bdce5bc5dc6c58a3b28355929e19911c45a43e6bfea0229e5791ef214b
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/07-workflow/airflow/docker-compose.monitor-acl.yml
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/airflow/docker-compose.yml
@@ -12233,12 +12215,12 @@ files:
   state: HASHED
   sha256: 621bcf244286dc784c0004ef2b51a3af8fca93b1b483f28fe1340cd54df3fc9b
   review:
-    path: infra/07-workflow/airflow/docker-compose.yml
+    sha256: b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9
     reviewer: /root/p02_final_iac_review (iac-reviewer)
     observed_at: '2026-11-02T01:08:32Z'
-    sha256: b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9
     scope: P02 dedicated Valkey mount changed section and cross-file contract; full-file
       review not claimed
+    path: infra/07-workflow/airflow/docker-compose.yml
     complete: false
     state: STALE
 - path: infra/07-workflow/airflow/workloads/README.md
@@ -12256,12 +12238,12 @@ files:
   state: HASHED
   sha256: 3bd4a89772e5222879d6d1f77c4610aec612fff1cad5f7eff09c76d8a02f854d
   review:
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/README.md
     sha256: 3bd4a89772e5222879d6d1f77c4610aec612fff1cad5f7eff09c76d8a02f854d
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T09:07:52.952274+00:00'
     scope: Entire living-document body read by the documentation writer. Independent
       changed-diff and source crosscheck is recorded separately in Task.
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/README.md
     complete: true
     state: REVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
@@ -12279,12 +12261,12 @@ files:
   state: HASHED
   sha256: 8b53fb1e250b04f0cd8ede22b1e88e1bf56abc99b10d4063d2f21394aa024663
   review:
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/dags/README.md
     sha256: 8b53fb1e250b04f0cd8ede22b1e88e1bf56abc99b10d4063d2f21394aa024663
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T08:12:18.635471+00:00'
     scope: Entire living-document body read by the documentation writer. Independent
       changed-diff and source crosscheck is recorded separately in Task.
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/dags/README.md
     complete: true
     state: REVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/dags/source_manifest_ingest.py
@@ -12382,12 +12364,12 @@ files:
   state: HASHED
   sha256: 8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32
   review:
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
+    sha256: 8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/008_checks.sql
@@ -12397,12 +12379,12 @@ files:
   state: HASHED
   sha256: f0f39f09341bb0783c10f27c136aea40ff770b2edbbf9ffd37dee618db3d4e77
   review:
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/008_checks.sql
+    sha256: f0f39f09341bb0783c10f27c136aea40ff770b2edbbf9ffd37dee618db3d4e77
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: f0f39f09341bb0783c10f27c136aea40ff770b2edbbf9ffd37dee618db3d4e77
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/008_checks.sql
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
@@ -12412,12 +12394,12 @@ files:
   state: HASHED
   sha256: 9c2913b7ab00ed2a4592a8e74fe58881ca690fdd9ce6edd594a0c0d5aa46039c
   review:
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
+    sha256: 9c2913b7ab00ed2a4592a8e74fe58881ca690fdd9ce6edd594a0c0d5aa46039c
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 9c2913b7ab00ed2a4592a8e74fe58881ca690fdd9ce6edd594a0c0d5aa46039c
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
@@ -12427,12 +12409,12 @@ files:
   state: HASHED
   sha256: 1d704d7fb97a1aaff11960c6c0a1d0a3ba0228465dbe0783f0aa028ffa8c157d
   review:
-    path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
     sha256: 1d704d7fb97a1aaff11960c6c0a1d0a3ba0228465dbe0783f0aa028ffa8c157d
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T08:12:18.635468+00:00'
     scope: Entire living-document body read by the documentation writer. Independent
       changed-diff and source crosscheck is recorded separately in Task.
+    path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
     complete: true
     state: REVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/__init__.py
@@ -12482,12 +12464,12 @@ files:
   state: HASHED
   sha256: 3e5f9565c8c5c681619cb2a72d128510e5b5306c4d3e548ca4479a2bb4e48c89
   review:
-    path: infra/07-workflow/n8n/README.md
+    sha256: 3e5f9565c8c5c681619cb2a72d128510e5b5306c4d3e548ca4479a2bb4e48c89
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: 3e5f9565c8c5c681619cb2a72d128510e5b5306c4d3e548ca4479a2bb4e48c89
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/07-workflow/n8n/README.md
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/custom/.gitkeep
@@ -12513,12 +12495,12 @@ files:
   state: HASHED
   sha256: ccb9299ec3b39dcde079aa8c8feed789cd41bdc9cbea975749d18b6bd91e8dec
   review:
-    path: infra/07-workflow/n8n/docker-compose.monitor-acl.yml
+    sha256: ccb9299ec3b39dcde079aa8c8feed789cd41bdc9cbea975749d18b6bd91e8dec
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: ccb9299ec3b39dcde079aa8c8feed789cd41bdc9cbea975749d18b6bd91e8dec
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/07-workflow/n8n/docker-compose.monitor-acl.yml
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/docker-compose.ollama-local.yml
@@ -12536,12 +12518,12 @@ files:
   state: HASHED
   sha256: 63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e
   review:
-    path: infra/07-workflow/n8n/docker-compose.yml
+    sha256: afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7
     reviewer: /root/p02_final_iac_review (iac-reviewer)
     observed_at: '2026-11-02T01:08:32Z'
-    sha256: afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7
     scope: P02 dedicated Valkey mount changed section and cross-file contract; full-file
       review not claimed
+    path: infra/07-workflow/n8n/docker-compose.yml
     complete: false
     state: STALE
 - path: infra/07-workflow/n8n/docker-entrypoint.dev.sh
@@ -13151,12 +13133,12 @@ files:
   state: HASHED
   sha256: 6fa171347d879e193ed36e71ae85d3905c887ae5bc76c4d87dcd3d95dc579133
   review:
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/README.md
+    sha256: 6fa171347d879e193ed36e71ae85d3905c887ae5bc76c4d87dcd3d95dc579133
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 6fa171347d879e193ed36e71ae85d3905c887ae5bc76c4d87dcd3d95dc579133
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/README.md
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
@@ -13174,12 +13156,12 @@ files:
   state: HASHED
   sha256: 0f00659f7077f7f976a296840f2b6f26164f9245d87ca80c92e3b3ae62fd14b7
   review:
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/fixtures/README.md
+    sha256: 0f00659f7077f7f976a296840f2b6f26164f9245d87ca80c92e3b3ae62fd14b7
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 0f00659f7077f7f976a296840f2b6f26164f9245d87ca80c92e3b3ae62fd14b7
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/fixtures/README.md
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/fixtures/cases.json
@@ -13205,12 +13187,12 @@ files:
   state: HASHED
   sha256: 53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca
   review:
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
+    sha256: 53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md
@@ -13220,12 +13202,12 @@ files:
   state: HASHED
   sha256: ffeb447906dd3cc042c2874869ab88613a81f8e4dfbad66ee3b8fd942753014c
   review:
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md
+    sha256: ffeb447906dd3cc042c2874869ab88613a81f8e4dfbad66ee3b8fd942753014c
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: ffeb447906dd3cc042c2874869ab88613a81f8e4dfbad66ee3b8fd942753014c
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/README.md
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json
@@ -13251,12 +13233,12 @@ files:
   state: HASHED
   sha256: 24bdfe3c56194afad02b5f8d83d476203c7f59df63226ae9ab9ef0cfe0139157
   review:
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md
+    sha256: 24bdfe3c56194afad02b5f8d83d476203c7f59df63226ae9ab9ef0cfe0139157
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 24bdfe3c56194afad02b5f8d83d476203c7f59df63226ae9ab9ef0cfe0139157
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/README.md
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs
@@ -13274,12 +13256,12 @@ files:
   state: HASHED
   sha256: 9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d
   review:
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs
+    sha256: 9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs
@@ -13313,12 +13295,12 @@ files:
   state: HASHED
   sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
   review:
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
+    sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json
@@ -13352,12 +13334,12 @@ files:
   state: HASHED
   sha256: 04cde9d6477b9270441df3e358f6c084d4c961e230469e87bb21024dca626b52
   review:
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/README.md
+    sha256: 04cde9d6477b9270441df3e358f6c084d4c961e230469e87bb21024dca626b52
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 04cde9d6477b9270441df3e358f6c084d4c961e230469e87bb21024dca626b52
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/README.md
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools/__init__.py
@@ -13391,12 +13373,12 @@ files:
   state: HASHED
   sha256: 2ea2e4e981b07121864109db6038a8b2a4419d7a1e0a99700b30c0c2513c6a40
   review:
-    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/README.md
+    sha256: 2ea2e4e981b07121864109db6038a8b2a4419d7a1e0a99700b30c0c2513c6a40
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T11:00:03.955287+00:00'
-    sha256: 2ea2e4e981b07121864109db6038a8b2a4419d7a1e0a99700b30c0c2513c6a40
     scope: P05 changed sections and related source contracts; full unchanged-file
       body review not claimed
+    path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/README.md
     complete: false
     state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/workflows/manifest-outbox-mailpit.json
@@ -13526,12 +13508,12 @@ files:
   state: HASHED
   sha256: b39f6acbc17fb214697073f2b932b6062f8d0abea1ac5a19026b6d11050eb200
   review:
-    path: infra/08-ai/open-notebook/README.md
+    sha256: b39f6acbc17fb214697073f2b932b6062f8d0abea1ac5a19026b6d11050eb200
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: b39f6acbc17fb214697073f2b932b6062f8d0abea1ac5a19026b6d11050eb200
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/08-ai/open-notebook/README.md
     complete: false
     state: PARTIAL
 - path: infra/08-ai/open-notebook/docker-compose.yml
@@ -13541,12 +13523,12 @@ files:
   state: HASHED
   sha256: 9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d
   review:
-    path: infra/08-ai/open-notebook/docker-compose.yml
+    sha256: a1d0b2c90982489a48c69198c1c785816246b42cf587fed8b6ac3b71e888b336
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: a1d0b2c90982489a48c69198c1c785816246b42cf587fed8b6ac3b71e888b336
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/08-ai/open-notebook/docker-compose.yml
     complete: false
     state: STALE
 - path: infra/08-ai/open-notebook/surrealdb/Dockerfile
@@ -13580,12 +13562,12 @@ files:
   state: HASHED
   sha256: 1efd1b2fc4ec0d507e72cfef6bcfd667dcfb24f565dc584a2a039fd232b09c35
   review:
-    path: infra/08-ai/open-webui/README.md
+    sha256: 1efd1b2fc4ec0d507e72cfef6bcfd667dcfb24f565dc584a2a039fd232b09c35
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: 1efd1b2fc4ec0d507e72cfef6bcfd667dcfb24f565dc584a2a039fd232b09c35
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/08-ai/open-webui/README.md
     complete: false
     state: PARTIAL
 - path: infra/08-ai/open-webui/docker-compose.yml
@@ -13595,12 +13577,12 @@ files:
   state: HASHED
   sha256: 718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b
   review:
-    path: infra/08-ai/open-webui/docker-compose.yml
+    sha256: 718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/08-ai/open-webui/docker-compose.yml
     complete: false
     state: PARTIAL
 - path: infra/08-ai/open-webui/docker-entrypoint.sh
@@ -14118,9 +14100,9 @@ files:
 - path: infra/09-platform-ops/security-updates/update-ledger.json
   tracked: true
   kind: configuration
-  bytes: 1544779
+  bytes: 1693493
   state: HASHED
-  sha256: 5298c88f3deb5ddecb0fb332694451a0f345b2883ff87c29bff56d4524992afd
+  sha256: 6694fce5fd09920404db2ab11f3303e97f0985ef1f5a4f0e8570d71e417a50bb
   review:
     state: UNREVIEWED
 - path: infra/09-platform-ops/security-updates/vendor-channel-references.json
@@ -14162,12 +14144,12 @@ files:
   state: HASHED
   sha256: 461278e99c9309165c66457e99c110b9d14e33c781ffaf1f653fcd11afbea0cf
   review:
-    path: infra/09-platform-ops/terrakube/README.md
+    sha256: 461278e99c9309165c66457e99c110b9d14e33c781ffaf1f653fcd11afbea0cf
     reviewer: root_document_review
     observed_at: '2026-11-01T22:51:37Z'
-    sha256: 461278e99c9309165c66457e99c110b9d14e33c781ffaf1f653fcd11afbea0cf
     scope: P02 README changed sections checked against listener/auth/secret contracts;
       full-file review not claimed
+    path: infra/09-platform-ops/terrakube/README.md
     complete: false
     state: PARTIAL
 - path: infra/09-platform-ops/terrakube/docker-compose.yml
@@ -14177,12 +14159,12 @@ files:
   state: HASHED
   sha256: 9b812e0c04256d9f3f2144835d46b07b44f0c4ca6c42cc058a1512bbd97ca3ae
   review:
-    path: infra/09-platform-ops/terrakube/docker-compose.yml
+    sha256: 9b812e0c04256d9f3f2144835d46b07b44f0c4ca6c42cc058a1512bbd97ca3ae
     reviewer: /root/p02_iac_review (iac-reviewer)
     observed_at: '2026-11-01T22:41:45Z'
-    sha256: 9b812e0c04256d9f3f2144835d46b07b44f0c4ca6c42cc058a1512bbd97ca3ae
     scope: P02 changed infrastructure sections and declared cross-file contracts;
       full-file review not claimed
+    path: infra/09-platform-ops/terrakube/docker-compose.yml
     complete: false
     state: PARTIAL
 - path: infra/10-communication/README.md
@@ -14600,12 +14582,12 @@ files:
   state: HASHED
   sha256: cc46241065c585a7c27c2cd64b3cde1446a0efcffb7a3a2fe033746c33fd8a39
   review:
-    path: infra/12-analytics/flink/README.md
     sha256: cc46241065c585a7c27c2cd64b3cde1446a0efcffb7a3a2fe033746c33fd8a39
     reviewer: /root/p04_docs
     observed_at: '2026-11-02T08:12:18.635476+00:00'
     scope: Entire living-document body read by the documentation writer. Independent
       changed-diff and source crosscheck is recorded separately in Task.
+    path: infra/12-analytics/flink/README.md
     complete: true
     state: REVIEWED
 - path: infra/12-analytics/flink/docker-compose.yml
@@ -15708,20 +15690,20 @@ files:
   state: HASHED
   sha256: d4bd053f93ae0a04a80d55bdf6569e500457258b946332f2ea3a58116353e579
   review:
-    path: scripts/hardening/check-all-hardening.sh
+    sha256: d4bd053f93ae0a04a80d55bdf6569e500457258b946332f2ea3a58116353e579
     reviewer: root_ci_review
     observed_at: '2026-11-01T22:59:14Z'
-    sha256: d4bd053f93ae0a04a80d55bdf6569e500457258b946332f2ea3a58116353e579
     scope: P02 changed CI registration and source assertions; full-file review not
       claimed
+    path: scripts/hardening/check-all-hardening.sh
     complete: false
     state: PARTIAL
 - path: scripts/hooks/agent-event-hook.sh
   tracked: true
   kind: code
-  bytes: 23809
+  bytes: 23931
   state: HASHED
-  sha256: 89fe1940e44b291aacaa54c4704a7ed544db9b2c3d1647acd0699cb5ffa392d4
+  sha256: c6ebf6fbbe80694cc0b96e2281961d0f489f65551f85d048e5c542fac70f4e68
   review:
     state: UNREVIEWED
 - path: scripts/hooks/hook_rules.py
@@ -16027,12 +16009,12 @@ files:
   state: HASHED
   sha256: d5a5a26e3a085db9e00f749a28c1e7f1d5cadbae86d0b0cc49fcc9d88f15342b
   review:
-    path: scripts/lib/gate/ci_gate_adapters.py
+    sha256: d5a5a26e3a085db9e00f749a28c1e7f1d5cadbae86d0b0cc49fcc9d88f15342b
     reviewer: p02_residual_code_review + p02_residual_supply_review
     observed_at: '2026-11-02T02:22:28Z'
-    sha256: d5a5a26e3a085db9e00f749a28c1e7f1d5cadbae86d0b0cc49fcc9d88f15342b
     scope: P02 selector checkpointing, bounds and timeout cleanup diff; full-file
       review not claimed
+    path: scripts/lib/gate/ci_gate_adapters.py
     complete: false
     state: PARTIAL
 - path: scripts/lib/gate/ci_gate_contract.py
@@ -16122,11 +16104,11 @@ files:
   state: HASHED
   sha256: e3f8e6e9368d1643d58fcb34951a8bd5f4f9bf76aaf243121eeee98edbbf3e5a
   review:
-    path: scripts/lib/ops/_workspace_connection_sources.py
+    sha256: dfefebaa9a03278669e9db590997d42a4473f428c35e1fa052bd792e2aa8e2bf
     reviewer: /root/p02_code_review (code-reviewer)
     observed_at: '2026-11-02T07:41:51+09:00'
-    sha256: dfefebaa9a03278669e9db590997d42a4473f428c35e1fa052bd792e2aa8e2bf
     scope: P02 changed/source-contract; full-file review not claimed
+    path: scripts/lib/ops/_workspace_connection_sources.py
     complete: false
     state: STALE
 - path: scripts/lib/ops/_workspace_connections.py
@@ -16136,11 +16118,11 @@ files:
   state: HASHED
   sha256: 4837bccb2c03380311b1852ffac2dcc98192824889549240eed027d87e096ed9
   review:
-    path: scripts/lib/ops/_workspace_connections.py
+    sha256: 4837bccb2c03380311b1852ffac2dcc98192824889549240eed027d87e096ed9
     reviewer: /root/p02_code_review (code-reviewer)
     observed_at: '2026-11-02T07:41:51+09:00'
-    sha256: 4837bccb2c03380311b1852ffac2dcc98192824889549240eed027d87e096ed9
     scope: P02 changed/source-contract; full-file review not claimed
+    path: scripts/lib/ops/_workspace_connections.py
     complete: false
     state: PARTIAL
 - path: scripts/lib/ops/_workspace_model_connections.py
@@ -16226,17 +16208,17 @@ files:
 - path: scripts/lib/ops/retire_materials.py
   tracked: true
   kind: code
-  bytes: 19847
+  bytes: 23360
   state: HASHED
-  sha256: 73755afee10f188b7e8092e928a77106404292ce9e2938a631fda24fc4e98fa1
+  sha256: 527cb962c41f8611812c2e7a986b05d8529fa254e2b5c0b453b736f4690f7032
   review:
     state: UNREVIEWED
 - path: scripts/lib/ops/root_resource_assessment.py
   tracked: true
   kind: code
-  bytes: 18536
+  bytes: 22048
   state: HASHED
-  sha256: d8b8ed0fae64932d44ccd9a9ef6b9028a82530fdcf89ff0b7ee27f7d99bcaf3a
+  sha256: fb89ce44e52f64830e4e7a3ca3a7a43df09fd49b7e06771afb1c82d265f45638
   review:
     state: UNREVIEWED
 - path: scripts/lib/ops/secret_catalog.py
@@ -16302,11 +16284,11 @@ files:
   state: HASHED
   sha256: 3edc866dc0bc58d83dd452a991e4c1c1f209fc211e9e2a64d8bd9f362ea17110
   review:
-    path: scripts/lib/ops/workspace_inventory.py
+    sha256: 3edc866dc0bc58d83dd452a991e4c1c1f209fc211e9e2a64d8bd9f362ea17110
     reviewer: /root/p02_code_review (code-reviewer)
     observed_at: '2026-11-02T07:41:51+09:00'
-    sha256: 3edc866dc0bc58d83dd452a991e4c1c1f209fc211e9e2a64d8bd9f362ea17110
     scope: P02 changed/source-contract; full-file review not claimed
+    path: scripts/lib/ops/workspace_inventory.py
     complete: false
     state: PARTIAL
 - path: scripts/lib/supply_chain/grype_db_seed.py
@@ -16320,9 +16302,9 @@ files:
 - path: scripts/lib/supply_chain/latest_version_gate.py
   tracked: true
   kind: code
-  bytes: 6681
+  bytes: 7048
   state: HASHED
-  sha256: 9a90a7491e3a2f913d7b338a3b622491b12a48fdd4418e09a08d42aceede7cf4
+  sha256: 443bd3e453caf01385cc288853e225a0407268de38533cb1fcf10d76f745c08d
   review:
     state: UNREVIEWED
 - path: scripts/lib/supply_chain/security_update_gate.py
@@ -16336,16 +16318,16 @@ files:
 - path: scripts/manifest.yaml
   tracked: true
   kind: configuration
-  bytes: 49147
+  bytes: 49197
   state: HASHED
-  sha256: 8ba009b5e3bd6aec416b14481b3a80ac8c0d68166b040635f83b72f74b8c807b
+  sha256: d2b6f014776ccce1f482c9ad432d8288d83486a7f37422ee7f99a1e64eeb45a5
   review:
-    path: scripts/manifest.yaml
+    sha256: aa85f837eb340bfa789910a4e3d53601dc43948fae274831b82357db5ea5cd9a
     reviewer: root_ci_review
     observed_at: '2026-11-01T22:59:14Z'
-    sha256: aa85f837eb340bfa789910a4e3d53601dc43948fae274831b82357db5ea5cd9a
     scope: P02 changed CI registration and source assertions; full-file review not
       claimed
+    path: scripts/manifest.yaml
     complete: false
     state: STALE
 - path: scripts/operations/agent_memory.py
@@ -16547,11 +16529,11 @@ files:
   state: HASHED
   sha256: 4f06eb705315cf42abba64d9bea6eb390494688f465ec74e280b3174f4ab7fce
   review:
-    path: scripts/operations/workspace-inventory.py
+    sha256: 4f06eb705315cf42abba64d9bea6eb390494688f465ec74e280b3174f4ab7fce
     reviewer: /root/p02_code_review (code-reviewer)
     observed_at: '2026-11-02T07:41:51+09:00'
-    sha256: 4f06eb705315cf42abba64d9bea6eb390494688f465ec74e280b3174f4ab7fce
     scope: P02 changed/source-contract; full-file review not claimed
+    path: scripts/operations/workspace-inventory.py
     complete: false
     state: PARTIAL
 - path: scripts/requirements-controller.lock
@@ -16733,9 +16715,9 @@ files:
 - path: scripts/validation/compose_controls.py
   tracked: true
   kind: code
-  bytes: 11570
+  bytes: 27910
   state: HASHED
-  sha256: 4abaecd36d1c4ca98b989249e2b153b1b01f371016fcacfcce939b79f7089fc5
+  sha256: d9e901e08f7f037d70e8b692902f5f60363c4d6417f6b3ce49bb273dc2a5fbdb
   review:
     state: UNREVIEWED
 - path: scripts/validation/run-agent-precommit-all-files.sh
@@ -17577,12 +17559,12 @@ files:
   state: HASHED
   sha256: 6677b8eb9c7046a80e91ea3ae31c0d0a825d443fb2b2a31ab2203af7a37a3b34
   review:
-    path: tests/lib/gate/test_ci_gate_adapters.py
+    sha256: 6677b8eb9c7046a80e91ea3ae31c0d0a825d443fb2b2a31ab2203af7a37a3b34
     reviewer: p02_residual_code_review + p02_residual_supply_review
     observed_at: '2026-11-02T02:22:28Z'
-    sha256: 6677b8eb9c7046a80e91ea3ae31c0d0a825d443fb2b2a31ab2203af7a37a3b34
     scope: P02 adapter progress, output-bound and failure-semantics tests; full-file
       review not claimed
+    path: tests/lib/gate/test_ci_gate_adapters.py
     complete: false
     state: PARTIAL
 - path: tests/lib/gate/test_ci_gate_contract.py
@@ -17604,24 +17586,24 @@ files:
 - path: tests/lib/gate/test_github_workflow_contract.py
   tracked: true
   kind: test
-  bytes: 88060
+  bytes: 91016
   state: HASHED
-  sha256: 2feb600436ab0a7a4b533ac46cba496ba582c870ecf6f5c2c95f63d9eeffd319
+  sha256: 90e6c80fe8a12fd7eac52901d0a479eeea84fc113d2219ab55db3d2297271891
   review:
-    path: tests/lib/gate/test_github_workflow_contract.py
+    sha256: b0ce71bc946221dd5e86efc223eed8d9c4011e1c6851f9c5119e66757b864a7a
     reviewer: p02_residual_code_review + p02_residual_supply_review
     observed_at: '2026-11-02T02:22:28Z'
-    sha256: b0ce71bc946221dd5e86efc223eed8d9c4011e1c6851f9c5119e66757b864a7a
     scope: Exact SSO optional selector and no-environment-expansion assertions; full-file
       review not claimed
+    path: tests/lib/gate/test_github_workflow_contract.py
     complete: false
     state: STALE
 - path: tests/lib/gate/test_p03_workflow_contract.py
   tracked: true
   kind: test
-  bytes: 6860
+  bytes: 11717
   state: HASHED
-  sha256: e205d8ac5517f988ed6645e4cb9b40498c76eae28e4d8d0e0cfad4a73639c5f6
+  sha256: 853ae51c4369bf5ec0997a50a5be87f7c6f325f98b2bb1a6eacecb65652f6ecb
   review:
     state: UNREVIEWED
 - path: tests/lib/hooks/__init__.py
@@ -17779,17 +17761,17 @@ files:
 - path: tests/lib/ops/test_retirement.py
   tracked: true
   kind: test
-  bytes: 27974
+  bytes: 34129
   state: HASHED
-  sha256: dc9a29af5f190cb20385405b70af902d151c17b6a6199c480bcfaa0dcd9dfe44
+  sha256: 5ad5c2eff58401983b24311c4552e86ad4f59f125df78988d5bb4e21647f6f96
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_root_resource_assessment.py
   tracked: true
   kind: test
-  bytes: 20317
+  bytes: 25592
   state: HASHED
-  sha256: a3e31d7985917fcd8a3771eb1093c5f86ab9bd16a58e4a72c569cf474aef9a45
+  sha256: 4781872630b99a747c588b2bdf09c2f71d8dff746b9c73fe5988bfc6751076e9
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_secret_catalog.py
@@ -17915,9 +17897,9 @@ files:
 - path: tests/lib/supply_chain/test_update_gates.py
   tracked: true
   kind: test
-  bytes: 22394
+  bytes: 44613
   state: HASHED
-  sha256: 060dc243c5061c820636dab9429ea3b61505ae013d2c543fe026c783ac538f4e
+  sha256: cc6ea117899144d19f0a1c5109c2359bdfda7fc673ebde8368b11c14185bce2e
   review:
     state: UNREVIEWED
 - path: tests/lib/test_surface_ownership.py
@@ -18151,13 +18133,13 @@ files:
   state: HASHED
   sha256: a0c99bb5882d2f45ce785d0021116c2c181aabf741eca34c8deeb7a09022911b
   review:
-    path: tests/validation/_p05_opsflow_native.py
+    sha256: a0c99bb5882d2f45ce785d0021116c2c181aabf741eca34c8deeb7a09022911b
     reviewer: /root/p04_uri (independent)
     observed_at: '2026-11-02T11:52:35.037311+00:00'
-    sha256: a0c99bb5882d2f45ce785d0021116c2c181aabf741eca34c8deeb7a09022911b
     scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
       and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
       not inferred
+    path: tests/validation/_p05_opsflow_native.py
     complete: false
     state: PARTIAL
 - path: tests/validation/_p05_opsflow_recovery.py
@@ -18167,13 +18149,13 @@ files:
   state: HASHED
   sha256: bc70d322399f8687d32d3b2191451c3afe0e4de8e448c52bf3bbf38767ef1f84
   review:
-    path: tests/validation/_p05_opsflow_recovery.py
+    sha256: bc70d322399f8687d32d3b2191451c3afe0e4de8e448c52bf3bbf38767ef1f84
     reviewer: /root/p04_uri (independent)
     observed_at: '2026-11-02T11:52:35.037311+00:00'
-    sha256: bc70d322399f8687d32d3b2191451c3afe0e4de8e448c52bf3bbf38767ef1f84
     scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
       and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
       not inferred
+    path: tests/validation/_p05_opsflow_recovery.py
     complete: false
     state: PARTIAL
 - path: tests/validation/_p05_opsflow_registration.py
@@ -18183,13 +18165,13 @@ files:
   state: HASHED
   sha256: 074291db8db4faed87648f0761c60d7a47a4d08fb7b74e061ea1d718f2146df6
   review:
-    path: tests/validation/_p05_opsflow_registration.py
+    sha256: 074291db8db4faed87648f0761c60d7a47a4d08fb7b74e061ea1d718f2146df6
     reviewer: /root/p04_uri (independent)
     observed_at: '2026-11-02T11:52:35.037311+00:00'
-    sha256: 074291db8db4faed87648f0761c60d7a47a4d08fb7b74e061ea1d718f2146df6
     scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
       and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
       not inferred
+    path: tests/validation/_p05_opsflow_registration.py
     complete: false
     state: PARTIAL
 - path: tests/validation/_sample_delivery_fixtures.py
@@ -18299,9 +18281,9 @@ files:
 - path: tests/validation/test_agent_governance_ci_routing.py
   tracked: true
   kind: test
-  bytes: 138937
+  bytes: 142265
   state: HASHED
-  sha256: 1fb3ce5be9843d6b620c97333b59bf69e849ef6de917c41a1d7e9c289987f209
+  sha256: dbe1ee208b14abb5df8dadd29999dd08feca052549e0cea1b456be8c31cc01e0
   review:
     state: UNREVIEWED
 - path: tests/validation/test_airflow_connection_uri.py
@@ -18311,12 +18293,12 @@ files:
   state: HASHED
   sha256: dcc5345a4f19975c2d62ed83790202d5bb763c44f1178bf902939264ddb798d2
   review:
-    path: tests/validation/test_airflow_connection_uri.py
     sha256: dcc5345a4f19975c2d62ed83790202d5bb763c44f1178bf902939264ddb798d2
     reviewer: /root/p04_uri; independent /root/p04_pipeline
     observed_at: '2026-11-02T09:12:44.140127+00:00'
     scope: Two approved synthetic-fixture inline comment deltas and executable-AST
       identity only. Whole test body and new test execution are not claimed.
+    path: tests/validation/test_airflow_connection_uri.py
     complete: false
     state: PARTIAL
 - path: tests/validation/test_ci_gate_execution_context.py
@@ -18326,12 +18308,12 @@ files:
   state: HASHED
   sha256: 881e059414bc9911949ad41c6d2e832470179a880a1a736ec79980337b2d6c3b
   review:
-    path: tests/validation/test_ci_gate_execution_context.py
+    sha256: 881e059414bc9911949ad41c6d2e832470179a880a1a736ec79980337b2d6c3b
     reviewer: p02_residual_code_review + p02_residual_supply_review
     observed_at: '2026-11-02T02:22:28Z'
-    sha256: 881e059414bc9911949ad41c6d2e832470179a880a1a736ec79980337b2d6c3b
     scope: P02 outer-timeout checkpoint and process-group cleanup regression; full-file
       review not claimed
+    path: tests/validation/test_ci_gate_execution_context.py
     complete: false
     state: PARTIAL
 - path: tests/validation/test_ci_gate_model.py
@@ -18345,15 +18327,15 @@ files:
 - path: tests/validation/test_ci_gate_plan.py
   tracked: true
   kind: test
-  bytes: 101566
+  bytes: 101650
   state: HASHED
-  sha256: ce67522ada1c6bc8a075bc3be36dc7a27cba7337182337486296919f08f3279a
+  sha256: 379917b64e54c3687b3b731f2e9ef9413e7c9b23344adbef992d3ca4f4776c97
   review:
-    path: tests/validation/test_ci_gate_plan.py
+    sha256: 4798f34350767ab35bffae92f5357c4db5f952dd55199b01f6ae7c30f24296d4
     reviewer: p02_code_review
     observed_at: '2026-11-02T01:12:52Z'
-    sha256: 4798f34350767ab35bffae92f5357c4db5f952dd55199b01f6ae7c30f24296d4
     scope: P02 changed CI selector assertions reviewed; full-file review not claimed
+    path: tests/validation/test_ci_gate_plan.py
     complete: false
     state: STALE
 - path: tests/validation/test_compose_baseline_gates.py
@@ -18363,16 +18345,16 @@ files:
   state: HASHED
   sha256: 2470477aafad41d441472c5e08c72eab628e0d6e93d321eaf720b55522944b3f
   review:
-    path: tests/validation/test_compose_baseline_gates.py
+    sha256: 2470477aafad41d441472c5e08c72eab628e0d6e93d321eaf720b55522944b3f
     reviewer: /root/p02_residual_ci/gitleaks_delta_review (code-reviewer); /root/p02_residual_ci/gitleaks_delta_security
       (security-auditor)
     observed_at: '2026-11-02T11:54:56+09:00'
-    sha256: 2470477aafad41d441472c5e08c72eab628e0d6e93d321eaf720b55522944b3f
     scope: 'Hook-compatibility-only local run-ID binding delta: focused 2/2 PASS in
       0.002 seconds, Ruff, gitleaks and diff check PASS; code review at 2026-11-02T11:54:53+09:00
       and security review at 2026-11-02T11:54:56+09:00 found no findings. b565 cleanup
       proof and e537 runtime evidence remain historical, separately source-bound.
       Full-file, HOME, remote-CI and operational acceptance are not claimed.'
+    path: tests/validation/test_compose_baseline_gates.py
     complete: false
     state: PARTIAL
 - path: tests/validation/test_compose_core_readiness.py
@@ -18878,12 +18860,12 @@ files:
   state: HASHED
   sha256: 76783c0e6a1bf3079d63237182a8be2fc3f9c8d6d08637f0d27b3a269b349e5d
   review:
-    path: tests/validation/test_p02_service_contracts.py
     sha256: 76783c0e6a1bf3079d63237182a8be2fc3f9c8d6d08637f0d27b3a269b349e5d
     reviewer: /root/p04_uri; independent /root/p04_pipeline
     observed_at: '2026-11-02T09:12:44.140127+00:00'
     scope: Two approved synthetic-fixture inline comment deltas and executable-AST
       identity only. Whole test body and new test execution are not claimed.
+    path: tests/validation/test_p02_service_contracts.py
     complete: false
     state: PARTIAL
 - path: tests/validation/test_p02_valkey_mount_scope.py
@@ -18893,12 +18875,12 @@ files:
   state: HASHED
   sha256: 13096d677d46913f8a11795bd14e99f6e759ea4da90ff6b834aa7db5b0e623b8
   review:
-    path: tests/validation/test_p02_valkey_mount_scope.py
+    sha256: 13096d677d46913f8a11795bd14e99f6e759ea4da90ff6b834aa7db5b0e623b8
     reviewer: p02_code_review
     observed_at: '2026-11-02T01:12:52Z'
-    sha256: 13096d677d46913f8a11795bd14e99f6e759ea4da90ff6b834aa7db5b0e623b8
     scope: P02 dedicated Valkey mount regression module reviewed; full-file review
       not claimed
+    path: tests/validation/test_p02_valkey_mount_scope.py
     complete: false
     state: PARTIAL
 - path: tests/validation/test_p03_hermes_gate.py
@@ -18988,13 +18970,13 @@ files:
   state: HASHED
   sha256: e30c0783cc94eb9d80eb8e5e05c52abb3e52eec5f2b01e7abafc7e8cac626fd9
   review:
-    path: tests/validation/test_p05_opsflow_native.py
+    sha256: e30c0783cc94eb9d80eb8e5e05c52abb3e52eec5f2b01e7abafc7e8cac626fd9
     reviewer: /root/p04_uri (independent)
     observed_at: '2026-11-02T11:52:35.037311+00:00'
-    sha256: e30c0783cc94eb9d80eb8e5e05c52abb3e52eec5f2b01e7abafc7e8cac626fd9
     scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
       and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
       not inferred
+    path: tests/validation/test_p05_opsflow_native.py
     complete: false
     state: PARTIAL
 - path: tests/validation/test_p05_opsflow_scenario.py
@@ -19004,13 +18986,13 @@ files:
   state: HASHED
   sha256: e9d5c6fa93554ed28185ddd99b940a0644dc4d00bb1f85794acc4336c1464d90
   review:
-    path: tests/validation/test_p05_opsflow_scenario.py
+    sha256: e9d5c6fa93554ed28185ddd99b940a0644dc4d00bb1f85794acc4336c1464d90
     reviewer: /root/p04_uri (independent)
     observed_at: '2026-11-02T11:52:35.037311+00:00'
-    sha256: e9d5c6fa93554ed28185ddd99b940a0644dc4d00bb1f85794acc4336c1464d90
     scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
       and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
       not inferred
+    path: tests/validation/test_p05_opsflow_scenario.py
     complete: false
     state: PARTIAL
 - path: tests/validation/test_p07_ci_routing.py
@@ -19027,6 +19009,38 @@ files:
   bytes: 5267
   state: HASHED
   sha256: fcd27af940e4f17ed5ba5f1d35dd9468b7267c1cd52b8cabac240a99019cd92e
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p08_ci_routing.py
+  tracked: true
+  kind: test
+  bytes: 4150
+  state: HASHED
+  sha256: 8f7a429afd971ccb6ef713ac36282e3d886227ef8a3c4099e87120f42de75f0f
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p09_ci_routing.py
+  tracked: true
+  kind: test
+  bytes: 4205
+  state: HASHED
+  sha256: 7e6593b1e7619143917a804059600120ed1efa8cc7e0aa0de737418e1e5f3f7b
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p09_compose_controls.py
+  tracked: true
+  kind: test
+  bytes: 12389
+  state: HASHED
+  sha256: 2b53691ac5cde8f5795635f4e6ce84beb4a82e17a85b200f8f9d518e431e68c8
+  review:
+    state: UNREVIEWED
+- path: tests/validation/test_p10_document_contract.py
+  tracked: true
+  kind: test
+  bytes: 4588
+  state: HASHED
+  sha256: dd9f24efaa9a2816ce5335a49228ad592e024b9e6e38551587fa40999dcbf823
   review:
     state: UNREVIEWED
 - path: tests/validation/test_perf_db_contract.py
@@ -19144,17 +19158,17 @@ files:
 - path: tests/validation/test_retirement_cli.py
   tracked: true
   kind: test
-  bytes: 7509
+  bytes: 10588
   state: HASHED
-  sha256: cff301b909028d71308632447f70502b59eb7582aab2ce022905289bb8ddf9e3
+  sha256: fc25cd3cde043254d4c95e8bc40825f11742a7e10507c898d164475f1592cd47
   review:
     state: UNREVIEWED
 - path: tests/validation/test_root_resource_contract.py
   tracked: true
   kind: test
-  bytes: 5699
+  bytes: 6053
   state: HASHED
-  sha256: 977fb43d1cbf73ee70aa7276d2bcf40e8896426f74ad51110aae063678976a49
+  sha256: 676f6d13e449dc1dd14b2274d8e241ca2d8081ee8cfde3789e487901b0ff7173
   review:
     state: UNREVIEWED
 - path: tests/validation/test_run_agent_precommit_all_files.sh
@@ -19204,13 +19218,13 @@ files:
   state: HASHED
   sha256: f3231f6c5a45dc9b402ad7574e4edb0dec93c07e770e5b4c8ee7ef6dd4f6fb23
   review:
-    path: tests/validation/test_sec01_next_stable_candidates.py
+    sha256: f3231f6c5a45dc9b402ad7574e4edb0dec93c07e770e5b4c8ee7ef6dd4f6fb23
     reviewer: code-reviewer (/root/p02_residual_code_review)
     observed_at: '2026-11-02T11:23:50+09:00'
-    sha256: f3231f6c5a45dc9b402ad7574e4edb0dec93c07e770e5b4c8ee7ef6dd4f6fb23
     scope: 'P02 exporter regression packet only: default/nondefault rendered argv,
       DEV fixed-port, secret-not-in-argv and retained image/ACL/OAuth/Tempo assertions;
       no findings. Full-file and wider residual review not claimed.'
+    path: tests/validation/test_sec01_next_stable_candidates.py
     complete: false
     state: PARTIAL
 - path: tests/validation/test_sec01_next_tool_candidates.py
@@ -19260,12 +19274,12 @@ files:
   state: HASHED
   sha256: f1ab9f225e73ba6b4e816a0922591d410875daf7bb10efb095aff4e5d3fc583d
   review:
-    path: tests/validation/test_service_wiring_contracts.py
+    sha256: f1ab9f225e73ba6b4e816a0922591d410875daf7bb10efb095aff4e5d3fc583d
     reviewer: p02_code_review
     observed_at: '2026-11-02T01:12:52Z'
-    sha256: f1ab9f225e73ba6b4e816a0922591d410875daf7bb10efb095aff4e5d3fc583d
     scope: P02 dedicated Valkey compatibility assertion reviewed; full-file review
       not claimed
+    path: tests/validation/test_service_wiring_contracts.py
     complete: false
     state: PARTIAL
 - path: tests/validation/test_shell_regressions.py
@@ -19383,9 +19397,9 @@ files:
 excluded:
   binary: 35
   code: 132
-  configuration: 472
+  configuration: 480
   document: 120
-  generated: 38637
+  generated: 38697
   private: 241
 opaque:
   git_directories: 1
@@ -35200,14 +35214,14 @@ compose:
   gaps: []
 coverage:
   files:
-    numerator: 41963
-    denominator: 41963
+    numerator: 42038
+    denominator: 42038
   body_review:
     numerator: 6
-    denominator: 2319
+    denominator: 2326
   body_review_partial:
     numerator: 78
-    denominator: 2319
+    denominator: 2326
   render:
     numerator: 0
     denominator: 17
@@ -37501,14 +37515,13 @@ requirements:
     ledger records 61 PUBLIC_SOURCE_OBSERVATION_ONLY release queries at 2026-11-02T22:15:52Z
     through 2026-11-02T22:16:20Z: 60 responses/one access failure, 99 mapped root
     services/13 unmapped, with nine Valkey/n8n services covered by separate candidates.
-    Each observation has freshness_verified, stable_channel_verified and
-    oci_availability_verified false.'
+    Each observation has freshness_verified, stable_channel_verified and oci_availability_verified
+    false.'
   static_checks: 43/45 scoped ledger and workflow-version-bundle tests PASS with two
     existing candidate cases SKIP; public observation regression 37 PASS; Ruff PASS.
-    `matches_target_latest` checks submitted
-    target/latest only; `matches_declared_latest` is null because active declarations
-    are not inspected. Latest-version gate exit 2 because fresh lookups remain incomplete,
-    not because a candidate is known absent.
+    `matches_target_latest` checks submitted target/latest only; `matches_declared_latest`
+    is null because active declarations are not inspected. Latest-version gate exit
+    2 because fresh lookups remain incomplete, not because a candidate is known absent.
   isolated_tests: NOT_RUN for the full image/package estate; ledger tests do not prove
     installed artifact or runtime compatibility.
   historical_operator_acceptance: Historical records retain their original version,
@@ -37533,16 +37546,16 @@ requirements:
   acceptance_owner: SPEC-0212-TSK-0047
   implementation_writer: P08 candidate writer under current Task lease
   source_verification: Five Valkey and four n8n candidate rows have official release/
-    advisory and registry metadata observations. Valkey GHSA-f4q9-j22m-xqq9 is
-    cluster-conditional; n8n private workflow applicability remains uninspected;
-    custom-image digest and applicability are UNKNOWN.
+    advisory and registry metadata observations. Valkey GHSA-f4q9-j22m-xqq9 is cluster-conditional;
+    n8n private workflow applicability remains uninspected; custom-image digest and
+    applicability are UNKNOWN.
   static_checks: Candidate source and exact artifact evidence remain in current Task.
   isolated_tests: LIMITED_ISOLATED_PASS (reported summary only) for Valkey 9.1.3 named
     ACL/AOF/RDB plus current n8n ioredis shared-6379 and Airflow redis-client dedicated-
     16379 roundtrips, then read-only cold-copy source volume to separate restore volume
     at 17379. Static P02/config/URI 69/69 and candidate/mount 13/13 passed. Raw command
-    log/timestamp is not retained here. n8n/Runner pulls exceeded five minutes and exited
-    130 with partial cache; Celery/Bull, Compose secret/exporter, signature/provenance/
+    log/timestamp is not retained here. n8n/Runner pulls exceeded five minutes and
+    exited 130 with partial cache; Celery/Bull, Compose secret/exporter, signature/provenance/
     SBOM and complete independent backup recovery remain NOT_RUN.
   historical_operator_acceptance: Existing C19/C22 and P02 topology acceptance retain
     their recorded version/actor/environment scope; no current equivalence inferred.
@@ -37553,8 +37566,8 @@ requirements:
   final_acceptance: NOT_RUN
   evidence:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
-  limit: No service recreation, actual credential use, cluster exposure inference or
-    activation without exact candidate, consumer and recovery evidence. Same-volume
+  limit: No service recreation, actual credential use, cluster exposure inference
+    or activation without exact candidate, consumer and recovery evidence. Same-volume
     restart is not independent restore and does not prove shared/dedicated Compose,
     listener variation, queue-client compatibility or independent backup recovery.
 - id: P08.03
@@ -37566,15 +37579,15 @@ requirements:
   acceptance: pending
   acceptance_owner: SPEC-0212-TSK-0047
   implementation_writer: P08 Storybook writer under current Task lease
-  source_verification: Tracked lock declares 10.6.3; the local 10.6.2 installation is
-    a separate observation.
+  source_verification: Tracked lock declares 10.6.3; the local 10.6.2 installation
+    is a separate observation.
   static_checks: 'PASS in clean offline install: lint/typecheck and Storybook/Next/MCP
     builds; 9/9 synthetic auth/MCP, 14/14 browser including 320px, static image 7/7,
     and synthetic renderToString Button/AsyncState six-state checks.'
   isolated_tests: PASS only for the owned clean copy. HTTP SSR request, remote-device
     authentication and npm audit are NOT_RUN; audit lookup failed with DNS EAI_AGAIN.
-  historical_operator_acceptance: Existing Storybook acceptance remains scoped to its
-    recorded source/version/actor and is not current runtime acceptance.
+  historical_operator_acceptance: Existing Storybook acceptance remains scoped to
+    its recorded source/version/actor and is not current runtime acceptance.
   current_direct_operation: NOT_RUN
   credential_rotation: NOT_RUN
   independent_restore: NOT_RUN
@@ -37582,8 +37595,8 @@ requirements:
   final_acceptance: NOT_RUN
   evidence:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
-  limit: Isolated clean-lock proof does not establish deployed UI, remote login or an
-    external registry audit result.
+  limit: Isolated clean-lock proof does not establish deployed UI, remote login or
+    an external registry audit result.
 - id: P08.04
   criterion: 89
   work_unit: W94
@@ -37593,20 +37606,20 @@ requirements:
   acceptance: pending
   acceptance_owner: SPEC-0212-TSK-0047
   implementation_writer: P08 supply-chain writer under current Task lease
-  source_verification: Existing sample-service policy and base/GHCR receipts are
-    explicitly non-transferable to Docker Hub or custom service images.
+  source_verification: Existing sample-service policy and base/GHCR receipts are explicitly
+    non-transferable to Docker Hub or custom service images.
   static_checks: 'Supply-chain gate exit 2: coverage checked but public ledger incomplete.
     Frozen upstream observation regression: 39 PASS and Ruff PASS.'
   isolated_tests: 'REPORTED_PASS only at upstream GHCR index digests under exact issuer
     https://token.actions.githubusercontent.com and exact docker-build-push release/2.45.7
     identity: n8n image signature plus SLSA v1 at sha256:9a8d8dcea75667496695d7810d7e1fe018a65efb36cc499d347f3931b3957b5d;
     runners CycloneDX/OpenVEX at sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300.
-    Valkey amd64 artifact has a local, not publisher, Syft CycloneDX 1.7 SBOM
-    (716 components). Runners signature exit10/SLSA
-    exit1, n8n CycloneDX exit1 and Grype offline DB absence exit1 remain negative/BLOCKED.
-    Raw transcript/time/SBOM absent; builder/parameters and SBOM/VEX meaning NOT_REVIEWED.'
-  historical_operator_acceptance: Historical source receipts remain bounded and are not
-    service artifact verification.
+    Valkey amd64 artifact has a local, not publisher, Syft CycloneDX 1.7 SBOM (716
+    components). Runners signature exit10/SLSA exit1, n8n CycloneDX exit1 and Grype
+    offline DB absence exit1 remain negative/BLOCKED. Raw transcript/time/SBOM absent;
+    builder/parameters and SBOM/VEX meaning NOT_REVIEWED.'
+  historical_operator_acceptance: Historical source receipts remain bounded and are
+    not service artifact verification.
   current_direct_operation: NOT_RUN
   credential_rotation: NOT_RUN
   independent_restore: NOT_RUN
@@ -37615,8 +37628,8 @@ requirements:
   evidence:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0047-image-supply-chain-storybook.md
   limit: Exact upstream index evidence does not verify custom images, native behavior,
-    compatibility, restore, deployment or runtime. Valkey signing identity/issuer is
-    NOT_ASSESSABLE; verification options are never disabled to create PASS.
+    compatibility, restore, deployment or runtime. Valkey signing identity/issuer
+    is NOT_ASSESSABLE; verification options are never disabled to create PASS.
 - id: P09.01
   criterion: 90
   work_unit: W95
@@ -37627,10 +37640,10 @@ requirements:
   acceptance_owner: SPEC-0212-TSK-0048
   implementation_writer: P09 documentation writer under current Task lease
   source_verification: Fifteen comparisons are mapped to public declarations and named
-    consumers where present. Post-controls-freeze P09 local scan/validate using 98 retained review receipts
-    listed 42,018/42,018 files; whole body 6/2,322, partial 78/2,322, render 0/17,
-    runtime 0/112 and restore 0/112. Unknown owner, use, cost and recovery facts remain
-    UNKNOWN.
+    consumers where present. Post-controls-freeze P09 local scan/validate using 98
+    retained review receipts listed 42,018/42,018 files; whole body 6/2,322, partial
+    78/2,322, render 0/17, runtime 0/112 and restore 0/112. Unknown owner, use, cost
+    and recovery facts remain UNKNOWN.
   static_checks: Pending final DATA and documentation checks.
   isolated_tests: NOT_RUN; role documentation is not runtime proof.
   current_direct_operation: NOT_RUN
@@ -37655,12 +37668,12 @@ requirements:
     measurement contract are reused; no new exception or resource limit is authorized.
   static_checks: 'PASS: latest controls30/30 skip0, independent security18/18 and
     public-copy root+8 overlays+9 LAB CLI18 scopes/1,062 instances/0 findings and
-    stdlib trace 335/364 added executable lines (92.0%, subprocess excluded) at
-    controls SHA256 d9e901e08f7f037d70e8b692902f5f60363c4d6417f6b3ce49bb273dc2a5fbdb
-    (test SHA256 2b53691ac5cde8f5795635f4e6ce84beb4a82e17a85b200f8f9d518e431e68c8).
-    Earlier controls26/security14 are history, not latest. Resource packet: 35 tests and changed execution trace
-    81/82 (98.8%). The binding verifies canonical registry/service/Compose/HEAD inputs;
-    it does not authenticate effective settings or a runtime receipt.'
+    stdlib trace 335/364 added executable lines (92.0%, subprocess excluded) at controls
+    SHA256 d9e901e08f7f037d70e8b692902f5f60363c4d6417f6b3ce49bb273dc2a5fbdb (test
+    SHA256 2b53691ac5cde8f5795635f4e6ce84beb4a82e17a85b200f8f9d518e431e68c8). Earlier
+    controls26/security14 are history, not latest. Resource packet: 35 tests and changed
+    execution trace 81/82 (98.8%). The binding verifies canonical registry/service/Compose/HEAD
+    inputs; it does not authenticate effective settings or a runtime receipt.'
   isolated_tests: NOT_RUN
   current_direct_operation: NOT_RUN
   credential_rotation: NOT_RUN
@@ -37669,9 +37682,9 @@ requirements:
   final_acceptance: NOT_RUN
   evidence:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md
-  limit: Effective controls and receipt remain EFFECTIVE_CONTROLS_UNVERIFIED and
-    RECEIPT_UNVERIFIED/BLOCKED. Short host observations do not prove capacity, peak,
-    RPO/RTO, energy budget or an accepted runtime limit.
+  limit: Effective controls and receipt remain EFFECTIVE_CONTROLS_UNVERIFIED and RECEIPT_UNVERIFIED/BLOCKED.
+    Short host observations do not prove capacity, peak, RPO/RTO, energy budget or
+    an accepted runtime limit.
 - id: P09.03
   criterion: 92
   work_unit: W97
@@ -37704,8 +37717,8 @@ requirements:
   acceptance: pending
   acceptance_owner: SPEC-0212-TSK-0048
   implementation_writer: P09 retirement writer under exact path lease
-  source_verification: No new target is confirmed. Existing protected recovery and Secret
-    boundaries remain outside this generic parser change.
+  source_verification: No new target is confirmed. Existing protected recovery and
+    Secret boundaries remain outside this generic parser change.
   static_checks: 'PASS: final 135 focused tests including SMTP/lock and trusted-git
     PATH-shim rejection; changed executable-line trace 86/88 (97.7%). Independent
     security focused packet: 66 PASS. Earlier 133-test/77-of-79 packet is preserved
@@ -37719,8 +37732,8 @@ requirements:
   evidence:
   - docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0048-role-resource-retirement.md
   limit: Apply remains blocked. Writer stop, separate target approval and post-output-failure
-    operator verification are required; hostile unlink race remains; owner/evidence text
-    is not authorization.
+    operator verification are required; hostile unlink race remains; owner/evidence
+    text is not authorization.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED

@@ -135,27 +135,28 @@ executor handoffs.
 
 ## Evidence
 
-| Evidence | Criteria | Result | Boundary |
-| --- | --- | --- | --- |
-| Current public role mapping | 90 | SOURCE_READY | Declaration/consumer evidence only; actual use and owner remain explicit UNKNOWN where unobserved |
-| Resource assessment binding | 91 | PASS: independent 35/35 rerun in 23.509 s through the QA-owned dependency bridge; new execution trace 81/82 (98.8%) | Canonical registry/service/Compose/HEAD bindings reject caller projections. `control_deviations` remains a caller projection, not measured settings. Effective runtime controls and the receipt itself remain `EFFECTIVE_CONTROLS_UNVERIFIED`/`RECEIPT_UNVERIFIED`, therefore BLOCKED for runtime or mutation acceptance |
-| Common-control overlay helper | 91 | PASS: latest direct 30/30, skip 0, exit 0 (0.037 s); independent security 18/18; public-copy root+8 overlays+9 LAB CLI 18 scopes/1,062 instances/0 findings; stdlib trace 335/364 added executable lines (92.0%, subprocess excluded) | Frozen source `d9e901e08f7f037d70e8b692902f5f60363c4d6417f6b3ce49bb273dc2a5fbdb`, direct-test source `2b53691ac5cde8f5795635f4e6ce84beb4a82e17a85b200f8f9d518e431e68c8`. Owned volatile trace counts were `/tmp/p09-controls-final.tSZlDh/counts`, not a retained test log. The earlier 26/26 and security14 packets remain history, not the latest source result. Base/overlay provenance source behavior only; no runtime limit or host change |
-| C1–C6 historical placement | 92 | REUSE_ACCEPTED | Recorded criterion acceptance only; no current migration or restore is claimed |
-| Retirement parser | 93 | PASS: final 135 focused tests, changed executable-line trace 86/88 (97.7%) | Independent security review passed 66 focused checks. Earlier 133-test/77-of-79 trace packet remains prior-fingerprint history. Trusted `/usr/bin/git` with a minimal environment rejects PATH shim bypass. This proves only rejected/synthetic input behavior; no apply/deletion evidence |
-| P09 routing and contract checks | 90–93 | PASS: final 28/28, exit 0, skip 0, 1.243 s; workflow contract (5 workflows/7 jobs/9 actions) PASS | The temporary alternate-index script manifest PASS (26.185 s); actual final staged manifest remains required |
-| Broad CI plan | 90–93 | NOT_PASS: 7 failures/323 errors | Existing `leaf.p03-hermes` public-execution parity residual; preserve separate P03/CI ownership |
-| Workflow expected-list residual | 90–93 | TEST_RESIDUAL: 6 expected-list registration differences | P04/P05 registration ownership, distinct from the P03 execution-parity residual |
-| P09 DATA review refresh | 90 | PASS: post-controls-freeze local `scan` then `validate` using 98 retained review receipts | 42,018/42,018 files listed; whole review 6/2,322 and partial 78/2,322; render 0/17, runtime 0/112 and restore 0/112. This is metadata/listing only, not a body, configuration, operational or restore acceptance |
-| Service operation, storage move, credential use, external deletion, remote CI | 90–93 | NOT_RUN | Not authorized in this Task |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Current public role mapping | 90 | W95 | Declaration and consumer mapping | Public source rows | PASS | Declaration/consumer source evidence was read; actual use and owner remain explicit `UNKNOWN` where unobserved. | required | - |
+| Current runtime role use | 90 | W95 | Service/consumer operation | Operating environment | NOT_RUN | Not authorized or observed; declaration evidence is not runtime use, owner or cost evidence. | required | - |
+| Resource assessment binding | 91 | W96 | QA-owned dependency bridge | Canonical registry/service/Compose/HEAD bindings | PASS | Independent 35/35 rerun in 23.509 s; changed execution trace 81/82 (98.8%). Caller projections are rejected. Effective runtime controls and receipt remain unverified, so runtime/mutation acceptance is blocked. | required | - |
+| Common-control overlay helper | 91 | W96 | Direct, security and public-copy overlay checks | Root plus documented overlays and LAB CLI | PASS | Direct 30/30, security 18/18, public-copy 18 scopes/1,062 instances/0 findings; trace 335/364 added lines. Recorded source fingerprints and earlier packets remain historical; no runtime limit or host change is claimed. | required | - |
+| C1–C6 historical placement | 92 | W97 | Historical acceptance readback | SPEC-0246 record | NOT_APPLICABLE | Recorded criterion acceptance only; no current migration or restore was run. | optional | - |
+| Retirement parser | 93 | W98 | Focused parser rejection and security checks | Owned synthetic fixtures | PASS | Final 135 focused tests; trace 86/88 (97.7%); independent security review 66 checks. This proves rejected/synthetic input behavior only, not apply/deletion. | required | - |
+| P09 routing and contract checks | 90 | W95 | Local routing and workflow contract checks | Current public P09 sources | PASS | Final 28/28, exit 0, skip 0, 1.243 s; workflow contract passed. Temporary alternate-index manifest result remains historical and is not a final staged-manifest result. | required | - |
+| Broad CI plan | 91 | W96 | Public-plan execution | Existing CI plan | FAIL | 7 failures/323 errors from existing `leaf.p03-hermes` public-execution parity residual; separate P03/CI ownership remains. | required | - |
+| Workflow expected-list residual | 93 | W98 | Expected-selector list comparison | Existing workflow test expectation | FAIL | Six P04/P05 registration expectation differences; distinct from P03 execution parity. | required | - |
+| P09 DATA review refresh | 90 | W95 | Local inventory scan then validate | 98 retained public review receipts | PASS | 42,018/42,018 files listed; whole review 6/2,322; partial 78/2,322; render 0/17; runtime/restore 0/112. Metadata/listing only. | required | - |
+| Service operation, storage move, credential use, external deletion, remote CI | 92 | W97 | Authorized-operation boundary | Current authorization | NOT_RUN | Not authorized in this Task. | required | - |
 
 ## Criterion Acceptance
 
-| Criterion | Decision | Current owner / resume condition |
-| --- | --- | --- |
-| 90 | SOURCE_READY | TSK-0048: keep all 15 public-source rows and unknowns current after source freeze |
-| 91 | SOURCE_READY | Controls and resource source tests pass; runtime/mutation remains BLOCKED because effective controls and receipt are unverified |
-| 92 | REUSE_ACCEPTED | SPEC-0246 owner evidence remains scoped; reopen only for measured drift plus approved recovery plan |
-| 93 | SOURCE_READY | Parser rejection tests pass; apply remains blocked pending exact owner, writer stop and target approval |
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 90 | pending | Current public role mapping, P09 DATA review refresh | Source declaration scope is current; actual use and ownership remain unverified. | SPEC-0212 TSK-0048 |
+| 91 | pending | Resource assessment binding, Common-control overlay helper | Source tests pass; runtime/mutation remains blocked because effective controls and receipt are unverified. | SPEC-0212 TSK-0048 |
+| 92 | pending | C1–C6 historical placement | Existing SPEC-0246 acceptance is reused at its recorded scope; measured drift plus an approved recovery plan is required to reopen. | SPEC-0246 owner |
+| 93 | pending | Retirement parser | Parser rejection tests pass; apply remains blocked pending exact owner, writer stop and target approval. | SPEC-0212 TSK-0048 |
 
 ## Review and Completion
 

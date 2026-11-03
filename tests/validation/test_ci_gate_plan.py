@@ -470,6 +470,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
+                "leaf.p03-hermes",
             },
             ids,
         )
@@ -500,6 +501,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
+                "leaf.p03-hermes",
             },
             ids,
         )
@@ -1325,7 +1327,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             requirements(("projects/storybook/nextjs/package.json",)),
         )
         self.assertEqual(
-            runner.SelectedPrerequisites(node=True, docker=True),
+            runner.SelectedPrerequisites(node=True, docker=True, compose=True),
             requirements(("infra/01-gateway/docker-compose.yml",)),
         )
 

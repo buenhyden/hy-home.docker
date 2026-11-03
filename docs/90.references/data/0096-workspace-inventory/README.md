@@ -18,6 +18,7 @@ parent_ids:
 - "SPEC-0212-TSK-0046"
 - "SPEC-0212-TSK-0047"
 - "SPEC-0212-TSK-0048"
+- "SPEC-0212-TSK-0049"
 created: "2026-11-01"
 observed_at: "2026-11-02"
 ---
@@ -251,7 +252,8 @@ builder/parameters 및 SBOM/VEX 의미는 검토하지 않았다. 따라서 이 
 image, native 기능, 호환·복원·배포 또는 운영 수용으로 전이되지 않는다.
 
 이후 정확한 OIDC issuer와 certificate identity로 n8n/runners 네 index 관측을
-재검증했다. 고정 Cosign 3.1.3에서 n8n signature/SLSA와 runners CycloneDX/OpenVEX은
+재검증했다. 여기의 Cosign 3.1.3과 Syft 1.54.1은 해당 로컬 관측 실행의 도구 버전이며
+서비스 런타임 pin이나 이미지 선택 근거가 아니다. 고정 Cosign 3.1.3에서 n8n signature/SLSA와 runners CycloneDX/OpenVEX은
 각각 exit 0이었지만, payload는 `/dev/null`로 처리하고 원시 영수증은 보관하지 않았다.
 정확한 시간·digest·identity는 P08 Task와 원장에 결속한다. Valkey amd64는 고정 Syft
 1.54.1로 로컬 CycloneDX 1.7 SBOM(Alpine 3.24.3, 716 components)을 생성했을 뿐
@@ -269,6 +271,11 @@ P09는 보존된 98개 검토 receipt를 입력으로 공개 `scan` 뒤 `validat
 그 controls source freeze 후 최종 로컬 결과는 파일 42,018/42,018, 전체 본문 6/2,322, 부분 본문 78/2,322,
 렌더 0/17, 실행 0/112, 복원 0/112이다. 이 새 목록/메타데이터 관측은 본문·구성·운영·복원
 수용이 아니며, 공개 정본 `data.yaml` 교체는 최종 source 동결 뒤 별도 비교에서만 한다.
+
+P10의 후속 공개 `scan --connections`은 처음에는 기존 검토 receipt를 보존하지 않아
+거부됐다. 이후 기존 98개 공개 review metadata와 이 자료의 7개 curated 섹션을 입력으로
+다시 생성해 receipt와 변경 입력 무효화를 보존했다. 최종 `validate`는 metadata
+consistency만 PASS했으며, 이 갱신은 본문·구성·운영·복원 수용이 아니다.
 
 ## Related Documents
 

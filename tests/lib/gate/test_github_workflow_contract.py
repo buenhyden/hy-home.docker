@@ -42,6 +42,15 @@ def load_contract_module():
 
 
 class GithubWorkflowContractTests(unittest.TestCase):
+    def test_p10_document_contract_is_a_required_repository_regression(self) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        nodes = {node["gate_id"]: node for node in document["gate_nodes"]}
+        arguments = nodes["leaf.repository-integrity-regressions"]["argv"]
+        module = "tests.validation.test_p10_document_contract"
+        boundary = arguments.index("--optional-runtime-skips")
+        self.assertEqual(1, arguments[1:boundary].count(module))
+        self.assertNotIn(module, arguments[boundary + 1 : -1])
+
     def test_datastore_boundary_checks_are_required_and_routed(self) -> None:
         document = gate_contract.load_contract_document(ROOT)
         gate = next(
@@ -151,6 +160,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.lib.ops.test_opsflow_adapters",
                 "tests.lib.ops.test_opsflow_provision_contract",
                 "tests.validation.test_opsflow_airflow_contract",
+                "tests.validation.test_airflow_connection_uri",
                 "tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests",
                 "tests.validation.test_opsflow_native_boundaries",
                 "tests.validation.test_opsflow_native_criterion22",
@@ -160,6 +170,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_opsflow_airflow_native_evidence",
                 "tests.validation.test_opsflow_airflow_native_quiescence",
                 "tests.validation.test_opsflow_airflow_native_rehearsal",
+                "tests.validation.test_opsflow_airflow_native_data",
+                "tests.validation.test_opsflow_airflow_native_scenario",
+                "tests.validation.test_p05_notification_recovery",
+                "tests.validation.test_p05_opsflow_native",
+                "tests.validation.test_p05_opsflow_scenario",
                 "tests.validation.test_p02_native_contracts",
                 "tests.validation.test_p02_oauth_native",
                 "tests.validation.test_p02_secret_presentation_native",
@@ -190,6 +205,44 @@ class GithubWorkflowContractTests(unittest.TestCase):
         ):
             self.assertIn(selector, optional)
         self.assertEqual([], gate["allowed_env_keys"])
+
+    def test_p04_p05_required_selectors_are_unique_and_explicitly_routed(
+        self,
+    ) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        nodes = {node["gate_id"]: node for node in document["gate_nodes"]}
+        arguments = nodes["leaf.compose-baseline-regressions"]["argv"]
+        boundary = arguments.index("--optional-runtime-skips")
+        required = arguments[1:boundary]
+        optional = arguments[boundary + 1 : -1]
+        selectors = (
+            "tests.validation.test_airflow_connection_uri",
+            "tests.validation.test_opsflow_airflow_native_data",
+            "tests.validation.test_opsflow_airflow_native_scenario",
+            "tests.validation.test_p05_notification_recovery",
+            "tests.validation.test_p05_opsflow_native",
+            "tests.validation.test_p05_opsflow_scenario",
+        )
+        public = gate_contract.parse_public_gate_contract(document)
+        registry = gate_contract.parse_gate_registry(
+            document, ".github/workflow-contract.yml"
+        )
+        for selector in selectors:
+            path = selector.replace(".", "/") + ".py"
+            with self.subTest(selector=selector):
+                self.assertEqual(1, required.count(selector))
+                self.assertNotIn(selector, optional)
+                suites = gate_contract.select_public_suites(public, "changed", (path,))
+                self.assertIn("operations", suites)
+                self.assertIn("repository-integrity", suites)
+                roots = gate_contract.public_root_gate_ids(
+                    public, suites, changed_paths=(path,)
+                )
+                expanded = gate_contract.expand_public_gate_ids(registry, roots)
+                self.assertEqual(1, expanded.count("leaf.compose-baseline-regressions"))
+                self.assertEqual(
+                    1, expanded.count("leaf.repository-integrity-regressions")
+                )
 
     def test_sso_interruption_rehearsal_is_an_exact_local_optional_scope(self) -> None:
         document = gate_contract.load_contract_document(ROOT)

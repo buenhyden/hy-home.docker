@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: incomplete logical commits"
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 action: "block"
 enabled: true
 event: "stop"
@@ -34,9 +34,12 @@ Before the final response for completed repository-modifying work:
 - Leave unrelated untracked files untouched.
 - If commits are intentionally skipped, state the reason clearly.
 
-The shared Stop hook blocks when task-owned repository changes remain
-uncommitted. Use this as a completion gate, not as a substitute for reviewing
-the staged diff.
+The shared Stop hook conservatively blocks on Git-visible uncommitted
+changes. Git status does not establish which task or person owns a path,
+nor does it grant permission to stage or commit it. Inspect ownership and
+scope before acting, preserve unrelated changes, and use the applicable
+incomplete-handoff route if completion cannot be established. The gate
+does not replace review of the staged diff or waive required checks.
 
 A repeated Stop payload (`stop_hook_active: true`) returns without another
 block or verification run. The first attempt retains the uncommitted-change

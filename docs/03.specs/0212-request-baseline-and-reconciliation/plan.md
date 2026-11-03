@@ -108,6 +108,12 @@ not authorize operating services, host changes, actual credentials, external
 delivery, remote integration, LAB runtime or an inference from a base/sample
 artifact receipt to a different artifact.
 
+W99–W102 implement the approved local P10 plan in TSK-0049. The Task
+normalizes current generation-7 documentation contracts, registers existing
+local CI/QA routes and aligns governance wording to active repository changes.
+It does not rewrite completed history, weaken admission, operate services,
+access credentials, transmit externally or run remote CI.
+
 W81–W86 implement the approved local P06 plan in TSK-0045. Existing OpenBao
 consumer acceptances and public catalog authority remain scoped to their own
 receipts. Value-free synthetic tests and independently reviewed read-only
@@ -229,6 +235,10 @@ Secret access or remote integration.
 | W96 | 91 | Preserve common controls while binding base/overlay provenance and measurement inputs to canonical sources | W95 | TSK-0048 | RED/GREEN synthetic overlay, exception and canonical-binding checks; runtime remains separate |
 | W97 | 92 | Reuse accepted C1–C6 placement and record only measured drift as a future candidate | W95 | TSK-0048 | Read-only current-source comparison and explicit no-migration boundary |
 | W98 | 93 | Reject unsafe or incomplete retirement manifests without creating an eligible deletion target | W95 | TSK-0048 | RED/GREEN manifest parser and owned-fixture rejection checks; apply remains blocked |
+| W99 | 94 | Normalize current document evidence and acceptance contracts without rewriting historical archives | None | TSK-0049 | Generation-7 document contract and sequential metadata/corpus/link checks; failures remain explicit |
+| W100 | 95 | Register existing P03 public validation and correct required P04/P05 selector expectations | W99 | TSK-0049 | Public plan/parity and exact selector tests in registered contexts |
+| W101 | 96 | Align hook and governance wording with active repository-change scope while preserving fail-closed admission | W99 | TSK-0049 | Synthetic payload and temporary-Git-fixture regressions |
+| W102 | 97 | Preserve result lifecycle and record local QA/CI residuals without upgrading them to remote acceptance | W99–W101 | TSK-0049 | EvidenceStore lifecycle and explicit NOT_RUN remote/operational outcomes |
 
 ### Current v30 continuation and delivery
 

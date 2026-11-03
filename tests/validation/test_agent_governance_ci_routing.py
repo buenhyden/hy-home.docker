@@ -278,6 +278,59 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 self.assertEqual("", retry.stdout)
                 self.assertFalse((repo / ".gate-calls").exists())
 
+    def test_read_only_claim_does_not_bypass_unowned_git_change_block(self) -> None:
+        for provider in ("claude", "codex"):
+            with self.subTest(provider=provider), tempfile.TemporaryDirectory() as name:
+                repo = self._hook_repo(name)
+                (repo / "tracked.txt").write_text("after\n", encoding="utf-8")
+                (repo / "unrelated-user-file.txt").write_text(
+                    "preserve me\n", encoding="utf-8"
+                )
+                before = subprocess.run(
+                    ["git", "status", "--porcelain=v1"],
+                    cwd=repo,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                ).stdout
+
+                result = self._run_stop(
+                    repo,
+                    provider,
+                    payload={"work_kind": "read_only"},
+                    allow_uncommitted=False,
+                )
+
+                self.assertEqual(0, result.returncode, result.stderr)
+                response = json.loads(result.stdout.splitlines()[-1])
+                self.assertEqual("block", response["decision"])
+                reason = response["reason"]
+                self.assertIn("Git-visible changes remain", reason)
+                self.assertIn("does not prove who owns them", reason)
+                self.assertNotIn("uncommitted task-owned changes", reason)
+                self.assertIn("tracked.txt", reason)
+                self.assertIn("unrelated-user-file.txt", reason)
+                self.assertIn("leave unrelated changes untouched", reason.lower())
+                after = subprocess.run(
+                    ["git", "status", "--porcelain=v1"],
+                    cwd=repo,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                ).stdout
+                self.assertEqual(before, after)
+                self.assertEqual(
+                    "",
+                    subprocess.run(
+                        ["git", "diff", "--cached", "--name-only"],
+                        cwd=repo,
+                        capture_output=True,
+                        text=True,
+                        check=True,
+                    ).stdout,
+                )
+                self.assertFalse((repo / ".gate-calls").exists())
+
     def test_stop_git_status_failure_blocks_without_session_end(self) -> None:
         for provider in ("claude", "codex"):
             with self.subTest(provider=provider), tempfile.TemporaryDirectory() as name:
@@ -2744,6 +2797,27 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                 output = json.loads(result.stdout)
                 self.assertNotIn("hookSpecificOutput", output)
                 self.assertIn("state snapshot", output["systemMessage"])
+
+    def test_task_update_reminders_are_conditional_on_repository_work(self) -> None:
+        for provider in ("claude", "codex"):
+            for event in ("SessionEnd", "PreCompact"):
+                with self.subTest(provider=provider, event=event):
+                    result = self._event(
+                        event,
+                        {"work_kind": "read_only"},
+                        provider=provider,
+                    )
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    message = json.loads(result.stdout)["systemMessage"]
+                    self.assertIn(
+                        "If this session changed the repository and an active "
+                        "co-located Stage 03 Task exists",
+                        message,
+                    )
+                    self.assertNotIn(
+                        "Update the active co-located Stage 03 Task",
+                        message,
+                    )
 
     def test_session_start_context_reaches_the_model(self) -> None:
         for source in ("startup", "compact"):

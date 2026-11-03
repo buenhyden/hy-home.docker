@@ -131,6 +131,12 @@ C1–C6 acceptance at their recorded scopes. Local source and synthetic checks
 are authorized; service operation, host changes, storage moves, actual
 deletion, Secret access and remote integration are not.
 
+The direct P10 plan approval of 2026-11-03 adds criteria 94–97 and W99–W102
+in TSK-0049. It normalizes current generation-7 documentation contracts,
+repairs registered local CI/QA routes and aligns governance wording without
+reopening completed Task bodies or presenting local checks as operational or
+remote acceptance.
+
 ## Scope
 
 LLM Wiki work is preparation only: documentation, schema, connection contract,
@@ -700,6 +706,16 @@ hold, authorization and recovery requirements have been established.
 93. P09.04 hardens only the retirement manifest's public input handling. No
     candidate is eligible from disabled state, missing traffic or a missing path;
     Secret and protected recovery material remain under their existing owners.
+94. P10.01 normalizes only current generation-7 evidence and acceptance records,
+    preserving completed bodies and recording metadata/corpus validator failures
+    as residuals rather than rewriting archives or declaring completion.
+95. P10.02 registers existing P03 public validation and P04/P05 required
+    selectors in every declared local context without admission weakening or
+    converting local plan evidence into remote CI acceptance.
+96. P10.03 aligns hook and governance wording to active repository-changing work
+    while retaining fail-closed approval, Secret protection and required checks.
+97. P10.04 preserves the registered result lifecycle for pass, fail, cancellation
+    and not-run states, keeping local, operational and remote acceptance separate.
 
 ## Failure Conditions
 
@@ -725,6 +741,8 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
 - [Exporter and observability contracts Task](tasks/tsk-0046-exporter-observability.md)
 - [Image, supply-chain and Storybook compatibility Task](tasks/tsk-0047-image-supply-chain-storybook.md)
+- [Role, resource and retirement Task](tasks/tsk-0048-role-resource-retirement.md)
+- [Documentation, governance, QA and CI Task](tasks/tsk-0049-document-governance-qa-ci.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)

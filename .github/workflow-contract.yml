@@ -868,6 +868,7 @@
         "tests.validation.test_p07_ci_routing",
         "tests.validation.test_p08_ci_routing",
         "tests.validation.test_p09_ci_routing",
+        "tests.validation.test_p10_document_contract",
         "tests.lib.ops.test_workspace_inventory",
         "tests.lib.ops.test_workspace_services",
         "tests.validation.test_workspace_inventory",
@@ -1469,6 +1470,18 @@
         "suite": "operations",
         "gate_id": "leaf.template-security-baseline",
         "entrypoint": "scripts/validation/check-template-security-baseline.sh",
+        "argv": [],
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "leaf.p03-hermes",
+        "entrypoint": "scripts/validation/check-p03-hermes.py",
         "argv": [],
         "contexts": [
           "local",
@@ -2492,6 +2505,14 @@
         ],
         "root_gate_ids": [
           "ci.opsflow-smtp-node-package"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/validation/test_p08_ci_routing.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
         ]
       },
       {

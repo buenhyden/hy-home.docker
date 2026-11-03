@@ -1,10 +1,10 @@
 ---
 title: "Task Checklists"
-version: "1.4.1"
+version: "1.4.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-03"
 ---
 
 # Task Checklists
@@ -48,7 +48,9 @@ No exception is granted here; a separately authorized operation follows [Approva
       for staged lint/format immediately before local commit, server PR final
       defense, direct pre-commit prohibition and the separate all-files route.
 - [ ] Run focused tests and validators for each changed authority surface.
-- [ ] Regenerate registered projections and prove byte-for-byte freshness.
+- [ ] For registered projections whose inputs changed, regenerate through the
+      registered renderer and prove byte-for-byte freshness; do not write
+      unaffected projections.
 - [ ] Inspect `git diff --check`, status, and the exact task-owned diff.
 - [ ] Record pass, fail, baseline debt, skipped checks, recovery, and review separately.
 - [ ] Record final criterion acceptance before disposition. A Stage 03 package
