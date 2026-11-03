@@ -137,6 +137,14 @@ draft recorded.` and no longer looks like frontmatter.
 | E4 | 2 | W2 | metadata-changed | `check-changed --base-ref origin/main`, commit 1ac1b884b | PASS | selected 13, zero violations | required | - |
 | E5 | 2 | W2 | document-links | alignment mode, commit 1ac1b884b | PASS | 848 documents, 7902 links, zero failures | required | - |
 | E6 | 2 | W2 | corpus-lifecycle | `--base-ref origin/main`, commit 1ac1b884b | PASS | lifecycle zero; occupancy zero | required | - |
+| E7 | 4 | W4 | governance-suite | `tests/lib/document_governance` discovery, commit 847e13f23, quiet tree | FAIL | 766 tests: 4 failures and 6 errors, all from tests that encoded the removed supersession fixtures, sealed shapes, archive anchors, or the index row wording | required | - |
+| E8 | 4 | W4 | governance-suite | same discovery after the test alignment, commit bc6fe0bb5 | PASS | 758 tests OK | required | E7 |
+| E9 | 4 | W4 | routing-ownership | CI routing and surface ownership, commit 847e13f23 | FAIL | 92 tests, 1 failure: the frozen payload test required an archive profile | required | - |
+| E10 | 4 | W4 | routing-ownership | same suites, commit bc6fe0bb5 | PASS | 92 tests OK | required | E9 |
+| E11 | 4 | W4 | lifecycle-and-gate-suites | `tests/validation/lifecycle` and `test_ci_gate_evidence` (system python3), commit bc6fe0bb5 | PASS | 20 and 21 tests OK | required | - |
+| E12 | 4 | W4 | repository-checks | metadata check-active, links alignment, Script Manifest, renderer `--check`, agent governance contract, commit bc6fe0bb5 | PASS | 497 selected, zero violations; alignment PASS; manifest valid; drift 0; contract failures 0 | required | - |
+| E13 | 4 | W4 | document-commands | links `commands` mode, commit bc6fe0bb5 | FAIL | 2 findings: the ignored `_workspace` paths in the DATA-0096 README, present on main before this change | required | - |
+| E14 | 4 | W4 | base-drift | metadata check-changed and corpus lifecycle against `origin/main` after PR #728 merged (4adeb3d37), commit bc6fe0bb5 | FAIL | configuration error on `docs/01.requirements/AGENTS.md`, which this branch's loaders did not yet admit; the rebase onto 4adeb3d37 brings in that support | required | - |
 
 ## Criterion Acceptance
 
