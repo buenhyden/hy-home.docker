@@ -25,6 +25,7 @@ E2E_TIMEOUT_SECONDS = 60
 INSTALL_TIMEOUT_SECONDS = 300
 # Set only on the child this gate starts inside its workload environment.
 CHILD_MARKER = "HYHOME_P11_HERMES_WORKLOAD_ENV"
+_ROOT_KEY = "HYHOME_CI_GATE_ROOT"
 _PIN = re.compile(r"^([A-Za-z0-9][A-Za-z0-9._-]*)==([^\s\\;]+)")
 E2E_SUCCESS = (
     "PASS: cached image is pinned; missing, malformed and invalid references are "
@@ -188,6 +189,24 @@ def locked_requirements_present(pins: dict[str, str], *, version=None) -> bool:
     return True
 
 
+def inherited_root_descriptors() -> tuple[int, ...]:
+    """Keep the CI runner's descriptor-rooted checkout valid in the child.
+
+    The runner exposes the checkout as HYHOME_CI_GATE_ROOT=/proc/self/fd/N and
+    its sitecustomize puts that path on sys.path. subprocess closes N by
+    default, so the rerun would otherwise resolve it to an unrelated file.
+    """
+    match = re.fullmatch(r"/proc/self/fd/(\d+)", os.environ.get(_ROOT_KEY, ""))
+    if match is None:
+        return ()
+    descriptor = int(match.group(1))
+    try:
+        os.fstat(descriptor)
+    except OSError:
+        return ()
+    return (descriptor,)
+
+
 def controller_site_paths() -> list[str]:
     """Third-party package directories this interpreter imports from."""
     candidates = [*site.getsitepackages(), *sys.path]
@@ -261,6 +280,7 @@ def run_in_workload_environment(
                 cwd=root,
                 stdin=subprocess.DEVNULL,
                 env={**os.environ, CHILD_MARKER: "1"},
+                pass_fds=inherited_root_descriptors(),
                 check=False,
             )
         except OSError:

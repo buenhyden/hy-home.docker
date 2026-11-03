@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import os
 import pathlib
 import subprocess
 import sys
@@ -260,6 +261,21 @@ class P11HermesGateTests(unittest.TestCase):
         self.assertEqual("1", child_kwargs["env"][self.module.CHILD_MARKER])
         # The controller's packages stay importable after the locked ones.
         self.assertEqual(self.module.controller_site_paths(), controller_sites)
+
+    def test_rerun_keeps_the_runner_descriptor_root_open(self) -> None:
+        descriptor = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            with patch.dict(
+                self.module.os.environ,
+                {"HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{descriptor}"},
+            ):
+                self.assertEqual(
+                    (descriptor,), self.module.inherited_root_descriptors()
+                )
+        finally:
+            os.close(descriptor)
+        with patch.dict(self.module.os.environ, {"HYHOME_CI_GATE_ROOT": str(ROOT)}):
+            self.assertEqual((), self.module.inherited_root_descriptors())
 
     def test_failed_workload_install_stops_before_running_tests(self) -> None:
         calls: list[list[str]] = []
