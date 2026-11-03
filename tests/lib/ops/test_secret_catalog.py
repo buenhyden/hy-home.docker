@@ -743,7 +743,7 @@ class SyntheticRepositoryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             alias = Path(tmp) / "alias"
             alias.symlink_to(self.root, target_is_directory=True)
-            with self.assertRaises(ValueError):
+            with self.assertRaisesRegex(catalog.CatalogError, "unsafe_repository_root"):
                 catalog.load_catalog(alias)
             target = self.root / catalog.CATALOG_PATH
             target.unlink()

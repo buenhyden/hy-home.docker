@@ -73,7 +73,7 @@ def _root(root):
         raise CatalogError("unsafe_repository_root")
     try:
         expected = root_identity(path)
-    except ContractError as exc:
+    except (ContractError, OSError) as exc:
         raise CatalogError("unsafe_repository_root") from exc
     environment = {
         key: value for key, value in os.environ.items() if not key.startswith("GIT_")
