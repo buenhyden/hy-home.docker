@@ -131,6 +131,9 @@ progress under the approved parents. Hosted CI has not run.
 | E9 | 3 | W4 | corpus-and-links | corpus lifecycle and links `alignment`, pre-rebase | PASS | zero violations; alignment PASS | required | - |
 | E10 | 3 | W4 | hosted-ci | GitHub Actions | NOT_RUN | branch not pushed | required | - |
 | E11 | 3 | W4 | governance-unit-tests | full `tests/lib/document_governance` discovery | NOT_RUN | no governance library code changed; metadata, lifecycle and link checks cover the document edits | optional | - |
+| E12 | 1 | W1 | rebased-unit-suites | gate evidence, workflow contract, CI routing (hook tests included), Script Manifest, CI gate plan, identity history and Registry suites with `/usr/bin/python3`, rebased head 2616c85e2 on main 4adeb3d37 | PASS | 407 tests OK | required | - |
+| E13 | 2 | W3 | rebased-manifest-and-links | `check-script-manifest.py`, links `alignment` and `commands`, head 2616c85e2 | PASS | manifest valid; alignment PASS; commands PASS with zero findings | required | - |
+| E14 | 3 | W4 | rebased-document-and-contract | metadata `check-changed --base-ref origin/main`, corpus lifecycle `--base-ref origin/main`, renderer `--check`, agent governance contract, head 2616c85e2 | PASS | 7 selected, zero violations; lifecycle and occupancy zero; drift 0; zero failures | required | - |
 
 ## Criterion Acceptance
 
@@ -142,8 +145,8 @@ progress under the approved parents. Hosted CI has not run.
 
 ## Review and Completion
 
-Local checks are recorded above. No independent review has run yet, and no
-criterion is accepted.
+Local checks are recorded above, last on head 2616c85e2 (E12 to E14). No
+independent review has run yet, and no criterion is accepted.
 
 ## Related Documents
 
