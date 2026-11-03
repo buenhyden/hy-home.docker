@@ -1,10 +1,10 @@
 ---
 title: "Grafana Alloy Unified Collector"
-version: "1.0.6"
+version: "1.0.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-11-04"
 created: "2026-01-12"
 ---
 
@@ -21,7 +21,6 @@ Alloy는 `hy-home.docker` 플랫폼의 통합 수집 에이전트입니다. 프�
 - Developers (데이터 수집 및 계측)
 - Operators (파이프라인 모니터링 및 튜닝)
 - SREs (계층 간 텔레메트리 거버넌스)
-- AI Agents (자동화된 트러블슈팅 및 온보딩)
 
 ## Scope
 

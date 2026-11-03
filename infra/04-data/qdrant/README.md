@@ -1,10 +1,10 @@
 ---
 title: "Qdrant"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -23,7 +23,6 @@ created: "2025-11-12"
 - AI/ML Engineers(벡터 검색 통합)
 - Operators(자원 튜닝과 snapshot)
 - Documentation Writers
-- AI Agents
 
 ## Scope
 

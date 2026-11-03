@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.7.1"
+version: "3.8.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 ---
 
 # Documentation Protocol
@@ -168,9 +168,11 @@ its prose. The profiles follow one priority order:
    packages, Stage 99, and the Stage 98 README. The generated provider READMEs
    are written in Korean through their renderer template, although they
    declare no `language` and are not judged.
-2. Every other document under `docs/05.operations/` is Korean.
-3. Every other document under `docs/` that declares a language is English.
-4. Every non-README governance, hook, role, skill, knowledge, and prompt
+2. Every folder `AGENTS.md` is English, wherever it sits, including under
+   `docs/05.operations/`.
+3. Every other document under `docs/05.operations/` is Korean.
+4. Every other document under `docs/` that declares a language is English.
+5. Every non-README governance, hook, role, skill, knowledge, and prompt
    document under `.agents/`, and the authored `.claude/provider.md` and
    `.codex/provider.md`, is English.
 
@@ -210,7 +212,42 @@ files, and a deeper link it carries is a citation that this rule does not limit.
 In any README, a link whose label ends in `/` resolves to that folder or to its
 `README.md`. A link outside the README's own directory is a citation, and the
 citation rules in this protocol apply to it. The `navigation` mode of
-`check-document-links.py` enforces this rule.
+`check-document-links.py` enforces this rule. A folder `AGENTS.md` does not
+count as a direct file, so it leaves a folder router a router.
+
+#### README and AGENTS.md
+
+A `README.md` is written for people: what the folder is for, what it holds,
+and how to find or use it. A folder `AGENTS.md` is written for AI agents: the
+working rules an agent follows when it changes a file in that folder, routed to
+the canonical owners that decide them. Neither repeats the other.
+
+A folder carries `README.md` and `AGENTS.md` together only when an agent
+changing files there needs folder-specific working rules that no single
+canonical owner already routes: a stage with its own templates, identities and
+lifecycle, a surface with protected or generated files, or registered checks
+that the folder owns. Every other folder carries `README.md` only. The Registry
+`folder-agent-guide` profile's `path_pattern` and `additional_paths` are the
+only list of folders that carry a guide; adding one means adding its path
+there, and a test keeps the tracked guides equal to that list. Root `AGENTS.md` and
+`CLAUDE.md` stay the entry shims that [bootstrap](bootstrap.md) defines and are
+not folder guides. A folder whose only agent rule is "never handle a secret
+value", such as `secrets/`, keeps `README.md` only, because
+[approval boundaries](approval-boundaries.md) already owns that rule.
+
+A folder `AGENTS.md` follows the Stage 99 `governance/agent-guide` template:
+Overview, Scope, Working Rules, Canonical References, Verification and Related
+Documents. Canonical References name the `.agents/` policies, roles, skills,
+prompts and hook rules, and the `.claude/` and `.codex/` adapters and hooks
+that apply to the folder. Verification names only registered commands that
+exist. The guide routes and summarizes; it never copies a policy body, and
+when a summary and its owner disagree, the owner wins and the guide is
+corrected. Under [authority and precedence](bootstrap.md#authority-and-precedence)
+it is routing only, ranked with roles and skills: it never overrides canonical
+governance or Stage contracts, and it grants no tool, path, permission or
+approval. An agent reads the nearest ancestor guide of the file it changes. A README does not carry an
+`AI Agent Guidance` section or other agent-directed instructions; it points to
+its folder `AGENTS.md` instead.
 
 Historical quotations retained in current Markdown must be a contiguous explicit
 blockquote beginning `> Historical evidence (not current authority; source: Git history):`.

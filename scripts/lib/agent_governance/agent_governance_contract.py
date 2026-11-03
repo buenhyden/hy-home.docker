@@ -1158,6 +1158,10 @@ ACTIVE_TEXT_FILES = (
     "AGENTS.md",
     "CLAUDE.md",
     "README.md",
+    # Folder agent guides outside the scanned roots above.
+    "docs/90.references/AGENTS.md",
+    "infra/AGENTS.md",
+    "tests/AGENTS.md",
 )
 
 

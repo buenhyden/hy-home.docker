@@ -1,10 +1,10 @@
 ---
 title: "Superset"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-09-23"
 ---
 
@@ -27,7 +27,6 @@ PKCE)로만 합니다. 처음 로그인한 사용자는 데이터 접근이 없�
 
 - Data analysts
 - Operators
-- AI Agents
 
 ## Scope
 

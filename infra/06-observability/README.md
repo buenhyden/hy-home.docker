@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.11"
+version: "1.0.12"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -20,7 +20,6 @@ created: "2025-11-12"
 
 - SREs & Platform Engineers (스택 유지보수)
 - Developers (디버깅 및 성능 튜닝)
-- AI Agents (자동화된 헬스 모니터링)
 
 ## Scope
 

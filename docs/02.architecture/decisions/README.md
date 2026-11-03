@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.9"
+version: "1.6.11"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 layer: "architecture"
 ---
 
@@ -143,7 +143,6 @@ docs/02.architecture/decisions/
 - System Architects
 - Developers
 - Reviewers
-- AI Agents
 
 ### Authoring Flow
 
@@ -162,14 +161,9 @@ docs/02.architecture/decisions/
 - 구현 계약과 검증 기준은 관련 Spec, 운영 절차는 Stage 05에 둔다.
 - 결정 확인 근거가 없는 runtime 상태는 주장하지 않는다.
 
-### AI Agent Guidance
-
-Agent는 결정 내용을 요약하면서 alternatives, rationale, consequences 또는
-supersession을 삭제하지 않는다. 새 선택이 필요한 경우 기존 ADR을 덮어쓰지
-말고 별도 승인된 ADR과 명시적 supersession을 사용한다.
-
 ## Related Documents
 
+- [에이전트 작업 규칙](../AGENTS.md)
 - [Architecture](../README.md)
 - [Architecture Descriptions](../descriptions/README.md)
 - [Product Requirements](../../01.requirements/README.md)

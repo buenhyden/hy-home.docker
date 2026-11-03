@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.2.8"
+version: "1.2.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -24,7 +24,6 @@ UI/API 인증은 OAuth2 Proxy ForwardAuth가 아니라
 
 - Data Engineers
 - SREs
-- AI Agents
 
 ## Scope
 

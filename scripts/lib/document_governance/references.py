@@ -497,11 +497,11 @@ def load_reference_packages(references_root: pathlib.Path) -> ReferenceCorpus:
             metadata = _entry_metadata(
                 root_descriptor, name, f"docs/90.references/{name}"
             )
-            if name == "README.md":
+            if name in {"README.md", "AGENTS.md"}:
                 text, budget = _read_regular_utf8(
-                    root_descriptor, name, "docs/90.references/README.md", budget
+                    root_descriptor, name, f"docs/90.references/{name}", budget
                 )
-                relative = pathlib.PurePosixPath("README.md")
+                relative = pathlib.PurePosixPath(name)
                 files.append(relative)
                 documents.append(
                     ReferenceDocument(
@@ -937,6 +937,7 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
 
     allowed_files = {
         pathlib.PurePosixPath("README.md"),
+        pathlib.PurePosixPath("AGENTS.md"),
         *(pathlib.PurePosixPath(category) / "README.md" for category in CATEGORIES),
         *(
             pathlib.PurePosixPath(relative).relative_to("docs/90.references")

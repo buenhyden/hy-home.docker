@@ -1,10 +1,10 @@
 ---
 title: "Prometheus"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-04"
 created: "2026-01-12"
 ---
 
@@ -21,7 +21,6 @@ created: "2026-01-12"
 - Developers
 - Operators
 - Documentation Writers
-- AI Agents
 
 ## Scope
 

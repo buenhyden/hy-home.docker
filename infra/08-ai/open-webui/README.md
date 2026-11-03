@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -25,7 +25,6 @@ Generation) 오케스트레이터 역할도 합니다.
 - AI Engineers (RAG 및 프롬프트 엔지니어링)
 - Developers (서비스 통합)
 - Operators (리소스 관리)
-- AI Agents
 
 ## Scope
 

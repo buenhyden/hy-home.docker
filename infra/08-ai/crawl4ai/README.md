@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI 웹 크롤러"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-04"
 created: "2026-09-21"
 ---
 
@@ -27,7 +27,6 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 ## Audience
 
 - **Operators**: 크롤러를 활성화하고 소비자를 연결할지 결정합니다.
-- **AI agents**: 소유 Guide, Policy, Runbook 아래에서 이 패키지를 변경합니다.
 
 ## Scope
 

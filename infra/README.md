@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.4.1"
+version: "1.4.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-03"
 created: "2025-11-24"
 ---
 
@@ -21,7 +21,6 @@ created: "2025-11-24"
 이 README의 주요 독자:
 
 - **Operators**: 인프라 배포 및 서비스 라이프사이클 관리.
-- **AI Agents**: 시스템 탐색, 자동화된 설정, 스케일링.
 - **Developers**: 애플리케이션 개발을 위한 인프라 서비스 소비.
 
 ## Scope
@@ -190,15 +189,11 @@ tier Compose가 여러 하위 설정 폴더를 묶고 Dozzle만 별도 leaf Comp
 4. **Operations and documentation**: 서비스 Guide의 `implementation_services` 매핑에 정확한 Compose 경로/서비스 바인딩을 추가하고 Policy/Runbook, 서비스 README, 현재 Spec/Task를 같은 변경에서 갱신합니다. operations catalog가 전역 조인을 검증하므로 별도 registry/checker를 만들지 않습니다.
 5. **Validation**: `scripts/validation/validate-docker-compose.sh`, operations catalog, metadata 및 link 점검을 변경 범위에 맞게 실행합니다.
 
-공유 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../.agents/governance/agentic.md)와 [documentation protocol](../.agents/governance/documentation-protocol.md)로 라우팅한다.
-
-1. 타겟 계층과 기존 서비스 패턴을 파악한다.
-2. 새 서비스가 `common-optimizations.yml` 템플릿을 준수하는지 확인한다.
-3. 상세 컨텍스트는 [bootstrap 정규 로드 순서](../.agents/governance/bootstrap.md#canonical-load-order)에 따라 요청에 필요한 문서만 해석한다.
-4. 이 README의 "Infrastructure Tiers" 테이블을 업데이트하여 추적성을 유지한다.
+AI 에이전트의 작업 규칙은 [AGENTS.md](AGENTS.md)가 소유합니다.
 
 ## Related Documents
 
+- [에이전트 작업 규칙](AGENTS.md)
 - [독립 LAB 인덱스](../labs/README.md)
 
 - Official Guides (`docs/05.operations/README.md`)

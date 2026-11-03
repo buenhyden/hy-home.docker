@@ -1,10 +1,10 @@
 ---
 title: "Conftest"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-11-04"
 created: "2026-09-23"
 ---
 
@@ -28,7 +28,6 @@ profile만 준비한 뒤, 정책 단위 테스트와 해당 Compose·Dockerfile 
 
 - Developers
 - Operators
-- AI Agents
 
 ## Scope
 

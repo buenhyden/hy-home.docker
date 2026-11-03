@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-09-23"
 ---
 
@@ -26,7 +26,6 @@ Pact Broker는 consumer가 게시한 pact와 provider 검증 결과를 저장하
 
 - Developers
 - Operators
-- AI Agents
 
 ## Scope
 

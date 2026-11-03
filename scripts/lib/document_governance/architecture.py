@@ -314,13 +314,16 @@ def load_architecture_documents(
             "docs/02.architecture/requirements is forbidden"
         )
     allowed_root_entries = {"README.md", "descriptions", "decisions"}
-    actual_root_entries = {entry.name for entry in stage_root.iterdir()}
+    actual_root_entries = {entry.name for entry in stage_root.iterdir()} - {"AGENTS.md"}
     unexpected = sorted(actual_root_entries - allowed_root_entries)
     missing = sorted(allowed_root_entries - actual_root_entries)
     if unexpected or missing:
         detail = ", ".join(unexpected or missing)
         raise ArchitectureDocumentError(f"unregistered Stage 02 entry: {detail}")
     _read_regular_utf8(stage_root / "README.md")
+    guide = stage_root / "AGENTS.md"
+    if guide.exists() or guide.is_symlink():
+        _read_regular_utf8(guide)
     active_registry = load_registry() if registry is None else registry
     _validate_registry_contract(active_registry)
     paths: list[pathlib.Path] = []

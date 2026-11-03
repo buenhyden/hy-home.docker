@@ -1,10 +1,10 @@
 ---
 title: "References"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-03"
 layer: "references"
 ---
 
@@ -77,6 +77,7 @@ reference는 독자의 필요를 설명할 뿐이며 이것만으로 문서가 S
 
 ## Related Documents
 
+- [에이전트 작업 규칙](AGENTS.md)
 - [Documentation protocol](../../.agents/governance/documentation-protocol.md)
 - [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)

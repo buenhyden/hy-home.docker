@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Workspace"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-09-21"
 ---
 
@@ -25,7 +25,6 @@ JupyterLab은 한 명의 운영자를 위해 하나의 Jupyter Server를 실행�
 
 - **Data scientists**: 노트북, DuckDB/Polars, MLflow SDK 사용.
 - **Operators**: 토큰, 작업 디렉터리 백업, 이미지 재빌드 관리.
-- **AI agents**: 소유 Guide, Policy, Runbook에 따라 이 패키지를 변경.
 
 ## Scope
 

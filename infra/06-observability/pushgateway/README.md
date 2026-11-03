@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-01-12"
 ---
 
@@ -20,7 +20,6 @@ Pushgateway는 표준 pull 모델을 사용할 수 없는 경우(예: 수명이 
 
 - DevOps Engineers
 - Backend Developers (Batch/CI)
-- AI Agents
 
 ## Scope
 

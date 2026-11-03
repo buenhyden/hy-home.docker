@@ -1,10 +1,10 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.7.0"
+version: "1.8.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 ---
 
 # Agent Bootstrap Policy
@@ -34,7 +34,11 @@ Supported agent entry shims, authored provider adapters, and request-scoped cano
    the authority for what it says. Evaluation data under `.agents/evaluations/`
    is not automatically loaded as execution instructions.
 4. For repository changes, load the governing Requirements, Architecture, and
-   Spec Package plus its current Task.
+   Spec Package plus its current Task. Before changing a file in a folder or
+   below it, read the nearest ancestor folder `AGENTS.md`; it routes to the
+   canonical owners above and adds no authority. The
+   [documentation protocol](documentation-protocol.md#readme-and-agentsmd)
+   decides which folders carry one.
 5. Execute the applicable registered gates and record evidence in that Task.
 
 Root shims and adapters route to this sequence and do not define alternatives.
@@ -53,7 +57,8 @@ README navigation, historical provenance and typed machine inputs follow the
 1. Direct system and user instructions.
 2. Canonical governance policies, including workflow and approval behavior.
 3. Canonical roles and explicitly invoked skills, which implement but cannot
-   override policy.
+   override policy. A folder `AGENTS.md` sits at this level as routing only:
+   it never overrides canonical governance or Stage contracts.
 4. Current stage documents under Stage 99 path, profile, identifier, and
    lifecycle contracts.
 5. Provider Registry translation facts, provider adapters, and native runtime

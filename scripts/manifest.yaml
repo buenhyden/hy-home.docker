@@ -10,6 +10,16 @@ files:
   disposition: retain
   successor: null
   tests: []
+- path: scripts/AGENTS.md
+  kind: contract
+  authority: .agents/governance/documentation-protocol.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests: []
 - path: scripts/README.md
   kind: contract
   authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md

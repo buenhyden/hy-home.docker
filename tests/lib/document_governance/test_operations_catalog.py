@@ -891,6 +891,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
     def test_structural_indexes_must_be_regular_and_symlink_free(self) -> None:
         for relative, expected in (
             ("docs/05.operations/README.md", "operations-root-index-invalid"),
+            ("docs/05.operations/AGENTS.md", "operations-root-guide-invalid"),
             ("docs/05.operations/incidents/README.md", "incident-index-invalid"),
             ("docs/05.operations/guides/README.md", "role-index-invalid"),
         ):

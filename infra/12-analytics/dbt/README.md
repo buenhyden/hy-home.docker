@@ -1,10 +1,10 @@
 ---
 title: "분석 dbt 변환 작업"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-09-21"
 ---
 
@@ -24,7 +24,6 @@ HOME에는 포함되지 않습니다.
 
 - **Analytics engineers**: 모델을 작성하고 실행합니다.
 - **Operators**: 역할을 프로비저닝하고 `run`/`build`의 부작용을 검토합니다.
-- **AI agents**: 소유 Guide, Policy, Runbook 아래에서 이 패키지를 변경합니다.
 
 ## Scope
 

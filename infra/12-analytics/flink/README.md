@@ -1,10 +1,10 @@
 ---
 title: "Flink (Iceberg)"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-04"
 created: "2026-09-23"
 ---
 
@@ -28,7 +28,6 @@ REST API로 JAR를 올릴 수도 없습니다.
 
 - Data engineers
 - Operators
-- AI Agents
 
 ## Scope
 

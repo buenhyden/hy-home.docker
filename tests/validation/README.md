@@ -1,10 +1,10 @@
 ---
 title: "Validation Contract Tests"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-11-04"
 created: "2026-09-27"
 ---
 
@@ -20,7 +20,6 @@ library의 단위 테스트는 짝이 되는 `tests/lib/<domain>/`에 둡니다.
 
 - Developers
 - QA Engineers
-- AI Agents
 
 ## Scope
 

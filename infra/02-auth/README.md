@@ -1,10 +1,10 @@
 ---
 title: "Auth Tier (02-auth)"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -23,7 +23,6 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 
 - Developers
 - Operators
-- AI Agents
 
 ## Scope
 

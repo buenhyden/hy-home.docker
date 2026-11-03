@@ -1,10 +1,10 @@
 ---
 title: "sample-web-service"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 ---
 
 <!-- Target: examples/sample-web-service/README.md -->
@@ -30,7 +30,6 @@ secret-free 설정)를 보여 줍니다. Compose 정의는
 - Developers
 - Operations/SRE Engineers
 - Documentation Writers
-- AI Agents
 
 ## Scope
 

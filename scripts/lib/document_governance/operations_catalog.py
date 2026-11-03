@@ -56,7 +56,9 @@ _YEAR = re.compile(r"[0-9]{4}")
 _INCIDENT = re.compile(r"inc-(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*")
 # Each role owns one directory; a subject is the slug its members share.
 _ROLE_DIRECTORY = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}
-_OPERATIONS_ROOT_ENTRIES = frozenset({"README.md", "incidents", *_ROLE_DIRECTORY})
+_OPERATIONS_ROOT_ENTRIES = frozenset(
+    {"README.md", "AGENTS.md", "incidents", *_ROLE_DIRECTORY}
+)
 _OPERATIONS_PROFILE_IDS = ("guide", "policy", "runbook", "incident", "postmortem")
 _ROLE_SECTION_ALIASES = {
     "guide": {
@@ -2354,6 +2356,15 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
         )
     else:
         require_tracked(OPERATIONS_ROOT / "README.md")
+    root_guide = root_by_name.get("AGENTS.md")
+    if root_guide is not None and not root_guide.is_regular:
+        findings.append(
+            _finding(
+                "operations-root-guide-invalid",
+                OPERATIONS_ROOT / "AGENTS.md",
+                "regular AGENTS.md required",
+            )
+        )
     template = root / "docs/99.templates/templates/operations/release.template.md"
     if template.exists() or template.is_symlink():
         findings.append(

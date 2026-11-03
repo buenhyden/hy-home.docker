@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Implementation"
-version: "0.3.1"
+version: "0.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-04"
 ---
 
 # SurrealDB Implementation
@@ -31,7 +31,6 @@ updated: "2026-10-26"
 
 - **Operators**: 데이터베이스 영속화, 버전, 자격 증명 관리.
 - **Developers**: 데이터베이스 스키마 확장 또는 쿼리 연결 디버깅.
-- **AI Agents**: 이미지 빌드 경계와 버전 호환성 규칙 파악.
 
 ## Scope
 

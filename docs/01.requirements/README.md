@@ -1,10 +1,10 @@
 ---
 title: "Requirement Packages"
-version: "1.1.4"
+version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-11-03"
 layer: "requirements"
 ---
 
@@ -64,7 +64,6 @@ high-water를 낮추지 않는다.
 - Product Owners
 - System Architects
 - Developers
-- AI Agents
 
 ### Authoring Flow
 
@@ -88,15 +87,9 @@ high-water를 낮추지 않는다.
 - solution-independent interface 의미만 Stage 01에 두고 실행 가능한 계약은
   Stage 03에 둔다.
 
-### AI Agent Guidance
-
-Agent는 기존 Requirement Package를 제자리에서 수정하고 병렬·호환 문서를
-만들지 않는다.
-연결된 Description, ADR, Spec 또는 Operations 문서가 실제로 존재할 때만
-추적성 링크를 추가한다.
-
 ## Related Documents
 
+- [에이전트 작업 규칙](AGENTS.md)
 - [Architecture](../02.architecture/README.md)
 - [Architecture Descriptions](../02.architecture/descriptions/README.md)
 - [Architecture Decisions](../02.architecture/decisions/README.md)

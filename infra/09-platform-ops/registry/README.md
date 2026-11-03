@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-11-04"
 created: "2026-03-19"
 ---
 
@@ -25,7 +25,6 @@ created: "2026-03-19"
 
 - Operators
 - CI/CD Developers
-- AI Agents
 
 ## Scope
 

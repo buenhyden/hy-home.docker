@@ -1,10 +1,10 @@
 ---
 title: "Examples Surface"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-09-03"
 ---
 
@@ -28,7 +28,6 @@ created: "2026-09-03"
 
 - 새 컨테이너 서비스를 추가하려는 Developers
 - 저장소의 컨테이너 하드닝 관례를 확인하려는 Reviewers
-- 새 서비스 골격을 생성하는 AI Agents
 
 ## Scope
 

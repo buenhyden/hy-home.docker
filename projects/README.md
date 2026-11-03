@@ -1,10 +1,10 @@
 ---
 title: "Projects Surface"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-01-12"
 ---
 
@@ -24,7 +24,6 @@ created: "2026-01-12"
 
 - Developers
 - Documentation Writers
-- AI Agents
 
 ## Scope
 

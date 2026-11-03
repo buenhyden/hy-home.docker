@@ -1,10 +1,10 @@
 ---
 title: "Keycloak IAM"
-version: "1.1.4"
+version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -28,7 +28,6 @@ Canonical realm:
 
 - Infrastructure Operators
 - Security Reviewers
-- AI Agents
 
 ## Scope
 

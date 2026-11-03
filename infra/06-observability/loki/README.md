@@ -1,10 +1,10 @@
 ---
 title: "Loki Log Aggregation System"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-01-12"
 ---
 
@@ -19,7 +19,6 @@ created: "2026-01-12"
 - 애플리케이션과 인프라 로그를 디버깅하는 Developers
 - 보존, 저장, 쿼리 성능을 관리하는 SREs
 - Loki 준비 상태와 SeaweedFS 연결을 유지 관리하는 Operators
-- 시크릿 값을 노출하지 않고 근거를 수집하는 AI Agents
 
 ## Scope
 

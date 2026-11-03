@@ -1,10 +1,10 @@
 ---
 title: "Great Expectations (lakehouse data quality)"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-11-04"
 created: "2026-09-23"
 ---
 
@@ -28,7 +28,6 @@ suite 목록만 출력합니다. exit `0`은 모든 suite 통과, `1`은 expecta
 
 - Data engineers
 - Operators
-- AI Agents
 
 ## Scope
 

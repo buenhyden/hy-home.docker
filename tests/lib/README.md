@@ -1,10 +1,10 @@
 ---
 title: "Library Tests"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 created: "2026-09-27"
 ---
 
@@ -21,7 +21,6 @@ library-unit 테스트 공간입니다. library 도메인마다 짝이 되는 �
 
 - Developers
 - QA Engineers
-- AI Agents
 
 ## Scope
 

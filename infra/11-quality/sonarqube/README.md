@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Code Quality"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -24,7 +24,6 @@ SonarQube는 정적 애플리케이션 보안 테스트(SAST)와 코드 품질 �
 - Developers (PR 분석)
 - Security Engineers (취약점 스캔)
 - Operators
-- AI Agents
 
 ## Scope
 

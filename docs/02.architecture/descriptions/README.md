@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.2.0"
+version: "1.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "architecture"
 ---
 
@@ -69,7 +69,6 @@ docs/02.architecture/descriptions/
 - System Architects
 - Developers
 - Operators
-- AI Agents
 
 ### Authoring Flow
 
@@ -89,14 +88,9 @@ docs/02.architecture/descriptions/
 - 관련 결정과 구현 명세가 존재하면 typed link로 연결한다.
 - Description은 selection rationale나 실행 절차를 복제하지 않는다.
 
-### AI Agent Guidance
-
-Agent는 기존 문서를 제자리에서 수정하고 대체·redirect 파일을 만들지 않는다.
-secret 값, 관찰하지 않은 runtime 상태 또는 존재하지 않는 interface를
-아키텍처 사실로 기록하지 않는다.
-
 ## Related Documents
 
+- [에이전트 작업 규칙](../AGENTS.md)
 - [Architecture](../README.md)
 - [Product Requirements](../../01.requirements/README.md)
 - [Architecture Decisions](../decisions/README.md)

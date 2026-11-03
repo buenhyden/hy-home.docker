@@ -1,10 +1,10 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.0.9"
+version: "1.0.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-11-04"
 created: "2026-01-12"
 ---
 
@@ -22,7 +22,6 @@ Tempo는 S3 호환 백엔드(SeaweedFS)에 트레이스 데이터를 저장합�
 
 - Backend Developers (지연 시간 분석)
 - SRE / DevOps Engineers (시스템 병목 식별)
-- AI Agents
 
 ## Scope
 

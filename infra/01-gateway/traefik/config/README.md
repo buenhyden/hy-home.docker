@@ -1,10 +1,10 @@
 ---
 title: "Traefik Static Configuration"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 ---
 
 # Traefik Static Configuration
@@ -26,7 +26,6 @@ updated: "2026-10-05"
 - Developers
 - Operators
 - Documentation Writers
-- AI Agents
 
 ## Scope
 

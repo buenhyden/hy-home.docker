@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway)"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -23,7 +23,6 @@ created: "2025-11-12"
 - Infrastructure Engineers
 - Backend Developers
 - Security Auditors
-- AI Agents
 
 ## Scope
 

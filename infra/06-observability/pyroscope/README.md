@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Continuous Profiling"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-03-19"
 ---
 
@@ -20,7 +20,6 @@ Pyroscope는 애플리케이션을 연속적으로 프로파일링하여 성능 
 
 - Backend Developers (성능 최적화)
 - SRE / DevOps Engineers (리소스 관리)
-- AI Agents
 
 ## Scope
 

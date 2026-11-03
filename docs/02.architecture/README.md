@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.1.4"
+version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-13"
+updated: "2026-11-03"
 layer: "architecture"
 ---
 
@@ -47,7 +47,6 @@ docs/02.architecture/
 - System Architects
 - Developers
 - Reviewers
-- AI Agents
 
 ### Authoring Flow
 
@@ -72,6 +71,7 @@ docs/02.architecture/
 
 ## Related Documents
 
+- [에이전트 작업 규칙](AGENTS.md)
 - [Product Requirements](../01.requirements/README.md)
 - [Architecture Descriptions](descriptions/README.md)
 - [Architecture Decisions](decisions/README.md)
