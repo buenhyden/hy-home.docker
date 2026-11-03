@@ -2445,10 +2445,6 @@ class RetiredPackageLinkTests(unittest.TestCase):
                 )
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class FencedCommandPathTests(unittest.TestCase):
     """A fenced command must name repository paths a reader can actually open."""
 
@@ -2583,3 +2579,7 @@ class FencedCommandPathTests(unittest.TestCase):
                 }
             ),
         )
+
+
+if __name__ == "__main__":
+    unittest.main()
