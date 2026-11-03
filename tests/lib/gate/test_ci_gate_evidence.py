@@ -159,7 +159,10 @@ class EvidenceStoreTests(unittest.TestCase):
         manifest_raw = manifest_path.read_bytes()
         manifest = json.loads(manifest_raw)
 
-        self.assertEqual(plan["owner"], "SPEC-0211-TSK-0003")
+        self.assertEqual(
+            plan["owner"],
+            ".agents/governance/quality-standards.md#7-local-qaci-orchestration",
+        )
         self.assertEqual(plan["retention_days"], 14)
         self.assertEqual([row["status"] for row in result["rows"]], ["PASS", "NOT_RUN"])
         self.assertTrue(result["complete"])

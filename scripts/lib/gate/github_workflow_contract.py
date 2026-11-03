@@ -552,7 +552,7 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
     )
     expected_evidence = {
         "schema_version": 1,
-        "owner": "SPEC-0211-TSK-0003",
+        "owner": ".agents/governance/quality-standards.md#7-local-qaci-orchestration",
         "directory_name": "ci-gate-evidence",
         "plan_file": "plan.json",
         "result_file": "result.json",

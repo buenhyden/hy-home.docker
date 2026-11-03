@@ -1023,7 +1023,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
         contract = self.module.load_workflow_contract(ROOT)
         self.assertEqual(9, len(contract.actions))
         self.assertEqual(1, contract.execution_evidence.schema_version)
-        self.assertEqual("SPEC-0211-TSK-0003", contract.execution_evidence.owner)
+        self.assertEqual(
+            ".agents/governance/quality-standards.md#7-local-qaci-orchestration",
+            contract.execution_evidence.owner,
+        )
         self.assertEqual("ci-gate-evidence", contract.execution_evidence.directory_name)
         self.assertEqual("plan.json", contract.execution_evidence.plan_file)
         self.assertEqual("result.json", contract.execution_evidence.result_file)

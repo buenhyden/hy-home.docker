@@ -12,7 +12,7 @@ import stat
 import sys
 from collections.abc import Mapping, Sequence
 
-OWNER = "SPEC-0211-TSK-0003"
+OWNER = ".agents/governance/quality-standards.md#7-local-qaci-orchestration"
 PLAN_NAME = "plan.json"
 RESULT_NAME = "result.json"
 MANIFEST_NAME = "evidence-manifest.json"
