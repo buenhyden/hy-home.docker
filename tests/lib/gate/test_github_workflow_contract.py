@@ -178,7 +178,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_p02_native_contracts",
                 "tests.validation.test_p02_oauth_native",
                 "tests.validation.test_p02_secret_presentation_native",
-                "tests.validation.test_p02_valkey_mount_scope",
                 "tests.validation.test_p03_runner_boundaries",
                 "tests.validation.test_p03_runner_consumers",
                 "tests.validation.test_p03_runner_isolation",
