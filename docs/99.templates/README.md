@@ -169,11 +169,9 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
   profile 경로가 그 규칙을 소유하고
   `scripts/lib/document_governance/references.py`가 그 분류를 실행합니다.
 - Tombstone은 `identity_relation: inherited`를 사용합니다: `artifact_id`는
-  `tomb-{retired_artifact_id}`이며,
-  `scripts/lib/document_governance/archive.py`가 이를 도출합니다. 네 자리
-  파일명은 Registry의 `tombstone` space에서 별도의 단조 증가 발급을
-  사용하며 상속된 artifact identity가 있어도 그 `high_water`나 `next_number`
-  검사는 그대로 적용됩니다.
+  `tomb-{retired_artifact_id}`입니다. 네 자리 파일명은 Registry의
+  `tombstone` space에서 별도의 단조 증가 발급을 사용합니다. Stage 98 기록은
+  어떤 gate도 검증하지 않으므로 이 규칙은 작성·검토 기준입니다.
 - Incident 번호는 연도 partition마다 다시 시작하므로, 연도는 경로뿐
   아니라 identity에도 속합니다.
 - 안정적인 package ID는 등록된 접두사와 대소문자를 유지합니다.
@@ -215,7 +213,8 @@ draft 또는 sealed입니다. `registry.json`이 모든 진입 상태, edge, ter
 않으며 template은 승인값을 미리 채우지 않습니다.
 
 보존 단위의 실제 재평가만 기존 카탈로그의 `Current Assessments`에 기록합니다.
-필드와 판정 순서는 `common.archive_retention`이 소유합니다. 평가·제거 결정은
+필드와 판정 순서는 `common.archive_retention`이 소유하며, 이를 자동으로
+검증하는 gate는 없습니다. 평가·제거 결정은
 당시 Task revision의 `archive_authorizations`와 해당 본문의 실제 승인 인용을
 연결합니다. 빈 승인값, proposed ADR, 이 일반 계약 채택 승인은 개별 제거 증거가
 아닙니다. 포착 행과 기존 원문은 재평가 때 수정하지 않습니다.

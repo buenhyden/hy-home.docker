@@ -369,11 +369,10 @@ are not duplicate Archive recovery ledgers.
 
 ##### Links into Stage 98
 
-Links between documents inside `docs/` keep their existing contracts. Resolve
-path, profile, and preservation unit first; then apply current assessment and
-availability restrictions, route-record restrictions, source-profile and capture
-class permissions, current-owner or historical-context checks, and link integrity,
-in that order. `withdrawn`, `invalidated`, and `git-history-only` units cannot be
+Links between documents inside `docs/` keep their existing contracts. No gate
+validates Stage 98: links out of `docs/98.archive/` are not checked, and a link
+into it is checked only for ordinary target integrity. The citation rules below
+are review guidance, not automated checks. `withdrawn`, `invalidated`, and `git-history-only` units cannot be
 ordinary direct payload targets, even from an Incident or Postmortem. Cite the
 current assessment, erratum, or Archive index instead. `superseded` assessment
 routes current authority to its successor.
@@ -384,9 +383,8 @@ may cite retained `completed/` and `resolved/` bodies as historical evidence;
 classes as evidence subject to the earlier restrictions. `tombstones/` and
 `migrations/` remain closed to every ordinary source profile because they hold
 routes, not bodies. Frozen-body links are interpreted at the captured source
-commit and original path, never repaired against today's tree. Current catalog
-and assessment links still use current link checks. A historical broken target
-is an observation or erratum, not permission to rewrite its source.
+commit and original path, never repaired against today's tree. A historical
+broken target is an observation or erratum, not permission to rewrite its source.
 
 ##### Current assessment and Git-history-only availability
 
