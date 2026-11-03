@@ -5074,11 +5074,9 @@
             3,
             4,
             5,
-            8,
             9,
             10,
             11,
-            12,
             13,
             14,
             15,
@@ -5086,7 +5084,9 @@
           ],
           "reserved_history": [
             6,
-            7
+            7,
+            8,
+            12
           ],
           "child_spaces": {}
         },
@@ -5096,8 +5096,7 @@
           "high_water": 12,
           "next_number": 13,
           "current_issued": [
-            6,
-            7
+            6
           ],
           "reserved_history": [
             1,
@@ -5105,6 +5104,7 @@
             3,
             4,
             5,
+            7,
             8,
             9,
             10,
@@ -5183,8 +5183,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 50,
-      "next_number": 51,
+      "high_water": 51,
+      "next_number": 52,
       "reserved_history": [
         3,
         12,

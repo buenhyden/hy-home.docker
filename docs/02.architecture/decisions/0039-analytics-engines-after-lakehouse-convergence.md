@@ -29,7 +29,7 @@ The basis is the S01 ruling of SPEC-0180 Task 0008, the S12-S15 source
 stages, the 2026-09-24 live acceptance record, and the current repository
 configuration. Unrecorded runtime state is not claimed.
 
-- **Superseded decision**: ADR-0015 selected specialized analytics engines (InfluxDB 3 Core as the TSDB and ksqlDB for stream processing) before the lakehouse convergence. This decision replaces it.
+- **Superseded decision**: ADR-0015 selected specialized analytics engines (InfluxDB 3 Core, ksqlDB, OpenSearch 3.x, and StarRocks 4.x) before the lakehouse convergence, rejecting PostgreSQL extensions and managed cloud services as alternatives. This decision replaces it.
 
 ## Decision Drivers
 

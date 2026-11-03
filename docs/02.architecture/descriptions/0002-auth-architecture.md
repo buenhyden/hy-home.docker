@@ -44,7 +44,7 @@ The `02-auth` architecture centers on `Keycloak`, which serves the central IAM r
 - **Native OIDC**: Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao
 - **Session Manager**: Valkey for OAuth2 Proxy
 - **Storage**: PostgreSQL for Keycloak realm/user/client state
-- **Superseded description**: AD-0014 described the 02-auth optimization hardening architecture. This description replaces it.
+- **Superseded description**: AD-0014 described the 02-auth optimization hardening architecture. This description replaces it; its hardening substance (runtime controls and fail-closed behavior) is owned by [ADR-0017](../decisions/0017-auth-hardening-runtime-and-fail-closed.md).
 
 ### System Boundaries
 
