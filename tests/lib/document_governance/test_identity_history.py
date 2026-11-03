@@ -508,15 +508,14 @@ class IdentityHistoryTests(unittest.TestCase):
                 ),
             )
 
-            # A completed package is preserved whole under the archive, so its
-            # Task still carries the recovery decision after leaving Stage 03.
-            # A superseded or retired Task is not a decision owner.
+            # Stage 98 holds no records (SPEC-0249): a Task under any archive
+            # disposition is never a decision owner, so recovery fails closed.
             preserved_path = (
                 "docs/98.archive/completed/03.specs/0104-decision/tasks/"
                 "tsk-0001-recovery.md"
             )
             for disposition, allowed in (
-                ("completed", True),
+                ("completed", False),
                 ("superseded", False),
                 ("retired", False),
             ):
