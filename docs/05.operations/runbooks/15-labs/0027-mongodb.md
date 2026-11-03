@@ -92,7 +92,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=80 mongo-express
    ```
 
-현재 key/init 경로는 비밀값을 argv에 싣지 않는다. 실제 key 생성·replica 결성 결과는 SPEC-0215 TSK-0002의 LAB 실행 기록을 따른다. member name/state만 기록한다.
+현재 key/init 경로는 비밀값을 argv에 싣지 않는다. 실제 key 생성·replica 결성 결과는 SPEC-0215 TSK-0002(삭제됨, Git history)의 LAB 실행 기록에 남아 있다. member name/state만 기록한다.
 
 ### Planned Isolated Restore Rehearsal
 

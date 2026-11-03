@@ -71,7 +71,7 @@ cache·TLS·거절·응답 schema와 자원 경계는 별도 격리 실행 전�
 
 ### 소비자 승인과 출처 권리
 
-consumer 연결은 [정책](../../policies/09-ai-and-search/0091-crawl4ai.md)의 승인 변경이 소유한다. 출처 registry, 제한된 job, 원본 출처 보존, 파생 결과 삭제는 소비 워크스페이스가 [수집 adapter](../../../../projects/crawl4ai/README.md)로 구현한다. 후보 프로젝트 세 가지(공공 API 문서 변경 감시, 허용 공지·법령 근거 노트, 라이선스 검증 학습자료)의 비교는 SPEC-0220 계획에 있으며, 아직 연결된 것은 없다.
+consumer 연결은 [정책](../../policies/09-ai-and-search/0091-crawl4ai.md)의 승인 변경이 소유한다. 출처 registry, 제한된 job, 원본 출처 보존, 파생 결과 삭제는 소비 워크스페이스가 [수집 adapter](../../../../projects/crawl4ai/README.md)로 구현한다. 후보 프로젝트 세 가지(공공 API 문서 변경 감시, 허용 공지·법령 근거 노트, 라이선스 검증 학습자료)의 비교는 SPEC-0220 계획(삭제됨, Git history)에 기록되었으며, 아직 연결된 것은 없다.
 
 ### Runbook Handoff
 

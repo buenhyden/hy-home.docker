@@ -1,6 +1,6 @@
 ---
 title: "Host Storage Placement Policy"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -61,7 +61,7 @@ created: "2026-10-27"
 
 ### Current reconciliation boundary
 
-2026-11-03 P09는 이 정책과 SPEC-0246 C1–C6의 기록을 읽기 전용으로 대조한다.
+2026-11-03 P09는 이 정책과 아래 Traceability에 요약한 SPEC-0246 C1–C6 수용 기록을 읽기 전용으로 대조한다.
 그 작업의 Docker root metadata와 짧은 사용량 표본은 현재 배치·실행 상태를 바꾸거나
 용량, RPO/RTO, 피크 또는 에너지 예산을 수용하는 근거가 아니다. 관측 환경의 read-only
 mount 표시는 호스트 mount 실패로 해석하지 않는다. Prometheus·Tempo SSD 및
@@ -76,7 +76,14 @@ drift와 명시적 소유자 승인이 없는 한 유지한다.
 ### Traceability
 
 - 같은 번호 `0102`의 Guide/Runbook은 없다.
-- 근거와 수용 기록: SPEC-0246 Task
+- 근거와 수용 기록: SPEC-0246(삭제됨, 번호는 Registry `reserved_history`, 본문은 Git history)의
+  C1–C6은 모두 소유자가 수용했다.
+  - C1(2026-10-19): containerd 이전 뒤 이미지 목록, 컨테이너 집합, health, k3d node가 이전 전 snapshot과 같았다.
+  - C2: Ollama가 SSD 경로에서 같은 model 목록을 제공하고, 첫 load가 318.4초에서 55.9초로 줄었다.
+  - C3: build-cache 하한을 정하고, 보관한 이미지는 digest로 검증했으며, inventory상 소유자 없는 volume·container만 지웠다.
+  - C4: 실행 중인 registry image digest가 Compose pin과 같았다.
+  - C5(2026-10-27): 소유자가 수용했고, 독립 rules review 뒤 이 정책이 active가 되었다. SMART 기반 이전 조건이 Spec의 측정되지 않은 정격 수명 문구를 대신한다.
+  - C6(2026-10-27): 읽기 전용 확인 뒤 소유자가 수용했다. Prometheus·Tempo volume은 SSD `fast-volumes/obs/*`에 bind되고 둘 다 healthy이며 이전 HDD 사본은 없다. Loki·Alloy·Pyroscope는 HDD에 남는다.
 
 ## Verification
 
@@ -87,6 +94,5 @@ drift와 명시적 소유자 승인이 없는 한 유지한다.
 
 ## Related Documents
 
-- SPEC-0246 Host Storage Tiering
 - [Prometheus Guide](../../guides/07-observability/0045-prometheus.md)
 - [Backup and Restore Policy](0021-backup-and-restore.md)
