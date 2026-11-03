@@ -234,13 +234,9 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            # No Stage 98 migration ledger exists here: Spec Package validation
+            # must run from the current tree alone (SPEC-0248).
             (root / "docs/03.specs").mkdir(parents=True)
-            authority = (
-                root
-                / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-            )
-            authority.parent.mkdir(parents=True)
-            authority.write_text("synthetic authority presence")
             lifecycle = mock.Mock(
                 findings=(),
                 actual_transitions=frozenset(),
@@ -288,6 +284,8 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                     previous_records=previous,
                 )
             self.assertEqual([], findings)
+            self.assertTrue(packages.called)
+            self.assertTrue(validate.called)
             self.assertIs(previous, current.call_args.kwargs["previous_records"])
             self.assertIs(
                 packages.call_args.kwargs["_historical_context"],

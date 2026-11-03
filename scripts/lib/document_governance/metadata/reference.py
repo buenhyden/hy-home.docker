@@ -426,198 +426,188 @@ def _validate_repository_contracts(
                     )
                 )
         spec_root = root / "docs/03.specs"
-        spec_package_authority = (
-            root
-            / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-        )
-        if spec_package_authority.is_file():
-            try:
-                historical_context = HistoricalSpecSnapshotContext()
-                spec_packages = (
-                    load_spec_packages(
-                        spec_root,
-                        registry=active_registry,
-                        _historical_context=historical_context,
-                    )
-                    if spec_root.exists() or spec_root.is_symlink()
-                    else ()
-                )
-                spec_lifecycle = validate_repository_spec_package_lifecycle_details(
-                    root,
-                    spec_packages,
-                    base_ref=base_ref,
+        try:
+            historical_context = HistoricalSpecSnapshotContext()
+            spec_packages = (
+                load_spec_packages(
+                    spec_root,
                     registry=active_registry,
                     _historical_context=historical_context,
                 )
-            except SpecPackageError as error:
-                findings.append(
-                    Finding(
-                        "docs/03.specs",
-                        "spec-package-invalid",
-                        str(error),
-                    )
+                if spec_root.exists() or spec_root.is_symlink()
+                else ()
+            )
+            spec_lifecycle = validate_repository_spec_package_lifecycle_details(
+                root,
+                spec_packages,
+                base_ref=base_ref,
+                registry=active_registry,
+                _historical_context=historical_context,
+            )
+        except SpecPackageError as error:
+            findings.append(
+                Finding(
+                    "docs/03.specs",
+                    "spec-package-invalid",
+                    str(error),
                 )
-            else:
-                actual_lifecycle_transitions = spec_lifecycle.actual_transitions
-                actual_lifecycle_normalizations.update(
-                    spec_lifecycle.actual_normalizations
+            )
+        else:
+            actual_lifecycle_transitions = spec_lifecycle.actual_transitions
+            actual_lifecycle_normalizations.update(spec_lifecycle.actual_normalizations)
+            if spec_lifecycle.generation_source is not None:
+                generation_revision = spec_lifecycle.generation_source
+                migration_contract = active_registry.common.get(
+                    "task_lifecycle_events", {}
                 )
-                if spec_lifecycle.generation_source is not None:
-                    generation_revision = spec_lifecycle.generation_source
-                    migration_contract = active_registry.common.get(
-                        "task_lifecycle_events", {}
+                migration = (
+                    migration_contract.get("migration", {})
+                    if isinstance(migration_contract, Mapping)
+                    else {}
+                )
+                registered_normalizations = frozenset(
+                    (
+                        item.get("lifecycle_id"),
+                        item.get("from_status"),
+                        item.get("to_status"),
                     )
-                    migration = (
-                        migration_contract.get("migration", {})
-                        if isinstance(migration_contract, Mapping)
-                        else {}
+                    for item in migration.get("normalizations", ())
+                    if isinstance(item, Mapping)
+                )
+                source_registry = load_registry_document_at_revision(
+                    spec_lifecycle.generation_source,
+                    root=root,
+                )
+                source_registry_contract = load_registry_at_revision(
+                    spec_lifecycle.generation_source,
+                    root=root,
+                )
+                source_profiles = source_registry.get("profiles")
+                source_lifecycles = source_registry.get("lifecycles")
+                source_profiles_by_id = (
+                    {
+                        profile.get("id"): profile
+                        for profile in source_profiles
+                        if isinstance(profile, Mapping)
+                    }
+                    if isinstance(source_profiles, list)
+                    else {}
+                )
+                source_records = collect_selected_records_at_ref(
+                    root,
+                    profiles,
+                    [record.path.as_posix() for record in records],
+                    spec_lifecycle.generation_source,
+                )
+                for record in records:
+                    source = source_records.get(record.path.as_posix())
+                    if source is None:
+                        continue
+                    current_profile = active_registry.profiles.get(record.artifact_type)
+                    source_status = source.metadata.get("status")
+                    current_status = record.metadata.get("status")
+                    source_profile = source_profiles_by_id.get(record.artifact_type)
+                    source_lifecycle_id = (
+                        source_profile.get("lifecycle_id")
+                        if isinstance(source_profile, Mapping)
+                        else None
                     )
-                    registered_normalizations = frozenset(
-                        (
-                            item.get("lifecycle_id"),
-                            item.get("from_status"),
-                            item.get("to_status"),
-                        )
-                        for item in migration.get("normalizations", ())
-                        if isinstance(item, Mapping)
+                    source_lifecycle = (
+                        source_lifecycles.get(source_lifecycle_id)
+                        if isinstance(source_lifecycles, Mapping)
+                        and isinstance(source_lifecycle_id, str)
+                        else None
                     )
-                    source_registry = load_registry_document_at_revision(
-                        spec_lifecycle.generation_source,
-                        root=root,
+                    current_lifecycle_id = (
+                        current_profile.get("lifecycle_id")
+                        if isinstance(current_profile, Mapping)
+                        else None
                     )
-                    source_registry_contract = load_registry_at_revision(
-                        spec_lifecycle.generation_source,
-                        root=root,
+                    current_statuses = active_registry.lifecycles.get(
+                        str(current_lifecycle_id), ()
                     )
-                    source_profiles = source_registry.get("profiles")
-                    source_lifecycles = source_registry.get("lifecycles")
-                    source_profiles_by_id = (
-                        {
-                            profile.get("id"): profile
-                            for profile in source_profiles
-                            if isinstance(profile, Mapping)
-                        }
-                        if isinstance(source_profiles, list)
-                        else {}
-                    )
-                    source_records = collect_selected_records_at_ref(
-                        root,
-                        profiles,
-                        [record.path.as_posix() for record in records],
-                        spec_lifecycle.generation_source,
-                    )
-                    for record in records:
-                        source = source_records.get(record.path.as_posix())
-                        if source is None:
-                            continue
-                        current_profile = active_registry.profiles.get(
-                            record.artifact_type
-                        )
-                        source_status = source.metadata.get("status")
-                        current_status = record.metadata.get("status")
-                        source_profile = source_profiles_by_id.get(record.artifact_type)
-                        source_lifecycle_id = (
-                            source_profile.get("lifecycle_id")
-                            if isinstance(source_profile, Mapping)
-                            else None
-                        )
-                        source_lifecycle = (
-                            source_lifecycles.get(source_lifecycle_id)
-                            if isinstance(source_lifecycles, Mapping)
-                            and isinstance(source_lifecycle_id, str)
-                            else None
-                        )
-                        current_lifecycle_id = (
-                            current_profile.get("lifecycle_id")
-                            if isinstance(current_profile, Mapping)
-                            else None
-                        )
-                        current_statuses = active_registry.lifecycles.get(
-                            str(current_lifecycle_id), ()
-                        )
-                        current_identity = record.metadata.get("artifact_id")
-                        source_identity = source.metadata.get("artifact_id")
-                        identity_is_bound = (
-                            source.artifact_type == record.artifact_type
-                            and (
-                                (
-                                    isinstance(current_identity, str)
-                                    and source_identity == current_identity
-                                )
-                                or (
-                                    current_identity is None
-                                    and source_identity is None
-                                    and isinstance(current_profile, Mapping)
-                                    and current_profile.get("identity_relation")
-                                    == "none"
-                                )
+                    current_identity = record.metadata.get("artifact_id")
+                    source_identity = source.metadata.get("artifact_id")
+                    identity_is_bound = (
+                        source.artifact_type == record.artifact_type
+                        and (
+                            (
+                                isinstance(current_identity, str)
+                                and source_identity == current_identity
+                            )
+                            or (
+                                current_identity is None
+                                and source_identity is None
+                                and isinstance(current_profile, Mapping)
+                                and current_profile.get("identity_relation") == "none"
                             )
                         )
-                        if (
-                            identity_is_bound
-                            and isinstance(source_status, str)
-                            and source_status == current_status
-                            and isinstance(source_lifecycle, Mapping)
-                            and source_status in source_lifecycle.get("statuses", ())
-                            and current_status in current_statuses
+                    )
+                    if (
+                        identity_is_bound
+                        and isinstance(source_status, str)
+                        and source_status == current_status
+                        and isinstance(source_lifecycle, Mapping)
+                        and source_status in source_lifecycle.get("statuses", ())
+                        and current_status in current_statuses
+                    ):
+                        unchanged_generation_statuses[record.path.as_posix()] = (
+                            source_status
+                        )
+                    source_profile_contract = source_registry_contract.profiles.get(
+                        record.artifact_type
+                    )
+                    source_lifecycle_contract = (
+                        source_profile_contract.get("lifecycle_id")
+                        if isinstance(source_profile_contract, Mapping)
+                        else None
+                    )
+                    if (
+                        identity_is_bound
+                        and record.artifact_type == "task"
+                        and isinstance(source_status, str)
+                        and source_status == current_status
+                        and source_status
+                        in source_registry_contract.lifecycle_terminal_statuses.get(
+                            str(source_lifecycle_contract), ()
+                        )
+                    ):
+                        if _source_blob_matches_worktree(
+                            root, record.path, spec_lifecycle.generation_source
                         ):
-                            unchanged_generation_statuses[record.path.as_posix()] = (
-                                source_status
-                            )
-                        source_profile_contract = source_registry_contract.profiles.get(
-                            record.artifact_type
-                        )
-                        source_lifecycle_contract = (
-                            source_profile_contract.get("lifecycle_id")
-                            if isinstance(source_profile_contract, Mapping)
-                            else None
-                        )
-                        if (
-                            identity_is_bound
-                            and record.artifact_type == "task"
-                            and isinstance(source_status, str)
-                            and source_status == current_status
-                            and source_status
-                            in source_registry_contract.lifecycle_terminal_statuses.get(
-                                str(source_lifecycle_contract), ()
-                            )
-                        ):
-                            if _source_blob_matches_worktree(
-                                root, record.path, spec_lifecycle.generation_source
-                            ):
-                                frozen_terminal_tasks.add(record.path.as_posix())
-                        normalization = (
-                            record.path.as_posix(),
+                            frozen_terminal_tasks.add(record.path.as_posix())
+                    normalization = (
+                        record.path.as_posix(),
+                        source_status,
+                        current_status,
+                    )
+                    if normalization in actual_lifecycle_normalizations:
+                        actual_lifecycle_normalization_sources[
+                            record.path.as_posix()
+                        ] = source_status
+                    if (
+                        source.artifact_type == record.artifact_type
+                        and source.metadata.get("artifact_id")
+                        == record.metadata.get("artifact_id")
+                        and source_status != current_status
+                        and isinstance(source_lifecycle, Mapping)
+                        and source_status in source_lifecycle.get("statuses", ())
+                        and current_status in current_statuses
+                        and _registered_generation_normalization(
+                            current_profile,
                             source_status,
                             current_status,
+                            registered_normalizations,
                         )
-                        if normalization in actual_lifecycle_normalizations:
-                            actual_lifecycle_normalization_sources[
-                                record.path.as_posix()
-                            ] = source_status
-                        if (
-                            source.artifact_type == record.artifact_type
-                            and source.metadata.get("artifact_id")
-                            == record.metadata.get("artifact_id")
-                            and source_status != current_status
-                            and isinstance(source_lifecycle, Mapping)
-                            and source_status in source_lifecycle.get("statuses", ())
-                            and current_status in current_statuses
-                            and _registered_generation_normalization(
-                                current_profile,
-                                source_status,
-                                current_status,
-                                registered_normalizations,
-                            )
-                        ):
-                            actual_lifecycle_normalization_sources[
-                                record.path.as_posix()
-                            ] = source_status
-                            actual_lifecycle_normalizations.add(normalization)
-                findings.extend(
-                    Finding(finding.path, finding.code, finding.message)
-                    for finding in spec_lifecycle.findings
-                )
+                    ):
+                        actual_lifecycle_normalization_sources[
+                            record.path.as_posix()
+                        ] = source_status
+                        actual_lifecycle_normalizations.add(normalization)
+            findings.extend(
+                Finding(finding.path, finding.code, finding.message)
+                for finding in spec_lifecycle.findings
+            )
         for record in records:
             # Template sources keep their own route because their placeholders
             # are correct for a template and invalid for an authored document.
