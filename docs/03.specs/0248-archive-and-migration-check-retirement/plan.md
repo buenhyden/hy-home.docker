@@ -47,10 +47,15 @@ Manifest and CI gate plan unit suites; `check-document-metadata.py` in
 
 ### Risks and Rollback
 
-A Stage 98 edit is no longer caught by any gate; review is the only control
-until the next phase removes the bodies. A non-archive check that depended on a
-deleted helper would fail at import, which the unit suites catch. Revert the
-branch to restore the previous gates; no outside state changes.
+No gate validates a Stage 98 record any more, but an edit there is not invisible:
+current checks still read the archive, and three of their readers stay
+fail-closed on a malformed record until the archive-file deletion phase
+replaces them (the 0003 ledger verifier behind `build_current_manifest`, the
+preserved ADR loader, and the preserved Spec Package loader). `docs/98.archive/`
+also stays in the document suite path trigger so an archive-only change still
+runs those current checks. A non-archive check that depended on a deleted helper
+would fail at import, which the unit suites catch. Revert the branch to restore
+the previous gates; no outside state changes.
 
 ## Related Documents
 

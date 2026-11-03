@@ -42,8 +42,14 @@ backlog with exit conditions.
 - Active-stage occupancy and Task cancellation checks keep running from the
   corpus lifecycle route. The incident corrective-owner check keeps working.
 - Read-only loaders that current checks need (lineage, identity allocation,
-  recorded retirements) may read Stage 98, are listed in the Task, and raise no
-  archive finding.
+  recorded retirements, requirement gaps, preserved predecessors) may read
+  Stage 98 and are listed in the Task. A Tombstone grants a retirement or
+  requirement-gap exemption only when it meets the minimal sealed contract;
+  otherwise it grants none. The 0003 ledger verifier, the preserved ADR loader
+  and the preserved Spec Package loader deliberately stay fail-closed until the
+  archive-file deletion phase removes them.
+- `docs/98.archive/` stays in the document suite path trigger, so an
+  archive-only change still runs the current checks that read it.
 - The `--profiles` transition alias is removed; `--registry` is the only flag.
 
 ## Acceptance Criteria
