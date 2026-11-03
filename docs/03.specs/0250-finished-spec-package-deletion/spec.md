@@ -40,13 +40,16 @@ to the PR #723 review fix, not to this Spec.
   only for a link from a terminal Task at a registered Task path into a package
   whose number the checked root's Registry reserves.
 - Generation 7 historical admission reads only packages still in the tree.
-- SPEC-0208, SPEC-0209, and SPEC-0231 stay while current terminal Tasks are
-  admitted through the lifecycle generation migration proofs they carry.
+- SPEC-0209 and SPEC-0231 stay while current terminal Tasks are admitted
+  through the lifecycle generation migration proofs they carry.
+- A package is deleted only when it is ready for removal review and its
+  removal is approved; the user's instruction approves this batch, and the Task
+  records it with each package's criterion state.
 
 ## Acceptance Criteria
 
-1. Every fully terminal package except the three proof carriers is deleted and
-   its number reserved; every package with a non-terminal Task remains.
+1. Every removal-ready package except the two proof carriers is deleted and its
+   number reserved; every package with a non-terminal Task remains.
 2. No current document links into a deleted package or names one in a typed
    reference, and governance describes the deletion rule.
 3. Link alignment, corpus lifecycle, and metadata checks pass without editing
