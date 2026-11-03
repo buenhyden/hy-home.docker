@@ -6607,8 +6607,11 @@ class SeaweedfsS3MetricsContractTests(unittest.TestCase):
             )
         )
         exprs = [r.get("expr", "") for g in rules["groups"] for r in g["rules"]]
-        self.assertIn('up{job="seaweedfs-s3"} == 0', exprs)
-        self.assertIn('up{job=~"seaweedfs-(master|volume|filer)"} == 0', exprs)
+        self.assertIn('up{job="seaweedfs-s3",expected_state!="off"} == 0', exprs)
+        self.assertIn(
+            'up{job=~"seaweedfs-(master|volume|filer)",expected_state!="off"} == 0',
+            exprs,
+        )
         self.assertTrue(any("node_filesystem_avail_bytes" in e for e in exprs))
 
 

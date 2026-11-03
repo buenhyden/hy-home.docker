@@ -794,6 +794,8 @@
         "tests.validation.test_openbao_protected_restore_inputs.NativeRehearsalTests",
         "tests.validation.test_workflow_version_bundle.WorkflowCandidateRehearsalTests",
         "tests.validation.test_opsflow_native_rehearsal.OpsflowN8nNativeRehearsal",
+        "tests.validation.test_opsflow_native_criterion22.Criterion22NodeRuntimeTests",
+        "tests.validation.test_p05_opsflow_native.P05NativeRehearsal",
         "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowNativeRehearsal",
         "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowStoragePermissionRehearsal",
         "tests.validation.test_p02_native_contracts.GrafanaStaticRouteNativeTests",

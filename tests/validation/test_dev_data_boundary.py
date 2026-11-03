@@ -321,9 +321,15 @@ class DatastoreScrapeLabelTests(unittest.TestCase):
             for rule in group["rules"]
         }
         expected = {
-            "PostgresDown": ('pg_up{db_scope="mng"}', "critical"),
-            "ValkeyDown": ('redis_up{db_scope="mng"}', "critical"),
-            "MngDatastoreExporterDown": ('up{db_scope="mng"}', "critical"),
+            "PostgresDown": ('pg_up{db_scope="mng",expected_state!="off"}', "critical"),
+            "ValkeyDown": (
+                'redis_up{db_scope="mng",expected_state!="off"}',
+                "critical",
+            ),
+            "MngDatastoreExporterDown": (
+                'up{db_scope="mng",expected_state!="off"}',
+                "critical",
+            ),
             "DevPostgresDown": (
                 'pg_up{db_scope="dev", expected_state="on"}',
                 "warning",

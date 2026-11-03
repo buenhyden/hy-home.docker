@@ -13,6 +13,8 @@ from tests.validation import _opsflow_airflow_native_evidence as evidence
 from tests.validation import _opsflow_airflow_native_fixture as fixture
 from tests.validation import test_opsflow_database_rehearsal as database
 
+NATIVE_DATA_SOURCE_ID = "tests/validation/_opsflow_airflow_native_data.py"
+
 
 class PublicationScenario:
     """Runs frozen repository DAG bytes; no replacement miniature DAG."""
@@ -303,9 +305,7 @@ class PublicationScenario:
                 "/opt/airflow/dags/p04_native_data.py": source.read_text(),
             },
         )
-        self.source_hashes[str(source.relative_to(fixture.ROOT))] = fixture.sha256(
-            source
-        )
+        self.source_hashes[NATIVE_DATA_SOURCE_ID] = fixture.sha256(source)
 
     def worker_files(self):
         pg = json.loads("""{"host":"dev-pg","port":5432,"dbname":"opsflow_dev","user":"opsflow_ingest",

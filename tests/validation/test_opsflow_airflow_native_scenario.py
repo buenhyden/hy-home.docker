@@ -422,6 +422,32 @@ class ScenarioControlFlowTests(unittest.TestCase):
             self.assertNotIn(self.publication.meta_password, str(command))
             self.assertNotIn(self.publication.s3_admin_secret, str(command))
 
+    def test_protected_module_source_keeps_stable_receipt_identity(self):
+        protected_source = self.owned.directory / "_opsflow_airflow_native_data.py"
+        protected_source.write_bytes(Path(data.__file__).read_bytes())
+        original_source = data.__file__
+        source_fd = os.open(
+            protected_source,
+            os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
+        )
+        protected_name = f"/proc/self/fd/{source_fd}"
+        try:
+            source_bytes = os.pread(source_fd, os.fstat(source_fd).st_size, 0)
+            with patch.object(data, "__file__", protected_name):
+                self.publication.airflow()
+                self.assertEqual(protected_name, data.__file__)
+        finally:
+            os.close(source_fd)
+
+        identity = "tests/validation/_opsflow_airflow_native_data.py"
+        self.assertEqual(
+            hashlib.sha256(source_bytes).hexdigest(),
+            self.publication.source_hashes[identity],
+        )
+        self.assertEqual(original_source, data.__file__)
+        with self.assertRaises(OSError):
+            os.fstat(source_fd)
+
     def test_narrow_storage_permission_probe_changes_only_policy_and_preserves_each_observation(
         self,
     ):
