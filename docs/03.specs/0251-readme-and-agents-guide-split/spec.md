@@ -1,10 +1,10 @@
 ---
 title: "README and Agent Guide Split Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 layer: "specs"
 artifact_id: "SPEC-0251"
 parent_ids:
@@ -65,9 +65,12 @@ corpus accept an `AGENTS.md` at their root, and a folder router stays a router.
 
 ### Error Behavior
 
-An `AGENTS.md` at a path the Registry profile does not list stays unregistered
-and fails the metadata check. A new folder guide that does not start at
-`draft` fails the metadata check.
+An `AGENTS.md` at a path the Registry profile does not list fails the
+placement test in the document-governance suite, which compares tracked folder
+guides with the profile paths. Under `docs/`, the stage loaders and the metadata
+check also reject it as an unregistered stage entry; outside `docs/` only the
+placement test catches it. A new folder guide that does not start at `draft`
+fails the metadata check.
 
 ### Boundary Behavior
 

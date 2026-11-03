@@ -69,9 +69,21 @@ progress under the approved parents. Hosted CI has not run.
   reading the folder guide, and no folder `CLAUDE.md` pointer is added. Codex
   documents a root-to-working-directory merge of `AGENTS.md`, not observed
   here.
-- SPEC-0251 is used because the completed-package deletion branch claims
-  SPEC-0250; this branch must land after it, or the 250 gap must be reconciled
-  at rebase.
+- SPEC-0251 follows SPEC-0250, which #725 merged; after the rebase onto main
+  c5ec612ff the Spec high-water is 251 and the index lists both.
+- Review fixes: the Stage 03 guide links the retirement preconditions and the
+  SDLC sequence instead of restating them; the Stage 02 guide drops an invented
+  acceptance rule and keeps separately approved supersession; bootstrap names
+  the nearest ancestor guide and places folder guides at the roles-and-skills
+  level as routing only; the protocol points to the Registry profile paths
+  instead of keeping a second list; GitHub governance lists folder guides as an
+  agent-instruction location below canonical governance.
+- The removed `infra/README.md` step about an "Infrastructure Tiers" table is
+  not carried into `infra/AGENTS.md`: no such table exists in the tree.
+- An unlisted `AGENTS.md` outside `docs/` (probe: `projects/storybook/AGENTS.md`)
+  passes the metadata check (26 selected, zero violations) and fails only the
+  placement test; the Spec's Error Behavior now says so. The probe file was
+  removed.
 
 ### Changed
 
@@ -85,7 +97,10 @@ progress under the approved parents. Hosted CI has not run.
   high-water 251.
 - Code: `registry.py` owns `scripts/AGENTS.md` and `tests/AGENTS.md` and lets
   the trusted Requirement history read skip `docs/01.requirements/AGENTS.md`;
-  `scripts/manifest.yaml` registers `scripts/AGENTS.md`; the
+  `scripts/manifest.yaml` registers `scripts/AGENTS.md`; Stage 01, Stage 02
+  and the operations catalog require the guide to be a regular file; the
+  agent governance contract scans the three guides outside its scanned roots;
+  the
   Stage 01, 02, 03 and 90 loaders and the operations catalog accept a root
   `AGENTS.md`; the navigation check ignores `AGENTS.md` when classifying a
   folder router.
@@ -103,6 +118,12 @@ progress under the approved parents. Hosted CI has not run.
   body; the README rule does not apply to it.
 - The folder guides start at `draft` and need a later change to become
   `active`.
+- The type name `governance/agent-guide` puts a folder guide in the governance
+  family although it lives beside stage documents; recorded for review, not
+  changed.
+- The 9 `entrypoint` findings (E5, E17) are pre-existing baseline debt on main
+  c5ec612ff, where `infra` READMEs link Stage 03 Task bodies; they are not
+  caused by this change and belong to the legacy and link cleanup phase.
 
 ## Evidence
 
