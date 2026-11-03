@@ -2,15 +2,24 @@
 
 from __future__ import annotations
 
+import base64
+import copy
 import hashlib
+import json
 import sys
+import tempfile
+import threading
 import unittest
 from pathlib import Path
+from unittest import mock
 
-PLUGIN_DIR = Path(__file__).resolve().parents[1] / "hermes-plugin"
+WORKLOAD = Path(__file__).resolve().parents[1]
+PLUGIN_DIR = WORKLOAD / "hermes-plugin"
 sys.path.insert(0, str(PLUGIN_DIR))
+sys.path.insert(1, str(WORKLOAD))
 
 import tools  # type: ignore  # noqa: E402
+from publisher import source_collection  # noqa: E402
 
 BASE_PAYLOAD = {
     "schema_version": "1.0",
@@ -32,19 +41,51 @@ BASE_PAYLOAD = {
             "title": "Example ships version 2.1",
             "body": "Example released version 2.1 of its build tool on 31 October.",
             "source_url": "https://example.com/news/2-1",
+            "source_quotes": [
+                "Example released version 2.1 of its build tool on 31 October."
+            ],
         }
     ],
 }
 
 
 def make_payload(**item_overrides):
-    payload = {
-        k: (list(v) if isinstance(v, list) else dict(v) if isinstance(v, dict) else v)
-        for k, v in BASE_PAYLOAD.items()
-    }
+    payload = copy.deepcopy(BASE_PAYLOAD)
     if item_overrides:
         payload["items"] = [dict(payload["items"][0], **item_overrides)]
     return payload
+
+
+def submission_args(payload=None):
+    """The model supplies content plus one opaque collector receipt per item."""
+    payload = payload or make_payload()
+    return {
+        "payload": {
+            "schema_version": payload["schema_version"],
+            "items": payload.get("items", []),
+        },
+        "source_receipts": [
+            f"{index + 1:032x}" for index, _ in enumerate(payload.get("items", []))
+        ],
+    }
+
+
+def resolved_sources(items):
+    return [
+        {
+            "item_id": entry["item_id"],
+            "source_url": entry.get("source_url", "https://example.com/source"),
+            "body_sha256": "a" * 64,
+            "fetched_at": "2026-11-01T00:00:30.000Z",
+            "collection_call_id": f"collector-{index}",
+            "text": "source text",
+        }
+        for index, entry in enumerate(items)
+    ]
+
+
+def resolve_submitted(_root, _job, _run, _scheduled, items, _receipts):
+    return resolved_sources(items)
 
 
 class SourceQuotesValidationTests(unittest.TestCase):
@@ -56,6 +97,7 @@ class SourceQuotesValidationTests(unittest.TestCase):
 
     def test_missing_source_quotes_passes(self):
         p = make_payload()
+        del p["items"][0]["source_quotes"]
         self.assertIsNone(tools._validate(p))
         self.assertNotIn("source_quotes", p["items"][0])
 
@@ -221,13 +263,13 @@ class ToolSchemaTests(unittest.TestCase):
     """The model sees the exact field sets the plugin and n8n accept."""
 
     def test_payload_schema_lists_exactly_the_accepted_fields(self):
-        payload = tools.SUBMIT_RESEARCH_REPORT_SCHEMA["parameters"]["properties"][
-            "payload"
-        ]
+        parameters = tools.SUBMIT_RESEARCH_REPORT_SCHEMA["parameters"]
+        self.assertFalse(parameters["additionalProperties"])
+        self.assertEqual(set(parameters["properties"]), {"payload", "source_receipts"})
+        self.assertEqual(set(parameters["required"]), {"payload", "source_receipts"})
+        payload = parameters["properties"]["payload"]
         self.assertFalse(payload["additionalProperties"])
-        self.assertEqual(
-            set(payload["properties"]), tools._FIELDS - {"companion_evidence"}
-        )
+        self.assertEqual(set(payload["properties"]), {"schema_version", "items"})
         item = payload["properties"]["items"]["items"]
         self.assertFalse(item["additionalProperties"])
         self.assertEqual(set(item["properties"]), tools._ITEM_FIELDS)
@@ -296,8 +338,11 @@ class DestinationAuthorityTests(unittest.TestCase):
             ),
             mock.patch.object(tools, "_load_secret") as secret,
             mock.patch.object(tools.webhook_transport, "post") as post,
+            mock.patch.object(
+                source_collection, "resolve", side_effect=resolve_submitted
+            ),
         ):
-            result = json.loads(tools.handle_submit_report({"payload": make_payload()}))
+            result = json.loads(tools.handle_submit_report(submission_args()))
         self.assertEqual(result, {"ok": False, "error": "disallowed_url"})
         secret.assert_not_called()
         post.assert_not_called()
@@ -307,17 +352,16 @@ class DestinationAuthorityTests(unittest.TestCase):
         from unittest import mock
 
         payload = make_payload()
-        payload["source_text"] = "x" * (tools.webhook_transport.MAX_REQUEST_BYTES + 1)
-        payload["source_sha256"] = hashlib.sha256(
-            payload["source_text"].encode()
-        ).hexdigest()
+        rows = resolved_sources(payload["items"])
+        rows[0]["text"] = "x" * (tools.webhook_transport.MAX_REQUEST_BYTES + 1)
         with (
             mock.patch.object(tools, "_CTX", CronRun()),
             mock.patch.object(tools, "_load_address_policy") as policy,
             mock.patch.object(tools, "_load_secret") as secret,
             mock.patch.object(tools.webhook_transport, "post") as post,
+            mock.patch.object(source_collection, "resolve", return_value=rows),
         ):
-            result = json.loads(tools.handle_submit_report({"payload": payload}))
+            result = json.loads(tools.handle_submit_report(submission_args(payload)))
         self.assertEqual(result, {"ok": False, "error": "request_too_large"})
         policy.assert_not_called()
         secret.assert_not_called()
@@ -384,15 +428,18 @@ class DeliveryBudgetTests(unittest.TestCase):
             )
             if monotonic is not None
             else mock.patch.object(tools.time, "monotonic", return_value=0),
+            mock.patch.object(
+                source_collection, "resolve", side_effect=resolve_submitted
+            ),
         ):
-            result = json.loads(tools.handle_submit_report({"payload": make_payload()}))
+            result = json.loads(tools.handle_submit_report(submission_args()))
         return result, post, sleep
 
-    def test_retryable_transport_failure_uses_three_bounded_attempts(self):
-        failure = tools.webhook_transport.TransportFailure("timeout", retryable=True)
+    def test_preconnect_dns_failure_uses_three_bounded_attempts(self):
+        failure = tools.webhook_transport.TransportFailure("dns", retryable=True)
         result, post, sleep = self.run_delivery(failure)
         self.assertEqual(result["error"], "delivery_failed")
-        self.assertEqual(result["error_type"], "timeout")
+        self.assertEqual(result["error_type"], "dns")
         self.assertEqual(post.call_count, 3)
         self.assertEqual(
             [call.kwargs["timeout"] for call in post.call_args_list], [15, 15, 15]
@@ -406,16 +453,16 @@ class DeliveryBudgetTests(unittest.TestCase):
         post.assert_called_once()
         sleep.assert_not_called()
 
-    def test_retryable_http_status_retries_but_redirect_does_not(self):
+    def test_http_failure_after_request_is_uncertain_and_not_retried(self):
         retry = tools.webhook_transport.Response(503, b"{}", "application/json")
         result, post, sleep = self.run_delivery(lambda *_args, **_kwargs: retry)
-        self.assertEqual(result["error_type"], "http_503_not_persisted")
-        self.assertEqual(post.call_count, 3)
-        self.assertEqual(sleep.call_count, 2)
+        self.assertEqual(result["error"], "delivery_uncertain")
+        post.assert_called_once()
+        sleep.assert_not_called()
 
         redirect = tools.webhook_transport.Response(302, b"", "text/plain")
         result, post, sleep = self.run_delivery(lambda *_args, **_kwargs: redirect)
-        self.assertEqual(result["error_type"], "http_302_not_persisted")
+        self.assertEqual(result["error"], "delivery_uncertain")
         post.assert_called_once()
         sleep.assert_not_called()
 
@@ -434,8 +481,11 @@ class DeliveryBudgetTests(unittest.TestCase):
             ),
             mock.patch.object(tools, "_load_secret", return_value=""),
             mock.patch.object(tools.webhook_transport, "post") as post,
+            mock.patch.object(
+                source_collection, "resolve", side_effect=resolve_submitted
+            ),
         ):
-            result = json.loads(tools.handle_submit_report({"payload": make_payload()}))
+            result = json.loads(tools.handle_submit_report(submission_args()))
         self.assertEqual(result, {"ok": False, "error": "invalid_credential"})
         post.assert_not_called()
 
@@ -459,8 +509,11 @@ class DeliveryBudgetTests(unittest.TestCase):
             mock.patch.object(tools, "_load_address_policy", return_value=""),
             mock.patch.object(tools, "_load_secret") as secret,
             mock.patch.object(tools.webhook_transport, "post") as post,
+            mock.patch.object(
+                source_collection, "resolve", side_effect=resolve_submitted
+            ),
         ):
-            result = json.loads(tools.handle_submit_report({"payload": make_payload()}))
+            result = json.loads(tools.handle_submit_report(submission_args()))
         self.assertEqual(result, {"ok": False, "error": "missing_address_policy"})
         secret.assert_not_called()
         post.assert_not_called()
@@ -469,10 +522,19 @@ class DeliveryBudgetTests(unittest.TestCase):
 class CronRun:
     """Stands in for Hermes' plugin context during one cron execution."""
 
-    def __init__(self, job_id="25674fbc0bf3", execution_id="0123456789abcdef"):
+    def __init__(
+        self,
+        job_id="25674fbc0bf3",
+        execution_id="0123456789abcdef",
+        scheduled_instant="2026-11-01T00:00:00Z",
+    ):
         from types import SimpleNamespace
 
-        self.run = SimpleNamespace(job_id=job_id, execution_id=execution_id)
+        self.run = SimpleNamespace(
+            job_id=job_id,
+            execution_id=execution_id,
+            scheduled_instant=scheduled_instant,
+        )
 
     def current_cron_execution(self):
         return self.run
@@ -480,16 +542,25 @@ class CronRun:
 
 def submit(payload, ctx):
     """Run the handler under ctx with a fake transport; return result and bodies."""
-    import json
-    import tempfile
-    from unittest import mock
-
     sent = []
 
     def post(url, body, token, policy, *, timeout):
         sent.append(json.loads(body))
         return tools.webhook_transport.Response(
-            201, b'{"persisted": true}', "application/json"
+            201,
+            json.dumps(
+                {
+                    "id": "11111111-1111-1111-1111-111111111111",
+                    "persisted": True,
+                    "duplicate": False,
+                    "status": "received",
+                    "candidate_count": len(sent[-1]["items"]),
+                    "status_url": (
+                        "/v1/ingestions/11111111-1111-1111-1111-111111111111"
+                    ),
+                }
+            ).encode(),
+            "application/json",
         )
 
     with (
@@ -505,8 +576,9 @@ def submit(payload, ctx):
             },
         ),
         mock.patch.object(tools.webhook_transport, "post", side_effect=post),
+        mock.patch.object(source_collection, "resolve", side_effect=resolve_submitted),
     ):
-        result = json.loads(tools.handle_submit_report({"payload": payload}))
+        result = json.loads(tools.handle_submit_report(submission_args(payload)))
     return result, sent
 
 
@@ -552,3 +624,440 @@ class CronIdentityTests(unittest.TestCase):
         result, sent = submit(make_payload(), CronRun(job_id="b729b76b4def"))
         self.assertEqual({"ok": False, "error": "job_not_allowed"}, result)
         self.assertEqual([], sent)
+
+
+class P11DirectDeliveryRegressionTests(unittest.TestCase):
+    """Direct delivery must retain evidence and fail closed before network I/O."""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.outbox = Path(temporary.name)
+        self.context = CronRun()
+        self.environment = {
+            "RESEARCH_WEBHOOK_URL": approved_url(),
+            "RESEARCH_WEBHOOK_SECRET": "synthetic",
+            "RESEARCH_WEBHOOK_ALLOWED_CIDRS": "10.250.1.128/32",
+        }
+
+    @staticmethod
+    def receipt(*, duplicate=False, status_url=None):
+        report_id = "11111111-1111-1111-1111-111111111111"
+        return tools.webhook_transport.Response(
+            200 if duplicate else 201,
+            json.dumps(
+                {
+                    "id": report_id,
+                    "persisted": True,
+                    "duplicate": duplicate,
+                    "status": "received",
+                    "candidate_count": 1,
+                    "status_url": status_url or f"/v1/ingestions/{report_id}",
+                }
+            ).encode(),
+            "application/json",
+        )
+
+    def run_submit(self, post, *, context=None):
+        with (
+            mock.patch.object(tools, "_CTX", context or self.context),
+            mock.patch.object(tools, "OUTBOX_DIR", self.outbox),
+            mock.patch.dict("os.environ", self.environment, clear=False),
+            mock.patch.object(tools.webhook_transport, "post", side_effect=post),
+            mock.patch.object(tools.time, "sleep"),
+            mock.patch.object(
+                source_collection, "resolve", side_effect=resolve_submitted
+            ),
+        ):
+            return json.loads(tools.handle_submit_report(submission_args()))
+
+    def test_scheduled_instant_is_required_before_network(self):
+        post = mock.Mock(return_value=self.receipt())
+        result = self.run_submit(post, context=CronRun(scheduled_instant=None))
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["error"], "scheduled_instant_required")
+        post.assert_not_called()
+
+    def test_mismatched_receipt_status_url_is_not_persisted(self):
+        post = mock.Mock(
+            return_value=self.receipt(
+                status_url="/v1/ingestions/22222222-2222-2222-2222-222222222222"
+            )
+        )
+        result = self.run_submit(post)
+        self.assertFalse(result["ok"])
+        self.assertNotEqual(result.get("status"), "persisted")
+
+    def test_malformed_uuid_receipt_is_rejected_but_real_uuid_is_accepted(self):
+        malformed_id = "-" * 36
+        malformed = self.receipt(status_url=f"/v1/ingestions/{malformed_id}")
+        body = json.loads(malformed.body)
+        body["id"] = malformed_id
+        malformed = tools.webhook_transport.Response(
+            malformed.status,
+            json.dumps(body).encode(),
+            malformed.content_type,
+        )
+        rejected = self.run_submit(mock.Mock(return_value=malformed))
+        with tempfile.TemporaryDirectory() as accepted_outbox:
+            self.outbox = Path(accepted_outbox)
+            accepted = self.run_submit(mock.Mock(return_value=self.receipt()))
+        self.assertEqual(rejected["error"], "delivery_uncertain")
+        self.assertTrue(accepted["ok"], accepted)
+        self.assertEqual(
+            accepted["response"]["id"],
+            "11111111-1111-1111-1111-111111111111",
+        )
+
+    def test_corrupt_existing_state_blocks_resend(self):
+        key = "25674fbc0bf3:25674fbc0bf3-0123456789abcdef"
+        record = self.outbox / f"{key}.json"
+        record.write_text("{", encoding="utf-8")
+        record.chmod(0o600)
+        post = mock.Mock(return_value=self.receipt())
+        result = self.run_submit(post)
+        self.assertFalse(result["ok"])
+        self.assertIn(
+            result["error"],
+            {"state_corrupt", "outbox_corrupt", "record_unverifiable"},
+        )
+        post.assert_not_called()
+
+    def test_retry_budget_is_cumulative_across_invocations(self):
+        failure = tools.webhook_transport.TransportFailure("dns", retryable=True)
+        post = mock.Mock(side_effect=failure)
+        first = self.run_submit(post)
+        second = self.run_submit(post)
+        self.assertFalse(first["ok"])
+        self.assertFalse(second["ok"])
+        self.assertEqual(post.call_count, 3)
+
+    def test_concurrent_same_key_uses_one_durable_submission(self):
+        results = []
+        failures = []
+        post = mock.Mock(return_value=self.receipt())
+
+        def invoke():
+            try:
+                results.append(
+                    json.loads(tools.handle_submit_report(submission_args()))
+                )
+            except BaseException as exc:  # collected for an explicit assertion
+                failures.append(exc)
+
+        with (
+            mock.patch.object(tools, "_CTX", self.context),
+            mock.patch.object(tools, "OUTBOX_DIR", self.outbox),
+            mock.patch.dict("os.environ", self.environment, clear=False),
+            mock.patch.object(tools.webhook_transport, "post", side_effect=post),
+            mock.patch.object(tools.time, "sleep"),
+            mock.patch.object(
+                source_collection, "resolve", side_effect=resolve_submitted
+            ),
+        ):
+            threads = [threading.Thread(target=invoke) for _ in range(2)]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join(timeout=5)
+
+        self.assertEqual(failures, [])
+        self.assertEqual(len(results), 2)
+        self.assertTrue(all(result["ok"] for result in results), results)
+        self.assertEqual(post.call_count, 1)
+
+    def test_ambiguous_transport_failure_is_not_replayed_on_restart(self):
+        failure = tools.webhook_transport.TransportFailure("timeout", retryable=True)
+        post = mock.Mock(side_effect=failure)
+        first = self.run_submit(post)
+        second = self.run_submit(post)
+        self.assertEqual(first["error"], "delivery_uncertain")
+        self.assertEqual(second["error"], "delivery_uncertain")
+        post.assert_called_once()
+
+    def test_missing_receipts_are_rejected_before_network(self):
+        post = mock.Mock(return_value=self.receipt())
+        with (
+            mock.patch.object(tools, "_CTX", self.context),
+            mock.patch.object(tools.webhook_transport, "post", post),
+        ):
+            result = json.loads(
+                tools.handle_submit_report(
+                    {
+                        "payload": {
+                            "schema_version": "1.0",
+                            "items": make_payload()["items"],
+                        }
+                    }
+                )
+            )
+        self.assertEqual(result, {"ok": False, "error": "source_receipts_required"})
+        post.assert_not_called()
+
+    def test_invalid_receipt_id_is_rejected_before_lookup_or_network(self):
+        args = submission_args()
+        args["source_receipts"] = ["not-a-collector-receipt"]
+        post = mock.Mock(return_value=self.receipt())
+        with (
+            mock.patch.object(tools, "_CTX", self.context),
+            mock.patch.object(source_collection, "resolve") as resolve,
+            mock.patch.object(tools.webhook_transport, "post", post),
+        ):
+            result = json.loads(tools.handle_submit_report(args))
+        self.assertEqual(result, {"ok": False, "error": "invalid_source_receipts"})
+        resolve.assert_not_called()
+        post.assert_not_called()
+
+    def test_item_without_source_quote_is_rejected_before_receipt_lookup(self):
+        payload = make_payload()
+        del payload["items"][0]["source_quotes"]
+        with (
+            mock.patch.object(tools, "_CTX", self.context),
+            mock.patch.object(source_collection, "resolve") as resolve,
+        ):
+            result = json.loads(tools.handle_submit_report(submission_args(payload)))
+        self.assertEqual(result, {"ok": False, "error": "source_receipts_required"})
+        resolve.assert_not_called()
+
+    def test_duplicate_json_key_in_gateway_receipt_is_uncertain(self):
+        body = (
+            b'{"id":"11111111-1111-1111-1111-111111111111",'
+            b'"persisted":true,"persisted":true,"duplicate":false,'
+            b'"status":"received","candidate_count":1,'
+            b'"status_url":"/v1/ingestions/11111111-1111-1111-1111-111111111111"}'
+        )
+        response = tools.webhook_transport.Response(201, body, "application/json")
+        result = self.run_submit(mock.Mock(return_value=response))
+        self.assertEqual(result["error"], "delivery_uncertain")
+
+    def test_forged_persisted_payload_is_blocked_without_rewrite_or_resend(self):
+        failure = tools.webhook_transport.TransportFailure("timeout", retryable=True)
+        first = self.run_submit(mock.Mock(side_effect=failure))
+        self.assertEqual(first["error"], "delivery_uncertain")
+        record_path = next(self.outbox.glob("*.json"))
+        record = json.loads(record_path.read_bytes())
+        payload = json.loads(base64.b64decode(record["payload_b64"]))
+        payload["items"][0]["title"] = "Forged title with unchanged input digest"
+        forged = json.dumps(
+            payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode()
+        record["payload_b64"] = base64.b64encode(forged).decode("ascii")
+        record["payload_sha256"] = hashlib.sha256(forged).hexdigest()
+        tampered_bytes = json.dumps(
+            record,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode()
+        record_path.write_bytes(tampered_bytes)
+        post = mock.Mock(return_value=self.receipt())
+        result = self.run_submit(post)
+        self.assertEqual(result, {"ok": False, "error": "record_unverifiable"})
+        post.assert_not_called()
+        self.assertEqual(record_path.read_bytes(), tampered_bytes)
+
+
+class P11CollectionToolTests(unittest.TestCase):
+    def test_missing_schedule_is_rejected_before_fetch(self):
+        collect = mock.Mock()
+        with (
+            mock.patch.object(tools, "_CTX", CronRun(scheduled_instant=None)),
+            mock.patch.object(source_collection, "collect", collect),
+        ):
+            result = json.loads(
+                tools.handle_collect_source(
+                    {"item_id": "item-1", "source_url": "https://example.org/a"}
+                )
+            )
+        self.assertEqual(result, {"ok": False, "error": "scheduled_instant_required"})
+        collect.assert_not_called()
+
+    def test_collector_generated_identity_is_returned_without_platform_call_id(self):
+        expected = {
+            "ok": True,
+            "receipt_id": "receipt-1",
+            "collection_call_id": "collector-generated-1",
+            "normalized_text": "untrusted page text",
+        }
+        with (
+            tempfile.TemporaryDirectory() as source_dir,
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(tools, "SOURCE_DIR", Path(source_dir)),
+            mock.patch.object(
+                source_collection, "collect", return_value=expected
+            ) as collect,
+        ):
+            result = json.loads(
+                tools.handle_collect_source(
+                    {"item_id": "item-1", "source_url": "https://example.org/a"}
+                )
+            )
+        self.assertEqual(result, expected)
+        self.assertNotIn("call_id", result)
+        self.assertEqual(
+            collect.call_args.args[1:3], ("25674fbc0bf3", "0123456789abcdef")
+        )
+
+    def test_invalid_schedule_and_unknown_fields_fail_before_collection(self):
+        for context, args, code in (
+            (
+                CronRun(scheduled_instant="not-a-time"),
+                {"item_id": "item-1", "source_url": "https://example.org/a"},
+                "invalid_scheduled_instant",
+            ),
+            (
+                CronRun(),
+                {
+                    "item_id": "item-1",
+                    "source_url": "https://example.org/a",
+                    "extra": True,
+                },
+                "invalid_source_request",
+            ),
+        ):
+            with (
+                self.subTest(code=code),
+                mock.patch.object(tools, "_CTX", context),
+                mock.patch.object(source_collection, "collect") as collect,
+            ):
+                result = json.loads(tools.handle_collect_source(args))
+            self.assertEqual(result, {"ok": False, "error": code})
+            collect.assert_not_called()
+
+    def test_expected_collection_limit_is_reported_without_detail_leak(self):
+        with (
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(
+                source_collection,
+                "collect",
+                side_effect=ValueError("source_item_limit"),
+            ),
+        ):
+            result = json.loads(
+                tools.handle_collect_source(
+                    {"item_id": "item-101", "source_url": "https://example.org/a"}
+                )
+            )
+        self.assertEqual(result, {"ok": False, "error": "source_item_limit"})
+
+        with (
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(
+                source_collection,
+                "collect",
+                side_effect=RuntimeError("synthetic secret detail"),
+            ),
+        ):
+            result = json.loads(
+                tools.handle_collect_source(
+                    {"item_id": "item-1", "source_url": "https://example.org/a"}
+                )
+            )
+        self.assertEqual(result, {"ok": False, "error": "source_unavailable"})
+        self.assertNotIn("secret", json.dumps(result))
+
+    def test_collect_then_submit_uses_the_persisted_receipt(self):
+        sentence = "Example released version 2.1 of its build tool on 31 October."
+        body = f"<html><body><p>{sentence}</p></body></html>".encode()
+        fetch_result = source_collection.source_fetch.FetchResult(
+            final_url="https://example.org/article",
+            status=200,
+            sha256=hashlib.sha256(body).hexdigest(),
+            fetched_at="2026-11-01T00:00:30.000Z",
+            content_type="text/html; charset=utf-8",
+            body=body,
+        )
+        item = {
+            "item_id": "item-1",
+            "kind": "news",
+            "title": "Example ships version 2.1",
+            "body": sentence,
+            "source_url": "https://example.org/article",
+            "source_quotes": [sentence],
+        }
+        report_id = "11111111-1111-1111-1111-111111111111"
+        response = tools.webhook_transport.Response(
+            201,
+            json.dumps(
+                {
+                    "id": report_id,
+                    "persisted": True,
+                    "duplicate": False,
+                    "status": "received",
+                    "candidate_count": 1,
+                    "status_url": f"/v1/ingestions/{report_id}",
+                }
+            ).encode(),
+            "application/json",
+        )
+        context = CronRun()
+        with (
+            tempfile.TemporaryDirectory() as source_dir,
+            tempfile.TemporaryDirectory() as outbox,
+            mock.patch.object(tools, "_CTX", context),
+            mock.patch.object(tools, "SOURCE_DIR", Path(source_dir)),
+            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+            mock.patch.dict(
+                "os.environ",
+                {
+                    "RESEARCH_WEBHOOK_URL": approved_url(),
+                    "RESEARCH_WEBHOOK_SECRET": "synthetic",
+                    "RESEARCH_WEBHOOK_ALLOWED_CIDRS": "10.250.1.128/32",
+                },
+                clear=False,
+            ),
+            mock.patch.object(
+                source_collection.source_fetch, "fetch", return_value=fetch_result
+            ) as fetch,
+            mock.patch.object(
+                tools.webhook_transport, "post", return_value=response
+            ) as post,
+        ):
+            collected = json.loads(
+                tools.handle_collect_source(
+                    {
+                        "item_id": "item-1",
+                        "source_url": "https://example.org/article",
+                    }
+                )
+            )
+            result = json.loads(
+                tools.handle_submit_report(
+                    {
+                        "payload": {"schema_version": "1.0", "items": [item]},
+                        "source_receipts": [collected["receipt_id"]],
+                    }
+                )
+            )
+        self.assertTrue(collected["ok"], collected)
+        self.assertEqual(collected["normalized_text"], sentence)
+        self.assertNotEqual(collected["receipt_id"], collected["collection_call_id"])
+        self.assertEqual(result["status"], "persisted")
+        fetch.assert_called_once_with("https://example.org/article")
+        post.assert_called_once()
+
+    def test_content_encoding_fetch_failure_is_returned_as_a_fixed_error(self):
+        failure = source_collection.source_fetch.FetchFailure("content_encoding")
+        with (
+            tempfile.TemporaryDirectory() as source_dir,
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(tools, "SOURCE_DIR", Path(source_dir)),
+            mock.patch.object(
+                source_collection.source_fetch, "fetch", side_effect=failure
+            ) as fetch,
+        ):
+            result = json.loads(
+                tools.handle_collect_source(
+                    {
+                        "item_id": "item-1",
+                        "source_url": "https://example.org/article",
+                    }
+                )
+            )
+        self.assertEqual(result, {"ok": False, "error": "content_encoding"})
+        fetch.assert_called_once_with("https://example.org/article")

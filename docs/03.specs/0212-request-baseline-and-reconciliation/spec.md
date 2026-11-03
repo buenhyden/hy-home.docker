@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.41.0"
+version: "1.42.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -136,6 +136,13 @@ in TSK-0049. It normalizes current generation-7 documentation contracts,
 repairs registered local CI/QA routes and aligns governance wording without
 reopening completed Task bodies or presenting local checks as operational or
 remote acceptance.
+
+The direct P11 plan approval of 2026-11-03 adds criteria 98–102 and W103–W107
+in TSK-0050. It hardens the current Hermes source evidence, durable direct
+submission and Attester replay boundaries without reopening SPEC-0204's
+historical Gateway, Attester timer, Export 1.0 ACK or backup receipts. It
+preserves Export 2.0 as the selected contract while leaving a new Windows B
+ACK, scheduled delivery and operational restore as separate unrun work.
 
 ## Scope
 
@@ -716,6 +723,24 @@ hold, authorization and recovery requirements have been established.
     while retaining fail-closed approval, Secret protection and required checks.
 97. P10.04 preserves the registered result lifecycle for pass, fail, cancellation
     and not-run states, keeping local, operational and remote acceptance separate.
+98. P11.01 requires every new direct Hermes report to reference a collector-issued,
+    execution-bound source receipt. The scheduled instant, response bytes digest,
+    final URL and collector call identifier are evidence only; they neither add a
+    Publisher signature nor replace the independent Attester decision.
+99. P11.02 verifies direct Gateway receipts with the exact response contract and
+    persists uncertain/corrupt local submission state fail-closed. A local request
+    binding and Gateway durable receipt remain distinct from server-side source
+    binding and final Windows delivery.
+100. P11.03 preserves the selected Export 2.0 schema and separates its synthetic
+     ACK fixture from the two historical Export 1.0 Windows ACKs. A new item,
+     real Windows B receive/ACK and scheduled delivery require their own evidence.
+101. P11.04 permits only bounded source and owned isolated replay/backup tests for
+     the Attester and direct outbox. Corrupt, mixed, incomplete or unverifiable
+     records remain held; restore never authorizes automatic resend of uncertain
+     delivery.
+102. P11.05 records the five independent Hermes trust boundaries and the exact
+     external Windows handoff. Live routes, credentials, service restart, remote
+     CI and external repository changes remain outside this local Task.
 
 ## Failure Conditions
 
@@ -743,6 +768,7 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Image, supply-chain and Storybook compatibility Task](tasks/tsk-0047-image-supply-chain-storybook.md)
 - [Role, resource and retirement Task](tasks/tsk-0048-role-resource-retirement.md)
 - [Documentation, governance, QA and CI Task](tasks/tsk-0049-document-governance-qa-ci.md)
+- [Hermes provenance, trust and export Task](tasks/tsk-0050-hermes-provenance-trust-export.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)

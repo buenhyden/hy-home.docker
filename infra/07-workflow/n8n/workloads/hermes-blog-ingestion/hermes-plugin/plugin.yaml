@@ -1,5 +1,6 @@
 name: research-report
-version: 0.2.5
+version: 0.3.0
 description: "Submit a structured Hermes research report directly to the reviewed n8n webhook."
 provides_tools:
+  - collect_research_source
   - submit_research_report

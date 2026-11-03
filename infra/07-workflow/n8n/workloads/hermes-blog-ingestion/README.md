@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.3.6"
+version: "0.3.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-03"
 ---
 
 # Hermes 수집 전송 소스
@@ -22,21 +22,21 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 
 | 구분 | 상태 | 확인 범위 |
 | --- | --- | --- |
-| 소스 | 부분 구현 | 로컬 대기함, 계약 어댑터, 선택적 동일 요청 재전송, 제한된 `dispatch`, Companion Evidence v1 구조 검증, Ed25519 생산자 서명 검증과 공통 신뢰 판정, 비활성 수집 흐름 |
-| 생산자 인증 | BLOCKED | 서명 검증기는 합성 키로 검증했지만 추적 키 저장소가 비어 있고 실제 제한 생산자 계정·키가 없음 |
-| 계약·흐름 합성 검증 | PASS | 고정 계약·Fixture와 합성 응답, 빈 VM의 입력 선별 |
-| 실제 원본 변환·전송 | BLOCKED | 실제 기사 수집 시각의 신뢰할 수 있는 근거와 전송 실행 연결 부재 |
-| 격리 n8n Queue 합성 검증 | PASS | 기본 게시 API·정적 Webhook 등록, Worker·외부 JS Runner, 가짜 Gateway 201·합성 영속 수신 |
-| 직접 경로 일회용 E2E | PASS | 호스트 → Traefik 경로(합성 사본) → n8n(추적 워크플로) → 실제 Gateway 이미지 → SQLite, [시험](tests/README.md) |
-| Attestation·Export·ACK 일회용 E2E | PASS | 합성 서명 → `ready` Export → Manifest·파일 해시 → ACK, `held`·위조·범위 거부, 재시작 영속 |
-| Schema 4 업그레이드·백업 복원 | PASS | 이전 고정본 저장소의 제자리 업그레이드와 두 백업의 새 볼륨 복원(합성) |
-| 항목 단위 Attester | 소스 PASS, 운영 NOT_RUN | `attest-queue`와 원본 확인 합성 시험·일회용 E2E는 통과했지만 `hermes-attester` 계정·키·Token·timer는 아직 만들지 않음 |
-| Hermes 플러그인 소스 | PASS(소스), 운영 NOT_RUN | PR #700으로 `hermes-plugin/`에 추적, 설치본 `~/.hermes/plugins/research-report` 네 파일과 SHA-256 일치(2026-11-01). 실제 제출은 미실행 |
-| 실제 Windows 수신기 | NOT_RUN | 서버 B의 수신기 Dry Run·ACK 미실행 |
-| 서버 A 운영 배치 | 부분 적용(2026-11-01), 새 고정본 NOT_RUN | 실행 중 Gateway `a43d824…`(이미지 ID `sha256:e513b938…`) 기동, Worker 내부망 연결, n8n 자격 증명·흐름 게시, Webhook·Export Traefik 경로 적용. `export` 설정이 없어 Export는 닫힘 |
-| 실제 운영 검증 | NOT_RUN | Hermes `RESEARCH_WEBHOOK_URL` 연결, 실제 Cron 제출·`received`, Windows 수신기 미실행 |
+| P11 소스·격리 구현 | 진행 중 | collector-issued receipt, 직접 제출 기록·Attester replay 결손은 `SPEC-0212-TSK-0050`의 local/owned-isolation 범위에서 검증한다. |
+| 생산자 인증 | BLOCKED | 추적 Publisher 공개키 저장소가 비어 있다. 이는 독립 Attester 또는 Gateway 수신 기록으로 해제되지 않으며 새 서명 경로를 만들지 않는다. |
+| 수집 출처 결속 | SOURCE_READY | 새 제출은 실행·항목·URL·원본 해시가 결속된 collector receipt를 요구한다. Hermes 도구와 receipt가 같은 UID이므로 이는 감사 결속일 뿐 생산자 인증·독립 Attestation이 아니다. 플랫폼 Call-ID 연계와 raw 원본 보존/소유/만료는 외부 SDK·data owner 인계다. |
+| 계약·흐름 합성 검증 | PASS | 고정 계약·fixture와 합성 응답의 역사적/격리 범위다. 실제 기사 수집 또는 운영 수신을 뜻하지 않는다. |
+| Queue·Worker 역사 수용 | REUSE_ACCEPTED | SPEC-0204의 기록된 날짜·버전·소비자 범위에서만 Queue·일정·Worker 수용을 재사용한다. 이번 P11은 Queue/Worker 실행을 수행하지 않았으며 P12 종단 검증에 인계한다. |
+| 직접 경로 일회용 E2E | PASS | 호스트 → Traefik 경로(합성 사본) → n8n(추적 워크플로) → 실제 Gateway 이미지 → SQLite. 이 결과는 실제 Hermes Cron 제출이나 Windows 전달을 수용하지 않는다. |
+| Attestation·Export·ACK 일회용 E2E | PASS | 합성 서명·`ready` Export·Manifest/파일 해시·합성 ACK의 격리 범위다. |
+| 독립 Attester 운영 기록 | REUSE_ACCEPTED | `SPEC-0204-TSK-0022`의 날짜·대상·계정 범위에서 host Attester timer 기록을 재사용한다. 현재 재기동이나 키 변경을 뜻하지 않는다. |
+| Export 1.0 Windows ACK | REUSE_ACCEPTED | `SPEC-0204-TSK-0022`의 두 실제 ACK는 Export 1.0의 역사적 수용이다. |
+| Export 2.0 및 실제 Windows 수신 | TEST_RESIDUAL | 현재 선택은 `c05e5b88bae36ae8f5421fd27beada9b1d596a19`, schema 4다. 새 항목의 Windows B 수신·ACK·예약·복원은 이번에 실행하지 않는다. |
+| 서버 A 운영 배치와 실제 수집 | NOT_RUN | 이번 로컬 작업은 서비스·route·자격·Cron을 변경하지 않는다. 기존 운영 기록은 `SPEC-0204-TSK-0022`에 보존한다. |
 
-전체 시험과 최신 조사·독립 검토 결과는 `SPEC-0204-TSK-0022`가 소유합니다.
+역사적 운영 기록은 `SPEC-0204-TSK-0022`가 보존하고, 현재 P11 소스·격리 증거와
+잔여 인계는 `SPEC-0212-TSK-0050`이 소유합니다. 다섯 경계(직접 토큰, Publisher
+서명, 독립 Attester, Gateway durable receipt, Windows ACK)는 서로 대신할 수 없습니다.
 
 ## Scope
 
@@ -49,6 +49,34 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 누락·변경된 의존성은 거부합니다. 원본·후보·복수 아이디어의 바이트와 해시를
 보존하고 같은 실행의 재입력은 중복으로 처리합니다. 내용 충돌은 최초 산출물과
 충돌 기록을 남깁니다. 재요약이나 원본 삭제는 수행하지 않습니다.
+
+### P11 직접 수집·제출 인터페이스
+
+현재 P11 source API는 `collect_research_source({item_id, source_url})`입니다.
+허용된 scheduler 실행의 `job_id`·`execution_id`·`scheduled_instant`가 없으면 네트워크
+호출 전에 거부합니다. 성공 응답은 `receipt_id`, 최종 `source_url`, `fetched_at`,
+`body_sha256`, `collection_call_id`, `normalized_text`이며 실제 응답 바이트를 먼저
+영속화한 결과입니다. 실행 하나에서 같은 item/URL 재호출은 원래 receipt를 반환하고,
+다른 URL로 바꾸려면 충돌로 거부합니다. `normalized_text`와 원본 내용은 비신뢰 데이터로
+도구·파일·자격·목적지 권한을 추가하지 않습니다.
+
+`submit_research_report`는 `payload`와 항목별 `source_receipts`를 받습니다. 현재
+payload는 `schema_version: "1.0"`과 `items`를 가지며 receipt 식별자는 32 hex입니다.
+도구가 producer/execution·scheduled/created/collected 시각, 원본 집합·해시와 멱등 키를
+구성합니다. receipt의 item·순서·URL·실행·본문 해시와 기존 제목/인용/숫자/고유명
+검사를 모두 통과해야 제출합니다. 준비한 요청 바이트는 재시도에도 바꾸지 않습니다.
+이는 직접 제출 추적일 뿐 Publisher Ed25519 서명이나 독립 Attester의 권한이 아닙니다.
+
+직접 송신은 요청당 15초·전체 60초·자동 시도 3회의 기존 한도를 유지합니다. 연속 DNS
+`no-send`만 이 예산 안에서 다시 시도하며, 그 밖의 응답 유실·중단·불확실 상태와
+legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID가 receipt와 도구를
+쓰기 때문에 파일 보호는 그 UID의 침해나 비협조에 대한 위조 불가능성을 보장하지 않습니다.
+수집 원본은 항목당 최대 2 MiB, 실행당 최대 100개로 제한하지만 활성화 전에는 data owner가
+보존 기간·접근자·폐기 방법을 별도 승인해야 합니다. 이번에는 공개 원본을 수집하지 않았습니다.
+
+플러그인 rollback은 서비스 중지 뒤 현재 디렉터리를 보존하고, 빈 0700 대상에
+source-only backup의 정확한 파일 집합만 복원합니다(overlay 금지). `doctor` 확인 뒤에도
+재시작은 별도 승인을 받아야 하며, 이 작업은 운영 rollback이나 재시작을 실행하지 않았습니다.
 
 ## Structure
 

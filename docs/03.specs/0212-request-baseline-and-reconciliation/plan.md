@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.41.0"
+version: "1.42.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -113,6 +113,13 @@ normalizes current generation-7 documentation contracts, registers existing
 local CI/QA routes and aligns governance wording to active repository changes.
 It does not rewrite completed history, weaken admission, operate services,
 access credentials, transmit externally or run remote CI.
+
+W103–W107 implement the approved local P11 plan in TSK-0050. The Task adds
+receipt-bound Hermes source collection and bounded durable replay/restore
+guards, while recording the current five trust boundaries. It preserves rather
+than re-runs SPEC-0204's historical Gateway/Attester/Export 1.0 receipts;
+Windows B, live scheduling, actual credentials, routes and remote CI remain
+outside the authorized local source and owned-isolation scope.
 
 W81–W86 implement the approved local P06 plan in TSK-0045. Existing OpenBao
 consumer acceptances and public catalog authority remain scoped to their own
@@ -239,6 +246,11 @@ Secret access or remote integration.
 | W100 | 95 | Register existing P03 public validation and correct required P04/P05 selector expectations | W99 | TSK-0049 | Public plan/parity and exact selector tests in registered contexts |
 | W101 | 96 | Align hook and governance wording with active repository-change scope while preserving fail-closed admission | W99 | TSK-0049 | Synthetic payload and temporary-Git-fixture regressions |
 | W102 | 97 | Preserve result lifecycle and record local QA/CI residuals without upgrading them to remote acceptance | W99–W101 | TSK-0049 | EvidenceStore lifecycle and explicit NOT_RUN remote/operational outcomes |
+| W103 | 98 | Bind new report items to persisted collector receipts and scheduled execution identity without granting producer-signature authority | None | TSK-0050 | RED/GREEN collector, receipt binding, source-quality and SSRF/interrupt regressions |
+| W104 | 99 | Validate exact Gateway durable receipts and preserve corrupt or uncertain direct-submission records without implicit replay | W103 | TSK-0050 | Direct outbox, receipt-contract, concurrency and response-loss regressions |
+| W105 | 100 | Preserve selected Export 2.0 and distinguish synthetic ACK from recorded Export 1.0 Windows ACKs | W104 | TSK-0050 | Isolated Export 2.0 manifest/fixture contract; external Windows acceptance remains NOT_RUN |
+| W106 | 101 | Bind Attester retry and SQLite backup/restore to one report's stored evidence and state | W104 | TSK-0050 | Mixed-record, tamper, interruption, concurrent replay and owned backup/restore regressions |
+| W107 | 102 | Publish current trust-boundary, route and external-receiver handoffs without mutating watched routes | W103–W106 | TSK-0050 | Documentation/readme/runbook checks, offline gate and explicit operational/remote residuals |
 
 ### Current v30 continuation and delivery
 

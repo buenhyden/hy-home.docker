@@ -14,6 +14,7 @@ from urllib.parse import urlsplit
 
 from .candidates import JOBS
 from .delivery import BoundRequest, Outcome, OutcomeKind, Receipt
+from .gateway_receipt import validate as validate_receipt
 from .http_transport import HttpResponse
 
 REVISION = "blog-data@a6d0957ad380f179f73bdd2a60ff23792d53f7ae"
@@ -24,7 +25,6 @@ _KINDS = {
     "solo-dev-ideas": ("business_ideas", "business_idea"),
 }
 _IDENTITY = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\Z")
-_REPORT_ID = re.compile(r"[a-f0-9-]{36}\Z")
 
 
 def _timestamp(value, *, generated=False):
@@ -219,34 +219,15 @@ class GatewayAdapter:
         if response.status not in (200, 201):
             return Outcome(OutcomeKind.UNKNOWN)
         try:
-            if (
-                response.content_type is None
-                or response.content_type.split(";", 1)[0].strip().lower()
-                != "application/json"
-            ):
-                raise ValueError
-            data = json.loads(_decode(response.body), object_pairs_hook=_object)
             sent = json.loads(_decode(request.body), object_pairs_hook=_object)
+            data = validate_receipt(
+                response.status,
+                response.content_type,
+                response.body,
+                len(sent["items"]),
+            )
             if (
-                set(data)
-                != {
-                    "id",
-                    "persisted",
-                    "duplicate",
-                    "status",
-                    "candidate_count",
-                    "status_url",
-                }
-                or not isinstance(data["id"], str)
-                or not _REPORT_ID.fullmatch(data["id"])
-                or data["persisted"] is not True
-                or data["status"] != "received"
-                or type(data["duplicate"]) is not bool
-                or data["duplicate"] != (response.status == 200)
-                or type(data["candidate_count"]) is not int
-                or data["candidate_count"] != len(sent["items"])
-                or data["status_url"] != "/v1/ingestions/" + data["id"]
-                or hashlib.sha256(request.body).hexdigest() != request.body_sha256
+                hashlib.sha256(request.body).hexdigest() != request.body_sha256
                 or sent["source_sha256"] != request.source_sha256
                 or (sent["job_id"], sent["run_id"]) != request.key
                 or request.contract_revision != REVISION

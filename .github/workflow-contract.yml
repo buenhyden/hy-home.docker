@@ -819,6 +819,17 @@
       "suite_key": "p03-hermes"
     },
     {
+      "gate_id": "leaf.p11-hermes",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-p11-hermes.py",
+      "argv": [],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "p11-hermes"
+    },
+    {
       "gate_id": "leaf.release-regressions",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -881,6 +892,7 @@
         "tests.validation.test_p03_worker_models",
         "tests.validation.test_p03_models_native",
         "tests.validation.test_p03_hermes_gate",
+        "tests.validation.test_p11_hermes_gate",
         "tests.validation.test_p02_service_contracts",
         "tests.validation.test_p02_gateway_port_validation",
         "tests.validation.test_p02_prometheus_contracts",
@@ -1331,6 +1343,7 @@
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.repository-integrity-regressions",
         "leaf.p03-hermes",
+        "leaf.p11-hermes",
         "ci.opsflow-smtp-node-package"
       ]
     },
@@ -1482,6 +1495,18 @@
         "suite": "repository-integrity",
         "gate_id": "leaf.p03-hermes",
         "entrypoint": "scripts/validation/check-p03-hermes.py",
+        "argv": [],
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "leaf.p11-hermes",
+        "entrypoint": "scripts/validation/check-p11-hermes.py",
         "argv": [],
         "contexts": [
           "local",
@@ -1902,6 +1927,16 @@
       },
       {
         "prefixes": [
+          "scripts/validation/check-p11-hermes.py",
+          "tests/validation/test_p11_hermes_gate.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
           "tests/validation/test_p02_service_contracts.py",
           "tests/validation/test_p02_gateway_port_validation.py",
           "tests/validation/test_p02_prometheus_contracts.py",
@@ -2270,6 +2305,16 @@
           "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/webhook_transport.py",
           "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_research_report_plugin.py",
           "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests/test_webhook_transport.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/validation/check-p11-hermes.py",
+          "tests/validation/test_p11_hermes_gate.py",
+          "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

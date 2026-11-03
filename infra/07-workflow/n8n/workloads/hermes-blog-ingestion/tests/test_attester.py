@@ -194,7 +194,9 @@ class AttesterTest(unittest.TestCase):
         self.assertEqual(counts["attested"], 1)
         self.assertEqual(sender.sent[0], sender.sent[1])
         self.assertEqual(len(fetcher.calls), 1)
-        self.assertEqual(reader.calls, [RID])
+        # A replay re-reads the authoritative Gateway request before sending the
+        # exact stored body; it must not rely on the local state alone.
+        self.assertEqual(reader.calls, [RID, RID])
 
     def test_quarantined_report_recorded_and_not_refetched(self):
         reader = Reader({RID: None})
@@ -218,9 +220,11 @@ class AttesterTest(unittest.TestCase):
         bad = request([item("a")]).replace(b'"hermes"', b'"hermes" ')
         reader = Reader({RID: bad})
         sender = Sender()
-        counts = self.go(reader, sender, Fetcher({GOOD: page()}))
+        fetcher = Fetcher({GOOD: page()})
+        counts = self.go(reader, sender, fetcher)
         self.assertEqual(counts["rejected"], 1)
         self.assertEqual(sender.sent, [])
+        self.assertEqual(fetcher.calls, [])
         self.assertEqual(self.go(reader, sender, Fetcher({GOOD: page()}))["skipped"], 1)
 
     def test_state_and_evidence_files_are_0600_in_0700_dirs(self):
@@ -230,7 +234,7 @@ class AttesterTest(unittest.TestCase):
             self.assertEqual(stat.S_IMODE(directory.stat().st_mode), 0o700)
             for f in directory.iterdir():
                 self.assertEqual(stat.S_IMODE(f.stat().st_mode), 0o600)
-            self.assertEqual(len(list(directory.iterdir())), 1)
+            self.assertEqual(len(list(directory.glob("*.json"))), 1)
 
     def test_crash_in_one_report_does_not_stop_the_next(self):
         other = "22222222-2222-2222-2222-222222222222"
@@ -291,17 +295,41 @@ class AttesterTest(unittest.TestCase):
         self.assertNotIn("status", state)
         self.assertEqual(counts["errors"], {"ValueError": 1})
 
-    def test_more_than_100_verified_items_records_limit(self):
+    def test_more_than_100_items_is_rejected_before_fetch(self):
         items = [item(f"i{n:03d}") for n in range(101)]
         reader = Reader({RID: request(items)})
         sender = Sender()
-        counts = self.go(reader, sender, Fetcher({GOOD: page()}))
-        body = json.loads(sender.sent[0][1])
-        self.assertEqual(len(body["verified_items"]), 100)
-        self.assertEqual(counts["held_items"], 1)
-        evidence = json.loads((self.evidence / f"{RID}.json").read_bytes())
-        last = next(i for i in evidence["items"] if i["item_id"] == "i100")
-        self.assertEqual(last["codes"], ["limit"])
+        fetcher = Fetcher({GOOD: page()})
+        counts = self.go(reader, sender, fetcher)
+        self.assertEqual(counts["rejected"], 1)
+        self.assertEqual(sender.sent, [])
+        self.assertEqual(fetcher.calls, [])
+
+    def test_invalid_item_collections_are_rejected_before_fetch(self):
+        invalid = (
+            [],
+            ["not-an-object"],
+            [item("same"), item("same")],
+        )
+        for items in invalid:
+            with self.subTest(items=items):
+                self.setUp()
+                fetcher = Fetcher({GOOD: page()})
+                sender = Sender()
+                counts = self.go(Reader({RID: request(items)}), sender, fetcher)
+                self.assertEqual(counts["rejected"], 1)
+                self.assertEqual(fetcher.calls, [])
+                self.assertEqual(sender.sent, [])
+
+    def test_exactly_100_items_remains_valid(self):
+        items = [item(f"i{n:03d}") for n in range(100)]
+        reader = Reader({RID: request(items)})
+        sender = Sender()
+        fetcher = Fetcher({GOOD: page()})
+        counts = self.go(reader, sender, fetcher)
+        self.assertEqual(counts["attested"], 1)
+        self.assertEqual(len(json.loads(sender.sent[0][1])["verified_items"]), 100)
+        self.assertEqual(fetcher.calls, [GOOD])
 
     def test_identical_urls_are_fetched_once(self):
         other = "22222222-2222-2222-2222-222222222222"
@@ -319,9 +347,108 @@ class AttesterTest(unittest.TestCase):
         self.assertEqual((fetcher.calls, counts["held_items"]), ([], 1))
 
     def test_invalid_report_id_is_rejected_without_io(self):
-        reader = Reader({"../evil": b"{}"})
+        malformed_uuid = "-" * 36
+        reader = Reader({"../evil": b"{}", malformed_uuid: b"{}", RID: None})
         counts = self.go(reader, Sender(), Fetcher({}))
-        self.assertEqual((counts["rejected"], reader.calls), (1, []))
+        self.assertEqual((counts["rejected"], counts["skipped"]), (2, 1))
+        self.assertEqual(reader.calls, [RID])
+
+    def test_duplicate_queue_id_after_ambiguous_send_is_not_resent(self):
+        class DuplicateReader(Reader):
+            def queue(self):
+                return iter((RID, RID))
+
+        reader = DuplicateReader({RID: request([item("a")])})
+        sender = Sender(TransportFailure(FailureKind.AMBIGUOUS))
+        counts = self.go(reader, sender, Fetcher({GOOD: page()}))
+        self.assertEqual(len(sender.sent), 1)
+        self.assertEqual(reader.calls, [RID])
+        self.assertEqual((counts["retry"], counts["rejected"]), (1, 1))
+        self.assertEqual(counts["errors"], {"duplicate_report": 1})
+
+    def test_run_processes_at_most_100_unique_queue_reports(self):
+        report_ids = [
+            f"00000000-0000-0000-0000-{index:012d}" for index in range(1, 102)
+        ]
+        reader = Reader({report_id: None for report_id in report_ids})
+        counts = self.go(reader, Sender(), Fetcher({}))
+        self.assertEqual(len(reader.calls), attester.MAX_QUEUE_REPORTS)
+        self.assertNotIn(report_ids[-1], reader.calls)
+        self.assertEqual(counts["retry"], 1)
+
+    def test_terminal_reports_do_not_starve_a_later_active_report(self):
+        terminal = [
+            f"00000000-0000-0000-0000-{index:012d}"
+            for index in range(1, attester.MAX_QUEUE_REPORTS + 1)
+        ]
+        active = "00000000-0000-0000-0000-000000000101"
+        self.state.mkdir(mode=0o700)
+        for report_id in terminal:
+            path = self.state / f"{report_id}.json"
+            path.write_text(
+                json.dumps({"report_id": report_id, "status": "attested"}),
+                encoding="utf-8",
+            )
+            path.chmod(0o600)
+        reader = Reader(
+            {
+                **{report_id: None for report_id in terminal},
+                active: request([item("a")]),
+            }
+        )
+        sender = Sender()
+
+        counts = self.go(reader, sender, Fetcher({GOOD: page()}))
+
+        self.assertEqual(reader.calls, [active])
+        self.assertEqual(len(sender.sent), 1)
+        self.assertEqual(sender.sent[0][0], active)
+        self.assertEqual((counts["skipped"], counts["attested"]), (100, 1))
+        self.assertEqual((counts["retry"], counts["rejected"]), (0, 0))
+
+    def test_state_for_another_report_is_rejected_before_send(self):
+        other = "22222222-2222-2222-2222-222222222222"
+        self.state.mkdir(mode=0o700)
+        body = base64.b64encode(b'{"report_id":"wrong"}').decode()
+        (self.state / f"{RID}.json").write_text(
+            json.dumps(
+                {
+                    "status": "signed",
+                    "report_id": other,
+                    "body": body,
+                }
+            )
+        )
+        sender = Sender()
+        counts = self.go(Reader({RID: request([item("a")])}), sender, Fetcher({}))
+        self.assertEqual(sender.sent, [])
+        self.assertEqual(counts["rejected"], 1)
+
+    def test_tampered_evidence_blocks_stored_body_resend(self):
+        reader = Reader({RID: request([item("a")])})
+        sender = Sender(TransportFailure(FailureKind.AMBIGUOUS))
+        fetcher = Fetcher({GOOD: page()})
+        self.assertEqual(self.go(reader, sender, fetcher)["retry"], 1)
+        (self.evidence / f"{RID}.json").write_bytes(b"{}")
+        counts = self.go(reader, sender, fetcher)
+        self.assertEqual(len(sender.sent), 1)
+        self.assertEqual(counts["rejected"], 1)
+
+    def test_partial_stored_body_is_rejected_before_send(self):
+        self.state.mkdir(mode=0o700)
+        (self.state / f"{RID}.json").write_text(
+            json.dumps(
+                {
+                    "status": "signed",
+                    "report_id": RID,
+                    "body": "not-base64!",
+                }
+            )
+        )
+        sender = Sender()
+        counts = self.go(Reader({RID: request([item("a")])}), sender, Fetcher({}))
+        self.assertEqual(sender.sent, [])
+        self.assertEqual(counts["rejected"], 1)
 
 
 class ReaderTest(unittest.TestCase):
@@ -337,10 +464,13 @@ class ReaderTest(unittest.TestCase):
         ), seen
 
     def test_queue_follows_next_after(self):
-        page1 = json.dumps({"items": [{"report_id": "a"}], "next_after": 7}).encode()
-        page2 = json.dumps({"items": [{"report_id": "b"}], "next_after": None}).encode()
+        other = "22222222-2222-2222-2222-222222222222"
+        page1 = json.dumps({"items": [{"report_id": RID}], "next_after": 7}).encode()
+        page2 = json.dumps(
+            {"items": [{"report_id": other}], "next_after": None}
+        ).encode()
         reader, seen = self.reader([(200, page1), (200, page2)])
-        self.assertEqual(list(reader.queue()), ["a", "b"])
+        self.assertEqual(list(reader.queue()), [RID, other])
         self.assertIn("limit=100", seen[0][2])
         self.assertIn("after=7", seen[1][2])
         self.assertEqual(seen[0][3]["Authorization"], "Bearer x")
@@ -385,7 +515,10 @@ class ReaderTest(unittest.TestCase):
                 self.tmp,
             ]
             self.assertEqual(cli.main(argv), 1)
-        self.assertEqual(out.call_args.args[0], '{"error":"operation_rejected"}')
+        printed = json.loads(out.call_args.args[0])
+        self.assertEqual(printed["rejected"], 1)
+        self.assertEqual(printed["errors"], {"GatewayError": 1})
+        self.assertNotIn("BadStatusLine", out.call_args.args[0])
 
     def setUp(self):
         t = tempfile.TemporaryDirectory()
@@ -397,6 +530,19 @@ class ReaderTest(unittest.TestCase):
         reader, _ = self.reader([(200, loop)])
         with self.assertRaises(attester.GatewayError):
             list(reader.queue())
+
+    def test_advancing_empty_pages_stop_at_the_page_budget(self):
+        answers = [
+            (
+                200,
+                json.dumps({"items": [], "next_after": page + 1}).encode(),
+            )
+            for page in range(attester.MAX_QUEUE_PAGES)
+        ]
+        reader, seen = self.reader(answers)
+        with self.assertRaisesRegex(attester.GatewayError, "queue_page_limit"):
+            list(reader.queue())
+        self.assertEqual(len(seen), attester.MAX_QUEUE_PAGES)
 
 
 class CliTest(unittest.TestCase):

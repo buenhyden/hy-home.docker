@@ -471,6 +471,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
                 "leaf.p03-hermes",
+                "leaf.p11-hermes",
             },
             ids,
         )
@@ -502,6 +503,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
                 "leaf.p03-hermes",
+                "leaf.p11-hermes",
             },
             ids,
         )

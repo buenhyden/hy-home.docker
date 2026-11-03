@@ -344,6 +344,16 @@ class DeadlineTests(unittest.TestCase):
 
 
 class OutcomeTests(unittest.TestCase):
+    def test_unsupported_content_encoding_is_rejected(self):
+        connect, _ = connector(http(200, b"compressed", Content_Encoding="gzip"))
+        refused(
+            self,
+            "https://example.com/",
+            "content_encoding",
+            resolve=resolver(),
+            connect=connect,
+        )
+
     def test_body_over_2_mib(self):
         connect, _ = connector(http(200, b"a" * (2 * 1024 * 1024 + 1)))
         refused(

@@ -1399,6 +1399,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_p03_hermes_gate.py
+- path: scripts/validation/check-p11-hermes.py
+  kind: validator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_p11_hermes_gate.py
 - path: scripts/validation/check-project-registration.py
   kind: validator
   authority: infra/09-platform-ops/project-registration/README.md

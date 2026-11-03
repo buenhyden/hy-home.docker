@@ -19,8 +19,9 @@ parent_ids:
 - "SPEC-0212-TSK-0047"
 - "SPEC-0212-TSK-0048"
 - "SPEC-0212-TSK-0049"
+- "SPEC-0212-TSK-0050"
 created: "2026-11-01"
-observed_at: "2026-11-02"
+observed_at: "2026-11-03"
 ---
 
 # Workspace Inventory
@@ -276,6 +277,17 @@ P10의 후속 공개 `scan --connections`은 처음에는 기존 검토 receipt�
 거부됐다. 이후 기존 98개 공개 review metadata와 이 자료의 7개 curated 섹션을 입력으로
 다시 생성해 receipt와 변경 입력 무효화를 보존했다. 최종 `validate`는 metadata
 consistency만 PASS했으며, 이 갱신은 본문·구성·운영·복원 수용이 아니다.
+
+P11 final-source refresh도 98개 공개 review metadata와 7개 curated 섹션을 보존한
+`scan --connections`으로 생성했고 `validate`를 실행했다. 이전 42,102/42,102와
+42,091/42,091은 각 시점 관측으로 보존하며, 현재 재수집 관측은 파일
+42,094/42,094, 전체 본문 6/2,337, 부분 본문 77/2,337, 렌더 0/17, 실행 0/112,
+복원 0/112이다. 42,102→42,091의 11개 차이는 `excluded.generated`
+38,748→38,737뿐이었다. 42,091→42,094의 공개 파일 목록 경로는 같고, 제외 집계는
+generated 38,737→38,741 및 private 241→240으로만 달라졌으며 binary/code/config/
+document는 35/132/482/120으로 유지됐다. 이 공개 원장은 정확한 생성물·사설 경로
+또는 어느 변화의 원인을 확인하지 않았다. 이는 Hermes cache-only isolated E2E,
+운영·Windows ACK·remote CI 수용을 대체하지 않는 metadata observation이다.
 
 ## Related Documents
 

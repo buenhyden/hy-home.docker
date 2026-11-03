@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.11.0"
+version: "1.12.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-03"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -328,13 +328,17 @@ router with body and rate limits may skip SSO, applied as a separate approval.
 Webhook and Gateway credentials are separate. Reuse queue workers, PostgreSQL
 metadata, selected Valkey and OpenBao ownership. Do not repurpose Manifest
 Outbox Notifier or duplicate `hy-home.n8n` news crawling. A dedicated host
-attester account, separate from Hermes, n8n and the Publisher, signs the
-Blog-data attestation only for reports whose producer-signed evidence passes the
-same trust decision as dispatch; it never holds the producer key and n8n never
-holds the attestation key. Windows server B pulls ready exports from the
-Blog-data-owned Export API over HTTPS through exact-path Traefik routes with
-separate read and ACK tokens, and acknowledges; A-side ingestion or export
-readiness is never reported as Windows storage.
+Attester account is separate from Hermes, n8n and the Publisher. Its
+independent item-level decision and key are not Publisher authentication:
+Publisher key registration remains separately blocked when its tracked key
+registry is empty, and n8n never holds the Attester key. Windows server B pulls
+ready exports from the Blog-data-owned Export API over HTTPS through exact-path
+Traefik routes with separate read and ACK tokens. Gateway durable persistence,
+Attester readiness and A-side export readiness are never reported as Windows
+storage or final delivery. SPEC-0204-TSK-0022 preserves the dated operational
+record of two Export 1.0 ACKs; SPEC-0212-TSK-0050 owns the current local
+source/isolated Export 2.0 contract and leaves a new Windows ACK as a separate
+required lane.
 
 ## Acceptance Criteria
 
@@ -601,6 +605,9 @@ readiness is never reported as Windows storage.
     native worker networking/authentication and actual durable persistence
     remain required blocked lanes until supplied and approved. Source-only
     Publisher or simulated adapter evidence does not close this criterion.
+    Collection receipts, Publisher Ed25519, independent Attester, Gateway
+    durable receipt and Windows ACK are five separate boundaries; a PASS at one
+    boundary neither authenticates nor accepts another.
 <!-- markdownlint-enable MD029 -->
 
 ## Failure Conditions

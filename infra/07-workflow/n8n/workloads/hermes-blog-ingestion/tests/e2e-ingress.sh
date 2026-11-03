@@ -7,28 +7,40 @@
 # Synthetic tokens only. It creates its own networks, volume and containers
 # with a random suffix and removes them on exit; the live stack, its networks,
 # secrets and Traefik directory are never touched.
-# Needs Docker, gh access to the private Blog-data repository and the local
-# n8n image. Usage: tests/e2e-ingress.sh [blog-data-commit]
+# Default build mode needs Docker and gh. Cache-only mode uses only local
+# images, an internal bridge, and no host-published port.
+# Usage: tests/e2e-ingress.sh [--cache-only] [blog-data-commit]
 set -euo pipefail
+cache_only=0
+if [[ ${1:-} == --cache-only ]]; then cache_only=1; shift; fi
+if (( $# > 1 )); then echo 'usage: e2e-ingress.sh [--cache-only] [blog-data-commit]' >&2; exit 2; fi
+if (( cache_only )); then
+  export DOCKER_HOST=unix:///var/run/docker.sock
+  unset DOCKER_CONTEXT
+fi
 workload=$(cd "$(dirname "$0")/.." && pwd)
 root=$(git -C "$workload" rev-parse --show-toplevel)
 compose=$root/infra/07-workflow/n8n/docker-compose.yml
 commit=${1:-$(sed -n 's#.*image: hy-home/blog-ingestion:\([0-9a-f]\{40\}\)$#\1#p' "$compose")}
 n8n_image=$(sed -n 's#^ *image: \(hyhome/n8n:[^ ]*\)$#\1#p' "$compose" | head -1)
 traefik_image=$(sed -n 's#^ *image: \(traefik:[^ ]*\)$#\1#p' "$root/infra/01-gateway/traefik/docker-compose.yml")
-id=e2e-$(od -An -N4 -tx1 /dev/urandom | tr -d ' \n')
+id=e2e-$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')
 # Live Traefik publishes only on the LAN address, so Hermes connects there too.
-lan_ip=${E2E_LAN_IP:-$(ip -4 route get 1.1.1.1 | sed -n 's/.* src \([0-9.]*\).*/\1/p')}
+lan_ip=''
+if (( ! cache_only )); then
+  lan_ip=${E2E_LAN_IP:-$(ip -4 route get 1.1.1.1 | sed -n 's/.* src \([0-9.]*\).*/\1/p')}
+fi
 gateway_image=hy-home/blog-ingestion-e2e:$commit
 work=$(mktemp -d)
 pass=0
 cleanup() {
-  docker rm -f "$id-traefik" "$id-n8n" "$id-gateway" >/dev/null 2>&1 || true
-  docker network rm "$id-edge" "$id-ingest" "$id-export" >/dev/null 2>&1 || true
-  docker volume rm "$id-gateway" >/dev/null 2>&1 || true
+  local name
+  for name in "$id-traefik" "$id-n8n" "$id-gateway" "$id-restored" "$id-check" "$id-init" "$id-restore-init"; do cleanup_owned container "$name" "$id"; done
+  for name in "$id-edge" "$id-ingest" "$id-export"; do cleanup_owned network "$name" "$id"; done
+  cleanup_owned volume "$id-gateway" "$id"
+  cleanup_owned volume "$id-restored" "$id"
   rm -rf "$work"
 }
-trap cleanup EXIT
 ok() { pass=$((pass + 1)); echo "PASS $*"; }
 fail() { echo "FAIL $*"; exit 1; }
 hex() { od -An -N"$1" -tx1 /dev/urandom | tr -d ' \n'; }
@@ -45,21 +57,42 @@ ready() {
 # 1. Gateway image from the pinned Blog-data commit, sparse and read-only.
 # shellcheck source=gateway-image.sh
 . "$workload/tests/gateway-image.sh"
-build_gateway_image "$commit" "$work/blog-data" "$gateway_image"
+trap cleanup EXIT
+pull_flag=()
+if (( cache_only )); then
+  # Fail before creating any Docker resource; execute immutable local IDs.
+  gateway_image=$(gateway_cached_image "$commit") || exit 1
+  n8n_image=$(cached_image_id "$n8n_image") || exit 1
+  traefik_image=$(cached_image_id "$traefik_image") || exit 1
+  pull_flag=(--pull never)
+else
+  build_gateway_image "$commit" "$work/blog-data" "$gateway_image"
+fi
 echo "INFO gateway image $gateway_image $(docker image inspect -f '{{.Id}}' "$gateway_image")"
 # The Resource Export renderer reads these; a missing one would hold every export.
-docker run --rm --network none --entrypoint sh "$gateway_image" -c \
+docker run "${pull_flag[@]}" --rm --name "$id-check" --label "hyhome.hermes-e2e=$id" --network none --entrypoint sh "$gateway_image" -c \
   'test -f 00_System/Templates/Vault/PARA/T-Resource.md && test -f 00_System/Contracts/Metadata/document-profile-registry.json && test -f scripts/lib/ingestion/research-map.json' ||
   fail "gateway image lacks the Resource Export templates"
 ok "gateway image carries the Resource templates, profile registry and research map"
 
 # 2. Disposable networks: a plain edge, an internal isolated ingest net (n8n
 # worker) and an internal isolated export net (Traefik), as in Compose.
-docker network create "$id-edge" >/dev/null
+edge_options=()
+if (( cache_only )); then edge_options=(--internal); fi
+docker network create "${edge_options[@]}" --label "hyhome.hermes-e2e=$id" "$id-edge" >/dev/null
 for net in "$id-ingest" "$id-export"; do
   docker network create --internal \
-    -o com.docker.network.bridge.gateway_mode_ipv4=isolated "$net" >/dev/null
+    --label "hyhome.hermes-e2e=$id" -o com.docker.network.bridge.gateway_mode_ipv4=isolated "$net" >/dev/null
 done
+for net in "$id-edge" "$id-ingest" "$id-export"; do
+  [[ $(docker network inspect --format '{{index .Labels "hyhome.hermes-e2e"}}' "$net") == "$id" ]] || fail 'network ownership mismatch'
+done
+if (( cache_only )); then
+  expected_peer=$(docker network inspect --format '{{(index .IPAM.Config 0).Gateway}}' "$id-edge")
+  [[ $expected_peer =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail 'internal bridge gateway unavailable'
+else
+  expected_peer=$lan_ip
+fi
 
 # 3. Gateway: synthetic token digests and attestation key only, config 0600
 # owned by 10001. Single-scope credentials per role; the attester holds
@@ -109,10 +142,11 @@ for opt in s["security_opt"]:
 out += ["--memory", str(s["mem_limit"])] if s.get("mem_limit") else []
 print("\n".join(out))' "$commit")
 [ "${#hardening[@]}" -ge 8 ] || fail "could not render the Compose Gateway hardening"
-docker volume create "$id-gateway" >/dev/null
-docker run --rm --user 0 --entrypoint sh -v "$id-gateway:/v" -v "$work/config.json:/in.json:ro" \
+docker volume create --label "hyhome.hermes-e2e=$id" "$id-gateway" >/dev/null
+[[ $(docker volume inspect --format '{{index .Labels "hyhome.hermes-e2e"}}' "$id-gateway") == "$id" ]] || fail 'volume ownership mismatch'
+docker run "${pull_flag[@]}" --rm --name "$id-init" --label "hyhome.hermes-e2e=$id" --network none --user 0 --entrypoint sh -v "$id-gateway:/v" -v "$work/config.json:/in.json:ro" \
   "$gateway_image" -c 'mkdir /v/data && cp /in.json /v/config.json && chown -R 10001:10001 /v && chmod 0600 /v/config.json && chmod 0700 /v/data'
-docker run -d --name "$id-gateway" --network "$id-ingest" --network-alias blog-ingestion \
+docker run "${pull_flag[@]}" -d --name "$id-gateway" --label "hyhome.hermes-e2e=$id" --network "$id-ingest" --network-alias blog-ingestion \
   "${hardening[@]}" \
   --mount "type=volume,src=$id-gateway,dst=/data,volume-subpath=data" \
   --mount "type=volume,src=$id-gateway,dst=/run/config.json,volume-subpath=config.json,readonly" \
@@ -143,7 +177,9 @@ PY
 chmod 0644 "$work/workflow.json" "$work/credentials.json"
 # The upstream entrypoint of the same image: the hy-home wrapper requires the
 # live stack's Docker secrets, which a disposable run must never mount.
-docker create --name "$id-n8n" --network "$id-edge" --network-alias n8n \
+n8n_resource=()
+if (( cache_only )); then n8n_resource=(--memory 1g --cpus 1 --pids-limit 256); fi
+docker create "${pull_flag[@]}" --name "$id-n8n" --label "hyhome.hermes-e2e=$id" "${n8n_resource[@]}" --network "$id-edge" --network-alias n8n \
   --entrypoint tini \
   -e N8N_ENCRYPTION_KEY="$(hex 24)" -e N8N_RUNNERS_MODE=internal \
   -e N8N_DIAGNOSTICS_ENABLED=false -e N8N_PROXY_HOPS=1 -e EXECUTIONS_MODE=regular \
@@ -195,16 +231,29 @@ chmod -R a+rX "$work/dynamic"
 # The routes read their site values from Traefik's environment, as live. One
 # host stands in for both Windows B and the server-A attester here; the
 # per-router source split is asserted by test_export_route.py.
-docker run -d --name "$id-traefik" --network "$id-edge" -p "$lan_ip::443" \
-  -e DEFAULT_URL=hy.home.arpa -e HOST_LAN_BIND_IP="$lan_ip" -e BLOG_EXPORT_RECEIVER_IP="$lan_ip" \
+publish=()
+traefik_resource=()
+if (( cache_only )); then
+  traefik_resource=(--memory 256m --cpus 1 --pids-limit 128)
+else
+  publish=(-p "$lan_ip::443")
+fi
+docker run "${pull_flag[@]}" -d --name "$id-traefik" --label "hyhome.hermes-e2e=$id" "${traefik_resource[@]}" --network "$id-edge" "${publish[@]}" \
+  -e DEFAULT_URL=hy.home.arpa -e HOST_LAN_BIND_IP="$expected_peer" -e BLOG_EXPORT_RECEIVER_IP="$expected_peer" \
   -v "$work/dynamic:/dynamic:ro" "$traefik_image" \
   --entrypoints.websecure.address=:443 --providers.file.directory=/dynamic \
   --accesslog=true --accesslog.format=json --log.level=ERROR >/dev/null
 docker network connect "$id-export" "$id-traefik"
-port=$(docker port "$id-traefik" 443/tcp | head -1 | sed 's/.*://')
+if (( cache_only )); then
+  lan_ip=$(docker inspect -f "{{(index .NetworkSettings.Networks \"$id-edge\").IPAddress}}" "$id-traefik")
+  [[ $lan_ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail 'internal Traefik address unavailable'
+  port=443
+else
+  port=$(docker port "$id-traefik" 443/tcp | head -1 | sed 's/.*://')
+fi
 url=https://n8n.hy.home.arpa:$port/webhook/hermes-blog-ingestion
 post() {
-  curl -sk -o "$work/body" -w '%{http_code}' --resolve "n8n.hy.home.arpa:$port:$lan_ip" \
+  curl --noproxy '*' -sk -o "$work/body" -w '%{http_code}' --resolve "n8n.hy.home.arpa:$port:$lan_ip" \
     --resolve "blog-export.hy.home.arpa:$port:$lan_ip" "$@" || true
 }
 call() { # call <expected-status> <label> [curl args...]
@@ -239,7 +288,12 @@ call 413 "body above 1 MiB stopped at Traefik" -X POST -H "$header" -H "$json" -
 call 401 "GET on the webhook path stays behind SSO" -H "$header" "$url"
 call 401 "other webhook paths stay behind SSO" -X POST -H "$header" -H "$json" --data-binary @"$report" "${url%hermes-blog-ingestion}other"
 call 401 "n8n UI stays behind SSO" "https://n8n.hy.home.arpa:$port/rest/settings"
-lan=$(docker exec -e NODE_TLS_REJECT_UNAUTHORIZED=0 "$id-n8n" node -e "require('https').request({host:'$id-traefik',port:443,path:'/webhook/hermes-blog-ingestion',method:'POST',servername:'n8n.hy.home.arpa',headers:{host:'n8n.hy.home.arpa'}},s=>console.log(s.statusCode)).end()" 2>/dev/null)
+lan=$(docker exec -e NODE_TLS_REJECT_UNAUTHORIZED=0 "$id-n8n" node -e "
+const req = require('https').request({host:'$id-traefik',port:443,path:'/webhook/hermes-blog-ingestion',method:'POST',servername:'n8n.hy.home.arpa',headers:{host:'n8n.hy.home.arpa'},timeout:3000,agent:false},
+  s => { console.log(s.statusCode); s.resume(); });
+req.on('timeout', () => req.destroy());
+req.on('error', () => process.exit(1));
+req.end();" 2>/dev/null)
 [ "$lan" = 403 ] || fail "non-host source on the webhook path: got $lan"
 ok "non-host source refused by the allowlist (403)"
 source_ip=$(docker logs "$id-traefik" 2>/dev/null | python3 -c '
@@ -252,7 +306,7 @@ for line in sys.stdin:
     if entry.get("RouterName", "").startswith("hermes-blog-ingestion-webhook") and entry.get("DownstreamStatus") == 201:
         print(entry["ClientHost"])
         break')
-[ "$source_ip" = "$lan_ip" ] || fail "host process via $lan_ip arrived as $source_ip"
+[ "$source_ip" = "$expected_peer" ] || fail "host process via $lan_ip arrived as $source_ip, expected $expected_peer"
 ok "host process connecting to $lan_ip arrives as $source_ip"
 call 403 "wrong webhook token refused by n8n" -X POST -H "X-Hermes-Ingest-Token: $(hex 24)" -H "$json" --data-binary @"$report" "$url"
 call 401 "trailing-slash webhook path stays behind SSO" -X POST -H "$header" -H "$json" --data-binary @"$report" "$url/"
@@ -287,8 +341,23 @@ json.dump({"https://example.org/a": f"{d['items'][0]['title']} {d['items'][0]['b
 json.dump(d, open(sys.argv[2], "w"))
 PY
 sleep 20  # the webhook route allows 6 a minute; let it refill
-call 201 "devops report persisted" -X POST -H "$header" -H "$json" --data-binary @"$work/devops.json" "$url"
-ready_id=$(field "$work/body" 'b["id"]')
+if (( cache_only )); then
+  subnet=$(docker network inspect --format '{{(index .IPAM.Config 0).Subnet}}' "$id-edge")
+  python3 - "$work" "$lan_ip" "$subnet" "$port" "$hermes_token" <<'PY'
+import json, os, sys
+work, address, subnet, port, token = sys.argv[1:]
+path = f'{work}/plugin-harness.json'
+with open(path, 'w') as out:
+    json.dump({'work': work, 'address': address, 'subnet': subnet, 'port': int(port), 'token': token}, out)
+os.chmod(path, 0o600)
+PY
+  python3 "$workload/tests/e2e_collect_harness.py" "$work/plugin-harness.json" >/dev/null || fail 'collector or direct plugin submission failed'
+  ready_id=$(field "$work/plugin-result.json" 'b["report_id"]')
+  ok 'synthetic collector and direct plugin persist one report; repeated submission does not send again'
+else
+  call 201 "devops report persisted" -X POST -H "$header" -H "$json" --data-binary @"$work/devops.json" "$url"
+  ready_id=$(field "$work/body" 'b["id"]')
+fi
 call 200 "persisted reports have no export before attestation" -H "$read" "$xb/v1/exports"
 body 'b["items"] == []'
 python3 - "$work" "$lan_ip" "$port" "$attest_token" <<'PY'
@@ -320,8 +389,10 @@ echo "INFO attester counts $counts"
 ok "attester signed and sent two reports (3 items held: 2 unapproved job, 1 source mismatch)"
 sends=$(wc -l <"$work/sends.log")
 counts=$(harness run) || fail "second attester run failed: $counts"
-[ "$(python3 -c 'import json,sys; c=json.loads(sys.argv[1]); print(c["attested"], c["held_items"], c["retry"], c["rejected"])' "$counts")" = "0 0 0 0" ] &&
-  [ "$(wc -l <"$work/sends.log")" = "$sends" ] || fail "second attester run sent again: $counts"
+if [ "$(python3 -c 'import json,sys; c=json.loads(sys.argv[1]); print(c["attested"], c["held_items"], c["retry"], c["rejected"])' "$counts")" != "0 0 0 0" ] ||
+   [ "$(wc -l <"$work/sends.log")" != "$sends" ]; then
+  fail "second attester run sent again: $counts"
+fi
 ok "a second attester run sends nothing new"
 [ "$(harness resend "$ready_id")" = 200 ] || fail "stored body resend"
 ok "resending the stored attestation body is a 200 duplicate"
@@ -341,6 +412,7 @@ for seq in $files; do
   [ "$(post -H "$read" "$xb/v1/exports/$export_id/files/$seq")" = 200 ] || fail "file $seq"
   python3 -c 'import hashlib,json,sys; m=json.load(open(sys.argv[1])); f=[x for x in m["files"] if x["seq"]==int(sys.argv[3])][0]; raw=open(sys.argv[2],"rb").read(); json.loads(raw.decode("utf-8")); assert (hashlib.sha256(raw).hexdigest(), len(raw)) == (f["sha256"], f["byte_length"])' \
     "$work/manifest" "$work/body" "$seq" || fail "file $seq differs from its manifest entry"
+  cp "$work/body" "$work/export-$seq"
 done
 ok "the Export 2.0 record ($files) matches its manifest SHA-256 and length and parses as UTF-8 JSON"
 python3 - "$work/manifest" "$work" <<'PY'
@@ -355,10 +427,96 @@ call 401 "export list without a token is refused" "$xb/v1/exports"
 call 401 "export list with a wrong token is refused" -H "Authorization: Bearer $(hex 24)" "$xb/v1/exports"
 call 403 "export_ack token cannot read" -H "$ack" "$xb/v1/exports"
 call 403 "export_read token cannot ACK" -X POST -H "$read" -H "$json" --data-binary @"$work/ack.json" "$xb/v1/exports/$export_id/acks"
-call 201 "ACK records the Windows delivery" -X POST -H "$ack" -H "$json" --data-binary @"$work/ack.json" "$xb/v1/exports/$export_id/acks"
+call 201 "synthetic ACK records the export acknowledgement" -X POST -H "$ack" -H "$json" --data-binary @"$work/ack.json" "$xb/v1/exports/$export_id/acks"
 body 'b["state"] == "acknowledged" and b["duplicate"] is False'
 call 200 "ACK replay is idempotent" -X POST -H "$ack" -H "$json" --data-binary @"$work/ack.json" "$xb/v1/exports/$export_id/acks"
 call 409 "a different ACK after acknowledgment conflicts" -X POST -H "$ack" -H "$json" --data-binary @"$work/ack-other.json" "$xb/v1/exports/$export_id/acks"
+
+# Back up the running synthetic Gateway through its supported online API and
+# restore into a separate, owned volume. This proves only this Gateway's data,
+# not the external receiver, scheduler, source collector or other files.
+docker exec "$id-gateway" node scripts/ops/ingestion-gateway.mjs backup \
+  --config /run/config.json --output /data/e2e-backup.sqlite3 >/dev/null || fail 'online backup failed'
+docker cp "$id-gateway:/data/e2e-backup.sqlite3" "$work/e2e-backup.sqlite3"
+if (( cache_only )); then
+  python3 - "$work" "$ready_id" "$held_id" <<'PY'
+import base64, hashlib, json, pathlib, shutil, sys
+work = pathlib.Path(sys.argv[1])
+target = work / 'restored-attester'
+target.mkdir(mode=0o700)
+for name in ('state', 'evidence'):
+    shutil.copytree(work / name, target / name)
+for report in sys.argv[2:]:
+    original = work / 'state' / f'{report}.json'
+    state_path = target / 'state' / f'{report}.json'
+    evidence_path = target / 'evidence' / f'{report}.json'
+    assert state_path.read_bytes() == original.read_bytes()
+    assert evidence_path.read_bytes() == (work / 'evidence' / f'{report}.json').read_bytes()
+    state = json.loads(state_path.read_bytes())
+    envelope = json.loads(base64.b64decode(state['body'], validate=True))
+    evidence = json.loads(evidence_path.read_bytes())
+    assert state['status'] == 'attested' and state['report_id'] == report
+    assert evidence['report_id'] == report
+    assert hashlib.sha256(evidence_path.read_bytes()).hexdigest() == envelope['evidence_sha256']
+config = json.load(open(work / 'harness.json'))
+config['work'] = str(target)
+with open(work / 'restored-attester.json', 'w') as out:
+    json.dump(config, out)
+PY
+  counts=$(python3 "$workload/tests/e2e_attest_harness.py" "$work/restored-attester.json" restore-check "$ready_id" "$held_id") || fail 'restored attester state rejected'
+  python3 - "$counts" <<'PY'
+import json, sys
+counts = json.loads(sys.argv[1])
+assert counts['skipped'] == 2 and counts['attested'] == counts['retry'] == counts['rejected'] == 0
+PY
+  [ ! -e "$work/restored-attester/sends.log" ] || fail 'restored attester unexpectedly resent'
+  ok 'restored attester state and evidence retain both report IDs without automatic resend'
+fi
+docker volume create --label "hyhome.hermes-e2e=$id" "$id-restored" >/dev/null
+[[ $(docker volume inspect --format '{{index .Labels "hyhome.hermes-e2e"}}' "$id-restored") == "$id" ]] || fail 'restore volume ownership mismatch'
+docker run "${pull_flag[@]}" --rm --name "$id-restore-init" --label "hyhome.hermes-e2e=$id" --network none --user 0 --entrypoint sh \
+  -v "$id-restored:/v" -v "$work/config.json:/config.json:ro" -v "$work/e2e-backup.sqlite3:/snapshot.sqlite3:ro" \
+  "$gateway_image" -c 'mkdir /v/data && cp /config.json /v/config.json && cp /snapshot.sqlite3 /v/data/ingestion.sqlite3 && chown -R 10001:10001 /v && chmod 0600 /v/config.json /v/data/ingestion.sqlite3 && chmod 0700 /v/data'
+docker run "${pull_flag[@]}" -d --name "$id-restored" --label "hyhome.hermes-e2e=$id" --network "$id-ingest" \
+  "${hardening[@]}" --mount "type=volume,src=$id-restored,dst=/data,volume-subpath=data" \
+  --mount "type=volume,src=$id-restored,dst=/run/config.json,volume-subpath=config.json,readonly" \
+  "$gateway_image" serve --config /run/config.json >/dev/null
+restored_get() {
+  docker exec "$id-restored" node -e '
+    const [path, token] = process.argv.slice(1);
+    fetch("http://127.0.0.1:8787" + path, {headers: {authorization: "Bearer " + token}})
+      .then(async r => { if (r.status !== 200) process.exit(1); process.stdout.write(await r.text()); }, () => process.exit(1));
+  ' "$1" "$2"
+}
+restored_ready=0
+for _ in $(seq 30); do
+  if restored_get "/v1/exports/$export_id" "$read_token" >"$work/restored-manifest" 2>/dev/null; then restored_ready=1; break; fi
+  sleep 1
+done
+[ "$restored_ready" = 1 ] || fail 'restored Gateway never became ready'
+python3 - "$work/manifest" "$work/restored-manifest" "$work/ack.json" <<'PY'
+import json, sys
+before, after, ack = (json.load(open(path)) for path in sys.argv[1:])
+assert after['state'] == 'acknowledged' and after['ack_id'] == ack['ack_id']
+assert after['manifest_sha256'] == before['manifest_sha256'] and after['files'] == before['files']
+PY
+restored_get "/v1/exports/$held_export" "$read_token" >"$work/restored-held" || fail 'restored held export unavailable'
+python3 - "$work/restored-held" <<'PY'
+import json, sys
+held = json.load(open(sys.argv[1]))
+assert held['state'] == 'held' and held['hold_reason'] == 'SOURCE_UNVERIFIED'
+PY
+for seq in $files; do
+  restored_get "/v1/exports/$export_id/files/$seq" "$read_token" >"$work/restored-export-$seq" || fail 'restored record unavailable'
+  cmp -s "$work/export-$seq" "$work/restored-export-$seq" || fail 'restored record differs'
+done
+replay=$(docker exec -i "$id-restored" node -e '
+  const [token] = process.argv.slice(1); const fs = require("fs");
+  fetch("http://127.0.0.1:8787/v1/ingestions", {method:"POST", body:fs.readFileSync(0), headers:{authorization:"Bearer " + token, "content-type":"application/json"}})
+    .then(async r => { const b = await r.json(); if (r.status !== 200 || !b.duplicate) process.exit(1); process.stdout.write(b.id); }, () => process.exit(1));
+' "$gateway_token" <"$report") || fail 'restored duplicate replay failed'
+[ "$replay" = "$held_id" ] || fail 'restored replay returned a different report'
+ok "online backup restored acknowledged and held exports, identical records and idempotent receipt into a separate volume"
 call 404 "summary is not routed on the export host" -H "$read" "$xb/v1/summary"
 call 404 "ingest is not routed on the export host" -X POST -H "Authorization: Bearer $gateway_token" -H "$json" --data-binary @"$report" "$xb/v1/ingestions"
 call 404 "GET on the attestation path is not routed" -H "$attest" "$xb/v1/ingestions/$ready_id/attestations"
@@ -385,13 +543,13 @@ call 200 "ACK replay after restart is idempotent" -X POST -H "$ack" -H "$json" -
 ok "resending the stored attestation body after restart is a 200 duplicate"
 gateway_ip=$(docker inspect -f "{{(index .NetworkSettings.Networks \"$id-ingest\").IPAddress}}" "$id-gateway")
 [ -n "$gateway_ip" ] || fail "Gateway has no address on the ingest network"
-if curl -s -m 3 -o /dev/null "http://$gateway_ip:8787/v1/summary"; then
+if curl --noproxy '*' -s -m 3 -o /dev/null "http://$gateway_ip:8787/v1/summary"; then
   fail "host process reached the Gateway on the isolated network"
 fi
 ok "host cannot reach the Gateway on the internal isolated network"
 export_ip=$(docker inspect -f "{{(index .NetworkSettings.Networks \"$id-export\").IPAddress}}" "$id-gateway")
 [ -n "$export_ip" ] || fail "Gateway has no address on the export network"
-if curl -s -m 3 -o /dev/null "http://$export_ip:8787/v1/summary"; then
+if curl --noproxy '*' -s -m 3 -o /dev/null "http://$export_ip:8787/v1/summary"; then
   fail "host process reached the Gateway on the export network"
 fi
 ok "host cannot reach the Gateway on the internal isolated export network"
