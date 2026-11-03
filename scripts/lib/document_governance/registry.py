@@ -41,12 +41,6 @@ FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
 # profile.
 PRESERVED_RECORD_PREFIX = "docs/98.archive/"
 PRESERVED_DISPOSITIONS = ("completed", "superseded", "retired", "resolved")
-# `common.archive_disposition_model` says whether ADR-0035's Stage 98 model is
-# adopted. At `transition` every archive check keeps its earlier behavior, and a
-# registered test binds `adopted` to the acceptance of that decision.
-ARCHIVE_MODEL_TRANSITION = "transition"
-ARCHIVE_MODEL_ADOPTED = "adopted"
-ARCHIVE_DISPOSITION_MODELS = (ARCHIVE_MODEL_TRANSITION, ARCHIVE_MODEL_ADOPTED)
 # The retention class the model adds. Before adoption no check admits it.
 # Roots a document may have been retired from, mirroring the registry's
 # `archive_source_prefixes`. `docs/` is the implicit default.
@@ -2348,30 +2342,6 @@ def preserved_origin_path(path: str | pathlib.PurePosixPath) -> str | None:
     if f"{head}/" in LEGACY_ARCHIVE_SOURCE_ROOTS:
         return rest
     return f"docs/{rest}"
-
-
-def archive_disposition_model(root: pathlib.Path) -> str:
-    """Return the Stage 98 model selected by the Registry under ``root``.
-
-    The archive and link checks work from a repository root rather than a
-    loaded Registry, and a fixture root may carry none. Absence therefore reads
-    as `transition`, the state in which every check behaves as it did before the
-    model. A value outside the registered pair fails closed instead of choosing.
-    """
-
-    path = pathlib.Path(root) / "docs/99.templates/registry.json"
-    if not (path.exists() or path.is_symlink()):
-        return ARCHIVE_MODEL_TRANSITION
-    raw = _parse_json(path, MAX_REGISTRY_BYTES)
-    common = raw.get("common") if isinstance(raw, Mapping) else None
-    value = (
-        common.get("archive_disposition_model", ARCHIVE_MODEL_TRANSITION)
-        if isinstance(common, Mapping)
-        else ARCHIVE_MODEL_TRANSITION
-    )
-    if value not in ARCHIVE_DISPOSITION_MODELS:
-        raise ValueError(f"archive disposition model is not registered: {value!r}")
-    return str(value)
 
 
 def path_matches_pattern(

@@ -1490,7 +1490,7 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
                 registry = root / "docs/99.templates/registry.json"
                 registry.parent.mkdir(parents=True)
                 registry.write_text(
-                    f'{{"common": {{"archive_disposition_model": "{model}"}}}}\n',
+                    '{"common": {}}\n',
                     encoding="utf-8",
                 )
             source = root / "docs/05.operations/incidents/0001-outage.md"
@@ -1519,7 +1519,7 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
             registry = root / "docs/99.templates/registry.json"
             registry.parent.mkdir(parents=True)
             registry.write_text(
-                '{"common": {"archive_disposition_model": "adopted"}}\n',
+                '{"common": {}}\n',
                 encoding="utf-8",
             )
             source = root / "docs/05.operations/incidents/0001-outage.md"

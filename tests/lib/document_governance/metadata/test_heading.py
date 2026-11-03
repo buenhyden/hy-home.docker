@@ -981,21 +981,16 @@ class SealedSectionShapeTests(unittest.TestCase):
                     ],
                 )
 
-    def test_sealed_shapes_are_registered_only_once_the_model_is_adopted(self) -> None:
-        """The shape lists move with the switch, so the rule is inert at transition."""
+    def test_sealed_shapes_are_registered(self) -> None:
+        """The route profiles keep their sealed section shapes as scheme definitions."""
 
-        from scripts.lib.document_governance.registry import (
-            ARCHIVE_MODEL_ADOPTED,
-            archive_disposition_model,
-            load_registry,
-        )
+        from scripts.lib.document_governance.registry import load_registry
 
         registry = load_registry()
-        adopted = archive_disposition_model(ROOT) == ARCHIVE_MODEL_ADOPTED
         for profile_id in ("tombstone", "migration"):
             with self.subTest(profile=profile_id):
                 shapes = registry.profiles[profile_id]["sealed_section_shapes"]
-                self.assertEqual(adopted, bool(shapes))
+                self.assertTrue(shapes)
                 self.assertTrue(all(shape for shape in shapes))
 
     def test_the_changed_check_rejects_only_an_added_sealed_shape_record(self) -> None:
