@@ -353,6 +353,18 @@ withdrawal. Before a package becomes ready for removal, apply the
 [completion checklist](task-checklists.md#before-completion) and record final
 evidence while the package is still editable.
 
+A Stage 03 package whose Spec, Plan, and every Task are terminal is deleted
+once the meaning a current document still depends on sits in its owner. Its
+Spec number joins the Registry `reserved_history`, current links to it become
+plain text, and version history keeps the body. A package with any
+non-terminal Task stays, with its completed Tasks. A terminal Task body stays
+immutable while its package exists, so a link it holds into a package deleted
+later is not repaired; link alignment excuses exactly that link, from a
+terminal Task at a registered Task path into a package whose number the
+checked root's Registry reserves. A package that carries a lifecycle
+generation migration proof (SPEC-0208, SPEC-0209, SPEC-0231) stays while a
+current terminal Task is admitted through that proof.
+
 Stage 03 occupancy is a package judgment using the Registry's Spec, Plan, and
 Task terminal sets. In an unfinished package, completed Tasks and validly
 cancelled Tasks may remain; a terminal Plan may not. A cancelled Task records
