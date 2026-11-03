@@ -1,10 +1,10 @@
 ---
 title: "OAuth2 Proxy"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-04"
 created: "2025-11-29"
 ---
 
@@ -25,7 +25,6 @@ ForwardAuth로 보호되지 않습니다.
 
 - Developers
 - Operators
-- AI Agents
 
 ## Scope
 

@@ -1,10 +1,10 @@
 ---
 title: "MLflow Tracking Server"
-version: "1.0.6"
+version: "1.0.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-11-04"
 created: "2026-09-21"
 ---
 
@@ -26,7 +26,6 @@ MLflow는 실행(run), 파라미터, 메트릭, 등록된 모델, 아티팩트�
 
 - **Data scientists and ML engineers**: JupyterLab이나 스크립트에서 실험 기록.
 - **Operators**: 추적 저장소와 아티팩트의 프로비저닝, 백업, 복구.
-- **AI agents**: 소유 Guide, Policy, Runbook에 따라 이 패키지를 변경.
 
 ## Scope
 

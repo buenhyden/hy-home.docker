@@ -1,10 +1,10 @@
 ---
 title: "Nginx Proxy"
-version: "1.2.3"
+version: "1.2.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2025-11-29"
 ---
 
@@ -22,7 +22,6 @@ Nginx 컴포넌트는 `01-gateway` tier의 전용 프록시로, 복잡한 경로
 
 - Infrastructure Engineers
 - Backend Developers
-- AI Agents
 
 ## Scope
 

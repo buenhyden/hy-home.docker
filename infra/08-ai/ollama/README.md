@@ -1,10 +1,10 @@
 ---
 title: "Ollama Inference Engine"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -20,7 +20,6 @@ created: "2025-11-12"
 
 - **AI Engineers**: 모델 라이프사이클 관리 및 성능 튜닝
 - **DevOps Engineers**: 인프라 프로비저닝 및 리소스 통제
-- **AI Agents**: 자동화된 추론 환경 이해 및 지표 분석
 
 ## Scope
 

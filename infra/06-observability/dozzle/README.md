@@ -1,10 +1,10 @@
 ---
 title: "Dozzle"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-03-27"
 ---
 
@@ -22,7 +22,6 @@ Dozzle은 작고 가벼운 애플리케이션으로, 웹 기반 인터페이스�
 
 - Operators (로그 모니터링 및 디버깅)
 - Developers (서비스 상태 확인)
-- AI Agents (로그 분석 및 오류 감지)
 
 ## Scope
 

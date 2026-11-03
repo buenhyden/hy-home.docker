@@ -1,10 +1,10 @@
 ---
 title: "Template Catalog"
-version: "3.0.0"
+version: "3.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 layer: "templates"
 ---
 
@@ -29,7 +29,6 @@ layer: "templates"
 
 - Documentation Writers
 - Repository Maintainers
-- AI Agents
 
 ## Structure
 

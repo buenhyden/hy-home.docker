@@ -1,10 +1,10 @@
 ---
 title: "Repository Support Staging"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 created: "2026-09-27"
 ---
 
@@ -21,7 +21,6 @@ created: "2026-09-27"
 
 ## Audience
 
-- AI Agents
 - Repository Maintainers
 
 ## Scope

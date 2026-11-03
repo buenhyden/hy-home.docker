@@ -1,10 +1,10 @@
 ---
 title: "Spark (Iceberg)"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-09-23"
 ---
 
@@ -26,7 +26,6 @@ bucket을 `lakehouse` S3 identity로 사용합니다. 기본 명령은 namespace
 
 - Data engineers
 - Operators
-- AI Agents
 
 ## Scope
 

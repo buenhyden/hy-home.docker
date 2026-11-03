@@ -1,10 +1,10 @@
 ---
 title: "Repository Support Previews"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 created: "2026-10-29"
 ---
 
@@ -17,7 +17,6 @@ created: "2026-10-29"
 
 ## Audience
 
-- AI Agents
 - Repository Maintainers
 
 ## Scope

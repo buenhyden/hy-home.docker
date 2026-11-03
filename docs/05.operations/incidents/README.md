@@ -1,10 +1,10 @@
 ---
 title: "05.operations/incidents"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -30,7 +30,6 @@ environment variables는 원형을 유지합니다.
 - Operators
 - Security Auditors
 - Incident Responders
-- AI Agents
 
 ## Scope
 

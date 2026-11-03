@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Notification Routing"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2026-01-12"
 ---
 
@@ -21,7 +21,6 @@ Alertmanager는 Prometheus가 보낸 알림을 처리하여 중복을 제거하�
 - SREs (알림 라우팅 및 통합)
 - On-call Engineers (무음 처리 및 트러블슈팅)
 - DevOps Engineers (설정 관리)
-- AI Agents (자동화된 무음 처리 관리)
 
 ## Scope
 

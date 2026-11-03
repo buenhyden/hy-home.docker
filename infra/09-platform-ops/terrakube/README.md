@@ -1,10 +1,10 @@
 ---
 title: "Terrakube IaC Automation Platform"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -26,7 +26,6 @@ created: "2025-11-12"
 - Operators
 - Developers
 - Documentation Writers
-- AI Agents
 
 ## Scope
 

@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-11-04"
 ---
 
 # docs
@@ -156,7 +156,6 @@ advisory graph는 advisory로 남고 `.agents/governance/environment-constraints
 - Developers
 - Operators
 - Documentation Writers
-- AI Agents
 
 ### Usage
 

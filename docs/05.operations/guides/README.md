@@ -1,10 +1,10 @@
 ---
 title: "운영 가이드"
-version: "0.2.4"
+version: "0.2.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -121,7 +121,6 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 - 개발자
 - SREs
 - 보안 담당자
-- AI 에이전트
 
 1. 새 Guide는 [Guide template](../../99.templates/templates/operations/guide.template.md)으로 시작한다.
 2. 새 subject 번호는 subject마다 하나를 발급하고 그 subject의 역할 문서가 같은 번호와 slug를 쓴다.

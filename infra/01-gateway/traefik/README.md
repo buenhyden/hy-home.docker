@@ -1,10 +1,10 @@
 ---
 title: "Traefik Edge Router"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -24,7 +24,6 @@ Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker �
 
 - Infrastructure Engineers
 - SREs
-- AI Agents
 
 ## Scope
 

@@ -1,10 +1,10 @@
 ---
 title: "Trino (Iceberg)"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-04"
 created: "2026-09-23"
 ---
 
@@ -26,7 +26,6 @@ SeaweedFS Iceberg REST catalog(`seaweedfs-s3:8181`)ì™€ `lakehouse` S3 identityë¥
 
 - Data engineers
 - Operators
-- AI Agents
 
 ## Scope
 

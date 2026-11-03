@@ -31,8 +31,9 @@ procedures belong to Stage 01, Stage 02 and Stage 05.
   [`task.template.md`](../99.templates/templates/specs/task.template.md).
   Allocate the next Spec number from the Registry `spec` space and advance its
   high-water mark in the same change.
-- Record each check as an Evidence row with an honest `PASS`, `FAIL`,
-  `BLOCKED` or `NOT_RUN` result and the revision it examined. What a row may
+- Record each check as an Evidence row with an honest result from the
+  Registry `result_domain` in [`registry.json`](../99.templates/registry.json)
+  and the revision it examined. What a row may
   `Resolve` is defined by the [SDLC](../../.agents/governance/sdlc.md#sequence)
   and the Registry `evidence_columns` contract.
 - Never edit the body of a terminal Task. Record a later correction in the

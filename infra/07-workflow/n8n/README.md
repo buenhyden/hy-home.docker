@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.16"
+version: "1.2.17"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -24,7 +24,6 @@ n8n은 시각적 인터페이스로 워크플로우 자동화를 구현하는 �
 
 - Workflow Operators
 - Integration Developers
-- AI Agents
 
 ## Scope
 

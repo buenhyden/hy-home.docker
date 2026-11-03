@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.4.1"
+version: "1.4.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -41,7 +41,6 @@ created: "2025-11-12"
 - 인프라 운영자
 - 개발자 및 서비스 소비자
 - 문서 작성자
-- AI Agents
 
 ## Structure
 

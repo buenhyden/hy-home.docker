@@ -1,10 +1,10 @@
 ---
 title: "Traefik Dynamic Configuration"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-04"
 ---
 
 # Traefik Dynamic Configuration
@@ -38,7 +38,6 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 - Developers
 - Operators
 - Documentation Writers
-- AI Agents
 
 ## Scope
 

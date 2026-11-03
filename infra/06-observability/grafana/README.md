@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.12"
+version: "1.1.13"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-11-04"
 created: "2026-01-12"
 ---
 
@@ -19,7 +19,6 @@ created: "2026-01-12"
 - 메트릭, 로그, 트레이스, 알림, 프로파일을 탐색하는 Developers
 - 데이터소스와 대시보드 프로비저닝을 유지 관리하는 SREs
 - SSO, 대시보드, 데이터소스 장애를 처리하는 Operators
-- 시크릿이나 토큰을 노출하지 않고 마스킹된 근거를 수집하는 AI Agents
 
 ## Scope
 

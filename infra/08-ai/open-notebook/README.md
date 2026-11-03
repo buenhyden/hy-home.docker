@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-27"
+updated: "2026-11-04"
 created: "2026-05-09"
 ---
 
@@ -22,7 +22,6 @@ Lifecycle: **OPTIONAL**. 루트 Compose가 이 정의를 include하며 명시적
 
 - **Operators**: 로컬 laboratory 서비스, 데이터 영속화, 자격 증명 관리.
 - **Developers**: 노트북 기반 AI 또는 지식 워크플로우 테스트.
-- **AI Agents**: 서비스 경계, 시크릿, 검증 경로 파악.
 
 ## Scope
 
