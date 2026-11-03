@@ -899,7 +899,6 @@
         "tests.validation.test_p02_service_contracts",
         "tests.validation.test_p02_gateway_port_validation",
         "tests.validation.test_p02_prometheus_contracts",
-        "tests.validation.test_p02_valkey_mount_scope",
         "tests.lib.ops.test_port_inventory",
         "tests.validation.test_port_contract",
         "tests.lib.ops.test_openbao_consumer_migration",
@@ -1092,6 +1091,7 @@
         "run-unittest",
         "tests.lib.gate.test_github_workflow_contract",
         "tests.lib.gate.test_p03_workflow_contract",
+        "tests.lib.gate.test_p11_workflow_contract",
         "-v"
       ],
       "cwd": ".",
