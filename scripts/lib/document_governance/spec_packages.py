@@ -260,7 +260,6 @@ class _ReceiptCarrier:
     receipt: BranchIntegrationReceipt
     task: SpecDocument
     package: SpecPackage
-    completed_archive: bool = False
 
 
 def _path_identity(metadata: os.stat_result) -> tuple[int, int]:
@@ -5413,17 +5412,6 @@ def _standard_preserved_package_path(
     return pathlib.PurePosixPath("docs/98.archive", disposition, *origin.parts[1:])
 
 
-def _archive_receipt_carriers(
-    completed: Sequence[SpecPackage],
-) -> tuple[_ReceiptCarrier, ...]:
-    return tuple(
-        _ReceiptCarrier(receipt, task, package, completed_archive=True)
-        for package in completed
-        for task in package.tasks
-        for receipt in task.branch_integration_receipts
-    )
-
-
 def _current_receipt_carriers(
     current: Sequence[SpecPackage],
 ) -> tuple[_ReceiptCarrier, ...]:
@@ -5616,45 +5604,18 @@ def _validate_receipt_carrier(
         return _invalid_receipt(
             carrier, "target_artifact_id does not match its package"
         )
-    if not carrier.completed_archive:
-        if carrier.package.spec.status not in {
-            "active",
-            "in-progress",
-            "blocked",
-        } or carrier.task.status not in {
-            "in-progress",
-            "blocked",
-        }:
-            return _invalid_receipt(
-                carrier,
-                "current carrier requires an active target Spec and in-progress or blocked Task",
-            )
-    else:
-        members = [carrier.package.spec, *carrier.package.tasks]
-        if carrier.package.plan is not None:
-            members.append(carrier.package.plan)
-        if (
-            carrier.package.plan is None
-            or not carrier.package.tasks
-            or any(member.status != "completed" for member in members)
-        ):
-            return _invalid_receipt(
-                carrier,
-                "archived carrier requires one full completed target package",
-            )
-        try:
-            _validate_completion_evidence(
-                carrier.package.spec,
-                carrier.package.plan,
-                carrier.package.tasks,
-                registry,
-                current_contracts=False,
-            )
-        except SpecPackageError:
-            return _invalid_receipt(
-                carrier,
-                "archived carrier requires valid completion evidence",
-            )
+    if carrier.package.spec.status not in {
+        "active",
+        "in-progress",
+        "blocked",
+    } or carrier.task.status not in {
+        "in-progress",
+        "blocked",
+    }:
+        return _invalid_receipt(
+            carrier,
+            "current carrier requires an active target Spec and in-progress or blocked Task",
+        )
     try:
         source_tree = _git_package_tree(root, base_commit, origin)
         preserved_tree = _filesystem_package_tree(
@@ -5729,10 +5690,7 @@ def _validate_branch_integration_receipts(
         if package.spec.path.parts[2]
         not in {item.spec.path.parts[2] for item in current}
     }
-    carriers = (
-        *_current_receipt_carriers(current),
-        *_archive_receipt_carriers(completed),
-    )
+    carriers = (*_current_receipt_carriers(current),)
     relevant = tuple(
         carrier
         for carrier in carriers
@@ -6034,7 +5992,7 @@ def validate_repository_spec_package_lifecycle_details(
     lifecycle_findings = validate_spec_package_lifecycle(
         previous,
         current,
-        retired_paths=_recorded_retirements(previous, registry),
+        retired_paths=_recorded_retirements(root, previous),
         preserved_paths=ordinary_preserved | branch_preserved,
         registry=registry,
     )
@@ -6083,11 +6041,21 @@ def validate_repository_spec_package_lifecycle(
 
 
 def _recorded_retirements(
-    previous: Sequence[SpecPackage], registry: DocumentRegistry
+    root: pathlib.Path, previous: Sequence[SpecPackage]
 ) -> frozenset[pathlib.PurePosixPath]:
-    """A removed package is recorded when the Registry reserves its number."""
+    """A removed package is recorded when the checked root's Registry reserves it.
 
-    space = registry.identity_spaces.get("spec")
+    The Registry is read from `root`, never the code-time default, so a tree
+    without its own valid, regular Registry grants no exemption.
+    """
+
+    from scripts.lib.document_governance import registry as registry_module
+
+    path = pathlib.Path(root) / "docs/99.templates/registry.json"
+    try:
+        space = registry_module.load_registry(path).identity_spaces.get("spec")
+    except (RegistryError, OSError, ValueError):
+        return frozenset()
     reserved = frozenset(space.reserved_history) if space is not None else frozenset()
     return frozenset(
         package.spec.path for package in previous if int(package.number) in reserved
