@@ -83,7 +83,9 @@ progress under the approved parents. Hosted CI has not run.
   `transitions` and disposition entries; `AI Agent Guidance` removed from the
   `documentation-readme` optional sections and from its template; Spec
   high-water 251.
-- Code: `registry.py` owns `scripts/AGENTS.md` and `tests/AGENTS.md`; the
+- Code: `registry.py` owns `scripts/AGENTS.md` and `tests/AGENTS.md` and lets
+  the trusted Requirement history read skip `docs/01.requirements/AGENTS.md`;
+  `scripts/manifest.yaml` registers `scripts/AGENTS.md`; the
   Stage 01, 02, 03 and 90 loaders and the operations catalog accept a root
   `AGENTS.md`; the navigation check ignores `AGENTS.md` when classifying a
   folder router.
@@ -112,6 +114,14 @@ progress under the approved parents. Hosted CI has not run.
 | E4 | 2, 3 | W3 | document-links | `alignment`, `navigation` and `language` modes | PASS | 964 documents, 8495 links, zero failures | required | - |
 | E5 | 2, 3 | W3 | document-entrypoint | `entrypoint` mode | FAIL | 8 findings, identical on main d6b535503: three `infra` READMEs link Stage 03 Task bodies; not caused by this change | required | - |
 | E6 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py` | PASS | lifecycle and occupancy zero violations | required | - |
+| E7 | 4 | W4 | metadata-changed | `check-changed --base-ref origin/main`, revision 20da707ba | PASS | 25 selected, zero violations | required | - |
+| E8 | 4 | W4 | metadata-active | `check-active`, revision 20da707ba | PASS | 497 selected, zero violations | required | - |
+| E9 | 4 | W4 | script-manifest | `check-script-manifest.py`, revision 20da707ba | FAIL | `scripts/AGENTS.md` had no manifest row | required | - |
+| E10 | 4 | W2 | governance-unit-tests | `tests/lib/document_governance` discovery, revision 20da707ba, quiet tree | FAIL | 763 tests: 1 failure and 10 errors, all from the trusted Requirement history read rejecting `docs/01.requirements/AGENTS.md` | required | - |
+| E11 | 4 | W4 | script-manifest | after the manifest row, revision c78cf723f | PASS | script manifest is valid | required | E9 |
+| E12 | 4 | W2 | governance-unit-tests | the 11 E10 tests after the history-read fix, revision c78cf723f | PASS | 11 tests OK | required | E10 |
+| E13 | 4 | W4 | validation-suites | `tests/validation/lifecycle`, CI routing and surface ownership, revision 20da707ba | PASS | all OK; 92 routing and ownership tests | required | - |
+| E14 | 1 | W1 | agent-governance-and-renderer | contract check and renderer `--check`, revision 20da707ba | PASS | zero failures; providers 2, drift 0 | required | - |
 
 ## Criterion Acceptance
 
