@@ -89,5 +89,6 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/descriptions/0012-data-analytics-architecture.md)
 - **ADR**: [0039-analytics-engines-after-lakehouse-convergence.md](../02.architecture/decisions/0039-analytics-engines-after-lakehouse-convergence.md) (supersedes ADR-0015)
-- **Spec**: [SPEC-0180](../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md) (lakehouse adoption and the removal of ksqlDB and StarRocks)
+- **Spec**: SPEC-0180 (lakehouse adoption and the removal of ksqlDB and StarRocks)
 - **Guide**: [README.md](../05.operations/guides/README.md)
+- **Retired domain Spec SPEC-0005** (data-analytics): replaced by the data-analytics guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.

@@ -9,8 +9,6 @@ layer: "architecture"
 artifact_id: "ADR-0032"
 parent_ids:
 - "AD-0027"
-supersedes:
-- "ADR-0029"
 created: "2026-09-06"
 ---
 
@@ -123,5 +121,6 @@ Adopt the following location model after an independent design review.
 - [Shared agent memory decision](0049-shared-agent-memory-store.md)
 - Predecessor authority decision
 - Preserved-record decision
-- [Owning specification](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md)
-- [Current plan](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/plan.md)
+- Owning specification
+- Current plan
+- **Superseded decisions**: ADR-0027 defined the Stage 00 canonical adapter model, and ADR-0029 replaced it with a separated workspace governance authority model. This decision replaces ADR-0029.

@@ -95,3 +95,4 @@ No separately numbered solution-independent external interface requirement was i
 - **Spec**: [Gateway technical specification](../02.architecture/descriptions/0001-gateway-architecture.md)
 - **Plan**: Gateway standardization plan
 - **ADR**: [Traefik and Nginx hybrid decision](../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
+- **Retired domain Spec SPEC-0001** (gateway): replaced by the gateway guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.

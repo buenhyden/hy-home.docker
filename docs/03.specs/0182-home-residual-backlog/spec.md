@@ -16,7 +16,7 @@ created: "2026-09-24"
 
 ## Overview
 
-Close the SPEC-0180 residuals that [SPEC-0181](../../98.archive/completed/03.specs/0181-home-residual-operations/spec.md)
+Close the SPEC-0180 residuals that SPEC-0181
 did not take: repository follow-ups, runtime follow-ups and legacy data, and
 recovery and authentication acceptance. The owner put all three groups in
 scope on 2026-09-25 and retired the rest with reasons recorded below.
@@ -205,8 +205,8 @@ a separately approved change.
 ### Traceability
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
-- [SPEC-0180](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
-- [SPEC-0181](../../98.archive/completed/03.specs/0181-home-residual-operations/spec.md)
+- SPEC-0180
+- SPEC-0181
 - [Plan](plan.md)
 - [Task 0001: repository follow-ups](tasks/tsk-0001-repository-follow-ups.md)
 - [Task 0002: runtime and legacy data](tasks/tsk-0002-runtime-and-legacy-data.md)

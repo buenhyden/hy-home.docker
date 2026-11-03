@@ -96,8 +96,8 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
 - [Stage 99 Registry](../../../99.templates/registry.json),
   [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   [research-member template](../../../99.templates/templates/references/research.template.md).
-- [완료된 SPEC-0172 결과](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)와
-  [현재 identity-recovery decision](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
+- 완료된 SPEC-0172 결과와
+  현재 identity-recovery decision.
 - [CI workflow](../../../../.github/workflows/ci-quality.yml),
   [workflow contract](../../../../.github/workflow-contract.yml),
   [main protection record](../../../../.github/rulesets/main-protection.md).
@@ -153,8 +153,8 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
 - Lifecycle authority: [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md),
   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md),
   ADR-0031.
-- 현재 identity-recovery owner: [SPEC-0173 Task 1](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md);
-  [완료된 SPEC-0172 결과](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)가 날짜가 있는 구현 결과를 보존.
+- 현재 identity-recovery owner: SPEC-0173 Task 1;
+  완료된 SPEC-0172 결과가 날짜가 있는 구현 결과를 보존.
 - Operations authority: [Stage 05](../../../05.operations/README.md).
 - Audit/data 증거: implementation overview, [k6 guide](../../../05.operations/guides/12-testing-and-quality/0061-k6.md),
   LLM Wiki index, repository map.

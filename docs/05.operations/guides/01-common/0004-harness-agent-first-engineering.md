@@ -8,7 +8,7 @@ updated: "2026-10-15"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
-- "SPEC-0094"
+- "POL-0004"
 created: "2026-06-04"
 ---
 
@@ -83,7 +83,7 @@ main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확�
 > hosted verification은 여전히 필수이다.
 >
 > 2026-09-20 PR #169 incident와 그에 따른 Hadolint 정렬은
-> [SPEC-0180 Task 0006](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0006-ci-quality-version-alignment.md)에
+> SPEC-0180 Task 0006에
 > 기록되어 있다. 이 문서는 실패한 hosted revision을 local 증거, 향후
 > GitHub Actions 통합 제안과 구분한다.
 
@@ -108,7 +108,7 @@ main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확�
 
 ### Traceability
 
-- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`)
 - 같은 주제: [Policy](../../policies/01-common/0004-harness-agent-first-engineering.md) (`POL-0004`), [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md) (`RUN-0004`)
 
 ## Troubleshooting

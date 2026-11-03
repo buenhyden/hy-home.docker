@@ -9,9 +9,6 @@ layer: "architecture"
 artifact_id: "ADR-0050"
 parent_ids:
 - "AD-0003"
-supersedes:
-- "ADR-0003"
-- "ADR-0018"
 created: "2026-10-29"
 ---
 
@@ -80,3 +77,4 @@ None. Any change of seal method or HA topology needs its own ADR.
 - [AD-0003](../descriptions/0003-security-architecture.md)
 - [ADR-0042](0042-openbao-unseal-method.md)
 - [OpenBao policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
+- **Superseded decisions**: ADR-0003 adopted HashiCorp Vault as the central secrets manager, and ADR-0018 ordered its hardening and HA expansion (agent template, healthcheck, CI gate; auto-unseal deferred). This decision replaces both.

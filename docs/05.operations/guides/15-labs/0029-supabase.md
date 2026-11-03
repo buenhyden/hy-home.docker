@@ -98,7 +98,7 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
 | `supavisor` | session/transaction pooler; host SQL publication 소유 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
 | `vector` | log collector; Docker socket API 권한과 private config | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
 
-선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### 사전 조건과 사용
 

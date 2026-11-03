@@ -8,7 +8,7 @@ updated: "2026-09-27"
 layer: "references"
 artifact_id: "RES-0002"
 parent_ids:
-- "SPEC-0158"
+- "REQ-0024"
 created: "2026-08-28"
 observed_at: "2026-09-05"
 ---
@@ -526,8 +526,8 @@ package 수준 목록은 범주 전반에 공유되는 source만 담습니다.
   [ADR-0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
   [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md),
   ADR-0031.
-- Implementation 증거: [완료된 SPEC-0172 결과](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)와
-  [현재 lifecycle reconciliation](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
+- Implementation 증거: 완료된 SPEC-0172 결과와
+  현재 lifecycle reconciliation.
 - Operations: [Stage 05](../../../05.operations/README.md).
 - Audit/data: AUD-0026,
   [k6 guide](../../../05.operations/guides/12-testing-and-quality/0061-k6.md), DATA-0082, DATA-0083.
@@ -638,7 +638,7 @@ draft/preview와 문서 간 차이는 해당 주장 옆에 한계로 남긴다.
 연구는 비규범적 근거다. 실제 채택과 변경은 [거버넌스](../../../../.agents/README.md),
 [SDLC](../../../../.agents/governance/sdlc.md) 및 해당 Requirement·Architecture·Spec·운영
 소유자가 결정한다. 이번 문서 갱신 증거는
-[SPEC-0185 Task](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md)에만 기록한다.
+SPEC-0185 Task에만 기록한다.
 기존 `parent_ids`는 구조적 관계를 유지하며 새 인용을 부모로 추가하지 않았다.
 
 보존 자료: [RES-0084](../0084-github-actions-platform/README.md),

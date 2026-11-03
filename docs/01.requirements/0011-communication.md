@@ -92,3 +92,4 @@ No separately numbered solution-independent external interface requirement was i
 - **Spec**: [011-communication/spec.md](../02.architecture/descriptions/0010-communication-architecture.md)
 - **Plan**: 2026-03-26-10-communication-standardization.md
 - **ADR**: [0010-communication-services.md](../02.architecture/decisions/0010-communication-services.md)
+- **Retired domain Spec SPEC-0011** (communication): replaced by the communication guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.

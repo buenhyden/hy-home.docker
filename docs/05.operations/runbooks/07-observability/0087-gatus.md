@@ -68,7 +68,7 @@ metrics 접두사는 제외한다. 설정 롤백에 대비해 원본 `config.yam
 실행 중인 바인드 마운트 파일을 고치면 서비스에 즉시 영향을 줄 수
 있다. 승인되지 않은 전환을 준비하기 위해 실행 중인 파일을 편집하지 않는다.
 현재 롤아웃 상태는
-[Task 0004](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0004-native-oidc-service-migration.md)에
+Task 0004에
 속한다.
 
 클라이언트는 `home-gatus`이며, 정확한 콜백은

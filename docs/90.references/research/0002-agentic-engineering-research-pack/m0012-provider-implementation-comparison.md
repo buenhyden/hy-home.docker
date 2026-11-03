@@ -68,7 +68,7 @@ Current originals correct historical blanket absence claims for Claude AGENTS, C
 - [Workspace baseline](./m0020-workspace-baseline.md)
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)
-- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- SPEC-0158 preservation contract
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
 ## Findings

@@ -8,7 +8,7 @@ updated: "2026-10-15"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
-- "SPEC-0094"
+- "REQ-0024"
 created: "2026-06-04"
 ---
 
@@ -87,7 +87,7 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 
 ### Traceability
 
-- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`)
 - 같은 주제: [Guide](../../guides/01-common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md) (`RUN-0004`)
 
 ## Verification

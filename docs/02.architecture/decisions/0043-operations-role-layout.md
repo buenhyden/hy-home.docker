@@ -111,4 +111,4 @@ check, and `check-document-links.py --mode all` enforce this decision.
 - Parent architecture: [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - Superseded structural decision: SPEC-0158 and MIG-0002's catalog convergence
   (Stage 98 preserved record)
-- Execution: [SPEC-0183](../../98.archive/completed/03.specs/0183-operations-role-layout/spec.md)
+- Execution: SPEC-0183

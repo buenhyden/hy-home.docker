@@ -7,12 +7,12 @@ settings by itself.
 ## Observation Boundary
 
 - The dated public snapshot remains at
-  the retired DATA-0071 package, preserved under `docs/98.archive/retired/`;
-  it is superseded historical evidence and is not current state.
+  the retired DATA-0071 package, now removed from the tree and recoverable from
+  version history; it is superseded historical evidence and is not current state.
 - On 2026-09-05, the repository owner approved a PATCH limited to
   `branches/main/protection/required_status_checks`. The applied state and full
   protection read-back are recorded in
-  the completed SPEC-0172 outcome (`docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md#remote-control-plane-evidence`).
+  the completed SPEC-0172 outcome, recoverable from version history.
 - That read-back verified `strict=true`, required contexts
   `validation-changed` and `validation-full`, and GitHub Actions app ID 15368.
   Review, CODEOWNERS, conversation-resolution, admin, signature,

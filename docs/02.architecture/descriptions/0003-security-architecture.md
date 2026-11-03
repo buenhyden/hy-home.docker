@@ -115,7 +115,7 @@ path stays out of service and must never share storage with OpenBao.
 - [Security requirement](../../01.requirements/0003-security.md)
 - [Secrets manager decision](../decisions/0050-openbao-as-secrets-manager.md)
 - [Current OpenBao custody policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
-- [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
+- Current convergence Spec
 
 Runtime pins are owned by Compose/Dockerfile declarations; the
 [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

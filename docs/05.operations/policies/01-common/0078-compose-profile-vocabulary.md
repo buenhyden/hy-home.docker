@@ -341,10 +341,10 @@ source·문서·secret을 함께 제거한다.
 - [Workspace catalog](../../README.md)
 - [Independent LAB entrypoints](../../../../labs/postgresql-ha.md)
 - [Supabase LAB source](../../../../labs/supabase/README.md)
-- [Convergence specification](../../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
+- Convergence specification
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
-- [Original enablement decision](../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
-- [Sibling resolution](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
+- Original enablement decision
+- Sibling resolution
 
 ## Verification
 

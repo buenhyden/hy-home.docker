@@ -103,7 +103,7 @@ Quality scenarios point to the existing configuration these attributes apply to 
 ## Related Documents
 
 - **PRD**: [010-tooling.md](../../01.requirements/0010-tooling.md)
-- [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
+- Current convergence Spec
 - [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
 - [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
 - **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)

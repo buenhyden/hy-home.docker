@@ -11,13 +11,6 @@ parent_ids:
 - "RES-0085"
 created: "2026-09-04"
 observed_at: "2026-09-05"
-identity_recovery:
-  source_commit: "db21aebf079fcc4e867779861b49c2283b7f8f01"
-  source_path: "docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/REQUEST-SCOPE.md"
-  source_artifact_id: "RES-0085-SCOPE"
-  decision_path: "docs/98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md"
-  decision_artifact_id: "SPEC-0173-TSK-0001"
-  disposition: "consolidated"
 ---
 
 # Workspace Engineering Main Baseline Request Scope
@@ -142,7 +135,7 @@ separate owner and the repository SDLC chain.
 - [Current workspace baseline](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
 - [Agentic engineering research](../0002-agentic-engineering-research-pack/README.md)
 - [GitHub Actions platform research](../0084-github-actions-platform/README.md)
-- [Current identity-recovery decision](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md)
+- Current identity-recovery decision
 
 ## Findings
 
@@ -170,4 +163,4 @@ separate owner and the repository SDLC chain.
 - [Canonical governance governance](../../../../.agents/README.md).
 - [Registry](../../../99.templates/registry.json) and the
   [research member template](../../../99.templates/templates/references/research.template.md).
-- [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md).
+- Completed SPEC-0172 outcome.

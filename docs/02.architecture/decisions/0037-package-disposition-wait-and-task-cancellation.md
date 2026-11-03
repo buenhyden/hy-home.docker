@@ -9,8 +9,6 @@ layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
 - "AD-0030"
-supersedes:
-- "ADR-0036"
 created: "2026-09-17"
 ---
 
@@ -152,6 +150,7 @@ before moving. The rest of this decision stays in force.
 - [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
-- [SPEC-0179](../../98.archive/completed/03.specs/0179-package-disposition-wait-and-task-cancellation/spec.md)
-- [Archive index, including predecessor ADR-0036](../../98.archive/README.md)
+- SPEC-0179
+- Archive index, including predecessor ADR-0036
 - [Retention policy](../../../.agents/governance/documentation-protocol.md#retention-by-status)
+- **Superseded archive-model decisions**: ADR-0030 made a Tombstone the record of a retirement; ADR-0031 made Stage 98 a preserved record keyed by Retired Path; ADR-0033 preserved whole Spec packages; ADR-0035 introduced Stage 98 retention classes and route dispositions; ADR-0036 added occupancy, citation, and frozen identity rules. This decision replaces ADR-0036. Under SPEC-0249 the Stage 98 records were later summarized into Stage 01 and Stage 02 and deleted; version history is their record and retired numbers live in the Registry.

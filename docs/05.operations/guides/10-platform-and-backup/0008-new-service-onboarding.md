@@ -77,7 +77,7 @@ release/tag 준비는 [RUN-0009](../../runbooks/10-platform-and-backup/0009-rele
 ### Traceability
 
 - 상위 문서: [Release Management Runbook](../../runbooks/10-platform-and-backup/0009-release-management.md) (`RUN-0009`)
-- 과거 구현 근거이며 현재 실행 권한이 아님: [Workspace Revalidation Outcome](../../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
+- 과거 구현 근거이며 현재 실행 권한이 아님: Workspace Revalidation Outcome (`SPEC-0097`)
 - 같은 번호 `0008`의 Policy/Runbook은 없다.
 
 ## Troubleshooting

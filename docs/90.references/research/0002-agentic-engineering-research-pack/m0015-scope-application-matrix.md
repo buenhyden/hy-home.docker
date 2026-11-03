@@ -106,9 +106,9 @@ belong to the linked topic members. No new external fact, price, model
 availability or standard version is asserted here. Future criteria are
 conditional research proposals, not current normative requirements.
 
-The [Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md),
-[Plan](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/plan.md) and
-[Task](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md)
+The Spec,
+Plan and
+Task
 own this refresh and its evidence. Adoption routes to the applicable governance,
 requirement, architecture, Spec/Task or operations owner. Revisit this routing
 when coverage or ownership changes; fresh catalog/scope counts require a
@@ -519,7 +519,7 @@ separate approved internal assessment.
 >
 >
 > Applicable leaf names below refer to the flat twenty-leaf pack contract in
-> [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md).
+> SPEC-0158 preservation contract.
 > `workspace-baseline.md` and this matrix apply to every row and are omitted from
 > the per-row leaf lists to keep the table readable. The `Catalog reachability`
 > column now reports agent and function counts separately, because the two differ
@@ -726,14 +726,14 @@ separate approved internal assessment.
 - [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
 - [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
 - [Verification and validation](m0019-verification-validation.md)
-- [Refresh Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md)
+- Refresh Spec
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
 >
 > - [Workspace baseline](./m0020-workspace-baseline.md)
 > - [Verification and validation](./m0019-verification-validation.md)
-> - [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+> - SPEC-0158 preservation contract
 > - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 > - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 > - [Agent governance hub](../../../../.agents/README.md)
@@ -806,7 +806,7 @@ Expected roles remain subject to the future Task's approved assignment.
 
 | Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner role | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| SCOPE-A: bounded harness/loop | Task + session + provider / implementation, quality, governance | An owner approves a bounded agent workflow | Verified doc: [SPEC-0185](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md); hypothetical: adapter, loop state, synthetic event record | Can stop/resume/retry preserve scope without duplicate side effects? | Target/version, approved actions, injected stall/retry trace, checkpoint/review | Separately authorized synthetic failure and handoff trial | Pass if bounds, terminal conditions and idempotency hold; fail on unbounded work, duplicate effects or scope escape | Live tools require separate approval; cost/mutation exposure | hook-developer + eval-engineer | Not assessed in this run |
+| SCOPE-A: bounded harness/loop | Task + session + provider / implementation, quality, governance | An owner approves a bounded agent workflow | Verified doc: SPEC-0185; hypothetical: adapter, loop state, synthetic event record | Can stop/resume/retry preserve scope without duplicate side effects? | Target/version, approved actions, injected stall/retry trace, checkpoint/review | Separately authorized synthetic failure and handoff trial | Pass if bounds, terminal conditions and idempotency hold; fail on unbounded work, duplicate effects or scope escape | Live tools require separate approval; cost/mutation exposure | hook-developer + eval-engineer | Not assessed in this run |
 | SCOPE-B: precedence | Organization/user + repository + directory + task + provider / governance, security | Intentional conflict test is approved | Verified docs: [bootstrap](../../../../.agents/governance/bootstrap.md), [provider adapter](../../../../.codex/provider.md); hypothetical: synthetic instruction hierarchy/load trace | Which instruction wins at each trust boundary, including discovery/load differences? | Fixture hashes, hierarchy, trust/approval state, loaded text and outcome | Approved synthetic conflicts per product/channel | Pass if agreed precedence/trust matches observed behavior; fail on silent omission or unauthorized override | No user-global/private inspection; live trials separately approved | rules-engineer + eval-engineer | Not assessed in this run |
 | SCOPE-C: model/cost | Task + provider / quality, governance | Owner considers a model/budget change | Verified doc: Spec acceptance; hypothetical: synthetic dataset, redacted usage export | Does selection meet quality, cost/latency and fallback/budget bounds? | Product/billing units/date, authorized aggregate usage, sample outcomes/fallback | Fixed reproducible task sample with failure case | Pass if agreed quality/cost/latency/fallback hold; fail on regression or budget breach | Paid calls/account export require separate approval; no entitlement inference | eval-engineer + repository owner | Not assessed in this run |
 | SCOPE-D: memory/handoff | Repository + task + session + provider / knowledge, security | Durable memory or cross-provider handoff is proposed | Verified doc: current Task; hypothetical: bounded packet and synthetic lifecycle records | Can recipient recover goal/baseline/approval/decisions/checks/next action while poison and expiry stay excluded? | Provenance/access/retention rules, synthetic promotion/expiry/deletion/injection cases | Review packet and approved non-sensitive lifecycle trial | Pass if scope/provenance/lifecycle observable; fail on leakage, stale promotion or approval expansion | No raw/private conversations; storage/live tools separately approved | doc-writer + security-auditor | Not assessed in this run |
@@ -865,7 +865,7 @@ risk/approval rows. This matrix routes them without replacing their criteria.
 > | [Contract validator module](../../../../scripts/lib/agent_governance/agent_governance_contract.py)               | 2026-08-14 | Tracked mutable        | Newly cited. Scope-enum membership enforced at lines 2661 and 2778 against the catalog's own list only.                                                                                                                             |
 > | Repository contract script (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                   | 2026-08-14 | Tracked mutable        | Newly cited. Scans the scopes directory for path placeholders; requires 11 CODEOWNERS patterns.                                                                                                                                     |
 > | [`.github/CODEOWNERS`](../../../../.github/CODEOWNERS)                                                 | 2026-08-14 | Tracked mutable        | Newly cited. 30 path rules, all assigning one GitHub account; no scope or agent vocabulary.                                                                                                                                         |
-> | [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md) | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-32 and the pack leaf list are unchanged. |
+> | SPEC-0158 preservation contract | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-32 and the pack leaf list are unchanged. |
 > | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-32's derivations are unchanged.                                                                                                                                                                                    |
 > | [Workspace baseline](./m0020-workspace-baseline.md)                                                          | 2026-08-14 | Tracked draft          | Companion measured inventory; re-derived at `ece3eda9`.                                                                                                                                                                             |
 > | [Backstage descriptor format](https://backstage.io/docs/features/software-catalog/descriptor-format/)  | 2026-08-14 | External mutable       | Newly cited. `spec.owner` required per kind; `type` taxonomy explicitly open; owners not for runtime authorization.                                                                                                                 |

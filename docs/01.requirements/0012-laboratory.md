@@ -84,3 +84,5 @@ No separately numbered solution-independent external interface requirement was i
 - **Spec**: [Laboratory technical specification](../02.architecture/descriptions/0011-laboratory-architecture.md)
 - **Plan**: Laboratory standardization plan
 - **ADR**: [Laboratory services decision](../02.architecture/decisions/0011-laboratory-services.md)
+- **Retired domain Spec SPEC-0012** (laboratory): replaced by the laboratory guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.
+- **Retired requirement REQ-0022** (laboratory optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the laboratory operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

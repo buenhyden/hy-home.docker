@@ -645,6 +645,6 @@ Missing permission or target defers only the dependent operation.
 - [AD-0030](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037](../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [CLN01 material retirement Task](tasks/tsk-0007-cln01-material-retirement.md)
-- [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
-- [SPEC-0202](../../98.archive/completed/03.specs/0202-development-data-and-lab-isolation/spec.md)
-- [SPEC-0203](../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
+- SPEC-0201
+- SPEC-0202
+- SPEC-0203

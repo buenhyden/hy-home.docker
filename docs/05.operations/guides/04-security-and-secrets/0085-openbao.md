@@ -164,7 +164,7 @@ server의 기존 bootstrap 기록은 threshold2, Shamir share3개다. 현재 cus
 [Policy Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#exceptions)가 소유한다. 분리 custody와
 만료·종료 조건은 충족된 것으로 보지 않는다. 사람 OIDC 수용, renderer
 확인, 수정된 recovery 절차는
-[보존된 follow-up Task](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md)에
+보존된 follow-up Task에
 기록되어 있다. snapshot 생성과 server 재시작/unseal은 검증되었으며, 격리된
 restore와 share의 오프라인 전달은 별도의 운영자 책임으로 남아 있다.
 

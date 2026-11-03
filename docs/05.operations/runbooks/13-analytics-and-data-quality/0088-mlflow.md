@@ -197,7 +197,7 @@ upgrade하고 새 서버로 조회한 리허설은 SEC01 Task에 기록되어 �
 
 ### 선언 버전의 동작 근거
 
-선언 버전의 공식 tagged 소스와 비교한 [W6 검토 근거](../../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0006-tooling-communication-laboratory.md)에
+선언 버전의 공식 tagged 소스와 비교한 W6 검토 근거에
 따르면 기존 schema revision 불일치는 명시적 DB upgrade가 필요하고 run 삭제는
 lifecycle 변경이다. 따라서 artifact 자동 제거를 주장하지 않는다. 실행 버전 원본은
 [Dockerfile](../../../../infra/08-ai/mlflow/Dockerfile)이며 변경 때 근거를 다시 검토한다.

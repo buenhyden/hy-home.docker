@@ -9,8 +9,6 @@ layer: "architecture"
 artifact_id: "ADR-0039"
 parent_ids:
 - "AD-0012"
-supersedes:
-- "ADR-0015"
 created: "2026-09-24"
 ---
 
@@ -30,6 +28,8 @@ data or volume.
 The basis is the S01 ruling of SPEC-0180 Task 0008, the S12-S15 source
 stages, the 2026-09-24 live acceptance record, and the current repository
 configuration. Unrecorded runtime state is not claimed.
+
+- **Superseded decision**: ADR-0015 selected specialized analytics engines (InfluxDB 3 Core as the TSDB and ksqlDB for stream processing) before the lakehouse convergence. This decision replaces it.
 
 ## Decision Drivers
 

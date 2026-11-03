@@ -49,7 +49,7 @@ Catalog profile. The Registry schema rejects an undeclared `language` value.
 ### Follow-up
 
 - Corpus language migration for non-README documents, and full enforcement:
-  done by [SPEC-0187](../../98.archive/completed/03.specs/0187-document-language-migration/).
+  done by SPEC-0187.
 - Script and legacy-code cleanup found by the same audit.
 
 ## Decision Drivers
@@ -133,4 +133,4 @@ retired.
 - Requirements: [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md),
   [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
 - Architecture: [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
-- Spec: [SPEC-0184](../../98.archive/completed/03.specs/0184-readme-navigation-and-language-contract/)
+- Spec: SPEC-0184
