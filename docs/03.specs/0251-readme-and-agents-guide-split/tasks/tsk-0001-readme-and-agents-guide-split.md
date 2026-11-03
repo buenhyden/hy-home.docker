@@ -111,9 +111,10 @@ progress under the approved parents. Hosted CI has not run.
 
 ### Open issues
 
-- `.github/CODEOWNERS` and `.github/labeler.yml` name only the root
-  `AGENTS.md`; adding folder guides there is a protected-surface change left
-  for a separate approval.
+- `.github/labeler.yml` now labels every `**/AGENTS.md` as `area/governance`,
+  under the user's direct approval of 2026-11-04 (E22). `.github/CODEOWNERS`
+  needs no change: its unanchored `AGENTS.md @buenhyden` pattern and the
+  `* @buenhyden` default already match folder guides at any depth.
 - ADR-0002 keeps an `AI Agent Guidance` subsection in its accepted decision
   body; the README rule does not apply to it.
 - The folder guides start at `draft` and need a later change to become
@@ -150,6 +151,7 @@ progress under the approved parents. Hosted CI has not run.
 | E19 | 4 | W2 | governance-unit-tests | `tests/lib/document_governance` discovery after the review fixes, revision c113796e9, quiet tree | PASS | 768 tests OK | required | - |
 | E20 | 4 | W4 | review-fix-gates | revision c113796e9: metadata check-changed and check-active, corpus lifecycle, links alignment/navigation/language/traceability, operations catalog, Script Manifest, renderer `--check`, agent governance contract | PASS | 26 and 497 selected with zero violations; lifecycle and occupancy zero; renderer drift 0; contract zero failures | required | - |
 | E21 | 4 | W4 | validation-suites | CI routing, surface ownership and `tests/validation/lifecycle`, revision c113796e9 | PASS | 92 and 20 tests OK | required | - |
+| E22 | 2 | W3 | labeler-governance-glob | `.github/labeler.yml` `area/governance` glob `AGENTS.md` to `**/AGENTS.md`, user-approved 2026-11-04, revision fe917496f | PASS | CI routing 84 tests OK; GitHub workflow contract PASS; staged yamllint passed | required | - |
 
 ## Criterion Acceptance
 
