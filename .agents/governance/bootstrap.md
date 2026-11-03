@@ -73,8 +73,8 @@ native role/skill projections and tracked runtime controls are consumers, never
 shared policy sources. Authored native provider documents own syntax and loading
 differences only. Canonical `.agents/` content is never a generated output.
 Execution progress and handoff state belong to the current Task. A document that
-leaves an active stage is preserved under `docs/98.archive/`; Git history proves
-that preserved record is what was removed.
+leaves an active stage is summarized into its current owner and deleted; Git
+history is the record of what was removed.
 
 ### Hard Constraints
 

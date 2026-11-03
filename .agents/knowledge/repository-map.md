@@ -42,7 +42,7 @@ contents, user-global provider settings, and anything outside this repository.
 | `docs/03.specs/**` | the active Spec Package; its Task owns execution evidence | bounded change contract | metadata, corpus lifecycle, spec package tests |
 | `docs/05.operations/**` | the Guide, Policy, or Runbook in its role directory, or the Incident packet | operator context, controls, procedure, and incidents | operations catalog check |
 | `docs/90.references/**` | Research, Audit, or Data package | non-normative dated evidence | metadata, reference protection tests |
-| `docs/98.archive/**` | retention classes holding frozen bodies, and Tombstone and Migration route records | frozen bodies are never edited; the index, `completed/`, and `resolved/` are the admitted link targets | corpus lifecycle, archive recovery, archive link boundary |
+| `docs/98.archive/README.md` | the disposition scheme only; Stage 98 holds no records | current documents do not link into Stage 98; retired numbers live in the Registry | README checks only |
 | `docs/99.templates/registry.json` | the Stage 99 registry | document shape, path, identity, lifecycle | registry and metadata suites |
 | `.github/workflow-contract.yml` | executable composition and public suite membership | workflow contract plus security review | `check-github-workflow-contract.py` |
 | `.github/workflows/**` | the workflow files | least privilege, pinned actions, no secrets in `run` | actionlint, workflow contract |
@@ -109,9 +109,9 @@ contract's `public_gate` section, `scripts/manifest.yaml`, and the stage index
 documents. The Entry Order was re-read from `bootstrap.md` at `f71449eff` on
 2026-09-07, because the version transcribed here predated the two canonical
 categories this map's own ownership table lists and so routed to neither. The knowledge graph under `graphify-out/` was not used as evidence
-because its build commit differs from HEAD. The `docs/98.archive/**` row was
-re-read from the documentation protocol's Stage 98 dispositions section on
-2026-09-15, in the change that added that section. Evaluation-route provenance preceding the current evidence-role alignment is
+because its build commit differs from HEAD. The `docs/98.archive/README.md` row
+was re-read from the documentation protocol's retention section on 2026-11-03,
+in the change that removed the Stage 98 records. Evaluation-route provenance preceding the current evidence-role alignment is
 preserved in Git history; obsolete scorer paths are no longer loading routes.
 
 ### Knowledge Validity

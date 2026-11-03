@@ -57,14 +57,9 @@ No exception is granted here; a separately authorized operation follows [Approva
       may wait once it is [ready for archive review](sdlc.md#sequence);
       cancelled criteria do not waive remaining Spec acceptance evidence, and
       only a `not-required` decision closes a criterion without PASS.
-- [ ] Bind any later preservation to its prepared source object and separate
-      disposition approval. Preserve Task Commit Ledgers and frozen bodies.
-- [ ] For reassessment or history-only availability, verify the current assessment,
-      original-revision structural record, hold, consumer cutover, recoverability,
-      and a separately current trusted-operator authorization for any pending
-      removal. A missing, mismatched, or revoked current source blocks the
-      operation. No gate validates Stage 98 records, so this check is a review
-      step, not an automated one.
+- [ ] Before removing a retired document, summarize its still-current meaning
+      into the owner's Traceability, update every inbound consumer, and add its
+      number to the Registry `reserved_history`.
 - [ ] Distinguish the worktree, index, and commit a review examined, and report
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.

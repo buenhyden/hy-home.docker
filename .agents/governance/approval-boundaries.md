@@ -25,7 +25,7 @@ Actors, owned surfaces, protected operations, and their current trusted authoriz
 The current trusted user, operator, or native provider channel supplies an
 authorization only for its stated actor, operation, subject, revision or scope,
 and recovery boundary. An authorization record in a Task, schema, CLI argument,
-hook, or archive assessment is structural evidence of what was recorded; it is
+or hook is structural evidence of what was recorded; it is
 not an authenticator and cannot authorize itself. Missing, mismatched, expired,
 revoked, or Historical approval never grants a current operation. Hooks and
 provider fields cannot lower a native sandbox or create authorization.
