@@ -14,6 +14,7 @@ from unittest import mock
 
 from scripts.lib.document_governance import identity_history
 from scripts.lib.document_governance.identity_history import (
+    IDENTITY_PREFIX_SPACES,
     IdentityHistoryError,
     IssuedIdentities,
     collect_issued_identities,
@@ -110,7 +111,6 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "config", "user.name", "Registry Test")
             self._git(root, "config", "user.email", "registry@example.invalid")
             fixtures = (
-                ("legacy/incident.md", "inc-0001"),
                 ("2026/inc-0002-example/incident.md", "inc-2026-0002"),
                 ("2026/inc-0002-example/postmortem.md", "inc-2026-0002-PM"),
             )
@@ -121,7 +121,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "add", ".")
             self._git(root, "commit", "-qm", "incident fixtures")
             issued = collect_issued_identities(root)
-            self.assertEqual(frozenset({1, 2}), issued.numbers["incident"])
+            self.assertEqual(frozenset({2}), issued.numbers["incident"])
 
     def test_current_classifier_rejects_legacy_requirement_path(self) -> None:
         profiles = build_registry_profiles(load_registry())
@@ -826,27 +826,60 @@ class IdentityHistoryTests(unittest.TestCase):
         self.assertNotIn(23, issued.numbers.get("research", frozenset()))
         self.assertNotIn(61, issued.numbers.get("research", frozenset()))
 
-    def test_tombstone_identity_comes_from_frontmatter_not_target_path(self) -> None:
+    def test_operations_prefixes_record_the_operations_subject_space(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             self._git(root, "init", "-q")
             self._git(root, "config", "user.name", "Registry Test")
             self._git(root, "config", "user.email", "registry@example.invalid")
-            tombstone = root / (
-                "docs/98.archive/tombstones/03.specs/0153-retired-target.md"
+            fixtures = (
+                ("guides/01-common/0103-example.md", "GDE-0103"),
+                ("policies/01-common/0104-example.md", "POL-0104"),
+                ("runbooks/01-common/0105-example.md", "RUN-0105"),
+                ("runbooks/01-common/0106-legacy.md", "RUNBOOK-0106"),
             )
-            tombstone.parent.mkdir(parents=True)
-            tombstone.write_text(
-                "---\nartifact_id: TOMBSTONE-0131\n---\n",
-                encoding="utf-8",
-            )
+            for relative, artifact in fixtures:
+                path = root / "docs/05.operations" / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"---\nartifact_id: {artifact}\n---\n")
             self._git(root, "add", ".")
-            self._git(root, "commit", "-qm", "add Tombstone fixture")
+            self._git(root, "commit", "-qm", "operations fixtures")
 
             issued = collect_issued_identities(root)
 
-        self.assertIn(131, issued.numbers["tombstone"])
-        self.assertNotIn(153, issued.numbers["tombstone"])
+        self.assertEqual(
+            frozenset({103, 104, 105}), issued.numbers["operations-subject"]
+        )
+
+    def test_every_numbered_registry_prefix_is_scanned(self) -> None:
+        registry = json.loads(
+            (
+                pathlib.Path(__file__).resolve().parents[3]
+                / "docs/99.templates/registry.json"
+            ).read_text(encoding="utf-8")
+        )
+        patterns = set()
+
+        def walk(node: object) -> None:
+            if isinstance(node, dict):
+                pattern = node.get("artifact_id_pattern")
+                if isinstance(pattern, str):
+                    patterns.add(pattern)
+                for value in node.values():
+                    walk(value)
+            elif isinstance(node, list):
+                for value in node:
+                    walk(value)
+
+        walk(registry)
+        scanned = {prefix for prefix, _space, _root in IDENTITY_PREFIX_SPACES}
+        special = ("REQ-", "inc-", "tomb-")
+        for pattern in sorted(patterns):
+            prefix = pattern.split("{", 1)[0]
+            if prefix.startswith(special) or "{number" not in pattern:
+                continue
+            with self.subTest(pattern=pattern):
+                self.assertIn(prefix.upper(), scanned)
 
     def test_registry_high_water_is_not_below_observed_history(self) -> None:
         # The real-tree scan is the full-profile metadata gate's job; its

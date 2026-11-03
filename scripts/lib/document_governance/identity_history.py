@@ -52,9 +52,24 @@ HISTORICAL_ID_PATTERN = re.compile(
     r"PRD-[0-9]{4}(?:-(?:R|AC|FR|NFR)-?[0-9]{4})?|"
     r"SRS-[0-9]{4}(?:-R[0-9]{4})?|IFR-[0-9]{4}(?:-R[0-9]{4})?|"
     r"inc-[0-9]{4}-[0-9]{4}(?:-PM)?|"
-    r"(?:AD|ADR|SPEC|RES|AUD|DATA)-[0-9]{4}|"
-    r"(?:ad|adr|spec|ref|audit|guide|policy|runbook|ops|inc|mig|tombstone)-[0-9]{4}"
+    r"(?:AD|ADR|SPEC|RES|AUD|DATA|GDE|POL|RUN|MIG)-[0-9]{4}"
     r")\b"
+)
+# Current Registry artifact_id_pattern prefixes and their identity spaces.
+# Tombstone IDs embed the retired identity and carry no number of their own,
+# and incident IDs (inc-YYYY-NNNN) are handled separately in _record.
+IDENTITY_PREFIX_SPACES = (
+    ("ADR-", "adr", "docs/02.architecture/decisions/"),
+    ("AD-", "architecture-description", "docs/02.architecture/descriptions/"),
+    ("SPEC-", "spec", "docs/03.specs/"),
+    ("GDE-", "operations-subject", "docs/05.operations/"),
+    ("POL-", "operations-subject", "docs/05.operations/"),
+    ("RUN-", "operations-subject", "docs/05.operations/"),
+    ("INC-", "incident", "docs/05.operations/"),
+    ("RES-", "research", "docs/90.references/"),
+    ("AUD-", "audit", "docs/90.references/"),
+    ("DATA-", "data", "docs/90.references/"),
+    ("MIG-", "migration", "docs/98.archive/"),
 )
 INTERNAL_REQUIREMENT_PATTERN = re.compile(
     r"(?i)\b(?:"
@@ -355,7 +370,7 @@ def _record(identity: str, collected: dict[str, set[int]]) -> None:
         return
     package = numbers[0]
     if upper.startswith("INC-"):
-        # Current IDs include a year; legacy IDs carry only the allocation.
+        # inc-YYYY-NNNN: the allocation follows the year.
         collected.setdefault("incident", set()).add(
             numbers[1] if len(numbers) > 1 else package
         )
@@ -374,24 +389,7 @@ def _record(identity: str, collected: dict[str, set[int]]) -> None:
                 numbers[-1]
             )
         return
-    prefixes = {
-        "AD-": "architecture-description",
-        "ADR-": "adr",
-        "SPEC-": "spec",
-        "RES-": "research",
-        "REF-": "research",
-        "AUD-": "audit",
-        "AUDIT-": "audit",
-        "DATA-": "data",
-        "GUIDE-": "operations-subject",
-        "POLICY-": "operations-subject",
-        "RUNBOOK-": "operations-subject",
-        "OPS-": "operations-subject",
-        "INC-": "incident",
-        "MIG-": "migration",
-        "TOMBSTONE-": "tombstone",
-    }
-    for prefix, space in prefixes.items():
+    for prefix, space, _root in IDENTITY_PREFIX_SPACES:
         if upper.startswith(prefix):
             collected.setdefault(space, set()).add(package)
             return
@@ -401,18 +399,9 @@ def _path_accepts_identity(path: str, identity: str) -> bool:
     upper = identity.upper()
     if upper.startswith(("REQ-", "PRD-", "SRS-", "IFR-")):
         return path.startswith("docs/01.requirements/")
-    if upper.startswith("AD-") and not upper.startswith("ADR-"):
-        return path.startswith("docs/02.architecture/descriptions/")
-    if upper.startswith("ADR-"):
-        return path.startswith("docs/02.architecture/decisions/")
-    if upper.startswith("SPEC-"):
-        return path.startswith("docs/03.specs/")
-    if upper.startswith(("GUIDE-", "POLICY-", "RUNBOOK-", "OPS-", "INC-")):
-        return path.startswith("docs/05.operations/")
-    if upper.startswith(("RES-", "REF-", "AUD-", "AUDIT-", "DATA-")):
-        return path.startswith("docs/90.references/")
-    if upper.startswith(("MIG-", "TOMBSTONE-")):
-        return path.startswith("docs/98.archive/")
+    for prefix, _space, root in IDENTITY_PREFIX_SPACES:
+        if upper.startswith(prefix):
+            return path.startswith(root)
     return False
 
 

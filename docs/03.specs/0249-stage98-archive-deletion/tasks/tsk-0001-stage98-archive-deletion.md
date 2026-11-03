@@ -193,8 +193,12 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
   already issued; it is now 106. No check caught it because the identity
   scanner maps the `GUIDE-`, `POLICY-` and `RUNBOOK-` prefixes while issued
   operations identities use `GDE-`, `POL-` and `RUN-`, so operations numbers are
-  never observed by allocation or by the new reserved-but-live check. Fixing
-  the prefix map is left for a separate change.
+  never observed by allocation or by the new reserved-but-live check. The
+  scanner now takes one prefix table from the current Registry patterns
+  (`GDE-`, `POL-`, `RUN-` and the other numbered spaces), drops the stale
+  `GUIDE-`, `POLICY-`, `RUNBOOK-`, `OPS-`, `REF-`, `AUDIT-` and `TOMBSTONE-`
+  aliases and the bare legacy incident form, and a test fails if a numbered
+  Registry prefix is not scanned.
 - The final evidence rows name revision b8832d8ee or ef6046cc9; the Task-only
   commit that records them changes no checked code or Registry data.
 - The archive-record metadata vocabulary in `metadata/profile.py` and the
@@ -258,6 +262,8 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 | E46 | 4 | W5 | manifest-and-renderer | Script Manifest and provider renderer `--check`, revision b8832d8ee | PASS | manifest valid; drift 0 | required | - |
 | E47 | 4 | W5 | staged-precommit | `run-ci-precommit.sh --mode local-staged` before each final re-review commit | PASS | no failing hook | required | - |
 | E48 | 4 | W5 | hosted-ci | GitHub Actions on the final head | NOT_RUN | not observed from this worktree | required | - |
+| E49 | 4 | W5 | operations-prefix-scan | identity history tests, metadata check-changed `--base-ref origin/main`, registry and requirements tests, corpus lifecycle after the prefix table change | PASS | 29 identity tests OK; check-changed 372 selected, 0 violations; registry and requirements OK; lifecycle and occupancy 0 | required | - |
+| E50 | 4 | W5 | hosted-ci-prior-head | CI Quality Gates run 41637977928 on d80fddbac | PASS | candidate-quality success; main-security skipped | required | - |
 
 ## Criterion Acceptance
 
