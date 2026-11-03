@@ -42,7 +42,7 @@ selection.
 
 ### Traceability
 
-- [SPEC-0219](../../03.specs/0219-storybook-build-and-delivery/spec.md)
+- SPEC-0219
 - [Storybook guide](../../05.operations/guides/14-design-system/0101-storybook.md)
 - [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md)
 - [Storybook runbook](../../05.operations/runbooks/14-design-system/0101-storybook.md)
@@ -87,11 +87,11 @@ infers no runtime, TLS or browser result.
 ### Risks
 
 A build whose commit differs between the two images, or a token accepted for
-another audience, would break the contracts that SPEC-0219 defines.
+another audience, would break the contracts that POL-0101 defines.
 
 ### Evolution
 
-Changes to the build, routes or token checks follow SPEC-0219 and its
+Changes to the build, routes or token checks follow POL-0101 and its
 operations documents; this description changes only when the structure does.
 
 ## Related Documents

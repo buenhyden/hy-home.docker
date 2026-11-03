@@ -127,7 +127,7 @@ replacement claim.
 - [REQ-0003](../../01.requirements/0003-security.md)
 - [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
 - [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-method.md)
-- [SPEC-0243](../0243-openbao-window-readiness/spec.md)
+- SPEC-0243
 - [Prometheus Runbook](../../05.operations/runbooks/07-observability/0045-prometheus.md)
 - [Gatus Runbook](../../05.operations/runbooks/07-observability/0087-gatus.md)
 - [Plan](plan.md)

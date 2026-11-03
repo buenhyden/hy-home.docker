@@ -781,6 +781,6 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
 - [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
 - [Integration owner](../0204-service-integration-security-and-operations/spec.md)
-- [Request precedence owner](../0221-request-precedence-and-enforcers/spec.md)
+- Request precedence owner
 - [Home host requirement](../../01.requirements/0027-home-development-host.md)
 - [Home host architecture](../../02.architecture/descriptions/0031-home-development-host.md)

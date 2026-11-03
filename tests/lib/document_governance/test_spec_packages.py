@@ -4675,13 +4675,10 @@ class HistoricalSpecSnapshotReuseTests(unittest.TestCase):
                 )
 
 
-class TerminalTaskResolvesCorrectionTests(unittest.TestCase):
-    """The one registered Resolves correction is the only allowed change."""
+class TerminalTaskBodyTests(unittest.TestCase):
+    """A terminal Task body admits no change, not even a Resolves correction."""
 
-    PATH = pathlib.PurePosixPath(
-        "docs/03.specs/0211-qa-scope-and-delivery-rationalization/tasks/"
-        "tsk-0002-hosted-contract-and-tier13-hardening.md"
-    )
+    PATH = pathlib.PurePosixPath("docs/03.specs/0001-example/tasks/tsk-0002-x.md")
     ROW = (
         "| Final hosted candidate recovery | 2, 3 | W70 | Actual PR candidate "
         "| PR 505 | PASS | Passed | required | {} |"
@@ -4696,19 +4693,19 @@ class TerminalTaskResolvesCorrectionTests(unittest.TestCase):
         return _spec_packages_module().SpecDocument(
             path or self.PATH,
             "task",
-            "SPEC-0211-TSK-0002",
+            "SPEC-0001-TSK-0002",
             "completed",
             (),
             source_text=text,
         )
 
-    def test_registered_resolves_correction_matches(self) -> None:
+    def test_the_former_resolves_correction_is_rejected(self) -> None:
         before = self._task("2026-10-22", "Final hosted candidate")
         after = self._task(
-            "2026-10-29",
+            "2026-10-22",
             "First hosted candidate RED, Hosted retry, Final hosted candidate",
         )
-        self.assertTrue(
+        self.assertFalse(
             _spec_packages_module()._terminal_task_migration_matches(before, after)
         )
 

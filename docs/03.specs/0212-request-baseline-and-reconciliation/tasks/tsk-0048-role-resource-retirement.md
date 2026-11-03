@@ -37,8 +37,9 @@ The observed clean starting HEAD was
 `d2ff343d51809f9472e9e12a4d717956947a8d5b`. The supplied dependencies package
 was unavailable, so a complete historical crosscheck is not claimed. Historical
 SPEC-0204 P09 remains the Wiki-preparation record. SPEC-0218 common controls
-and SPEC-0246 C1–C6 remain authoritative at their recorded source, actor,
-environment and criterion scope.
+and the SPEC-0246 C1–C6 acceptance, now summarized in the POL-0102
+Traceability, remain authoritative at their recorded actor, environment and
+criterion scope.
 
 ### Read-only host observation
 
@@ -103,7 +104,8 @@ Kafka/SeaweedFS/Mailpit paths. That is a documented source-versus-history
 distinction, not evidence that packages, images, backups or external consumers
 are absent.
 
-SPEC-0246 C1–C6 is `REUSE_ACCEPTED`: the recorded owner acceptance places
+SPEC-0246 C1–C6 is `REUSE_ACCEPTED`: the owner acceptance summarized in the
+POL-0102 Traceability places
 Prometheus and Tempo on SSD while Loki, Alloy, Pyroscope, containerd, Docker
 and BuildKit remain on HDD. P09 does not re-run any migration, change C6 to
 pending, or interpret an observational read-only mount as a host fault.
@@ -141,7 +143,7 @@ executor handoffs.
 | Current runtime role use | 90 | W95 | Service/consumer operation | Operating environment | NOT_RUN | Not authorized or observed; declaration evidence is not runtime use, owner or cost evidence. | required | - |
 | Resource assessment binding | 91 | W96 | QA-owned dependency bridge | Canonical registry/service/Compose/HEAD bindings | PASS | Independent 35/35 rerun in 23.509 s; changed execution trace 81/82 (98.8%). Caller projections are rejected. Effective runtime controls and receipt remain unverified, so runtime/mutation acceptance is blocked. | required | - |
 | Common-control overlay helper | 91 | W96 | Direct, security and public-copy overlay checks | Root plus documented overlays and LAB CLI | PASS | Direct 30/30, security 18/18, public-copy 18 scopes/1,062 instances/0 findings; trace 335/364 added lines. Recorded source fingerprints and earlier packets remain historical; no runtime limit or host change is claimed. | required | - |
-| C1–C6 historical placement | 92 | W97 | Historical acceptance readback | SPEC-0246 record | NOT_APPLICABLE | Recorded criterion acceptance only; no current migration or restore was run. | optional | - |
+| C1–C6 historical placement | 92 | W97 | Historical acceptance readback | POL-0102 Traceability | NOT_APPLICABLE | Recorded criterion acceptance only; no current migration or restore was run. | optional | - |
 | Retirement parser | 93 | W98 | Focused parser rejection and security checks | Owned synthetic fixtures | PASS | Final 135 focused tests; trace 86/88 (97.7%); independent security review 66 checks. This proves rejected/synthetic input behavior only, not apply/deletion. | required | - |
 | P09 routing and contract checks | 90 | W95 | Local routing and workflow contract checks | Current public P09 sources | PASS | Final 28/28, exit 0, skip 0, 1.243 s; workflow contract passed. Temporary alternate-index manifest result remains historical and is not a final staged-manifest result. | required | - |
 | Broad CI plan | 91 | W96 | Public-plan execution | Existing CI plan | FAIL | 7 failures/323 errors from existing `leaf.p03-hermes` public-execution parity residual; separate P03/CI ownership remains. | required | - |
@@ -155,7 +157,7 @@ executor handoffs.
 | --- | --- | --- | --- | --- |
 | 90 | pending | Current public role mapping, P09 DATA review refresh | Source declaration scope is current; actual use and ownership remain unverified. | SPEC-0212 TSK-0048 |
 | 91 | pending | Resource assessment binding, Common-control overlay helper | Source tests pass; runtime/mutation remains blocked because effective controls and receipt are unverified. | SPEC-0212 TSK-0048 |
-| 92 | pending | C1–C6 historical placement | Existing SPEC-0246 acceptance is reused at its recorded scope; measured drift plus an approved recovery plan is required to reopen. | SPEC-0246 owner |
+| 92 | pending | C1–C6 historical placement | Existing SPEC-0246 acceptance, summarized in POL-0102, is reused at its recorded scope; measured drift plus an approved recovery plan is required to reopen. | @buenhyden |
 | 93 | pending | Retirement parser | Parser rejection tests pass; apply remains blocked pending exact owner, writer stop and target approval. | SPEC-0212 TSK-0048 |
 
 ## Review and Completion
@@ -174,4 +176,3 @@ remain independent results.
 - [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
 - [Common profile policy](../../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
 - [Host storage placement policy](../../../05.operations/policies/10-platform-and-backup/0102-host-storage-placement.md)
-- [SPEC-0246 storage Task](../../0246-host-storage-tiering/tasks/tsk-0001-host-storage-tiering.md)

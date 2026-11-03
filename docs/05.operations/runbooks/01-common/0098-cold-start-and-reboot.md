@@ -7,8 +7,6 @@ owner: "@buenhyden"
 updated: "2026-10-28"
 layer: "operations"
 artifact_id: "RUN-0098"
-parent_ids:
-- "SPEC-0182"
 created: "2026-09-25"
 ---
 
@@ -281,9 +279,9 @@ Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 
 
 ### Traceability
 
-- 과거 구현·리허설 근거: [SPEC-0182](../../../03.specs/0182-home-residual-backlog/spec.md)
-  criterion 11, [Plan W11](../../../03.specs/0182-home-residual-backlog/plan.md),
-  [Task 0003](../../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)
+- 과거 구현·리허설 근거: SPEC-0182
+  criterion 11, Plan W11,
+  Task 0003
 - 현재 결정: [ADR-0042](../../../02.architecture/decisions/0042-openbao-unseal-method.md)
 - 관련 runbook: [RUN-0085 OpenBao](../04-security-and-secrets/0085-openbao.md),
   [RUN-0021 Backup and Restore](../10-platform-and-backup/0021-backup-and-restore.md),

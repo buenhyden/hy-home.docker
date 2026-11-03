@@ -22,12 +22,12 @@ Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않
 
 ## Scope
 
-- 포함: 진행 중인 변경, 검증이 끝나 보관 승인을 기다리는 package의
+- 포함: 진행 중인 변경, 검증이 끝나 삭제 승인을 기다리는 package의
   Spec·Plan·Task와 Spec이 직접 소유하는 실행 가능한 contract.
-- 제외: 운영 절차, 감사·조사 데이터, 이미 처분된 package의 본문, 이전 경로의
-  복제본과 redirect. 운영·참조 자료는 각 Stage의 현재 owner가 소유합니다. 삭제된
-  package의 본문은 Git 이력이 기록이며, 그 번호는 Registry `reserved_history`가
-  보관합니다.
+- 제외: 운영 절차, 감사·조사 데이터, 이미 삭제된 package의 본문, 이전 경로의
+  복제본과 redirect. 운영·참조 자료는 각 Stage의 현재 owner가 소유합니다.
+  삭제된 package의 번호는 Registry `reserved_history`에 남고, 본문은 Git
+  history가 기록합니다.
 
 ## Structure
 
@@ -40,51 +40,20 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 
 | ID | Package | 목적 |
 | --- | --- | --- |
-| SPEC-0182 | [HOME 잔여 작업](./0182-home-residual-backlog/) | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
 | SPEC-0204 | [서비스 연동·보안·운영](./0204-service-integration-security-and-operations/) | 공통 서비스 호환성·외부 연결·백업 경계의 승인용 계약 |
-| SPEC-0207 | [공통 권한·안전한 저술](./0207-common-authorization-and-safe-authoring/) | 권한 원본·검토·안전한 문서 저술 경계의 수렴 |
-| SPEC-0208 | [Stage 99 frontmatter·Task 수명주기](./0208-stage99-frontmatter-and-task-lifecycle/) | Stage 99 완료 증거와 Task 수명주기 기록의 기계 계약 |
 | SPEC-0209 | [0209-common-document-contract-adoption/](./0209-common-document-contract-adoption/) | 공통 문서 계약의 Registry, 현재 문서, 소비자 정합화 |
-| SPEC-0210 | [Task 증거 표 무결성](./0210-task-evidence-table-integrity/) | generation 5 Plan과 Task 증거 표의 분절 누락 방지 |
-| SPEC-0211 | [QA 범위·전달 정합화](./0211-qa-scope-and-delivery-rationalization/) | 일회성 QA 폐기, 원격 변경 영향 검사, commit·SemVer 릴리스 단일 소유권 |
 | SPEC-0212 | [요청 기준선·정합화](./0212-request-baseline-and-reconciliation/) | 2026-10-07 요청의 기준선, 서비스 키 인벤토리, 충돌 지도, 후속 package 순서 |
-| SPEC-0213 | [DEV 데이터 경계·InfluxDB 퇴역](./0213-dev-data-and-influx-retirement/) | DEV/MNG 변수 분리, role별 연결 예산, InfluxDB 활성 표면 퇴역 |
-| SPEC-0214 | [품질 부하 도구·OTel 의미](./0214-quality-k6-locust-and-otel-semantics/) | k6 기본·Locust LAB, 인증된 품질 metrics 경로, 속성 보존 |
-| SPEC-0215 | [LAB 격리·서비스 선택](./0215-lab-isolation-and-service-selection/) | root 폐포, LAB 경계·lease controller·예산, 선택 서비스 처분 |
-| SPEC-0216 | [Compose container·host 이름 규칙](./0216-compose-container-and-host-naming/) | infra 서비스 `container_name`·`hostname` = 서비스 이름, 등록 예외만 허용 |
-| SPEC-0217 | [하위 에이전트 모델·위임 설명](./0217-subagent-model-and-routing-text/) | 하위 에이전트 모델을 Opus 5.5·Sonnet 5.5로 갱신, 역할 Overview·Use When에서 위임 설명 생성 |
 | SPEC-0218 | [공통 control·예외](./0218-common-controls-and-exceptions/) | root·LAB 모든 서비스의 최종 control을 정확한 예외와 대조, secret group·capability·PID 예산 정리 |
-| SPEC-0219 | [Storybook 빌드·전달](./0219-storybook-build-and-delivery/) | 커밋 고정 image 빌드·registry 증명, 인증 회귀, 토큰 기반 공유 UI, 다른 워크스페이스용 원격 문서 MCP와 Claude Design export 경계 |
-| SPEC-0220 | [Crawl4AI 수집·egress](./0220-crawl4ai-collection-and-egress/) | 컨테이너 밖 egress 강제, 출처 권리 registry와 consumer 승인 계약, bounded job 참조 adapter, 실이미지 격리 리허설 |
-| SPEC-0221 | [요청 우선 정책·집행기 정합](./0221-request-precedence-and-enforcers/) | 현재 요청 범위의 승인, 수집 텍스트의 지시 배제, 로컬 gate의 원격 후보 검사 사전 실행과 그 집행 검사 |
-| SPEC-0222 | [npm 위험 수용 연장](./0222-npm-risk-acceptance-extension/) | 패치 없는 GHSA-vfj7 수용을 소유자 승인으로 최대 30일씩 연장하는 계약 창과 품질 기준 규칙 |
-| SPEC-0223 | [RedisInsight Valkey 조회](./0223-redisinsight-valkey-inspection/) | DEV·MNG Valkey 읽기 전용 inspector, SSO 우회 차단, 사전 등록 연결·암호화와 공유 소비자 영향 점검 |
-| SPEC-0224 | [DEV·MNG 저장소 관측 분리](./0224-datastore-observation-split/) | DEV·MNG PostgreSQL·Valkey 전용 관측 계정, `db_scope`·`db_engine` 레이블, 기대 상태 기반 경보와 범위별 대시보드 |
-| SPEC-0225 | [HOME 관측 대상 정리](./0225-observability-home-coverage/) | LAB 전용 대시보드·경보 분리, 비어 있던 대시보드의 수집 보완과 쿼리 정정 |
 | SPEC-0226 | [AI 런타임 고정 검증](./0226-ai-runtime-pin-verification/) | Ollama·Open WebUI digest 고정, 모델 load·대기열 한도, 세션 key·모델 catalog 백업과 격리 복원·기능 검증 |
-| SPEC-0227 | [Stage 05 양식 정비](./0227-stage05-format-refresh/) | 운영 문서 230개의 템플릿 순서·빈 절 검사 도입, 한국어 본문·소유 분리·Compose 사실 정정 |
-| SPEC-0228 | [백업 telemetry·예산](./0228-backup-telemetry-budget/) | Loki·Tempo SeaweedFS collection 백업 제외와 state 저장소 예산 8 GiB |
-| SPEC-0229 | [소유자 후속 조치](./0229-owner-follow-ups/) | Storybook MCP refresh 오류 원인, Grype DB 상한과 AI 이미지 스캔, OpenBao snapshot token 발급 절차 |
-| SPEC-0230 | [v9 품질 교정](./0230-v9-quality-corrections/) | stale 자동 닫기 제거(표시만 유지), compose-baseline selector 목록과 SEC01 ledger 입력 digest 정정 |
 | SPEC-0231 | [Task lifecycle 6세대](./0231-task-lifecycle-generation-6/) | Spec·Plan 권한 상태, 기준별 수용 표, 다중 실행 항목 Task, 파생 보관 준비 판정과 활성 문서 이행 |
-| SPEC-0232 | [v9 잔여 교정](./0232-v9-residual-corrections/) | 검증만 하는 PostToolUse 훅, 낡은 n8n 후보 시험 제거, Registry 기준 동결 경계 검사, 세 단계 `AGENTS.md` |
-| SPEC-0233 | [6세대 reader 교정](./0233-generation-6-reader-corrections/) | criterion 수용 행 정확히 하나, 실행 항목 완료 판정, 완료 보관 진입 조건과 누락된 규칙 fixture |
-| SPEC-0235 | [로컬 gate 거버넌스 timeout](./0235-local-gate-governance-timeout/) | 로컬 전용 문서 거버넌스 unittest node timeout을 15분에서 45분으로 올리고 실측 시간으로 근거 기록 |
-| SPEC-0236 | [공유 에이전트 기억](./0236-shared-agent-memory/) | Claude·Codex native 기억 비활성화, 등록된 단일 공유 기억 저장소와 CLI, 용량·백업 계약 초안 |
-| SPEC-0237 | [에이전트 memory Restic 포함](./0237-agent-memory-restic-coverage/) | 일일 `hyhome-backup.sh`가 공유 memory 저장소를 staging에 online backup해 Restic snapshot에 포함 |
-| SPEC-0239 | [OpenBao Agent telemetry와 alert](./0239-openbao-agent-alert/) | Agent `metrics_only` listener, Prometheus `openbao-agent` job, scrape 실패·인증 실패 alert |
-| SPEC-0241 | [hook 출력과 main push 차단](./0241-hook-outputs-and-main-push-guard/) | PreCompact·SessionStart·PreToolUse 출력 교정, Codex hook 정렬, main 직접 push 차단과 pre-push guard, secret 읽기 거부 |
-| SPEC-0242 | [1인 관리자 OpenBao custody](./0242-single-admin-openbao-custody/) | share·CA key는 host와 host 백업에, BKP-003·R2 자격 증명·BKP-002·Cloudflare 접근만 비밀번호 관리자 계정에 두고 W1b rekey를 뺀다 |
-| SPEC-0243 | [OpenBao 유지보수 창 준비](./0243-openbao-window-readiness/) | 창 NOT READY 판정의 선행 조건·결함(D1~D4)·W4 rollback을 문서로 막고 restore·W1c·W3a·W3b 도구와 CA mount를 단위별로 준비 |
 | SPEC-0244 | [Native memory 통제 검증](./0244-native-memory-controlled-verification/) | Claude native memory effective-state와 hook delivery를 설정·메뉴·영수증별로 분리해 통제 검증 |
 | SPEC-0245 | [Observability CA 실행](./0245-observability-ca-execution/) | Prometheus·Gatus의 백업·격리 복원 검증 후 순차 CA 재생성과 rollback 경계 |
-| SPEC-0246 | [호스트 저장소 계층화](./0246-host-storage-tiering/) | Docker 저장소 종류별 SSD·HDD 배치 정책: containerd 이미지 저장소는 HDD, Ollama 모델은 SSD, 빌드 캐시 한도와 미사용 이미지의 registry 보관 |
-| SPEC-0247 | [Hermes 후보 오프라인 검증](./0247-offline-hermes-candidate-validator/) | 후보 JSON의 식별자·상태·출처 해시·비공개 차단 경계를 로컬에서 검사하고 게시 승인과 분리 |
 | SPEC-0248 | [Archive·migration 검사 폐기](./0248-archive-and-migration-check-retirement/) | Stage 98 기록과 migration ledger를 검증하던 gate를 삭제하고 현재 검사가 쓰는 읽기 전용 loader와 legacy 허용만 남겨 목록으로 관리 |
 | SPEC-0249 | [Stage 98 archive 삭제](./0249-stage98-archive-deletion/) | Stage 98 기록을 01·02 문서에 요약하고 삭제하며, 폐기 번호를 Registry `reserved_history`로 옮기고 archive를 읽던 검사를 제거 |
+| SPEC-0250 | [완료 Spec package 삭제](./0250-finished-spec-package-deletion/) | 모든 문서가 terminal인 Spec package를 삭제하고 번호를 Registry `reserved_history`에 예약하며, 현재 문서의 링크를 일반 텍스트로 바꿈 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
-package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
+package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
 규칙대로 읽을 때 계산하며 표나 frontmatter에 적지 않습니다. 새 lifecycle
 상태도, 처분 승인도 아닙니다.
 
@@ -112,9 +81,10 @@ package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/
 5. acceptance 대응과 승격 기록은 현재 Task에 남기고 Stage 01·02·05의 오래
    유지할 갱신을 연결하거나 갱신이 필요 없는 이유를 적습니다.
 6. metadata, lifecycle, 링크, 구현 정합성, 등록된 gate profile을 검증합니다.
-7. 승격과 acceptance 검증으로 package를 삭제 검토 준비 상태로 만듭니다. 별도 승인과
-   inbound consumer 확인 뒤 남아야 할 내용을 01·02 문서에 요약하고 package를 삭제하며,
-   Spec 번호를 `reserved_history`에 추가합니다. clarify, analyze, 구현, 검증 순서는
+7. 승격과 acceptance 검증으로 package가 removal review 준비 상태가 되고 삭제가
+   승인되면, 현재 문서가 여전히 기대는 의미를 01·02 owner에 요약한 뒤 package를
+   삭제하고 Spec 번호를
+   `reserved_history`에 추가합니다. clarify, analyze, 구현, 검증 순서는
    [SDLC](../../.agents/governance/sdlc.md)를 따릅니다.
 
 ### Package 수명주기
@@ -127,9 +97,21 @@ package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/
   `Evidence` 한 곳에 기록합니다.
 - Spec·Plan 상태는 승인 권한만 기록합니다. 실행 상태는 Task가, 수용 판정은
   Task의 `Criterion Acceptance` 표가 소유합니다.
-- 삭제 검토 준비가 된 package는 그대로 승인을 기다릴 수 있습니다. 별도 승인을
-  받은 뒤 요약을 옮기고 package 전체를 삭제하며, Spec 번호가 `reserved_history`에
-  없으면 삭제가 실패합니다. Stage 98로 옮기지 않습니다. 철회와 완료의 처분 기록은
+- removal review 준비가 되고 삭제가 승인된 package는 삭제합니다. 준비 상태는
+  모든 criterion이 accepted 또는 `not-required`인 상태이며, typed Criterion
+  Acceptance 표가 없는 이전 형식은 모든 criterion이 PASS·accepted이고 해결되지
+  않은 required non-PASS가 없으면 준비로 봅니다. 완료 package를 지우라는 사용자
+  지시가 그 묶음의 승인이며, 삭제하는 Task가 승인과 package별 criterion 상태를
+  기록합니다. Spec 번호는
+  Registry `reserved_history`에 추가하고, 현재 문서의 링크는 일반 텍스트로
+  바꾸며, 본문은 Git history가 기록합니다. 하나라도 terminal이 아닌 Task가
+  있으면 package와 그 완료된 Task는 남깁니다. Stage 98로 옮기지 않습니다.
+- terminal Task 본문은 package가 남아 있는 동안 고치지 않습니다. 그 본문이
+  나중에 삭제된 package를 가리키는 링크는 고치지 않으며, 링크 검사는 번호가
+  예약된 package를 향한 그런 링크만 허용합니다.
+- lifecycle generation 이전 proof를 지닌 package(SPEC-0209, SPEC-0231)는 현재
+  terminal Task가 그 proof에 기대는 동안 삭제하지 않습니다.
+  철회와 완료의 처분 기록은
   [문서 보존 정책](../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)을
   따릅니다.
 

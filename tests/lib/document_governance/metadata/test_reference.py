@@ -601,9 +601,9 @@ The fixture is intentionally in progress.
                 f"docs/03.specs/{fixture_number:04d}-fixture-evidence-integrity"
             )
             index_anchor = (
-                "| SPEC-0209 | [0209-common-document-contract-adoption/]"
-                "(./0209-common-document-contract-adoption/) | 공통 문서 계약의 "
-                "Registry, 현재 문서, 소비자 정합화 |"
+                "| SPEC-0204 | [서비스 연동·보안·운영]"
+                "(./0204-service-integration-security-and-operations/) | 공통 서비스 "
+                "호환성·외부 연결·백업 경계의 승인용 계약 |"
             )
             index_row = (
                 f"| {fixture_id} | [{fixture_number:04d}-fixture-evidence-integrity/]"

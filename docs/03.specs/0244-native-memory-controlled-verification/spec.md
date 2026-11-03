@@ -132,6 +132,6 @@ separately scoped authorization.
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
 - [AD-0027](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - [ADR-0049](../../02.architecture/decisions/0049-shared-agent-memory-store.md)
-- [SPEC-0236](../0236-shared-agent-memory/spec.md)
+- SPEC-0236
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-native-memory-controlled-verification.md)

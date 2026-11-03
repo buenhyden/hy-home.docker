@@ -1616,7 +1616,7 @@ without claiming private data or runtime recovery.
 
 The v29 local request reuses completed verification and corrects the current
 handoff against main `49fd95a6ed482d7194c840b43b73a030be6f3d5d`.
-[SPEC-0243's recorded window outcomes](../../0243-openbao-window-readiness/tasks/tsk-0001-openbao-window-readiness.md)
+SPEC-0243's recorded window outcomes
 include the 07:18 W2 Snapshot-token delivery, the 07:49 manual backup success,
 the later protected Snapshot/R2 dump match, accepted `-06` restore, HOME 2.7.1
 transition, W5 Agent rendering, W6 checks and 13:00:31 manual backup success.

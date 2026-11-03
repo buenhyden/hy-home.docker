@@ -87,4 +87,4 @@ the status changed to `accepted` in the first change after SPEC-0236 merged
 - [AD-0027](../descriptions/0027-agent-governance-canonical-adapter.md)
 - [ADR-0032](0032-canonical-agent-governance-home.md)
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
-- [SPEC-0236](../../03.specs/0236-shared-agent-memory/spec.md)
+- SPEC-0236

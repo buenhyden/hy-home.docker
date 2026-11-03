@@ -53,7 +53,7 @@ jobs.run_once(Crawl4AI("http://crawl4ai:11235", token))
 
 ## Related Documents
 
-- SPEC-0220(`docs/03.specs/0220-crawl4ai-collection-and-egress/spec.md`)
+- SPEC-0220
 - Crawl4AI 정책(`docs/05.operations/policies/0091-crawl4ai.md`)
 - Crawl4AI 가이드(`docs/05.operations/guides/0091-crawl4ai.md`)
 - [문서 인덱스](../../docs/README.md)

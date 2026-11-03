@@ -97,9 +97,17 @@ Proposed on 2026-10-13 from the owner's choice of these options. SPEC-0231
 implements and verifies it, and SPEC-0233 corrects its reader and text. The
 owner accepted this decision on 2026-10-13.
 
+## Traceability
+
+Partially superseded by
+[ADR-0051](0051-summarize-and-delete-retirement.md): the archive and
+preservation wording in decision 4 ("ready for archive review", "enters the
+completed archive", "the preserved copy") no longer applies. A ready package is
+deleted once its removal is approved, and its number is reserved.
+
 ## Related Documents
 
 - [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037](0037-package-disposition-wait-and-task-cancellation.md)
-- [SPEC-0231](../../03.specs/0231-task-lifecycle-generation-6/spec.md)
-- [SPEC-0233](../../03.specs/0233-generation-6-reader-corrections/spec.md)
+- SPEC-0231
+- SPEC-0233

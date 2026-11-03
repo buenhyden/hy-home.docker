@@ -3093,7 +3093,7 @@ value, and the repository cannot certify where values are kept.
 
 The v29 local request reuses completed work on main
 `49fd95a6ed482d7194c840b43b73a030be6f3d5d` and reconciles this active P01
-handoff with [SPEC-0243's dated window records](../../0243-openbao-window-readiness/tasks/tsk-0001-openbao-window-readiness.md).
+handoff with SPEC-0243's dated window records.
 The 12:30 attempt records W1 delivery, unchanged role targets, W1c/W2 skips,
 protected W3 Snapshot and W3b R2 dump agreement, accepted W3a `-06` restore,
 W4 HOME 2.7.1 transition, W5 typed-JSON issuance and Agent rendering, and W6

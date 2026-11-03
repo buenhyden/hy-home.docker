@@ -2321,8 +2321,128 @@ class LanguageModeTests(unittest.TestCase):
         )
 
 
-if __name__ == "__main__":
-    unittest.main()
+class RetiredPackageLinkTests(unittest.TestCase):
+    """A terminal Task may keep a link into a package whose number is retired."""
+
+    TASK = (
+        "---\ntitle: Fixture\ntype: sdlc/task\nstatus: {status}\n---\n"
+        "# Fixture\n\n[gone](../../{target}/spec.md)\n"
+    )
+
+    def _codes(
+        self, bodies: dict[str, str], *, registry: bool | str = True
+    ) -> list[str]:
+        import json
+
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+        from scripts.lib.document_governance.registry import DEFAULT_REGISTRY
+
+        spec = importlib.util.spec_from_file_location("agent_home_retired", CLI)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            if registry:
+                raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+                raw["identity_spaces"]["spec"]["reserved_history"] = [1]
+                path = root / "docs/99.templates/registry.json"
+                path.parent.mkdir(parents=True)
+                text = json.dumps(raw)
+                path.write_text(
+                    text if registry is True else registry, encoding="utf-8"
+                )
+            for relative, body in bodies.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(body, encoding="utf-8")
+            track_repository(root)
+            graph = build_document_graph(module._paths(root), repo_root=root)
+            return [finding.code for finding in check_alignment(graph)]
+
+    def _task(self, status: str, target: str) -> dict[str, str]:
+        return {
+            "docs/03.specs/0002-live/tasks/tsk-0001-a.md": self.TASK.format(
+                status=status, target=target
+            )
+        }
+
+    def test_a_terminal_task_link_into_a_reserved_package_is_excused(self) -> None:
+        self.assertNotIn(
+            "missing-link-target", self._codes(self._task("completed", "0001-gone"))
+        )
+
+    MULTI_ITEM = (
+        "---\ntitle: Fixture\ntype: sdlc/task\n---\n# Fixture\n\n"
+        "## Work Log\n\n### Execution Items\n\n"
+        "| Item | Work Unit | Scope | Owner | Status | Blocker |\n"
+        "| --- | --- | --- | --- | --- | --- |\n"
+        "| A | W1 | a | @o | completed | - |\n"
+        "| B | W2 | b | @o | {second} | - |\n\n"
+        "[gone](../../0001-gone/spec.md)\n"
+    )
+
+    def test_a_row_derived_status_decides_a_multi_item_task(self) -> None:
+        for second, excused in (("completed", True), ("in-progress", False)):
+            with self.subTest(second=second):
+                codes = self._codes(
+                    {
+                        "docs/03.specs/0002-live/tasks/tsk-0001-a.md": (
+                            self.MULTI_ITEM.format(second=second)
+                        )
+                    }
+                )
+                self.assertEqual(not excused, "missing-link-target" in codes)
+
+    def test_a_malformed_registry_exempts_nothing(self) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = root / "docs/99.templates/registry.json"
+            path.parent.mkdir(parents=True)
+            path.write_text("{", encoding="utf-8")
+            registry = links._checked_root_registry(root)
+        self.assertIsNone(registry)
+        self.assertEqual(frozenset(), links._reserved_spec_numbers(registry))
+        node = links.DocumentNode(
+            path=pathlib.PurePosixPath("docs/03.specs/0002-live/tasks/tsk-0001-a.md"),
+            text=self.TASK.format(status="completed", target="0001-gone"),
+            metadata={"status": "completed"},
+            headings=(),
+        )
+        self.assertFalse(links._is_terminal_task(node, registry))
+
+    def test_every_other_missing_package_link_still_fails(self) -> None:
+        cases = {
+            "editable task": (self._task("in-progress", "0001-gone"), True),
+            "unreserved number": (self._task("completed", "0003-gone"), True),
+            "no registry": (self._task("completed", "0001-gone"), False),
+            "outside Stage 03": (
+                {
+                    "docs/03.specs/0002-live/tasks/tsk-0001-a.md": (
+                        self.TASK.format(status="completed", target="../../0001-gone")
+                    )
+                },
+                True,
+            ),
+            "self-declared task": (
+                {
+                    "docs/03.specs/0002-live/notes.md": (
+                        "---\ntitle: Fixture\ntype: sdlc/task\nstatus: completed\n"
+                        "---\n# Fixture\n\n[gone](../0001-gone/spec.md)\n"
+                    )
+                },
+                True,
+            ),
+        }
+        for name, (bodies, registry) in cases.items():
+            with self.subTest(case=name):
+                self.assertIn(
+                    "missing-link-target", self._codes(bodies, registry=registry)
+                )
 
 
 class FencedCommandPathTests(unittest.TestCase):
@@ -2459,3 +2579,7 @@ class FencedCommandPathTests(unittest.TestCase):
                 }
             ),
         )
+
+
+if __name__ == "__main__":
+    unittest.main()

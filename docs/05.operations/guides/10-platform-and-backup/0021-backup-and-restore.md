@@ -103,8 +103,10 @@ schema export는 DB별 extension 선언과 권한을, physical backup의 catalog
 infra revision도 staging에 기록합니다. 외부 앱의 정확한 migration source revision과
 restore 후 역할/extension/migration 대조는 앱 소유자가 제공합니다. infra revision이
 앱 revision을 대신하지 않습니다. 소스는 `archive_mode=on`으로 연속 WAL을
-보내며, `dev` stanza가 먼저 있어야 합니다(RUN-0021). HOME online backup, PITR,
-실제 복구의 검증 여부는 SPEC-0213 TSK-0002가 기록합니다.
+보내며, `dev` stanza가 먼저 있어야 합니다(RUN-0021). HOME stanza·WAL·첫 full backup·격리 restore canary는
+2026-10-08 통과했고 소유자가 2026-10-29 수용했습니다(SPEC-0213, 삭제됨). HOME PITR과
+R2 복구는 `NOT_RUN`이며, 남은 검증은
+[POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)이 소유합니다.
 2026-10-04 합성 offline full→현재 Restic state snapshot→선택한 snapshot의
 repository→새 빈 볼륨 복구에서 row·extension·migration·role 비교와 reader
 쓰기/DDL 거절은 통과했습니다. 이 격리 결과는 online WAL/PITR·HOME·R2 복구

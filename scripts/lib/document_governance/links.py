@@ -1112,12 +1112,79 @@ class _HistoricalEvidenceLinks:
         return True, _finding(link, code, link.raw_target) if code else None
 
 
+_RETIRED_PACKAGE_DIRECTORY = re.compile(r"(?P<number>[0-9]{4})-[a-z0-9-]+")
+
+
+def _checked_root_registry(root: pathlib.Path):
+    """The checked root's own Registry, or None when it is missing or invalid."""
+
+    from scripts.lib.document_governance.registry import RegistryError
+
+    try:
+        return load_registry(pathlib.Path(root) / "docs/99.templates/registry.json")
+    except (RegistryError, OSError, ValueError):
+        return None
+
+
+def _reserved_spec_numbers(registry) -> frozenset[int]:
+    """Retired Spec numbers of the checked root; nothing without its Registry."""
+
+    space = registry.identity_spaces.get("spec") if registry is not None else None
+    return frozenset(space.reserved_history) if space is not None else frozenset()
+
+
+def _is_terminal_task(node: DocumentNode, registry) -> bool:
+    """A Task by its Registry path profile whose own or row-derived status is
+    terminal under the checked root's Registry; never without that Registry."""
+
+    if registry is None or classify_path(node.path.as_posix()) != "task":
+        return False
+    terminal = frozenset(registry.lifecycle_terminal_statuses.get("task", ()))
+    status = node.metadata.get("status")
+    if status is None:
+        from scripts.lib.document_governance.spec_packages import (
+            SpecPackageError,
+            _execution_item_rows,
+            _item_status_summary,
+        )
+
+        try:
+            body = frontmatter_record_from_text(
+                pathlib.Path(node.path.as_posix()), node.text
+            ).body
+            items = _execution_item_rows(body, registry, node.path)
+        except (FrontmatterError, SpecPackageError, ValueError):
+            return False
+        if not items:
+            return False
+        status = _item_status_summary([row[4] for row in items], terminal)
+    return status in terminal
+
+
+def _links_into_retired_package(link: DocumentLink, reserved: frozenset[int]) -> bool:
+    parts = link.target.parts
+    if len(parts) < 3 or parts[:2] != ("docs", "03.specs"):
+        return False
+    match = _RETIRED_PACKAGE_DIRECTORY.fullmatch(parts[2])
+    return match is not None and int(match.group("number")) in reserved
+
+
 def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
-    """Validate current local links, anchors, and old templates."""
+    """Validate current local links, anchors, and old templates.
+
+    A terminal Task body is immutable execution evidence, so a link it holds
+    into a Spec package deleted afterwards cannot be repaired. Such a link is
+    excused only when the checked root's Registry reserves that package's
+    number; any other missing target still fails.
+    """
 
     findings: list[LinkFinding] = list(graph.input_findings)
     nodes = _node_map(graph)
     evidence_links = _HistoricalEvidenceLinks(graph, nodes)
+    root_registry = None
+    registry_loaded = False
+    reserved: frozenset[int] = frozenset()
+    terminal_tasks: dict[pathlib.PurePosixPath, bool] = {}
     for link in graph.links:
         if link.absolute:
             findings.append(_finding(link, "absolute-local-link", link.raw_target))
@@ -1141,6 +1208,20 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
                     if finding is not None:
                         findings.append(finding)
                     continue
+                source = nodes.get(link.source)
+                if source is not None:
+                    if not registry_loaded:
+                        registry_loaded = True
+                        root_registry = _checked_root_registry(graph.repo_root)
+                        reserved = _reserved_spec_numbers(root_registry)
+                    if link.source not in terminal_tasks:
+                        terminal_tasks[link.source] = _is_terminal_task(
+                            source, root_registry
+                        )
+                    if terminal_tasks[link.source] and _links_into_retired_package(
+                        link, reserved
+                    ):
+                        continue
             findings.append(
                 _finding(link, target_error or "missing-link-target", link.raw_target)
             )

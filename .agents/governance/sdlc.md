@@ -105,12 +105,17 @@ review, or execution.
 
 A package is ready for removal review when its Spec and Plan are `approved`
 (or validly `cancelled` or `superseded`), every Task or item is terminal, every
-criterion is accepted or `not-required`, and no required non-PASS observation is unresolved.
+criterion is accepted or `not-required`, and no required non-PASS observation is unresolved;
+an older Task format that predates the typed Criterion Acceptance table counts
+when it records every criterion as PASS or accepted and leaves no required
+non-PASS observation unresolved.
 Readiness is derived on read, is never stored, and is not removal approval.
-A ready package with an approved Spec may wait in Stage 03; a cancelled or
-superseded Spec keeps no member there. A package leaves Stage 03 only when its
-Spec number is reserved in the Registry `reserved_history`, after its durable
-meaning is summarized into its owners; version history keeps its body.
+A ready package with an approved Spec may wait in Stage 03 until its removal is
+approved; a user instruction to delete completed packages approves that batch,
+and the deleting Task records it. A cancelled or superseded Spec keeps no
+member there. A package leaves Stage 03 only when its Spec number is reserved in
+the Registry `reserved_history`, after its durable meaning is summarized into
+its owners; version history keeps its body.
 
 The Registry supplies the exact Evidence, Criterion Acceptance, Execution
 Items and Work Breakdown shapes. `spec_packages.py` implements their meaning.

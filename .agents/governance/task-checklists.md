@@ -59,7 +59,9 @@ No exception is granted here; a separately authorized operation follows [Approva
       only a `not-required` decision closes a criterion without PASS.
 - [ ] Before removing a retired document, summarize its still-current meaning
       into the owner's Traceability, update every inbound consumer, and add its
-      number to the Registry `reserved_history`.
+      number to the Registry `reserved_history`. Delete a Stage 03 package only
+      when it is ready for removal review and its removal is approved, and record
+      that approval and each package's criterion state in the deleting Task.
 - [ ] Distinguish the worktree, index, and commit a review examined, and report
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.
