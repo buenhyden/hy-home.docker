@@ -19,7 +19,7 @@ updated: "2026-10-15"
 | 03 | `specs` | implementable change contract and execution | Spec Package: Spec contracts behavior, Plan sequences work, Task records execution and item evidence | focused tests, Task, review |
 | 05 | `operations` | operational knowledge and incidents | Operations Guide, Policy, Runbook, or Incident | safe procedure and observed result |
 | 90 | `references` | non-normative evidence | Research, Audit, or Data | provenance and observation date |
-| 98 | `archive` | retention classes for frozen bodies and route dispositions for outside routes | preserved records, Migration, or Tombstone | source-byte evidence; Git history recovers frozen content |
+| 98 | `archive` | the disposition scheme only; holds no records | its README | version history holds removed bodies; retired numbers live in the Registry |
 | 99 | — | document contracts | registry, schemas, templates | registry/schema tests |
 
 A `layer` value is the stage directory name without its numeric prefix.
@@ -52,7 +52,7 @@ document; the kind names its role inside that family.
 | `sdlc` | 01, 02, 03 | `requirement`, `architecture-description`, `architecture-decision`, `spec`, `plan`, `task`, `data-model`, `openapi`, `graphql`, `proto` |
 | `operation` | 05 | `guide`, `policy`, `runbook`, `incident`, `postmortem` |
 | `reference` | 90 | `research-pack`, `research`, `audit-pack`, `audit`, `data-pack`, `data` |
-| `archive` | 98 | `catalog`, `route` |
+| `archive` | 98 | `catalog`, `route` (registered scheme only; no records are held) |
 | `common` | any | `readme`; supporting `template-source`, `unsupported` |
 
 A Stage 90 `*-pack` kind is the container index; the bare kind is one `m####`

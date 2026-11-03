@@ -127,7 +127,7 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 - 같은 절차나 통제를 여러 문서에 복제하지 않고 소유 문서로 링크한다.
 - 이 README, 세 역할 인덱스, 채워진 의미 기반 폴더 README와 incidents README가
   자신의 직접 하위 항목으로 Operations 탐색 경로를 연결한다.
-- 과거 경로와 실행 이력은 Git과 Stage 98에서 찾으며 현재 Operations 권한으로
+- 과거 경로와 실행 이력은 Git 이력에서 찾으며 현재 Operations 권한으로
   사용하지 않는다.
 
 ## Related Documents

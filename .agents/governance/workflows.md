@@ -100,7 +100,7 @@ current operation.
 3. Define a bounded change contract, approach, plan, and Task in Stage 03.
 4. Implement only approved Task scope and verify its acceptance contract.
 5. Maintain operator knowledge and runtime procedures in Stage 05.
-6. Preserve external evidence in Stage 90 and minimal recovery in Stage 98.
+6. Preserve external evidence in Stage 90; removed bodies stay in version history.
 
 `sdlc.md` owns stage boundaries, the Stage 99 registry owns document shapes
 and lifecycle values, and `scripts/` owns executable validation.

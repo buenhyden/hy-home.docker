@@ -46,8 +46,9 @@ verifies projection drift.
   and syntax differences. Generated README, role, and Claude skill adapters,
   and existing runtime mechanics, neither define shared policy nor overwrite
   the canonical source.
-- The current Task owns the execution result. After completion, Stage 98
-  preserves the frozen body, and Git proves the source and recovery history.
+- The current Task owns the execution result. After completion, its durable
+  meaning moves to current owners, the package is deleted, and version history
+  keeps its body.
 - User-global configuration, credentials, provider availability, and
   deployment state are outside this architecture. `.agents/evaluations/README.md`
   routes paired Skill task, raw output, scoring and aggregate evidence. Current

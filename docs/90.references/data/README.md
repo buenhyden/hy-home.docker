@@ -43,8 +43,8 @@ Tombstone을 기록하는 같은 변경에서 제거되어 은퇴합니다. 은�
 현재성을 유지한다." 이 package들을 살아 있게 만들던 모든 consumer,
 곧 등록된 generator, freshness gate, 해당 경로를 적어 두던 metadata
 allow-list가 같은 변경에서 제거되어 더 이상 읽는 이가 남지 않았습니다.
-보존된 각 본문은 `docs/98.archive/retired/90.references/data/` 아래에
-있으며 tombstone으로 기록됩니다.
+삭제된 각 본문은 Git 이력에 있으며, 그 번호는 Registry `reserved_history`가
+보관합니다.
 
 DATA-0067은 남은 consumer가 독자가 아니었던 유일한 package였습니다:
 lifecycle gate가 그 `data.yaml`을 Migration 0003 복구 blob과 byte 단위로

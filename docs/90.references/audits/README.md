@@ -47,9 +47,9 @@ Stage 간 audit은 자신을 관장하는 Spec 아래의 Task에 둡니다. 이�
 등록된 consumer 덕분에 살아 있었습니다: 파일명을 매핑하던 criteria 계약,
 그 행을 단정하던 semantic-freshness checker, package 디렉터리를 읽던
 matrix generator, 그 경로를 이름 붙이던 metadata profile의 path
-allow-list입니다. 이 넷 모두 같은 변경에서 제거되었습니다. 보존된 각 본문은
-`docs/98.archive/retired/90.references/audits/` 아래에 있으며
-`tomb-AUD-0019`부터 `tomb-AUD-0032`까지의 tombstone으로 기록됩니다.
+allow-list입니다. 이 넷 모두 같은 변경에서 제거되었습니다. AUD-0019부터
+AUD-0032까지의 본문은 Git 이력에 있으며 그 번호는 Registry `reserved_history`가
+보관합니다.
 
 ### Dated Historical Snapshots
 
@@ -59,8 +59,8 @@ package 경로는 날짜를 포함하지 않습니다.
 AUD-0097은 2026-09-09에 은퇴했습니다. 네 결함 가운데 세 개는 tree에서
 수정되었지만 그동안 네 개의 운영 guide가 여전히 AUD-0097을 미해결 finding의
 owner로 링크하고 있었습니다. 남은 한 결함은 이를 소유하는 subject의
-guide로 옮겨졌습니다. 보존된 본문은 `docs/98.archive/retired/` 아래에
-있으며 `tomb-AUD-0097`이 그 처분을 기록합니다.
+guide로 옮겨졌습니다. 본문은 Git 이력에 있으며 그 번호는 Registry
+`reserved_history`가 보관합니다.
 
 ## Usage
 

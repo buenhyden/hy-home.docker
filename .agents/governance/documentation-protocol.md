@@ -93,9 +93,9 @@ retired identities.
    The registry's `artifact_id_pattern` states the exact shape per profile.
 7. Name a Stage 90 package member `m####-<slug>.md`; a Stage 03 Task keeps its
    `tsk-####-<slug>.md` name and an incident packet keeps `inc-####-<slug>/`.
-8. Give a tombstone the retired document's identity under a `tomb-` prefix
-   instead of issuing a new artifact identity. Its numbered filename still
-   uses the Registry's separate monotonic `tombstone` allocation.
+8. Record a retired document's number in its identity space's Registry
+   `reserved_history` instead of issuing a record for it. A reserved number is
+   never issued again.
 9. Declare the frontmatter its registry profile requires, in the registry's
    `common.frontmatter_order`. The registry owns which keys a profile requires
    and permits; `contracts/document-frontmatter.schema.json` owns their value shapes.
@@ -165,7 +165,7 @@ its prose. The profiles follow one priority order:
 
 1. Every tracked `README.md` is Korean, whatever its path or profile. This
    includes the READMEs under `.agents/`, the provider directories, Stage 90
-   packages, Stage 99, and the Stage 98 index. The generated provider READMEs
+   packages, Stage 99, and the Stage 98 README. The generated provider READMEs
    are written in Korean through their renderer template, although they
    declare no `language` and are not judged.
 2. Every other document under `docs/05.operations/` is Korean.

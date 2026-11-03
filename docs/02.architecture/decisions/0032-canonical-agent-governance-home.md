@@ -40,8 +40,9 @@ with a bounded target and action.
 
 Change only ADR-0029's reciprocal supersession metadata and the lawful
 lifecycle metadata immediately before initial preservation. The decision body
-is not modified and stays preserved in Stage 98. Already-frozen ADR-0027 and
-other records are left as they are. Required static checks, protected-path
+was not modified; ADR-0029 is now retired, its number reserved in the Registry
+and its body in version history. ADR-0027 and other records were left as they
+were. Required static checks, protected-path
 approval status, and pending native verification continue to be tracked in the
 current Task.
 
