@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.5.1"
+version: "1.6.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 ---
 
 # Software Development Lifecycle
@@ -55,23 +55,26 @@ to the current Task; unresolved requirements or decisions return to their owning
 stage. Retry and approval boundaries remain in agent governance policy.
 
 Stage 99 assigns document-family states and legal transitions. Requirements use
-`draft`, `in-review`, `approved`, `superseded`, and `retired`; architecture
-descriptions and operational guidance use `draft`, `in-review`, `active`,
-`deprecated`, `superseded`, and `retired`; ADRs use `proposed`, `accepted`,
-`rejected`, `deprecated`, and `superseded`. Specs and Plans record authority
-only: `draft`, `in-review`, `approved`, `cancelled`, and `superseded`. Tasks
+`draft`, `in-review`, and `approved`; architecture descriptions use `draft`,
+`in-review`, and `active`; ADRs use `proposed`, `accepted`, and `rejected`.
+Specs and Plans record authority only: `draft`, `in-review`, `approved`, and
+`cancelled`. Stage 01 to 03 documents never use `deprecated`, `superseded`,
+`retired`, or `archived`: a replaced or withdrawn document is summarized into
+its current owner and deleted, and its number is reserved. Operational guidance
+uses `draft`, `in-review`, `active`, `deprecated`, `superseded`, and
+`retired`. Tasks
 retain `draft`, `ready`, `in-progress`, `blocked`, `completed`, and
 `cancelled`. Incidents use `open`, `investigating`, `mitigated`, `resolved`,
 and `closed`; postmortems use `draft`, `in-review`, and `published`;
 publications use `draft`, `in-review`, `published`, `superseded`, and
-`retired`; executable contracts use `draft`, `review`, `approved`, `active`,
-`superseded`, and `retired`. Navigation READMEs remain `active`.
+`retired`; executable contracts use `draft`, `review`, `approved`, and
+`active`. Navigation READMEs remain `active`.
 
 A Plan has one Spec parent and a Task has one Plan parent. A Plan is never
 ahead of its Spec and never ends before it. A Task, and each of its items,
 runs only while both are `approved`; under a `draft` or `in-review` parent a
-remaining Task or item stays `draft` or `blocked`. A `cancelled` or
-`superseded` Spec requires a terminal Plan and terminal Tasks. Parent status
+remaining Task or item stays `draft` or `blocked`. A `cancelled` Spec requires
+a terminal Plan and terminal Tasks. Parent status
 never reflects execution.
 
 Execution state has one owner. A single-mode Task keeps one frontmatter
@@ -104,7 +107,7 @@ proof rows record observed structure only; they do not authenticate approval,
 review, or execution.
 
 A package is ready for removal review when its Spec and Plan are `approved`
-(or validly `cancelled` or `superseded`), every Task or item is terminal, every
+(or validly `cancelled`), every Task or item is terminal, every
 criterion is accepted or `not-required`, and no required non-PASS observation is unresolved;
 an older Task format that predates the typed Criterion Acceptance table counts
 when it records every criterion as PASS or accepted and leaves no required
@@ -112,7 +115,7 @@ non-PASS observation unresolved.
 Readiness is derived on read, is never stored, and is not removal approval.
 A ready package with an approved Spec may wait in Stage 03 until its removal is
 approved; a user instruction to delete completed packages approves that batch,
-and the deleting Task records it. A cancelled or superseded Spec keeps no
+and the deleting Task records it. A cancelled Spec keeps no
 member there. A package leaves Stage 03 only when its Spec number is reserved in
 the Registry `reserved_history`, after its durable meaning is summarized into
 its owners; version history keeps its body.

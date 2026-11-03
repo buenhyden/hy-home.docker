@@ -818,8 +818,8 @@ opened, no value read):
 | Historical | `.backup-20261002-prompt02`, `.backup-20261003`, `.backup-20261003-layout`, `.retired` | Owner review, then CLN01 disposal; none is read here |
 | Excluded | `labs/` | LAB scope, not assessed |
 
-Which owner to choose, and any move or deletion, is the owner's decision. S10b
-status: PARTIAL, draft recorded.
+Which owner to choose, and any move or deletion, is the owner's decision. S10b result:
+`PARTIAL`, draft recorded.
 
 Owner decision — 2026-10-21 ("S10b secret 단일 owner 검토후 진행"): the draft's
 single owner is adopted. GDE-0010 now names `secret-catalog.json` as the one
