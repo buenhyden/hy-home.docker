@@ -46,10 +46,6 @@ updated: "{{UPDATED}}"
 
 {{DOCUMENTATION_STANDARDS}}
 
-### AI Agent Guidance
-
-{{AI_AGENT_GUIDANCE}}
-
 ## Related Documents
 
 {{RELATED_DOCUMENTS}}

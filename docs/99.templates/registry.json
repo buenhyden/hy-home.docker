@@ -568,6 +568,12 @@
           "superseded",
           "retired"
         ],
+        "folder-agent-guide": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
         "governance-provider-index": [
           "completed",
           "cancelled",
@@ -2044,7 +2050,6 @@
         "Local Constraints",
         "Documents",
         "Verification",
-        "AI Agent Guidance",
         "Cross-link Rules",
         "Current Inventory",
         "Current LLM Wiki Evidence",
@@ -2876,6 +2881,52 @@
       }
     },
     {
+      "id": "folder-agent-guide",
+      "type": "governance/agent-guide",
+      "language": "en",
+      "frontmatter_policy": "required",
+      "path_pattern": "docs/01.requirements/AGENTS.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "governance/agent-guide",
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "layer",
+        "created"
+      ],
+      "required_sections": [
+        "Overview",
+        "Scope",
+        "Working Rules",
+        "Canonical References",
+        "Verification",
+        "Related Documents"
+      ],
+      "optional_sections": [
+        "Exceptions"
+      ],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": [],
+      "additional_paths": [
+        "docs/02.architecture/AGENTS.md",
+        "docs/03.specs/AGENTS.md",
+        "docs/05.operations/AGENTS.md",
+        "docs/90.references/AGENTS.md",
+        "docs/99.templates/AGENTS.md",
+        "infra/AGENTS.md",
+        "scripts/AGENTS.md",
+        "tests/AGENTS.md"
+      ]
+    },
+    {
       "id": "governance-provider-index",
       "type": "common/readme",
       "language": "ko",
@@ -3406,6 +3457,12 @@
       "source": "docs/99.templates/templates/common/readme-runtime-governance.template.md",
       "profiles": [
         "runtime-governance-readme"
+      ]
+    },
+    "governance/agent-guide": {
+      "source": "docs/99.templates/templates/governance/agent-guide.template.md",
+      "profiles": [
+        "folder-agent-guide"
       ]
     },
     "governance/claude-agent": {
@@ -5205,8 +5262,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 250,
-      "next_number": 251,
+      "high_water": 251,
+      "next_number": 252,
       "reserved_history": [
         1,
         2,
@@ -6067,6 +6124,7 @@
     "governance-prompt": "living",
     "governance-prompt-index": "navigation",
     "governance-provider": "living",
+    "folder-agent-guide": "living",
     "governance-provider-index": "navigation",
     "governance-role": "living",
     "governance-sdlc": "operational-policy",
