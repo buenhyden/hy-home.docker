@@ -74,6 +74,12 @@ MUTATION_OVERRIDES = {
     "scripts/operations/prometheus-isolated-restore.py": "runtime",
     "scripts/operations/mng-pg-immediate-restore-rehearsal.py": "runtime",
     "scripts/validation/validate-docker-compose.sh": "runtime",
+    "scripts/lib/ops/compose_observation.py": "runtime",
+    "scripts/lib/ops/compose_start.py": "runtime",
+    "scripts/operations/compose-start.py": "runtime",
+    "scripts/lib/ops/_notebook_models_http.py": "runtime",
+    "scripts/lib/ops/notebook_models.py": "runtime",
+    "scripts/operations/notebook-models.py": "runtime",
 }
 
 
