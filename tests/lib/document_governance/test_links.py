@@ -2172,6 +2172,14 @@ class NavigationModeTests(unittest.TestCase):
                     {"navigation-descendant-link"}, self._codes("# X\n\n" + body)
                 )
 
+    def test_a_folder_agent_guide_keeps_a_router_a_router(self) -> None:
+        guide = {"docs/x/AGENTS.md": "# Guide\n"}
+        self.assertEqual(
+            {"navigation-descendant-link"},
+            self._codes("# X\n\n[a](a/spec.md)\n", guide),
+        )
+        self.assertEqual(set(), self._codes("# X\n\n[g](AGENTS.md)\n", guide))
+
     def test_router_tree_naming_a_grandchild_file_fails(self) -> None:
         body = "```text\nx/\n├── README.md\n└── a/\n    └── spec.md\n```\n"
         self.assertEqual({"navigation-descendant-tree"}, self._codes("# X\n\n" + body))

@@ -56,7 +56,9 @@ _YEAR = re.compile(r"[0-9]{4}")
 _INCIDENT = re.compile(r"inc-(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*")
 # Each role owns one directory; a subject is the slug its members share.
 _ROLE_DIRECTORY = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}
-_OPERATIONS_ROOT_ENTRIES = frozenset({"README.md", "incidents", *_ROLE_DIRECTORY})
+_OPERATIONS_ROOT_ENTRIES = frozenset(
+    {"README.md", "AGENTS.md", "incidents", *_ROLE_DIRECTORY}
+)
 _OPERATIONS_PROFILE_IDS = ("guide", "policy", "runbook", "incident", "postmortem")
 _ROLE_SECTION_ALIASES = {
     "guide": {

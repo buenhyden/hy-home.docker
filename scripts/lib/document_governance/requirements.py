@@ -772,7 +772,7 @@ def load_requirement_packages(
         )
     paths: list[pathlib.Path] = []
     for entry in sorted(stage_root.iterdir(), key=lambda item: item.name):
-        if entry.name == "README.md":
+        if entry.name in {"README.md", "AGENTS.md"}:
             continue
         if entry.suffix.lower() in _EXECUTABLE_SUFFIXES:
             raise RequirementPackageError(

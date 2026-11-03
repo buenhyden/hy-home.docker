@@ -3091,6 +3091,29 @@ class DocumentRegistryTests(unittest.TestCase):
         )
 
 
+class FolderAgentGuidePlacementTests(unittest.TestCase):
+    """Folder AGENTS.md files and the Registry profile list the same paths."""
+
+    def test_every_folder_agent_guide_is_registered_and_present(self) -> None:
+        registry = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        (profile,) = (
+            item for item in registry["profiles"] if item["id"] == "folder-agent-guide"
+        )
+        registered = {profile["path_pattern"], *profile["additional_paths"]}
+        tracked = subprocess.run(
+            ["git", "ls-files", "-z", "--", "*AGENTS.md"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        ).stdout.decode("utf-8")
+        # The root AGENTS.md is the bootstrap entry shim, not a folder guide.
+        guides = {path for path in tracked.split("\0") if path} - {"AGENTS.md"}
+        self.assertEqual(registered, guides)
+        self.assertEqual("en", profile["language"])
+
+
 class ProfileLanguageTests(unittest.TestCase):
     """SPEC-0184 rule 4: every prose profile declares its language."""
 
