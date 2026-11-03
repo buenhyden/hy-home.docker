@@ -172,7 +172,7 @@ templates under `docs/99.templates/templates/archive/`.
 | E20 | 1 | W3 | document-commands | after exempting terminal Task bodies; links, owner lookup and lifecycle contract tests | FAIL | 105 tests OK; commands mode still reports 2 findings, both for ignored `_workspace` files from PR #720 that are absent from this worktree; baseline debt not caused by this change, and commands mode runs only locally | required | - |
 | E21 | 1, 2 | W2 | corpus-lifecycle-and-links | after the review fixes | PASS | corpus lifecycle zero; occupancy zero; link alignment PASS; Script Manifest PASS | required | - |
 | E22 | 4 | W5 | metadata-changed | final tree after the review fixes, base origin/main 355e8caa1 | PASS | selected 8, zero violations, zero legacy exceptions | required | - |
-| E23 | 1, 2, 3, 4 | W5 | hosted-ci | CI Quality Gates run 41595209280 on head a879f2b64 | PASS | candidate-quality success; main-security skipped by its trigger | required | E3, E15, E16 |
+| E23 | 4 | W5 | hosted-ci | CI Quality Gates run 41595209280 on head a879f2b64 | PASS | candidate-quality success; main-security skipped by its trigger | required | - |
 
 ## Criterion Acceptance
 
