@@ -63,7 +63,7 @@ target fails this Spec.
 ## Related Documents
 
 - [Plan](plan.md)
-- [Task](tasks/tsk-0001-completed-spec-package-deletion.md)
+- [Task](tasks/tsk-0001-finished-spec-package-deletion.md)
 - [Stage 98 archive deletion](../0249-stage98-archive-deletion/spec.md)
 - [Document retention requirement](../../01.requirements/0026-document-retention-and-retirement.md)
 - [Document lifecycle architecture](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)

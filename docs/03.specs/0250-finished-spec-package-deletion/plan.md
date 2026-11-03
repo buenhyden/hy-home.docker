@@ -56,4 +56,4 @@ branch to restore them; no outside state changes.
 ## Related Documents
 
 - [Spec](spec.md)
-- [Task](tasks/tsk-0001-completed-spec-package-deletion.md)
+- [Task](tasks/tsk-0001-finished-spec-package-deletion.md)
