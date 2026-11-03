@@ -1949,22 +1949,26 @@ def _current_owner(root: pathlib.Path, value: str) -> bool:
     registry = (
         load_registry(registry_path) if registry_path.is_file() else load_registry()
     )
-    names = subprocess.run(
-        ["git", "ls-files", "-z", "--", "docs"],
-        cwd=root,
-        capture_output=True,
-        check=True,
-    ).stdout.decode()
+    try:
+        names = subprocess.run(
+            ["git", "ls-files", "-z", "--", "docs"],
+            cwd=root,
+            capture_output=True,
+            check=True,
+        ).stdout.decode()
+    except (OSError, subprocess.SubprocessError) as error:
+        # The caller turns ValueError into a closure finding instead of a crash.
+        raise ValueError("owner inventory is unavailable") from error
     candidates = []
     for name in names.split("\0"):
         if not name.endswith(".md") or name.startswith("docs/98.archive/"):
             continue
         if classify_path(name, registry) is None:
             continue
-        try:
-            content = read_bounded_regular(root, pathlib.PurePosixPath(name))
-        except OperationsAuthorityError:
-            continue
+        if not (root / name).exists() and not (root / name).is_symlink():
+            continue  # Tracked but deleted in the worktree: not a current owner.
+        # An unreadable candidate raises, so the closure check fails closed.
+        content = read_bounded_regular(root, pathlib.PurePosixPath(name))
         metadata = parse_frontmatter_text(content.decode("utf-8"))
         if value in (name, metadata.get("artifact_id")):
             candidates.append(metadata)
