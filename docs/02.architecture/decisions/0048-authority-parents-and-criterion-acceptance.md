@@ -101,5 +101,5 @@ owner accepted this decision on 2026-10-13.
 
 - [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037](0037-package-disposition-wait-and-task-cancellation.md)
-- [SPEC-0231](../../03.specs/0231-task-lifecycle-generation-6/spec.md)
-- [SPEC-0233](../../03.specs/0233-generation-6-reader-corrections/spec.md)
+- SPEC-0231
+- SPEC-0233

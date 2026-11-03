@@ -217,8 +217,8 @@ Use **(b) S3-compatible cloud, Cloudflare R2** (owner decision, 2026-09-25).
 ### Traceability
 
 - Parent: [AD-0004 Data Architecture](../descriptions/0004-data-architecture.md)
-- Spec: [SPEC-0182](../../03.specs/0182-home-residual-backlog/spec.md) criterion 10, Plan W10,
-  [Task 0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)
+- Spec: SPEC-0182 criterion 10, Plan W10,
+  Task 0003
 - Policy: [POL-0021](../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md)
   control 1–3; Runbook: [RUN-0021](../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md)
 - Runtime sources: [Restic Compose](https://github.com/buenhyden/hy-home.docker/blob/c26bc8026254dffd7d51fc45b4081a1f80f855f2/infra/09-tooling/restic/docker-compose.yml),

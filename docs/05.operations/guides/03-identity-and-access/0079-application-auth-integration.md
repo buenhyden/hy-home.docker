@@ -454,7 +454,7 @@ TLS 검사를 끄지 않는다). owner 행에는 로그인된 browser나 Keycloa
 | Native OIDC 로그인 상태의 동작 | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | 로그인하고 role mapping을 확인한 뒤 logout | 각 app이 자체 client와 role mapping을 적용하며 Proxy allowlist는 적용되지 않음 | owner |
 
 아직 대기 중인 owner 행을 포함한 각 행의 결과는
-[SPEC-0182 Task 0003](../../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)의
+SPEC-0182 Task 0003의
 Verification Evidence와 Work Log에 기록되어 있다.
 
 ### Scope and current limitations

@@ -14,7 +14,7 @@ created: "2026-10-27"
 
 ## Overview
 
-이 정책은 개인 PC 호스트에서 Docker·containerd 저장소와 서비스 데이터를 SSD와 HDD 중 어디에 둘지, 그리고 저장소를 SSD로 옮기는 조건을 정한다. [SPEC-0246](../../../03.specs/0246-host-storage-tiering/spec.md)에서 측정·이전·수용한 배치를 현재 운영 기준으로 정한 문서다.
+이 정책은 개인 PC 호스트에서 Docker·containerd 저장소와 서비스 데이터를 SSD와 HDD 중 어디에 둘지, 그리고 저장소를 SSD로 옮기는 조건을 정한다. SPEC-0246에서 측정·이전·수용한 배치를 현재 운영 기준으로 정한 문서다.
 
 ## Scope
 
@@ -76,7 +76,7 @@ drift와 명시적 소유자 승인이 없는 한 유지한다.
 ### Traceability
 
 - 같은 번호 `0102`의 Guide/Runbook은 없다.
-- 근거와 수용 기록: [SPEC-0246 Task](../../../03.specs/0246-host-storage-tiering/tasks/tsk-0001-host-storage-tiering.md)
+- 근거와 수용 기록: SPEC-0246 Task
 
 ## Verification
 
@@ -87,6 +87,6 @@ drift와 명시적 소유자 승인이 없는 한 유지한다.
 
 ## Related Documents
 
-- [SPEC-0246 Host Storage Tiering](../../../03.specs/0246-host-storage-tiering/spec.md)
+- SPEC-0246 Host Storage Tiering
 - [Prometheus Guide](../../guides/07-observability/0045-prometheus.md)
 - [Backup and Restore Policy](0021-backup-and-restore.md)

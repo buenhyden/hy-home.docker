@@ -42,7 +42,7 @@ selection.
 
 ### Traceability
 
-- [SPEC-0219](../../03.specs/0219-storybook-build-and-delivery/spec.md)
+- SPEC-0219
 - [Storybook guide](../../05.operations/guides/14-design-system/0101-storybook.md)
 - [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md)
 - [Storybook runbook](../../05.operations/runbooks/14-design-system/0101-storybook.md)
