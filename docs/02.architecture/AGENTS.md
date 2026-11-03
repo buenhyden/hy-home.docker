@@ -1,10 +1,10 @@
 ---
 title: "Architecture Agent Guide"
-version: "0.1.0"
-type: "governance/agent-guide"
-status: "draft"
+version: "0.2.0"
+type: "common/agent-guide"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 ---
 
 # Architecture Agent Guide
