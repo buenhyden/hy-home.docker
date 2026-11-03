@@ -1,10 +1,10 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.3.0"
+version: "1.4.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 runtime: "codex"
 ---
 
@@ -21,6 +21,10 @@ Codex enters through root `AGENTS.md`, which explicitly instructs reading the
 Load the active Spec Package and current Task when repository state changes.
 Select a canonical role from `.agents/roles/`, read its `skill_ids`, and explicitly
 read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
+Codex documents that it merges `AGENTS.md` files from the repository root down
+to the working directory, so a folder guide joins its context when Codex works
+there. That merge has not been observed in this repository; the bootstrap step
+that requires reading the folder guide applies either way.
 
 ## Native Controls
 

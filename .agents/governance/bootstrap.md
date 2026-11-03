@@ -1,10 +1,10 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.7.0"
+version: "1.8.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 ---
 
 # Agent Bootstrap Policy
@@ -34,7 +34,11 @@ Supported agent entry shims, authored provider adapters, and request-scoped cano
    the authority for what it says. Evaluation data under `.agents/evaluations/`
    is not automatically loaded as execution instructions.
 4. For repository changes, load the governing Requirements, Architecture, and
-   Spec Package plus its current Task.
+   Spec Package plus its current Task. Before changing a file in a folder that
+   carries an `AGENTS.md`, read that folder guide; it routes to the canonical
+   owners above and adds no authority. The
+   [documentation protocol](documentation-protocol.md#readme-and-agentsmd)
+   decides which folders carry one.
 5. Execute the applicable registered gates and record evidence in that Task.
 
 Root shims and adapters route to this sequence and do not define alternatives.

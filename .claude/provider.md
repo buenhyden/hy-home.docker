@@ -1,10 +1,10 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.4.0"
+version: "1.5.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 runtime: "claude"
 ---
 
@@ -20,6 +20,11 @@ Root `CLAUDE.md` imports the shared
 [bootstrap policy](../.agents/governance/bootstrap.md) and this authored adapter.
 Load the active Spec Package and current Task when repository state changes.
 Read the selected canonical role and procedure before acting.
+Claude Code loads `CLAUDE.md` files, not `AGENTS.md`, so it does not read a
+folder `AGENTS.md` on its own. The bootstrap step that requires reading the
+folder guide before changing a file there is what brings it into context; no
+folder `CLAUDE.md` pointer is added, because it would be a second copy of the
+same route.
 `.agents/knowledge/` and `.agents/prompts/` are canonical categories read
 directly, in the order the bootstrap policy sets. Claude has no generated
 projection of either, and their absence under `.claude/` is not a defect.
