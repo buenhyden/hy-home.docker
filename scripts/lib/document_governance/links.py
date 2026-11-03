@@ -1115,27 +1115,31 @@ class _HistoricalEvidenceLinks:
 _RETIRED_PACKAGE_DIRECTORY = re.compile(r"(?P<number>[0-9]{4})-[a-z0-9-]+")
 
 
-def _reserved_spec_numbers(root: pathlib.Path) -> frozenset[int]:
-    """The checked root's retired Spec numbers; nothing when its Registry is unusable."""
+def _checked_root_registry(root: pathlib.Path):
+    """The checked root's own Registry, or None when it is missing or invalid."""
 
     from scripts.lib.document_governance.registry import RegistryError
 
     try:
-        space = load_registry(
-            pathlib.Path(root) / "docs/99.templates/registry.json"
-        ).identity_spaces.get("spec")
+        return load_registry(pathlib.Path(root) / "docs/99.templates/registry.json")
     except (RegistryError, OSError, ValueError):
-        return frozenset()
+        return None
+
+
+def _reserved_spec_numbers(registry) -> frozenset[int]:
+    """Retired Spec numbers of the checked root; nothing without its Registry."""
+
+    space = registry.identity_spaces.get("spec") if registry is not None else None
     return frozenset(space.reserved_history) if space is not None else frozenset()
 
 
-def _is_terminal_task(node: DocumentNode) -> bool:
-    """A Task by its Registry path profile whose own or row-derived status is terminal."""
+def _is_terminal_task(node: DocumentNode, registry) -> bool:
+    """A Task by its Registry path profile whose own or row-derived status is
+    terminal under the checked root's Registry; never without that Registry."""
 
-    if classify_path(node.path.as_posix()) != "task":
+    if registry is None or classify_path(node.path.as_posix()) != "task":
         return False
-    registry = load_registry()
-    terminal = frozenset(registry.lifecycle_terminal_statuses["task"])
+    terminal = frozenset(registry.lifecycle_terminal_statuses.get("task", ()))
     status = node.metadata.get("status")
     if status is None:
         from scripts.lib.document_governance.spec_packages import (
@@ -1177,7 +1181,9 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     findings: list[LinkFinding] = list(graph.input_findings)
     nodes = _node_map(graph)
     evidence_links = _HistoricalEvidenceLinks(graph, nodes)
-    reserved: frozenset[int] | None = None
+    root_registry = None
+    registry_loaded = False
+    reserved: frozenset[int] = frozenset()
     terminal_tasks: dict[pathlib.PurePosixPath, bool] = {}
     for link in graph.links:
         if link.absolute:
@@ -1204,10 +1210,14 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
                     continue
                 source = nodes.get(link.source)
                 if source is not None:
-                    if reserved is None:
-                        reserved = _reserved_spec_numbers(graph.repo_root)
+                    if not registry_loaded:
+                        registry_loaded = True
+                        root_registry = _checked_root_registry(graph.repo_root)
+                        reserved = _reserved_spec_numbers(root_registry)
                     if link.source not in terminal_tasks:
-                        terminal_tasks[link.source] = _is_terminal_task(source)
+                        terminal_tasks[link.source] = _is_terminal_task(
+                            source, root_registry
+                        )
                     if terminal_tasks[link.source] and _links_into_retired_package(
                         link, reserved
                     ):
