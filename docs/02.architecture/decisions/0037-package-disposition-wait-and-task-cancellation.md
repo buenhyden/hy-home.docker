@@ -47,8 +47,9 @@ scoped operation after recoverability and consumer checks.
 2026-10-13, replaces decision 1 except its last sentence, and the
 completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
 the completed Spec's PASS receipt, and that completion receipts are checked
-before moving. [ADR-0051](0051-summarize-and-delete-retirement.md), accepted on
-2026-11-03, replaces decision items 4 to 10 and the last sentence of decision 1.
+before moving. [ADR-0051](0051-summarize-and-delete-retirement.md), whose
+acceptance the owner decided on 2026-11-03, replaces decision items 4 to 10 and
+the last sentence of decision 1.
 Decisions 1 (otherwise), 2, and 3 stay in force.
 
 ## Decision Drivers

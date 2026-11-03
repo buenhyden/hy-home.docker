@@ -1,8 +1,8 @@
 ---
 title: "Summarize-and-Delete Retirement"
-version: "1.0.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "proposed"
 owner: "@buenhyden"
 updated: "2026-11-03"
 layer: "architecture"
@@ -93,8 +93,10 @@ reserved-number rule for Stage 03; the Requirement loader enforces it for Stage
 
 ### Follow-up
 
-The owner accepted this record on 2026-11-03. Completed Spec packages in Stage
-03 are retired under it in the next phase.
+The owner decided on 2026-11-03 to accept this record. A new ADR must enter as
+`proposed`, so the status moves to `accepted` in the first change after this
+record lands, as ADR-0050 did. Completed Spec packages in Stage 03 are retired
+under it in the next phase.
 
 ## Related Documents
 
