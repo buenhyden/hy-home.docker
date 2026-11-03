@@ -18,7 +18,6 @@ from scripts.lib.document_governance.frontmatter import (
 from scripts.lib.document_governance.identity_history import collect_issued_identities
 from scripts.lib.document_governance.metadata.heading import (
     _introduced_body_findings,
-    _native_migration_compaction_witness,
     validate_body_contract,
 )
 from scripts.lib.document_governance.metadata.lifecycle import (
@@ -73,7 +72,6 @@ __all__ = (
     "Record",
     "RegistryError",
     "_introduced_body_findings",
-    "_native_migration_compaction_witness",
     "_parse_frontmatter_text",
     "_record_from_text",
     "_safe_load_unique",

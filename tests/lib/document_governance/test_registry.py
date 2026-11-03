@@ -3407,54 +3407,6 @@ class ExecutionLifecycleTests(unittest.TestCase):
         )
 
 
-class InvalidPreviousStatusTests(unittest.TestCase):
-    """A status the lifecycle never defined is repaired, not transitioned.
-
-    `docs/98.archive/migrations/0001` and `0002` carried `archived`, which is
-    not a member of any lifecycle in the registry. The transition check reads
-    `transitions[previous_status]`, finds nothing, and demands an override for
-    every move out of that state. The override is unreachable twice over: its
-    `evidence_task` contract matches no path in this repository, and no gate
-    or workflow passes an override file at all. The effect is that an invalid
-    status is cheaper to keep than to correct.
-    """
-
-    def _profiles(self):
-        return build_registry_profiles(load_registry())
-
-    def _codes(self, previous_status: str, status: str) -> set[str]:
-        record = Record(
-            path=pathlib.Path("docs/98.archive/migrations/0001-fixture.md"),
-            metadata={
-                "title": "Fixture migration",
-                "version": "1.0.0",
-                "type": "archive/migration",
-                "status": status,
-                "owner": "@buenhyden",
-                "updated": "2026-09-04",
-                "layer": "archive",
-                "artifact_id": "MIG-0001",
-                "parent_ids": ["SPEC-0136"],
-                "created": "2026-08-29",
-            },
-            artifact_type="migration",
-            previous_status=previous_status,
-            frontmatter_present=True,
-        )
-        return {
-            finding.code for finding in validate_record(record, self._profiles(), {})
-        }
-
-    def test_undefined_previous_status_needs_exact_migration_evidence(self) -> None:
-        self.assertIn("invalid-transition", self._codes("archived", "sealed"))
-
-    def test_sealed_record_cannot_move_to_an_undefined_status(self) -> None:
-        self.assertIn("invalid-transition", self._codes("sealed", "completed"))
-
-    def test_repair_must_land_on_a_defined_status(self) -> None:
-        self.assertIn("invalid-transition", self._codes("archived", "archived-too"))
-
-
 class ActualTaskLifecycleTransitionTests(unittest.TestCase):
     def test_exact_validated_current_event_path_satisfies_initial_guard(self) -> None:
         profiles = build_registry_profiles(load_registry())

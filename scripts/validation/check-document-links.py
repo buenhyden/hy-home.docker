@@ -19,7 +19,6 @@ from scripts.lib.document_governance.frontmatter import (  # noqa: E402
 )
 from scripts.lib.document_governance.links import (  # noqa: E402
     MODE_HANDLERS,
-    archive_direct_link_total,
     build_document_graph,
     removed_template_mention_total,
     run_mode,
@@ -32,10 +31,7 @@ from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
 )
 from scripts.lib.document_governance.registry import (  # noqa: E402
     DocumentRegistry,
-    classify_path,
-    declares_frozen_legacy_status,
     load_registry,
-    preserved_origin_path,
 )
 
 DOC_ROOT = pathlib.Path("docs")
@@ -72,13 +68,6 @@ def _routing_status(
         status = parse_frontmatter_text(text).get("status")
     except FrontmatterError:
         return True
-    if registry is not None:
-        relative = path.relative_to(root).as_posix()
-        profile_id = classify_path(relative, registry)
-        if profile_id is not None and declares_frozen_legacy_status(
-            registry.profiles[profile_id], relative, status
-        ):
-            return False
     return not isinstance(status, str) or status not in NON_ROUTING_STATUSES
 
 
@@ -102,8 +91,6 @@ def _path_sets(
             continue
         if _routing_status(root, path, registry):
             current.append(path)
-            historical.append(path)
-        elif preserved_origin_path(path.relative_to(root).as_posix()) is not None:
             historical.append(path)
     return tuple(current), tuple(historical)
 
@@ -186,7 +173,6 @@ def main(argv: list[str] | None = None) -> int:
         "document links: "
         f"mode={args.mode} documents={len(graph.nodes)} links={len(graph.links)} "
         f"catalog_pairs_total={traceability_pair_total(graph)} "
-        f"archive_direct_links_total={archive_direct_link_total(graph)} "
         f"removed_template_mentions_total={removed_template_mention_total(graph)} "
         f"failures={failures} warnings={warnings} historical_documents={len(alignment_graph.nodes) - len(graph.nodes)}"
     )

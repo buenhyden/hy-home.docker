@@ -654,29 +654,6 @@ TARGET_MARKDOWN_FILES = frozenset(
         "tests/fixtures/opsflow-acceptance/README.md",
     }
 )
-MIGRATION_TYPED_KEYS = frozenset(
-    {
-        "artifact_id",
-        "artifact_type",
-        "parent_ids",
-        "supersedes",
-        "reviewed_at",
-        "next_review_at",
-    }
-)
-APPROVED_MIGRATION_PATHS = frozenset(
-    {
-        "docs/99.templates/templates/common/readme.template.md",
-        "docs/99.templates/templates/operations/guide.template.md",
-        "docs/99.templates/templates/operations/incident.template.md",
-        "docs/99.templates/templates/operations/policy.template.md",
-        "docs/99.templates/templates/operations/postmortem.template.md",
-        "docs/99.templates/templates/operations/runbook.template.md",
-    }
-)
-LEGACY_EXCEPTION_CODES = frozenset(
-    {"missing-required-key", "replacement-free-supersession", "stale-active"}
-)
 MARKDOWN_BODY_TOKEN = re.compile(r"{{[A-Z][A-Z0-9_]*}}")
 MACHINE_TEMPLATE_TOKEN = re.compile(r"__[A-Z][A-Z0-9_]*__")
 TARGET_TEMPLATE_LITERALS = ("<!-- Target:", "> Rules:", "## Template Usage")

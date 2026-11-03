@@ -11,23 +11,14 @@ from scripts.lib.document_governance.lifecycle.contract import Finding
 from tests.validation.lifecycle._support import lifecycle
 
 SPEC_FINDING = Finding("docs/03.specs/0000-fixture/spec.md", "spec-sentinel", "x")
-PROMOTED_FINDING = Finding("docs/98.archive/fixture.md", "promoted-sentinel", "x")
-RECOVERY_FINDING = Finding("docs/98.archive/tombstones/f.md", "recovery-sentinel", "x")
 
 
 class LifecycleRouteEquivalenceTests(unittest.TestCase):
-    """The four modes contribute three finding sources.
+    """The default route emits the Spec Package and occupancy finding sources.
 
-    `check-contract` is the Spec Package source alone. `check-public` and
-    `check-promoted` are that source plus the promoted source, and on the
-    default registry route they are the same call. `check-recovery` is the
-    archive-recovery source and shares nothing with the others. Their union is
-    therefore Spec Package plus promoted plus recovery, and the replacement
-    default must emit all three.
-
-    A clean tree produces no findings at all, so comparing modes on this
-    repository proves nothing. Each source is stubbed with a distinct sentinel
-    instead, which fails if the default drops one.
+    A clean tree produces no findings at all, so each source is stubbed with a
+    distinct sentinel instead, which fails if the default drops one. Stage 98
+    archive records are not validated by this route.
     """
 
     def _run_default(self) -> str:
@@ -40,15 +31,8 @@ class LifecycleRouteEquivalenceTests(unittest.TestCase):
             ),
             mock.patch.object(
                 lifecycle,
-                "_historical_promoted_findings",
-                return_value=[PROMOTED_FINDING],
-            ),
-            mock.patch.object(
-                lifecycle,
-                "run_recovery",
-                side_effect=lambda root, base=None: (
-                    print(f"{RECOVERY_FINDING.code}: stub") or 1
-                ),
+                "run_occupancy",
+                side_effect=lambda root: print("occupancy-sentinel: stub") or 1,
             ),
             contextlib.redirect_stdout(output),
         ):
@@ -56,9 +40,9 @@ class LifecycleRouteEquivalenceTests(unittest.TestCase):
         self.assertNotEqual(0, code, "seeded findings must fail the route")
         return output.getvalue()
 
-    def test_default_route_emits_every_mode_finding_source(self) -> None:
+    def test_default_route_emits_every_finding_source(self) -> None:
         rendered = self._run_default()
-        for code in ("spec-sentinel", "promoted-sentinel", "recovery-sentinel"):
+        for code in ("spec-sentinel", "occupancy-sentinel"):
             with self.subTest(code=code):
                 self.assertIn(code, rendered)
 

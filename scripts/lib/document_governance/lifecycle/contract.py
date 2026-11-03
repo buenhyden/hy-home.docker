@@ -6,7 +6,6 @@ from __future__ import annotations
 import collections
 import collections.abc
 import dataclasses
-import hashlib
 import itertools
 import os
 import pathlib
@@ -2112,25 +2111,6 @@ def _surface_result_state_findings(
                     "migrated result target does not satisfy its canonical metadata profile",
                 )
             )
-    if row.artifact_type_after == "archive":
-        archive_errors = [
-            finding
-            for finding in metadata.validate_record(
-                target_record,
-                profiles,
-                metadata.build_manifest((target_record,)),
-            )
-            if finding.severity == "error"
-        ]
-        if archive_errors:
-            findings.append(
-                _finding(
-                    target,
-                    "manifest-archive-target-profile-invalid",
-                    "archive result does not satisfy its path-selected profile",
-                )
-            )
-        findings.extend(validate_archive_provenance(root, target_record))
     return findings, not findings
 
 
@@ -2319,161 +2299,6 @@ def _partition_plan_findings(
 def _safe_archive_value(record: Record, key: str) -> str | None:
     value = record.metadata.get(key)
     return value if isinstance(value, str) and value else None
-
-
-def validate_archive_provenance(root: pathlib.Path, record: Record) -> list[Finding]:
-    """Verify Git and snapshot identity while returning value-free diagnostics."""
-
-    if record.artifact_type != "archive":
-        return []
-    findings: list[Finding] = []
-    path = record.path.as_posix()
-    commit = _safe_archive_value(record, "archived_commit")
-    blob = _safe_archive_value(record, "archived_blob")
-    archived_from = _safe_archive_value(record, "archived_from")
-    preservation = _safe_archive_value(record, "preservation_class")
-    snapshot_path = _safe_archive_value(record, "snapshot_path")
-    content_sha256 = _safe_archive_value(record, "content_sha256")
-    snapshot_fields_present = any(
-        record.metadata.get(key) is not None
-        for key in ("snapshot_path", "content_sha256", "snapshot_reason")
-    )
-    if preservation == "git-history" and snapshot_fields_present:
-        findings.append(
-            _finding(
-                path,
-                "archive-snapshot-forbidden",
-                "git-history forbids snapshot fields",
-            )
-        )
-    if preservation is None:
-        findings.append(
-            _finding(
-                path,
-                "archive-preservation-missing",
-                "archive preservation class is unavailable",
-            )
-        )
-    if commit is None:
-        findings.append(
-            _finding(
-                path,
-                "archive-commit-missing",
-                "archive commit provenance is unavailable",
-            )
-        )
-        return sorted(set(findings))
-    if not OBJECT_ID.fullmatch(commit) or _git_object_type(root, commit) != "commit":
-        findings.append(
-            _finding(
-                path, "archive-commit-invalid", "archived commit is not a commit object"
-            )
-        )
-        return sorted(set(findings))
-    if blob is None:
-        findings.append(
-            _finding(
-                path, "archive-blob-missing", "archive blob provenance is unavailable"
-            )
-        )
-        return sorted(set(findings))
-    if not OBJECT_ID.fullmatch(blob) or _git_object_type(root, blob) != "blob":
-        findings.append(
-            _finding(path, "archive-blob-invalid", "archived blob is not a blob object")
-        )
-        return sorted(set(findings))
-    if archived_from is None:
-        findings.append(
-            _finding(
-                path, "archive-source-missing", "archived source path is unavailable"
-            )
-        )
-        return sorted(set(findings))
-    if not _safe_path(archived_from):
-        findings.append(
-            _finding(
-                path,
-                "archive-source-path-invalid",
-                "archived source path is not repository-safe",
-            )
-        )
-        return sorted(set(findings))
-    resolved = _run_git(root, ["rev-parse", f"{commit}:{archived_from}"])
-    if resolved.returncode != 0 or resolved.stdout.strip() != blob:
-        findings.append(
-            _finding(
-                path,
-                "archive-blob-mismatch",
-                "commit path does not resolve to archived blob",
-            )
-        )
-        return sorted(set(findings))
-    blob_bytes_result = _run_git(root, ["cat-file", "blob", blob], text=False)
-    if blob_bytes_result.returncode != 0:
-        findings.append(
-            _finding(
-                path, "archive-blob-invalid", "archived blob bytes are unavailable"
-            )
-        )
-        return sorted(set(findings))
-    blob_sha256 = hashlib.sha256(blob_bytes_result.stdout).hexdigest()
-    if preservation == "immutable-snapshot":
-        expected_path = (
-            f"docs/98.archive/evidence/{content_sha256}.md.snapshot"
-            if isinstance(content_sha256, str)
-            else None
-        )
-        if (
-            snapshot_path != expected_path
-            or snapshot_path is None
-            or not _safe_path(snapshot_path)
-        ):
-            findings.append(
-                _finding(
-                    path,
-                    "archive-snapshot-path-mismatch",
-                    "snapshot path is not the content-addressed canonical path",
-                )
-            )
-            return sorted(set(findings))
-        snapshot_bytes = _read_regular_repo_bytes(
-            root,
-            snapshot_path,
-            require_tracked=True,
-        )
-        if snapshot_bytes is None:
-            findings.append(
-                _finding(
-                    path,
-                    "archive-snapshot-file-invalid",
-                    "snapshot must be a tracked regular in-root file",
-                )
-            )
-            return sorted(set(findings))
-        snapshot_sha256 = hashlib.sha256(snapshot_bytes).hexdigest()
-        if (
-            not isinstance(content_sha256, str)
-            or snapshot_sha256 != content_sha256
-            or blob_sha256 != content_sha256
-        ):
-            findings.append(
-                _finding(
-                    path,
-                    "archive-content-sha256-mismatch",
-                    "snapshot and archived blob do not match the declared digest",
-                )
-            )
-        if any(
-            pattern.search(snapshot_bytes) for pattern in SENSITIVE_PAYLOAD_PATTERNS
-        ):
-            findings.append(
-                _finding(
-                    path,
-                    "archive-snapshot-confidential",
-                    "snapshot matches a prohibited confidentiality class",
-                )
-            )
-    return sorted(set(findings))
 
 
 def _rooted(root: pathlib.Path, path: pathlib.Path) -> pathlib.Path:

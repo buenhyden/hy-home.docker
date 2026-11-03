@@ -1931,6 +1931,50 @@ def _date_time(value: object) -> dt.datetime | None:
     return parsed
 
 
+_TERMINAL_OWNER_STATUSES = frozenset(
+    {"superseded", "retired", "cancelled", "completed", "rejected", "resolved"}
+)
+
+
+def _current_owner(root: pathlib.Path, value: str) -> bool:
+    """Return whether exactly one live document outside Stage 98 owns `value`.
+
+    `value` is a tracked path or an `artifact_id`; the owner must not be in a
+    terminal status.
+    """
+
+    from scripts.lib.document_governance.registry import classify_path, load_registry
+
+    registry_path = root / REGISTRY_PATH
+    registry = (
+        load_registry(registry_path) if registry_path.is_file() else load_registry()
+    )
+    names = subprocess.run(
+        ["git", "ls-files", "-z", "--", "docs"],
+        cwd=root,
+        capture_output=True,
+        check=True,
+    ).stdout.decode()
+    candidates = []
+    for name in names.split("\0"):
+        if not name.endswith(".md") or name.startswith("docs/98.archive/"):
+            continue
+        if classify_path(name, registry) is None:
+            continue
+        try:
+            content = read_bounded_regular(root, pathlib.PurePosixPath(name))
+        except OperationsAuthorityError:
+            continue
+        metadata = parse_frontmatter_text(content.decode("utf-8"))
+        if value in (name, metadata.get("artifact_id")):
+            candidates.append(metadata)
+    return (
+        len(candidates) == 1
+        and isinstance(candidates[0].get("status"), str)
+        and candidates[0]["status"] not in _TERMINAL_OWNER_STATUSES
+    )
+
+
 def _incident_closure_findings(
     root: pathlib.Path,
     packet: pathlib.PurePosixPath,
@@ -1941,7 +1985,6 @@ def _incident_closure_findings(
         _catalog_contract,
         _names_are_valid,
     )
-    from scripts.lib.document_governance.archive_assessments import _current_owner
     from scripts.lib.document_governance.spec_packages import _contract_section
 
     incident, _ = documents.get("incident", ({}, ""))

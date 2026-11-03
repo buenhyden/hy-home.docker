@@ -453,7 +453,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
                     str(ROOT / "scripts/validation/check-document-metadata.py"),
                     "--root",
                     directory,
-                    "--profiles",
+                    "--registry",
                     str(ROOT / "docs/99.templates/registry.json"),
                     "--mode",
                     "report",

@@ -171,7 +171,7 @@ def _run_checker_process(
             str(CHECKER),
             "--root",
             str(root),
-            "--profiles",
+            "--registry",
             str(resolved_profiles),
             "--mode",
             mode,

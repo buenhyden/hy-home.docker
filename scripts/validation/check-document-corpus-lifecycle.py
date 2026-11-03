@@ -39,21 +39,11 @@ from scripts.lib.document_governance.lifecycle.contract import (  # noqa: E402
     metadata,
     render_migration_manifest,
 )
-from scripts.lib.document_governance.lifecycle.promoted import (  # noqa: E402
-    _historical_promoted_findings,
+from scripts.lib.document_governance.lifecycle.occupancy import (  # noqa: E402
+    run as run_occupancy,
 )
 from scripts.lib.document_governance.lifecycle.public import (  # noqa: E402
     _spec_package_lifecycle_findings,
-)
-from scripts.lib.document_governance.lifecycle.recovery import (  # noqa: E402
-    run as run_recovery,
-)
-from scripts.lib.document_governance.registry import (  # noqa: E402
-    ARCHIVE_MODEL_ADOPTED,
-    archive_disposition_model,
-)
-from scripts.lib.document_governance.spec_packages import (  # noqa: E402
-    resolve_lifecycle_base,
 )
 
 
@@ -96,11 +86,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
     parser.add_argument(
         "--registry",
-        "--profiles",
         dest="profiles",
         type=pathlib.Path,
         default=DEFAULT_PROFILES,
-        help="Stage 99 registry (legacy --profiles remains a transition alias)",
+        help="Stage 99 registry",
     )
     parser.add_argument("--base-ref")
     return parser
@@ -109,11 +98,8 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: collections.abc.Sequence[str] | None = None) -> int:
     """Validate the complete current document-corpus lifecycle in one route.
 
-    The four retired modes contributed three finding sources. `check-contract`
-    was the Spec Package source alone; `check-public` and `check-promoted` were
-    that source plus the promoted source; `check-recovery` was the disjoint
-    archive-recovery source. This route emits all three, so it is the union of
-    what the modes produced and nothing is lost by their removal.
+    It emits the Spec Package lifecycle findings and active-stage occupancy.
+    Stage 98 archive records are history and are not validated here.
     """
 
     parser = _parser()
@@ -131,20 +117,12 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
         profiles = metadata.build_registry_profiles(registry)
 
         findings = _spec_package_lifecycle_findings(root, profiles, args.base_ref)
-        findings.extend(_historical_promoted_findings(root))
         _print_findings(findings)
         print(f"document corpus lifecycle: violations={len(findings)}")
-        # The catalog rules need the comparison base only once they apply, so
-        # the transition route resolves nothing it did not resolve before.
-        recovery_base = (
-            resolve_lifecycle_base(root, args.base_ref)
-            if archive_disposition_model(root) == ARCHIVE_MODEL_ADOPTED
-            else None
-        )
-        recovery_code = run_recovery(root, recovery_base)
+        occupancy_code = run_occupancy(root)
         if any(_is_safety_finding(item) for item in findings):
             return 3
-        return 1 if findings or recovery_code else 0
+        return 1 if findings or occupancy_code else 0
     except _CorpusSafetyError as error:
         print(
             f"{error.code}: {_safe_diagnostic_path(error.path)}: "

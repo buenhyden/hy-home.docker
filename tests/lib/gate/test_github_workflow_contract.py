@@ -72,20 +72,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertIn("operations", selected)
         self.assertIn("repository-integrity", selected)
 
-    def test_archive_adoption_regressions_are_required_by_public_gate(self) -> None:
-        document = gate_contract.load_contract_document(ROOT)
-        gate = next(
-            node
-            for node in document["gate_nodes"]
-            if node["gate_id"] == "leaf.document-governance-library-regressions"
-        )
-        for module in (
-            "archive_assessments",
-            "archive_snapshots",
-            "archive_catalog_contract",
-        ):
-            self.assertIn(f"tests.lib.document_governance.test_{module}", gate["argv"])
-
     def test_optional_runtime_skips_keep_all_required_module_selectors(self) -> None:
         document = gate_contract.load_contract_document(ROOT)
         gate = next(
