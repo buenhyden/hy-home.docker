@@ -77,8 +77,6 @@ SAMPLE_SERVICE_FIXTURE_METADATA = {
 MODES = (
     "check-public",
     "check-contract",
-    "check-promoted",
-    "check-recovery",
 )
 
 
@@ -275,24 +273,6 @@ SAFETY_FINDING_CODES = frozenset(
         "corpus-markdown-file-invalid",
         "manifest-baseline-commit-invalid",
         "manifest-serialization-stale",
-        "promoted-manifest-path-invalid",
-        "promoted-manifest-file-invalid",
-        "archive-commit-invalid",
-        "archive-blob-invalid",
-        "archive-blob-mismatch",
-        "archive-source-path-invalid",
-        "archive-snapshot-path-mismatch",
-        "archive-snapshot-file-invalid",
-        "archive-snapshot-missing",
-        "archive-content-sha256-mismatch",
-        "archive-snapshot-confidential",
-        "archive-snapshot-forbidden",
-        "invalid-archived-commit",
-        "invalid-archived-blob",
-        "invalid-snapshot-path",
-        "invalid-content-sha256",
-        "archive-snapshot-disposition-forbidden",
-        "manifest-archive-baseline-blob-mismatch",
         "frontmatter-malformed-yaml",
         "frontmatter-duplicate-key",
         "exception-schema-invalid",
@@ -342,13 +322,6 @@ KNOWN_FINDING_CODES = frozenset(
         "directory-budget-blocked",
         "review-age-unavailable",
         "review-due",
-        "archive-commit-invalid",
-        "archive-blob-invalid",
-        "archive-blob-mismatch",
-        "archive-snapshot-path-mismatch",
-        "archive-content-sha256-mismatch",
-        "archive-snapshot-confidential",
-        "archive-snapshot-forbidden",
     }
 )
 
