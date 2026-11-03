@@ -64,13 +64,20 @@ def validate_active_stage_occupancy(
     )
 
     root = pathlib.Path(root)
-    tracked = subprocess.run(
-        ["git", "ls-files", "docs"],
+    listing = subprocess.run(
+        ["git", "ls-files", "-z", "docs"],
         cwd=root,
         capture_output=True,
-        text=True,
         check=False,
-    ).stdout.split()
+    )
+    if listing.returncode != 0:
+        # Without the tracked inventory no Stage 98 or Stage 03 rule can hold.
+        return ("docs: tracked file inventory is unavailable",)
+    tracked = [
+        name
+        for name in listing.stdout.decode("utf-8", "surrogateescape").split("\0")
+        if name
+    ]
     findings: list[str] = []
     members: dict[str, dict[str, Mapping[str, Any]]] = {}
     for relative in tracked:

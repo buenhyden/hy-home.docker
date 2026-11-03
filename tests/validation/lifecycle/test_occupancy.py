@@ -44,6 +44,27 @@ class OccupancyTests(unittest.TestCase):
                 occupancy.validate_active_stage_occupancy(root),
             )
 
+    def test_a_non_ascii_stage_98_name_is_still_a_violation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            record = root / "docs/98.archive/보존 기록.md"
+            record.parent.mkdir(parents=True)
+            record.write_text("# 기록\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            self.assertEqual(
+                ("docs/98.archive/보존 기록.md: Stage 98 holds no records",),
+                occupancy.validate_active_stage_occupancy(root),
+            )
+
+    def test_a_git_failure_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            # Not a repository: the tracked inventory cannot be read.
+            self.assertEqual(
+                ("docs: tracked file inventory is unavailable",),
+                occupancy.validate_active_stage_occupancy(pathlib.Path(directory)),
+            )
+
     def test_stage_03_membership_comes_from_the_registry(self) -> None:
         self.assertEqual(
             "docs/03.specs/0001-example",
