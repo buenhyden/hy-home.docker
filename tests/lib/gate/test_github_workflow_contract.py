@@ -186,7 +186,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             arguments[1:boundary],
         )
         optional = arguments[boundary + 1 : -1]
-        self.assertEqual(29, len(optional))
+        self.assertEqual(30, len(optional))
         self.assertEqual(len(optional), len(set(optional)))
         self.assertTrue(
             all(scope.rsplit(".", 1)[0] in arguments[1:boundary] for scope in optional)
@@ -202,6 +202,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         for selector in (
             "tests.validation.test_opsflow_native_rehearsal.OpsflowN8nNativeRehearsal",
             "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowNativeRehearsal",
+            "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowStoragePermissionRehearsal",
         ):
             self.assertIn(selector, optional)
         self.assertEqual([], gate["allowed_env_keys"])
@@ -384,7 +385,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         boundary = compose_arguments.index("--optional-runtime-skips")
         optional = compose_arguments[boundary + 1 : -1]
         self.assertNotIn(module, optional)
-        self.assertEqual(29, len(optional))
+        self.assertEqual(30, len(optional))
 
     def setUp(self) -> None:
         self.module = load_contract_module()

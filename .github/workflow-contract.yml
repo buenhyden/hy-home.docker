@@ -795,6 +795,7 @@
         "tests.validation.test_workflow_version_bundle.WorkflowCandidateRehearsalTests",
         "tests.validation.test_opsflow_native_rehearsal.OpsflowN8nNativeRehearsal",
         "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowNativeRehearsal",
+        "tests.validation.test_opsflow_airflow_native_rehearsal.AirflowStoragePermissionRehearsal",
         "tests.validation.test_p02_native_contracts.GrafanaStaticRouteNativeTests",
         "tests.validation.test_p02_oauth_native.OAuth2ProxyOidcNativeTests",
         "tests.validation.test_p02_secret_presentation_native.ComposeSecretPresentationNativeTests",
