@@ -32,7 +32,9 @@ that `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`,
 `docs/05.operations`, `docs/90.references` and `docs/99.templates` carry one.
 The user then chose `infra/`, `scripts/` and `tests/` as the only further
 locations and kept `secrets/` README-only. Exclusions: root shims stay as they
-are; no push, pull request or merge from this Task.
+are. This Task pushes and merges nothing: the coordinator pushed the branch
+and opened PR #728 under the user's instruction to continue the approved plan,
+and the user merges.
 
 ## Work Log
 
@@ -69,8 +71,23 @@ progress under the approved parents. Hosted CI has not run.
   reading the folder guide, and no folder `CLAUDE.md` pointer is added. Codex
   documents a root-to-working-directory merge of `AGENTS.md`, not observed
   here.
-- SPEC-0251 follows SPEC-0250, which #725 merged; after the rebase onto main
-  c5ec612ff the Spec high-water is 251 and the index lists both.
+- SPEC-0251 follows SPEC-0250, which #725 merged; after the coordinator's
+  rebases onto main c5ec612ff and then cb7c324d3 (with #727) the Spec
+  high-water is 251 and the index lists both.
+- The rebases rewrote commit IDs. Evidence rows before E23 name pre-rebase
+  revisions; they map to the current branch as 20da707ba to a9b26827e,
+  c78cf723f to 2833f28fc, 4d4fefc26 to cd68f30fd, c113796e9 to 95ad5ab2b and
+  fe917496f to c1005554a. E23 onward name revisions on the current branch.
+- Change note for criterion 1: the review replaced the protocol's prose folder
+  list with a pointer to the Registry `folder-agent-guide` profile paths, kept
+  equal to the tracked guides by the placement test. Criterion 1's "with the
+  folder list" is met through that pointer.
+- Every tracked README now drops its `AI Agents` audience entry (59 files),
+  not only the nine matching READMEs. The removed entries in the `infra`
+  service READMEs described agents gathering masked evidence, changing a
+  package under its Guide, Policy and Runbook, or learning secret and build
+  boundaries; `infra/AGENTS.md` already covers each. No other removed entry
+  carried an agent instruction.
 - Review fixes: the Stage 03 guide links the retirement preconditions and the
   SDLC sequence instead of restating them; the Stage 02 guide drops an invented
   acceptance rule and keeps separately approved supersession; bootstrap names
@@ -119,11 +136,17 @@ progress under the approved parents. Hosted CI has not run.
   body; the README rule does not apply to it.
 - The folder guides start at `draft` and need a later change to become
   `active`.
+- An edit to only a folder guide does not select the agent-governance suite in
+  CI; adding the guide paths to its selector is a protected workflow-contract
+  change left for separate approval.
+- Outside the nine folders, "the nearest ancestor `AGENTS.md`" resolves to the
+  root entry shim, which routes to bootstrap; this is harmless and needs no
+  change.
 - The type name `governance/agent-guide` puts a folder guide in the governance
   family although it lives beside stage documents; recorded for review, not
   changed.
-- The 9 `entrypoint` findings (E5, E17) are pre-existing baseline debt on main
-  c5ec612ff, where `infra` READMEs link Stage 03 Task bodies; they are not
+- The `entrypoint` findings (E5, E17, E25) are pre-existing baseline debt on
+  main, where `infra` READMEs link Stage 03 Task bodies; they are not
   caused by this change and belong to the legacy and link cleanup phase.
 
 ## Evidence
@@ -145,13 +168,15 @@ progress under the approved parents. Hosted CI has not run.
 | E13 | 4 | W4 | validation-suites | `tests/validation/lifecycle`, CI routing and surface ownership, revision 20da707ba | PASS | all OK; 92 routing and ownership tests | required | - |
 | E14 | 1 | W1 | agent-governance-and-renderer | contract check and renderer `--check`, revision 20da707ba | PASS | zero failures; providers 2, drift 0 | required | - |
 | E15 | 4 | W2 | governance-unit-tests | `tests/lib/document_governance` discovery, revision 4d4fefc26, quiet tree | PASS | 763 tests OK; metadata check-changed 25 and check-active 497 selected with zero violations; Script Manifest and link alignment PASS | required | E10 |
-| E16 | 4 | W4 | hosted-ci | GitHub Actions | NOT_RUN | branch not pushed | required | - |
+| E16 | 4 | W4 | hosted-ci | GitHub Actions on PR #728 | NOT_RUN | the coordinator pushed the branch and opened PR #728; the hosted result is not observed from this worktree | required | - |
 | E17 | 2, 3 | W3 | document-entrypoint | `entrypoint` mode, revision c113796e9, compared with main c5ec612ff | FAIL | 9 findings, identical on main: `infra` READMEs link Stage 03 Task bodies; pre-existing baseline debt, not caused by this change | required | - |
 | E18 | 2, 3 | W3 | document-commands | `commands` mode, revision c113796e9 | FAIL | 2 findings for ignored `_workspace` paths in the DATA-0096 README, carried since PR #720; pre-existing baseline debt, not caused by this change | required | - |
 | E19 | 4 | W2 | governance-unit-tests | `tests/lib/document_governance` discovery after the review fixes, revision c113796e9, quiet tree | PASS | 768 tests OK | required | - |
 | E20 | 4 | W4 | review-fix-gates | revision c113796e9: metadata check-changed and check-active, corpus lifecycle, links alignment/navigation/language/traceability, operations catalog, Script Manifest, renderer `--check`, agent governance contract | PASS | 26 and 497 selected with zero violations; lifecycle and occupancy zero; renderer drift 0; contract zero failures | required | - |
 | E21 | 4 | W4 | validation-suites | CI routing, surface ownership and `tests/validation/lifecycle`, revision c113796e9 | PASS | 92 and 20 tests OK | required | - |
 | E22 | 2 | W3 | labeler-governance-glob | `.github/labeler.yml` `area/governance` glob `AGENTS.md` to `**/AGENTS.md`, user-approved 2026-11-04, revision fe917496f | PASS | CI routing 84 tests OK; GitHub workflow contract PASS; staged yamllint passed | required | - |
+| E23 | 4 | W4 | independent-review | review 1 of the branch, commits through dff9ddf53 | FAIL | changes requested: I1 to I5 and M1 to M14, no Critical; resolved by the review-fix commits bb0a9da3e to 95ad5ab2b and recorded in Decisions | required | - |
+| E24 | 4 | W4 | independent-review | re-review 2 of PR #728 at c37ff4e11 | FAIL | changes requested: N1 to N3, Minor N4 to N7; resolved in this change (SHA map, evidence rerun, Registry result pointer, README audience cleanup, open issues) and awaiting re-review | required | - |
 
 ## Criterion Acceptance
 
@@ -164,8 +189,10 @@ progress under the approved parents. Hosted CI has not run.
 
 ## Review and Completion
 
-Local checks are recorded above. No independent review has run, hosted CI has
-not run, and no criterion is accepted yet.
+Local checks are recorded above. Independent review 1 and re-review 2 requested
+changes (E23, E24); both sets are addressed on this branch and await
+re-review. Hosted CI on PR #728 is not observed here, and no criterion is
+accepted yet.
 
 ## Related Documents
 

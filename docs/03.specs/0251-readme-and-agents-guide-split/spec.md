@@ -1,6 +1,6 @@
 ---
 title: "README and Agent Guide Split Specification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -107,7 +107,9 @@ stage loader rejects its own `AGENTS.md`.
 
 ### Stop Boundaries
 
-No push, pull request or merge from this Task.
+This Task pushes nothing and merges nothing. The coordinator pushes the
+branch and opens the pull request under the user's instruction to continue the
+approved plan, and the user merges.
 
 ## Related Documents
 
