@@ -16,10 +16,8 @@ from types import MappingProxyType
 from scripts.lib.document_governance.architecture import (
     ArchitectureDocumentError,
     load_architecture_documents,
-    load_preserved_architecture_documents,
     validate_supersession_graph,
 )
-from scripts.lib.document_governance.archive import recover_legacy_parent_identities
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
 )
@@ -51,12 +49,8 @@ from scripts.lib.document_governance.metadata.identity import (
 )
 from scripts.lib.document_governance.metadata.lifecycle import (
     _governance_moved_body_baseline,
-    _legacy_exception_evidence,
-    _link_target_neutral_text,
     _operations_moved_body_baseline,
     _record_from_text,
-    _task5_move_body_sources,
-    _task5_moved_body_baseline,
     _text_at_ref,
     collect_records,
     collect_records_at_ref,
@@ -1453,9 +1447,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         "Requirement allocation transition requires a trusted base commit"
                     )
                 trusted_requirement_baseline = (
-                    load_trusted_requirement_allocation_baseline(
-                        revision, root=root, allow_pinned_recovery=True
-                    )
+                    load_trusted_requirement_allocation_baseline(revision, root=root)
                 )
             registry = load_registry(
                 args.profiles,
@@ -1477,12 +1469,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             if architecture_root.exists() or architecture_root.is_symlink():
                 architecture_documents = load_architecture_documents(
                     architecture_root,
-                    registry=registry,
-                )
-                # A preserved predecessor still owns its identity, so the graph
-                # sees both sides of a completed supersession.
-                architecture_documents += load_preserved_architecture_documents(
-                    root / "docs/98.archive",
                     registry=registry,
                 )
                 graph_findings = validate_supersession_graph(architecture_documents)
@@ -1815,12 +1801,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         except (ProfileError, SpecPackageError) as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
-    base_manifest = build_manifest(base_records)
-    base_findings_by_path = {
-        path_text: validate_record(record, profiles, base_manifest)
-        for path_text, record in base_records_by_path.items()
-        if path_text in changed_selection
-    }
     findings_by_path = {
         record.path.as_posix(): validate_record(
             record,
@@ -1856,9 +1836,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             ]
     records_by_path = {record.path.as_posix(): record for record in records}
     changed_body_findings: dict[str, list[Finding]] = {}
-    link_only_changes: set[str] = set()
     if args.mode == "check-changed":
-        task5_move_sources = _task5_move_body_sources(root)
         for path_text in sorted(changed_selection):
             record = records_by_path.get(path_text)
             if record is None:
@@ -1888,22 +1866,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 base_text = generation_text
             if base_text is None:
                 base_text = _text_at_ref(root, record.path, base.merge_base)
-            if (
-                base_text is not None
-                and current_text != base_text
-                and _link_target_neutral_text(current_text)
-                == _link_target_neutral_text(base_text)
-            ):
-                link_only_changes.add(path_text)
-            if base_record is None or base_text is None:
-                moved_record, moved_text = _task5_moved_body_baseline(
-                    root,
-                    record.path,
-                    profiles,
-                    task5_move_sources,
-                )
-                base_record = moved_record or base_record
-                base_text = moved_text or base_text
             changed_body_findings[path_text] = _introduced_body_findings(
                 record,
                 current_text,
@@ -1959,49 +1921,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         }
     )
     selected_paths = directly_selected_paths | set(relation_impact_findings)
-    task5_legacy_parent_ids = recover_legacy_parent_identities(root)
-    legacy_exception_evidence = {
-        path: evidence
-        for path in selected_paths
-        if path in records_by_path
-        and (
-            evidence := _legacy_exception_evidence(
-                records_by_path[path],
-                findings_by_path.get(path, []),
-                base_records_by_path.get(path),
-                base_findings_by_path.get(path, []),
-                changed_body_findings.get(path, []),
-                path in link_only_changes,
-                task5_legacy_parent_ids,
-            )
-        )
-        is not None
-    }
-    legacy_exceptions = set(legacy_exception_evidence)
-    for path, (current_count, base_count) in sorted(legacy_exception_evidence.items()):
-        print(
-            f"{path}: legacy metadata exception: base-existing deficits preserved by an approved structural migration; "
-            f"current_deficits={current_count} base_deficits={base_count} new_deficits=0",
-            file=sys.stderr,
-        )
     selected_findings = sorted(
         set(native_findings)
         | {
             finding
-            for path in directly_selected_paths - legacy_exceptions
+            for path in directly_selected_paths
             for finding in findings_by_path.get(path, [])
             if finding.severity == "error"
         }
         | {
             finding
             for path, findings in relation_impact_findings.items()
-            if path not in legacy_exceptions
             for finding in findings
         }
         | {
             finding
             for path, findings in changed_body_findings.items()
-            if path not in legacy_exceptions
             for finding in findings
             if finding.severity == "error"
         }
@@ -2010,7 +1945,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"{finding.path}: {finding.code}: {finding.message}")
     print(
         f"metadata {args.mode}: selected={len(selected_paths)} violations={len(selected_findings)} "
-        f"legacy_exceptions={len(legacy_exceptions)} transition_overrides={len(transition_overrides)}"
+        f"transition_overrides={len(transition_overrides)}"
     )
     return 1 if selected_findings else 0
 

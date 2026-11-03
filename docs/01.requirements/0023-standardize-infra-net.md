@@ -84,6 +84,6 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [Compose network segmentation architecture description](../02.architecture/descriptions/0026-standardize-infra-net.md)
 - **ADR**: [infra_net standardization decision (superseded single-mesh model)](../02.architecture/decisions/0026-standardize-infra-net.md)
-- **Spec**: [infra_net technical specification](../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md)
+- **Spec**: infra_net technical specification
 - **Plan**: infra_net implementation plan
 - **Task**: infra_net task evidence

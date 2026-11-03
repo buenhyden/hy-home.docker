@@ -14,6 +14,7 @@ from unittest import mock
 
 from scripts.lib.document_governance import identity_history
 from scripts.lib.document_governance.identity_history import (
+    IDENTITY_PREFIX_SPACES,
     IdentityHistoryError,
     IssuedIdentities,
     collect_issued_identities,
@@ -73,6 +74,35 @@ def pinned_lineage_root():
             )
 
 
+def _registry_bytes_with_live_spec(number: int) -> bytes:
+    """Registry file bytes with one Spec number treated as still issued."""
+
+    import json
+
+    from scripts.lib.document_governance.registry import DEFAULT_REGISTRY
+
+    raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+    spec = raw["identity_spaces"]["spec"]
+    spec["reserved_history"] = [n for n in spec["reserved_history"] if n != number]
+    return (json.dumps(raw, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+def _registry_with_live_spec(number: int):
+    """The repository Registry, with one Spec number treated as still issued.
+
+    These fixtures reuse SPEC-0104, which this repository has since retired.
+    """
+
+    registry = load_registry()
+    spaces = dict(registry.identity_spaces)
+    spec = spaces["spec"]
+    spaces["spec"] = dataclasses.replace(
+        spec,
+        reserved_history=tuple(n for n in spec.reserved_history if n != number),
+    )
+    return dataclasses.replace(registry, identity_spaces=MappingProxyType(spaces))
+
+
 class IdentityHistoryTests(unittest.TestCase):
     def test_incident_year_does_not_consume_allocation_numbers(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -81,7 +111,6 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "config", "user.name", "Registry Test")
             self._git(root, "config", "user.email", "registry@example.invalid")
             fixtures = (
-                ("legacy/incident.md", "inc-0001"),
                 ("2026/inc-0002-example/incident.md", "inc-2026-0002"),
                 ("2026/inc-0002-example/postmortem.md", "inc-2026-0002-PM"),
             )
@@ -92,7 +121,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "add", ".")
             self._git(root, "commit", "-qm", "incident fixtures")
             issued = collect_issued_identities(root)
-            self.assertEqual(frozenset({1, 2}), issued.numbers["incident"])
+            self.assertEqual(frozenset({2}), issued.numbers["incident"])
 
     def test_current_classifier_rejects_legacy_requirement_path(self) -> None:
         profiles = build_registry_profiles(load_registry())
@@ -158,67 +187,24 @@ class IdentityHistoryTests(unittest.TestCase):
             source,
         )
 
-    def test_allocation_transition_reads_each_blob_once(self) -> None:
+    def test_predecessor_without_a_registry_fails_closed(self) -> None:
         with pinned_lineage_root() as root:
-            self._test_allocation_transition_reads_each_blob_once(root)
-
-    def _test_allocation_transition_reads_each_blob_once(
-        self, root: pathlib.Path
-    ) -> None:
-        from scripts.lib.document_governance.archive_migration_0003 import (
-            _approved_migration_document,
-        )
-
-        base = _approved_migration_document(root)["baseline_commit"]
-        real = identity_history._run_git
-        blobs: list[str] = []
-
-        def counting(root_arg, args, **kwargs):
-            if tuple(args[:2]) == ("cat-file", "blob"):
-                blobs.append(args[2])
-            return real(root_arg, args, **kwargs)
-
-        with mock.patch.object(identity_history, "_run_git", counting):
-            identity_history.validate_allocation_transition(
-                root,
-                load_registry(),
-                {"docs/03.specs/0008-workflow/spec.md": "SPEC-0008"},
-                base,
+            base = self._git(root, "rev-list", "--max-parents=0", "HEAD").split()[0]
+            self.assertEqual(
+                "",
+                self._git(
+                    root, "ls-tree", base, "--", "docs/99.templates/registry.json"
+                ),
             )
-        self.assertEqual(len(blobs), len(set(blobs)))
+            with self.assertRaisesRegex(IdentityHistoryError, "lacks a Registry"):
+                identity_history.validate_allocation_transition(
+                    root,
+                    load_registry(),
+                    {"docs/03.specs/0008-workflow/spec.md": "SPEC-0008"},
+                    base,
+                )
 
-    def test_approved_pre_introduction_base_preserves_existing_identity(self) -> None:
-        with pinned_lineage_root() as root:
-            self._test_approved_pre_introduction_base_preserves_existing_identity(root)
-
-    def _test_approved_pre_introduction_base_preserves_existing_identity(
-        self, root: pathlib.Path
-    ) -> None:
-        from scripts.lib.document_governance.archive_migration_0003 import (
-            _approved_migration_document,
-        )
-
-        approved = _approved_migration_document(root)
-        base = approved["baseline_commit"]
-        self.assertEqual(
-            "",
-            self._git(root, "ls-tree", base, "--", "docs/99.templates/registry.json"),
-        )
-        current = {"docs/03.specs/0008-workflow/spec.md": "SPEC-0008"}
-        self.assertEqual(
-            (),
-            identity_history.validate_allocation_transition(
-                root, load_registry(), current, base
-            ),
-        )
-        with self.assertRaises(IdentityHistoryError):
-            identity_history.validate_allocation_transition(
-                root, load_registry(), current, "0" * 40
-            )
-
-    def test_generic_allocation_rejects_retired_reuse_and_requires_atomic_advance(
-        self,
-    ) -> None:
+    def test_reserved_history_cannot_drop_a_number(self) -> None:
         from scripts.lib.document_governance import registry as registry_module
 
         with tempfile.TemporaryDirectory() as directory:
@@ -229,13 +215,64 @@ class IdentityHistoryTests(unittest.TestCase):
             source = root / "docs/99.templates/registry.json"
             source.parent.mkdir(parents=True)
             source.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "registry")
+            base = self._git(root, "rev-parse", "HEAD").strip()
+            registry = load_registry()
+
+            def codes(candidate):
+                return {
+                    item.code
+                    for item in identity_history.validate_allocation_transition(
+                        root, candidate, {}, base
+                    )
+                }
+
+            self.assertNotIn("identity-reserved-history-dropped", codes(registry))
+            spaces = dict(registry.identity_spaces)
+            spaces["adr"] = dataclasses.replace(
+                spaces["adr"], reserved_history=spaces["adr"].reserved_history[1:]
+            )
+            dropped = dataclasses.replace(
+                registry, identity_spaces=MappingProxyType(spaces)
+            )
+            self.assertIn("identity-reserved-history-dropped", codes(dropped))
+
+            live_adr = registry.identity_spaces["adr"].reserved_history[0]
+            live = {
+                item.code
+                for item in identity_history.validate_allocation_transition(
+                    root,
+                    registry,
+                    {
+                        f"docs/02.architecture/decisions/{live_adr:04d}-x.md": (
+                            f"ADR-{live_adr:04d}"
+                        )
+                    },
+                    base,
+                )
+            }
+            self.assertIn("identity-reserved-history-live", live)
+
+    def test_generic_allocation_rejects_retired_reuse_and_requires_atomic_advance(
+        self,
+    ) -> None:
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            source = root / "docs/99.templates/registry.json"
+            source.parent.mkdir(parents=True)
+            source.write_bytes(_registry_bytes_with_live_spec(104))
             spec = root / "docs/03.specs/0104-original/spec.md"
             spec.parent.mkdir(parents=True)
             spec.write_text("---\nartifact_id: SPEC-0104\n---\n", encoding="utf-8")
             self._git(root, "add", ".")
             self._git(root, "commit", "-qm", "issue identity")
             previous = self._git(root, "rev-parse", "HEAD").strip()
-            registry = load_registry()
+            registry = _registry_with_live_spec(104)
             current = {"docs/03.specs/0104-moved/spec.md": "SPEC-0104"}
             self.assertEqual(
                 (),
@@ -453,7 +490,6 @@ class IdentityHistoryTests(unittest.TestCase):
             )
 
     def test_deleted_package_identity_requires_exact_git_recovery(self) -> None:
-        from scripts.lib.document_governance import registry as registry_module
 
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -462,7 +498,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "config", "user.email", "identity@example.invalid")
             registry_path = root / "docs/99.templates/registry.json"
             registry_path.parent.mkdir(parents=True)
-            registry_path.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
+            registry_path.write_bytes(_registry_bytes_with_live_spec(104))
             decision = root / "docs/03.specs/0104-decision/tasks/tsk-0001-recovery.md"
             decision.parent.mkdir(parents=True)
             decision.write_text(
@@ -492,7 +528,7 @@ class IdentityHistoryTests(unittest.TestCase):
             }
 
             findings = identity_history.validate_allocation_transition(
-                root, load_registry(), current, base
+                root, _registry_with_live_spec(104), current, base
             )
             self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
 
@@ -522,7 +558,7 @@ class IdentityHistoryTests(unittest.TestCase):
                 (),
                 identity_history.validate_allocation_transition(
                     root,
-                    load_registry(),
+                    _registry_with_live_spec(104),
                     current,
                     base,
                     recovery_evidence=recovery,
@@ -541,7 +577,7 @@ class IdentityHistoryTests(unittest.TestCase):
                 (),
                 identity_history.validate_allocation_transition(
                     root,
-                    load_registry(),
+                    _registry_with_live_spec(104),
                     current,
                     target_base,
                     recovery_evidence=recovery,
@@ -549,15 +585,14 @@ class IdentityHistoryTests(unittest.TestCase):
                 ),
             )
 
-            # A completed package is preserved whole under the archive, so its
-            # Task still carries the recovery decision after leaving Stage 03.
-            # A superseded or retired Task is not a decision owner.
+            # Stage 98 holds no records (SPEC-0249): a Task under any archive
+            # disposition is never a decision owner, so recovery fails closed.
             preserved_path = (
                 "docs/98.archive/completed/03.specs/0104-decision/tasks/"
                 "tsk-0001-recovery.md"
             )
             for disposition, allowed in (
-                ("completed", True),
+                ("completed", False),
                 ("superseded", False),
                 ("retired", False),
             ):
@@ -565,7 +600,7 @@ class IdentityHistoryTests(unittest.TestCase):
                 with self.subTest(disposition=disposition):
                     findings = identity_history.validate_allocation_transition(
                         root,
-                        load_registry(),
+                        _registry_with_live_spec(104),
                         {target_path: "RES-0085-m0001", moved: "SPEC-0104-TSK-0001"},
                         base,
                         recovery_evidence={
@@ -586,7 +621,7 @@ class IdentityHistoryTests(unittest.TestCase):
             recovery[target_path]["source_artifact_id"] = "RES-0084-SCOPE"
             findings = identity_history.validate_allocation_transition(
                 root,
-                load_registry(),
+                _registry_with_live_spec(104),
                 current,
                 base,
                 recovery_evidence=recovery,
@@ -598,7 +633,7 @@ class IdentityHistoryTests(unittest.TestCase):
             recovery[target_path]["source_artifact_id"] = "RES-0085-SCOPE"
             findings = identity_history.validate_allocation_transition(
                 root,
-                load_registry(),
+                _registry_with_live_spec(104),
                 current,
                 base,
                 recovery_evidence=recovery,
@@ -612,7 +647,7 @@ class IdentityHistoryTests(unittest.TestCase):
             decision_evidence[untyped_decision_path] = decision_evidence[decision_path]
             findings = identity_history.validate_allocation_transition(
                 root,
-                load_registry(),
+                _registry_with_live_spec(104),
                 current,
                 base,
                 recovery_evidence=recovery,
@@ -652,7 +687,7 @@ class IdentityHistoryTests(unittest.TestCase):
             )
             findings = identity_history.validate_allocation_transition(
                 root,
-                load_registry(),
+                _registry_with_live_spec(104),
                 current,
                 canonical_base,
                 recovery_evidence=recovery,
@@ -690,7 +725,7 @@ class IdentityHistoryTests(unittest.TestCase):
             )
             findings = identity_history.validate_allocation_transition(
                 root,
-                load_registry(),
+                _registry_with_live_spec(104),
                 current,
                 foreign_base,
                 recovery_evidence=recovery,
@@ -791,27 +826,60 @@ class IdentityHistoryTests(unittest.TestCase):
         self.assertNotIn(23, issued.numbers.get("research", frozenset()))
         self.assertNotIn(61, issued.numbers.get("research", frozenset()))
 
-    def test_tombstone_identity_comes_from_frontmatter_not_target_path(self) -> None:
+    def test_operations_prefixes_record_the_operations_subject_space(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             self._git(root, "init", "-q")
             self._git(root, "config", "user.name", "Registry Test")
             self._git(root, "config", "user.email", "registry@example.invalid")
-            tombstone = root / (
-                "docs/98.archive/tombstones/03.specs/0153-retired-target.md"
+            fixtures = (
+                ("guides/01-common/0103-example.md", "GDE-0103"),
+                ("policies/01-common/0104-example.md", "POL-0104"),
+                ("runbooks/01-common/0105-example.md", "RUN-0105"),
+                ("runbooks/01-common/0106-legacy.md", "RUNBOOK-0106"),
             )
-            tombstone.parent.mkdir(parents=True)
-            tombstone.write_text(
-                "---\nartifact_id: TOMBSTONE-0131\n---\n",
-                encoding="utf-8",
-            )
+            for relative, artifact in fixtures:
+                path = root / "docs/05.operations" / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"---\nartifact_id: {artifact}\n---\n")
             self._git(root, "add", ".")
-            self._git(root, "commit", "-qm", "add Tombstone fixture")
+            self._git(root, "commit", "-qm", "operations fixtures")
 
             issued = collect_issued_identities(root)
 
-        self.assertIn(131, issued.numbers["tombstone"])
-        self.assertNotIn(153, issued.numbers["tombstone"])
+        self.assertEqual(
+            frozenset({103, 104, 105}), issued.numbers["operations-subject"]
+        )
+
+    def test_every_numbered_registry_prefix_is_scanned(self) -> None:
+        registry = json.loads(
+            (
+                pathlib.Path(__file__).resolve().parents[3]
+                / "docs/99.templates/registry.json"
+            ).read_text(encoding="utf-8")
+        )
+        patterns = set()
+
+        def walk(node: object) -> None:
+            if isinstance(node, dict):
+                pattern = node.get("artifact_id_pattern")
+                if isinstance(pattern, str):
+                    patterns.add(pattern)
+                for value in node.values():
+                    walk(value)
+            elif isinstance(node, list):
+                for value in node:
+                    walk(value)
+
+        walk(registry)
+        scanned = {prefix for prefix, _space, _root in IDENTITY_PREFIX_SPACES}
+        special = ("REQ-", "inc-", "tomb-")
+        for pattern in sorted(patterns):
+            prefix = pattern.split("{", 1)[0]
+            if prefix.startswith(special) or "{number" not in pattern:
+                continue
+            with self.subTest(pattern=pattern):
+                self.assertIn(prefix.upper(), scanned)
 
     def test_registry_high_water_is_not_below_observed_history(self) -> None:
         # The real-tree scan is the full-profile metadata gate's job; its

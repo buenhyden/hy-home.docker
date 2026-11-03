@@ -38,9 +38,6 @@ _DOC_ROOT = "docs"
 # Stage directories are numbered by construction, so the pattern keeps matching
 # a stage that is added or removed without a second list to keep in step.
 _STAGE_DIRECTORY = re.compile(rf"^{_DOC_ROOT}/[0-9]{{2}}\.[^/]+(?:/|$)")
-# Stage 98 is history and is not validated: its outbound links, bodies and
-# README shapes are skipped.
-_ARCHIVE_PREFIX = "docs/98.archive/"
 _ROOT_PREFIXES = (
     ".agents/",
     "docs/",
@@ -1122,9 +1119,6 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     nodes = _node_map(graph)
     evidence_links = _HistoricalEvidenceLinks(graph, nodes)
     for link in graph.links:
-        if link.source.as_posix().startswith(_ARCHIVE_PREFIX):
-            # Stage 98 is history; its outbound links are not validated.
-            continue
         if link.absolute:
             findings.append(_finding(link, "absolute-local-link", link.raw_target))
             continue
@@ -1442,9 +1436,6 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
     for node in graph.nodes:
         if node.path.name != "README.md":
             continue
-        # Frozen Stage 98 bodies keep the contract they were preserved under.
-        if node.path.as_posix().startswith(_ARCHIVE_PREFIX):
-            continue
         directory = node.path.parent
         directory_text = "" if directory.as_posix() == "." else directory.as_posix()
         children, files = _direct_children(tracked, directory_text)
@@ -1609,8 +1600,8 @@ def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
     Only the repository's own top-level surfaces are candidates, so a URL, a
     flag, or an unrelated word with a slash is not read as a path. `secrets/`
     is excluded because those files are created by the operator and are
-    untracked by design, and Stage 98 under `docs/98.archive/` is history that
-    no check validates. A terminal Task is excluded too: its body is immutable
+    untracked by design. A terminal Task, as the Registry path profile classifies
+    it, is excluded too: its body is immutable
     execution evidence, so it may name a script a later change retired and it
     cannot be edited to satisfy a check. A block whose paths are illustrative
     rather than runnable declares that on its own first line with the stated
@@ -1623,10 +1614,9 @@ def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
     terminal_task_statuses = load_registry().lifecycle_terminal_statuses["task"]
     findings: list[LinkFinding] = []
     for node in graph.nodes:
-        if node.path.as_posix().startswith(_ARCHIVE_PREFIX):
-            continue
+        # The Registry path profile, not a self-declared `type`, makes a Task.
         if (
-            node.metadata.get("type") == "sdlc/task"
+            classify_path(node.path.as_posix()) == "task"
             and node.metadata.get("status") in terminal_task_statuses
         ):
             continue

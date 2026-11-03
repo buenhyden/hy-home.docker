@@ -689,7 +689,7 @@ in [m0021](m0021-local-docker-service-consolidation.md#current-external-research
 - [Automation pipeline and workflow](./m0004-automation-pipeline-workflow.md)
 - [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
 - [Data index](../../data/README.md)
-- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- SPEC-0158 preservation contract
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
 - [Research pack navigation](README.md)

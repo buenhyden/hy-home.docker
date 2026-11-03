@@ -51,7 +51,6 @@ from scripts.lib.document_governance.registry import (
     DocumentRegistry,
     RegistryError,
     _declares_provider_binding,
-    declares_frozen_legacy_record,
     document_type,
     resolve_template_placeholders,
     validate_frontmatter,
@@ -382,7 +381,6 @@ def _authored_body_target(record: Record, profiles: dict[str, object]) -> bool:
     if (
         profile.get("frontmatter_policy") in {"absent", "unmanaged"}
         or _declares_provider_binding(profile)
-        or declares_frozen_legacy_record(profile, record.path.as_posix())
         or _source_roles_for_path(record.path, profiles)
     ):
         return False
@@ -1293,7 +1291,7 @@ def _runtime_version_findings(
 ) -> list[Finding]:
     path = record.path.as_posix()
     in_scope = (
-        (record.path.name == "README.md" and not path.startswith("docs/98.archive/"))
+        record.path.name == "README.md"
         or path.startswith(_OPERATIONS_ROLE_ROOTS)
         or (
             path.startswith(

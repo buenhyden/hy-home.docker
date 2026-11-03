@@ -49,7 +49,7 @@ Catalog profile. The Registry schema rejects an undeclared `language` value.
 ### Follow-up
 
 - Corpus language migration for non-README documents, and full enforcement:
-  done by [SPEC-0187](../../98.archive/completed/03.specs/0187-document-language-migration/).
+  done by SPEC-0187.
 - Script and legacy-code cleanup found by the same audit.
 
 ## Decision Drivers
@@ -105,10 +105,9 @@ Structure tokens keep their form in every language. These are required
 headings, paths, identifiers, commands, and metadata keys. The body validator
 judges prose outside those tokens.
 
-**Ledger separation.** The Retention Catalog moves from
-`docs/98.archive/README.md` to `docs/98.archive/retention-catalog.md`. It gets
-its own profile, and its table header is kept byte-exact. The Stage 98 README
-becomes a router.
+**Ledger separation.** The Retention Catalog left the Stage 98 README, which
+became a router. SPEC-0249 later deleted the catalog with every Stage 98
+record; retired numbers now live in the Registry `reserved_history`.
 
 **Index ownership.** The Stage 03 index links package directories rather than
 `spec.md`, `plan.md`, or Tasks. The Registry `template_roles` map is the only
@@ -133,4 +132,4 @@ retired.
 - Requirements: [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md),
   [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
 - Architecture: [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
-- Spec: [SPEC-0184](../../98.archive/completed/03.specs/0184-readme-navigation-and-language-contract/)
+- Spec: SPEC-0184

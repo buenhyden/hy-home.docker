@@ -75,5 +75,5 @@ Accepted (2026-03-26). Amended on 2026-09-19 to withdraw Syncthing and align the
 
 - [Tooling PRD](../../01.requirements/0010-tooling.md)
 - [Tooling Architecture Description](../descriptions/0009-tooling-architecture.md)
-- [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
+- Current convergence Spec
 - [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)

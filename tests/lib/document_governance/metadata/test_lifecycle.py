@@ -190,6 +190,40 @@ class CurrentSpecRelationTests(unittest.TestCase):
         self.assertNotIn("invalid-transition", {item.code for item in unchanged})
         self.assertIn("invalid-transition", {item.code for item in different})
 
+    def test_a_typed_reference_to_a_reserved_only_identity_is_unresolved(
+        self,
+    ) -> None:
+        """A retired number is reserved in the Registry, never resolvable."""
+
+        registry = metadata.load_registry(REGISTRY)
+        self.assertIn(29, registry.identity_spaces["adr"].reserved_history)
+        self.assertIn(
+            14, registry.identity_spaces["architecture-description"].reserved_history
+        )
+        profiles = metadata.build_registry_profiles(registry)
+        record = metadata.Record(
+            pathlib.Path("docs/02.architecture/decisions/0032-fixture.md"),
+            {
+                "artifact_id": "ADR-0032",
+                "type": "sdlc/architecture-decision",
+                "status": "accepted",
+                "parent_ids": ["AD-0014"],
+                "supersedes": ["ADR-0029"],
+            },
+            "adr",
+            frontmatter_present=True,
+        )
+        codes = {
+            finding.code
+            for finding in metadata.validate_record(
+                record,
+                profiles,
+                metadata.build_current_manifest(pathlib.Path("."), [record]),
+            )
+        }
+        self.assertIn("unresolved-parent", codes)
+        self.assertIn("unresolved-supersedes", codes)
+
     def test_current_spec_cannot_use_another_spec_as_its_parent(self) -> None:
         profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
         parent = metadata.Record(

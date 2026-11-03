@@ -324,5 +324,5 @@ helper는 전체 preflight 후 각 파일을 즉시 재검증한다. 부분 실�
 ### Traceability
 
 - 현재 정책: [Documentation Protocol](../../../../.agents/governance/documentation-protocol.md); external release evidence 소유권을 포함한다.
-- 과거 구현 증거: [Workspace Revalidation Outcome](../../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`). 완료된 기록은 현재 실행 권한이 아니다.
+- 과거 구현 증거: Workspace Revalidation Outcome (`SPEC-0097`). 완료된 기록은 현재 실행 권한이 아니다.
 - 같은 번호 `0009`의 Guide/Policy는 없다.

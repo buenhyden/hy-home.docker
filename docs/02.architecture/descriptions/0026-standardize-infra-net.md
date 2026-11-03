@@ -115,8 +115,8 @@ Compose configuration.
 
 - [REQ-0023 Compose network segmentation](../../01.requirements/0023-standardize-infra-net.md)
 - [ADR-0026 Standardize infra_net (the superseded single-mesh decision)](../decisions/0026-standardize-infra-net.md)
-- [SPEC-0180 HOME development convergence](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
-- [SPEC-0098 completed implementation outcome](../../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md)
+- SPEC-0180 HOME development convergence
+- SPEC-0098 completed implementation outcome
 - [IP address management guide](../../05.operations/guides/02-gateway-and-networking/0077-ip-address-management.md)
 - [IP address management policy](../../05.operations/policies/02-gateway-and-networking/0077-ip-address-management.md)
 - [IP address management runbook](../../05.operations/runbooks/02-gateway-and-networking/0077-ip-address-management.md)

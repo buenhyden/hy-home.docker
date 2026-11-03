@@ -42,8 +42,8 @@ Reuse approved Requirement and Architecture inputs when they already cover the
 change. Within Stage 03, clarify unresolved scope before writing the Spec, map
 its acceptance criteria into the Plan and Tasks, and analyze their coverage and
 consistency before implementation. Verify actual results, promote durable meaning
-to its Stage 01/02/05 owner, then bring the package to readiness for archive
-review before any separately approved preservation.
+to its Stage 01/02/05 owner, then bring the package to readiness for removal
+review before any separately approved retirement.
 This adapts the [Spec Kit workflow](https://github.com/github/spec-kit) while
 retaining this repository's separate numbered Task records.
 
@@ -65,8 +65,7 @@ retain `draft`, `ready`, `in-progress`, `blocked`, `completed`, and
 and `closed`; postmortems use `draft`, `in-review`, and `published`;
 publications use `draft`, `in-review`, `published`, `superseded`, and
 `retired`; executable contracts use `draft`, `review`, `approved`, `active`,
-`superseded`, and `retired`. Navigation READMEs and the current archive
-catalog remain `active`; route records use `draft` or `sealed`.
+`superseded`, and `retired`. Navigation READMEs remain `active`.
 
 A Plan has one Spec parent and a Task has one Plan parent. A Plan is never
 ahead of its Spec and never ends before it. A Task, and each of its items,
@@ -104,14 +103,14 @@ Result vocabulary is the Registry's `PASS`, `FAIL`, `ERROR`, `NOT_RUN`,
 proof rows record observed structure only; they do not authenticate approval,
 review, or execution.
 
-A package is ready for archive review when its Spec and Plan are `approved`
+A package is ready for removal review when its Spec and Plan are `approved`
 (or validly `cancelled` or `superseded`), every Task or item is terminal, every
 criterion is accepted or `not-required`, and no required non-PASS observation is unresolved.
-Readiness is derived on read, is never stored, and is not archive approval.
+Readiness is derived on read, is never stored, and is not removal approval.
 A ready package with an approved Spec may wait in Stage 03; a cancelled or
-superseded Spec keeps no member there. A package enters the completed archive
-only from a ready base revision with an approved Spec, and the preserved copy
-keeps every base member with its status.
+superseded Spec keeps no member there. A package leaves Stage 03 only when its
+Spec number is reserved in the Registry `reserved_history`, after its durable
+meaning is summarized into its owners; version history keeps its body.
 
 The Registry supplies the exact Evidence, Criterion Acceptance, Execution
 Items and Work Breakdown shapes. `spec_packages.py` implements their meaning.
@@ -122,7 +121,7 @@ Task event records only an observed direct registered transition with
 same-Task evidence. Structural event validation does not authenticate
 approval; current authorization remains manual under the approval boundary.
 
-Stage 90 supplies evidence and Stage 98 supplies historical path lookup; neither
+Stage 90 supplies evidence and version history supplies removed bodies; neither
 overrides current lifecycle authority. Stage 99 defines document shapes and
 identities. Registered scripts implement gates. `FAIL`, `ERROR`, `NOT_RUN`, `CANCELLED`,
 and `NOT_APPLICABLE` remain valid non-completion observations; they do not

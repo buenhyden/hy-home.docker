@@ -8,7 +8,7 @@ updated: "2026-10-15"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
-- "SPEC-0094"
+- "POL-0004"
 created: "2026-06-04"
 ---
 # Harness / Agent-first Engineering Runbook
@@ -222,7 +222,7 @@ verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴
 ## Related Documents
 
 - [Operations index](../../README.md)
-- [Specification](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md)
+- Specification: SPEC-0094 (retired)
 - [Usage guide](../../guides/01-common/0004-harness-agent-first-engineering.md)
 - [Operations policy](../../policies/01-common/0004-harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../../../.agents/README.md)
@@ -231,5 +231,5 @@ verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴
 
 ### Traceability
 
-- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`)
 - 같은 주제: [Guide](../../guides/01-common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../../policies/01-common/0004-harness-agent-first-engineering.md) (`POL-0004`)

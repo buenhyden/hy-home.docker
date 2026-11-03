@@ -47,9 +47,6 @@ from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E4
     normalize_repo_relative_path,
 )
 from scripts.lib.document_governance.frontmatter import (  # noqa: E402
-    parse_frontmatter_text as _parse_frontmatter_text,
-)
-from scripts.lib.document_governance.frontmatter import (  # noqa: E402
     read_frontmatter_values,
 )
 from scripts.lib.document_governance.registry import (  # noqa: E402
@@ -873,9 +870,7 @@ def infer_artifact_type(
     return "unsupported"
 
 
-def build_manifest(
-    records: Sequence[Record], *, retired_records: Sequence[Record] = ()
-) -> dict[str, pathlib.Path]:
+def build_manifest(records: Sequence[Record]) -> dict[str, pathlib.Path]:
     """Build a deterministic artifact-ID manifest and retain duplicate context."""
 
     paths_by_id: dict[str, list[pathlib.Path]] = collections.defaultdict(list)
@@ -913,10 +908,6 @@ def build_manifest(
                 sorted(candidate.path for candidate in unique.values())
             )
 
-    for record in retired_records:
-        artifact_id = record.metadata.get("artifact_id")
-        if isinstance(artifact_id, str) and artifact_id not in relation_records_by_id:
-            relation_records_by_id[artifact_id] = record
     return Manifest(
         values,
         duplicates,
@@ -939,72 +930,9 @@ def _profile_mapping(
 def build_current_manifest(
     root: pathlib.Path, records: Sequence[Record]
 ) -> dict[str, pathlib.Path]:
-    """Resolve retired Spec lineage only through exact verified compact evidence."""
+    """Current records only: typed references never cite a retired identity."""
 
-    current = build_manifest(records)
-    needed: set[str] = set()
-    for record in records:
-        for field in ("parent_ids", "supersedes", "superseded_by"):
-            value = record.metadata.get(field)
-            values = (
-                [value]
-                if isinstance(value, str)
-                else value
-                if isinstance(value, list)
-                else []
-            )
-            needed.update(
-                item
-                for item in values
-                if isinstance(item, str)
-                and item.startswith("SPEC-")
-                and item not in current
-            )
-    if (
-        not needed
-        or not (
-            root
-            / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-        ).exists()
-    ):
-        return current
-    from scripts.lib.document_governance.archive_migration_0003 import (
-        _migration_document,
-    )
-    from scripts.lib.document_governance.git_provenance import HistoricalDocument
-
-    try:
-        migration = _migration_document(root)
-        retired = []
-        if migration["schema_version"] == 3:
-            for row in migration["rows"]:
-                source = row["source_path"]
-                if (
-                    row["action"] != "delete"
-                    or row["artifact_id"] not in needed
-                    or not source.endswith("/spec.md")
-                    or (root / source).exists()
-                ):
-                    continue
-                text = HistoricalDocument(
-                    root, row["recovery_commit"], source
-                ).read_text()
-                values = _parse_frontmatter_text(text)
-                # Read at its recovery commit, where the role key was still
-                # `artifact_type`; the blob is frozen and never re-typed.
-                if (
-                    values.get("artifact_id") != row["artifact_id"]
-                    or values.get("artifact_type") != "spec"
-                ):
-                    raise ValueError("retired Spec identity does not match recovery")
-                retired.append(
-                    Record(
-                        pathlib.Path(source), {**values, "status": "retired"}, "spec"
-                    )
-                )
-        return build_manifest(records, retired_records=retired)
-    except ValueError as error:
-        raise ProfileError("retired Spec lineage recovery is invalid") from error
+    return build_manifest(records)
 
 
 def _finding(

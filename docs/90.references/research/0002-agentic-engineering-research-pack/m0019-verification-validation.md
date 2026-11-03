@@ -116,7 +116,7 @@ questions unassessed. Those limitations are part of the result.
 - [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
 - [Docker Compose and infrastructure](./m0005-docker-compose-infrastructure.md)
 - [Security governance](./m0017-security-governance.md)
-- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- SPEC-0158 preservation contract
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
 ## Findings
@@ -711,7 +711,7 @@ observations are candidates, not newly inspected implementations.
 
 This member’s source-research worker did not execute validators or tests, inspect
 live refs, approve release, or establish current compliance. Integrated document
-QA evidence belongs to [the execution Task](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md). Historical command outcomes, reachable-ref
+QA evidence belongs to the execution Task. Historical command outcomes, reachable-ref
 denominators, review timing, IEEE/ISO references and baseline/candidate distinctions
 are retained verbatim with their original dates. Recheck current requirements
 and relevant primary-standard status before adopting a normative policy.

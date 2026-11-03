@@ -9,8 +9,6 @@ layer: "architecture"
 artifact_id: "ADR-0040"
 parent_ids:
 - "AD-0019"
-supersedes:
-- "ADR-0019"
 created: "2026-09-24"
 ---
 
@@ -30,6 +28,8 @@ this ADR rewrites the same decisions against the current services.
 The basis is `check-all-hardening.sh`'s 04-data checks, the CI
 `infrastructure-hardening` gate, and the current repository configuration.
 Unrecorded runtime state is not claimed.
+
+- **Superseded decision**: ADR-0019 ordered the 04-data hardening and HA expansion (Supabase healthchecks, exporter secret paths, malformed expose tokens, and a per-tier hardening check first). This decision replaces it.
 
 ## Decision Drivers
 
@@ -82,7 +82,7 @@ regressions.
 
 ## Related Documents
 
-- **Superseded ADR**: `ADR-0019` (preserved under `docs/98.archive/superseded/`)
+- **Superseded ADR**: `ADR-0019` (number reserved in the Registry; body in version history)
 - **Architecture Description**: [0019-data-optimization-hardening-architecture.md](../descriptions/0019-data-optimization-hardening-architecture.md)
 - **Requirements**: [0004-data.md](../../01.requirements/0004-data.md)
 - **Related ADR**: [ADR-0004](0004-postgresql-ha-patroni.md), [ADR-0039](0039-analytics-engines-after-lakehouse-convergence.md)

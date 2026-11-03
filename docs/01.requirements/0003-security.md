@@ -119,3 +119,5 @@ certification or a claim to have reviewed the paid standards' full text.
 - **Recovery procedure**: [OpenBao runbook](../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
 - **Quality references**: [ISO/IEC 25010](https://www.iso.org/standard/78176.html), [ISO/IEC 25023](https://www.iso.org/standard/35747.html), [ISO/IEC 25030](https://www.iso.org/standard/72116.html).
 - **Secrets manager decision**: [ADR-0050](../02.architecture/decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0003
+- **Retired domain Spec SPEC-0003** (security): replaced by the security guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.
+- **Retired requirement REQ-0015** (security optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the security operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

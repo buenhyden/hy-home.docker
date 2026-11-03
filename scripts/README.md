@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.1"
+version: "1.5.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-03"
 created: "2026-02-21"
 ---
 
@@ -323,7 +323,8 @@ list 안의 등록된 angle-bracket 토큰을 재귀적으로 탐지하며, 날�
 
 `scripts/validation/check-document-corpus-lifecycle.py`는 lifecycle 전용
 companion입니다. mode 없이 한 경로만 실행하며 Spec Package lifecycle 결과와
-active stage 점유 결과를 함께 보고합니다. Stage 98 기록은 검증하지 않습니다.
+active stage 점유 결과를 함께 보고합니다. Stage 98에 대한 검사는 점유 규칙
+하나뿐이며, README가 아닌 tracked 파일이 있으면 실패합니다.
 `--mode` 인자는 없으며 argparse 오류가 됩니다. parser, contract, Git, path, redaction,
 내부 안전성 실패는 여전히 fail-closed로 처리됩니다. 집중 인벤토리는
 `python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py' -v`로

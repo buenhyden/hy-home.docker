@@ -83,5 +83,5 @@ profile, authentication exception or deployment permission.
 
 - [AD-0009](../descriptions/0009-tooling-architecture.md)
 - [AD-0011](../descriptions/0011-laboratory-architecture.md)
-- [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
-- [SPEC-0198](../../98.archive/completed/03.specs/0198-operations-documentation-system/spec.md)
+- SPEC-0197
+- SPEC-0198

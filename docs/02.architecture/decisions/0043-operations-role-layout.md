@@ -54,7 +54,7 @@ check, and `check-document-links.py --mode all` enforce this decision.
 - People look first by role (understand, control, execute).
 - Do not change issued IDs (documentation protocol authoring rule 5).
 - Do not run two discovery systems in parallel.
-- Do not rewrite Stage 98 frozen bodies and sealed records.
+- Do not rewrite historical records; they are deleted, not edited (ADR-0051, pending acceptance).
 
 ## Options
 
@@ -101,8 +101,8 @@ check, and `check-document-links.py --mode all` enforce this decision.
   The matching slug across role indexes shows that relationship.
 - Catalog links from other repositories break. This repository hands that off
   without fixing it.
-- Stage 98 records and MIG-0002 continue to carry the catalog path as
-  historical fact.
+- MIG-0002 and the other removed Stage 98 records carry the catalog path only in
+  version history.
 
 ## Related Documents
 
@@ -110,5 +110,5 @@ check, and `check-document-links.py --mode all` enforce this decision.
 
 - Parent architecture: [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - Superseded structural decision: SPEC-0158 and MIG-0002's catalog convergence
-  (Stage 98 preserved record)
-- Execution: [SPEC-0183](../../98.archive/completed/03.specs/0183-operations-role-layout/spec.md)
+  (both retired; bodies in version history)
+- Execution: SPEC-0183

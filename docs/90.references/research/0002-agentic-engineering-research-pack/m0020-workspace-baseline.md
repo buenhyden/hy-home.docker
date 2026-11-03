@@ -287,7 +287,7 @@ review_cycle: "on-source-change"
 > | Stage 04 execution (retired path: `../../../04.execution/README.md`)         |   239 | 104 Plan-path files, 134 Task-path files, and the stage index.                           |
 > | [Stage 05 operations](../../../05.operations/README.md)       |   263 | 88 guide, 87 policy, 85 runbook, one incident index, one release index, one stage index. |
 > | [Stage 90 references](../../../90.references/README.md)       |   118 | 42 research, 39 audits, 30 data, 3 LLM Wiki, 3 learning, one stage index.                |
-> | [Stage 98 archive](../../../98.archive/README.md)             |    69 | Historical tombstones and archived lifecycle evidence, including 32 Specs.               |
+> | Stage 98 archive             |    69 | Historical tombstones and archived lifecycle evidence, including 32 Specs.               |
 > | [Stage 99 templates](../../../99.templates/README.md)         |    48 | Template sources and support contracts; 33 files are under the template tree.            |
 >
 > Stage 04 moved from 238 to 239 for the single reason recorded above. The Stage
@@ -799,14 +799,14 @@ review_cycle: "on-source-change"
 - [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
 - [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
 - [Verification and validation](m0019-verification-validation.md)
-- [Refresh Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md)
+- Refresh Spec
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
 >
 > - [Scope application matrix](./m0015-scope-application-matrix.md)
 > - [Verification and validation](./m0019-verification-validation.md)
-> - [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+> - SPEC-0158 preservation contract
 > - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 > - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 > - [Agent governance hub](../../../../.agents/README.md)
@@ -878,7 +878,7 @@ instructions are preserved history and are not executed by this refresh.
 > <!-- Historical evidence table (not current authority; source: Git history). -->
 > | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                              |
 > | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-> | [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md) | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access. |
+> | SPEC-0158 preservation contract | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access. |
 > | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-31's derivations are unchanged.                                                                                                                                                                                                |
 > | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                             | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26. Cardinality independently confirmed by an executed run.                                                                                                                                    |
 > | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26.                                                                                                                                                                                            |

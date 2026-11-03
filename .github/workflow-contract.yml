@@ -313,7 +313,6 @@
       "argv": [
         "run-unittest",
         "tests.lib.document_governance.test_architecture",
-        "tests.lib.document_governance.test_archive_readers",
         "tests.lib.document_governance.test_generation6",
         "tests.lib.document_governance.test_generation7",
         "tests.lib.document_governance.test_identity_history",

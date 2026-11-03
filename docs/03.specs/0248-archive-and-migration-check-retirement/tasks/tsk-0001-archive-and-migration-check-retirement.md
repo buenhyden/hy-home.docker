@@ -169,9 +169,12 @@ templates under `docs/99.templates/templates/archive/`.
 | E17 | 4 | W5 | lifecycle-metadata-gate-suites | metadata reference, github workflow contract, CI gate plan and surface ownership after gating Spec validation on current Stage 03 | PASS | 138 tests OK | required | E16 |
 | E18 | 4 | W5 | gate-evidence | `tests.lib.gate.test_ci_gate_evidence` with system python3, because the uv Python lacks `fcntl.F_ADD_SEALS` | PASS | 21 tests OK | required | - |
 | E19 | 1 | W3 | document-commands | links `commands` mode after the archive module removal | FAIL | 8 failures: 6 in completed SPEC-0209-TSK-0001 naming removed archive modules, and 2 for ignored `_workspace` files absent from this worktree | required | - |
-| E20 | 1 | W3 | document-commands | after exempting terminal Task bodies; links, owner lookup and lifecycle contract tests | PASS | 105 tests OK; commands mode down to the 2 `_workspace` findings from PR #720, which depend on ignored local files and are not caused by this change | required | E19 |
+| E20 | 1 | W3 | document-commands | after exempting terminal Task bodies; links, owner lookup and lifecycle contract tests | FAIL | 105 tests OK; commands mode still reports 2 findings, both for ignored `_workspace` files from PR #720 that are absent from this worktree; baseline debt not caused by this change, and commands mode runs only locally | required | - |
 | E21 | 1, 2 | W2 | corpus-lifecycle-and-links | after the review fixes | PASS | corpus lifecycle zero; occupancy zero; link alignment PASS; Script Manifest PASS | required | - |
 | E22 | 4 | W5 | metadata-changed | final tree after the review fixes, base origin/main 355e8caa1 | PASS | selected 8, zero violations, zero legacy exceptions | required | - |
+| E23 | 4 | W5 | hosted-ci | CI Quality Gates run 41595209280 on head a879f2b64 | PASS | candidate-quality success; main-security skipped by its trigger | required | - |
+| E24 | 4 | W5 | full-suite-comparison | `tests/lib` and `tests/validation` discovery on a879f2b64 against main ec8555d09, system python3 | FAIL | lib 1053 tests, validation 2179; every failure also fails on main (15 secret metadata sync, 1 SMTP, 3 loader errors, 1 identity history) except 11 that read live `docs/03.specs` while a commit landed mid-run, and one lifecycle public test broken by the E23 row shape, since corrected | required | - |
+| E25 | 4 | W5 | quiet-tree-rerun | `test_spec_packages`, `test_requirements`, lifecycle `test_public` on the corrected tree with no concurrent writes | PASS | 122 tests OK; corpus lifecycle zero; metadata check-changed selected 7, zero violations | required | - |
 
 ## Criterion Acceptance
 

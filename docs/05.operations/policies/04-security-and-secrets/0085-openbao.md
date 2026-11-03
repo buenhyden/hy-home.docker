@@ -66,8 +66,8 @@ IP allowlist 없이 유지한다.
 이 다섯 경로는 [추적 ACL](../../../../infra/03-security/openbao/config/policies/eso-read-platform.hcl)의
 범위이며 사람이 쓰는 operator의 create/update 권한과 구분한다. 기존 세 경로 설명
 이후 owner-authored 변경 `e3d811870`과 `5fb725b2a`(2026-09-23)가 Prometheus와
-Kiali Grafana 읽기를 추가했고, [완료된 Task 0008](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0008-storage-security-lakehouse-convergence.md)의
-해당 경로·통합/merge 기록과 [2026-09-24 owner 완료 결정](../../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md#completion-basis-owner-decision-2026-09-24)이
+Kiali Grafana 읽기를 추가했고, 완료된 Task 0008의
+해당 경로·통합/merge 기록과 2026-09-24 owner 완료 결정이
 그 제한된 추가의 역사적 근거다. 이 교정은 임의 권한 확대를 허용하지 않는다.
 ESO 주체가 침해되면 이 다섯 항목에 대한 읽기가 함께 영향을 받으므로 exact
 service-account/namespace/audience 바인딩을 유지한다. 실제 설치된 정책·role과

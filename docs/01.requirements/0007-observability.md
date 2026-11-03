@@ -88,3 +88,5 @@ No separately numbered solution-independent external interface requirement was i
 - **Architecture Description**: [Observability architecture descriptions](../02.architecture/descriptions/0006-observability-architecture.md)
 - **Spec**: [Observability technical specification](../02.architecture/descriptions/0006-observability-architecture.md)
 - **ADR**: [LGTM stack selection decision](../02.architecture/decisions/0006-lgtm-stack-selection.md)
+- **Retired domain Spec SPEC-0007** (observability): replaced by the observability guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.
+- **Retired requirement REQ-0018** (observability optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the observability operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

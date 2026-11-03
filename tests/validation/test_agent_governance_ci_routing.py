@@ -2175,7 +2175,9 @@ class PostToolFormattingOwnershipTests(unittest.TestCase):
             if exception.get("kind") == "frozen-legacy-status"
             for path in exception["paths"]
         }
-        self.assertTrue(record_roots and legacy, "the Registry declares no frozen set")
+        # SPEC-0249 removed the frozen-legacy-status exception; only the
+        # unmanaged archive profiles still define the frozen set.
+        self.assertTrue(record_roots, "the Registry declares no frozen set")
         self.assertEqual(
             [],
             [

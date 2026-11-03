@@ -159,5 +159,5 @@ independent policy sources.
 - **Decision**: [ADR-0032 Canonical Agent Governance Home](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - **Decision**: [ADR-0034 Canonical Knowledge and Prompt Surfaces](../02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
 - **Decision**: [ADR-0049 Shared Agent Memory Store](../02.architecture/decisions/0049-shared-agent-memory-store.md)
-- **Historical implementation evidence**: [SPEC-0158](../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- **Historical implementation evidence**: SPEC-0158
 - **Governance entry**: [canonical agent governance](../../.agents/README.md)

@@ -9,8 +9,6 @@ layer: "architecture"
 artifact_id: "ADR-0039"
 parent_ids:
 - "AD-0012"
-supersedes:
-- "ADR-0015"
 created: "2026-09-24"
 ---
 
@@ -30,6 +28,8 @@ data or volume.
 The basis is the S01 ruling of SPEC-0180 Task 0008, the S12-S15 source
 stages, the 2026-09-24 live acceptance record, and the current repository
 configuration. Unrecorded runtime state is not claimed.
+
+- **Superseded decision**: ADR-0015 selected specialized analytics engines (InfluxDB 3 Core, ksqlDB, OpenSearch 3.x, and StarRocks 4.x) before the lakehouse convergence, rejecting PostgreSQL extensions and managed cloud services as alternatives. This decision replaces it.
 
 ## Decision Drivers
 
@@ -92,7 +92,7 @@ Tracked Compose files fix the runtime image tags, and
 
 ## Related Documents
 
-- **Superseded ADR**: `ADR-0015` (preserved under `docs/98.archive/superseded/`)
+- **Superseded ADR**: `ADR-0015` (number reserved in the Registry; body in version history)
 - **Architecture Description**: [0012-data-analytics-architecture.md](../descriptions/0012-data-analytics-architecture.md)
 - **Requirements**: [0005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
 - **Lakehouse policy**: [POL-0094](../../05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md)

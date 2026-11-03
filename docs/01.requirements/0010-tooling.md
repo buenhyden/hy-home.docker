@@ -90,6 +90,9 @@ No separately numbered solution-independent external interface requirement was i
 ### Traceability
 
 - **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/0009-tooling-architecture.md)
-- [Current convergence Spec](../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
-- [Current convergence Plan](../98.archive/completed/03.specs/0180-home-dev-convergence/plan.md)
+- Current convergence Spec
+- Current convergence Plan
 - **ADR**: [0009-tooling-services.md](../02.architecture/decisions/0009-tooling-services.md)
+- **Retired domain Spec SPEC-0010** (tooling): replaced by the tooling guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.
+- **Retired requirement REQ-0021** (tooling optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the tooling operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.
+- **Retired Terraform operations documents**: the Terraform guide, policy, and runbook were retired when OpenTofu became the infrastructure-as-code tool.

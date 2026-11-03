@@ -40,7 +40,7 @@ No package is split solely to make a folder taxonomy more uniform.
 - [REQ-0004](../../01.requirements/0004-data.md)
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
-- [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
+- SPEC-0197
 
 ## Structure
 

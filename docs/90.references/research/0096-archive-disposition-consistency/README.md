@@ -199,7 +199,7 @@ SPEC-0179 Task가 소유하며 완료된 SPEC-0185를 다시 열지 않습니다
 - [문서 보존 정책](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
 - [REQ-0026 문서 보존 및 은퇴](../../../01.requirements/0026-document-retention-and-retirement.md)
 - ADR-0035 Stage 98 Retention Classes and Route Dispositions (superseded)
-- [ADR-0036 보존 기록 탐색](../../../98.archive/README.md)
+- ADR-0036 보존 기록 탐색
 - [ADR-0037 Package Waiting, Cancellation and Archive Reassessment](../../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [SPEC-0177 Archive Disposition Enforcement](../../../98.archive/completed/03.specs/0177-archive-disposition-enforcement/spec.md)
-- [SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity](../../../98.archive/completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md)
+- SPEC-0177 Archive Disposition Enforcement
+- SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity

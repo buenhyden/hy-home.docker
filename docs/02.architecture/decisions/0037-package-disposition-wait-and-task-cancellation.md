@@ -1,16 +1,14 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-03"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
 - "AD-0030"
-supersedes:
-- "ADR-0036"
 created: "2026-09-17"
 ---
 
@@ -49,7 +47,11 @@ scoped operation after recoverability and consumer checks.
 2026-10-13, replaces decision 1 except its last sentence, and the
 completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
 the completed Spec's PASS receipt, and that completion receipts are checked
-before moving. The rest of this decision stays in force.
+before moving. [ADR-0051](0051-summarize-and-delete-retirement.md), pending its
+acceptance (decided by the owner on 2026-11-03), supersedes decision items 4 to
+10 and the last sentence of decision 1. Decision 1 is therefore fully replaced
+by ADR-0048 and ADR-0051; decisions 2 and 3 stay in force except their
+completion-receipt clauses.
 
 ## Decision Drivers
 
@@ -149,9 +151,17 @@ before moving. The rest of this decision stays in force.
 
 ### Traceability
 
+- **Partially superseded**: pending acceptance of
+  [ADR-0051](0051-summarize-and-delete-retirement.md), it supersedes decision
+  items 4 to 10 and the last sentence of decision 1, because Stage 98 holds no
+  records and retirement summarizes then deletes. With ADR-0048, decision 1 is
+  fully replaced; decisions 2 and 3 remain this decision except their
+  completion-receipt clauses. The decision body above is kept as accepted.
+
 - [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
-- [SPEC-0179](../../98.archive/completed/03.specs/0179-package-disposition-wait-and-task-cancellation/spec.md)
-- [Archive index, including predecessor ADR-0036](../../98.archive/README.md)
+- SPEC-0179
+- ADR-0036 predecessor; its number is reserved in the Registry and its body is in version history
 - [Retention policy](../../../.agents/governance/documentation-protocol.md#retention-by-status)
+- **Superseded archive-model decisions**: ADR-0030 made a Tombstone the record of a retirement; ADR-0031 made Stage 98 a preserved record keyed by Retired Path; ADR-0033 preserved whole Spec packages; ADR-0035 introduced Stage 98 retention classes and route dispositions; ADR-0036 added occupancy, citation, and frozen identity rules. This decision replaces ADR-0036. Under SPEC-0249 the Stage 98 records were later summarized into Stage 01 and Stage 02 and deleted; version history is their record and retired numbers live in the Registry.

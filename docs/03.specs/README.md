@@ -1,10 +1,10 @@
 ---
 title: "명세 패키지"
-version: "1.3.3"
+version: "1.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-11-03"
 layer: "specs"
 ---
 
@@ -25,9 +25,9 @@ Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않
 - 포함: 진행 중인 변경, 검증이 끝나 보관 승인을 기다리는 package의
   Spec·Plan·Task와 Spec이 직접 소유하는 실행 가능한 contract.
 - 제외: 운영 절차, 감사·조사 데이터, 이미 처분된 package의 본문, 이전 경로의
-  복제본과 redirect. 운영·참조 자료는 각 Stage의 현재 owner가, 처분된 실행
-  증거는 Stage 98의 보존 package가 소유합니다. Git history는 원본과 복구를
-  증명할 뿐, 반드시 보존해야 할 본문을 대신하지 않습니다.
+  복제본과 redirect. 운영·참조 자료는 각 Stage의 현재 owner가 소유합니다. 삭제된
+  package의 본문은 Git 이력이 기록이며, 그 번호는 Registry `reserved_history`가
+  보관합니다.
 
 ## Structure
 
@@ -81,8 +81,9 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0246 | [호스트 저장소 계층화](./0246-host-storage-tiering/) | Docker 저장소 종류별 SSD·HDD 배치 정책: containerd 이미지 저장소는 HDD, Ollama 모델은 SSD, 빌드 캐시 한도와 미사용 이미지의 registry 보관 |
 | SPEC-0247 | [Hermes 후보 오프라인 검증](./0247-offline-hermes-candidate-validator/) | 후보 JSON의 식별자·상태·출처 해시·비공개 차단 경계를 로컬에서 검사하고 게시 승인과 분리 |
 | SPEC-0248 | [Archive·migration 검사 폐기](./0248-archive-and-migration-check-retirement/) | Stage 98 기록과 migration ledger를 검증하던 gate를 삭제하고 현재 검사가 쓰는 읽기 전용 loader와 legacy 허용만 남겨 목록으로 관리 |
+| SPEC-0249 | [Stage 98 archive 삭제](./0249-stage98-archive-deletion/) | Stage 98 기록을 01·02 문서에 요약하고 삭제하며, 폐기 번호를 Registry `reserved_history`로 옮기고 archive를 읽던 검사를 제거 |
 
-처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
+처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
 규칙대로 읽을 때 계산하며 표나 frontmatter에 적지 않습니다. 새 lifecycle
 상태도, 처분 승인도 아닙니다.
@@ -111,8 +112,9 @@ package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/
 5. acceptance 대응과 승격 기록은 현재 Task에 남기고 Stage 01·02·05의 오래
    유지할 갱신을 연결하거나 갱신이 필요 없는 이유를 적습니다.
 6. metadata, lifecycle, 링크, 구현 정합성, 등록된 gate profile을 검증합니다.
-7. 승격과 acceptance 검증으로 package를 보관 검토 준비 상태로 만듭니다. 별도 보관 승인과
-   복구·inbound consumer 확인 뒤 전체 단위를 보존합니다. clarify, analyze, 구현, 검증 순서는
+7. 승격과 acceptance 검증으로 package를 삭제 검토 준비 상태로 만듭니다. 별도 승인과
+   inbound consumer 확인 뒤 남아야 할 내용을 01·02 문서에 요약하고 package를 삭제하며,
+   Spec 번호를 `reserved_history`에 추가합니다. clarify, analyze, 구현, 검증 순서는
    [SDLC](../../.agents/governance/sdlc.md)를 따릅니다.
 
 ### Package 수명주기
@@ -125,10 +127,9 @@ package가 보관 검토 준비 상태인지는 [SDLC](../../.agents/governance/
   `Evidence` 한 곳에 기록합니다.
 - Spec·Plan 상태는 승인 권한만 기록합니다. 실행 상태는 Task가, 수용 판정은
   Task의 `Criterion Acceptance` 표가 소유합니다.
-- 보관 검토 준비가 된 package는 그대로 보관 승인을 기다릴 수 있습니다.
-  별도 승인을 받은 뒤 Spec·Plan·모든 Task를 Stage 98로 함께 옮깁니다.
-  Git 복구만 믿고 실행 본문을 지우거나 동결된 내용을 다시 쓰지 않습니다.
-  철회와 완료의 처분 기록은
+- 삭제 검토 준비가 된 package는 그대로 승인을 기다릴 수 있습니다. 별도 승인을
+  받은 뒤 요약을 옮기고 package 전체를 삭제하며, Spec 번호가 `reserved_history`에
+  없으면 삭제가 실패합니다. Stage 98로 옮기지 않습니다. 철회와 완료의 처분 기록은
   [문서 보존 정책](../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)을
   따릅니다.
 

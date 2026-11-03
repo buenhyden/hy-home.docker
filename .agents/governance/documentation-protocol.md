@@ -33,8 +33,8 @@ authoring behavior and `scripts/` owns executable validation.
   and executable interface contracts.
 - Stage 05 owns operator guidance, policies, runbooks, and incidents.
 - Stage 90 owns non-normative research, audits, and reference data.
-- Stage 98 owns four capture classes for frozen units and two route
-  dispositions that hold no body; current assessment and availability are separate.
+- Stage 98 owns only the README describing the disposition scheme; it holds no
+  records, and retired numbers live in the Registry.
 - Stage 99 owns profiles, schemas, and copyable templates.
 
 Do not create parallel PRD, SRS, interface-requirement, design, tests, release,
@@ -78,7 +78,8 @@ Reading governing Requirements, Architecture, the approved Spec and current
 Task during authorized execution remains required by bootstrap. Such scoped
 reads, investigation, and docs-internal traceability are not outside-docs
 instruction dependencies. Links inside `docs/` keep their existing rules;
-[Links into Stage 98](#links-into-stage-98) governs archive citations.
+[Document Retention and Retirement](#document-retention-and-retirement) governs
+retired identities.
 
 ### Authoring Rules
 
@@ -92,9 +93,9 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
    The registry's `artifact_id_pattern` states the exact shape per profile.
 7. Name a Stage 90 package member `m####-<slug>.md`; a Stage 03 Task keeps its
    `tsk-####-<slug>.md` name and an incident packet keeps `inc-####-<slug>/`.
-8. Give a tombstone the retired document's identity under a `tomb-` prefix
-   instead of issuing a new artifact identity. Its numbered filename still
-   uses the Registry's separate monotonic `tombstone` allocation.
+8. Record a retired document's number in its identity space's Registry
+   `reserved_history` instead of issuing a record for it. A reserved number is
+   never issued again.
 9. Declare the frontmatter its registry profile requires, in the registry's
    `common.frontmatter_order`. The registry owns which keys a profile requires
    and permits; `contracts/document-frontmatter.schema.json` owns their value shapes.
@@ -150,9 +151,12 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
     `# doc-paths: illustrative`, so the exemption is visible to the reader
     instead of hidden in a predicate. `leaf.docs-traceability` enforces this
     through the `commands` mode of `check-document-links.py`. Operator-created
-    files under `secrets/` and everything under `docs/98.archive/` are outside
-    the check: the first are untracked by design and Stage 98 is history that
-    no gate validates.
+    files under `secrets/` are outside the check because they are untracked by
+    design. So is the body of a terminal Task: it is immutable execution
+    evidence that may name a script a later change retired. The exemption keys
+    on the Registry path profile, so only a file at a registered Task path with
+    a terminal Task status qualifies; a `type: sdlc/task` frontmatter elsewhere
+    does not.
 
 #### Document language
 
@@ -161,10 +165,9 @@ its prose. The profiles follow one priority order:
 
 1. Every tracked `README.md` is Korean, whatever its path or profile. This
    includes the READMEs under `.agents/`, the provider directories, Stage 90
-   packages, Stage 99, and the Stage 98 index. The generated provider READMEs
+   packages, Stage 99, and the Stage 98 README. The generated provider READMEs
    are written in Korean through their renderer template, although they
-   declare no `language` and are not judged. A frozen Stage 98 body keeps the
-   language it was written in.
+   declare no `language` and are not judged.
 2. Every other document under `docs/05.operations/` is Korean.
 3. Every other document under `docs/` that declares a language is English.
 4. Every non-README governance, hook, role, skill, knowledge, and prompt
@@ -174,7 +177,7 @@ its prose. The profiles follow one priority order:
 A template's author prompt names its profile's language. Native keys,
 required headings, commands, code, quotations, and external originals keep
 their original syntax. The current authoring language is not applied back
-to Stage 98 originals, template sources, or generated runtime adapters.
+to template sources or generated runtime adapters.
 
 Structure tokens keep their original form in every language: required headings,
 identifiers, paths, command text, metadata keys, environment variables, profile
@@ -309,145 +312,46 @@ of external templates.
 | Implementation evidence | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` | Record result, deviation, and validation evidence. |
 | Operator knowledge | `docs/05.operations/` | Update the applicable guide, policy, runbook, or incident. |
 | External evidence | `docs/90.references/` | Preserve non-normative research, audit, or data. |
-| Historical recovery | `docs/98.archive/`; non-authoritative for current rules | Read prior content as a preserved record without creating a current authoring route. |
+| Historical recovery | Version history and the owner's Traceability; non-authoritative for current rules | Read a removed body at the revision that last carried it; summarize still-current meaning into its current owner. |
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
 ### Document Retention and Retirement
 
-Archive work is a disposition inside the current approved Task, never a new
-Spec project of its own, and a closed Spec gets no new standing verification
-pipeline. Retention follows lifecycle and ownership. Age and document count are never
-retention criteria. A document is retained while it owns current behavior,
-structure, decision, or procedure. It is retired when its status is terminal
-and its still-current meaning has moved to a canonical owner.
+Retirement is a disposition inside the current approved Task, never a new Spec
+project of its own, and a closed Spec gets no new standing verification
+pipeline. Retention follows lifecycle and ownership. Age and document count are
+never retention criteria. A document is retained while it owns current
+behavior, structure, decision, or procedure. It is retired when its status is
+terminal and its still-current meaning has moved to a canonical owner.
 
-#### Stage 98 dispositions
+A retired document is summarized and deleted, not preserved. Its still-current
+meaning goes to the Traceability section of the owning Stage 01 requirement or
+Stage 02 description or decision, and the original file is removed. Version
+history is the record of the removed body. Stage 98 (`docs/98.archive/`) holds
+no records: only its README remains, describing the disposition scheme. The
+only Stage 98 check is corpus lifecycle occupancy, which fails on any tracked
+file there other than the README; the README is checked like any other README.
 
-Stage 98 retains what the active stages no longer carry, in six dispositions.
-Each disposition owns a directory that is created by the change that first uses
-it, so a disposition with no record yet has no directory. The families are two
-kinds, and the kind decides what a directory holds and whether a current
-document may cite it.
+Retired artifact numbers live in the Registry. Each top-level identity space
+keeps `reserved_history`, the sorted list of numbers that no current document
+carries; a reserved number is never issued again, and the allocation check
+rejects dropping one. Stage 01 numbering is dense,
+so a Requirement gap is legitimate exactly when its number is reserved, and a
+Stage 03 package removal is recorded exactly when its Spec number is reserved.
 
-A **retention class** records why a whole document or package left its current
-stage, under the profile that governed it then. A governed document that is no
-longer current leaves Stages 01, 02, 03, 05, 90, and 99 and is captured in the
-class that matches what happened to it. Availability is a separate judgment:
-`retained` keeps the immutable whole body in the current tree; approved
-`git-history-only` keeps its catalog provenance and recoverable Git source
-without a current payload or compatibility copy. Disposition requires its own
-authorization.
-
-| Class | Captured scope | Must name | Citable from an active stage |
-| --- | --- | --- | --- |
-| `completed/` | Work that finished and landed | What it promoted | yes |
-| `superseded/` | Content a newer current authority replaced | The document that replaced it | no; cite its successor |
-| `retired/` | A rule or scope withdrawn with no successor | Why it was withdrawn | no |
-| `resolved/` | A closed Incident bundle and published Postmortem | Closure evidence and the current corrective-work owner | yes, as historical evidence |
-
-A **route disposition** holds no body. It names a route for a consumer outside
-this repository, so a current document cites the current route and never the
-record that names it.
-
-| Family | Holds | Must name | Citable from an active stage |
-| --- | --- | --- | --- |
-| `tombstones/` | Nothing | The retired route, its successor or absence, and the reason | no |
-| `migrations/` | Nothing | The moved scope and its current owner, as `MIG-####` | no |
-
-Citability is the repository's explicit use policy and a review rule, not an
-automated check; a directory name alone does not establish authority. Captured
-completion or incident resolution remains historical evidence. Current rules
-cite their current owner.
-
-What no Stage 98 record carries, in any family, is a second recovery ledger: no
-redirect, path ledger, self-designed body digest, branch SHA, or recovery
-commit. The catalog's Retention Envelope names the source Git object once;
-normal Git history remains the recovery mechanism for frozen content. Existing
-Task Commit Ledgers are original execution evidence and remain unchanged; they
-are not duplicate Archive recovery ledgers.
-
-##### Links into Stage 98
-
-Links between documents inside `docs/` keep their existing contracts. No gate
-validates Stage 98: links out of `docs/98.archive/` are not checked, and a link
-into it is checked only for ordinary target integrity. The citation rules below
-are review guidance, not automated checks. `withdrawn`, `invalidated`, and `git-history-only` units cannot be
-ordinary direct payload targets, even from an Incident or Postmortem. Cite the
-current assessment, erratum, or Archive index instead. `superseded` assessment
-routes current authority to its successor.
-
-The Archive index and catalog provide historical discovery. Current documents
-may cite retained `completed/` and `resolved/` bodies as historical evidence;
-`operation/incident` and `operation/postmortem` may also cite other retained
-classes as evidence subject to the earlier restrictions. `tombstones/` and
-`migrations/` remain closed to every ordinary source profile because they hold
-routes, not bodies. Frozen-body links are interpreted at the captured source
-commit and original path, never repaired against today's tree. A historical
-broken target is an observation or erratum, not permission to rewrite its source.
-
-##### Current assessment and Git-history-only availability
-
-The existing Retention Catalog owns optional current assessment rows, at most
-one per unit. The capture envelope remains immutable. Assessment values are
-`unreviewed`, `usable`, `superseded`, `withdrawn`, and `invalidated`; availability
-is independently `retained` or `git-history-only`. No row means
-`unreviewed` and `retained`, never implicit approval or usability. Do not seed
-empty rows. A real reassessment records its decision, reason, actual date,
-retention hold, and conditional current owner; `superseded` requires a real
-successor. Previous judgments remain in Git history. Do not delete an assessment
-to regain the default, or restore `invalidated` to `usable` without evidence.
-
-Removing a retained unit requires a separately current unit/action/date-scoped
-authorization from the trusted operator route, reassessment, no hold, completed
-current-consumer cutover, reachable source history with recoverable objects, and
-complete unit absence. The pinned Task revision is an immutable structural record
-of the original completed disposition and its scope; it is not a trusted approval
-source. An existing ID, a proposed ADR, an approver name, an archive
-authorization record, or a validator result alone proves no current
-authorization. A later lifecycle change does not rewrite or invalidate the
-historical record valid at its original revision, but missing, mismatched, or
-revoked current authorization blocks a pending or new removal. Automatic
-authentication and revocation enforcement are unsupported unless separately
-observed through a native provider capability. Partial deletion, renaming,
-rewriting, and deletion of the capture row are not permitted; review, not a
-gate, enforces this. Keep the catalog and
-capture envelope and route discovery to them, not a missing payload. Restoration
-is a separately explained recovery into a current owner, not silent resurrection
-of frozen authority.
-
-A pre-catalog unit, preserved before the Retention Catalog existed, has no
-capture row and is not loaded retroactively. Its only capture route is the
-change that also records its authorized `git-history-only` assessment and
-removes its whole payload. That capture names the base commit where the origin
-last existed as a regular object of the expected kind. Because no payload
-remains, byte comparison does not apply; the removed bodies stay recoverable at
-the last revision that carried them. Such a capture is never added to a
-retained unit.
-
-`git-history-only` means that the current tree supplies no payload; it makes no
-claim about purging Git history, clones, forks, or caches. `purged` is not a
-registered availability value. Secret exposure follows separately authorized
-credential revocation and security response, not ordinary archival deletion.
-Tests of removal use isolated Git fixtures and grant no permission to remove
-real records. A sealed Tombstone or Migration keeps its original form.
+Current documents do not link into `docs/98.archive/` and do not name a retired
+identity in `parent_ids`, `supersedes`, or `superseded_by`. A retired identity
+may still appear in prose where it explains lineage.
 
 #### Retention by status
 
 The Registry owns each profile's entry state, transition edges, and terminal
 states. Apply that lifecycle before disposition; do not infer permission from
-age or a folder count. Completed packages and superseded documents move to their
-registered frozen archive routes, and withdrawn ones move to `retired/`. Do not
-record completion or supersession as a withdrawal.
-
-Before a package becomes ready for archive review, apply the [completion checklist](task-checklists.md#before-completion).
-Record final evidence while the package is still editable. All-files checks
-retain their explicit approval and controlled-wrapper requirements. A package
-may wait in Stage 03 once it is
-[ready for archive review](sdlc.md#sequence). Readiness is derived on read and
-never stored. Waiting is neither active work nor disposition approval;
-the Stage 03 index routes to the package without a second status ledger. A later authorized move preserves the prepared source
-object, including the original Task evidence.
+age or a folder count. Do not record completion or supersession as a
+withdrawal. Before a package becomes ready for removal, apply the
+[completion checklist](task-checklists.md#before-completion) and record final
+evidence while the package is still editable.
 
 Stage 03 occupancy is a package judgment using the Registry's Spec, Plan, and
 Task terminal sets. In an unfinished package, completed Tasks and validly
@@ -461,113 +365,28 @@ Criterion Acceptance `not-required` decision closes a criterion without PASS.
 A cancelled or superseded Spec keeps no package members in active Stage 03.
 Standalone documents keep their per-document disposition rule. No rule here
 renames lifecycle statuses or applies a union of terminal sets to other stages.
-Stage 03 may be empty when no package remains, including no waiting package.
+Stage 03 may be empty when no package remains.
 
 #### Retirement preconditions
 
 Retire a package or a standalone document only when all of these hold.
 
-1. Its profile/status pair is eligible for the relevant Stage 98 disposition in
-   the Registry's `archive_retention.disposition_entry_statuses` map. Lifecycle
-   terminality and disposition eligibility are separate: neither one grants an
-   automatic archive action.
+1. Its profile/status pair is eligible in the Registry's
+   `archive_retention.disposition_entry_statuses` map. Lifecycle terminality and
+   disposition eligibility are separate: neither one grants an automatic
+   removal.
 2. Every still-current obligation, decision, structure, or procedure it owns is
-   written to its canonical agent governance, 01, 02, or 05 owner.
+   written to its canonical agent governance, 01, 02, or 05 owner, and its
+   lineage is summarized in that owner's Traceability.
 3. Every inbound consumer is updated in the same logical change.
-4. Preserve the original body in the matching Stage 98 disposition route.
-   Withdrawal also records exactly one withdrawal record for the preserved unit:
-   a sealed Tombstone paired with `retired/`, or a Retention Catalog row.
-   Completion and supersession are never recorded as a withdrawal.
+4. Its artifact number is added to the Registry `reserved_history` of its
+   identity space in the same change.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to
-investigate, not permission to delete.
-
-Record the authoring obligations and consumer cutover in the current Task's
-promotion receipt. A withdrawal's Retention Catalog row carries the withdrawal
-reason, and a sealed Tombstone that already carries it in `Reason` keeps it.
-No gate compares a unit against its capture envelope; the rules below describe
-what a reviewer checks against the single source commit/path in it. Captures
-already present at cutover
-`be949f338056ee05ca139ea72403576aa18f21d8` retain their legacy comparison:
-member set, Git modes, body bytes, and only the registered lifecycle-field
-allowances. Older rows without provable identity remain explicit verification
-limits rather than retroactive identity claims. The explicitly registered ADR-0036 bootstrap capture alone also
-uses that narrow legacy metadata transition. Every other new capture preserves
-the complete raw Git blob bytes, modes, and member set exactly, including
-frontmatter. Prepare closure, promotion, and links at the original path before
-freezing; without an authorized commit boundary, report the prepared result
-rather than inventing a source commit. Never reformat legacy bodies or envelopes.
-
-A reviewer states the worktree, index, or commit examined. No automated check
-detects deletion of a retained unit and its catalog row. A recorded SHA is
-not reachability: missing history or objects is an unverifiable result, not
-success. Raw object identity and checkout representation are separate checks;
-attributes, encoding, and line-ending conversions can change the latter. Report
-an unsupported checkout representation separately, execute no external filters,
-and never renormalize frozen records. Resource bounds protect the checker and
-never authorize deletion. Unsupported gitlinks or unavailable external large
-objects remain explicit recovery limits.
-
-Age may trigger a disposition review. It never triggers a deletion.
-
-#### Tombstone scope
-
-One Tombstone records one retired route, never one per member. It names the
-retired route, its successor or absence, and the reason, holds no body, and
-carries no recovery commit. Because it records a route for an outside consumer
-rather than a withdrawal, it may name the route of a record in any retention
-class. A sealed Tombstone keeps the form it was written in, including its
-recovery commit and its pairing with a `retired/` body, and that pairing is the
-withdrawal record of the unit it pairs with.
-
-A Tombstone lives under `docs/98.archive/tombstones/<stage>/`, mirroring the
-namespace of the document it retires, and the change that writes a stage's
-first Tombstone creates that namespace. A missing namespace is a namespace to
-create, never a reason to remove a document without a withdrawal record.
-
-#### Divergent branch package handoff
-
-This rule applies only to an explicitly approved integration of divergent,
-committed lineages when the same source identity is already an immutable
-completed archive Spec record. It does not permit ordinary removal of a
-nonterminal package.
-
-Preserve the source packet's original status and bytes unchanged, and copy the
-full packet to `docs/98.archive/superseded/<original-path>`. The target current
-in-progress Task carries the integration receipt in
-`branch_integration_receipts`: the exact source commit, path, and identity plus
-a receipt for the distinct active integration owner. That active package owns
-the integration receipt and acceptance mapping. Before its atomic completion,
-every still-current obligation and inbound consumer is cut over to its canonical
-agent governance, 01, 02, or 05 owner.
-
-There is exactly one carrier state. After target atomic completion and
-preservation, the matching Task under
-`docs/98.archive/completed/<target-package>/` is the durable carrier. Its
-receipt remains unchanged across the move; the archived Task is frozen evidence,
-not current policy.
-
-This handoff creates no Tombstone or new identity, does not reopen a terminal
-package, and never treats Git-only deletion or an allowlist as sufficient
-evidence. Machine guards verify the full source tree against the superseded
-mirror, the exact source commit/path/identity, the existing immutable completed
-same-ID Spec record, and the distinct target.
-
-A Task lifecycle event already appended on a divergent branch remains immutable
-when another Task reached main first with the same package transition. The later
-integrated Task may carry one registered reconciliation row that binds its exact
-event to the canonical same-package Task, both divergent source commits, and
-their ordered introductions on the current main first-parent history. The
-common-base Spec or Plan must still have the declared source status and neither
-carrier may already contain the edge there. Each integration must introduce one
-exact event on the declared Task identity, preserve the canonical target state
-before the later duplicate, and move the target from the declared source to the
-declared target only at the canonical boundary. Validation excludes only that
-proven concurrent observation from the event chain; the original row stays in
-place, and the receipt cannot reconcile Task self-events, path-reused carriers,
-side-merge-only history, unrelated packages, unknown history, or an unproven
-duplicate.
+investigate, not permission to delete. Record the summary map and consumer
+cutover in the current Task. Age may trigger a disposition review. It never
+triggers a deletion.
 
 ## Exceptions
 

@@ -85,5 +85,5 @@ does not execute rekeying or a maintenance window.
 - [AD-0004](../../02.architecture/descriptions/0004-data-architecture.md)
 - [ADR-0041](../../02.architecture/decisions/0041-offsite-backup-target.md)
 - [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-method.md)
-- SPEC-0240, superseded by this Spec; preserved under `docs/98.archive/superseded/03.specs/0240-unseal-backup-exclusion/`
+- SPEC-0240, superseded by this Spec; its number is reserved in the Registry and its body is in version history
 - [Plan](plan.md)

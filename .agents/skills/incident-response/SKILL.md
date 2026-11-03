@@ -28,13 +28,9 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 
 - Bounded incident evidence and current runbook.
 - Affected services, timestamps, impact, authority, and escalation contacts.
-- Preserved evidence when reconstruction needs it. Incident and postmortem
-  records are the only profiles that may cite any archive path directly, because the
-  evidence such an account rests on is often the archived record itself. Other
-  documents cite only the Stage 98 index, `completed/`, and `resolved/`. A route
-  record holds no body, so `tombstones/` and `migrations/` are closed to an
-  incident and a postmortem as well. The
-  [documentation protocol](../../governance/documentation-protocol.md#links-into-stage-98)
+- Earlier evidence when reconstruction needs it, read from version history at
+  the revision that last carried it; Stage 98 holds no records. The
+  [documentation protocol](../../governance/documentation-protocol.md#document-retention-and-retirement)
   owns that rule.
 
 ## Procedure

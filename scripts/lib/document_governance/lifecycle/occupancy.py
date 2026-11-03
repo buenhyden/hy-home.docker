@@ -23,6 +23,9 @@ ACTIVE_STAGE_PREFIXES = (
     "docs/90.references/",
 )
 _STAGE_03_PREFIX = "docs/03.specs/"
+_STAGE_98_PREFIX = "docs/98.archive/"
+# Stage 98 holds no records (SPEC-0249); only its README describes the scheme.
+_STAGE_98_ALLOWED = frozenset({"docs/98.archive/README.md"})
 _STAGE_03_MEMBER_PROFILES = ("spec", "plan", "task")
 
 
@@ -50,7 +53,7 @@ def _stage_03_package(relative: str) -> str | None:
 def validate_active_stage_occupancy(
     root: pathlib.Path, registry: DocumentRegistry | None = None
 ) -> tuple[str, ...]:
-    """Judge Stage 03 packages, including completed disposition waiting."""
+    """Judge Stage 03 packages and reject any Stage 98 file but its README."""
     from scripts.lib.document_governance.frontmatter import read_frontmatter_values
     from scripts.lib.document_governance.spec_packages import (
         SpecPackageError,
@@ -61,16 +64,29 @@ def validate_active_stage_occupancy(
     )
 
     root = pathlib.Path(root)
-    tracked = subprocess.run(
-        ["git", "ls-files", "docs"],
-        cwd=root,
-        capture_output=True,
-        text=True,
-        check=False,
-    ).stdout.split()
+    try:
+        listing = subprocess.run(
+            ["git", "ls-files", "-z", "docs"],
+            cwd=root,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:  # git is missing or cannot start
+        return ("docs: tracked file inventory is unavailable",)
+    if listing.returncode != 0:
+        # Without the tracked inventory no Stage 98 or Stage 03 rule can hold.
+        return ("docs: tracked file inventory is unavailable",)
+    tracked = [
+        name
+        for name in listing.stdout.decode("utf-8", "surrogateescape").split("\0")
+        if name
+    ]
     findings: list[str] = []
     members: dict[str, dict[str, Mapping[str, Any]]] = {}
     for relative in tracked:
+        if relative.startswith(_STAGE_98_PREFIX) and relative not in _STAGE_98_ALLOWED:
+            findings.append(f"{relative}: Stage 98 holds no records")
+            continue
         if not relative.endswith(".md") or not relative.startswith(
             ACTIVE_STAGE_PREFIXES
         ):

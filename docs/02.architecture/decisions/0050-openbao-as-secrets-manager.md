@@ -9,9 +9,6 @@ layer: "architecture"
 artifact_id: "ADR-0050"
 parent_ids:
 - "AD-0003"
-supersedes:
-- "ADR-0003"
-- "ADR-0018"
 created: "2026-10-29"
 ---
 
@@ -61,7 +58,8 @@ implementation of consumer secret rendering.
 ## Consequences
 
 This record supersedes ADR-0003 and ADR-0018. The owner accepted it on
-2026-10-29, and both move to the superseded archive. The Vault-era
+2026-10-29. Both were later deleted; their numbers are reserved in the Registry
+and their bodies are in version history. The Vault-era
 auto-unseal and remote-audit deferral recorded in ADR-0018 was never decided
 and is not carried here; ADR-0042 owns the seal question. This record changes
 no runtime behavior and claims no data migration, recovery or deployment result.
@@ -80,3 +78,4 @@ None. Any change of seal method or HA topology needs its own ADR.
 - [AD-0003](../descriptions/0003-security-architecture.md)
 - [ADR-0042](0042-openbao-unseal-method.md)
 - [OpenBao policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
+- **Superseded decisions**: ADR-0003 adopted HashiCorp Vault as the central secrets manager, and ADR-0018 ordered its hardening and HA expansion (agent template, healthcheck, CI gate; auto-unseal deferred). This decision replaces both.

@@ -168,12 +168,9 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - Stage 90 package 구성원은 `m####-<slug>.md`로 이름 붙이며, Registry
   profile 경로가 그 규칙을 소유하고
   `scripts/lib/document_governance/references.py`가 그 분류를 실행합니다.
-- Tombstone은 `identity_relation: inherited`를 사용합니다: `artifact_id`는
-  `tomb-{retired_artifact_id}`입니다. 네 자리 파일명은 Registry의
-  `tombstone` space에서 별도의 단조 증가 발급을 사용하며, identity 발급 검사가
-  Stage 98 경로의 Tombstone·Migration ID도 발급된 번호로 세므로 `high_water`
-  규칙은 그대로 적용됩니다. Tombstone 본문 계약은 어떤 gate도 검증하지 않는
-  작성·검토 기준입니다.
+- 폐기된 번호는 각 top-level identity space의 `reserved_history`에 정렬된
+  목록으로 둡니다. 예약된 번호는 다시 발급하지 않으며, Stage 01 번호 공백과
+  Stage 03 package 삭제는 그 번호가 예약되어 있을 때만 정당합니다.
 - Incident 번호는 연도 partition마다 다시 시작하므로, 연도는 경로뿐
   아니라 identity에도 속합니다.
 - 안정적인 package ID는 등록된 접두사와 대소문자를 유지합니다.
@@ -199,14 +196,13 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 수락하거나 거부합니다. Spec과 Plan은 계약·계획의 승인 권한만 나타내며,
 진행·차단·완료는 Task 또는 Execution Item이 소유합니다.
 Task는 준비 상태를 거쳐 진행 중이 됩니다. Guide·Policy·Runbook과 common rule·Skill은
-검토 후 active가 되며, Postmortem과 reference는 게시되고, Navigation README와
-current archive catalog는 active로 유지되며 Migration과 Tombstone 기록은
-draft 또는 sealed입니다. `registry.json`이 모든 진입 상태, edge, terminal
+검토 후 active가 되며, Postmortem과 reference는 게시되고, Navigation README는
+active로 유지됩니다. `registry.json`이 모든 진입 상태, edge, terminal
 상태의 정확한 권위로 남습니다.
 전체 Git history 발급 검증은 전체 문서 계약 profile이 소유합니다. 변경
 검증은 저장된 Registry 발급 상태를 사용합니다.
 
-#### Cancellation and Archive Assessments
+#### Cancellation
 
 `cancelled` Task에는 `cancellation`이 필요합니다. 실제 `reason`과 `authorization_ref`,
 `criteria_disposition`을 작성합니다. 각 `criterion`에는 `successor` 또는 승인된
@@ -214,34 +210,9 @@ draft 또는 sealed입니다. `registry.json`이 모든 진입 상태, edge, ter
 자신이 아닌 유효한 Task여야 합니다. 취소는 완료 영수증의 PASS 의무를 면제하지
 않으며 template은 승인값을 미리 채우지 않습니다.
 
-보존 단위의 실제 재평가만 기존 카탈로그의 `Current Assessments`에 기록합니다.
-필드와 판정 순서는 `common.archive_retention`이 소유하며, 이를 자동으로
-검증하는 gate는 없습니다. 평가·제거 결정은
-당시 Task revision의 `archive_authorizations`와 해당 본문의 실제 승인 인용을
-연결합니다. 빈 승인값, proposed ADR, 이 일반 계약 채택 승인은 개별 제거 증거가
-아닙니다. 포착 행과 기존 원문은 재평가 때 수정하지 않습니다.
-승인 항목의 `evidence`는 같은 Task의 `#heading-anchor`이며 해당 절의 실제
-승인 인용은 `> @owner approved action for unit on YYYY-MM-DD.` 형식으로
-단위·행위·일자·권한자를 명시합니다. 코드 fence의 예제나 부정문은 증거가
-아닙니다. 실제 승인 없이 이 문장을 채우지 않습니다.
-
-#### Pinned Requirement Allocation Recovery
-
-일반적인 신뢰 baseline loader는 여전히 엄격합니다. 현재 metadata gate는
-추적되는 현재 Task의 `requirement_allocation_recovery_decisions` 필드를
-통해서만 기록된 REQ-0012.FR 안정 identity 복원을 복구할 수 있으며, 그
-정확한 값 문법은 frontmatter schema에 있습니다. 이 decision은 요청된 비교
-base, 결함 commit, 그 유효한 parent, 이전/손상/복구된 발급 집합, 복구된
-Requirement 콘텐츠 hash를 고정합니다. 복구는 이들의 Git ancestry, 정규
-bounded source, 변하지 않은 defect-to-base Requirement 콘텐츠, 정확히
-선언에만 그치는 복구를 검증합니다. 영향받지 않은 모든 발급은 여전히
-일반적인 엄격한 loader를 통과합니다. 과거 발급은 `[1, 2, 3, 4]`로
-유지되며, 현재 전이는 철회된 번호 3을 예약하고 안정 번호 4를 유지합니다.
-
-누락, 중복, 추적되지 않음, 형식 오류, 오래되거나 불일치하는 증거는
-fail-closed로 처리됩니다. 대체 base 검색, history 재작성, 일반 waiver,
-identity 재사용은 암묵적으로 허용하지 않습니다. 복구된 commit이 비교
-base가 되면, 엄격한 loading은 복구 증거를 참조하지 않고도 성공합니다.
+문서를 은퇴시킬 때는 남아야 할 내용을 01·02 문서의 Traceability에 요약하고 원본을
+삭제한 뒤, 그 번호를 `reserved_history`에 추가합니다. Stage 98은 기록을 담지
+않습니다.
 
 ### Template Rules
 

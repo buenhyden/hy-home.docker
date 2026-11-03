@@ -32,9 +32,6 @@ from scripts.lib.document_governance.metadata.identity import (
     _tracked_markdown,
 )
 from scripts.lib.document_governance.metadata.profile import (
-    EXPECTED_ARCHIVE_DISPOSITIONS,
-    EXPECTED_PRESERVATION_CLASSES,
-    EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS,
     TARGET_MARKDOWN_FILES,
     TARGET_MARKDOWN_PREFIXES,
     TYPED_EXAMPLE_FIXTURE_PARENT_IDS,
@@ -46,7 +43,6 @@ from scripts.lib.document_governance.metadata.profile import (
     ProfileError,
     Record,
     TransitionOverride,
-    _condition_members,
     _contains_template_placeholder,
     _finding,
     _has_parent_cycle,
@@ -57,14 +53,11 @@ from scripts.lib.document_governance.metadata.profile import (
     _relation_record,
     _relation_reference_exists,
     _safe_repo_path,
-    _safe_snapshot_path,
     _stage00_specialization_entry,
     _string_list,
     _template_angle_tokens,
     _typed_target_types,
     _valid_iso_temporal,
-    _valid_lowercase_object_id,
-    _valid_lowercase_sha256,
     _valid_metadata_artifact_id,
     infer_artifact_type,
     registered_generated_owner,
@@ -74,11 +67,8 @@ from scripts.lib.document_governance.operations_catalog import (
     read_bounded_regular,
 )
 from scripts.lib.document_governance.registry import (
-    PRESERVED_RECORD_PREFIX,
     DocumentRegistry,
     RegistryError,
-    declares_frozen_legacy_record,
-    declares_frozen_legacy_status,
     document_type,
     preserved_origin_path,
     validate_frontmatter,
@@ -122,11 +112,6 @@ def validate_record(
         return []
     raw_profile = profile_map.get(record.artifact_type)
     registry = profiles.get("_registry")
-    if record.path.as_posix().startswith(PRESERVED_RECORD_PREFIX):
-        # Stage 98 is history, not an authoring target, and no gate validates
-        # it. Judging an archive record against the current contract would
-        # force edits to the record it exists to preserve.
-        return []
     profile_label = record.artifact_type
     if not isinstance(raw_profile, dict):
         return [
@@ -194,9 +179,7 @@ def validate_record(
     if isinstance(registry, DocumentRegistry):
         classify_registered_path(record.path.as_posix(), registry)
     uses_archive_parent_contract = record.artifact_type == "archive"
-    if record.artifact_type in _typed_target_types(
-        profiles
-    ) and not declares_frozen_legacy_record(raw_profile, record.path.as_posix()):
+    if record.artifact_type in _typed_target_types(profiles):
         frontmatter_order = common.get("frontmatter_order", [])
         if isinstance(frontmatter_order, list):
             order_index = {key: index for index, key in enumerate(frontmatter_order)}
@@ -262,13 +245,12 @@ def validate_record(
                     "multi-item Task must not declare a frontmatter status",
                 )
             )
-    if not declares_frozen_legacy_record(raw_profile, record.path.as_posix()):
-        findings.extend(
-            _finding(record, item.code, f"{item.path}: {item.message}")
-            for item in validate_profile_values(
-                record.metadata, raw_profile, record.path.as_posix()
-            )
+    findings.extend(
+        _finding(record, item.code, f"{item.path}: {item.message}")
+        for item in validate_profile_values(
+            record.metadata, raw_profile, record.path.as_posix()
         )
+    )
     global_forbidden = set(common.get("globally_forbidden", []))
     # `globally_forbidden` named three retired keys but was read only to pick a
     # finding code inside a loop no profile could enter, because no profile
@@ -316,12 +298,7 @@ def validate_record(
     status = record.metadata.get("status")
     allowed_statuses = raw_profile.get("allowed_statuses", [])
     if status is not None:
-        frozen_legacy_status = declares_frozen_legacy_status(
-            raw_profile, record.path.as_posix(), status
-        )
-        if (not isinstance(status, str) or status not in allowed_statuses) and not (
-            frozen_legacy_status
-        ):
+        if not isinstance(status, str) or status not in allowed_statuses:
             findings.append(
                 _finding(
                     record,
@@ -778,208 +755,6 @@ def validate_record(
                 "generated_by differs from the exact registered generator owner",
             )
         )
-
-    if record.artifact_type == "archive":
-        archived_from = record.metadata.get("archived_from")
-        archive_source_prefixes = common.get("archive_source_prefixes", [])
-        if archived_from is not None and not (
-            isinstance(archive_source_prefixes, list)
-            and any(
-                _safe_repo_path(archived_from, prefix)
-                for prefix in archive_source_prefixes
-            )
-        ):
-            findings.append(
-                _finding(
-                    record,
-                    "invalid-archived-from",
-                    "archived_from must be a safe canonical path under a registered historical source root",
-                )
-            )
-        current_replacement = record.metadata.get("current_replacement")
-        if (
-            current_replacement is not None
-            and not _safe_repo_path(current_replacement, "docs/")
-            and not _safe_repo_path(current_replacement, ".agents/")
-        ):
-            findings.append(
-                _finding(
-                    record,
-                    "invalid-current-replacement",
-                    "current_replacement must be a safe canonical docs/ or .agents/ repository path",
-                )
-            )
-        archive_reason = record.metadata.get("archive_reason")
-        if archive_reason is not None and (
-            not isinstance(archive_reason, str) or not archive_reason.strip()
-        ):
-            findings.append(
-                _finding(
-                    record,
-                    "invalid-archive-reason",
-                    "archive_reason must be a non-empty string",
-                )
-            )
-
-        archive_disposition = record.metadata.get("archive_disposition")
-        archive_disposition_valid = (
-            isinstance(archive_disposition, str)
-            and archive_disposition in EXPECTED_ARCHIVE_DISPOSITIONS
-        )
-        if archive_disposition is not None and not archive_disposition_valid:
-            findings.append(
-                _finding(
-                    record,
-                    "invalid-archive-disposition",
-                    "archive_disposition must be a registered archive disposition",
-                )
-            )
-        replacement_required_for = _condition_members(
-            raw_profile,
-            "replacement",
-            "required_for",
-        )
-        replacement_forbidden_for = _condition_members(
-            raw_profile,
-            "replacement",
-            "forbidden_for",
-        )
-        replacement_present = "current_replacement" in record.metadata
-        replacement = record.metadata.get("current_replacement")
-        if (
-            archive_disposition_valid
-            and archive_disposition in replacement_required_for
-            and replacement in (None, "")
-        ):
-            findings.append(
-                _finding(
-                    record,
-                    "archive-replacement-required",
-                    "current_replacement is required for this archive disposition",
-                )
-            )
-        if (
-            archive_disposition_valid
-            and archive_disposition in replacement_forbidden_for
-            and replacement_present
-        ):
-            findings.append(
-                _finding(
-                    record,
-                    "archive-replacement-forbidden",
-                    "current_replacement is forbidden for this archive disposition",
-                )
-            )
-
-        for key, code in (
-            ("archived_commit", "invalid-archived-commit"),
-            ("archived_blob", "invalid-archived-blob"),
-        ):
-            if key in record.metadata and not _valid_lowercase_object_id(
-                record.metadata.get(key)
-            ):
-                findings.append(
-                    _finding(
-                        record,
-                        code,
-                        f"{key} must be a lowercase full 40- or 64-hex object ID",
-                    )
-                )
-
-        preservation_class = record.metadata.get("preservation_class")
-        preservation_class_valid = (
-            isinstance(preservation_class, str)
-            and preservation_class in EXPECTED_PRESERVATION_CLASSES
-        )
-        if preservation_class is not None and not preservation_class_valid:
-            findings.append(
-                _finding(
-                    record,
-                    "invalid-preservation-class",
-                    "preservation_class must be a registered archive preservation class",
-                )
-            )
-        snapshot_fields = ("snapshot_path", "content_sha256", "snapshot_reason")
-        snapshot_required_for = _condition_members(
-            raw_profile,
-            "snapshot",
-            "required_for",
-        )
-        snapshot_forbidden_for = _condition_members(
-            raw_profile,
-            "snapshot",
-            "forbidden_for",
-        )
-        if (
-            preservation_class_valid
-            and preservation_class in snapshot_forbidden_for
-            and any(key in record.metadata for key in snapshot_fields)
-        ):
-            findings.append(
-                _finding(
-                    record,
-                    "archive-snapshot-forbidden",
-                    "snapshot fields are forbidden for this preservation class",
-                )
-            )
-        if preservation_class_valid and preservation_class in snapshot_required_for:
-            if (
-                archive_disposition_valid
-                and archive_disposition not in EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS
-            ):
-                findings.append(
-                    _finding(
-                        record,
-                        "archive-snapshot-disposition-forbidden",
-                        "immutable snapshots require an admitted archive disposition",
-                    )
-                )
-            required_codes = {
-                "snapshot_path": "archive-snapshot-path-required",
-                "content_sha256": "archive-content-sha256-required",
-                "snapshot_reason": "archive-snapshot-reason-required",
-            }
-            for key in snapshot_fields:
-                if record.metadata.get(key) in (None, ""):
-                    findings.append(
-                        _finding(
-                            record,
-                            required_codes[key],
-                            f"{key} is required for immutable snapshot preservation",
-                        )
-                    )
-
-        if "snapshot_path" in record.metadata and not _safe_snapshot_path(
-            record.metadata.get("snapshot_path")
-        ):
-            findings.append(
-                _finding(
-                    record,
-                    "invalid-snapshot-path",
-                    "snapshot_path must be a safe canonical archive evidence path",
-                )
-            )
-        if "content_sha256" in record.metadata and not _valid_lowercase_sha256(
-            record.metadata.get("content_sha256")
-        ):
-            findings.append(
-                _finding(
-                    record,
-                    "invalid-content-sha256",
-                    "content_sha256 must be a lowercase full 64-hex digest",
-                )
-            )
-        snapshot_reason = record.metadata.get("snapshot_reason")
-        if "snapshot_reason" in record.metadata and (
-            not isinstance(snapshot_reason, str) or not snapshot_reason.strip()
-        ):
-            findings.append(
-                _finding(
-                    record,
-                    "invalid-snapshot-reason",
-                    "snapshot_reason must be a non-empty string",
-                )
-            )
 
     if not raw_profile.get("allow_additional", False):
         known = required | optional | forbidden | specialization_keys
@@ -1649,122 +1424,6 @@ def load_transition_overrides(
             )
         overrides[key] = override
     return overrides
-
-
-def _legacy_deficit_identity(finding: Finding) -> tuple[str, str]:
-    return finding.code, finding.message
-
-
-def _legacy_exception_evidence(
-    record: Record,
-    findings: Sequence[Finding],
-    base_record: Record | None,
-    base_findings: Sequence[Finding],
-    body_findings: Sequence[Finding],
-    link_only_change: bool,
-    task5_legacy_parent_ids: set[str],
-) -> tuple[int, int] | None:
-    """Excuse base-existing metadata deficits on a link-only change.
-
-    This is the only remaining legacy metadata allowance. It excuses a deficit
-    a changed document already had at the base when the change only rewrites
-    link destinations, or when the new deficit is an unresolved parent proven
-    by the mig-0001 ledger. SPEC-0248-TSK-0001 records its inventory; remove it
-    once that inventory stays zero (no changed document needs it).
-    """
-    if record.parse_error or base_record is None:
-        return None
-    metadata_preserved = record.metadata == base_record.metadata
-    if base_record.parse_error or not metadata_preserved:
-        return None
-    if any(finding.severity == "error" for finding in body_findings):
-        return None
-    current_errors = [finding for finding in findings if finding.severity == "error"]
-    base_errors = [finding for finding in base_findings if finding.severity == "error"]
-    if not current_errors:
-        return None
-    current_deficits = {_legacy_deficit_identity(finding) for finding in current_errors}
-    base_deficits = {_legacy_deficit_identity(finding) for finding in base_errors}
-    new_deficits = current_deficits - base_deficits
-    if new_deficits:
-        proven_parent_deficits = {
-            _legacy_deficit_identity(finding)
-            for finding in current_errors
-            if finding.code == "unresolved-parent"
-            and finding.message.removeprefix("parent artifact_id is unresolved: ")
-            in task5_legacy_parent_ids
-        }
-        if not link_only_change or not new_deficits <= proven_parent_deficits:
-            return None
-    if link_only_change:
-        return len(current_deficits), len(base_deficits)
-    return None
-
-
-MARKDOWN_LINK_TARGET = re.compile(r"(?<!!)(?<!\\)\[([^\]\n]+)\]\([^)\n]+\)")
-
-
-def _link_target_neutral_text(text: str) -> str:
-    """Erase only Markdown destinations so link-only rewrites compare exactly."""
-
-    return MARKDOWN_LINK_TARGET.sub(r"\1", text)
-
-
-def _task5_move_body_sources(root: pathlib.Path) -> dict[str, tuple[str, str]]:
-    """Return exact moved target -> immutable source mappings from mig-0001."""
-
-    ledger = root / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
-    try:
-        text = ledger.read_text(encoding="utf-8")
-        fenced = (
-            text.split("## Archive Ledger", 1)[1]
-            .split("```yaml", 1)[1]
-            .split("```", 1)[0]
-        )
-        document = _safe_load_unique(fenced)
-    except (OSError, UnicodeError, IndexError, yaml.YAMLError):
-        return {}
-    records = document.get("records") if isinstance(document, dict) else None
-    if not isinstance(records, list):
-        return {}
-    mappings: dict[str, tuple[str, str]] = {}
-    for row in records:
-        if not isinstance(row, dict) or row.get("action") != "move":
-            continue
-        target = row.get("stable_path")
-        source = row.get("legacy_path")
-        commit = row.get("source_commit")
-        if not all(
-            isinstance(value, str) and value for value in (target, source, commit)
-        ):
-            return {}
-        if target in mappings:
-            return {}
-        mappings[target] = (source, commit)
-    return mappings
-
-
-def _task5_moved_body_baseline(
-    root: pathlib.Path,
-    target: pathlib.Path,
-    profiles: dict[str, object],
-    mappings: Mapping[str, tuple[str, str]],
-) -> tuple[Record | None, str | None]:
-    """Read a moved document's body baseline through its frozen Git provenance."""
-
-    source = mappings.get(target.as_posix())
-    if source is None:
-        return None, None
-    legacy_path, source_commit = source
-    shown = _run_git(
-        root,
-        ["show", f"{source_commit}:{legacy_path}"],
-        operation="Task 5 moved-body baseline discovery",
-        text=True,
-    )
-    if shown.returncode != 0:
-        return None, None
-    return _record_from_text(target, shown.stdout, profiles=profiles), shown.stdout
 
 
 def _declares_execution_items(record: Record, common: Mapping[str, object]) -> bool:

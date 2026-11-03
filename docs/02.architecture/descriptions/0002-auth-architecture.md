@@ -9,8 +9,6 @@ layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
 - "REQ-0002"
-supersedes:
-- "AD-0014"
 created: "2026-03-26"
 ---
 
@@ -46,6 +44,7 @@ The `02-auth` architecture centers on `Keycloak`, which serves the central IAM r
 - **Native OIDC**: Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao
 - **Session Manager**: Valkey for OAuth2 Proxy
 - **Storage**: PostgreSQL for Keycloak realm/user/client state
+- **Superseded description**: AD-0014 described the 02-auth optimization hardening architecture. This description replaces it; its hardening substance (runtime controls and fail-closed behavior) is owned by [ADR-0017](../decisions/0017-auth-hardening-runtime-and-fail-closed.md).
 
 ### System Boundaries
 
@@ -182,7 +181,7 @@ Airflow uses `KeycloakAuthManager` in `infra/07-workflow/airflow/docker-compose.
 Kafbat UI configures native OAuth2 in `infra/05-messaging/kafka/docker-compose.yml` and `kafbat-ui/dynamic_config.template.yaml`, and its router applies only `gateway-standard-chain@file`.
 
 The OpenBao router also uses only `gateway-standard-chain@file`. The Keycloak group `/openbao-admins` is a condition for the OpenBao OIDC role `home-admin`, and the login result is an OpenBao token under the `hy-home-operator` policy. Keycloak users/groups and OpenBao roles/policies are separate objects. The actual login verification is owned by the
-[OpenBao work record](../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md).
+OpenBao work record.
 
 ## Quality and Risks
 

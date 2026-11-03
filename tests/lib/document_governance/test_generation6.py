@@ -407,40 +407,6 @@ created: "2026-10-13"
                     self.assertIn(error, result)
 
 
-class Generation6DepartureTests(unittest.TestCase):
-    registry = generation6_registry()
-
-    def test_only_a_ready_base_enters_the_completed_archive(self) -> None:
-        done = task(PASS_BOTH, ACCEPT_BOTH, "completed")
-        evidence = module._v6_evidence_contract(SPEC, PLAN, (done,), self.registry)
-        archived = module.SpecPackage(
-            pathlib.Path(ROOT), "0001", "example", SPEC, PLAN, (done,), ()
-        )
-        reopened = dataclasses.replace(
-            archived, tasks=(dataclasses.replace(done, status="in-progress"),)
-        )
-        for status, copy, preserved in (
-            ("approved", archived, True),
-            ("draft", archived, False),
-            ("cancelled", archived, False),
-            ("approved", reopened, False),
-        ):
-            source = dataclasses.replace(
-                archived,
-                spec=dataclasses.replace(SPEC, status=status),
-                plan=dataclasses.replace(PLAN, status=status),
-                evidence=evidence,
-            )
-            with self.subTest(status=status, copy=copy is archived):
-                self.assertEqual(
-                    preserved,
-                    SPEC.path
-                    in module._ordinary_preserved_paths(
-                        pathlib.Path("."), (source,), (), (copy,), self.registry
-                    ),
-                )
-
-
 class Generation6ParentTests(unittest.TestCase):
     def parents(self, spec: str, plan: str, *tasks: str) -> None:
         module._validate_parent_authority(

@@ -287,7 +287,7 @@ One owner-defined profile with focused validation avoids independent field conve
 >
 > Current preservation and disposition follow the
 > [Canonical governance documentation protocol](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
-> and [Stage 98 index](../../../98.archive/README.md). Registered frozen payloads
+> and Stage 98 index. Registered frozen payloads
 > remain unchanged; Tombstone and Migration records do not embed their bodies.
 > Age or counts may prompt review but cannot authorize disposition.
 >

@@ -52,9 +52,24 @@ HISTORICAL_ID_PATTERN = re.compile(
     r"PRD-[0-9]{4}(?:-(?:R|AC|FR|NFR)-?[0-9]{4})?|"
     r"SRS-[0-9]{4}(?:-R[0-9]{4})?|IFR-[0-9]{4}(?:-R[0-9]{4})?|"
     r"inc-[0-9]{4}-[0-9]{4}(?:-PM)?|"
-    r"(?:AD|ADR|SPEC|RES|AUD|DATA)-[0-9]{4}|"
-    r"(?:ad|adr|spec|ref|audit|guide|policy|runbook|ops|inc|mig|tombstone)-[0-9]{4}"
+    r"(?:AD|ADR|SPEC|RES|AUD|DATA|GDE|POL|RUN|MIG)-[0-9]{4}"
     r")\b"
+)
+# Current Registry artifact_id_pattern prefixes and their identity spaces.
+# Tombstone IDs embed the retired identity and carry no number of their own,
+# and incident IDs (inc-YYYY-NNNN) are handled separately in _record.
+IDENTITY_PREFIX_SPACES = (
+    ("ADR-", "adr", "docs/02.architecture/decisions/"),
+    ("AD-", "architecture-description", "docs/02.architecture/descriptions/"),
+    ("SPEC-", "spec", "docs/03.specs/"),
+    ("GDE-", "operations-subject", "docs/05.operations/"),
+    ("POL-", "operations-subject", "docs/05.operations/"),
+    ("RUN-", "operations-subject", "docs/05.operations/"),
+    ("INC-", "incident", "docs/05.operations/"),
+    ("RES-", "research", "docs/90.references/"),
+    ("AUD-", "audit", "docs/90.references/"),
+    ("DATA-", "data", "docs/90.references/"),
+    ("MIG-", "migration", "docs/98.archive/"),
 )
 INTERNAL_REQUIREMENT_PATTERN = re.compile(
     r"(?i)\b(?:"
@@ -355,7 +370,7 @@ def _record(identity: str, collected: dict[str, set[int]]) -> None:
         return
     package = numbers[0]
     if upper.startswith("INC-"):
-        # Current IDs include a year; legacy IDs carry only the allocation.
+        # inc-YYYY-NNNN: the allocation follows the year.
         collected.setdefault("incident", set()).add(
             numbers[1] if len(numbers) > 1 else package
         )
@@ -374,24 +389,7 @@ def _record(identity: str, collected: dict[str, set[int]]) -> None:
                 numbers[-1]
             )
         return
-    prefixes = {
-        "AD-": "architecture-description",
-        "ADR-": "adr",
-        "SPEC-": "spec",
-        "RES-": "research",
-        "REF-": "research",
-        "AUD-": "audit",
-        "AUDIT-": "audit",
-        "DATA-": "data",
-        "GUIDE-": "operations-subject",
-        "POLICY-": "operations-subject",
-        "RUNBOOK-": "operations-subject",
-        "OPS-": "operations-subject",
-        "INC-": "incident",
-        "MIG-": "migration",
-        "TOMBSTONE-": "tombstone",
-    }
-    for prefix, space in prefixes.items():
+    for prefix, space, _root in IDENTITY_PREFIX_SPACES:
         if upper.startswith(prefix):
             collected.setdefault(space, set()).add(package)
             return
@@ -401,46 +399,19 @@ def _path_accepts_identity(path: str, identity: str) -> bool:
     upper = identity.upper()
     if upper.startswith(("REQ-", "PRD-", "SRS-", "IFR-")):
         return path.startswith("docs/01.requirements/")
-    if upper.startswith("AD-") and not upper.startswith("ADR-"):
-        return path.startswith("docs/02.architecture/descriptions/")
-    if upper.startswith("ADR-"):
-        return path.startswith("docs/02.architecture/decisions/")
-    if upper.startswith("SPEC-"):
-        return path.startswith("docs/03.specs/")
-    if upper.startswith(("GUIDE-", "POLICY-", "RUNBOOK-", "OPS-", "INC-")):
-        return path.startswith("docs/05.operations/")
-    if upper.startswith(("RES-", "REF-", "AUD-", "AUDIT-", "DATA-")):
-        return path.startswith("docs/90.references/")
-    if upper.startswith(("MIG-", "TOMBSTONE-")):
-        return path.startswith("docs/98.archive/")
+    for prefix, _space, root in IDENTITY_PREFIX_SPACES:
+        if upper.startswith(prefix):
+            return path.startswith(root)
     return False
 
 
-_PRESERVED_DECISION_TASK = re.compile(
-    r"docs/98\.archive/completed/03\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*"
-    r"/tasks/tsk-[0-9]{4}-[a-z0-9][a-z0-9-]*\.md"
-)
-
-
 def _is_decision_task(path: str, identity: str, registry: DocumentRegistry) -> bool:
-    """Accept a current Task, or one preserved whole after completion.
-
-    Completion moves a package to the archive with every Task, so the Task that
-    recorded a recovery decision keeps carrying it there. Without this, the
-    retention policy and identity recovery cannot both hold. A superseded or
-    retired Task is withdrawn authority and is not a decision owner.
-    """
+    """A recovery decision is owned by a current Stage 03 Task."""
 
     from scripts.lib.document_governance.registry import classify_path
 
-    if classify_path(path, registry) == "task":
-        return _path_accepts_identity(path, identity)
-    upper = identity.upper()
-    return (
-        _PRESERVED_DECISION_TASK.fullmatch(path) is not None
-        and classify_path(path, registry) == "archive-record-completed"
-        and upper.startswith("SPEC-")
-        and "-TSK-" in upper
+    return classify_path(path, registry) == "task" and _path_accepts_identity(
+        path, identity
     )
 
 
@@ -762,91 +733,34 @@ def validate_allocation_transition(
         if isinstance(identity, str) and _path_accepts_identity(origin, identity):
             _record(identity, previous)
     registry_oid = entries.get("docs/99.templates/registry.json")
-    # Exact reviewed renames preserve identity even when the predecessor's
-    # migrated envelope had not yet acquired its canonical artifact_id.
-    migration_path = (
-        root / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-    )
-    if migration_path.exists():
-        from scripts.lib.document_governance.archive_migration_0003 import (
-            _approved_migration_document,
-        )
-
-        try:
-            approved_selection = _approved_migration_document(root)
-            require_ancestor(
-                approved_selection["baseline_commit"],
-                "HEAD",
-                "approved migration baseline",
-            )
-            for row in approved_selection["rows"]:
-                target = row.get("target_path")
-                identity = row.get("artifact_id")
-                if (
-                    row.get("action") == "rename"
-                    and isinstance(identity, str)
-                    and (row["source_path"] in entries or target in entries)
-                    and current.get(target) == identity
-                ):
-                    _record(identity, previous)
-        except (KeyError, ValueError) as error:
-            raise IdentityHistoryError(
-                "identity-preserving mapping cannot be verified"
-            ) from error
     if registry_oid is None:
-        # Only the reviewed pre-introduction lineage can bootstrap a Registry.
-        from scripts.lib.document_governance.archive_migration_0003 import (
-            _approved_migration_document,
+        # Every supported base already carries the Registry.
+        raise IdentityHistoryError("allocation predecessor lacks a Registry")
+    try:
+        from scripts.lib.document_governance.registry import _unique_object
+
+        raw = json.loads(
+            git("cat-file", "blob", registry_oid), object_pairs_hook=_unique_object
         )
-
-        try:
-            approved = _approved_migration_document(root)
-            approved_base = approved["baseline_commit"]
-            require_ancestor(base_commit, approved_base, "allocation predecessor")
-            require_ancestor(approved_base, "HEAD", "approved migration baseline")
-            prior_registry = git(
-                "log",
-                "--format=%H",
-                "-1",
-                base_commit,
-                "--",
-                "docs/99.templates/registry.json",
-            ).strip()
-            if prior_registry:
-                raise IdentityHistoryError("a removed Registry cannot bootstrap again")
-            historical = collect_issued_identities(
-                root, refs=(base_commit,), include_current=False
-            )
-            high_water = {
-                name: historical.high_water(name) for name in registry.identity_spaces
-            }
-        except (KeyError, ValueError) as error:
-            raise IdentityHistoryError(
-                "allocation bootstrap lacks approved lineage"
-            ) from error
-    else:
-        try:
-            from scripts.lib.document_governance.registry import _unique_object
-
-            raw = json.loads(
-                git("cat-file", "blob", registry_oid), object_pairs_hook=_unique_object
-            )
-            spaces = raw["identity_spaces"]
-            high_water = {}
-            for name in registry.identity_spaces:
-                space = spaces[name]
-                mark = space["high_water"]
-                if (
-                    type(mark) is not int
-                    or mark < 0
-                    or space["next_number"] != mark + 1
-                ):
-                    raise ValueError("invalid allocation")
-                high_water[name] = mark
-        except (KeyError, TypeError, ValueError) as error:
-            raise IdentityHistoryError(
-                "allocation predecessor Registry is invalid"
-            ) from error
+        spaces = raw["identity_spaces"]
+        high_water = {}
+        base_reserved: dict[str, frozenset[int]] = {}
+        for name in registry.identity_spaces:
+            space = spaces[name]
+            mark = space["high_water"]
+            if type(mark) is not int or mark < 0 or space["next_number"] != mark + 1:
+                raise ValueError("invalid allocation")
+            high_water[name] = mark
+            reserved = space.get("reserved_history", [])
+            if not isinstance(reserved, list) or any(
+                type(number) is not int for number in reserved
+            ):
+                raise ValueError("invalid reserved history")
+            base_reserved[name] = frozenset(reserved)
+    except (KeyError, TypeError, ValueError) as error:
+        raise IdentityHistoryError(
+            "allocation predecessor Registry is invalid"
+        ) from error
 
     observed: dict[str, set[int]] = {}
     candidate_current: dict[str, str] = {}
@@ -1207,6 +1121,24 @@ def validate_allocation_transition(
                     "identity-allocation-regression",
                     f"identity_spaces.{name}",
                     "allocation cannot move below its trusted predecessor",
+                )
+            )
+        # A retired number stays retired: reserved_history only grows.
+        if not base_reserved[name] <= frozenset(space.reserved_history):
+            findings.append(
+                RegistryFinding(
+                    "identity-reserved-history-dropped",
+                    f"identity_spaces.{name}",
+                    "reserved_history cannot drop a number its predecessor reserved",
+                )
+            )
+        # A reserved number is retired: no current document may carry it.
+        if frozenset(space.reserved_history) & observed.get(name, set()):
+            findings.append(
+                RegistryFinding(
+                    "identity-reserved-history-live",
+                    f"identity_spaces.{name}",
+                    "reserved_history names a number a current document carries",
                 )
             )
         issued_before = previous.get(name, set()) | merged_issuance.get(name, set())

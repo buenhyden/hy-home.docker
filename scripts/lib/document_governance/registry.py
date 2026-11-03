@@ -41,13 +41,6 @@ FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
 # profile.
 PRESERVED_RECORD_PREFIX = "docs/98.archive/"
 PRESERVED_DISPOSITIONS = ("completed", "superseded", "retired", "resolved")
-# `common.archive_disposition_model` says whether ADR-0035's Stage 98 model is
-# adopted. At `transition` every archive check keeps its earlier behavior, and a
-# registered test binds `adopted` to the acceptance of that decision.
-ARCHIVE_MODEL_TRANSITION = "transition"
-ARCHIVE_MODEL_ADOPTED = "adopted"
-ARCHIVE_DISPOSITION_MODELS = (ARCHIVE_MODEL_TRANSITION, ARCHIVE_MODEL_ADOPTED)
-# The retention class the model adds. Before adoption no check admits it.
 # Roots a document may have been retired from, mirroring the registry's
 # `archive_source_prefixes`. `docs/` is the implicit default.
 LEGACY_ARCHIVE_SOURCE_ROOTS = frozenset({"archive/"})
@@ -176,39 +169,6 @@ def _declares_provider_binding(profile: Mapping[str, object]) -> bool:
     # The registry freeze turns declared lists into tuples, so accept both.
     return isinstance(exceptions, (list, tuple)) and any(
         isinstance(item, Mapping) and item.get("kind") == "provider-owned-binding"
-        for item in exceptions
-    )
-
-
-def declares_frozen_legacy_status(
-    profile: Mapping[str, object], path: str, status: object
-) -> bool:
-    """Return whether Registry preserves one exact frozen legacy status."""
-
-    exceptions = profile.get("exceptions")
-    if not isinstance(exceptions, (list, tuple)):
-        return False
-    return any(
-        isinstance(item, Mapping)
-        and item.get("kind") == "frozen-legacy-status"
-        and item.get("status") == status
-        and isinstance(item.get("paths"), (list, tuple))
-        and path in item["paths"]
-        for item in exceptions
-    )
-
-
-def declares_frozen_legacy_record(profile: Mapping[str, object], path: str) -> bool:
-    """Return whether Registry identifies one exact byte-frozen legacy record."""
-
-    exceptions = profile.get("exceptions")
-    if not isinstance(exceptions, (list, tuple)):
-        return False
-    return any(
-        isinstance(item, Mapping)
-        and item.get("kind") == "frozen-legacy-status"
-        and isinstance(item.get("paths"), (list, tuple))
-        and path in item["paths"]
         for item in exceptions
     )
 
@@ -1897,33 +1857,15 @@ def load_trusted_requirement_allocation_baseline(
     revision: str,
     *,
     root: pathlib.Path = ROOT,
-    allow_pinned_recovery: bool = False,
 ) -> RequirementAllocationBaseline:
-    """Keep strict loading default; admit only an evidenced, exact repair."""
-    try:
-        return _load_strict_requirement_allocation_baseline(revision, root=root)
-    except RegistryError as error:
-        if not allow_pinned_recovery or str(error) != (
-            "trusted Requirement declarations disagree with allocation history: REQ-0012.FR"
-        ):
-            raise
-        from scripts.lib.document_governance.requirement_recovery import (
-            recover_pinned_requirement_baseline,
-        )
-
-        declarations = recover_pinned_requirement_baseline(revision, root=root)
-        return _load_strict_requirement_allocation_baseline(
-            revision,
-            root=root,
-            recovered_declarations=declarations,
-        )
+    """Derive the strict allocation baseline at `revision`."""
+    return _load_strict_requirement_allocation_baseline(revision, root=root)
 
 
 def _load_strict_requirement_allocation_baseline(
     revision: str,
     *,
     root: pathlib.Path = ROOT,
-    recovered_declarations: Mapping[str, tuple[int, ...]] | None = None,
 ) -> RequirementAllocationBaseline:
     """Derive immutable history from an explicit index marker or commit."""
 
@@ -2038,8 +1980,6 @@ def _load_strict_requirement_allocation_baseline(
             )
             next_number = high_water + 1
         declared = tuple(sorted(declarations.get(str(name), set())))
-        if recovered_declarations and str(name) in recovered_declarations:
-            declared = recovered_declarations[str(name)]
         explicit_current = value.get("current_issued")
         explicit_reserved = value.get("reserved_history")
         has_explicit_history = isinstance(explicit_current, list) and isinstance(
@@ -2401,30 +2341,6 @@ def preserved_origin_path(path: str | pathlib.PurePosixPath) -> str | None:
     if f"{head}/" in LEGACY_ARCHIVE_SOURCE_ROOTS:
         return rest
     return f"docs/{rest}"
-
-
-def archive_disposition_model(root: pathlib.Path) -> str:
-    """Return the Stage 98 model selected by the Registry under ``root``.
-
-    The archive and link checks work from a repository root rather than a
-    loaded Registry, and a fixture root may carry none. Absence therefore reads
-    as `transition`, the state in which every check behaves as it did before the
-    model. A value outside the registered pair fails closed instead of choosing.
-    """
-
-    path = pathlib.Path(root) / "docs/99.templates/registry.json"
-    if not (path.exists() or path.is_symlink()):
-        return ARCHIVE_MODEL_TRANSITION
-    raw = _parse_json(path, MAX_REGISTRY_BYTES)
-    common = raw.get("common") if isinstance(raw, Mapping) else None
-    value = (
-        common.get("archive_disposition_model", ARCHIVE_MODEL_TRANSITION)
-        if isinstance(common, Mapping)
-        else ARCHIVE_MODEL_TRANSITION
-    )
-    if value not in ARCHIVE_DISPOSITION_MODELS:
-        raise ValueError(f"archive disposition model is not registered: {value!r}")
-    return str(value)
 
 
 def path_matches_pattern(

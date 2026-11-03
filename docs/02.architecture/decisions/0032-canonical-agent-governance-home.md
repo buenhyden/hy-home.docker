@@ -9,8 +9,6 @@ layer: "architecture"
 artifact_id: "ADR-0032"
 parent_ids:
 - "AD-0027"
-supersedes:
-- "ADR-0029"
 created: "2026-09-06"
 ---
 
@@ -42,8 +40,9 @@ with a bounded target and action.
 
 Change only ADR-0029's reciprocal supersession metadata and the lawful
 lifecycle metadata immediately before initial preservation. The decision body
-is not modified and stays preserved in Stage 98. Already-frozen ADR-0027 and
-other records are left as they are. Required static checks, protected-path
+was not modified; ADR-0029 is now retired, its number reserved in the Registry
+and its body in version history. ADR-0027 and other records were left as they
+were. Required static checks, protected-path
 approval status, and pending native verification continue to be tracked in the
 current Task.
 
@@ -91,9 +90,9 @@ Adopt the following location model after an independent design review.
   execution configuration, and the script manifest. This relocation does not
   grant execution approval to access operational input.
 - Detailed Requirement, Architecture, Spec/Plan/Task, and Operations documents
-  stay in the existing docs. Stage 90 is non-authoritative evidence, and Stage
-  98 is the preserved record per ADR-0031. Git history is the recovery/identity
-  basis for preserved bodies, not a substitute for Task bodies.
+  stay in the existing docs. Stage 90 is non-authoritative evidence. Stage 98
+  was the preserved record per ADR-0031; it now holds no records (ADR-0051,
+  pending acceptance), and version history keeps removed bodies.
 - Remove the old common directory from current reading, generation, linking,
   and fallback targets. Old paths in frozen records and regression-test
   strings are classified as history/negative examples.
@@ -121,7 +120,8 @@ Adopt the following location model after an independent design review.
 - [Agent governance requirement](../../01.requirements/0024-agent-governance-standardization.md)
 - [Canonical adapter architecture](../descriptions/0027-agent-governance-canonical-adapter.md)
 - [Shared agent memory decision](0049-shared-agent-memory-store.md)
-- Predecessor authority decision
-- Preserved-record decision
-- [Owning specification](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md)
-- [Current plan](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/plan.md)
+- Predecessor authority decision: ADR-0029 (retired)
+- Preserved-record decision: ADR-0031 (retired)
+- Owning specification: SPEC-0173 (retired)
+- Plan: SPEC-0173-PLAN-0001 (retired)
+- **Superseded decisions**: ADR-0027 defined the Stage 00 canonical adapter model, and ADR-0029 replaced it with a separated workspace governance authority model. This decision replaces ADR-0029.

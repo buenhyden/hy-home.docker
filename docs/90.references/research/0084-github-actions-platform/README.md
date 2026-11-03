@@ -90,7 +90,7 @@ release는 여전히 증거 경계 밖에 있습니다.
 - [Workflow contract](../../../../.github/workflow-contract.yml)와
   [CI Quality Gates](../../../../.github/workflows/ci-quality.yml).
 - [Main protection record](../../../../.github/rulesets/main-protection.md).
-- [완료된 SPEC-0172 결과](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md).
+- 완료된 SPEC-0172 결과.
 
 세부 source inventory와 claim 단위 분석은 구성원이 소유합니다.
 
@@ -135,8 +135,8 @@ release는 여전히 증거 경계 밖에 있습니다.
 - Requirement/Architecture: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
   [AD-0027](../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md),
   [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md).
-- Implementation/evidence: [완료된 SPEC-0172 결과](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)와
-  [현재 lifecycle reconciliation](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
+- Implementation/evidence: 완료된 SPEC-0172 결과와
+  현재 lifecycle reconciliation.
 - Templates and Registry: [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   [research-member template](../../../99.templates/templates/references/research.template.md),
   [Registry](../../../99.templates/registry.json).

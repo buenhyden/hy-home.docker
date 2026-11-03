@@ -642,7 +642,7 @@ Measure accepted findings and defect detection, not comments/tests produced.
 >
 > Use a fresh authenticated read-back and separately approved field-level changes
 > for protection recovery. Do not restore obsolete check lists from this member.
-> [Task 0006](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md)
+> Task 0006
 > owns the actual current remote observations and local verification. The dated
 > inventories and 2026-09-05 result above remain historical observations.
 >

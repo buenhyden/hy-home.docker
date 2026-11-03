@@ -108,14 +108,11 @@ main-push security remains a post-merge observation.
 - Retire one-time QA in this order: transfer a continuing guarantee to its
   current owner; remove callers and registration; remove exclusive helpers,
   fixtures and tests; preserve useful actual results in existing Task/history.
-- Stage 98 (`docs/98.archive/`) is history: no archive integrity, retention,
-  recovery, Tombstone, migration-ledger or archive-link check runs. Current
-  checks still read it through the loaders SPEC-0248-TSK-0001 inventories
-  (lineage, identity allocation, recorded retirements, requirement gaps,
-  preserved ADR and Spec predecessors, and link targets). The 0003 ledger
-  verifier, preserved ADR loader and preserved Spec Package loader stay
-  fail-closed on a malformed record until the phase that removes the archive
-  files replaces them, so an edit there can still fail a current check.
+- Stage 98 (`docs/98.archive/`) holds no records. Its only check is corpus
+  lifecycle occupancy, which fails on any tracked file there other than the
+  README; no archive integrity, retention, recovery, Tombstone, migration-ledger
+  or archive-link check exists. Retired numbers come from the Registry
+  `reserved_history`, never from archive files.
 - Shared implementation libraries under `scripts/lib/` and executable QA
   owners retain meaningful test evidence. A nonmutating companion library
   outside that shared surface may be retained through a proven current
