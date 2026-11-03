@@ -204,6 +204,52 @@ class IdentityHistoryTests(unittest.TestCase):
                     base,
                 )
 
+    def test_ordinary_allocation_transition_reads_each_blob_once(self) -> None:
+        from scripts.lib.document_governance import registry as registry_module
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q", "-b", "main")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            source = root / "docs/99.templates/registry.json"
+            source.parent.mkdir(parents=True)
+            source.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
+            spec = root / "docs/03.specs/0001-example/spec.md"
+            spec.parent.mkdir(parents=True)
+            spec.write_text("---\nartifact_id: SPEC-0001\n---\n", encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "base")
+            base = self._git(root, "rev-parse", "HEAD").strip()
+            # Two forks carry the same Registry and Spec blobs into one merge
+            # after the base, so the merge scan meets each blob more than once.
+            self._git(root, "checkout", "-qb", "fork")
+            (root / "fork.md").write_text("fork\n", encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "fork")
+            self._git(root, "checkout", "-q", "main")
+            (root / "main.md").write_text("main\n", encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "main")
+            self._git(root, "merge", "-q", "--no-edit", "fork")
+            real = identity_history._run_git
+            blobs: list[str] = []
+
+            def counting(root_arg, args, **kwargs):
+                if tuple(args[:2]) == ("cat-file", "blob"):
+                    blobs.append(args[2])
+                return real(root_arg, args, **kwargs)
+
+            with mock.patch.object(identity_history, "_run_git", counting):
+                identity_history.validate_allocation_transition(
+                    root,
+                    load_registry(),
+                    {"docs/03.specs/0001-example/spec.md": "SPEC-0001"},
+                    base,
+                )
+        self.assertTrue(blobs, "the transition read no blob")
+        self.assertEqual(len(blobs), len(set(blobs)))
+
     def test_reserved_history_cannot_drop_a_number(self) -> None:
         from scripts.lib.document_governance import registry as registry_module
 

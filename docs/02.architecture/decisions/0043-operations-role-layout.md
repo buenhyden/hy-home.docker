@@ -1,10 +1,10 @@
 ---
 title: "Operations Role Layout"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-03"
 layer: "architecture"
 artifact_id: "ADR-0043"
 parent_ids:
@@ -54,7 +54,7 @@ check, and `check-document-links.py --mode all` enforce this decision.
 - People look first by role (understand, control, execute).
 - Do not change issued IDs (documentation protocol authoring rule 5).
 - Do not run two discovery systems in parallel.
-- Do not rewrite historical records; they are deleted, not edited (ADR-0051, pending acceptance).
+- Do not rewrite historical records; they are deleted, not edited (ADR-0051).
 
 ## Options
 

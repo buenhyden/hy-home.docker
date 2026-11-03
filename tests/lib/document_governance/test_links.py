@@ -2385,6 +2385,30 @@ class FencedCommandPathTests(unittest.TestCase):
                 )
                 self.assertEqual(expected, len(findings))
 
+    def test_a_multi_item_task_is_exempt_only_when_every_item_is_terminal(
+        self,
+    ) -> None:
+        task = (
+            "---\ntitle: Fixture\ntype: sdlc/task\n---\n"
+            "# Fixture\n\n## Work Log\n\n### Execution Items\n\n"
+            "| Item | Work Unit | Scope | Owner | Status | Blocker |\n"
+            "| --- | --- | --- | --- | --- | --- |\n"
+            "| I1 | W1 | a | @o | completed | - |\n"
+            "| I2 | W2 | b | @o | {second} | - |\n\n"
+            "```bash\nbash scripts/gone.sh\n```\n"
+        )
+        for second, expected in (("completed", 0), ("in-progress", 1)):
+            with self.subTest(second=second):
+                findings = self._findings(
+                    {
+                        "scripts/keep.sh": "",
+                        "docs/03.specs/0001-a/tasks/tsk-0001-a.md": task.format(
+                            second=second
+                        ),
+                    }
+                )
+                self.assertEqual(expected, len(findings))
+
     def test_a_self_declared_task_outside_the_task_path_is_not_exempt(self) -> None:
         body = (
             "---\ntitle: Fixture\ntype: sdlc/task\nstatus: completed\n---\n"
