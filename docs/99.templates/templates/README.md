@@ -37,7 +37,6 @@ layer: "templates"
 | Path | Purpose |
 | --- | --- |
 | [architecture/](architecture/) | Description과 ADR source |
-| [archive/](archive/) | route record source |
 | [common/](common/) | README source |
 | [governance/](governance/) | 공유 governance source |
 | [operations/](operations/) | 운영 역할별 source |
