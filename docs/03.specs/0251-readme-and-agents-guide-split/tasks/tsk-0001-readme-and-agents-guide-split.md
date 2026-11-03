@@ -122,6 +122,8 @@ progress under the approved parents. Hosted CI has not run.
 | E12 | 4 | W2 | governance-unit-tests | the 11 E10 tests after the history-read fix, revision c78cf723f | PASS | 11 tests OK | required | E10 |
 | E13 | 4 | W4 | validation-suites | `tests/validation/lifecycle`, CI routing and surface ownership, revision 20da707ba | PASS | all OK; 92 routing and ownership tests | required | - |
 | E14 | 1 | W1 | agent-governance-and-renderer | contract check and renderer `--check`, revision 20da707ba | PASS | zero failures; providers 2, drift 0 | required | - |
+| E15 | 4 | W2 | governance-unit-tests | `tests/lib/document_governance` discovery, revision 4d4fefc26, quiet tree | PASS | 763 tests OK; metadata check-changed 25 and check-active 497 selected with zero violations; Script Manifest and link alignment PASS | required | E10 |
+| E16 | 4 | W4 | hosted-ci | GitHub Actions | NOT_RUN | branch not pushed | required | - |
 
 ## Criterion Acceptance
 
