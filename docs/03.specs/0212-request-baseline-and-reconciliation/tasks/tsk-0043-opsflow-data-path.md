@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Data Path Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-04"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0043"
 parent_ids:
@@ -254,6 +254,49 @@ receipt drift remains P05/P08-owned rather than a P04 success or blocker to
 unrelated local implementation. Roll back only this logical source delta;
 real data recovery requires its separate approved contract.
 
+### D04 phase diagnosis and native reruns
+
+A direct user request on 2026-11-04 re-ran this contract as D04 on clean `main`
+`fb790c539b267f8acb85f5897a110db22ae347fa`, branch
+`fix/opsflow-storage-admin-cpu`. The Opsflow/Airflow source suites ran 248
+tests: OK, eight declared skips. The cached Airflow 3.3.2 image
+`sha256:8c139ddd…` and SeaweedFS 4.48 `sha256:4e61d15f…` were present; nothing
+was pulled or built. Running `dev-pg` and `mng-pg` have no replication slot,
+and both declare `max_slot_wal_keep_size=2048MB`.
+
+Phase timing of the narrow storage rehearsal reproduced the earlier ERROR at
+189.5 seconds: probe 57 s, storage readiness 38 s, then each S3 call about 27 s.
+In-container timing showed 23 s importing boto3 and creating the client, and
+0.2 s of S3 work. The cause was the 0.05 CPU `storage-admin` cap, not the
+policy or the server. With the fixture default 0.25 CPU the same call took
+about 5 s and the narrow rehearsal passed in 125.5 s: the old principal policy
+allowed delete (204), and the corrected policy matrix passed. Owned residue was
+zero.
+
+The first full Worker rerun then passed the corrected S3 matrix and stopped at
+`quarantine metadata changed`. Instrumentation showed matching bytes, reason
+and data version, but ContentType `application/json`. A minimal pinned-image
+probe confirmed that SeaweedFS 4.48 stores `application/json` for any `*.json`
+key whatever the request sends, while a `.bin` key keeps the requested type.
+The production SeaweedFS uses the same digest, so every quarantine write failed
+its own verification there and surfaced only as a generic contract rejection.
+`put_quarantine` now stores and verifies `application/json`, matching the key;
+a regression with an extension-typing store failed before the fix.
+
+The second full rerun passed the S3 matrix, invalid-input quarantine, Celery
+publication with retry (try 2) and replay, then ended ERROR at 812.8 s: the
+existing 780 s work deadline expired while the recovery phase created its
+second-generation `storage-admin`. One owned created container remained; its
+attempt and owner labels were verified before removal, and owned containers
+and networks are now zero. The fixture's retained attempt directory is kept as
+failure evidence. The time limit was not raised, so independent restore
+remains NOT_RUN for this Task.
+
+Official pages re-read on 2026-11-04: Airflow DAGs and connections (3.3.2,
+`quote_plus` for reserved characters), PostgreSQL logical decoding (unused
+slots retain WAL and must be dropped), Confluent Schema Registry (8.4,
+Community License) and dbt data tests.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -276,6 +319,8 @@ real data recovery requires its separate approved contract.
 | First native bounded foundation observations | 67 | W72 | Owned native phase receipts | First full attempt only; frozen cached image and reviewed SQL005 source | PASS | Actual probe reported core3.3.2/provider3.24.1/UID50000. The SQL005 apply control path completed after the witnessed version3 data_version rejection; Airflow DB migration, pool/DAG registration and unpause completed. SQL006 was NOT_RUN because it follows publication. These phase observations do not establish a Worker business result, current end-to-end publication or recovery. | optional | - |
 | First owned native Worker and restore rehearsal | 67 | W72 | Owned native Worker and restore rehearsal | First P04 owned cached-image attempt after corrected source review | FAIL | Actual duration 582.770s; SeaweedFS static-identity principal was 000000000000 while the fixture deny policy named 111111111111. Stopped at S3 permission before publication, input quarantine and recovery; those phases remain NOT_RUN. Final cleanup reported FAIL with the original evidence retained while independently confirmed owned containers/networks were zero. Preserve both facts. The exact same-filesystem custody rename at 2026-11-02T08:35:37Z preserved identity bindings and modes; native-custody-event.json (0600) records it. A 0.001-second retained-path preflight denial started no resources and did not consume the narrow probe budget. One bounded three-role cached-S3 probe is separate and cannot resolve this full Worker/restore FAIL. | required | - |
 | Narrow owned S3 permission retry | 67 | W72 | Owned S3 permission diagnostic | The one authorized cached-S3 retry after principal/source correction; three owned roles | FAIL | ERROR after 190.468s: 180-second work deadline reached during administrator permission canaries, before old/new action matrices. No corrected-policy runtime PASS, Worker publication, input quarantine or independent restore follows. The 0.001s admission denial is preserved separately; no third runtime is performed. Value-free receipt: native-storage-retry-resumed.log. | required | - |
+| D04 narrow S3 permission rerun | 67 | W72 | Owned S3 permission diagnostic | storage-admin 0.25 CPU, cached images | PASS | 125.5 s; old principal delete 204, corrected matrix PASS; residue 0 | required | Narrow owned S3 permission retry |
+| D04 full Worker rerun | 67 | W72 | Owned native Worker and restore rehearsal | Both D04 fixes, unchanged 780 s deadline | FAIL | S3 matrix, quarantine, Celery publication retry/replay PASS; recovery stopped at the 780 s deadline (812.8 s); owned residue removed to 0; restore NOT_RUN | required | - |
 | Narrow retry cleanup postcondition | 67 | W72 | Owned S3 retry cleanup | Exact retry probe, three roles and two networks | PASS | Confirmed absent; retained lists zero and attempt directory null. This is cleanup only, not data recovery or closure of the first full native FAIL. | optional | - |
 | P04 local implementation and review | 67 | W72 | Approved source, RED/GREEN, coverage and independent review | Final owner packets and DATA-0096 file fingerprints | PASS | URI, pipeline, IaC, native source and corrective scenario QA are independently reviewed. Native data 13 unit PASS, 289/300 lines (96.33%); scenario QA 11 PASS, 528/538 lines (98.1413%), independent 11 PASS in 0.115s. Python controller line coverage is not branch coverage or proof that embedded container programs/DB/IAM/queue executed. Full native and narrow timeout remain separate failed evidence. | required | - |
 | CDC current-consumer reconciliation | 68 | W73 | Tracked connector/provisioner, ADR and historical receipt readback | Existing platform_dev path; no live query or registration | PASS | Preserved consumer and acceptance scopes; current CDC is SOURCE_READY and Opsflow adoption is deferred, not a new runtime PASS | required | - |
@@ -300,7 +345,7 @@ real data recovery requires its separate approved contract.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 66 | pending | Issued P04 baseline and documentation leases, Current public inventory and comparison | REUSE_ACCEPTED for bounded existing ownership with current affected source regressions; operating roles and restore remain independently unaccepted. | SPEC-0212 TSK-0043 |
-| 67 | pending | P04 local implementation and review, First owned native Worker and restore rehearsal, Narrow owned S3 permission retry | TEST_RESIDUAL: local source, static/isolated regressions and independent review are complete; actual full native FAIL and narrow ERROR remain. Corrected policy matrices, Worker business publication/quarantine and independent recovery need a future bounded run after phase-timing diagnosis. | SPEC-0212 TSK-0043 |
+| 67 | pending | P04 local implementation and review, D04 narrow S3 permission rerun, D04 full Worker rerun | TEST_RESIDUAL: the corrected S3 matrix, input quarantine and Celery publication retry/replay now pass natively; independent recovery still stops at the unchanged 780 s work deadline and needs a separately approved larger budget or a faster recovery phase. | SPEC-0212 TSK-0043 |
 | 68 | pending | CDC current-consumer reconciliation | SOURCE_READY; no new Opsflow CDC consumer is authorized. | SPEC-0212 TSK-0043 |
 | 69 | pending | Quality publication regressions | SOURCE_READY: current unit/adapter quality blocking is evidenced; actual Worker publication remains residual. | SPEC-0212 TSK-0043 |
 | 70 | pending | Experiment input decision | BLOCKED on actual inputs by user choice; no experiment is invented. | SPEC-0212 TSK-0043 |

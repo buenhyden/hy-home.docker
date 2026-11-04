@@ -248,7 +248,9 @@ CAPS = {
     "scheduler": (512, 300, 256),
     "processor": (512, 250, 256),
     "worker": (1024, 650, 256),
-    "storage-admin": (128, 50, 64),
+    # 50 milli-CPU made each boto3 client start take ~23s, exhausting the
+    # 180s storage-permission budget before the canaries ran.
+    "storage-admin": (128, 250, 64),
 }
 
 

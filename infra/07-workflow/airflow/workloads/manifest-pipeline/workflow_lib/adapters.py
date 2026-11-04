@@ -591,7 +591,9 @@ class S3Store:
             "reason": reason,
             "data-version": hashlib.sha256(body).hexdigest(),
         }
-        attributes = {"ContentType": "application/octet-stream", "Metadata": metadata}
+        # The key ends in .json and SeaweedFS types objects by extension, so a
+        # different requested type never verifies.
+        attributes = {"ContentType": "application/json", "Metadata": metadata}
 
         def write():
             head = _head(self.client, self.bucket, key)
