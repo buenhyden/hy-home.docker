@@ -1871,7 +1871,16 @@
         "labs/postgresql-ha/scripts/README.md",
         "labs/valkey-cluster/README.md",
         "labs/valkey-cluster/config/README.md",
-        "labs/valkey-cluster/scripts/README.md"
+        "labs/valkey-cluster/scripts/README.md",
+        "labs/lakehouse/spark/README.md",
+        "labs/lakehouse/flink/README.md",
+        "labs/lakehouse/trino/README.md",
+        "labs/lakehouse/great-expectations/README.md",
+        "labs/dbt/README.md",
+        "labs/superset/README.md",
+        "labs/jupyterlab/README.md",
+        "labs/sonarqube/README.md",
+        "labs/stalwart/README.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
@@ -4846,8 +4855,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 261,
-      "next_number": 262,
+      "high_water": 262,
+      "next_number": 263,
       "reserved_history": [
         1,
         2,

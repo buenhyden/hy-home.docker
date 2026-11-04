@@ -1,0 +1,293 @@
+# Independent lakehouse LAB entrypoint (SPEC-0262); never included by the root.
+# It joins no HOME network. The SeaweedFS S3 and Iceberg REST endpoints are
+# required LAB inputs; HOME publishes neither to a LAB network by default.
+name: hy-home-lab-lakehouse
+
+x-tier-label: &tier-label
+  hy-home.tier: lab
+  traefik.enable: 'false'
+
+x-lakehouse-env: &lakehouse-env
+  # SeaweedFS `lakehouse` identity: read, write and list on the lakehouse
+  # table bucket only (s3-identities.conf), plus the catalog and table
+  # actions its table bucket policy grants.
+  AWS_ACCESS_KEY_ID: lakehouse
+  # SeaweedFS does not enforce a region; SigV4 only needs a fixed one.
+  AWS_REGION: us-east-1
+  LAKEHOUSE_CATALOG_URI: '${LAB_LAKEHOUSE_CATALOG_URI:?set an approved Iceberg REST catalog endpoint}'
+  LAKEHOUSE_S3_ENDPOINT: '${LAB_LAKEHOUSE_S3_ENDPOINT:?set an approved SeaweedFS S3 endpoint}'
+  LAKEHOUSE_WAREHOUSE: 's3://lakehouse/'
+
+x-flink-common: &flink-common
+  profiles:
+    - lakehouse
+  build:
+    context: ./lakehouse/flink
+    dockerfile: Dockerfile
+  image: hy-home/flink-iceberg:2.1.3-iceberg1.11.0-local
+  # The image user; the checkpoint directory on the host must be writable by it.
+  user: '9999:9999'
+  entrypoint:
+    - /bin/bash
+    - /opt/hyhome/hyhome-flink.sh
+  # /tmp and /run come from the read-only template.
+  tmpfs:
+    - /opt/flink/log:uid=9999,gid=9999
+  environment:
+    <<: *lakehouse-env
+  volumes:
+    - ./lakehouse/flink/hyhome-flink.sh:/opt/hyhome/hyhome-flink.sh:ro
+    # JobManager and TaskManager must see the same path for file checkpoints.
+    - flink-checkpoints:/opt/flink/checkpoints
+  secrets:
+    - seaweedfs_s3_lakehouse_secret_key
+  depends_on:
+    seaweedfs-table-bucket:
+      condition: service_completed_successfully
+  networks:
+    lab_lakehouse_net: {}
+  labels:
+    <<: *tier-label
+
+volumes:
+  # Must exist before the first start: 2770, group LAB_SECRETS_GID (RUN-0094).
+  flink-checkpoints:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/lakehouse/flink/checkpoints
+
+networks:
+  lab_lakehouse_net:
+    name: hy-home-lab-lakehouse
+
+# Secret files keep their canonical root paths; no value moves with the LAB.
+secrets:
+  seaweedfs_s3_admin_secret_key:
+    file: ../secrets/storage/seaweedfs/seaweedfs_s3_admin_secret_key.txt
+  seaweedfs_s3_lakehouse_secret_key:
+    file: ../secrets/storage/seaweedfs/seaweedfs_s3_lakehouse_secret_key.txt
+
+services:
+  # Iceberg table bucket, its policy and namespaces on the configured endpoint.
+  seaweedfs-table-bucket:
+    profiles:
+      - lakehouse
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-low
+    image: amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce
+    container_name: seaweedfs-table-bucket
+    hostname: seaweedfs-table-bucket
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    restart: 'no'
+    entrypoint: [ '/bin/bash', '/opt/hyhome/seaweedfs-table-bucket.sh' ]
+    environment:
+      AWS_ACCESS_KEY_ID: ${LAB_LAKEHOUSE_S3_ADMIN_ACCESS_KEY:-}
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_EC2_METADATA_DISABLED: 'true'
+      S3_ENDPOINT: '${LAB_LAKEHOUSE_S3_ENDPOINT:?set an approved SeaweedFS S3 endpoint}'
+    volumes:
+      - ./lakehouse/seaweedfs-table-bucket.sh:/opt/hyhome/seaweedfs-table-bucket.sh:ro
+    secrets:
+      - seaweedfs_s3_admin_secret_key
+    networks:
+      lab_lakehouse_net: {}
+    labels:
+      <<: *tier-label
+
+  # Batch and table-maintenance job over the Iceberg tables in the REST
+  # catalog. The default command only lists namespaces; any write is an
+  # explicit `docker compose -f labs/lakehouse.yml run --rm spark spark-sql ...`.
+  spark:
+    profiles:
+      - lakehouse
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-med
+    # Spark local mode: driver and executors share this JVM.
+    cpus: "2.00"
+    mem_limit: 2g
+    build:
+      context: ./lakehouse/spark
+      dockerfile: Dockerfile
+    image: hy-home/spark-iceberg:4.1.3-iceberg1.11.0-local
+    container_name: spark
+    hostname: spark
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    entrypoint:
+      - /bin/bash
+      - /opt/hyhome/hyhome-spark.sh
+    command:
+      - /opt/spark/bin/spark-sql
+      - -S
+      - -e
+      - SHOW NAMESPACES
+    environment:
+      <<: *lakehouse-env
+    volumes:
+      - ./lakehouse/spark/hyhome-spark.sh:/opt/hyhome/hyhome-spark.sh:ro
+    secrets:
+      - seaweedfs_s3_lakehouse_secret_key
+    depends_on:
+      seaweedfs-table-bucket:
+        condition: service_completed_successfully
+    networks:
+      lab_lakehouse_net: {}
+    labels:
+      <<: *tier-label
+
+  # Single-node SQL engine (coordinator also runs tasks) over the Iceberg
+  # tables in the REST catalog, with the same scoped identity as Spark.
+  trino:
+    profiles:
+      - lakehouse
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-infra-readonly-high
+    image: trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f
+    container_name: trino
+    hostname: trino
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    entrypoint:
+      - /bin/bash
+      - /opt/hyhome/hyhome-trino.sh
+    command:
+      - /usr/lib/trino/bin/launcher
+      - run
+      - --etc-dir
+      - /etc/trino
+    tmpfs:
+      - /tmp
+      - /run
+      - /data/trino:uid=1000,gid=1000
+    environment:
+      <<: *lakehouse-env
+    volumes:
+      - ./lakehouse/trino/hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro
+      - ./lakehouse/trino/catalog/lakehouse.properties:/etc/trino/catalog/lakehouse.properties:ro
+    secrets:
+      - seaweedfs_s3_lakehouse_secret_key
+    # Plain HTTP without authentication: loopback only, no gateway route.
+    ports:
+      - '127.0.0.1:${LAB_TRINO_HOST_PORT:-18090}:8080'
+    healthcheck:
+      test: [ 'CMD', '/usr/lib/trino/bin/health-check' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
+    depends_on:
+      seaweedfs-table-bucket:
+        condition: service_completed_successfully
+    networks:
+      lab_lakehouse_net: {}
+    labels:
+      <<: *tier-label
+
+  # Data quality job: checks Iceberg tables through Trino against the tracked
+  # suites. The default command only lists suites; checking is an explicit
+  # `docker compose -f labs/lakehouse.yml run --rm great-expectations validate [SUITE...]`,
+  # which reads tables and exits 1 when an expectation fails.
+  great-expectations:
+    profiles:
+      - lakehouse
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-med
+    build:
+      context: ./lakehouse/great-expectations
+      dockerfile: Dockerfile
+    image: hy-home/great-expectations:1.24.0-local
+    container_name: great-expectations
+    hostname: great-expectations
+    command:
+      - list
+    environment:
+      HOME: /tmp
+      # No usage events leave the host.
+      GX_ANALYTICS_ENABLED: 'false'
+      # Trino has no authentication; the user name only labels the queries.
+      GX_TRINO_URL: 'trino://great-expectations@trino:8080/lakehouse'
+    volumes:
+      - ./lakehouse/great-expectations/suites:/opt/hyhome/suites:ro
+    depends_on:
+      trino:
+        condition: service_healthy
+    networks:
+      lab_lakehouse_net: {}
+    labels:
+      <<: *tier-label
+
+  # Session cluster for streaming and batch SQL into the Iceberg tables. Jobs
+  # are submitted from the SQL client inside this container; JAR upload
+  # through the REST API is disabled. HOME Kafka is not on this network.
+  flink-jobmanager:
+    <<: *flink-common
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-infra-readonly-med
+    cpus: "1.00"
+    mem_limit: 1280m
+    container_name: flink-jobmanager
+    hostname: flink-jobmanager
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    command:
+      - /opt/flink/bin/jobmanager.sh
+      - start-foreground
+      - -D
+      - jobmanager.rpc.address=flink-jobmanager
+      - -D
+      - jobmanager.memory.process.size=1024m
+      - -D
+      - web.submit.enable=false
+      - -D
+      - execution.checkpointing.dir=file:///opt/flink/checkpoints
+    # Plain HTTP without authentication: loopback only, no gateway route.
+    ports:
+      - '127.0.0.1:${LAB_FLINK_HOST_PORT:-18091}:8081'
+    healthcheck:
+      test: [ 'CMD', 'curl', '-fsS', '-o', '/dev/null', 'http://localhost:8081/overview' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
+
+  flink-taskmanager:
+    <<: *flink-common
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-infra-readonly-high
+    cpus: "2.00"
+    mem_limit: 2g
+    container_name: flink-taskmanager
+    hostname: flink-taskmanager
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    healthcheck:
+      test: [ 'CMD-SHELL', 'curl -fsS http://flink-jobmanager:8081/taskmanagers | grep -q "\"id\""' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    command:
+      - /opt/flink/bin/taskmanager.sh
+      - start-foreground
+      - -D
+      - jobmanager.rpc.address=flink-jobmanager
+      - -D
+      - taskmanager.memory.process.size=1536m
+      - -D
+      - taskmanager.numberOfTaskSlots=2
+      - -D
+      - execution.checkpointing.dir=file:///opt/flink/checkpoints
+    depends_on:
+      seaweedfs-table-bucket:
+        condition: service_completed_successfully
+      flink-jobmanager:
+        condition: service_healthy
