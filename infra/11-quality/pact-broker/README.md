@@ -105,9 +105,9 @@ broker 프로세스로 내보냅니다. Compose `environment`에는 어느 것�
 
 ## Related Documents
 
-- **Guide**: Pact Broker Usage Guide (`docs/05.operations/guides/0093-pact-broker.md`)
-- **Policy**: Pact Broker Operations Policy (`docs/05.operations/policies/0093-pact-broker.md`)
-- **Runbook**: Pact Broker Recovery Runbook (`docs/05.operations/runbooks/0093-pact-broker.md`)
+- **Guide**: Pact Broker Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0093-pact-broker.md`)
+- **Policy**: Pact Broker Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0093-pact-broker.md`)
+- **Runbook**: Pact Broker Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0093-pact-broker.md`)
 - [Documentation index](../../../docs/README.md)
 
 ---
@@ -126,7 +126,7 @@ broker 프로세스로 내보냅니다. Compose `environment`에는 어느 것�
 | Labels | `hy-home.tier` |
 | Secret refs | `pact_broker_db_password`, `pact_broker_basic_auth_password`, `mng_postgres_password` (프로비저닝) |
 | Healthcheck | `pact-broker`에 Compose 헬스체크가 선언되어 있음 (`/diagnostic/status/heartbeat`) |
-| Operations | Guide (`docs/05.operations/guides/0093-pact-broker.md`), Policy (`docs/05.operations/policies/0093-pact-broker.md`), Runbook (`docs/05.operations/runbooks/0093-pact-broker.md`) |
+| Operations | Guide (`docs/05.operations/guides/12-testing-and-quality/0093-pact-broker.md`), Policy (`docs/05.operations/policies/12-testing-and-quality/0093-pact-broker.md`), Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0093-pact-broker.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | heartbeat를 먼저 확인한 뒤 프로비저닝과 broker 로그, 연결된 런북 순서로 확인합니다. |
 

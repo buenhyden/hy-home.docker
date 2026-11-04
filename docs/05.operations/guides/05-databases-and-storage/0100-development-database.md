@@ -44,6 +44,9 @@ created: "2026-10-03"
 TimescaleDB Community 기반 `dev-pg`, 승인된 내부 fixture의 계정·DB를 만드는
 `dev-platform-provision`, 공용 시험 결과의 `dev-perf-provision`, project ACL을 적용하는
 `dev-valkey`를 소유한다. 지표는 `dev-data` profile의 exporter 둘이 Prometheus에 제공한다. `dev-pg-monitor-provision`이 통계·설정 읽기 권한만 가진 `dev_pg_monitor` role을 만들고, `dev-pg-exporter`(`9187`)가 이 role로 접속한다. `dev-valkey-exporter`(`9121`)는 읽기 전용 `devmonitor` ACL 사용자로 접속한다. 두 exporter는 관리자 비밀을 받지 않고 각자의 monitor secret(`dev_pg_monitor_password`, `dev_valkey_monitor_password`)만 쓴다. 두 exporter는 `dev_data_net`과 `obs_net`에 붙고 호스트 포트는 없다. DB 서비스는 `dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
+`hyhome-platform` project의 `platform_dev` database role은
+`dev_pg_platform_migrator_password`, `dev_pg_platform_runtime_password`,
+`dev_pg_platform_reader_password`를 쓴다.
 image, profile, host exposure, resource limit, mount 및 secret reference는 Compose와
 각 엔진 README가 권위다.
 

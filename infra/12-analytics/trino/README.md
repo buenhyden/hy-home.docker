@@ -99,9 +99,9 @@ Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
 
 ## Related Documents
 
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/0094-lakehouse.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/0094-lakehouse.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`)
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0094-lakehouse.md`)
 - [문서 인덱스](../../../docs/README.md)
 
 ---
@@ -120,7 +120,7 @@ Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
 | Labels | `hy-home.tier` |
 | Secret refs | `seaweedfs_s3_lakehouse_secret_key` |
 | Healthcheck | `/usr/lib/trino/bin/health-check` |
-| Operations | Guide (`docs/05.operations/guides/0094-lakehouse.md`), Policy (`docs/05.operations/policies/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`) |
+| Operations | Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md`), Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0094-lakehouse.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `SHOW SCHEMAS FROM lakehouse`를 실행한 뒤 runbook을 따름 |
 

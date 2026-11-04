@@ -25,7 +25,7 @@ Lifecycle: **DEV job**. 루트 Compose가 이 정의를 include하며 명시적 
 
 ## Scope
 
-로컬 서비스 정의와 구현 탐색. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/0082-opentofu.md`, `docs/05.operations/policies/0082-opentofu.md`, `docs/05.operations/runbooks/0082-opentofu.md`(ID: `GDE-0082`, `POL-0082`, `RUN-0082`)가 담당합니다.
+로컬 서비스 정의와 구현 탐색. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/10-platform-and-backup/0082-opentofu.md`, `docs/05.operations/policies/10-platform-and-backup/0082-opentofu.md`, `docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`(ID: `GDE-0082`, `POL-0082`, `RUN-0082`)가 담당합니다.
 
 ## Structure
 

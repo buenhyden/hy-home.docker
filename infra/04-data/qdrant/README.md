@@ -36,9 +36,9 @@ created: "2025-11-12"
 ### Out of Scope
 
 - 벡터 임베딩 생성(upstream 모델이 담당)
-- collection 수준의 스키마 설계(시스템 가이드 `docs/05.operations/guides/0034-qdrant.md` 참조)
-- 운영 통제(운영 정책 `docs/05.operations/policies/0034-qdrant.md` 참조)
-- 헬스와 복구 triage(복구 런북 `docs/05.operations/runbooks/0034-qdrant.md` 참조)
+- collection 수준의 스키마 설계(시스템 가이드 `docs/05.operations/guides/09-ai-and-search/0034-qdrant.md` 참조)
+- 운영 통제(운영 정책 `docs/05.operations/policies/09-ai-and-search/0034-qdrant.md` 참조)
+- 헬스와 복구 triage(복구 런북 `docs/05.operations/runbooks/09-ai-and-search/0034-qdrant.md` 참조)
 
 ## Structure
 
@@ -62,13 +62,13 @@ qdrant/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.qdrant.rule`, `traefik.http.routers.qdrant.entrypoints`, `traefik.http.routers.qdrant.tls`, `traefik.http.routers.qdrant.middlewares`, `traefik.http.services.qdrant.loadbalancer.server.port` |
 | Secret refs | `qdrant_api_key`, `qdrant_read_only_api_key` |
 | Healthcheck | `qdrant`에 Compose healthcheck 선언됨 |
-| Operations | Guide (`docs/05.operations/guides/0034-qdrant.md`), Policy (`docs/05.operations/policies/0034-qdrant.md`), Runbook (`docs/05.operations/runbooks/0034-qdrant.md`) |
+| Operations | Guide (`docs/05.operations/guides/09-ai-and-search/0034-qdrant.md`), Policy (`docs/05.operations/policies/09-ai-and-search/0034-qdrant.md`), Runbook (`docs/05.operations/runbooks/09-ai-and-search/0034-qdrant.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `docker compose config --quiet`부터 시작한 뒤 서비스 로그와 연결된 운영/runbook 증거를 확인함 |
 
 ## Usage
 
-1. RAG 통합 패턴을 위해 시스템 가이드 (`docs/05.operations/guides/0034-qdrant.md`)를 검토합니다.
+1. RAG 통합 패턴을 위해 시스템 가이드 (`docs/05.operations/guides/09-ai-and-search/0034-qdrant.md`)를 검토합니다.
 2. 배포 시 `ai`나 `qdrant` profile이 활성화되어 있는지 확인합니다.
 3. Snapshot은 persistent volume 안에 설정됩니다. owner 승인 백업 작업 전에 경로 매핑을 확인합니다.
 4. `/readyz` 엔드포인트로 헬스를 모니터링합니다.
@@ -103,9 +103,9 @@ force가 아닌 한 존재하지 않는 목적지 collection, snapshot 크기의
 ## Related Documents
 
 - Specialized 가이드 (`docs/05.operations/guides/README.md`)
-- Qdrant 시스템 가이드 (`docs/05.operations/guides/0034-qdrant.md`)
-- Qdrant 운영 정책 (`docs/05.operations/policies/0034-qdrant.md`)
-- Qdrant 복구 런북 (`docs/05.operations/runbooks/0034-qdrant.md`)
+- Qdrant 시스템 가이드 (`docs/05.operations/guides/09-ai-and-search/0034-qdrant.md`)
+- Qdrant 운영 정책 (`docs/05.operations/policies/09-ai-and-search/0034-qdrant.md`)
+- Qdrant 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0034-qdrant.md`)
 - [문서 인덱스](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../../tech-stack.versions.json)은 drift 검증을 제공합니다.

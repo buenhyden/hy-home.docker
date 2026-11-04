@@ -35,9 +35,9 @@ created: "2025-11-12"
 
 ### Out of Scope
 
-- 애플리케이션 수준의 그래프 모델링(시스템 가이드 `docs/05.operations/guides/0033-neo4j.md` 참조)
-- 운영 통제(운영 정책 `docs/05.operations/policies/0033-neo4j.md` 참조)
-- 헬스와 복구 triage(복구 런북 `docs/05.operations/runbooks/0033-neo4j.md` 참조)
+- 애플리케이션 수준의 그래프 모델링(시스템 가이드 `docs/05.operations/guides/05-databases-and-storage/0033-neo4j.md` 참조)
+- 운영 통제(운영 정책 `docs/05.operations/policies/05-databases-and-storage/0033-neo4j.md` 참조)
+- 헬스와 복구 triage(복구 런북 `docs/05.operations/runbooks/05-databases-and-storage/0033-neo4j.md` 참조)
 
 ## Structure
 
@@ -63,13 +63,13 @@ neo4j/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.neo4j.rule`, `traefik.http.routers.neo4j.entrypoints`, `traefik.http.routers.neo4j.tls`, `traefik.http.services.neo4j.loadbalancer.server.port`, `traefik.http.routers.neo4j.middlewares` |
 | Secret refs | names: `neo4j_password`; mounts: `/run/secrets/neo4j_password` |
 | Healthcheck | `neo4j`에 Compose healthcheck 선언됨 |
-| Operations | Guide (`docs/05.operations/guides/0033-neo4j.md`), Policy (`docs/05.operations/policies/0033-neo4j.md`), Runbook (`docs/05.operations/runbooks/0033-neo4j.md`) |
+| Operations | Guide (`docs/05.operations/guides/05-databases-and-storage/0033-neo4j.md`), Policy (`docs/05.operations/policies/05-databases-and-storage/0033-neo4j.md`), Runbook (`docs/05.operations/runbooks/05-databases-and-storage/0033-neo4j.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `docker compose config --quiet`부터 시작한 뒤 서비스 로그와 연결된 운영/runbook 증거를 확인함 |
 
 ## Usage
 
-1. 아키텍처 맥락을 위해 시스템 가이드 (`docs/05.operations/guides/0033-neo4j.md`)부터 검토합니다.
+1. 아키텍처 맥락을 위해 시스템 가이드 (`docs/05.operations/guides/05-databases-and-storage/0033-neo4j.md`)부터 검토합니다.
 2. 서비스 시작 전에 `neo4j_password` secret이 provisioning되었는지 확인합니다.
 3. 자원 일관성을 위해 `docker-compose.yml`의 `template-stateful-med` 서비스 확장을 따릅니다.
 4. 컨테이너 로컬 `cypher-shell`이나 Traefik 뒤의 Neo4j Browser route로 연결을 확인합니다.
@@ -102,9 +102,9 @@ Enterprise online-backup이나 cluster 명령은 이 배포 범위 밖입니다.
 ## Related Documents
 
 - Specialized 가이드 (`docs/05.operations/guides/README.md`)
-- Neo4j 시스템 가이드 (`docs/05.operations/guides/0033-neo4j.md`)
-- Neo4j 운영 정책 (`docs/05.operations/policies/0033-neo4j.md`)
-- Neo4j 복구 런북 (`docs/05.operations/runbooks/0033-neo4j.md`)
+- Neo4j 시스템 가이드 (`docs/05.operations/guides/05-databases-and-storage/0033-neo4j.md`)
+- Neo4j 운영 정책 (`docs/05.operations/policies/05-databases-and-storage/0033-neo4j.md`)
+- Neo4j 복구 런북 (`docs/05.operations/runbooks/05-databases-and-storage/0033-neo4j.md`)
 - [문서 인덱스](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../../tech-stack.versions.json)은 drift 검증을 제공합니다.

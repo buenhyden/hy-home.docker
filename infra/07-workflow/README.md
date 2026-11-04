@@ -108,14 +108,14 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 | Airflow Valkey + exporter | OPTIONAL | `dedicated-valkey` |
 | n8n Valkey + exporter | OPTIONAL | `dedicated-valkey` |
 
-이 프로필은 선택적 브로커를 시작만 할 뿐 선택하지는 않습니다. 각 애플리케이션에 맞는 host와 secret 선택자를 함께 설정해야 합니다. 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/guides/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/guides/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.
+이 프로필은 선택적 브로커를 시작만 할 뿐 선택하지는 않습니다. 각 애플리케이션에 맞는 host와 secret 선택자를 함께 설정해야 합니다. 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/guides/08-workflows-and-automation/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.
 
 ## Related Documents
 
 - [Data](../04-data/README.md)
 - [Observability](../06-observability/README.md)
 - [Gateway](../01-gateway/README.md)
-- **Auth Integration**: `docs/05.operations/guides/0079-application-auth-integration.md` (진입점: [docs/README.md](../../docs/README.md))
+- **Auth Integration**: `docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md` (진입점: [docs/README.md](../../docs/README.md))
 - [Documentation index](../../docs/README.md)
 
 워크플로우 서비스는 소유자가 확인한 상시 HOME 역량입니다. 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../tech-stack.versions.json)으로 드리프트를 검증합니다.

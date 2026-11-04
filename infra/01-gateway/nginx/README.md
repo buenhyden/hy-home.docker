@@ -65,7 +65,7 @@ nginx/
 | Labels | 선언되지 않음 |
 | Secret refs | 선언되지 않음 |
 | Healthcheck | `nginx`에 Compose healthcheck 선언됨 |
-| Operations | Guide (`docs/05.operations/guides/0011-nginx.md`), Policy (`docs/05.operations/policies/0011-nginx.md`), Runbook (`docs/05.operations/runbooks/0011-nginx.md`) |
+| Operations | Guide (`docs/05.operations/guides/02-gateway-and-networking/0011-nginx.md`), Policy (`docs/05.operations/policies/02-gateway-and-networking/0011-nginx.md`), Runbook (`docs/05.operations/runbooks/02-gateway-and-networking/0011-nginx.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 정적 하드닝 검사부터 시작하고 승인된 Nginx runtime 컨텍스트가 이미 실행 중일 때만 서비스 로그를 확인함 |
 
@@ -79,7 +79,7 @@ nginx/
 4. 설정 변경 후에는 `bash scripts/hardening/check-all-hardening.sh 01-gateway`를 실행합니다. `nginx -t`나 reload는 승인된 실행 중 Nginx 컨텍스트에 대해서만 수행합니다.
 5. 설정을 reload하기 전에는 승인된 실행 중 컨텍스트에서 항상 `nginx -t`를 먼저 실행합니다.
 6. redirect loop를 피하기 위해 upstream에 `X-Forwarded-Proto https`가 설정되어 있는지 확인합니다.
-7. 새 라우팅 로직을 추가할 때는 `docs/05.operations/guides/0011-nginx.md`의 관련 경로 가이드를 갱신합니다.
+7. 새 라우팅 로직을 추가할 때는 `docs/05.operations/guides/02-gateway-and-networking/0011-nginx.md`의 관련 경로 가이드를 갱신합니다.
 
 ## Configuration
 
@@ -119,9 +119,9 @@ healthcheck:
 ## Related Documents
 
 - [01-gateway 루트 README](../README.md)
-- Nginx 가이드 (`docs/05.operations/guides/0011-nginx.md`)
-- 게이트웨이 운영 정책 (`docs/05.operations/policies/0011-nginx.md`)
-- Nginx 런북 (`docs/05.operations/runbooks/0011-nginx.md`)
+- Nginx 가이드 (`docs/05.operations/guides/02-gateway-and-networking/0011-nginx.md`)
+- 게이트웨이 운영 정책 (`docs/05.operations/policies/02-gateway-and-networking/0011-nginx.md`)
+- Nginx 런북 (`docs/05.operations/runbooks/02-gateway-and-networking/0011-nginx.md`)
 - SSO 설정 가이드 (`docs/05.operations/guides/README.md`)
 - [문서 인덱스](../../../docs/README.md)
 

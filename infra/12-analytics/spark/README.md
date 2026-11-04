@@ -90,9 +90,9 @@ job 시작에는 runtime 승인이 필요합니다.
 
 ## Related Documents
 
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/0094-lakehouse.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/0094-lakehouse.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`)
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0094-lakehouse.md`)
 - [문서 인덱스](../../../docs/README.md)
 
 ---
@@ -111,7 +111,7 @@ job 시작에는 runtime 승인이 필요합니다.
 | Labels | `hy-home.tier` |
 | Secret refs | `seaweedfs_s3_lakehouse_secret_key` |
 | Healthcheck | 선언되지 않음(one-shot job) |
-| Operations | Guide (`docs/05.operations/guides/0094-lakehouse.md`), Policy (`docs/05.operations/policies/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`) |
+| Operations | Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md`), Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0094-lakehouse.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | catalog 접근을 증명하기 위해 기본 명령을 실행한 뒤 runbook을 따름 |
 

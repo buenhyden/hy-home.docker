@@ -23,7 +23,7 @@ updated: "2026-10-05"
 
 ## Scope
 
-Lifecycle: **DEV**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/0084-mailpit.md`, `docs/05.operations/policies/0084-mailpit.md`, `docs/05.operations/runbooks/0084-mailpit.md`(ID: `GDE-0084`, `POL-0084`, `RUN-0084`)가 담당합니다.
+Lifecycle: **DEV**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/11-mail-and-notifications/0084-mailpit.md`, `docs/05.operations/policies/11-mail-and-notifications/0084-mailpit.md`, `docs/05.operations/runbooks/11-mail-and-notifications/0084-mailpit.md`(ID: `GDE-0084`, `POL-0084`, `RUN-0084`)가 담당합니다.
 
 ## Structure
 

@@ -55,6 +55,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0253 | [QA·CI legacy 정리](./0253-qa-ci-legacy-cleanup/) | 빈 frozen archive payload 경계와 삭제된 Task를 가리키던 CI gate evidence owner를 정리하고, 일회성 script·test를 점검합니다 |
 | SPEC-0254 | [Agent guide 후속 정리](./0254-agent-guide-follow-ups/) | infra README의 개별 stage 링크를 정리하고, 폴더 guide 변경이 agent-governance suite를 고르게 하며, guide type을 `common/agent-guide`로 바꾸고 guide를 사용 상태로 전환합니다 |
 | SPEC-0255 | [구현 정합성 수정](./0255-implementation-alignment-fixes/) | 감사에서 확인된 문서와 구현의 차이 중 열린 branch 밖의 항목을 고칩니다: AD-0026 network, 삭제된 Spec을 현재 소유자로 가리키는 문구, 운영 문서의 secret 이름과 database 목록 |
+| SPEC-0257 | [구현 정합성 수정 2차](./0257-implementation-alignment-batch2/) | infra README의 운영 문서 경로, Grafana 링크, Registry의 깨진 예외 항목, 누락된 secret 이름을 바로잡습니다. |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)

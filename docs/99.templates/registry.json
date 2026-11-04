@@ -109,12 +109,8 @@
       "artifact_type",
       "doc_type"
     ],
-    "inventory_excludes": [
-      "docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md"
-    ],
-    "root_exceptions": {
-      "docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md": "Cross-cutting umbrella spec approved without a manufactured PRD, Architecture Description, or ADR parent."
-    },
+    "inventory_excludes": [],
+    "root_exceptions": {},
     "template_placeholders": {
       "agent_id": "{{AGENT_ID}}",
       "description": "{{DESCRIPTION}}",
@@ -5262,8 +5258,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 255,
-      "next_number": 256,
+      "high_water": 257,
+      "next_number": 258,
       "reserved_history": [
         1,
         2,
