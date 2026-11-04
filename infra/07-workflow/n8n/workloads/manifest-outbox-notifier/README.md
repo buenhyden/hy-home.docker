@@ -16,7 +16,7 @@ n8n 소비자입니다. 공개 workflow는 비활성을 유지합니다. SPEC-02
 선택 이미지와 당시 격리 queue·수동/예약·불확실 전송·복원 범위에서 수용됐습니다.
 이전 readiness 실패도 이력으로 보존하며 이후 수용을 취소하는 근거로 쓰지 않습니다.
 현재 P05의 수동 재처리·복원 장벽·인증 STARTTLS 보완은 별도
-[SPEC-0212 Task0044](../../../../../docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md)가 기록합니다.
+SPEC-0212 Task0044(`docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md`)가 기록합니다.
 과거 수용은 현재 이미지·사설 workflow·HOME 운영의 독립 PASS가 아닙니다.
 
 ## Scope

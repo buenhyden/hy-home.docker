@@ -87,12 +87,12 @@ Celery worker 게시·재실행·경합·backfill·객체 후 DB 실패 및 빈 
 필요합니다. 관련 계약 미확정 상태에서는 이 항목을 NOT_RUN으로 기록합니다.
 고정 캐시 이미지·명시 선택자가 없는 기본 시험은 native 실행을 skip합니다.
 과거 migration·pg_hba·PutObject 오류는 각 실행 입력과 함께 역사 Task에 보존되어
-있습니다. 후속 [Task0020](../../../../../docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0020-airflow-native-publication.md)은
+있습니다. 후속 Task0020(`docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0020-airflow-native-publication.md`)은
 generation-1 실제 Celery 게시·제어된 재시도·replay PASS를 기록하지만 generation-2는
-UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED입니다. [Task0018](../../../../../docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0018-workflow-lease-and-connect-safety.md)의
+UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED입니다. Task0018(`docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0018-workflow-lease-and-connect-safety.md`)의
 별도 PostgreSQL CONNECT 거부·복원은 같은 범위의 보조 증거입니다. 이를 현재
 전체 Worker·S3·실제 Timescale·HOME·P05 종단 인수로 확대하지 않습니다.
-이번 [P04 Task](../../../../../docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)는
+이번 P04 Task(`docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md`)는
 연결·입력 격리·data_version·객체 메타데이터 복원의 현재 차분과 실제 시험 결과를
 별도로 기록합니다. 정제된 명령·결과만 공개하고 원시 payload·자격·운영 로그는
 남기지 않습니다. 직렬 lock·소유 자원·cleanup HOLD는 기존 fixture 경계를 따릅니다.

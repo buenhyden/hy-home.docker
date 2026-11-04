@@ -182,7 +182,7 @@ receipt와 현재 schema fingerprint가 다르면 DDL 전에 실패합니다. �
 grant를 보존한 채 마지막 열에 `runs.raw_sha256 AS data_version`을 추가합니다.
 `publish_manifest`, claim/ack/retry/unknown/reconcile 함수와 outbox는 유지합니다.
 P05의 역사 version 3 영수증을 version 4 수용으로 고쳐 쓰지 않으며 실제 소비자의
-현재 호환과 수용은 [P04 Task](../../../../../../docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md)에서
+현재 호환과 수용은 P04 Task(`docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md`)에서
 별도 인계합니다. 소스 revert는 실행한 schema rollback이 아닙니다.
 
 ### Version 5 operator recovery and checks

@@ -2882,13 +2882,13 @@
     },
     {
       "id": "folder-agent-guide",
-      "type": "governance/agent-guide",
+      "type": "common/agent-guide",
       "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/01.requirements/AGENTS.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
-      "template_id": "governance/agent-guide",
+      "template_id": "common/agent-guide",
       "required_frontmatter": [
         "title",
         "version",
@@ -3459,8 +3459,8 @@
         "runtime-governance-readme"
       ]
     },
-    "governance/agent-guide": {
-      "source": "docs/99.templates/templates/governance/agent-guide.template.md",
+    "common/agent-guide": {
+      "source": "docs/99.templates/templates/common/agent-guide.template.md",
       "profiles": [
         "folder-agent-guide"
       ]
@@ -5262,8 +5262,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 253,
-      "next_number": 254,
+      "high_water": 254,
+      "next_number": 255,
       "reserved_history": [
         1,
         2,
