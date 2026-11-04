@@ -1,6 +1,6 @@
 ---
 title: "Workspace Inventory"
-version: "0.8.2"
+version: "0.8.3"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
@@ -21,7 +21,7 @@ parent_ids:
 - "SPEC-0212-TSK-0049"
 - "SPEC-0212-TSK-0050"
 created: "2026-11-01"
-observed_at: "2026-11-03"
+observed_at: "2026-11-04"
 ---
 
 # Workspace Inventory
@@ -288,6 +288,16 @@ generated 38,737→38,741 및 private 241→240으로만 달라졌으며 binary/
 document는 35/132/482/120으로 유지됐다. 이 공개 원장은 정확한 생성물·사설 경로
 또는 어느 변화의 원인을 확인하지 않았다. 이는 Hermes cache-only isolated E2E,
 운영·Windows ACK·remote CI 수용을 대체하지 않는 metadata observation이다.
+
+D01 재관측(2026-11-04, HEAD `d53a0cd6e8f6970b44e1c404e25842a258019ab3`, 원격 main 동일)에서는
+커밋된 `data.yaml`이 자체 `validate`와 `compare`에서 거부됐다. 원인은 `30d73680a`가
+모델 정책 파일을 `infra/08-ai/open-notebook/config/`로 옮길 때 원장을 갱신하지 않아
+남은 이전 `tests/fixtures/` 연결 출처였다. 파일 지문은 이동 전과 같다. 같은 98개
+review metadata와 7개 curated 섹션으로 `scan --connections`을 다시 생성했고 `validate`를
+통과했다. 관측값은 파일 40,853/40,853, 전체 본문 3/1,996, 부분 본문 57/1,996, STALE
+38, 렌더 0/17, 실행 0/112, 복원 0/112다. 연결 행의 변경·추가·삭제는 0이다. 커밋된
+원장 자체를 검증하는 회귀 시험을 추가했다. 이 기록은 metadata 관측일 뿐 본문·구성·
+운영·복원 수용이 아니다.
 
 **S01–S11 현재 이행 요약 — 범위와 읽는 방법.**
 
