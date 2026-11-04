@@ -22,7 +22,7 @@ Docker Secret으로 마운트됩니다. 캐시 볼륨은 일회용이며 게시�
 
 ## Scope
 
-Lifecycle: **DEV maintenance job**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/0083-renovate.md`, `docs/05.operations/policies/0083-renovate.md`, `docs/05.operations/runbooks/0083-renovate.md`(ID: `GDE-0083`, `POL-0083`, `RUN-0083`)가 담당합니다.
+Lifecycle: **DEV maintenance job**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/10-platform-and-backup/0083-renovate.md`, `docs/05.operations/policies/10-platform-and-backup/0083-renovate.md`, `docs/05.operations/runbooks/10-platform-and-backup/0083-renovate.md`(ID: `GDE-0083`, `POL-0083`, `RUN-0083`)가 담당합니다.
 
 ## Structure
 

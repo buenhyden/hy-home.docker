@@ -59,16 +59,16 @@ dozzle/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dozzle.rule`, `traefik.http.routers.dozzle.entrypoints`, `traefik.http.routers.dozzle.tls`, `traefik.http.middlewares.dozzle-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.dozzle.middlewares`, `traefik.http.services.dozzle.loadbalancer.server.port` |
 | Secret refs | `dozzle_client_secret`; OIDC client secret 파일 참조 |
 | Healthcheck | `dozzle`에 Compose 헬스체크가 선언되어 있음 |
-| Operations | Guide (`docs/05.operations/guides/0072-dozzle.md`), Policy (`docs/05.operations/policies/0072-dozzle.md`), Runbook (`docs/05.operations/runbooks/0072-dozzle.md`) |
+| Operations | Guide (`docs/05.operations/guides/07-observability/0072-dozzle.md`), Policy (`docs/05.operations/policies/07-observability/0072-dozzle.md`), Runbook (`docs/05.operations/runbooks/07-observability/0072-dozzle.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `06-observability` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `admin` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
 ## Usage
 
 1. [docker-compose.yml](./docker-compose.yml)을 통해 서비스 구성을 확인한다.
-2. 가이드 문서는 Dozzle guide (`docs/05.operations/guides/0072-dozzle.md`)를 참조한다.
-3. 운영 정책은 Dozzle policy (`docs/05.operations/policies/0072-dozzle.md`)를 확인한다.
-4. 장애 조치 지침은 Dozzle runbook (`docs/05.operations/runbooks/0072-dozzle.md`)를 따른다.
+2. 가이드 문서는 Dozzle guide (`docs/05.operations/guides/07-observability/0072-dozzle.md`)를 참조한다.
+3. 운영 정책은 Dozzle policy (`docs/05.operations/policies/07-observability/0072-dozzle.md`)를 확인한다.
+4. 장애 조치 지침은 Dozzle runbook (`docs/05.operations/runbooks/07-observability/0072-dozzle.md`)를 따른다.
 
 ## Tech Stack
 
@@ -109,7 +109,7 @@ Docker 소켓의 `:ro` 마운트는 Docker API 호출 권한을 읽기 전용으
 
 ## Related Documents
 
-- **Guide**: `docs/05.operations/guides/0072-dozzle.md`
-- **Policy**: `docs/05.operations/policies/0072-dozzle.md`
-- **Runbook**: `docs/05.operations/runbooks/0072-dozzle.md`
+- **Guide**: `docs/05.operations/guides/07-observability/0072-dozzle.md`
+- **Policy**: `docs/05.operations/policies/07-observability/0072-dozzle.md`
+- **Runbook**: `docs/05.operations/runbooks/07-observability/0072-dozzle.md`
 - [Documentation index](../../../docs/README.md)

@@ -175,8 +175,8 @@ file-backed 호스트 권한을 재매핑할 수 있다고 가정하지 않습�
 
 - [Keycloak](../keycloak/README.md)
 - [Gateway](../../01-gateway/README.md)
-- OAuth2 Proxy 운영 문서: `docs/05.operations/guides/0015-oauth2-proxy.md`, `docs/05.operations/policies/0015-oauth2-proxy.md`, `docs/05.operations/runbooks/0015-oauth2-proxy.md`
-- 애플리케이션 인증 통합 가이드: `docs/05.operations/guides/0079-application-auth-integration.md`
+- OAuth2 Proxy 운영 문서: `docs/05.operations/guides/03-identity-and-access/0015-oauth2-proxy.md`, `docs/05.operations/policies/03-identity-and-access/0015-oauth2-proxy.md`, `docs/05.operations/runbooks/03-identity-and-access/0015-oauth2-proxy.md`
+- 애플리케이션 인증 통합 가이드: `docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md`
 - [문서 인덱스](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../tech-stack.versions.json)은 drift 검증을 제공합니다.

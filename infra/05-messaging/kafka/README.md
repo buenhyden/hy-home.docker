@@ -84,8 +84,8 @@ KRaft identity나 개별 broker 디렉터리를 그대로 재사용해서는 안
 ## Related Documents
 
 [문서 진입점](../../../docs/README.md)을 사용해 Stage 05 subject
-`docs/05.operations/guides/0036-kafka.md`와 hardening subject
-`docs/05.operations/guides/0037-messaging-optimization-hardening.md`을
+`docs/05.operations/guides/06-messaging-and-cdc/0036-kafka.md`와 hardening subject
+`docs/05.operations/guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md`을
 찾으십시오. 공식 문서: [Kafka operations](https://kafka.apache.org/documentation/#operations),
 [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html),
 [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control).

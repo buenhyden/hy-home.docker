@@ -57,15 +57,15 @@ ollama/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.ollama.rule`, `traefik.http.routers.ollama.entrypoints`, `traefik.http.routers.ollama.tls`, `traefik.http.services.ollama.loadbalancer.server.port`, `traefik.http.routers.ollama.middlewares` |
 | Secret refs | 선언되지 않음 |
 | Healthcheck | `ollama`, `ollama-exporter`에 Compose 헬스체크가 선언되어 있음 |
-| Operations | Guide (`docs/05.operations/guides/0056-ollama.md`), Policy (`docs/05.operations/policies/0056-ollama.md`), Runbook (`docs/05.operations/runbooks/0056-ollama.md`) |
+| Operations | Guide (`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`), Policy (`docs/05.operations/policies/09-ai-and-search/0056-ollama.md`), Runbook (`docs/05.operations/runbooks/09-ai-and-search/0056-ollama.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `bash scripts/hardening/check-all-hardening.sh 08-ai`로 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
 ## Usage
 
-1. 상위 사용 가이드인 Ollama usage guide (`docs/05.operations/guides/0056-ollama.md`)를 먼저 읽는다.
-2. 리소스 예약 및 모델 거버넌스는 Ollama operations policy (`docs/05.operations/policies/0056-ollama.md`)를 따른다.
-3. 장애 발생 시 Ollama recovery runbook (`docs/05.operations/runbooks/0056-ollama.md`)에 따라 복구한다.
+1. 상위 사용 가이드인 Ollama usage guide (`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)를 먼저 읽는다.
+2. 리소스 예약 및 모델 거버넌스는 Ollama operations policy (`docs/05.operations/policies/09-ai-and-search/0056-ollama.md`)를 따른다.
+3. 장애 발생 시 Ollama recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0056-ollama.md`)에 따라 복구한다.
 
 ## Validation
 
@@ -87,14 +87,14 @@ ollama/
 - Classification: **HOME**. Exact profiles: `ai`, `ai-llm`, `ollama`.
 - Source authority: 이 패키지의 Compose와 선택된 이미지/빌드 입력. `infra/tech-stack.versions.json`은 파생 프로젝션입니다.
 - Root preflight: `docker compose --profile ai config --quiet`. Root targeted start: `docker compose --profile ai up -d ollama ollama-exporter`.
-- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/0056-ollama.md`; ID: `GDE-0056`, `POL-0056`, `RUN-0056`.
+- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/09-ai-and-search/0056-ollama.md`; ID: `GDE-0056`, `POL-0056`, `RUN-0056`.
 - 해당 런북의 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다. 모델/콘텐츠 출처를 보존하고 실행 중인 파일시스템 복사본을 복구 근거로 사용하지 않습니다.
 
 ## Related Documents
 
-- **Guide**: Ollama usage guide (`docs/05.operations/guides/0056-ollama.md`)
-- **Policy**: Ollama operations policy (`docs/05.operations/policies/0056-ollama.md`)
-- **Runbook**: Ollama recovery runbook (`docs/05.operations/runbooks/0056-ollama.md`)
+- **Guide**: Ollama usage guide (`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)
+- **Policy**: Ollama operations policy (`docs/05.operations/policies/09-ai-and-search/0056-ollama.md`)
+- **Runbook**: Ollama recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0056-ollama.md`)
 - [Documentation index](../../../docs/README.md)
 
 ## Configuration

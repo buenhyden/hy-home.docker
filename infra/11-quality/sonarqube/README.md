@@ -95,9 +95,9 @@ password를 secret에서 내보내는 wrapper·기존 DB/volume·network·Java �
 
 ## Related Documents
 
-- **Guide**: SonarQube Guide (`docs/05.operations/guides/0066-sonarqube.md`)
-- **Policy**: SonarQube Operations (`docs/05.operations/policies/0066-sonarqube.md`)
-- **Runbook**: SonarQube Runbook (`docs/05.operations/runbooks/0066-sonarqube.md`)
+- **Guide**: SonarQube Guide (`docs/05.operations/guides/12-testing-and-quality/0066-sonarqube.md`)
+- **Policy**: SonarQube Operations (`docs/05.operations/policies/12-testing-and-quality/0066-sonarqube.md`)
+- **Runbook**: SonarQube Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0066-sonarqube.md`)
 - [Documentation index](../../../docs/README.md)
 
 ---
@@ -116,7 +116,7 @@ password를 secret에서 내보내는 wrapper·기존 DB/volume·network·Java �
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.sonarqube.rule`, `traefik.http.routers.sonarqube.entrypoints`, `traefik.http.routers.sonarqube.tls`, `traefik.http.routers.sonarqube.middlewares`, `traefik.http.services.sonarqube.loadbalancer.server.port` |
 | Secret refs | 이름: `sonarqube_db_password`; 마운트: `/run/secrets/sonarqube_db_password` |
 | Healthcheck | `sonarqube`에 Compose 헬스체크가 선언되어 있음 |
-| Operations | Guide (`docs/05.operations/guides/0066-sonarqube.md`), Policy (`docs/05.operations/policies/0066-sonarqube.md`), Runbook (`docs/05.operations/runbooks/0066-sonarqube.md`) |
+| Operations | Guide (`docs/05.operations/guides/12-testing-and-quality/0066-sonarqube.md`), Policy (`docs/05.operations/policies/12-testing-and-quality/0066-sonarqube.md`), Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0066-sonarqube.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | hardening 점검으로 시작한 뒤 승인된 런타임 컨텍스트에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 

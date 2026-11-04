@@ -108,14 +108,14 @@ alertmanager/
 - Classification: **HOME**. Exact profiles: `obs`, `alerting`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d alertmanager`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/0039-alertmanager.md`; ID: `GDE-0039`, `POL-0039`, `RUN-0039`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0039-alertmanager.md`; ID: `GDE-0039`, `POL-0039`, `RUN-0039`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.
 
 ## Related Documents
 
-- **Guides**: `docs/05.operations/guides/0039-alertmanager.md`
-- **Policy**: `docs/05.operations/policies/0039-alertmanager.md`
-- **Runbook**: `docs/05.operations/runbooks/0039-alertmanager.md`
+- **Guides**: `docs/05.operations/guides/07-observability/0039-alertmanager.md`
+- **Policy**: `docs/05.operations/policies/07-observability/0039-alertmanager.md`
+- **Runbook**: `docs/05.operations/runbooks/07-observability/0039-alertmanager.md`
 - [Documentation index](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증에 쓰입니다.

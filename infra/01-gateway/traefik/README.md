@@ -68,7 +68,7 @@ traefik/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |
 | Secret refs | names: `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`; mounts: `/run/secrets/traefik_basicauth_password`, `/run/secrets/traefik_opensearch_basicauth_password`, `/run/secrets/traefik_prometheus_api_htpasswd` |
 | Healthcheck | `traefik`에 Compose healthcheck 선언됨 |
-| Operations | Guide (`docs/05.operations/guides/0013-traefik.md`), Policy (`docs/05.operations/policies/0013-traefik.md`), Runbook (`docs/05.operations/runbooks/0013-traefik.md`) |
+| Operations | Guide (`docs/05.operations/guides/02-gateway-and-networking/0013-traefik.md`), Policy (`docs/05.operations/policies/02-gateway-and-networking/0013-traefik.md`), Runbook (`docs/05.operations/runbooks/02-gateway-and-networking/0013-traefik.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 루트 profile 검증과 게이트웨이 하드닝 검사부터 시작하고 Traefik runtime이 이미 승인되어 실행 중일 때만 서비스 로그를 확인함 |
 
@@ -143,9 +143,9 @@ Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OA
 ## Related Documents
 
 - [01-gateway 루트 README](../README.md)
-- Traefik 가이드 (`docs/05.operations/guides/0013-traefik.md`)
-- 게이트웨이 운영 정책 (`docs/05.operations/policies/0013-traefik.md`)
-- Traefik 런북 (`docs/05.operations/runbooks/0013-traefik.md`)
+- Traefik 가이드 (`docs/05.operations/guides/02-gateway-and-networking/0013-traefik.md`)
+- 게이트웨이 운영 정책 (`docs/05.operations/policies/02-gateway-and-networking/0013-traefik.md`)
+- Traefik 런북 (`docs/05.operations/runbooks/02-gateway-and-networking/0013-traefik.md`)
 - [Traefik 대시보드](https://dashboard.${DEFAULT_URL:-localhost}) (내부용)
 - [문서 인덱스](../../../docs/README.md)
 
