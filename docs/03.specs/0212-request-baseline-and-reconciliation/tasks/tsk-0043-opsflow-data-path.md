@@ -1,6 +1,6 @@
 ---
 title: "Opsflow Data Path Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -297,6 +297,46 @@ Official pages re-read on 2026-11-04: Airflow DAGs and connections (3.3.2,
 slots retain WAL and must be dropped), Confluent Schema Registry (8.4,
 Community License) and dbt data tests.
 
+### Full rehearsal optimization and independent recovery
+
+A follow-up direct user request on 2026-11-04 asked to optimize the full Worker
+rehearsal and resolve the recovery phase. A measurement-only run with the work
+deadline extended to 1,500 s (repository source unchanged) passed in 1,059.7 s,
+including recovery, so the earlier FAIL was time budget, not behavior. Phase
+totals were dominated by recover 425.8 s, `initialize_airflow` 310.8 s, waits
+236.7 s and DAG triggers 134.0 s: each `airflow` CLI call imports Airflow under
+the fixture's 0.25-0.65 CPU caps, while production allows 2 CPUs per role. The
+api, scheduler, processor and worker caps are now 1 CPU each (memory and pid
+limits unchanged), raising the pinned aggregate from 2,250 to 4,800 milli-CPU.
+The next measurement passed in 719.5 s with work ending at 683.7 s, inside the
+unchanged 780 s work deadline; no time limit was raised.
+
+The registered tests then ran unmodified with their original deadlines:
+`AirflowNativeRehearsal` and `AirflowStoragePermissionRehearsal` ran 2 tests
+OK in 889.3 s. Recovery restored metadata and DEV databases into empty physical
+PostgreSQL 18.6 servers and objects into an empty SeaweedFS, read back body,
+size, ContentType, user metadata and tags, and replayed the Worker run (PASS).
+Owned containers, networks and attempt directories were zero afterwards. The
+failed attempt directory of the 812.8 s run was moved into local custody with
+its inode, owner and mode preserved before the reruns.
+
+### Operating installation handoff to D12
+
+The adapter fix is not yet operating: the production `airflow-scheduler`
+`/opt/airflow/dags` (bind-backed by `${DEFAULT_WORKFLOW_DIR}/airflow/dags`) is
+empty, so the Opsflow workload has never been installed in HOME. D12 owns the
+first installation under an approved window, in this order, each step with its
+own check: (1) back up `opsflow_dev`, the Airflow metadata database and the
+`opsflow-dev` bucket listing; (2) apply SQL 001-008 to `opsflow_dev` as the
+migrator role and verify `008_checks.sql`; (3) create the bucket and apply the
+worker bucket policy, then run the permission canaries; (4) install `dags/` and
+`workflow_lib/` at the reviewed commit into the DAG directory without editing
+the image; (5) create the pool, keep the DAG paused, run one synthetic business
+date, and confirm raw, validated, published and outbox rows plus quarantine of
+an invalid input with `application/json`; (6) unpause only after that. Rollback
+removes the installed files, keeps the backups, and drops nothing that existed
+before. This Task performs none of these steps.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -321,6 +361,7 @@ Community License) and dbt data tests.
 | Narrow owned S3 permission retry | 67 | W72 | Owned S3 permission diagnostic | The one authorized cached-S3 retry after principal/source correction; three owned roles | FAIL | ERROR after 190.468s: 180-second work deadline reached during administrator permission canaries, before old/new action matrices. No corrected-policy runtime PASS, Worker publication, input quarantine or independent restore follows. The 0.001s admission denial is preserved separately; no third runtime is performed. Value-free receipt: native-storage-retry-resumed.log. | required | - |
 | D04 narrow S3 permission rerun | 67 | W72 | Owned S3 permission diagnostic | storage-admin 0.25 CPU, cached images | PASS | 125.5 s; old principal delete 204, corrected matrix PASS; residue 0 | required | Narrow owned S3 permission retry |
 | D04 full Worker rerun | 67 | W72 | Owned native Worker and restore rehearsal | Both D04 fixes, unchanged 780 s deadline | FAIL | S3 matrix, quarantine, Celery publication retry/replay PASS; recovery stopped at the 780 s deadline (812.8 s); owned residue removed to 0; restore NOT_RUN | required | - |
+| Optimized full Worker and restore rehearsal | 67 | W72 | Owned native Worker and restore rehearsal | Airflow roles 1 CPU, unchanged 780 s/900 s deadlines, registered test unmodified | PASS | 2 tests OK in 889.3 s with the narrow S3 test; recovery PASS (empty PG18.6 metadata/DEV, empty SeaweedFS, metadata/tags read back, Worker replay); measured 719.5 s, work ended 683.7 s; residue 0 | required | First owned native Worker and restore rehearsal |
 | Narrow retry cleanup postcondition | 67 | W72 | Owned S3 retry cleanup | Exact retry probe, three roles and two networks | PASS | Confirmed absent; retained lists zero and attempt directory null. This is cleanup only, not data recovery or closure of the first full native FAIL. | optional | - |
 | P04 local implementation and review | 67 | W72 | Approved source, RED/GREEN, coverage and independent review | Final owner packets and DATA-0096 file fingerprints | PASS | URI, pipeline, IaC, native source and corrective scenario QA are independently reviewed. Native data 13 unit PASS, 289/300 lines (96.33%); scenario QA 11 PASS, 528/538 lines (98.1413%), independent 11 PASS in 0.115s. Python controller line coverage is not branch coverage or proof that embedded container programs/DB/IAM/queue executed. Full native and narrow timeout remain separate failed evidence. | required | - |
 | CDC current-consumer reconciliation | 68 | W73 | Tracked connector/provisioner, ADR and historical receipt readback | Existing platform_dev path; no live query or registration | PASS | Preserved consumer and acceptance scopes; current CDC is SOURCE_READY and Opsflow adoption is deferred, not a new runtime PASS | required | - |
@@ -345,7 +386,7 @@ Community License) and dbt data tests.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 66 | pending | Issued P04 baseline and documentation leases, Current public inventory and comparison | REUSE_ACCEPTED for bounded existing ownership with current affected source regressions; operating roles and restore remain independently unaccepted. | SPEC-0212 TSK-0043 |
-| 67 | pending | P04 local implementation and review, D04 narrow S3 permission rerun, D04 full Worker rerun | TEST_RESIDUAL: the corrected S3 matrix, input quarantine and Celery publication retry/replay now pass natively; independent recovery still stops at the unchanged 780 s work deadline and needs a separately approved larger budget or a faster recovery phase. | SPEC-0212 TSK-0043 |
+| 67 | pending | P04 local implementation and review, D04 narrow S3 permission rerun, Optimized full Worker and restore rehearsal | SOURCE_READY: S3 matrix, input quarantine, Celery publication retry/replay and independent recovery pass in the isolated native rehearsal within the unchanged deadline; HOME installation is NOT_RUN and handed to D12. | SPEC-0212 TSK-0043 |
 | 68 | pending | CDC current-consumer reconciliation | SOURCE_READY; no new Opsflow CDC consumer is authorized. | SPEC-0212 TSK-0043 |
 | 69 | pending | Quality publication regressions | SOURCE_READY: current unit/adapter quality blocking is evidenced; actual Worker publication remains residual. | SPEC-0212 TSK-0043 |
 | 70 | pending | Experiment input decision | BLOCKED on actual inputs by user choice; no experiment is invented. | SPEC-0212 TSK-0043 |
