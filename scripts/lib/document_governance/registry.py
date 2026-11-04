@@ -817,7 +817,7 @@ def validate_registry(
                     )
         exceptions = profile.get("exceptions")
         if isinstance(exceptions, list):
-            for exception_index, exception in enumerate(exceptions):
+            for exception in exceptions:
                 if (
                     isinstance(exception, Mapping)
                     and exception.get("kind") == "native-skill-envelope"
@@ -836,42 +836,6 @@ def validate_registry(
                                 "native envelope belongs only to the canonical governance skill profile",
                             )
                         )
-                if (
-                    not isinstance(exception, Mapping)
-                    or exception.get("kind") != "frozen-legacy-status"
-                ):
-                    continue
-                exception_path = f"profiles.{index}.exceptions.{exception_index}"
-                paths = exception.get("paths")
-                status = exception.get("status")
-                path_pattern = profile.get("path_pattern")
-                valid_paths = (
-                    isinstance(paths, list)
-                    and bool(paths)
-                    and len(paths) == len(set(paths))
-                    and isinstance(path_pattern, str)
-                    and all(
-                        isinstance(path, str)
-                        and _registry_owned_root(path)
-                        and _safe_path_pattern(path)
-                        and "{" not in path
-                        and "}" not in path
-                        and _path_regex(path_pattern).fullmatch(path) is not None
-                        for path in paths
-                    )
-                )
-                if (
-                    set(exception) != {"kind", "status", "paths"}
-                    or not isinstance(status, str)
-                    or not valid_paths
-                ):
-                    findings.append(
-                        RegistryFinding(
-                            "frozen-status-exception-invalid",
-                            exception_path,
-                            "frozen legacy status exceptions require one status and exact owned paths",
-                        )
-                    )
         path_pattern = profile.get("path_pattern")
         artifact_pattern = profile.get("artifact_id_pattern")
         identity_relation = profile.get("identity_relation")
