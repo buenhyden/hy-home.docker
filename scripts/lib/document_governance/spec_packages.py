@@ -2531,6 +2531,7 @@ def _v5_historical_admission(
     packages: Sequence[SpecPackage],
     active_registry: DocumentRegistry,
     _historical_context: HistoricalSpecSnapshotContext | None,
+    proof_packages: Sequence[SpecPackage] | None = None,
 ) -> tuple[
     frozenset[pathlib.PurePosixPath],
     dict[pathlib.PurePosixPath, frozenset[tuple[str, str]]],
@@ -2542,7 +2543,7 @@ def _v5_historical_admission(
     """Admit Tasks closed under generations 3 and 4 through the generation 5 proof."""
 
     proof = _migration_proof(
-        packages,
+        packages if proof_packages is None else proof_packages,
         active_registry,
         root=stage_root.parent.parent,
         target_generation=5,
@@ -2701,6 +2702,7 @@ def _v6_historical_admission(
     context: HistoricalSpecSnapshotContext | None,
     v5_tasks: frozenset[pathlib.PurePosixPath],
     v5_pairs: Mapping[pathlib.PurePosixPath, frozenset[tuple[str, str]]],
+    proof_packages: Sequence[SpecPackage] | None = None,
 ) -> tuple[
     frozenset[pathlib.PurePosixPath],
     dict[pathlib.PurePosixPath, frozenset[tuple[str, str]]],
@@ -2713,7 +2715,12 @@ def _v6_historical_admission(
     """
 
     root = stage_root.parent.parent
-    proof = _migration_proof(packages, active_registry, root=root, target_generation=6)
+    proof = _migration_proof(
+        packages if proof_packages is None else proof_packages,
+        active_registry,
+        root=root,
+        target_generation=6,
+    )
     source_packages = _load_base_spec_packages(
         root, base_ref=proof.source_revision, context=context
     )
@@ -2835,6 +2842,7 @@ def _v7_historical_admission(
     context: HistoricalSpecSnapshotContext | None,
     historical: frozenset[pathlib.PurePosixPath],
     historical_pairs: Mapping[pathlib.PurePosixPath, frozenset[tuple[str, str]]],
+    proof_packages: Sequence[SpecPackage],
 ) -> tuple[
     frozenset[pathlib.PurePosixPath],
     dict[pathlib.PurePosixPath, frozenset[tuple[str, str]]],
@@ -2843,17 +2851,22 @@ def _v7_historical_admission(
     revision = previous_generation_revision(root, 7)
     # Only a package still in the tree can admit a Task; a deleted one's
     # number is reserved instead, so its historical tables are not re-read.
+    # The migration proofs come from the full generation 6 tree instead.
     current_packages = {package.spec.path.parent for package in packages}
     sources = tuple(
         package
-        for package in _load_base_spec_packages(
-            root, base_ref=revision, context=context
-        )
+        for package in proof_packages
         if package.spec.path.parent in current_packages
     )
     source_registry = load_registry_at_revision(revision, root=root)
     source_historical, source_pairs = _v6_historical_admission(
-        stage_root, sources, source_registry, context, historical, historical_pairs
+        stage_root,
+        sources,
+        source_registry,
+        context,
+        historical,
+        historical_pairs,
+        proof_packages,
     )
     candidates = {task.path: task for package in packages for task in package.tasks}
     admitted = set(historical)
@@ -3000,18 +3013,30 @@ def load_spec_packages(
         if len(artifact_ids) != len(set(artifact_ids)):
             raise SpecPackageError("duplicate Stage 03 Spec identity")
         if defer_v5_evidence:
+            # From generation 7 the migration proofs are read from the
+            # generation 6 tree, so a proof package may leave the working tree.
+            proof_packages: tuple[SpecPackage, ...] | None = None
             if active_registry.common.get("lifecycle_generation", 0) >= 7:
                 packages = list(
                     _bind_legacy_evidence(
                         packages, stage_root.parent.parent, _historical_context
                     )
                 )
+                proof_packages = _load_base_spec_packages(
+                    stage_root.parent.parent,
+                    base_ref=previous_generation_revision(stage_root.parent.parent, 7),
+                    context=_historical_context,
+                )
             (
                 historical_tasks,
                 historical_completed_pairs,
                 source_semantics,
             ) = _v5_historical_admission(
-                stage_root, packages, active_registry, _historical_context
+                stage_root,
+                packages,
+                active_registry,
+                _historical_context,
+                proof_packages,
             )
             if active_registry.common.get("lifecycle_generation", 0) >= 6:
                 historical_tasks, historical_completed_pairs = _v6_historical_admission(
@@ -3021,9 +3046,11 @@ def load_spec_packages(
                     _historical_context,
                     historical_tasks,
                     historical_completed_pairs,
+                    proof_packages,
                 )
                 source_semantics = {}
             if active_registry.common.get("lifecycle_generation", 0) >= 7:
+                assert proof_packages is not None
                 historical_tasks, historical_completed_pairs = _v7_historical_admission(
                     stage_root,
                     packages,
@@ -3031,6 +3058,7 @@ def load_spec_packages(
                     _historical_context,
                     historical_tasks,
                     historical_completed_pairs,
+                    proof_packages,
                 )
             spec_statuses = {
                 package.spec.artifact_id: package.spec.status for package in packages

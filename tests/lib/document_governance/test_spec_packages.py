@@ -20,11 +20,12 @@ from unittest import mock
 
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 from scripts.lib.document_governance.registry import (
-    load_registry as load_current_registry,
-)
-from scripts.lib.document_governance.registry import (
+    RegistryError,
     load_registry_at_revision,
     load_registry_document_at_revision,
+)
+from scripts.lib.document_governance.registry import (
+    load_registry as load_current_registry,
 )
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
@@ -34,6 +35,8 @@ INTEGRATION_BASE = "68e0bfd3edb0895235dc628d03d427ca9fd14736"
 # The last generation 5 main revision and the source of the generation 6
 # migration. Tests of the generation 5 proof read this snapshot.
 GENERATION_5_SOURCE = "2a57d4122dc8dac954afca364b838e4bf97fd44a"
+# The last generation 6 main revision; generation 7 reads migration proofs here.
+GENERATION_6_SOURCE = "49f8dd661acf37bf292ee0aa59abfe1af16cde10"
 RECONCILIATION_MAINLINE = "a31a38ca29ee8e0683a29e61bf41347bfddc3d62"
 RECONCILIATION_SIDE_HISTORY = "6aff7433c755feacf659f7654a5ad3b9e70f401d"
 RECONCILIATION_BASE = "cac9e10fa584754706598d624654e07e8d6531f4"
@@ -3711,6 +3714,72 @@ Narrative after the registered table.
                 spec_packages.resolve_contract_migration_source(
                     ROOT, changed_packages, registry
                 )
+
+    def test_generation_6_tree_supplies_retired_migration_proofs(self) -> None:
+        spec_packages = _spec_packages_module()
+        retired = ("0209", "0231")
+        self.assertFalse(
+            [
+                path
+                for path in (ROOT / "docs/03.specs").iterdir()
+                if path.name[:4] in retired
+            ]
+        )
+        with mock.patch.object(
+            spec_packages, "_migration_proof", wraps=spec_packages._migration_proof
+        ) as proof:
+            current = spec_packages.load_spec_packages(
+                ROOT / "docs/03.specs", registry=load_current_registry()
+            )
+        self.assertFalse([package for package in current if package.number in retired])
+        hosts = {
+            call.kwargs["target_generation"]: {
+                package.number for package in call.args[0]
+            }
+            for call in proof.call_args_list
+        }
+        self.assertEqual({5, 6}, set(hosts))
+        for numbers in hosts.values():
+            self.assertTrue(set(retired) <= numbers)
+
+    def test_missing_migration_proof_package_fails_closed(self) -> None:
+        spec_packages = _spec_packages_module()
+        original = spec_packages._load_base_spec_packages
+
+        def without_proof(root, *, base_ref, context=None):
+            packages = original(root, base_ref=base_ref, context=context)
+            if base_ref != GENERATION_6_SOURCE:
+                return packages
+            return tuple(package for package in packages if package.number != "0209")
+
+        with (
+            mock.patch.object(
+                spec_packages, "_load_base_spec_packages", side_effect=without_proof
+            ),
+            self.assertRaisesRegex(
+                spec_packages.SpecPackageError, "migration requires one proof"
+            ),
+        ):
+            spec_packages.load_spec_packages(
+                ROOT / "docs/03.specs", registry=load_current_registry()
+            )
+
+    def test_missing_generation_6_revision_fails_closed(self) -> None:
+        spec_packages = _spec_packages_module()
+        with (
+            mock.patch.object(
+                spec_packages,
+                "previous_generation_revision",
+                return_value="0" * 40,
+            ),
+            self.assertRaises(Exception) as raised,
+        ):
+            spec_packages.load_spec_packages(
+                ROOT / "docs/03.specs", registry=load_current_registry()
+            )
+        self.assertIsInstance(
+            raised.exception, (spec_packages.SpecPackageError, RegistryError)
+        )
 
     def test_current_repository_spec_packages_cover_spec_directories(self) -> None:
         spec_packages = _spec_packages_module()

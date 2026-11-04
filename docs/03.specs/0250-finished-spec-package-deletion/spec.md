@@ -1,10 +1,10 @@
 ---
 title: "Completed Spec Package Deletion"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 layer: "specs"
 artifact_id: "SPEC-0250"
 parent_ids:
@@ -40,8 +40,9 @@ to the PR #723 review fix, not to this Spec.
   only for a link from a terminal Task at a registered Task path into a package
   whose number the checked root's Registry reserves.
 - Generation 7 historical admission reads only packages still in the tree.
-- SPEC-0209 and SPEC-0231 stay while current terminal Tasks are admitted
-  through the lifecycle generation migration proofs they carry.
+- SPEC-0209 and SPEC-0231 stayed in this batch, because current terminal
+  Tasks were admitted through the migration proofs they carried; SPEC-0258
+  later read those proofs from the generation 6 revision and deleted both.
 - A package is deleted only when it is ready for removal review and its
   removal is approved; the user's instruction approves this batch, and the Task
   records it with each package's criterion state.
