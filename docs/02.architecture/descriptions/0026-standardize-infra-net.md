@@ -70,7 +70,7 @@ automatic address pool cannot take one first.
 | `blog_export_net` | 10.250.21.0/24, internal, isolated | Traefik and `blog-ingestion` | exact-path Traefik routes → Gateway; no published port |
 | `n8n_main_runner_net`, `n8n_worker_runner_net` | 10.250.22.0/24 and 10.250.23.0/24, internal, isolated | `n8n` with `n8n-task-runner`; `n8n-worker` with `n8n-task-runner-worker` | broker ↔ its external Code runner only |
 | `crawl4ai_net` | leaf-owned, internal | Crawl4AI and admitted consumers (POL-0091) | consumer → Crawl4AI API; no egress |
-| `crawl4ai_egress_net` | 10.250.200.0/29, leaf-owned, internal | Crawl4AI (fixed .3) and `crawl4ai-egress` (fixed .2) | crawler → egress gateway |
+| `crawl4ai_egress_net` | 10.250.200.0/29, leaf-owned, internal (named egress-isolation exception in REQ-0023-FR-0002) | Crawl4AI (fixed .3) and `crawl4ai-egress` (fixed .2) | crawler → egress gateway |
 | `crawl4ai_outbound_net` | leaf-owned | `crawl4ai-egress` | gateway → public addresses on ports 80/443 only; non-global and IPv6 addresses refused |
 | `restic_offsite_net` | leaf-owned | `restic-offsite` | backup egress to Cloudflare R2 only (ADR-0041) |
 

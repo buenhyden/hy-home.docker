@@ -76,8 +76,16 @@ progress under the approved parents. Hosted CI has not run.
 - Secret names are added only where an owning document already keeps a
   secret list (POL-0028, GDE-0053). Values are never read.
 - The Spec number 255 follows the open branches' claims (0252, 0253, 0254).
-  The Registry Spec high-water bump is pending for batch 2, after the open
-  branches merge; see Evidence for whether the metadata check accepts it now.
+  After PR #729 merged (Spec high-water 253), the Registry `spec` high-water
+  moved to 255 and `next_number` to 256 in this change; 254 stays claimed by
+  the open SPEC-0254 branch. That is the only Registry edit here.
+- REQ-0023-FR-0002 required every subnet to be a root-owned `10.250.x.0/24`,
+  while the leaf-owned `crawl4ai_egress_net` is `10.250.200.0/29`. The user
+  decided on 2026-11-04 to keep the implementation and grant a named exception:
+  FR-0002 and its acceptance line now allow a small, leaf-owned, internal
+  egress-isolation network declared in its own Compose file, naming
+  `crawl4ai_egress_net` as the one exception, with no new child ID. AD-0026
+  marks the row.
 
 #### Deleted Spec reference decisions
 
@@ -123,6 +131,9 @@ progress under the approved parents. Hosted CI has not run.
   secret names.
 - `_workspace/README.md`: agent audience entry removed.
 - `README.md`: pointer to `AGENTS.md` for agent working rules.
+- `docs/01.requirements/0023-standardize-infra-net.md`: FR-0002 named
+  exception (version 1.2.0).
+- `docs/99.templates/registry.json`: `spec` high-water 255, `next_number` 256.
 
 ### Open issues
 
@@ -135,7 +146,6 @@ progress under the approved parents. Hosted CI has not run.
 - `infra/09-platform-ops/README.md:36-37` agent audience entries.
 - Registry `root_exceptions` (SPEC-0123 path) and `inventory_excludes`
   (AUD-0023 path) point at missing files (SPEC-0252 edits the Registry).
-- The Registry Spec high-water for SPEC-0255.
 - Secret names with no owning secret list: the oauth2-proxy, airflow and n8n
   monitor ACL overlays; `dev-db` admin, platform and inspector names; the
   RedisInsight inspector names; four SeaweedFS keys; `grafana_reader_password`;
@@ -146,9 +156,6 @@ progress under the approved parents. Hosted CI has not run.
 
 #### Other
 
-- REQ-0023-FR-0002 requires every subnet to be a `10.250.x.0/24` in the root
-  Compose, while the leaf-owned `crawl4ai_egress_net` is a `/29` in its own
-  file. The requirement or the network needs a decision.
 - ADR-0040:28-29 names the retired `service_valkey_password` inside an
   accepted decision; left as history.
 
@@ -163,6 +170,10 @@ progress under the approved parents. Hosted CI has not run.
 | E5 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py`, same tree | PASS | lifecycle zero, occupancy zero | required | - |
 | E6 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, same tree | PASS | operations catalog PASS; every link mode PASS | required | - |
 | E7 | 4 | W4 | hosted-ci | GitHub Actions | NOT_RUN | branch not pushed | required | - |
+| E8 | 4 | W4 | metadata-changed | `check-changed --base-ref origin/main` after the rebase onto 46a7811dd (PR #729) with the Spec allocation and REQ-0023 edits, uncommitted on 1d8d35205 | PASS | selected 27, zero violations | required | E3 |
+| E9 | 4 | W4 | metadata-active | `check-active`, same tree | PASS | selected 497, zero violations | required | - |
+| E10 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py`, same tree | PASS | lifecycle zero, occupancy zero | required | - |
+| E11 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, same tree | PASS | operations catalog PASS; every link mode PASS | required | - |
 
 ## Criterion Acceptance
 

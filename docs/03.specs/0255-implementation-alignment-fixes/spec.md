@@ -45,10 +45,12 @@ the first audits did not check be handled.
 - The SonarQube README credential key and the POL-0021 management database
   list.
 - Small provenance, audience and Related Documents corrections.
+- The REQ-0023-FR-0002 egress-isolation exception the user decided.
 
 ### Out of Scope
 
-- Files edited by open branches: the Registry and schemas, infra README
+- Files edited by open branches: the Registry and schemas (except the Spec
+  allocation counters), infra README
   operations paths, `.github/**`, hook scripts, Stage 01–03 lifecycle
   statuses, ADR-0011, ADR-0002 and folder AGENTS.md files.
 - Rewriting accepted ADR decision bodies and terminal Task bodies.
