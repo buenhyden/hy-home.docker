@@ -25,15 +25,15 @@ networks:
   lab_sonarqube_net:
     name: hy-home-lab-sonarqube
 
-# Secret files keep their canonical root paths; no value moves with the LAB.
+# LAB-only secrets under LAB_SECRET_DIR; no root value is shared. Each mounts
+# at its original /run/secrets name, which the LAB scripts read.
 secrets:
-  sonarqube_db_password:
-    file: ../secrets/db/mng-pg/sonarqube_password.txt
+  lab_sonarqube_db_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/sonarqube/db_password.txt
 
 services:
   sonarqube:
     profiles:
-      - 'tooling'
       - sast
     extends: { file: ../infra/common-optimizations.yml, service: template-stateful-high }
     image: sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8
@@ -62,7 +62,9 @@ services:
       - sonarqube-logs-volume:/opt/sonarqube/logs:rw
     networks:
       lab_sonarqube_net: {}
-    secrets: [sonarqube_db_password]
+    secrets:
+      - source: lab_sonarqube_db_password
+        target: sonarqube_db_password
     # The image reads only SONAR_JDBC_PASSWORD, not a _FILE form
     # (infra/secret-file-support.json); export it from the secret and keep the
     # image entrypoint.

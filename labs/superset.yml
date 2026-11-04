@@ -9,7 +9,7 @@ x-tier-label: &tier-label
 
 x-superset-common: &superset-common
   profiles:
-    - bi
+    - lab-superset
   build:
     context: ./superset
     dockerfile: Dockerfile
@@ -29,9 +29,12 @@ x-superset-common: &superset-common
     - ./superset/superset_config.py:/app/pythonpath/superset_config.py:ro
     - ${LAB_SUPERSET_CA_FILE:?set the HOME root CA certificate file}:/etc/ssl/certs/hy-home-rootCA.pem:ro
   secrets:
-    - superset_secret_key
-    - superset_db_password
-    - superset_oidc_client_secret
+    - source: lab_superset_secret_key
+      target: superset_secret_key
+    - source: lab_superset_db_password
+      target: superset_db_password
+    - source: lab_superset_oidc_client_secret
+      target: superset_oidc_client_secret
   networks:
     lab_superset_net: {}
   labels:
@@ -41,22 +44,23 @@ networks:
   lab_superset_net:
     name: hy-home-lab-superset
 
-# Secret files keep their canonical root paths; no value moves with the LAB.
+# LAB-only secrets under LAB_SECRET_DIR; no root value is shared. Each mounts
+# at its original /run/secrets name, which the LAB scripts read.
 secrets:
-  mng_postgres_password:
-    file: ../secrets/db/mng-pg/mng_password.txt
-  superset_db_password:
-    file: ../secrets/db/mng-pg/superset_password.txt
-  superset_secret_key:
-    file: ../secrets/tools/superset/superset_secret_key.txt
-  superset_oidc_client_secret:
-    file: ../secrets/auth/superset/superset_oidc_client_secret.txt
+  lab_superset_mng_postgres_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/mng_postgres_password.txt
+  lab_superset_db_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/db_password.txt
+  lab_superset_secret_key:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/secret_key.txt
+  lab_superset_oidc_client_secret:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/oidc_client_secret.txt
 
 services:
   # Feature-owned metadata database provisioning on the configured mng-pg.
   superset-db-provision:
     profiles:
-      - bi
+      - lab-superset
     extends:
       file: ../infra/common-optimizations.yml
       service: template-job-low
@@ -83,8 +87,10 @@ services:
       - ../infra/04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
       - ./superset/provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
     secrets:
-      - mng_postgres_password
-      - superset_db_password
+      - source: lab_superset_mng_postgres_password
+        target: mng_postgres_password
+      - source: lab_superset_db_password
+        target: superset_db_password
     networks:
       lab_superset_net: {}
     labels:

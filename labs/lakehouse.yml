@@ -20,7 +20,7 @@ x-lakehouse-env: &lakehouse-env
 
 x-flink-common: &flink-common
   profiles:
-    - lakehouse
+    - lab-lakehouse
   build:
     context: ./lakehouse/flink
     dockerfile: Dockerfile
@@ -40,7 +40,8 @@ x-flink-common: &flink-common
     # JobManager and TaskManager must see the same path for file checkpoints.
     - flink-checkpoints:/opt/flink/checkpoints
   secrets:
-    - seaweedfs_s3_lakehouse_secret_key
+    - source: lab_lakehouse_s3_lakehouse_secret_key
+      target: seaweedfs_s3_lakehouse_secret_key
   depends_on:
     seaweedfs-table-bucket:
       condition: service_completed_successfully
@@ -62,18 +63,19 @@ networks:
   lab_lakehouse_net:
     name: hy-home-lab-lakehouse
 
-# Secret files keep their canonical root paths; no value moves with the LAB.
+# LAB-only secrets under LAB_SECRET_DIR; no root value is shared. Each mounts
+# at its original /run/secrets name, which the LAB scripts read.
 secrets:
-  seaweedfs_s3_admin_secret_key:
-    file: ../secrets/storage/seaweedfs/seaweedfs_s3_admin_secret_key.txt
-  seaweedfs_s3_lakehouse_secret_key:
-    file: ../secrets/storage/seaweedfs/seaweedfs_s3_lakehouse_secret_key.txt
+  lab_lakehouse_s3_admin_secret_key:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/lakehouse/s3_admin_secret_key.txt
+  lab_lakehouse_s3_lakehouse_secret_key:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/lakehouse/s3_lakehouse_secret_key.txt
 
 services:
   # Iceberg table bucket, its policy and namespaces on the configured endpoint.
   seaweedfs-table-bucket:
     profiles:
-      - lakehouse
+      - lab-lakehouse
     extends:
       file: ../infra/common-optimizations.yml
       service: template-job-low
@@ -92,7 +94,8 @@ services:
     volumes:
       - ./lakehouse/seaweedfs-table-bucket.sh:/opt/hyhome/seaweedfs-table-bucket.sh:ro
     secrets:
-      - seaweedfs_s3_admin_secret_key
+      - source: lab_lakehouse_s3_admin_secret_key
+        target: seaweedfs_s3_admin_secret_key
     networks:
       lab_lakehouse_net: {}
     labels:
@@ -103,7 +106,7 @@ services:
   # explicit `docker compose -f labs/lakehouse.yml run --rm spark spark-sql ...`.
   spark:
     profiles:
-      - lakehouse
+      - lab-lakehouse
     extends:
       file: ../infra/common-optimizations.yml
       service: template-job-med
@@ -131,7 +134,8 @@ services:
     volumes:
       - ./lakehouse/spark/hyhome-spark.sh:/opt/hyhome/hyhome-spark.sh:ro
     secrets:
-      - seaweedfs_s3_lakehouse_secret_key
+      - source: lab_lakehouse_s3_lakehouse_secret_key
+        target: seaweedfs_s3_lakehouse_secret_key
     depends_on:
       seaweedfs-table-bucket:
         condition: service_completed_successfully
@@ -144,7 +148,7 @@ services:
   # tables in the REST catalog, with the same scoped identity as Spark.
   trino:
     profiles:
-      - lakehouse
+      - lab-lakehouse
     extends:
       file: ../infra/common-optimizations.yml
       service: template-infra-readonly-high
@@ -171,7 +175,8 @@ services:
       - ./lakehouse/trino/hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro
       - ./lakehouse/trino/catalog/lakehouse.properties:/etc/trino/catalog/lakehouse.properties:ro
     secrets:
-      - seaweedfs_s3_lakehouse_secret_key
+      - source: lab_lakehouse_s3_lakehouse_secret_key
+        target: seaweedfs_s3_lakehouse_secret_key
     # Plain HTTP without authentication: loopback only, no gateway route.
     ports:
       - '127.0.0.1:${LAB_TRINO_HOST_PORT:-18090}:8080'
@@ -195,7 +200,7 @@ services:
   # which reads tables and exits 1 when an expectation fails.
   great-expectations:
     profiles:
-      - lakehouse
+      - lab-lakehouse
     extends:
       file: ../infra/common-optimizations.yml
       service: template-job-med

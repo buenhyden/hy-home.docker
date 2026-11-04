@@ -21,10 +21,11 @@ networks:
   lab_jupyterlab_net:
     name: hy-home-lab-jupyterlab
 
-# Secret files keep their canonical root paths; no value moves with the LAB.
+# LAB-only secrets under LAB_SECRET_DIR; no root value is shared. Each mounts
+# at its original /run/secrets name, which the LAB scripts read.
 secrets:
-  jupyter_token:
-    file: ../secrets/tools/jupyterlab/jupyter_token.txt
+  lab_jupyterlab_token:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/jupyterlab/token.txt
 
 services:
   jupyterlab:
@@ -47,7 +48,8 @@ services:
       MLFLOW_TRACKING_URI: '${LAB_JUPYTERLAB_MLFLOW_TRACKING_URI:-}'
       JUPYTER_PORT: '8888'
     secrets:
-      - jupyter_token
+      - source: lab_jupyterlab_token
+        target: jupyter_token
     # Jupyter Server reads JUPYTER_TOKEN; an empty token would leave kernels,
     # terminals and the REST API open to every client of the published port.
     command:

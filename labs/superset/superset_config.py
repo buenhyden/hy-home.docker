@@ -2,8 +2,8 @@
 
 Secrets come from Docker secret files, never the environment or a URI:
 the signing key, the metadata database password and the Keycloak client
-secret. Keycloak is reached through Traefik (`keycloak.${DEFAULT_URL}` is a
-Traefik alias on edge_net), so the local root CA is added to the CA bundle.
+secret. Keycloak is reached through its gateway name `keycloak.${DEFAULT_URL}`
+(the LAB joins no HOME network), so the local root CA is added to the bundle.
 """
 
 import os

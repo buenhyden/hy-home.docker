@@ -1,10 +1,10 @@
 ---
 title: "품질 계층 (11-quality)"
-version: "0.2.1"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 created: "2026-10-01"
 ---
 
@@ -13,7 +13,7 @@ created: "2026-10-01"
 ## Overview
 
 소프트웨어·설정·계약·성능과 테스트 메일을 검증하는 패키지를 모았습니다.
-데이터 품질 검증인 Great Expectations는 [12 Analytics](../12-analytics/README.md)에
+데이터 품질 검증인 Great Expectations는 [lakehouse LAB](../../labs/lakehouse.yml)에
 남습니다. 폴더 이름은 profile·기동 순서·network 격리를 대신하지 않습니다.
 
 ## Audience
@@ -28,8 +28,9 @@ created: "2026-10-01"
   journal을 제거합니다.
 - [Pact Broker](pact-broker/README.md)는 pact와 검증 결과를 기능 전용 management
   DB에 저장합니다.
-- [SonarQube](sonarqube/README.md), [Conftest](conftest/README.md),
-  [Mailpit](mailpit/README.md)은 각 package 문서의 권한·상태 경계를 따릅니다.
+- [Conftest](conftest/README.md), [Mailpit](mailpit/README.md)은 각 package 문서의
+  권한·상태 경계를 따릅니다. SonarQube는 독립 [LAB](../../labs/sonarqube.yml)으로
+  옮겼습니다(SPEC-0262).
 
 ## Structure
 
@@ -38,7 +39,6 @@ created: "2026-10-01"
 ├── k6/
 ├── wiremock/
 ├── pact-broker/
-├── sonarqube/
 ├── conftest/
 └── mailpit/
 ~~~
@@ -50,7 +50,6 @@ created: "2026-10-01"
 | [k6](k6/) | **testing** | root는 비트래픽 버전 확인; 승인된 격리 runner가 부하 실행 |
 | [wiremock](wiremock/) | **api-mock**, load override | 한 Compose model에 기능·부하 중 한 모드만 존재 |
 | [pact-broker](pact-broker/) | **contract-testing** | 기능 전용 DB provisioner와 Broker |
-| [sonarqube](sonarqube/) | **tooling**, **sast** | management DB와 data·log volume |
 | [conftest](conftest/) | **policy-check** | 읽기 전용 infra 검증, network 없음 |
 | [mailpit](mailpit/) | **dev**, **local**, **mail-dev** | 테스트 메시지 SQLite capture |
 

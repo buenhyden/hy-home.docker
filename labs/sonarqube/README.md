@@ -1,6 +1,6 @@
 ---
 title: "SonarQube Code Quality"
-version: "1.0.6"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -11,11 +11,17 @@ created: "2025-11-12"
 <!-- [ID:11-quality:sonarqube] -->
 # SonarQube Code Quality
 
-> 지속적인 코드 품질 검사 및 보안 스캐닝입니다.
+> 지속적인 코드 품질 검사 및 보안 스캐닝 LAB입니다.
 
 ## Overview
 
-SonarQube는 정적 애플리케이션 보안 테스트(SAST)와 코드 품질 지표를 제공합니다. 플랫폼의 PostgreSQL 관리 데이터베이스와 통합해 데이터를 영속화하고 안전한 외부 접근에는 Traefik을 사용합니다.
+SonarQube는 정적 애플리케이션 보안 테스트(SAST)와 코드 품질 지표를 제공합니다.
+독립 Compose project인 [SonarQube LAB](../sonarqube.yml)(`sast` profile)이며 root
+Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traefik route도 없습니다. UI는
+`${LAB_HOST_BIND_IP}:${LAB_SONARQUBE_HOST_PORT:-18094}`에만 게시됩니다. 데이터베이스는
+`LAB_SONARQUBE_DB_HOST`가 가리키는 mng-pg이며 HOME `mng-pg-init`이 `sonarqube` role을
+계속 프로비저닝합니다. HOME은 mng-pg를 LAB network에 게시하지 않으므로 owner가
+endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 
 ## Audience
 
@@ -30,39 +36,40 @@ SonarQube는 정적 애플리케이션 보안 테스트(SAST)와 코드 품질 �
 ### In Scope
 
 - SonarQube Community Edition 서비스.
-- 외부 관리 PostgreSQL과의 통합.
+- 승인된 외부 PostgreSQL endpoint와의 통합.
 - ElasticSearch 기반 검색 인덱스 관리.
-- Traefik 라우팅 설정.
 
 ### Out of Scope
 
 - CI/CD 파이프라인 구현 (개별 프로젝트 저장소에서 관리).
-- 관리 데이터베이스 수명주기 (`04-data`에서 관리).
+- 관리 데이터베이스 수명주기 (HOME `04-data`에서 관리).
+- Traefik route와 게이트웨이 SSO.
 - SonarLint IDE 설정 (클라이언트 측).
 
 ## Structure
 
 ```text
 sonarqube/
-├── README.md           # This file
-└── docker-compose.yml  # Service definition
+└── README.md           # This file
 ```
+
+서비스 정의는 [labs/sonarqube.yml](../sonarqube.yml)이 소유합니다.
 
 ## Tech Stack
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | SonarQube Community Build | 런타임 이미지는 [Compose](docker-compose.yml)에만 선언됨 |
-| **Database** | PostgreSQL | 관리용 클러스터 |
-| **Network** | Traefik | SSL 종료 |
-| **Storage** | Bind Mount | `${DEFAULT_TOOLING_DIR}/sonarqube` |
+| **Service** | SonarQube Community Build | 런타임 이미지는 [Compose](../sonarqube.yml)에만 선언됨 |
+| **Database** | PostgreSQL | `LAB_SONARQUBE_DB_HOST`의 승인된 endpoint |
+| **Network** | `lab_sonarqube_net` | HOME network·Traefik 없음 |
+| **Storage** | Bind Mount | `${LAB_DATA_DIR}/sonarqube/{data,logs}` |
 
 현재 Community Build 후보는 공식 공급자의 같은 연도 직접 업그레이드 경로,
 PostgreSQL 지원 범위와 producer entrypoint를 대조해 소스로 준비합니다. JDBC
-password를 secret에서 내보내는 wrapper·기존 DB/volume·network·Java 옵션을
-유지합니다. 새 후보의 DB migration·plugin·OIDC·health 실행과 backup·복원은
-아직 인수하지 않았습니다. 이미 DB/schema가 바뀐 경우에는 image tag 하향만으로
-복구하지 않으며 소유자의 검증된 backup·복원 절차가 필요합니다.
+password를 secret에서 내보내는 wrapper·Java 옵션을 유지합니다. 새 후보의 DB
+migration·plugin·OIDC·health 실행과 backup·복원은 아직 인수하지 않았습니다. 이미
+DB/schema가 바뀐 경우에는 image tag 하향만으로 복구하지 않으며 소유자의 검증된
+backup·복원 절차가 필요합니다.
 
 ## Configuration
 
@@ -70,35 +77,43 @@ password를 secret에서 내보내는 wrapper·기존 DB/volume·network·Java �
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
-| `SONARQUBE_PORT` | No | 리스닝 포트(기본값: 9000). |
-| `SONARQUBE_DBNAME` | Yes | 대상 데이터베이스 이름. |
-| `SONARQUBE_DB_USER` | Yes | 데이터베이스 사용자명. |
+| `LAB_SONARQUBE_DB_HOST` | Yes | 승인된 mng-pg endpoint host. 비어 있으면 render가 거부됩니다. |
+| `LAB_SONARQUBE_DB_PORT` | No | DB 포트(기본값: 5432). |
+| `LAB_SONARQUBE_DB_NAME` | No | 대상 데이터베이스 이름(기본값: sonarqube). |
+| `LAB_SONARQUBE_DB_USER` | No | 데이터베이스 사용자명(기본값: sonarqube). |
+| `LAB_SONARQUBE_HOST_PORT` | No | UI 호스트 포트(기본값: 18094). |
+| `LAB_DATA_DIR` | Yes | 격리된 LAB data root. |
 
 ## Available Scripts
 
-저장소 루트에서 다음 읽기 전용 확인 명령을 실행합니다. SonarQube를 시작하거나 변경하려면 런타임 승인이 필요합니다.
+아래 `LAB`은 저장소 루트에서
+`docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast`입니다.
+`config`는 render만 합니다. 컨테이너를 시작하는 명령은
+`python3 scripts/operations/lab.py check|up|down sonarqube`의 lease 규칙
+([LAB 안내](../README.md#usage))을 따릅니다.
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile sast config --services` | 선택된 root-project 서비스를 확인합니다. |
-| `docker compose --profile sast logs --tail=200 sonarqube` | 승인된 실행 중인 SonarQube 서비스를 점검합니다. |
+| `LAB config --services` | 선택된 LAB 서비스를 확인합니다(render-only). |
+| `LAB logs --tail=200 sonarqube` | 활성 lease 안에서 실행 중인 SonarQube를 점검합니다. |
 
 ## Validation
 
-- SonarQube에 영향을 주는 README나 Compose 참조를 변경한 후에는 `bash scripts/hardening/check-all-hardening.sh 11-quality`을 실행합니다.
-- SonarQube 문서를 준비 완료로 표시하기 전에 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
+- `docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast config --quiet`
+- `python3 -m unittest tests.validation.test_lab_isolation`
 
 ## Troubleshooting
 
-- SonarQube DB, 네트워크, 시크릿 참조가 계속 선언되어 있는지 hardening 점검으로 먼저 확인합니다.
+- render가 거부되면 `LAB_SONARQUBE_DB_HOST`, `LAB_DATA_DIR`, LAB secret 파일 경로를 먼저 확인합니다.
 - 데이터베이스나 quality-gate 설정을 변경하기 전에 SonarQube 로그와 연결된 런북을 확인합니다.
 
 ## Related Documents
 
-- **Guide**: SonarQube Guide (`docs/05.operations/guides/12-testing-and-quality/0066-sonarqube.md`)
-- **Policy**: SonarQube Operations (`docs/05.operations/policies/12-testing-and-quality/0066-sonarqube.md`)
-- **Runbook**: SonarQube Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0066-sonarqube.md`)
-- [Documentation index](../../../docs/README.md)
+- **Guide**: SonarQube Guide (`docs/05.operations/guides/15-labs/0066-sonarqube.md`)
+- **Policy**: SonarQube Operations (`docs/05.operations/policies/15-labs/0066-sonarqube.md`)
+- **Runbook**: SonarQube Runbook (`docs/05.operations/runbooks/15-labs/0066-sonarqube.md`)
+- [LAB 탐색](../README.md)
+- [Documentation index](../../docs/README.md)
 
 ---
 
@@ -106,25 +121,25 @@ password를 secret에서 내보내는 wrapper·기존 DB/volume·network·Java �
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | `11-quality`의 SonarQube Code Quality 서비스 leaf; 서비스: `sonarqube`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-quality/sonarqube/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
-| Config files | `docker-compose.yml` |
-| Config values | env 키: `SONAR_JDBC_URL`, `SONAR_JDBC_USERNAME`, `SONAR_JDBC_PASSWORD`(entrypoint가 secret `sonarqube_db_password`에서 export; image는 `_FILE` 형식을 읽지 않음), `SONAR_WEB_JAVAOPTS`, `SONAR_SEARCH_JAVAOPTS`; 프로필: `tooling`, `sast` |
-| Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-quality/sonarqube/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
-| Networks | `edge_net`, `mng_data_net` |
-| Volumes | `sonarqube-data-volume:/opt/sonarqube/data:rw`, `sonarqube-logs-volume:/opt/sonarqube/logs:rw`, `sonarqube-data-volume`, `sonarqube-logs-volume` |
-| Ports | `${SONARQUBE_PORT:-9000}` |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.sonarqube.rule`, `traefik.http.routers.sonarqube.entrypoints`, `traefik.http.routers.sonarqube.tls`, `traefik.http.routers.sonarqube.middlewares`, `traefik.http.services.sonarqube.loadbalancer.server.port` |
-| Secret refs | 이름: `sonarqube_db_password`; 마운트: `/run/secrets/sonarqube_db_password` |
-| Healthcheck | `sonarqube`에 Compose 헬스체크가 선언되어 있음 |
-| Operations | Guide (`docs/05.operations/guides/12-testing-and-quality/0066-sonarqube.md`), Policy (`docs/05.operations/policies/12-testing-and-quality/0066-sonarqube.md`), Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0066-sonarqube.md`) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | hardening 점검으로 시작한 뒤 승인된 런타임 컨텍스트에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
+| Purpose | SonarQube LAB; 서비스: `sonarqube` |
+| Config files | [labs/sonarqube.yml](../sonarqube.yml) |
+| Config values | env 키: `SONAR_JDBC_URL`, `SONAR_JDBC_USERNAME`, `SONAR_JDBC_PASSWORD`(entrypoint가 secret `sonarqube_db_password`에서 export; image는 `_FILE` 형식을 읽지 않음), `SONAR_WEB_JAVAOPTS`, `SONAR_SEARCH_JAVAOPTS`; 프로필: `sast` |
+| Compose linkage | 독립 Compose project `hy-home-lab-sonarqube`; root include 없음 |
+| Networks | `lab_sonarqube_net`(`hy-home-lab-sonarqube`); HOME network 없음 |
+| Volumes | `sonarqube-data-volume`(`${LAB_DATA_DIR}/sonarqube/data`) -> `/opt/sonarqube/data`, `sonarqube-logs-volume`(`${LAB_DATA_DIR}/sonarqube/logs`) -> `/opt/sonarqube/logs` |
+| Ports | `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}:9000` |
+| Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
+| Secret refs | `${LAB_SECRET_DIR}/sonarqube/db_password.txt`의 `lab_sonarqube_db_password`; 마운트: `/run/secrets/sonarqube_db_password` |
+| Healthcheck | `/api/system/health` |
+| Operations | Guide (`docs/05.operations/guides/15-labs/0066-sonarqube.md`), Policy (`docs/05.operations/policies/15-labs/0066-sonarqube.md`), Runbook (`docs/05.operations/runbooks/15-labs/0066-sonarqube.md`) |
+| Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
+| Troubleshooting | render로 시작한 뒤 활성 lease 안에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
 ## Usage
 
-1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
+1. [labs/sonarqube.yml](../sonarqube.yml)과 [LAB 안내](../README.md)를 먼저 확인한다.
 2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
-런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
+런타임 고정 값은 Compose 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../infra/tech-stack.versions.json)으로 드리프트를 검증합니다.

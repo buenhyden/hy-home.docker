@@ -11,12 +11,13 @@ networks:
   lab_dbt_net:
     name: hy-home-lab-dbt
 
-# Secret files keep their canonical root paths; no value moves with the LAB.
+# LAB-only secrets under LAB_SECRET_DIR; no root value is shared. Each mounts
+# at its original /run/secrets name, which the LAB scripts read.
 secrets:
-  dev_pg_admin_password:
-    file: ../secrets/db/dev-pg/admin_password.txt
-  dbt_db_password:
-    file: ../secrets/db/dev-pg/dbt_password.txt
+  lab_dbt_dev_pg_admin_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/dbt/dev_pg_admin_password.txt
+  lab_dbt_db_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/dbt/db_password.txt
 
 services:
   # Feature-owned analytics role on the explicit internal development fixture.
@@ -24,7 +25,7 @@ services:
   # creates; run that first in HOME.
   dbt-db-provision:
     profiles:
-      - analytics-engineering
+      - lab-dbt
     extends:
       file: ../infra/common-optimizations.yml
       service: template-job-low
@@ -54,8 +55,10 @@ services:
       - ../infra/04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
       - ./dbt/provisioning/dev-pg.sql:/provision/dev-pg.sql:ro
     secrets:
-      - dev_pg_admin_password
-      - dbt_db_password
+      - source: lab_dbt_dev_pg_admin_password
+        target: dev_pg_admin_password
+      - source: lab_dbt_db_password
+        target: dbt_db_password
     networks:
       lab_dbt_net: {}
     labels:
@@ -66,7 +69,7 @@ services:
   # database, while `run`, `build` and `--full-refresh` write to DBT_SCHEMA.
   dbt:
     profiles:
-      - analytics-engineering
+      - lab-dbt
     extends:
       file: ../infra/common-optimizations.yml
       service: template-job-med
@@ -88,7 +91,8 @@ services:
       DBT_SOURCE_SCHEMA: app
       DBT_THREADS: '${LAB_DBT_THREADS:-4}'
     secrets:
-      - dbt_db_password
+      - source: lab_dbt_db_password
+        target: dbt_db_password
     # Project and profiles are read-only; target/, logs/ and packages live on
     # the job's /tmp tmpfs (see dbt_project.yml) and vanish with the container.
     volumes:

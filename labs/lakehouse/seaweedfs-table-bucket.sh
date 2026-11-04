@@ -1,14 +1,14 @@
 #!/bin/bash
-# Iceberg table bucket for the REST catalog (SPEC-0180 S12), only under the
-# lakehouse profile so the object-bucket job other profiles wait on never
-# depends on the S3 Tables API. Admin owns the bucket; the policy grants the
+# Iceberg table bucket for the REST catalog (SPEC-0180 S12), run only by the
+# lakehouse LAB (SPEC-0262) so the HOME object-bucket job never depends on the
+# S3 Tables API. Admin owns the bucket; the policy grants the
 # table identity the catalog and table actions an engine needs, and neither
 # policy changes nor bucket deletion. That identity's S3 actions are scoped to
 # the same bucket in s3-identities.conf. Every run rewrites the policy.
 set -euo pipefail
 secret=/run/secrets/seaweedfs_s3_admin_secret_key
 [[ -f "$secret" && ! -L "$secret" ]] || { echo "seaweedfs-table-bucket: admin secret missing" >&2; exit 64; }
-[[ -n "${AWS_ACCESS_KEY_ID:-}" ]] || { echo "seaweedfs-table-bucket: SEAWEEDFS_S3_ADMIN_ACCESS_KEY unset" >&2; exit 64; }
+[[ -n "${AWS_ACCESS_KEY_ID:-}" ]] || { echo "seaweedfs-table-bucket: LAB_LAKEHOUSE_S3_ADMIN_ACCESS_KEY unset" >&2; exit 64; }
 AWS_SECRET_ACCESS_KEY="$(tr -d '\r\n' <"$secret")"
 [[ -n "$AWS_SECRET_ACCESS_KEY" ]] || { echo "seaweedfs-table-bucket: admin secret empty" >&2; exit 64; }
 export AWS_SECRET_ACCESS_KEY

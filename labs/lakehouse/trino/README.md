@@ -1,6 +1,6 @@
 ---
 title: "Trino (Iceberg)"
-version: "1.0.4"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -11,14 +11,16 @@ created: "2026-09-23"
 <!-- [ID:04-data:lakehouse-trino] -->
 # Trino (Iceberg)
 
-> SeaweedFS REST catalog의 Iceberg table에 대한 on-demand OPTIONAL 단일 노드 SQL 엔진입니다.
+> 승인된 Iceberg REST catalog의 table에 대한 lakehouse LAB의 on-demand 단일 노드 SQL 엔진입니다.
 
 ## Overview
 
-Trino는 `lakehouse` profile로 선택되는 **OPTIONAL** SQL engine입니다.
-coordinator 한 개가 작업도 실행하며 catalog `lakehouse`는 Spark와 같은
-SeaweedFS Iceberg REST catalog(`seaweedfs-s3:8181`)와 `lakehouse` S3 identity를
-사용합니다. HTTP API에 인증이 없으므로 `127.0.0.1`에만 게시하고 route는 없습니다.
+Trino는 독립 Compose project인 [lakehouse LAB](../../lakehouse.yml)
+(`lab-lakehouse` profile)의 SQL engine입니다. coordinator 한 개가 작업도 실행하며
+catalog `lakehouse`는 Spark와 같은 `LAB_LAKEHOUSE_CATALOG_URI` catalog와 `lakehouse`
+S3 identity를 사용합니다. HOME network에 연결되지 않고, HTTP API에 인증이 없으므로
+`127.0.0.1`에만 게시하며 Traefik route는 없습니다. HOME은 SeaweedFS를 LAB network에
+게시하지 않으므로 owner가 endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 
 ## Audience
 
@@ -44,19 +46,20 @@ SeaweedFS Iceberg REST catalog(`seaweedfs-s3:8181`)와 `lakehouse` S3 identity�
 ```text
 trino/
 ├── README.md                   # 이 파일
-├── docker-compose.yml          # 단일 노드 서비스
 ├── hyhome-trino.sh             # secret을 export한 뒤 Trino를 시작함
 └── catalog/
     └── lakehouse.properties    # Iceberg REST catalog(SigV4)와 native S3
 ```
 
+서비스 정의는 [labs/lakehouse.yml](../../lakehouse.yml)이 소유합니다.
+
 ## Tech Stack
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Engine** | Trino(버전은 `docker-compose.yml`) | 단일 노드, 2 CPU, 2 GiB, heap 80% |
-| **Catalog** | SeaweedFS Iceberg REST | SigV4(`signing-name=s3`), view endpoint 꺼짐 |
-| **Storage** | SeaweedFS S3 | Native S3 파일 시스템, path-style |
+| **Engine** | Trino(버전은 `labs/lakehouse.yml`) | 단일 노드, 2 CPU, 2 GiB, heap 80% |
+| **Catalog** | Iceberg REST(`LAB_LAKEHOUSE_CATALOG_URI`) | SigV4(`signing-name=s3`), view endpoint 꺼짐 |
+| **Storage** | S3(`LAB_LAKEHOUSE_S3_ENDPOINT`) | Native S3 파일 시스템, path-style |
 
 ## Configuration
 
@@ -64,20 +67,28 @@ trino/
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
-| `TRINO_HOST_PORT` | No | HTTP API용 loopback 호스트 포트(기본값: 18090). |
-| `SEAWEEDFS_ICEBERG_PORT` | No | `seaweedfs-s3`의 REST catalog 포트(기본값: 8181). |
+| `LAB_TRINO_HOST_PORT` | No | HTTP API용 loopback 호스트 포트(기본값: 18090). |
+| `LAB_LAKEHOUSE_CATALOG_URI` | Yes | 승인된 Iceberg REST catalog endpoint. |
+| `LAB_LAKEHOUSE_S3_ENDPOINT` | Yes | 승인된 S3 endpoint. |
 
-Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
-`lakehouse`입니다. catalog 파일은 둘 다 `${ENV:…}`를 통해 읽습니다.
+Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전용
+`lab_lakehouse_s3_lakehouse_secret_key`이며
+`/run/secrets/seaweedfs_s3_lakehouse_secret_key`로 마운트됩니다. access key ID는
+`lakehouse`입니다. catalog 파일은 둘 다 `${ENV:…}`를 통해 읽습니다. HOME 값을
+복사하려면 별도 승인이 필요합니다.
 
 ## Available Scripts
 
-서비스 시작에는 runtime 승인이 필요합니다.
+아래 `LAB`은 저장소 루트에서
+`docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse`입니다.
+`config`는 render만 합니다. 컨테이너를 시작하는 명령은
+`python3 scripts/operations/lab.py check|up|down lakehouse`의 lease 규칙
+([LAB 안내](../../README.md#usage))을 따릅니다.
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile lakehouse up -d trino` | 엔진 시작(아무것도 쓰지 않음). |
-| `docker compose exec trino trino --execute "SHOW SCHEMAS FROM lakehouse"` | catalog 접근 증명. |
+| `LAB up -d trino` | 엔진 시작; dependency table-bucket provisioning 가능. |
+| `LAB exec trino trino --execute "SHOW SCHEMAS FROM lakehouse"` | catalog 접근 증명. |
 
 2026-10-26에는 장부의 공식 후보 이미지와 공식 launcher 명령으로 소스를
 준비했습니다. 기존 secret wrapper, catalog, 환경 변수 참조와 S3 속성 alias를
@@ -88,8 +99,8 @@ Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
 
 ## Validation
 
-- `HYHOME_COMPOSE_PROFILES=lakehouse bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests`
+- `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse config --quiet`
+- `python3 -m unittest tests.validation.test_lab_isolation`
 
 ## Troubleshooting
 
@@ -99,9 +110,10 @@ Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
 
 ## Related Documents
 
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0094-lakehouse.md`)
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
+- [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
 
 ---
@@ -110,19 +122,19 @@ Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | `12-analytics`의 Trino leaf; services: `trino`; [root docker-compose.yml](../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/12-analytics/trino/docker-compose.yml` |
-| Config files | `docker-compose.yml`, `hyhome-trino.sh`, `catalog/lakehouse.properties` |
-| Config values | profiles: `lakehouse` |
-| Compose linkage | [root docker-compose.yml](../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/12-analytics/trino/docker-compose.yml` |
-| Networks | `object_net` |
-| Volumes | `./hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro`, `./catalog/lakehouse.properties:/etc/trino/catalog/lakehouse.properties:ro` |
-| Ports | `127.0.0.1:${TRINO_HOST_PORT:-18090}:8080` |
-| Labels | `hy-home.tier` |
-| Secret refs | `seaweedfs_s3_lakehouse_secret_key` |
+| Purpose | lakehouse LAB의 Trino leaf; services: `trino` |
+| Config files | `hyhome-trino.sh`, `catalog/lakehouse.properties` |
+| Config values | profiles: `lab-lakehouse` |
+| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse.yml](../../lakehouse.yml)); root include 없음 |
+| Networks | `lab_lakehouse_net`(`hy-home-lab-lakehouse`); HOME network 없음 |
+| Volumes | `./lakehouse/trino/hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro`, `./lakehouse/trino/catalog/lakehouse.properties:/etc/trino/catalog/lakehouse.properties:ro` |
+| Ports | `127.0.0.1:${LAB_TRINO_HOST_PORT:-18090}:8080` |
+| Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
+| Secret refs | `lab_lakehouse_s3_lakehouse_secret_key` -> `seaweedfs_s3_lakehouse_secret_key` |
 | Healthcheck | `/usr/lib/trino/bin/health-check` |
-| Operations | Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md`), Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0094-lakehouse.md`) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | `SHOW SCHEMAS FROM lakehouse`를 실행한 뒤 runbook을 따름 |
+| Operations | Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`), Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`) |
+| Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
+| Troubleshooting | 활성 lease 안에서 `SHOW SCHEMAS FROM lakehouse`를 실행한 뒤 runbook을 따름 |
 
 ## Usage
 
@@ -130,5 +142,5 @@ Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
 2. Renovate가 이미지 tag를 갱신합니다.
 3. Table 삭제와 snapshot 만료는 named table과 기록된 사유가 있을 때만 실행합니다.
 
-런타임 이미지 권한은 [docker-compose.yml](docker-compose.yml)이 소유하며
-[derived Compose 이미지 투영](../../tech-stack.versions.json)은 drift 증거입니다.
+런타임 이미지 권한은 [labs/lakehouse.yml](../../lakehouse.yml)이 소유하며
+[derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.

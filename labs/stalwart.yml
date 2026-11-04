@@ -21,10 +21,11 @@ networks:
   lab_stalwart_net:
     name: hy-home-lab-stalwart
 
-# Secret files keep their canonical root paths; no value moves with the LAB.
+# LAB-only secrets under LAB_SECRET_DIR; no root value is shared. Each mounts
+# at its original /run/secrets name, which the LAB scripts read.
 secrets:
-  stalwart_password:
-    file: ../secrets/communication/stalwart/stalwart_password.txt
+  lab_stalwart_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/stalwart/password.txt
 
 services:
   # Mail server on the LAB network only. Containers on lab_stalwart_net submit
@@ -57,7 +58,8 @@ services:
       - ./stalwart/config/config.json:/etc/stalwart/config.json:ro
       - ./stalwart/config/start.sh:/opt/hyhome/start.sh:ro
     secrets:
-      - stalwart_password
+      - source: lab_stalwart_password
+        target: stalwart_password
     ports:
       - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_STALWART_HOST_PORT:-18093}:8080'
     healthcheck:
@@ -103,7 +105,8 @@ services:
       - ./stalwart/config/apply-plan.sh:/opt/hyhome/apply-plan.sh:ro
       - ./stalwart/config/plan.ndjson:/opt/hyhome/plan.ndjson:ro
     secrets:
-      - stalwart_password
+      - source: lab_stalwart_password
+        target: stalwart_password
     depends_on:
       stalwart:
         condition: service_healthy
