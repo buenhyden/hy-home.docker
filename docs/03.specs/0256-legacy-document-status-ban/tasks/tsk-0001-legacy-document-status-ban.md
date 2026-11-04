@@ -6,9 +6,9 @@ status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-04"
 layer: "specs"
-artifact_id: "SPEC-0255-TSK-0001"
+artifact_id: "SPEC-0256-TSK-0001"
 parent_ids:
-- "SPEC-0255-PLAN-0001"
+- "SPEC-0256-PLAN-0001"
 created: "2026-11-04"
 ---
 
@@ -45,10 +45,10 @@ progress under the approved parents. Hosted CI has not run.
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
-| SPEC-0255 | draft | approved | #current-contract-decision |
-| SPEC-0255-PLAN-0001 | draft | approved | #current-contract-decision |
-| SPEC-0255-TSK-0001 | draft | ready | #current-readiness-and-execution |
-| SPEC-0255-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0256 | draft | approved | #current-contract-decision |
+| SPEC-0256-PLAN-0001 | draft | approved | #current-contract-decision |
+| SPEC-0256-TSK-0001 | draft | ready | #current-readiness-and-execution |
+| SPEC-0256-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
 ### Removed states and keys
 
@@ -139,8 +139,9 @@ body begins with `status:`.
 - The `migration` and `tombstone` identity spaces keep their reserved numbers.
 - `archive_authorizations` remains for completed SPEC-0212-TSK-0012 and can go
   when that package is deleted.
-- SPEC-0253-TSK-0001 still notes that SPEC-0252 is claimed; this package was
-  renumbered to SPEC-0255 and 252 is unissued.
+- SPEC-0253-TSK-0001 still notes that SPEC-0252 is claimed. SPEC-0252 is
+  unissued; this package took SPEC-0256 because SPEC-0254 belongs to PR #733
+  and SPEC-0255 to PR #732.
 - The `sealed` status and `sealed-record` lifecycle are removed with the
   archive profiles; `_registered_section_findings` keeps an unused
   `changed_boundary` parameter.

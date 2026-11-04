@@ -1880,9 +1880,9 @@ class DocumentRegistryTests(unittest.TestCase):
             "docs/01.requirements/0012-laboratory.md",
             "docs/02.architecture/descriptions/0011-laboratory-architecture.md",
             "docs/02.architecture/decisions/0050-openbao-as-secrets-manager.md",
-            "docs/03.specs/0255-legacy-document-status-ban/spec.md",
-            "docs/03.specs/0255-legacy-document-status-ban/plan.md",
-            "docs/03.specs/0255-legacy-document-status-ban/tasks/"
+            "docs/03.specs/0256-legacy-document-status-ban/spec.md",
+            "docs/03.specs/0256-legacy-document-status-ban/plan.md",
+            "docs/03.specs/0256-legacy-document-status-ban/tasks/"
             "tsk-0001-legacy-document-status-ban.md",
         ):
             source = (ROOT / relative).read_text(encoding="utf-8")
@@ -1909,7 +1909,7 @@ class DocumentRegistryTests(unittest.TestCase):
         profiles = build_registry_profiles(load_registry())
         for relative in (
             "docs/01.requirements/0012-laboratory.md",
-            "docs/03.specs/0255-legacy-document-status-ban/spec.md",
+            "docs/03.specs/0256-legacy-document-status-ban/spec.md",
         ):
             source = (ROOT / relative).read_text(encoding="utf-8")
             for key in ("supersedes", "superseded_by"):

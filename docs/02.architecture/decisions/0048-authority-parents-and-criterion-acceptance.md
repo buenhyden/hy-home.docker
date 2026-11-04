@@ -106,7 +106,7 @@ completed archive", "the preserved copy") no longer applies. A ready package is
 deleted once its removal is approved, and its number is reserved.
 
 The `superseded` Spec and Plan status named in decision 1 and decision 4 no
-longer exists: SPEC-0255 removed it from the Stage 01 to 03 lifecycles. The
+longer exists: SPEC-0256 removed it from the Stage 01 to 03 lifecycles. The
 decision body above is unchanged.
 
 ## Related Documents
