@@ -68,10 +68,19 @@ def validate_replay(results, before, after, claimable):
     return {"replayed": len(results), "claimable": 0}
 
 
+def _run_id(line):
+    fields = line.split("|")
+    if fields[0] == "outbox" and len(fields) > 2:
+        return fields[2]
+    if fields[0] == "run" and len(fields) > 1:
+        return fields[1]
+    return None
+
+
 def validate_next_claim(before, after, fresh):
     row = _outbox(after).get(fresh)
     if (
-        tuple(line for line in after if fresh not in line) != tuple(before)
+        tuple(line for line in after if _run_id(line) != fresh) != tuple(before)
         or row is None
         or row[3] != "accepted_by_smtp"
         or row[4] != "1"
@@ -80,26 +89,64 @@ def validate_next_claim(before, after, fresh):
     return {"old_rows_unchanged": True, "fresh_accepted_first_attempt": True}
 
 
-_HELD = (
-    "data_started",
-    "body_held",
-    "session_open_at_stop",
-    "client_closed_after_stop",
+_HOLD_LINE = re.compile(
+    r"P05_HOLD (?:(DATA_STARTED)|BODY_HELD at=([0-9]{1,16})"
+    r"|CLIENT_CLOSED (?:after_body_ms=([0-9]{1,9})|before_body))"
 )
 
 
+def parse_hold(text):
+    """Closed facts from the hold endpoint's own log lines only."""
+    facts = {
+        "data_started": False,
+        "body_held_at_ms": None,
+        "closed_after_body_ms": None,
+    }
+    for line in str(text).splitlines():
+        if not line.startswith("P05_HOLD ") or line in {
+            "P05_HOLD LISTENING",
+        }:
+            continue
+        match = _HOLD_LINE.fullmatch(line)
+        if match is None:
+            raise RehearsalFailure("hold log line rejected")
+        started, held, closed = match.groups()
+        if (held and facts["body_held_at_ms"] is not None) or (
+            closed and facts["closed_after_body_ms"] is not None
+        ):
+            raise RehearsalFailure("hold saw more than one session")
+        if started:
+            facts["data_started"] = True
+        if held:
+            facts["body_held_at_ms"] = int(held)
+        if closed:
+            facts["closed_after_body_ms"] = int(closed)
+    return facts
+
+
 def validate_interruption(facts):
-    latency = facts.get("detect_to_stop_seconds") if isinstance(facts, dict) else None
+    limit = int(SOCKET_TIMEOUT_SECONDS * 1000)
+    fields = {
+        "data_started",
+        "session_open_at_kill",
+        "body_to_kill_ms",
+        "body_to_close_ms",
+        "state_after_kill",
+        "execution_status",
+    }
     if (
         not isinstance(facts, dict)
-        or set(facts)
-        != {*_HELD, "detect_to_stop_seconds", "state_after_stop", "execution_status"}
-        or any(facts[key] is not True for key in _HELD)
-        or type(latency) not in {int, float}
-        or not 0 <= latency < SOCKET_TIMEOUT_SECONDS
-        # The conservative transport rule: a started send is never success
-        # or retry; it is uncertain (unknown) or still leased (sending).
-        or facts["state_after_stop"] not in {"unknown", "sending"}
+        or set(facts) != fields
+        or facts["data_started"] is not True
+        or facts["session_open_at_kill"] is not True
+        or any(
+            type(facts[key]) is not int or not 0 <= facts[key] < limit
+            for key in ("body_to_kill_ms", "body_to_close_ms")
+        )
+        # A SIGKILLed worker records nothing: the lease stays sending. An
+        # unknown row here would mean the transport's own timeout ended the
+        # session, which is not an interruption; success/retry never apply.
+        or facts["state_after_kill"] != "sending"
         or facts["execution_status"] == "success"
     ):
         raise RehearsalFailure("active-send interruption outcome rejected")
@@ -113,7 +160,7 @@ HOLD_JS = r"""const net=require('net'),tls=require('tls'),fs=require('fs');
 const context=tls.createSecureContext({cert:fs.readFileSync('/run/secrets/server.pem'),key:fs.readFileSync('/run/secrets/server.key')});
 const fact=name=>process.stdout.write('P05_HOLD '+name+'\n');
 net.createServer(raw=>{
- let socket=raw,secure=false,data=false,pending='';
+ let socket=raw,secure=false,data=false,pending='',bodyAt=0;
  const reply=text=>socket.write(text+'\r\n');
  const command=line=>{const verb=line.slice(0,4).toUpperCase();
   if(verb==='EHLO')reply(secure?'250-mailpit\r\n250 AUTH PLAIN':'250-mailpit\r\n250 STARTTLS');
@@ -123,11 +170,12 @@ net.createServer(raw=>{
   else if((verb==='MAIL'||verb==='RCPT')&&secure)reply('250 synthetic');
   else if(verb==='DATA'&&secure){data=true;reply('354 synthetic');fact('DATA_STARTED');}
   else reply('503 synthetic');};
- function feed(chunk){if(data){fact('BODY_HELD');return;}
+ const body=()=>{if(!bodyAt){bodyAt=Date.now();fact('BODY_HELD at='+bodyAt);}};
+ function feed(chunk){if(data){body();return;}
   pending+=chunk.toString('latin1');let at;
   while(!data&&(at=pending.indexOf('\r\n'))>=0){const line=pending.slice(0,at);pending=pending.slice(at+2);command(line);}
-  if(data&&pending){pending='';fact('BODY_HELD');}}
- raw.on('data',feed);raw.on('error',()=>{});raw.on('close',()=>fact('CLIENT_CLOSED'));
+  if(data&&pending){pending='';body();}}
+ raw.on('data',feed);raw.on('error',()=>{});raw.on('close',()=>fact(bodyAt?'CLIENT_CLOSED after_body_ms='+(Date.now()-bodyAt):'CLIENT_CLOSED before_body'));
  reply('220 mailpit ESMTP synthetic hold');
 }).listen(1025,'0.0.0.0',()=>fact('LISTENING'));
 """

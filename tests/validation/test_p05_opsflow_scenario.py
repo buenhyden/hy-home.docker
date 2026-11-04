@@ -34,6 +34,7 @@ class MemoryFixture:
         self.running = {role: False for role in self.containers}
         self.running[native.HOLD] = False
         self.session = None
+        self.expired = set()
         self.metadata_present = True
         self.dev_present = True
         self.metadata = {"smtp_id": "same-smtp-id", "material": None}
@@ -94,15 +95,31 @@ class MemoryFixture:
     def stop(self, role):
         self.event("stop:" + role)
         self.running[role] = self.fail == "live-process"
+
+    def kill(self, role):
+        self.event("kill:" + role)
+        self.running[role] = False
         if role == "worker" and self.session == "held":
-            # A held send ends uncertain unless the worker is killed first.
+            # A killed worker records nothing; the variants model a transport
+            # timeout (unknown) and a silent success that must both fail.
             self.session = "closed"
             run, execution = self.held
-            if self.fail != "killed-worker":
+            if self.fail in {"graceful-unknown", "silent-success"}:
                 self.rows[run] = (
-                    "accepted_by_smtp" if self.fail == "silent-success" else "unknown"
+                    "unknown" if self.fail == "graceful-unknown" else "accepted_by_smtp"
                 )
                 self.executions[execution] = "error"
+
+    def hold_facts(self):
+        held = self.session is not None and self.fail != "no-data"
+        closed = self.session == "closed" or self.fail == "closed-before-kill"
+        return {
+            "data_started": held,
+            "body_held_at_ms": self.body_at if held else None,
+            "closed_after_body_ms": (5000 if self.fail == "late-close" else 300)
+            if held and closed
+            else None,
+        }
 
     def start(self, role):
         self.event("start:" + role)
@@ -115,13 +132,9 @@ class MemoryFixture:
         self.running[native.HOLD] = True
 
     def logs_contain(self, role, pattern):
-        if role == "worker":
-            return True
-        if role != native.HOLD:
+        if role != "worker":
             raise AssertionError("unexpected log probe")
-        if pattern.endswith("CLIENT_CLOSED"):
-            return self.session == "closed" or self.fail == "closed-before-stop"
-        return self.session is not None and self.fail != "no-data"
+        return True
 
     def remove(self, role):
         self.event("remove:" + role)
@@ -196,6 +209,15 @@ class ScenarioModel:
                 f"outbox|{index}|{run}|{state}|1|5"
                 for index, (run, state) in enumerate(f.rows.items(), 1)
             )
+        if "SET lease_until=clock_timestamp()" in sql:
+            run = re.search(r"run_id='([0-9a-f]{64})'", sql)[1]
+            if f.rows[run] != "sending":
+                return ""
+            f.expired.add(run)
+            return "7"
+        if "last_error_code" in sql:
+            run = re.search(r"run_id='([0-9a-f]{64})'", sql)[1]
+            return f.rows[run] + "|1|lease_expired_delivery_unknown"
         if sql == native.recovery.CLAIMABLE_SQL:
             return str(list(f.rows.values()).count("pending"))
         if "publish_manifest" in sql:
@@ -282,6 +304,9 @@ class ScenarioModel:
         if not f.metadata_present or not f.dev_present:
             raise native.RehearsalFailure("restored DB missing")
         self.scenario.assertEqual(self.workflow, workflow)
+        for run in f.expired:
+            if f.rows[run] == "sending":
+                f.rows[run] = "unknown"
         pending = [run for run, state in f.rows.items() if state == "pending"]
         if self.fail == "reclaim-interrupted" and f.session == "closed":
             f.captured.append(f.held[0])
@@ -295,6 +320,7 @@ class ScenarioModel:
             execution = str(len(f.executions) + 1)
             f.rows[run], f.executions[execution] = "sending", "running"
             f.session, f.held = "held", (run, execution)
+            f.body_at = int(native.time.time() * 1000)
             f.event("execute:held")
             return execution
         accepted = f.metadata["material"] == f.smtp_values[f.smtp_epoch]
@@ -419,6 +445,13 @@ class P05ScenarioStateTests(unittest.TestCase):
         self.assertEqual("QUIESCED_ONLY", receipt["recovery_scope"])
         self.assertEqual("PASS", receipt["live_inflight_interruption"])
         self.assertEqual("unknown", receipt["interrupted_recovery"]["state"])
+        self.assertEqual(
+            "sending", receipt["active_send_interruption"]["state_after_kill"]
+        )
+        self.assertEqual(
+            "not_terminal", receipt["active_send_interruption"]["execution_status"]
+        )
+        self.assertEqual(300, receipt["active_send_interruption"]["body_to_close_ms"])
         self.assertFalse(receipt["interrupted_recovery"]["resent"])
         self.assertEqual(0, receipt["interrupted_broker_job_matching"])
         self.assertEqual(5, receipt["same_input_replay"]["replayed"])
@@ -447,28 +480,15 @@ class P05ScenarioStateTests(unittest.TestCase):
             self.assertLess(events.index(before), events.index(after))
         held = events.index("execute:held")
         self.assertIn(
-            "stop:worker", events[held : events.index("remove:" + native.HOLD)]
+            "kill:worker", events[held : events.index("remove:" + native.HOLD)]
         )
-
-    def test_killed_worker_leaves_sending_that_recovery_never_reclaims(self):
-        model = ScenarioModel("killed-worker")
-        receipt = model.run()
-        self.assertEqual("PASS", receipt["native"])
-        self.assertEqual(
-            "sending", receipt["active_send_interruption"]["state_after_stop"]
-        )
-        self.assertEqual(
-            "not_terminal", receipt["active_send_interruption"]["execution_status"]
-        )
-        self.assertEqual("sending", receipt["interrupted_recovery"]["state"])
-        self.assertEqual(
-            "sending", list(model.fixture.rows.values())[-2]
-        )  # the lease waits for expiry; the fresh row after it was sent
 
     def test_interruption_replay_and_next_claim_violations_cannot_pass(self):
         for failure in (
+            "graceful-unknown",
             "silent-success",
-            "closed-before-stop",
+            "closed-before-kill",
+            "late-close",
             "no-data",
             "reclaim-interrupted",
             "restore-drift",
@@ -892,6 +912,34 @@ class P05FixtureAdapterTests(unittest.TestCase):
             self.assertEqual("mailpit", seen["alias"])
             self.assertEqual(native.inputs.RESOURCE_CAPS["capture-probe"], seen["caps"])
             self.assertNotIn(native.HOLD, native.legacy.ALIASES)
+
+    def test_hold_facts_and_kill_use_only_verified_owned_containers(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = fixture_at(directory)
+            fixture.containers = {
+                native.HOLD: SimpleNamespace(cid="hold"),
+                "worker": SimpleNamespace(cid="worker"),
+            }
+            fixture._verify_container = mock.Mock()
+            fixture._verify_owned = lambda _record: {"State": {"Running": False}}
+            fixture.wait_until = lambda condition, *_args: self.assertTrue(condition())
+            log = "P05_HOLD DATA_STARTED\nP05_HOLD BODY_HELD at=5\n"
+            fixture.client = mock.Mock()
+            fixture.client.run_result.return_value = SimpleNamespace(
+                returncode=0, stdout=log
+            )
+            self.assertEqual(5, fixture.hold_facts()["body_held_at_ms"])
+            fixture.kill("worker")
+            self.assertEqual(
+                [mock.call("logs", "hold"), mock.call("kill", "worker")],
+                fixture.client.run_result.call_args_list,
+            )
+            fixture.client.run_result.return_value = SimpleNamespace(
+                returncode=1, stdout=""
+            )
+            for action in (fixture.hold_facts, lambda: fixture.kill("worker")):
+                with self.assertRaises(native.RehearsalFailure):
+                    action()
 
     def test_ca_environment_closed_diagnostics_and_receipt_binding(self):
         with tempfile.TemporaryDirectory() as directory:

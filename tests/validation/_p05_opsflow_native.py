@@ -499,6 +499,29 @@ class P05Fixture(legacy.NativeFixture):
             30,
         )
 
+    def hold_facts(self):
+        record = self.containers[HOLD]
+        self._verify_container(record)
+        result = self.client.run_result("logs", record.cid)
+        if result.returncode:
+            raise RehearsalFailure("SMTP hold log unavailable")
+        return recovery.parse_hold(result.stdout)
+
+    def kill(self, role):
+        # SIGKILL, not `docker stop`: no graceful shutdown can let the node
+        # finish or the transport's own socket timeout end the session.
+        record = self.containers[role]
+        self._verify_container(record)
+        if self.client.run_result("kill", record.cid).returncode:
+            raise RehearsalFailure("owned container kill failed")
+        self.wait_until(
+            lambda: (
+                (self._verify_owned(record).get("State") or {}).get("Running") is False
+            ),
+            "owned container remained running after kill",
+            10,
+        )
+
     def receipt_json(self):
         value = json.loads(super().receipt_json())
         return json.dumps(
@@ -630,26 +653,31 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         execution = self.run_manual(workflow)
         self.execution_ids.append(execution)
         f.wait_until(
-            lambda: f.logs_contain(HOLD, "P05_HOLD BODY_HELD"),
+            lambda: f.hold_facts()["body_held_at_ms"] is not None,
             "SMTP session was not held mid-DATA",
             60,
         )
-        held = time.monotonic()
-        data_started = f.logs_contain(HOLD, "P05_HOLD DATA_STARTED")
-        session_open = not f.logs_contain(HOLD, "P05_HOLD CLIENT_CLOSED")
-        latency = round(time.monotonic() - held, 3)
-        f.stop("worker")
+        held = f.hold_facts()
+        f.kill("worker")
+        # Host and container read the same kernel wall clock; measuring after
+        # the kill returns is an upper bound on the interruption point.
+        killed_ms = int(time.time() * 1000) - held["body_held_at_ms"]
+        f.wait_until(
+            lambda: f.hold_facts()["closed_after_body_ms"] is not None,
+            "held SMTP session did not close after the kill",
+            10,
+        )
         facts = {
-            "data_started": data_started,
-            "body_held": True,
-            "session_open_at_stop": session_open,
-            "client_closed_after_stop": f.logs_contain(HOLD, "P05_HOLD CLIENT_CLOSED"),
-            "detect_to_stop_seconds": latency,
-            "state_after_stop": self.db_value(
+            "data_started": held["data_started"],
+            "session_open_at_kill": held["closed_after_body_ms"] is None,
+            "body_to_kill_ms": killed_ms,
+            "body_to_close_ms": f.hold_facts()["closed_after_body_ms"],
+            "state_after_kill": self.db_value(
                 f"SELECT state FROM ops_flow.outbox WHERE run_id='{run}';"
             ),
             "execution_status": self.execution_status(execution),
         }
+        f.receipt["active_send_interruption"] = facts
         f.remove(HOLD)
         f.receipt["active_send_interruption"] = recovery.validate_interruption(facts)
         return run
@@ -664,7 +692,6 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
 
     def recover_interrupted(self, workflow, run):
         f = self.fixture
-        stopped = f.receipt["active_send_interruption"]["state_after_stop"]
         # Closed count only: whether the interrupted job outlived its worker.
         f.receipt["interrupted_broker_job_matching"] = self.broker_jobs(
             [self.execution_ids[-1]]
@@ -687,22 +714,32 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             "external runner did not re-register",
             60,
         )
+        # Fixture-only time travel as the superuser (as fast_forward_sql does)
+        # instead of waiting out the 10-minute lease; the notifier cannot.
+        expired = self.db_value(
+            "UPDATE ops_flow.outbox SET lease_until=clock_timestamp() "
+            f"WHERE run_id='{run}' AND state='sending' RETURNING id;"
+        )
+        if not expired.isdecimal():
+            raise RehearsalFailure("interrupted lease was not left sending")
         fresh = self.publish_input(b"p05-after-interruption", "2026-11-28T00:00:00Z")
         self.execute(workflow, "success")
         self.wait_state(fresh, "accepted_by_smtp")
         observed = (
             self.db_value(
-                f"SELECT state||'|'||attempts FROM ops_flow.outbox WHERE run_id='{run}';"
+                "SELECT state||'|'||attempts||'|'||coalesce(last_error_code,'') "
+                f"FROM ops_flow.outbox WHERE run_id='{run}';"
             ),
             self.capture(run)["matched"],
             self.capture(fresh)["matched"],
         )
-        # The interrupted row is neither resent nor reclaimed by the recovered
-        # worker; a leased sending row waits for expiry, unknown for an operator.
-        if observed != (stopped + "|1", False, True):
+        # claim_notification turns the expired lease unknown without a send
+        # or a new attempt; only the fresh row is claimed and delivered.
+        if observed != ("unknown|1|lease_expired_delivery_unknown", False, True):
             raise RehearsalFailure("interrupted notification was resent or reclaimed")
         f.receipt["interrupted_recovery"] = {
-            "state": stopped,
+            "state": "unknown",
+            "last_error_code": "lease_expired_delivery_unknown",
             "attempts": 1,
             "resent": False,
             "fresh_after_recovery": "accepted_by_smtp",

@@ -328,32 +328,73 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
             with self.assertRaises(recovery.RehearsalFailure):
                 recovery.validate_next_claim(self.LINES, changed, self.FRESH)
 
-    def test_active_send_interruption_requires_held_session_and_no_success(self):
+    def test_next_claim_filters_the_parsed_run_id_not_a_substring(self):
+        fresh = "outbox|3|" + self.FRESH + "|accepted_by_smtp|1|5||t|t||x|y"
+        audit = "audit|req|2|1|requeue_dead|" + self.FRESH + "|t1"
+        before = (*self.LINES, audit)
+        after = (*before, fresh, "run|" + self.FRESH + "|hy-home.k8s|published|z")
+        self.assertTrue(
+            recovery.validate_next_claim(before, after, self.FRESH)[
+                "old_rows_unchanged"
+            ]
+        )
+        drifted = (*self.LINES, audit.replace("|t1", "|t2"), fresh)
+        with self.assertRaises(recovery.RehearsalFailure):
+            recovery.validate_next_claim(before, drifted, self.FRESH)
+
+    def test_hold_log_parser_reads_only_closed_tokens(self):
+        text = (
+            "P05_HOLD LISTENING\nP05_HOLD DATA_STARTED\n"
+            "P05_HOLD BODY_HELD at=1762300000123\n"
+            "P05_HOLD CLIENT_CLOSED after_body_ms=412\nunrelated private text\n"
+        )
+        self.assertEqual(
+            {
+                "data_started": True,
+                "body_held_at_ms": 1762300000123,
+                "closed_after_body_ms": 412,
+            },
+            recovery.parse_hold(text),
+        )
+        self.assertEqual(
+            {
+                "data_started": False,
+                "body_held_at_ms": None,
+                "closed_after_body_ms": None,
+            },
+            recovery.parse_hold("P05_HOLD LISTENING\n"),
+        )
+        for text in (
+            "P05_HOLD BODY_HELD at=1\nP05_HOLD BODY_HELD at=2\n",
+            "P05_HOLD CLIENT_CLOSED after_body_ms=-1\n",
+            "P05_HOLD BODY_HELD at=abc\n",
+        ):
+            with self.subTest(text=text), self.assertRaises(recovery.RehearsalFailure):
+                recovery.parse_hold(text)
+
+    def test_active_send_interruption_requires_a_kill_inside_the_socket_timeout(self):
         good = {
             "data_started": True,
-            "body_held": True,
-            "session_open_at_stop": True,
-            "client_closed_after_stop": True,
-            "detect_to_stop_seconds": 0.4,
-            "state_after_stop": "unknown",
-            "execution_status": "error",
+            "session_open_at_kill": True,
+            "body_to_kill_ms": 420,
+            "body_to_close_ms": 431,
+            "state_after_kill": "sending",
+            "execution_status": "not_terminal",
         }
         self.assertEqual(good, recovery.validate_interruption(good))
-        self.assertEqual(
-            "sending",
-            recovery.validate_interruption({**good, "state_after_stop": "sending"})[
-                "state_after_stop"
-            ],
-        )
+        limit = int(recovery.SOCKET_TIMEOUT_SECONDS * 1000)
         for change in (
             {"data_started": False},
-            {"body_held": False},
-            {"session_open_at_stop": False},
-            {"client_closed_after_stop": None},
-            {"detect_to_stop_seconds": recovery.SOCKET_TIMEOUT_SECONDS},
-            {"detect_to_stop_seconds": True},
-            {"state_after_stop": "accepted_by_smtp"},
-            {"state_after_stop": "retry"},
+            {"session_open_at_kill": False},
+            {"body_to_kill_ms": limit},
+            {"body_to_kill_ms": True},
+            {"body_to_kill_ms": -1},
+            {"body_to_close_ms": limit},
+            {"body_to_close_ms": None},
+            # The transport's own timeout records unknown: not an interruption.
+            {"state_after_kill": "unknown"},
+            {"state_after_kill": "accepted_by_smtp"},
+            {"state_after_kill": "retry"},
             {"execution_status": "success"},
             {"unexpected": "private-payload"},
         ):
