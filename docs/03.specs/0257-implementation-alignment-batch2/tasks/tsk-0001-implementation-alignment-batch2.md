@@ -85,6 +85,12 @@ progress under the approved parents. Hosted CI has not run.
 | E1 | 1 | W1 | path-scan | backticked `docs/` paths in `infra/**/README.md`, main b56fd4480 | FAIL | 250 missing paths; 54 resolve | required | - |
 | E2 | 1 | W1 | path-scan | the same scan after W1 | PASS | 250 rewritten, zero unresolved | required | E1 |
 | E3 | 4 | W4 | secret-name-scan | Compose top-level secret names against `docs/05.operations`, `docs/02.architecture` and infra READMEs, main b56fd4480 | FAIL | 9 of 88 names missing | required | - |
+| E4 | 4 | W4 | secret-name-scan | the same scan after W4 | PASS | 88 of 88 names appear in an owning document | required | E3 |
+| E5 | 5 | W5 | metadata-changed | `check-changed --base-ref origin/main`, revision 1d1aac4ba, base main 0ab42bc30 | PASS | 57 selected, zero violations | required | - |
+| E6 | 5 | W5 | metadata-active | `check-active`, revision 1d1aac4ba | PASS | 503 selected, zero violations | required | - |
+| E7 | 3 | W3 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref origin/main`, revision 1d1aac4ba | PASS | lifecycle and occupancy zero | required | - |
+| E8 | 5 | W5 | operations-catalog | `check-operations-catalog.py`, revision 1d1aac4ba | PASS | PASS | required | - |
+| E9 | 2 | W2 | links-modes | alignment, navigation, language, traceability, entrypoint and commands, revision 1d1aac4ba | PASS | every mode PASS | required | - |
 
 ## Criterion Acceptance
 
@@ -98,8 +104,8 @@ progress under the approved parents. Hosted CI has not run.
 
 ## Review and Completion
 
-No independent review has run and hosted CI is not observed; no criterion is
-accepted yet.
+Local checks E2 and E4 to E9 pass. No independent review has run and hosted
+CI is not observed; no criterion is accepted yet.
 
 ## Related Documents
 
