@@ -60,11 +60,14 @@ progress under the approved parents. Hosted CI has not run.
   later Task deletion cannot leave it dangling again.
 - The frozen archive boundary selected only
   `docs/98.archive/{completed,superseded,retired}/`, which hold no files. The
-  anchor, its four `exclude` uses and the hook code that read it are removed;
-  the hook still normalizes every changed text file.
-- The DATA-0096 command names run-specific output paths. They use the `<run>`
-  placeholder, which the `commands` mode skips, and the prose says what it
-  stands for.
+  anchor, its four `exclude` uses and the hook code that read it are removed.
+  The hook still reports every changed text file by default and normalizes it
+  only with `--write`.
+- The DATA-0096 command names run-specific output paths, now written with a
+  `<run>` placeholder that the prose explains. The `commands` mode passes
+  because its path-token pattern stops before `<`, leaving the tracked
+  `_workspace/repo-support/analysis/` prefix, whose README exists; the
+  placeholder itself is not what the check skips.
 - SPEC-0253 follows SPEC-0251; SPEC-0252 is claimed by the legacy document
   status work on another branch. The Spec high-water is 253 here; whichever
   branch lands second takes the larger value.
@@ -91,6 +94,7 @@ progress under the approved parents. Hosted CI has not run.
 | `test_post_tool_rejects_an_owner_without_the_frozen_anchor` | deleted | exercised the removed fail-closed read of the anchor |
 | `test_commit_formatter_invocations_are_read_only` | adapted | still asserts a formatter and its checker share excludes, now through `.get()` since neither declares one |
 | `test_ci_gate_evidence`, `test_github_workflow_contract` | updated | expect the new owner label |
+| `test_evidence_owner_names_an_existing_governance_heading`, `test_a_changed_evidence_owner_is_rejected` | added | the owner anchor must resolve to a real heading, and a changed owner value fails the contract load |
 
 ### Inventory
 
@@ -99,7 +103,7 @@ progress under the approved parents. Hosted CI has not run.
 | `frozen_archive_payloads` anchor and hook reader | QA legacy | matches no tracked file | deleted |
 | `SPEC-0211-TSK-0003` evidence owner | CI legacy | Task deleted in #725 | repointed |
 | DATA-0096 command paths | QA legacy | two `commands` findings | fixed |
-| `scripts/README.md` metadata legacy exception text | docs legacy | no code remains | deleted |
+| `scripts/README.md` metadata legacy exception text | docs legacy | no allowance for existing defects remains, but `check-changed` still subtracts merge-base defect identities (`metadata/reference.py`, `metadata/heading.py` `introduced = current - base`) | reworded to that behavior |
 | `infra/03-security/openbao/scripts/p01-bootstrap.sh` | one-off candidate | used by RUN-0104, RUN-0105 and SPEC-0204 | kept |
 | `scripts/operations/rehearse-postgres-logical-upgrade.sh`, `rehearse-sample-service-delivery.sh` | one-off candidate | used by the workflow contract, REQ-0025, ADR-0028, AD-0028 | kept |
 | `scripts/operations/mng-pg-immediate-restore-rehearsal.py` | one-off candidate | used by RUN-0021, the Script Manifest and its test | kept |
@@ -115,6 +119,16 @@ progress under the approved parents. Hosted CI has not run.
   rewrote a frozen archive body; it is a historical rationale, not a rule.
 - Lifecycle-generation and identity-history legacy code stays with the legacy
   document status work and the SPEC-0209/0231 proof move.
+
+### Review status
+
+- The `.agents/governance/agentic.md` edit is a policy change; per
+  `approval-boundaries.md` it needs `rules-engineer` review, pending in the PR
+  #729 review.
+- Deferred: removing the dead `frozen-legacy-status` exception kind
+  (`registry.py` validation and the `document-profile.schema.json` const).
+  PR #730 rewrites the same schema region and `test_registry.py`, so it is left
+  for after #730 merges.
 
 ## Evidence
 
