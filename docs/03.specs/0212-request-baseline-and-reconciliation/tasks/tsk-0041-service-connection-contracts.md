@@ -1,10 +1,10 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.16"
+version: "0.1.17"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-04"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0041"
 parent_ids:
@@ -131,6 +131,35 @@ credential, model registration, successful external delivery, a current
 operator run, credential rotation, recovery or remote CI result. Those items
 remain explicitly routed to their owning task.
 
+### D02 re-verification at current main
+
+A direct user request on 2026-11-04 re-ran this contract as D02 on clean
+`main` `d3f1cfaac3d1237331fa59786948c4e4dbabc9be`, branch
+`fix/compose-start-host-port-conflict`. The focused P02 port, service, native,
+Valkey-mount, Prometheus, port-inventory and Hermes gate suites ran 131 tests:
+OK, one declared skip. A value-free all-profile render shows only Traefik
+(`core`/`dev`/`local`) and opt-in Nginx (`nginx`) publish 80/443 on
+`HOST_LAN_BIND_IP`. The Loki, Tempo, Alloy and `mng-valkey` LAN publications are
+the owner-approved POL-0096 exception and are preserved unchanged.
+
+POL-0011 forbids selecting Nginx with the Traefik profile, but nothing enforced
+it: `compose_start.create_plan` accepted `--profile core --profile nginx` and
+`--target traefik --target nginx`, which would bind the same host 80/443. The
+plan now rejects any selection in which two services publish the same unrendered
+host binding expression (`host_port_conflict`). A new regression failed before
+the fix and passes after; the module runs 20 tests OK. On the real source, HOME
+and every one of the single profiles still plan, and the gateway pair is
+refused with CLI exit 2. Different variables resolving to one value are a stated
+limit of this source-expression check. No container, route, credential or
+authentication setting was changed; runtime and Hosted CI for this delta are
+recorded separately.
+
+Official pages re-read on 2026-11-04: Traefik routing rules (redirected to the
+v3.7 reference; declared image `v3.7.16`), Compose networking (service-to-service
+traffic uses the container port, host ports only from outside), OIDC Core
+§3.1.3.7 ID Token validation and RFC 8725. They match the existing P02 contract;
+no new authentication change was adopted from them.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -162,6 +191,8 @@ remain explicitly routed to their owning task.
 | Hosted CI C58 | 58 | W63 | Remote CI execution | No remote publication | NOT_RUN | Out of this local source unit | optional | - |
 | Hosted CI C59 | 59 | W64 | Remote CI execution | No remote publication | NOT_RUN | Out of this local source unit | optional | - |
 | Hosted CI C60 | 60 | W65 | Remote CI execution | No remote publication | NOT_RUN | Out of this local source unit | optional | - |
+| D02 focused regression | 56 | W61 | P02 port/service/native/Valkey/Prometheus/port-inventory/Hermes suites | HEAD d3f1cfaac | PASS | 131 tests OK, 1 declared skip | required | - |
+| D02 gateway exclusivity | 56 | W61 | compose-start host binding conflict regression and real-source plans | HEAD d3f1cfaac plus this delta | PASS | New test RED before fix, 20/20 after; HOME and all single profiles plan; Traefik+Nginx refused (exit 2) | required | - |
 
 ## Criterion Acceptance
 

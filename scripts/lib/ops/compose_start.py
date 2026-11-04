@@ -283,6 +283,44 @@ def _closure(services, initial, companions, mode):
     return {name: sorted(reasons[name]) for name in sorted(reasons)}
 
 
+def _host_bindings(service):
+    """Yield (host_ip, host_port, protocol) source expressions a service publishes."""
+    for item in service.get("ports") or ():
+        if isinstance(item, dict):
+            if item.get("published") is not None:
+                yield (
+                    str(item.get("host_ip", "")),
+                    str(item["published"]),
+                    str(item.get("protocol", "tcp")),
+                )
+            continue
+        text, protocol = str(item), "tcp"
+        if text.endswith(("/tcp", "/udp", "/sctp")):
+            text, protocol = text.rsplit("/", 1)
+        parts, depth, current = [], 0, ""
+        for char in text:  # split on ':' outside ${...}
+            depth += (char == "{") - (char == "}")
+            if char == ":" and depth == 0:
+                parts.append(current)
+                current = ""
+            else:
+                current += char
+        parts.append(current)
+        if len(parts) >= 2:
+            yield (":".join(parts[:-2]), parts[-2], protocol)
+
+
+def _reject_host_port_conflicts(services, selected):
+    # ponytail: compares unrendered source expressions, so two different
+    # variables that resolve to the same value are not caught; render the
+    # selection first if that matters.
+    owners = {}
+    for name in sorted(selected):
+        for binding in set(_host_bindings(services[name])):
+            if owners.setdefault(binding, name) != name:
+                raise ValueError("host_port_conflict")
+
+
 def create_plan(root, *, mode, values, dev_data_expected=None):
     root = _root(root)
     if mode not in {"home", "profile", "target"} or not isinstance(
@@ -318,6 +356,7 @@ def create_plan(root, *, mode, values, dev_data_expected=None):
     if not initial:
         raise ValueError("empty_selection")
     reasons = _closure(services, initial, companions, mode)
+    _reject_host_port_conflicts(services, reasons)
     if mode != "target":
         selected_dev = bool({"dev-pg", "dev-valkey"} & reasons.keys())
         if dev_data_expected != ("on" if selected_dev else "off"):

@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Operations Policy"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0011"
 parent_ids:
@@ -40,7 +40,9 @@ created: "2026-05-17"
   - `proxy_next_upstream` 정책을 명시해야 한다.
   - 정적 자산 확장자 기반 캐시 정책(`expires`, `Cache-Control`)을 유지해야 한다.
   - `nginx`를 `${HOST_LAN_BIND_IP:-192.168.0.13}`의 host ports 80/443을
-    점유하는 Traefik profile과 함께 선택하지 않는다.
+    점유하는 Traefik profile과 함께 선택하지 않는다. `compose-start.py plan`은 한
+    선택 안에서 같은 host 바인딩 식을 게시하는 서비스가 둘 이상이면
+    `host_port_conflict`로 계획을 거부한다.
   - Git config와 private certificate backup authority를 구분한다. tmpfs는 복구
     대상이 아니며 private key를 repository/evidence에 복사하지 않는다.
 - **허용**:
