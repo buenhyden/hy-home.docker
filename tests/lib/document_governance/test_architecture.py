@@ -59,12 +59,14 @@ def _document_text(
             ("REQ-0001",) if profile_id == "architecture-description" else ("AD-0001",)
         )
     parent_lines = "\n".join(f"  - {item}" for item in parent_ids)
-    supersedes_lines = (
-        "supersedes: []"
-        if not supersedes
-        else "supersedes:\n" + "\n".join(f"  - {item}" for item in supersedes)
+    lineage_lines = "".join(
+        (
+            "supersedes:\n" + "".join(f"  - {item}\n" for item in supersedes)
+            if supersedes
+            else "",
+            f"superseded_by: {superseded_by}\n" if superseded_by else "",
+        )
     )
-    superseded_by_value = "null" if superseded_by is None else superseded_by
     return f"""---
 title: Fixture {artifact_id}
 version: 1.0.0
@@ -77,9 +79,7 @@ artifact_id: {artifact_id}
 parent_ids:
 {parent_lines}
 created: 2026-08-22
-{supersedes_lines}
-superseded_by: {superseded_by_value}
----
+{lineage_lines}---
 
 # Fixture {artifact_id}
 
@@ -121,42 +121,47 @@ def _write_minimal_corpus(stage_root: pathlib.Path) -> None:
 
 
 class ArchitectureDocumentTests(unittest.TestCase):
-    def test_loads_frozen_canonical_documents_and_validates_graph(self) -> None:
+    def test_loads_frozen_canonical_documents(self) -> None:
         architecture = _architecture_module()
         with tempfile.TemporaryDirectory() as directory:
             stage_root = pathlib.Path(directory) / "docs/02.architecture"
             _write_minimal_corpus(stage_root)
-            predecessor = _write_document(
-                stage_root,
-                "decisions",
-                "0027-predecessor.md",
-                _document_text(
-                    "adr",
-                    "0027",
-                    status="superseded",
-                    superseded_by="ADR-0029",
-                ),
-            )
-            _write_document(
+            decision = _write_document(
                 stage_root,
                 "decisions",
                 "0029-successor.md",
-                _document_text(
-                    "adr",
-                    "0029",
-                    supersedes=("ADR-0027",),
-                ),
+                _document_text("adr", "0029"),
             )
             corpus = architecture.load_architecture_documents(stage_root)
 
         by_id = {document.artifact_id: document for document in corpus}
-        self.assertEqual((), architecture.validate_supersession_graph(corpus))
-        self.assertEqual(("ADR-0027",), by_id["ADR-0029"].supersedes)
-        self.assertEqual("ADR-0029", by_id["ADR-0027"].superseded_by)
-        self.assertEqual(predecessor.name, by_id["ADR-0027"].path.name)
-        self.assertIsInstance(by_id["ADR-0027"].parent_ids, tuple)
+        self.assertEqual(decision.name, by_id["ADR-0029"].path.name)
+        self.assertIsInstance(by_id["ADR-0029"].parent_ids, tuple)
         with self.assertRaises(dataclasses.FrozenInstanceError):
-            by_id["ADR-0027"].status = "active"
+            by_id["ADR-0029"].status = "active"
+
+    def test_a_legacy_status_fails_closed_at_load(self) -> None:
+        architecture = _architecture_module()
+        for profile, directory_name in (
+            ("adr", "decisions"),
+            ("architecture-description", "descriptions"),
+        ):
+            for status in ("superseded", "deprecated", "retired"):
+                with self.subTest(profile=profile, status=status):
+                    with tempfile.TemporaryDirectory() as directory:
+                        stage_root = pathlib.Path(directory) / "docs/02.architecture"
+                        _write_minimal_corpus(stage_root)
+                        _write_document(
+                            stage_root,
+                            directory_name,
+                            "0027-legacy.md",
+                            _document_text(profile, "0027", status=status),
+                        )
+                        with self.assertRaisesRegex(
+                            architecture.ArchitectureDocumentError,
+                            "outside lifecycle",
+                        ):
+                            architecture.load_architecture_documents(stage_root)
 
     def test_lowercase_stable_id_fails_closed(self) -> None:
         architecture = _architecture_module()
@@ -278,150 +283,26 @@ class ArchitectureDocumentTests(unittest.TestCase):
                 (final.st_dev, final.st_ino, final.st_size),
             )
 
-    def test_dangling_and_asymmetric_supersession_are_reported(self) -> None:
+    def test_a_lineage_key_fails_closed_at_load(self) -> None:
         architecture = _architecture_module()
-        with tempfile.TemporaryDirectory() as directory:
-            stage_root = pathlib.Path(directory) / "docs/02.architecture"
-            _write_minimal_corpus(stage_root)
-            _write_document(
-                stage_root,
-                "decisions",
-                "0029-successor.md",
-                _document_text("adr", "0029", supersedes=("ADR-0027",)),
-            )
-            corpus = architecture.load_architecture_documents(stage_root)
-            dangling = architecture.validate_supersession_graph(corpus)
-            self.assertIn("supersession-dangling", {item.code for item in dangling})
+        for keys in ({"supersedes": ("ADR-0026",)}, {"superseded_by": "ADR-0028"}):
+            with self.subTest(keys=keys):
+                with tempfile.TemporaryDirectory() as directory:
+                    stage_root = pathlib.Path(directory) / "docs/02.architecture"
+                    _write_minimal_corpus(stage_root)
+                    _write_document(
+                        stage_root,
+                        "decisions",
+                        "0027-lineage.md",
+                        _document_text("adr", "0027", **keys),
+                    )
+                    with self.assertRaisesRegex(
+                        architecture.ArchitectureDocumentError,
+                        "no supersedes or superseded_by",
+                    ):
+                        architecture.load_architecture_documents(stage_root)
 
-            _write_document(
-                stage_root,
-                "decisions",
-                "0027-predecessor.md",
-                _document_text("adr", "0027", status="superseded"),
-            )
-            corpus = architecture.load_architecture_documents(stage_root)
-            asymmetric = architecture.validate_supersession_graph(corpus)
-            self.assertIn("supersession-asymmetric", {item.code for item in asymmetric})
-
-    def test_cyclic_supersession_is_reported(self) -> None:
-        architecture = _architecture_module()
-        with tempfile.TemporaryDirectory() as directory:
-            stage_root = pathlib.Path(directory) / "docs/02.architecture"
-            _write_minimal_corpus(stage_root)
-            _write_document(
-                stage_root,
-                "decisions",
-                "0027-cycle-a.md",
-                _document_text(
-                    "adr",
-                    "0027",
-                    status="superseded",
-                    supersedes=("ADR-0029",),
-                    superseded_by="ADR-0029",
-                ),
-            )
-            _write_document(
-                stage_root,
-                "decisions",
-                "0029-cycle-b.md",
-                _document_text(
-                    "adr",
-                    "0029",
-                    status="superseded",
-                    supersedes=("ADR-0027",),
-                    superseded_by="ADR-0027",
-                ),
-            )
-            corpus = architecture.load_architecture_documents(stage_root)
-            findings = architecture.validate_supersession_graph(corpus)
-        self.assertIn("supersession-cycle", {item.code for item in findings})
-
-    def test_supersession_edges_require_effective_successor_and_superseded_predecessor(
-        self,
-    ) -> None:
-        architecture = _architecture_module()
-        predecessor = architecture.ArchitectureDocument(
-            pathlib.PurePosixPath("docs/02.architecture/decisions/0027-predecessor.md"),
-            "ADR-0027",
-            "adr",
-            "superseded",
-            ("AD-0001",),
-            (),
-            "ADR-0029",
-        )
-        for status in ("rejected", "draft", "retired"):
-            with self.subTest(status=status):
-                successor = architecture.ArchitectureDocument(
-                    pathlib.PurePosixPath(
-                        "docs/02.architecture/decisions/0029-successor.md"
-                    ),
-                    "ADR-0029",
-                    "adr",
-                    status,
-                    ("AD-0001",),
-                    ("ADR-0027",),
-                    None,
-                )
-                findings = architecture.validate_supersession_graph(
-                    (predecessor, successor)
-                )
-                self.assertIn(
-                    "supersession-successor-not-effective",
-                    {item.code for item in findings},
-                )
-
-        accepted_predecessor = dataclasses.replace(predecessor, status="accepted")
-        accepted_successor = architecture.ArchitectureDocument(
-            pathlib.PurePosixPath("docs/02.architecture/decisions/0029-successor.md"),
-            "ADR-0029",
-            "adr",
-            "accepted",
-            ("AD-0001",),
-            ("ADR-0027",),
-            None,
-        )
-        findings = architecture.validate_supersession_graph(
-            (accepted_predecessor, accepted_successor)
-        )
-        self.assertIn(
-            "supersession-predecessor-not-superseded",
-            {item.code for item in findings},
-        )
-
-    def test_superseded_successor_remains_effective_in_a_reciprocal_chain(self) -> None:
-        architecture = _architecture_module()
-        documents = (
-            architecture.ArchitectureDocument(
-                pathlib.PurePosixPath("docs/02.architecture/decisions/0027-first.md"),
-                "ADR-0027",
-                "adr",
-                "superseded",
-                ("AD-0001",),
-                (),
-                "ADR-0028",
-            ),
-            architecture.ArchitectureDocument(
-                pathlib.PurePosixPath("docs/02.architecture/decisions/0028-middle.md"),
-                "ADR-0028",
-                "adr",
-                "superseded",
-                ("AD-0001",),
-                ("ADR-0027",),
-                "ADR-0029",
-            ),
-            architecture.ArchitectureDocument(
-                pathlib.PurePosixPath("docs/02.architecture/decisions/0029-current.md"),
-                "ADR-0029",
-                "adr",
-                "accepted",
-                ("AD-0001",),
-                ("ADR-0028",),
-                None,
-            ),
-        )
-        self.assertEqual((), architecture.validate_supersession_graph(documents))
-
-    def test_metadata_cli_rejects_ineffective_supersession_successor(self) -> None:
+    def test_metadata_cli_rejects_a_legacy_architecture_status(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             stage_root = pathlib.Path(directory) / "docs/02.architecture"
             _write_minimal_corpus(stage_root)
@@ -433,18 +314,6 @@ class ArchitectureDocumentTests(unittest.TestCase):
                     "adr",
                     "0027",
                     status="superseded",
-                    superseded_by="ADR-0029",
-                ),
-            )
-            _write_document(
-                stage_root,
-                "decisions",
-                "0029-successor.md",
-                _document_text(
-                    "adr",
-                    "0029",
-                    status="proposed",
-                    supersedes=("ADR-0027",),
                 ),
             )
             result = subprocess.run(
@@ -468,33 +337,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
         self.assertEqual(2, result.returncode, result.stdout + result.stderr)
         self.assertNotIn("Error in sitecustomize", result.stderr)
         self.assertIn("configuration-error:", result.stderr)
-        self.assertIn("supersession-successor-not-effective", result.stderr)
-
-    def test_preserved_superseded_adr_still_resolves(self) -> None:
-        architecture = _architecture_module()
-        predecessor = architecture.ArchitectureDocument(
-            pathlib.PurePosixPath("docs/98.archive/decisions/0027-predecessor.md"),
-            "ADR-0027",
-            "adr",
-            "superseded",
-            ("AD-0001",),
-            (),
-            "ADR-0029",
-        )
-        successor = architecture.ArchitectureDocument(
-            pathlib.PurePosixPath("docs/02.architecture/decisions/0029-successor.md"),
-            "ADR-0029",
-            "adr",
-            "accepted",
-            ("AD-0001",),
-            ("ADR-0027",),
-            None,
-        )
-        findings = architecture.validate_supersession_graph((predecessor, successor))
-        # Preservation moves a superseded ADR out of the decision log. Where it
-        # sits is the placement check's concern; this graph must only keep
-        # resolving both sides of the supersession.
-        self.assertEqual(set(), {item.code for item in findings})
+        self.assertIn("status is outside lifecycle", result.stderr)
 
     def test_restored_requirements_root_is_forbidden(self) -> None:
         architecture = _architecture_module()

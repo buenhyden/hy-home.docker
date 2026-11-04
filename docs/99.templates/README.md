@@ -28,7 +28,7 @@ Stage 99가 소유하는 것:
 
 - the Requirement Package and Architecture Description profiles;
 - the Guide, Policy, Runbook, Incident, and Postmortem profiles;
-- the Research, Audit, Data publication roles and archive route records;
+- the Research, Audit, Data publication roles;
 - canonical path와 안정 ID 패턴;
 - profile별 frontmatter와 section 계약;
 - lifecycle 상태와 허용된 직접 transition;
@@ -67,7 +67,6 @@ docs/99.templates/
     │   └── contracts/
     ├── operations/
     ├── references/
-    ├── archive/
     └── common/
 ```
 
@@ -100,7 +99,9 @@ canonical Markdown artifact의 `type`이 해당 Registry-classified profile type
 domain, subject, stage, governance, generated, repository-support
 Markdown에도 적용됩니다. `absent`는 Markdown frontmatter를 쓰지 않는
 실행 가능한 machine contract 전용입니다. `unmanaged`는 지원되지 않는
-fallback을 포괄하며, 현재 작성 대상이 아닙니다.
+fallback을 뜻하며 현재 작성 대상이 아닙니다. Stage 01~03 lifecycle은
+`deprecated`, `superseded`, `retired`, `archived` 상태를 두지 않습니다.
+대체되거나 철회된 문서는 현재 owner에 요약한 뒤 삭제하고 번호를 예약합니다.
 
 ### Local r10 Role Forms
 

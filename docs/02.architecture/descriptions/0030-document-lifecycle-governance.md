@@ -91,8 +91,9 @@ owners and final evidence into the Task. A package with an approved Spec and
 Plan may wait once it is ready for removal review as ADR-0048 defines it, and
 is deleted once its removal is approved. In an
 unfinished package, completed and validly cancelled Tasks may remain, but a
-terminal Plan may not. Cancelled or superseded Specs keep no members in active
-Stage 03. The occupancy branch reads per-profile terminal sets from Registry;
+terminal Plan may not. Cancelled Specs keep no members in active Stage 03.
+Stage 01 to 03 documents use no deprecated, superseded, retired, or archived
+status; a replaced document is summarized into its owner and deleted. The occupancy branch reads per-profile terminal sets from Registry;
 standalone documents retain their existing per-document rule.
 
 Cancellation uses one pure judgment for occupancy and package validation. It

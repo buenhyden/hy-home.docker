@@ -7,6 +7,7 @@ import importlib.util
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -1018,6 +1019,25 @@ class GithubWorkflowContractTests(unittest.TestCase):
         for value in ("", "2026-99-01", "2026-02-30", "9999-01-01", "2026-9-2"):
             with self.subTest(value=value):
                 self.assertFalse(self.module._valid_retrieval_date(value))
+
+    def test_evidence_owner_names_an_existing_governance_heading(self) -> None:
+        owner = self.module.load_workflow_contract(ROOT).execution_evidence.owner
+        path, _, anchor = owner.partition("#")
+        text = (ROOT / path).read_text(encoding="utf-8")
+        slugs = {
+            re.sub(r"[^\w\- ]", "", line.lstrip("#").strip().lower()).replace(" ", "-")
+            for line in text.splitlines()
+            if line.startswith("#")
+        }
+        self.assertIn(anchor, slugs)
+
+    def test_a_changed_evidence_owner_is_rejected(self) -> None:
+        raw = copy.deepcopy(self.module.load_contract_document(ROOT))
+        raw["execution_evidence"]["owner"] = "SPEC-0211-TSK-0003"
+        with mock.patch.object(self.module, "load_contract_document", return_value=raw):
+            with self.assertRaises(self.module.WorkflowContractError) as caught:
+                self.module.load_workflow_contract(ROOT)
+        self.assertEqual("contract-execution-evidence-invalid", caught.exception.code)
 
     def test_action_registry_and_ci_precommit_wiring_are_exact(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)

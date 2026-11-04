@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.8.1"
+version: "3.9.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -120,10 +120,13 @@ retired identities.
    common and governance fields. Its skill-local invocation control permits only
    explicit invocation. Stage 99 defines both shapes; native discovery does not
    change policy ownership or role permissions.
-   The existing lineage graph permits multiple predecessors in `supersedes`
-   and one reciprocal successor in `superseded_by`. Preserve that singular
-   successor contract; changing it to an array requires a coordinated graph and
-   lineage contract change. A Registry-required root `parent_ids: []` records
+   Stage 01 to 03 profiles carry no `supersedes` or `superseded_by`, and their
+   statuses follow the [SDLC](sdlc.md#sequence): a successor records the
+   replaced substance in its Traceability and the predecessor is deleted with
+   its number reserved. Other profiles keep the lineage graph of
+   multiple predecessors in `supersedes` and one reciprocal successor in
+   `superseded_by`; changing that singular successor to an array requires a
+   coordinated graph and lineage contract change. A Registry-required root `parent_ids: []` records
    structural root identity and is not optional placeholder metadata.
 10. Title a Stage 03 Spec as `<Subject> Specification`. The subject names what
     the change contracts, not the document class, so `Technical`, `Capability`,
@@ -415,7 +418,7 @@ non-cancelled Task in the package (`successor`) or an actual approved scope
 withdrawal reference (`withdrawal_ref`). An empty list means no assigned criterion. Withdrawal
 never exempts a criterion still present in the Spec from PASS evidence; only a
 Criterion Acceptance `not-required` decision closes a criterion without PASS.
-A cancelled or superseded Spec keeps no package members in active Stage 03.
+A cancelled Spec keeps no package members in active Stage 03.
 Standalone documents keep their per-document disposition rule. No rule here
 renames lifecycle statuses or applies a union of terminal sets to other stages.
 Stage 03 may be empty when no package remains.
