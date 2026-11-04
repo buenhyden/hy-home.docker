@@ -1,6 +1,6 @@
 ---
 title: "명세 패키지"
-version: "1.3.6"
+version: "1.3.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -41,11 +41,9 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | ID | Package | 목적 |
 | --- | --- | --- |
 | SPEC-0204 | [서비스 연동·보안·운영](./0204-service-integration-security-and-operations/) | 공통 서비스 호환성·외부 연결·백업 경계의 승인용 계약 |
-| SPEC-0209 | [0209-common-document-contract-adoption/](./0209-common-document-contract-adoption/) | 공통 문서 계약의 Registry, 현재 문서, 소비자 정합화 |
 | SPEC-0212 | [요청 기준선·정합화](./0212-request-baseline-and-reconciliation/) | 2026-10-07 요청의 기준선, 서비스 키 인벤토리, 충돌 지도, 후속 package 순서 |
 | SPEC-0218 | [공통 control·예외](./0218-common-controls-and-exceptions/) | root·LAB 모든 서비스의 최종 control을 정확한 예외와 대조, secret group·capability·PID 예산 정리 |
 | SPEC-0226 | [AI 런타임 고정 검증](./0226-ai-runtime-pin-verification/) | Ollama·Open WebUI digest 고정, 모델 load·대기열 한도, 세션 key·모델 catalog 백업과 격리 복원·기능 검증 |
-| SPEC-0231 | [Task lifecycle 6세대](./0231-task-lifecycle-generation-6/) | Spec·Plan 권한 상태, 기준별 수용 표, 다중 실행 항목 Task, 파생 보관 준비 판정과 활성 문서 이행 |
 | SPEC-0244 | [Native memory 통제 검증](./0244-native-memory-controlled-verification/) | Claude native memory effective-state와 hook delivery를 설정·메뉴·영수증별로 분리해 통제 검증 |
 | SPEC-0245 | [Observability CA 실행](./0245-observability-ca-execution/) | Prometheus·Gatus의 백업·격리 복원 검증 후 순차 CA 재생성과 rollback 경계 |
 | SPEC-0248 | [Archive·migration 검사 폐기](./0248-archive-and-migration-check-retirement/) | Stage 98 기록과 migration ledger를 검증하던 gate를 삭제하고 현재 검사가 쓰는 읽기 전용 loader와 legacy 허용만 남겨 목록으로 관리 |
@@ -58,6 +56,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0256 | [Legacy 문서 상태 금지](./0256-legacy-document-status-ban/) | Stage 01~03 lifecycle에서 legacy 상태와 lineage key를 없애고, ADR-0011을 요약·삭제하며, archive scaffolding을 정리함 |
 | SPEC-0257 | [구현 정합성 수정 2차](./0257-implementation-alignment-batch2/) | infra README의 운영 문서 경로, Grafana 링크, Registry의 깨진 예외 항목, 누락된 secret 이름을 바로잡습니다. |
 | SPEC-0259 | [구현 정합성 수정 3차](./0259-implementation-alignment-batch3/) | 삭제된 Spec 경로를 라벨로 쓰는 Stage 02 링크, OpenBao audit 서술, 구현과 일치하는 Stage 05 문서의 승격을 다룹니다 |
+| SPEC-0260 | [SPEC-0209·0231 삭제](./0260-spec-0209-0231-retirement/) | generation 5·6 migration proof를 generation 6 revision에서 읽게 하고, proof를 지녔던 두 package를 삭제해 번호를 Registry `reserved_history`에 예약함 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
@@ -116,8 +115,8 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
 - terminal Task 본문은 package가 남아 있는 동안 고치지 않습니다. 그 본문이
   나중에 삭제된 package를 가리키는 링크는 고치지 않으며, 링크 검사는 번호가
   예약된 package를 향한 그런 링크만 허용합니다.
-- lifecycle generation 이전 proof를 지닌 package(SPEC-0209, SPEC-0231)는 현재
-  terminal Task가 그 proof에 기대는 동안 삭제하지 않습니다.
+- lifecycle generation migration proof는 마지막 generation 6 revision에서 읽으므로,
+  proof를 지녔던 package도 같은 조건으로 삭제합니다.
   철회와 완료의 처분 기록은
   [문서 보존 정책](../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)을
   따릅니다.

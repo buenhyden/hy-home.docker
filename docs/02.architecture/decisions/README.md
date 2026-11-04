@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.12"
+version: "1.6.13"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -122,8 +122,8 @@ docs/02.architecture/decisions/
 - [`ADR-0048`](./0048-authority-parents-and-criterion-acceptance.md):
   Spec·Plan은 승인 권한만, Task는 실행 상태를, criterion마다 하나의 수용 판정을
   두고 보관 검토 준비를 읽을 때 계산하는 accepted decision. ADR-0037 결정 1(마지막
-  문장 제외)과 결정 2·3의 완료 receipt 조항을 대체하며 SPEC-0231과 SPEC-0233이 구현·검증을
-  소유한다.
+  문장 제외)과 결정 2·3의 완료 receipt 조항을 대체하며 SPEC-0231과 SPEC-0233이 구현·검증했고
+  두 Spec은 삭제되었다.
 - [`ADR-0049`](./0049-shared-agent-memory-store.md):
   Claude와 Codex가 main checkout의 SQLite 저장소 하나를 함께 쓰고 native
   memory를 끄는 accepted decision. CLI만 쓰고 rollback journal과 논리 한도를

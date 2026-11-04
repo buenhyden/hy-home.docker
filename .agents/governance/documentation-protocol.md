@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.9.0"
+version: "3.9.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -405,9 +405,9 @@ non-terminal Task stays, with its completed Tasks. A terminal Task body stays
 immutable while its package exists, so a link it holds into a package deleted
 later is not repaired; link alignment excuses exactly that link, from a
 terminal Task at a registered Task path into a package whose number the
-checked root's Registry reserves. A package that carries a lifecycle
-generation migration proof (SPEC-0209, SPEC-0231) stays while a
-current terminal Task is admitted through that proof.
+checked root's Registry reserves. From lifecycle generation 7 the loader reads
+the generation 5 and 6 migration proofs from the last generation 6 revision,
+not the working tree, so a package that carried one is retired like any other.
 
 Stage 03 occupancy is a package judgment using the Registry's Spec, Plan, and
 Task terminal sets. In an unfinished package, completed Tasks and validly
