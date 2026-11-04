@@ -352,6 +352,11 @@ class ScenarioModel:
         # no outbox row, which the shared publish() helper refuses.
         if captured <= getattr(f, "latest_capture", ""):
             raise native.RehearsalFailure("synthetic publication failed")
+        # SQL003 runs_source_business_date_uidx: one run per source per UTC date.
+        days = f.__dict__.setdefault("capture_days", set())
+        if captured[:10] in days:
+            raise native.RehearsalFailure("synthetic publication failed")
+        days.add(captured[:10])
         f.latest_capture = captured
         f.rows[digest] = "pending"
         f.event("publish")

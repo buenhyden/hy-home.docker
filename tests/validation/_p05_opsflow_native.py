@@ -856,7 +856,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         f.receipt["main_restart_recovery"] = facts
         recovery.validate_main_restart_recovery(facts)
         f.receipt["main_restart_quarantine"] = self.quarantine_interrupted(
-            workflow, run, b"p05-after-main-restart", "2026-11-28T12:00:00Z"
+            workflow, run, b"p05-after-main-restart", "2026-11-30T00:00:00Z"
         )
 
     def retry_crashed(self, crashed, interrupted_runs):
@@ -868,7 +868,8 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         statuses, fresh = [], []
         for index, execution in enumerate(crashed):
             run = self.publish_input(
-                b"p05-retry-" + str(index).encode(), f"2026-11-28T{18 + index}:00:00Z"
+                b"p05-retry-" + str(index).encode(),
+                f"2026-12-{1 + index:02d}T00:00:00Z",
             )
             fresh.append(run)
             result = self.api("retry", executionId=execution)
@@ -1028,7 +1029,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         self.recover_interrupted(workflow, interrupted)
         self.phase("main_and_worker_interruption")
         main_lost = self.interrupt_active_send(
-            workflow, b"p05-main-restart", "2026-11-28T06:00:00Z", kill_main=True
+            workflow, b"p05-main-restart", "2026-11-29T00:00:00Z", kill_main=True
         )
         crashed = [self.execution_ids[-1]]
         self.recover_after_main_restart(workflow, main_lost)
@@ -1058,9 +1059,10 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         fourth = self.publish(
             "hy-home.k8s",
             hashlib.sha256(b"p05-restored").hexdigest(),
-            # Newer than every pre-restore capture, including the interrupted
-            # pair, or publish_manifest records it as historical.
-            "2026-11-29T00:00:00Z",
+            # Newer than every pre-restore capture, or publish_manifest records
+            # it as historical; SQL003 also allows one run per source per UTC
+            # date, so every input in this scenario has its own date.
+            "2026-12-31T00:00:00Z",
         )
         self.execute(workflow, "success")
         self.wait_state(fourth, "accepted_by_smtp")
