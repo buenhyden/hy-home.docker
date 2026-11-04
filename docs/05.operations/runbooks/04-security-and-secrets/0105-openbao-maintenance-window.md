@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
@@ -342,7 +342,7 @@ CVE-2025-60876, GO-2026-5932 처분)을 수용한 기록(2026-10-21 교체 승�
 새 stable·Go·x/net·x/crypto가 나왔으면 gate는 실패다. SEC01 기준 15 전체는 다른 gate까지
 포함하므로 W4 조건이 아니다. 둘 중 하나라도 없거나 실패면 W4/W5를 실행하지 않는다. 실제 scan·플랫폼 적용 판단은
 [SEC01 Task](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0009-sec01-stable-security-integration.md)가
-소유합니다. 아래 명령의 준비 여부와 실제 실행은 별도이며, 지정 운영자의 서로 다른 share 2개·5단계 custody 기록(SPEC-0242)과
+소유합니다. 아래 명령의 준비 여부와 실제 실행은 별도이며, 지정 운영자의 서로 다른 share 2개·5단계 custody 기록([1인 관리자 custody 절차](#1인-관리자-custody-절차))과
 W3a 복구 gate도 계속 필요합니다.
 
 #### W0 Preflight

@@ -1,10 +1,10 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.1.3"
+version: "0.1.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -81,7 +81,7 @@ WAL 연속 보관·PITR, 관리 DB 복구, HOME 서비스 기동·정지·재시
 ### Runbook Handoff
 
 정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md)이
-소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002에 있다. HOME 기동·실제 프로젝트
+소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002가 기록했다(삭제됨, 버전 이력). HOME 기동·실제 프로젝트
 provision·운영 백업/복원·이관·전환은 각각 `NOT_RUN`이며 별도 승인이 필요하다.
 
 ### Traceability

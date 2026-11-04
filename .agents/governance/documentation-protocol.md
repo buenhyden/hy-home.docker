@@ -238,7 +238,7 @@ not folder guides. A folder whose only agent rule is "never handle a secret
 value", such as `secrets/`, keeps `README.md` only, because
 [approval boundaries](approval-boundaries.md) already owns that rule.
 
-A folder `AGENTS.md` follows the Stage 99 `governance/agent-guide` template:
+A folder `AGENTS.md` follows the Stage 99 `common/agent-guide` template:
 Overview, Scope, Working Rules, Canonical References, Verification and Related
 Documents. Canonical References name the `.agents/` policies, roles, skills,
 prompts and hook rules, and the `.claude/` and `.codex/` adapters and hooks

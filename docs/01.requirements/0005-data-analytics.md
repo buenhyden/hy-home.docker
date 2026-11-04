@@ -1,10 +1,10 @@
 ---
 title: "Analytics Services Requirements"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "requirements"
 artifact_id: "REQ-0005"
 created: "2026-03-26"
@@ -42,7 +42,7 @@ Build a high-performance analytics hub that collects, processes, and analyzes al
 ### Constraints
 
 - **In Scope**: Analytics requirements, interfaces, and optional-compose execution boundary definitions for OpenSearch, Flink, and Trino, plus the InfluxDB retirement.
-- **Owned elsewhere**: SPEC-0180 and POL-0094 own the Iceberg catalog, table bucket, and SeaweedFS storage operations.
+- **Owned elsewhere**: POL-0094 owns the Iceberg catalog, table bucket, and SeaweedFS storage operations; SPEC-0180 introduced them and is retired (its body is in version history).
 - **Out of Scope**: Detailed dashboard design for individual data visualization tools (Grafana).
 - **Non-goals**: Real-time transactional SQL data processing (owned by core PostgreSQL).
 
@@ -89,6 +89,6 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/descriptions/0012-data-analytics-architecture.md)
 - **ADR**: [0039-analytics-engines-after-lakehouse-convergence.md](../02.architecture/decisions/0039-analytics-engines-after-lakehouse-convergence.md) (supersedes ADR-0015)
-- **Spec**: SPEC-0180 (lakehouse adoption and the removal of ksqlDB and StarRocks)
+- **Spec**: SPEC-0180 (lakehouse adoption and the removal of ksqlDB and StarRocks; retired, its body is in version history)
 - **Guide**: [README.md](../05.operations/guides/README.md)
 - **Retired domain Spec SPEC-0005** (data-analytics): replaced by the data-analytics guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.

@@ -1,10 +1,10 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 created: "2026-03-05"
 ---
 
@@ -22,7 +22,6 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 
 ## Audience
 
-- task 도중 작업 파일이 필요한 agent와 스크립트
 - evidence로 요약되기 전에 task가 만든 산출물을 검토하는 maintainer
 - agent scratch 출력이 저장소에 도달하지 않았는지 감사하는 사람
 

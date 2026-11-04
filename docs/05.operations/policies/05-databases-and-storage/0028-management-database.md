@@ -1,10 +1,10 @@
 ---
 title: "Management Database Operations Policy"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -31,7 +31,8 @@ role, broker, credential 변경은 consumer를 인지하는 유지보수와 roll
   Leaf Compose 파일을 독립적으로 실행하지 않는다.
 - PostgreSQL과 Valkey를 별도의 bind-backed volume에 유지하고 `mng_data_net`,
   health check, secret 파일, 공유 리소스 제한을 보존한다.
-- `mng_postgres_password`, `mng_valkey_password`와 서비스 database credential을
+- `mng_postgres_password`, `mng_valkey_password`, monitor·inspector credential(`mng_pg_monitor_password`,
+  `mng_valkey_monitor_password`, `mng_valkey_inspector_password`)과 서비스 database credential을
   Docker secret 보관에 유지한다. Dump와 evidence는 plaintext 값을 포함해서는
   안 된다.
 - `mng-pg-init`을 restore가 아니라 idempotent provisioning으로 취급한다. Rerun

@@ -126,7 +126,7 @@ retain their own authorization and execution evidence requirements.
   distinct; a changed-only pass does not prove corpus-wide cleanup.
 - `TARGET_TEMPLATE_LITERALS` retains the residual `<!-- Target:` marker rule.
   Current templates and metadata reports no longer generate the marker.
-  SPEC-0173-TSK-0006 owns the historical cleanup evidence; its observed count is
+  SPEC-0173-TSK-0006 recorded the historical cleanup evidence (retired; version history); its observed count is
   not a permanent contract.
 - Eight domains were observed to have both base and optimization-hardening
   Descriptions without declared relationships. REQ-0026-FR-0005 requires clear
