@@ -312,6 +312,8 @@ class NativeDataTests(unittest.TestCase):
         options = guards.create_options("storage-admin", "50000:0")
         self.assertIn("--read-only", options)
         self.assertIn("128m", options)
+        # Below 0.25 CPU each boto3 client start overruns the 180s S3 budget.
+        self.assertEqual("0.25", options[options.index("--cpus") + 1])
         self.assertNotIn("--publish", options)
         self.assertNotIn("--mount", options)
         self.assertEqual("mng-pg", guards.network_alias("metadata-pg"))
