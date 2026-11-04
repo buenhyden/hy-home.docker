@@ -1658,18 +1658,17 @@ Narrative after the registered table.
             dataclasses.replace(plan, status="in-review"),
             (task,),
         )
-        for terminal in ("cancelled", "superseded"):
+        spec_packages._validate_execution_states(
+            dataclasses.replace(spec, status="cancelled"),
+            dataclasses.replace(plan, status="cancelled"),
+            (dataclasses.replace(task, status="cancelled"),),
+        )
+        with self.assertRaisesRegex(
+            spec_packages.SpecPackageError, "active Plan or Task"
+        ):
             spec_packages._validate_execution_states(
-                dataclasses.replace(spec, status=terminal),
-                dataclasses.replace(plan, status=terminal),
-                (dataclasses.replace(task, status="cancelled"),),
+                dataclasses.replace(spec, status="cancelled"), plan, (task,)
             )
-            with self.assertRaisesRegex(
-                spec_packages.SpecPackageError, "active Plan or Task"
-            ):
-                spec_packages._validate_execution_states(
-                    dataclasses.replace(spec, status=terminal), plan, (task,)
-                )
 
     def test_v4_rejects_previous_status_aliases_and_dual_task_parents(self) -> None:
         spec_packages = _spec_packages_module()

@@ -166,6 +166,9 @@ body begins with `status:`.
 | E13 | 4 | W4 | document-commands | links `commands` mode, commit bc6fe0bb5 | FAIL | 2 findings: the ignored `_workspace` paths in the DATA-0096 README, present on main before this change | required | - |
 | E14 | 4 | W4 | base-drift | metadata check-changed and corpus lifecycle against `origin/main` after PR #728 merged (4adeb3d37), commit bc6fe0bb5 | FAIL | configuration error on `docs/01.requirements/AGENTS.md`, which this branch's loaders did not yet admit; the rebase onto 4adeb3d37 brings in that support | required | - |
 | E15 | 4 | W4 | base-drift | metadata check-changed and corpus lifecycle against `origin/main` 4adeb3d37 after the rebase, commit 36ebc9517 | PASS | check-changed 17 selected, zero violations; lifecycle and occupancy zero; check-active 497 zero; links alignment PASS; Script Manifest valid; registry, Spec Package, metadata validator, heading, metadata lifecycle, architecture and link tests 425 OK | required | E14 |
+| E16 | 4 | W4 | governance-suite | `tests/lib/document_governance` discovery after the review fixes, commit b8893cc28 on 46a7811dd, quiet tree | FAIL | 760 tests, 1 error: `test_v4_preexecution_and_terminal_package_occupancy` still iterated `superseded`, which the narrowed loader rejects | required | - |
+| E17 | 4 | W4 | review-fix-suites | CI routing and surface ownership, validation lifecycle, `test_ci_gate_evidence` (system python3), `tests/lib/gate`, commit b8893cc28 | PASS | 89, 20, 21, and 139 tests OK | required | - |
+| E18 | 4 | W4 | review-fix-checks | metadata check-changed against `origin/main` 46a7811dd and check-active, corpus lifecycle, links alignment and commands, Script Manifest, renderer `--check`, agent governance contract, commit b8893cc28 | PASS | 20 and 497 selected, zero violations; lifecycle and occupancy zero; both link modes PASS; manifest valid; drift 0; contract failures 0 | required | - |
 
 ## Criterion Acceptance
 
@@ -178,8 +181,11 @@ body begins with `status:`.
 
 ## Review and Completion
 
-Local checks are recorded above. Independent review and hosted CI have not run,
-and no criterion is accepted yet.
+Local checks are recorded above. E8, E10, E11, and E12 predate the rebases
+onto 4adeb3d37 and 46a7811dd; the rows from E16 on are the review-fix runs.
+Independent review requested changes I1 to I4 and M1 to M8, which commits
+bf3ea869e and b8893cc28 and the follow-up test fix address. Hosted CI has not
+run, and no criterion is accepted yet.
 
 ## Related Documents
 
