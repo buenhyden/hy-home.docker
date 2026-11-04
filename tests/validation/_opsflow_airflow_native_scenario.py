@@ -489,7 +489,7 @@ else:
         if observed != {
             "digest": digest,
             "metadata": {"reason": "manifest_invalid", "data-version": digest},
-            "type": "application/octet-stream",
+            "type": "application/json",
         }:
             raise fixture.RehearsalFailure("quarantine metadata changed")
         self.install_input(self.raw, capture_context=True)

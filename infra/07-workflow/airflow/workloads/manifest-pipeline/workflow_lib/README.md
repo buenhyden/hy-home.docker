@@ -31,7 +31,8 @@ double의 PASS로 대신하지 않습니다. 설정 예시는 실행 가능한 c
 
 `Store.put_quarantine(key, body, reason)`은 1MiB 이하의 검증 실패 원본을
 `manifest-quarantine/<source>/<business_date>/<sha256>.json`에 조건부로 보존합니다.
-Content-Type은 `application/octet-stream`이며 메타데이터 `reason`은 고정 코드
+Content-Type은 key 확장자와 같은 `application/json`이며(SeaweedFS는 `.json` key를
+요청값과 관계없이 이 형식으로 저장한다) 메타데이터 `reason`은 고정 코드
 `manifest_invalid` 또는 `partition_mismatch`, `data-version`은 원본 SHA-256입니다.
 기존 객체의 bytes와 메타데이터가 다르거나 보존에 실패하면 게시를 중단합니다.
 크기 초과·읽기 실패는 원본이 보존됐다고 기록하지 않습니다.

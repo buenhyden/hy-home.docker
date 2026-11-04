@@ -379,6 +379,23 @@ class ObjectAdapter(unittest.TestCase):
             + ".json"
         )
 
+    def test_quarantine_survives_store_typing_json_keys_by_extension(self):
+        # SeaweedFS 4.48 stores application/json for any *.json key, whatever
+        # ContentType the request sent; the preserved type must match it.
+        original = self.client.put_object
+
+        def put_object(**kwargs):
+            result = original(**kwargs)
+            if kwargs["Key"].endswith(".json"):
+                self.client.metadata[kwargs["Key"]]["ContentType"] = "application/json"
+            return result
+
+        self.client.put_object = put_object
+        raw = b"invalid"
+        key = self.quarantine_key(raw)
+        self.store.put_quarantine(key, raw, "manifest_invalid")
+        self.assertEqual("application/json", self.client.metadata[key]["ContentType"])
+
     def test_quarantine_verifies_exact_bytes_metadata_and_immutable_replay(self):
         raw = b"invalid"
         key = self.quarantine_key(raw)
@@ -387,7 +404,7 @@ class ObjectAdapter(unittest.TestCase):
         self.assertEqual(
             self.client.metadata[key],
             {
-                "ContentType": "application/octet-stream",
+                "ContentType": "application/json",
                 "Metadata": {
                     "reason": "manifest_invalid",
                     "data-version": hashlib.sha256(raw).hexdigest(),
@@ -426,7 +443,7 @@ class ObjectAdapter(unittest.TestCase):
         raw, key = b"invalid", self.quarantine_key()
         self.store.put_quarantine(key, raw, "manifest_invalid")
         for field, value in (
-            ("ContentType", "application/json"),
+            ("ContentType", "application/octet-stream"),
             (
                 "Metadata",
                 {
@@ -472,7 +489,7 @@ class ObjectAdapter(unittest.TestCase):
         response = {
             "Body": Body(b"invalid"),
             "ETag": '"fixed"',
-            "ContentType": "application/octet-stream",
+            "ContentType": "application/json",
             "Metadata": {},
         }
         with patch.object(self.client, "get_object", return_value=response):

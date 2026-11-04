@@ -197,7 +197,7 @@ class OpsflowAcceptanceSeams(unittest.TestCase):
                 self.assertEqual(
                     self.client.metadata[quarantine],
                     {
-                        "ContentType": "application/octet-stream",
+                        "ContentType": "application/json",
                         "Metadata": {
                             "reason": "partition_mismatch"
                             if case["error"] == "partition_mismatch"
