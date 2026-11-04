@@ -108,6 +108,10 @@ runbook 0098, plus ADR-0038 (accepted). 30 Stage 05 documents in total.
 | E5 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref origin/main`, same tree | FAIL | one violation: spec-package-invalid, same cause as E4 | required | - |
 | E6 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `language`, `traceability`, `entrypoint`, same tree | PASS | catalog PASS; every link mode PASS, 876 documents, zero failures | required | - |
 | E7 | 4 | W4 | hosted-ci | GitHub Actions | NOT_RUN | branch not pushed | required | - |
+| E8 | 4 | W4 | metadata-changed | `check-changed --base-ref origin/main`, package complete and staged, after merging origin/main 52d08bf94 (PR #736), clean tree at e454d3697 | PASS | selected 57, zero violations | required | E4 |
+| E9 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref origin/main`, same tree | PASS | lifecycle zero, occupancy zero | required | E5 |
+| E10 | 4 | W4 | metadata-active | `check-active`, same tree | PASS | selected 533, zero violations | required | - |
+| E11 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, `entrypoint`, same tree | PASS | catalog PASS; every link mode PASS, 879 documents, 8113 links, zero failures | required | - |
 
 ## Criterion Acceptance
 
