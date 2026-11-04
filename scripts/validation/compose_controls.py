@@ -37,6 +37,16 @@ LAB_INPUTS = {
     "LAB_LOCUST_SCENARIO_DIR": "/nonexistent/locust-scenario",
     "LAB_LOCUST_RESULT_DIR": "/nonexistent/locust-results",
     "LAB_OPENSEARCH_CERT_DIR": "/nonexistent/opensearch-certs",
+    # Required HOME endpoints of the SPEC-0262 LABs; same synthetic values as
+    # tests/validation/test_lab_isolation.py.
+    "LAB_LAKEHOUSE_S3_ENDPOINT": "http://lab-endpoint.invalid:8333",
+    "LAB_LAKEHOUSE_CATALOG_URI": "http://lab-endpoint.invalid:8181",
+    "LAB_DBT_DB_HOST": "lab-endpoint.invalid",
+    "LAB_SUPERSET_DB_HOST": "lab-endpoint.invalid",
+    "LAB_SUPERSET_DEFAULT_URL": "lab.invalid",
+    "LAB_SUPERSET_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
+    "LAB_SONARQUBE_DB_HOST": "lab-endpoint.invalid",
+    "LAB_STALWART_DEFAULT_URL": "lab.invalid",
 }
 SECRETS_GID = "1000"
 DAEMON_RESTART = {"unless-stopped", "always"}
