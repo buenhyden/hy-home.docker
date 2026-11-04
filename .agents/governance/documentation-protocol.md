@@ -120,10 +120,10 @@ retired identities.
    common and governance fields. Its skill-local invocation control permits only
    explicit invocation. Stage 99 defines both shapes; native discovery does not
    change policy ownership or role permissions.
-   Stage 01 to 03 profiles carry no `supersedes` or `superseded_by` and no
-   `deprecated`, `superseded`, `retired`, or `archived` status: a successor
-   records the replaced substance in its Traceability and the predecessor is
-   deleted with its number reserved. Other profiles keep the lineage graph of
+   Stage 01 to 03 profiles carry no `supersedes` or `superseded_by`, and their
+   statuses follow the [SDLC](sdlc.md#sequence): a successor records the
+   replaced substance in its Traceability and the predecessor is deleted with
+   its number reserved. Other profiles keep the lineage graph of
    multiple predecessors in `supersedes` and one reciprocal successor in
    `superseded_by`; changing that singular successor to an array requires a
    coordinated graph and lineage contract change. A Registry-required root `parent_ids: []` records

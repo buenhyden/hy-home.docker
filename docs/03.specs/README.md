@@ -52,8 +52,8 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0249 | [Stage 98 archive 삭제](./0249-stage98-archive-deletion/) | Stage 98 기록을 01·02 문서에 요약하고 삭제하며, 폐기 번호를 Registry `reserved_history`로 옮기고 archive를 읽던 검사를 제거 |
 | SPEC-0250 | [완료 Spec package 삭제](./0250-finished-spec-package-deletion/) | 모든 문서가 terminal인 Spec package를 삭제하고 번호를 Registry `reserved_history`에 예약하며, 현재 문서의 링크를 일반 텍스트로 바꿈 |
 | SPEC-0251 | [README와 AGENTS.md 분리](./0251-readme-and-agents-guide-split/) | README는 사람, 폴더 AGENTS.md는 AI agent를 대상으로 나누고, AGENTS.md를 둘 폴더의 규칙과 9개 폴더 guide를 정합니다 |
-| SPEC-0252 | [Legacy 문서 상태 금지](./0252-legacy-document-status-ban/) | Stage 01~03 lifecycle에서 legacy 상태와 lineage key를 없애고, ADR-0011을 요약·삭제하며, archive scaffolding을 정리함 |
 | SPEC-0253 | [QA·CI legacy 정리](./0253-qa-ci-legacy-cleanup/) | 빈 frozen archive payload 경계와 삭제된 Task를 가리키던 CI gate evidence owner를 정리하고, 일회성 script·test를 점검합니다 |
+| SPEC-0255 | [Legacy 문서 상태 금지](./0255-legacy-document-status-ban/) | Stage 01~03 lifecycle에서 legacy 상태와 lineage key를 없애고, ADR-0011을 요약·삭제하며, archive scaffolding을 정리함 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)

@@ -6,7 +6,7 @@ status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-04"
 layer: "specs"
-artifact_id: "SPEC-0252"
+artifact_id: "SPEC-0255"
 parent_ids:
 - "REQ-0026"
 - "AD-0030"
@@ -31,8 +31,10 @@ profile schemas, the Spec Package loader, ADR-0011 (the only `deprecated`
 document), the inert `branch_integration_receipts` field, the archive profiles
 and templates, and the governance text that names these states. Operational,
 reference, and governance profiles keep their own lifecycles.
-PR #728 allocates SPEC-0251, so this package takes SPEC-0252 and the Registry
-Spec `high_water` resolves to 252 when both land.
+SPEC-0251 and SPEC-0253 are on main and SPEC-0254 is claimed by another
+branch, so this package takes SPEC-0255 and the Registry Spec `high_water` is
+255. A package numbered at or below the base high-water counts as reuse, so
+SPEC-0254 has to land before this one or move above 255.
 
 ## Contracts
 

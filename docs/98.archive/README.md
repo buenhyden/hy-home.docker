@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "3.0.1"
+version: "3.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 layer: "archive"
 ---
 
@@ -43,7 +43,8 @@ Stage 98은 활성 스테이지를 떠난 문서의 처분 체계를 정의합�
 | --- | --- |
 | `README.md` | 처분 체계 설명 |
 
-처분 분류는 다음과 같습니다. 기록이 없으므로 각 폴더는 지금 존재하지 않습니다.
+처분 분류는 다음과 같습니다. 이 분류는 설명일 뿐이며, 대응하는 Registry profile이나
+template은 없습니다. 기록이 없으므로 각 폴더는 지금 존재하지 않습니다.
 
 | 분류 | 뜻 |
 | --- | --- |

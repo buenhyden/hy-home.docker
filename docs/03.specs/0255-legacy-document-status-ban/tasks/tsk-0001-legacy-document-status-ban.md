@@ -6,9 +6,9 @@ status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-04"
 layer: "specs"
-artifact_id: "SPEC-0252-TSK-0001"
+artifact_id: "SPEC-0255-TSK-0001"
 parent_ids:
-- "SPEC-0252-PLAN-0001"
+- "SPEC-0255-PLAN-0001"
 created: "2026-11-04"
 ---
 
@@ -45,10 +45,10 @@ progress under the approved parents. Hosted CI has not run.
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
-| SPEC-0252 | draft | approved | #current-contract-decision |
-| SPEC-0252-PLAN-0001 | draft | approved | #current-contract-decision |
-| SPEC-0252-TSK-0001 | draft | ready | #current-readiness-and-execution |
-| SPEC-0252-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0255 | draft | approved | #current-contract-decision |
+| SPEC-0255-PLAN-0001 | draft | approved | #current-contract-decision |
+| SPEC-0255-TSK-0001 | draft | ready | #current-readiness-and-execution |
+| SPEC-0255-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
 ### Removed states and keys
 
@@ -73,6 +73,23 @@ progress under the approved parents. Hosted CI has not run.
 - `branch_integration_receipts` is removed from the Registry, the frontmatter
   schema, the Spec Package loader, and SPEC-0204-TSK-0001, which is `blocked`
   and therefore editable. Receipts granted nothing since SPEC-0249.
+- Folder agent guides, three of which sit under Stage 01 to 03, move from the
+  `living` lifecycle to a new `agent-guide` lifecycle with `draft`,
+  `in-review`, and `active`; only their `lifecycle_id` and transitions entry
+  change.
+- The architecture loader rejects `supersedes` and `superseded_by` on a Stage
+  02 document, and the supersession graph (`validate_supersession_graph`,
+  `ArchitectureFinding`, `_cycle_nodes`, `_EFFECTIVE_SUPERSESSION_STATUSES`)
+  and its call in `metadata/reference.py` are removed.
+- `spec_packages.py` drops the `superseded` Spec and Plan literals that the
+  narrowed lifecycles can no longer produce.
+- The common transition fallback keeps `draft`, `active`, and `completed`,
+  without `superseded` or `archived`; no Stage 01 to 03 profile uses it, and
+  its only reader is the migration manifest path in `lifecycle/contract.py`.
+- The frontmatter `type` pattern no longer admits the `archive/` family.
+- `archive_authorizations` stays in the Task profile and schema. Only completed
+  SPEC-0212-TSK-0012 carries it; removing the key made `check-changed` reject
+  that immutable Task body, so the key is kept until the package is deleted.
 
 ### ADR-0011 retirement
 
@@ -87,9 +104,10 @@ snapshot keep their mentions.
 
 ### Other cleanup
 
-SPEC-0204-TSK-0010 (in progress) had a body line that began `status:`
-(`status: PARTIAL, draft recorded.`); it now reads `S10b result: PARTIAL,
-draft recorded.` and no longer looks like frontmatter.
+SPEC-0204-TSK-0010 (in progress) had a body line that began with `status:`
+and read `status: PARTIAL, draft recorded.`. It now reads "S10b result:"
+followed on the next line by "`PARTIAL`, draft recorded.", so no line of the
+body begins with `status:`.
 
 ### Test changes
 
@@ -98,16 +116,19 @@ draft recorded.` and no longer looks like frontmatter.
 | `test_task_branch_integration_receipt_has_one_closed_typed_contract` | Replaced by `test_retired_branch_integration_receipt_is_rejected`: the field is in no profile, and the closed schema rejects it |
 | `test_an_unsafe_receipt_path_is_rejected_at_load` | Deleted: the loader no longer parses receipts; the schema rejection above covers the field |
 | `test_stage_01_to_03_lifecycles_offer_no_legacy_status` | Added |
-| `test_a_legacy_status_in_stage_01_or_02_is_an_invalid_status` | Added: each legacy status on a Requirement, AD, and ADR yields `invalid-status` |
+| `test_a_legacy_status_in_stage_01_to_03_is_an_invalid_status` | Added: each legacy status on a Requirement, AD, ADR, Spec, Plan, and Task yields `invalid-status` |
+| `test_a_lineage_key_in_stage_01_to_03_is_type_inappropriate` | Added: `supersedes` or `superseded_by` on a Requirement or Spec yields `type-inappropriate-key` |
+| `test_stage_01_to_03_lifecycles_offer_no_legacy_status` | Now derives its profile set from the Registry path patterns under `docs/01` to `docs/03`, folder agent guides included |
 | Four lifecycle expectation tests and the profile map test | Updated to the narrowed lifecycles; `migration` and `tombstone` left the profile map |
-| `test_loads_frozen_canonical_documents_and_validates_graph` | Loads a plain accepted ADR; it no longer builds a superseded pair |
+| `test_loads_frozen_canonical_documents_and_validates_graph` | Now `test_loads_frozen_canonical_documents`; it loads a plain accepted ADR |
+| `test_a_lineage_key_fails_closed_at_load` | Added: the architecture loader rejects `supersedes` and `superseded_by` |
 | `test_a_legacy_status_fails_closed_at_load` | Added: the architecture loader rejects `superseded`, `deprecated`, and `retired` |
-| `test_dangling_and_asymmetric_supersession_are_reported`, `test_cyclic_supersession_is_reported` | Deleted: their fixtures need a `superseded` status the loader now rejects; the graph rules keep their direct-construction tests |
+| `test_dangling_and_asymmetric_supersession_are_reported`, `test_cyclic_supersession_is_reported`, `test_supersession_edges_require_effective_successor_and_superseded_predecessor`, `test_superseded_successor_remains_effective_in_a_reciprocal_chain`, `test_preserved_superseded_adr_still_resolves` | Deleted with the supersession graph they tested |
 | `test_metadata_cli_rejects_a_legacy_architecture_status` | Was `test_metadata_cli_rejects_ineffective_supersession_successor`; now asserts the CLI rejects a `superseded` ADR |
 | `SealedSectionShapeTests`, `test_a_sealed_shape_is_not_held_to_the_required_order` | Deleted with the sealed section shape mechanism, which only archive route records used |
 | Frozen exemption path `docs/98.archive/retired/...` | Dropped from the heading exemption test: no archive profile classifies it |
 | `test_a_stage_98_anchor_is_no_longer_admitted` | Was `test_registered_archive_anchor_remains_admitted`; a Stage 98 anchor is now unadmitted |
-| `test_every_text_mutator_excludes_the_same_frozen_payloads` | The Registry defines no frozen set, so the anchor must select no tracked file |
+| UNJUDGED language entries `migration`, `tombstone`, and the `archive-record-` prefix | Dropped with the profiles |
 
 ### Open issues
 
@@ -116,11 +137,10 @@ draft recorded.` and no longer looks like frontmatter.
   `common.archive_source_prefixes` remain; no current profile uses them, and
   removing them is a separate validator change.
 - The `migration` and `tombstone` identity spaces keep their reserved numbers.
-- `architecture.py` and `metadata/reference.py` keep the supersession graph
-  code; it can no longer receive an edge from a Stage 02 document.
-- The `frozen_archive_payloads` pre-commit anchor and its reader in
-  `scripts/hooks/post-tool-validate.sh` remain and select no file; removing
-  them is a hook change for the QA and CI/CD cleanup phase.
+- `archive_authorizations` remains for completed SPEC-0212-TSK-0012 and can go
+  when that package is deleted.
+- SPEC-0253-TSK-0001 still notes that SPEC-0252 is claimed; this package was
+  renumbered to SPEC-0255 and 252 is unissued.
 - The `sealed` status and `sealed-record` lifecycle are removed with the
   archive profiles; `_registered_section_findings` keeps an unused
   `changed_boundary` parameter.
