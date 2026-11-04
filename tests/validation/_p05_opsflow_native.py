@@ -507,6 +507,16 @@ class P05Fixture(legacy.NativeFixture):
             raise RehearsalFailure("SMTP hold log unavailable")
         return recovery.parse_hold(result.stdout)
 
+    def log_count(self, role, pattern):
+        # A restarted container keeps its earlier log, so presence alone
+        # cannot show that a new process logged the line.
+        record = self.containers[role]
+        self._verify_container(record)
+        result = self.client.run_result("logs", record.cid)
+        if result.returncode:
+            raise RehearsalFailure("owned container log unavailable")
+        return (result.stdout + result.stderr).count(pattern)
+
     def kill(self, role):
         # SIGKILL, not `docker stop`: no graceful shutdown can let the node
         # finish or the transport's own socket timeout end the session.
@@ -533,6 +543,8 @@ class P05Fixture(legacy.NativeFixture):
             sort_keys=True,
         )
 
+
+RUNNER_REGISTERED = 'Registered runner "'
 
 PROFILE_API = historical.API_JS.replace(
     "else if(input.action==='credential_update')",
@@ -718,9 +730,10 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             self.broker_jobs([interrupted]), [interrupted]
         )
         f.receipt["interrupted_broker_job_matching"] = before
+        registered = f.log_count("worker", RUNNER_REGISTERED)
         for role in ("mailpit", "worker", "runner"):
             f.start(role)
-        self.await_worker_and_capture()
+        self.await_worker_and_capture(registered)
         # n8n's own recovery only: the restarted worker fails and deletes the
         # stalled job and main marks the execution crashed. The rehearsal
         # removes nothing from the queue.
@@ -740,7 +753,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             workflow, run, b"p05-after-interruption", "2026-11-28T00:00:00Z"
         )
 
-    def await_worker_and_capture(self):
+    def await_worker_and_capture(self, registered_before):
         f = self.fixture
         for target, seconds in (
             ("http://127.0.0.1:5679/healthz", 300),
@@ -753,8 +766,11 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
                 "recovered worker or capture readiness expired",
                 seconds,
             )
+        # The external runner must register with the restarted worker; an
+        # earlier registration line would let a Code node wait out the 60 s
+        # runner task timeout (native attempt 9).
         f.wait_until(
-            lambda: f.logs_contain("worker", 'Registered runner "'),
+            lambda: f.log_count("worker", RUNNER_REGISTERED) > registered_before,
             "external runner did not re-register",
             60,
         )
@@ -837,6 +853,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         f.receipt["main_restart_execution_id"] = interrupted
         # Main is down, so the worker probes; it must run before the killed
         # worker's lock expires or the job could already be gone.
+        registered = f.log_count("worker", RUNNER_REGISTERED)
         f.start("worker")
         before = recovery.broker_job_count(
             self.broker_jobs([interrupted], "worker"), [interrupted]
@@ -844,7 +861,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         probe_ms = int((time.monotonic() - self.killed_at) * 1000)
         for role in ("mailpit", "runner"):
             f.start(role)
-        self.await_worker_and_capture()
+        self.await_worker_and_capture(registered)
         after = self.settle_job(interrupted, "worker")
         if not interrupted.isdecimal():
             raise RehearsalFailure("interrupted execution id rejected")

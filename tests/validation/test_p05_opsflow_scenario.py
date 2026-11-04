@@ -47,6 +47,8 @@ class MemoryFixture:
         # A restarted worker settles stalled jobs once their lock expires,
         # modelled as the next wait after the start.
         self.settle_pending = False
+        # Runner registrations logged by worker processes, cumulative.
+        self.registrations = 1
 
     def event(self, name):
         self.events.append(name)
@@ -134,6 +136,8 @@ class MemoryFixture:
     def start(self, role):
         self.event("start:" + role)
         self.running[role] = True
+        if role == "worker" and self.fail != "stale-runner":
+            self.registrations += 1
         if role == "worker" and self.jobs:
             self.settle_pending = True
         if role == "main" and self.fail != "no-startup-recovery":
@@ -160,6 +164,11 @@ class MemoryFixture:
             raise native.RehearsalFailure("capture still running")
         self.event("smtp-hold")
         self.running[native.HOLD] = True
+
+    def log_count(self, role, pattern):
+        if role != "worker" or pattern != native.RUNNER_REGISTERED:
+            raise AssertionError("unexpected log count")
+        return self.registrations
 
     def logs_contain(self, role, pattern):
         if role != "worker":
@@ -632,6 +641,7 @@ class P05ScenarioStateTests(unittest.TestCase):
             "job-not-surviving",
             "no-stall-recovery",
             "not-crashed",
+            "stale-runner",
         ):
             with self.subTest(failure=failure):
                 model = ScenarioModel(failure)
