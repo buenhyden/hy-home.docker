@@ -6,9 +6,9 @@ status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-04"
 layer: "specs"
-artifact_id: "SPEC-0258-TSK-0001"
+artifact_id: "SPEC-0260-TSK-0001"
 parent_ids:
-- "SPEC-0258-PLAN-0001"
+- "SPEC-0260-PLAN-0001"
 created: "2026-11-04"
 ---
 
@@ -45,10 +45,10 @@ progress under the approved parents. Hosted CI has not run.
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
-| SPEC-0258 | draft | approved | #current-contract-decision |
-| SPEC-0258-PLAN-0001 | draft | approved | #current-contract-decision |
-| SPEC-0258-TSK-0001 | draft | ready | #current-readiness-and-execution |
-| SPEC-0258-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0260 | draft | approved | #current-contract-decision |
+| SPEC-0260-PLAN-0001 | draft | approved | #current-contract-decision |
+| SPEC-0260-TSK-0001 | draft | ready | #current-readiness-and-execution |
+| SPEC-0260-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
 ### Decisions
 
@@ -81,10 +81,14 @@ progress under the approved parents. Hosted CI has not run.
   `docs/03.specs/0231-task-lifecycle-generation-6/`: deleted.
 - `docs/99.templates/registry.json`: 209 and 231 in `reserved_history`;
   high-water 258, `next_number` 259.
-- `docs/03.specs/README.md`: rows removed, SPEC-0258 row, retention bullet.
+- `docs/03.specs/README.md`: rows removed, SPEC-0260 row, retention bullet.
 - `.agents/governance/documentation-protocol.md`: retention sentence.
 - `docs/02.architecture/decisions/README.md`: ADR-0048 entry wording.
 - `docs/03.specs/0250-finished-spec-package-deletion/spec.md`: past tense.
+
+- **Renumbering:** SPEC-0259 merged first (PR #738) and raised the Spec
+  high-water to 259, so this package moved from SPEC-0258 to SPEC-0260; 258
+  stays unissued. Registry Spec high-water is 260.
 
 ### Open issues
 

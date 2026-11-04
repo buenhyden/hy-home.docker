@@ -41,7 +41,7 @@ to the PR #723 review fix, not to this Spec.
   whose number the checked root's Registry reserves.
 - Generation 7 historical admission reads only packages still in the tree.
 - SPEC-0209 and SPEC-0231 stayed in this batch, because current terminal
-  Tasks were admitted through the migration proofs they carried; SPEC-0258
+  Tasks were admitted through the migration proofs they carried; SPEC-0260
   later read those proofs from the generation 6 revision and deleted both.
 - A package is deleted only when it is ready for removal review and its
   removal is approved; the user's instruction approves this batch, and the Task

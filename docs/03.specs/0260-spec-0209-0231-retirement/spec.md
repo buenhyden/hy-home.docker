@@ -6,7 +6,7 @@ status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-04"
 layer: "specs"
-artifact_id: "SPEC-0258"
+artifact_id: "SPEC-0260"
 parent_ids:
 - "REQ-0026"
 - "AD-0030"
