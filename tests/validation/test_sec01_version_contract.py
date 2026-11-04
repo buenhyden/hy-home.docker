@@ -30,11 +30,11 @@ PATCH_STABLE_IMAGES = {
         "renovate",
     ): "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1",
     (
-        "infra/11-quality/sonarqube/docker-compose.yml",
+        "labs/sonarqube.yml",
         "sonarqube",
     ): "sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8",
     (
-        "infra/10-communication/stalwart/docker-compose.yml",
+        "labs/stalwart.yml",
         "stalwart",
     ): "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c",
     (
@@ -76,20 +76,16 @@ class CandidateContract(unittest.TestCase):
                 self.assertEqual(compose["services"][service]["image"], expected)
 
         stalwart_compose = yaml.safe_load(
-            (ROOT / "infra/10-communication/stalwart/docker-compose.yml").read_text(
-                encoding="utf-8"
-            )
+            (ROOT / "labs/stalwart.yml").read_text(encoding="utf-8")
         )
         self.assertEqual(
             stalwart_compose["services"]["stalwart-config"]["image"],
             "hy-home/stalwart-config:0.16.27-cli1.0.13-local",
         )
-        dockerfile = (
-            ROOT / "infra/10-communication/stalwart/config/Dockerfile"
-        ).read_text(encoding="utf-8")
-        stalwart_image = PATCH_STABLE_IMAGES[
-            ("infra/10-communication/stalwart/docker-compose.yml", "stalwart")
-        ]
+        dockerfile = (ROOT / "labs/stalwart/config/Dockerfile").read_text(
+            encoding="utf-8"
+        )
+        stalwart_image = PATCH_STABLE_IMAGES[("labs/stalwart.yml", "stalwart")]
         self.assertIn(f"FROM {stalwart_image}", dockerfile)
 
     def test_openwebui_minor_refresh_keeps_exact_cuda_variant(self):
@@ -162,9 +158,9 @@ class CandidateContract(unittest.TestCase):
         )
 
     def test_trino_candidate_uses_official_launcher_and_keeps_secret_boundary(self):
-        service = yaml.safe_load(
-            (ROOT / "infra/12-analytics/trino/docker-compose.yml").read_text()
-        )["services"]["trino"]
+        service = yaml.safe_load((ROOT / "labs/lakehouse.yml").read_text())["services"][
+            "trino"
+        ]
         self.assertEqual(
             "trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f",
             service["image"],
@@ -178,7 +174,8 @@ class CandidateContract(unittest.TestCase):
         )
         self.assertEqual(["seaweedfs_s3_lakehouse_secret_key"], service["secrets"])
         self.assertIn(
-            "./hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro", service["volumes"]
+            "./lakehouse/trino/hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro",
+            service["volumes"],
         )
         self.assertTrue(all(port.startswith("127.0.0.1:") for port in service["ports"]))
         self.assertEqual("template-infra-readonly-high", service["extends"]["service"])

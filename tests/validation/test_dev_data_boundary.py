@@ -29,7 +29,7 @@ class DevDataBoundaryTests(unittest.TestCase):
         self.assertNotIn("service_postgres_db", sql)
 
     def test_dbt_and_cdc_target_named_dev_fixture(self):
-        dbt = compose("infra/12-analytics/dbt/docker-compose.yml")
+        dbt = compose("labs/dbt.yml")
         kafka = compose("infra/05-messaging/kafka/docker-compose.yml")
         connector = json.loads(
             (
@@ -37,9 +37,12 @@ class DevDataBoundaryTests(unittest.TestCase):
                 / "infra/05-messaging/kafka/connect/debezium/postgres-connector.json"
             ).read_text(encoding="utf-8")
         )
-        self.assertEqual(dbt["dbt"]["environment"]["DBT_DB_HOST"], "dev-pg")
+        # SPEC-0262: dbt is a LAB; the dev-pg endpoint is a required LAB input.
+        dev_pg_input = "${LAB_DBT_DB_HOST:?set an approved dev-pg endpoint host}"
+        self.assertEqual(dbt["dbt"]["environment"]["DBT_DB_HOST"], dev_pg_input)
+        self.assertEqual(dbt["dbt-db-provision"]["environment"]["PGHOST"], dev_pg_input)
         self.assertEqual(dbt["dbt"]["environment"]["DBT_DB_NAME"], "platform_dev")
-        profile = (ROOT / "infra/12-analytics/dbt/profiles/profiles.yml").read_text()
+        profile = (ROOT / "labs/dbt/profiles/profiles.yml").read_text()
         self.assertIn("env_var('DBT_DB_HOST')", profile)
         self.assertIn("env_var('DBT_DB_NAME')", profile)
         self.assertNotIn("mng-pg", profile)
@@ -87,7 +90,13 @@ class DevDataBoundaryTests(unittest.TestCase):
                     with self.subTest(service=name, key=key):
                         self.assertNotIn("POSTGRES_PORT", str(value))
                         self.assertNotIn("POSTGRES_DEFAULT_DB", str(value))
-        self.assertGreaterEqual(consumers, 4)
+        # SPEC-0262 moved the two dbt consumers to labs/dbt.yml, checked below.
+        self.assertGreaterEqual(consumers, 2)
+        for name, service in compose("labs/dbt.yml").items():
+            for key, value in (service.get("environment") or {}).items():
+                with self.subTest(service=name, key=key):
+                    self.assertNotIn("POSTGRES_PORT", str(value))
+                    self.assertNotIn("POSTGRES_DEFAULT_DB", str(value))
 
     def test_dev_exporters_use_monitor_accounts_not_admin(self):
         services = compose("infra/04-data/dev-db/docker-compose.yml")

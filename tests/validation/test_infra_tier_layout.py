@@ -27,7 +27,20 @@ DATA = (
     "neo4j",
     "qdrant",
 )
-ANALYTICS = ("flink", "spark", "trino", "great-expectations", "superset", "dbt")
+# Analytics packages left the root for standalone LABs (SPEC-0262).
+ANALYTICS_LABS = {
+    "lakehouse": (
+        "lakehouse/flink",
+        "lakehouse/spark",
+        "lakehouse/trino",
+        "lakehouse/great-expectations",
+    ),
+    "dbt": ("dbt",),
+    "superset": ("superset",),
+    "jupyterlab": ("jupyterlab",),
+    "sonarqube": ("sonarqube",),
+    "stalwart": ("stalwart",),
+}
 # ADR-0046 capability tiers; a renamed or retired tier fails here.
 TIERS = (
     "01-gateway",
@@ -122,14 +135,12 @@ class TierLayoutTests(unittest.TestCase):
                 "k6",
                 "wiremock",
                 "pact-broker",
-                "sonarqube",
                 "conftest",
                 "mailpit",
             ),
             "06-observability": ("dozzle",),
             "04-data": ("redisinsight",),
             "08-ai": ("open-notebook", "mlflow"),
-            "12-analytics": ("jupyterlab",),
         }
         includes = yaml.safe_load((ROOT / "docker-compose.yml").read_text())["include"]
         self.assertEqual(len(includes), len(set(includes)))
@@ -163,9 +174,7 @@ class TierLayoutTests(unittest.TestCase):
                     ROOT / "infra/09-platform-ops" / package / "docker-compose.yml"
                 ).is_file()
             )
-        self.assertTrue(
-            (ROOT / "infra/10-communication/stalwart/docker-compose.yml").is_file()
-        )
+        self.assertTrue((ROOT / "labs/stalwart.yml").is_file())
         self.assertFalse((ROOT / "infra/10-communication/mailpit").exists())
 
     def test_transferred_hardening_retains_controls(self):
@@ -177,7 +186,7 @@ class TierLayoutTests(unittest.TestCase):
             "infra/tech-stack.versions.json",
             "labs/supabase.yml",
             "infra/04-data/dev-db/docker-compose.yml",
-            "infra/04-data/seaweedfs/config/seaweedfs-table-bucket.sh",
+            "labs/lakehouse/seaweedfs-table-bucket.sh",
             "infra/06-observability/docker-compose.yml",
             "infra/01-gateway/traefik/dynamic/middleware.yml",
             "infra/08-ai/ollama/docker-compose.yml",
@@ -185,7 +194,7 @@ class TierLayoutTests(unittest.TestCase):
             "infra/04-data/redisinsight/docker-compose.yml",
             "infra/06-observability/dozzle/docker-compose.yml",
             "infra/08-ai/open-notebook/docker-compose.yml",
-            "infra/11-quality/sonarqube/docker-compose.yml",
+            "labs/sonarqube.yml",
             "infra/11-quality/wiremock/docker-compose.yml",
             "infra/11-quality/pact-broker/docker-compose.yml",
             "infra/11-quality/mailpit/docker-compose.yml",
@@ -382,19 +391,22 @@ class TierLayoutTests(unittest.TestCase):
     def test_packages_include_coverage_and_labels(self):
         config = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
         includes = {str(x) for x in config["include"]}
-        for tier, packages in (("04-data", DATA), ("12-analytics", ANALYTICS)):
-            for name in packages:
-                with self.subTest(package=name):
-                    path = ROOT / "infra" / tier / name
-                    self.assertTrue((path / "README.md").is_file())
-                    relative = str((path / "docker-compose.yml").relative_to(ROOT))
-                    self.assertIn(relative, includes)
-                    document = yaml.safe_load((ROOT / relative).read_text())
-                    for service in document["services"].values():
-                        if tier == "12-analytics":
-                            self.assertEqual(
-                                "analytics", service["labels"]["hy-home.tier"]
-                            )
+        for name in DATA:
+            with self.subTest(package=name):
+                path = ROOT / "infra/04-data" / name
+                self.assertTrue((path / "README.md").is_file())
+                relative = str((path / "docker-compose.yml").relative_to(ROOT))
+                self.assertIn(relative, includes)
+        for lab, packages in ANALYTICS_LABS.items():
+            with self.subTest(lab=lab):
+                self.assertTrue((ROOT / "labs" / f"{lab}.yml").is_file())
+                self.assertNotIn(f"labs/{lab}.yml", includes)
+                for package in packages:
+                    self.assertTrue((ROOT / "labs" / package / "README.md").is_file())
+        for tier in ("10-communication", "12-analytics"):
+            self.assertEqual(
+                [], [p.name for p in (ROOT / "infra" / tier).iterdir() if p.is_dir()]
+            )
         actual = {
             str(p.relative_to(ROOT))
             for p in (ROOT / "infra").rglob("docker-compose.yml")
@@ -426,8 +438,10 @@ class TierLayoutTests(unittest.TestCase):
             library = fixture / "scripts/lib/hardening-lib.sh"
             library.parent.mkdir(parents=True)
             shutil.copy2(ROOT / "scripts/lib/hardening-lib.sh", library)
-            shutil.copytree(ROOT / "infra/12-analytics", fixture / "infra/12-analytics")
-            wrapper = fixture / "infra/12-analytics/spark/hyhome-spark.sh"
+            for lab in ("lakehouse", "superset", "dbt"):
+                shutil.copytree(ROOT / "labs" / lab, fixture / "labs" / lab)
+                shutil.copy2(ROOT / "labs" / f"{lab}.yml", fixture / "labs")
+            wrapper = fixture / "labs/lakehouse/spark/hyhome-spark.sh"
             wrapper.write_text(
                 wrapper.read_text().replace(
                     "rest.auth.type sigv4", "rest.auth.type none"
@@ -455,13 +469,14 @@ class TierLayoutTests(unittest.TestCase):
             for relative in (
                 script,
                 "scripts/lib/hardening-lib.sh",
-                "labs/supabase.yml",
                 "docs/01.requirements/0003-security.md",
             ):
                 target = fixture / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes((ROOT / relative).read_bytes())
             shutil.copytree(ROOT / "infra", fixture / "infra")
+            # LAB sources the full route also checks (SPEC-0262).
+            shutil.copytree(ROOT / "labs", fixture / "labs")
 
             for alias in ("13-experience", "experience"):
                 result = subprocess.run(

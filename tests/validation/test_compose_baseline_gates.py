@@ -919,7 +919,7 @@ class MailpitHealthContractTests(unittest.TestCase):
             for name in (
                 "scripts/hardening/check-all-hardening.sh",
                 "scripts/lib/hardening-lib.sh",
-                "infra/11-quality/sonarqube/docker-compose.yml",
+                "labs/sonarqube.yml",
                 "infra/11-quality/wiremock/docker-compose.yml",
                 "infra/11-quality/pact-broker/docker-compose.yml",
                 "infra/11-quality/mailpit/docker-compose.yml",
@@ -1025,9 +1025,9 @@ FEATURE_JOBS = (
         {"mlops", "data-science"},
     ),
     (
-        "infra/12-analytics/dbt/docker-compose.yml",
+        "labs/dbt.yml",
         "dbt-db-provision",
-        "infra/12-analytics/dbt/provisioning/dev-pg.sql",
+        "labs/dbt/provisioning/dev-pg.sql",
         {"analytics-engineering"},
     ),
     (
@@ -1043,9 +1043,9 @@ FEATURE_JOBS = (
         {"contract-testing"},
     ),
     (
-        "infra/12-analytics/superset/docker-compose.yml",
+        "labs/superset.yml",
         "superset-db-provision",
-        "infra/12-analytics/superset/provisioning/mng-pg.sql",
+        "labs/superset/provisioning/mng-pg.sql",
         {"bi"},
     ),
 )
@@ -1737,7 +1737,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         # SPEC-0180 S16: provisioning, the init job's own command twice, then
         # the web server; the password carries a quote, a backslash and an @.
         self.assertEqual(0, self.provision("superset-db-provision").returncode)
-        compose = "infra/12-analytics/superset/docker-compose.yml"
+        compose = "labs/superset.yml"
         init = _compose_service(compose, "superset-init")
         image = init["image"]
         built = subprocess.run(
@@ -1747,7 +1747,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
                 "-q",
                 "-t",
                 image,
-                str(ROOT / "infra/12-analytics/superset"),
+                str(ROOT / "labs/superset"),
             ],
             capture_output=True,
             text=True,
@@ -4601,13 +4601,13 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "data/seaweedfs/filer",
             "io",
             "backup",
-            "data/flink/checkpoints",
+            "lab/lakehouse/flink/checkpoints",
         ):
             (cls.dir / sub).mkdir(parents=True)
         (cls.dir / "io").chmod(0o777)
         # As RUN-0094 creates it: operator-owned, setgid, written by the
         # image user through its SECRETS_GID supplementary group.
-        (cls.dir / "data/flink/checkpoints").chmod(0o2770)
+        (cls.dir / "lab/lakehouse/flink/checkpoints").chmod(0o2770)
         subprocess.run(
             [
                 "bash",
@@ -4643,34 +4643,38 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             # Flink (UID 9999) reads secrets and checkpoints through this group.
             "SECRETS_GID": str(os.getgid()),
         }
-        rendered = json.loads(
-            subprocess.run(
-                [
-                    "docker",
-                    "compose",
-                    "--env-file",
-                    ".env.example",
-                    "--profile",
-                    "seaweedfs",
-                    "--profile",
-                    "lakehouse",
-                    "config",
-                    "--format",
-                    "json",
-                    *SEAWEEDFS_SERVICES,
-                    "seaweedfs-buckets",
-                    "seaweedfs-table-bucket",
-                    "trino",
-                    "great-expectations",
-                    *FLINK_SERVICES,
-                ],
-                cwd=ROOT,
-                env=env,
-                check=True,
-                capture_output=True,
-                text=True,
-            ).stdout
+
+        def render(args: list[str], extra: dict[str, str]) -> dict:
+            return json.loads(
+                subprocess.run(
+                    ["docker", "compose", *args, "config", "--format", "json"],
+                    cwd=ROOT,
+                    env={**env, **extra},
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout
+            )
+
+        # HOME SeaweedFS from the root; the engines from the lakehouse LAB
+        # (SPEC-0262), whose endpoint inputs name the rehearsal SeaweedFS.
+        rendered = render(
+            ["--env-file", ".env.example", "--profile", "seaweedfs"],
+            {},
         )
+        lab = render(
+            ["--env-file", "labs/.env.example", "-f", "labs/lakehouse.yml",
+             "--profile", "lakehouse"],
+            {
+                "LAB_DATA_DIR": str(cls.dir / "lab"),
+                "LAB_SECRETS_GID": str(os.getgid()),
+                "LAB_LAKEHOUSE_S3_ADMIN_ACCESS_KEY": cls.ACCESS,
+                "LAB_LAKEHOUSE_S3_ENDPOINT": "http://seaweedfs-s3:8333",
+                "LAB_LAKEHOUSE_CATALOG_URI": "http://seaweedfs-s3:8181",
+            },
+        )  # fmt: skip
+        rendered["services"].update(lab["services"])
+        rendered["volumes"].update(lab["volumes"])
         services = {
             name: rendered["services"][name]
             for name in (
@@ -4741,7 +4745,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 "--entrypoint",
                 "find",
                 "-v",
-                f"{cls.dir / 'data/flink/checkpoints'}:/c",
+                f"{cls.dir / 'lab/lakehouse/flink/checkpoints'}:/c",
                 services["flink-jobmanager"]["image"],
                 "/c",
                 "-mindepth",
@@ -6095,7 +6099,7 @@ sys.exit(37 if "run" in args else 0)
     "set HYHOME_MAIL_REHEARSAL=1 to run the disposable Stalwart rehearsal (needs Docker)",
 )
 class StalwartRehearsalTests(unittest.TestCase):
-    """SPEC-0180 S17: the rendered HOME services on an internal network."""
+    """SPEC-0180 S17: the rendered LAB services (SPEC-0262) on an internal network."""
 
     SERVICES = ("stalwart", "stalwart-config")
 
@@ -6134,9 +6138,9 @@ class StalwartRehearsalTests(unittest.TestCase):
         (cls.dir / "stalwart_password.txt").chmod(0o640)
         env = {
             **os.environ,
-            "DEFAULT_COMMUNICATION_DIR": str(cls.dir / "data"),
-            "DEFAULT_URL": "rehearsal.test",
-            "SECRETS_GID": str(os.getgid()),
+            "LAB_DATA_DIR": str(cls.dir / "data"),
+            "LAB_STALWART_DEFAULT_URL": "rehearsal.test",
+            "LAB_SECRETS_GID": str(os.getgid()),
         }
         rendered = json.loads(
             subprocess.run(
@@ -6144,7 +6148,9 @@ class StalwartRehearsalTests(unittest.TestCase):
                     "docker",
                     "compose",
                     "--env-file",
-                    ".env.example",
+                    "labs/.env.example",
+                    "-f",
+                    "labs/stalwart.yml",
                     "--profile",
                     "mail-server",
                     "config",
@@ -6165,6 +6171,7 @@ class StalwartRehearsalTests(unittest.TestCase):
             service["labels"] = {}
             service["networks"] = {"mail": {}}
             service.pop("profiles", None)
+            service.pop("ports", None)
         volume = rendered["volumes"]["stalwart-data"]
         volume.pop("name", None)
         cls.model = {
@@ -6393,7 +6400,6 @@ ROUTES_WITHOUT_SSO = {
     "kafka-ui": "native-oidc",
     "open-webui": "native-oidc",
     "openbao": "native-oidc",
-    "superset": "native-oidc",
     # The identity provider and the ForwardAuth service themselves
     "keycloak": "identity-provider",
     "oauth2-proxy": "identity-provider",

@@ -1001,6 +1001,15 @@ def _operations_moved_body_baseline(
         for record in base_records
         if (
             record.path in family_predecessors
+            # A move between numbered families of the same role (SPEC-0262).
+            or (
+                len(target.parts) == 5
+                and record.path != target
+                and record.path.name == target.name
+                and record.path.parent.parent == target.parent.parent
+                and re.fullmatch(r"[0-9]{2}-[a-z0-9-]+", record.path.parent.name)
+                is not None
+            )
             or (
                 record.path.as_posix().startswith(_RETIRED_OPERATIONS_CATALOG)
                 and slug

@@ -12,7 +12,7 @@ from unittest.mock import patch
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-GX = ROOT / "infra/12-analytics/great-expectations"
+GX = ROOT / "labs/lakehouse/great-expectations"
 TOFU = "ghcr.io/opentofu/opentofu:1.13.1-minimal@sha256:dfbc3f0a8bed0adfa2cf49ff418f158afe24080eea6d6e748db8799fc4553db6"
 K6 = "grafana/k6:2.3.0@sha256:9c2dee7f8ed74d317e4027c06a10f169b625638189de8d4555d0b3486a5aeb34"
 
@@ -74,18 +74,26 @@ class NextToolCandidates(unittest.TestCase):
         }
         self.assertEqual(len(current_inputs), len(updates["include_inputs"]))
         selected = set(refresh["updated_services"])
+        # Rows later relocated to a LAB entrypoint keep their original ROOT row.
+        relocated = {
+            row["service"]: row["original_root_row"]
+            for row in updates["historical_lab_entries"]
+            if row["service"] in selected
+        }
         selected_rows = [
             row for row in updates["entries"] if row["service"] in selected
         ]
-        self.assertEqual(len(selected_rows), len(selected))
+        self.assertEqual(len(selected_rows) + len(relocated), len(selected))
         rows = {row["service"]: row for row in selected_rows}
-        self.assertEqual(set(rows), selected)
-        for service, row in rows.items():
+        self.assertEqual(set(rows) | set(relocated), selected)
+        for service, row in {**rows, **relocated}.items():
             with self.subTest(service=service, field="pending_evidence"):
-                self.assertIn(row["compose_file"], current_inputs)
-                self.assertEqual(
-                    row["source_input_sha256"], current_inputs[row["compose_file"]]
-                )
+                if service in rows:
+                    self.assertIn(row["compose_file"], current_inputs)
+                    self.assertEqual(
+                        row["source_input_sha256"],
+                        current_inputs[row["compose_file"]],
+                    )
                 self.assertEqual(row["signature"], "NOT_RUN")
                 self.assertEqual(row["sbom_scan"], "NOT_RUN")
                 self.assertEqual(row["deployment"], "NOT_RUN")
@@ -102,7 +110,7 @@ class NextToolCandidates(unittest.TestCase):
         self.assertLessEqual(custom_services, selected)
         for service in custom_services:
             with self.subTest(service=service, field="custom_digest"):
-                row = rows[service]
+                row = rows.get(service) or relocated[service]
                 self.assertEqual(row["target_index_digest"], "UNKNOWN")
                 self.assertEqual(row["target_manifest_digest"], "UNKNOWN")
                 self.assertEqual(row["target_config_digest"], "UNKNOWN")
@@ -137,7 +145,7 @@ class NextToolCandidates(unittest.TestCase):
 
         for service in ("great-expectations", "opentofu"):
             with self.subTest(service=service, field="followup_image"):
-                row = rows[service]
+                row = rows.get(service) or relocated[service]
                 self.assertEqual(
                     row["next_fact_command"],
                     [
@@ -191,14 +199,15 @@ class NextToolCandidates(unittest.TestCase):
         self.assertEqual(
             lines, ["great-expectations==1.24.0", "trino[sqlalchemy]==0.340.0"]
         )
-        service = services("infra/12-analytics/great-expectations/docker-compose.yml")[
-            "great-expectations"
-        ]
+        service = services("labs/lakehouse.yml")["great-expectations"]
         self.assertEqual(service["image"], "hy-home/great-expectations:1.24.0-local")
         self.assertEqual(service["command"], ["list"])
         self.assertEqual(service["environment"]["GX_ANALYTICS_ENABLED"], "false")
         self.assertEqual(service["environment"]["HOME"], "/tmp")
-        self.assertEqual(service["volumes"], ["./suites:/opt/hyhome/suites:ro"])
+        self.assertEqual(
+            service["volumes"],
+            ["./lakehouse/great-expectations/suites:/opt/hyhome/suites:ro"],
+        )
         dockerfile = (GX / "Dockerfile").read_text()
         self.assertIn("COPY requirements.txt /tmp/requirements.txt", dockerfile)
         self.assertIn("pip install --no-cache-dir -r /tmp/requirements.txt", dockerfile)
