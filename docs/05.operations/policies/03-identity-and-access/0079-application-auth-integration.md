@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.6.3"
+version: "0.7.0"
 type: "operation/policy"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:

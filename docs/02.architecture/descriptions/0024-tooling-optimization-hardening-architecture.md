@@ -146,7 +146,7 @@ execution evidence is owned by the related Spec and Operations documents.
 ## Related Documents
 
 - **PRD**: [../01.requirements/0010-tooling.md](../../01.requirements/0010-tooling.md)
-- **Spec**: [../03.specs/010-tooling/spec.md](0009-tooling-architecture.md)
+- **Tier Architecture Description**: [AD-0009 Platform Operations and Software Verification Architecture Description](0009-tooling-architecture.md)
 - **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/09-platform-ops/optimization-hardening.md](../../05.operations/guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)
 - **Operation**: [../../05.operations/policies/09-platform-ops/optimization-hardening.md](../../05.operations/policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)

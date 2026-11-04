@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.3.6"
+version: "0.4.0"
 type: "operation/runbook"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "RUN-0098"
 created: "2026-09-25"

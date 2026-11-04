@@ -76,6 +76,6 @@ The laboratory tier greatly affects operator productivity but provides UIs with 
 ## Related Documents
 
 - **PRD**: [../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
-- **Architecture Description**: [../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md](../descriptions/0025-laboratory-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/012-laboratory/spec.md](../descriptions/0011-laboratory-architecture.md)
+- **Architecture Description**: [AD-0025 Admin and Experiment Tools Hardening Architecture Description](../descriptions/0025-laboratory-optimization-hardening-architecture.md)
+- **Tier Architecture Description**: [AD-0011 Administration and Experimentation Architecture Description](../descriptions/0011-laboratory-architecture.md)
 - **Related ADR**: ADR-0011 (retired; summarized in AD-0011 Traceability)

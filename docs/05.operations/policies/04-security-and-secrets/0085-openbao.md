@@ -1,8 +1,8 @@
 ---
 title: "OpenBao Policy"
-version: "0.8.8"
+version: "0.9.0"
 type: "operation/policy"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-11-04"
 layer: "operations"

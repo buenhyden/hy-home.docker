@@ -130,7 +130,7 @@ execution evidence is owned by the related Spec and Operations documents.
 ## Related Documents
 
 - **PRD**: [../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
-- **Spec**: [../03.specs/007-observability/spec.md](0006-observability-architecture.md)
+- **Tier Architecture Description**: [AD-0006 Observability Architecture Description](0006-observability-architecture.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/guides/07-observability/0044-observability-optimization-hardening.md)
 - **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/07-observability/0044-observability-optimization-hardening.md)

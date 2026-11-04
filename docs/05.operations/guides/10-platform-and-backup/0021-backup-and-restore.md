@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.1.9"
+version: "1.2.0"
 type: "operation/guide"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:

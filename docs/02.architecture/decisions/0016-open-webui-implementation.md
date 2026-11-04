@@ -67,5 +67,5 @@ Local LLM interaction requires a user-friendly, feature-complete interface that 
 ## Related Documents
 
 - **PRD**: [../../01.requirements/0013-ai-open-webui.md](../../01.requirements/0013-ai-open-webui.md)
-- **Architecture Description**: [../descriptions/0013-open-webui-architecture.md](../descriptions/0013-open-webui-architecture.md)
-- **Spec**: [../../03.specs/009-ai/open-webui.md](../descriptions/0008-ai-architecture.md)
+- **Architecture Description**: [AD-0013 Open WebUI Architecture Description](../descriptions/0013-open-webui-architecture.md)
+- **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](../descriptions/0008-ai-architecture.md)

@@ -128,7 +128,7 @@ execution evidence is owned by the related Spec and Operations documents.
 ## Related Documents
 
 - **PRD**: [../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
-- **Spec**: [../03.specs/012-laboratory/spec.md](0011-laboratory-architecture.md)
+- **Tier Architecture Description**: [AD-0011 Administration and Experimentation Architecture Description](0011-laboratory-architecture.md)
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/0074-laboratory-optimization-hardening.md](../../05.operations/guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
 - **Operation**: [../../05.operations/policies/0074-laboratory-optimization-hardening.md](../../05.operations/policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md)

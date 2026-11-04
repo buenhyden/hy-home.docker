@@ -1,10 +1,10 @@
 ---
 title: "Superset Usage Guide"
-version: "1.0.5"
+version: "1.1.0"
 type: "operation/guide"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0097"
 parent_ids:
