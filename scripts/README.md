@@ -306,8 +306,9 @@ Markdown 템플릿 매핑이 완전하고 타입이 일관되어야 합니다. �
 선택된 changed 입력의 차단 모드이고, `check-active`는 base 없이 동작하는 active-corpus
 점검입니다. base를 정할 때는 명시적 참조, CI, 안전한 로컬 참조를 우선하며 그
 다음에는 전체 corpus를 선택하지 않고 working-tree 전용 fallback을
-보고합니다. 기존 metadata 결함을 허용하는 legacy 예외는 없습니다. 역방향
-전환에는 범위를 지정한 별도 evidence manifest가 필요하며 기본 훅은 이를 제공하지
+보고합니다. `check-changed`는 변경이 새로 만든 결함에서만 실패하며, merge
+base에 이미 있던 결함 identity는 다시 보고하지 않고, 새 문서는 전체 검사를
+받습니다. 역방향 전환에는 범위를 지정한 별도 evidence manifest가 필요하며 기본 훅은 이를 제공하지
 않습니다. 템플릿 placeholder 점검은 조합된 scalar와
 list 안의 등록된 angle-bracket 토큰을 재귀적으로 탐지하며, 날짜 형태의 ID
 텍스트를 전역 placeholder로 취급하지 않습니다. 집중 suite는
