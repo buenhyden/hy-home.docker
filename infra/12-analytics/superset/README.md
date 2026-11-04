@@ -100,9 +100,9 @@ Secrets: `superset_secret_key` (AUTO-020), `superset_db_password` (PG-028),
 
 ## Related Documents
 
-- **Guide**: Superset Usage Guide (`docs/05.operations/guides/0097-superset.md`)
-- **Policy**: Superset Operations Policy (`docs/05.operations/policies/0097-superset.md`)
-- **Runbook**: Superset Runbook (`docs/05.operations/runbooks/0097-superset.md`)
+- **Guide**: Superset Usage Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0097-superset.md`)
+- **Policy**: Superset Operations Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0097-superset.md`)
+- **Runbook**: Superset Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0097-superset.md`)
 - [문서 인덱스](../../../docs/README.md)
 
 ---
@@ -121,7 +121,7 @@ Secrets: `superset_secret_key` (AUTO-020), `superset_db_password` (PG-028),
 | Labels | `hy-home.tier`, Traefik router `superset` |
 | Secret refs | `superset_secret_key`, `superset_db_password`, `superset_oidc_client_secret`, `mng_postgres_password`(provisioning 전용) |
 | Healthcheck | `curl -fsS http://localhost:8088/health` |
-| Operations | Guide (`docs/05.operations/guides/0097-superset.md`), Policy (`docs/05.operations/policies/0097-superset.md`), Runbook (`docs/05.operations/runbooks/0097-superset.md`) |
+| Operations | Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0097-superset.md`), Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0097-superset.md`), Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0097-superset.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `/health`와 init job 로그를 확인한 뒤 runbook을 따름 |
 

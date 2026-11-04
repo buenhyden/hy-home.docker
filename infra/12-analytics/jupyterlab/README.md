@@ -81,8 +81,8 @@ JupyterLab은 한 명의 운영자를 위해 하나의 Jupyter Server를 실행�
 
 ## Related Documents
 
-- **Guide**: JupyterLab usage guide (`docs/05.operations/guides/0089-jupyterlab.md`)
-- **Policy**: JupyterLab operations policy (`docs/05.operations/policies/0089-jupyterlab.md`)
-- **Runbook**: JupyterLab recovery runbook (`docs/05.operations/runbooks/0089-jupyterlab.md`)
+- **Guide**: JupyterLab usage guide (`docs/05.operations/guides/13-analytics-and-data-quality/0089-jupyterlab.md`)
+- **Policy**: JupyterLab operations policy (`docs/05.operations/policies/13-analytics-and-data-quality/0089-jupyterlab.md`)
+- **Runbook**: JupyterLab recovery runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0089-jupyterlab.md`)
 - [MLflow package](../../08-ai/mlflow/README.md)
 - [Documentation index](../../../docs/README.md)

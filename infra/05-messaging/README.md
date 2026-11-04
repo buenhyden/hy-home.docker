@@ -50,6 +50,6 @@ Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 �
 ## Related Documents
 
 [문서 진입점](../../docs/README.md)을 사용해 Stage 05 Messaging subject
-`docs/05.operations/guides/0036-kafka.md`와
-`docs/05.operations/guides/0037-messaging-optimization-hardening.md`을
+`docs/05.operations/guides/06-messaging-and-cdc/0036-kafka.md`와
+`docs/05.operations/guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md`을
 찾으십시오.

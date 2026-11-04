@@ -33,8 +33,7 @@ dbt 변환 작업은 [12 Analytics](../12-analytics/README.md)에서 관리합�
 
 ## Audience
 
-플랫폼 운영자, 이 도구들을 사용하는 개발자, 보안 검토자, tooling 프로필 계약을
-담당하는 문서화 agent.
+플랫폼 운영자, 이 도구들을 사용하는 개발자, 보안 검토자.
 
 이 tier는 공통 플랫폼의 IaC, 아티팩트 배포, 의존성 유지보수와 백업·복구
 조율을 담당합니다. 애플리케이션 Workflow, 소프트웨어 Quality, Data 저장 엔진,

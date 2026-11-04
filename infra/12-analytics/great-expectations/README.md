@@ -109,9 +109,9 @@ job 실행에는 runtime 승인이 필요합니다. job은 필요할 때 Trino�
 
 ## Related Documents
 
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/0094-lakehouse.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/0094-lakehouse.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`)
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0094-lakehouse.md`)
 - [문서 인덱스](../../../docs/README.md)
 
 ---
@@ -130,7 +130,7 @@ job 실행에는 runtime 승인이 필요합니다. job은 필요할 때 Trino�
 | Labels | `hy-home.tier` |
 | Secret refs | 없음 |
 | Healthcheck | 없음(one-shot job) |
-| Operations | Guide (`docs/05.operations/guides/0094-lakehouse.md`), Policy (`docs/05.operations/policies/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`) |
+| Operations | Guide (`docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md`), Policy (`docs/05.operations/policies/13-analytics-and-data-quality/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0094-lakehouse.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `validate <suite>`를 실행한 뒤 runbook을 따름 |
 

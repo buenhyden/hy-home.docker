@@ -42,6 +42,8 @@ created: "2026-05-10"
   경로 확인. Profile은 서비스를 추가할 뿐 Proxy의 기본 호스트나 이미지를 전환하지 않는다.
   공유 경로는 `dev.Dockerfile`/`docker-entrypoint.dev.sh`의 `mng_valkey_password`,
   전용 경로는 `Dockerfile`/`docker-entrypoint.sh`의 `oauth2_valkey_password`를 사용한다.
+  `docker-compose.monitor-acl.yml` overlay를 쓰면 exporter는 `oauth2_valkey_monitor_password`로
+  접속한다.
   이미지 선택은 기존 `OAUTH2_PROXY_DOCKERFILE` 구성에 따른다.
 
 ## Concepts

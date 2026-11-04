@@ -32,7 +32,7 @@ Pyroscope는 애플리케이션을 연속적으로 프로파일링하여 성능 
 ### Out of Scope
 
 - 애플리케이션 수준 프로파일링 에이전트 ([Grafana Alloy](../alloy/README.md)에서 처리).
-- 프로파일링 데이터의 장기 보관 (Retention Policy(`docs/05.operations/policies/0047-pyroscope.md`)에서 관리).
+- 프로파일링 데이터의 장기 보관 (Retention Policy(`docs/05.operations/policies/07-observability/0047-pyroscope.md`)에서 관리).
 
 ## Structure
 
@@ -92,14 +92,14 @@ pyroscope/
 - Classification: **HOME**. Exact profiles: `obs`, `profiling`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d pyroscope`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/0047-pyroscope.md`; ID: `GDE-0047`, `POL-0047`, `RUN-0047`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0047-pyroscope.md`; ID: `GDE-0047`, `POL-0047`, `RUN-0047`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주합니다. 이 README에서는 운영 중인 상태를 변경하지 않습니다.
 
 ## Related Documents
 
-- Usage guide (`docs/05.operations/guides/0047-pyroscope.md`)
-- Operations policy (`docs/05.operations/policies/0047-pyroscope.md`)
-- Recovery runbook (`docs/05.operations/runbooks/0047-pyroscope.md`)
+- Usage guide (`docs/05.operations/guides/07-observability/0047-pyroscope.md`)
+- Operations policy (`docs/05.operations/policies/07-observability/0047-pyroscope.md`)
+- Recovery runbook (`docs/05.operations/runbooks/07-observability/0047-pyroscope.md`)
 - [Documentation index](../../../docs/README.md)
 
 ## Usage

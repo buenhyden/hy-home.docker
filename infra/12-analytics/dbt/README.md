@@ -87,7 +87,7 @@ HOME에는 포함되지 않습니다.
 
 ## Related Documents
 
-- **Guide**: dbt usage guide (`docs/05.operations/guides/0090-dbt.md`)
-- **Policy**: dbt operations policy (`docs/05.operations/policies/0090-dbt.md`)
-- **Runbook**: dbt recovery runbook (`docs/05.operations/runbooks/0090-dbt.md`)
+- **Guide**: dbt usage guide (`docs/05.operations/guides/13-analytics-and-data-quality/0090-dbt.md`)
+- **Policy**: dbt operations policy (`docs/05.operations/policies/13-analytics-and-data-quality/0090-dbt.md`)
+- **Runbook**: dbt recovery runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0090-dbt.md`)
 - [Documentation index](../../../docs/README.md)

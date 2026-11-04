@@ -78,11 +78,11 @@ Apache 2.0 본문과 별도의 공개 사용·배포 출처 표시 조건을 포
 
 1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai/crawl4ai_api_token.txt`를 생성합니다.
 2. 승인된 대상으로만 시작합니다: `docker compose --profile crawl4ai up -d crawl4ai` (gateway가 healthy가 된 뒤 크롤러가 시작됩니다).
-3. 소비자는 Crawl4AI 정책(`docs/05.operations/policies/0091-crawl4ai.md`)의 승인 변경으로만 `crawl4ai_net`에 추가합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.
+3. 소비자는 Crawl4AI 정책(`docs/05.operations/policies/09-ai-and-search/0091-crawl4ai.md`)의 승인 변경으로만 `crawl4ai_net`에 추가합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.
 
 ## Related Documents
 
-- **Guide**: Crawl4AI usage guide (`docs/05.operations/guides/0091-crawl4ai.md`)
-- **Policy**: Crawl4AI operations policy (`docs/05.operations/policies/0091-crawl4ai.md`)
-- **Runbook**: Crawl4AI recovery runbook (`docs/05.operations/runbooks/0091-crawl4ai.md`)
+- **Guide**: Crawl4AI usage guide (`docs/05.operations/guides/09-ai-and-search/0091-crawl4ai.md`)
+- **Policy**: Crawl4AI operations policy (`docs/05.operations/policies/09-ai-and-search/0091-crawl4ai.md`)
+- **Runbook**: Crawl4AI recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md`)
 - [Documentation index](../../../docs/README.md)
