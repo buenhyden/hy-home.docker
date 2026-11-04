@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.4.1"
+version: "1.5.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -42,7 +42,7 @@ fixed address.
 
 ## Structure
 
-### Networks (SPEC-0180 S05)
+### Networks
 
 Phase 1 attached every service to its target networks beside `infra_net`;
 phase 2 removed `infra_net` from the services and from the root. Root Compose
@@ -62,7 +62,16 @@ automatic address pool cannot take one first.
 | `airflow_net`, `n8n_net`, `supabase_net`, `terrakube_net` | 10.250.10–13.0/24 | the application's own services and private stores | application-internal |
 | `mail_net` | 10.250.14.0/24 | Stalwart, its config job, Mailpit and SMTP senders | SMTP 25/587 and IMAPS 993 to Stalwart, capture on Mailpit 1025; Stalwart management/JMAP on 8080 is also reachable here without the gateway SSO chain |
 | `quality_otlp_net` | 10.250.17.0/24, internal | Alloy and the per-run k6 metrics relays that `metrics_relay.py` attaches | relay → authenticated Alloy OTLP receiver 4319 (SPEC-0214) |
-| `crawl4ai_net` | leaf-owned | Crawl4AI | isolated SSRF-capable egress (unchanged) |
+| `dev_data_net` | 10.250.15.0/24 | `dev-pg`, `dev-valkey`, their exporters and provision jobs, dbt, Kafka Connect, RedisInsight, `n8n-worker`, workload overrides that read dev data | development client → dev PostgreSQL/Valkey |
+| `experience_ingress_net` | 10.250.16.0/24, internal | Traefik and Storybook | gateway → Storybook only |
+| `redisinsight_ingress_net` | 10.250.18.0/24, internal, isolated, dynamic from .128/25 | Traefik and RedisInsight (fixed .3) | gateway → RedisInsight only; no host address |
+| `seaweedfs_metrics_net` | 10.250.19.0/24, internal, isolated | Prometheus and the SeaweedFS master, volume and filer | metrics scrape only |
+| `n8n_blog_ingest_net` | 10.250.20.0/24, internal, isolated | `n8n-worker` and `blog-ingestion` | worker → Blog-data ingestion Gateway |
+| `blog_export_net` | 10.250.21.0/24, internal, isolated | Traefik and `blog-ingestion` | exact-path Traefik routes → Gateway; no published port |
+| `n8n_main_runner_net`, `n8n_worker_runner_net` | 10.250.22.0/24 and 10.250.23.0/24, internal, isolated | `n8n` with `n8n-task-runner`; `n8n-worker` with `n8n-task-runner-worker` | broker ↔ its external Code runner only |
+| `crawl4ai_net` | leaf-owned, internal | Crawl4AI and admitted consumers (POL-0091) | consumer → Crawl4AI API; no egress |
+| `crawl4ai_egress_net` | 10.250.200.0/29, leaf-owned, internal | Crawl4AI (fixed .3) and `crawl4ai-egress` (fixed .2) | crawler → egress gateway |
+| `crawl4ai_outbound_net` | leaf-owned | `crawl4ai-egress` | gateway → public addresses on ports 80/443 only; non-global and IPv6 addresses refused |
 | `restic_offsite_net` | leaf-owned | `restic-offsite` | backup egress to Cloudflare R2 only (ADR-0041) |
 
 Services with no container peer (Renovate, OpenTofu, Locust) use the
