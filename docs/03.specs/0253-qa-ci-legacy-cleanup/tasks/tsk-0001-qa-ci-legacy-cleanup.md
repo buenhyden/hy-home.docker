@@ -151,6 +151,9 @@ progress under the approved parents. Hosted CI has not run.
 | E12 | 1 | W1 | rebased-unit-suites | gate evidence, workflow contract, CI routing (hook tests included), Script Manifest, CI gate plan, identity history and Registry suites with `/usr/bin/python3`, rebased head 2616c85e2 on main 4adeb3d37 | PASS | 407 tests OK | required | - |
 | E13 | 2 | W3 | rebased-manifest-and-links | `check-script-manifest.py`, links `alignment` and `commands`, head 2616c85e2 | PASS | manifest valid; alignment PASS; commands PASS with zero findings | required | - |
 | E14 | 3 | W4 | rebased-document-and-contract | metadata `check-changed --base-ref origin/main`, corpus lifecycle `--base-ref origin/main`, renderer `--check`, agent governance contract, head 2616c85e2 | PASS | 7 selected, zero violations; lifecycle and occupancy zero; drift 0; zero failures | required | - |
+| E15 | 3 | W4 | hosted-ci | CI Quality Gates run 41743239293 on 09171c663 (PR #729), observed by the coordinator | PASS | candidate-quality success; main-security skipped by trigger; merge state CLEAN. The follow-up commits get a fresh run after push | required | E10 |
+| E16 | 1 | W1 | followup-unit-suites | gate evidence, workflow contract, CI routing (hook tests included), Script Manifest, CI gate plan, Registry and identity history suites with `/usr/bin/python3`, head 1914065b1 on main 46a7811dd | PASS | 410 tests OK | required | - |
+| E17 | 3 | W4 | followup-document-checks | `check-script-manifest.py`, metadata `check-changed --base-ref origin/main`, corpus lifecycle `--base-ref origin/main`, links `alignment` and `commands`, head 1914065b1 | PASS | manifest valid; 4 selected, zero violations; lifecycle and occupancy zero; alignment and commands PASS | required | - |
 
 ## Criterion Acceptance
 
@@ -162,8 +165,9 @@ progress under the approved parents. Hosted CI has not run.
 
 ## Review and Completion
 
-Local checks are recorded above, last on head 2616c85e2 (E12 to E14). No
-independent review has run yet, and no criterion is accepted.
+Local checks are recorded above, last on head 1914065b1 (E16, E17). The
+independent review of PR #729 approved after fixes; those fixes are on this
+branch. Hosted CI passed on 09171c663 (E15). No criterion is accepted yet.
 
 ## Related Documents
 
