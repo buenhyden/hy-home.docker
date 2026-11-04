@@ -695,7 +695,9 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         interrupted = self.execution_ids[-1]
         f.receipt["interrupted_execution_id"] = interrupted
         # Closed count only: whether the interrupted job outlived its worker.
-        before = self.broker_jobs([interrupted])["matching"]
+        before = recovery.broker_job_count(
+            self.broker_jobs([interrupted]), [interrupted]
+        )
         f.receipt["interrupted_broker_job_matching"] = before
         for role in ("mailpit", "worker", "runner"):
             f.start(role)
@@ -721,13 +723,23 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         started = time.monotonic()
         try:
             f.wait_until(
-                lambda: self.broker_jobs([interrupted])["matching"] == 0,
+                lambda: (
+                    recovery.broker_job_count(
+                        self.broker_jobs([interrupted]), [interrupted]
+                    )
+                    == 0
+                ),
                 "n8n did not settle the interrupted queue job",
                 recovery.STALL_RECOVERY_SECONDS,
             )
-        except RehearsalFailure:
-            pass
-        after = self.broker_jobs([interrupted])["matching"]
+        except RehearsalFailure as error:
+            # Only the settle timeout is recorded and validated below; any
+            # other failure (probe, headroom) propagates unchanged.
+            if str(error) != "n8n did not settle the interrupted queue job":
+                raise
+        after = recovery.broker_job_count(
+            self.broker_jobs([interrupted]), [interrupted]
+        )
         f.receipt["interrupted_queue_recovery_seconds"] = round(
             time.monotonic() - started, 3
         )

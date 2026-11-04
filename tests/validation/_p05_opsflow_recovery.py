@@ -162,6 +162,19 @@ def validate_interruption(facts):
     return dict(facts)
 
 
+def broker_job_count(observed, ids):
+    # Accept only a complete probe of exactly the requested ids, as the barrier
+    # does; a partial scan or another id set is never read as a count.
+    count = observed.get("matching") if isinstance(observed, dict) else None
+    if type(count) is not int or observed != {
+        "scanned": True,
+        "matching": count,
+        "ids": list(ids),
+    }:
+        raise RehearsalFailure("exact old broker job probe unavailable")
+    return count
+
+
 def validate_queue_recovery(facts):
     # n8n's own route, read from the 2.43.6 image: ScalingService forces Bull
     # maxStalledCount 0, so the restarted worker's stall check fails the

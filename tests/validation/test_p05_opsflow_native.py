@@ -418,6 +418,25 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
             ):
                 recovery.validate_interruption({**good, **change})
 
+    def test_broker_job_count_requires_a_complete_probe_of_the_exact_ids(self):
+        ids = ["7"]
+        self.assertEqual(
+            1,
+            recovery.broker_job_count(
+                {"scanned": True, "matching": 1, "ids": ["7"]}, ids
+            ),
+        )
+        for observed in (
+            {"scanned": False, "matching": 0, "ids": ["7"]},
+            {"scanned": True, "matching": 0, "ids": ["6"]},
+            {"scanned": True, "matching": True, "ids": ["7"]},
+            {"scanned": True, "matching": 0, "ids": ["7"], "extra": 1},
+            None,
+        ):
+            with self.subTest(observed=observed):
+                with self.assertRaises(recovery.RehearsalFailure):
+                    recovery.broker_job_count(observed, ids)
+
     def test_queue_recovery_requires_n8n_to_fail_the_job_and_crash_the_execution(
         self,
     ):
