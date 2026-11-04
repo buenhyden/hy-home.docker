@@ -911,6 +911,24 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             if result.get("retryOf") != execution:
                 raise RehearsalFailure("retry was not bound to the crashed execution")
             statuses.append(str(result.get("status")))
+            # Closed facts before any wait: the retry's own outcome and path.
+            try:
+                path = self.api("execution", executionId=str(result.get("id")))
+                path = {
+                    key: path.get(key)
+                    for key in ("status", "mode", "acknowledged", "deliveryRedacted")
+                }
+            except RehearsalFailure:
+                path = "unreadable"
+            f.receipt.setdefault("execution_retry_attempts", []).append(
+                {
+                    "status": statuses[-1],
+                    "path": path,
+                    "fresh_state": self.db_value(
+                        f"SELECT state FROM ops_flow.outbox WHERE run_id='{run}';"
+                    ),
+                }
+            )
             self.wait_state(run, "accepted_by_smtp")
         others = tuple(
             line
