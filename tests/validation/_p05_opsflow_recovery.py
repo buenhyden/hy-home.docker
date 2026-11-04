@@ -300,6 +300,8 @@ def validate_barrier(value):
     return {**value, "old_execution_ids": list(ids)}
 
 
+# Bull getJobs lists ids, then reads each hash: a job n8n removes in between
+# is null. A null is an absent job, never a match, and must not fail the probe.
 QUEUE_PROBE = r"""const fs=require('fs');
 const data=JSON.parse(fs.readFileSync(0,'utf8'));
 const Bull=require('/usr/local/lib/node_modules/n8n/node_modules/bull');
@@ -308,7 +310,7 @@ const password=fs.readFileSync('/run/secrets/n8n_valkey_password','utf8').replac
 const q=new Bull('jobs',{prefix:'opsflow_native',redis:{host:'n8n-valkey',port:6379,password}});
 try {
  const jobs=await q.getJobs(['waiting','active','delayed','paused','completed','failed']);
- const found=jobs.filter(j=>data.ids.includes(String(j.data?.executionId)));
+ const found=jobs.filter(j=>j!==null&&data.ids.includes(String(j.data?.executionId)));
  process.stdout.write(JSON.stringify({scanned:true,matching:found.length,ids:data.ids}));
 } finally {await q.close();}
 })().catch(()=>{process.stderr.write('owned queue inspection failed');process.exitCode=1});

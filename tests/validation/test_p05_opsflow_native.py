@@ -529,6 +529,11 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
             ):
                 recovery.validate_execution_retry({**good, **change})
 
+    def test_queue_probe_skips_jobs_removed_during_the_scan(self):
+        # Bull 4 getJobs returns null for a job deleted between listing and
+        # reading; dereferencing it failed the probe mid-recovery (run3).
+        self.assertIn("j!==null&&data.ids.includes", recovery.QUEUE_PROBE)
+
     def test_hold_endpoint_stops_after_data_and_prints_only_closed_facts(self):
         script = recovery.HOLD_JS
         self.assertIn("354", script)
