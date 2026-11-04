@@ -249,6 +249,13 @@ require(process.argv[1]).selfCheckWrongPassword().catch(error=>{console.error(er
         self.assertIn("/usr/local/libexec/mng-valkey/start.sh", compose)
         self.assertIn("/run/valkey:uid=999,gid=999,mode=0700", compose)
 
+    def test_shared_and_dedicated_servers_refuse_writes_before_oom(self) -> None:
+        # Queue tenants need write errors, not an OOM kill, at the 256m limit.
+        for name in ("start.sh", "start-dedicated.sh"):
+            with self.subTest(script=name):
+                text = (SCRIPT.parent / name).read_text(encoding="utf-8")
+                self.assertIn("--maxmemory 128mb --maxmemory-policy noeviction", text)
+
 
 @unittest.skipUnless(
     os.environ.get("HYHOME_N8N_ACL_REHEARSAL") == "1",

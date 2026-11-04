@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -86,8 +86,9 @@ listener가 불일치한다. 모든 입력 확인은 값 공개 없이 수행한
 
 Proxy의 cfg와 CA는 읽기 전용, 세션은 외부 Valkey가 소유한다. Proxy는 CPU 1/
 512 MiB, 두 helper는 각각 CPU 0.5/256 MiB를 공통 template에서 상속한다.
-Valkey에 별도 `maxmemory` 선언은 없어 AOF·세션 증가와 OOM·디스크 여유를 함께
-본다. exporter는 `redis_up`과 target `UP`을 구분한다. Secret을 password 인자로
+공유·전용 Valkey는 dev-valkey와 같이 `maxmemory 128mb`와 `noeviction`으로
+시작해 256 MiB 한도 전에 쓰기를 OOM 오류로 거부한다. AOF·세션 증가와 디스크 여유는
+함께 본다. exporter는 `redis_up`과 target `UP`을 구분한다. Secret을 password 인자로
 전달하는 기존 helper 구현 때문에 전체 process/inspect/health 출력은 수집하지 않는다.
 전용 helper의 healthcheck 부재는 공통 health 요구의 구현 한계이며 예외 승인으로
 취급하지 않는다. 영속성·삭제·자원 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md)가 소유한다.

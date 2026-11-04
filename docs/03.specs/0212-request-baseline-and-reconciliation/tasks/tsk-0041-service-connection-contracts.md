@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.17"
+version: "0.1.18"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -160,6 +160,41 @@ traffic uses the container port, host ports only from outside), OIDC Core
 §3.1.3.7 ID Token validation and RFC 8725. They match the existing P02 contract;
 no new authentication change was adopted from them.
 
+### D03 data-tier re-verification at current main
+
+A direct user request on 2026-11-04 re-ran the data, Valkey and storage
+contract as D03 on clean `main` `73ccd9930c64e38b4a51d4bb191b061ecf1c9b95`,
+branch `fix/valkey-maxmemory-noeviction`. Data-tier suites (DEV boundary,
+DEV/MNG Valkey ACL, MNG init SQL, mount scope, write rate, restore and upgrade
+rehearsals) ran 155 tests: OK, four declared skips. Value-free renders with
+`VALKEY_PORT=16379` and `POSTGRES_PORT=15432` show every `mng-valkey` and
+`mng-pg` consumer, exporter and health check following the nondefault port;
+RedisInsight keeps the fixed `dev-valkey` 6379 by design. The store set is
+already consolidated: one MNG and one DEV PostgreSQL 18.6, shared `mng-valkey`
+with opt-in `dedicated-valkey`, Prometheus as the single time-series source, no
+PG or Valkey cluster or InfluxDB, and graph/search/NoSQL stores only in opt-in
+profiles. Eight bind volumes of opt-in profiles have no host directory, which
+fails closed instead of creating an empty data directory. The shared n8n named
+account secret is not issued; issuance stays with the secret owner.
+
+Read-only `docker stats` showed `mng-valkey` at about 5 MiB of its 256 MiB limit,
+with no `maxmemory`, while `dev-valkey` already used `128mb`/`noeviction`. A
+full queue would therefore OOM-kill the process shared by n8n, Airflow,
+oauth2-proxy and Terrakube. The shared and dedicated start scripts now pass
+`--maxmemory 128mb --maxmemory-policy noeviction`. A labelled, network-less
+container of the pinned `valkey/valkey:9.1.2-alpine` image reported 134217728
+and `noeviction`; with the cap lowered it refused write 12 with the OOM error,
+still answered PONG and kept earlier keys; residue was zero. The new static
+regression failed before the change. The pinned dedicated-wrapper argv test was
+updated to the intended arguments; Valkey suites run OK with three declared
+skips. The running containers were not recreated, so the live servers keep the
+old arguments until an approved operator recreates them.
+
+Official pages re-read on 2026-11-04: Valkey ACL (database index is not an
+isolation boundary; channels start empty for new users), Valkey persistence
+(AOF `everysec` default, safe AOF copy procedure), PostgreSQL backup (current
+major 18) and Docker volumes (removing a service keeps its volumes).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -193,6 +228,8 @@ no new authentication change was adopted from them.
 | Hosted CI C60 | 60 | W65 | Remote CI execution | No remote publication | NOT_RUN | Out of this local source unit | optional | - |
 | D02 focused regression | 56 | W61 | P02 port/service/native/Valkey/Prometheus/port-inventory/Hermes suites | HEAD d3f1cfaac | PASS | 131 tests OK, 1 declared skip | required | - |
 | D02 gateway exclusivity | 56 | W61 | compose-start host binding conflict regression and real-source plans | HEAD d3f1cfaac plus this delta | PASS | New test RED before fix, 20/20 after; HOME and all single profiles plan; Traefik+Nginx refused (exit 2) | required | - |
+| D03 data-tier regression | 59 | W64 | Data-tier suites and nondefault-port renders | HEAD 73ccd9930 | PASS | 155 tests OK, 4 declared skips; all MNG consumers follow 16379/15432 | required | - |
+| D03 Valkey memory cap | 59 | W64 | Static regression and pinned-image native probe | 9.1.2-alpine, labelled network-less container | PASS | RED before change; 128 MiB noeviction; write refused with OOM, PONG, keys kept, residue 0; live servers not recreated | required | - |
 
 ## Criterion Acceptance
 

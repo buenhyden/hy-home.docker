@@ -670,7 +670,11 @@ class DedicatedValkeyContractTests(unittest.TestCase):
             digest = hashlib.sha256(value.encode("ascii")).hexdigest()
             self.assertIn(f"user default reset on #{digest}", output.read_text())
             self.assertEqual(
-                ["--aclfile", str(output), "--appendonly", "yes", "--port", "6388"],
+                [
+                    *("--aclfile", str(output), "--appendonly", "yes"),
+                    *("--port", "6388", "--maxmemory", "128mb"),
+                    *("--maxmemory-policy", "noeviction"),
+                ],
                 args_file.read_text().splitlines(),
             )
 
