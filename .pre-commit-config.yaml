@@ -26,16 +26,11 @@ repos:
       - id: check-toml
       - id: end-of-file-fixer
         stages: [manual]
-        # Registry-preserved payloads stay byte-identical; read-only checks
-        # still run on them. Reuse this boundary for all text mutators.
-        exclude: &frozen_archive_payloads '^docs/98\.archive/(?:completed|superseded|retired)/'
       - id: check-json
       - id: mixed-line-ending
         args: [--fix=no]
-        exclude: *frozen_archive_payloads
       - id: trailing-whitespace
         stages: [manual]
-        exclude: *frozen_archive_payloads
         # Unified diff context markers must remain byte-identical.
         exclude_types: [diff]
 
@@ -119,11 +114,9 @@ repos:
         entry: python3 scripts/validation/check-text-style.py --check eof --
         language: system
         types: [text]
-        exclude: *frozen_archive_payloads
       - id: check-trailing-whitespace
         name: check trailing whitespace
         entry: python3 scripts/validation/check-text-style.py --check trailing --
         language: system
         types: [text]
-        exclude: *frozen_archive_payloads
         exclude_types: [diff]

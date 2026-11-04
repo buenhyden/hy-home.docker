@@ -1,10 +1,10 @@
 ---
 title: "Workspace Inventory"
-version: "0.8.1"
+version: "0.8.2"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 layer: "references"
 artifact_id: "DATA-0096"
 parent_ids:
@@ -76,12 +76,12 @@ SPEC-0212 TSK-0040과 후속 P02–P12 인계로 확정했다. 서비스 구현�
 자료 자신의 해시는 순환 계산에서 제외하고 이유를 기록한다. 사용자 변경은
 보존하며 경계 밖 심볼릭 링크와 외부 체크아웃을 수정하지 않는다.
 
-관측 파일을 다시 수집하는 다음 명령은 실제 존재하는 이 실행의 로컬 검토
-기록을 사용한다. 다른 실행에서는 자신의 실제 검토 기록 경로를 먼저 확인한다.
+관측 파일을 다시 수집하는 다음 명령의 `<run>`은 이 실행의 로컬 검토 기록
+디렉터리다. 실행 전에 자신의 실제 검토 기록 경로를 확인해 바꾼다.
 결과는 로컬 비교용이며, 렌더를 요청하지 않으므로 구성·서비스를 실행하지 않는다.
 
 ```bash
-rtk python3 scripts/operations/workspace-inventory.py scan --root . --output _workspace/repo-support/analysis/p01/reviewed-public.yaml --reviews _workspace/repo-support/analysis/p01/doc-reviews.yaml
+rtk python3 scripts/operations/workspace-inventory.py scan --root . --output _workspace/repo-support/analysis/<run>/reviewed-public.yaml --reviews _workspace/repo-support/analysis/<run>/doc-reviews.yaml
 ```
 
 검토 기록의 필수 필드는 `path`, `reviewer`, `observed_at`, `sha256`, `scope`다.

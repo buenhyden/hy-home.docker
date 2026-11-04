@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.3"
+version: "1.5.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 created: "2026-02-21"
 ---
 
@@ -306,11 +306,9 @@ Markdown 템플릿 매핑이 완전하고 타입이 일관되어야 합니다. �
 선택된 changed 입력의 차단 모드이고, `check-active`는 base 없이 동작하는 active-corpus
 점검입니다. base를 정할 때는 명시적 참조, CI, 안전한 로컬 참조를 우선하며 그
 다음에는 전체 corpus를 선택하지 않고 working-tree 전용 fallback을
-보고합니다. base가 존재하는 좁은 legacy 예외는 새 문서나 부분적인 typed
-마이그레이션에는 적용할 수 없습니다. 역방향 전환에는 범위를 지정한 별도 evidence
-manifest가 필요하며 기본 훅은 이를 제공하지 않습니다. legacy 예외는 base
-레코드를 base manifest와 대조 검증합니다. 허용하는 것은 merge base에 이미 존재하는
-안정적인 현재 deficit identity뿐입니다. 템플릿 placeholder 점검은 조합된 scalar와
+보고합니다. 기존 metadata 결함을 허용하는 legacy 예외는 없습니다. 역방향
+전환에는 범위를 지정한 별도 evidence manifest가 필요하며 기본 훅은 이를 제공하지
+않습니다. 템플릿 placeholder 점검은 조합된 scalar와
 list 안의 등록된 angle-bracket 토큰을 재귀적으로 탐지하며, 날짜 형태의 ID
 텍스트를 전역 placeholder로 취급하지 않습니다. 집중 suite는
 `python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py' -v`로
