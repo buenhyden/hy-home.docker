@@ -1,10 +1,10 @@
 ---
 title: "시험과 품질 런북"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -26,7 +26,6 @@ layer: "operations"
 | --- | --- | --- |
 | [k6 Load Test Recovery Runbook](0061-k6.md) | `RUN-0061` | 승인된 isolated k6 실행이 잘못된 endpoint를 대상으로 하거나 한도를 넘거나 비정상 종료할 때 부하를 멈추고 정리하는 절차다. root Compose의 `k6`는 `version`만 실행하므로 이 절차의 대상이 아니다. |
 | [Performance Testing Incident Runbook](0064-performance-testing.md) | `RUN-0064` | 공유 서비스에 영향을 주는 k6·Locust LAB 부하 시험을 중단하고 진단하는 공통 절차다. 부하를 먼저 멈추고, root `k6` 작업 또는 독립 Locust LAB의 정확한 프로젝트를 확인한 뒤 대상 회복과 증거 완전성을 판정한다. |
-| [SonarQube Runbook](0066-sonarqube.md) | `RUN-0066` | SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다. |
 | [WireMock Recovery Runbook](0092-wiremock.md) | `RUN-0092` | WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 도달을 다루는 런북이다. |
 | [Pact Broker Recovery Runbook](0093-pact-broker.md) | `RUN-0093` | Pact Broker의 프로비저닝 실패, 비정상 상태, 401 오류, 데이터베이스 손실, 크리덴셜 교체를 다루는 복구 런북이다. |
 | [Conftest Recovery Runbook](0095-conftest.md) | `RUN-0095` | `conftest` 정책 검사 작업이 실패했을 때 원인을 찾고 수정하는 런북이다. |

@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.6.2"
+version: "1.7.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -24,8 +24,8 @@ created: "2026-05-17"
 SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다. HOME 대상이다.
 S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`, `nginx`,
 `mlops`, `data-science`, `lakehouse`)은 4개 서비스와 `seaweedfs-buckets`도 함께
-선택하며, `seaweedfs`와 `storage-seaweedfs` profile도 마찬가지다. `lakehouse`는
-`seaweedfs-table-bucket`도 함께 선택한다. Terrakube(`iac`, HOME이 제외하는 자동화
+선택하며, `seaweedfs`와 `storage-seaweedfs` profile도 마찬가지다. root `lakehouse`는 SeaweedFS만
+선택하고, `seaweedfs-table-bucket`은 SPEC-0262에서 독립 LAB `labs/lakehouse.yml`로 옮겨졌다. Terrakube(`iac`, HOME이 제외하는 자동화
 profile)는 `storage`와 함께 동작한다.
 
 ## Rules
@@ -56,8 +56,9 @@ profile)는 `storage`와 함께 동작한다.
   catalog는 `object_net`에서만 접근 가능해야 하며 route/host port를 두지 않는다. **현재 구현 미준수**: `seaweedfs-s3`의 Iceberg listener는 `0.0.0.0:8181`로 edge_net/seaweed_internal/object_net 모두에서 도달 가능하다. host port와 catalog router는 없고 데이터 관리 route는 인증 middleware를 사용한다. 단순 `expose` 제거로 격리되지 않으며 별도 source 변경과 network별 부정 접근 검증이 필요하다. 예외는 승인되지 않았다. 동일 identity(SigV4)를 사용한다. Table bucket은 `lakehouse`
   하나뿐이며 admin이 소유한다. 해당 policy는 `lakehouse` identity에 catalog와
   table action만 부여한다(policy 변경이나 bucket 삭제는 불가). Run마다
-  `seaweedfs-table-bucket`이 이를 재작성하므로 수동 편집한 policy는 유지되지
-  않는다.
+  lakehouse LAB의 `seaweedfs-table-bucket`이 이를 재작성하므로 수동 편집한 policy는 유지되지
+  않는다. LAB은 HOME network에 합류하지 않으므로, 이 작업이나 LAB 엔진을 위해 S3·catalog를 LAB
+  network·host port·route에 게시하는 것은 소유자의 별도 승인 대상이다(SPEC-0262 미결정 항목).
 - **Metrics.** `seaweedfs-s3`는 `9327`에서 metrics를 제공하며 Prometheus가
   job `seaweedfs-s3`로 수집한다. Listener는 게시되지 않고 Traefik route도
   없지만, 어떤 `edge_net` 서비스든 접근할 수 있다. Request counter와
@@ -98,7 +99,7 @@ change에서 추가한다.
 
 ### Accountable lifecycle boundary
 
-적용 identity: `seaweedfs-buckets`, `seaweedfs-filer`, `seaweedfs-master`, `seaweedfs-s3`, `seaweedfs-table-bucket`, `seaweedfs-volume`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
+적용 identity: `seaweedfs-buckets`, `seaweedfs-filer`, `seaweedfs-master`, `seaweedfs-s3`, `seaweedfs-volume`. `seaweedfs-table-bucket`은 [POL-0094](../15-labs/0094-lakehouse.md)가 적용된다. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
 ## Exceptions
 

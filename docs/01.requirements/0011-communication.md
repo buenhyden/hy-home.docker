@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier (10-communication) Requirements"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "requirements"
 artifact_id: "REQ-0011"
 created: "2026-03-26"
@@ -15,7 +15,7 @@ created: "2026-03-26"
 
 ### Problem and Goals
 
-This document retains mail requirements across Stalwart in `10-communication` and the development SMTP sandbox Mailpit in `11-quality`. Current Stalwart is optional and internal-only: no host ports are published, and the tracked configuration rejects relaying. Production delivery, public protocol exposure and DNS/TLS acceptance remain separate promotion requirements, not implemented runtime claims.
+This document retains mail requirements across Stalwart, now the standalone LAB `labs/stalwart.yml` (SPEC-0262), and the development SMTP sandbox Mailpit in `11-quality`. Current Stalwart is optional and internal-only: no host ports are published, and the tracked configuration rejects relaying. Production delivery, public protocol exposure and DNS/TLS acceptance remain separate promotion requirements, not implemented runtime claims.
 
 ### Problem Statement
 
@@ -65,7 +65,7 @@ N/A
 ### Functional Requirements
 
 - **REQ-0011-FR-0001**: Provide a development SMTP trap service (Mailpit).
-- **REQ-0011-FR-0002**: Provide a high-performance production IMAP/SMTP/JMAP mail server (Stalwart).
+- **REQ-0011-FR-0002**: Provide a high-performance IMAP/SMTP/JMAP mail server (Stalwart). Since SPEC-0262 it is the standalone LAB entrypoint `labs/stalwart.yml`, outside root Compose; it joins no HOME network, so it serves no HOME container until a separately approved requirement adds a delivery path.
 - **REQ-0011-FR-0003**: Support real-time UI monitoring and search of mail transmission data.
 - **REQ-0011-FR-0004**: Guarantee secure communication through TLS encryption.
 - **REQ-0011-FR-0005**: Control access to the admin UI based on system SSO (Keycloak).

@@ -1,10 +1,10 @@
 ---
 title: "System Operations Diagnostic Runbook"
-version: "0.1.2"
+version: "0.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "RUN-0099"
 parent_ids:
@@ -95,7 +95,7 @@ OpenBao와 Agent의 `healthy`는 unseal·인증·렌더링 성공을 증명하�
 | 웹은 열리나 여러 로그인이 실패·반복 | Keycloak·관리 DB 상태; proxy 경로인지 앱 자체 로그인인지 | Keycloak/DB 이상이면 [Keycloak](../03-identity-and-access/0014-keycloak.md)과 [관리 DB](../05-databases-and-storage/0028-management-database.md). proxy 경로만 실패하면 Valkey와 [OAuth2 Proxy](../03-identity-and-access/0015-oauth2-proxy.md). 한 앱의 권한 실패만 있으면 [앱 인증 통합](../../guides/03-identity-and-access/0079-application-auth-integration.md)을 거쳐 해당 앱 Runbook |
 | 재부팅 뒤 secret 의존 기능 실패, OpenBao는 healthy | sealed 여부와 Agent 인증·출력 갱신의 기존 확인 기록 | 기록이 없거나 실패하면 healthy로 통과하지 않는다. [RUN-0098](0098-cold-start-and-reboot.md)에서 [OpenBao](../04-security-and-secrets/0085-openbao.md) owner-run 단계로 전달; SecretID·token을 여기서 읽지 않음 |
 | Airflow·n8n 화면은 열리나 작업 정체 | 관리 DB·Valkey 상태, 초기화 작업 종료, 해당 worker/runner 상태 | 공유 기반 이상이면 [관리 DB](../05-databases-and-storage/0028-management-database.md), 한 작업 경로만 실패하면 [Airflow](../08-workflows-and-automation/0050-airflow.md) 또는 [n8n](../08-workflows-and-automation/0053-n8n.md); 재실행·queue 삭제는 선택하지 않음 |
-| Loki·Tempo 또는 lakehouse가 함께 저장·조회 실패 | SeaweedFS 각 daemon과 bucket 작업 상태; 해당 서비스의 기존 실패 신호 | 공통 S3 기반 이상이면 [SeaweedFS](../05-databases-and-storage/0024-seaweedfs.md), 그 외 [Loki](../07-observability/0043-loki.md), [Tempo](../07-observability/0049-tempo.md), [lakehouse](../13-analytics-and-data-quality/0094-lakehouse.md). 저장소 여유 부족 징후는 [용량 진단](../05-databases-and-storage/0035-storage-exhaustion.md) |
+| Loki·Tempo 또는 lakehouse가 함께 저장·조회 실패 | SeaweedFS 각 daemon과 bucket 작업 상태; 해당 서비스의 기존 실패 신호 | 공통 S3 기반 이상이면 [SeaweedFS](../05-databases-and-storage/0024-seaweedfs.md), 그 외 [Loki](../07-observability/0043-loki.md), [Tempo](../07-observability/0049-tempo.md), [lakehouse LAB](../15-labs/0094-lakehouse.md). 저장소 여유 부족 징후는 [용량 진단](../05-databases-and-storage/0035-storage-exhaustion.md) |
 | GPU 작업과 앱 응답이 함께 느려짐·OOM | 기존 host/GPU 대시보드, 컨테이너 OOM 상태, 동시 실행 중인 작업 범위 | host 메모리·디스크도 함께 부족하면 공통 자원 영향으로 전달. GPU에 한정되면 [GPU](../09-ai-and-search/0055-gpu-recovery.md), [Ollama](../09-ai-and-search/0056-ollama.md), [ComfyUI](../09-ai-and-search/0081-comfyui.md); 추가 benchmark나 GPU reset을 하지 않음 |
 | 대시보드만 실패하거나 여러 수집 신호가 사라짐 | 사용자가 보고한 앱 상태와 collector·backend 상태의 차이 | 관측 장애 후보로 [Grafana](../07-observability/0041-grafana.md), [Prometheus](../07-observability/0045-prometheus.md), [Alloy](../07-observability/0040-alloy.md), [Gatus](../07-observability/0087-gatus.md)에 전달. 같은 호스트 관측 실패를 앱 가용성 성공·실패로 단정하지 않음 |
 | 백업 실패 또는 변경 직후 여러 기능 실패 | 승인 변경 경로, 백업 전체 실행 종료 상태와 단계별 요약, 복원 증거 존재 여부 | 백업은 [0021](../10-platform-and-backup/0021-backup-and-restore.md), 버전은 [0086](../10-platform-and-backup/0086-dependency-version-management.md), mount 반영은 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary). snapshot 존재만으로 전체 성공을 판단하지 않음 |

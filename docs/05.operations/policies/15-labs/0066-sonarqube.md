@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Operations Policy"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0066"
 parent_ids:
@@ -16,19 +16,24 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 추적 중인 SonarQube Community Build 배포를 다루며 유료 에디션 기능,
+이 정책은 독립 LAB `labs/sonarqube.yml`의 SonarQube Community Build 배포를 다루며 유료 에디션 기능,
 네이티브 Keycloak 통합, 범용 CI 게이트는 가정하지 않는다.
 
 ## Scope
 
-활성화, gateway/애플리케이션 인증, 토큰, 데이터베이스/인덱스/로그 데이터, 리소스
+활성화, 애플리케이션 인증, LAB 노출, 토큰, 데이터베이스/인덱스/로그 데이터, 리소스
 제한, 백업/복구, 업그레이드, 제거.
 
 ## Rules
 
-- **Activation:** `sast` 또는 일반 `tooling`을 사용한다. HOME 밖에 유지한다.
-- **Authentication:** gateway ForwardAuth가 진입을 보호하고, SonarQube가
-  애플리케이션 사용자, 그룹, 권한, 토큰을 소유한다. 네이티브 위임 인증은
+- **Activation:** LAB profile `sast`를 `labs/sonarqube.yml`에서만 사용하고
+  `scripts/operations/lab.py` lease로 기동한다. root에 include하지 않고 HOME 밖에 유지한다.
+- **Exposure:** gateway route와 SSO가 없다. UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}` bind의
+  `LAB_SONARQUBE_HOST_PORT`에만 게시하며 loopback 밖 bind는 별도 보안 검토가 필요하다. LAB은
+  HOME network에 합류하지 않고 mng-pg는 승인된 `LAB_SONARQUBE_DB_HOST` endpoint로만 접근한다.
+  그 endpoint 승인은 미결정이다.
+- **Authentication:** SonarQube가 유일한 진입 인증이며 애플리케이션 사용자, 그룹, 권한,
+  토큰을 소유한다. 네이티브 위임 인증은
   구성 및 테스트되기 전까지는 존재하지 않는다. IdP 비활성화만으로는 기존
   SonarQube 토큰이 자동으로 폐기되지 않으며, SonarQube에서 직접 폐기해야 한다.
 - **Tokens:** 최소 범위의 만료 토큰을 발급하고, 승인된 CI 시크릿 소유자에게
@@ -48,8 +53,8 @@ created: "2026-05-17"
 
 ### 운영 책임
 
-승인·예외·데이터 복구 책임자는 `@buenhyden`이다. 스캐너 토큰과 gateway 인증은
-별개이며 인증 실패를 해결하기 위해 middleware를 완화할 수 없다. 공유 PostgreSQL
+승인·예외·데이터 복구 책임자는 `@buenhyden`이다. 인증 실패를 해결하기 위해 SonarQube
+인증을 완화하거나 port를 넓게 게시할 수 없다. 공유 PostgreSQL
 전체를 복원하는 변경은 다른 데이터 소유자의 영향 검토와 별도 승인을 요구한다.
 
 ## Exceptions
@@ -63,18 +68,19 @@ created: "2026-05-17"
 
 ### Traceability
 
-- [가이드](../../guides/12-testing-and-quality/0066-sonarqube.md) (`GDE-0066`)
-- [런북](../../runbooks/12-testing-and-quality/0066-sonarqube.md) (`RUN-0066`)
+- [가이드](../../guides/15-labs/0066-sonarqube.md) (`GDE-0066`)
+- [런북](../../runbooks/15-labs/0066-sonarqube.md) (`RUN-0066`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+- SPEC-0262 Analytics labs migration(LAB 이전)
 
 ## Verification
 
-헬스는 부분적이다. 런타임 수용 기준에는 DB 접근, gateway와 앱 권한 부여,
+헬스는 부분적이다. 런타임 수용 기준에는 승인된 endpoint로의 DB 접근, 앱 권한 부여,
 백그라운드 작업 완료, 대표 분석이 포함되며 백업/복구를 주장하는 경우 그
 증거도 포함된다.
 
 ## Related Documents
 
-- [SonarQube Compose 소스](../../../../infra/11-quality/sonarqube/docker-compose.yml)
+- [SonarQube Compose 소스](../../../../labs/sonarqube.yml)
 - [Community Build 인증](https://docs.sonarsource.com/sonarqube-community-build/instance-administration/authentication/overview)
 - [SonarQube 토큰 관리](https://docs.sonarsource.com/sonarqube-community-build/user-guide/managing-tokens)

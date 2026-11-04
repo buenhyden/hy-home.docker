@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 가이드"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -31,6 +31,12 @@ layer: "operations"
 | [Supabase Usage Guide](0029-supabase.md) | `GDE-0029` | `supabase`는 정상 root에서 분리된 LAB Compose의 exact `supabase` profile 기반 통합 백엔드 실험 환경이다. 13개 서비스가 PostgreSQL, Kong, Auth, REST, Realtime, Storage, |
 | [PostgreSQL Cluster Usage Guide](0031-postgresql-cluster.md) | `GDE-0031` | 이 문서는 PostgreSQL cluster Compose 구현의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 |
 | [Locust Usage Guide](0062-locust.md) | `GDE-0062` | Locust는 `labs/locust.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다. HOME root Compose와 `testing` profile에는 포함되지 않는다. |
+| [SonarQube Usage Guide](0066-sonarqube.md) | `GDE-0066` | SonarQube Community Build는 독립 LAB `labs/sonarqube.yml`(project `hy-home-lab-sonarqube`)의 `sonarqube` service로 운영하는 코드 품질·SAST 도구다. |
+| [Stalwart Mail Server Guide](0070-mail.md) | `GDE-0070` | 이 가이드는 독립 LAB `labs/stalwart.yml`(project `hy-home-lab-stalwart`)의 메일 서버 Stalwart 구성, 네트워크 경계, 일반 사용 방법을 설명한다. |
+| [JupyterLab Usage Guide](0089-jupyterlab.md) | `GDE-0089` | 독립 LAB `labs/jupyterlab.yml`의 token 보호 single-user notebook server이며 LAB profile `jupyterlab`으로 선택한다. gateway route가 없고 MLflow endpoint는 선택 입력이다. |
+| [dbt Usage Guide](0090-dbt.md) | `GDE-0090` | 독립 LAB `labs/dbt.yml`의 command-line 변환 작업이다. HOME dev-pg는 필수 LAB 입력 endpoint로만 지정하며 승인 전에는 렌더링 전용이다. |
+| [Lakehouse Usage Guide](0094-lakehouse.md) | `GDE-0094` | 독립 LAB `labs/lakehouse.yml`의 Iceberg 엔진(Spark·Trino·Flink·Great Expectations)과 table bucket 작업이다. HOME SeaweedFS S3·REST catalog는 필수 LAB 입력 endpoint로만 지정한다. |
+| [Superset Usage Guide](0097-superset.md) | `GDE-0097` | 독립 LAB `labs/superset.yml`의 BI 웹 애플리케이션이다. gateway route 없이 loopback port로 게시하며 HOME mng-pg와 Keycloak은 LAB 입력으로만 찾는다. |
 
 ## Usage
 

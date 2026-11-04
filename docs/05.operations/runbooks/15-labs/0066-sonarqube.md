@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Runbook"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "RUN-0066"
 parent_ids:
@@ -38,17 +38,18 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
 
 1. 저장소 루트에서 validate하고 bounded state를 캡처한다.
 
-   ```bash
-   docker compose --profile sast config --quiet
-   docker compose --profile sast ps sonarqube
-   docker compose --profile sast logs --tail=200 sonarqube
-   ```
+   - `docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast config --quiet`
+   - `python3 scripts/operations/lab.py status`
+   - `docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast logs --tail=200 sonarqube`
 
-2. gateway 인증·SonarQube 앱 인증/token·DB 연결·compute engine 대기열·검색
+   첫 명령만 render-only다. 기동·재기동·정지는 `lab.py check|up|down sonarqube` lease
+   규칙을 따른다. HOME mng-pg endpoint(`LAB_SONARQUBE_DB_HOST`)가 승인되지 않았다면 DB 연결
+   장애가 아니라 미결정 입력이므로 중단한다.
+2. SonarQube 앱 인증/token·DB 연결·compute engine 대기열·검색
    인덱스 증상을 구분한다. user/source/token data는 redact한다.
 3. management PostgreSQL service와 여유 공간을 owner를 통해 확인한다. image가 해당
    client를 선언하지 않으므로 SonarQube 내부에서 `psql`을 실행하지 않는다.
-4. DB/storage 점검 후 SonarQube만 재시작한다. system health, gateway entry,
+4. DB/storage 점검 후 SonarQube LAB만 재시작한다. system health, loopback port 로그인,
    SonarQube permission, 대표 background task 하나를 확인한다.
 5. token compromise 시에는 SonarQube에서 token을 revoke하고, 소유 CI secret을
    rotate하고, 이전 token이 거부되는지 확인한다. IdP account 비활성화만으로는
@@ -122,9 +123,10 @@ plugin 호환성을 알 수 없거나, queue/index failure가 지속되거나, a
 
 ### Traceability
 
-- [Guide](../../guides/12-testing-and-quality/0066-sonarqube.md) (`GDE-0066`)
-- [Policy](../../policies/12-testing-and-quality/0066-sonarqube.md) (`POL-0066`)
-- [SonarQube Compose](../../../../infra/11-quality/sonarqube/docker-compose.yml)
+- [Guide](../../guides/15-labs/0066-sonarqube.md) (`GDE-0066`)
+- [Policy](../../policies/15-labs/0066-sonarqube.md) (`POL-0066`)
+- [SonarQube Compose](../../../../labs/sonarqube.yml)
+- SPEC-0262 Analytics labs migration(LAB 이전)
 
 - [SonarQube backup/restore](https://docs.sonarsource.com/sonarqube-server/9.9/instance-administration/backup-and-restore)
 - [SonarQube upgrade](https://docs.sonarsource.com/sonarqube-server/9.8/setup-and-upgrade/upgrade-the-server/upgrade-guide)

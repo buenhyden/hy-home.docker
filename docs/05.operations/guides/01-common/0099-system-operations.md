@@ -1,10 +1,10 @@
 ---
 title: "System Operations Guide"
-version: "0.1.2"
+version: "0.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -121,7 +121,7 @@ Qdrant는 별도 vector 저장소이며 `ai` 선택에 포함된다는 사실만
 
 [SeaweedFS](../../../../infra/04-data/seaweedfs/docker-compose.yml)의 master → volume·filer →
 S3와 bucket 준비는 [Loki·Tempo](../../../../infra/06-observability/docker-compose.yml)의
-object 저장 경로와 [lakehouse](../13-analytics-and-data-quality/0094-lakehouse.md)의 기반이다. Loki·Tempo는 bucket
+object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반이다. Loki·Tempo는 bucket
 작업 성공을 기다리지만 이것만으로 과거 데이터 조회·보존·복구가 검증되지는 않는다.
 메트릭·로그·가용성 신호는 같은 호스트와 저장소에 의존하므로 관측 장애와 앱
 장애를 구분한다. Grafana 화면 하나의 실패를 전체 앱 장애로 확대하지 않는다.
@@ -149,9 +149,9 @@ object 저장 경로와 [lakehouse](../13-analytics-and-data-quality/0094-lakeho
 | 07 Workflow | [Airflow](../08-workflows-and-automation/0050-airflow.md), [n8n](../08-workflows-and-automation/0053-n8n.md): 스케줄·작업 실행 | 관리 DB·broker·초기화·worker·runner; 화면 성공은 작업 성공이 아님 |
 | 08 AI | [Ollama](../09-ai-and-search/0056-ollama.md), [Open WebUI](../09-ai-and-search/0057-open-webui.md), [ComfyUI](../09-ai-and-search/0081-comfyui.md), [Open Notebook](../09-ai-and-search/0073-open-notebook.md), [MLflow](../13-analytics-and-data-quality/0088-mlflow.md) | 추론·이미지·지식 앱·실험 상태; SurrealDB·관리 DB·객체 저장소·GPU 경계 |
 | 09 Platform Operations | [Terrakube](../10-platform-and-backup/0069-terrakube.md), [OpenTofu](../10-platform-and-backup/0082-opentofu.md), [Registry](../10-platform-and-backup/0065-registry.md), [Renovate](../10-platform-and-backup/0083-renovate.md), [백업](../10-platform-and-backup/0021-backup-and-restore.md) | IaC·아티팩트·의존성·공통 복구 작업; 공유 데이터 의존성 |
-| 10 Communication | [Stalwart](../11-mail-and-notifications/0070-mail.md) | 내부 메일과 설정 helper; 외부 배달은 별도 범위 |
-| 11 Quality | [성능 검사](../12-testing-and-quality/0064-performance-testing.md), [SonarQube](../12-testing-and-quality/0066-sonarqube.md), [WireMock](../12-testing-and-quality/0092-wiremock.md), [Pact](../12-testing-and-quality/0093-pact-broker.md), [Conftest](../12-testing-and-quality/0095-conftest.md), [Mailpit](../11-mail-and-notifications/0084-mailpit.md) | 승인된 대상·합성 데이터·계약·정책 검사; 개발 캡처와 운영 메일 구분 |
-| 12 Analytics | [Lakehouse](../13-analytics-and-data-quality/0094-lakehouse.md), [Superset](../13-analytics-and-data-quality/0097-superset.md), [dbt](../13-analytics-and-data-quality/0090-dbt.md), [JupyterLab](../13-analytics-and-data-quality/0089-jupyterlab.md) | 공유 객체·catalog·관리 DB와 명시적 분석 작업; 선택이 전체 파이프라인 기동을 뜻하지 않음 |
+| 10 Communication | [Stalwart LAB](../15-labs/0070-mail.md) | 독립 LAB 메일 서버와 설정 helper; HOME network 밖이며 외부 배달은 별도 범위 |
+| 11 Quality | [성능 검사](../12-testing-and-quality/0064-performance-testing.md), [SonarQube LAB](../15-labs/0066-sonarqube.md), [WireMock](../12-testing-and-quality/0092-wiremock.md), [Pact](../12-testing-and-quality/0093-pact-broker.md), [Conftest](../12-testing-and-quality/0095-conftest.md), [Mailpit](../11-mail-and-notifications/0084-mailpit.md) | 승인된 대상·합성 데이터·계약·정책 검사; 개발 캡처와 운영 메일 구분 |
+| 12 Analytics | [Lakehouse](../15-labs/0094-lakehouse.md), [Superset](../15-labs/0097-superset.md), [dbt](../15-labs/0090-dbt.md), [JupyterLab](../15-labs/0089-jupyterlab.md)(모두 독립 LAB) | 공유 객체·catalog·관리 DB와 명시적 분석 작업; 선택이 전체 파이프라인 기동을 뜻하지 않음 |
 
 ### Runbook Handoff
 

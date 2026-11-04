@@ -1,6 +1,6 @@
 ---
 title: "운영 가이드"
-version: "0.2.5"
+version: "0.2.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -108,10 +108,10 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 | [AI와 검색](09-ai-and-search/README.md) | 기존 Ollama·Open WebUI·Qdrant·ComfyUI의 사용·데이터·GPU 경계를 이해한다. |
 | [플랫폼과 백업](10-platform-and-backup/README.md) | 플랫폼 도구, 이미지 공급망과 backup·restore의 사용 전제를 이해한다. |
 | [메일과 통지](11-mail-and-notifications/README.md) | 공용 SMTP, mail capture와 수락·외부 배달 상태를 구분한다. |
-| [시험과 품질](12-testing-and-quality/README.md) | k6·WireMock·Pact·SonarQube·Mailpit의 시험 역할을 이해한다. |
-| [분석과 데이터 품질](13-analytics-and-data-quality/README.md) | DEV 분석·dbt·BI의 데이터 소유권과 품질 확인 흐름을 이해한다. |
+| [시험과 품질](12-testing-and-quality/README.md) | k6·WireMock·Pact·Mailpit의 시험 역할을 이해한다. |
+| [분석과 데이터 품질](13-analytics-and-data-quality/README.md) | MLflow 실험 추적의 사용 전제를 이해한다. |
 | [디자인 시스템](14-design-system/README.md) | Storybook, 공유 UI와 문서 MCP의 사용 전제를 이해한다. |
-| [독립 LAB 문서](15-labs/README.md) | 기존 독립 LAB의 목적·한계와 문서상 운영 경계를 확인한다. |
+| [독립 LAB 문서](15-labs/README.md) | 데이터 클러스터·부하·분석·SAST·메일 서버 독립 LAB의 목적·한계와 문서상 운영 경계를 확인한다. |
 
 ## Usage
 

@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.8.0"
+version: "0.9.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -112,7 +112,8 @@ sequenceDiagram
     A->>A: Apply local roles or policies
 ```
 
-Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus, Superset이 이 경로를 사용한다. 이 router들은
+Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus가 이 경로를 사용한다. Superset도 native OIDC지만
+SPEC-0262 이후 독립 LAB이라 gateway router가 없다. 이 router들은
 `gateway-standard-chain@file`을 사용하며 `sso-auth@file`을 적용하지 않는다.
 Keycloak에 이미 로그인했다면 비밀번호 입력이 생략될 수 있지만, 애플리케이션별
 callback 처리와 세션·권한 생성은 여전히 필요하다. OpenBao의 OIDC 로그인은
@@ -131,7 +132,7 @@ Realm은 `hy-home.realm`, issuer는
 | OpenBao | `home-openbao` | `https://openbao.${DEFAULT_URL}/ui/vault/auth/oidc/oidc/callback` | `home-admin` → `hy-home-operator`; [검증된 로그인 절차](../04-security-and-secrets/0085-openbao.md) |
 | Open WebUI | `home-openwebui` | `https://chat.${DEFAULT_URL}/oauth/oidc/callback` | 기존 로컬 사용자 ID·역할 보존; [운영 절차](../../runbooks/09-ai-and-search/0057-open-webui.md) |
 | Gatus | `home-gatus` | `https://status.${DEFAULT_URL}/authorization-code/callback` | 정확한 subject allowlist; [운영 절차](../../runbooks/07-observability/0087-gatus.md) |
-| Superset | `home-superset` | `https://superset.${DEFAULT_URL}/oauth-authorized/keycloak` | 가입은 `Gamma`, 역할은 Superset Admin이 부여; [운영 절차](../../runbooks/13-analytics-and-data-quality/0097-superset.md) |
+| Superset | `home-superset` | `https://superset.${DEFAULT_URL}/oauth-authorized/keycloak` | 가입은 `Gamma`, 역할은 Superset Admin이 부여. SPEC-0262 이후 LAB이며 gateway host가 없으므로 LAB loopback origin의 redirect 등록은 소유자 승인 전 미결정; [운영 절차](../../runbooks/15-labs/0097-superset.md) |
 
 OpenBao CLI callback은 `http://localhost:8250/oidc/callback`이다. 이는 브라우저
 루프백 수신점이며 서버의 공개 HTTP 주소가 아니다. 현재 OpenBao 그룹은
@@ -242,12 +243,12 @@ OAuth2 Proxy 뒤에 있다는 사실만으로 애플리케이션 권한 모델�
 | Terrakube | Direct issuer 선언은 있으나 미기동; API 외부 JWT 경로에서 명시적 audience 검사 미확인 | `iac` profile을 켤 때 처리(owner 결정 2026-09-24): 전용 public client `home-terrakube`, API route의 ForwardAuth 제거, audience/RBAC 실행 검증. 그 전까지 gateway 유지. API route의 ForwardAuth는 cookie가 없는 Terraform CLI·API token 호출과, `terrakube-api.` 공개 주소로 API를 부르는 `terrakube-executor`를 막는다. executor를 내부 주소로 돌릴지와 executor route의 SSO도 같은 시점에 정한다 |
 | n8n Community | [공식 SSO 안내](https://docs.n8n.io/deploy/host-n8n/configure-n8n/security/configure-sso)는 self-hosted Business/Enterprise만 지원 | 유료 기능 도입 없이 ForwardAuth 유지 |
 | Flower | [공식 인증 안내](https://flower.readthedocs.io/en/latest/auth.html)는 provider별 OAuth와 custom handler 제공; generic Keycloak OIDC 계약 없음 | custom 인증 코드 추가 없이 ForwardAuth 유지 |
-| Stalwart WebUI | [OIDC backend](https://stalw.art/docs/auth/backend/oidc/)는 클라이언트가 제시한 bearer token 검증; 서버가 browser OIDC를 시작하지 않음 | mail/JMAP OIDC 지원을 WebUI SSO로 오인하지 않고 gateway 유지 |
+| Stalwart WebUI | [OIDC backend](https://stalw.art/docs/auth/backend/oidc/)는 클라이언트가 제시한 bearer token 검증; 서버가 browser OIDC를 시작하지 않음 | mail/JMAP OIDC 지원을 WebUI SSO로 오인하지 않음. SPEC-0262 이후 독립 LAB `labs/stalwart.yml`이며 gateway·SSO route 없이 loopback에만 게시 |
 | RedisInsight | [공식 설정](https://redis.io/docs/latest/operate/redisinsight/configuration/)에서 UI OIDC 연동 설정 미확인; DB 연결 인증과 구분 | native 지원 미검증으로 유지; 불가능하다고 단정하지 않음 |
 | Open Notebook | [upstream OIDC 요청](https://github.com/lfnovo/open-notebook/issues/607)과 현재 배포의 password 인증 | native 계약 미확인; router는 ForwardAuth 없이 IP allowlist와 앱 password (2026-09 `b90b74837`) |
 | ComfyUI | [custom OIDC 요청](https://github.com/Comfy-Org/ComfyUI/issues/12558); Comfy 계정 로그인과 Keycloak 연동은 별개 | 유지 |
 | Mailpit, Ollama | [Mailpit HTTP 인증](https://mailpit.axllent.org/docs/configuration/http/), [Ollama 인증](https://docs.ollama.com/api/authentication)은 native Keycloak browser login 모델이 아님 | 유지 |
-| SonarQube Community | [공식 인증 목록](https://docs.sonarsource.com/sonarqube-server/2025.4/instance-administration/authentication/overview/)의 SAML/위임 인증과 OIDC를 구분 | 설치판에서 native OIDC 미확인, 유지 |
+| SonarQube Community | [공식 인증 목록](https://docs.sonarsource.com/sonarqube-server/2025.4/instance-administration/authentication/overview/)의 SAML/위임 인증과 OIDC를 구분 | 설치판에서 native OIDC 미확인. SPEC-0262 이후 독립 LAB `labs/sonarqube.yml`이며 gateway·SSO route 없이 loopback에만 게시 |
 | Prometheus, Alertmanager, Pushgateway, Loki, Tempo, Alloy, Pyroscope, cAdvisor | 현재 배포의 browser OIDC 계약 미확인; Grafana/API/reverse-proxy 보호 사용 | 유지 |
 
 Open WebUI는 OAuth role/group 자동 관리를 끄고 기존 로컬 관리자 역할을 보존한다.
@@ -415,7 +416,7 @@ TCP router는 두지 않는다.
 
 | Router | Authentication without the SSO chain |
 | --- | --- |
-| `airflow`, `dozzle`, `gatus`, `grafana`, `kafka-ui`, `open-webui`, `openbao`, `superset` | native OIDC(Dozzle은 IP allowlist도 적용) |
+| `airflow`, `dozzle`, `gatus`, `grafana`, `kafka-ui`, `open-webui`, `openbao` | native OIDC(Dozzle은 IP allowlist도 적용) |
 | `keycloak`, `oauth2-proxy` | identity provider와 ForwardAuth 서비스 자체 |
 | `couchdb`, `haproxy-stats`, `neo4j` | application 관리자 credential |
 | `mongo-express` | mongo-express basic auth(`ME_CONFIG_BASICAUTH=true`) |
@@ -444,7 +445,7 @@ TLS 검사를 끄지 않는다). owner 행에는 로그인된 browser나 Keycloa
 
 | Behaviour | Routers covered | Method | Expected | Performer |
 | --- | --- | --- | --- | --- |
-| Cookie 없음, SSO route | 이 matrix에 기록된 `sso-auth` router 19개: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `jupyter`, `kafka-connect`, `kafka-rest`, `loki`, `mlflow`, `n8n`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/`(`/favicon.ico`는 `redisinsight-static`용) | upstream content가 노출되지 않고 응답이 Keycloak authorization endpoint를 가리킴 | agent |
+| Cookie 없음, SSO route | 이 matrix에 기록된 `sso-auth` router 18개: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `kafka-connect`, `kafka-rest`, `loki`, `mlflow`, `n8n`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/`(`/favicon.ico`는 `redisinsight-static`용) | upstream content가 노출되지 않고 응답이 Keycloak authorization endpoint를 가리킴 | agent |
 | Cookie 없음, API client | `alloy`(`Accept: application/json`), `prometheus`(`/api/v1/status/buildinfo`) | credential 없이 GET | 401을 유지하고 upstream content를 노출하지 않음 | agent |
 | Session 없음, native OIDC | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | `/`, app login 경로, API 경로 하나에 GET | Keycloak이나 app login 페이지에서 로그인이 시작되고 API는 거부함 | agent |
 | `/admins` 밖의 사용자 | 모든 SSO route | `/admins` 밖의 realm 사용자로 로그인하고 SSO route에 접속 | 거부됨: OAuth2 Proxy callback group 거부가 log와 Proxy 오류 화면으로 끝남. 이는 gateway `sso-errors`가 ForwardAuth 403을 가로채는 경우와 별도임 | owner |

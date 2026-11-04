@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Operations Policy"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -23,13 +23,14 @@ created: "2026-05-10"
 - `infra/09-platform-ops/*/docker-compose.yml` 및 `infra/11-quality/*/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
 
-- **Systems**: opentofu, terrakube, registry, sonarqube, k6, Locust LAB, renovate
+- **Systems**: opentofu, terrakube, registry, SonarQube LAB, k6, Locust LAB, renovate
 - **Environments**: local·DEV·stage 및 production-like 환경
 
 ## Rules
 
 - **Required**:
-  - SonarQube/Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+  - Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+  - SonarQube LAB(`labs/sonarqube.yml`, SPEC-0262)은 gateway route를 두지 않고 `LAB_HOST_BIND_IP` bind의 loopback port만 게시한다.
   - tooling 서비스는 root Compose가 정의한 선언된 network bridge에 연결한다.
   - `labs/locust.yml`의 Locust LAB worker healthcheck를 유지한다.
   - k6 volume 계약(`k6-data:/scripts:ro`)을 유지한다.

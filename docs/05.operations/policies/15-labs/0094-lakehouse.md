@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Operations Policy"
-version: "1.4.0"
+version: "1.5.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -25,8 +25,14 @@ Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 
 
 ## Rules
 
-- `lakehouse`를 통해서만 선택한다. HOME에는 절대 추가하지 않는다.
-- 카탈로그는 `object_net`에서만 접근 가능해야 하고 라우트/host port를 금지한다. 현재 all-interface S3 listener는 edge_net/seaweed_internal에도8181을 열어 이 통제가 미준수다(POL-0024). route/host port 부재와 authenticated catalog 동작은 더 좁은 통제이며 network 격리를 대신하지 않는다. 별도 구현 수정 전 compliant로 인정하지 않는다. 엔진은
+- 엔진은 독립 LAB `labs/lakehouse.yml`의 `lab-lakehouse` profile로만 선택한다(SPEC-0262). root
+  include, HOME network 합류, HOME 이름 선택 추가를 금지한다. root `lakehouse` profile은 HOME
+  SeaweedFS만 선택한다.
+- LAB은 HOME 서비스를 `LAB_LAKEHOUSE_S3_ENDPOINT`·`LAB_LAKEHOUSE_CATALOG_URI` 필수 입력으로만
+  찾는다. 소유자가 LAB에서 도달 가능한 endpoint를 승인하기 전까지 LAB은 렌더링 전용이며, 이를
+  위해 HOME 카탈로그나 S3를 LAB network·host port·route에 임의로 게시하지 않는다(미결정, 별도
+  승인). Kafka bootstrap endpoint도 같다.
+- HOME 카탈로그는 `object_net`에서만 접근 가능해야 하고 라우트/host port를 금지한다. 현재 all-interface S3 listener는 edge_net/seaweed_internal에도8181을 열어 이 통제가 미준수다(POL-0024). route/host port 부재와 authenticated catalog 동작은 더 좁은 통제이며 network 격리를 대신하지 않는다. 별도 구현 수정 전 compliant로 인정하지 않는다. 엔진은
   `lakehouse` identity로 서명하며, 이 identity의 S3 액션과 테이블 버킷
   정책은 lakehouse 버킷만 다룬다. 정책은 열 개의 namespace 및 테이블 액션을
   나열하며 정책 변경과 버킷 삭제는 제외한다. 새 엔진은 이 identity를 재사용
@@ -65,9 +71,10 @@ SeaweedFS, Iceberg, 엔진 업그레이드 시, 새 엔진 추가 시, 새 names
 
 ### Traceability
 
-- [가이드](../../guides/13-analytics-and-data-quality/0094-lakehouse.md) (`GDE-0094`)
-- [런북](../../runbooks/13-analytics-and-data-quality/0094-lakehouse.md) (`RUN-0094`)
+- [가이드](../../guides/15-labs/0094-lakehouse.md) (`GDE-0094`)
+- [런북](../../runbooks/15-labs/0094-lakehouse.md) (`RUN-0094`)
 - [SeaweedFS policy](../05-databases-and-storage/0024-seaweedfs.md)
+- SPEC-0262 Analytics labs migration
 
 ## Verification
 
@@ -77,8 +84,6 @@ Compose 렌더링, 카탈로그 확인, 그리고 범위가 한정된 identity�
 
 ## Related Documents
 
-- [Spark Compose source](../../../../infra/12-analytics/spark/docker-compose.yml)
-- [Trino Compose source](../../../../infra/12-analytics/trino/docker-compose.yml)
-- [Flink Compose source](../../../../infra/12-analytics/flink/docker-compose.yml)
-- [Great Expectations Compose source](../../../../infra/12-analytics/great-expectations/docker-compose.yml)
+- [Lakehouse LAB Compose source](../../../../labs/lakehouse.yml)
+- [LAB 공개 입력 예시](../../../../labs/.env.example)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)

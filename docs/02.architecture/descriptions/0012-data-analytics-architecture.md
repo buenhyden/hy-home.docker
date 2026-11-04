@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier Architecture Description"
-version: "1.1.5"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "AD-0012"
 parent_ids:
@@ -18,8 +18,12 @@ created: "2026-03-26"
 
 ### Context and Stakeholders
 
-`infra/12-analytics` groups stream/batch processing, SQL queries, transformation,
-data quality and BI for data engineers and analysts. The former description
+The analytics tier groups stream/batch processing, SQL queries, transformation,
+data quality and BI for data engineers and analysts. Since SPEC-0262 its packages
+are standalone LAB entrypoints (`labs/lakehouse.yml`, `labs/dbt.yml`,
+`labs/superset.yml`, `labs/jupyterlab.yml`) that join no HOME network and reach
+HOME stores only through approved LAB endpoint inputs; `infra/12-analytics` holds
+no root package. The former description
 covered only `04-data/analytics` storage engines; ADR-0045 makes the storage
 versus processing boundary explicit. OpenSearch remains in Data; InfluxDB is retired (ADR-0047).
 
@@ -51,7 +55,7 @@ failure isolation nor a separate Compose project.
 | Great Expectations | quality checks through Trino | lakehouse |
 | Superset | BI, Keycloak OIDC and mng-pg metadata; configured Trino datasource | bi |
 | dbt | PostgreSQL transformations using feature-owned grants/schema | analytics-engineering |
-| JupyterLab | interactive data analysis, token-protected kernels and optional MLflow SDK access | data-science |
+| JupyterLab | interactive data analysis, token-protected kernels and optional MLflow SDK access | jupyterlab (LAB) |
 
 ## Runtime and Deployment
 
@@ -83,8 +87,8 @@ static source validation. Runtime version pins remain in Compose/Dockerfiles.
 
 ## Related Documents
 
-- [Analytics packages](../../../infra/12-analytics/README.md)
+- [Analytics packages](../../../infra/12-analytics/README.md) and [LAB sources](../../../labs/README.md)
 - [Data architecture](0004-data-architecture.md)
-- [Lakehouse guide](../../05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md)
-- [Superset guide](../../05.operations/guides/13-analytics-and-data-quality/0097-superset.md)
-- [dbt guide](../../05.operations/guides/13-analytics-and-data-quality/0090-dbt.md)
+- [Lakehouse guide](../../05.operations/guides/15-labs/0094-lakehouse.md)
+- [Superset guide](../../05.operations/guides/15-labs/0097-superset.md)
+- [dbt guide](../../05.operations/guides/15-labs/0090-dbt.md)

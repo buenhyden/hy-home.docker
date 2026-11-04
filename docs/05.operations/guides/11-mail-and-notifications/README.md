@@ -1,10 +1,10 @@
 ---
 title: "메일과 통지 가이드"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -24,7 +24,6 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [Stalwart Mail Server Guide](0070-mail.md) | `GDE-0070` | 이 가이드는 OPTIONAL 내부 메일 서버 Stalwart의 구성, 네트워크 경계, 일반 사용 방법을 설명한다. `mail-server` profile에서만 선택되며 개발용 메일 캡처인 Mailpit과는 구분된다. |
 | [Mailpit Guide](0084-mailpit.md) | `GDE-0084` | 이 가이드는 DEV 메일 캡처 서비스 Mailpit의 구성, 접근 경계, 일반 사용 방법을 설명한다. Mailpit은 전달용 MTA가 아니며 `dev`, `local`, `mail-dev` profile에서만 선택된다. |
 
 ## Usage

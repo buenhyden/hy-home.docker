@@ -1,6 +1,6 @@
 ---
 title: "Superset Runbook"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -34,30 +34,36 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-1. 최초 설정(각 단계는 승인을 받으며, 값은 로그나 문서에 절대 남기지 않는다):
-   1. Keycloak realm `hy-home.realm`: standard flow만 사용하고 PKCE `S256`,
-      redirect URI `https://superset.${DEFAULT_URL}/oauth-authorized/keycloak`,
-      web origin `https://superset.${DEFAULT_URL}`을 설정해 confidential
-      client `home-superset`를 생성한다.
-   2. 해당 client secret을 `secrets/auth/superset/superset_oidc_client_secret.txt`로
-      저장한다(IAM-013, 한 줄, 모드 `0640`).
+1. 최초 설정(각 단계는 승인을 받으며, 값은 로그나 문서에 절대 남기지 않는다). Superset은
+   독립 LAB `labs/superset.yml`이며(SPEC-0262) 아래 `LAB`은
+   `docker compose --env-file labs/.env -f labs/superset.yml --profile lab-superset`다. `LAB config` 외 명령은
+   `python3 scripts/operations/lab.py up superset`의 활성 lease 안에서만 쓰고, 승인된
+   `LAB_SUPERSET_DB_HOST` endpoint가 없으면 렌더링까지만 한다(미결정 항목):
+   1. Keycloak realm `hy-home.realm`: standard flow만 사용하고 PKCE `S256`으로 confidential
+      client `home-superset`를 생성한다. 현재 등록 redirect URI
+      `https://superset.${DEFAULT_URL}/oauth-authorized/keycloak`은 이전 gateway host이므로 LAB
+      loopback origin(`LAB_SUPERSET_HOST_PORT`)의 redirect는 소유자가 승인한 client 변경으로만
+      추가한다(미결정 항목).
+   2. 해당 client secret을 HOME `secrets/auth/superset/superset_oidc_client_secret.txt`로
+      저장한다(IAM-013, 한 줄, 모드 `0640`). LAB은 LAB 전용 secret만 읽으므로 이 값과 mng-pg
+      관리자·Superset DB 비밀번호, signing key의 LAB 사본을 `${LAB_SECRET_DIR:-../secrets/labs}/superset/`
+      아래(정확한 파일명은 `labs/superset.yml`의 `secrets:`가 소유) 별도 승인으로 준비한다(미결정 항목).
    3. `bash scripts/operations/gen-secrets.sh --sync-metadata`를 실행한 다음
       `bash scripts/operations/gen-secrets.sh`를 실행해 PG-028과 AUTO-020을
       생성한다.
-   4. `docker compose --profile bi build superset`를 실행한 다음
-      `docker compose --profile bi up -d superset`를 실행한다.
-   5. 최초 Admin은 named OIDC identity와 FAB username mapping을 먼저 확인한다. 비공개 TTY에서 `docker compose --profile bi exec superset superset fab create-admin`의 interactive identity/password/confirmation prompt를 사용한다. 승인된 password manager의 강한 값을 masked prompt에만 입력하고 custody한다. `--password`, shell substitution, 환경 변수, 터미널 출력/녹화·trace, stdin pipe와 `exec -T`는 금지한다. TTY/custody/정확한 identity가 없거나 prompt가 masking되지 않으면 중단한다. 폼 로그인 비활성화는 password hash를 비민감 정보로 만들지 않는다. 생성 후 named 사용자의 OIDC login과 Admin 권한만 별도 승인 검증하고 등록 Gamma 정책을 바꾸지 않는다.
+   4. `LAB build superset`를 실행한 다음 `LAB up -d superset`를 실행한다.
+   5. 최초 Admin은 named OIDC identity와 FAB username mapping을 먼저 확인한다. 비공개 TTY에서 `LAB exec superset superset fab create-admin`의 interactive identity/password/confirmation prompt를 사용한다. 승인된 password manager의 강한 값을 masked prompt에만 입력하고 custody한다. `--password`, shell substitution, 환경 변수, 터미널 출력/녹화·trace, stdin pipe와 `exec -T`는 금지한다. TTY/custody/정확한 identity가 없거나 prompt가 masking되지 않으면 중단한다. 폼 로그인 비활성화는 password hash를 비민감 정보로 만들지 않는다. 생성 후 named 사용자의 OIDC login과 Admin 권한만 별도 승인 검증하고 등록 Gamma 정책을 바꾸지 않는다.
 
-2. 점검: `docker compose --profile bi logs --tail=100 superset-db-provision superset-init superset`.
+2. 점검: `LAB logs --tail=100 superset-db-provision superset-init superset`.
 3. `superset: secret … must be one non-empty line`: 지정된 secret 파일이
    비어 있거나 여러 줄로 되어 있다는 뜻이다.
-4. 로그인이 오류와 함께 Superset으로 돌아오는 경우: Keycloak의 redirect URI와
-   client secret을 확인한 다음, 컨테이너에서 `keycloak.${DEFAULT_URL}`이
-   Traefik로 해석되는지, `${DEFAULT_CERT_DIR}/rootCA.pem`이 마운트되어
-   있는지 확인한다.
+4. 로그인이 오류와 함께 Superset으로 돌아오는 경우: Keycloak의 redirect URI가 실제 LAB
+   origin을 포함하는지와 client secret을 확인한 다음, 컨테이너에서
+   `keycloak.${LAB_SUPERSET_DEFAULT_URL}`이 HOME gateway로 해석·도달되는지,
+   `LAB_SUPERSET_CA_FILE`이 `/etc/ssl/certs/hy-home-rootCA.pem`으로 마운트되어 있는지 확인한다.
 5. 로그인한 사용자에게 데이터가 보이지 않는 경우: 해당 사용자는 `Gamma`
    역할이므로 Admin이 역할을 부여한다.
-6. 업그레이드: 정확한 metadata backup, signing key custody, image/schema 호환성과 rollback을 승인받은 다음 재빌드한다. `docker compose --profile bi run --rm superset-init`을
+6. 업그레이드: 정확한 metadata backup, signing key custody, image/schema 호환성과 rollback을 승인받은 다음 재빌드한다. `LAB run --rm superset-init`을
    실행하고 `superset`을 재생성한다.
 
 ## Verification
@@ -73,17 +79,18 @@ client ID, 역할 이름, Admin이 부여된 사용자 이름, exit code, 소스
 
 ### Escalation
 
-폼 로그인 활성화, 등록 시 `Admin` 부여, 호스트 포트 게시, 또는 환경 변수에
+폼 로그인 활성화, 등록 시 `Admin` 부여, loopback 밖 호스트 포트 bind, 또는 환경 변수에
 credential을 넣으라는 요청이 있으면 중단하고 @buenhyden에게 전달한다.
 
 ## Related Documents
 
 ### Traceability
 
-- [Guide](../../guides/13-analytics-and-data-quality/0097-superset.md) (`GDE-0097`)
-- [Policy](../../policies/13-analytics-and-data-quality/0097-superset.md) (`POL-0097`)
+- [Guide](../../guides/15-labs/0097-superset.md) (`GDE-0097`)
+- [Policy](../../policies/15-labs/0097-superset.md) (`POL-0097`)
 - [Keycloak runbook](../03-identity-and-access/0014-keycloak.md)
+- SPEC-0262 Analytics labs migration
 
-- [Superset package README](../../../../infra/12-analytics/superset/README.md)
-- [Superset Compose source](../../../../infra/12-analytics/superset/docker-compose.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
+- [Superset package README](../../../../labs/superset/README.md)
+- [Superset Compose source](../../../../labs/superset.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [Backup and restore runbook](../10-platform-and-backup/0021-backup-and-restore.md)

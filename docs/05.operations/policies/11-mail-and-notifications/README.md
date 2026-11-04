@@ -1,10 +1,10 @@
 ---
 title: "메일과 통지 정책"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -24,7 +24,6 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [Stalwart Mail Operations Policy](0070-mail.md) | `POL-0070` | Stalwart는 OPTIONAL 내부 메일 서비스다. 프로토콜 리스너, relay 규칙, 메일박스 데이터는 관리 UI 경로 이상의 통제가 필요하다. 이 정책은 그 통제를 정의한다. |
 | [Mailpit Policy](0084-mailpit.md) | `POL-0084` | Mailpit은 개발용 이메일을 캡처한다. 일부러 느슨하게 둔 SMTP 설정은 현재 DEV 분류와 loopback/internal 네트워크 경계 안에서만 허용된다. |
 
 ## Usage

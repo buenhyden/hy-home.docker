@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Recovery Runbook"
-version: "1.4.0"
+version: "1.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -36,23 +36,29 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-1. 저장소 루트에서 승인된 대상만 점검한다. `--no-deps` 예시는 SeaweedFS/table-bucket와 Trino가 이미 준비된 경우만 해당한다. 준비되지 않았으면 멈추며 진단을 위해 provisioning을 암묵 실행하지 않는다.
+1. 저장소 루트에서 승인된 대상만 점검한다. 이 엔진들은 독립 LAB `labs/lakehouse.yml`에
+   있으며(SPEC-0262) 아래에서 `LAB`은
+   `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse`를 뜻한다.
+   `LAB config`는 렌더링만 한다. 그 외 명령은 `python3 scripts/operations/lab.py up lakehouse`로
+   얻은 활성 lease 안에서만 쓰고, 소유자가 승인한 `LAB_LAKEHOUSE_S3_ENDPOINT`·
+   `LAB_LAKEHOUSE_CATALOG_URI`가 없으면 멈춘다(HOME은 기본적으로 이 endpoint를 LAB network에
+   게시하지 않는 미결정 항목). `--no-deps` 예시는 table-bucket provisioning과 Trino가 이미 준비된
+   경우만 해당한다. 준비되지 않았으면 멈추며 진단을 위해 provisioning을 암묵 실행하지 않는다.
 
-   ```bash
-   docker compose --profile lakehouse config --quiet
-   docker compose --profile lakehouse logs --tail=100 seaweedfs-table-bucket seaweedfs-s3
-   docker compose --profile lakehouse run --rm --no-deps spark
-   ```
+   - `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse config --quiet`
+   - `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse logs --tail=100 seaweedfs-table-bucket`
+   - `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse run --rm --no-deps spark`
 
    마지막 명령은 네임스페이스를 나열해 카탈로그 접근을 처음부터 끝까지
-   증명한다. Trino의 경우:
-   `docker compose --profile lakehouse logs --tail=100 trino`를 실행한 뒤
-   `docker compose exec trino trino --execute "SHOW SCHEMAS FROM lakehouse"`를
+   증명한다. HOME `seaweedfs-s3` 로그는 HOME root project에서 따로 본다
+   ([SeaweedFS runbook](../05-databases-and-storage/0024-seaweedfs.md)). Trino의 경우:
+   `LAB logs --tail=100 trino`를 실행한 뒤
+   `LAB exec trino trino --execute "SHOW SCHEMAS FROM lakehouse"`를
    실행한다. Flink의 경우:
-   `docker compose --profile lakehouse logs --tail=100 flink-jobmanager flink-taskmanager`를
-   실행한 뒤 `docker compose exec flink-jobmanager /opt/flink/bin/flink list -a`를
+   `LAB logs --tail=100 flink-jobmanager flink-taskmanager`를
+   실행한 뒤 `LAB exec flink-jobmanager /opt/flink/bin/flink list -a`를
    실행한다. 스위트의 경우:
-   `docker compose --profile lakehouse run --rm --no-deps great-expectations validate <suite>`를
+   `LAB run --rm --no-deps great-expectations validate <suite>`를
    실행한다. `"success": false` 앞 줄에 실패한 expectation이 나온다(종료
    `1`). 종료 `2`는 아무것도 검사하지 못했다는 뜻이며 원인은 stderr에
    나온다.
@@ -78,8 +84,10 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 7. Flink 체크포인트가 `/opt/flink/checkpoints`에서 `AccessDeniedException`으로
    실패하면 컨테이너가 호스트 디렉터리에 쓸 수 없다는 뜻이다. 운영자
    권한으로
-   `install -d -m 2770 -g "${SECRETS_GID:-1000}" "$DEFAULT_DATA_DIR/flink/checkpoints"`를
-   실행해 생성한다. 컨테이너는 `SECRETS_GID` 그룹을 통해 쓴다. `RESTARTING`
+   `install -d -m 2770 -g "${LAB_SECRETS_GID:-1000}" "$LAB_DATA_DIR/lakehouse/flink/checkpoints"`를
+   실행해 생성한다. 컨테이너는 `LAB_SECRETS_GID` 그룹을 통해 쓴다. 이전
+   `${DEFAULT_DATA_DIR}/flink/checkpoints`의 체크포인트는 옮겨지지 않았으며 재배치는 별도
+   승인 아래 수동으로 한다. `RESTARTING`
    상태에 멈춘 작업은 `flink cancel <job_id>`로 취소한다. 이전 체크포인트에서
    커밋된 행은 테이블에 남는다.
 
@@ -106,12 +114,14 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Traceability
 
-- [Guide](../../guides/13-analytics-and-data-quality/0094-lakehouse.md) (`GDE-0094`)
-- [Policy](../../policies/13-analytics-and-data-quality/0094-lakehouse.md) (`POL-0094`)
+- [Guide](../../guides/15-labs/0094-lakehouse.md) (`GDE-0094`)
+- [Policy](../../policies/15-labs/0094-lakehouse.md) (`POL-0094`)
 - [SeaweedFS runbook](../05-databases-and-storage/0024-seaweedfs.md)
+- SPEC-0262 Analytics labs migration
 
-- [Spark 패키지 README](../../../../infra/12-analytics/spark/README.md)
-- [Trino 패키지 README](../../../../infra/12-analytics/trino/README.md)
-- [Flink 패키지 README](../../../../infra/12-analytics/flink/README.md)
-- [Great Expectations 패키지 README](../../../../infra/12-analytics/great-expectations/README.md)
+- [Lakehouse LAB Compose](../../../../labs/lakehouse.yml)와 [독립 LAB source](../../../../labs/README.md)
+- [Spark 패키지 README](../../../../labs/lakehouse/spark/README.md)
+- [Trino 패키지 README](../../../../labs/lakehouse/trino/README.md)
+- [Flink 패키지 README](../../../../labs/lakehouse/flink/README.md)
+- [Great Expectations 패키지 README](../../../../labs/lakehouse/great-expectations/README.md)
 - [Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/)

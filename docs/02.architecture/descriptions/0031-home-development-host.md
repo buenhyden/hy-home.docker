@@ -1,6 +1,6 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -37,7 +37,7 @@ boundary and share the same Docker daemon failure. The shared Compose network
 is an existing implementation's trust boundary, and this design does not
 prove complete network isolation.
 
-Storage and Redis administration packages are flat under `04-data`; processing, data quality, BI, dbt and JupyterLab are under `12-analytics`. Software verification and development mail capture belong to `11-quality`; platform tools remain in `09-platform-ops`. Dozzle belongs to Observability; Open Notebook/SurrealDB and MLflow belong to AI. This is source organization only and does
+Storage and Redis administration packages are flat under `04-data`; processing, data quality, BI, dbt and JupyterLab are standalone LAB entrypoints under `labs/` (SPEC-0262). Software verification and development mail capture belong to `11-quality`; platform tools remain in `09-platform-ops`. Dozzle belongs to Observability; Open Notebook/SurrealDB and MLflow belong to AI. This is source organization only and does
 not change HOME selection or the root Compose project (ADR-0045).
 
 ## Structure

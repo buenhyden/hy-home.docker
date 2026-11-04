@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Usage Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -27,7 +27,7 @@ created: "2026-05-17"
 대상 독자는 SRE/Platform Operator, DevOps Engineer, Platform Product Owner다.
 목표는 다음과 같다.
 
-- SonarQube와 Terrakube 경로를 gateway+SSO 정책에 맞춘다.
+- Terrakube 경로를 gateway+SSO 정책에 맞춘다. SonarQube는 SPEC-0262로 독립 LAB(`labs/sonarqube.yml`)이 되어 gateway route 없이 loopback port만 게시한다.
 - tooling compose의 네트워크 경계를 일관되게 유지한다.
 - root `k6`와 독립 Locust LAB의 테스트 런타임 계약을 안정화한다.
 - 하드닝 회귀를 script와 CI로 일찍 막는다.

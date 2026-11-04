@@ -1,6 +1,6 @@
 ---
 title: "Platform Operations and Software Verification Architecture Description"
-version: "2.3.1"
+version: "2.4.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -78,8 +78,8 @@ Data and control flows include only the interactions specified in this section a
 
 - **Runtime / Platform**: Docker Compose using the current root Compose include and profile contract.
 - **Deployment Model**: The root `docker-compose.yml` includes every leaf, and
-  a profile selects the service. `tooling` selects only Registry and
-  SonarQube; `testing` selects k6 (`infra/11-quality/k6`); no Locust service exists in the root model; `iac`
+  a profile selects the service. `tooling` selects only Registry (SonarQube is the
+  standalone LAB `labs/sonarqube.yml` since SPEC-0262); `testing` selects k6 (`infra/11-quality/k6`); no Locust service exists in the root model; `iac`
   selects OpenTofu and the Terrakube API/UI/executor together;
   `dependency-update` selects only Renovate. `registry` and `sast` each
   select that single role. `analytics-engineering` selects dbt and its DB

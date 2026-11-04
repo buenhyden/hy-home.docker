@@ -1,6 +1,6 @@
 ---
 title: "Superset Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -17,7 +17,7 @@ created: "2026-09-23"
 ## Overview
 
 Superset는 자체 로그인, 메타데이터 데이터베이스, lakehouse 데이터 접근
-권한을 가진 라우팅되는 웹 애플리케이션이다. 인증, role 부여, 자격 증명
+권한을 가진 독립 LAB 웹 애플리케이션이며 gateway route가 없다(SPEC-0262). 인증, role 부여, 자격 증명
 처리가 통제 대상이다.
 
 ## Scope
@@ -26,18 +26,22 @@ Superset는 자체 로그인, 메타데이터 데이터베이스, lakehouse 데�
 
 ## Rules
 
-- `bi`를 통해서만 선택한다. HOME에는 절대 추가하지 않는다.
-- 로그인은 PKCE를 사용하는 native Keycloak OIDC다. router는
-  `gateway-standard-chain@file`만 사용하며 OAuth2 Proxy ForwardAuth는 절대
-  쓰지 않는다. form 로그인은 제공하지 않는다.
+- 독립 LAB `labs/superset.yml`의 `lab-superset` profile로만 선택한다. root include, HOME network
+  합류, HOME 이름 선택 추가를 금지한다.
+- 로그인은 PKCE를 사용하는 native Keycloak OIDC다. gateway route가 없으므로 OAuth2 Proxy
+  ForwardAuth도 적용되지 않으며 form 로그인은 제공하지 않는다. LAB loopback origin용 redirect
+  URI는 소유자가 승인한 Keycloak client 변경으로만 등록한다(미결정, 별도 승인).
 - self-registration은 `Gamma`만 부여한다. Admin과 데이터 role은 Admin이
   이름이 명시된 Keycloak 사용자에게 부여하며, 누가 왜 부여했는지를 Task에
   기록한다.
 - signing key, 데이터베이스 비밀번호, client secret은 Docker secret 파일에서
   가져온다. 어느 것도 환경 변수, 명령줄 인자, 설정 안의 평문 URI로 두지
   않는다.
-- 메타데이터 데이터베이스는 `mng-pg`에서 feature-owned로 존재하며
-  앱은 `mng_data_net`으로 연결한다. 공유 mng-pg는 loopback host port도 게시하므로 network-only 격리라고 주장하지 않는다. Superset app 자체의 host port는 금지한다.
+- 메타데이터 데이터베이스는 HOME `mng-pg`에서 feature-owned로 존재하며 LAB은
+  `LAB_SUPERSET_DB_HOST`/`LAB_SUPERSET_DB_PORT` 입력으로만 연결한다. 소유자가 LAB에서 도달 가능한
+  endpoint를 승인하기 전까지 mng-pg를 LAB network에 임의로 게시하지 않는다(미결정, 별도 승인).
+  Superset app의 host port는 `LAB_HOST_BIND_IP`(기본 `127.0.0.1`)의 `LAB_SUPERSET_HOST_PORT`에만
+  허용하며 loopback 밖 bind는 별도 보안 검토가 필요하다.
 - UI에서 추가한 데이터 연결은 범위가 한정된 identity를 사용한다. 어떤
   것도 관리자 로그인을 쓰지 않는다.
 
@@ -59,17 +63,18 @@ Superset 또는 Flask-AppBuilder 업그레이드, Keycloak client 변경, 새 �
 
 ### Traceability
 
-- [가이드](../../guides/13-analytics-and-data-quality/0097-superset.md) (`GDE-0097`)
-- [런북](../../runbooks/13-analytics-and-data-quality/0097-superset.md) (`RUN-0097`)
+- [가이드](../../guides/15-labs/0097-superset.md) (`GDE-0097`)
+- [런북](../../runbooks/15-labs/0097-superset.md) (`RUN-0097`)
 - [Application auth integration policy](../03-identity-and-access/0079-application-auth-integration.md)
+- SPEC-0262 Analytics labs migration
 
 ## Verification
 
-Compose 렌더링, hardening 고정값, 그리고 예행연습: 프로비저닝, idempotent
+LAB Compose 렌더링과 `tests.validation.test_lab_isolation`, hardening 고정값, 그리고 예행연습: 프로비저닝, idempotent
 마이그레이션, 등록된 `lakehouse` 데이터베이스, `/health`, 익명 API `401`,
 Keycloak 로그인 옵션, 컨테이너 환경 변수에 자격 증명이 없음.
 
 ## Related Documents
 
-- [Superset Compose source](../../../../infra/12-analytics/superset/docker-compose.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
+- [Superset Compose source](../../../../labs/superset.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)

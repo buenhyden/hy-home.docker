@@ -89,7 +89,7 @@ This hardening Architecture Description does not introduce production data owner
 
 ### Deployment View
 
-- **Runtime / Platform**: Docker Compose (`infra/04-data/redisinsight`, `infra/06-observability/dozzle`, `infra/08-ai/open-notebook`, `infra/08-ai/mlflow`, `infra/12-analytics/jupyterlab`)
+- **Runtime / Platform**: Docker Compose (`infra/04-data/redisinsight`, `infra/06-observability/dozzle`, `infra/08-ai/open-notebook`, `infra/08-ai/mlflow`, `labs/jupyterlab`)
 - **Deployment Model**:
   - per-service compose + a common template (`infra/common-optimizations.yml`)
 - **Operational Evidence**:

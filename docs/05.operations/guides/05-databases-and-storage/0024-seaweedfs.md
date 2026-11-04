@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.5.7"
+version: "1.6.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -42,9 +42,11 @@ rehearsal로 구성을 확인하는 것이다.
 
 [`infra/04-data/seaweedfs/docker-compose.yml`](../../../../infra/04-data/seaweedfs/docker-compose.yml)은
 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`,
-`seaweedfs-buckets`, `seaweedfs-table-bucket`을 정의한다. profile `seaweedfs`와
-`storage-seaweedfs`가 네 service와 `seaweedfs-buckets`를 모두 선택하고,
-`seaweedfs-table-bucket`은 `lakehouse` profile에서만 선택된다. 각 service는 UID 1000으로
+`seaweedfs-buckets`를 정의한다. profile `seaweedfs`와
+`storage-seaweedfs`가 네 service와 `seaweedfs-buckets`를 모두 선택하고, root `lakehouse`
+profile도 이 SeaweedFS 서비스만 선택한다. table bucket 작업 `seaweedfs-table-bucket`은
+SPEC-0262에서 독립 LAB [`labs/lakehouse.yml`](../../../../labs/lakehouse.yml)로 옮겨졌다
+([Lakehouse guide](../15-labs/0094-lakehouse.md)). 각 service는 UID 1000으로
 [`config/hyhome-seaweedfs.sh`](../../../../infra/04-data/seaweedfs/config/hyhome-seaweedfs.sh)를
 통해 시작한다. 이 script는 `security.toml`(volume과 filer JWT key, gRPC
 mTLS)을 만들고 S3용 identity 파일은 Docker secret에서 만든다. JWT key는
@@ -80,7 +82,6 @@ master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leve
 | `seaweedfs-filer` | filer metadata/leveldb2 보존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
 | `seaweedfs-master` | topology/volume 배정; master metadata 보존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
 | `seaweedfs-s3` | S3·Iceberg·metrics listener; 생성 config, 자체 durable data 없음 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
-| `seaweedfs-table-bucket` | `lakehouse` table bucket·policy·namespace provisioning job (`lakehouse` profile); GDE-0094 소유 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
 | `seaweedfs-volume` | object bytes 보존; 최소 여유 공간에서 write 거부 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/seaweedfs/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
@@ -97,8 +98,10 @@ master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leve
 | Nginx `/cdn/` | `cdn-bucket` | `anonymous` (object reads only) | none |
 
 `seaweedfs-buckets`(aws-cli, admin identity)는 다섯 개 bucket을 생성하고,
-`lakehouse`에 한해 `seaweedfs-table-bucket`이 `lakehouse` table bucket과 그
-policy, `dev`/`test` namespace를 모두 idempotent하게 생성한다. bucket을
+`lakehouse` table bucket과 그 policy, `dev`/`test` namespace는 lakehouse LAB의
+`seaweedfs-table-bucket`이 `LAB_LAKEHOUSE_S3_ENDPOINT`에 idempotent하게 생성한다. HOME은 기본적으로
+S3를 LAB network에 게시하지 않으므로 소유자가 endpoint를 승인하기 전까지 이 작업은 실행되지 않는다
+(SPEC-0262 미결정 항목). bucket을
 소유한 모든 consumer는 이를 기다린다(Nginx는 `seaweedfs-s3`만 기다린다).
 S07 cutover는 각 MinIO bucket을 S3 API를 통해 복사하고
 `hyhome-migration/<bucket>.cutover` marker object를 남겼다. copy job은

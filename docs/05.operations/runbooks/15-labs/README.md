@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 런북"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -31,6 +31,12 @@ layer: "operations"
 | [Supabase Stack Health Runbook](0029-supabase.md) | `RUN-0029` | 이 런북은 health triage와 별도 승인 후 수행할 coherent Supabase backup의 격리 복원 rehearsal 계약을 제공한다. 정상 root와 분리된 `labs/supabase.yml` LAB의 controller prefli |
 | [PostgreSQL Cluster Health and Recovery Triage Runbook](0031-postgresql-cluster.md) | `RUN-0031` | 범위: LAB 전용 PostgreSQL HA cluster의 상태, etcd quorum 증상, HAProxy routing, Patroni leadership, init job 상태, exporter readiness를 파괴적 데이터 작업 없이 점검 |
 | [Locust Recovery Runbook](0062-locust.md) | `RUN-0062` | Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다. 시나리오 파일 복구와 승인된 upgrade canary도 다룬다. |
+| [SonarQube Runbook](0066-sonarqube.md) | `RUN-0066` | SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다. |
+| [Stalwart Mail Runbook](0070-mail.md) | `RUN-0070` | 이 런북은 Stalwart의 listener, 인증, TLS, DNS, queue 장애 진단과 메일박스·설정 복구, 승인된 최초 기동과 업그레이드 절차를 정의한다. |
+| [JupyterLab Recovery Runbook](0089-jupyterlab.md) | `RUN-0089` | JupyterLab LAB의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실, 이미지 업그레이드를 다루는 복구 런북이다. |
+| [dbt Recovery Runbook](0090-dbt.md) | `RUN-0090` | dbt LAB의 프로비저닝 실패, 연결·권한 오류, 잘못된 모델 실행, 크리덴셜 교체를 다루는 런북이다. |
+| [Lakehouse Recovery Runbook](0094-lakehouse.md) | `RUN-0094` | lakehouse LAB의 Spark·Trino·Flink·Great Expectations 실패, 카탈로그 오류, 접근 거부, 테이블 롤백을 다루는 런북이다. |
+| [Superset Runbook](0097-superset.md) | `RUN-0097` | Superset LAB의 최초 설정, 로그인 실패, 웹 서버 비정상, 업그레이드를 다루는 런북이다. |
 
 ## Usage
 
