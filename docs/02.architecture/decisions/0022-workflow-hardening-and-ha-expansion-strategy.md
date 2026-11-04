@@ -84,6 +84,6 @@ The workflow tier has a broad operational impact scope, and failure propagation 
 ## Related Documents
 
 - **PRD**: [../01.requirements/0008-workflow.md](../../01.requirements/0008-workflow.md)
-- **Architecture Description**: [../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md](../descriptions/0022-workflow-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/008-workflow/spec.md](../descriptions/0007-workflow-architecture.md)
+- **Architecture Description**: [AD-0022 07-Workflow Optimization Hardening Architecture Description](../descriptions/0022-workflow-optimization-hardening-architecture.md)
+- **Tier Architecture Description**: [AD-0007 Workflow Tier (07-workflow) Architecture Description](../descriptions/0007-workflow-architecture.md)
 - **Related ADR**: [ADR-0007](0007-airflow-n8n-hybrid-workflow.md)

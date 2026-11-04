@@ -75,6 +75,6 @@ The observability layer provides many management paths, and failures can spread 
 ## Related Documents
 
 - **PRD**: [../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
-- **Architecture Description**: [../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md](../descriptions/0021-observability-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/007-observability/spec.md](../descriptions/0006-observability-architecture.md)
+- **Architecture Description**: [AD-0021 06-Observability Optimization Hardening Architecture Description](../descriptions/0021-observability-optimization-hardening-architecture.md)
+- **Tier Architecture Description**: [AD-0006 Observability Architecture Description](../descriptions/0006-observability-architecture.md)
 - **Related ADR**: [ADR-0006](0006-lgtm-stack-selection.md)

@@ -65,4 +65,3 @@ exercises replication and failover but is not host HA.
 
 - **PRD**: [../../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
 - **Architecture Description**: [../descriptions/0004-data-architecture.md](../descriptions/0004-data-architecture.md)
-- **Spec**: [../../03.specs/004-data/spec.md](../descriptions/0004-data-architecture.md)

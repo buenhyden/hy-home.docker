@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Policy"
-version: "0.2.3"
+version: "0.3.0"
 type: "operation/policy"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0081"
 parent_ids:

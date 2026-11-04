@@ -114,7 +114,7 @@ The quality scenarios point to the existing configuration, failure boundary, and
 ## Related Documents
 
 - **PRD**: [../../01.requirements/0013-ai-open-webui.md](../../01.requirements/0013-ai-open-webui.md)
-- **Spec**: [../../03.specs/009-ai/open-webui.md](0008-ai-architecture.md)
+- **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](0008-ai-architecture.md)
 - **ADR**: [../decisions/0016-open-webui-implementation.md](../decisions/0016-open-webui-implementation.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

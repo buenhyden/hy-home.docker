@@ -107,7 +107,6 @@ Quality scenarios point to the existing configuration these attributes apply to 
 ## Related Documents
 
 - **PRD**: [../../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
-- **Spec**: [../../03.specs/007-observability/spec.md](0006-observability-architecture.md)
 - **ADR**: [../decisions/0006-lgtm-stack-selection.md](../decisions/0006-lgtm-stack-selection.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

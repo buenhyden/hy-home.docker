@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.7.7"
+version: "0.8.0"
 type: "operation/guide"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:

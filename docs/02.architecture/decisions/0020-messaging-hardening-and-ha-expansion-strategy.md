@@ -76,6 +76,6 @@ The messaging layer exposes operationally sensitive management paths externally,
 ## Related Documents
 
 - **PRD**: [../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
-- **Architecture Description**: [../02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md](../descriptions/0020-messaging-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/006-messaging/spec.md](../descriptions/0005-messaging-architecture.md)
+- **Architecture Description**: [AD-0020 05-Messaging Optimization Hardening Architecture Description](../descriptions/0020-messaging-optimization-hardening-architecture.md)
+- **Tier Architecture Description**: [AD-0005 Messaging Architecture Description](../descriptions/0005-messaging-architecture.md)
 - **Related ADR**: [ADR-0005](0005-kafka-vs-rabbitmq-selection.md)

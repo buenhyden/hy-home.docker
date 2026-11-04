@@ -1,10 +1,10 @@
 ---
 title: "Selective Native OIDC for Applications with Built-in Authentication"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "ADR-0038"
 parent_ids:

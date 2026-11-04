@@ -402,8 +402,11 @@ image가 없으면 registry에서 받을 수 없으므로, 별도 승인으로 �
 W0에서는 audit 디렉터리와 rotation 계약도 server 재생성 전에 준비합니다. 실제 audit
 경로 `/home/hyunyoun/storage/volumes/security/openbao/audit`는 2026-10-14에 독립 IaC
 검토 후 생성됐습니다: device2064/inode115609395, UID100/GID1000, mode0700,
-해당 filesystem 가용 공간 약2.5TiB. 전용 rotation 규칙은 2026-10-15에 등록됐고, audit
-volume·file과 server mount는 아직 없습니다. W6는 사후 쓰기·reopen 검증 단계이며 audit 디렉터리의 최초 준비를
+해당 filesystem 가용 공간 약2.5TiB. 전용 rotation 규칙은 2026-10-15에 등록됐습니다.
+`infra/03-security/openbao/docker-compose.yml`은 `openbao-audit` volume,
+`/openbao/audit` mount와 file audit device(`/openbao/audit/audit.json`)를 이미 선언합니다.
+다만 HOME에서 관찰된 live 상태는 아니므로, 매 실행 전 실제 volume·mount·audit device를
+확인하기 전에는 존재한다고 단정하지 않습니다. W6는 사후 쓰기·reopen 검증 단계이며 audit 디렉터리의 최초 준비를
 그때까지 미루지 않습니다. 매 실행 전 같은 path/device/inode·권한과 실제 mount 용량을
 다시 확인하고, 원본 데이터 volume `hy-home-infra_openbao-data`의 bind device
 `/home/hyunyoun/storage/volumes/security/openbao/data`와 device2064/inode115612005를
