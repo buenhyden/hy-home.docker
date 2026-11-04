@@ -11,7 +11,6 @@ import shutil
 import stat
 import subprocess
 import time
-import uuid
 from contextlib import contextmanager
 from pathlib import Path
 from unittest import mock
@@ -625,7 +624,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
 
     def interrupt_active_send(self, workflow):
         f = self.fixture
-        run = self.publish_input(b"p05-interrupted", "2026-11-25T00:00:00Z")
+        run = self.publish_input(b"p05-interrupted", "2026-11-27T00:00:00Z")
         f.stop("mailpit")
         f.start_smtp_hold()
         execution = self.run_manual(workflow)
@@ -655,38 +654,59 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         f.receipt["active_send_interruption"] = recovery.validate_interruption(facts)
         return run
 
-    def recover_interrupted(self, run):
-        state, attempts = self.db_value(
-            f"SELECT state||'|'||attempts FROM ops_flow.outbox WHERE run_id='{run}';"
-        ).split("|")
-        route = "UNKNOWN_BEFORE_RESTORE"
-        if state == "sending" and attempts.isdecimal():
-            # A restored lease is quarantined through the documented barrier
-            # function; it is never retried or treated as not sent.
-            evidence = hashlib.sha256(
-                json.dumps(
-                    self.fixture.receipt["recovery_barrier"], sort_keys=True
-                ).encode()
-            ).hexdigest()
-            quarantined = self.fixture.psql(
-                "opsflow_migrator",
-                "opsflow_dev",
-                "SET ROLE opsflow_owner;\n"
-                f"SELECT ops_flow.quarantine_restored_notification(id,{attempts},"
-                f"'{uuid.uuid4()}'::uuid,'{evidence}') FROM ops_flow.outbox "
-                f"WHERE run_id='{run}';",
-            ).stdout.strip()
-            if quarantined != "t":
-                raise RehearsalFailure("restored sending quarantine refused")
-            route = "QUARANTINED_AFTER_RESTORE"
-        elif state != "unknown":
-            raise RehearsalFailure("interrupted notification left the uncertain states")
-        if (
-            self.db_value(f"SELECT state FROM ops_flow.outbox WHERE run_id='{run}';")
-            != "unknown"
+    def broker_jobs(self, ids):
+        result = self.fixture.exec_result(
+            "main", "node", "-e", recovery.QUEUE_PROBE, input_=json.dumps({"ids": ids})
+        )
+        if result.returncode:
+            raise RehearsalFailure("exact old broker job probe unavailable")
+        return json.loads(result.stdout)
+
+    def recover_interrupted(self, workflow, run):
+        f = self.fixture
+        stopped = f.receipt["active_send_interruption"]["state_after_stop"]
+        # Closed count only: whether the interrupted job outlived its worker.
+        f.receipt["interrupted_broker_job_matching"] = self.broker_jobs(
+            [self.execution_ids[-1]]
+        )["matching"]
+        for role in ("mailpit", "worker", "runner"):
+            f.start(role)
+        for target, seconds in (
+            ("http://127.0.0.1:5679/healthz", 300),
+            ("http://mailpit:8025/readyz", 60),
         ):
-            raise RehearsalFailure("interrupted notification is not unknown")
-        self.fixture.receipt["interrupted_recovery"] = route
+            f.wait_until(
+                lambda target=target: legacy.node_status_probe(
+                    lambda *args: f.exec_result("worker", *args), target
+                )[0],
+                "recovered worker or capture readiness expired",
+                seconds,
+            )
+        f.wait_until(
+            lambda: f.logs_contain("worker", 'Registered runner "'),
+            "external runner did not re-register",
+            60,
+        )
+        fresh = self.publish_input(b"p05-after-interruption", "2026-11-28T00:00:00Z")
+        self.execute(workflow, "success")
+        self.wait_state(fresh, "accepted_by_smtp")
+        observed = (
+            self.db_value(
+                f"SELECT state||'|'||attempts FROM ops_flow.outbox WHERE run_id='{run}';"
+            ),
+            self.capture(run)["matched"],
+            self.capture(fresh)["matched"],
+        )
+        # The interrupted row is neither resent nor reclaimed by the recovered
+        # worker; a leased sending row waits for expiry, unknown for an operator.
+        if observed != (stopped + "|1", False, True):
+            raise RehearsalFailure("interrupted notification was resent or reclaimed")
+        f.receipt["interrupted_recovery"] = {
+            "state": stopped,
+            "attempts": 1,
+            "resent": False,
+            "fresh_after_recovery": "accepted_by_smtp",
+        }
 
     def ready_retry(self, run):
         self.fixture.wait_until(
@@ -725,16 +745,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             )(self.fixture._verify_owned(self.fixture.containers[role])["State"])
             for role in ("runner", "worker", "mailpit")
         )
-        result = self.fixture.exec_result(
-            "main",
-            "node",
-            "-e",
-            recovery.QUEUE_PROBE,
-            input_=json.dumps({"ids": self.execution_ids}),
-        )
-        if result.returncode:
-            raise RehearsalFailure("exact old broker job probe unavailable")
-        observed = json.loads(result.stdout)
+        observed = self.broker_jobs(self.execution_ids)
         barrier = {
             "smtp_egress_held": absent,
             "workflow_inactive": inactive,
@@ -745,6 +756,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             == {"scanned": True, "matching": 0, "ids": self.execution_ids},
             "owned_attempt": self.fixture.attempt,
         }
+        self.fixture.receipt["recovery_barrier_facts"] = barrier
         self.fixture.receipt["recovery_barrier"] = recovery.validate_barrier(barrier)
         self.fixture.receipt["recovery_scope"] = "QUIESCED_ONLY"
         self.fixture.receipt["live_inflight_interruption"] = "TEST_RESIDUAL"
@@ -807,8 +819,6 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         corrected = self.publish_input(b"p05-corrected", "2026-11-24T00:00:00Z")
         self.execute(workflow, "success")
         self.wait_state(corrected, "accepted_by_smtp")
-        self.phase("live_active_send_interruption")
-        interrupted = self.interrupt_active_send(workflow)
         self.fence(workflow)
         before = self.outbox_snapshot()
         self.phase("owned_restore")
@@ -818,7 +828,6 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         f.receipt["restored_outbox_equivalence"] = recovery.validate_restored_state(
             before, self.outbox_snapshot()
         )
-        self.recover_interrupted(interrupted)
         baseline = self.outbox_snapshot()
         replays = [
             self.db_value(publish_sql(*item)[1], "opsflow_ingest")
@@ -847,6 +856,9 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         resent = [run for run in self.runs if self.capture(run)["matched"]]
         if resent:
             raise RehearsalFailure("a pre-restore notification was sent again")
+        self.phase("live_active_send_interruption")
+        interrupted = self.interrupt_active_send(workflow)
+        self.recover_interrupted(workflow, interrupted)
         f.receipt["live_inflight_interruption"] = "PASS"
         f.receipt["same_encryption_key_restore"] = "PASS"
         f.receipt["native"] = "PASS"

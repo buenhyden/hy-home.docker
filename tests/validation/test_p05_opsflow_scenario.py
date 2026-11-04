@@ -70,14 +70,7 @@ class MemoryFixture:
         self.event("sql:" + role)
         if database != "opsflow_dev":
             raise AssertionError("unexpected database")
-        stdout = ""
-        if "SELECT ops_flow.quarantine_restored_notification(id," in sql:
-            run = re.search(r"run_id='([0-9a-f]{64})'", sql)[1]
-            stdout = "t" if self.rows.get(run) == "sending" else ""
-            if stdout:
-                self.rows[run] = "unknown"
-                self.event("quarantine")
-        return SimpleNamespace(stdout=stdout, stderr="", returncode=0)
+        return SimpleNamespace(stdout="", stderr="", returncode=0)
 
     def private(self, _name, content):
         self.event("private-write")
@@ -111,6 +104,10 @@ class MemoryFixture:
                 )
                 self.executions[execution] = "error"
 
+    def start(self, role):
+        self.event("start:" + role)
+        self.running[role] = True
+
     def start_smtp_hold(self):
         if self.running["mailpit"]:
             raise native.RehearsalFailure("capture still running")
@@ -118,6 +115,8 @@ class MemoryFixture:
         self.running[native.HOLD] = True
 
     def logs_contain(self, role, pattern):
+        if role == "worker":
+            return True
         if role != native.HOLD:
             raise AssertionError("unexpected log probe")
         if pattern.endswith("CLIENT_CLOSED"):
@@ -284,6 +283,8 @@ class ScenarioModel:
             raise native.RehearsalFailure("restored DB missing")
         self.scenario.assertEqual(self.workflow, workflow)
         pending = [run for run, state in f.rows.items() if state == "pending"]
+        if self.fail == "reclaim-interrupted" and f.session == "closed":
+            f.captured.append(f.held[0])
         if self.fail == "resend-unknown" and f.generation == 2:
             resent = next(run for run, state in f.rows.items() if state == "unknown")
             f.rows[resent] = "accepted_by_smtp"
@@ -346,6 +347,9 @@ class ScenarioModel:
         with (
             mock.patch.object(
                 native.historical.OpsflowN8nNativeRehearsal, "api", self.api
+            ),
+            mock.patch.object(
+                native.legacy, "node_status_probe", return_value=(True, {})
             ),
             mock.patch.object(
                 native.historical.OpsflowN8nNativeRehearsal,
@@ -414,14 +418,16 @@ class P05ScenarioStateTests(unittest.TestCase):
         self.assertEqual("complete", receipt["phase"])
         self.assertEqual("QUIESCED_ONLY", receipt["recovery_scope"])
         self.assertEqual("PASS", receipt["live_inflight_interruption"])
-        self.assertEqual("UNKNOWN_BEFORE_RESTORE", receipt["interrupted_recovery"])
-        self.assertEqual(6, receipt["same_input_replay"]["replayed"])
+        self.assertEqual("unknown", receipt["interrupted_recovery"]["state"])
+        self.assertFalse(receipt["interrupted_recovery"]["resent"])
+        self.assertEqual(0, receipt["interrupted_broker_job_matching"])
+        self.assertEqual(5, receipt["same_input_replay"]["replayed"])
         self.assertEqual(
-            {"accepted_by_smtp": 3, "unknown": 3},
+            {"accepted_by_smtp": 3, "unknown": 2},
             receipt["restored_outbox_equivalence"]["states"],
         )
         self.assertEqual(3, list(model.fixture.rows.values()).count("unknown"))
-        self.assertEqual(4, list(model.fixture.rows.values()).count("accepted_by_smtp"))
+        self.assertEqual(5, list(model.fixture.rows.values()).count("accepted_by_smtp"))
         self.assertEqual("same-smtp-id", model.fixture.metadata["smtp_id"])
         self.assertEqual(2, model.fixture.generation)
         events = model.fixture.events
@@ -431,16 +437,20 @@ class P05ScenarioStateTests(unittest.TestCase):
             ("tls-material", "networks"),
             ("provision-v3", "queue"),
             ("smtp-hold", "execute:held"),
-            ("execute:held", "stop:worker"),
-            ("remove:" + native.HOLD, "old-job-probe"),
+            ("restore-dev", "smtp-hold"),
+            ("remove:" + native.HOLD, "start:worker"),
             ("stop:worker", "old-job-probe"),
             ("old-job-probe", "destroy-old-databases"),
             ("destroy-old-databases", "restore-metadata"),
             ("restore-metadata", "restore-dev"),
         ):
             self.assertLess(events.index(before), events.index(after))
+        held = events.index("execute:held")
+        self.assertIn(
+            "stop:worker", events[held : events.index("remove:" + native.HOLD)]
+        )
 
-    def test_killed_worker_leaves_sending_that_restore_quarantines(self):
+    def test_killed_worker_leaves_sending_that_recovery_never_reclaims(self):
         model = ScenarioModel("killed-worker")
         receipt = model.run()
         self.assertEqual("PASS", receipt["native"])
@@ -450,27 +460,26 @@ class P05ScenarioStateTests(unittest.TestCase):
         self.assertEqual(
             "not_terminal", receipt["active_send_interruption"]["execution_status"]
         )
-        self.assertEqual("QUARANTINED_AFTER_RESTORE", receipt["interrupted_recovery"])
-        events = model.fixture.events
-        self.assertLess(events.index("restore-dev"), events.index("quarantine"))
+        self.assertEqual("sending", receipt["interrupted_recovery"]["state"])
+        self.assertEqual(
+            "sending", list(model.fixture.rows.values())[-2]
+        )  # the lease waits for expiry; the fresh row after it was sent
 
     def test_interruption_replay_and_next_claim_violations_cannot_pass(self):
-        for failure, before_restore in (
-            ("silent-success", True),
-            ("closed-before-stop", True),
-            ("no-data", True),
-            ("restore-drift", False),
-            ("replay-duplicate", False),
-            ("resend-unknown", False),
+        for failure in (
+            "silent-success",
+            "closed-before-stop",
+            "no-data",
+            "reclaim-interrupted",
+            "restore-drift",
+            "replay-duplicate",
+            "resend-unknown",
         ):
             with self.subTest(failure=failure):
                 model = ScenarioModel(failure)
                 with self.assertRaises(native.RehearsalFailure):
                     model.run()
-                self.assertEqual(
-                    before_restore,
-                    "destroy-old-databases" not in model.fixture.events,
-                )
+                self.assertIn("restore-dev", model.fixture.events)
                 self.assertNotEqual("PASS", model.fixture.receipt.get("native"))
                 self.assertNotEqual(
                     "PASS", model.fixture.receipt.get("live_inflight_interruption")
