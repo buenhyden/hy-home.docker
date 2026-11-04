@@ -57,7 +57,7 @@ class AirflowNativeBoundaryTests(unittest.TestCase):
 
     def test_resource_budget_and_no_public_or_host_mount_options(self):
         self.assertEqual(3776, sum(row[0] for row in fixture.CAPS.values()))
-        self.assertEqual(2250, sum(row[1] for row in fixture.CAPS.values()))
+        self.assertEqual(4800, sum(row[1] for row in fixture.CAPS.values()))
         for role in fixture.CAPS:
             options = fixture.create_options(role, "50000:0")
             self.assertIn("--read-only", options)

@@ -244,10 +244,13 @@ CAPS = {
     "dev-pg": (384, 200, 128),
     "valkey": (64, 50, 64),
     "s3": (384, 150, 128),
-    "api": (512, 250, 256),
-    "scheduler": (512, 300, 256),
-    "processor": (512, 250, 256),
-    "worker": (1024, 650, 256),
+    # Airflow roles get 1 CPU each (production allows 2): below that every
+    # `airflow` CLI call spends most of its time importing, and the rehearsal
+    # overran its budget in the recovery phase.
+    "api": (512, 1000, 256),
+    "scheduler": (512, 1000, 256),
+    "processor": (512, 1000, 256),
+    "worker": (1024, 1000, 256),
     # 50 milli-CPU made each boto3 client start take ~23s, exhausting the
     # 180s storage-permission budget before the canaries ran.
     "storage-admin": (128, 250, 64),
