@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.11"
+version: "1.6.12"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -86,7 +86,7 @@ docs/02.architecture/decisions/
 - [`ADR-0037`](./0037-package-disposition-wait-and-task-cancellation.md):
   모든 구성원이 terminal인 완료 package의 처분 대기와, 구조화된 취소 근거를 가진
   cancelled Task, 현재 재평가·history-only 이용 가능성·새 포착의 정확 동일성을
-  채택한 accepted decision. ADR-0036을 대체하며 SPEC-0179가 구현·검증을 소유한다.
+  채택한 accepted decision. ADR-0036을 대체하며 SPEC-0179(삭제됨, 버전 이력)가 구현·검증했다.
   처분 대기를 다룬 결정 1(마지막 문장 제외)과 결정 2·3의 완료 receipt 조항은 ADR-0048이
   대체하고, 취소 기록·terminal Plan·terminality 규칙은 그대로 유지된다.
   결정 4~10과 결정 1의 마지막 문장은 ADR-0051이 대체한다.
@@ -127,7 +127,7 @@ docs/02.architecture/decisions/
   Claude와 Codex가 main checkout의 SQLite 저장소 하나를 함께 쓰고 native
   memory를 끄는 accepted decision. CLI만 쓰고 rollback journal과 논리 한도를
   쓴다. ADR-0032의 memory·`.codex/config.toml` 금지를 이 두 항목에 한해 좁히며
-  SPEC-0236가 구현·검증을 소유한다.
+  SPEC-0236(삭제됨, 버전 이력)이 구현·검증했다.
 - [`ADR-0050`](./0050-openbao-as-secrets-manager.md):
   OpenBao와 `openbao-agent`를 secrets manager로 채택하며 ADR-0003, ADR-0018을 supersede한 accepted decision.
 - [`ADR-0051`](./0051-summarize-and-delete-retirement.md):

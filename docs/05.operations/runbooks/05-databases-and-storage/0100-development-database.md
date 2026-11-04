@@ -1,10 +1,10 @@
 ---
 title: "Development Database Source Preflight Runbook"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "RUN-0100"
 parent_ids:
@@ -43,7 +43,7 @@ python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test
 
 두 명령이 exit 0이면 source profile, secret reference, static project grant/ACL contract가
 일관됨을 기록한다. 이미지 빌드·컨테이너 health·확장 로드·격리 복원은 별도
-SPEC-0202-TSK-0002 증거를 따른다. 이 정적 명령만으로 HOME 도달성, WAL archive,
+SPEC-0202-TSK-0002가 남긴 증거(삭제됨, 버전 이력)를 기준으로 한다. 이 정적 명령만으로 HOME 도달성, WAL archive,
 운영 복원 성공을 주장하지 않는다.
 
 runtime request가 있으면 실행 전에 승인된 Docker context, project name, ports, networks,

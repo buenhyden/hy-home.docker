@@ -1,6 +1,6 @@
 ---
 title: "SonarQube Code Quality"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -108,7 +108,7 @@ password를 secret에서 내보내는 wrapper·기존 DB/volume·network·Java �
 | --- | --- |
 | Purpose | `11-quality`의 SonarQube Code Quality 서비스 leaf; 서비스: `sonarqube`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-quality/sonarqube/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Config files | `docker-compose.yml` |
-| Config values | env 키: `SONAR_JDBC_URL`, `SONAR_JDBC_USERNAME`, `SONAR_JDBC_PASSWORD_FILE`, `SONAR_WEB_JAVAOPTS`, `SONAR_SEARCH_JAVAOPTS`; 프로필: `tooling`, `sast` |
+| Config values | env 키: `SONAR_JDBC_URL`, `SONAR_JDBC_USERNAME`, `SONAR_JDBC_PASSWORD`(entrypoint가 secret `sonarqube_db_password`에서 export; image는 `_FILE` 형식을 읽지 않음), `SONAR_WEB_JAVAOPTS`, `SONAR_SEARCH_JAVAOPTS`; 프로필: `tooling`, `sast` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-quality/sonarqube/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Networks | `edge_net`, `mng_data_net` |
 | Volumes | `sonarqube-data-volume:/opt/sonarqube/data:rw`, `sonarqube-logs-volume:/opt/sonarqube/logs:rw`, `sonarqube-data-volume`, `sonarqube-logs-volume` |

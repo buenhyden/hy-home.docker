@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Software Verification Architecture Description"
-version: "2.3.0"
+version: "2.3.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -103,9 +103,8 @@ Quality scenarios point to the existing configuration these attributes apply to 
 ## Related Documents
 
 - **PRD**: [010-tooling.md](../../01.requirements/0010-tooling.md)
-- Current convergence Spec
 - [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
-- [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
+- [Pact Broker operations](../../05.operations/guides/12-testing-and-quality/0093-pact-broker.md)
 - **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

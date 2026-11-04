@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -42,9 +42,9 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 - `docs/03.specs/**`
 - `docs/03.specs/[0-9][0-9][0-9][0-9]-*/plan.md`
 - `docs/03.specs/[0-9][0-9][0-9][0-9]-*/tasks/tsk-[0-9][0-9][0-9][0-9]-*.md`
-- `docs/05.operations/guides/[0-9][0-9][0-9][0-9]-*.md`
-- `docs/05.operations/policies/[0-9][0-9][0-9][0-9]-*.md`
-- `docs/05.operations/runbooks/[0-9][0-9][0-9][0-9]-*.md`
+- `docs/05.operations/guides/*/[0-9][0-9][0-9][0-9]-*.md`
+- `docs/05.operations/policies/*/[0-9][0-9][0-9][0-9]-*.md`
+- `docs/05.operations/runbooks/*/[0-9][0-9][0-9][0-9]-*.md`
 - `scripts/validation/check-*.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/validation/validate-docker-compose.sh`
 
 ## Rules
