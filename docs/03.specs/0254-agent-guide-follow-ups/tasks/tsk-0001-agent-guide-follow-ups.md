@@ -68,8 +68,11 @@ progress under the approved parents. Hosted CI has not run.
   `## Consequences` in the accepted decision body, and
   `docs/02.architecture/AGENTS.md` ("do not rewrite an accepted decision
   body") with `documentation-protocol.md` ("Do not change an existing accepted
-  decision silently") forbids rewriting it. Moving the text needs a separately
-  approved superseding ADR; this is reported for the owner's decision.
+  decision silently") forbids rewriting it. The owner decided on 2026-11-04 to
+  keep the subsection as written and route to it: `docs/02.architecture/AGENTS.md`
+  now states that the subsection is part of the accepted decision record and
+  that current agent working rules come from the guide and canonical
+  governance. No ADR body changed and no new ADR was written.
 - **Activation:** the `living` lifecycle allows `draft` to `active`; the nine
   guides moved with a minor version bump.
 
@@ -87,8 +90,6 @@ progress under the approved parents. Hosted CI has not run.
 
 ### Open issues
 
-- ADR-0002's `AI Agent Guidance` subsection stays until the owner approves a
-  superseding ADR or another route.
 - Main moved to 46a7811dd (PR #729, SPEC-0253) after this branch was cut. Against
   that main, corpus lifecycle reports `package-retirement-unrecorded` for
   SPEC-0253 because this branch predates it; against the branch base

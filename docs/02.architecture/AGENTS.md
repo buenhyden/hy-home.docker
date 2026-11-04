@@ -1,6 +1,6 @@
 ---
 title: "Architecture Agent Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
@@ -36,6 +36,9 @@ operating procedures belong to Stage 01, Stage 03 and Stage 05.
 - Supersede an accepted ADR only through a separately approved new ADR with
   explicit `supersedes` metadata and links in both directions; do not rewrite
   an accepted decision body.
+- ADR-0002's `AI Agent Guidance` subsection is part of that accepted decision
+  record, kept as written; current agent working rules come from this guide
+  and canonical governance, not from that subsection.
 - Keep the root to `README.md`, `AGENTS.md`, `descriptions/` and `decisions/`;
   the Stage 02 loader rejects any other root entry.
 - Change a Description or ADR in place; do not add a replacement or redirect
