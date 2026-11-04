@@ -94,6 +94,7 @@ progress under the approved parents. Hosted CI has not run.
 | `test_post_tool_rejects_an_owner_without_the_frozen_anchor` | deleted | exercised the removed fail-closed read of the anchor |
 | `test_commit_formatter_invocations_are_read_only` | adapted | still asserts a formatter and its checker share excludes, now through `.get()` since neither declares one |
 | `test_ci_gate_evidence`, `test_github_workflow_contract` | updated | expect the new owner label |
+| `test_the_retired_frozen_legacy_status_exception_is_rejected` | added | an exception of the removed kind now fails Registry schema validation |
 | `test_evidence_owner_names_an_existing_governance_heading`, `test_a_changed_evidence_owner_is_rejected` | added | the owner anchor must resolve to a real heading, and a changed owner value fails the contract load |
 
 ### Inventory
@@ -125,10 +126,12 @@ progress under the approved parents. Hosted CI has not run.
 - The `.agents/governance/agentic.md` edit is a policy change; per
   `approval-boundaries.md` it needs `rules-engineer` review, pending in the PR
   #729 review.
-- Deferred: removing the dead `frozen-legacy-status` exception kind
-  (`registry.py` validation and the `document-profile.schema.json` const).
-  PR #730 rewrites the same schema region and `test_registry.py`, so it is left
-  for after #730 merges.
+- The dead `frozen-legacy-status` exception kind is removed from
+  `registry.py` validation and from `document-profile.schema.json`; no profile
+  used it. PR #730 edits the same schema and `test_registry.py`, so a rebase is
+  expected after it merges.
+- PR #729 merged at 09171c663; these review fixes continue on
+  `chore/qa-ci-review-followups` from main 46a7811dd.
 
 ## Evidence
 
