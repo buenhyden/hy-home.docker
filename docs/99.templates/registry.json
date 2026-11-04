@@ -152,22 +152,16 @@
       "occurred_at"
     ],
     "terminal_statuses": [
-      "superseded",
-      "archived"
+      "completed"
     ],
     "transitions": {
       "draft": [
         "active"
       ],
       "active": [
-        "completed",
-        "superseded"
+        "completed"
       ],
-      "completed": [
-        "superseded"
-      ],
-      "superseded": [],
-      "archived": []
+      "completed": []
     },
     "typed_keys": [
       "title",
@@ -2634,7 +2628,7 @@
       "optional_sections": [
         "Exceptions"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "agent-guide",
       "traceability": {},
       "exceptions": [],
       "additional_paths": [
@@ -3671,6 +3665,28 @@
       "transitions": {
         "draft": []
       }
+    },
+    "agent-guide": {
+      "initial_status": "draft",
+      "statuses": [
+        "draft",
+        "in-review",
+        "active"
+      ],
+      "transitions": {
+        "draft": [
+          "in-review",
+          "active"
+        ],
+        "in-review": [
+          "active",
+          "draft"
+        ],
+        "active": [
+          "in-review"
+        ]
+      },
+      "terminal_statuses": []
     }
   },
   "identity_spaces": {
@@ -4834,8 +4850,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 253,
-      "next_number": 254,
+      "high_water": 255,
+      "next_number": 256,
       "reserved_history": [
         1,
         2,
@@ -5695,7 +5711,7 @@
     "governance-prompt": "living",
     "governance-prompt-index": "navigation",
     "governance-provider": "living",
-    "folder-agent-guide": "living",
+    "folder-agent-guide": "agent-guide",
     "governance-provider-index": "navigation",
     "governance-role": "living",
     "governance-sdlc": "operational-policy",

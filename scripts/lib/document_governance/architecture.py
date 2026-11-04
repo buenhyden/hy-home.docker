@@ -7,7 +7,7 @@ import os
 import pathlib
 import re
 import stat
-from collections.abc import Iterable, Mapping
+from collections.abc import Mapping
 
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
@@ -39,10 +39,6 @@ _EXPECTED_PROFILE_CONTRACTS = {
         "architecture-decision",
     ),
 }
-_EFFECTIVE_SUPERSESSION_STATUSES = {
-    "architecture-description": frozenset({"active", "superseded"}),
-    "adr": frozenset({"accepted", "superseded"}),
-}
 
 
 class ArchitectureDocumentError(ValueError):
@@ -58,17 +54,6 @@ class ArchitectureDocument:
     artifact_type: str
     status: str
     parent_ids: tuple[str, ...]
-    supersedes: tuple[str, ...]
-    superseded_by: str | None
-
-
-@dataclasses.dataclass(frozen=True, order=True)
-class ArchitectureFinding:
-    """One deterministic supersession-graph finding."""
-
-    code: str
-    path: str
-    message: str
 
 
 def _require_directory(path: pathlib.Path, label: str) -> None:
@@ -272,21 +257,9 @@ def parse_architecture_document(
         raise ArchitectureDocumentError(
             "architecture parent_ids must use uppercase canonical stable IDs"
         )
-    supersedes_value = record.metadata.get("supersedes", ())
-    supersedes = _string_tuple(supersedes_value, "supersedes")
-    superseded_by = record.metadata.get("superseded_by")
-    if superseded_by is not None and not isinstance(superseded_by, str):
-        raise ArchitectureDocumentError("superseded_by must be a stable ID or null")
-    identity_pattern = (
-        _DESCRIPTION_ID if artifact_type == "architecture-description" else _DECISION_ID
-    )
-    if any(identity_pattern.fullmatch(item) is None for item in supersedes):
+    if {"supersedes", "superseded_by"} & set(record.metadata):
         raise ArchitectureDocumentError(
-            "supersedes must use same-type uppercase stable IDs"
-        )
-    if superseded_by is not None and identity_pattern.fullmatch(superseded_by) is None:
-        raise ArchitectureDocumentError(
-            "superseded_by must use a same-type uppercase stable ID"
+            "Stage 02 documents carry no supersedes or superseded_by"
         )
     return ArchitectureDocument(
         relative_path,
@@ -294,8 +267,6 @@ def parse_architecture_document(
         artifact_type,
         status,
         parent_ids,
-        supersedes,
-        superseded_by,
     )
 
 
@@ -360,145 +331,3 @@ def load_architecture_documents(
         )
         raise ArchitectureDocumentError(f"duplicate architecture identity: {duplicate}")
     return documents
-
-
-def _cycle_nodes(edges: Mapping[str, tuple[str, ...]]) -> frozenset[str]:
-    visited: set[str] = set()
-    active: list[str] = []
-    active_set: set[str] = set()
-    cyclic: set[str] = set()
-
-    def visit(identity: str) -> None:
-        if identity in visited:
-            return
-        if identity in active_set:
-            start = active.index(identity)
-            cyclic.update(active[start:])
-            return
-        active.append(identity)
-        active_set.add(identity)
-        for target in edges.get(identity, ()):
-            if target in edges:
-                visit(target)
-        active.pop()
-        active_set.remove(identity)
-        visited.add(identity)
-
-    for identity in sorted(edges):
-        visit(identity)
-    return frozenset(cyclic)
-
-
-def validate_supersession_graph(
-    documents: Iterable[ArchitectureDocument],
-) -> tuple[ArchitectureFinding, ...]:
-    """Validate reciprocal, acyclic, in-place Stage 02 supersession."""
-
-    corpus = tuple(documents)
-    by_id: dict[str, ArchitectureDocument] = {}
-    findings: set[ArchitectureFinding] = set()
-    for document in corpus:
-        if document.artifact_id in by_id:
-            findings.add(
-                ArchitectureFinding(
-                    "architecture-identity-duplicate",
-                    document.path.as_posix(),
-                    f"duplicate stable identity: {document.artifact_id}",
-                )
-            )
-        else:
-            by_id[document.artifact_id] = document
-        if document.status == "superseded" and document.superseded_by is None:
-            findings.add(
-                ArchitectureFinding(
-                    "supersession-successor-missing",
-                    document.path.as_posix(),
-                    "a superseded document must declare superseded_by",
-                )
-            )
-        if document.status != "superseded" and document.superseded_by is not None:
-            findings.add(
-                ArchitectureFinding(
-                    "supersession-status-mismatch",
-                    document.path.as_posix(),
-                    "superseded_by requires status: superseded",
-                )
-            )
-
-    edges = {document.artifact_id: document.supersedes for document in corpus}
-    for document in corpus:
-        effective_statuses = _EFFECTIVE_SUPERSESSION_STATUSES.get(
-            document.artifact_type, frozenset()
-        )
-        if document.supersedes and document.status not in effective_statuses:
-            findings.add(
-                ArchitectureFinding(
-                    "supersession-successor-not-effective",
-                    document.path.as_posix(),
-                    "a superseding document must be effective or itself superseded",
-                )
-            )
-        for predecessor_id in document.supersedes:
-            predecessor = by_id.get(predecessor_id)
-            if predecessor is None:
-                findings.add(
-                    ArchitectureFinding(
-                        "supersession-dangling",
-                        document.path.as_posix(),
-                        f"supersedes target does not exist: {predecessor_id}",
-                    )
-                )
-                continue
-            if predecessor.artifact_type != document.artifact_type:
-                findings.add(
-                    ArchitectureFinding(
-                        "supersession-type-mismatch",
-                        document.path.as_posix(),
-                        f"supersession crosses document types: {predecessor_id}",
-                    )
-                )
-            if predecessor.status != "superseded":
-                findings.add(
-                    ArchitectureFinding(
-                        "supersession-predecessor-not-superseded",
-                        predecessor.path.as_posix(),
-                        f"superseded predecessor is not superseded: {predecessor_id}",
-                    )
-                )
-            if predecessor.superseded_by != document.artifact_id:
-                findings.add(
-                    ArchitectureFinding(
-                        "supersession-asymmetric",
-                        document.path.as_posix(),
-                        f"{predecessor_id} does not reciprocate {document.artifact_id}",
-                    )
-                )
-        if document.superseded_by is None:
-            continue
-        successor = by_id.get(document.superseded_by)
-        if successor is None:
-            findings.add(
-                ArchitectureFinding(
-                    "supersession-dangling",
-                    document.path.as_posix(),
-                    f"superseded_by target does not exist: {document.superseded_by}",
-                )
-            )
-        elif document.artifact_id not in successor.supersedes:
-            findings.add(
-                ArchitectureFinding(
-                    "supersession-asymmetric",
-                    document.path.as_posix(),
-                    f"{document.superseded_by} does not supersede {document.artifact_id}",
-                )
-            )
-    for identity in sorted(_cycle_nodes(edges)):
-        document = by_id.get(identity)
-        findings.add(
-            ArchitectureFinding(
-                "supersession-cycle",
-                document.path.as_posix() if document is not None else identity,
-                f"supersession cycle includes {identity}",
-            )
-        )
-    return tuple(sorted(findings))

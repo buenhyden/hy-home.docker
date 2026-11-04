@@ -651,7 +651,7 @@ def _validate_parent_authority(
     tasks: tuple[SpecDocument, ...],
 ) -> None:
     """Generation 6: parents record authority; Tasks own execution."""
-    authority = {"draft", "in-review", "approved", "cancelled", "superseded"}
+    authority = {"draft", "in-review", "approved", "cancelled"}
     for parent in (spec, plan):
         if parent is not None and parent.status not in authority:
             raise SpecPackageError(
@@ -661,7 +661,7 @@ def _validate_parent_authority(
     if plan is None:
         return
     task_terminal = {"completed", "cancelled"}
-    parent_terminal = {"cancelled", "superseded"}
+    parent_terminal = {"cancelled"}
     if spec.status in parent_terminal:
         if plan.status not in parent_terminal or any(
             task.status not in task_terminal for task in tasks
@@ -701,8 +701,8 @@ def _validate_execution_states(
     if plan is None:
         return
     task_terminal = {"completed", "cancelled"}
-    parent_terminal = {"completed", "cancelled", "superseded"}
-    if spec.status in {"cancelled", "superseded"}:
+    parent_terminal = {"completed", "cancelled"}
+    if spec.status in {"cancelled"}:
         if plan.status not in parent_terminal or any(
             task.status not in task_terminal for task in tasks
         ):
@@ -1798,7 +1798,7 @@ def archive_readiness_findings(
     """
 
     findings: list[str] = []
-    authority = {"approved", "cancelled", "superseded"}
+    authority = {"approved", "cancelled"}
     if package.spec.status not in authority:
         findings.append(f"Spec is {package.spec.status}")
     if package.plan is None or package.plan.status not in authority:
@@ -1807,7 +1807,7 @@ def archive_readiness_findings(
             if package.plan is None
             else f"Plan is {package.plan.status}"
         )
-    if package.spec.status in {"cancelled", "superseded"}:
+    if package.spec.status in {"cancelled"}:
         return tuple(findings)
     for task in package.tasks:
         if task.status not in {"completed", "cancelled"}:

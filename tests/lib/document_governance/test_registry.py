@@ -1870,7 +1870,7 @@ class DocumentRegistryTests(unittest.TestCase):
             },
         )
 
-    def test_a_legacy_status_in_stage_01_or_02_is_an_invalid_status(self) -> None:
+    def test_a_legacy_status_in_stage_01_to_03_is_an_invalid_status(self) -> None:
         import re
 
         from scripts.lib.document_governance import metadata_validator
@@ -1880,6 +1880,10 @@ class DocumentRegistryTests(unittest.TestCase):
             "docs/01.requirements/0012-laboratory.md",
             "docs/02.architecture/descriptions/0011-laboratory-architecture.md",
             "docs/02.architecture/decisions/0050-openbao-as-secrets-manager.md",
+            "docs/03.specs/0255-legacy-document-status-ban/spec.md",
+            "docs/03.specs/0255-legacy-document-status-ban/plan.md",
+            "docs/03.specs/0255-legacy-document-status-ban/tasks/"
+            "tsk-0001-legacy-document-status-ban.md",
         ):
             source = (ROOT / relative).read_text(encoding="utf-8")
             for status in ("deprecated", "superseded", "retired", "archived"):
@@ -1899,18 +1903,47 @@ class DocumentRegistryTests(unittest.TestCase):
                         {item.code for item in validate_record(record, profiles, {})},
                     )
 
+    def test_a_lineage_key_in_stage_01_to_03_is_type_inappropriate(self) -> None:
+        from scripts.lib.document_governance import metadata_validator
+
+        profiles = build_registry_profiles(load_registry())
+        for relative in (
+            "docs/01.requirements/0012-laboratory.md",
+            "docs/03.specs/0255-legacy-document-status-ban/spec.md",
+        ):
+            source = (ROOT / relative).read_text(encoding="utf-8")
+            for key in ("supersedes", "superseded_by"):
+                with self.subTest(path=relative, key=key):
+                    changed = source.replace(
+                        "\ncreated:", f'\n{key}: "REQ-0099"\ncreated:', 1
+                    )
+                    self.assertNotEqual(source, changed)
+                    record = metadata_validator._record_from_text(
+                        pathlib.Path(relative), changed, profiles=profiles
+                    )
+                    self.assertIn(
+                        "type-inappropriate-key",
+                        {item.code for item in validate_record(record, profiles, {})},
+                    )
+
     def test_stage_01_to_03_lifecycles_offer_no_legacy_status(self) -> None:
         registry = load_registry()
         legacy = {"deprecated", "superseded", "retired", "archived"}
-        stage_profiles = (
-            "requirements-package",
-            "architecture-description",
-            "adr",
-            "spec",
-            "plan",
-            "task",
-            "data-model-contract",
+        stage_roots = ("docs/01.", "docs/02.", "docs/03.")
+        stage_profiles = sorted(
+            profile_id
+            for profile_id, profile in registry.profiles.items()
+            if profile.get("lifecycle_id")
+            and any(
+                str(path).startswith(stage_roots)
+                for path in (
+                    profile.get("path_pattern", ""),
+                    *profile.get("additional_paths", ()),
+                )
+            )
         )
+        self.assertIn("folder-agent-guide", stage_profiles)
+        self.assertIn("task", stage_profiles)
         for profile_id in stage_profiles:
             with self.subTest(profile=profile_id):
                 profile = registry.profiles[profile_id]
@@ -3178,8 +3211,6 @@ class ProfileLanguageTests(unittest.TestCase):
             "openapi-contract",
             "graphql-contract",
             "proto-contract",
-            "migration",
-            "tombstone",
         }
     )
 
@@ -3196,9 +3227,7 @@ class ProfileLanguageTests(unittest.TestCase):
             declared = profile.get("language")
             if profile_id in self.README_KO | self.OPERATIONS_KO:
                 expected = "ko"
-            elif profile_id in self.UNJUDGED or profile_id.startswith(
-                "archive-record-"
-            ):
+            elif profile_id in self.UNJUDGED:
                 expected = None
             else:
                 expected = "en"

@@ -15,7 +15,7 @@
     },
     "type": {
       "type": "string",
-      "pattern": "^(common|governance|sdlc|operation|reference|archive)/[a-z][a-z0-9-]*$"
+      "pattern": "^(common|governance|sdlc|operation|reference)/[a-z][a-z0-9-]*$"
     },
     "status": {
       "type": "string",
