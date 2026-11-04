@@ -86,7 +86,7 @@ infra/06-observability/prometheus/
 `scripts/operations/compose-start.py plan`은 공개 설정의 선택 및 companion을
 확인하는 소비자다. 운영자가 계획을 따로 검토하고 승인·복구 조건을 확인하기 전에는
 `up --plan`을 실행하지 않는다. 기대 대상의 갱신과 문제 해결은
-[Prometheus runbook](../../../docs/05.operations/runbooks/07-observability/0045-prometheus.md)을 따른다.
+Prometheus runbook(`docs/05.operations/runbooks/07-observability/0045-prometheus.md`)을 따른다.
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 

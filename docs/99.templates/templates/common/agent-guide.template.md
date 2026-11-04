@@ -1,7 +1,7 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "governance/agent-guide"
+type: "common/agent-guide"
 status: "draft"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
