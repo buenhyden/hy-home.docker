@@ -1,10 +1,10 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.1.7"
+version: "1.1.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-04"
 created: "2025-12-03"
 ---
 
@@ -46,7 +46,8 @@ secret은 컨테이너를 exit 64로 중지시킵니다.
 n8n, Keycloak, Airflow, Terrakube, SonarQube와 설정된 애플리케이션 database를
 위한 현재 role/database를 생성합니다. `mng-valkey-data`는
 `${DEFAULT_MANAGEMENT_DIR}/valkey`에 매핑되며 workflow broker/cache 상태를
-위해 AOF가 활성화되어 있습니다. Grafana는 현재 Compose에서 관리 PostgreSQL에
+위해 AOF가 활성화되어 있습니다. `maxmemory 128mb`와 `noeviction`으로 256 MiB
+한도 전에 쓰기를 거부하며 key를 축출하지 않습니다. Grafana는 현재 Compose에서 관리 PostgreSQL에
 연결되어 있지 않습니다.
 
 PostgreSQL은 `mng_postgres_password`와 `pgbackrest_cipher_pass`를 읽습니다.

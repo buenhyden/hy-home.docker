@@ -36,4 +36,7 @@ else
   /bin/sh "$renderer" "$default_secret" "$acl_file"
 fi
 
-exec valkey-server --aclfile "$acl_file" --appendonly yes --port "$port"
+# Match dev-valkey: half of the 256m container limit, so a full queue gets
+# write errors instead of an OOM kill.
+exec valkey-server --aclfile "$acl_file" --appendonly yes --port "$port" \
+  --maxmemory 128mb --maxmemory-policy noeviction

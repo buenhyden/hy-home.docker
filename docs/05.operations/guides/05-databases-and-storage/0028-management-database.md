@@ -1,10 +1,10 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -73,6 +73,8 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 공유 DB 연결이 중단된다. Compose는 모든 consumer를 자동 재시작하지 않는다. logical WAL은 WAL 볼륨을 소폭 늘리고, slot은
 등록된 CDC connector만 생성한다. Valkey는 `${DEFAULT_MANAGEMENT_DIR}/valkey`의
 `mng-valkey-data`를 소유하고 AOF를 활성화하며 `mng_valkey_password`를 읽는다.
+256 MiB 컨테이너 한도 아래 `maxmemory 128mb`·`noeviction`이라, 가득 차면 OOM kill 대신
+쓰기 오류를 반환하고 기존 큐 key는 축출하지 않는다.
 둘 다 `mng_data_net`을 사용한다. PostgreSQL host port(`POSTGRES_HOST_PORT`,
 기본값 `25432`)는 `127.0.0.1`에만 게시하고, Valkey host port
 (`VALKEY_MNG_HOST_PORT`, 기본값 `26379`)는 `HOST_LAN_BIND_IP`(기본값
