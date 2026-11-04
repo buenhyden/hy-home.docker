@@ -551,6 +551,10 @@ PROFILE_API = PROFILE_API.replace(
     "else if(input.action==='credential_update')",
     """else if(input.action==='retry'){const r=await call('/rest/executions/'+encodeURIComponent(input.executionId)+'/retry','POST',{loadWorkflow:false},auth);const d=r.data;
 out={id:String(d.id),retryOf:String(d.retryOf),status:String(d.status)};}
+else if(input.action==='trace'){const d=(await call('/rest/executions/'+encodeURIComponent(input.executionId),'GET',undefined,auth)).data;
+const x=typeof d.data==='string'?require('flatted').parse(d.data):d.data;const nm=v=>/^[A-Za-z0-9 _.-]{1,64}$/.test(String(v))?String(v):'withheld';
+const rd=x?.resultData||{};const e=rd.error;
+out={stack:(x?.executionData?.nodeExecutionStack||[]).map(i=>nm(i?.node?.name)),runNodes:Object.keys(rd.runData||{}).map(nm),last:rd.lastNodeExecuted?nm(rd.lastNodeExecuted):'',error:e?{name:nm(e.name),node:e.node?nm(e.node.name):''}:null};}
 else if(input.action==='credential_update')""",
 )
 
@@ -907,6 +911,8 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
                 f"2026-12-{1 + index:02d}T00:00:00Z",
             )
             fresh.append(run)
+            # Closed node names only: where the retry starts from.
+            crashed_trace = self.api("trace", executionId=execution)
             result = self.api("retry", executionId=execution)
             if result.get("retryOf") != execution:
                 raise RehearsalFailure("retry was not bound to the crashed execution")
@@ -918,11 +924,13 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
                     key: path.get(key)
                     for key in ("status", "mode", "acknowledged", "deliveryRedacted")
                 }
+                path["trace"] = self.api("trace", executionId=str(result.get("id")))
             except RehearsalFailure:
                 path = "unreadable"
             f.receipt.setdefault("execution_retry_attempts", []).append(
                 {
                     "status": statuses[-1],
+                    "crashed_trace": crashed_trace,
                     "path": path,
                     "fresh_state": self.db_value(
                         f"SELECT state FROM ops_flow.outbox WHERE run_id='{run}';"

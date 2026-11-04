@@ -276,6 +276,8 @@ class ScenarioModel:
         f = self.fixture
         if not f.running["main"]:
             raise native.RehearsalFailure("n8n REST operation failed (main down)")
+        if action == "trace":
+            return {"stack": ["Manual"], "runNodes": [], "last": "", "error": None}
         if action == "retry":
             if f.executions[payload["executionId"]] != "crashed":
                 raise native.RehearsalFailure("synthetic retry conflict")
