@@ -172,7 +172,15 @@ class CandidateContract(unittest.TestCase):
         self.assertEqual(
             ["/bin/bash", "/opt/hyhome/hyhome-trino.sh"], service["entrypoint"]
         )
-        self.assertEqual(["seaweedfs_s3_lakehouse_secret_key"], service["secrets"])
+        self.assertEqual(
+            [
+                {
+                    "source": "lab_lakehouse_s3_lakehouse_secret_key",
+                    "target": "seaweedfs_s3_lakehouse_secret_key",
+                }
+            ],
+            service["secrets"],
+        )
         self.assertIn(
             "./lakehouse/trino/hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro",
             service["volumes"],

@@ -64,6 +64,8 @@ _ROOT_FILES = frozenset(
 _MAX_ANCHOR_BYTES = 4 * 1024 * 1024
 _LEGACY_FLAT_OPERATION_ROLE = re.compile(
     r"^docs/05\.operations/(?P<family>guides|policies|runbooks)/"
+    # A former numbered family resolves too, after a move between families.
+    r"(?:[0-9]{2}-[a-z0-9][a-z0-9-]*/)?"
     r"(?P<name>[0-9]{4}-[a-z0-9][a-z0-9-]*\.md)$"
 )
 

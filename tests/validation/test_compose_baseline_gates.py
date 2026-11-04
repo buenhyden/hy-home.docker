@@ -1028,7 +1028,7 @@ FEATURE_JOBS = (
         "labs/dbt.yml",
         "dbt-db-provision",
         "labs/dbt/provisioning/dev-pg.sql",
-        {"analytics-engineering"},
+        {"lab-dbt"},
     ),
     (
         "infra/05-messaging/kafka/docker-compose.yml",
@@ -1046,7 +1046,7 @@ FEATURE_JOBS = (
         "labs/superset.yml",
         "superset-db-provision",
         "labs/superset/provisioning/mng-pg.sql",
-        {"bi"},
+        {"lab-superset"},
     ),
 )
 FEATURE_SECRETS = {
@@ -1134,6 +1134,12 @@ class FeatureProvisioningContractTests(unittest.TestCase):
         for compose, job, sql_path, profiles in FEATURE_JOBS:
             with self.subTest(job=job):
                 service = _compose_service(compose, job)
+                # A LAB mounts LAB-only secrets at the original target names
+                # (SPEC-0262); the contract reads the in-container names.
+                service["secrets"] = [
+                    item["target"] if isinstance(item, dict) else item
+                    for item in service.get("secrets", [])
+                ]
                 env = service["environment"]
                 self.assertEqual(profiles, set(service["profiles"]))
                 self.assertEqual(
@@ -1165,6 +1171,10 @@ class FeatureProvisioningContractTests(unittest.TestCase):
                     (ROOT / sql_path).resolve(),
                     ((ROOT / compose).parent / mounts[env["PROVISION_SQL"]]).resolve(),
                 )
+                if compose.startswith("labs/"):
+                    # A LAB cannot depend on a HOME service (SPEC-0262).
+                    self.assertNotIn("depends_on", service)
+                    continue
                 self.assertEqual(
                     "service_completed_successfully",
                     service["depends_on"][
