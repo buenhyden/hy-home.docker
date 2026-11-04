@@ -1,6 +1,6 @@
 ---
 title: "Opsflow Data Path Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -365,6 +365,26 @@ no connector was registered and the runs say nothing about the connector
 change. The declared Debezium 3.6.3 image trails 3.7 and is a D09 image
 candidate.
 
+### T03 owner-approved stop and leftover removal
+
+After a re-review, the owner answered "정지와 삭제를 둘 다 실행" on
+2026-11-04. The re-review found that `messaging` is not in the POL-0078 HOME
+selection, so the stack had been started on demand and stopping it restores the
+HOME default without a profile or policy change; Kafka has no `absent(up)`
+rule and `KafkaBrokerDown` needs the exporter metric, so no false alert follows.
+Immediately before acting, Connect still had zero connectors and the broker
+zero consumer groups. The four `hyhome.app` heartbeat subjects were soft- then
+hard-deleted (each returned version `[1]`; subjects now `[]`), and the topics
+`__debezium-heartbeat.hyhome.app` and `hyhome.app.debezium_heartbeat.heartbeat`
+were deleted; `application-logs`, `infra-events` and the internal topics remain.
+`docker compose --profile messaging stop` then stopped `kafbat-ui`,
+`kafka-rest-proxy`, `kafka-connect`, `schema-registry`, `kafka-exporter` and
+`kafka-1` (exit 143); `kafka-init` was not running. The four Kafka and Connect
+volumes are unchanged, so a later start resumes the same state. Prometheus
+shows no Kafka alert; its five firing alerts (backup staleness, OpenBao scrape
+and agent authentication, missing gatus and pyroscope targets) predate this
+action and belong to their owners.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -395,6 +415,7 @@ candidate.
 | CDC current-consumer reconciliation | 68 | W73 | Tracked connector/provisioner, ADR and historical receipt readback | Existing platform_dev path; no live query or registration | PASS | Preserved consumer and acceptance scopes; current CDC is SOURCE_READY and Opsflow adoption is deferred, not a new runtime PASS | required | - |
 | T03 HOME stream observation | 68 | W73 | Read-only HOME Connect, topic, consumer-group and subject queries | Running HOME stack, 2026-11-04 | PASS | 0 connectors, 0 consumer groups, declared topics 0 messages, ~1.36 GiB; leftover `hyhome.app` topics/subjects recorded; no state changed | required | - |
 | T03 isolated CDC stream rehearsal | 68 | W73 | `CdcStreamRehearsalTests` with HYHOME_CDC_REHEARSAL=1 | Connector without schema-history keys; host load 13-18 | FAIL | Two setup ERRORs (433.1 s, 407.1 s): TimescaleDB post-init stop timed out before readiness; no connector registered; owned residue 0 | required | - |
+| T03 owner-approved stop and cleanup | 68 | W73 | HOME leftover deletion and messaging stop | Owner approval 2026-11-04; 0 connectors, 0 groups rechecked | PASS | 4 subjects hard-deleted, 2 topics deleted, 6 services stopped (exit 143), volumes unchanged, no Kafka alert | required | - |
 | Quality publication regressions | 69 | W74 | Invalid/partial/no-publication unit and adapter tests | Current reviewed manifest/adapter packet and synthetic inputs | PASS | Included in the actual 80-case focused suite: failed schema/partition and failed quarantine never reach DB/outbox; source driver boundaries are synthetic. Actual native publication/quarantine remain NOT_RUN. | required | - |
 | Experiment input decision | 70 | W75 | Direct user scope choice and missing-input record | No approved dataset/version/time field/target/baseline/owner | PASS | User selected experiment-input deferral during P04 planning; no claim about private experiment absence | required | - |
 | Iceberg current-workload reconciliation | 71 | W76 | Current optional source, ADR-0039 and preserved owner acceptance readback | Existing optional platform; no runtime change | PASS | Preserved consumer and acceptance scopes; DATA-0096 research records Iceberg 1.11.0 maintenance separately from latest 1.12.0 | required | - |
@@ -417,7 +438,7 @@ candidate.
 | --- | --- | --- | --- | --- |
 | 66 | pending | Issued P04 baseline and documentation leases, Current public inventory and comparison | REUSE_ACCEPTED for bounded existing ownership with current affected source regressions; operating roles and restore remain independently unaccepted. | SPEC-0212 TSK-0043 |
 | 67 | pending | P04 local implementation and review, D04 narrow S3 permission rerun, Optimized full Worker and restore rehearsal | SOURCE_READY: S3 matrix, input quarantine, Celery publication retry/replay and independent recovery pass in the isolated native rehearsal within the unchanged deadline; HOME installation is NOT_RUN and handed to D12. | SPEC-0212 TSK-0043 |
-| 68 | pending | CDC current-consumer reconciliation, T03 HOME stream observation, T03 isolated CDC stream rehearsal | SOURCE_READY; HOME stack measured idle with no consumer; the isolated stream rerun is pending a quieter host; stopping the idle stack awaits the owner. | SPEC-0212 TSK-0043 |
+| 68 | pending | CDC current-consumer reconciliation, T03 HOME stream observation, T03 isolated CDC stream rehearsal | SOURCE_READY; HOME stack measured idle with no consumer; the isolated stream rerun is pending a quieter host; the idle stack is stopped and leftovers removed with owner approval. | SPEC-0212 TSK-0043 |
 | 69 | pending | Quality publication regressions | SOURCE_READY: current unit/adapter quality blocking is evidenced; actual Worker publication remains residual. | SPEC-0212 TSK-0043 |
 | 70 | pending | Experiment input decision | BLOCKED on actual inputs by user choice; no experiment is invented. | SPEC-0212 TSK-0043 |
 | 71 | pending | Iceberg current-workload reconciliation | REUSE_ACCEPTED only for the evidenced optional platform; workload adoption is deferred. | SPEC-0212 TSK-0043 |
