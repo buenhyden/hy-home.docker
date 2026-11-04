@@ -75,7 +75,7 @@ python scripts/operations/root-resource-assessment.py infra/09-platform-ops/reso
 
 [쓰기율 CLI](../../../scripts/operations/storage-write-rate.py)는 관측 저장소
 (Prometheus·Loki·Tempo·Pyroscope·Alloy)의 24시간 쓰기량을 비교합니다. SPEC-0246 W7에서
-도입했고, 배치 결정은 [POL-0102](../../../docs/05.operations/policies/10-platform-and-backup/0102-host-storage-placement.md)가 소유합니다.
+도입했고, 배치 결정은 POL-0102(`docs/05.operations/policies/10-platform-and-backup/0102-host-storage-placement.md`)가 소유합니다.
 `collect`는 Docker 메타데이터·`/proc/diskstats`·cgroup `io.stat`만 읽고 기존 snapshot을
 덮어쓰지 않습니다. `compare`는 owner가 읽은 SMART 사용률과 누적 host 쓰기 바이트
 (`Total_LBAs_Written` × 512)로 SSD 수명을 추정합니다.
