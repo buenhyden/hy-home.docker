@@ -145,6 +145,7 @@ draft recorded.` and no longer looks like frontmatter.
 | E12 | 4 | W4 | repository-checks | metadata check-active, links alignment, Script Manifest, renderer `--check`, agent governance contract, commit bc6fe0bb5 | PASS | 497 selected, zero violations; alignment PASS; manifest valid; drift 0; contract failures 0 | required | - |
 | E13 | 4 | W4 | document-commands | links `commands` mode, commit bc6fe0bb5 | FAIL | 2 findings: the ignored `_workspace` paths in the DATA-0096 README, present on main before this change | required | - |
 | E14 | 4 | W4 | base-drift | metadata check-changed and corpus lifecycle against `origin/main` after PR #728 merged (4adeb3d37), commit bc6fe0bb5 | FAIL | configuration error on `docs/01.requirements/AGENTS.md`, which this branch's loaders did not yet admit; the rebase onto 4adeb3d37 brings in that support | required | - |
+| E15 | 4 | W4 | base-drift | metadata check-changed and corpus lifecycle against `origin/main` 4adeb3d37 after the rebase, commit 36ebc9517 | PASS | check-changed 17 selected, zero violations; lifecycle and occupancy zero; check-active 497 zero; links alignment PASS; Script Manifest valid; registry, Spec Package, metadata validator, heading, metadata lifecycle, architecture and link tests 425 OK | required | E14 |
 
 ## Criterion Acceptance
 
