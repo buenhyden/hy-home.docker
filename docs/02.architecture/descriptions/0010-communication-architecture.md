@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier Architecture Description"
-version: "1.1.2"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "AD-0010"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-03-26"
 
 ### Context and Stakeholders
 
-The mail requirements separate development message capture in `11-quality/mailpit` from the optional internal mail server in `10-communication/stalwart`. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
+The mail requirements separate development message capture in `11-quality/mailpit` from the optional mail server, which since SPEC-0262 is the standalone LAB `labs/stalwart.yml` and joins no HOME network. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
 `mail-dev`. Stalwart is selected only by `mail-server` and requires mail-domain,
 DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 
@@ -40,7 +40,7 @@ DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 ### Traceability
 
 - [Mailpit operations](../../05.operations/guides/11-mail-and-notifications/0084-mailpit.md)
-- [Stalwart operations](../../05.operations/guides/11-mail-and-notifications/0070-mail.md)
+- [Stalwart operations](../../05.operations/guides/15-labs/0070-mail.md)
 
 ## Structure
 

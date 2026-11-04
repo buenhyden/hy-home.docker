@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB source"
-version: "0.1.1"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 created: "2026-10-12"
 ---
 
@@ -38,6 +38,12 @@ source 경로와 공개 구성의 탐색입니다. 실제 기동, 이미지 업�
 | MongoDB | [Compose](mongodb.yml), [안내](mongodb.md) | 독립 Compose source |
 | Kafka | [Compose](kafka-cluster.yml), [안내](kafka-cluster.md) | 독립 Compose source |
 | OpenSearch | [Compose](opensearch-cluster.yml), [안내](opensearch-cluster.md) | [Dashboards 설정](opensearch-cluster-dashboards.config) |
+| Lakehouse | [Compose](lakehouse.yml), 안내 `GDE-0094` | [Spark](lakehouse/spark/README.md), [Trino](lakehouse/trino/README.md), [Flink](lakehouse/flink/README.md), [GX](lakehouse/great-expectations/README.md), [table bucket job](lakehouse/seaweedfs-table-bucket.sh) |
+| dbt | [Compose](dbt.yml), 안내 `GDE-0090` | [build·project](dbt/README.md) |
+| Superset | [Compose](superset.yml), 안내 `GDE-0097` | [build·설정](superset/README.md) |
+| JupyterLab | [Compose](jupyterlab.yml), 안내 `GDE-0089` | [build](jupyterlab/README.md) |
+| SonarQube | [Compose](sonarqube.yml), 안내 `GDE-0066` | [안내](sonarqube/README.md) |
+| Stalwart | [Compose](stalwart.yml), 안내 `GDE-0070` | [설정 helper](stalwart/README.md) |
 
 [dashboards](dashboards/README.md)는 기존 LAB 관측 자산을 보관합니다.
 [공개 환경 예시](.env.example)는 정적 구성 입력이며 실제 비밀값을 저장하지 않습니다.
@@ -57,6 +63,23 @@ source 경로와 공개 구성의 탐색입니다. 실제 기동, 이미지 업�
 | [OpenSearch Cluster](opensearch-cluster.md) | 세 노드 검색 토폴로지 | `opensearch-cluster` | HOME 단일 노드와 별개 |
 | [Supabase](supabase/README.md) | 독립 백엔드 플랫폼·GoTrue | `supabase` | LAB 상태·입력과 HOME canonical 시크릿 소비 계약 |
 | [Locust](locust/README.md) | 독립 부하 검증 image source | `labs/locust.yml` | root include와 HOME 상태를 공유하지 않음 |
+
+SPEC-0262로 root에서 옮긴 LAB은 다음과 같습니다. LAB은 HOME network에
+연결되지 않으므로 HOME SeaweedFS·mng-pg·dev-pg·MLflow가 필요한 LAB은
+[.env.example](.env.example)의 `LAB_*` endpoint 입력으로만 대상을 지정합니다.
+HOME은 이 서비스들을 LAB network에 기본으로 게시하지 않으므로 도달 가능한
+endpoint는 별도 owner 승인 대상이며, 그 전까지 이 LAB들은 render 검증만 합니다.
+Secret은 다른 데이터 LAB처럼 `LAB_SECRET_DIR` 아래 LAB 전용 파일이며, HOME 값의 LAB 사본
+준비는 별도 승인 대상입니다.
+
+| LAB | 역할 | Profile·진입점 | HOME 의존 입력 |
+| --- | --- | --- | --- |
+| Lakehouse | Iceberg batch·SQL·streaming·품질 검증 | `lab-lakehouse` / `labs/lakehouse.yml` | `LAB_LAKEHOUSE_S3_ENDPOINT`, `LAB_LAKEHOUSE_CATALOG_URI` |
+| dbt | dev-pg SQL 변환 작업 | `lab-dbt` / `labs/dbt.yml` | `LAB_DBT_DB_HOST` |
+| Superset | BI 웹, native Keycloak OIDC | `lab-superset` / `labs/superset.yml` | `LAB_SUPERSET_DB_HOST`, `LAB_SUPERSET_DEFAULT_URL`, `LAB_SUPERSET_CA_FILE` |
+| JupyterLab | 단일 사용자 notebook | `jupyterlab` / `labs/jupyterlab.yml` | 선택 `LAB_JUPYTERLAB_MLFLOW_TRACKING_URI` |
+| SonarQube | 정적 분석 서버 | `sast` / `labs/sonarqube.yml` | `LAB_SONARQUBE_DB_HOST` |
+| Stalwart | 메일 서버 실험 | `mail-server` / `labs/stalwart.yml` | 없음(자체 완결) |
 
 Locust 전용 공개 입력은 [.env.example](.env.example)의 `LAB_LOCUST_*`를
 사용합니다. Locust source는 이 독립 entrypoint용이며 root profile에 추가하지

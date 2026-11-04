@@ -142,8 +142,8 @@
       "release_condition": "Remove when the stores and staging share a backup group"
     },
     {
-      "scope": "root",
-      "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
+      "scope": "lab:stalwart",
+      "compose_file": "labs/stalwart.yml",
       "service": "stalwart",
       "control": "cap_add",
       "allowed_value": [
@@ -153,7 +153,7 @@
       "owner": "@buenhyden",
       "reason": "Stalwart binds SMTP 25 and submission 587 inside the container as a non-root user",
       "impact": "The process can bind ports below 1024 inside its network namespace",
-      "mitigation": "No host port is published; internal mail network only",
+      "mitigation": "SMTP ports are not published; only the admin UI binds the LAB loopback address, on the LAB-only network",
       "verification": "StalwartRehearsalTests (opt-in)",
       "reviewed": "2026-10-09",
       "review_by": "2027-04-07",

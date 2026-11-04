@@ -1,10 +1,10 @@
 ---
 title: "Admin and Experiment Tools Hardening Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0074"
 parent_ids:
@@ -20,7 +20,7 @@ created: "2026-05-10"
 
 ## Scope
 
-- 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`, `infra/12-analytics/jupyterlab/`
+- 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`; JupyterLab LAB은 `labs/jupyterlab.yml`과 `labs/jupyterlab/`(SPEC-0262)
 - `.env.example` (`ADMIN_UI_ALLOWED_CIDRS`)
 - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 

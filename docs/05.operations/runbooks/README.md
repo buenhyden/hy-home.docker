@@ -1,6 +1,6 @@
 ---
 title: "운영 런북"
-version: "0.2.5"
+version: "0.2.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -109,7 +109,7 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 | [플랫폼과 백업](10-platform-and-backup/README.md) | 도구 실행, backup 확인, 복원과 제한 rollback 절차를 찾는다. |
 | [메일과 통지](11-mail-and-notifications/README.md) | SMTP·capture 연결과 통지 실패의 점검 절차를 찾는다. |
 | [시험과 품질](12-testing-and-quality/README.md) | 품질 도구 실행, 결과 확인과 실패 진단의 절차를 찾는다. |
-| [분석과 데이터 품질](13-analytics-and-data-quality/README.md) | SQL·모델·품질 검사와 분석 도구 장애의 절차를 찾는다. |
+| [분석과 데이터 품질](13-analytics-and-data-quality/README.md) | MLflow 추적 서버 장애와 복구의 절차를 찾는다. |
 | [디자인 시스템](14-design-system/README.md) | 빌드·로그인·MCP 호출과 디자인 연동 장애의 절차를 찾는다. |
 | [독립 LAB 문서](15-labs/README.md) | 기존 LAB 절차를 찾되 문서 수정이 runtime 실행 권한을 주지는 않는다. |
 

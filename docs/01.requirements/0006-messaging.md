@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging) Requirements"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "requirements"
 artifact_id: "REQ-0006"
 created: "2026-03-26"
@@ -62,7 +62,7 @@ Provide a robust, dedicated messaging infrastructure that lowers coupling betwee
 ### Risks
 
 - **Risks**: Possible delayed partition rebalancing after a Kafka node failure. Risk of backward-compatibility violations on schema changes.
-- **Dependencies**: Depends on the `02-auth` tier for authentication and authorization management. The Flink consumer/processing boundary depends on `12-analytics/flink`.
+- **Dependencies**: Depends on the `02-auth` tier for authentication and authorization management. The Flink consumer/processing boundary is the optional lakehouse LAB `labs/lakehouse.yml` (SPEC-0262), which joins no messaging network and reaches Kafka only through an approved endpoint.
 - **Assumptions**: All nodes communicate within `kafka_net` and store data on dedicated volumes.
 
 ## Requirements

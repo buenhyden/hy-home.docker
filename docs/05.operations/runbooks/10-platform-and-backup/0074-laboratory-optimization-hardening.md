@@ -1,10 +1,10 @@
 ---
 title: "Admin and Experiment Tools Hardening Runbook"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "RUN-0074"
 parent_ids:
@@ -85,7 +85,7 @@ created: "2026-05-17"
 ### 적용 범위와 검증 한계
 
 이 주제는 Data·Observability·AI·Analytics로 나뉜 관리·실험 기능의 공통 통제를
-소유한다. Dozzle·RedisInsight·JupyterLab은 OPTIONAL이며 tier나 프로필은 격리
+소유한다. Dozzle·RedisInsight는 OPTIONAL, JupyterLab은 독립 LAB(SPEC-0262)이며 tier나 프로필은 격리
 수단이 아니다. socket `:ro`는 Docker API 호출을 제한하지 않는다. Open Notebook의
 secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 Compose·로그·근거에
 노출되지 않도록 하고, mutable 이미지의 FILE 옵션 지원은 별도로 검증한다.
@@ -119,7 +119,7 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 - 관측 실패가 절차와 맞지 않으면 변경을 멈추고 근거를 보존한 뒤 `## Escalation`을 따른다.
 
 - [ ] 롤백 대상 파일
-  - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`, `infra/12-analytics/jupyterlab/`
+  - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`; JupyterLab LAB은 `labs/jupyterlab.yml`과 `labs/jupyterlab/`
   - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
   - `.github/workflows/ci-quality.yml`
 - [ ] 파일 되돌림이나 runtime 재시작이 필요하면 승인자와 영향 범위를 기록한 뒤 수행

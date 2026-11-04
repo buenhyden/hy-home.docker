@@ -49,10 +49,8 @@ class WorkspaceConnectionTests(WorkspaceConnectionFixture, unittest.TestCase):
             candidate_kind("infra/demo/docker-compose.yml"),
             "compose",
         )
-        self.assertEqual(
-            candidate_kind("infra/12-analytics/superset/docker-compose.yml"),
-            "compose",
-        )
+        # SPEC-0262: a LAB entrypoint is outside the HOME connection census.
+        self.assertIsNone(candidate_kind("labs/superset.yml"))
         self.assertIsNone(candidate_kind("infra/demo/README.md"))
         self.assertTrue(public_source_path("infra/demo/docker-compose.yml"))
         self.assertFalse(public_source_path("secrets/docker-compose.yml"))
@@ -94,8 +92,10 @@ services:
         validate_connections(result, public_files=[row])
 
     def test_superset_metadata_and_provision_connections_use_declared_mng_port(self):
+        # Superset is a LAB since SPEC-0262; the handler keeps its contract on a
+        # synthetic Compose source.
         row = self.put(
-            "infra/12-analytics/superset/docker-compose.yml",
+            "infra/demo/superset/docker-compose.yml",
             """
 services:
   superset:

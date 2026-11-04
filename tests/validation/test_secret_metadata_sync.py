@@ -37,8 +37,20 @@ REGISTRY_PATH_EXCEPTIONS = {
     "OBS-013": "secrets/observability/prometheus/prometheus_api_password.txt",
     "SEC-003": "secrets/security/openbao/openbao_unseal_keys.txt",
 }
+# SPEC-0262: root files whose only consumer moved to a LAB-only copy. They stay
+# as the LAB provisioning and rollback source; IAM-013 also feeds the OpenBao
+# import (consumer-migration/oidc-client-secrets.sh).
+LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS = {
+    "AUTO-020": "secrets/tools/superset/superset_secret_key.txt",
+    "AI-007": "secrets/tools/jupyterlab/jupyter_token.txt",
+    "COMM-006": "secrets/communication/stalwart/stalwart_password.txt",
+    "IAM-013": "secrets/auth/superset/superset_oidc_client_secret.txt",
+    "PG-023": "secrets/db/dev-pg/dbt_password.txt",
+    "PG-028": "secrets/db/mng-pg/superset_password.txt",
+}
 CUTOVER_REGISTRY_PATH_EXCEPTIONS = {
     "PG-020": "secrets/db/legacy-app/service_password.txt",
+    **LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS,
 }
 HOST_INTERPOLATION_KEYS = {"HOME"}
 SUPABASE_CANONICAL_SECRET_PATHS = {

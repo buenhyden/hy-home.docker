@@ -170,8 +170,6 @@ secrets:
     file: ./secrets/communication/slack/slack_webhook.txt
   smtp_username:
     file: ./secrets/communication/smtp/smtp_username.txt
-  stalwart_password:
-    file: ./secrets/communication/stalwart/stalwart_password.txt
 
   # ── Gateway ─────────────────────────────────────────────
   traefik_basicauth_password:
@@ -347,33 +345,17 @@ secrets:
   mlflow_db_password:
     file: ./secrets/db/mng-pg/mlflow_password.txt
 
-  dbt_db_password:
-    file: ./secrets/db/dev-pg/dbt_password.txt
-
   debezium_postgres_password:
     file: ./secrets/db/dev-pg/debezium_password.txt
 
   pact_broker_db_password:
     file: ./secrets/db/mng-pg/pact_broker_password.txt
 
-  superset_db_password:
-    file: ./secrets/db/mng-pg/superset_password.txt
-
   grafana_reader_password:
     file: ./secrets/db/mng-pg/grafana_reader_password.txt
 
-  superset_secret_key:
-    file: ./secrets/tools/superset/superset_secret_key.txt
-
-  superset_oidc_client_secret:
-    file: ./secrets/auth/superset/superset_oidc_client_secret.txt
-
   pact_broker_basic_auth_password:
     file: ./secrets/tools/pact-broker/pact_broker_basic_auth_password.txt
-
-
-  jupyter_token:
-    file: ./secrets/tools/jupyterlab/jupyter_token.txt
 
   # ── Backup ─────────────────────────────────────────────────────
   pgbackrest_cipher_pass:
@@ -436,22 +418,11 @@ include:
   - infra/09-platform-ops/renovate/docker-compose.yml
   - infra/09-platform-ops/restic/docker-compose.yml
   - infra/09-platform-ops/terrakube/docker-compose.yml
-  # 10-communication
-  - infra/10-communication/stalwart/docker-compose.yml
   # 11-quality
   - infra/11-quality/conftest/docker-compose.yml
   - infra/11-quality/k6/docker-compose.yml
   - infra/11-quality/mailpit/docker-compose.yml
   - infra/11-quality/pact-broker/docker-compose.yml
-  - infra/11-quality/sonarqube/docker-compose.yml
   - infra/11-quality/wiremock/docker-compose.yml
-  # 12-analytics
-  - infra/12-analytics/dbt/docker-compose.yml
-  - infra/12-analytics/flink/docker-compose.yml
-  - infra/12-analytics/great-expectations/docker-compose.yml
-  - infra/12-analytics/jupyterlab/docker-compose.yml
-  - infra/12-analytics/spark/docker-compose.yml
-  - infra/12-analytics/superset/docker-compose.yml
-  - infra/12-analytics/trino/docker-compose.yml
   # 13-experience
   - infra/13-experience/storybook/docker-compose.yml

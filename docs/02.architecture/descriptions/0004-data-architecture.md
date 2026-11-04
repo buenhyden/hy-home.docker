@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.0.9"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -21,8 +21,8 @@ created: "2026-03-26"
 Data provides storage and data-platform packages for HOME applications and
 explicitly selected development workloads. Operators need to distinguish
 shared HOME state from OPTIONAL platforms and LAB topologies. Package names
-are direct children of `infra/04-data`; Analytics processing lives in
-`infra/12-analytics` under ADR-0045.
+are direct children of `infra/04-data`; Analytics processing follows ADR-0045
+and, since SPEC-0262, runs as standalone LAB entrypoints under `labs/`.
 
 ## Scope
 

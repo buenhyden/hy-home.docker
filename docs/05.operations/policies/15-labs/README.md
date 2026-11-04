@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 정책"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -31,6 +31,12 @@ layer: "operations"
 | [Supabase Operations Policy](0029-supabase.md) | `POL-0029` | 이 정책은 정상 root에서 분리된 `labs/supabase.yml`의 exact `supabase` profile LAB 운영 기준을 정의한다. 핵심 통제는 controller lease, Kong 중심 공개 접근, canonical Docker  |
 | [PostgreSQL Cluster Operations Policy](0031-postgresql-cluster.md) | `POL-0031` | 이 정책은 `hy-home.docker`의 독립 LAB인 PostgreSQL HA 실습 cluster 운영 기준을 정의한다. 세 node가 한 host를 공유하므로 host HA가 아니며 HOME·DEV PostgreSQL은 단일 node다. 기준은  |
 | [Locust Operations Policy](0062-locust.md) | `POL-0062` | Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는 절대 포함되지 않는다. 이 정책은 test target을 보호하고 검토되지 않은 load, credential capture, 오해를 부르 |
+| [SonarQube Operations Policy](0066-sonarqube.md) | `POL-0066` | 이 정책은 독립 LAB `labs/sonarqube.yml`의 SonarQube Community Build 배포를 다룬다. |
+| [Stalwart Mail Operations Policy](0070-mail.md) | `POL-0070` | Stalwart는 독립 LAB `labs/stalwart.yml`의 메일 서비스다. |
+| [JupyterLab Operations Policy](0089-jupyterlab.md) | `POL-0089` | JupyterLab LAB은 임의의 코드를 실행한다. mandatory token, loopback 게시, 단일 사용자와 work directory 보존을 통제한다. |
+| [dbt Operations Policy](0090-dbt.md) | `POL-0090` | dbt LAB의 권한은 source 읽기와 target schema 소유로 제한하며 HOME dev-pg endpoint는 별도 승인으로만 연다. |
+| [Lakehouse Operations Policy](0094-lakehouse.md) | `POL-0094` | lakehouse LAB 엔진의 identity 범위, 파괴적 유지보수, 테스트 데이터 분리와 HOME catalog endpoint 승인을 통제한다. |
+| [Superset Operations Policy](0097-superset.md) | `POL-0097` | Superset LAB의 native OIDC 로그인, role 부여, 자격 증명 처리와 HOME mng-pg endpoint 승인을 통제한다. |
 
 ## Usage
 

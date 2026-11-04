@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.4.2"
+version: "1.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 created: "2025-11-24"
 ---
 
@@ -131,9 +131,9 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 | **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / 선택적; disposition 참고 |
 | **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui), [ComfyUI](./08-ai/comfyui), [Open Notebook](./08-ai/open-notebook), [MLflow](./08-ai/mlflow) | HOME / 선택적 |
 | **09** | **Platform Operations** | [OpenTofu](./09-platform-ops/opentofu), [Terrakube](./09-platform-ops/terrakube), [Registry](./09-platform-ops/registry), [Renovate](./09-platform-ops/renovate), [Restic](./09-platform-ops/restic) | HOME / 명시적 작업 |
-| **10** | **Communication** | [Stalwart](./10-communication/stalwart) | 선택적 내부 메일 |
-| **11** | **Quality** | [k6](./11-quality/k6), [SonarQube](./11-quality/sonarqube), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |
-| **12** | **Analytics** | [Flink](./12-analytics/flink), [Trino](./12-analytics/trino), [Superset](./12-analytics/superset), [dbt](./12-analytics/dbt), [JupyterLab](./12-analytics/jupyterlab) | OPTIONAL; 패키지의 profile 참조 |
+| **10** | **Communication** | 없음; Stalwart는 [LAB](../labs/README.md)으로 이동(SPEC-0262) | root 패키지 없음 |
+| **11** | **Quality** | [k6](./11-quality/k6), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |
+| **12** | **Analytics** | 없음; Lakehouse·dbt·Superset·JupyterLab은 [LAB](../labs/README.md)으로 이동(SPEC-0262) | root 패키지 없음 |
 | **13** | **Experience** | [Storybook](./13-experience/storybook) | OPTIONAL / `experience`; HOME 제외 |
 
 ```text
@@ -147,9 +147,9 @@ infra/
 ├── 07-workflow/       # DAG Orchestration & Automation
 ├── 08-ai/             # LLM Inference & RAG Engines
 ├── 09-platform-ops/        # IaC, 아티팩트, 의존성 유지보수와 공통 백업
-├── 10-communication/  # 운영 메일
+├── 10-communication/  # 현재 root 패키지 없음(Stalwart는 LAB)
 ├── 11-quality/        # 소프트웨어·설정·성능·계약 검증과 테스트 메일
-├── 12-analytics/      # Processing, SQL, quality, BI and transformation
+├── 12-analytics/      # 현재 root 패키지 없음(분석 엔진은 LAB)
 ├── 13-experience/     # 공유 Storybook 정적 UI 검토
 ├── common-optimizations.yml # Shared Docker templates
 └── README.md          # This file

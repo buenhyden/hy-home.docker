@@ -1,10 +1,10 @@
 ---
 title: "분석과 데이터 품질 가이드"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -25,10 +25,6 @@ layer: "operations"
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
 | [MLflow Usage Guide](0088-mlflow.md) | `GDE-0088` | MLflow는 `mlops` 또는 `data-science`가 선택하는 OPTIONAL experiment tracking server이다. HOME에도, 현재 8개 profile 운용 명령에도 들어 있지 않다. 추가하려면 별도로 활성화를 결정해야 한 |
-| [JupyterLab Usage Guide](0089-jupyterlab.md) | `GDE-0089` | JupyterLab은 `data-science`만 선택하는 OPTIONAL single-user notebook server이며, 이 profile은 MLflow도 함께 선택한다. HOME에도, 현재 8개 profile 운용 명령에도 들어 있지 않다. |
-| [dbt Usage Guide](0090-dbt.md) | `GDE-0090` | dbt는 `analytics-engineering`이 선택하는 OPTIONAL command-line 변환 작업이다. web UI가 없으므로 route나 OIDC client가 없고 필요하지도 않다. |
-| [Lakehouse Usage Guide](0094-lakehouse.md) | `GDE-0094` | 레이크하우스는 OPTIONAL이며 `lakehouse`로 선택된다. 테이블은 SeaweedFS `lakehouse` 테이블 버킷 안의 Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다. Spark는 배치와 |
-| [Superset Usage Guide](0097-superset.md) | `GDE-0097` | Superset은 `bi`로 선택되는 OPTIONAL BI 웹 애플리케이션이다. Trino를 통해 레이크하우스 테이블을 탐색하고 차트로 만든다. Grafana는 운영 관측 도구로 남고, Superset은 데이터 분석용이다. |
 
 ## Usage
 

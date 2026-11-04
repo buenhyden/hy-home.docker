@@ -1,10 +1,10 @@
 ---
 title: "데이터 계층 (04-data)"
-version: "1.3.3"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 created: "2025-11-12"
 ---
 
@@ -13,7 +13,7 @@ created: "2025-11-12"
 ## Overview
 
 데이터 저장·접근 기반 패키지를 서비스 이름으로 바로 배치합니다. 처리·변환·품질
-검증·BI는 [12 Analytics](../12-analytics/README.md)가 담당합니다. 루트 Compose는 정상 HOME 패키지만 include합니다.
+검증·BI는 독립 [LAB](../../labs/README.md)이 담당합니다(SPEC-0262). 루트 Compose는 정상 HOME 패키지만 include합니다.
 
 ## Audience
 

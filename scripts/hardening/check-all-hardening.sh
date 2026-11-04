@@ -530,11 +530,6 @@ check_04_data() {
   check_service_healthcheck "$supabase_compose" "auth"
   check_service_healthcheck "$valkey_compose" "dev-valkey"
 
-  local table_bucket="infra/04-data/seaweedfs/config/seaweedfs-table-bucket.sh"
-  check_file "$table_bucket"
-  if grep -Eq 's3tables:(\*|PutTableBucketPolicy|DeleteTableBucket)' "$table_bucket"; then
-    fail "lakehouse table bucket policy must not grant policy changes or bucket deletion"
-  fi
   local redisinsight_compose="infra/04-data/redisinsight/docker-compose.yml"
   check_file "$redisinsight_compose"
   if [[ "$(compose_service_image "$redisinsight_compose" "redisinsight")" != "$(registry_component_image "RedisInsight")" ]]; then
@@ -663,16 +658,19 @@ check_10_communication() {
   local tier="10-communication"
   start_tier "$tier"
 
-  local mail_compose="infra/10-communication/stalwart/docker-compose.yml"
+  # Stalwart is a standalone LAB (SPEC-0262), checked here like labs/supabase.yml.
+  local mail_compose="labs/stalwart.yml"
   check_file "$mail_compose"
   check_contains "$mail_compose" "service: template-infra-readonly-med" "stalwart template inheritance missing"
-  # SPEC-0180 S17: internal-only, no relaying, secret only through the wrapper.
-  check_not_contains "$mail_compose" "ports:" "stalwart must not publish a host port"
-  check_contains "infra/10-communication/stalwart/config/plan.ndjson" '"allowRelaying":{"else":"false"' "stalwart must refuse relaying"
+  # SPEC-0180 S17: no relaying, secret only through the wrapper; the admin UI
+  # is published on the LAB bind address only and SMTP stays on the LAB network.
+  check_contains "$mail_compose" '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_STALWART_HOST_PORT:-18093}:8080' "stalwart LAB admin UI must use the LAB bind address"
+  check_not_contains "$mail_compose" ":25'" "stalwart must not publish SMTP"
+  check_not_contains "$mail_compose" ":587'" "stalwart must not publish submission"
+  check_contains "labs/stalwart/config/plan.ndjson" '"allowRelaying":{"else":"false"' "stalwart must refuse relaying"
   check_not_contains "$mail_compose" "STALWART_RECOVERY_ADMIN" "stalwart admin credential must come from the secret file"
-  check_service_network "$mail_compose" "stalwart" "mail_net"
-  check_contains "$mail_compose" "traefik.http.routers.stalwart-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "stalwart admin route sso middleware mismatch"
-  check_service_network "$mail_compose" "stalwart" "edge_net"
+  check_not_contains "$mail_compose" "traefik.http" "stalwart LAB must not have a gateway route"
+  check_service_network "$mail_compose" "stalwart" "lab_stalwart_net"
   check_service_healthcheck "$mail_compose" "stalwart"
 }
 
@@ -681,9 +679,11 @@ check_11_quality() {
   local tier="11-quality"
   start_tier "$tier"
 
-  local sonarqube_compose="infra/11-quality/sonarqube/docker-compose.yml"
+  local sonarqube_compose="labs/sonarqube.yml"
   check_file "$sonarqube_compose"
-  check_contains "$sonarqube_compose" "sso-auth@file" "sonarqube sso missing"
+  # SonarQube is a standalone LAB (SPEC-0262) without a gateway route.
+  check_contains "$sonarqube_compose" '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}:9000' "sonarqube LAB port must use the LAB bind address"
+  check_not_contains "$sonarqube_compose" "traefik.http" "sonarqube LAB must not have a gateway route"
 
   local wiremock_compose="infra/11-quality/wiremock/docker-compose.yml"
   check_file "$wiremock_compose"
@@ -722,42 +722,47 @@ MAILPIT_HEALTH
 check_12_analytics() {
   local tier="12-analytics"
   start_tier "$tier"
+  # Analytics LAB sources (SPEC-0262), outside the root like labs/supabase.yml.
   # Lakehouse (SPEC-0180 S12): an edited catalog key degrades silently at run
   # time, and the table identity must never gain policy or bucket deletion.
-  local spark_wrapper="infra/12-analytics/spark/hyhome-spark.sh"
+  local table_bucket="labs/lakehouse/seaweedfs-table-bucket.sh"
+  check_file "$table_bucket"
+  if grep -Eq 's3tables:(\*|PutTableBucketPolicy|DeleteTableBucket)' "$table_bucket"; then
+    fail "lakehouse table bucket policy must not grant policy changes or bucket deletion"
+  fi
+  local spark_wrapper="labs/lakehouse/spark/hyhome-spark.sh"
   check_file "$spark_wrapper"
   check_contains "$spark_wrapper" "rest.auth.type sigv4" "spark catalog must sign with SigV4"
   check_contains "$spark_wrapper" "rest.signing-name s3" "spark catalog signing name must be s3"
   check_contains "$spark_wrapper" "s3.path-style-access true" "spark S3 must use path-style access"
   check_contains "$spark_wrapper" "io-impl org.apache.iceberg.aws.s3.S3FileIO" "spark must use S3FileIO"
-  local trino_compose="infra/12-analytics/trino/docker-compose.yml"
-  local trino_catalog="infra/12-analytics/trino/catalog/lakehouse.properties"
+  local lakehouse_compose="labs/lakehouse.yml"
+  local trino_compose="$lakehouse_compose"
+  local trino_catalog="labs/lakehouse/trino/catalog/lakehouse.properties"
   check_file "$trino_compose"
   check_file "$trino_catalog"
-  check_contains "$trino_compose" '127.0.0.1:${TRINO_HOST_PORT:-18090}:8080' "trino unauthenticated HTTP API must be loopback"
-  check_not_contains "$trino_compose" "traefik.enable" "trino must not have a gateway route"
+  check_contains "$trino_compose" '127.0.0.1:${LAB_TRINO_HOST_PORT:-18090}:8080' "trino unauthenticated HTTP API must be loopback"
+  check_not_contains "$lakehouse_compose" "traefik.http" "lakehouse LAB must not have a gateway route"
+  check_not_contains "$lakehouse_compose" "traefik.enable: 'true'" "lakehouse LAB must not enable a gateway route"
   check_contains "$trino_catalog" "iceberg.rest-catalog.security=SIGV4" "trino catalog must sign with SigV4"
   check_contains "$trino_catalog" "iceberg.rest-catalog.signing-name=s3" "trino catalog signing name must be s3"
   check_contains "$trino_catalog" 's3.aws-secret-key=${ENV:AWS_SECRET_ACCESS_KEY}' "trino S3 secret must come from the environment"
-  local flink_compose="infra/12-analytics/flink/docker-compose.yml"
-  local flink_wrapper="infra/12-analytics/flink/hyhome-flink.sh"
+  local flink_compose="$lakehouse_compose"
+  local flink_wrapper="labs/lakehouse/flink/hyhome-flink.sh"
   check_file "$flink_compose"
   check_file "$flink_wrapper"
-  check_contains "$flink_compose" '127.0.0.1:${FLINK_HOST_PORT:-18091}:8081' "flink unauthenticated REST API must be loopback"
+  check_contains "$flink_compose" '127.0.0.1:${LAB_FLINK_HOST_PORT:-18091}:8081' "flink unauthenticated REST API must be loopback"
   check_contains "$flink_compose" "web.submit.enable=false" "flink must refuse JAR upload through the REST API"
-  check_not_contains "$flink_compose" "traefik.enable" "flink must not have a gateway route"
   check_contains "$flink_wrapper" "'rest.auth.type' = 'sigv4'" "flink catalog must sign with SigV4"
   check_contains "$flink_wrapper" "'rest.signing-name' = 's3'" "flink catalog signing name must be s3"
   check_contains "$flink_wrapper" "'io-impl' = 'org.apache.iceberg.aws.s3.S3FileIO'" "flink must use S3FileIO"
-  local gx_compose="infra/12-analytics/great-expectations/docker-compose.yml"
-  check_file "$gx_compose"
+  local gx_compose="$lakehouse_compose"
   check_contains "$gx_compose" "GX_ANALYTICS_ENABLED: 'false'" "great-expectations must not send usage events"
-  check_contains "$gx_compose" "./suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
-  check_not_contains "$gx_compose" "ports:" "great-expectations must not publish a port"
+  check_contains "$gx_compose" "./lakehouse/great-expectations/suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
   check_contains "$gx_compose" "service: template-job-med" "great-expectations must use the read-only job template"
   # Superset (SPEC-0180 S16): native Keycloak OIDC, secrets from files only.
-  local superset_compose="infra/12-analytics/superset/docker-compose.yml"
-  local superset_config="infra/12-analytics/superset/superset_config.py"
+  local superset_compose="labs/superset.yml"
+  local superset_config="labs/superset/superset_config.py"
   check_file "$superset_compose"
   check_file "$superset_config"
   check_contains "$superset_config" "AUTH_TYPE = AUTH_OAUTH" "superset must log in through Keycloak OIDC"
@@ -765,14 +770,14 @@ check_12_analytics() {
   check_contains "$superset_config" '"code_challenge_method": "S256"' "superset OIDC must use PKCE"
   check_contains "$superset_config" 'SECRET_KEY = _secret("superset_secret_key")' "superset signing key must come from a secret file"
   check_not_contains "$superset_compose" "SUPERSET_SECRET_KEY" "superset signing key must not be an environment variable"
-  check_not_contains "$superset_compose" "ports:" "superset must be reached only through Traefik"
-  check_contains "$superset_compose" "traefik.http.routers.superset.middlewares: gateway-standard-chain@file" "superset native oidc gateway chain missing"
+  check_contains "$superset_compose" '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}:8088' "superset LAB port must use the LAB bind address"
+  check_not_contains "$superset_compose" "traefik.http" "superset LAB must not have a gateway route"
   check_not_contains "$superset_compose" "sso-auth" "superset double-auth middleware must not be enabled"
-  local dbt_compose="infra/12-analytics/dbt/docker-compose.yml"
+  local dbt_compose="labs/dbt.yml"
   check_file "$dbt_compose"
   check_contains "$dbt_compose" "service: template-job-med" "dbt must use the read-only job template"
-  check_contains "$dbt_compose" "./projects:/workspace:ro" "dbt project must remain read-only"
-  check_contains "$dbt_compose" "./profiles:/config:ro" "dbt profiles must remain read-only"
+  check_contains "$dbt_compose" "./dbt/projects:/workspace:ro" "dbt project must remain read-only"
+  check_contains "$dbt_compose" "./dbt/profiles:/config:ro" "dbt profiles must remain read-only"
 }
 
 # --- Tier 13: Experience ---

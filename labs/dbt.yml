@@ -1,0 +1,109 @@
+# Independent dbt LAB entrypoint (SPEC-0262); never included by the root.
+# It joins no HOME network. The dev-pg endpoint is a required LAB input;
+# HOME publishes no database port to a LAB network by default.
+name: hy-home-lab-dbt
+
+x-tier-label: &tier-label
+  hy-home.tier: lab
+  traefik.enable: 'false'
+
+networks:
+  lab_dbt_net:
+    name: hy-home-lab-dbt
+
+# LAB-only secrets under LAB_SECRET_DIR; no root value is shared. Each mounts
+# at its original /run/secrets name, which the LAB scripts read.
+secrets:
+  lab_dbt_dev_pg_admin_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/dbt/dev_pg_admin_password.txt
+  lab_dbt_db_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/dbt/db_password.txt
+
+services:
+  # Feature-owned analytics role on the explicit internal development fixture.
+  # It needs the dev-pg `platform_dev` fixture that HOME `dev-platform-provision`
+  # creates; run that first in HOME.
+  dbt-db-provision:
+    profiles:
+      - lab-dbt
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-low
+    image: postgres:18.6-alpine
+    container_name: dbt-db-provision
+    hostname: dbt-db-provision
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    entrypoint:
+      - /bin/sh
+      - /provision/run-feature-provision.sh
+    environment:
+      PGHOST: '${LAB_DBT_DB_HOST:?set an approved dev-pg endpoint host}'
+      PGPORT: '${LAB_DBT_DB_PORT:-5432}'
+      PGUSER: '${LAB_DBT_DB_ADMIN_USER:-postgres}'
+      PGDATABASE: postgres
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/dev_pg_admin_password
+      PROVISION_SQL: /provision/dev-pg.sql
+      PROVISION_IDENTIFIERS: DBT_DB_USER DBT_DB_NAME DBT_SCHEMA DBT_SOURCE_SCHEMA DBT_SOURCE_OWNER
+      PROVISION_SECRETS: DBT_DB_PASSWORD=/run/secrets/dbt_db_password
+      DBT_DB_USER: '${LAB_DBT_DB_USER:-dbt}'
+      DBT_DB_NAME: platform_dev
+      DBT_SCHEMA: '${LAB_DBT_SCHEMA:-analytics}'
+      DBT_SOURCE_SCHEMA: app
+      DBT_SOURCE_OWNER: platform_owner
+    volumes:
+      - ../infra/04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./dbt/provisioning/dev-pg.sql:/provision/dev-pg.sql:ro
+    secrets:
+      - source: lab_dbt_dev_pg_admin_password
+        target: dev_pg_admin_password
+      - source: lab_dbt_db_password
+        target: dbt_db_password
+    networks:
+      lab_dbt_net: {}
+    labels:
+      <<: *tier-label
+
+  # Command-line job, not a web service. The default `debug` only validates
+  # the profile and connection; `compile` renders SQL without writing to the
+  # database, while `run`, `build` and `--full-refresh` write to DBT_SCHEMA.
+  dbt:
+    profiles:
+      - lab-dbt
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-med
+    build:
+      context: ./dbt
+      dockerfile: Dockerfile
+    image: hy-home/dbt-postgres:1.11-local
+    container_name: dbt
+    hostname: dbt
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    environment:
+      DBT_PROFILES_DIR: /config
+      DBT_DB_HOST: '${LAB_DBT_DB_HOST:?set an approved dev-pg endpoint host}'
+      DBT_DB_PORT: '${LAB_DBT_DB_PORT:-5432}'
+      DBT_DB_USER: '${LAB_DBT_DB_USER:-dbt}'
+      DBT_DB_NAME: platform_dev
+      DBT_SCHEMA: '${LAB_DBT_SCHEMA:-analytics}'
+      DBT_SOURCE_SCHEMA: app
+      DBT_THREADS: '${LAB_DBT_THREADS:-4}'
+    secrets:
+      - source: lab_dbt_db_password
+        target: dbt_db_password
+    # Project and profiles are read-only; target/, logs/ and packages live on
+    # the job's /tmp tmpfs (see dbt_project.yml) and vanish with the container.
+    volumes:
+      - ./dbt/profiles:/config:ro
+      - ./dbt/projects:/workspace:ro
+    command:
+      - debug
+    depends_on:
+      dbt-db-provision:
+        condition: service_completed_successfully
+    networks:
+      lab_dbt_net: {}
+    labels:
+      <<: *tier-label

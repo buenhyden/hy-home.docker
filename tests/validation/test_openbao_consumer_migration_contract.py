@@ -965,7 +965,8 @@ class OidcClientSecretVerifierTests(unittest.TestCase):
             "gatus": "infra/06-observability/docker-compose.yml",
             "airflow-apiserver": "infra/07-workflow/airflow/docker-compose.yml",
             "open-webui": "infra/08-ai/open-webui/docker-compose.yml",
-            "superset": "infra/12-analytics/superset/docker-compose.yml",
+            # SPEC-0262: Superset is a LAB that reads its own LAB-only secret;
+            # it binds no OpenBao Agent output, so it is not a root consumer.
         }
         example = (ROOT / ".env.example").read_text()
         for service, path in files.items():

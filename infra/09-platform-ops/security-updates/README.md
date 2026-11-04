@@ -110,6 +110,15 @@ custom 이미지가 새로 빌드되지 않은 경우 upstream base 증거를 cu
 pull·scan·독립 검토·config 검사·HOME 재생성·rollback은 `NOT_RUN`이고
 `SPEC-0204-TSK-0021`이 owner 단계로 기록한다.
 
+2026-11-04 `SPEC-0262`로 분석 lakehouse·dbt·Superset·JupyterLab과 SonarQube·Stalwart
+15개 서비스가 ROOT include에서 빠져 `labs/lakehouse.yml`, `labs/dbt.yml`,
+`labs/superset.yml`, `labs/jupyterlab.yml`, `labs/sonarqube.yml`, `labs/stalwart.yml`의
+단독 LAB entrypoint로 옮겨졌다. ROOT include를 다시 계산하니 97개 서비스와 35개 입력이었다.
+Supabase 선례처럼 15개 행은 현재 ROOT 장부에서 빼고 원래 행을 `historical_lab_entries`에
+보존했다. SeaweedFS Compose 입력 SHA가 바뀌어 남은 SeaweedFS 다섯 행의 source binding만
+다시 연결했고, P08 공개 관찰의 이전 서비스 대응은 `relocated_lab_service_mapping`에 보존했다.
+이 정합화는 공급자 재조회·서명·SBOM/scan·native·HOME 배포·복구 결과를 만들지 않는다.
+
 ## Structure
 
 | 파일 | 용도 |

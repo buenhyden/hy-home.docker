@@ -1,10 +1,10 @@
 ---
 title: "분석과 데이터 품질 런북"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -25,10 +25,6 @@ layer: "operations"
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
 | [MLflow Recovery Runbook](0088-mlflow.md) | `RUN-0088` | MLflow tracking server의 프로비저닝 실패, 크리덴셜 회전, 복원, 업그레이드를 다루는 복구 런북이다. |
-| [JupyterLab Recovery Runbook](0089-jupyterlab.md) | `RUN-0089` | JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실, 이미지 업그레이드를 다루는 복구 런북이다. |
-| [dbt Recovery Runbook](0090-dbt.md) | `RUN-0090` | dbt 프로비저닝 실패, 연결·권한 오류, 잘못된 모델 실행, 크리덴셜 교체를 다루는 런북이다. |
-| [Lakehouse Recovery Runbook](0094-lakehouse.md) | `RUN-0094` | 레이크하우스의 Spark·Trino·Flink·Great Expectations 실패, 카탈로그 오류, 접근 거부, 테이블 롤백을 다루는 런북이다. |
-| [Superset Runbook](0097-superset.md) | `RUN-0097` | Superset의 최초 설정, 로그인 실패, 웹 서버 비정상, 업그레이드를 다루는 런북이다. |
 
 ## Usage
 

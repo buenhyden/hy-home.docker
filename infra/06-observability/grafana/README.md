@@ -1,6 +1,6 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.13"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -123,9 +123,6 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 02-auth | `oauth2-proxy-valkey-exporter` | `oauth2-proxy-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 03-security | `openbao` | `openbao` | `Security/openbao`, `Infrastructure/containers` |  |
 | 03-security | `openbao-agent` | `openbao-agent` | `Infrastructure/containers` | auth counters and scrape health; alerts only, no dashboard |
-| 12-analytics | `flink-jobmanager` | none | `Infrastructure/containers` | container metrics and logs only |
-| 12-analytics | `flink-taskmanager` | none | `Infrastructure/containers` | container metrics and logs only |
-| 12-analytics | `great-expectations` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `mng-pg` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-exporter` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-init` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -140,15 +137,9 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 04-data | `seaweedfs-filer` | `seaweedfs-filer` | `Infrastructure/seaweedfs`, `Infrastructure/containers` | scraped over `seaweedfs_metrics_net` |
 | 04-data | `seaweedfs-master` | `seaweedfs-master` | `Infrastructure/seaweedfs`, `Infrastructure/containers` | scraped over `seaweedfs_metrics_net` |
 | 04-data | `seaweedfs-s3` | `seaweedfs-s3` | `Infrastructure/seaweedfs`, `Infrastructure/containers` |  |
-| 04-data | `seaweedfs-table-bucket` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `seaweedfs-volume` | `seaweedfs-volume` | `Infrastructure/seaweedfs`, `Infrastructure/containers` | scraped over `seaweedfs_metrics_net` |
-| 12-analytics | `spark` | none | `Infrastructure/containers` | container metrics and logs only |
 | 13-experience | `storybook` | none | `Infrastructure/containers` | 소스 선언만; 지표 scrape 미정의 |
 | 13-experience | `storybook-mcp` | none | `Infrastructure/containers` | 소스 선언만; 지표 scrape 미정의 |
-| 12-analytics | `superset` | none | `Infrastructure/containers` | container metrics and logs only |
-| 12-analytics | `superset-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
-| 12-analytics | `superset-init` | none | `Infrastructure/containers` | container metrics and logs only |
-| 12-analytics | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `dev-pg` | `dev-pg-exporter` | `Infrastructure/postgresql`, `Infrastructure/containers` | statistics-and-settings-only `dev_pg_monitor` role |
 | 04-data | `dev-pg-exporter` | `dev-pg-exporter` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `dev-pg-monitor-provision` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -202,8 +193,6 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 08-ai | `open-webui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-platform-ops | `backup-sqlite-export` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `conftest` | none | `Infrastructure/containers` | container metrics and logs only |
-| 12-analytics | `dbt` | none | `Infrastructure/containers` | container metrics and logs only |
-| 12-analytics | `dbt-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `k6` | k6 remote write | `Infrastructure/k6`, `Infrastructure/containers` |  |
 | 09-platform-ops | `opentofu` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `pact-broker` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -212,16 +201,12 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 09-platform-ops | `renovate` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-platform-ops | `restic` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-platform-ops | `restic-offsite` | none | `Infrastructure/containers` | container metrics and logs only |
-| 11-quality | `sonarqube` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-platform-ops | `terrakube-api` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-platform-ops | `terrakube-executor` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-platform-ops | `terrakube-ui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `wiremock` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `mailpit` | none | `Infrastructure/containers` | container metrics and logs only |
-| 10-communication | `stalwart` | none | `Infrastructure/containers` | container metrics and logs only |
-| 10-communication | `stalwart-config` | none | `Infrastructure/containers` | container metrics and logs only |
 | 06-observability | `dozzle` | none | `Infrastructure/containers` | container metrics and logs only |
-| 12-analytics | `jupyterlab` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `mlflow` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `mlflow-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `open_notebook` | none | `Infrastructure/containers` | container metrics and logs only |

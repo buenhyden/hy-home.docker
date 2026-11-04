@@ -906,6 +906,7 @@ class DocumentRegistryTests(unittest.TestCase):
         values = {"type": "operation/policy", "artifact_id": "POL-0052"}
         flat = target.parent.parent / target.name
         unnumbered = target.parent.parent / "workflows-and-automation" / target.name
+        sibling = target.parent.parent / "15-labs" / target.name
 
         def base(path, metadata=values):
             return lifecycle.Record(path, metadata, "policy")
@@ -916,7 +917,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 lifecycle, "read_bounded_regular", return_value=historical.encode()
             ),
         ):
-            for source in (flat, unnumbered):
+            for source in (flat, unnumbered, sibling):
                 with self.subTest(source=source):
                     record, text = lifecycle._operations_moved_body_baseline(
                         ROOT, target, profiles, [base(source)], "a" * 40
@@ -931,6 +932,8 @@ class DocumentRegistryTests(unittest.TestCase):
                 [base(pathlib.Path(str(flat).replace("/policies/", "/guides/")))],
                 [base(unnumbered.parent.parent / "another" / target.name)],
                 [base(flat), base(unnumbered)],
+                [base(sibling), base(flat)],
+                [base(sibling.parent.parent / "15-labs" / "0052-another.md")],
             ):
                 with self.subTest(records=records):
                     self.assertEqual(

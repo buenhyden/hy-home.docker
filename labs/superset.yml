@@ -1,0 +1,144 @@
+# Independent Superset LAB entrypoint (SPEC-0262); never included by the root.
+# It joins no HOME network and has no gateway route. The mng-pg endpoint is a
+# required LAB input; Keycloak is reached through its public gateway name.
+name: hy-home-lab-superset
+
+x-tier-label: &tier-label
+  hy-home.tier: lab
+  traefik.enable: 'false'
+
+x-superset-common: &superset-common
+  profiles:
+    - lab-superset
+  build:
+    context: ./superset
+    dockerfile: Dockerfile
+  image: hy-home/superset:6.1.0-local
+  environment:
+    DEFAULT_URL: '${LAB_SUPERSET_DEFAULT_URL:?set the HOME gateway domain}'
+    SUPERSET_DB_HOST: '${LAB_SUPERSET_DB_HOST:?set an approved mng-pg endpoint host}'
+    SUPERSET_DB_PORT: '${LAB_SUPERSET_DB_PORT:-5432}'
+    SUPERSET_DB_USER: '${LAB_SUPERSET_DB_USER:-superset}'
+    SUPERSET_DB_NAME: '${LAB_SUPERSET_DB_NAME:-superset}'
+    SUPERSET_OIDC_CLIENT_ID: '${LAB_SUPERSET_OIDC_CLIENT_ID:-home-superset}'
+  # SUPERSET_HOME holds logs and uploads only; the metadata lives in mng-pg.
+  # /tmp (CA bundle) and /run come from the read-only templates.
+  tmpfs:
+    - /app/superset_home:uid=1000,gid=1000
+  volumes:
+    - ./superset/superset_config.py:/app/pythonpath/superset_config.py:ro
+    - ${LAB_SUPERSET_CA_FILE:?set the HOME root CA certificate file}:/etc/ssl/certs/hy-home-rootCA.pem:ro
+  secrets:
+    - source: lab_superset_secret_key
+      target: superset_secret_key
+    - source: lab_superset_db_password
+      target: superset_db_password
+    - source: lab_superset_oidc_client_secret
+      target: superset_oidc_client_secret
+  networks:
+    lab_superset_net: {}
+  labels:
+    <<: *tier-label
+
+networks:
+  lab_superset_net:
+    name: hy-home-lab-superset
+
+# LAB-only secrets under LAB_SECRET_DIR; no root value is shared. Each mounts
+# at its original /run/secrets name, which the LAB scripts read.
+secrets:
+  lab_superset_mng_postgres_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/mng_postgres_password.txt
+  lab_superset_db_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/db_password.txt
+  lab_superset_secret_key:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/secret_key.txt
+  lab_superset_oidc_client_secret:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/oidc_client_secret.txt
+
+services:
+  # Feature-owned metadata database provisioning on the configured mng-pg.
+  superset-db-provision:
+    profiles:
+      - lab-superset
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-low
+    image: postgres:18.6-alpine
+    container_name: superset-db-provision
+    hostname: superset-db-provision
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    entrypoint:
+      - /bin/sh
+      - /provision/run-feature-provision.sh
+    environment:
+      PGHOST: '${LAB_SUPERSET_DB_HOST:?set an approved mng-pg endpoint host}'
+      PGPORT: '${LAB_SUPERSET_DB_PORT:-5432}'
+      PGUSER: '${LAB_SUPERSET_DB_ADMIN_USER:-postgres}'
+      PGDATABASE: '${LAB_SUPERSET_DB_ADMIN_DB:-postgres}'
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
+      PROVISION_SQL: /provision/mng-pg.sql
+      PROVISION_IDENTIFIERS: SUPERSET_DB_USER SUPERSET_DB_NAME
+      PROVISION_SECRETS: SUPERSET_DB_PASSWORD=/run/secrets/superset_db_password
+      SUPERSET_DB_USER: '${LAB_SUPERSET_DB_USER:-superset}'
+      SUPERSET_DB_NAME: '${LAB_SUPERSET_DB_NAME:-superset}'
+    volumes:
+      - ../infra/04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./superset/provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
+    secrets:
+      - source: lab_superset_mng_postgres_password
+        target: mng_postgres_password
+      - source: lab_superset_db_password
+        target: superset_db_password
+    networks:
+      lab_superset_net: {}
+    labels:
+      <<: *tier-label
+
+  # Schema migration, default roles and permissions, and the `lakehouse`
+  # database entry (Trino). Idempotent; re-run after an image upgrade.
+  # The Trino entry resolves only where a `trino` host is reachable.
+  superset-init:
+    <<: *superset-common
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-med
+    container_name: superset-init
+    hostname: superset-init
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    entrypoint:
+      - /bin/sh
+      - -ec
+    command:
+      - |
+        superset db upgrade
+        superset init
+        superset set-database-uri --database_name lakehouse --uri 'trino://superset@trino:8080/lakehouse'
+    depends_on:
+      superset-db-provision:
+        condition: service_completed_successfully
+
+  superset:
+    <<: *superset-common
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-infra-readonly-med
+    mem_limit: 1g
+    container_name: superset
+    hostname: superset
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    # No gateway route: the web UI is published on the LAB bind address only.
+    ports:
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}:8088'
+    healthcheck:
+      test: [ 'CMD', 'curl', '-fsS', '-o', '/dev/null', 'http://localhost:8088/health' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully

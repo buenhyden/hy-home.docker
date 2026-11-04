@@ -1300,14 +1300,17 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
             check_alignment,
         )
 
-        for source_type, status, allowed in (
-            ("operation/postmortem", "published", True),
-            ("sdlc/task", "completed", True),
-            ("operation/runbook", "published", False),
-            ("sdlc/task", "blocked", False),
+        for source_type, status, allowed, former in (
+            ("operation/postmortem", "published", True, ""),
+            ("sdlc/task", "completed", True, ""),
+            ("operation/runbook", "published", False, ""),
+            ("sdlc/task", "blocked", False, ""),
+            # A move between numbered families (SPEC-0262).
+            ("sdlc/task", "completed", True, "13-analytics-and-data-quality/"),
+            ("sdlc/task", "blocked", False, "13-analytics-and-data-quality/"),
         ):
             with (
-                self.subTest(source_type=source_type, status=status),
+                self.subTest(source_type=source_type, status=status, former=former),
                 tempfile.TemporaryDirectory() as temp,
             ):
                 root = pathlib.Path(temp)
@@ -1327,7 +1330,8 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
                 source.parent.mkdir(parents=True)
                 target.parent.mkdir(parents=True)
                 raw = os.path.relpath(
-                    root / "docs/05.operations/runbooks/0050-airflow.md", source.parent
+                    root / f"docs/05.operations/runbooks/{former}0050-airflow.md",
+                    source.parent,
                 )
                 source.write_text(
                     "---\n"

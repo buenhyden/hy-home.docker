@@ -1,10 +1,10 @@
 ---
 title: "메일과 통지 런북"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-04"
 layer: "operations"
 ---
 
@@ -24,7 +24,6 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [Stalwart Mail Runbook](0070-mail.md) | `RUN-0070` | 이 런북은 Stalwart의 listener, 인증, TLS, DNS, queue 장애 진단과 메일박스·설정 복구, 승인된 최초 기동과 업그레이드 절차를 정의한다. 작업은 저장소 루트에서 하고 합성 메일만 사용한다. |
 | [Mailpit Runbook](0084-mailpit.md) | `RUN-0084` | 이 런북은 Mailpit의 캡처 실패, database lock·손상, 보존 한도 이상을 진단하고, 승인된 export·restore·upgrade를 수행하는 절차를 정의한다. 저장소 루트에서 작업하며 캡처된 콘텐츠를 증거로 노출하지 않는다. |
 
 ## Usage

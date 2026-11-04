@@ -21,6 +21,18 @@ LAB_INPUTS = {
     "LAB_LOCUST_RESULT_DIR": "/nonexistent/locust-results",
     "LAB_OPENSEARCH_CERT_DIR": "/nonexistent/opensearch-certs",
 }
+# Synthetic HOME-dependency endpoints of the analytics LABs (SPEC-0262); no
+# volume binds under them, so the volume-root test does not read this map.
+LAB_ENDPOINTS = {
+    "LAB_LAKEHOUSE_S3_ENDPOINT": "http://lab-endpoint.invalid:8333",
+    "LAB_LAKEHOUSE_CATALOG_URI": "http://lab-endpoint.invalid:8181",
+    "LAB_DBT_DB_HOST": "lab-endpoint.invalid",
+    "LAB_SUPERSET_DB_HOST": "lab-endpoint.invalid",
+    "LAB_SUPERSET_DEFAULT_URL": "lab.invalid",
+    "LAB_SUPERSET_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
+    "LAB_SONARQUBE_DB_HOST": "lab-endpoint.invalid",
+    "LAB_STALWART_DEFAULT_URL": "lab.invalid",
+}
 
 
 def compose(*args: str, extra_env: dict[str, str] | None = None):
@@ -55,7 +67,7 @@ def rendered_models() -> tuple[dict, dict[str, dict]]:
             str(path.relative_to(ROOT)),
             "--profile",
             "*",
-            extra_env=LAB_INPUTS,
+            extra_env=LAB_INPUTS | LAB_ENDPOINTS,
         )
         for path in LABS
     }
@@ -72,7 +84,7 @@ class RenderedModels(unittest.TestCase):
 
 class RootClosureTests(RenderedModels):
     def test_wildcard_root_render_selects_no_lab_service(self) -> None:
-        self.assertEqual(9, len(self.labs))
+        self.assertEqual(15, len(self.labs))
         root_services = set(self.root["services"])
         for name, lab in self.labs.items():
             with self.subTest(lab=name):

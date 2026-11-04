@@ -793,9 +793,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
     def test_sonarqube_exports_its_jdbc_password_from_the_secret(self):
         # The image has no _FILE support; the wrapper refuses an empty secret
         # and keeps the image entrypoint.
-        service = compose("infra/11-quality/sonarqube/docker-compose.yml")["services"][
-            "sonarqube"
-        ]
+        service = compose("labs/sonarqube.yml")["services"]["sonarqube"]
         script = service["entrypoint"][2]
         self.assertIn("cat /run/secrets/sonarqube_db_password", script)
         self.assertIn('[ -n "$$SONAR_JDBC_PASSWORD" ] ||', script)
