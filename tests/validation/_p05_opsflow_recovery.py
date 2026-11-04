@@ -225,14 +225,21 @@ def validate_execution_retry(facts):
     # the retry runs no node, claims nothing and ends error (native attempt 8).
     # Replay is a new execution: it claims only claimable rows, while each
     # interrupted row stays unknown for reconciliation.
+    # A run that ends before n8n attaches its result promise makes retry
+    # throw "The retry did not start" (HTTP 500, native attempt 11): the same
+    # no-op, recorded as not_started.
     count = facts.get("retried") if isinstance(facts, dict) else None
+    statuses = facts.get("statuses") if isinstance(facts, dict) else None
     if (
         type(count) is not int
         or count < 1
+        or not isinstance(statuses, list)
+        or len(statuses) != count
+        or any(status not in {"error", "not_started"} for status in statuses)
         or facts
         != {
             "retried": count,
-            "statuses": ["error"] * count,
+            "statuses": statuses,
             "start_stacks_empty": True,
             "claimed_by_retry": 0,
             "interrupted_resent": 0,

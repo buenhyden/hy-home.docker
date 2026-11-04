@@ -518,9 +518,15 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
             "fresh_execution_delivered": True,
         }
         self.assertEqual(good, recovery.validate_execution_retry(good))
+        # The copied empty run can also end before n8n attaches its result
+        # promise: ExecutionService.retry then throws "The retry did not
+        # start" (HTTP 500, native attempt 11). Still no node ran.
+        mixed = {**good, "statuses": ["not_started", "error"]}
+        self.assertEqual(mixed, recovery.validate_execution_retry(mixed))
         for change in (
             {"retried": 0, "statuses": []},
             {"statuses": ["error"]},
+            {"statuses": ["refused", "error"]},
             # A retry that ran is no longer the measured n8n behavior.
             {"statuses": ["success", "error"]},
             {"start_stacks_empty": False},

@@ -564,8 +564,9 @@ PROFILE_API = PROFILE_API.replace(
 # editor's "Retry with original workflow"); it resolves on completion.
 PROFILE_API = PROFILE_API.replace(
     "else if(input.action==='credential_update')",
-    """else if(input.action==='retry'){const r=await call('/rest/executions/'+encodeURIComponent(input.executionId)+'/retry','POST',{loadWorkflow:false},auth);const d=r.data;
+    """else if(input.action==='retry'){try{const r=await call('/rest/executions/'+encodeURIComponent(input.executionId)+'/retry','POST',{loadWorkflow:false},auth);const d=r.data;
 out={id:String(d.id),retryOf:String(d.retryOf),status:String(d.status)};}
+catch(e){if(e.opsflowStatus!==500)throw e;out={id:'',retryOf:String(input.executionId),status:'not_started'};}}
 else if(input.action==='trace'){const d=(await call('/rest/executions/'+encodeURIComponent(input.executionId),'GET',undefined,auth)).data;
 const x=typeof d.data==='string'?require('flatted').parse(d.data):d.data;const nm=v=>/^[A-Za-z0-9 _.-]{1,64}$/.test(String(v))?String(v):'withheld';
 const rd=x?.resultData||{};const e=rd.error;
@@ -937,7 +938,9 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
                 {
                     "status": statuses[-1],
                     "crashed_trace": trace,
-                    "retry_trace": self.api("trace", executionId=str(result.get("id"))),
+                    "retry_trace": None
+                    if statuses[-1] == "not_started"
+                    else self.api("trace", executionId=str(result.get("id"))),
                 }
             )
         f.receipt["execution_retry_attempts"] = attempts

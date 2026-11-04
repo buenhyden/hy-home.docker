@@ -299,6 +299,12 @@ class ScenarioModel:
         if action == "retry":
             if f.executions[payload["executionId"]] != "crashed":
                 raise native.RehearsalFailure("synthetic retry conflict")
+            if self.fail == "retry-not-started":
+                return {
+                    "id": "",
+                    "retryOf": payload["executionId"],
+                    "status": "not_started",
+                }
             retried = str(len(f.executions) + 1)
             f.executions[retried] = "error"
             if self.fail == "retry-resend":
@@ -656,6 +662,14 @@ class P05ScenarioStateTests(unittest.TestCase):
                 self.assertNotEqual(
                     "PASS", model.fixture.receipt.get("live_inflight_interruption")
                 )
+
+    def test_retry_that_did_not_start_is_the_same_no_op(self):
+        receipt = ScenarioModel("retry-not-started").run()
+        self.assertEqual("PASS", receipt["native"])
+        self.assertEqual(
+            ["not_started", "not_started"], receipt["execution_retry"]["statuses"]
+        )
+        self.assertTrue(receipt["execution_retry"]["fresh_execution_delivered"])
 
     def test_main_restart_and_retry_violations_block_the_barrier(self):
         for failure in (
