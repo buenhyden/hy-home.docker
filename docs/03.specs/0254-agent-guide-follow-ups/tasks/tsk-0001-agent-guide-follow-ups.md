@@ -97,6 +97,16 @@ progress under the approved parents. Hosted CI has not run.
 | E1 | 1 | W1 | links-entrypoint | `check-document-links.py --mode entrypoint` before the edit, main 4adeb3d37 | FAIL | 9 `stage-link-outside-docs` findings in six `infra` READMEs | required | - |
 | E2 | 1 | W1 | links-entrypoint | after the plain-text change | PASS | zero findings | required | E1 |
 | E3 | 2 | W2 | ci-routing | `test_a_folder_agent_guide_change_selects_agent_governance` with the new rule, and with the workflow contract restored to main | PASS | OK with the rule; 7 subtests fail without it | required | - |
+| E4 | 3 | W4 | metadata-changed | `check-changed --base-ref origin/main`, revision fa156dbee, base main 4adeb3d37 | PASS | 19 selected, zero violations; the guides' `draft` to `active` change is accepted | required | - |
+| E5 | 3 | W4 | metadata-active | `check-active`, revision fa156dbee | PASS | 503 selected, zero violations | required | - |
+| E6 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref origin/main`, revision fa156dbee | PASS | lifecycle and occupancy zero | required | - |
+| E7 | 1, 4 | W4 | links-modes | alignment, navigation, language, traceability and entrypoint, revision fa156dbee | PASS | every mode PASS; entrypoint zero (main 4adeb3d37 reports 9) | required | - |
+| E8 | 4 | W4 | links-commands | `--mode commands`, revision fa156dbee | FAIL | 2 findings for ignored `_workspace` paths in the DATA-0096 README, present on main and owned by SPEC-0253; not caused by this change | required | - |
+| E9 | 4 | W4 | contract-and-parity | Script Manifest, `provider_surface_renderer.py --check`, agent governance contract, revision fa156dbee | PASS | manifest valid; drift 0; zero failures | required | - |
+| E10 | 2, 4 | W4 | ci-routing | CI routing, CI gate plan, surface ownership and a `tests.validation.test_github_workflow_contract` selector, revision fa156dbee | FAIL | 154 run; 1 loader error because that module lives at `tests.lib.gate.test_github_workflow_contract` | required | - |
+| E11 | 4 | W4 | document-governance | `tests/lib/document_governance` discovery, revision fa156dbee | FAIL | 768 run, 1 failure: the SPEC-0254 index row named a status word | required | - |
+| E12 | 4 | W4 | document-governance | `test_spec_packages` after rewording the index row | PASS | OK, run together with E13 (134 tests) | required | E11 |
+| E13 | 2, 4 | W4 | ci-routing | `tests.lib.gate.test_github_workflow_contract` at its real path | PASS | OK, run together with E12 (134 tests); the other routing modules passed in E10 | required | E10 |
 
 ## Criterion Acceptance
 
@@ -109,8 +119,9 @@ progress under the approved parents. Hosted CI has not run.
 
 ## Review and Completion
 
-Local checks are recorded above. No independent review has run and hosted CI
-is not observed here; no criterion is accepted yet.
+Local checks are recorded above; E8 is pre-existing debt owned by SPEC-0253.
+No independent review has run and hosted CI is not observed here; no
+criterion is accepted yet.
 
 ## Related Documents
 
