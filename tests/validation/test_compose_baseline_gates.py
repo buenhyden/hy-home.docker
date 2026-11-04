@@ -3928,14 +3928,19 @@ class CdcStreamRehearsalTests(unittest.TestCase):
                 _cdc_docker, "rm", "-f", f"{cls.tag}-{name}", check=False
             )
             _cdc_docker(*run, "--name", f"{cls.tag}-{name}", *args)
+            if name == "pg":
+                # Finish the image's init (temporary server stop and checkpoint)
+                # before the JVM services start: under their I/O the init stop
+                # overran pg_ctl's 60 s wait and the container exited. The TCP
+                # probe only answers once the final server is up.
+                cls.wait(
+                    lambda: cls.sql("SELECT 1", db="postgres") == "1",
+                    "postgres",
+                    tries=150,
+                    container="pg",
+                )
         cls.addClassCleanup(_cdc_docker, "rm", "-f", f"{cls.tag}-connect", check=False)
         cls.start_connect(secret)
-        cls.wait(
-            lambda: cls.sql("SELECT 1", db="postgres") == "1",
-            "postgres",
-            tries=150,
-            container="pg",
-        )
         cls.provision()
         cls.wait(cls.connect_ready, "kafka connect", tries=120)
 
