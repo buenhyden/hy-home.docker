@@ -62,13 +62,13 @@ open-webui/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-webui.rule`, `traefik.http.routers.open-webui.entrypoints`, `traefik.http.routers.open-webui.tls`, `traefik.http.services.open-webui.loadbalancer.server.port`, `traefik.http.routers.open-webui.middlewares` |
 | Secret refs | `openwebui_oidc_client_secret`; root:root 0600 호스트 파일 |
 | Healthcheck | `open-webui`에 Compose 헬스체크가 선언되어 있음 |
-| Operations | Guide (`docs/05.operations/guides/0057-open-webui.md`), Policy (`docs/05.operations/policies/0057-open-webui.md`), Runbook (`docs/05.operations/runbooks/0057-open-webui.md`) |
+| Operations | Guide (`docs/05.operations/guides/09-ai-and-search/0057-open-webui.md`), Policy (`docs/05.operations/policies/09-ai-and-search/0057-open-webui.md`), Runbook (`docs/05.operations/runbooks/09-ai-and-search/0057-open-webui.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `bash scripts/hardening/check-all-hardening.sh 08-ai`로 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
 ## Usage
 
-1. Open WebUI Interface & RAG Guide(`docs/05.operations/guides/0057-open-webui.md`)를 읽습니다.
+1. Open WebUI Interface & RAG Guide(`docs/05.operations/guides/09-ai-and-search/0057-open-webui.md`)를 읽습니다.
 2. SSO로 `https://chat.${DEFAULT_URL}`에서 UI에 접속합니다.
 3. 문서 색인 전에 Ollama와의 연결을 확인합니다.
 
@@ -83,16 +83,16 @@ open-webui/
 - Classification: **HOME**. Exact profiles: `ai`, `ai-llm`.
 - Source authority: 이 패키지의 Compose와 선택된 이미지/빌드 입력. `infra/tech-stack.versions.json`은 파생 프로젝션입니다.
 - Root preflight: `docker compose --profile ai config --quiet`. Root targeted start: `docker compose --profile ai up -d open-webui`.
-- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/0057-open-webui.md`; ID: `GDE-0057`, `POL-0057`, `RUN-0057`.
+- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/09-ai-and-search/0057-open-webui.md`; ID: `GDE-0057`, `POL-0057`, `RUN-0057`.
 - 해당 런북의 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다. 모델/콘텐츠 출처를 보존하고 실행 중인 파일시스템 복사본을 복구 근거로 사용하지 않습니다.
 
 ## Related Documents
 
 - [Ollama Implementation](../ollama/README.md)
 - [Qdrant Implementation](../../04-data/qdrant/README.md) (참고용; 08-ai에서는 연결되어 사용되지 않음)
-- Open WebUI usage guide (`docs/05.operations/guides/0057-open-webui.md`)
-- Open WebUI operations policy (`docs/05.operations/policies/0057-open-webui.md`)
-- Open WebUI recovery runbook (`docs/05.operations/runbooks/0057-open-webui.md`)
+- Open WebUI usage guide (`docs/05.operations/guides/09-ai-and-search/0057-open-webui.md`)
+- Open WebUI operations policy (`docs/05.operations/policies/09-ai-and-search/0057-open-webui.md`)
+- Open WebUI recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0057-open-webui.md`)
 - [Documentation index](../../../docs/README.md)
 
 ## Validation
@@ -115,7 +115,7 @@ Open WebUI는 전용 Keycloak 클라이언트 `home-openwebui`, S256 PKCE,
 `ENABLE_LOGIN_FORM=false`는 폼을 숨기고 `ENABLE_PASSWORD_AUTH=false`는
 별도로 비밀번호 API를 거부합니다. 영속화된 UI 설정도 함께 확인해야 합니다.
 시크릿 소유권, 원-키 설정 업데이트, 복구는 런북
-(`docs/05.operations/runbooks/0057-open-webui.md`)을 참고합니다.
+(`docs/05.operations/runbooks/09-ai-and-search/0057-open-webui.md`)을 참고합니다.
 
 ### Environment Variables
 

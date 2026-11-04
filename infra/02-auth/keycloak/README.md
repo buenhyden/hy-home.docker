@@ -158,8 +158,8 @@ bash scripts/hardening/check-all-hardening.sh 02-auth
 
 ## Related Documents
 
-- **Guide**: `docs/05.operations/guides/0014-keycloak.md`
-- **Policy**: `docs/05.operations/policies/0014-keycloak.md`
-- **Runbook**: `docs/05.operations/runbooks/0014-keycloak.md`
-- **Integration**: `docs/05.operations/guides/0079-application-auth-integration.md`
+- **Guide**: `docs/05.operations/guides/03-identity-and-access/0014-keycloak.md`
+- **Policy**: `docs/05.operations/policies/03-identity-and-access/0014-keycloak.md`
+- **Runbook**: `docs/05.operations/runbooks/03-identity-and-access/0014-keycloak.md`
+- **Integration**: `docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md`
 - [문서 인덱스](../../../docs/README.md)

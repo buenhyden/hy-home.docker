@@ -74,6 +74,8 @@ created: "2026-05-10"
   `airflow-valkey`와 exporter를 **기동만** 한다. 전용 broker를 실제로 쓰려면
   `AIRFLOW_VALKEY_HOST=airflow-valkey`와
   `AIRFLOW_VALKEY_SECRET=airflow_valkey_password`를 함께 설정해야 한다.
+  `docker-compose.monitor-acl.yml` overlay를 쓰면 exporter는 관리자 비밀 대신
+  `airflow_valkey_monitor_password`로 접속한다.
 
 #### 시스템 아키텍처 이해
 

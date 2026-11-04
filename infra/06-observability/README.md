@@ -80,8 +80,8 @@ created: "2025-11-12"
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. LGTM 스택 가이드(`docs/05.operations/guides/0042-lgtm-stack.md`)를 따릅니다.
-2. 데이터 파이핑은 Alloy 수집기 가이드(`docs/05.operations/guides/0040-alloy.md`)를 참고합니다.
+1. LGTM 스택 가이드(`docs/05.operations/guides/07-observability/0042-lgtm-stack.md`)를 따릅니다.
+2. 데이터 파이핑은 Alloy 수집기 가이드(`docs/05.operations/guides/07-observability/0040-alloy.md`)를 참고합니다.
 3. 보존 정책은 Operations Policy(`docs/05.operations/policies/README.md`)에서 확인합니다.
 4. 복구 절차는 Observability Runbook(`docs/05.operations/runbooks/README.md`)을 참고합니다.
 5. 텔레메트리 데이터(OTLP)의 기본 진입점으로는 항상 `Alloy`를 사용합니다.

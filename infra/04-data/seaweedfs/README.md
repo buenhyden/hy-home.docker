@@ -58,7 +58,7 @@ volume/master 트리를 순서 있는 한 세트로 담습니다(RUN-0021).
 ## Related Documents
 
 [문서 진입점](../../../docs/README.md)에서 Stage 05 subject
-`docs/05.operations/guides/0024-seaweedfs.md`와 POL-0021을 찾으십시오. 공식 소스:
+`docs/05.operations/guides/05-databases-and-storage/0024-seaweedfs.md`와 POL-0021을 찾으십시오. 공식 소스:
 [data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup),
 [security](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration),
 [license](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE).

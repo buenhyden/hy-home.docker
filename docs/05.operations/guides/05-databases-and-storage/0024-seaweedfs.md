@@ -47,7 +47,9 @@ rehearsal로 구성을 확인하는 것이다.
 `seaweedfs-table-bucket`은 `lakehouse` profile에서만 선택된다. 각 service는 UID 1000으로
 [`config/hyhome-seaweedfs.sh`](../../../../infra/04-data/seaweedfs/config/hyhome-seaweedfs.sh)를
 통해 시작한다. 이 script는 `security.toml`(volume과 filer JWT key, gRPC
-mTLS)을 만들고 S3용 identity 파일은 Docker secret에서 만든다.
+mTLS)을 만들고 S3용 identity 파일은 Docker secret에서 만든다. JWT key는
+`seaweedfs_jwt_volume_key`와 `seaweedfs_jwt_filer_key`, S3 관리자 key는
+`seaweedfs_s3_admin_secret_key`다.
 secret이나 certificate가 없으면 시작을 거부한다.
 
 state는 data disk에 있다: `${DEFAULT_DATA_DIR}/seaweedfs/master`, `/volume`,

@@ -67,7 +67,7 @@ grafana/
 | Ports | `traefik.http.services.grafana-svc.loadbalancer.server.port: ${GRAFANA_PORT:-3000}` |
 | Labels | `traefik.http.routers.grafana.*`, `traefik.http.routers.grafana-static.*`, `traefik.http.services.grafana-svc.*` |
 | Healthcheck | `http://localhost:${GRAFANA_PORT:-3000}/api/health` |
-| Operations | Guide (`docs/05.operations/guides/0041-grafana.md`), Policy (`docs/05.operations/policies/0041-grafana.md`), Runbook (`docs/05.operations/runbooks/0041-grafana.md`) |
+| Operations | Guide (`docs/05.operations/guides/07-observability/0041-grafana.md`), Policy (`docs/05.operations/policies/07-observability/0041-grafana.md`), Runbook (`docs/05.operations/runbooks/07-observability/0041-grafana.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 연결된 런북, compose 설정 렌더링, 서비스 로그, 헬스체크, 마스킹된 OAuth/데이터소스 근거로 시작합니다 |
 
@@ -81,7 +81,7 @@ grafana/
 
 ## Tech Stack
 
-Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와 이 패키지의 provisioning 설정이 소유합니다.
+Grafana 이미지와 데이터 소스 선언은 [Compose](../docker-compose.yml)와 이 패키지의 provisioning 설정이 소유합니다.
 
 선택된 패치 이미지의 tag·index·amd64 manifest와 config descriptor는 SEC01 증거에
 연결합니다. 이번 소스 준비는 OAuth strict role·CA 검증·anonymous 비활성화와
@@ -310,8 +310,8 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 
 ## Usage
 
-1. 사용법과 프로비저닝 맥락은 Grafana 가이드(`docs/05.operations/guides/0041-grafana.md`)를 따릅니다.
-2. 준비 상태, SSO, 데이터소스, 대시보드 프로비저닝, 재시작, 롤백 절차는 Grafana 런북(`docs/05.operations/runbooks/0041-grafana.md`)을 따릅니다.
+1. 사용법과 프로비저닝 맥락은 Grafana 가이드(`docs/05.operations/guides/07-observability/0041-grafana.md`)를 따릅니다.
+2. 준비 상태, SSO, 데이터소스, 대시보드 프로비저닝, 재시작, 롤백 절차는 Grafana 런북(`docs/05.operations/runbooks/07-observability/0041-grafana.md`)을 따릅니다.
 3. 관리자 비밀번호, OAuth 클라이언트 시크릿, 토큰, 렌더링된 시크릿 값은 문서, 로그, 태스크 근거, 커밋 메시지에 남기지 않습니다.
 4. 계획/태스크 근거와 롤백 기록 없이는 역할 매핑, 데이터소스 UID, 대시보드 프로바이더 잠금, 시크릿 참조, 이미지 버전, 라우트 미들웨어를 변경하지 않습니다.
 
@@ -337,16 +337,16 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 - Classification: **HOME**. Exact profiles: `obs`, `obs-core`, `dev`, `logs`, `tracing`, `profiling`, `alerting`, `batch-metrics`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d grafana`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/0041-grafana.md`; ID: `GDE-0041`, `POL-0041`, `RUN-0041`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0041-grafana.md`; ID: `GDE-0041`, `POL-0041`, `RUN-0041`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.
 
 ## Related Documents
 
 - [infra/README.md](../../README.md)
 - Operations index (`docs/05.operations/README.md`)
-- Grafana guide (`docs/05.operations/guides/0041-grafana.md`)
-- Grafana policy (`docs/05.operations/policies/0041-grafana.md`)
-- Grafana runbook (`docs/05.operations/runbooks/0041-grafana.md`)
+- Grafana guide (`docs/05.operations/guides/07-observability/0041-grafana.md`)
+- Grafana policy (`docs/05.operations/policies/07-observability/0041-grafana.md`)
+- Grafana runbook (`docs/05.operations/runbooks/07-observability/0041-grafana.md`)
 - [Documentation index](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증을 제공합니다.

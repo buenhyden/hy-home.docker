@@ -93,7 +93,7 @@ created: "2026-05-10"
 
 - **Purpose/classification/source**: `grafana`는 여러 observability profile이 선택하는 `HOME` observability UI이며, [Compose](../../../../infra/06-observability/docker-compose.yml)와 provisioning 파일이 권위 있는 정의다.
 - **State flow**: 현재 source는 `GF_DATABASE_*` 외부 데이터베이스 변수를 설정하지 않으므로, Grafana는 `grafana-data:/var/lib/grafana`의 기본 SQLite 데이터베이스를 plugin, runtime 상태와 함께 사용한다. datasource/dashboard는 추적되는 파일에서 읽기 전용으로 provision된다.
-- **Secrets/auth/dependencies**: `grafana_admin_password`와 `grafana_client_secret`가 admin bootstrap과 native Keycloak OAuth에 공급된다. 익명 접근은 현재 source(2026-09-21)에서 비활성화되어 있다. 이전에는 로그인 없이 모든 dashboard가 노출되었다. Traefik, Keycloak, root CA, datasource, `obs_net`이 의존성이며, 익명 접근은 OAuth 관리와 별개로 평가한다.
+- **Secrets/auth/dependencies**: `grafana_admin_password`와 `grafana_client_secret`가 admin bootstrap과 native Keycloak OAuth에 공급된다. PostgreSQL datasource는 `grafana_reader_password`로 접속한다. 익명 접근은 현재 source(2026-09-21)에서 비활성화되어 있다. 이전에는 로그인 없이 모든 dashboard가 노출되었다. Traefik, Keycloak, root CA, datasource, `obs_net`이 의존성이며, 익명 접근은 OAuth 관리와 별개로 평가한다.
 - **Resources/normal use**: Compose 제한은 source 값일 뿐 측정된 여유 용량이 아니다. root에서 렌더링하고 `/api/health`, OAuth 로그인, 익명 거부, datasource health, provisioned dashboard 로드를 확인한다.
 - **Lifecycle**: SQLite/`grafana-data`를 복사하기 전에 Grafana를 중지한다. provisioning과 대응하는 secret을 보존한다. plugin/schema 호환성을 검토하고, 핀된 버전을 하나씩 업그레이드하고, 재개 전에 users/teams/dashboards/alerts/datasources/OAuth를 확인한다.
 - **Upstream/license**: 공식 [installation/database default](https://grafana.com/docs/grafana/latest/setup-grafana/installation/), [backup](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/), [upgrade](https://grafana.com/docs/grafana/latest/upgrade-guide/when-to-upgrade/) 안내를 따른다. Grafana OSS는 AGPL-3.0 라이선스다.

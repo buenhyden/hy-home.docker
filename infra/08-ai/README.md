@@ -58,8 +58,8 @@ created: "2025-11-12"
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. Ollama Usage Guide(`docs/05.operations/guides/0056-ollama.md`)를 읽습니다.
-2. Open WebUI Usage Guide(`docs/05.operations/guides/0057-open-webui.md`)와 RAG Workflow Guide(`docs/05.operations/guides/0059-rag-workflow.md`)를 따릅니다.
+1. Ollama Usage Guide(`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)를 읽습니다.
+2. Open WebUI Usage Guide(`docs/05.operations/guides/09-ai-and-search/0057-open-webui.md`)와 RAG Workflow Guide(`docs/05.operations/guides/09-ai-and-search/0059-rag-workflow.md`)를 따릅니다.
 3. GPU, 모델, 접근, 로깅 통제는 운영 정책 색인(`docs/05.operations/policies/README.md`)에서 확인합니다.
 4. NVIDIA 드라이버, OOM, Open WebUI 트러블슈팅은 AI Runbooks(`docs/05.operations/runbooks/README.md`)를 참고합니다.
 
@@ -113,7 +113,7 @@ docker compose exec ollama ollama list
 | `open-webui` | HOME | `ai`, `ai-llm` |
 | `comfyui` | HOME | `ai`, `ai-image` |
 
-안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)입니다. 정확한 Stage 05 대상은 `docs/05.operations/guides/0056-ollama.md`의 `GDE/POL/RUN-0056`, `.../0057-open-webui/`의 `GDE/POL/RUN-0057`, `.../0081-comfyui/`의 `GDE/POL/RUN-0081`입니다.
+안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)입니다. 정확한 Stage 05 대상은 `docs/05.operations/guides/09-ai-and-search/0056-ollama.md`의 `GDE/POL/RUN-0056`, `.../0057-open-webui/`의 `GDE/POL/RUN-0057`, `.../0081-comfyui/`의 `GDE/POL/RUN-0081`입니다.
 
 ### 선택적 지식·실험 관리
 

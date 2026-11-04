@@ -105,8 +105,8 @@ restore)를 사용합니다. Valkey 복구는 RDB export를 사용합니다. 둘
 ## Related Documents
 
 [문서 진입점](../../../docs/README.md)을 사용해 Stage 05 subject
-`docs/05.operations/guides/0028-management-database.md`, synthetic rehearsal
-RUN-0032, 백업 subject `docs/05.operations/guides/0021-backup-and-restore.md`
+`docs/05.operations/guides/05-databases-and-storage/0028-management-database.md`, synthetic rehearsal
+RUN-0032, 백업 subject `docs/05.operations/guides/10-platform-and-backup/0021-backup-and-restore.md`
 (POL/GDE/RUN-0021)을 찾으십시오. 공식 소스:
 [PostgreSQL backup](https://www.postgresql.org/docs/current/backup.html),
 [upgrade](https://www.postgresql.org/docs/current/upgrading.html),

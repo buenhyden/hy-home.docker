@@ -53,10 +53,10 @@ alloy/
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. Alloy 가이드(`docs/05.operations/guides/0040-alloy.md`)를 따릅니다.
+1. Alloy 가이드(`docs/05.operations/guides/07-observability/0040-alloy.md`)를 따릅니다.
 2. 새로운 파이프라인 컴포넌트나 재레이블링 규칙을 추가하려면 `config.alloy`를 수정합니다.
 3. 파이프라인을 디버깅하고 컴포넌트 상태를 확인하려면 `https://alloy.${DEFAULT_URL}`의 Alloy UI에 접속합니다.
-4. 변경 사항은 Alloy Operation Policy(`docs/05.operations/policies/0040-alloy.md`)에서 확인합니다.
+4. 변경 사항은 Alloy Operation Policy(`docs/05.operations/policies/07-observability/0040-alloy.md`)에서 확인합니다.
 5. 컨테이너 메타데이터를 자동으로 보강하려면 Alloy의 `discovery.docker`를 사용합니다.
 
 6. **OTLP First**: 향후 호환성을 보장하도록 새로운 애플리케이션 계측에는 `OTLP` 수집을 우선 사용합니다.
@@ -111,12 +111,12 @@ alloy/
 - Classification: **HOME**. Exact profiles: `obs`, `logs`, `tracing`, `profiling`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d alloy`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/0040-alloy.md`; ID: `GDE-0040`, `POL-0040`, `RUN-0040`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0040-alloy.md`; ID: `GDE-0040`, `POL-0040`, `RUN-0040`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.
 
 ## Related Documents
 
-- **System Guide**: `docs/05.operations/guides/0040-alloy.md`
-- **Policy**: `docs/05.operations/policies/0040-alloy.md`
-- **Runbooks**: `docs/05.operations/runbooks/0040-alloy.md`
+- **System Guide**: `docs/05.operations/guides/07-observability/0040-alloy.md`
+- **Policy**: `docs/05.operations/policies/07-observability/0040-alloy.md`
+- **Runbooks**: `docs/05.operations/runbooks/07-observability/0040-alloy.md`
 - [Documentation index](../../../docs/README.md)

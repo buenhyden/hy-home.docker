@@ -98,7 +98,7 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
 
 ## Related Documents
 
-- **Guide**: MLflow usage guide (`docs/05.operations/guides/0088-mlflow.md`)
-- **Policy**: MLflow operations policy (`docs/05.operations/policies/0088-mlflow.md`)
-- **Runbook**: MLflow recovery runbook (`docs/05.operations/runbooks/0088-mlflow.md`)
+- **Guide**: MLflow usage guide (`docs/05.operations/guides/13-analytics-and-data-quality/0088-mlflow.md`)
+- **Policy**: MLflow operations policy (`docs/05.operations/policies/13-analytics-and-data-quality/0088-mlflow.md`)
+- **Runbook**: MLflow recovery runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0088-mlflow.md`)
 - [Documentation index](../../../docs/README.md)
