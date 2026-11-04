@@ -144,7 +144,7 @@ execution evidence is owned by the related Spec and Operations documents.
 ## Related Documents
 
 - **PRD**: [../01.requirements/0009-ai.md](../../01.requirements/0009-ai.md)
-- **Spec**: [../03.specs/009-ai/spec.md](0008-ai-architecture.md)
+- **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](0008-ai-architecture.md)
 - **ADR**: [../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/guides/09-ai-and-search/0058-ai-optimization-hardening.md)
 - **Operation**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/policies/09-ai-and-search/0058-ai-optimization-hardening.md)

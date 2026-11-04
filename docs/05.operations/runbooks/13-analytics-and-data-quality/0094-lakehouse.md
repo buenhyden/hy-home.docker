@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Recovery Runbook"
-version: "1.3.5"
+version: "1.4.0"
 type: "operation/runbook"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "RUN-0094"
 parent_ids:

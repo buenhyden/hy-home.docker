@@ -80,4 +80,3 @@ The confirming evidence for this decision is limited to the Architecture Descrip
 
 - **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
 - **Architecture Description**: [../descriptions/0001-gateway-architecture.md](../descriptions/0001-gateway-architecture.md)
-- **Related Spec**: [../../03.specs/001-gateway/spec.md](../descriptions/0001-gateway-architecture.md)

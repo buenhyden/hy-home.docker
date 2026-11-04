@@ -138,7 +138,7 @@ execution evidence is owned by the related Spec and Operations documents.
 ## Related Documents
 
 - **PRD**: [../01.requirements/0008-workflow.md](../../01.requirements/0008-workflow.md)
-- **Spec**: [../03.specs/008-workflow/spec.md](0007-workflow-architecture.md)
+- **Tier Architecture Description**: [AD-0007 Workflow Tier (07-workflow) Architecture Description](0007-workflow-architecture.md)
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 - **Operation**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md)

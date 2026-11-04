@@ -62,4 +62,3 @@ In a modern microservices environment, correlation across metrics, logs, and tra
 
 - **PRD**: [../../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
 - **Architecture Description**: [../descriptions/0006-observability-architecture.md](../descriptions/0006-observability-architecture.md)
-- **Spec**: [../../03.specs/007-observability/spec.md](../descriptions/0006-observability-architecture.md)

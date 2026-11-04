@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.3.6"
+version: "1.4.0"
 type: "operation/guide"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0094"
 parent_ids:

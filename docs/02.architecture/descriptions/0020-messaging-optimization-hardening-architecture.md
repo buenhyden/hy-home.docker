@@ -137,7 +137,7 @@ execution evidence is owned by the related Spec and Operations documents.
 ## Related Documents
 
 - **PRD**: [../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
-- **Spec**: [../03.specs/006-messaging/spec.md](0005-messaging-architecture.md)
+- **Tier Architecture Description**: [AD-0005 Messaging Architecture Description](0005-messaging-architecture.md)
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
 - **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)

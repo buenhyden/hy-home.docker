@@ -74,4 +74,3 @@ Existing rationale, positive/negative notes, and trade-off text in this ADR rema
 
 - **PRD**: [../../01.requirements/0002-auth.md](../../01.requirements/0002-auth.md)
 - **Architecture Description**: [../descriptions/0002-auth-architecture.md](../descriptions/0002-auth-architecture.md)
-- **Spec**: [../../03.specs/002-auth/spec.md](../descriptions/0002-auth-architecture.md)

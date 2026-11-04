@@ -79,6 +79,6 @@ The AI tier handles GPU/model resources and user conversation paths at the same 
 ## Related Documents
 
 - **PRD**: [../01.requirements/0009-ai.md](../../01.requirements/0009-ai.md)
-- **Architecture Description**: [../02.architecture/descriptions/0023-ai-optimization-hardening-architecture.md](../descriptions/0023-ai-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/009-ai/spec.md](../descriptions/0008-ai-architecture.md)
+- **Architecture Description**: [AD-0023 08-AI Optimization Hardening Architecture Description](../descriptions/0023-ai-optimization-hardening-architecture.md)
+- **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](../descriptions/0008-ai-architecture.md)
 - **Related ADR**: [ADR-0008](0008-ollama-openwebui-local-ai.md)

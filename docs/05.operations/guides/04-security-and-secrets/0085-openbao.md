@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.7.3"
+version: "0.8.0"
 type: "operation/guide"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:

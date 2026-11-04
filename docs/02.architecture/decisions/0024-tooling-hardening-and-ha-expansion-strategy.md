@@ -80,6 +80,6 @@ The tooling tier corresponds to the platform's operational control plane, and if
 ## Related Documents
 
 - **PRD**: [../01.requirements/0010-tooling.md](../../01.requirements/0010-tooling.md)
-- **Architecture Description**: [../02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md](../descriptions/0024-tooling-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/010-tooling/spec.md](../descriptions/0009-tooling-architecture.md)
+- **Architecture Description**: [AD-0024 Platform Operations and Quality Optimization Hardening Architecture Description](../descriptions/0024-tooling-optimization-hardening-architecture.md)
+- **Tier Architecture Description**: [AD-0009 Platform Operations and Software Verification Architecture Description](../descriptions/0009-tooling-architecture.md)
 - **Related ADR**: [ADR-0009](0009-tooling-services.md)

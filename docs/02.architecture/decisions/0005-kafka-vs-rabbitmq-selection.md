@@ -70,4 +70,3 @@ Trying to satisfy both needs with a single solution (Kafka or RabbitMQ) leads to
 
 - **PRD**: [../../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
 - **Architecture Description**: [../descriptions/0005-messaging-architecture.md](../descriptions/0005-messaging-architecture.md)
-- **Spec**: [../../03.specs/006-messaging/spec.md](../descriptions/0005-messaging-architecture.md)

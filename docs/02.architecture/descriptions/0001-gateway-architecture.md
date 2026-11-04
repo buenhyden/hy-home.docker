@@ -100,7 +100,6 @@ Quality scenarios point to the existing configuration these attributes apply to 
 ## Related Documents
 
 - **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
-- **Spec**: [../../03.specs/001-gateway/spec.md](0001-gateway-architecture.md)
 - **ADR**: [../decisions/0001-traefik-nginx-hybrid.md](../decisions/0001-traefik-nginx-hybrid.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
