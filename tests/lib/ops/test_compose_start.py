@@ -80,6 +80,38 @@ class ComposeStartTests(unittest.TestCase):
         self.assertIn("broker-exporter", profile["targets"])
         self.assertIn("db-exporter", profile["targets"])
 
+    def test_same_host_binding_in_one_selection_is_rejected(self):
+        gateway = (
+            "    ports:\n"
+            "      - ${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}\n"
+        )
+        (self.root / "infra/services.yml").write_text(
+            "services:\n"
+            "  traefik:\n    profiles: [core]\n"
+            + gateway
+            + "  nginx:\n    profiles: [nginx]\n"
+            + gateway
+            + "  other-port:\n    profiles: [nginx]\n    ports:\n"
+            "      - ${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTPS_HOST_PORT:-443}:443/tcp\n"
+            "  udp-only:\n    profiles: [core]\n    ports:\n"
+            "      - ${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTP_HOST_PORT:-80}:80/udp\n"
+            "  prometheus:\n    profiles: [obs-core]\n",
+            encoding="utf-8",
+        )
+        with mock.patch.object(compose_start, "_sources") as sources:
+            services = compose_start.yaml.safe_load(
+                (self.root / "infra/services.yml").read_text()
+            )["services"]
+            sources.return_value = (services, ["core"], {}, {})
+            self.assertIn("traefik", self.plan("profile", ["core"], "off")["targets"])
+            self.assertIn("nginx", self.plan("profile", ["nginx"], "off")["targets"])
+            for mode, values, expected in [
+                ("profile", ["core", "nginx"], "off"),
+                ("target", ["traefik", "nginx"], None),
+            ]:
+                with self.assertRaisesRegex(ValueError, "host_port_conflict"):
+                    self.plan(mode, values, expected)
+
     def test_unknown_selection_and_invalid_expected_fail(self):
         for mode, values, expected in [
             ("target", ["--help"], None),
