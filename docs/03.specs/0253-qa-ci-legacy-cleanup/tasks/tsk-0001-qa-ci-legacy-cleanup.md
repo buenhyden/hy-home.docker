@@ -60,11 +60,14 @@ progress under the approved parents. Hosted CI has not run.
   later Task deletion cannot leave it dangling again.
 - The frozen archive boundary selected only
   `docs/98.archive/{completed,superseded,retired}/`, which hold no files. The
-  anchor, its four `exclude` uses and the hook code that read it are removed;
-  the hook still normalizes every changed text file.
-- The DATA-0096 command names run-specific output paths. They use the `<run>`
-  placeholder, which the `commands` mode skips, and the prose says what it
-  stands for.
+  anchor, its four `exclude` uses and the hook code that read it are removed.
+  The hook still reports every changed text file by default and normalizes it
+  only with `--write`.
+- The DATA-0096 command names run-specific output paths, now written with a
+  `<run>` placeholder that the prose explains. The `commands` mode passes
+  because its path-token pattern stops before `<`, leaving the tracked
+  `_workspace/repo-support/analysis/` prefix, whose README exists; the
+  placeholder itself is not what the check skips.
 - SPEC-0253 follows SPEC-0251; SPEC-0252 is claimed by the legacy document
   status work on another branch. The Spec high-water is 253 here; whichever
   branch lands second takes the larger value.
@@ -91,6 +94,8 @@ progress under the approved parents. Hosted CI has not run.
 | `test_post_tool_rejects_an_owner_without_the_frozen_anchor` | deleted | exercised the removed fail-closed read of the anchor |
 | `test_commit_formatter_invocations_are_read_only` | adapted | still asserts a formatter and its checker share excludes, now through `.get()` since neither declares one |
 | `test_ci_gate_evidence`, `test_github_workflow_contract` | updated | expect the new owner label |
+| `test_the_retired_frozen_legacy_status_exception_is_rejected` | added | an exception of the removed kind now fails Registry schema validation |
+| `test_evidence_owner_names_an_existing_governance_heading`, `test_a_changed_evidence_owner_is_rejected` | added | the owner anchor must resolve to a real heading, and a changed owner value fails the contract load |
 
 ### Inventory
 
@@ -99,7 +104,7 @@ progress under the approved parents. Hosted CI has not run.
 | `frozen_archive_payloads` anchor and hook reader | QA legacy | matches no tracked file | deleted |
 | `SPEC-0211-TSK-0003` evidence owner | CI legacy | Task deleted in #725 | repointed |
 | DATA-0096 command paths | QA legacy | two `commands` findings | fixed |
-| `scripts/README.md` metadata legacy exception text | docs legacy | no code remains | deleted |
+| `scripts/README.md` metadata legacy exception text | docs legacy | no allowance for existing defects remains, but `check-changed` still subtracts merge-base defect identities (`metadata/reference.py`, `metadata/heading.py` `introduced = current - base`) | reworded to that behavior |
 | `infra/03-security/openbao/scripts/p01-bootstrap.sh` | one-off candidate | used by RUN-0104, RUN-0105 and SPEC-0204 | kept |
 | `scripts/operations/rehearse-postgres-logical-upgrade.sh`, `rehearse-sample-service-delivery.sh` | one-off candidate | used by the workflow contract, REQ-0025, ADR-0028, AD-0028 | kept |
 | `scripts/operations/mng-pg-immediate-restore-rehearsal.py` | one-off candidate | used by RUN-0021, the Script Manifest and its test | kept |
@@ -115,6 +120,18 @@ progress under the approved parents. Hosted CI has not run.
   rewrote a frozen archive body; it is a historical rationale, not a rule.
 - Lifecycle-generation and identity-history legacy code stays with the legacy
   document status work and the SPEC-0209/0231 proof move.
+
+### Review status
+
+- The `.agents/governance/agentic.md` edit is a policy change; per
+  `approval-boundaries.md` it needs `rules-engineer` review, pending in the PR
+  #729 review.
+- The dead `frozen-legacy-status` exception kind is removed from
+  `registry.py` validation and from `document-profile.schema.json`; no profile
+  used it. PR #730 edits the same schema and `test_registry.py`, so a rebase is
+  expected after it merges.
+- PR #729 merged at 09171c663; these review fixes continue on
+  `chore/qa-ci-review-followups` from main 46a7811dd.
 
 ## Evidence
 
@@ -134,6 +151,9 @@ progress under the approved parents. Hosted CI has not run.
 | E12 | 1 | W1 | rebased-unit-suites | gate evidence, workflow contract, CI routing (hook tests included), Script Manifest, CI gate plan, identity history and Registry suites with `/usr/bin/python3`, rebased head 2616c85e2 on main 4adeb3d37 | PASS | 407 tests OK | required | - |
 | E13 | 2 | W3 | rebased-manifest-and-links | `check-script-manifest.py`, links `alignment` and `commands`, head 2616c85e2 | PASS | manifest valid; alignment PASS; commands PASS with zero findings | required | - |
 | E14 | 3 | W4 | rebased-document-and-contract | metadata `check-changed --base-ref origin/main`, corpus lifecycle `--base-ref origin/main`, renderer `--check`, agent governance contract, head 2616c85e2 | PASS | 7 selected, zero violations; lifecycle and occupancy zero; drift 0; zero failures | required | - |
+| E15 | 3 | W4 | hosted-ci | CI Quality Gates run 41743239293 on 09171c663 (PR #729), observed by the coordinator | PASS | candidate-quality success; main-security skipped by trigger; merge state CLEAN. The follow-up commits get a fresh run after push | required | E10 |
+| E16 | 1 | W1 | followup-unit-suites | gate evidence, workflow contract, CI routing (hook tests included), Script Manifest, CI gate plan, Registry and identity history suites with `/usr/bin/python3`, head 1914065b1 on main 46a7811dd | PASS | 410 tests OK | required | - |
+| E17 | 3 | W4 | followup-document-checks | `check-script-manifest.py`, metadata `check-changed --base-ref origin/main`, corpus lifecycle `--base-ref origin/main`, links `alignment` and `commands`, head 1914065b1 | PASS | manifest valid; 4 selected, zero violations; lifecycle and occupancy zero; alignment and commands PASS | required | - |
 
 ## Criterion Acceptance
 
@@ -145,8 +165,9 @@ progress under the approved parents. Hosted CI has not run.
 
 ## Review and Completion
 
-Local checks are recorded above, last on head 2616c85e2 (E12 to E14). No
-independent review has run yet, and no criterion is accepted.
+Local checks are recorded above, last on head 1914065b1 (E16, E17). The
+independent review of PR #729 approved after fixes; those fixes are on this
+branch. Hosted CI passed on 09171c663 (E15). No criterion is accepted yet.
 
 ## Related Documents
 

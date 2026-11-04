@@ -56,8 +56,8 @@ Provider-neutral agent execution, delegation, capability intake, and Task eviden
   Markdown, shell, YAML, and JSON text with trailing whitespace or a missing
   final newline, runs `shellcheck` and `yamllint` on changed files where those
   tools are available, and runs `git diff --check` before repository
-  validators. It reads `.pre-commit-config.yaml` for the lint arguments. A
-  failure reaches the model as `additionalContext` with exit 0,
+  validators. It passes the lint arguments that `.pre-commit-config.yaml`
+  registers. A failure reaches the model as `additionalContext` with exit 0,
   because neither provider shows a hook's other non-zero exits to the model.
   `post-tool-validate.sh --write` is the explicit fix, under
   [formatting ownership](quality-standards.md#10-formatting-and-linting-ownership).

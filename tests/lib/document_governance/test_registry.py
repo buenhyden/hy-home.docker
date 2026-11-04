@@ -709,6 +709,24 @@ class DocumentRegistryTests(unittest.TestCase):
             {finding.code for finding in validate_registry(raw)},
         )
 
+    def test_the_retired_frozen_legacy_status_exception_is_rejected(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text())
+        policy = next(
+            profile
+            for profile in raw["profiles"]
+            if profile["id"] == "governance-policy"
+        )
+        policy["exceptions"] = [
+            {
+                "kind": "frozen-legacy-status",
+                "status": "deprecated",
+                "paths": [".agents/governance/bootstrap.md"],
+            }
+        ]
+        self.assertIn(
+            "schema-invalid", {finding.code for finding in validate_registry(raw)}
+        )
+
     def test_native_skill_ingestion_preserves_previous_lifecycle_status(self) -> None:
         from scripts.lib.document_governance.metadata import lifecycle
 

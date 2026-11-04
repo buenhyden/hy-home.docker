@@ -54,8 +54,8 @@ names run-specific files in a runnable command.
 
 ### Normal Behavior
 
-The PostToolUse hook normalizes changed text files without reading a frozen
-boundary. CI gate evidence names
+The PostToolUse hook reports changed text files by default and normalizes
+them only with `--write`, without reading a frozen boundary. CI gate evidence names
 `.agents/governance/quality-standards.md#7-local-qaci-orchestration` as its
 owner. The `commands` link mode reports no finding.
 
