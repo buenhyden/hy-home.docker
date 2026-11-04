@@ -1,8 +1,8 @@
 ---
 title: "Development Database Operations Policy"
-version: "0.1.4"
+version: "0.2.0"
 type: "operation/policy"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-11-04"
 layer: "operations"

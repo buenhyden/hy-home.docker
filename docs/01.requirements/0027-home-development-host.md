@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/requirement"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -20,9 +20,9 @@ Operate real HOME services and development work on a single Linux host.
 Remove inconsistencies in implementation, operations documentation,
 configuration, and version-update rules so one operator can explain each
 service's necessity, access path, status, and recovery method. This
-requirement is a draft recording the full audit/redesign scope the user
-requested. Authoring documents and implementation does not imply approval to
-deploy real services or change data.
+requirement records the full audit/redesign scope the user requested.
+Authoring documents and implementation does not imply approval to deploy real
+services or change data.
 
 ## Scope
 

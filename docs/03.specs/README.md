@@ -56,6 +56,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0256 | [Legacy 문서 상태 금지](./0256-legacy-document-status-ban/) | Stage 01~03 lifecycle에서 legacy 상태와 lineage key를 없애고, ADR-0011을 요약·삭제하며, archive scaffolding을 정리함 |
 | SPEC-0257 | [구현 정합성 수정 2차](./0257-implementation-alignment-batch2/) | infra README의 운영 문서 경로, Grafana 링크, Registry의 깨진 예외 항목, 누락된 secret 이름을 바로잡습니다. |
 | SPEC-0259 | [구현 정합성 수정 3차](./0259-implementation-alignment-batch3/) | 삭제된 Spec 경로를 라벨로 쓰는 Stage 02 링크, OpenBao audit 서술, 구현과 일치하는 Stage 05 문서의 승격을 다룹니다 |
+| SPEC-0261 | [REQ-0027 승인](./0261-req-0027-approval/) | REQ-0027 요구사항 승인과, 구현과 일치하는 AD-0031, AD-0032, Stage 05 문서의 승격을 다룹니다 |
 | SPEC-0260 | [SPEC-0209·0231 삭제](./0260-spec-0209-0231-retirement/) | generation 5·6 migration proof를 generation 6 revision에서 읽게 하고, proof를 지녔던 두 package를 삭제해 번호를 Registry `reserved_history`에 예약함 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
