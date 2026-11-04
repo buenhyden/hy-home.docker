@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.1.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-04"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0044"
 parent_ids:
@@ -394,6 +394,166 @@ rehearsal check without rewriting their historical outcomes. Independent reviewe
 `a241ae94965752fc9378e0fcdea3da3444687c0f3be1a2517cc12e7d20388a94`
 only for these observed fields and explicitly retained the recovery residuals.
 
+### Restore replay and active-send interruption (2026-11-04)
+
+The owner's 2026-11-04 request to re-review the n8n notification consumer
+contract authorized closing the two residuals above in the owned native
+scenario. Source commits after rebasing onto `1425b017b` are `465d37d77` and
+`a1e9ab4eb` on `test/opsflow-notifier-replay-residuals`. Attempt 3's native
+helper SHA was
+`f9a9005326a488b4907ddbc21671b1521d914321286e98fadda6a45c80482eb0` and
+recovery validator SHA was
+`61c11dce6ffd6c216e01a6f68d46454f26e66207ddf7897396e6e965031dcc4a`.
+The rules come from SQL001/007 and the transport, not from new behavior:
+
+- `publish_manifest` returns `replayed` for an identical run and adds no outbox row.
+- `claim_notification` selects only `pending`/`retry` rows under `attempt_limit`.
+- `unknown` leaves only through operator `reconcile_notification`.
+- Any stall after `sendMail` starts is `uncertain`, recorded as `unknown`.
+
+After the quiesced barrier, the scenario snapshots every outbox, attempt
+reconciliation, recovery audit and run row. Lease tokens are compared only
+for presence. Restored rows must be identical. All five pre-restore inputs
+are then replayed and must return `replayed` with an unchanged snapshot and
+zero claimable rows. The next fresh claim must leave every old row
+byte-identical and accept only the fresh row on attempt 1. Generation 2
+capture must hold that one message and no pre-restore run.
+
+For the active send, a fixture-only STARTTLS endpoint (`smtp-hold`)
+replaces the stopped Mailpit under alias `mailpit`. It uses the owned
+synthetic certificate and the existing ephemeral capture-probe caps
+(128MiB/0.10CPU while Mailpit's 192MiB is stopped), so the reviewed
+aggregate does not grow. It answers up to `354` and then never replies.
+It stores nothing and prints closed facts only. A loopback check against
+the package Nodemailer observed verified STARTTLS/AUTH, DATA, held body
+and the client's own ETIMEDOUT at 5.05 seconds. The worker is stopped
+while the body is held, within the 5-second transport socket timeout.
+The row must then be `unknown` or `sending`, never success or retry. After
+Mailpit/worker/runner restart, one fresh claim must deliver while the
+interrupted row keeps its state and attempt and is never captured.
+
+New guard tests were written first: 14 tests with 6 errors (validators
+absent). Final Docker-free GREEN is 33 tests, 32 PASS and 1 native SKIP.
+Five separate weakenings each turned the suites RED: interruption accepting
+success/retry (3 failures), restore ignoring drift (2), replay ignoring new
+rows (1), next claim ignoring old rows (2) and recovery ignoring a resend (1).
+Stdlib-trace coverage of executable lines added since `b08e1bdbf` is native
+172/173 and recovery 56/56. Whole files are 645/647 and 79/79.
+
+Native attempt 1 ended ERROR in 1.872 seconds at preflight. The invocation
+omitted the existing exact image/context selection; no container was
+created, and cleanup was PASS. Attempt 2 (`opsflow-native-af0c888e5e75900431de413e`)
+ended ERROR in 724.780 seconds. It held the session mid-DATA, issued the
+worker stop 0.487 seconds after detection, and the row was `unknown`. The
+interrupted execution never became terminal, and the quiesced barrier then
+refused restore (`recovery barrier incomplete`). Cleanup was PASS with
+nothing retained. Attempt 3 (`opsflow-native-18877650611b9ad82a8035a5`)
+moved the interruption after the restore checks and passed in 852.821
+seconds with cleanup PASS. It recorded the interrupted Bull job still
+present after its worker stopped (matching 1). This confirms the cause of
+attempt 2's refusal: the barrier correctly failed closed on a surviving
+in-flight job. Attempt 3 receipt facts:
+
+- Restored snapshot: 10 rows, 5 outbox rows (3 accepted, 2 unknown),
+  identical, SHA `9af7ad82cb8306937eb2c259f85816a1caac1a30efc04ae9734de2644c1db8d5`.
+- Replay: 5 replayed, 0 claimable; next claim left old rows unchanged and
+  accepted only the fresh row.
+- Interruption: DATA started, body held, session open at stop, 0.411
+  seconds detection-to-stop, row `unknown`, execution 7 not terminal.
+- Recovery: row stayed `unknown` on attempt 1, was not resent, and the
+  fresh row was accepted.
+
+The 2400/120-second bounds were unchanged. Post-run census found zero owned
+containers, networks and attempt directories, and the serial lock was free.
+Receipts and logs are in the executing worktree's ignored
+`_workspace/repo-support/analysis/p05/replay-residuals/`. The native-run3
+receipt SHA256 is
+`cf43208d549d19afa4fb9e069449b132b6625711b4b6267e11bd5da2dc533f6b`.
+
+#### Independent review and kill-based correction
+
+The independent code review returned CHANGES_REQUESTED, with one important
+and two minor findings:
+
+- **Important:** the stopped-worker facts could not tell a stop-caused
+  interruption from the transport's own 5-second `socketTimeout`.
+  `fixture.stop()` waits 10 seconds, and the n8n queue-mode documentation sets
+  `N8N_GRACEFUL_SHUTDOWN_TIMEOUT` to 30 seconds by default for running jobs.
+  A gracefully stopping worker could therefore let the transport time out,
+  record `unknown`, and still pass. Attempts 2 and 3 are consistent with that
+  path, so attempt 3's interruption result is superseded. Its restore,
+  replay and next-claim results stand.
+- **Minor:** the detection-to-stop latency excluded polling and log
+  round-trips.
+- **Minor:** the next-claim filter matched the fresh run_id as a substring.
+
+Fix (source commit `d94f7440c` after rebasing onto `1425b017b`):
+
+- The worker is now SIGKILLed while the body is held, so no node code can
+  run after the kill. The row must stay `sending`; `unknown` is rejected as
+  the transport-timeout path.
+- The hold endpoint emits its own body epoch timestamp and body-to-close
+  milliseconds. The client close must come within 5000 milliseconds, and the
+  session must still be open when the kill is issued.
+- Recovery expires the lease by fixture-only superuser time travel, the same
+  precedent as `fast_forward_sql`. The next claim must then record
+  `lease_expired_delivery_unknown` on attempt 1, without a resend.
+- The next-claim filter compares the parsed run_id field.
+
+A loopback check on the new endpoint separates the two paths. The client's
+own timeout closed at 5004 ms after the body (rejected). A SIGKILLed client
+closed at 346 ms.
+
+Final helper SHAs are native
+`6fdb8b62878629bcec22351a5b0ceaafe512366523108ca695104abbaeb86287` and
+recovery `e924d9f3030b60284c2e824b75e6dd0b0c7977b28f9f5b9c81cd50b6ea6d19ed`.
+The new guards first failed (16 tests: 2 failures, 1 error). Final
+Docker-free GREEN is 35 tests, 34 PASS and 1 native SKIP. Six separate
+weakenings each turned the suites RED:
+
+- unknown accepted as an interruption (1 failure);
+- close time ignored (3);
+- restore drift ignored (2);
+- replay new rows ignored (1);
+- substring filter restored (1);
+- resend ignored (1).
+
+Coverage of executable lines added since `1425b017b` is native 196/198 and
+recovery 88/88.
+
+The single native rerun, attempt 4 (`opsflow-native-e676807076f07cf48424ae89`),
+passed in 731.029 seconds with cleanup PASS and nothing retained. Receipt
+`native-run4-receipt.json` has SHA256
+`b21b2f7b1cd7e66c94550512c3fceb02f71301e6005fbbade20b184ad89c939c`.
+
+- Restore, replay and next claim matched attempt 3: 10 identical rows,
+  5 replayed, 0 claimable, fresh row only.
+- Interruption: the session was open when the kill was issued, the client
+  closed 1020 ms after the body, and the row stayed `sending`.
+- `body_to_kill_ms=3257` is an upper bound measured after the kill and the
+  stopped-state poll returned, not the instant of the signal. The exact
+  kill-issue time was not recorded separately.
+- The interrupted execution stayed non-terminal, and its Bull job survived
+  (matching 1).
+- After the lease expired, the next claim recorded
+  `unknown|1|lease_expired_delivery_unknown`, nothing was resent, and the
+  fresh row was accepted.
+
+Unchanged limits and zero owned residue held, and the lock was free.
+
+Aggregate caps: Docker limits apply only to running containers. The hold
+runs only while Mailpit is stopped and is removed before Mailpit restarts.
+Its 128MiB/0.10CPU therefore replaces Mailpit's 192MiB/0.10CPU, lowering
+the running aggregate by 64MiB.
+
+Remaining limits:
+
+- Restore with an interrupted job still in the broker is refused by the
+  barrier, and no reviewed route clears that job, so it stays TEST_RESIDUAL.
+- The interrupted execution remains non-terminal in n8n metadata.
+- Same-input replay covers repeated publication, not replay of an n8n execution.
+- Re-review of the kill-based correction is pending.
+
 ### Actual isolated SQL-only verification
 
 The first guarded attempt stopped before007 after the driver expected a different
@@ -583,13 +743,23 @@ P03 global explain/admission failure remains unresolved by these local checks.
 | Notifier retry/recovery source and tests | 73 | W78 | Approved SQL/Node/native normal-rejection-recovery checks | Reviewed final components and actual owned receipts | PASS | SQL14behavior,Node38tests and native6executions/quiescedrestorePASS; liveactiveSMTPinterruption explicitly TEST_RESIDUAL | required | - |
 | Selected binary/storage contract | 74 | W79 | Exact-source and input.binary rejection checks | Tagged2.43.6 binary-data.config.ts and selected node/test | PASS | Tagged unset-mode queue→database fallback; node binary/cardinality rejection in38PASS; no new storage/consumer and actual overrides uninspected | required | - |
 | Isolated STARTTLS and same-ID refresh | 75 | W80 | Owned authenticated SMTP and next-execution credential tests | Synthetic isolated fixture only | PASS | Actual final receipt:Worker/Bull/TLSAUTH/sameIDnext-exec/old-newnegatives/restoredcredentialPASS; operating delivery/rotation NOT_RUN | required | - |
+| Restore replay and interruption guards initial RED | 73 | W78 | Restore equivalence, same-input replay, next-claim and active-send interruption guards | New guard tests before validators existed | FAIL | replay-residuals/guards-red.log:14tests,6errors(validators absent),1native SKIP | required | - |
+| Restore replay and interruption guards GREEN | 73 | W78 | Restore equivalence, same-input replay, next-claim and active-send interruption guards | Native f9a90053/recovery 61c11dce and scenario doubles | PASS | 33tests:32PASS1nativeSKIP;5separate weakenings RED(3/2/1/2/1);new executable lines native172/173,recovery56/56;no Docker | required | Restore replay and interruption guards initial RED |
+| Native replay/interruption invocation attempt | 73 | W78 | Current-artifact native restore replay and active-send interruption rehearsal | Same candidate 9dea1967/binding d4b51cee, selection env omitted | FAIL | Actual ERROR1.872s at preflight:exact image/context selection required;no container created;cleanupPASS | required | - |
+| Native replay/interruption barrier refusal | 73 | W78 | Current-artifact native restore replay and active-send interruption rehearsal | Interruption before quiesced restore | FAIL | Actual ERROR724.780s:held mid-DATA,stop0.487s,row unknown;interrupted execution not terminal;quiesced barrier refused restore;cleanupPASS/retained none | required | - |
+| Native replay/interruption rehearsal | 73 | W78 | Current-artifact native restore replay and active-send interruption rehearsal | Interruption after restore checks with in-place worker recovery | PASS | native-run3-receipt.json cf43208d:852.821s;restored10rows identical;5replayed/0claimable;next claim fresh-only;held mid-DATA,stop0.411s,row unknown;broker job survived(1);no resend,fresh accepted;cleanupPASS/owned0 | required | Native replay/interruption invocation attempt, Native replay/interruption barrier refusal |
+| Independent replay/interruption code review | 73 | W78 | Independent code review of the replay/interruption increment | Branch commits through 8a1b32892 before correction | FAIL | CHANGES_REQUESTED:stopped-worker facts could not exclude the transport 5s socketTimeout(important);latency excluded polling;substring run_id filter(minor);re-review pending | required | - |
+| Review-fix guards initial RED | 73 | W78 | Kill-based interruption, hold timing and parsed run_id guards | New guards before the correction | FAIL | review-guards-red.log:16tests,2failures,1error(parse_hold absent),1native SKIP | required | - |
+| Review-fix guards GREEN | 73 | W78 | Kill-based interruption, hold timing and parsed run_id guards | Native 6fdb8b62/recovery e924d9f3 and scenario doubles | PASS | 35tests:34PASS1nativeSKIP;6weakenings RED(1/3/2/1/1/1);loopback timeout close5004ms vs kill346ms;new lines native196/198,recovery88/88 | required | Review-fix guards initial RED |
+| Native kill-based interruption rehearsal | 73 | W78 | Current-artifact native restore replay and active-send interruption rehearsal | Rebased d94f7440c, same candidate 9dea1967/binding d4b51cee | PASS | native-run4-receipt.json b21b2f7b:731.029s;restore/replay/next-claim as attempt3;session open at kill,close1020ms<5000,row sending;expired lease→unknown/1/lease_expired_delivery_unknown,no resend,fresh accepted;broker job survived(1);cleanupPASS/owned0 | required | - |
+| Independent replay/interruption code re-review | 73 | W78 | Independent code review of the replay/interruption increment | Correction d94f7440c and TSK-0044 v0.3.0 | PASS | APPROVED: kill-based interruption requires `sending` and a sub-5000 ms close against `socketTimeout: 5000`; latency from the hold timestamp; parsed run_id filter; the fixture-only lease expiry targets only the interrupted `sending` row and rejects zero or several rows | required | Independent replay/interruption code review |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 72 | pending | Issued P05 baseline and leases, P08 source-binding parity GREEN, Final workspace inventory and comparisons | REUSE_ACCEPTED only for original C19/C22 scope; current source/image/runtime equivalence separate. | SPEC-0212 TSK-0044 |
-| 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; same-input replay, prior outbox-state equivalence and live active-send interruption remain TEST_RESIDUAL. | SPEC-0212 TSK-0044 |
+| 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; isolated same-input replay, restored outbox-state equivalence and next-claim PASS; the stopped-worker interruption result was superseded by review, and the SIGKILL mid-DATA interruption with lease-expiry recovery PASS (Native kill-based interruption rehearsal); restore while an interrupted broker job survives, and the non-terminal interrupted execution remain TEST_RESIDUAL; the correction passed independent re-review. | SPEC-0212 TSK-0044 |
 | 74 | pending | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. | SPEC-0212 TSK-0044 |
 | 75 | pending | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | SOURCE_READY with scoped actual native increment PASS; formal owner acceptance, actual P06 producer and operating rotation remain separate. | SPEC-0212 TSK-0044 |
 
@@ -599,8 +769,12 @@ Current source and owned isolated implementation receipts are recorded above.
 Independent source/document reviews, metadata/links/catalog/Registry/lifecycle
 checks and source comparison are complete within their stated scopes. The
 normal staged wrapper awaits final staging and must pass before commit; Python
-audit is tool-unavailable, and remote CI is NOT_RUN. Live active-send interruption, same-input replay/prior outbox-state equivalence and
-P03 global CI admission are explicit cross-owner residuals.
+audit is tool-unavailable, and remote CI is NOT_RUN. Same-input replay,
+restored outbox-state equivalence and SIGKILL mid-DATA interruption with
+lease-expiry recovery have isolated native PASS. The review's
+CHANGES_REQUESTED finding is fixed and awaits re-review. Restore with a
+surviving interrupted broker job and P03 global CI admission remain
+explicit residuals.
 All future outcomes must bind exact source, actor, environment, time and receipt
 without cancelling accepted history or promoting a lower evidence axis.
 

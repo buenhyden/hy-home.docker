@@ -271,6 +271,147 @@ class P05NativeGuards(unittest.TestCase):
                 recovery.validate_barrier({**good, **change})
 
 
+class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
+    RUN = "a" * 64
+    FRESH = "f" * 64
+    LINES = (
+        "outbox|1|" + "a" * 64 + "|accepted_by_smtp|1|5||t|t||x|y",
+        "outbox|2|" + "b" * 64 + "|unknown|1|5|smtp_outcome_unknown||t||x|y",
+        "run|" + "a" * 64 + "|hy-home.k8s|published|z",
+    )
+
+    def test_snapshot_shape_is_closed_and_nonempty(self):
+        self.assertEqual(self.LINES, recovery.snapshot_lines("\n".join(self.LINES)))
+        for text in ("", "run|only", "private|x\noutbox|1|r|unknown|1"):
+            with self.subTest(text=text), self.assertRaises(recovery.RehearsalFailure):
+                recovery.snapshot_lines(text)
+
+    def test_restored_state_must_equal_pre_restore_rows_exactly(self):
+        summary = recovery.validate_restored_state(self.LINES, self.LINES)
+        self.assertEqual({"accepted_by_smtp": 1, "unknown": 1}, summary["states"])
+        drifted = (self.LINES[0].replace("|1|5|", "|2|5|"), *self.LINES[1:])
+        for after in (drifted, self.LINES[:2], (*self.LINES, "audit|x")):
+            with self.assertRaises(recovery.RehearsalFailure):
+                recovery.validate_restored_state(self.LINES, after)
+
+    def test_same_input_replay_is_dedup_only_and_claims_nothing(self):
+        self.assertEqual(
+            {"replayed": 2, "claimable": 0},
+            recovery.validate_replay(
+                ["replayed", "replayed"], self.LINES, self.LINES, "0"
+            ),
+        )
+        for results, after, claimable in (
+            ([], self.LINES, "0"),
+            (["replayed", "published"], self.LINES, "0"),
+            (["replayed"], (*self.LINES, "outbox|3|" + "c" * 64 + "|pending"), "0"),
+            (["replayed"], self.LINES, "1"),
+        ):
+            with self.assertRaises(recovery.RehearsalFailure):
+                recovery.validate_replay(results, self.LINES, after, claimable)
+
+    def test_next_claim_sends_only_the_fresh_row(self):
+        fresh = "outbox|3|" + self.FRESH + "|accepted_by_smtp|1|5||t|t||x|y"
+        after = (*self.LINES, fresh, "run|" + self.FRESH + "|hy-home.k8s|published|z")
+        self.assertTrue(
+            recovery.validate_next_claim(self.LINES, after, self.FRESH)[
+                "old_rows_unchanged"
+            ]
+        )
+        resent = (self.LINES[0], self.LINES[1].replace("unknown", "accepted_by_smtp"))
+        for changed in (
+            (*resent, self.LINES[2], fresh),
+            (*self.LINES, fresh.replace("accepted_by_smtp", "unknown")),
+            (*self.LINES, fresh.replace("|1|5|", "|2|5|")),
+            self.LINES,
+        ):
+            with self.assertRaises(recovery.RehearsalFailure):
+                recovery.validate_next_claim(self.LINES, changed, self.FRESH)
+
+    def test_next_claim_filters_the_parsed_run_id_not_a_substring(self):
+        fresh = "outbox|3|" + self.FRESH + "|accepted_by_smtp|1|5||t|t||x|y"
+        audit = "audit|req|2|1|requeue_dead|" + self.FRESH + "|t1"
+        before = (*self.LINES, audit)
+        after = (*before, fresh, "run|" + self.FRESH + "|hy-home.k8s|published|z")
+        self.assertTrue(
+            recovery.validate_next_claim(before, after, self.FRESH)[
+                "old_rows_unchanged"
+            ]
+        )
+        drifted = (*self.LINES, audit.replace("|t1", "|t2"), fresh)
+        with self.assertRaises(recovery.RehearsalFailure):
+            recovery.validate_next_claim(before, drifted, self.FRESH)
+
+    def test_hold_log_parser_reads_only_closed_tokens(self):
+        text = (
+            "P05_HOLD LISTENING\nP05_HOLD DATA_STARTED\n"
+            "P05_HOLD BODY_HELD at=1762300000123\n"
+            "P05_HOLD CLIENT_CLOSED after_body_ms=412\nunrelated private text\n"
+        )
+        self.assertEqual(
+            {
+                "data_started": True,
+                "body_held_at_ms": 1762300000123,
+                "closed_after_body_ms": 412,
+            },
+            recovery.parse_hold(text),
+        )
+        self.assertEqual(
+            {
+                "data_started": False,
+                "body_held_at_ms": None,
+                "closed_after_body_ms": None,
+            },
+            recovery.parse_hold("P05_HOLD LISTENING\n"),
+        )
+        for text in (
+            "P05_HOLD BODY_HELD at=1\nP05_HOLD BODY_HELD at=2\n",
+            "P05_HOLD CLIENT_CLOSED after_body_ms=-1\n",
+            "P05_HOLD BODY_HELD at=abc\n",
+        ):
+            with self.subTest(text=text), self.assertRaises(recovery.RehearsalFailure):
+                recovery.parse_hold(text)
+
+    def test_active_send_interruption_requires_a_kill_inside_the_socket_timeout(self):
+        good = {
+            "data_started": True,
+            "session_open_at_kill": True,
+            "body_to_kill_ms": 420,
+            "body_to_close_ms": 431,
+            "state_after_kill": "sending",
+            "execution_status": "not_terminal",
+        }
+        self.assertEqual(good, recovery.validate_interruption(good))
+        limit = int(recovery.SOCKET_TIMEOUT_SECONDS * 1000)
+        for change in (
+            {"data_started": False},
+            {"session_open_at_kill": False},
+            {"body_to_kill_ms": limit},
+            {"body_to_kill_ms": True},
+            {"body_to_kill_ms": -1},
+            {"body_to_close_ms": limit},
+            {"body_to_close_ms": None},
+            # The transport's own timeout records unknown: not an interruption.
+            {"state_after_kill": "unknown"},
+            {"state_after_kill": "accepted_by_smtp"},
+            {"state_after_kill": "retry"},
+            {"execution_status": "success"},
+            {"unexpected": "private-payload"},
+        ):
+            with (
+                self.subTest(change=tuple(change)),
+                self.assertRaises(recovery.RehearsalFailure),
+            ):
+                recovery.validate_interruption({**good, **change})
+
+    def test_hold_endpoint_stops_after_data_and_prints_only_closed_facts(self):
+        script = recovery.HOLD_JS
+        self.assertIn("354", script)
+        self.assertNotIn("'250 ", script.split("DATA")[-1])
+        self.assertNotRegex(script, r"fact\([^)]*(line|chunk|pending)")
+        self.assertIn("/run/secrets/server.key", script)
+
+
 @unittest.skipUnless(
     os.environ.get("P05_OPSFLOW_NATIVE") == "1",
     "exact current candidate and owned isolated runtime required",
