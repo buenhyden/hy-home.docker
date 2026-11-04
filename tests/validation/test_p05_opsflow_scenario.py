@@ -303,10 +303,15 @@ class ScenarioModel:
             raise AssertionError("unexpected API action")
         return {"id": self.workflow}
 
-    def publish(self, _source, digest, _time):
+    def publish(self, _source, digest, captured):
         f = self.fixture
         if not f.dev_present:
             raise native.RehearsalFailure("DEV restore missing")
+        # SQL001 publish_manifest: an older capture is 'historical' and adds
+        # no outbox row, which the shared publish() helper refuses.
+        if captured <= getattr(f, "latest_capture", ""):
+            raise native.RehearsalFailure("synthetic publication failed")
+        f.latest_capture = captured
         f.rows[digest] = "pending"
         f.event("publish")
         return digest

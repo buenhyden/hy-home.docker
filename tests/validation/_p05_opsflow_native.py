@@ -913,7 +913,9 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         fourth = self.publish(
             "hy-home.k8s",
             hashlib.sha256(b"p05-restored").hexdigest(),
-            "2026-11-26T00:00:00Z",
+            # Newer than every pre-restore capture, including the interrupted
+            # pair, or publish_manifest records it as historical.
+            "2026-11-29T00:00:00Z",
         )
         self.execute(workflow, "success")
         self.wait_state(fourth, "accepted_by_smtp")
