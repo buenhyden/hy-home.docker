@@ -692,10 +692,13 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
 
     def recover_interrupted(self, workflow, run):
         f = self.fixture
+        interrupted = self.execution_ids[-1]
+        f.receipt["interrupted_execution_id"] = interrupted
         # Closed count only: whether the interrupted job outlived its worker.
-        f.receipt["interrupted_broker_job_matching"] = self.broker_jobs(
-            [self.execution_ids[-1]]
-        )["matching"]
+        before = recovery.broker_job_count(
+            self.broker_jobs([interrupted]), [interrupted]
+        )
+        f.receipt["interrupted_broker_job_matching"] = before
         for role in ("mailpit", "worker", "runner"):
             f.start(role)
         for target, seconds in (
@@ -714,6 +717,39 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             "external runner did not re-register",
             60,
         )
+        # n8n's own recovery only: the restarted worker fails and deletes the
+        # stalled job and main marks the execution crashed. The rehearsal
+        # removes nothing from the queue.
+        started = time.monotonic()
+        try:
+            f.wait_until(
+                lambda: (
+                    recovery.broker_job_count(
+                        self.broker_jobs([interrupted]), [interrupted]
+                    )
+                    == 0
+                ),
+                "n8n did not settle the interrupted queue job",
+                recovery.STALL_RECOVERY_SECONDS,
+            )
+        except RehearsalFailure as error:
+            # Only the settle timeout is recorded and validated below; any
+            # other failure (probe, headroom) propagates unchanged.
+            if str(error) != "n8n did not settle the interrupted queue job":
+                raise
+        after = recovery.broker_job_count(
+            self.broker_jobs([interrupted]), [interrupted]
+        )
+        f.receipt["interrupted_queue_recovery_seconds"] = round(
+            time.monotonic() - started, 3
+        )
+        facts = {
+            "jobs_before_restart": before,
+            "jobs_after_recovery": after,
+            "execution_status": self.execution_status(interrupted),
+        }
+        f.receipt["interrupted_queue_recovery"] = facts
+        recovery.validate_queue_recovery(facts)
         # Fixture-only time travel as the superuser (as fast_forward_sql does)
         # instead of waiting out the 10-minute lease; the notifier cannot.
         expired = self.db_value(
@@ -783,6 +819,10 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             for role in ("runner", "worker", "mailpit")
         )
         observed = self.broker_jobs(self.execution_ids)
+        terminal = all(
+            self.api("execution", executionId=execution).get("terminal") is True
+            for execution in self.execution_ids
+        )
         barrier = {
             "smtp_egress_held": absent,
             "workflow_inactive": inactive,
@@ -791,6 +831,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             "old_sockets_absent": absent,
             "old_broker_jobs_absent": observed
             == {"scanned": True, "matching": 0, "ids": self.execution_ids},
+            "old_executions_terminal": terminal,
             "owned_attempt": self.fixture.attempt,
         }
         self.fixture.receipt["recovery_barrier_facts"] = barrier
@@ -856,6 +897,11 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         corrected = self.publish_input(b"p05-corrected", "2026-11-24T00:00:00Z")
         self.execute(workflow, "success")
         self.wait_state(corrected, "accepted_by_smtp")
+        # Interrupt before the barrier: restore must wait for n8n to settle
+        # the orphaned job and execution, never ignore or delete them.
+        self.phase("live_active_send_interruption")
+        interrupted = self.interrupt_active_send(workflow)
+        self.recover_interrupted(workflow, interrupted)
         self.fence(workflow)
         before = self.outbox_snapshot()
         self.phase("owned_restore")
@@ -879,7 +925,9 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         fourth = self.publish(
             "hy-home.k8s",
             hashlib.sha256(b"p05-restored").hexdigest(),
-            "2026-11-26T00:00:00Z",
+            # Newer than every pre-restore capture, including the interrupted
+            # pair, or publish_manifest records it as historical.
+            "2026-11-29T00:00:00Z",
         )
         self.execute(workflow, "success")
         self.wait_state(fourth, "accepted_by_smtp")
@@ -893,9 +941,6 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         resent = [run for run in self.runs if self.capture(run)["matched"]]
         if resent:
             raise RehearsalFailure("a pre-restore notification was sent again")
-        self.phase("live_active_send_interruption")
-        interrupted = self.interrupt_active_send(workflow)
-        self.recover_interrupted(workflow, interrupted)
         f.receipt["live_inflight_interruption"] = "PASS"
         f.receipt["same_encryption_key_restore"] = "PASS"
         f.receipt["native"] = "PASS"

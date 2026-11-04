@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.3.1"
+version: "0.4.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0044"
 parent_ids:
@@ -554,6 +554,125 @@ Remaining limits:
 - Same-input replay covers repeated publication, not replay of an n8n execution.
 - Re-review of the kill-based correction is pending.
 
+### Interrupted broker job and execution recovery (2026-11-05)
+
+The owner's 2026-11-05 request to review and then implement the remaining
+T05 items authorized this increment. Branch
+`fix/opsflow-notifier-interrupted-job-recovery` from `729d16da7`.
+
+#### Review before code
+
+The n8n documentation, retrieved 2026-11-05, does not describe what happens to
+a job or execution after a worker crash:
+
+- <https://docs.n8n.io/hosting/scaling/queue-mode/> gives only
+  `N8N_GRACEFUL_SHUTDOWN_TIMEOUT` (30 seconds) for workers to finish running
+  jobs.
+- <https://docs.n8n.io/hosting/configuration/environment-variables/queue-mode/>
+  lists `QUEUE_WORKER_LOCK_DURATION` 60000 ms, `QUEUE_WORKER_LOCK_RENEW_TIME`
+  10000 ms and `QUEUE_WORKER_STALLED_INTERVAL` 30000 ms, and marks
+  `QUEUE_WORKER_MAX_STALLED_COUNT` removed in 2.0.
+
+Crash recovery is therefore NOT_VERIFIED in the documentation. The behavior
+relied on was read from the cached declared image `n8nio/n8n:2.43.6`
+(`sha256:dd580fe1…`, the candidate's base). The files were copied from a
+stopped, network-none container that was then removed:
+
+- `dist/scaling/scaling.service.js` creates the Bull queue with
+  `maxStalledCount: 0`. `addJob` sets `removeOnFail` to
+  `executions.queueRetention.keepLastFailed`, which defaults to 0
+  (`N8N_EXECUTIONS_QUEUE_KEEP_LAST_FAILED`).
+- Bull 4.16.4 (n8n-patched) `moveStalledJobsToWait-7.lua` runs only in a
+  processing worker: at startup and then every `stalledInterval`. When an
+  active job has no lock and its stalled count exceeds 0, the script moves it
+  to failed instead of wait. It publishes `job stalled more than
+  maxStalledCount` and, with `removeOnFail` 0, deletes the job.
+- `dist/workflow-runner.js`: main, which still awaits the job, maps that
+  message to `MaxStalledCountError`. After a 30-second recheck window it calls
+  `markAsCrashedWithoutCounting(executionId, 'stall')`. The execution
+  repository sets `status='crashed'` and `stoppedAt`.
+- Main's own sweep for executions without a queue job is
+  `N8N_EXECUTIONS_QUEUE_RECOVERY_INTERVAL` (180 minutes). It is not relied on.
+- The fixture and HOME n8n environments set none of these variables.
+
+The smallest correct route is n8n's own route (a). Restart a worker with
+polling held and main still running, then wait until the exact job is gone and
+the execution is `crashed`. No job is deleted by the fixture or an operator,
+and the barrier is not weakened. A failed job kept by a non-zero retention
+still matches the probe, which also scans failed and completed jobs, so the
+barrier fails closed. The outbox row was already safe through lease expiry.
+
+#### Implementation and guards
+
+- The interruption now runs before the quiesced barrier, as in the earlier
+  barrier-refusal attempt.
+- `recover_interrupted` records the exact job count before the worker restart.
+  It then waits up to `STALL_RECOVERY_SECONDS` = 60 + 3×30 = 150 seconds and
+  reads the execution status (existing 60-second wait).
+  `validate_queue_recovery` accepts only `{jobs_before_restart: 1,
+  jobs_after_recovery: 0, execution_status: crashed}`.
+- The barrier gains `old_executions_terminal`: every old execution must have
+  `stoppedAt` in n8n's REST record.
+- The existing 2400/120-second bounds are unchanged. The new 150-second wait
+  is derived from the image defaults above; the measured settle time was
+  38 seconds.
+
+The new guards first failed: 37 tests with 10 failures, 3 errors and 1 native
+SKIP (`guards-red.log`). GREEN is 37 tests, 36 PASS and 1 native SKIP. Five
+separate weakenings each turned the suites RED:
+
+- the barrier ignores the terminal field (9 failures);
+- recovery accepts a surviving job (1);
+- recovery accepts a non-crashed execution (5);
+- the rehearsal skips the recovery check (3);
+- the fence reports terminal without reading n8n (1).
+
+Stdlib-trace coverage of executable lines added since `729d16da7` is native
+29/29 and recovery 13/13. Whole files are 690/693 and 124/124.
+
+#### Native results
+
+Every attempt used the same candidate `9dea1967` and binding `d4b51cee`:
+
+- Attempt 1 (`opsflow-native-7e474cd8911ee7b6feba9c22`) ended ERROR at
+  preflight in 0.282 seconds. It selected the base image id instead of the
+  candidate image id. No container was created, and cleanup was PASS.
+- Attempt 2 (`opsflow-native-45a8e72bbcaa702c57d0174c`) ended ERROR in
+  832.489 seconds. n8n recovery passed: job 1→0 and execution 6 `crashed` in
+  38.389 seconds. The barrier then passed with seven old executions terminal,
+  and the restore and seven-input replay passed. The post-restore publication
+  then failed because its capture time (2026-11-26) was older than the
+  reordered interruption inputs, so `publish_manifest` recorded it as
+  `historical`. The scenario double now refuses an older capture. That rule
+  first failed two scenario tests, and GREEN is again 37/36 PASS/1 SKIP. The
+  fix is commit `1d76b7135`.
+- Attempt 3 (`opsflow-native-7d3e7050dc522b4ab9cc6caa`, native helper
+  `038d4207…`, recovery `c9c26338…`) passed in 799.181 seconds with cleanup
+  PASS:
+  - Kill: the session was open at the kill, and the client closed 911 ms after
+    the body. `body_to_kill_ms` was 2594, and the row stayed `sending`.
+  - Before recovery, execution 6 was `not_terminal` and its Bull job survived
+    (1).
+  - After the worker restart, n8n removed the job (0) and marked execution 6
+    `crashed` in 38.074 seconds.
+  - Lease expiry gave `unknown|1|lease_expired_delivery_unknown` with no
+    resend, and the fresh row was accepted.
+  - The barrier passed with executions 1–7 all terminal and no broker jobs.
+  - The restored snapshot had 14 rows and 7 outbox rows (4 accepted,
+    3 unknown), identical. Replay gave 7 replayed and 0 claimable, and the next
+    claim was fresh-only.
+  - Receipt `native-run3-receipt.json` SHA256 is
+    `47b1b878d0310e0f9f9d92d65ff2d3bc25ed02fac02faacbe1b4fc554aff33d0`.
+
+After every attempt the census found zero owned containers and networks.
+Receipts and logs are in the ignored
+`_workspace/repo-support/analysis/p05/interrupted-job-recovery/`. The failed
+attempts' logs are also kept under `retained/`.
+
+The guarded operator step is in the
+[n8n Runbook](../../../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md#강제-종료된-worker의-queue-job과-실행-기록).
+HOME execution is NOT_RUN. An independent review of this increment is NOT_RUN.
+
 ### Actual isolated SQL-only verification
 
 The first guarded attempt stopped before007 after the driver expected a different
@@ -753,13 +872,24 @@ P03 global explain/admission failure remains unresolved by these local checks.
 | Review-fix guards GREEN | 73 | W78 | Kill-based interruption, hold timing and parsed run_id guards | Native 6fdb8b62/recovery e924d9f3 and scenario doubles | PASS | 35tests:34PASS1nativeSKIP;6weakenings RED(1/3/2/1/1/1);loopback timeout close5004ms vs kill346ms;new lines native196/198,recovery88/88 | required | Review-fix guards initial RED |
 | Native kill-based interruption rehearsal | 73 | W78 | Current-artifact native restore replay and active-send interruption rehearsal | Rebased d94f7440c, same candidate 9dea1967/binding d4b51cee | PASS | native-run4-receipt.json b21b2f7b:731.029s;restore/replay/next-claim as attempt3;session open at kill,close1020ms<5000,row sending;expired lease→unknown/1/lease_expired_delivery_unknown,no resend,fresh accepted;broker job survived(1);cleanupPASS/owned0 | required | - |
 | Independent replay/interruption code re-review | 73 | W78 | Independent code review of the replay/interruption increment | Correction d94f7440c and TSK-0044 v0.3.0 | PASS | APPROVED: kill-based interruption requires `sending` and a sub-5000 ms close against `socketTimeout: 5000`; latency from the hold timestamp; parsed run_id filter; the fixture-only lease expiry targets only the interrupted `sending` row and rejects zero or several rows | required | Independent replay/interruption code review |
+| n8n stall-recovery guards initial RED | 73 | W78 | Interrupted queue job recovery and terminal-execution barrier guards | New guards before validate_queue_recovery and old_executions_terminal existed | FAIL | interrupted-job-recovery/guards-red.log:37tests,10failures,3errors,1native SKIP | required | - |
+| n8n stall-recovery guards GREEN | 73 | W78 | Interrupted queue job recovery and terminal-execution barrier guards | Commit 54194cbbc and scenario doubles | PASS | 37tests:36PASS1nativeSKIP;5weakenings RED(9/1/5/3/1);new lines since 729d16da7 native29/29,recovery13/13;no Docker | required | n8n stall-recovery guards initial RED |
+| Post-restore capture-order guard RED | 73 | W78 | Post-restore capture ordering guard | Double refusing an older capture as SQL001 does, before the fix | FAIL | interrupted-job-recovery/capture-order-red.log:37tests,2failures,1native SKIP | required | - |
+| Post-restore capture-order guard GREEN | 73 | W78 | Post-restore capture ordering guard | Commit 1d76b7135 | PASS | 37tests:36PASS1nativeSKIP; mutations still RED | required | Post-restore capture-order guard RED |
+| Native stall-recovery invocation attempt | 73 | W78 | Current-artifact native interrupted-job recovery and restore rehearsal | Same candidate 9dea1967/binding d4b51cee, base id selected | FAIL | Actual ERROR0.282s at preflight:exact candidate image selection required;no container;cleanupPASS | required | - |
+| Native stall-recovery capture-order refusal | 73 | W78 | Current-artifact native interrupted-job recovery and restore rehearsal | Commit 54194cbbc | FAIL | Actual ERROR832.489s:n8n job1→0,execution crashed38.389s;barrier PASS(7 terminal);restore/replay PASS;post-restore publish historical(older capture);cleanupPASS/owned0 | required | - |
+| Native stall-recovery restore rehearsal | 73 | W78 | Current-artifact native interrupted-job recovery and restore rehearsal | Commit 1d76b7135, same candidate 9dea1967/binding d4b51cee | PASS | native-run3-receipt.json 47b1b878:799.181s;kill close911ms,row sending;job survived(1)→n8n removed(0),execution6 crashed38.074s;lease expiry unknown/1/lease_expired_delivery_unknown,no resend;barrier PASS with executions1–7 terminal;14rows identical;7replayed/0claimable;next claim fresh-only;cleanupPASS/owned0 | required | Native stall-recovery invocation attempt, Native stall-recovery capture-order refusal |
+| Stall-recovery changed metadata initial | 73 | W78 | Changed-document metadata against origin/main | Runbook RUN-0053 v1.9.0 and this Task | FAIL | check-changed:1violation runtime-version-literal(image tag in runbook body) | required | - |
+| Stall-recovery changed metadata corrected | 73 | W78 | Changed-document metadata against origin/main | Runbook names the Dockerfile N8N_VERSION instead of a tag | PASS | check-changed selected2 violations0; links mode all PASS; corpus lifecycle 0; operations catalog PASS | required | Stall-recovery changed metadata initial |
+| Independent stall-recovery code review | 73 | W78 | Independent code review of the stall-recovery increment | Commits 54194cbbc,1d76b7135 | NOT_RUN | No independent reviewer ran in this session | required | - |
+| Independent stall-recovery code re-review | 73 | W78 | Independent code review of the stall-recovery increment | Commits 54194cbbc, 1d76b7135, 04df40b4d, 155e8d579 plus the minor-finding fix | PASS | APPROVED, no Critical/Important: assertions need n8n-driven job removal and a `crashed` execution (probe scans all job states, exact 1/0 ints); no queue deletion or barrier weakening; 150 s bound derived from lock and stall intervals; session cookie stripped from receipts; runbook step approval-gated. Minor findings fixed: only the settle timeout is tolerated, the job count uses the full probe result via `broker_job_count` (new test RED then GREEN, P05 suites 38 tests OK, 1 native skip) | required | Independent stall-recovery code review |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 72 | pending | Issued P05 baseline and leases, P08 source-binding parity GREEN, Final workspace inventory and comparisons | REUSE_ACCEPTED only for original C19/C22 scope; current source/image/runtime equivalence separate. | SPEC-0212 TSK-0044 |
-| 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; isolated same-input replay, restored outbox-state equivalence and next-claim PASS; the stopped-worker interruption result was superseded by review, and the SIGKILL mid-DATA interruption with lease-expiry recovery PASS (Native kill-based interruption rehearsal); restore while an interrupted broker job survives, and the non-terminal interrupted execution remain TEST_RESIDUAL; the correction passed independent re-review. | SPEC-0212 TSK-0044 |
+| 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review, n8n stall-recovery guards GREEN, Post-restore capture-order guard GREEN, Native stall-recovery restore rehearsal, Independent stall-recovery code re-review | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; isolated same-input replay, restored outbox-state equivalence and next-claim PASS; the stopped-worker interruption result was superseded by review, and the SIGKILL mid-DATA interruption with lease-expiry recovery PASS (Native kill-based interruption rehearsal); the correction passed independent re-review. The two former residuals pass in the isolated fixture through n8n 2.43.6's own stall recovery (Native stall-recovery restore rehearsal): the surviving job was removed by n8n, the interrupted execution became `crashed`, and the strengthened barrier then accepted restore. The criterion passed independent review; it stays TEST_RESIDUAL because the same-input replay covers repeated publication, not replay of an n8n execution, and HOME operation is NOT_RUN. | SPEC-0212 TSK-0044 |
 | 74 | pending | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. | SPEC-0212 TSK-0044 |
 | 75 | pending | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | SOURCE_READY with scoped actual native increment PASS; formal owner acceptance, actual P06 producer and operating rotation remain separate. | SPEC-0212 TSK-0044 |
 
@@ -772,9 +902,11 @@ normal staged wrapper awaits final staging and must pass before commit; Python
 audit is tool-unavailable, and remote CI is NOT_RUN. Same-input replay,
 restored outbox-state equivalence and SIGKILL mid-DATA interruption with
 lease-expiry recovery have isolated native PASS. The review's
-CHANGES_REQUESTED finding is fixed and awaits re-review. Restore with a
-surviving interrupted broker job and P03 global CI admission remain
-explicit residuals.
+CHANGES_REQUESTED finding is fixed and passed re-review. Restore after an
+interrupted broker job now has isolated native PASS through n8n's own stall
+recovery, and the interrupted execution is recorded `crashed`. Independent
+review of that increment and HOME operation are NOT_RUN. P03 global CI
+admission remains an explicit residual.
 All future outcomes must bind exact source, actor, environment, time and receipt
 without cancelling accepted history or promoting a lower evidence axis.
 

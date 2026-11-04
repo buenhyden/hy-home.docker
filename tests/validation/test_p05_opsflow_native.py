@@ -147,7 +147,12 @@ class P05NativeGuards(unittest.TestCase):
             attempt="opsflow-native-" + "a" * 24,
         )
 
+        terminal = {"value": True}
+
         def api(action, **payload):
+            if action == "execution":
+                self.assertEqual("42", payload["executionId"])
+                return {"status": "crashed", "terminal": terminal["value"]}
             self.assertEqual("workflows", action)
             return {"rows": [{"id": "owned", "active": False, "versionId": "v"}]}
 
@@ -156,6 +161,13 @@ class P05NativeGuards(unittest.TestCase):
         self.assertTrue(
             scenario.fixture.receipt["recovery_barrier"]["workflow_inactive"]
         )
+        self.assertTrue(
+            scenario.fixture.receipt["recovery_barrier"]["old_executions_terminal"]
+        )
+        # A non-terminal old execution in n8n metadata keeps the barrier shut.
+        terminal["value"] = False
+        with self.assertRaises(recovery.RehearsalFailure):
+            scenario.fence("owned")
 
     def test_mailpit_key_uses_filename_flag_and_keeps_secret_environment_guard(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -245,6 +257,7 @@ class P05NativeGuards(unittest.TestCase):
             "old_processes_absent": True,
             "old_sockets_absent": True,
             "old_broker_jobs_absent": True,
+            "old_executions_terminal": True,
             "owned_attempt": "opsflow-native-" + "a" * 24,
         }
         self.assertEqual(good, recovery.validate_barrier(good))
@@ -254,6 +267,7 @@ class P05NativeGuards(unittest.TestCase):
             "old_processes_absent",
             "old_sockets_absent",
             "old_broker_jobs_absent",
+            "old_executions_terminal",
         ):
             for value in (False, 1, None):
                 with (
@@ -403,6 +417,60 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
                 self.assertRaises(recovery.RehearsalFailure),
             ):
                 recovery.validate_interruption({**good, **change})
+
+    def test_broker_job_count_requires_a_complete_probe_of_the_exact_ids(self):
+        ids = ["7"]
+        self.assertEqual(
+            1,
+            recovery.broker_job_count(
+                {"scanned": True, "matching": 1, "ids": ["7"]}, ids
+            ),
+        )
+        for observed in (
+            {"scanned": False, "matching": 0, "ids": ["7"]},
+            {"scanned": True, "matching": 0, "ids": ["6"]},
+            {"scanned": True, "matching": True, "ids": ["7"]},
+            {"scanned": True, "matching": 0, "ids": ["7"], "extra": 1},
+            None,
+        ):
+            with self.subTest(observed=observed):
+                with self.assertRaises(recovery.RehearsalFailure):
+                    recovery.broker_job_count(observed, ids)
+
+    def test_queue_recovery_requires_n8n_to_fail_the_job_and_crash_the_execution(
+        self,
+    ):
+        # n8n 2.43.6 forces Bull maxStalledCount 0 and keeps no failed jobs:
+        # the restarted worker fails the stalled job and Bull deletes it; main
+        # then marks the execution crashed. Nothing else is accepted.
+        good = {
+            "jobs_before_restart": 1,
+            "jobs_after_recovery": 0,
+            "execution_status": "crashed",
+        }
+        self.assertEqual(good, recovery.validate_queue_recovery(good))
+        for change in (
+            # The job must really have outlived the kill, or nothing recovered.
+            {"jobs_before_restart": 0},
+            {"jobs_before_restart": True},
+            {"jobs_after_recovery": 1},
+            {"jobs_after_recovery": False},
+            {"execution_status": "not_terminal"},
+            {"execution_status": "running"},
+            {"execution_status": "success"},
+            {"execution_status": "error"},
+            {"unexpected": "private-payload"},
+        ):
+            with (
+                self.subTest(change=tuple(change)),
+                self.assertRaises(recovery.RehearsalFailure),
+            ):
+                recovery.validate_queue_recovery({**good, **change})
+        self.assertGreaterEqual(
+            recovery.STALL_RECOVERY_SECONDS,
+            recovery.N8N_LOCK_DURATION_SECONDS
+            + 2 * recovery.N8N_STALLED_INTERVAL_SECONDS,
+        )
 
     def test_hold_endpoint_stops_after_data_and_prints_only_closed_facts(self):
         script = recovery.HOLD_JS
