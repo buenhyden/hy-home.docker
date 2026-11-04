@@ -42,6 +42,8 @@ class MemoryFixture:
         self.executions = {}
         self.captured = []
         self.active = True
+        # Bull jobs that outlived their worker (active, lock expiring).
+        self.jobs = set()
 
     def event(self, name):
         self.events.append(name)
@@ -124,6 +126,14 @@ class MemoryFixture:
     def start(self, role):
         self.event("start:" + role)
         self.running[role] = True
+        if role == "worker" and self.jobs and self.fail != "no-stall-recovery":
+            # n8n 2.43.6: the restarted worker's Bull stall check fails the
+            # job (maxStalledCount 0) and deletes it (keepLastFailed 0); main
+            # then marks its execution crashed.
+            for execution in self.jobs:
+                if self.fail != "not-crashed":
+                    self.executions[execution] = "crashed"
+            self.jobs.clear()
 
     def start_smtp_hold(self):
         if self.running["mailpit"]:
@@ -160,7 +170,9 @@ class MemoryFixture:
         ids = json.loads(input_)["ids"]
         value = {
             "scanned": True,
-            "matching": 1 if self.fail == "old-job" else 0,
+            "matching": 1
+            if self.fail == "old-job"
+            else len(self.jobs.intersection(ids)),
             "ids": ids,
         }
         if self.fail == "wrong-job-ids":
@@ -319,6 +331,8 @@ class ScenarioModel:
         if f.running[native.HOLD]:
             execution = str(len(f.executions) + 1)
             f.rows[run], f.executions[execution] = "sending", "running"
+            if self.fail != "job-not-surviving":
+                f.jobs.add(execution)
             f.session, f.held = "held", (run, execution)
             f.body_at = int(native.time.time() * 1000)
             f.event("execute:held")
@@ -453,10 +467,23 @@ class P05ScenarioStateTests(unittest.TestCase):
         )
         self.assertEqual(300, receipt["active_send_interruption"]["body_to_close_ms"])
         self.assertFalse(receipt["interrupted_recovery"]["resent"])
-        self.assertEqual(0, receipt["interrupted_broker_job_matching"])
-        self.assertEqual(5, receipt["same_input_replay"]["replayed"])
+        self.assertEqual(1, receipt["interrupted_broker_job_matching"])
         self.assertEqual(
-            {"accepted_by_smtp": 3, "unknown": 2},
+            {
+                "jobs_before_restart": 1,
+                "jobs_after_recovery": 0,
+                "execution_status": "crashed",
+            },
+            receipt["interrupted_queue_recovery"],
+        )
+        self.assertTrue(receipt["recovery_barrier"]["old_executions_terminal"])
+        self.assertIn(
+            receipt["interrupted_execution_id"],
+            receipt["recovery_barrier"]["old_execution_ids"],
+        )
+        self.assertEqual(7, receipt["same_input_replay"]["replayed"])
+        self.assertEqual(
+            {"accepted_by_smtp": 4, "unknown": 3},
             receipt["restored_outbox_equivalence"]["states"],
         )
         self.assertEqual(3, list(model.fixture.rows.values()).count("unknown"))
@@ -470,20 +497,29 @@ class P05ScenarioStateTests(unittest.TestCase):
             ("tls-material", "networks"),
             ("provision-v3", "queue"),
             ("smtp-hold", "execute:held"),
-            ("restore-dev", "smtp-hold"),
+            # The interrupted job is recovered before the barrier and restore.
+            ("execute:held", "stop:worker"),
             ("remove:" + native.HOLD, "start:worker"),
-            ("stop:worker", "old-job-probe"),
-            ("old-job-probe", "destroy-old-databases"),
+            ("start:worker", "deactivate"),
             ("destroy-old-databases", "restore-metadata"),
             ("restore-metadata", "restore-dev"),
         ):
             self.assertLess(events.index(before), events.index(after))
+        # The barrier probe is the last one before teardown, after the stop.
+        barrier = max(
+            index
+            for index, name in enumerate(
+                events[: events.index("destroy-old-databases")]
+            )
+            if name == "old-job-probe"
+        )
+        self.assertLess(events.index("stop:worker"), barrier)
         held = events.index("execute:held")
         self.assertIn(
             "kill:worker", events[held : events.index("remove:" + native.HOLD)]
         )
 
-    def test_interruption_replay_and_next_claim_violations_cannot_pass(self):
+    def test_unrecovered_interruption_blocks_the_barrier_and_restore(self):
         for failure in (
             "graceful-unknown",
             "silent-success",
@@ -491,6 +527,25 @@ class P05ScenarioStateTests(unittest.TestCase):
             "late-close",
             "no-data",
             "reclaim-interrupted",
+            "job-not-surviving",
+            "no-stall-recovery",
+            "not-crashed",
+        ):
+            with self.subTest(failure=failure):
+                model = ScenarioModel(failure)
+                with self.assertRaises(native.RehearsalFailure):
+                    model.run()
+                self.assertIn("execute:held", model.fixture.events)
+                # Refused before the fence even runs, not only by the barrier.
+                self.assertNotIn("recovery_barrier_facts", model.fixture.receipt)
+                self.assertNotIn("destroy-old-databases", model.fixture.events)
+                self.assertNotEqual("PASS", model.fixture.receipt.get("native"))
+                self.assertNotEqual(
+                    "PASS", model.fixture.receipt.get("live_inflight_interruption")
+                )
+
+    def test_replay_and_next_claim_violations_cannot_pass(self):
+        for failure in (
             "restore-drift",
             "replay-duplicate",
             "resend-unknown",

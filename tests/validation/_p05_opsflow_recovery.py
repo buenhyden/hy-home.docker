@@ -10,6 +10,15 @@ from tests.validation._opsflow_native_fixture import RehearsalFailure
 # itself, so a worker stop issued later would not interrupt an active send.
 SOCKET_TIMEOUT_SECONDS = 5.0
 
+# n8n 2.43.6 queue defaults (@n8n/config scaling-mode.config.js): a killed
+# worker's job lock expires after QUEUE_WORKER_LOCK_DURATION, and a running
+# worker checks for stalled jobs every QUEUE_WORKER_STALLED_INTERVAL. Bull
+# needs a marking pass and a failing pass, so a restarted worker settles the
+# orphan within lock + 2 intervals; the bound adds one more interval of margin.
+N8N_LOCK_DURATION_SECONDS = 60
+N8N_STALLED_INTERVAL_SECONDS = 30
+STALL_RECOVERY_SECONDS = N8N_LOCK_DURATION_SECONDS + 3 * N8N_STALLED_INTERVAL_SECONDS
+
 # Every outbox, attempt-reconciliation, recovery-audit and run row, sorted.
 # Lease tokens are capabilities: only their presence is compared.
 SNAPSHOT_SQL = """SELECT line FROM (
@@ -153,6 +162,25 @@ def validate_interruption(facts):
     return dict(facts)
 
 
+def validate_queue_recovery(facts):
+    # n8n's own route, read from the 2.43.6 image: ScalingService forces Bull
+    # maxStalledCount 0, so the restarted worker's stall check fails the
+    # orphaned job ("job stalled more than maxStalledCount") and, with
+    # keepLastFailed 0, deletes it. Main's WorkflowRunner then marks that
+    # execution crashed. The job must have survived the kill (1) or nothing
+    # was recovered; no job may be deleted by the rehearsal itself.
+    if facts != {
+        "jobs_before_restart": 1,
+        "jobs_after_recovery": 0,
+        "execution_status": "crashed",
+    } or any(
+        type(facts[key]) is not int
+        for key in ("jobs_before_restart", "jobs_after_recovery")
+    ):
+        raise RehearsalFailure("interrupted queue job was not recovered by n8n")
+    return dict(facts)
+
+
 # Fixture-only STARTTLS endpoint under the capture alias with the owned
 # synthetic certificate. It answers up to DATA, then never replies, so the
 # client's session stays mid-DATA. It stores nothing and prints closed facts.
@@ -188,6 +216,7 @@ def validate_barrier(value):
         "old_processes_absent",
         "old_sockets_absent",
         "old_broker_jobs_absent",
+        "old_executions_terminal",
     }
     if not isinstance(value, dict) or set(value) != booleans | {
         "old_execution_ids",
