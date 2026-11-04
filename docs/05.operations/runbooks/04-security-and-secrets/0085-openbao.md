@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.16.0"
+version: "0.16.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -190,7 +190,7 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 
 #### Unseal Share Custody
 
-이 HOME은 1인 관리자 결정(SPEC-0242)으로 share를 host에 두며 [1인 관리자 custody 절차](0105-openbao-maintenance-window.md#1인-관리자-custody-절차)를 따른다. 기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
+이 HOME은 1인 관리자 결정(SPEC-0242에서 결정, 삭제됨)으로 share를 host에 두며 [1인 관리자 custody 절차](0105-openbao-maintenance-window.md#1인-관리자-custody-절차)를 따른다. 기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
 [POL-0085 Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)가
 소유한다. 이 예외는 share 분리 검증을 뜻하지 않는다. 승인된 운영자는 대화형
 `docker compose exec openbao bao operator unseal`의 숨겨진 prompt로 share를 하나씩

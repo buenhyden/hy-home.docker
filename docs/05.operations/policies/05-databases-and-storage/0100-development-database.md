@@ -1,10 +1,10 @@
 ---
 title: "Development Database Operations Policy"
-version: "0.1.3"
+version: "0.1.4"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0100"
 parent_ids:
@@ -17,7 +17,7 @@ created: "2026-10-03"
 
 ## Overview
 
-현재 source 인계 소유자는 [SPEC-0204](../../../03.specs/0204-service-integration-security-and-operations/spec.md)이며, SPEC-0202의 합성 검증은 보관된 역사적 근거이다.
+현재 source 인계 소유자는 [SPEC-0204](../../../03.specs/0204-service-integration-security-and-operations/spec.md)이며, SPEC-0202의 합성 검증은 삭제된 Spec의 역사적 근거이며 본문은 버전 이력에 있다.
 
 이 정책은 source-only `dev-pg`와 `dev-valkey`의 관리 데이터 분리, 최소 권한
 provision, 그리고 승인 전 실행 금지 경계를 정한다.

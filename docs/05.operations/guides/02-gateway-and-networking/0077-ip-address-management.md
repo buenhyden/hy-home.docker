@@ -27,7 +27,7 @@ created: "2026-05-17"
 
 ## Concepts
 
-구조적 할당은 [AD-0026 Networks](../../../02.architecture/descriptions/0026-standardize-infra-net.md#networks-spec-0180-s05),
+구조적 할당은 [AD-0026 Networks](../../../02.architecture/descriptions/0026-standardize-infra-net.md#networks),
 선언은 [루트 Compose](../../../../docker-compose.yml)와 해당 service fragment가
 소유한다. 서비스가 여러 network를 공유해도 개별 인증·권한 검증을 대신하지 않는다.
 

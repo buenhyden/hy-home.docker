@@ -1,6 +1,6 @@
 ---
 title: "hy-home.docker"
-version: "1.4.2"
+version: "1.4.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -16,7 +16,7 @@ created: "2025-11-12"
 
 `hy-home.docker`는 shared harness-engineering and agent-first engineering workspace 저장소입니다. 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결합니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 `include`로 통합해 단일 진입점 역할을 합니다.
 
-이 저장소의 핵심 목적은 세 가지입니다. 인프라 구성을 계층별로 분리해 서비스 추가와 변경 영향을 명확히 하고 문서와 실행 대상을 연결해 추적성과 검증 가능성을 확보합니다. 여기에 AI Agent와 사람이 동일한 규칙 아래에서 안전하게 협업할 수 있도록 진입 규칙과 작업 범위를 명확히 유지합니다.
+이 저장소의 핵심 목적은 세 가지입니다. 인프라 구성을 계층별로 분리해 서비스 추가와 변경 영향을 명확히 하고 문서와 실행 대상을 연결해 추적성과 검증 가능성을 확보합니다. 여기에 AI Agent와 사람이 동일한 규칙 아래에서 안전하게 협업할 수 있도록 진입 규칙과 작업 범위를 명확히 유지합니다. 이 README는 사람을 위한 안내이며, agent의 작업 규칙은 [`AGENTS.md`](./AGENTS.md)에서 시작합니다.
 
 ## Scope
 

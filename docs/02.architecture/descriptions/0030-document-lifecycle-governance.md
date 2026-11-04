@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "3.0.0"
+version: "3.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -125,7 +125,7 @@ retain their own authorization and execution evidence requirements.
   distinct; a changed-only pass does not prove corpus-wide cleanup.
 - `TARGET_TEMPLATE_LITERALS` retains the residual `<!-- Target:` marker rule.
   Current templates and metadata reports no longer generate the marker.
-  SPEC-0173-TSK-0006 owns the historical cleanup evidence; its observed count is
+  SPEC-0173-TSK-0006 recorded the historical cleanup evidence (retired; version history); its observed count is
   not a permanent contract.
 - Eight domains were observed to have both base and optimization-hardening
   Descriptions without declared relationships. REQ-0026-FR-0005 requires clear

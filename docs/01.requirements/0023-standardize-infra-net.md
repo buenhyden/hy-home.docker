@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Requirements"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "requirements"
 artifact_id: "REQ-0023"
 created: "2026-04-01"
@@ -62,7 +62,7 @@ N/A
 ### Functional Requirements
 
 - **REQ-0023-FR-0001**: Every active service must connect only to networks with peers it actually uses, and use the project default network when it has no peer.
-- **REQ-0023-FR-0002**: Each network's subnet must be declared as `10.250.x.0/24` in the root Compose.
+- **REQ-0023-FR-0002**: Each network's subnet must be declared as `10.250.x.0/24` in the root Compose. Exception: a small, leaf-owned, internal network used only to isolate one service's egress may declare a narrower subnet in its own Compose file; it must be named here. The one exception is `crawl4ai_egress_net` (`10.250.200.0/29`, `infra/08-ai/crawl4ai/docker-compose.yml`).
 - **REQ-0023-FR-0003**: No service connects to the `k3d-hyhome` network (k3d integration removed by owner decision on 2026-09-23).
 
 ### Non-functional Requirements
@@ -76,7 +76,7 @@ No separately numbered solution-independent external interface requirement was i
 ## Acceptance Criteria
 
 - **REQ-0023-FR-0001**: In `docker-compose config` output, each service's network matches its declared flow.
-- **REQ-0023-FR-0002**: Each network's IPAM setting points to the declared `10.250.x.0/24` block.
+- **REQ-0023-FR-0002**: Each network's IPAM setting points to the declared `10.250.x.0/24` block, or, for a named egress-isolation exception, to the subnet its leaf Compose declares.
 
 ## Related Documents
 

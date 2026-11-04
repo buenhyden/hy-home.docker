@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Architecture Description"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "architecture"
 artifact_id: "AD-0011"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-03-26"
 
 ### Context and Stakeholders
 
-The former Laboratory capabilities now reside in their owning Data, Observability, AI and Analytics tiers under SPEC-0197. This description records the structure of those operator and knowledge-work services; their obligations are owned by [REQ-0012](../../01.requirements/0012-laboratory.md).
+The former Laboratory capabilities now reside in their owning Data, Observability, AI and Analytics tiers; SPEC-0197 moved them there and is retired (its body is in version history). This description records the structure of those operator and knowledge-work services; their obligations are owned by [REQ-0012](../../01.requirements/0012-laboratory.md).
 
 ## Scope
 

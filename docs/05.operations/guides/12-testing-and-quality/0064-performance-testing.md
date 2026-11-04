@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Usage Guide"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0064"
 parent_ids:
@@ -103,7 +103,7 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 ### Runbook Handoff
 
 [RUN-0064](../../runbooks/12-testing-and-quality/0064-performance-testing.md)는 부하 중단과 대상
-회복 판단을 소유한다. 현재 SPEC-0203 소스·합성 검증은 HOME 실행이나
+회복 판단을 소유한다. SPEC-0203(삭제됨, 버전 이력)이 기록한 소스·합성 검증은 HOME 실행이나
 실제 프로젝트의 성능 수치가 아니다. k6, Locust, WireMock의 세부 절차는
 각 서비스 런북을 따른다.
 
