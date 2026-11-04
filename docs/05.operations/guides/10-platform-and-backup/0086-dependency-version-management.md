@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Guide"
-version: "0.2.2"
+version: "0.3.0"
 type: "operation/guide"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "GDE-0086"
 parent_ids:
@@ -34,7 +34,7 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 파생 drift 투영이다. 로컬/커스텀 저장소도 명시적으로 분류하지만 빌드 전용
 서비스, Dockerfile의 상속 단계와 전체 의존성을 레지스트리가 완전히
 나열한다고 해석하지 않는다.
-현재 서비스 분류와 소유자는 [Guide 인덱스](../../../../README.md)와 각 Guide의
+현재 서비스 분류와 소유자는 [Guide 인덱스](../README.md)와 각 Guide의
 `implementation_services` binding을 따른다. Stage90 inventory는 해당 날짜의
 연구 근거이며 현재 명단이나 실행 버전의 권위가 아니다.
 
