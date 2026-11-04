@@ -7,6 +7,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import subprocess
 import tempfile
 import unittest
@@ -31,6 +32,8 @@ class MemoryFixture:
             role: role for role in ("main", "runner", "worker", "mailpit")
         }
         self.running = {role: False for role in self.containers}
+        self.running[native.HOLD] = False
+        self.session = None
         self.metadata_present = True
         self.dev_present = True
         self.metadata = {"smtp_id": "same-smtp-id", "material": None}
@@ -67,7 +70,14 @@ class MemoryFixture:
         self.event("sql:" + role)
         if database != "opsflow_dev":
             raise AssertionError("unexpected database")
-        return SimpleNamespace(stdout="", stderr="", returncode=0)
+        stdout = ""
+        if "SELECT ops_flow.quarantine_restored_notification(id," in sql:
+            run = re.search(r"run_id='([0-9a-f]{64})'", sql)[1]
+            stdout = "t" if self.rows.get(run) == "sending" else ""
+            if stdout:
+                self.rows[run] = "unknown"
+                self.event("quarantine")
+        return SimpleNamespace(stdout=stdout, stderr="", returncode=0)
 
     def private(self, _name, content):
         self.event("private-write")
@@ -91,9 +101,33 @@ class MemoryFixture:
     def stop(self, role):
         self.event("stop:" + role)
         self.running[role] = self.fail == "live-process"
+        if role == "worker" and self.session == "held":
+            # A held send ends uncertain unless the worker is killed first.
+            self.session = "closed"
+            run, execution = self.held
+            if self.fail != "killed-worker":
+                self.rows[run] = (
+                    "accepted_by_smtp" if self.fail == "silent-success" else "unknown"
+                )
+                self.executions[execution] = "error"
+
+    def start_smtp_hold(self):
+        if self.running["mailpit"]:
+            raise native.RehearsalFailure("capture still running")
+        self.event("smtp-hold")
+        self.running[native.HOLD] = True
+
+    def logs_contain(self, role, pattern):
+        if role != native.HOLD:
+            raise AssertionError("unexpected log probe")
+        if pattern.endswith("CLIENT_CLOSED"):
+            return self.session == "closed" or self.fail == "closed-before-stop"
+        return self.session is not None and self.fail != "no-data"
 
     def remove(self, role):
         self.event("remove:" + role)
+        if role == native.HOLD:
+            self.running[role] = False
         if self.running[role]:
             raise native.RehearsalFailure("cannot remove running fixture")
 
@@ -152,7 +186,29 @@ class ScenarioModel:
         self.scenario.wait_state = self.wait_state
         self.scenario.capture = self.capture
         self.scenario.restore_and_restart = self.restore
-        self.scenario.db_value = lambda _sql: "f" if fail == "retry-not-ready" else "t"
+        self.scenario.db_value = self.db_value
+
+    def db_value(self, sql, _role=None):
+        f = self.fixture
+        if "next_attempt_at<=clock_timestamp()" in sql:
+            return "f" if self.fail == "retry-not-ready" else "t"
+        if sql == native.recovery.SNAPSHOT_SQL:
+            return "\n".join(
+                f"outbox|{index}|{run}|{state}|1|5"
+                for index, (run, state) in enumerate(f.rows.items(), 1)
+            )
+        if sql == native.recovery.CLAIMABLE_SQL:
+            return str(list(f.rows.values()).count("pending"))
+        if "publish_manifest" in sql:
+            digest = re.search(
+                r"publish_manifest\('[^']*','[^']*','([0-9a-f]{64})'", sql
+            )[1]
+            if digest in f.rows and self.fail != "replay-duplicate":
+                return "replayed"
+            f.rows[digest] = "pending"
+            return "published"
+        state = f.rows[re.search(r"run_id='([0-9a-f]{64})'", sql)[1]]
+        return state + "|1" if "attempts" in sql else state
 
     def bind(self):
         self.fixture.event("bind")
@@ -204,6 +260,9 @@ class ScenarioModel:
                     }
                 ]
             }
+        if action == "execution":
+            status = f.executions[payload["executionId"]]
+            return {"status": status, "terminal": status != "running"}
         if action == "deactivate":
             f.event("deactivate")
             f.active = self.fail == "still-active"
@@ -225,8 +284,18 @@ class ScenarioModel:
             raise native.RehearsalFailure("restored DB missing")
         self.scenario.assertEqual(self.workflow, workflow)
         pending = [run for run, state in f.rows.items() if state == "pending"]
+        if self.fail == "resend-unknown" and f.generation == 2:
+            resent = next(run for run, state in f.rows.items() if state == "unknown")
+            f.rows[resent] = "accepted_by_smtp"
+            f.captured.append(resent)
         self.scenario.assertEqual(1, len(pending))
         run = pending[0]
+        if f.running[native.HOLD]:
+            execution = str(len(f.executions) + 1)
+            f.rows[run], f.executions[execution] = "sending", "running"
+            f.session, f.held = "held", (run, execution)
+            f.event("execute:held")
+            return execution
         accepted = f.metadata["material"] == f.smtp_values[f.smtp_epoch]
         f.rows[run] = "accepted_by_smtp" if accepted else "unknown"
         if accepted:
@@ -264,6 +333,8 @@ class ScenarioModel:
             f.event("restore-metadata")
         if self.fail != "omit-dev-restore":
             f.rows.update(saved_rows)
+            if self.fail == "restore-drift":
+                f.rows[next(iter(f.rows))] = "retry"
             f.dev_present = True
             f.event("restore-dev")
         f.running.update(main=True, worker=True, runner=True, mailpit=True)
@@ -342,8 +413,14 @@ class P05ScenarioStateTests(unittest.TestCase):
         self.assertEqual("PASS", receipt["native"])
         self.assertEqual("complete", receipt["phase"])
         self.assertEqual("QUIESCED_ONLY", receipt["recovery_scope"])
-        self.assertEqual("TEST_RESIDUAL", receipt["live_inflight_interruption"])
-        self.assertEqual(2, list(model.fixture.rows.values()).count("unknown"))
+        self.assertEqual("PASS", receipt["live_inflight_interruption"])
+        self.assertEqual("UNKNOWN_BEFORE_RESTORE", receipt["interrupted_recovery"])
+        self.assertEqual(6, receipt["same_input_replay"]["replayed"])
+        self.assertEqual(
+            {"accepted_by_smtp": 3, "unknown": 3},
+            receipt["restored_outbox_equivalence"]["states"],
+        )
+        self.assertEqual(3, list(model.fixture.rows.values()).count("unknown"))
         self.assertEqual(4, list(model.fixture.rows.values()).count("accepted_by_smtp"))
         self.assertEqual("same-smtp-id", model.fixture.metadata["smtp_id"])
         self.assertEqual(2, model.fixture.generation)
@@ -353,12 +430,51 @@ class P05ScenarioStateTests(unittest.TestCase):
             ("preflight", "tls-material"),
             ("tls-material", "networks"),
             ("provision-v3", "queue"),
+            ("smtp-hold", "execute:held"),
+            ("execute:held", "stop:worker"),
+            ("remove:" + native.HOLD, "old-job-probe"),
             ("stop:worker", "old-job-probe"),
             ("old-job-probe", "destroy-old-databases"),
             ("destroy-old-databases", "restore-metadata"),
             ("restore-metadata", "restore-dev"),
         ):
             self.assertLess(events.index(before), events.index(after))
+
+    def test_killed_worker_leaves_sending_that_restore_quarantines(self):
+        model = ScenarioModel("killed-worker")
+        receipt = model.run()
+        self.assertEqual("PASS", receipt["native"])
+        self.assertEqual(
+            "sending", receipt["active_send_interruption"]["state_after_stop"]
+        )
+        self.assertEqual(
+            "not_terminal", receipt["active_send_interruption"]["execution_status"]
+        )
+        self.assertEqual("QUARANTINED_AFTER_RESTORE", receipt["interrupted_recovery"])
+        events = model.fixture.events
+        self.assertLess(events.index("restore-dev"), events.index("quarantine"))
+
+    def test_interruption_replay_and_next_claim_violations_cannot_pass(self):
+        for failure, before_restore in (
+            ("silent-success", True),
+            ("closed-before-stop", True),
+            ("no-data", True),
+            ("restore-drift", False),
+            ("replay-duplicate", False),
+            ("resend-unknown", False),
+        ):
+            with self.subTest(failure=failure):
+                model = ScenarioModel(failure)
+                with self.assertRaises(native.RehearsalFailure):
+                    model.run()
+                self.assertEqual(
+                    before_restore,
+                    "destroy-old-databases" not in model.fixture.events,
+                )
+                self.assertNotEqual("PASS", model.fixture.receipt.get("native"))
+                self.assertNotEqual(
+                    "PASS", model.fixture.receipt.get("live_inflight_interruption")
+                )
 
     def test_each_barrier_failure_prevents_database_teardown_and_success(self):
         for failure in (
@@ -721,6 +837,52 @@ class P05FixtureAdapterTests(unittest.TestCase):
                 with self.assertRaises(native.RehearsalFailure):
                     fixture.start_mailpit()
                 self.assertEqual(1, create.call_count)
+
+    def test_smtp_hold_replaces_only_a_stopped_capture_under_its_alias(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = fixture_at(directory)
+            fixture.containers = {"mailpit": "mailpit"}
+            state = {"Running": True}
+            fixture._verify_owned = lambda _record: {"State": state}
+            fixture.logs_contain = mock.Mock(return_value=True)
+            with (
+                mock.patch.object(fixture, "create") as create,
+                mock.patch.object(fixture, "start") as start,
+            ):
+                with self.assertRaises(native.RehearsalFailure):
+                    fixture.start_smtp_hold()
+                create.assert_not_called()
+                state["Running"] = False
+                with mock.patch.object(fixture, "wait_until") as wait:
+                    fixture.start_smtp_hold()
+                    self.assertTrue(wait.call_args.args[0]())
+                options = create.call_args
+                self.assertEqual(
+                    (native.HOLD, fixture.artifact["reference"]), options.args[:2]
+                )
+                self.assertEqual(("capture",), options.args[3])
+                self.assertEqual(
+                    ("-e", native.recovery.HOLD_JS), options.kwargs["command"]
+                )
+                self.assertTrue(
+                    all("readonly" in mount for mount in options.kwargs["mounts"])
+                )
+                start.assert_called_once_with(native.HOLD)
+            seen = {}
+
+            def verify(_self, record):
+                seen.update(
+                    alias=native.legacy.ALIASES[record],
+                    caps=native.legacy.RESOURCE_CAPS[record],
+                )
+
+            with mock.patch.object(
+                native.legacy.NativeFixture, "_verify_container", verify
+            ):
+                fixture._verify_container(native.HOLD)
+            self.assertEqual("mailpit", seen["alias"])
+            self.assertEqual(native.inputs.RESOURCE_CAPS["capture-probe"], seen["caps"])
+            self.assertNotIn(native.HOLD, native.legacy.ALIASES)
 
     def test_ca_environment_closed_diagnostics_and_receipt_binding(self):
         with tempfile.TemporaryDirectory() as directory:

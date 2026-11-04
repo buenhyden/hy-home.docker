@@ -271,6 +271,106 @@ class P05NativeGuards(unittest.TestCase):
                 recovery.validate_barrier({**good, **change})
 
 
+class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
+    RUN = "a" * 64
+    FRESH = "f" * 64
+    LINES = (
+        "outbox|1|" + "a" * 64 + "|accepted_by_smtp|1|5||t|t||x|y",
+        "outbox|2|" + "b" * 64 + "|unknown|1|5|smtp_outcome_unknown||t||x|y",
+        "run|" + "a" * 64 + "|hy-home.k8s|published|z",
+    )
+
+    def test_snapshot_shape_is_closed_and_nonempty(self):
+        self.assertEqual(self.LINES, recovery.snapshot_lines("\n".join(self.LINES)))
+        for text in ("", "run|only", "private|x\noutbox|1|r|unknown|1"):
+            with self.subTest(text=text), self.assertRaises(recovery.RehearsalFailure):
+                recovery.snapshot_lines(text)
+
+    def test_restored_state_must_equal_pre_restore_rows_exactly(self):
+        summary = recovery.validate_restored_state(self.LINES, self.LINES)
+        self.assertEqual({"accepted_by_smtp": 1, "unknown": 1}, summary["states"])
+        drifted = (self.LINES[0].replace("|1|5|", "|2|5|"), *self.LINES[1:])
+        for after in (drifted, self.LINES[:2], (*self.LINES, "audit|x")):
+            with self.assertRaises(recovery.RehearsalFailure):
+                recovery.validate_restored_state(self.LINES, after)
+
+    def test_same_input_replay_is_dedup_only_and_claims_nothing(self):
+        self.assertEqual(
+            {"replayed": 2, "claimable": 0},
+            recovery.validate_replay(
+                ["replayed", "replayed"], self.LINES, self.LINES, "0"
+            ),
+        )
+        for results, after, claimable in (
+            ([], self.LINES, "0"),
+            (["replayed", "published"], self.LINES, "0"),
+            (["replayed"], (*self.LINES, "outbox|3|" + "c" * 64 + "|pending"), "0"),
+            (["replayed"], self.LINES, "1"),
+        ):
+            with self.assertRaises(recovery.RehearsalFailure):
+                recovery.validate_replay(results, self.LINES, after, claimable)
+
+    def test_next_claim_sends_only_the_fresh_row(self):
+        fresh = "outbox|3|" + self.FRESH + "|accepted_by_smtp|1|5||t|t||x|y"
+        after = (*self.LINES, fresh, "run|" + self.FRESH + "|hy-home.k8s|published|z")
+        self.assertTrue(
+            recovery.validate_next_claim(self.LINES, after, self.FRESH)[
+                "old_rows_unchanged"
+            ]
+        )
+        resent = (self.LINES[0], self.LINES[1].replace("unknown", "accepted_by_smtp"))
+        for changed in (
+            (*resent, self.LINES[2], fresh),
+            (*self.LINES, fresh.replace("accepted_by_smtp", "unknown")),
+            (*self.LINES, fresh.replace("|1|5|", "|2|5|")),
+            self.LINES,
+        ):
+            with self.assertRaises(recovery.RehearsalFailure):
+                recovery.validate_next_claim(self.LINES, changed, self.FRESH)
+
+    def test_active_send_interruption_requires_held_session_and_no_success(self):
+        good = {
+            "data_started": True,
+            "body_held": True,
+            "session_open_at_stop": True,
+            "client_closed_after_stop": True,
+            "detect_to_stop_seconds": 0.4,
+            "state_after_stop": "unknown",
+            "execution_status": "error",
+        }
+        self.assertEqual(good, recovery.validate_interruption(good))
+        self.assertEqual(
+            "sending",
+            recovery.validate_interruption({**good, "state_after_stop": "sending"})[
+                "state_after_stop"
+            ],
+        )
+        for change in (
+            {"data_started": False},
+            {"body_held": False},
+            {"session_open_at_stop": False},
+            {"client_closed_after_stop": None},
+            {"detect_to_stop_seconds": recovery.SOCKET_TIMEOUT_SECONDS},
+            {"detect_to_stop_seconds": True},
+            {"state_after_stop": "accepted_by_smtp"},
+            {"state_after_stop": "retry"},
+            {"execution_status": "success"},
+            {"unexpected": "private-payload"},
+        ):
+            with (
+                self.subTest(change=tuple(change)),
+                self.assertRaises(recovery.RehearsalFailure),
+            ):
+                recovery.validate_interruption({**good, **change})
+
+    def test_hold_endpoint_stops_after_data_and_prints_only_closed_facts(self):
+        script = recovery.HOLD_JS
+        self.assertIn("354", script)
+        self.assertNotIn("'250 ", script.split("DATA")[-1])
+        self.assertNotRegex(script, r"fact\([^)]*(line|chunk|pending)")
+        self.assertIn("/run/secrets/server.key", script)
+
+
 @unittest.skipUnless(
     os.environ.get("P05_OPSFLOW_NATIVE") == "1",
     "exact current candidate and owned isolated runtime required",
