@@ -1,6 +1,6 @@
 ---
 title: "Analytics Labs Migration Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -118,6 +118,26 @@ progress under the approved parents. Hosted CI has not run.
 - The supply-chain ledger moved the 15 rows to `historical_lab_entries`, as
   for Supabase, with a new `source_refreshes` record.
 
+### Owner confirmations
+
+On 2026-11-04 the owner answered the three open choices:
+
+- "허용 (권장)" for editing the public registry
+  `secrets/SENSITIVE_ENV_VARS.md.example`: rows LAB-026 to LAB-036 were added
+  and the PG-011, PG-024 and PG-029 user keys renamed to their `LAB_*` names,
+  from the OpenBao catalog. All 14 changed value cells are `(비어있음)`.
+- "입력 방식 유지 (권장)" for HOME reachability: SPEC-0215 stays unchanged and
+  the HOME-dependent LABs keep the required `LAB_*` endpoint inputs.
+- "이번 결정을 승인으로 기록 (권장)" for the amended requirements: this owner
+  decision is the approval of the amended REQ-0005, REQ-0006, REQ-0010,
+  REQ-0011 and REQ-0012 wording, which therefore stay `approved`.
+
+With the registry edit, `test_secret_metadata_sync` and
+`test_secret_catalog_contract` give 14 failures and 1 error under the local
+system Python, exactly as on `main` `1425b017b` with the same interpreter
+(jsonschema 4.10.3 lacks `referencing`). The branch adds no failure there;
+Hosted CI with the locked dependencies is the deciding run.
+
 ### Changed
 
 - `42413743a`: this package, the Registry `spec` high-water 262 and next
@@ -142,15 +162,8 @@ progress under the approved parents. Hosted CI has not run.
 
 ### Open issues
 
-- Owner: approve reachable endpoints (or a SPEC-0215 amendment) before any LAB
-  that needs HOME runs; provision LAB secret copies; approve a Superset LAB
-  redirect URI; confirm the amended requirement wording.
-- BLOCKED: the public registry `secrets/SENSITIVE_ENV_VARS.md.example` must
-  gain rows LAB-026 to LAB-036 and the renamed `LAB_*_DB_USER` keys of PG-011,
-  PG-024 and PG-029 to match the catalog. The file is under `secrets/`, and the
-  permission classifier refused the edit, so it needs the owner's own change or
-  approval. Until then 16 `test_secret_metadata_sync` tests and one
-  `test_secret_catalog_contract` test fail.
+- Operator: provide the `LAB_*` endpoints and LAB secret copies before a
+  HOME-dependent LAB runs, and approve a Superset LAB redirect URI.
 - The local Python has jsonschema 4.10.3 without the `referencing` module, so
   catalog schema checks error here (one catalog test, the SMTP generator
   dry run, and two modules that fail to import); a supported environment must
