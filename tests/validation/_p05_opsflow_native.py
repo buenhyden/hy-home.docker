@@ -10,6 +10,7 @@ import secrets
 import shutil
 import stat
 import subprocess
+import time
 from contextlib import contextmanager
 from pathlib import Path
 from unittest import mock
@@ -21,13 +22,16 @@ from tests.validation import _p05_opsflow_recovery as recovery
 from tests.validation import _p05_opsflow_registration as registration
 from tests.validation import test_opsflow_native_rehearsal as historical
 from tests.validation._opsflow_native_fixture import RehearsalFailure
-from tests.validation.test_opsflow_database_rehearsal import migration_sql
+from tests.validation.test_opsflow_database_rehearsal import migration_sql, publish_sql
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = (
     ROOT / "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp"
 )
 ANALYSIS = ROOT / "_workspace/repo-support/analysis/p05"
+# The active-send hold replaces the stopped Mailpit under its alias and reuses
+# the ephemeral capture-probe caps, so the reviewed aggregate does not grow.
+HOLD = "smtp-hold"
 
 
 def validate_artifact(value, expected_binding, expected_dist):
@@ -339,6 +343,23 @@ class P05Fixture(legacy.NativeFixture):
             return super().start_n8n(values)
 
     @contextmanager
+    def roles(self):
+        with mock.patch.multiple(
+            legacy,
+            ALIASES={**inputs.ALIASES, HOLD: "mailpit"},
+            RESOURCE_CAPS={
+                **inputs.RESOURCE_CAPS,
+                HOLD: inputs.RESOURCE_CAPS["capture-probe"],
+            },
+            TMPFS={**inputs.TMPFS, HOLD: inputs.TMPFS["capture-probe"]},
+        ):
+            yield
+
+    def _verify_container(self, record):
+        with self.roles():
+            return super()._verify_container(record)
+
+    @contextmanager
     def bindings(self):
         selected = {
             self.artifact["reference"]: self.artifact["image_id"],
@@ -347,19 +368,22 @@ class P05Fixture(legacy.NativeFixture):
             inputs.MAILPIT_ID: inputs.MAILPIT_ID,
             inputs.RUNNER_REF: inputs.RUNNER_ID,
         }
-        with mock.patch.multiple(
-            legacy,
-            IMAGE_IDS=selected,
-            N8N_REF=self.artifact["reference"],
-            N8N_ID=self.artifact["image_id"],
-            N8N_LABELS={
-                "hyhome.source-binding": self.artifact["binding"],
-                "hyhome.p05.base-id": inputs.N8N_ID,
-                "hyhome.p05.fixture": "1",
-            },
-            PG_REF=inputs.PG_ID,
-            VALKEY_REF=inputs.VALKEY_ID,
-            MAILPIT_REF=inputs.MAILPIT_ID,
+        with (
+            mock.patch.multiple(
+                legacy,
+                IMAGE_IDS=selected,
+                N8N_REF=self.artifact["reference"],
+                N8N_ID=self.artifact["image_id"],
+                N8N_LABELS={
+                    "hyhome.source-binding": self.artifact["binding"],
+                    "hyhome.p05.base-id": inputs.N8N_ID,
+                    "hyhome.p05.fixture": "1",
+                },
+                PG_REF=inputs.PG_ID,
+                VALKEY_REF=inputs.VALKEY_ID,
+                MAILPIT_REF=inputs.MAILPIT_ID,
+            ),
+            self.roles(),
         ):
             yield
 
@@ -384,6 +408,7 @@ class P05Fixture(legacy.NativeFixture):
             "capture-probe": self.artifact["reference"],
             "runner": inputs.RUNNER_REF,
             "mailpit": inputs.MAILPIT_ID,
+            HOLD: self.artifact["reference"],
         }
         if role not in allowed or translated != allowed[role]:
             raise RehearsalFailure("current fixture role/image combination rejected")
@@ -448,6 +473,55 @@ class P05Fixture(legacy.NativeFixture):
         )
         self.start("mailpit")
 
+    def start_smtp_hold(self):
+        state = self._verify_owned(self.containers["mailpit"]).get("State") or {}
+        if state.get("Running") is not False:
+            raise RehearsalFailure("SMTP hold requires the stopped capture")
+        self.create(
+            HOLD,
+            self.artifact["reference"],
+            "1000:1000",
+            ("capture",),
+            mounts=tuple(
+                inputs.bind_mount(self.directory / name, "/run/secrets/" + target)
+                for name, target in (
+                    ("p05-server.pem", "server.pem"),
+                    ("p05-server.key", "server.key"),
+                )
+            ),
+            entrypoint="node",
+            command=("-e", recovery.HOLD_JS),
+        )
+        self.start(HOLD)
+        self.wait_until(
+            lambda: self.logs_contain(HOLD, "P05_HOLD LISTENING"),
+            "SMTP hold readiness expired",
+            30,
+        )
+
+    def hold_facts(self):
+        record = self.containers[HOLD]
+        self._verify_container(record)
+        result = self.client.run_result("logs", record.cid)
+        if result.returncode:
+            raise RehearsalFailure("SMTP hold log unavailable")
+        return recovery.parse_hold(result.stdout)
+
+    def kill(self, role):
+        # SIGKILL, not `docker stop`: no graceful shutdown can let the node
+        # finish or the transport's own socket timeout end the session.
+        record = self.containers[role]
+        self._verify_container(record)
+        if self.client.run_result("kill", record.cid).returncode:
+            raise RehearsalFailure("owned container kill failed")
+        self.wait_until(
+            lambda: (
+                (self._verify_owned(record).get("State") or {}).get("Running") is False
+            ),
+            "owned container remained running after kill",
+            10,
+        )
+
     def receipt_json(self):
         value = json.loads(super().receipt_json())
         return json.dumps(
@@ -490,6 +564,8 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         self.execution_ids = []
         self.published = 0
         self.stale_notifier = ""
+        self.inputs = []
+        self.runs = []
 
     def api(self, action, **payload):
         with mock.patch.object(historical, "API_JS", PROFILE_API):
@@ -542,6 +618,133 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         )
         return execution
 
+    def publish_input(self, label, captured):
+        item = ("hy-home.k8s", hashlib.sha256(label).hexdigest(), captured)
+        run = self.publish(*item)
+        self.inputs.append(item)
+        self.runs.append(run)
+        return run
+
+    def outbox_snapshot(self):
+        return recovery.snapshot_lines(self.db_value(recovery.SNAPSHOT_SQL))
+
+    def execution_status(self, execution):
+        seen = {}
+
+        def terminal():
+            summary = self.api("execution", executionId=execution)
+            if summary.get("terminal") is True:
+                seen["status"] = str(summary.get("status"))
+            return "status" in seen
+
+        try:
+            self.fixture.wait_until(
+                terminal, "interrupted execution did not settle", 60
+            )
+        except RehearsalFailure:
+            return "not_terminal"
+        return seen["status"]
+
+    def interrupt_active_send(self, workflow):
+        f = self.fixture
+        run = self.publish_input(b"p05-interrupted", "2026-11-27T00:00:00Z")
+        f.stop("mailpit")
+        f.start_smtp_hold()
+        execution = self.run_manual(workflow)
+        self.execution_ids.append(execution)
+        f.wait_until(
+            lambda: f.hold_facts()["body_held_at_ms"] is not None,
+            "SMTP session was not held mid-DATA",
+            60,
+        )
+        held = f.hold_facts()
+        f.kill("worker")
+        # Host and container read the same kernel wall clock; measuring after
+        # the kill returns is an upper bound on the interruption point.
+        killed_ms = int(time.time() * 1000) - held["body_held_at_ms"]
+        f.wait_until(
+            lambda: f.hold_facts()["closed_after_body_ms"] is not None,
+            "held SMTP session did not close after the kill",
+            10,
+        )
+        facts = {
+            "data_started": held["data_started"],
+            "session_open_at_kill": held["closed_after_body_ms"] is None,
+            "body_to_kill_ms": killed_ms,
+            "body_to_close_ms": f.hold_facts()["closed_after_body_ms"],
+            "state_after_kill": self.db_value(
+                f"SELECT state FROM ops_flow.outbox WHERE run_id='{run}';"
+            ),
+            "execution_status": self.execution_status(execution),
+        }
+        f.receipt["active_send_interruption"] = facts
+        f.remove(HOLD)
+        f.receipt["active_send_interruption"] = recovery.validate_interruption(facts)
+        return run
+
+    def broker_jobs(self, ids):
+        result = self.fixture.exec_result(
+            "main", "node", "-e", recovery.QUEUE_PROBE, input_=json.dumps({"ids": ids})
+        )
+        if result.returncode:
+            raise RehearsalFailure("exact old broker job probe unavailable")
+        return json.loads(result.stdout)
+
+    def recover_interrupted(self, workflow, run):
+        f = self.fixture
+        # Closed count only: whether the interrupted job outlived its worker.
+        f.receipt["interrupted_broker_job_matching"] = self.broker_jobs(
+            [self.execution_ids[-1]]
+        )["matching"]
+        for role in ("mailpit", "worker", "runner"):
+            f.start(role)
+        for target, seconds in (
+            ("http://127.0.0.1:5679/healthz", 300),
+            ("http://mailpit:8025/readyz", 60),
+        ):
+            f.wait_until(
+                lambda target=target: legacy.node_status_probe(
+                    lambda *args: f.exec_result("worker", *args), target
+                )[0],
+                "recovered worker or capture readiness expired",
+                seconds,
+            )
+        f.wait_until(
+            lambda: f.logs_contain("worker", 'Registered runner "'),
+            "external runner did not re-register",
+            60,
+        )
+        # Fixture-only time travel as the superuser (as fast_forward_sql does)
+        # instead of waiting out the 10-minute lease; the notifier cannot.
+        expired = self.db_value(
+            "UPDATE ops_flow.outbox SET lease_until=clock_timestamp() "
+            f"WHERE run_id='{run}' AND state='sending' RETURNING id;"
+        )
+        if not expired.isdecimal():
+            raise RehearsalFailure("interrupted lease was not left sending")
+        fresh = self.publish_input(b"p05-after-interruption", "2026-11-28T00:00:00Z")
+        self.execute(workflow, "success")
+        self.wait_state(fresh, "accepted_by_smtp")
+        observed = (
+            self.db_value(
+                "SELECT state||'|'||attempts||'|'||coalesce(last_error_code,'') "
+                f"FROM ops_flow.outbox WHERE run_id='{run}';"
+            ),
+            self.capture(run)["matched"],
+            self.capture(fresh)["matched"],
+        )
+        # claim_notification turns the expired lease unknown without a send
+        # or a new attempt; only the fresh row is claimed and delivered.
+        if observed != ("unknown|1|lease_expired_delivery_unknown", False, True):
+            raise RehearsalFailure("interrupted notification was resent or reclaimed")
+        f.receipt["interrupted_recovery"] = {
+            "state": "unknown",
+            "last_error_code": "lease_expired_delivery_unknown",
+            "attempts": 1,
+            "resent": False,
+            "fresh_after_recovery": "accepted_by_smtp",
+        }
+
     def ready_retry(self, run):
         self.fixture.wait_until(
             lambda: (
@@ -579,16 +782,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             )(self.fixture._verify_owned(self.fixture.containers[role])["State"])
             for role in ("runner", "worker", "mailpit")
         )
-        result = self.fixture.exec_result(
-            "main",
-            "node",
-            "-e",
-            recovery.QUEUE_PROBE,
-            input_=json.dumps({"ids": self.execution_ids}),
-        )
-        if result.returncode:
-            raise RehearsalFailure("exact old broker job probe unavailable")
-        observed = json.loads(result.stdout)
+        observed = self.broker_jobs(self.execution_ids)
         barrier = {
             "smtp_egress_held": absent,
             "workflow_inactive": inactive,
@@ -599,6 +793,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             == {"scanned": True, "matching": 0, "ids": self.execution_ids},
             "owned_attempt": self.fixture.attempt,
         }
+        self.fixture.receipt["recovery_barrier_facts"] = barrier
         self.fixture.receipt["recovery_barrier"] = recovery.validate_barrier(barrier)
         self.fixture.receipt["recovery_scope"] = "QUIESCED_ONLY"
         self.fixture.receipt["live_inflight_interruption"] = "TEST_RESIDUAL"
@@ -623,11 +818,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         workflow, _name = self.bind_and_import()
         self.api("profile", workflowId=workflow)
         self.update_smtp(1)
-        first = self.publish(
-            "hy-home.k8s",
-            hashlib.sha256(b"p05-first").hexdigest(),
-            "2026-11-20T00:00:00Z",
-        )
+        first = self.publish_input(b"p05-first", "2026-11-20T00:00:00Z")
         self.phase("first_worker_starttls_delivery")
         self.execute(workflow, "success")
         self.wait_state(first, "accepted_by_smtp")
@@ -641,11 +832,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         )
         f.receipt["worker_queue_starttls_auth"] = "PASS"
         self.phase("same_id_credential_refresh")
-        second = self.publish(
-            "hy-home.k8s",
-            hashlib.sha256(b"p05-second").hexdigest(),
-            "2026-11-21T00:00:00Z",
-        )
+        second = self.publish_input(b"p05-second", "2026-11-21T00:00:00Z")
         self.update_smtp(2)
         self.execute(workflow, "error")
         self.wait_state(second, "unknown")
@@ -655,44 +842,61 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         f.remove("mailpit")
         f.smtp_epoch = 2
         f.start_mailpit()
-        refreshed = self.publish(
-            "hy-home.k8s",
-            hashlib.sha256(b"p05-refreshed").hexdigest(),
-            "2026-11-22T00:00:00Z",
-        )
+        refreshed = self.publish_input(b"p05-refreshed", "2026-11-22T00:00:00Z")
         self.execute(workflow, "success")
         self.wait_state(refreshed, "accepted_by_smtp")
         f.receipt["same_id_next_execution_refresh"] = "PASS"
-        third = self.publish(
-            "hy-home.k8s",
-            hashlib.sha256(b"p05-third").hexdigest(),
-            "2026-11-23T00:00:00Z",
-        )
+        third = self.publish_input(b"p05-third", "2026-11-23T00:00:00Z")
         self.update_smtp(1)
         self.execute(workflow, "error")
         self.wait_state(third, "unknown")
         self.assertEqual(2, self.capture(refreshed)["total"])
         f.receipt["wrong_old_material"] = "PASS"
         self.update_smtp(2)
-        corrected = self.publish(
-            "hy-home.k8s",
-            hashlib.sha256(b"p05-corrected").hexdigest(),
-            "2026-11-24T00:00:00Z",
-        )
+        corrected = self.publish_input(b"p05-corrected", "2026-11-24T00:00:00Z")
         self.execute(workflow, "success")
         self.wait_state(corrected, "accepted_by_smtp")
         self.fence(workflow)
+        before = self.outbox_snapshot()
         self.phase("owned_restore")
         self.restore_and_restart()
         self._session = None
+        self.phase("restored_state_replay")
+        f.receipt["restored_outbox_equivalence"] = recovery.validate_restored_state(
+            before, self.outbox_snapshot()
+        )
+        baseline = self.outbox_snapshot()
+        replays = [
+            self.db_value(publish_sql(*item)[1], "opsflow_ingest")
+            for item in self.inputs
+        ]
+        f.receipt["same_input_replay"] = recovery.validate_replay(
+            replays,
+            baseline,
+            self.outbox_snapshot(),
+            self.db_value(recovery.CLAIMABLE_SQL),
+        )
         fourth = self.publish(
             "hy-home.k8s",
             hashlib.sha256(b"p05-restored").hexdigest(),
-            "2026-11-25T00:00:00Z",
+            "2026-11-26T00:00:00Z",
         )
         self.execute(workflow, "success")
         self.wait_state(fourth, "accepted_by_smtp")
-        self.assertTrue(self.capture(fourth)["matched"])
+        f.receipt["next_claim_after_restore"] = recovery.validate_next_claim(
+            baseline, self.outbox_snapshot(), fourth
+        )
+        self.assertEqual(
+            (True, 1), (self.capture(fourth)["matched"], self.capture(fourth)["total"])
+        )
+        # Generation 2 capture: no accepted or unknown pre-restore run resent.
+        resent = [run for run in self.runs if self.capture(run)["matched"]]
+        if resent:
+            raise RehearsalFailure("a pre-restore notification was sent again")
+        self.phase("live_active_send_interruption")
+        interrupted = self.interrupt_active_send(workflow)
+        self.recover_interrupted(workflow, interrupted)
+        f.receipt["live_inflight_interruption"] = "PASS"
         f.receipt["same_encryption_key_restore"] = "PASS"
         f.receipt["native"] = "PASS"
         self.phase("complete")
