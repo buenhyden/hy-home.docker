@@ -75,11 +75,9 @@ class MemoryFixture:
     def psql(self, role, database, sql, **kwargs):
         self.event("sql:" + role)
         if database == "n8n" and kwargs.get("container") == "metadata-pg":
-            execution = re.fullmatch(
-                r"SELECT status FROM execution_entity WHERE id=([0-9]+);", sql
-            )[1]
+            execution = re.search(r"WHERE id=([0-9]+)\)", sql)[1]
             return SimpleNamespace(
-                stdout=self.executions[execution] + "\n", stderr="", returncode=0
+                stdout=self.executions[execution] + "|1\n", stderr="", returncode=0
             )
         if database != "opsflow_dev":
             raise AssertionError("unexpected database")

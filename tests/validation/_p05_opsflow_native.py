@@ -810,6 +810,23 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             "fresh_after_recovery": "accepted_by_smtp",
         }
 
+    def metadata_execution(self, execution):
+        # Closed facts only: the status word and the count of its data rows.
+        if not execution.isdecimal():
+            raise RehearsalFailure("interrupted execution id rejected")
+        value = self.fixture.psql(
+            "n8n",
+            "n8n",
+            "SELECT coalesce((SELECT status FROM execution_entity WHERE "
+            f"id={execution}),'absent')||'|'||(SELECT count(*) FROM execution_data "
+            f'WHERE "executionId"={execution});',
+            container="metadata-pg",
+        ).stdout.strip()
+        status, _, rows = value.partition("|")
+        if not re.fullmatch(r"[a-z]{1,16}", status) or not rows.isdecimal():
+            raise RehearsalFailure("metadata execution facts rejected")
+        return status, int(rows)
+
     def recover_after_main_restart(self, workflow, run):
         f = self.fixture
         interrupted = self.execution_ids[-1]
@@ -827,12 +844,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         after = self.settle_job(interrupted, "worker")
         if not interrupted.isdecimal():
             raise RehearsalFailure("interrupted execution id rejected")
-        status = f.psql(
-            "n8n",
-            "n8n",
-            f"SELECT status FROM execution_entity WHERE id={interrupted};",
-            container="metadata-pg",
-        ).stdout.strip()
+        status, data_before = self.metadata_execution(interrupted)
         started = time.monotonic()
         f.start("main")
         f.wait_until(
@@ -843,12 +855,35 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             "restarted main readiness expired",
             300,
         )
+        # The metadata DB is authoritative here: after a main restart the REST
+        # read can answer 404 for the execution (native attempt 4).
+        try:
+            f.wait_until(
+                lambda: (
+                    self.metadata_execution(interrupted)[0] not in {"new", "running"}
+                ),
+                "restarted main did not settle the execution",
+                60,
+            )
+        except RehearsalFailure as error:
+            if str(error) != "restarted main did not settle the execution":
+                raise
+        settled, data_after = self.metadata_execution(interrupted)
+        try:
+            readable = self.api("execution", executionId=interrupted).get("status")
+        except RehearsalFailure:
+            readable = "unreadable"
+        f.receipt["main_restart_metadata"] = {
+            "execution_data_rows_before_main": data_before,
+            "execution_data_rows_after_main": data_after,
+            "rest_status": readable,
+        }
         facts = {
             "jobs_before_restart": before,
             "kill_to_probe_ms": probe_ms,
             "jobs_after_worker_recovery": after,
             "status_while_main_down": status,
-            "execution_status": self.execution_status(interrupted),
+            "execution_status": settled,
         }
         f.receipt["main_restart_recovery_seconds"] = round(
             time.monotonic() - started, 3
