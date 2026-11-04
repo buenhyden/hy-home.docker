@@ -545,6 +545,14 @@ else if(input.action==='credential_update')""",
 PROFILE_API = PROFILE_API.replace(
     "else if(input.action==='profile')", registration.CREATE_BRANCH
 )
+# n8n's own retry of a crashed execution (REST /executions/:id/retry, the
+# editor's "Retry with original workflow"); it resolves on completion.
+PROFILE_API = PROFILE_API.replace(
+    "else if(input.action==='credential_update')",
+    """else if(input.action==='retry'){const r=await call('/rest/executions/'+encodeURIComponent(input.executionId)+'/retry','POST',{loadWorkflow:false},auth);const d=r.data;
+out={id:String(d.id),retryOf:String(d.retryOf),status:String(d.status)};}
+else if(input.action==='credential_update')""",
+)
 
 
 class P05Scenario(historical.OpsflowN8nNativeRehearsal):
@@ -645,9 +653,9 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             return "not_terminal"
         return seen["status"]
 
-    def interrupt_active_send(self, workflow):
+    def interrupt_active_send(self, workflow, label, captured, *, kill_main=False):
         f = self.fixture
-        run = self.publish_input(b"p05-interrupted", "2026-11-27T00:00:00Z")
+        run = self.publish_input(label, captured)
         f.stop("mailpit")
         f.start_smtp_hold()
         execution = self.run_manual(workflow)
@@ -659,9 +667,13 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         )
         held = f.hold_facts()
         f.kill("worker")
+        self.killed_at = time.monotonic()
         # Host and container read the same kernel wall clock; measuring after
         # the kill returns is an upper bound on the interruption point.
         killed_ms = int(time.time() * 1000) - held["body_held_at_ms"]
+        if kill_main:
+            # Main dies with the worker: its in-memory wait for the job is lost.
+            f.kill("main")
         f.wait_until(
             lambda: f.hold_facts()["closed_after_body_ms"] is not None,
             "held SMTP session did not close after the kill",
@@ -675,16 +687,19 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             "state_after_kill": self.db_value(
                 f"SELECT state FROM ops_flow.outbox WHERE run_id='{run}';"
             ),
-            "execution_status": self.execution_status(execution),
+            "execution_status": "main_down"
+            if kill_main
+            else self.execution_status(execution),
         }
-        f.receipt["active_send_interruption"] = facts
+        key = "main_restart_interruption" if kill_main else "active_send_interruption"
+        f.receipt[key] = facts
         f.remove(HOLD)
-        f.receipt["active_send_interruption"] = recovery.validate_interruption(facts)
+        f.receipt[key] = recovery.validate_interruption(facts)
         return run
 
-    def broker_jobs(self, ids):
+    def broker_jobs(self, ids, role="main"):
         result = self.fixture.exec_result(
-            "main", "node", "-e", recovery.QUEUE_PROBE, input_=json.dumps({"ids": ids})
+            role, "node", "-e", recovery.QUEUE_PROBE, input_=json.dumps({"ids": ids})
         )
         if result.returncode:
             raise RehearsalFailure("exact old broker job probe unavailable")
@@ -701,6 +716,28 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         f.receipt["interrupted_broker_job_matching"] = before
         for role in ("mailpit", "worker", "runner"):
             f.start(role)
+        self.await_worker_and_capture()
+        # n8n's own recovery only: the restarted worker fails and deletes the
+        # stalled job and main marks the execution crashed. The rehearsal
+        # removes nothing from the queue.
+        started = time.monotonic()
+        after = self.settle_job(interrupted)
+        f.receipt["interrupted_queue_recovery_seconds"] = round(
+            time.monotonic() - started, 3
+        )
+        facts = {
+            "jobs_before_restart": before,
+            "jobs_after_recovery": after,
+            "execution_status": self.execution_status(interrupted),
+        }
+        f.receipt["interrupted_queue_recovery"] = facts
+        recovery.validate_queue_recovery(facts)
+        f.receipt["interrupted_recovery"] = self.quarantine_interrupted(
+            workflow, run, b"p05-after-interruption", "2026-11-28T00:00:00Z"
+        )
+
+    def await_worker_and_capture(self):
+        f = self.fixture
         for target, seconds in (
             ("http://127.0.0.1:5679/healthz", 300),
             ("http://mailpit:8025/readyz", 60),
@@ -717,15 +754,15 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             "external runner did not re-register",
             60,
         )
-        # n8n's own recovery only: the restarted worker fails and deletes the
-        # stalled job and main marks the execution crashed. The rehearsal
-        # removes nothing from the queue.
-        started = time.monotonic()
+
+    def settle_job(self, execution, role="main"):
+        # Waits only for n8n itself to remove the job; returns the final count.
+        f = self.fixture
         try:
             f.wait_until(
                 lambda: (
                     recovery.broker_job_count(
-                        self.broker_jobs([interrupted]), [interrupted]
+                        self.broker_jobs([execution], role), [execution]
                     )
                     == 0
                 ),
@@ -733,23 +770,15 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
                 recovery.STALL_RECOVERY_SECONDS,
             )
         except RehearsalFailure as error:
-            # Only the settle timeout is recorded and validated below; any
-            # other failure (probe, headroom) propagates unchanged.
+            # Only the settle timeout is recorded and validated by the caller;
+            # any other failure (probe, headroom) propagates unchanged.
             if str(error) != "n8n did not settle the interrupted queue job":
                 raise
-        after = recovery.broker_job_count(
-            self.broker_jobs([interrupted]), [interrupted]
+        return recovery.broker_job_count(
+            self.broker_jobs([execution], role), [execution]
         )
-        f.receipt["interrupted_queue_recovery_seconds"] = round(
-            time.monotonic() - started, 3
-        )
-        facts = {
-            "jobs_before_restart": before,
-            "jobs_after_recovery": after,
-            "execution_status": self.execution_status(interrupted),
-        }
-        f.receipt["interrupted_queue_recovery"] = facts
-        recovery.validate_queue_recovery(facts)
+
+    def quarantine_interrupted(self, workflow, run, label, captured):
         # Fixture-only time travel as the superuser (as fast_forward_sql does)
         # instead of waiting out the 10-minute lease; the notifier cannot.
         expired = self.db_value(
@@ -758,7 +787,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         )
         if not expired.isdecimal():
             raise RehearsalFailure("interrupted lease was not left sending")
-        fresh = self.publish_input(b"p05-after-interruption", "2026-11-28T00:00:00Z")
+        fresh = self.publish_input(label, captured)
         self.execute(workflow, "success")
         self.wait_state(fresh, "accepted_by_smtp")
         observed = (
@@ -773,13 +802,106 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         # or a new attempt; only the fresh row is claimed and delivered.
         if observed != ("unknown|1|lease_expired_delivery_unknown", False, True):
             raise RehearsalFailure("interrupted notification was resent or reclaimed")
-        f.receipt["interrupted_recovery"] = {
+        return {
             "state": "unknown",
             "last_error_code": "lease_expired_delivery_unknown",
             "attempts": 1,
             "resent": False,
             "fresh_after_recovery": "accepted_by_smtp",
         }
+
+    def recover_after_main_restart(self, workflow, run):
+        f = self.fixture
+        interrupted = self.execution_ids[-1]
+        f.receipt["main_restart_execution_id"] = interrupted
+        # Main is down, so the worker probes; it must run before the killed
+        # worker's lock expires or the job could already be gone.
+        f.start("worker")
+        before = recovery.broker_job_count(
+            self.broker_jobs([interrupted], "worker"), [interrupted]
+        )
+        probe_ms = int((time.monotonic() - self.killed_at) * 1000)
+        for role in ("mailpit", "runner"):
+            f.start(role)
+        self.await_worker_and_capture()
+        after = self.settle_job(interrupted, "worker")
+        if not interrupted.isdecimal():
+            raise RehearsalFailure("interrupted execution id rejected")
+        status = f.psql(
+            "n8n",
+            "n8n",
+            f"SELECT status FROM execution_entity WHERE id={interrupted};",
+            container="metadata-pg",
+        ).stdout.strip()
+        started = time.monotonic()
+        f.start("main")
+        f.wait_until(
+            lambda: legacy.node_status_probe(
+                lambda *args: f.exec_result("main", *args),
+                "http://127.0.0.1:5678/healthz",
+            )[0],
+            "restarted main readiness expired",
+            300,
+        )
+        facts = {
+            "jobs_before_restart": before,
+            "kill_to_probe_ms": probe_ms,
+            "jobs_after_worker_recovery": after,
+            "status_while_main_down": status,
+            "execution_status": self.execution_status(interrupted),
+        }
+        f.receipt["main_restart_recovery_seconds"] = round(
+            time.monotonic() - started, 3
+        )
+        f.receipt["main_restart_recovery"] = facts
+        recovery.validate_main_restart_recovery(facts)
+        f.receipt["main_restart_quarantine"] = self.quarantine_interrupted(
+            workflow, run, b"p05-after-main-restart", "2026-11-28T12:00:00Z"
+        )
+
+    def retry_crashed(self, crashed, interrupted_runs):
+        # n8n's own replay of each crashed execution. A fresh row is published
+        # first so the retry must really run: it claims and delivers that row
+        # while every interrupted row and its mail stay untouched.
+        f = self.fixture
+        baseline = self.outbox_snapshot()
+        statuses, fresh = [], []
+        for index, execution in enumerate(crashed):
+            run = self.publish_input(
+                b"p05-retry-" + str(index).encode(), f"2026-11-28T{18 + index}:00:00Z"
+            )
+            fresh.append(run)
+            result = self.api("retry", executionId=execution)
+            if result.get("retryOf") != execution:
+                raise RehearsalFailure("retry was not bound to the crashed execution")
+            statuses.append(str(result.get("status")))
+            self.wait_state(run, "accepted_by_smtp")
+        others = tuple(
+            line
+            for line in self.outbox_snapshot()
+            if recovery.run_id_of(line) not in fresh
+        )
+        facts = {
+            "retried": len(crashed),
+            "statuses": statuses,
+            "interrupted_rows_unchanged": others
+            == tuple(
+                line for line in baseline if recovery.run_id_of(line) not in fresh
+            ),
+            "interrupted_resent": sum(
+                1 for run in interrupted_runs if self.capture(run)["matched"]
+            ),
+            "fresh_accepted_first_attempt": sum(
+                1
+                for run in fresh
+                if self.db_value(
+                    f"SELECT state||'|'||attempts FROM ops_flow.outbox WHERE run_id='{run}';"
+                )
+                == "accepted_by_smtp|1"
+            ),
+        }
+        f.receipt["execution_retry"] = facts
+        f.receipt["execution_retry"] = recovery.validate_execution_retry(facts)
 
     def ready_retry(self, run):
         self.fixture.wait_until(
@@ -900,8 +1022,19 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         # Interrupt before the barrier: restore must wait for n8n to settle
         # the orphaned job and execution, never ignore or delete them.
         self.phase("live_active_send_interruption")
-        interrupted = self.interrupt_active_send(workflow)
+        interrupted = self.interrupt_active_send(
+            workflow, b"p05-interrupted", "2026-11-27T00:00:00Z"
+        )
         self.recover_interrupted(workflow, interrupted)
+        self.phase("main_and_worker_interruption")
+        main_lost = self.interrupt_active_send(
+            workflow, b"p05-main-restart", "2026-11-28T06:00:00Z", kill_main=True
+        )
+        crashed = [self.execution_ids[-1]]
+        self.recover_after_main_restart(workflow, main_lost)
+        self.phase("crashed_execution_retry")
+        crashed.insert(0, f.receipt["interrupted_execution_id"])
+        self.retry_crashed(crashed, [interrupted, main_lost])
         self.fence(workflow)
         before = self.outbox_snapshot()
         self.phase("owned_restore")

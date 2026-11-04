@@ -472,6 +472,63 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
             + 2 * recovery.N8N_STALLED_INTERVAL_SECONDS,
         )
 
+    def test_main_restart_recovery_requires_worker_settle_then_startup_crash(self):
+        # With main also killed, nobody awaits the job: the restarted worker
+        # deletes it but the execution stays running until the restarted
+        # leader main's startup queue recovery marks it crashed.
+        lock_ms = recovery.N8N_LOCK_DURATION_SECONDS * 1000
+        good = {
+            "jobs_before_restart": 1,
+            "kill_to_probe_ms": lock_ms - 1,
+            "jobs_after_worker_recovery": 0,
+            "status_while_main_down": "running",
+            "execution_status": "crashed",
+        }
+        self.assertEqual(good, recovery.validate_main_restart_recovery(good))
+        for change in (
+            {"jobs_before_restart": 0},
+            # Probed after the lock expired: the job may already be gone.
+            {"kill_to_probe_ms": lock_ms},
+            {"kill_to_probe_ms": -1},
+            {"kill_to_probe_ms": 1.5},
+            {"jobs_after_worker_recovery": 1},
+            # Already terminal means something other than main's recovery ran.
+            {"status_while_main_down": "crashed"},
+            {"execution_status": "running"},
+            {"execution_status": "not_terminal"},
+            {"unexpected": "private-payload"},
+        ):
+            with (
+                self.subTest(change=tuple(change)),
+                self.assertRaises(recovery.RehearsalFailure),
+            ):
+                recovery.validate_main_restart_recovery({**good, **change})
+
+    def test_execution_retry_runs_a_fresh_claim_and_never_resends(self):
+        good = {
+            "retried": 2,
+            "statuses": ["success", "success"],
+            "interrupted_rows_unchanged": True,
+            "interrupted_resent": 0,
+            "fresh_accepted_first_attempt": 2,
+        }
+        self.assertEqual(good, recovery.validate_execution_retry(good))
+        for change in (
+            {"retried": 0, "statuses": []},
+            {"statuses": ["success", "refused"]},
+            {"statuses": ["success"]},
+            {"interrupted_rows_unchanged": False},
+            {"interrupted_resent": 1},
+            {"fresh_accepted_first_attempt": 1},
+            {"retried": True},
+            {"unexpected": "private-payload"},
+        ):
+            with (
+                self.subTest(change=tuple(change)),
+                self.assertRaises(recovery.RehearsalFailure),
+            ):
+                recovery.validate_execution_retry({**good, **change})
+
     def test_hold_endpoint_stops_after_data_and_prints_only_closed_facts(self):
         script = recovery.HOLD_JS
         self.assertIn("354", script)

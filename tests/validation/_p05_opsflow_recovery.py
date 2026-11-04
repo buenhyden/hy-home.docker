@@ -77,7 +77,7 @@ def validate_replay(results, before, after, claimable):
     return {"replayed": len(results), "claimable": 0}
 
 
-def _run_id(line):
+def run_id_of(line):
     fields = line.split("|")
     if fields[0] == "outbox" and len(fields) > 2:
         return fields[2]
@@ -89,7 +89,7 @@ def _run_id(line):
 def validate_next_claim(before, after, fresh):
     row = _outbox(after).get(fresh)
     if (
-        tuple(line for line in after if _run_id(line) != fresh) != tuple(before)
+        tuple(line for line in after if run_id_of(line) != fresh) != tuple(before)
         or row is None
         or row[3] != "accepted_by_smtp"
         or row[4] != "1"
@@ -191,6 +191,52 @@ def validate_queue_recovery(facts):
         for key in ("jobs_before_restart", "jobs_after_recovery")
     ):
         raise RehearsalFailure("interrupted queue job was not recovered by n8n")
+    return dict(facts)
+
+
+def validate_main_restart_recovery(facts):
+    # Main killed too: the restarted worker still deletes the stalled job, but
+    # no WorkflowRunner awaits it, so the execution stays running. The leader
+    # main's ScalingService.setupQueue runs scheduleQueueRecovery(0) at start:
+    # an in-progress execution with no active or waiting job becomes crashed.
+    # The probe must precede lock expiry, or the job may already be gone.
+    probe_ms = facts.get("kill_to_probe_ms") if isinstance(facts, dict) else None
+    if (
+        facts
+        != {
+            "jobs_before_restart": 1,
+            "kill_to_probe_ms": probe_ms,
+            "jobs_after_worker_recovery": 0,
+            "status_while_main_down": "running",
+            "execution_status": "crashed",
+        }
+        or type(probe_ms) is not int
+        or not 0 <= probe_ms < N8N_LOCK_DURATION_SECONDS * 1000
+        or type(facts["jobs_before_restart"]) is not int
+        or type(facts["jobs_after_worker_recovery"]) is not int
+    ):
+        raise RehearsalFailure("main-restart queue recovery rejected")
+    return dict(facts)
+
+
+def validate_execution_retry(facts):
+    # n8n's own retry of each crashed execution: the notifier saves no
+    # progress, so a retry starts from the trigger and claims afresh. It must
+    # deliver exactly the fresh rows and never reuse an interrupted lease.
+    count = facts.get("retried") if isinstance(facts, dict) else None
+    if (
+        type(count) is not int
+        or count < 1
+        or facts
+        != {
+            "retried": count,
+            "statuses": ["success"] * count,
+            "interrupted_rows_unchanged": True,
+            "interrupted_resent": 0,
+            "fresh_accepted_first_attempt": count,
+        }
+    ):
+        raise RehearsalFailure("n8n execution retry outcome rejected")
     return dict(facts)
 
 
