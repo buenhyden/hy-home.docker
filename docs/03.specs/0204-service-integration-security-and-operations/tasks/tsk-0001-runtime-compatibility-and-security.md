@@ -10,11 +10,6 @@ artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
 - "SPEC-0204-PLAN-0001"
 created: "2026-10-03"
-branch_integration_receipts:
-- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0201-home-infrastructure-diagnosis-and-work-design", source_artifact_id: "SPEC-0201", preserved_package_path: "docs/98.archive/superseded/03.specs/0201-home-infrastructure-diagnosis-and-work-design", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
-- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0202-development-data-and-lab-isolation", source_artifact_id: "SPEC-0202", preserved_package_path: "docs/98.archive/superseded/03.specs/0202-development-data-and-lab-isolation", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
-- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0203-quality-results-and-isolated-load-testing", source_artifact_id: "SPEC-0203", preserved_package_path: "docs/98.archive/superseded/03.specs/0203-quality-results-and-isolated-load-testing", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
-- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0205-storybook-dependency-refresh", source_artifact_id: "SPEC-0205", preserved_package_path: "docs/98.archive/superseded/03.specs/0205-storybook-dependency-refresh", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
 ---
 
 # Runtime Compatibility and Security Task

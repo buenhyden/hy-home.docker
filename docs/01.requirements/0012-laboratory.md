@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Requirements"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-04"
 layer: "requirements"
 artifact_id: "REQ-0012"
 created: "2026-03-26"
@@ -83,6 +83,6 @@ No separately numbered solution-independent external interface requirement was i
 - **Architecture Description**: [Laboratory architecture descriptions](../02.architecture/descriptions/0011-laboratory-architecture.md)
 - **Spec**: [Laboratory technical specification](../02.architecture/descriptions/0011-laboratory-architecture.md)
 - **Plan**: Laboratory standardization plan
-- **ADR**: [Laboratory services decision](../02.architecture/decisions/0011-laboratory-services.md)
+- **Retired ADR-0011** (laboratory services): deleted on 2026-11-04; its surviving tool selection is summarized in AD-0011 Traceability.
 - **Retired domain Spec SPEC-0012** (laboratory): replaced by the laboratory guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.
 - **Retired requirement REQ-0022** (laboratory optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the laboratory operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

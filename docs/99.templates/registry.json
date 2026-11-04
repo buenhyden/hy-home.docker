@@ -21,7 +21,6 @@
       "mitigated",
       "resolved",
       "published",
-      "sealed",
       "review",
       "open",
       "closed"
@@ -73,7 +72,6 @@
       "runtime",
       "identity_recovery",
       "identity_recovery_decisions",
-      "branch_integration_receipts",
       "cancellation",
       "archive_authorizations",
       "action",
@@ -154,22 +152,16 @@
       "occurred_at"
     ],
     "terminal_statuses": [
-      "superseded",
-      "archived"
+      "completed"
     ],
     "transitions": {
       "draft": [
         "active"
       ],
       "active": [
-        "completed",
-        "superseded"
+        "completed"
       ],
-      "completed": [
-        "superseded"
-      ],
-      "superseded": [],
-      "archived": []
+      "completed": []
     },
     "typed_keys": [
       "title",
@@ -334,101 +326,36 @@
       }
     },
     "archive_retention": {
-      "standard_version": "3.0.0",
-      "catalog_path": "docs/98.archive/retention-catalog.md",
-      "capture_section": "Retention Catalog",
-      "capture_columns": [
-        "Record",
-        "Class",
-        "Names",
-        "Source"
-      ],
-      "assessment_section": "Current Assessments",
-      "assessment_columns": [
-        "Record",
-        "Assessment",
-        "Availability",
-        "Current Owner",
-        "Decision",
-        "Reason",
-        "Assessed At",
-        "Hold"
-      ],
-      "assessment_values": [
-        "unreviewed",
-        "usable",
-        "superseded",
-        "withdrawn",
-        "invalidated"
-      ],
-      "availability_values": [
-        "retained",
-        "git-history-only"
-      ],
-      "default_assessment": "unreviewed",
-      "default_availability": "retained",
-      "absence_token": "none",
-      "legacy_capture_revision": "cb11af64194432d94739c47046ed707010634468",
-      "citation_order": [
-        "resolve",
-        "assessment",
-        "route-record",
-        "profile",
-        "context",
-        "integrity"
-      ],
-      "blocked_assessments": [
-        "withdrawn",
-        "invalidated"
-      ],
-      "history_only_availability": "git-history-only",
-      "legacy_transition_units": [
-        "superseded/02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md"
-      ],
       "disposition_entry_statuses": {
         "requirements-package": [
           "completed",
-          "cancelled",
-          "superseded",
-          "retired"
+          "cancelled"
         ],
         "architecture-description": [
           "completed",
-          "cancelled",
-          "superseded",
-          "retired"
+          "cancelled"
         ],
         "adr": [
           "completed",
-          "cancelled",
-          "superseded",
-          "retired"
+          "cancelled"
         ],
         "spec": [
           "approved",
           "completed",
-          "cancelled",
-          "superseded",
-          "retired"
+          "cancelled"
         ],
         "data-model-contract": [
           "completed",
-          "cancelled",
-          "superseded",
-          "retired"
+          "cancelled"
         ],
         "plan": [
           "approved",
           "completed",
-          "cancelled",
-          "superseded",
-          "retired"
+          "cancelled"
         ],
         "task": [
           "completed",
-          "cancelled",
-          "superseded",
-          "retired"
+          "cancelled"
         ],
         "guide": [
           "completed",
@@ -491,18 +418,6 @@
           "retired"
         ],
         "audit-member": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "migration": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "tombstone": [
           "completed",
           "cancelled",
           "superseded",
@@ -670,8 +585,6 @@
       "optional_frontmatter": [
         "layer",
         "created",
-        "supersedes",
-        "superseded_by",
         "parent_ids"
       ],
       "required_sections": [
@@ -707,11 +620,6 @@
       "frontmatter_values": {
         "layer": "requirements"
       },
-      "required_frontmatter_by_status": {
-        "superseded": [
-          "superseded_by"
-        ]
-      },
       "ordered_sections": true,
       "nonempty_sections": true
     },
@@ -736,8 +644,6 @@
       "optional_frontmatter": [
         "layer",
         "created",
-        "supersedes",
-        "superseded_by",
         "parent_ids"
       ],
       "required_sections": [
@@ -770,11 +676,6 @@
       "frontmatter_values": {
         "layer": "architecture"
       },
-      "required_frontmatter_by_status": {
-        "superseded": [
-          "superseded_by"
-        ]
-      },
       "ordered_sections": true,
       "nonempty_sections": true
     },
@@ -799,8 +700,6 @@
       "optional_frontmatter": [
         "layer",
         "created",
-        "supersedes",
-        "superseded_by",
         "parent_ids"
       ],
       "required_sections": [
@@ -828,11 +727,6 @@
       "frontmatter_values": {
         "layer": "architecture"
       },
-      "required_frontmatter_by_status": {
-        "superseded": [
-          "superseded_by"
-        ]
-      },
       "ordered_sections": true,
       "nonempty_sections": true
     },
@@ -857,8 +751,6 @@
       "optional_frontmatter": [
         "layer",
         "created",
-        "supersedes",
-        "superseded_by",
         "cancellation",
         "parent_ids",
         "reviewed_at",
@@ -892,9 +784,6 @@
       "required_frontmatter_by_status": {
         "cancelled": [
           "cancellation"
-        ],
-        "superseded": [
-          "superseded_by"
         ]
       },
       "ordered_sections": true,
@@ -1029,8 +918,6 @@
       "optional_frontmatter": [
         "layer",
         "created",
-        "supersedes",
-        "superseded_by",
         "cancellation",
         "completed_at"
       ],
@@ -1059,9 +946,6 @@
       "required_frontmatter_by_status": {
         "cancelled": [
           "cancellation"
-        ],
-        "superseded": [
-          "superseded_by"
         ]
       },
       "ordered_sections": true,
@@ -1089,12 +973,9 @@
       "optional_frontmatter": [
         "layer",
         "created",
-        "supersedes",
-        "superseded_by",
         "cancellation",
         "completed_at",
         "identity_recovery_decisions",
-        "branch_integration_receipts",
         "archive_authorizations"
       ],
       "required_sections": [
@@ -1849,171 +1730,6 @@
           "superseded_by"
         ]
       }
-    },
-    {
-      "id": "migration",
-      "type": "archive/route",
-      "frontmatter_policy": "required",
-      "path_pattern": "docs/98.archive/migrations/{number:4}-{slug}.md",
-      "artifact_id_pattern": "MIG-{number:4}",
-      "identity_relation": "direct",
-      "template_id": "archive/migration",
-      "required_frontmatter": [
-        "title",
-        "version",
-        "type",
-        "status",
-        "owner",
-        "updated",
-        "artifact_id"
-      ],
-      "optional_frontmatter": [
-        "layer",
-        "created",
-        "supersedes",
-        "superseded_by",
-        "parent_ids",
-        "archived_from",
-        "archived_at",
-        "archive_reason",
-        "archive_disposition",
-        "archived_commit",
-        "archived_blob",
-        "preservation_class"
-      ],
-      "required_sections": [
-        "Overview",
-        "Route Disposition",
-        "Current Owner",
-        "Related Documents"
-      ],
-      "optional_sections": [
-        "Purpose",
-        "Moved Scope",
-        "Approval",
-        "Traceability",
-        "Execution Evidence"
-      ],
-      "sealed_section_shapes": [
-        [
-          "Purpose",
-          "Authority Change",
-          "Path Mapping",
-          "Recovery",
-          "Approval",
-          "Traceability"
-        ],
-        [
-          "Purpose",
-          "Moved Scope",
-          "Current Owner",
-          "Approval",
-          "Traceability"
-        ]
-      ],
-      "lifecycle_id": "sealed-record",
-      "traceability": {
-        "allowed_parent_profiles": [
-          "spec",
-          "adr",
-          "migration"
-        ]
-      },
-      "exceptions": [],
-      "frontmatter_values": {
-        "layer": "archive"
-      }
-    },
-    {
-      "id": "tombstone",
-      "type": "archive/route",
-      "frontmatter_policy": "required",
-      "path_pattern": "docs/98.archive/tombstones/{stage}/{number:4}-{slug}.md",
-      "artifact_id_pattern": "tomb-{retired_artifact_id}",
-      "identity_relation": "inherited",
-      "template_id": "archive/tombstone",
-      "required_frontmatter": [
-        "title",
-        "version",
-        "type",
-        "status",
-        "owner",
-        "updated",
-        "artifact_id"
-      ],
-      "optional_frontmatter": [
-        "layer",
-        "created",
-        "supersedes",
-        "superseded_by",
-        "parent_ids"
-      ],
-      "required_sections": [
-        "Overview",
-        "Route Disposition",
-        "Current Owner",
-        "Related Documents"
-      ],
-      "optional_sections": [
-        "Retired Path",
-        "Successor",
-        "Reason",
-        "Traceability"
-      ],
-      "sealed_section_shapes": [
-        [
-          "Retired Path",
-          "Replacement",
-          "Reason",
-          "Recovery Commit",
-          "Traceability"
-        ],
-        [
-          "Retired Path",
-          "Successor",
-          "Reason",
-          "Traceability"
-        ]
-      ],
-      "lifecycle_id": "sealed-record",
-      "traceability": {
-        "allowed_parent_profiles": []
-      },
-      "exceptions": [],
-      "frontmatter_values": {
-        "layer": "archive"
-      }
-    },
-    {
-      "id": "archive-retention-catalog",
-      "type": "archive/catalog",
-      "language": "en",
-      "frontmatter_policy": "required",
-      "path_pattern": "docs/98.archive/retention-catalog.md",
-      "artifact_id_pattern": null,
-      "identity_relation": "none",
-      "template_id": null,
-      "required_frontmatter": [
-        "title",
-        "version",
-        "type",
-        "status",
-        "owner",
-        "updated"
-      ],
-      "optional_frontmatter": [
-        "layer"
-      ],
-      "required_sections": [
-        "Overview",
-        "Retention Catalog",
-        "Current Assessments",
-        "Related Documents"
-      ],
-      "optional_sections": [],
-      "lifecycle_id": "navigation",
-      "traceability": {},
-      "exceptions": []
     },
     {
       "id": "documentation-readme",
@@ -2912,7 +2628,7 @@
       "optional_sections": [
         "Exceptions"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "agent-guide",
       "traceability": {},
       "exceptions": [],
       "additional_paths": [
@@ -3346,89 +3062,9 @@
       "lifecycle_id": null,
       "traceability": {},
       "exceptions": []
-    },
-    {
-      "id": "archive-record-completed",
-      "type": "archive/record-completed",
-      "frontmatter_policy": "unmanaged",
-      "path_pattern": "docs/98.archive/completed/{archived_subpath}.md",
-      "artifact_id_pattern": null,
-      "identity_relation": "none",
-      "template_id": null,
-      "required_frontmatter": [],
-      "optional_frontmatter": [],
-      "required_sections": [],
-      "optional_sections": [],
-      "free_form_sections": true,
-      "lifecycle_id": null,
-      "traceability": {},
-      "exceptions": []
-    },
-    {
-      "id": "archive-record-superseded",
-      "type": "archive/record-superseded",
-      "frontmatter_policy": "unmanaged",
-      "path_pattern": "docs/98.archive/superseded/{archived_subpath}.md",
-      "artifact_id_pattern": null,
-      "identity_relation": "none",
-      "template_id": null,
-      "required_frontmatter": [],
-      "optional_frontmatter": [],
-      "required_sections": [],
-      "optional_sections": [],
-      "free_form_sections": true,
-      "lifecycle_id": null,
-      "traceability": {},
-      "exceptions": []
-    },
-    {
-      "id": "archive-record-retired",
-      "type": "archive/record-retired",
-      "frontmatter_policy": "unmanaged",
-      "path_pattern": "docs/98.archive/retired/{archived_subpath}.md",
-      "artifact_id_pattern": null,
-      "identity_relation": "none",
-      "template_id": null,
-      "required_frontmatter": [],
-      "optional_frontmatter": [],
-      "required_sections": [],
-      "optional_sections": [],
-      "free_form_sections": true,
-      "lifecycle_id": null,
-      "traceability": {},
-      "exceptions": []
-    },
-    {
-      "id": "archive-record-resolved",
-      "type": "archive/record-resolved",
-      "frontmatter_policy": "unmanaged",
-      "path_pattern": "docs/98.archive/resolved/{archived_subpath}.md",
-      "artifact_id_pattern": null,
-      "identity_relation": "none",
-      "template_id": null,
-      "required_frontmatter": [],
-      "optional_frontmatter": [],
-      "required_sections": [],
-      "optional_sections": [],
-      "free_form_sections": true,
-      "lifecycle_id": null,
-      "traceability": {},
-      "exceptions": []
     }
   ],
   "template_roles": {
-    "archive/migration": {
-      "source": "docs/99.templates/templates/archive/migration.template.md",
-      "profiles": [
-        "migration"
-      ]
-    },
-    "archive/tombstone": {
-      "source": "docs/99.templates/templates/archive/tombstone.template.md",
-      "profiles": [
-        "tombstone"
-      ]
-    },
     "common/documentation-readme": {
       "source": "docs/99.templates/templates/common/readme-documentation.template.md",
       "profiles": [
@@ -3715,100 +3351,63 @@
       "statuses": [
         "draft",
         "in-review",
-        "approved",
-        "superseded",
-        "retired"
+        "approved"
       ],
       "transitions": {
         "draft": [
           "in-review",
-          "approved",
-          "retired"
+          "approved"
         ],
         "in-review": [
           "approved",
-          "draft",
-          "retired"
+          "draft"
         ],
         "approved": [
-          "in-review",
-          "superseded",
-          "retired"
-        ],
-        "superseded": [],
-        "retired": []
+          "in-review"
+        ]
       },
-      "terminal_statuses": [
-        "superseded",
-        "retired"
-      ]
+      "terminal_statuses": []
     },
     "architecture-description": {
       "initial_status": "draft",
       "statuses": [
         "draft",
         "in-review",
-        "active",
-        "deprecated",
-        "superseded",
-        "retired"
+        "active"
       ],
       "transitions": {
         "draft": [
           "in-review",
-          "active",
-          "retired"
+          "active"
         ],
         "in-review": [
           "active",
-          "draft",
-          "retired"
+          "draft"
         ],
         "active": [
-          "in-review",
-          "deprecated",
-          "superseded",
-          "retired"
-        ],
-        "deprecated": [
-          "superseded",
-          "retired"
-        ],
-        "superseded": [],
-        "retired": []
+          "in-review"
+        ]
       },
-      "terminal_statuses": [
-        "superseded",
-        "retired"
-      ]
+      "terminal_statuses": []
     },
     "architecture-decision": {
       "initial_status": "proposed",
       "terminal_statuses": [
-        "rejected",
-        "superseded"
+        "accepted",
+        "rejected"
       ],
       "statuses": [
         "proposed",
         "accepted",
-        "rejected",
-        "deprecated",
-        "superseded"
+        "rejected"
       ],
       "transitions": {
         "proposed": [
           "accepted",
           "rejected"
         ],
-        "accepted": [
-          "deprecated",
-          "superseded"
-        ],
-        "rejected": [],
-        "superseded": [],
-        "deprecated": [
-          "superseded"
-        ]
+        "accepted": [],
+        "rejected": []
       }
     },
     "spec": {
@@ -3817,8 +3416,7 @@
         "draft",
         "in-review",
         "approved",
-        "cancelled",
-        "superseded"
+        "cancelled"
       ],
       "transitions": {
         "draft": [
@@ -3829,20 +3427,16 @@
         "in-review": [
           "approved",
           "draft",
-          "cancelled",
-          "superseded"
+          "cancelled"
         ],
         "approved": [
           "in-review",
-          "cancelled",
-          "superseded"
+          "cancelled"
         ],
-        "cancelled": [],
-        "superseded": []
+        "cancelled": []
       },
       "terminal_statuses": [
-        "cancelled",
-        "superseded"
+        "cancelled"
       ]
     },
     "plan": {
@@ -3851,8 +3445,7 @@
         "draft",
         "in-review",
         "approved",
-        "cancelled",
-        "superseded"
+        "cancelled"
       ],
       "transitions": {
         "draft": [
@@ -3863,20 +3456,16 @@
         "in-review": [
           "approved",
           "draft",
-          "cancelled",
-          "superseded"
+          "cancelled"
         ],
         "approved": [
           "in-review",
-          "cancelled",
-          "superseded"
+          "cancelled"
         ],
-        "cancelled": [],
-        "superseded": []
+        "cancelled": []
       },
       "terminal_statuses": [
-        "cancelled",
-        "superseded"
+        "cancelled"
       ]
     },
     "task": {
@@ -4041,35 +3630,16 @@
         "retired"
       ]
     },
-    "sealed-record": {
-      "initial_status": "draft",
-      "statuses": [
-        "draft",
-        "sealed"
-      ],
-      "transitions": {
-        "draft": [
-          "sealed"
-        ],
-        "sealed": []
-      },
-      "terminal_statuses": [
-        "sealed"
-      ]
-    },
     "contract": {
       "initial_status": "draft",
       "terminal_statuses": [
-        "superseded",
-        "retired"
+        "active"
       ],
       "statuses": [
         "draft",
         "review",
         "approved",
-        "active",
-        "superseded",
-        "retired"
+        "active"
       ],
       "transitions": {
         "draft": [
@@ -4081,12 +3651,7 @@
         "approved": [
           "active"
         ],
-        "active": [
-          "superseded",
-          "retired"
-        ],
-        "superseded": [],
-        "retired": []
+        "active": []
       }
     },
     "template": {
@@ -4100,6 +3665,28 @@
       "transitions": {
         "draft": []
       }
+    },
+    "agent-guide": {
+      "initial_status": "draft",
+      "statuses": [
+        "draft",
+        "in-review",
+        "active"
+      ],
+      "transitions": {
+        "draft": [
+          "in-review",
+          "active"
+        ],
+        "in-review": [
+          "active",
+          "draft"
+        ],
+        "active": [
+          "in-review"
+        ]
+      },
+      "terminal_statuses": []
     }
   },
   "identity_spaces": {
@@ -5243,6 +4830,7 @@
       "next_number": 52,
       "reserved_history": [
         3,
+        11,
         12,
         13,
         14,
@@ -5262,8 +4850,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 255,
-      "next_number": 256,
+      "high_water": 256,
+      "next_number": 257,
       "reserved_history": [
         1,
         2,
@@ -6110,7 +5698,6 @@
   "transitions": {
     "adr": "architecture-decision",
     "architecture-description": "architecture-description",
-    "archive-retention-catalog": "navigation",
     "audit": "publication",
     "audit-member": "publication",
     "data": "publication",
@@ -6124,7 +5711,7 @@
     "governance-prompt": "living",
     "governance-prompt-index": "navigation",
     "governance-provider": "living",
-    "folder-agent-guide": "living",
+    "folder-agent-guide": "agent-guide",
     "governance-provider-index": "navigation",
     "governance-role": "living",
     "governance-sdlc": "operational-policy",
@@ -6132,7 +5719,6 @@
     "guide": "operational-policy",
     "incident": "incident",
     "incident-year-readme": "navigation",
-    "migration": "sealed-record",
     "package-readme": "navigation",
     "plan": "plan",
     "policy": "operational-policy",
@@ -6147,8 +5733,7 @@
     "runtime-governance-readme": "navigation",
     "spec": "spec",
     "task": "task",
-    "template-source": "template",
-    "tombstone": "sealed-record"
+    "template-source": "template"
   },
   "indexes": {
     "docs/03.specs/README.md": "spec",

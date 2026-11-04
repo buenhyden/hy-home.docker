@@ -203,10 +203,12 @@ class DeclaredHistoricalLinkTests(unittest.TestCase):
         self.target = self.root / "scripts/helper.py"
         self.assert_target_body_unread(fragment=None, expected=[])
 
-    def test_registered_archive_anchor_remains_admitted(self):
+    def test_a_stage_98_anchor_is_no_longer_admitted(self):
+        # Stage 98 holds no records and no archive profile classifies one.
         self.target = self.root / "docs/98.archive/completed/fixture.md"
-        self.capture()
-        self.assertEqual([], self.findings())
+        self.assert_target_body_unread(
+            expected=["historical-evidence-target-unadmitted"]
+        )
 
     def test_original_crlf_is_preserved_and_normalization_is_rejected(self):
         self.capture(newline="\r\n")

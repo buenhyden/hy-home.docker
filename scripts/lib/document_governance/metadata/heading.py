@@ -731,13 +731,7 @@ def _registered_section_findings(
     profile: Mapping[str, object],
     changed_boundary: bool = False,
 ) -> list[Finding]:
-    """Return the section-contract findings a Registry profile declares.
-
-    A document in one of the profile's `sealed_section_shapes` keeps the shape
-    it was written in. At the changed boundary that shape is a deficit, and the
-    changed check subtracts the base record's deficits, so it remains only for
-    a record the change adds.
-    """
+    """Return the section-contract findings a Registry profile declares."""
 
     findings: list[Finding] = []
     h1, h2 = extract_markdown_headings(text)
@@ -760,20 +754,6 @@ def _registered_section_findings(
         if isinstance(heading, str)
     }
     missing = required - set(h2)
-    if missing:
-        for shape in profile.get("sealed_section_shapes", ()):
-            sealed = {f"## {heading}" for heading in shape if isinstance(heading, str)}
-            if sealed and sealed <= set(h2) <= sealed | optional:
-                required, missing = sealed, set()
-                if changed_boundary:
-                    findings.append(
-                        _finding(
-                            record,
-                            "body-sealed-shape",
-                            f"profile {record.artifact_type} adds a record in a sealed section shape",
-                        )
-                    )
-                break
     for heading in sorted(missing):
         findings.append(
             _finding(
@@ -800,10 +780,8 @@ def _registered_section_findings(
             for heading in profile.get("required_sections", ())
             if isinstance(heading, str)
         ]
-        # A record admitted in a sealed shape keeps that shape's order.
         if (
-            required == set(declared)
-            and not missing
+            not missing
             and [heading for heading in h2 if heading in declared] != declared
         ):
             findings.append(

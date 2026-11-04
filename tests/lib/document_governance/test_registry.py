@@ -1098,7 +1098,7 @@ class DocumentRegistryTests(unittest.TestCase):
         profiles = build_registry_profiles(load_registry())
         source = (ROOT / path).read_text(encoding="utf-8")
         source = source.replace(
-            'created: "{{CREATED}}"', 'supersedes: []\ncreated: "{{CREATED}}"'
+            'created: "{{CREATED}}"', 'cancellation: []\ncreated: "{{CREATED}}"'
         )
         record = metadata_validator._record_from_text(path, source, profiles=profiles)
         self.assertIn(
@@ -1435,8 +1435,6 @@ class DocumentRegistryTests(unittest.TestCase):
             "research": "publication",
             "audit": "publication",
             "data": "publication",
-            "migration": "sealed-record",
-            "tombstone": "sealed-record",
         }
 
         self.assertEqual(
@@ -1509,11 +1507,11 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
 
         self.assertEqual(
-            ("in-review", "approved", "retired"),
+            ("in-review", "approved"),
             registry.transitions["requirements-package"]["draft"],
         )
         self.assertEqual(
-            ("approved", "draft", "retired"),
+            ("approved", "draft"),
             registry.transitions["requirements-package"]["in-review"],
         )
         self.assertNotIn(
@@ -1865,68 +1863,114 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         self.assertEqual((), validate_frontmatter(hook_values, schema_path))
 
-    def test_task_branch_integration_receipt_has_one_closed_typed_contract(
-        self,
-    ) -> None:
+    def test_retired_branch_integration_receipt_is_rejected(self) -> None:
         registry = load_registry()
         schema_path = (
             ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
         )
-        schema = json.loads(schema_path.read_text(encoding="utf-8"))
-        receipt = {
-            "source_commit": "a" * 40,
-            "source_package_path": "docs/03.specs/0172-document-contract-convergence",
-            "source_artifact_id": "SPEC-0172",
-            "preserved_package_path": (
-                "docs/98.archive/superseded/03.specs/0172-document-contract-convergence"
-            ),
-            "target_package_path": (
-                "docs/03.specs/0173-governance-qa-surface-convergence"
-            ),
-            "target_artifact_id": "SPEC-0173",
-            "disposition": "historical-superseded",
-        }
-        task = registry.profiles["task"]
-        self.assertIn("branch_integration_receipts", task["optional_frontmatter"])
         self.assertTrue(
             all(
                 "branch_integration_receipts" not in profile["optional_frontmatter"]
-                for profile_id, profile in registry.profiles.items()
-                if profile_id != "task"
+                for profile in registry.profiles.values()
             )
         )
-        self.assertIn(
+        self.assertNotIn(
             "branch_integration_receipts", registry.common["frontmatter_order"]
         )
         self.assertEqual(
-            (),
-            validate_frontmatter(
-                {"branch_integration_receipts": [receipt]}, schema_path
-            ),
-        )
-        for mutation in (
-            {"disposition": "retired"},
-            {"source_commit": "a" * 39},
-            {"source_package_path": "docs/03.specs/../0172-invalid"},
-            {"unexpected": "value"},
-        ):
-            with self.subTest(mutation=mutation):
-                invalid = dict(receipt)
-                invalid.update(mutation)
-                self.assertEqual(
-                    {"frontmatter-schema-invalid"},
-                    {
-                        finding.code
-                        for finding in validate_frontmatter(
-                            {"branch_integration_receipts": [invalid]},
-                            schema_path,
-                        )
-                    },
+            {"frontmatter-schema-invalid"},
+            {
+                finding.code
+                for finding in validate_frontmatter(
+                    {"branch_integration_receipts": [{"disposition": "x"}]},
+                    schema_path,
                 )
-        self.assertEqual(
-            False,
-            schema["$defs"]["branchIntegrationReceipt"]["additionalProperties"],
+            },
         )
+
+    def test_a_legacy_status_in_stage_01_to_03_is_an_invalid_status(self) -> None:
+        import re
+
+        from scripts.lib.document_governance import metadata_validator
+
+        profiles = build_registry_profiles(load_registry())
+        for relative in (
+            "docs/01.requirements/0012-laboratory.md",
+            "docs/02.architecture/descriptions/0011-laboratory-architecture.md",
+            "docs/02.architecture/decisions/0050-openbao-as-secrets-manager.md",
+            "docs/03.specs/0256-legacy-document-status-ban/spec.md",
+            "docs/03.specs/0256-legacy-document-status-ban/plan.md",
+            "docs/03.specs/0256-legacy-document-status-ban/tasks/"
+            "tsk-0001-legacy-document-status-ban.md",
+        ):
+            source = (ROOT / relative).read_text(encoding="utf-8")
+            for status in ("deprecated", "superseded", "retired", "archived"):
+                with self.subTest(path=relative, status=status):
+                    changed = re.sub(
+                        r'^status: "[^"]*"',
+                        f'status: "{status}"',
+                        source,
+                        count=1,
+                        flags=re.M,
+                    )
+                    record = metadata_validator._record_from_text(
+                        pathlib.Path(relative), changed, profiles=profiles
+                    )
+                    self.assertIn(
+                        "invalid-status",
+                        {item.code for item in validate_record(record, profiles, {})},
+                    )
+
+    def test_a_lineage_key_in_stage_01_to_03_is_type_inappropriate(self) -> None:
+        from scripts.lib.document_governance import metadata_validator
+
+        profiles = build_registry_profiles(load_registry())
+        for relative in (
+            "docs/01.requirements/0012-laboratory.md",
+            "docs/03.specs/0256-legacy-document-status-ban/spec.md",
+        ):
+            source = (ROOT / relative).read_text(encoding="utf-8")
+            for key in ("supersedes", "superseded_by"):
+                with self.subTest(path=relative, key=key):
+                    changed = source.replace(
+                        "\ncreated:", f'\n{key}: "REQ-0099"\ncreated:', 1
+                    )
+                    self.assertNotEqual(source, changed)
+                    record = metadata_validator._record_from_text(
+                        pathlib.Path(relative), changed, profiles=profiles
+                    )
+                    self.assertIn(
+                        "type-inappropriate-key",
+                        {item.code for item in validate_record(record, profiles, {})},
+                    )
+
+    def test_stage_01_to_03_lifecycles_offer_no_legacy_status(self) -> None:
+        registry = load_registry()
+        legacy = {"deprecated", "superseded", "retired", "archived"}
+        stage_roots = ("docs/01.", "docs/02.", "docs/03.")
+        stage_profiles = sorted(
+            profile_id
+            for profile_id, profile in registry.profiles.items()
+            if profile.get("lifecycle_id")
+            and any(
+                str(path).startswith(stage_roots)
+                for path in (
+                    profile.get("path_pattern", ""),
+                    *profile.get("additional_paths", ()),
+                )
+            )
+        )
+        self.assertIn("folder-agent-guide", stage_profiles)
+        self.assertIn("task", stage_profiles)
+        for profile_id in stage_profiles:
+            with self.subTest(profile=profile_id):
+                profile = registry.profiles[profile_id]
+                statuses = set(registry.lifecycles[profile["lifecycle_id"]])
+                self.assertFalse(statuses & legacy)
+                self.assertFalse(
+                    {"supersedes", "superseded_by"}
+                    & set(profile.get("optional_frontmatter", ()))
+                )
 
     def test_guide_implementation_services_has_one_optional_typed_contract(
         self,
@@ -2983,8 +3027,8 @@ class DocumentRegistryTests(unittest.TestCase):
         profile_map = adapted["profiles"]
         self.assertIsInstance(profile_map, dict)
         spec = profile_map["spec"]
-        self.assertIn("superseded", spec["transitions"]["approved"])
-        self.assertEqual([], spec["transitions"]["superseded"])
+        self.assertIn("cancelled", spec["transitions"]["approved"])
+        self.assertEqual([], spec["transitions"]["cancelled"])
 
     def test_adapter_rejects_every_unregistered_target_route(self) -> None:
         """A route the Registry does not own is unsupported, with no fallback.
@@ -3185,8 +3229,6 @@ class ProfileLanguageTests(unittest.TestCase):
             "openapi-contract",
             "graphql-contract",
             "proto-contract",
-            "migration",
-            "tombstone",
         }
     )
 
@@ -3203,9 +3245,7 @@ class ProfileLanguageTests(unittest.TestCase):
             declared = profile.get("language")
             if profile_id in self.README_KO | self.OPERATIONS_KO:
                 expected = "ko"
-            elif profile_id in self.UNJUDGED or profile_id.startswith(
-                "archive-record-"
-            ):
+            elif profile_id in self.UNJUDGED:
                 expected = None
             else:
                 expected = "en"
@@ -3366,9 +3406,7 @@ class ExecutionLifecycleTests(unittest.TestCase):
             transitions["draft"],
         )
         self.assertIn("approved", transitions["in-review"])
-        self.assertEqual(
-            ["in-review", "cancelled", "superseded"], transitions["approved"]
-        )
+        self.assertEqual(["in-review", "cancelled"], transitions["approved"])
         for status in ("in-progress", "blocked", "completed"):
             self.assertNotIn(status, transitions)
 

@@ -16,7 +16,6 @@ from types import MappingProxyType
 from scripts.lib.document_governance.architecture import (
     ArchitectureDocumentError,
     load_architecture_documents,
-    validate_supersession_graph,
 )
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
@@ -1467,16 +1466,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
             architecture_root = root / "docs/02.architecture"
             if architecture_root.exists() or architecture_root.is_symlink():
-                architecture_documents = load_architecture_documents(
-                    architecture_root,
-                    registry=registry,
-                )
-                graph_findings = validate_supersession_graph(architecture_documents)
-                if graph_findings:
-                    finding = graph_findings[0]
-                    raise ArchitectureDocumentError(
-                        f"{finding.code}: {finding.path}: {finding.message}"
-                    )
+                load_architecture_documents(architecture_root, registry=registry)
         else:
             raise ProfileError("profiles must be the Stage 99 JSON registry")
     except (
