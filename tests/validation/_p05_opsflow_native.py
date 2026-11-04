@@ -927,6 +927,9 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
                     "fresh_state": self.db_value(
                         f"SELECT state FROM ops_flow.outbox WHERE run_id='{run}';"
                     ),
+                    "interrupted_resent": sum(
+                        1 for old in interrupted_runs if self.capture(old)["matched"]
+                    ),
                 }
             )
             self.wait_state(run, "accepted_by_smtp")
