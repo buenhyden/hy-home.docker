@@ -83,8 +83,8 @@
         "infra/06-observability/docker-compose.yml",
         "infra/08-ai/mlflow/docker-compose.yml",
         "infra/11-quality/pact-broker/docker-compose.yml",
-        "infra/12-analytics/dbt/docker-compose.yml",
-        "infra/12-analytics/superset/docker-compose.yml",
+        "labs/dbt.yml",
+        "labs/superset.yml",
         "labs/postgresql-ha.yml",
         "labs/supabase.yml"
       ],
@@ -126,13 +126,13 @@
           ]
         },
         {
-          "compose_file": "infra/12-analytics/dbt/docker-compose.yml",
+          "compose_file": "labs/dbt.yml",
           "images": [
             "postgres:18.6-alpine"
           ]
         },
         {
-          "compose_file": "infra/12-analytics/superset/docker-compose.yml",
+          "compose_file": "labs/superset.yml",
           "images": [
             "postgres:18.6-alpine"
           ]
@@ -1399,11 +1399,11 @@
         "sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8"
       ],
       "compose_files": [
-        "infra/11-quality/sonarqube/docker-compose.yml"
+        "labs/sonarqube.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/11-quality/sonarqube/docker-compose.yml",
+          "compose_file": "labs/sonarqube.yml",
           "images": [
             "sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8"
           ]
@@ -1421,11 +1421,11 @@
         "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c"
       ],
       "compose_files": [
-        "infra/10-communication/stalwart/docker-compose.yml"
+        "labs/stalwart.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
+          "compose_file": "labs/stalwart.yml",
           "images": [
             "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c"
           ]
@@ -1641,11 +1641,11 @@
         "hy-home/dbt-postgres:1.11-local"
       ],
       "compose_files": [
-        "infra/12-analytics/dbt/docker-compose.yml"
+        "labs/dbt.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/12-analytics/dbt/docker-compose.yml",
+          "compose_file": "labs/dbt.yml",
           "images": [
             "hy-home/dbt-postgres:1.11-local"
           ]
@@ -1663,11 +1663,11 @@
         "hy-home/jupyterlab:scipy-local"
       ],
       "compose_files": [
-        "infra/12-analytics/jupyterlab/docker-compose.yml"
+        "labs/jupyterlab.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/12-analytics/jupyterlab/docker-compose.yml",
+          "compose_file": "labs/jupyterlab.yml",
           "images": [
             "hy-home/jupyterlab:scipy-local"
           ]
@@ -1913,11 +1913,11 @@
         "hy-home/spark-iceberg:4.1.3-iceberg1.11.0-local"
       ],
       "compose_files": [
-        "infra/12-analytics/spark/docker-compose.yml"
+        "labs/lakehouse.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/12-analytics/spark/docker-compose.yml",
+          "compose_file": "labs/lakehouse.yml",
           "images": [
             "hy-home/spark-iceberg:4.1.3-iceberg1.11.0-local"
           ]
@@ -1957,11 +1957,11 @@
         "trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f"
       ],
       "compose_files": [
-        "infra/12-analytics/trino/docker-compose.yml"
+        "labs/lakehouse.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/12-analytics/trino/docker-compose.yml",
+          "compose_file": "labs/lakehouse.yml",
           "images": [
             "trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f"
           ]
@@ -1979,11 +1979,11 @@
         "hy-home/flink-iceberg:2.1.3-iceberg1.11.0-local"
       ],
       "compose_files": [
-        "infra/12-analytics/flink/docker-compose.yml"
+        "labs/lakehouse.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/12-analytics/flink/docker-compose.yml",
+          "compose_file": "labs/lakehouse.yml",
           "images": [
             "hy-home/flink-iceberg:2.1.3-iceberg1.11.0-local"
           ]
@@ -2001,11 +2001,11 @@
         "hy-home/great-expectations:1.24.0-local"
       ],
       "compose_files": [
-        "infra/12-analytics/great-expectations/docker-compose.yml"
+        "labs/lakehouse.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/12-analytics/great-expectations/docker-compose.yml",
+          "compose_file": "labs/lakehouse.yml",
           "images": [
             "hy-home/great-expectations:1.24.0-local"
           ]
@@ -2023,11 +2023,11 @@
         "hy-home/superset:6.1.0-local"
       ],
       "compose_files": [
-        "infra/12-analytics/superset/docker-compose.yml"
+        "labs/superset.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/12-analytics/superset/docker-compose.yml",
+          "compose_file": "labs/superset.yml",
           "images": [
             "hy-home/superset:6.1.0-local"
           ]
@@ -2045,11 +2045,11 @@
         "hy-home/stalwart-config:0.16.27-cli1.0.13-local"
       ],
       "compose_files": [
-        "infra/10-communication/stalwart/docker-compose.yml"
+        "labs/stalwart.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
+          "compose_file": "labs/stalwart.yml",
           "images": [
             "hy-home/stalwart-config:0.16.27-cli1.0.13-local"
           ]

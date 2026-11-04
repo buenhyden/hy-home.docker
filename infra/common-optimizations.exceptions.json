@@ -143,7 +143,7 @@
     },
     {
       "scope": "root",
-      "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
+      "compose_file": "labs/stalwart.yml",
       "service": "stalwart",
       "control": "cap_add",
       "allowed_value": [
