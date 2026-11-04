@@ -84,9 +84,9 @@
         "infra/08-ai/mlflow/docker-compose.yml",
         "infra/11-quality/pact-broker/docker-compose.yml",
         "labs/dbt.yml",
-        "labs/superset.yml",
         "labs/postgresql-ha.yml",
-        "labs/supabase.yml"
+        "labs/supabase.yml",
+        "labs/superset.yml"
       ],
       "sources": [
         {
@@ -132,13 +132,13 @@
           ]
         },
         {
-          "compose_file": "labs/superset.yml",
+          "compose_file": "labs/postgresql-ha.yml",
           "images": [
             "postgres:18.6-alpine"
           ]
         },
         {
-          "compose_file": "labs/postgresql-ha.yml",
+          "compose_file": "labs/superset.yml",
           "images": [
             "postgres:18.6-alpine"
           ]
@@ -1847,11 +1847,18 @@
         "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce"
       ],
       "compose_files": [
-        "infra/04-data/seaweedfs/docker-compose.yml"
+        "infra/04-data/seaweedfs/docker-compose.yml",
+        "labs/lakehouse.yml"
       ],
       "sources": [
         {
           "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
+          "images": [
+            "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce"
+          ]
+        },
+        {
+          "compose_file": "labs/lakehouse.yml",
           "images": [
             "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce"
           ]
