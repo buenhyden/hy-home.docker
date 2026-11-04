@@ -898,72 +898,53 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             workflow, run, b"p05-after-main-restart", "2026-11-30T00:00:00Z"
         )
 
-    def retry_crashed(self, crashed, interrupted_runs):
-        # n8n's own replay of each crashed execution. A fresh row is published
-        # first so the retry must really run: it claims and delivers that row
-        # while every interrupted row and its mail stay untouched.
+    def retry_crashed(self, workflow, crashed, interrupted_runs):
+        # n8n's own replay of each crashed execution, with a claimable fresh
+        # row present so a retry that ran would have to claim it.
         f = self.fixture
+        fresh = self.publish_input(b"p05-retry", "2026-12-01T00:00:00Z")
         baseline = self.outbox_snapshot()
-        statuses, fresh = [], []
-        for index, execution in enumerate(crashed):
-            run = self.publish_input(
-                b"p05-retry-" + str(index).encode(),
-                f"2026-12-{1 + index:02d}T00:00:00Z",
-            )
-            fresh.append(run)
+        statuses, stacks, attempts = [], [], []
+        for execution in crashed:
             # Closed node names only: where the retry starts from.
-            crashed_trace = self.api("trace", executionId=execution)
+            trace = self.api("trace", executionId=execution)
+            stacks.append(trace.get("stack") == [] and trace.get("runNodes") == [])
             result = self.api("retry", executionId=execution)
             if result.get("retryOf") != execution:
                 raise RehearsalFailure("retry was not bound to the crashed execution")
             statuses.append(str(result.get("status")))
-            # Closed facts before any wait: the retry's own outcome and path.
-            try:
-                path = self.api("execution", executionId=str(result.get("id")))
-                path = {
-                    key: path.get(key)
-                    for key in ("status", "mode", "acknowledged", "deliveryRedacted")
-                }
-                path["trace"] = self.api("trace", executionId=str(result.get("id")))
-            except RehearsalFailure:
-                path = "unreadable"
-            f.receipt.setdefault("execution_retry_attempts", []).append(
+            attempts.append(
                 {
                     "status": statuses[-1],
-                    "crashed_trace": crashed_trace,
-                    "path": path,
-                    "fresh_state": self.db_value(
-                        f"SELECT state FROM ops_flow.outbox WHERE run_id='{run}';"
-                    ),
-                    "interrupted_resent": sum(
-                        1 for old in interrupted_runs if self.capture(old)["matched"]
-                    ),
+                    "crashed_trace": trace,
+                    "retry_trace": self.api("trace", executionId=str(result.get("id"))),
                 }
             )
-            self.wait_state(run, "accepted_by_smtp")
-        others = tuple(
-            line
-            for line in self.outbox_snapshot()
-            if recovery.run_id_of(line) not in fresh
+        f.receipt["execution_retry_attempts"] = attempts
+        after_retry = self.outbox_snapshot()
+        claimed = self.db_value(
+            f"SELECT state FROM ops_flow.outbox WHERE run_id='{fresh}';"
         )
+        resent = sum(1 for run in interrupted_runs if self.capture(run)["matched"])
+        if claimed != "pending" or after_retry != baseline:
+            # Refuse before a new execution could mask what the retry did.
+            f.receipt["execution_retry_claimed_state"] = claimed
+            raise RehearsalFailure("n8n execution retry changed notification state")
+        # The replay that works: a new execution of the same workflow.
+        self.execute(workflow, "success")
+        self.wait_state(fresh, "accepted_by_smtp")
         facts = {
             "retried": len(crashed),
             "statuses": statuses,
-            "interrupted_rows_unchanged": others
-            == tuple(
-                line for line in baseline if recovery.run_id_of(line) not in fresh
-            ),
-            "interrupted_resent": sum(
-                1 for run in interrupted_runs if self.capture(run)["matched"]
-            ),
-            "fresh_accepted_first_attempt": sum(
-                1
-                for run in fresh
-                if self.db_value(
-                    f"SELECT state||'|'||attempts FROM ops_flow.outbox WHERE run_id='{run}';"
-                )
-                == "accepted_by_smtp|1"
-            ),
+            "start_stacks_empty": all(stacks),
+            "claimed_by_retry": 0 if claimed == "pending" else 1,
+            "interrupted_resent": resent,
+            "rows_unchanged_by_retry": after_retry == baseline,
+            "fresh_execution_delivered": self.capture(fresh)["matched"]
+            and self.db_value(
+                f"SELECT state||'|'||attempts FROM ops_flow.outbox WHERE run_id='{fresh}';"
+            )
+            == "accepted_by_smtp|1",
         }
         f.receipt["execution_retry"] = facts
         f.receipt["execution_retry"] = recovery.validate_execution_retry(facts)
@@ -1099,7 +1080,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         self.recover_after_main_restart(workflow, main_lost)
         self.phase("crashed_execution_retry")
         crashed.insert(0, f.receipt["interrupted_execution_id"])
-        self.retry_crashed(crashed, [interrupted, main_lost])
+        self.retry_crashed(workflow, crashed, [interrupted, main_lost])
         self.fence(workflow)
         before = self.outbox_snapshot()
         self.phase("owned_restore")

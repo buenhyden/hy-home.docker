@@ -277,13 +277,26 @@ class ScenarioModel:
         if not f.running["main"]:
             raise native.RehearsalFailure("n8n REST operation failed (main down)")
         if action == "trace":
-            return {"stack": ["Manual"], "runNodes": [], "last": "", "error": None}
+            stored = f.executions.get(payload["executionId"])
+            # A crashed execution keeps no start stack (n8n 2.43.6).
+            stack = ["Claim"] if self.fail == "retry-has-stack" else []
+            return {
+                "stack": stack if stored in {"crashed", "error"} else ["Manual"],
+                "runNodes": [],
+                "last": "",
+                "error": None,
+            }
         if action == "retry":
             if f.executions[payload["executionId"]] != "crashed":
                 raise native.RehearsalFailure("synthetic retry conflict")
-            retried = self.run_manual(self.workflow)
+            retried = str(len(f.executions) + 1)
+            f.executions[retried] = "error"
             if self.fail == "retry-resend":
                 f.captured.extend(f.held_runs)
+            pending = [r for r, st in f.rows.items() if st == "pending"]
+            if self.fail == "retry-claims" and pending:
+                f.rows[pending[0]] = "accepted_by_smtp"
+                f.captured.append(pending[0])
             return {
                 "id": retried,
                 "retryOf": "999"
@@ -553,10 +566,12 @@ class P05ScenarioStateTests(unittest.TestCase):
         self.assertEqual(
             {
                 "retried": 2,
-                "statuses": ["success", "success"],
-                "interrupted_rows_unchanged": True,
+                "statuses": ["error", "error"],
+                "start_stacks_empty": True,
+                "claimed_by_retry": 0,
                 "interrupted_resent": 0,
-                "fresh_accepted_first_attempt": 2,
+                "rows_unchanged_by_retry": True,
+                "fresh_execution_delivered": True,
             },
             receipt["execution_retry"],
         )
@@ -564,13 +579,13 @@ class P05ScenarioStateTests(unittest.TestCase):
             receipt["main_restart_execution_id"],
             receipt["recovery_barrier"]["old_execution_ids"],
         )
-        self.assertEqual(11, receipt["same_input_replay"]["replayed"])
+        self.assertEqual(10, receipt["same_input_replay"]["replayed"])
         self.assertEqual(
-            {"accepted_by_smtp": 7, "unknown": 4},
+            {"accepted_by_smtp": 6, "unknown": 4},
             receipt["restored_outbox_equivalence"]["states"],
         )
         self.assertEqual(4, list(model.fixture.rows.values()).count("unknown"))
-        self.assertEqual(8, list(model.fixture.rows.values()).count("accepted_by_smtp"))
+        self.assertEqual(7, list(model.fixture.rows.values()).count("accepted_by_smtp"))
         self.assertEqual("same-smtp-id", model.fixture.metadata["smtp_id"])
         self.assertEqual(2, model.fixture.generation)
         events = model.fixture.events
@@ -636,6 +651,8 @@ class P05ScenarioStateTests(unittest.TestCase):
             "no-startup-recovery",
             "retry-resend",
             "retry-unbound",
+            "retry-claims",
+            "retry-has-stack",
         ):
             with self.subTest(failure=failure):
                 model = ScenarioModel(failure)

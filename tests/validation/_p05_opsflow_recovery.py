@@ -220,9 +220,11 @@ def validate_main_restart_recovery(facts):
 
 
 def validate_execution_retry(facts):
-    # n8n's own retry of each crashed execution: the notifier saves no
-    # progress, so a retry starts from the trigger and claims afresh. It must
-    # deliver exactly the fresh rows and never reuse an interrupted lease.
+    # n8n 2.43.6 records a worker-killed execution with an empty start stack
+    # and only the stall error; ExecutionService.retry copies that data, so
+    # the retry runs no node, claims nothing and ends error (native attempt 8).
+    # Replay is a new execution: it claims only claimable rows, while each
+    # interrupted row stays unknown for reconciliation.
     count = facts.get("retried") if isinstance(facts, dict) else None
     if (
         type(count) is not int
@@ -230,10 +232,12 @@ def validate_execution_retry(facts):
         or facts
         != {
             "retried": count,
-            "statuses": ["success"] * count,
-            "interrupted_rows_unchanged": True,
+            "statuses": ["error"] * count,
+            "start_stacks_empty": True,
+            "claimed_by_retry": 0,
             "interrupted_resent": 0,
-            "fresh_accepted_first_attempt": count,
+            "rows_unchanged_by_retry": True,
+            "fresh_execution_delivered": True,
         }
     ):
         raise RehearsalFailure("n8n execution retry outcome rejected")

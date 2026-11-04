@@ -505,22 +505,29 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
             ):
                 recovery.validate_main_restart_recovery({**good, **change})
 
-    def test_execution_retry_runs_a_fresh_claim_and_never_resends(self):
+    def test_execution_retry_is_a_no_op_and_a_new_execution_replays(self):
+        # n8n 2.43.6 stores a worker-killed execution with an empty start
+        # stack, so its retry runs no node and ends error (native attempt 8).
         good = {
             "retried": 2,
-            "statuses": ["success", "success"],
-            "interrupted_rows_unchanged": True,
+            "statuses": ["error", "error"],
+            "start_stacks_empty": True,
+            "claimed_by_retry": 0,
             "interrupted_resent": 0,
-            "fresh_accepted_first_attempt": 2,
+            "rows_unchanged_by_retry": True,
+            "fresh_execution_delivered": True,
         }
         self.assertEqual(good, recovery.validate_execution_retry(good))
         for change in (
             {"retried": 0, "statuses": []},
-            {"statuses": ["success", "refused"]},
-            {"statuses": ["success"]},
-            {"interrupted_rows_unchanged": False},
+            {"statuses": ["error"]},
+            # A retry that ran is no longer the measured n8n behavior.
+            {"statuses": ["success", "error"]},
+            {"start_stacks_empty": False},
+            {"claimed_by_retry": 1},
             {"interrupted_resent": 1},
-            {"fresh_accepted_first_attempt": 1},
+            {"rows_unchanged_by_retry": False},
+            {"fresh_execution_delivered": False},
             {"retried": True},
             {"unexpected": "private-payload"},
         ):
