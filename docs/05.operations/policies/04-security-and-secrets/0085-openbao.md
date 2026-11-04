@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.8.7"
+version: "0.8.8"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-11-04"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -108,7 +108,7 @@ credential 폐기와 보호 자료 보존을 각각 승인받아 수행하며 `d
 
 ### Maintenance window credential handling
 
-HOME 유지보수 window(SPEC-0243, 절차는 RUN-0105)는 아래 규칙을 따른다.
+HOME 유지보수 window(절차는 RUN-0105; SPEC-0243이 도입했고 삭제됨)는 아래 규칙을 따른다.
 
 - share·root·operator token은 숨김 입력, stdin, 보호된 FD, tmpfs의 0600 파일, 또는 명령 하나에만
   붙는 환경 변수(`BAO_TOKEN="$(cat …)"`와 이름만 넘기는 `docker compose exec -e BAO_TOKEN`)로만

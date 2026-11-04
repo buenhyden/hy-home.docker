@@ -1,10 +1,10 @@
 ---
 title: "Repository Authority Map"
-version: "0.5.0"
+version: "0.5.1"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-11-04"
 created: "2026-09-06"
 observed_at: "2026-10-07"
 review_cycle: "on-surface-change"
@@ -97,9 +97,10 @@ Historical reads below are provenance, not a current Task-progress view.
 
 ### Provenance
 
-At commit `a4e928b668bcfbf24eda54b06c47d030a1eb4786`, the Task at
-`docs/03.specs/0211-qa-scope-and-delivery-rationalization/tasks/tsk-0001-qa-scope-and-delivery-rationalization.md`
-recorded the then-approved patch identity and source authorization. This dated
+At commit `a4e928b668bcfbf24eda54b06c47d030a1eb4786`, SPEC-0211-TSK-0001
+recorded the then-approved patch identity and source authorization. SPEC-0211
+was deleted in PR #725; its Task body remains in version history at that
+commit. This dated
 citation does not declare current execution status or authenticate a new action.
 
 Derived by reading tracked sources at repository commit
