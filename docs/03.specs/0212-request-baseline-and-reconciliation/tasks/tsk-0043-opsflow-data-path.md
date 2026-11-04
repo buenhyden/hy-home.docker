@@ -1,6 +1,6 @@
 ---
 title: "Opsflow Data Path Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -337,6 +337,34 @@ an invalid input with `application/json`; (6) unpause only after that. Rollback
 removes the installed files, keeps the backups, and drops nothing that existed
 before. This Task performs none of these steps.
 
+### T03 Kafka and CDC re-review
+
+The same 2026-11-04 request asked to re-review and optimize the Kafka,
+Debezium and Schema Registry path. Read-only HOME observation: the stack
+(`kafka-1`, `kafka-connect`, `schema-registry`, `kafka-rest-proxy`, `kafbat-ui`,
+`kafka-exporter`) has run since 2026-11-02 using about 1.36 GiB; Connect has
+zero registered connectors; there are zero consumer groups; the declared
+`application-logs` and `infra-events` topics hold no messages; DEV
+`platform_dev`, the connector's source database, does not exist in HOME.
+Leftovers of an earlier, unregistered connector remain: two `hyhome.app`
+heartbeat topics (10,267 messages) and four Schema Registry subjects, while the
+current prefix is `hyhome.platform`. Broker CLI tools inside `kafka-1` fail
+unless `KAFKA_JMX_OPTS` and `KAFKA_OPTS` are unset first, exactly as the
+healthcheck already does. Stopping the idle stack or deleting the leftovers is
+an operating change awaiting the owner; this Task performs neither.
+
+The source connector is single-broker correct (replication factor 1,
+`topic.creation.default.*`, publication auto-create disabled, `pgoutput`,
+heartbeat). Its two `schema.history.internal.kafka.*` keys were removed: they
+apply to MySQL-family connectors, and the Debezium 3.7 PostgreSQL property
+reference lists none. Static Compose and DEV-boundary suites pass. The
+isolated `CdcStreamRehearsalTests` ran twice and both ended ERROR in setup
+(433.1 s and 407.1 s): under host load 13-18 on 12 CPUs, the TimescaleDB
+image's post-init `pg_ctl stop` timed out before PostgreSQL became ready, so
+no connector was registered and the runs say nothing about the connector
+change. The declared Debezium 3.6.3 image trails 3.7 and is a D09 image
+candidate.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -365,6 +393,8 @@ before. This Task performs none of these steps.
 | Narrow retry cleanup postcondition | 67 | W72 | Owned S3 retry cleanup | Exact retry probe, three roles and two networks | PASS | Confirmed absent; retained lists zero and attempt directory null. This is cleanup only, not data recovery or closure of the first full native FAIL. | optional | - |
 | P04 local implementation and review | 67 | W72 | Approved source, RED/GREEN, coverage and independent review | Final owner packets and DATA-0096 file fingerprints | PASS | URI, pipeline, IaC, native source and corrective scenario QA are independently reviewed. Native data 13 unit PASS, 289/300 lines (96.33%); scenario QA 11 PASS, 528/538 lines (98.1413%), independent 11 PASS in 0.115s. Python controller line coverage is not branch coverage or proof that embedded container programs/DB/IAM/queue executed. Full native and narrow timeout remain separate failed evidence. | required | - |
 | CDC current-consumer reconciliation | 68 | W73 | Tracked connector/provisioner, ADR and historical receipt readback | Existing platform_dev path; no live query or registration | PASS | Preserved consumer and acceptance scopes; current CDC is SOURCE_READY and Opsflow adoption is deferred, not a new runtime PASS | required | - |
+| T03 HOME stream observation | 68 | W73 | Read-only HOME Connect, topic, consumer-group and subject queries | Running HOME stack, 2026-11-04 | PASS | 0 connectors, 0 consumer groups, declared topics 0 messages, ~1.36 GiB; leftover `hyhome.app` topics/subjects recorded; no state changed | required | - |
+| T03 isolated CDC stream rehearsal | 68 | W73 | `CdcStreamRehearsalTests` with HYHOME_CDC_REHEARSAL=1 | Connector without schema-history keys; host load 13-18 | FAIL | Two setup ERRORs (433.1 s, 407.1 s): TimescaleDB post-init stop timed out before readiness; no connector registered; owned residue 0 | required | - |
 | Quality publication regressions | 69 | W74 | Invalid/partial/no-publication unit and adapter tests | Current reviewed manifest/adapter packet and synthetic inputs | PASS | Included in the actual 80-case focused suite: failed schema/partition and failed quarantine never reach DB/outbox; source driver boundaries are synthetic. Actual native publication/quarantine remain NOT_RUN. | required | - |
 | Experiment input decision | 70 | W75 | Direct user scope choice and missing-input record | No approved dataset/version/time field/target/baseline/owner | PASS | User selected experiment-input deferral during P04 planning; no claim about private experiment absence | required | - |
 | Iceberg current-workload reconciliation | 71 | W76 | Current optional source, ADR-0039 and preserved owner acceptance readback | Existing optional platform; no runtime change | PASS | Preserved consumer and acceptance scopes; DATA-0096 research records Iceberg 1.11.0 maintenance separately from latest 1.12.0 | required | - |
@@ -387,7 +417,7 @@ before. This Task performs none of these steps.
 | --- | --- | --- | --- | --- |
 | 66 | pending | Issued P04 baseline and documentation leases, Current public inventory and comparison | REUSE_ACCEPTED for bounded existing ownership with current affected source regressions; operating roles and restore remain independently unaccepted. | SPEC-0212 TSK-0043 |
 | 67 | pending | P04 local implementation and review, D04 narrow S3 permission rerun, Optimized full Worker and restore rehearsal | SOURCE_READY: S3 matrix, input quarantine, Celery publication retry/replay and independent recovery pass in the isolated native rehearsal within the unchanged deadline; HOME installation is NOT_RUN and handed to D12. | SPEC-0212 TSK-0043 |
-| 68 | pending | CDC current-consumer reconciliation | SOURCE_READY; no new Opsflow CDC consumer is authorized. | SPEC-0212 TSK-0043 |
+| 68 | pending | CDC current-consumer reconciliation, T03 HOME stream observation, T03 isolated CDC stream rehearsal | SOURCE_READY; HOME stack measured idle with no consumer; the isolated stream rerun is pending a quieter host; stopping the idle stack awaits the owner. | SPEC-0212 TSK-0043 |
 | 69 | pending | Quality publication regressions | SOURCE_READY: current unit/adapter quality blocking is evidenced; actual Worker publication remains residual. | SPEC-0212 TSK-0043 |
 | 70 | pending | Experiment input decision | BLOCKED on actual inputs by user choice; no experiment is invented. | SPEC-0212 TSK-0043 |
 | 71 | pending | Iceberg current-workload reconciliation | REUSE_ACCEPTED only for the evidenced optional platform; workload adoption is deferred. | SPEC-0212 TSK-0043 |
