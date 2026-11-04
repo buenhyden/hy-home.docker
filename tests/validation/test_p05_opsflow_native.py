@@ -1,6 +1,7 @@
 """P05 source/guard tests and an explicit current-artifact native rehearsal."""
 
 import hashlib
+import inspect
 import os
 import tempfile
 import unittest
@@ -528,6 +529,12 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
                 self.assertRaises(recovery.RehearsalFailure),
             ):
                 recovery.validate_execution_retry({**good, **change})
+
+    def test_postgres_readiness_waits_for_the_tcp_listener(self):
+        # The entrypoint's init server listens on the socket only and then
+        # restarts; only the final server answers on TCP.
+        source = inspect.getsource(native.legacy.NativeFixture.start_postgres)
+        self.assertIn('"pg_isready", "-h", "127.0.0.1"', source)
 
     def test_queue_probe_skips_jobs_removed_during_the_scan(self):
         # Bull 4 getJobs returns null for a job deleted between listing and
