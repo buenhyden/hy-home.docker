@@ -111,6 +111,7 @@ class MemoryFixture:
     def kill(self, role):
         self.event("kill:" + role)
         self.running[role] = False
+        self.killed_wall_ms = int(native.time.time() * 1000)
         if role == "worker" and self.session == "held":
             # A killed worker records nothing; the variants model a transport
             # timeout (unknown) and a silent success that must both fail.

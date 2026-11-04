@@ -524,6 +524,9 @@ class P05Fixture(legacy.NativeFixture):
         self._verify_container(record)
         if self.client.run_result("kill", record.cid).returncode:
             raise RehearsalFailure("owned container kill failed")
+        # When the signal was delivered, before the stop wait below; the
+        # wait can take seconds under host load (native attempt 10).
+        self.killed_wall_ms = int(time.time() * 1000)
         self.wait_until(
             lambda: (
                 (self._verify_owned(record).get("State") or {}).get("Running") is False
@@ -684,9 +687,9 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         held = f.hold_facts()
         f.kill("worker")
         self.killed_at = time.monotonic()
-        # Host and container read the same kernel wall clock; measuring after
-        # the kill returns is an upper bound on the interruption point.
-        killed_ms = int(time.time() * 1000) - held["body_held_at_ms"]
+        # Host and container read the same kernel wall clock; the time the
+        # kill command returned is an upper bound on the interruption point.
+        killed_ms = f.killed_wall_ms - held["body_held_at_ms"]
         if kill_main:
             # Main dies with the worker: its in-memory wait for the job is lost.
             f.kill("main")
