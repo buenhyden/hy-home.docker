@@ -100,7 +100,9 @@ canonical Markdown artifact의 `type`이 해당 Registry-classified profile type
 domain, subject, stage, governance, generated, repository-support
 Markdown에도 적용됩니다. `absent`는 Markdown frontmatter를 쓰지 않는
 실행 가능한 machine contract 전용입니다. `unmanaged`는 지원되지 않는
-fallback을 포괄하며, 현재 작성 대상이 아닙니다.
+fallback과 Stage 98 archive-record profile을 포괄합니다. archive-record profile은
+Registry에 남아 있지만 해당 경로에는 파일이 없으며, 둘 다 현재 작성 대상이
+아닙니다.
 
 ### Local r10 Role Forms
 
