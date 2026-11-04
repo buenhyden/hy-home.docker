@@ -1,6 +1,6 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -752,13 +752,14 @@ P03 global explain/admission failure remains unresolved by these local checks.
 | Review-fix guards initial RED | 73 | W78 | Kill-based interruption, hold timing and parsed run_id guards | New guards before the correction | FAIL | review-guards-red.log:16tests,2failures,1error(parse_hold absent),1native SKIP | required | - |
 | Review-fix guards GREEN | 73 | W78 | Kill-based interruption, hold timing and parsed run_id guards | Native 6fdb8b62/recovery e924d9f3 and scenario doubles | PASS | 35tests:34PASS1nativeSKIP;6weakenings RED(1/3/2/1/1/1);loopback timeout close5004ms vs kill346ms;new lines native196/198,recovery88/88 | required | Review-fix guards initial RED |
 | Native kill-based interruption rehearsal | 73 | W78 | Current-artifact native restore replay and active-send interruption rehearsal | Rebased d94f7440c, same candidate 9dea1967/binding d4b51cee | PASS | native-run4-receipt.json b21b2f7b:731.029s;restore/replay/next-claim as attempt3;session open at kill,close1020ms<5000,row sending;expired lease→unknown/1/lease_expired_delivery_unknown,no resend,fresh accepted;broker job survived(1);cleanupPASS/owned0 | required | - |
+| Independent replay/interruption code re-review | 73 | W78 | Independent code review of the replay/interruption increment | Correction d94f7440c and TSK-0044 v0.3.0 | PASS | APPROVED: kill-based interruption requires `sending` and a sub-5000 ms close against `socketTimeout: 5000`; latency from the hold timestamp; parsed run_id filter; the fixture-only lease expiry targets only the interrupted `sending` row and rejects zero or several rows | required | Independent replay/interruption code review |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 72 | pending | Issued P05 baseline and leases, P08 source-binding parity GREEN, Final workspace inventory and comparisons | REUSE_ACCEPTED only for original C19/C22 scope; current source/image/runtime equivalence separate. | SPEC-0212 TSK-0044 |
-| 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Native replay/interruption rehearsal, Review-fix guards GREEN, Native kill-based interruption rehearsal | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; isolated same-input replay, restored outbox-state equivalence and next-claim PASS; the stopped-worker interruption result was superseded by review, and the SIGKILL mid-DATA interruption with lease-expiry recovery PASS (Native kill-based interruption rehearsal); restore while an interrupted broker job survives, the non-terminal interrupted execution and re-review of the correction remain TEST_RESIDUAL. | SPEC-0212 TSK-0044 |
+| 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; isolated same-input replay, restored outbox-state equivalence and next-claim PASS; the stopped-worker interruption result was superseded by review, and the SIGKILL mid-DATA interruption with lease-expiry recovery PASS (Native kill-based interruption rehearsal); restore while an interrupted broker job survives, and the non-terminal interrupted execution remain TEST_RESIDUAL; the correction passed independent re-review. | SPEC-0212 TSK-0044 |
 | 74 | pending | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. | SPEC-0212 TSK-0044 |
 | 75 | pending | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | SOURCE_READY with scoped actual native increment PASS; formal owner acceptance, actual P06 producer and operating rotation remain separate. | SPEC-0212 TSK-0044 |
 
