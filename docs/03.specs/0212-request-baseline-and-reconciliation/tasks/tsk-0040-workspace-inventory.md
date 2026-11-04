@@ -1,10 +1,10 @@
 ---
 title: "Workspace Inventory Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-04"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0040"
 parent_ids:
@@ -285,6 +285,31 @@ credential changed. Independent review approved all seven frozen executable
 source/test files in its exact fingerprint scope. The only current configuration
 residual is the readiness fixture handoff above.
 
+### D01 re-observation at current main
+
+A direct user request on 2026-11-04 re-ran this inventory contract as D01. The
+input workspace was clean `main` at `d53a0cd6e8f6970b44e1c404e25842a258019ab3`,
+equal to read-only `git ls-remote` main. Work ran on branch
+`fix/data-0096-model-policy-path`; no reset, clean, stash or pull was used.
+
+A fresh scan passed, but `compare` against committed DATA-0096 exited 2:
+`validate` rejected one connection source, `tests/fixtures/p03_models/notebook-model-policy.json`,
+whose path no longer maps to a candidate kind. Commit `30d73680a` moved that file
+byte-identically to `infra/08-ai/open-notebook/config/` without regenerating
+the ledger, and no test validated the committed ledger. The ledger was
+regenerated from the clean tree with the same 98 review records and seven
+curated sections; `validate` passed and connection rows changed by zero. A new
+regression validates the committed ledger; before this fix the same validator
+exited 2 on the committed bytes. The 75 inventory/service/connection tests pass.
+
+`docker compose config -q` exited 0. Without profiles no service is selected;
+`--profile '*'` lists 112 services, equal to the ledger. Only value-free flags
+were used. Compose config/profiles and GitHub non-code rendering pages were
+re-read on 2026-11-04; they confirm `-q`, `--services` and `--profiles` print
+no interpolated values and that unprofiled services are always enabled. The
+GitHub page gives no YAML size limit, so it does not apply to this ledger.
+Runtime, restore and Hosted CI for this observation remain NOT_RUN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -323,6 +348,8 @@ residual is the readiness fixture handoff above.
 | Final selected ownership checks | 54 | W59 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | - |
 | Final selected research checks | 55 | W60 | Registered selected local checks | Six prior selected leaves plus corrected exact seventh integrity invocation | PASS | localfollowup-integrity-final.json:720/720 PASS,48/48 P01 ok,278.518s,exit0; separate source-bound executions, no full14 aggregate claim | required | - |
 | Hosted CI | 51 | W56 | Remote CI execution | Local branch | NOT_RUN | No remote publication; applies to all P01 units | optional | - |
+| D01 ledger revalidation | 52 | W57 | Committed-ledger validate, regenerated scan and 75 focused tests | HEAD d53a0cd6e, clean tree | PASS | Old ledger validate exit 2 (stale moved source); regenerated ledger PASS; local d01-20261104 receipts | required | - |
+| D01 Compose static check | 52 | W57 | `docker compose config -q`, `--services`, `--profiles` | HEAD d53a0cd6e | PASS | exit 0; 0 default services, 112 with all profiles; no runtime claim | required | - |
 
 ## Criterion Acceptance
 

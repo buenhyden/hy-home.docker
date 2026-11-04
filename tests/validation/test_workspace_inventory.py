@@ -247,5 +247,18 @@ class WorkspaceCliTests(unittest.TestCase):
                 self.assertEqual(renderer.call_args.kwargs["case_inputs"], inputs)
 
 
+class CommittedLedgerTests(unittest.TestCase):
+    def test_committed_ledger_passes_its_own_validator(self):
+        # A moved connection source (e.g. 30d73680a) must not leave DATA-0096
+        # unloadable by `compare`; regenerate the ledger when this fails.
+        from scripts.lib.ops.workspace_inventory import validate
+
+        ledger = (
+            CLI.parents[2]
+            / "docs/90.references/data/0096-workspace-inventory/data.yaml"
+        )
+        self.assertTrue(validate(yaml.safe_load(ledger.read_text())))
+
+
 if __name__ == "__main__":
     unittest.main()
