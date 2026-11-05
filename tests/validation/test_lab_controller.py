@@ -1584,6 +1584,10 @@ def readiness_case(cpus=1.0, memory=GIB, **changes):
             integrations=[
                 {"kind": "observability", "owner": "infra/06-observability/"}
             ],
+            documents={
+                "guide": "docs/05.operations/guides/15-labs/0022-valkey-cluster.md",
+                "runbook": "docs/05.operations/runbooks/15-labs/0022-valkey-cluster.md",
+            },
             resources={
                 "services": {"node": {"cpus": cpus, "memory_mib": memory / MIB}},
                 "disk_gib": {"data": 5, "images": 1},
@@ -1624,6 +1628,41 @@ def readiness_case(cpus=1.0, memory=GIB, **changes):
 
 def readiness(case: dict) -> dict:
     return lab.readiness("candidate", **case)
+
+
+DEV_DB = ROOT / "infra/04-data/dev-db"
+
+
+def dev_db_root() -> dict:
+    """A root render with dev-valkey (bind under valkey/) and dev-pg (build
+    context pg/), as infra/04-data/dev-db/docker-compose.yml declares."""
+    pg = service("dev-pg", ports=[("0.0.0.0", 5432)])
+    pg["build"] = {"context": str(DEV_DB / "pg"), "dockerfile": "Dockerfile"}
+    valkey = service(
+        "dev-valkey", ports=[("0.0.0.0", 6379)], binds=[str(DEV_DB / "valkey/config")]
+    )
+    return lab.footprint(
+        model(
+            "hy-home",
+            {"home": service("home-1"), "dev-valkey": valkey, "dev-pg": pg},
+        )
+    )
+
+
+def replacement_case(folder: str, services: list[str], kind="replace-same") -> dict:
+    case = readiness_case(root=dev_db_root())
+    case["manifest"].update(
+        kind=kind,
+        target={"folder": folder, "profile": "dev-data"},
+        replaces=[
+            {
+                "compose_path": "infra/04-data/dev-db/docker-compose.yml",
+                "services": services,
+                "consumers": [],
+            }
+        ],
+    )
+    return case
 
 
 class ReadinessTests(unittest.TestCase):
@@ -1697,6 +1736,7 @@ class ReadinessTests(unittest.TestCase):
                 ],
             )
             found["lab"]["ports"] = {"127.0.0.1:6379"}
+            found["root"] = dev_db_root()
             found["running"][0]["cpus"] = 7.0
             found["running"].append(
                 {"name": "dev-valkey", "project": "hy-home",
@@ -1730,6 +1770,101 @@ class ReadinessTests(unittest.TestCase):
         case = readiness_case()
         case["manifest"]["target"]["folder"] = "infra/04-data/../../etc/"
         self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_add_does_not_honor_replaces(self) -> None:
+        # Reviewer repro: an add candidate naming a "root" service hid a real
+        # port and network clash with root.
+        case = readiness_case()
+        case["root"]["ports"] = {"0.0.0.0:8080"}
+        case["lab"]["ports"] = {"0.0.0.0:8080"}
+        case["root"]["networks"] = case["root"]["networks"] | {"shared"}
+        case["lab"]["networks"] = case["lab"]["networks"] | {"shared"}
+        case["manifest"]["replaces"] = [
+            {"compose_path": "infra/04-data/x/docker-compose.yml", "services": ["root"]}
+        ]
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+        problems = report["criteria"]["composition"]["problems"]
+        self.assertTrue(any("8080" in p for p in problems), problems)
+        self.assertTrue(any("shared" in p for p in problems), problems)
+
+    def test_readiness_retired_name_filters_no_other_clash(self) -> None:
+        # Reviewer repro: retiring "held" dropped "host port ... held by other".
+        for services in (["held"], ["dev-valkey"]):
+            with self.subTest(services=services):
+                case = replacement_case("infra/04-data/dev-db/valkey/", services)
+                case["lab"]["ports"] = {"0.0.0.0:6380"}
+                case["running"].append(
+                    {"name": "other-svc", "project": "hy-home",
+                     "ports": {"0.0.0.0:6380"}, "cpus": 1, "memory": GIB,
+                     "running": True}
+                )  # fmt: skip
+                report = readiness(case)
+                self.assertEqual("FAIL", self.result(report, "composition"))
+                problems = report["criteria"]["composition"]["problems"]
+                self.assertTrue(any("other-svc" in p for p in problems), problems)
+
+    def test_readiness_retired_service_must_exist(self) -> None:
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["ghost"])
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+        problems = report["criteria"]["composition"]["problems"]
+        self.assertTrue(any("ghost" in p for p in problems), problems)
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["dev-valkey"])
+        case["manifest"]["replaces"][0]["compose_path"] = "infra/04-data/nope.yml"
+        self.assertEqual("FAIL", self.result(readiness(case), "composition"))
+
+    def test_readiness_tier_needs_the_folder_of_a_retired_service(self) -> None:
+        # Reviewer repro: the valkey manifest claimed dev-db/pg/ (dev-pg stays).
+        case = replacement_case("infra/04-data/dev-db/pg/", ["dev-valkey"])
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+        case = replacement_case("infra/04-data/dev-db/pg/", ["dev-pg"])
+        self.assertEqual("PASS", self.result(readiness(case), "tier"))
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["dev-valkey"], "add")
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_add_cannot_claim_an_existing_folder(self) -> None:
+        # Reviewer repro: add with a made-up compose_path claimed qdrant/.
+        case = readiness_case()
+        case["manifest"].update(
+            target={"folder": "infra/04-data/qdrant/", "profile": "dev-data"},
+            replaces=[
+                {"compose_path": "infra/04-data/qdrant/nope.yml", "services": []}
+            ],
+        )
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_fails_tier_on_manifest_problems(self) -> None:
+        case = readiness_case()
+        case["manifest"]["secrets"] = [{"row": "NO-SUCH-ROW", "destination": "x"}]
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "tier"))
+        self.assertTrue(
+            any("NO-SUCH-ROW" in p for p in report["criteria"]["tier"]["problems"])
+        )
+
+    def test_readiness_over_budget_with_unlimited_stays_fail(self) -> None:
+        # Ruling: the known lower bound already exceeds the budget.
+        case = readiness_case()
+        case["running"][0]["cpus"] = 9.5
+        case["running"].append(
+            {"name": "free-1", "project": "hy-home", "ports": set(),
+             "cpus": 0, "memory": GIB, "running": True}
+        )  # fmt: skip
+        self.assertEqual("FAIL", self.result(readiness(case), "resources"))
+
+    def test_measure_host_omits_unparsable_docker_info(self) -> None:
+        answers = [
+            subprocess.CompletedProcess([], 0, "not json", ""),
+            subprocess.CompletedProcess([], 1, "", ""),
+        ]
+        with (
+            mock.patch.object(lab, "run", side_effect=answers),
+            mock.patch.object(lab.shutil, "disk_usage", side_effect=OSError),
+        ):
+            host = lab.measure_host("docker", "/data/home")
+        self.assertEqual({}, host)
+        self.assertEqual("NOT_RUN", readiness(readiness_case(host=host))["result"])
 
     def test_readiness_unknown_profile_fails_composition(self) -> None:
         case = readiness_case()

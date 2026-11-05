@@ -33,7 +33,6 @@ import functools
 import json
 import os
 import pathlib
-import posixpath
 import re
 import shutil
 import signal
@@ -131,20 +130,34 @@ def footprint(model: dict) -> dict:
     cluster_ids = set()
     cpus = memory = 0.0
     limits, users = {}, {}
+    # Per-service identities, so a replacement can retire exactly its own
+    # services' containers, ports and folders (readiness).
+    by_service: dict[str, dict[str, set]] = {}
     for name, service in model.get("services", {}).items():
         replicas = int((service.get("deploy") or {}).get("replicas") or 1)
+        own = by_service[name] = {"containers": set(), "ports": set(), "dirs": set()}
         if service.get("container_name"):
-            containers.add(service["container_name"])
+            own["containers"].add(service["container_name"])
         else:
-            containers |= {f"{project}-{name}-{i}" for i in range(1, replicas + 1)}
+            own["containers"] |= {
+                f"{project}-{name}-{i}" for i in range(1, replicas + 1)
+            }
+        containers |= own["containers"]
         for port in service.get("ports", []) or []:
             if port.get("published"):
-                ports.add(f"{port.get('host_ip', '0.0.0.0')}:{port['published']}")
+                own["ports"].add(
+                    f"{port.get('host_ip', '0.0.0.0')}:{port['published']}"
+                )
+        ports |= own["ports"]
+        build = service.get("build")
+        if isinstance(build, dict) and isinstance(build.get("context"), str):
+            own["dirs"].add(os.path.realpath(build["context"]))
         for mount in service.get("volumes", []) or []:
             if mount.get("type") == "bind":
                 # realpath: a symlinked root must not hide an overlap.
                 declared = mount["source"]
                 path = os.path.realpath(declared)
+                own["dirs"].add(path)
                 read_only = bool(mount.get("read_only"))
                 paths.add(path)
                 if read_only:
@@ -277,6 +290,7 @@ def footprint(model: dict) -> dict:
         "services": limits,
         "users": users,
         "drivers": drivers,
+        "by_service": by_service,
     }
 
 
@@ -875,7 +889,11 @@ def measure_host(docker: str, data_root: str) -> dict:
     A value that cannot be read is left out, so readiness reports NOT_RUN."""
     host = {}
     info = run([docker, "info", "--format", "{{json .}}"])
-    data = json.loads(info.stdout) if info.returncode == 0 and info.stdout else {}
+    try:
+        data = json.loads(info.stdout) if info.returncode == 0 else {}
+    except ValueError:  # unparsable output is unmeasured, not a crash
+        data = {}
+    data = data if isinstance(data, dict) else {}
     for key, name in (
         ("NCPU", "NCPU"),
         ("MemTotal", "MemTotal"),
@@ -904,6 +922,19 @@ def measure_host(docker: str, data_root: str) -> dict:
             "source": f"shutil.disk_usage({path})",
         }
     return host
+
+
+def _compose_services(path: str) -> set[str] | None:
+    """Service names a repository Compose file declares, or None if absent."""
+    import yaml
+
+    file = ROOT / path
+    if ".." in pathlib.PurePosixPath(path).parts or not file.is_file():
+        return None
+    loaded = yaml.safe_load(file.read_text(encoding="utf-8"))
+    return (
+        set((loaded or {}).get("services") or {}) if isinstance(loaded, dict) else set()
+    )
 
 
 def _version(text: object) -> tuple[int, ...]:
@@ -936,13 +967,36 @@ def readiness(
     source = f"labs/{name}/promotion.yaml"
     kind = manifest.get("kind")
     target = manifest.get("target") or {}
-    replaces = manifest.get("replaces") or []
-    retired = {
-        service
-        for item in replaces
-        if isinstance(item, dict)
-        for service in (item.get("services") or [item.get("service")])
-        if service
+    # Only a replacement kind retires anything. Each retired service must be
+    # declared in an existing compose_path and rendered in root; a claim that
+    # fails is a composition problem and retires nothing.
+    replaces = manifest.get("replaces") if kind in REPLACEMENT_KINDS else None
+    retired: set[str] = set()
+    covering: list[str] = []  # compose files that declare the retired services
+    replace_problems = []
+    for item in replaces or []:
+        item = item if isinstance(item, dict) else {}
+        path = str(item.get("compose_path"))
+        services = [str(s) for s in item.get("services") or [item.get("service")] if s]
+        declared = _compose_services(path)
+        missing = [
+            s
+            for s in services
+            if s not in (declared or ()) or s not in root.get("by_service", {})
+        ]
+        if declared is None:
+            replace_problems.append(f"replaces compose_path {path} does not exist")
+        elif not services or missing:
+            replace_problems.append(
+                f"replaces {path}: services {missing or services} are not "
+                "declared there and rendered in root"
+            )
+        else:
+            retired |= set(services)
+            covering.append(path)
+    retired_identity = {
+        key: set().union(*(root["by_service"][s][key] for s in retired))
+        for key in ("containers", "ports", "dirs")
     }
     criteria = {}
 
@@ -969,23 +1023,35 @@ def readiness(
         exists = (ROOT / folder).exists()
         values["folder_exists"] = {"value": exists, "source": folder}
 
-        def covered(path: str) -> bool:
-            # The folder holds the retired Compose file, or sits inside the
-            # service folder of a Compose file below the tier (dev-db/valkey/).
-            parent = posixpath.dirname(path)
-            return path.startswith(folder) or (
-                folder.startswith(parent + "/") and len(parent.split("/")) >= 3
-            )
-
-        paths = [str(i.get("compose_path")) for i in replaces if isinstance(i, dict)]
-        if exists and not any(covered(path) for path in paths):
+        # An existing folder is a declared replacement when it holds a
+        # verified retired Compose file, or when a retired service's build
+        # context or bind source lies inside it (dev-db/valkey/ for
+        # dev-valkey): derived from the root render, not from the manifest.
+        real = os.path.realpath(ROOT / folder)
+        covered = any(path.startswith(folder) for path in covering) or any(
+            _within(item, real) for item in retired_identity["dirs"]
+        )
+        if exists and not covered:
             failed.append(f"target folder {folder} exists and is not a replacement")
-    criteria["tier"] = _criterion(values, failed, [])
+    unmeasured = []
+    try:
+        failed += manifest_problems(name, manifest, lab, catalog_ids())
+    except LabError as exc:
+        unmeasured.append(str(exc))
+    criteria["tier"] = _criterion(values, failed, unmeasured)
 
-    # Service composition. A clash with a retired service is not counted.
-    failed, unmeasured = [], []
-    clashes = collisions({name: lab}, root, running)
-    failed += [p for p in clashes if not set(p.split()) & retired]
+    # Service composition. The retired services' own containers and ports
+    # are removed from root and running before collisions(); networks and
+    # data paths stay, since retiring a service frees neither.
+    failed, unmeasured = list(replace_problems), []
+    kept_root = dict(root)
+    for key in ("containers", "ports"):
+        kept_root[key] = root[key] - retired_identity[key]
+    kept_running = [
+        c for c in running if c["name"] not in retired_identity["containers"]
+    ]
+    clashes = collisions({name: lab}, kept_root, kept_running)
+    failed += clashes
     profile = target.get("profile")
     values = {
         "collisions": {
@@ -1067,7 +1133,7 @@ def readiness(
     counted = [
         c for c in running if c.get("running", True) and c["project"] != lab["project"]
     ]
-    retiring = [c for c in counted if c["name"] in retired or c["project"] in retired]
+    retiring = [c for c in counted if c["name"] in retired_identity["containers"]]
     kept = [c for c in counted if c not in retiring]
     unlimited = sorted(c["name"] for c in kept if not c["cpus"] or not c["memory"])
     unmeasured += [f"running container {c} declares no limit" for c in unlimited]
@@ -1136,6 +1202,8 @@ def readiness(
                 f"{disk}: {free / 2**30:.1f} GiB usable, disk_gib.{key} needs "
                 f"{need[key]}"
             )
+    # Over budget stays FAIL even with unlimited containers: the known lower
+    # bound already exceeds the budget. NOT_RUN only when the measured sum fits.
     criteria["resources"] = _criterion(values, failed, unmeasured)
 
     results = {c["result"] for c in criteria.values()}
