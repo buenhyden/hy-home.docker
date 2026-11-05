@@ -56,6 +56,8 @@ BUILD_KEYS = frozenset(
 )
 # Tracked source trees HOME tools may read whole; see _path_conflict.
 SOURCE_TREES = frozenset(os.path.realpath(ROOT / name) for name in ("infra", "labs"))
+SECRETS_TREE = os.path.realpath(ROOT / "secrets")
+LAB_SECRETS_TREE = os.path.realpath(ROOT / "secrets" / "labs")
 
 
 class LabError(Exception):
@@ -314,6 +316,8 @@ def root_footprint(
     found["home_data_root"] = home_data_root
     found["paths"].add(home_data_root)
     found["state"].add(home_data_root)
+    # Writable binds only, before sensitive inputs are promoted to state.
+    found["bound_state"] = set(found["state"])
     for path in set(found["sensitive_inputs"]):
         found["state"].add(path)
     if env_file is not None:
@@ -393,6 +397,18 @@ def _path_conflict(path: str, owner: dict, other_path: str, other: dict) -> bool
         and path not in owner["state"]
         and path not in owner["sensitive_inputs"]
         and _tracked_only(path)
+    ):
+        return False
+    # restic backs up the repo's secrets/ through a read-only bind; it owns
+    # none of a LAB's read-only copies under secrets/labs/<name>/. A writable
+    # bind of secrets/, a HOME secret or the whole LAB tree still clashes.
+    if (
+        other_path == SECRETS_TREE
+        and other_path in other["inputs"]
+        and other_path not in other.get("bound_state", other["state"])
+        and path.startswith(LAB_SECRETS_TREE + os.sep)
+        and path in owner["inputs"]
+        and path not in owner["state"]
     ):
         return False
     shared_public_input = (

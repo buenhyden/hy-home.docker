@@ -310,6 +310,51 @@ class CollisionAndBudgetTests(unittest.TestCase):
             with self.subTest(case=name):
                 self.assertTrue(lab.collisions({"x": selected}, root, []))
 
+    def test_read_only_secrets_backup_owns_no_lab_secret_copy(self) -> None:
+        # restic binds the repo's secrets/ read-only to back it up. A LAB's
+        # read-only copy under secrets/labs/<name>/ is not HOME data; a
+        # writable HOME bind, a HOME secret, the whole LAB secrets tree or a
+        # writable LAB bind still clash.
+        def home(read_only=True):
+            spec = service("restic")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": str(ROOT / "secrets"),
+                    "target": "/src/host/secrets",
+                    "read_only": read_only,
+                }
+            ]
+            # root_footprint makes every HOME sensitive input HOME state.
+            return lab.root_footprint(
+                model("hy-home-infra", {"restic": spec}, data_root="/data/home")
+            )
+
+        def lab_secret(path):
+            rendered = model("hy-home-lab-x", {"x": service("lab-x")})
+            rendered["secrets"] = {"s": {"name": "s", "file": path}}
+            return lab.footprint(rendered)
+
+        def lab_bind(path):
+            spec = service("lab-x")
+            spec["volumes"] = [{"type": "bind", "source": path, "target": "/x"}]
+            return lab.footprint(model("hy-home-lab-x", {"x": spec}))
+
+        copy = str(ROOT / "secrets/labs/x/password.txt")
+        self.assertEqual([], lab.collisions({"x": lab_secret(copy)}, home(), []))
+        for name, selected, root in (
+            ("writable HOME bind", lab_secret(copy), home(read_only=False)),
+            (
+                "HOME secret",
+                lab_secret(str(ROOT / "secrets/auth/example_password.txt")),
+                home(),
+            ),
+            ("whole LAB secrets tree", lab_secret(str(ROOT / "secrets/labs")), home()),
+            ("writable LAB bind", lab_bind(str(ROOT / "secrets/labs/x")), home()),
+        ):
+            with self.subTest(case=name):
+                self.assertTrue(lab.collisions({"x": selected}, root, []))
+
     def test_host_root_observer_exemption_keeps_home_secrets_env_and_docker(self):
         # With HOME's read-only / exempt, assets no HOME bind covers must be
         # footprinted explicitly: top-level secret files, the root env file
