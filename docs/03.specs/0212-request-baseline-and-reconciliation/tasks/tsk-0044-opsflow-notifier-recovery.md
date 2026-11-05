@@ -706,31 +706,31 @@ Read from the declared image `n8nio/n8n:2.43.6`:
 
 #### Native result
 
-Attempt 13 on code `a4bf785d9`, after the review fixes (candidate
-`9dea1967…`, binding `d4b51cee…`), passed in 980.804 seconds with cleanup
-PASS and zero owned residue:
+Attempt 14 on the final code `444e1a2ae` (candidate `9dea1967…`, binding
+`d4b51cee…`) passed in 981.189 seconds with cleanup PASS and zero owned
+residue:
 
-- Main alive: SIGKILL mid-DATA (open session, body-to-kill 2435 ms), job
-  1→0 and execution 6 `crashed` in 37.533 seconds.
-- Main also killed: job 1 at 10573 ms after the kill signal, before lock
-  expiry. The worker deleted it (0) while execution 8 stayed `running`.
-  After the main restart it was `crashed` in 61.262 seconds, with its data
-  row kept (1→1) and REST readable. The interrupted row became
+- Main alive: SIGKILL mid-DATA (open session, body-to-kill 2279 ms), job
+  1→0 and execution 6 `crashed` in 32.684 seconds.
+- Main also killed: job 1 at 10908 ms after the kill signal. The worker
+  deleted it (0) while execution 8 stayed `running`. After the main restart
+  it was `crashed` in 61.208 seconds, with its data row kept (1→1) and REST
+  readable. The interrupted row became
   `unknown|1|lease_expired_delivery_unknown` with no resend.
 - Retry: both crashed executions had an empty start stack and no run data.
-  n8n's retry ended `error` once (creating execution 10) and `not_started`
-  (HTTP 500, no execution created) once. Execution 10 was terminal before
-  the state checks. Nothing was claimed or resent and the outbox was
-  unchanged, with a claimable fresh row present. A new execution then
-  delivered that row on its first attempt.
-- Barrier passed with executions 1–11 terminal, including retry execution
-  10, and no jobs. The restore was identical (20 rows, 10 outbox: 6
-  accepted, 4 unknown). Replay gave 10 replayed and 0 claimable; the next
-  claim was fresh-only.
-- Receipt `native-run13-receipt.json` SHA256 is
-  `84f8eda39e71f0c2914ec30d2c292af6cfeac42dd01e6ea60c1e1268c396aefe`.
-  Attempt 12 (`17a61823…`, code `ef2ca463a`) had passed before the review
-  fixes and is superseded.
+  n8n's retry ended `error` once and `not_started` (HTTP 500) once. The
+  `error` retry created execution 10. Its id was the single `retryOf` row,
+  and it was terminal before the state checks. The 500 created no
+  execution. Nothing was claimed or resent and the outbox was unchanged,
+  with a claimable fresh row present. A new execution then delivered that
+  row on its first attempt.
+- Barrier passed with executions 1–11 terminal and no jobs. The restore
+  was identical (20 rows, 10 outbox: 6 accepted, 4 unknown). Replay gave
+  10 replayed and 0 claimable; the next claim was fresh-only.
+- Receipt `native-run14-receipt.json` SHA256 is
+  `78418d12a911d5a08f5526382f2f92167d445954ca5b7011c19ff38c9e6c3a9c`.
+  Attempts 12 (`17a61823…`, `ef2ca463a`) and 13 (`84f8eda3…`, `a4bf785d9`)
+  also passed on earlier code and are superseded.
 
 So n8n's own retry cannot replay a worker-killed notifier execution. The
 replay is a new execution of the workflow, and the interrupted row stays
@@ -747,6 +747,13 @@ a resend refused only after a new execution, and two source-only runbook
 claims. Commits `a4bf785d9` and `395e1fe64` fix all six. Each `retryOf`
 execution is read from the metadata DB, must be terminal before the state
 checks, and joins the barrier.
+
+The narrow re-review approved the fixes, and found that the DB terminal
+check closes the late-claim case. It raised three Minor points: the
+double's generic wait message bypassed the late-retry refusal, the
+returned retry id was not bound to its row, and a NULL status could be
+dropped. Commit `444e1a2ae` fixes them. Removing the late-retry refusal
+now turns the scenario suite RED.
 
 #### Failed attempts
 
@@ -979,10 +986,11 @@ P03 global explain/admission failure remains unresolved by these local checks.
 | Independent stall-recovery code review | 73 | W78 | Independent code review of the stall-recovery increment | Commits 54194cbbc,1d76b7135 | NOT_RUN | No independent reviewer ran in this session | required | - |
 | Independent stall-recovery code re-review | 73 | W78 | Independent code review of the stall-recovery increment | Commits 54194cbbc, 1d76b7135, 04df40b4d, 155e8d579 plus the minor-finding fix | PASS | APPROVED, no Critical/Important: assertions need n8n-driven job removal and a `crashed` execution (probe scans all job states, exact 1/0 ints); no queue deletion or barrier weakening; 150 s bound derived from lock and stall intervals; session cookie stripped from receipts; runbook step approval-gated. Minor findings fixed: only the settle timeout is tolerated, the job count uses the full probe result via `broker_job_count` (new test RED then GREEN, P05 suites 38 tests OK, 1 native skip) | required | Independent stall-recovery code review |
 | Main-restart and retry guards initial RED | 73 | W78 | Main-restart queue recovery and crashed-execution retry guards | New guards before validate_main_restart_recovery and validate_execution_retry existed | FAIL | 20 tests: 2 errors (missing validators), 1 native SKIP | required | - |
-| Main-restart and retry guards GREEN | 73 | W78 | Main-restart queue recovery and crashed-execution retry guards | Commits 69e47d4ec through ef2ca463a and scenario doubles | PASS | P05 unit and scenario tests all OK, 1 native SKIP; doubles refuse no startup recovery, stale runner, retry claim/resend/unbound, non-empty stack, same-date input | required | Main-restart and retry guards initial RED |
+| Main-restart and retry guards GREEN | 73 | W78 | Main-restart queue recovery and crashed-execution retry guards | Commits 69e47d4ec through 444e1a2ae and scenario doubles | PASS | P05 unit and scenario tests all OK, 1 native SKIP; doubles refuse no startup recovery, stale runner, retry claim/resend/unbound, non-empty stack, same-date input | required | Main-restart and retry guards initial RED |
 | Native main-restart and retry attempts 1-11 | 73 | W78 | Current-artifact native main-restart recovery and crashed-execution retry rehearsal | Commits 69e47d4ec through 6db614394 | FAIL | main-restart-retry/native-attempt*.log: causes in the Failed attempts table; cleanup PASS, owned residue 0 each | required | - |
-| Native main-restart and retry rehearsal | 73 | W78 | Current-artifact native main-restart recovery and crashed-execution retry rehearsal | Commit a4bf785d9, candidate 9dea1967/binding d4b51cee | PASS | native-run13-receipt.json 84f8eda3: 980.804 s; main-restart job 1→0, running→crashed 61.262 s, data 1→1; retry error/not_started, retry execution 10 terminal and fenced, 0 claimed, 0 resent, outbox unchanged; new execution delivered; barrier 1–11, restore, replay PASS | required | Native main-restart and retry attempts 1-11 |
+| Native main-restart and retry rehearsal | 73 | W78 | Current-artifact native main-restart recovery and crashed-execution retry rehearsal | Commit 444e1a2ae, candidate 9dea1967/binding d4b51cee | PASS | native-run14-receipt.json 78418d12: 981.189 s; main-restart job 1→0, running→crashed 61.208 s, data 1→1; retry error/not_started, retry execution 10 bound to its retryOf row, terminal and fenced, 0 claimed, 0 resent, outbox unchanged; new execution delivered; barrier 1–11, restore, replay PASS | required | Native main-restart and retry attempts 1-11 |
 | Independent main-restart and retry code review | 73 | W78 | Independent code review of the main-restart and retry increment | Range f0ce46fda..174155ab5 | FAIL | CHANGES_REQUESTED: 2 Important (500 mapping could hide a late claim; retry executions outside barrier), 4 Minor | required | - |
+| Independent main-restart and retry code re-review | 73 | W78 | Independent code review of the main-restart and retry increment | Fix range 174155ab5..48eb91256, then 444e1a2ae for its Minor points | PASS | APPROVED: I1/I2/M1-M4 resolved; DB retryOf terminal check closes the late claim; 3 Minor fixed in 444e1a2ae with late-retry mutation RED | required | Independent main-restart and retry code review |
 | HOME n8n recovery target inspection | 73 | W78 | Read-only HOME queue and execution target check | mng-valkey mnginspector and read-only n8n metadata session, 2026-11-05 | PASS | jobs active/wait/delayed/paused/failed absent; 0 new/running executions; Opsflow notifier not installed; no restart run | required | - |
 
 ## Criterion Acceptance
