@@ -1,10 +1,10 @@
 ---
 title: "Supabase Usage Guide"
-version: "1.0.8"
+version: "1.0.9"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-05"
 layer: "operations"
 artifact_id: "GDE-0029"
 parent_ids:
@@ -46,16 +46,19 @@ Supabase stack을 운영하거나 사용하는 운영자, 개발자, SRE, AI 에
 
 ### SMTP 원본과 소비 경로
 
-공용 SMTP password 원본은 COMM-002 하나입니다. Auth는 공용 `smtp_password`
-source를 `/run/secrets/supabase_smtp_password`로 마운트합니다. COMM-003은 값 없는
+HOME SMTP password 원본은 COMM-002입니다. Supabase LAB은 그 값을 복사한 LAB-037
+`secrets/labs/supabase/smtp_password.txt`만 읽고 HOME 경로를 읽지 않습니다. Auth는
+LAB `smtp_password` source를 `/run/secrets/supabase_smtp_password`로 마운트합니다.
+COMM-003은 값 없는
 퇴역 ID이며 별도 파일이나 OpenBao KV 값을 생성하지 않습니다. 향후 OpenBao 전환도
 canonical entry 하나와 서비스별 필요한 render를 사용합니다.
 
 GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv를 보존합니다.
 값은 실행 프로세스 환경에만 전달되므로 Docker/호스트 관리자와 환경 접근 위험을
 관리해야 합니다. SMTP의 격리 capture·인증 결과와 DB/JWT/전체 platform readiness는
-다른 증거입니다. LAB source 이동은 11개 secret 파일을 읽거나 이동·복제·삭제하지
-않았고 현재 Supabase 비선택 상태를 바꾸어 전체 stack을 가동하지 않았습니다.
+다른 증거입니다. SPEC-0263 이후 11개 secret은 모두 `secrets/labs/supabase/`의 LAB
+사본이며 소유자가 직접 배치했습니다. 에이전트는 값을 읽거나 옮기지 않았고 전체
+stack을 가동하지 않았습니다.
 
 ## Concepts
 
@@ -70,7 +73,7 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
 | Services / profile | frontmatter에 매핑된 13개 서비스; exact `supabase`. |
 | Flow / dependency | Kong이 API 경로 앞단에 있고, PostgreSQL이 메타데이터/데이터 코어이며, Storage가 메타데이터를 object 파일과 결합하고, Supavisor가 데이터베이스 트래픽을 pooling한다. |
 | Exposure / persistence | Kong/analytics/Supavisor host port는 `LAB_SUPABASE_*` 변수로 loopback에 게시되며, Studio는 직접 포트가 없고, `${LAB_DATA_DIR}/supabase`가 data/config를 소유한다. |
-| Environment / secrets | 공개 입력은 `labs/.env`의 `LAB_*` 계약을 사용한다. 11개 secret declaration은 기존 canonical root 파일을 참조하며 값을 LAB로 복사하지 않는다. SMTP는 COMM-002 한 원본이다. |
+| Environment / secrets | 공개 입력은 `labs/.env`의 `LAB_*` 계약을 사용한다. 11개 secret declaration은 `${LAB_SECRET_DIR}/supabase/`의 LAB 사본(SUPA-002, SUPA-004~011, AI-001, LAB-037)만 참조하고 HOME secret 경로는 읽지 않는다. SMTP 값은 HOME COMM-002를 복사한 LAB-037이다. |
 | Health / resources | 서비스별 healthcheck와 의존성 그래프; 각 서비스는 Compose에 선언된 공유 템플릿을 사용하므로 총 용량을 검토해야 한다. |
 | Security | Kong 경계, secret mount, JWT/provider 일관성, 생성된 증거에 credential 자료가 없어야 함. |
 | Backup / upgrade | PostgreSQL + Storage + config/functions + Auth/secret reference가 하나의 recovery set을 이루며, upstream update config backup만으로는 부족하다. |

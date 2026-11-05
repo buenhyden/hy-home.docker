@@ -1,6 +1,6 @@
 ---
 title: "Supabase LAB Source"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -82,10 +82,13 @@ Vector의 Docker socket bind는 read-only여도 Docker API 권한 경계가 아�
 데이터·그룹·예산 key만 공개 환경 입력입니다. 인증자료는 Docker Secret 파일로만
 참조하며 `.env.example`에 secret placeholder를 두지 않습니다.
 
-### SMTP 단일 원본
+### Secret LAB 사본
 
-공용 SMTP와 Auth는 COMM-002의 `secrets/communication/smtp/smtp_password.txt`를
-함께 사용합니다. Auth는 `source: smtp_password`, `target: supabase_smtp_password`
+11개 secret은 모두 `${LAB_SECRET_DIR:-../../secrets/labs}/supabase/`의 LAB 사본이며
+HOME secret 경로를 읽지 않습니다. SMTP 비밀번호는 HOME COMM-002 값을 복사한 LAB-037
+`secrets/labs/supabase/smtp_password.txt`이고, `supabase_db_password.txt`를 포함한
+나머지 10개는 SUPA-002, SUPA-004~011, AI-001 행이 소유합니다. Auth는
+`source: smtp_password`, `target: supabase_smtp_password`
 별칭으로 기존 container 경로를 유지합니다. COMM-003은 값 없는 퇴역 alias입니다.
 SMTP username, host, account와 Alertmanager 소비는 그대로 유지합니다.
 
@@ -128,7 +131,7 @@ DB URL 및 DB/JWT 입력 결함은 별도이며 SMTP alias나 격리 시험은 �
 
 공개 합성 입력으로 Compose 전체 모델을 렌더하고 이전 13-service graph, container
 name, profile, dependency, image와 wrapper를 비교합니다. 이동 경로, LAB data root,
-local network, 11개 secret source와 read-only input guard만 승인된 차이입니다.
+local network, 11개 LAB secret 사본 경로와 read-only input guard만 승인된 차이입니다.
 실제 image pull, service start, HOME 배포와 데이터 복구는 수행하지 않습니다.
 
 ## Troubleshooting

@@ -1,10 +1,10 @@
 ---
 title: "Supabase Stack Health Runbook"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-05"
 layer: "operations"
 artifact_id: "RUN-0029"
 parent_ids:
@@ -39,6 +39,8 @@ database/storage/config 복원, secret 읽기·이동·복제·삭제는 이번 
 
 - 이 task가 destructive restore나 secret rotation이 아니라 health/access 검증 task인지 확인한다.
 - compose secret ref에 대응하는 Docker Secret 파일이 존재하는지 값을 출력하지 않고 확인한다.
+  11개 파일은 모두 `secrets/labs/supabase/`의 LAB 사본이며, HOME secret 경로를
+  대신 연결하지 않는다.
 - `${LAB_DATA_DIR}/supabase/...` runtime mount가 승인된 격리 경로이며 HOME data
   root와 동일하거나 상하위 realpath가 아닌지 확인한다.
 - 비공개 `labs/.env`에 `LAB_DATA_DIR`, `LAB_SECRETS_GID`와 필요한
@@ -201,7 +203,8 @@ receipt는 관찰 후 5분 이내여야 하고 30초를 넘는 미래 시각을 
 `source_sha256`은 값이나 private 환경이 아니라 tracked public source 파일의
 상대경로→SHA-256 map입니다. root Compose include graph와, 존재하는 경우
 `labs/supabase/docker-compose.yml` 및 Auth가 고정 참조하는 `infra/common-optimizations.yml`
-public source digest를 함께 묶습니다. LAB Auth proof는 canonical SMTP source,
+public source digest를 함께 묶습니다. LAB Auth proof는 LAB-037 SMTP 사본 source(HOME
+canonical 경로를 읽지 않음),
 `supabase_smtp_password` target alias, exact common `extends`, public GoTrue image,
 profile, command, tier label, `_FILE` environment declaration, and previously native-vetted
 entrypoint declaration digest만 증명합니다. GoTrue를 ROOT service로 되돌리거나 LAB 실행,
