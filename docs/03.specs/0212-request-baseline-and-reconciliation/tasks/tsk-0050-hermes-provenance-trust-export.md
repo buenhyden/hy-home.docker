@@ -1,10 +1,10 @@
 ---
 title: "Hermes Provenance, Trust and Export Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0050"
 parent_ids:
@@ -144,7 +144,7 @@ control.
 | --- | --- | --- | --- | --- |
 | 98 | pending | Collector receipt and source-quality contract, DNS lookup deadline | Local workload proof passes; external Hermes SDK Call-ID linkage, actual collection and a bounded DNS lookup remain separate handoffs. | SPEC-0212 TSK-0050 |
 | 99 | pending | Direct receipt/outbox durability contract, Isolated ingress first attempt | Local negative-path proof passes; Gateway-side binding and live durable receipt remain separate. The retained pre-fix ingress ERROR does not become Queue acceptance. | SPEC-0212 TSK-0050 |
-| 100 | pending | Historical Export 1.0 ACK record, Export 2.0 isolated contract, Final cache-only isolated E2E | Export 1.0 history is reused and cache-only Export 2.0 passes; new Export 2.0 Windows delivery remains unaccepted. | SPEC-0212 TSK-0050 / Windows B owner |
+| 100 | accepted | Historical Export 1.0 ACK record, Export 2.0 isolated contract, Final cache-only isolated E2E | Export 1.0 history is reused and cache-only Export 2.0 passes; new Export 2.0 Windows delivery remains unaccepted. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0050 / Windows B owner |
 | 101 | pending | Historical backup record, Attester replay and owned SQLite restore, Attester queue fairness | Local source and independent-volume proof pass; operational Attester replay/restore and fairness stay separate. | SPEC-0212 TSK-0050 |
 | 102 | pending | Security-reviewed plugin source identity, P11 gate registration and local plan, Broad P11 gate baseline, Independent security baseline, Pre-format host offline gate, DATA-0096 receipt-preserving refresh, Actual operation boundary, New Python execution coverage, Final restricted QA, Pre-hook document contract checks, Initial commit-hook formatting result, Gateway receipt format correction, Post-format P11 gate, Post-format P11 gate result, Same-UID and recovery handoff | The post-format host gate and cache-only contract pass; the final cache-only E2E is recorded above. Restricted-sandbox gid mapping is environment-specific. Live route, actual Queue execution, external ownership and operations remain separate. | SPEC-0212 TSK-0050 |
 

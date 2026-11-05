@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.5.0"
+version: "0.5.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0044"
 parent_ids:
@@ -999,7 +999,7 @@ P03 global explain/admission failure remains unresolved by these local checks.
 | --- | --- | --- | --- | --- |
 | 72 | pending | Issued P05 baseline and leases, P08 source-binding parity GREEN, Final workspace inventory and comparisons | REUSE_ACCEPTED only for original C19/C22 scope; current source/image/runtime equivalence separate. | SPEC-0212 TSK-0044 |
 | 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review, n8n stall-recovery guards GREEN, Post-restore capture-order guard GREEN, Native stall-recovery restore rehearsal, Independent stall-recovery code re-review, Main-restart and retry guards GREEN, Native main-restart and retry rehearsal, HOME n8n recovery target inspection | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; isolated same-input replay, restored outbox-state equivalence and next-claim PASS; the stopped-worker interruption result was superseded by review, and the SIGKILL mid-DATA interruption with lease-expiry recovery PASS (Native kill-based interruption rehearsal); the correction passed independent re-review. The two former residuals pass in the isolated fixture through n8n 2.43.6's own stall recovery (Native stall-recovery restore rehearsal): the surviving job was removed by n8n, the interrupted execution became `crashed`, and the strengthened barrier then accepted restore. The criterion passed independent review; it stays TEST_RESIDUAL because the same-input replay covers repeated publication, not replay of an n8n execution, and HOME operation is NOT_RUN. | SPEC-0212 TSK-0044 |
-| 74 | pending | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. | SPEC-0212 TSK-0044 |
+| 74 | accepted | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0044 |
 | 75 | pending | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | SOURCE_READY with scoped actual native increment PASS; formal owner acceptance, actual P06 producer and operating rotation remain separate. | SPEC-0212 TSK-0044 |
 
 ## Review and Completion

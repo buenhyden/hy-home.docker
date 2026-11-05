@@ -1,10 +1,10 @@
 ---
 title: "Analytics Labs Migration Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0262-TSK-0001"
 parent_ids:
@@ -309,17 +309,17 @@ The real budget is an operator input.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
+| 1 | accepted | E1 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
 | 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
-| 5 | pending | - | - | @buenhyden |
+| 3 | accepted | E5, E8, E14 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
+| 4 | accepted | E9 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
+| 5 | accepted | E10, E11, E12, E15 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
 
 ## Review and Completion
 
 Local checks and hosted CI for PR #747 are recorded above. The LAB check
-follow-up awaits independent review and its own hosted CI, and no criterion
-is accepted yet.
+follow-up awaits independent review and its own hosted CI. On 2026-11-06 the owner
+@buenhyden accepted criteria 1, 3, 4 and 5; criterion 2 stays pending.
 
 ## Related Documents
 

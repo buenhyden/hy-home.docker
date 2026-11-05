@@ -1,9 +1,9 @@
 ---
 title: "Documentation, Governance, QA and CI Contract Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0049"
 parent_ids:
@@ -61,8 +61,8 @@ The observed starting revision is `43f112eb5452767f5ab56f95335ef59fb4ab743c`. Lo
 | --- | --- | --- | --- | --- |
 | 94 | pending | Generation-7 current-task normalization, Metadata baseline, Corpus lifecycle baseline, Link alignment baseline, DATA-0096 retention-preserving refresh | Draft records are normalized, lifecycle and receipt-preserving DATA refresh pass, but metadata has an initial current Plan/Spec failure plus preserved archive debt; final rerun determines the scoped residual. | SPEC-0212 TSK-0049 |
 | 95 | pending | P03 public validator registration, P04/P05 selector expectation correction | CI implementation and complete local plan/parity evidence are pending. | SPEC-0212 TSK-0049 |
-| 96 | pending | Hook and governance local regressions | Local regressions are reported; native provider delivery is separate and unrun. | SPEC-0212 TSK-0049 |
-| 97 | pending | Evidence lifecycle and remote boundary | Existing lifecycle machinery is reused; remote CI and operational acceptance remain unrun. | SPEC-0212 TSK-0049 |
+| 96 | accepted | Hook and governance local regressions | Local regressions are reported; native provider delivery is separate and unrun. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0049 |
+| 97 | accepted | Evidence lifecycle and remote boundary | Existing lifecycle machinery is reused; remote CI and operational acceptance remain unrun. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0049 |
 
 ### Cross-package header handoff
 
