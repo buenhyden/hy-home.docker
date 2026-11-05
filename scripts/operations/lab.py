@@ -126,7 +126,7 @@ def footprint(model: dict) -> dict:
                     inputs.add(path)
                     if _sensitive_input(path, mount.get("target")):
                         sensitive_inputs.add(path)
-                    elif path in SHARED_PUBLIC_INPUTS and pathlib.Path(path).is_file():
+                    elif _public_file(path):
                         public_inputs.add(path)
                 else:
                     state.add(path)
@@ -159,7 +159,7 @@ def footprint(model: dict) -> dict:
                 read_only = True
                 if _sensitive_input(path, None):
                     sensitive_inputs.add(path)
-                elif path in SHARED_PUBLIC_INPUTS and pathlib.Path(path).is_file():
+                elif _public_file(path):
                     public_inputs.add(path)
             sources.append({"declared": device, "real": path, "read_only": read_only})
     # Compose secret files are mounted without a bind entry; each is a
@@ -189,6 +189,21 @@ def footprint(model: dict) -> dict:
         "cpus": cpus,
         "memory": memory,
     }
+
+
+def _public_file(path: str) -> bool:
+    """A regular file both sides may mount read-only: an allowlisted shared
+    input, or any git-tracked, non-sensitive file in the repository."""
+    if not pathlib.Path(path).is_file():
+        return False
+    if path in SHARED_PUBLIC_INPUTS:
+        return True
+    repo = os.path.realpath(ROOT)
+    return (
+        path.startswith(repo + os.sep)
+        and not _sensitive_input(path, None)
+        and _tracked_only(path)
+    )
 
 
 def _sensitive_input(source: str, target: object) -> bool:
@@ -246,10 +261,11 @@ def _tracked_only(path: str) -> bool:
     """True when path is a tracked file, or a directory with tracked files
     and no untracked or ignored ones (which may hold local secrets)."""
     relative = os.path.relpath(path, os.path.realpath(ROOT))
-    tracked = run(["git", "ls-files", "-z", "--", relative])
-    others = run(
-        ["git", "ls-files", "-z", "--others", "--", relative]
-    )  # untracked, including ignored
+    # Literal pathspecs: a name such as cfg[1] must not glob-match cfg1.
+    tracked = run(["git", "--literal-pathspecs", "ls-files", "-z", "--", relative])
+    others = run(  # untracked, including ignored
+        ["git", "--literal-pathspecs", "ls-files", "-z", "--others", "--", relative]
+    )
     return (
         tracked.returncode == 0
         and others.returncode == 0
@@ -449,6 +465,63 @@ def path_integrity_problems(selected: dict[str, dict]) -> list[str]:
     return problems
 
 
+def _within(path: str, root: str) -> bool:
+    return path == root or path.startswith(root.rstrip(os.sep) + os.sep)
+
+
+def source_allowlist_problems(
+    selected: dict[str, dict], env: dict[str, str]
+) -> list[str]:
+    """Owner decision 2026-11-05: a LAB may only use its own data, read-only
+    LAB secret copies, read-only operator LAB_* path inputs and read-only,
+    non-sensitive, git-tracked repo files. Overlap with HOME is checked
+    separately; this refuses anything else, such as .git, scripts, retired
+    secrets, host credentials or the Docker socket."""
+    data = os.path.realpath(env.get("LAB_DATA_DIR") or "/nonexistent-lab-data")
+    secret_value = env.get("LAB_SECRET_DIR") or "../secrets/labs"
+    # Compose resolves a relative LAB_SECRET_DIR against labs/.
+    secret = os.path.realpath(ROOT / "labs" / secret_value)
+    operator = {
+        os.path.realpath(value)
+        for key, value in env.items()
+        if key.startswith("LAB_")
+        and key not in {"LAB_DATA_DIR", "LAB_SECRET_DIR"}
+        and os.path.isabs(value)
+    }
+    # Owner decision 2026-11-05: only an operator *_RESULT_DIR input (the
+    # Locust results) may be written; other operator paths are read-only.
+    results = {
+        os.path.realpath(value)
+        for key, value in env.items()
+        if key.startswith("LAB_")
+        and key.endswith("_RESULT_DIR")
+        and os.path.isabs(value)
+    }
+    repo = os.path.realpath(ROOT)
+    problems = []
+    for name, lab in selected.items():
+        for source in lab["sources"]:
+            real, read_only = source["real"], source["read_only"]
+            if _within(real, data) and not _within(data, repo):
+                continue
+            if read_only and _within(real, secret):
+                continue
+            if read_only and any(_within(real, item) for item in operator):
+                continue
+            if any(_within(real, item) for item in results):
+                continue
+            if (
+                read_only
+                and _within(real, repo)
+                and real != repo
+                and not _sensitive_input(real, None)
+                and _tracked_only(real)
+            ):
+                continue
+            problems.append(f"{name}: source {real} is outside the LAB allowlist")
+    return problems
+
+
 def data_root_problems(env: dict[str, str], root: dict) -> list[str]:
     data = env.get("LAB_DATA_DIR")
     if not data or not os.path.isabs(data):
@@ -535,6 +608,7 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         ),
         "problems": data_root_problems(env, root)
         + path_integrity_problems(selected)
+        + source_allowlist_problems(selected, env)
         + collisions(selected, root, running)
         + budget(selected, running, env)
         + stale_volumes(args.docker, selected),

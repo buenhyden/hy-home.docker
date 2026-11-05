@@ -371,6 +371,82 @@ class CollisionAndBudgetTests(unittest.TestCase):
         self.assertTrue(lab._sensitive_input(str(ROOT / "labs/.env"), None))
         self.assertFalse(lab._sensitive_input(str(ROOT / "labs/.env.example"), None))
 
+    def test_lab_sources_must_be_on_the_allowlist(self) -> None:
+        # Owner decision 2026-11-05: LAB data, read-only LAB secrets,
+        # read-only operator LAB_* path inputs and read-only tracked
+        # non-sensitive repo files; everything else is refused.
+        env = {
+            "LAB_DATA_DIR": "/lab-data",
+            "LAB_SECRET_DIR": "../secrets/labs",
+            "LAB_SUPERSET_CA_FILE": "/srv/ca/rootCA.pem",
+            "LAB_LOCUST_RESULT_DIR": "/srv/locust-results",
+        }
+
+        def one(source, read_only):
+            spec = service("lab-x")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": "/x",
+                    "read_only": read_only,
+                }
+            ]
+            return {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))}
+
+        tracked = str(ROOT / "labs/dbt/profiles")
+        with mock.patch.object(lab, "_tracked_only", lambda p: p == tracked):
+            for source, read_only in (
+                ("/lab-data/x/state", False),
+                (str(ROOT / "secrets/labs/dbt/password.txt"), True),
+                ("/srv/ca/rootCA.pem", True),
+                (tracked, True),
+                ("/srv/locust-results/run-1", False),
+            ):
+                with self.subTest(allowed=source):
+                    self.assertEqual(
+                        [], lab.source_allowlist_problems(one(source, read_only), env)
+                    )
+            for source, read_only in (
+                (str(ROOT / ".git/hooks"), False),
+                (str(ROOT / "scripts"), True),
+                (str(ROOT / "secrets/.retired/auth/key.txt"), True),
+                (str(ROOT / ".env.oidc.tmp"), True),
+                (str(pathlib.Path.home() / ".ssh"), True),
+                ("/run/docker.sock", True),
+                (str(ROOT / "secrets/labs/dbt/password.txt"), False),
+                ("/srv/ca/rootCA.pem", False),
+                (tracked, False),
+            ):
+                with self.subTest(refused=source, read_only=read_only):
+                    self.assertTrue(
+                        lab.source_allowlist_problems(one(source, read_only), env)
+                    )
+
+    def test_tracked_only_uses_literal_pathspecs_and_rejects_ignored_files(self):
+        calls = []
+
+        def fake(command, **kwargs):
+            calls.append(command)
+            if "--others" in command:
+                out = "labs/dbt/profiles/.user.yml\0" if "ignored" in fake.mode else ""
+            else:
+                out = "labs/dbt/profiles/profiles.yml\0"
+            return subprocess.CompletedProcess(command, 0, out, "")
+
+        for mode, expected in (("clean", True), ("ignored", False)):
+            fake.mode = mode
+            lab._tracked_only.cache_clear()
+            with (
+                self.subTest(mode=mode),
+                mock.patch.object(lab, "run", side_effect=fake),
+            ):
+                self.assertIs(
+                    expected, lab._tracked_only(str(ROOT / "labs/dbt/profiles"))
+                )
+        lab._tracked_only.cache_clear()
+        self.assertTrue(all("--literal-pathspecs" in command for command in calls))
+
     def test_symlink_into_home_data_is_still_an_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             home = pathlib.Path(tmp) / "home-data"
@@ -435,6 +511,16 @@ class CollisionAndBudgetTests(unittest.TestCase):
         home_job = readonly("hy-home-infra", "grafana-db-provision", provision)
         lab_job = readonly("hy-home-lab-dbt", "dbt-provision", provision)
         self.assertEqual([], lab.collisions({"dbt": lab_job}, home_job, []))
+        # Any identical git-tracked, non-sensitive file both sides mount
+        # read-only is a shared public input (HOME opensearch and the LAB
+        # mount the same tracked security config).
+        tracked_file = str(
+            ROOT
+            / "infra/04-data/opensearch/opensearch/config/opensearch-security/roles.yml"
+        )
+        home_reader = readonly("hy-home-infra", "opensearch", tracked_file)
+        lab_reader = readonly("hy-home-lab-os", "lab-os", tracked_file)
+        self.assertEqual([], lab.collisions({"os": lab_reader}, home_reader, []))
 
         writable = lab.footprint(
             model(
@@ -634,13 +720,16 @@ class LifecycleTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.data = pathlib.Path(self.tmp.name) / "lab-data"
         self.env_file = pathlib.Path(self.tmp.name) / "lab.env"
+        self.outside = pathlib.Path(self.tmp.name) / "outside"
+        # A writable operator path outside LAB_DATA_DIR, as LAB_LOCUST_RESULT_DIR
+        # is; the allowlist admits only *_RESULT_DIR inputs for writes.
         self.env_file.write_text(
             f'LAB_DATA_DIR="{self.data}"\nLAB_HOST_BUDGET_CPUS="8"\n'
-            'LAB_HOST_BUDGET_MEMORY_MIB="8192"\nLAB_MAX_CONCURRENT="1"\n',
+            'LAB_HOST_BUDGET_MEMORY_MIB="8192"\nLAB_MAX_CONCURRENT="1"\n'
+            f'LAB_FIXTURE_RESULT_DIR="{self.outside}"\n',
             encoding="utf-8",
         )
         self.calls: list[list[str]] = []
-        self.outside = pathlib.Path(self.tmp.name) / "outside"
         self.home_data = pathlib.Path(self.tmp.name) / "home-data"
         self.rendered = model(
             "hy-home-lab-cassandra",
@@ -744,6 +833,9 @@ class LifecycleTests(unittest.TestCase):
     ) -> None:
         fixture = pathlib.Path(self.tmp.name) / "fixture.json"
         fixture.write_text('{"input":true}\n', encoding="utf-8")
+        # An operator read-only input, as LAB_LOCUST_SCENARIO_DIR is.
+        with self.env_file.open("a", encoding="utf-8") as handle:
+            handle.write(f'LAB_FIXTURE_INPUT="{fixture}"\n')
         before = (fixture.read_bytes(), fixture.stat().st_mode)
         self.rendered["services"]["c"]["volumes"].append(
             {
