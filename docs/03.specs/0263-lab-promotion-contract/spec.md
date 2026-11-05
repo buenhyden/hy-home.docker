@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Specification"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/spec"
-status: "approved"
+status: "in-review"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0263"
 parent_ids:
@@ -64,6 +64,21 @@ The owner answered three open questions on 2026-11-05:
   supabase uses move into the LAB location, `secrets/labs/supabase/`.
 - **Docker socket.** supabase's Docker socket bind is allowed by the LAB
   check.
+
+The owner amended the resource rule and the section 5 scope on 2026-11-06,
+after the first readiness runs. Those runs showed that HOME's declared limits
+already total about 64 CPUs on a 12-CPU host, while the running containers use
+about 3 CPUs and 9 GiB:
+
+- **Reservations, not limits.** The resource budget sums declared
+  reservations. HOME declares them in the shared resource templates of
+  `infra/common-optimizations.yml`, sized from measured usage plus a margin.
+- **External containers.** Containers outside the HOME and LAB Compose
+  projects, such as k3d, count as a fixed allowance set in the operations
+  policy.
+- **Owner check items.** Groups and file modes, and profile and consumer
+  clashes, are owner check items in each promotion Task, not readiness
+  measurements.
 
 #### Observed state
 
@@ -214,21 +229,26 @@ It covers:
 - **Tier fit.** The target tier matches the service function. The target
   folder either does not exist or is a declared replacement.
 - **Service composition.** The candidate does not clash with the HOME-selected
-  services in names, ports, networks, profiles or consumers. Each integration
-  it needs exists in `infra`.
-- **Linux.** The kernel and cgroups support the declared limits, and the
-  users, groups and file modes the service needs are available. The check
-  derives these from the rendered Compose (`user`, mounts, limits) and the
-  manifest `host` field.
+  services in names, ports or networks. Each integration it needs exists in
+  `infra`. Profile and consumer clashes are owner check items, which the
+  promotion Task records.
+- **Linux.** The kernel and cgroups support the declared limits and
+  reservations, and the users the service runs as are valid. The check
+  derives these from the rendered Compose (`user`, limits, reservations) and
+  the manifest `host` field. Groups and file modes are owner check items,
+  which the promotion Task records.
 - **Docker.** The required Docker and Compose versions, the network and volume
   drivers, and the location of Docker's data root are all compatible. The
   requirements come from the same sources.
 - **Server resources.** Measured on the HOME host:
   - the host budget is the measured CPU count and memory minus the OS and
     Docker reserve set in an operations policy;
-  - the declared CPU and memory limits of every running container, plus the
-    candidate, minus the services a replacement retires, stay within that
-    budget;
+  - the declared CPU and memory reservations of every running container in a
+    HOME or LAB Compose project, plus the candidate, minus the services a
+    replacement retires, plus the external-workload allowance from the same
+    policy, stay within that budget;
+  - every service, including the candidate, also declares limits, and its
+    reservation does not exceed its limit;
   - free disk on the data root and on Docker's data root covers the declared
     need.
 
@@ -236,9 +256,12 @@ It covers:
   the services already running is not promoted.
 
 The report records each measured value and its source. A value that cannot be
-measured is `NOT_RUN`, not passed. A running container without declared
-limits cannot be summed, so it makes the resource criterion `NOT_RUN` until
-it declares limits.
+measured is `NOT_RUN`, not passed. A running Compose container or a
+candidate service without declared reservations cannot be summed, so it
+makes the resource criterion `NOT_RUN` until it declares them. An owner check
+item is reported as owner judgment; it is neither a measurement nor a block.
+The LAB check (`lab.py check`) sums the same reservations against its host
+budget.
 
 #### 6. Promotion procedures
 
@@ -281,6 +304,9 @@ These were decided while drafting the Spec, not by the owner:
 - the rule that LAB secret values are never promoted;
 - the OS and Docker reserve is a value in an operations policy, with its
   first value proposed in the Plan;
+- the external-workload allowance is a value in the same policy, with its
+  first value proposed in the Plan from a measurement;
+- reservations are declared next to limits in the shared resource templates;
 - dashboards move into each LAB folder;
 - Linux and Docker requirements come from the rendered Compose plus the
   optional `host` field.
@@ -323,6 +349,11 @@ and creation dates. No secret value is read or written.
    OpenSearch cluster LABs.
 7. Document, hardening, LAB and unit checks pass, and hosted CI passes, with
    actual results in the Task.
+8. The shared resource templates in `infra/common-optimizations.yml`, and
+   every HOME and LAB service that sets its own limits, declare reservations
+   sized from recorded measurements. The readiness check and `lab.py check`
+   sum reservations plus the external-workload allowance, and report owner
+   check items as owner judgment.
 
 ## Failure Conditions
 

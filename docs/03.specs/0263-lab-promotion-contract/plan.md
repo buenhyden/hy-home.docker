@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0263-PLAN-0001"
 parent_ids:
@@ -64,6 +64,7 @@ checkboxes. Run each test through the Python 3.12 controller venv
 | W4 | 5 | `lab.py readiness <name>` writes the section 5 report from measured host values, with the reserve from the promotion policy | W1, W2 | TSK-0001 | `test_lab_controller.py`; one read-only run on HOME |
 | W5 | 4, 6 | Promotion policy (destination rules, reserve) and Runbook (three procedures); Kafka and OpenSearch cluster Guides and Runbooks | W2, W4 | TSK-0001 | operations catalog; metadata; links |
 | W6 | 7 | Record local and hosted CI results | W1-W5 | TSK-0001 | the checks in the Verification Plan |
+| W7 | 5, 8 | Amend the resource rule to reservations plus an external-workload allowance; declare reservations in the shared templates from measurements; make the section 5 owner check items non-blocking in readiness and `lab.py check` | W1-W6 | TSK-0002 | `test_lab_controller`; readiness and check on HOME; full suite; hardening |
 
 ### Global Constraints
 
@@ -482,6 +483,81 @@ is `FAIL` when any criterion fails, and `NOT_RUN` in the remaining cases.
   result.
 - [ ] **Step 3: Leave criteria pending.** Set each Criterion Acceptance row to
   `pending`; the owner accepts them.
+
+### W7: Reservations and owner check items
+
+Spec 0.3.0 (owner decisions, 2026-11-06) changes the resource rule from summed
+limits to summed reservations plus an external-workload allowance. It also
+turns two section 5 sub-checks into owner check items.
+
+**Files:**
+
+- Modify `infra/common-optimizations.yml`. Add a reservation next to each
+  `x-resource-*` anchor.
+- Modify every HOME or LAB service that sets its own `cpus` or `mem_limit`
+  outside the anchors. Find them with the root render plus the 15 LAB renders.
+- Modify `scripts/operations/lab.py`:
+  - `footprint`;
+  - `running_containers`;
+  - `budget`;
+  - `readiness`;
+  - `PROMOTION_EXTERNAL_ALLOWANCE`.
+- Modify POL-0107, RUN-0107 and the Task.
+- Test: `tests/validation/test_lab_controller.py`.
+
+**Decided values:**
+
+- **Reservation sizing.** For each anchor, take at least 3 `docker stats`
+  samples of its running members, keep the peak, and multiply it by 1.5.
+  - Round CPU up to 0.05 and memory up to 32 MiB.
+  - The result never exceeds the anchor's limit.
+  - The minimum is 0.05 CPU and 32 MiB.
+  - The Task records the samples.
+- **Declaration form.** `deploy.resources.reservations.cpus` and
+  `.memory`.
+  - Docker does not enforce a CPU reservation; it is a declared budget.
+  - The memory reservation is a soft limit.
+  - Limits keep their current short form.
+- **External-workload allowance.** The first value is
+  `PROMOTION_EXTERNAL_ALLOWANCE = {"cpus": 2.0, "memory_mib": 6144}`. It is
+  based on k3d measured at about 1.0 CPU and 4.1 GiB on 2026-11-06. POL-0107
+  carries the same table, and a test checks that the two match.
+- **Summation.**
+  - A running container counts with the reservation of its rendered service,
+    looked up by the `com.docker.compose.project` and `.service` labels from
+    the root or LAB render.
+  - A container outside those projects counts only through the allowance.
+  - A Compose service without a reservation gives resources `NOT_RUN`.
+  - Limits stay required, and `reservation > limit` fails.
+- **Owner check items.** Groups and file modes, and profile and consumer
+  clashes, are reported with result `OWNER_JUDGMENT` and do not block PASS.
+  - The tier `function_fit` entry uses the same value.
+  - Readiness PASS still needs every measured criterion to pass.
+- **`lab.py check`.** `budget` uses the same reservation sum and the same
+  allowance against `LAB_HOST_BUDGET_*`.
+
+**Tests (RED first):**
+
+- `test_readiness_sums_reservations_not_limits`;
+- `test_readiness_external_allowance_counts_once`;
+- `test_readiness_service_without_reservation_is_not_run`;
+- `test_readiness_reservation_above_limit_fails`;
+- `test_owner_check_items_do_not_block_pass`;
+- `test_check_budget_uses_reservations`;
+- `test_allowance_matches_policy`;
+- `test_shared_templates_declare_reservations`, which checks that every
+  `x-resource-*` anchor has a reservation no larger than its limit.
+
+**Verification:**
+
+- Run the LAB suites and the full suite.
+- Run hardening, including `common-optimizations` validation.
+- Run a root render.
+- Run read-only HOME readiness for valkey-cluster and postgresql-ha.
+- Run `lab.py check valkey-cluster` with the owner's `labs/.env`.
+
+The HOME services pick up the new reservations only when they are recreated,
+in an owner window. This work unit restarts nothing.
 
 ## Verification Plan
 

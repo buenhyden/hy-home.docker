@@ -416,6 +416,7 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | E56 | 7 | W6 | hardening, operations catalog and script manifest | `bash scripts/hardening/check-all-hardening.sh`, `check-operations-catalog.py`, `check-script-manifest.py` at `4bec12fa2` | PASS | ALL checks passed; operations-catalog PASS; manifest valid | required | - |
 | E57 | 7 | W6 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main` and `--mode check-active`, `check-document-links.py --mode all`, on the final fix wave working tree | PASS | check-changed selected=144 violations=0; check-active selected=543 violations=0; link mode all PASS | required | - |
 | E58 | 3 | W3 | `lab.py check supabase` with owner inputs | `lab.py --env-file labs/.env check supabase` at `4bec12fa2` | NOT_RUN | exit 2 before any report: `labs/.env` gives no numeric `LAB_HOST_BUDGET_CPUS` | required | - |
+| E59 | 7 | W6 | hosted CI | pull request #753 checks on head `bce9baf4f` | PASS | CI Quality Gates run 42053991999 `candidate-quality` pass, CodeQL and GitGuardian pass; merged as `5989bf1c9` | required | E48 |
 
 ## Criterion Acceptance
 
