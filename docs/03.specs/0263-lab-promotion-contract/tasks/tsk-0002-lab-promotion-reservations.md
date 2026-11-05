@@ -41,13 +41,15 @@ the new reservations only when they are recreated, in an owner window.
 ### Current contract decision
 
 SPEC-0263 moves to `in-review` for the amendment to version 0.3.0. It returns
-to `approved` when the owner approves the amended Spec.
+to `approved` when the owner approves the amended Spec. The owner approved
+version 0.3.0 on 2026-11-06 ("승인").
 
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0263 | approved | in-review | #current-contract-decision |
+| SPEC-0263 | in-review | approved | #current-contract-decision |
 
 ### Measurements
 
@@ -73,7 +75,7 @@ On 2026-11-06, read-only:
 
 ## Review and Completion
 
-The amended Spec waits for owner approval. No implementation has started.
+The owner approved Spec 0.3.0. W7 implementation is in progress.
 
 ## Related Documents
 
