@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -227,12 +227,14 @@ DAGs; the next member peak is 0.077 CPU.
 | E17 | 8 | W7 | task review | independent review of `5e270cf08..3cf6dde9e` | PASS | spec compliance PASS, quality APPROVED; 4 Minor findings: 2 fixed (E18), 2 recorded under Review and Completion | required | - |
 | E18 | 8 | W7 | LAB suites | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout` after the review fixes | PASS | 117 tests OK; the new limits-fallback test fails with the fallback removed | required | - |
 | E19 | 8 | W7 | full unit suite | the E15 command at `c79e51526` (code identical at `b2c1d3658`) | PASS | 3346 tests OK, skipped=108 | required | - |
+| E20 | 8 | W7 | HOME readiness | `lab.py --env-file labs/.env readiness valkey-cluster`, read-only, after the dag-processor reservation | FAIL | resources FAIL: running 11.1 CPUs / 21888 MiB, needed 19.9 CPUs / 31360 MiB against 10 / 27924; no unrendered project | required | - |
+| E21 | 8 | W7 | HOME readiness | the E20 command for `postgresql-ha` | FAIL | resources FAIL: needed 23.45 CPUs / 36256 MiB against 10 / 27924 | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19 | - | @buenhyden |
+| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21 | - | @buenhyden |
 
 ## Review and Completion
 
@@ -253,16 +255,22 @@ recreation. The owner decides the next step:
 The memory reservations take effect in Docker only when the owner recreates
 the HOME services in an owner window.
 
-Two review findings wait for the owner:
+Owner decisions on the review findings and the resource `FAIL` (2026-11-06):
 
-- `ollama` keeps its authored 4G memory reservation for model loading. The
-  measured peak was 47 MiB, so the sizing rule would give 96M. Keeping 4G is
-  the safe direction, but it adds about 4 GiB to every HOME readiness sum.
-  The owner either accepts it as an exception or lowers it to 96M.
-- A container from a Compose project that is not rendered (for example a
-  HOME stack started on its own, or a third-party stack) counts only through
-  the external-workload allowance, as the work unit specified. The owner may
-  instead make any non-empty unknown project `NOT_RUN`.
+- `ollama` keeps its authored 4G memory reservation for model loading, as an
+  approved exception to the sizing rule (measured peak 47 MiB). POL-0107 0.2.1
+  records it.
+- A running container of a Compose project without a render is `NOT_RUN`.
+  Only a container without Compose labels (k3d and similar) counts through the
+  allowance (`6b8f29334`).
+- `airflow-dag-processor` gets its own reservation, 2.00 CPUs (its 2.48 peak
+  margin capped at the limit) and 512M (329 MiB x 1.5). The `x-resource-db`
+  anchor drops to 0.15 CPUs (the next member peak, 0.077 x 1.5) and keeps
+  704M. The running sum falls from 27.75 to 11.1 CPUs (E20, E21). The update
+  ledger re-pins the airflow Compose source binding (10 rows and
+  `include_inputs`), and the m0021 inventory is re-projected (12 rows).
+- The candidates still fail, so the next step is a LAB lease measurement in
+  an owner window; until then each candidate reserves its limit.
 
 ## Related Documents
 
