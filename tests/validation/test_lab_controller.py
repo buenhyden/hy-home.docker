@@ -34,7 +34,11 @@ def model(project, services, volumes=None, networks=None, data_root=None):
     return rendered
 
 
-def service(container=None, ports=(), binds=(), cpus=1, memory=2**30, replicas=None):
+def service(
+    container=None, ports=(), binds=(), cpus=1, memory=2**30, replicas=None,
+    reserve=True,
+):  # fmt: skip
+    """A rendered service; reserve True reserves its limits, a pair sets them."""
     spec = {
         "cpus": cpus,
         "mem_limit": str(memory),
@@ -43,8 +47,15 @@ def service(container=None, ports=(), binds=(), cpus=1, memory=2**30, replicas=N
     }
     if container:
         spec["container_name"] = container
+    deploy = {}
     if replicas:
-        spec["deploy"] = {"replicas": replicas}
+        deploy["replicas"] = replicas
+    if reserve:
+        cpu, mem = (cpus, memory) if reserve is True else reserve
+        # Compose renders a reservation memory as a byte string.
+        deploy["resources"] = {"reservations": {"cpus": cpu, "memory": str(int(mem))}}
+    if deploy:
+        spec["deploy"] = deploy
     return spec
 
 
@@ -59,10 +70,13 @@ def read_only_service(container, source, target="/etc/example/config.yml"):
 ROOTFP = {"home_data_root": "/data/home", "docker_root": "/var/lib/docker-data"}
 
 
-def container_record(project, *, name="", ports=(), cpus=0.0, memory=0, running=True):
+def container_record(
+    project, *, name="", ports=(), cpus=0.0, memory=0, running=True, service=""
+):
     return {
         "name": name,
         "project": project,
+        "service": service,
         "ports": set(ports),
         "cpus": cpus,
         "memory": memory,
@@ -785,12 +799,13 @@ class CollisionAndBudgetTests(unittest.TestCase):
         stopped[0]["project"] = "hy-home-lab-one"
         self.assertEqual([], lab.collisions({"one": self.lab1}, self.root, stopped))
         stopped[0]["project"] = "hy-home-lab-old"
+        allowance = lab.PROMOTION_EXTERNAL_ALLOWANCE
         env = {
-            "LAB_HOST_BUDGET_CPUS": "1",
-            "LAB_HOST_BUDGET_MEMORY_MIB": "1024",
+            "LAB_HOST_BUDGET_CPUS": str(1 + allowance["cpus"]),
+            "LAB_HOST_BUDGET_MEMORY_MIB": str(1024 + allowance["memory_mib"]),
             "LAB_MAX_CONCURRENT": "1",
         }
-        self.assertEqual([], lab.budget({"one": self.lab1}, stopped, env))
+        self.assertEqual([], lab.budget({"one": self.lab1}, stopped, env, {}))
 
     def test_shared_public_read_only_config_is_allowed_but_state_is_not(self) -> None:
         def readonly(project, name, source, target="/etc/example/config.yml"):
@@ -889,34 +904,59 @@ class CollisionAndBudgetTests(unittest.TestCase):
                 )
                 self.assertIn("sensitive read-only path", text)
 
-    def test_budget_sums_running_and_selected_and_limits_concurrency(self) -> None:
+    def test_check_budget_uses_reservations(self) -> None:
+        # SPEC-0263 0.3.0 section 5: reservations, not limits, plus the
+        # external-workload allowance once.
+        allowance = lab.PROMOTION_EXTERNAL_ALLOWANCE
+        root = lab.footprint(
+            model(
+                "hy-home-infra",
+                {"pg": service("mng-pg", cpus=4, memory=8 * 2**30,
+                               reserve=(0.5, 2**29))},
+            )
+        )  # fmt: skip
+        known = {"hy-home-infra": root}
+        running = [
+            container_record("hy-home-infra", name="mng-pg", service="pg",
+                             cpus=4.0, memory=8 * 2**30),
+            container_record("", name="k3d-a", cpus=0.0),
+            container_record("", name="k3d-b", cpus=0.0),
+        ]  # fmt: skip
+        # lab1 reserves its limits: 1 CPU, 1 GiB. Needed: 0.5 + 1 + allowance.
+        cpus = 0.5 + 1 + allowance["cpus"]
+        memory_mib = 512 + 1024 + allowance["memory_mib"]
         env = {
-            "LAB_HOST_BUDGET_CPUS": "4",
-            "LAB_HOST_BUDGET_MEMORY_MIB": "4096",
+            "LAB_HOST_BUDGET_CPUS": str(cpus),
+            "LAB_HOST_BUDGET_MEMORY_MIB": str(memory_mib),
             "LAB_MAX_CONCURRENT": "1",
         }
-        running = [
-            container_record("hy-home-infra", cpus=2.0, memory=2 * 2**30),
-            container_record("hy-home-lab-old", cpus=0.5, memory=2**29),
-        ]
-        problems = lab.budget({"one": self.lab1}, running, env)
-        self.assertEqual(["2 LABs would run; limit is 1"], problems)
-        env["LAB_HOST_BUDGET_CPUS"] = "3"
-        env["LAB_HOST_BUDGET_MEMORY_MIB"] = "3000"
-        env["LAB_MAX_CONCURRENT"] = "2"
-        self.assertEqual(2, len(lab.budget({"one": self.lab1}, running, env)))
+        self.assertEqual([], lab.budget({"one": self.lab1}, running, env, known))
+        env["LAB_HOST_BUDGET_CPUS"] = str(cpus - 0.05)
+        env["LAB_HOST_BUDGET_MEMORY_MIB"] = str(memory_mib - 1)
+        problems = lab.budget({"one": self.lab1}, running, env, known)
+        self.assertEqual(2, len(problems), problems)
+        self.assertIn("reserved CPUs", problems[0])
+        # A known service without a reservation cannot be summed.
+        root["reservations"]["pg"] = {"cpus": 0.0, "memory": 0.0}
+        env["LAB_HOST_BUDGET_CPUS"] = "100"
+        env["LAB_HOST_BUDGET_MEMORY_MIB"] = "100000"
+        problems = lab.budget({"one": self.lab1}, running, env, known)
+        self.assertTrue(any("mng-pg" in p and "reservation" in p for p in problems))
         with self.assertRaises(lab.LabError):
             lab.budget({"one": self.lab1}, running, {"LAB_HOST_BUDGET_CPUS": ""})
-        # The selected LAB's own running containers are not counted twice.
-        own = [container_record("hy-home-lab-one", cpus=50.0, memory=2**40)]
-        env["LAB_HOST_BUDGET_CPUS"] = "1"
-        env["LAB_HOST_BUDGET_MEMORY_MIB"] = "1024"
-        self.assertEqual([], lab.budget({"one": self.lab1}, own, env))
-
-        stopped = [
-            container_record("hy-home-lab-old", cpus=50.0, memory=2**40, running=False)
-        ]
-        self.assertEqual([], lab.budget({"one": self.lab1}, stopped, env))
+        # The concurrency limit still counts running LAB projects.
+        other = lab.footprint(model("hy-home-lab-old", {"o": service("lab-old")}))
+        old = [container_record("hy-home-lab-old", name="lab-old", service="o")]
+        problems = lab.budget({"one": self.lab1}, old, env, {"hy-home-lab-old": other})
+        self.assertEqual(["2 LABs would run; limit is 1"], problems)
+        # The selected LAB's own running containers are not counted twice,
+        # and a stopped container is not counted.
+        env["LAB_HOST_BUDGET_CPUS"] = str(1 + allowance["cpus"])
+        env["LAB_HOST_BUDGET_MEMORY_MIB"] = str(1024 + allowance["memory_mib"])
+        own = [container_record("hy-home-lab-one", name="lab-one-x", service="x")]
+        self.assertEqual([], lab.budget({"one": self.lab1}, own, env, {}))
+        stopped = [container_record("hy-home-lab-old", running=False)]
+        self.assertEqual([], lab.budget({"one": self.lab1}, stopped, env, {}))
 
 
 class AdmissionGuardTests(unittest.TestCase):
@@ -990,7 +1030,12 @@ class AdmissionGuardTests(unittest.TestCase):
         records = [
             {
                 "Name": "/running",
-                "Config": {"Labels": {"com.docker.compose.project": "other"}},
+                "Config": {
+                    "Labels": {
+                        "com.docker.compose.project": "other",
+                        "com.docker.compose.service": "svc",
+                    }
+                },
                 "HostConfig": {"NanoCpus": 10**9, "Memory": 2**30},
                 "State": {"Running": True},
             },
@@ -1010,6 +1055,7 @@ class AdmissionGuardTests(unittest.TestCase):
             ["docker", "ps", "--all", "--quiet"], called.call_args_list[0].args[0]
         )
         self.assertEqual([True, False], [item["running"] for item in found])
+        self.assertEqual(["svc", ""], [item["service"] for item in found])
 
 
 def manifest(**changes) -> dict:
@@ -1032,7 +1078,13 @@ def manifest(**changes) -> dict:
         ],
         "documents": {"guide": "docs/guide.md", "runbook": "docs/runbook.md"},
         "resources": {
-            "services": {"node": {"cpus": 0.5, "memory_mib": 512}},
+            "services": {
+                "node": {
+                    "cpus": 0.5,
+                    "memory_mib": 512,
+                    "reservations": {"cpus": 0.5, "memory_mib": 512},
+                }
+            },
             "disk_gib": {"data": 5, "images": 1},
         },
     }
@@ -1147,6 +1199,20 @@ class LabLayoutAndManifestTests(unittest.TestCase):
         extra = manifest()
         extra["resources"]["services"]["ghost"] = {"cpus": 1, "memory_mib": 1}
         self.assert_problem("disagrees with rendered limits", extra)
+        # Reservations are carried per service and checked against the render.
+        self.lab = lab.footprint(
+            model("hy-home-lab-x", {"node": service("lab-node", cpus=0.5,
+                  memory=512 * 2**20, reserve=(0.1, 64 * 2**20))})
+        )  # fmt: skip
+        self.assert_problem("disagree with rendered reservations", manifest())
+        bare = manifest()
+        del bare["resources"]["services"]["node"]["reservations"]
+        self.assert_problem("disagree with rendered reservations", bare)
+        good = manifest()
+        good["resources"]["services"]["node"]["reservations"] = {
+            "cpus": 0.1, "memory_mib": 64
+        }  # fmt: skip
+        self.assertEqual([], self.problems(good))
 
     def test_manifest_missing_document(self) -> None:
         self.assert_problem(
@@ -1270,7 +1336,15 @@ class LifecycleTests(unittest.TestCase):
             kind="add",
             target={"folder": "infra/04-data/nosql/cassandra/", "profile": "data"},
             replaces=[],
-            resources={"services": {"c": {"cpus": 1, "memory_mib": 1024}}},
+            resources={
+                "services": {
+                    "c": {
+                        "cpus": 1,
+                        "memory_mib": 1024,
+                        "reservations": {"cpus": 1, "memory_mib": 1024},
+                    }
+                }
+            },
         )
         repo = lab_repo(pathlib.Path(self.tmp.name) / "repo", "cassandra", cassandra)
         patcher = mock.patch.object(lab, "ROOT", repo)
@@ -1594,7 +1668,13 @@ def readiness_case(cpus=1.0, memory=GIB, **changes):
                 "runbook": "docs/05.operations/runbooks/15-labs/0022-valkey-cluster.md",
             },
             resources={
-                "services": {"node": {"cpus": cpus, "memory_mib": memory / MIB}},
+                "services": {
+                    "node": {
+                        "cpus": cpus,
+                        "memory_mib": memory / MIB,
+                        "reservations": {"cpus": cpus, "memory_mib": memory / MIB},
+                    }
+                },
                 "disk_gib": {"data": 5, "images": 1},
             },
         ),
@@ -1615,20 +1695,36 @@ def readiness_case(cpus=1.0, memory=GIB, **changes):
                 "source": "shutil.disk_usage",
             },
         },
+        # Limits are 4 CPUs and 4 GiB; only the reservation is summed.
         "running": [
-            {
-                "name": "home-1",
-                "project": "hy-home",
-                "ports": set(),
-                "cpus": 2.0,
-                "memory": 2 * GIB,
-                "running": True,
-            },
+            container_record(
+                "hy-home", name="home-1", service="home", cpus=4.0, memory=4 * GIB
+            ),
         ],
-        "root": lab.footprint(model("hy-home", {"home": service("home-1")})),
+        "root": lab.footprint(
+            model(
+                "hy-home",
+                {
+                    "home": service(
+                        "home-1", cpus=4, memory=4 * GIB, reserve=(2.0, 2 * GIB)
+                    )
+                },
+            )
+        ),
     }
     case.update(changes)
     return case
+
+
+def reserve(case: dict, service: str, cpus: float, memory: float | None = None):
+    """Set a root service's rendered reservation."""
+    found = case["root"]["reservations"][service]
+    found["cpus"] = cpus
+    if memory is not None:
+        found["memory"] = memory
+
+
+ALLOWANCE = lab.PROMOTION_EXTERNAL_ALLOWANCE
 
 
 def readiness(case: dict) -> dict:
@@ -1641,16 +1737,15 @@ DEV_DB = ROOT / "infra/04-data/dev-db"
 def dev_db_root() -> dict:
     """A root render with dev-valkey (bind under valkey/) and dev-pg (build
     context pg/), as infra/04-data/dev-db/docker-compose.yml declares."""
-    pg = service("dev-pg", ports=[("0.0.0.0", 5432)])
+    pg = service("dev-pg", ports=[("0.0.0.0", 5432)], cpus=4)
     pg["build"] = {"context": str(DEV_DB / "pg"), "dockerfile": "Dockerfile"}
     valkey = service(
-        "dev-valkey", ports=[("0.0.0.0", 6379)], binds=[str(DEV_DB / "valkey/config")]
-    )
+        "dev-valkey", ports=[("0.0.0.0", 6379)], binds=[str(DEV_DB / "valkey/config")],
+        cpus=4,
+    )  # fmt: skip
+    home = service("home-1", cpus=8, memory=4 * GIB, reserve=(2.0, 2 * GIB))
     return lab.footprint(
-        model(
-            "hy-home",
-            {"home": service("home-1"), "dev-valkey": valkey, "dev-pg": pg},
-        )
+        model("hy-home", {"home": home, "dev-valkey": valkey, "dev-pg": pg})
     )
 
 
@@ -1679,36 +1774,125 @@ class ReadinessTests(unittest.TestCase):
     def test_readiness_passes_within_budget(self) -> None:
         report = readiness(readiness_case())
         self.assertEqual("add", report["kind"])
-        for criterion in ("tier", "docker", "resources"):
+        for criterion, found in report["criteria"].items():
+            self.assertEqual("PASS", found["result"], (criterion, found))
+            self.assertTrue(all("source" in v for v in found["values"].values()))
+        self.assertEqual("PASS", report["result"])
+
+    def test_owner_check_items_do_not_block_pass(self) -> None:
+        report = readiness(readiness_case())
+        items = {
+            "tier": "function_fit",
+            "composition": "profile_and_consumer_clashes",
+            "linux": "groups_and_file_modes",
+        }
+        for criterion, item in items.items():
             found = report["criteria"][criterion]
             self.assertEqual("PASS", found["result"], (criterion, found))
-        for found in report["criteria"].values():
-            self.assertTrue(all("source" in v for v in found["values"].values()))
-        # Spec section 5 sub-checks the code never measures stay visible and
-        # keep linux and composition, and so the report, at NOT_RUN.
-        for criterion in ("linux", "composition"):
-            found = report["criteria"][criterion]
-            self.assertEqual("NOT_RUN", found["result"], (criterion, found))
-            self.assertEqual(1, len(found["problems"]), found)
-        self.assertEqual("NOT_RUN", report["result"])
-        fit = report["criteria"]["tier"]["values"]["function_fit"]
-        self.assertEqual("NOT_RUN", fit["value"])
-        self.assertIn("owner judgment", fit["source"])
+            self.assertEqual("OWNER_JUDGMENT", found["values"][item]["value"])
+            self.assertIn("promotion Task", found["values"][item]["source"])
+        self.assertEqual(sorted(items.values()), sorted(report["owner_checks"]))
+        self.assertEqual("PASS", report["result"])
+        # Criteria and the overall result never take OWNER_JUDGMENT.
+        results = {c["result"] for c in report["criteria"].values()}
+        self.assertLessEqual(results, {"PASS", "FAIL", "NOT_RUN"})
+
+    def test_readiness_sums_reservations_not_limits(self) -> None:
+        # Running limits 4 CPUs / 4 GiB, reservation 2 / 2 GiB; the candidate
+        # reserves 1 CPU and 1 GiB; the allowance adds 2 CPUs and 6 GiB.
+        report = readiness(readiness_case())
+        values = report["criteria"]["resources"]["values"]
+        self.assertEqual(2.0, values["running_reserved_cpus"]["value"])
+        self.assertEqual(1.0, values["candidate_reserved_cpus"]["value"])
+        self.assertEqual(ALLOWANCE["cpus"], values["allowance_cpus"]["value"])
+        self.assertEqual(2.0 + 1.0 + ALLOWANCE["cpus"], values["cpus_needed"]["value"])
         self.assertEqual(
-            "NOT_RUN",
-            report["criteria"]["linux"]["values"]["groups_and_file_modes"]["value"],
+            2048 + 1024 + ALLOWANCE["memory_mib"], values["memory_needed_mib"]["value"]
         )
-        self.assertEqual(
-            "NOT_RUN",
-            report["criteria"]["composition"]["values"]["profile_and_consumer_clashes"][
-                "value"
-            ],
+        # 7 running reserved CPUs + 1 + 2 = 10 fits the 10-CPU budget even
+        # though the running limit alone would be 12.
+        case = readiness_case()
+        reserve(case, "home", 7.0)
+        case["root"]["services"]["home"]["cpus"] = 12.0
+        self.assertEqual("PASS", self.result(readiness(case), "resources"))
+        reserve(case, "home", 7.05)
+        self.assertEqual("FAIL", self.result(readiness(case), "resources"))
+
+    def test_readiness_external_allowance_counts_once(self) -> None:
+        base = readiness(readiness_case())["criteria"]["resources"]["values"]
+        for count in (1, 5):
+            with self.subTest(count=count):
+                case = readiness_case()
+                case["running"] += [
+                    container_record("", name=f"k3d-{i}", cpus=0.0)
+                    for i in range(count)
+                ]
+                found = readiness(case)["criteria"]["resources"]
+                self.assertEqual("PASS", found["result"], found)
+                values = found["values"]
+                self.assertEqual(count, len(values["external_containers"]["value"]))
+                self.assertEqual(base["cpus_needed"], values["cpus_needed"])
+                self.assertEqual(base["memory_needed_mib"], values["memory_needed_mib"])
+
+    def test_readiness_service_without_reservation_is_not_run(self) -> None:
+        case = readiness_case()
+        reserve(case, "home", 0.0, 0.0)
+        found = readiness(case)["criteria"]["resources"]
+        self.assertEqual("NOT_RUN", found["result"], found)
+        self.assertTrue(any("home-1" in p for p in found["problems"]), found)
+        # A container of a known project whose service is not rendered.
+        case = readiness_case()
+        case["running"].append(
+            container_record("hy-home", name="ghost-1", service="ghost", cpus=1.0)
         )
+        found = readiness(case)["criteria"]["resources"]
+        self.assertEqual("NOT_RUN", found["result"], found)
+        # A running LAB project without a render is not external.
+        case = readiness_case()
+        case["running"].append(
+            container_record("hy-home-lab-other", name="lab-o", service="o")
+        )
+        found = readiness(case)["criteria"]["resources"]
+        self.assertEqual("NOT_RUN", found["result"], found)
+        # With its render, the LAB counts by its reservation.
+        other = lab.footprint(
+            model("hy-home-lab-other", {"o": service("lab-o", reserve=(0.5, GIB))})
+        )
+        case["labs"] = {"hy-home-lab-other": other}
+        found = readiness(case)["criteria"]["resources"]
+        self.assertEqual("PASS", found["result"], found)
+        self.assertEqual(2.5, found["values"]["running_reserved_cpus"]["value"])
+        # A candidate service without a reservation.
+        case = readiness_case()
+        case["lab"]["reservations"]["node"] = {"cpus": 0.0, "memory": 0.0}
+        found = readiness(case)["criteria"]["resources"]
+        self.assertEqual("NOT_RUN", found["result"], found)
+        self.assertTrue(any("candidate service node" in p for p in found["problems"]))
+        # An over-budget known sum stays FAIL with an unmeasured service.
+        case = readiness_case()
+        reserve(case, "home", 9.5)
+        case["running"].append(
+            container_record("hy-home", name="ghost-1", service="ghost", cpus=1.0)
+        )
+        self.assertEqual("FAIL", self.result(readiness(case), "resources"))
+
+    def test_readiness_reservation_above_limit_fails(self) -> None:
+        case = readiness_case()
+        reserve(case, "home", 5.0)  # limit 4
+        found = readiness(case)["criteria"]["resources"]
+        self.assertEqual("FAIL", found["result"], found)
+        self.assertTrue(any("exceeds its limit" in p for p in found["problems"]))
+        case = readiness_case()
+        case["lab"]["reservations"]["node"]["memory"] = 2.0 * GIB  # limit 1 GiB
+        found = readiness(case)["criteria"]["resources"]
+        self.assertEqual("FAIL", found["result"], found)
 
     def test_readiness_fails_over_cpu_budget(self) -> None:
-        # 12 CPUs minus the 2-CPU reserve leaves 10; 9.5 running plus 1 is 10.5.
+        # 12 CPUs minus the 2-CPU reserve leaves 10; 7.5 reserved running,
+        # 1 candidate and the 2-CPU allowance is 10.5.
         case = readiness_case()
-        case["running"][0]["cpus"] = 9.5
+        reserve(case, "home", 7.5)
+        case["root"]["services"]["home"]["cpus"] = 8.0
         report = readiness(case)
         self.assertEqual("FAIL", self.result(report, "resources"))
         self.assertEqual("FAIL", report["result"])
@@ -1718,24 +1902,33 @@ class ReadinessTests(unittest.TestCase):
         self.assertEqual(10.5, values["cpus_needed"]["value"])
 
     def test_readiness_compares_memory_bytes_with_mib(self) -> None:
-        # Budget: (4096 reserve + 3072) MiB total leaves 3072 MiB; 2 GiB runs.
+        # Budget: 4096 reserve plus the allowance plus 3072 MiB; 2 GiB is
+        # reserved by the running service.
+        total = (4096 + ALLOWANCE["memory_mib"] + 3072) * MIB
         case = readiness_case(memory=1024 * MIB)
-        case["host"]["MemTotal"]["value"] = (4096 + 3072) * MIB
+        case["host"]["MemTotal"]["value"] = total
         self.assertEqual("PASS", self.result(readiness(case), "resources"))
         case = readiness_case(memory=1025 * MIB)
-        case["host"]["MemTotal"]["value"] = (4096 + 3072) * MIB
+        case["host"]["MemTotal"]["value"] = total
         report = readiness(case)
         self.assertEqual("FAIL", self.result(report, "resources"))
         values = report["criteria"]["resources"]["values"]
-        self.assertEqual(3072, values["memory_budget_mib"]["value"])
-        self.assertEqual(3073, values["memory_needed_mib"]["value"])
+        self.assertEqual(
+            3072 + ALLOWANCE["memory_mib"], values["memory_budget_mib"]["value"]
+        )
+        self.assertEqual(
+            3073 + ALLOWANCE["memory_mib"], values["memory_needed_mib"]["value"]
+        )
 
     def test_readiness_unlimited_container_is_not_run(self) -> None:
         case = readiness_case()
+        case["root"] = lab.footprint(model("hy-home", {
+            "home": service("home-1", cpus=4, memory=4 * GIB, reserve=(2.0, 2 * GIB)),
+            "free": service("free-1", cpus=0, reserve=(0.5, GIB)),
+        }))  # fmt: skip
         case["running"].append(
-            {"name": "free-1", "project": "hy-home", "ports": set(),
-             "cpus": 0, "memory": GIB, "running": True}
-        )  # fmt: skip
+            container_record("hy-home", name="free-1", service="free")
+        )
         report = readiness(case)
         self.assertEqual("NOT_RUN", self.result(report, "resources"))
         self.assertEqual("NOT_RUN", report["result"])
@@ -1762,28 +1955,29 @@ class ReadinessTests(unittest.TestCase):
             )
             found["lab"]["ports"] = {"127.0.0.1:6379"}
             found["root"] = dev_db_root()
-            found["running"][0]["cpus"] = 7.0
+            reserve(found, "home", 7.0)
+            reserve(found, "dev-valkey", 3.0)
             found["running"].append(
-                {"name": "dev-valkey", "project": "hy-home",
-                 "ports": {"0.0.0.0:6379"}, "cpus": 3.0, "memory": GIB,
-                 "running": retired_running}
+                container_record("hy-home", name="dev-valkey", service="dev-valkey",
+                                 ports={"0.0.0.0:6379"}, running=retired_running)
             )  # fmt: skip
             return found
 
-        # Running: 7 + 3 retired + 1 candidate, minus the 3 retired once.
+        # Reserved: 7 + 3 retired + 1 candidate + 2 allowance, minus the 3
+        # retired once.
         report = readiness(case(True))
         for criterion in ("tier", "resources"):
             self.assertEqual("PASS", self.result(report, criterion), report)
         values = report["criteria"]["resources"]["values"]
-        self.assertEqual(3.0, values["retired_cpus"]["value"])
-        self.assertEqual(8.0, values["cpus_needed"]["value"])
+        self.assertEqual(3.0, values["retired_reserved_cpus"]["value"])
+        self.assertEqual(10.0, values["cpus_needed"]["value"])
         # Stopped: never counted, so nothing is subtracted.
         report = readiness(case(False))
         for criterion in ("tier", "resources"):
             self.assertEqual("PASS", self.result(report, criterion), report)
         values = report["criteria"]["resources"]["values"]
-        self.assertEqual(0.0, values["retired_cpus"]["value"])
-        self.assertEqual(8.0, values["cpus_needed"]["value"])
+        self.assertEqual(0.0, values["retired_reserved_cpus"]["value"])
+        self.assertEqual(10.0, values["cpus_needed"]["value"])
 
     def test_readiness_undecided_fails_tier(self) -> None:
         case = readiness_case()
@@ -1945,11 +2139,11 @@ class ReadinessTests(unittest.TestCase):
     def test_readiness_over_budget_with_unlimited_stays_fail(self) -> None:
         # Ruling: the known lower bound already exceeds the budget.
         case = readiness_case()
-        case["running"][0]["cpus"] = 9.5
+        reserve(case, "home", 9.5)
+        case["root"]["services"]["home"]["cpus"] = 10.0
         case["running"].append(
-            {"name": "free-1", "project": "hy-home", "ports": set(),
-             "cpus": 0, "memory": GIB, "running": True}
-        )  # fmt: skip
+            container_record("hy-home", name="free-1", service="free")
+        )
         self.assertEqual("FAIL", self.result(readiness(case), "resources"))
 
     def test_measure_host_omits_unparsable_docker_info(self) -> None:
@@ -2081,8 +2275,8 @@ class ReadinessTests(unittest.TestCase):
 
     def test_readiness_checks_rendered_users(self) -> None:
         for user, expected in (
-            # A valid user leaves linux at NOT_RUN (groups and modes unmeasured).
-            ("999:999", "NOT_RUN"), ("postgres", "NOT_RUN"), ("0", "NOT_RUN"),
+            # Groups and file modes are an owner check item, not a block.
+            ("999:999", "PASS"), ("postgres", "PASS"), ("0", "PASS"),
             ("70000", "FAIL"), ("1000:", "FAIL"),
         ):  # fmt: skip
             with self.subTest(user=user):
@@ -2115,7 +2309,7 @@ class ReadinessTests(unittest.TestCase):
         self.assertEqual("/var/lib/docker", host["disk_docker"]["value"]["path"])
 
     def test_readiness_cli_writes_the_report_and_exits_on_result(self) -> None:
-        for result, code in (("PASS", 0), ("NOT_RUN", 3)):
+        for result, code in (("PASS", 0), ("NOT_RUN", 3), ("FAIL", 3)):
             with (
                 self.subTest(result=result),
                 tempfile.TemporaryDirectory() as tmp,
@@ -2139,6 +2333,23 @@ class ReadinessTests(unittest.TestCase):
                 )
                 self.assertEqual(result, json.loads(path.read_text())["result"])
 
+    def test_allowance_matches_policy(self) -> None:
+        policy = (
+            ROOT / "docs/05.operations/policies/15-labs/0107-lab-promotion.md"
+        ).read_text(encoding="utf-8")
+        rows = {}
+        for line in policy.splitlines():
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if len(cells) == 2 and cells[0] in {"Allowance CPUs", "Allowance MiB"}:
+                rows[cells[0]] = float(cells[1])
+        self.assertEqual(
+            {
+                "Allowance CPUs": lab.PROMOTION_EXTERNAL_ALLOWANCE["cpus"],
+                "Allowance MiB": lab.PROMOTION_EXTERNAL_ALLOWANCE["memory_mib"],
+            },
+            rows,
+        )
+
     def test_reserve_matches_policy(self) -> None:
         policy = (
             ROOT / "docs/05.operations/policies/15-labs/0107-lab-promotion.md"
@@ -2156,6 +2367,40 @@ class ReadinessTests(unittest.TestCase):
             },
             rows,
         )
+
+
+def _bytes(value: object) -> float:
+    """A Compose size such as 256m, 2g or 32M, in bytes."""
+    text = str(value).strip().lower()
+    units = {"k": 2**10, "m": 2**20, "g": 2**30}
+    if text[-1:] in units:
+        return float(text[:-1]) * units[text[-1]]
+    return float(text.rstrip("b"))
+
+
+class SharedTemplateTests(unittest.TestCase):
+    def test_shared_templates_declare_reservations(self) -> None:
+        # SPEC-0263 AC8: every resource anchor and every template that sets
+        # limits inline reserves no more than its limit.
+        loaded = yaml.safe_load(
+            (ROOT / "infra/common-optimizations.yml").read_text(encoding="utf-8")
+        )
+        blocks = {k: v for k, v in loaded.items() if k.startswith("x-resource-")}
+        blocks |= {
+            name: spec
+            for name, spec in loaded["services"].items()
+            if "cpus" in spec or "mem_limit" in spec
+        }
+        self.assertGreaterEqual(len(blocks), 7)
+        for name, block in blocks.items():
+            with self.subTest(name=name):
+                reserved = block["deploy"]["resources"]["reservations"]
+                self.assertGreater(float(reserved["cpus"]), 0)
+                self.assertGreater(_bytes(reserved["memory"]), 0)
+                self.assertLessEqual(float(reserved["cpus"]), float(block["cpus"]))
+                self.assertLessEqual(
+                    _bytes(reserved["memory"]), _bytes(block["mem_limit"])
+                )
 
 
 if __name__ == "__main__":
