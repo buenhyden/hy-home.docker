@@ -226,12 +226,13 @@ DAGs; the next member peak is 0.077 CPU.
 | E16 | 8 | W7 | full unit suite | the E15 command at `ed5ddeccb` (with this Task edit in the working tree) | PASS | 3344 tests OK, skipped=108 | required | E15 |
 | E17 | 8 | W7 | task review | independent review of `5e270cf08..3cf6dde9e` | PASS | spec compliance PASS, quality APPROVED; 4 Minor findings: 2 fixed (E18), 2 recorded under Review and Completion | required | - |
 | E18 | 8 | W7 | LAB suites | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout` after the review fixes | PASS | 117 tests OK; the new limits-fallback test fails with the fallback removed | required | - |
+| E19 | 8 | W7 | full unit suite | the E15 command at `c79e51526` (code identical at `b2c1d3658`) | PASS | 3346 tests OK, skipped=108 | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18 | - | @buenhyden |
+| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19 | - | @buenhyden |
 
 ## Review and Completion
 
