@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 created: "2026-09-23"
 ---
 
@@ -15,7 +15,7 @@ created: "2026-09-23"
 
 ## Overview
 
-Trino는 독립 Compose project인 [lakehouse LAB](../../lakehouse.yml)
+Trino는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 SQL engine입니다. coordinator 한 개가 작업도 실행하며
 catalog `lakehouse`는 Spark와 같은 `LAB_LAKEHOUSE_CATALOG_URI` catalog와 `lakehouse`
 S3 identity를 사용합니다. HOME network에 연결되지 않고, HTTP API에 인증이 없으므로
@@ -51,13 +51,13 @@ trino/
     └── lakehouse.properties    # Iceberg REST catalog(SigV4)와 native S3
 ```
 
-서비스 정의는 [labs/lakehouse.yml](../../lakehouse.yml)이 소유합니다.
+서비스 정의는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
 ## Tech Stack
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Engine** | Trino(버전은 `labs/lakehouse.yml`) | 단일 노드, 2 CPU, 2 GiB, heap 80% |
+| **Engine** | Trino(버전은 `labs/lakehouse/docker-compose.yml`) | 단일 노드, 2 CPU, 2 GiB, heap 80% |
 | **Catalog** | Iceberg REST(`LAB_LAKEHOUSE_CATALOG_URI`) | SigV4(`signing-name=s3`), view endpoint 꺼짐 |
 | **Storage** | S3(`LAB_LAKEHOUSE_S3_ENDPOINT`) | Native S3 파일 시스템, path-style |
 
@@ -80,7 +80,7 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 ## Available Scripts
 
 아래 `LAB`은 저장소 루트에서
-`docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse`입니다.
+`docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down lakehouse`의 lease 규칙
 ([LAB 안내](../../README.md#usage))을 따릅니다.
@@ -99,7 +99,7 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 
 ## Validation
 
-- `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse config --quiet`
+- `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
 ## Troubleshooting
@@ -125,7 +125,7 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 | Purpose | lakehouse LAB의 Trino leaf; services: `trino` |
 | Config files | `hyhome-trino.sh`, `catalog/lakehouse.properties` |
 | Config values | profiles: `lab-lakehouse` |
-| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse.yml](../../lakehouse.yml)); root include 없음 |
+| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse/docker-compose.yml](../docker-compose.yml)); root include 없음 |
 | Networks | `lab_lakehouse_net`(`hy-home-lab-lakehouse`); HOME network 없음 |
 | Volumes | `./lakehouse/trino/hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro`, `./lakehouse/trino/catalog/lakehouse.properties:/etc/trino/catalog/lakehouse.properties:ro` |
 | Ports | `127.0.0.1:${LAB_TRINO_HOST_PORT:-18090}:8080` |
@@ -142,5 +142,5 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 2. Renovate가 이미지 tag를 갱신합니다.
 3. Table 삭제와 snapshot 만료는 named table과 기록된 사유가 있을 때만 실행합니다.
 
-런타임 이미지 권한은 [labs/lakehouse.yml](../../lakehouse.yml)이 소유하며
+런타임 이미지 권한은 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.

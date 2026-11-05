@@ -1,0 +1,45 @@
+# SPEC-0263 promotion manifest for the lakehouse LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+# kind undecided: the owner has not named a promotion target yet.
+kind: undecided
+integrations:
+- kind: network
+  owner: infra/04-data/seaweedfs/
+- kind: observability
+  owner: infra/06-observability/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-026
+  destination: secrets/storage/lakehouse/s3_admin_secret_key.txt
+- row: LAB-027
+  destination: secrets/storage/lakehouse/s3_lakehouse_secret_key.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0094-lakehouse.md
+  runbook: docs/05.operations/runbooks/15-labs/0094-lakehouse.md
+  guide_target: docs/05.operations/guides/13-analytics-and-data-quality/
+  runbook_target: docs/05.operations/runbooks/13-analytics-and-data-quality/
+resources:
+  services:
+    flink-jobmanager:
+      cpus: 1.0
+      memory_mib: 1280
+    flink-taskmanager:
+      cpus: 2.0
+      memory_mib: 2048
+    great-expectations:
+      cpus: 1.0
+      memory_mib: 512
+    seaweedfs-table-bucket:
+      cpus: 0.5
+      memory_mib: 256
+    spark:
+      cpus: 2.0
+      memory_mib: 2048
+    trino:
+      cpus: 2.0
+      memory_mib: 2048
+  disk_gib:
+    data: 20
+    images: 8

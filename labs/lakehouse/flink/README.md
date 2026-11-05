@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 created: "2026-09-23"
 ---
 
@@ -15,7 +15,7 @@ created: "2026-09-23"
 
 ## Overview
 
-Flink는 독립 Compose project인 [lakehouse LAB](../../lakehouse.yml)
+Flink는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 stream processing engine입니다. JobManager 하나와
 TaskManager 하나(slot 2개)로 된 session cluster이며 catalog `lakehouse`는 Spark·Trino와
 같은 `LAB_LAKEHOUSE_CATALOG_URI` catalog와 `lakehouse` S3 identity를 사용합니다.
@@ -54,7 +54,7 @@ flink/
 └── hyhome-flink.sh     # secret을 export하고 /tmp/lakehouse.sql을 작성한 뒤 명령을 실행함
 ```
 
-서비스 정의(`flink-jobmanager`, `flink-taskmanager`)는 [labs/lakehouse.yml](../../lakehouse.yml)이 소유합니다.
+서비스 정의(`flink-jobmanager`, `flink-taskmanager`)는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
 ## Tech Stack
 
@@ -85,7 +85,7 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 ## Available Scripts
 
 아래 `LAB`은 저장소 루트에서
-`docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse`입니다.
+`docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down lakehouse`의 lease 규칙
 ([LAB 안내](../../README.md#usage))을 따릅니다. 먼저 checkpoint 디렉터리를
@@ -100,7 +100,7 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 
 ## Validation
 
-- `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse config --quiet`
+- `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
 ## Troubleshooting
@@ -128,7 +128,7 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 | Purpose | lakehouse LAB의 Flink leaf; services: `flink-jobmanager`, `flink-taskmanager` |
 | Config files | `Dockerfile`, `hyhome-flink.sh` |
 | Config values | profiles: `lab-lakehouse` |
-| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse.yml](../../lakehouse.yml)); root include 없음 |
+| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse/docker-compose.yml](../docker-compose.yml)); root include 없음 |
 | Networks | `lab_lakehouse_net`(`hy-home-lab-lakehouse`); HOME network 없음 |
 | Volumes | `./lakehouse/flink/hyhome-flink.sh:/opt/hyhome/hyhome-flink.sh:ro`, `flink-checkpoints:/opt/flink/checkpoints`(`${LAB_DATA_DIR}/lakehouse/flink/checkpoints`) |
 | Ports | `127.0.0.1:${LAB_FLINK_HOST_PORT:-18091}:8081`(JobManager) |
@@ -145,5 +145,5 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 2. Renovate는 `FROM` 이미지만 갱신하며 jar는 새 checksum으로 수동 갱신합니다. Flink minor 버전이 오르면 대응하는 `iceberg-flink-runtime-<minor>`와 Kafka connector jar도 필요합니다.
 3. 스트리밍 `INSERT`는 취소될 때까지 실행되며 각 checkpoint(wrapper 기본값 60초)마다 커밋됩니다. job ID와 대상 table을 기록하십시오.
 
-런타임 이미지 권한은 [labs/lakehouse.yml](../../lakehouse.yml)이 소유하며
+런타임 이미지 권한은 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
