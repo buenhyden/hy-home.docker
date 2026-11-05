@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.42.0"
+version: "1.43.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -143,6 +143,11 @@ submission and Attester replay boundaries without reopening SPEC-0204's
 historical Gateway, Attester timer, Export 1.0 ACK or backup receipts. It
 preserves Export 2.0 as the selected contract while leaving a new Windows B
 ACK, scheduled delivery and operational restore as separate unrun work.
+
+The owner decision of 2026-11-06 adds criterion 103 and W108 in TSK-0051 for
+D12, the first Opsflow installation in HOME. It records the ordered execution
+contract and Runbook procedure for review; every step runs later in an
+owner-approved window, so no HOME change is authorized by this amendment.
 
 ## Scope
 
@@ -741,6 +746,11 @@ hold, authorization and recovery requirements have been established.
 102. P11.05 records the five independent Hermes trust boundaries and the exact
      external Windows handoff. Live routes, credentials, service restart, remote
      CI and external repository changes remain outside this local Task.
+103. D12 installs the Opsflow manifest workload in HOME in six ordered steps
+     (backup, SQL 001-008, bucket and canaries, code install, paused synthetic
+     run, unpause), each with its own recorded check, in an owner-approved
+     window. Rollback removes installed files, keeps backups and drops nothing
+     that existed before.
 
 ## Failure Conditions
 
@@ -769,6 +779,7 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Role, resource and retirement Task](tasks/tsk-0048-role-resource-retirement.md)
 - [Documentation, governance, QA and CI Task](tasks/tsk-0049-document-governance-qa-ci.md)
 - [Hermes provenance, trust and export Task](tasks/tsk-0050-hermes-provenance-trust-export.md)
+- [Opsflow first HOME installation Task](tasks/tsk-0051-opsflow-home-installation.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)
