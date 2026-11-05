@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -230,12 +230,14 @@ DAGs; the next member peak is 0.077 CPU.
 | E20 | 8 | W7 | HOME readiness | `lab.py --env-file labs/.env readiness valkey-cluster`, read-only, after the dag-processor reservation | FAIL | resources FAIL: running 11.1 CPUs / 21888 MiB, needed 19.9 CPUs / 31360 MiB against 10 / 27924; no unrendered project | required | - |
 | E21 | 8 | W7 | HOME readiness | the E20 command for `postgresql-ha` | FAIL | resources FAIL: needed 23.45 CPUs / 36256 MiB against 10 / 27924 | required | - |
 | E22 | 8 | W7 | HOME readiness | the E20 command after the valkey-cluster lease-run reservations | FAIL | tier, composition, linux, docker PASS; resources FAIL: candidate 1.15 CPUs / 480 MiB, needed 14.05 CPUs / 28256 MiB against 10 / 27924 | required | - |
+| E23 | 8 | W7 | HOME readiness | `lab.py --env-file labs/.env readiness valkey-cluster`, read-only, after the HOME outlier reservations | PASS | all five criteria PASS; needed 9.8 CPUs / 25536 MiB against 10 / 27924 | required | E22 |
+| E24 | 8 | W7 | HOME readiness | the E23 command for `postgresql-ha` | FAIL | resources FAIL: candidate unmeasured at its limit, needed 19.2 CPUs / 33440 MiB | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22 | - | @buenhyden |
+| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24 | - | @buenhyden |
 
 ## Review and Completion
 
@@ -282,6 +284,18 @@ Owner decisions on the review findings and the resource `FAIL` (2026-11-06):
   CPUs / 3584 MiB to 1.15 CPUs / 480 MiB (E22). Readiness still fails: the
   running HOME sum (11.1 CPUs) alone exceeds the 10-CPU budget. Idle samples
   understate a loaded cluster; a load run should re-measure before promotion.
+- **HOME outlier reservations (owner request, 2026-11-06).** One anchor
+  reservation carried its highest member's peak to every member, so seven
+  outliers from the W7 samples reserve their own peak x 1.5: `openbao` 0.30
+  CPU / 32M, `blog-ingestion` 0.20 / 128M, `dozzle` 0.10 / 64M, `alloy` 0.05
+  / 352M, `seaweedfs-filer` 0.05 / 320M, `dev-valkey` and `mng-valkey` 0.10 /
+  32M. `x-resource-med` drops to 0.05 CPU / 192M (next peaks: alloy 0.023 CPU
+  excluded, redisinsight 116 MiB) and `x-resource-low` to 0.05 CPU (next
+  peak: alertmanager 0.018). The running HOME sum falls to 6.8 CPUs / 19072
+  MiB. The update ledger re-pins only `entries[*].source_input_sha256` (41)
+  and `include_inputs` (7); a first blanket replacement that also touched
+  historical bindings was discarded before commit. valkey-cluster now passes
+  resources with 0.2 CPU of headroom (E23); postgresql-ha still fails (E24).
 
 ## Related Documents
 

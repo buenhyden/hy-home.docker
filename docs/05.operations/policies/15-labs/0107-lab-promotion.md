@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Policy"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -181,12 +181,14 @@ container 수와 관계없이 resource 합에 한 번 더한다. 2026-11-06 k3d 
 2026-11-06 owner가 limit 대신 reservation으로 판정하기로 결정했다(SPEC-0263 0.3.0). 같은 날
 read-only HOME readiness에서 `valkey-cluster`와 `postgresql-ha`는 tier, composition, linux,
 docker가 `PASS`이고 resources가 `FAIL`이었다. 12 CPU host의 예산은 10 CPU와 27924 MiB다.
-`airflow-dag-processor`는 DAG parsing에서 1.65 CPU까지 올라가 owner 결정으로 자체 reservation
-(2.00 CPU, 512M)을 갖고, 나머지 `x-resource-db` 구성원은 0.15 CPU와 704M을 예약한다. 그 결과
-실행 중 HOME container의 reservation 합은 11.1 CPU와 21888 MiB다. 후보는 측정 전이라
-reservation이 limit과 같다(`valkey-cluster` 7.0 CPU, 필요 19.9 CPU와 31360 MiB;
-`postgresql-ha` 10.5 CPU, 필요 23.45 CPU와 36256 MiB). 다음 단계는 owner window의 LAB lease
-측정이다. 이 값은 render에서 오므로 HOME
+anchor 하나의 reservation이 가장 높은 구성원 peak를 모두에게 적용하므로, owner 결정으로 peak가
+두드러진 서비스가 자체 reservation을 갖는다: `airflow-dag-processor`(2.00 CPU, 512M), `openbao`,
+`blog-ingestion`, `dozzle`, `alloy`, `seaweedfs-filer`, `dev-valkey`, `mng-valkey`. anchor는 나머지
+구성원의 peak로 낮췄다(`x-resource-db` 0.15 CPU, `x-resource-med` 0.05 CPU와 192M,
+`x-resource-low` 0.05 CPU). 실행 중 HOME reservation 합은 6.8 CPU와 19072 MiB다.
+`valkey-cluster`는 2026-11-06 lease run 측정값(1.15 CPU, 480 MiB)으로 resources `PASS`다(필요
+9.8 CPU와 25536 MiB). `postgresql-ha`는 측정 전이라 reservation이 limit(10.5 CPU)이고 `FAIL`이다.
+측정은 유휴 표본이므로 승격 전 부하 측정이 필요하다. 이 값은 render에서 오므로 HOME
 container를 재생성하지 않아도 같다. resource `FAIL`은 승격 거부다. 예외 owner는 @buenhyden이다.
 
 `ollama`는 측정 최대 47 MiB와 달리 model loading을 위한 4G memory reservation을 유지한다.
