@@ -721,17 +721,24 @@ def path_integrity_problems(selected: dict[str, dict]) -> list[str]:
             if not source["read_only"]:
                 continue
             declared = pathlib.Path(source["declared"])
+            # Name the source (a path, never its contents): repo-relative
+            # inside the repository, otherwise as declared.
+            shown = source["declared"]
+            if declared.is_absolute() and _within(str(declared), str(ROOT)):
+                shown = os.path.relpath(declared, ROOT)
             if not declared.is_absolute():
-                problems.append(f"{name}: read-only source must be absolute")
+                problems.append(f"{name}: read-only source {shown} must be absolute")
                 continue
             if not os.path.lexists(declared):
-                problems.append(f"{name}: read-only source does not exist")
+                problems.append(f"{name}: read-only source {shown} does not exist")
                 continue
             # /var/run is a symlink to /run on most hosts.
             if _has_symlink_component(declared) and not _socket_exception(name, source):
-                problems.append(f"{name}: read-only source contains a symlink")
+                problems.append(f"{name}: read-only source {shown} contains a symlink")
             if not declared.exists():
-                problems.append(f"{name}: read-only source target does not exist")
+                problems.append(
+                    f"{name}: read-only source {shown} target does not exist"
+                )
     return problems
 
 

@@ -1022,6 +1022,27 @@ class AdmissionGuardTests(unittest.TestCase):
             problems = lab.path_integrity_problems({"x": found})
             self.assertTrue(any("symlink" in problem for problem in problems))
             self.assertTrue(any("does not exist" in problem for problem in problems))
+            # Each problem names its source: as declared outside the repo.
+            self.assertIn(
+                f"x: read-only source {base / 'missing'} does not exist", problems
+            )
+            self.assertIn(f"x: read-only source {alias} contains a symlink", problems)
+            # Repo-relative inside the repository, and a relative one as declared.
+            spec["volumes"] = [
+                {"type": "bind", "source": str(ROOT / "labs/no-such-input"),
+                 "target": "/a", "read_only": True},
+                {"type": "bind", "source": "relative/input", "target": "/b",
+                 "read_only": True},
+            ]  # fmt: skip
+            found = lab.footprint(model("hy-home-lab-x", {"x": spec}))
+            found["sources"][1]["declared"] = "relative/input"
+            problems = lab.path_integrity_problems({"x": found})
+            self.assertIn(
+                "x: read-only source labs/no-such-input does not exist", problems
+            )
+            self.assertIn(
+                "x: read-only source relative/input must be absolute", problems
+            )
             self.assertEqual(set(), found["state"])
 
     def test_running_container_inventory_includes_stopped_state(self) -> None:
