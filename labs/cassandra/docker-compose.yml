@@ -1,0 +1,55 @@
+name: hy-home-lab-cassandra
+x-tier-label: &tier-label
+  hy-home.tier: lab
+
+volumes:
+  cassandra-node1-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/cassandra/node1
+
+services:
+  cassandra-node1:
+    profiles:
+      - cassandra
+    extends:
+      file: ../../infra/common-optimizations.yml
+      service: template-stateful-db-high
+    image: cassandra:5.0.9
+    container_name: lab-cassandra-cassandra-node1
+    # JVM thread pools; initial budget above the DB template's 1024.
+    pids_limit: 2048
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - SETGID
+      - SETUID
+    hostname: cassandra-node1
+    read_only: false
+    expose:
+      - 7000
+      - 9042
+    networks:
+      lab_cassandra_core_net: {}
+    environment:
+      - CASSANDRA_SEEDS=cassandra-node1
+      - CASSANDRA_CLUSTER_NAME=hy-home-lab-cassandra
+      - MAX_HEAP_SIZE=1G
+      - HEAP_NEWSIZE=200M
+    volumes:
+      - cassandra-node1-volume:/var/lib/cassandra:rw
+    healthcheck:
+      test: [ 'CMD-SHELL', "nodetool status | grep -E '^UN' || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+
+networks:
+  lab_cassandra_core_net:
+    name: ${LAB_CASSANDRA_CORE_NETWORK_NAME:-hy-home-lab-cassandra-core}
+    internal: true

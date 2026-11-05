@@ -142,7 +142,7 @@ class OperationsMovesTests(unittest.TestCase):
 
     def test_runtime_and_nonoperations_inputs_are_out_of_scope(self):
         for path in (
-            "labs/kafka-cluster.md",
+            "labs/kafka-cluster/README.md",
             "infra/04-data/docker-compose.yml",
             "docs/05.operations/README.md",
             "docs/05.operations/guides/README.md",

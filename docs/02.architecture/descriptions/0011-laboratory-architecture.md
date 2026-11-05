@@ -35,7 +35,7 @@ The former Laboratory capabilities now reside in their owning Data, Observabilit
   Secrets. Provider/API egress is a distinct authorization boundary.
 - **SurrealDB:** the nested build in `infra/08-ai/open-notebook/surrealdb`, selected by `notebook` or `surrealdb`, persists Open Notebook records under `/mydata`; its host-port block remains commented out.
 - **MLflow:** `08-ai/mlflow` retains tracking and feature-owned DB provisioning under `mlops`/`data-science`; PostgreSQL metadata and SeaweedFS artifacts recover together. The browser uses ForwardAuth, while direct SDK access on all four declared networks lacks equivalent authentication.
-- **JupyterLab:** the standalone LAB `labs/jupyterlab.yml` (SPEC-0262), selected by its `jupyterlab` LAB profile, retains its token-file startup guard and UID1000 notebook workspace under the LAB data root. It has no gateway route and is published only on the LAB bind address.
+- **JupyterLab:** the standalone LAB `labs/jupyterlab/docker-compose.yml` (SPEC-0262), selected by its `jupyterlab` LAB profile, retains its token-file startup guard and UID1000 notebook workspace under the LAB data root. It has no gateway route and is published only on the LAB bind address.
 - **Non-goals:** this tier does not own primary Redis/Valkey backups, copied Docker
   logs, production notebook workloads, or Metabase. No current Metabase service is
   declared in this tier.

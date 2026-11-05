@@ -140,7 +140,7 @@ def main():
         )
         compose = [
             *docker, "compose", "--env-file", str(empty_env), "--project-name",
-            project, "-f", str(ROOT / "labs/locust.yml"), "-f",
+            project, "-f", str(ROOT / "labs/locust/docker-compose.yml"), "-f",
             str(HERE / "compose.override.yml"), "--profile", "lab-locust",
         ]  # fmt: skip
 

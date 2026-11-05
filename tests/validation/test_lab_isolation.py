@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-LABS = sorted((ROOT / "labs").glob("*.yml"))
+LABS = sorted((ROOT / "labs").glob("*/docker-compose.yml"))
 # Synthetic, non-HOME inputs: only enough to render each LAB model.
 LAB_INPUTS = {
     "LAB_DATA_DIR": "/nonexistent/lab-data",
@@ -60,7 +60,7 @@ def rendered_models() -> tuple[dict, dict[str, dict]]:
     """Render the root and every LAB once per test process; tests only read."""
     root = render("--env-file", ".env.example", "--profile", "*")
     labs = {
-        path.name: render(
+        path.parent.name: render(
             "--env-file",
             "labs/.env.example",
             "-f",
@@ -129,7 +129,7 @@ class LabBoundaryTests(RenderedModels):
     def test_kafka_lab_tolerates_one_broker_loss_and_home_does_not(self) -> None:
         brokers = {
             name: spec["environment"]
-            for name, spec in self.labs["kafka-cluster.yml"]["services"].items()
+            for name, spec in self.labs["kafka-cluster"]["services"].items()
             if name.startswith("lab-kafka-") and name[-1].isdigit()
         }
         self.assertEqual(3, len(brokers))
@@ -167,7 +167,7 @@ def guide_bound_labs() -> set[str]:
             continue
         metadata = yaml.safe_load(text.split("---\n", 2)[1]) or {}
         bound |= {
-            path.removeprefix("labs/")
+            path.split("/")[1]
             for path in metadata.get("implementation_services") or {}
             if path.startswith("labs/")
         }
@@ -184,9 +184,7 @@ class LabInventoryAndSelectionTests(RenderedModels):
         for name, lab in self.labs.items():
             if name in bound:
                 continue
-            guide = (
-                (ROOT / "labs" / name).with_suffix(".md").read_text(encoding="utf-8")
-            )
+            guide = (ROOT / "labs" / name / "README.md").read_text(encoding="utf-8")
             with self.subTest(lab=name):
                 project = re.search(
                     r"^\| Project \| [`*]+([^`*]+)[`*]+ \|$", guide, re.M
@@ -225,7 +223,7 @@ class LabInventoryAndSelectionTests(RenderedModels):
 
         obs = ROOT / "infra/06-observability"
         provisioned = {p.name for p in (obs / "grafana/dashboards").rglob("*.json")}
-        moved = {p.name for p in (ROOT / "labs/dashboards").glob("*.json")}
+        moved = {p.name for p in (ROOT / "labs").glob("*/dashboards/*.json")}
         self.assertTrue(moved)
         self.assertEqual(set(), provisioned & moved)
         lab_metrics = re.compile(r"\b(haproxy|cassandra|mongodb|etcd|patroni)_\w+")

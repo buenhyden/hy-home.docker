@@ -29,7 +29,7 @@ IaC·아티팩트 배포·의존성 유지보수·플랫폼 공통 백업을 소
 선택하지 않지만 `registry` 서비스는 별도의 `registry` 프로필을 통해 HOME
 선택에 포함됩니다(루트 [infra/README.md](../README.md) 참고).
 
-dbt 변환 작업은 독립 [dbt LAB](../../labs/dbt.yml)에서 관리합니다.
+dbt 변환 작업은 독립 [dbt LAB](../../labs/dbt/docker-compose.yml)에서 관리합니다.
 
 ## Audience
 

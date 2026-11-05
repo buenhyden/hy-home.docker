@@ -451,7 +451,9 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         self.assertEqual(len(historical_services), len(historical))
         for row in historical:
             self.assertEqual("lab", row["current_scope"])
-            self.assertRegex(row["current_compose_file"], r"^labs/[a-z0-9-]+\.yml$")
+            self.assertRegex(
+                row["current_compose_file"], r"^labs/[a-z0-9-]+/docker-compose\.yml$"
+            )
             self.assertTrue((root / row["current_compose_file"]).is_file())
             self.assertEqual("root", row["original_root_row"]["scope"])
             self.assertEqual(row["service"], row["original_root_row"]["service"])

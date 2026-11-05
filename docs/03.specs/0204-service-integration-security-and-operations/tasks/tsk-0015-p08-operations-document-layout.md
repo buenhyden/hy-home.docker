@@ -119,7 +119,7 @@ input receipt. Work-unit issuance does not mark any move or operational test PAS
 
 Initial confirmed source families are Supabase, PostgreSQL HA, Valkey cluster
 and Locust. Existing independent `labs/<name>.yml` entrypoints and the registered
-LAB controller are reused. Map Supabase to `labs/supabase.yml` and its authored
+LAB controller are reused. Map Supabase to `labs/supabase/docker-compose.yml` and its authored
 README/environment example to `labs/supabase/`; map exclusively LAB PostgreSQL HA,
 Valkey cluster and Locust assets to their matching `labs/` folders. These are
 prospective exact destinations pending reference/render review, not executed moves.
@@ -150,7 +150,7 @@ Remote main was independently reobserved at
 The reviewed Supabase worker source `85fd9adafa5afdcb36492f412b81f2e78aaef727`
 is preserved as logical cherry-pick `99957fb0142bd32da13ce74a190bd457f01d3c44`.
 The companion baseline is `5580a4693f3841df2b976c6d7ab5ee213213dd1e`. The sole
-source is `labs/supabase.yml`, with public README/env and exact naming exception
+source is `labs/supabase/docker-compose.yml`, with public README/env and exact naming exception
 records under `labs/supabase/`. All thirteen service keys, image pins, container
 names and dependency edges are preserved. Root include/network and Supabase-only
 secret declarations are removed; actual secret files and stored data are retained.

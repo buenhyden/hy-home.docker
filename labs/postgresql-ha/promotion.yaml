@@ -1,0 +1,91 @@
+# SPEC-0263 promotion manifest for the postgresql-ha LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+# kind replace-same: owner decision A (2026-11-05) retires the dev-db
+# single PostgreSQL node, with its own provisioning jobs (dev-platform-provision,
+# dev-perf-provision), whose work moves to the cluster (controller ruling).
+kind: replace-same
+target:
+  folder: infra/04-data/dev-db/pg/
+  profile: dev-data
+replaces:
+- compose_path: infra/04-data/dev-db/docker-compose.yml
+  services:
+  - dev-pg
+  - dev-pg-monitor-provision
+  - dev-pg-exporter
+  - dev-platform-provision
+  - dev-perf-provision
+  consumers:
+  - infra/04-data/dev-db/docker-compose.yml
+  - infra/05-messaging/kafka/docker-compose.yml
+  - infra/05-messaging/kafka/connect/debezium/postgres-connector.json
+  - infra/06-observability/grafana/dashboards/Infrastructure/postgresql.json
+  - infra/06-observability/prometheus/config/prometheus.yml
+  - infra/06-observability/prometheus/config/prometheus.dev.yml
+  - infra/06-observability/prometheus/config/alert_rules/alert_rules.local.datastores.yml
+  - infra/06-observability/prometheus/config/alert_rules/alert_rules.local.selection.yml
+  - infra/06-observability/prometheus/scripts/start.sh
+  - infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/adapters.py
+  - infra/09-platform-ops/restic/bin/hyhome-backup.sh
+  - labs/dbt/docker-compose.yml
+  - scripts/lib/ops/compose_start.py
+integrations:
+- kind: observability
+  owner: infra/06-observability/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-001
+  destination: secrets/db/pg-ha/haproxy_stats_password.txt
+- row: LAB-002
+  destination: secrets/db/pg-ha/superuser_password.txt
+- row: LAB-003
+  destination: secrets/db/pg-ha/replication_password.txt
+- row: LAB-004
+  destination: secrets/db/pg-ha/exporter_password.txt
+- row: LAB-005
+  destination: secrets/db/pg-ha/service_password.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0031-postgresql-cluster.md
+  runbook: docs/05.operations/runbooks/15-labs/0031-postgresql-cluster.md
+  guide_target: docs/05.operations/guides/05-databases-and-storage/
+  runbook_target: docs/05.operations/runbooks/05-databases-and-storage/
+resources:
+  services:
+    etcd-1:
+      cpus: 0.5
+      memory_mib: 256
+    etcd-2:
+      cpus: 0.5
+      memory_mib: 256
+    etcd-3:
+      cpus: 0.5
+      memory_mib: 256
+    pg-0:
+      cpus: 2.0
+      memory_mib: 2048
+    pg-0-exporter:
+      cpus: 0.5
+      memory_mib: 256
+    pg-1:
+      cpus: 2.0
+      memory_mib: 2048
+    pg-1-exporter:
+      cpus: 0.5
+      memory_mib: 256
+    pg-2:
+      cpus: 2.0
+      memory_mib: 2048
+    pg-2-exporter:
+      cpus: 0.5
+      memory_mib: 256
+    pg-cluster-init:
+      cpus: 0.5
+      memory_mib: 256
+    pg-router:
+      cpus: 1.0
+      memory_mib: 512
+  disk_gib:
+    data: 30
+    images: 2

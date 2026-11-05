@@ -26,7 +26,7 @@ Superset는 자체 로그인, 메타데이터 데이터베이스, lakehouse 데�
 
 ## Rules
 
-- 독립 LAB `labs/superset.yml`의 `lab-superset` profile로만 선택한다. root include, HOME network
+- 독립 LAB `labs/superset/docker-compose.yml`의 `lab-superset` profile로만 선택한다. root include, HOME network
   합류, HOME 이름 선택 추가를 금지한다.
 - 로그인은 PKCE를 사용하는 native Keycloak OIDC다. gateway route가 없으므로 OAuth2 Proxy
   ForwardAuth도 적용되지 않으며 form 로그인은 제공하지 않는다. LAB loopback origin용 redirect
@@ -76,5 +76,5 @@ Keycloak 로그인 옵션, 컨테이너 환경 변수에 자격 증명이 없음
 
 ## Related Documents
 
-- [Superset Compose source](../../../../labs/superset.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
+- [Superset Compose source](../../../../labs/superset/docker-compose.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)

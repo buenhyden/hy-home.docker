@@ -143,7 +143,7 @@
     },
     {
       "scope": "lab:stalwart",
-      "compose_file": "labs/stalwart.yml",
+      "compose_file": "labs/stalwart/docker-compose.yml",
       "service": "stalwart",
       "control": "cap_add",
       "allowed_value": [
@@ -161,7 +161,7 @@
     },
     {
       "scope": "lab:mongodb",
-      "compose_file": "labs/mongodb.yml",
+      "compose_file": "labs/mongodb/docker-compose.yml",
       "service": "mongo-key-generator",
       "control": "cap_add",
       "allowed_value": [
@@ -181,7 +181,7 @@
     },
     {
       "scope": "lab:opensearch-cluster",
-      "compose_file": "labs/opensearch-cluster.yml",
+      "compose_file": "labs/opensearch-cluster/docker-compose.yml",
       "service": "opensearch-node1",
       "control": "cap_add",
       "allowed_value": [
@@ -199,7 +199,7 @@
     },
     {
       "scope": "lab:opensearch-cluster",
-      "compose_file": "labs/opensearch-cluster.yml",
+      "compose_file": "labs/opensearch-cluster/docker-compose.yml",
       "service": "opensearch-node2",
       "control": "cap_add",
       "allowed_value": [
@@ -217,7 +217,7 @@
     },
     {
       "scope": "lab:opensearch-cluster",
-      "compose_file": "labs/opensearch-cluster.yml",
+      "compose_file": "labs/opensearch-cluster/docker-compose.yml",
       "service": "opensearch-node3",
       "control": "cap_add",
       "allowed_value": [
@@ -299,7 +299,7 @@
     },
     {
       "scope": "lab:postgresql-ha",
-      "compose_file": "labs/postgresql-ha.yml",
+      "compose_file": "labs/postgresql-ha/docker-compose.yml",
       "service": "etcd-1",
       "control": "secrets_group",
       "allowed_value": "unneeded",
@@ -315,7 +315,7 @@
     },
     {
       "scope": "lab:postgresql-ha",
-      "compose_file": "labs/postgresql-ha.yml",
+      "compose_file": "labs/postgresql-ha/docker-compose.yml",
       "service": "etcd-2",
       "control": "secrets_group",
       "allowed_value": "unneeded",
@@ -331,7 +331,7 @@
     },
     {
       "scope": "lab:postgresql-ha",
-      "compose_file": "labs/postgresql-ha.yml",
+      "compose_file": "labs/postgresql-ha/docker-compose.yml",
       "service": "etcd-3",
       "control": "secrets_group",
       "allowed_value": "unneeded",
@@ -347,7 +347,7 @@
     },
     {
       "scope": "lab:couchdb",
-      "compose_file": "labs/couchdb.yml",
+      "compose_file": "labs/couchdb/docker-compose.yml",
       "service": "couchdb-1",
       "control": "cap_add",
       "allowed_value": [
@@ -369,7 +369,7 @@
     },
     {
       "scope": "lab:couchdb",
-      "compose_file": "labs/couchdb.yml",
+      "compose_file": "labs/couchdb/docker-compose.yml",
       "service": "couchdb-2",
       "control": "cap_add",
       "allowed_value": [
@@ -391,7 +391,7 @@
     },
     {
       "scope": "lab:couchdb",
-      "compose_file": "labs/couchdb.yml",
+      "compose_file": "labs/couchdb/docker-compose.yml",
       "service": "couchdb-3",
       "control": "cap_add",
       "allowed_value": [
@@ -413,7 +413,7 @@
     },
     {
       "scope": "lab:cassandra",
-      "compose_file": "labs/cassandra.yml",
+      "compose_file": "labs/cassandra/docker-compose.yml",
       "service": "cassandra-node1",
       "control": "cap_add",
       "allowed_value": [
@@ -434,7 +434,7 @@
     },
     {
       "scope": "lab:postgresql-ha",
-      "compose_file": "labs/postgresql-ha.yml",
+      "compose_file": "labs/postgresql-ha/docker-compose.yml",
       "service": "pg-0",
       "control": "cap_add",
       "allowed_value": [
@@ -456,7 +456,7 @@
     },
     {
       "scope": "lab:postgresql-ha",
-      "compose_file": "labs/postgresql-ha.yml",
+      "compose_file": "labs/postgresql-ha/docker-compose.yml",
       "service": "pg-1",
       "control": "cap_add",
       "allowed_value": [
@@ -478,7 +478,7 @@
     },
     {
       "scope": "lab:postgresql-ha",
-      "compose_file": "labs/postgresql-ha.yml",
+      "compose_file": "labs/postgresql-ha/docker-compose.yml",
       "service": "pg-2",
       "control": "cap_add",
       "allowed_value": [

@@ -39,7 +39,7 @@ The following service stack is selected as the standard tooling for `09-tooling`
    - Reason: the current CLI helper is OpenTofu, and Terrakube manages workspace state and execution. The existing Terraform workspace state/provider contract is reviewed in the migration handoff.
 2. **Code Quality**: **SonarQube**
    - Reason: multi-language support and precise static analysis capability let it centrally manage the project's overall code quality and security vulnerabilities.
-3. **Performance Testing**: **k6** is the default load tool ([ADR-0047](0047-dev-timescale-influx-retirement-and-load-tools.md)); Locust stays an optional standalone LAB (`labs/locust.yml`) for Python or protocol comparisons.
+3. **Performance Testing**: **k6** is the default load tool ([ADR-0047](0047-dev-timescale-influx-retirement-and-load-tools.md)); Locust stays an optional standalone LAB (`labs/locust/docker-compose.yml`) for Python or protocol comparisons.
    - Reason: k6 already owns the run/result contract; Locust's Python scenario definitions remain available in the LAB.
 4. **OCI Registry**: **OCI Distribution Registry**
    - Reason: provides a lightweight private image store for internal service deployment.

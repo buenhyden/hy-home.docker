@@ -2029,23 +2029,30 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertIn("Service Guides", template)
         self.assertIn("workspace and process Guides omit", template)
 
-    def test_guide_lab_binding_is_flat_and_cannot_escape_its_source_family(self):
+    def test_guide_lab_binding_is_the_lab_entrypoint_and_cannot_escape(self):
         schema = ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
         self.assertEqual(
             (),
             validate_frontmatter(
-                {"implementation_services": {"labs/supabase.yml": ["auth"]}}, schema
+                {
+                    "implementation_services": {
+                        "labs/supabase/docker-compose.yml": ["auth"]
+                    }
+                },
+                schema,
             ),
         )
         for source in (
             "labs/nested/supabase.yml",
             "labs/../supabase.yml",
-            "/labs/supabase.yml",
+            "/labs/supabase/docker-compose.yml",
             "Labs/supabase.yml",
             "labs/Supabase.yml",
             "labs/.supabase.yml",
             "labs/supabase.yaml",
             "labs/*.yml",
+            "labs/supabase.yml",
+            "labs/supabase/nested/docker-compose.yml",
         ):
             with self.subTest(source=source):
                 self.assertTrue(

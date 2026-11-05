@@ -1,10 +1,10 @@
 ---
 title: "Supabase LAB Source"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-05"
 created: "2025-11-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2025-11-12"
 
 ## Overview
 
-이 폴더는 독립 LAB Compose 진입점인 [supabase.yml](../supabase.yml)의 공개 입력
+이 폴더는 독립 LAB Compose 진입점인 [docker-compose.yml](docker-compose.yml)의 공개 입력
 계약을 설명합니다. GoTrue를 포함한 13개 Supabase 서비스는 root Compose include에서
 분리되며, `scripts/operations/lab.py`가 검토된 예산·경로·lease 안에서 실행을
 조정하는 유일한 runtime 진입점입니다. 이번 이동은 source 경로만 바꾸며 실행 중인
@@ -22,12 +22,13 @@ container, 비밀값, 데이터 디렉터리 또는 복구 상태를 변경하�
 
 ```text
 labs/
-├── .env                 # LAB controller가 소비하는 단일 실제 public 환경 파일(추적 제외)
-├── supabase.yml         # 독립 Compose 프로젝트
+├── .env                       # LAB controller가 소비하는 단일 실제 public 환경 파일(추적 제외)
 └── supabase/
-    ├── .env.example     # labs/.env에 옮길 public key 안내
+    ├── docker-compose.yml     # 독립 Compose 프로젝트
+    ├── promotion.yaml         # SPEC-0263 승격 manifest
+    ├── .env.example           # labs/.env에 옮길 public key 안내
     ├── naming-exceptions.json # 이 LAB의 정확한 container 이름 예외
-    └── README.md        # 이 문서
+    └── README.md              # 이 문서
 ```
 
 ## Scope
@@ -63,7 +64,7 @@ Vector의 Docker socket bind는 read-only여도 Docker API 권한 경계가 아�
 
 ## Tech Stack
 
-정확한 엔진 버전은 [supabase.yml](../supabase.yml)이 소유합니다.
+정확한 엔진 버전은 [docker-compose.yml](docker-compose.yml)이 소유합니다.
 
 | Service | Technology | Role |
 | :--- | :--- | :--- |
@@ -81,10 +82,13 @@ Vector의 Docker socket bind는 read-only여도 Docker API 권한 경계가 아�
 데이터·그룹·예산 key만 공개 환경 입력입니다. 인증자료는 Docker Secret 파일로만
 참조하며 `.env.example`에 secret placeholder를 두지 않습니다.
 
-### SMTP 단일 원본
+### Secret LAB 사본
 
-공용 SMTP와 Auth는 COMM-002의 `secrets/communication/smtp/smtp_password.txt`를
-함께 사용합니다. Auth는 `source: smtp_password`, `target: supabase_smtp_password`
+11개 secret은 모두 `${LAB_SECRET_DIR:-../../secrets/labs}/supabase/`의 LAB 사본이며
+HOME secret 경로를 읽지 않습니다. SMTP 비밀번호는 HOME COMM-002 값을 복사한 LAB-037
+`secrets/labs/supabase/smtp_password.txt`이고, `supabase_db_password.txt`를 포함한
+나머지 10개는 SUPA-002, SUPA-004~011, AI-001 행이 소유합니다. Auth는
+`source: smtp_password`, `target: supabase_smtp_password`
 별칭으로 기존 container 경로를 유지합니다. COMM-003은 값 없는 퇴역 alias입니다.
 SMTP username, host, account와 Alertmanager 소비는 그대로 유지합니다.
 
@@ -127,7 +131,7 @@ DB URL 및 DB/JWT 입력 결함은 별도이며 SMTP alias나 격리 시험은 �
 
 공개 합성 입력으로 Compose 전체 모델을 렌더하고 이전 13-service graph, container
 name, profile, dependency, image와 wrapper를 비교합니다. 이동 경로, LAB data root,
-local network, 11개 secret source와 read-only input guard만 승인된 차이입니다.
+local network, 11개 LAB secret 사본 경로와 read-only input guard만 승인된 차이입니다.
 실제 image pull, service start, HOME 배포와 데이터 복구는 수행하지 않습니다.
 
 ## Troubleshooting

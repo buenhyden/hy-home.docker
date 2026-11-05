@@ -10,7 +10,7 @@ artifact_id: "GDE-0089"
 parent_ids:
 - "POL-0089"
 implementation_services:
-  labs/jupyterlab.yml:
+  labs/jupyterlab/docker-compose.yml:
   - jupyterlab
 created: "2026-09-21"
 ---
@@ -19,7 +19,7 @@ created: "2026-09-21"
 
 ## Overview
 
-JupyterLab은 root Compose에서 분리된 독립 LAB `labs/jupyterlab.yml`의 single-user notebook
+JupyterLab은 root Compose에서 분리된 독립 LAB `labs/jupyterlab/docker-compose.yml`의 single-user notebook
 server이며 LAB profile `jupyterlab`으로 선택된다(SPEC-0262). root `data-science` profile은 이제
 MLflow와 그 provisioner만 선택하고 JupyterLab을 선택하지 않는다.
 
@@ -33,7 +33,7 @@ JupyterLab LAB을 쓰는 노트북 사용자와 운영자를 위한 문서다. �
 
 ### Current implementation
 
-- [JupyterLab LAB Compose](../../../../labs/jupyterlab.yml)는 pinned library를 가진
+- [JupyterLab LAB Compose](../../../../labs/jupyterlab/docker-compose.yml)는 pinned library를 가진
   scipy-notebook image를 빌드하고 Jupyter Server 하나를 `hy-home-lab-jupyterlab` project의
   `lab_jupyterlab_net`에서 실행한다. HOME network에는 합류하지 않으며 서비스는
   `hy-home.tier: lab`, `traefik.enable: 'false'` label을 가진다.
@@ -85,7 +85,7 @@ token, 시작, kernel, restore 문제에는
 한 명의 승인된 사용자가 notebook·kernel·terminal을 사용한다. 출력과 work 파일에는
 민감 정보가 포함될 수 있으므로 공유·삭제 전에 보존 범위를 확인한다. 기동은
 `python3 scripts/operations/lab.py check|up|down jupyterlab`의 목적·lease·충돌·예산 규칙을
-따르고, `docker compose --env-file labs/.env -f labs/jupyterlab.yml --profile jupyterlab config`
+따르고, `docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab config`
 렌더링만 승인 없이 안전하다. 자원 제한은 서비스 전체에 적용되며 사용자별 quota가 아니다.
 
 Dockerfile의 base 날짜와 직접 library pin은 정확한 Lab·Server·Python 실행 버전이나
@@ -110,7 +110,7 @@ transitive dependency를 증명하지 않는다. 새 build와 rollback 전에 re
 
 ### Common Checks
 
-- `docker compose --env-file labs/.env -f labs/jupyterlab.yml --profile jupyterlab config --quiet`
+- `docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - 승인된 런타임 검사에서 token 없는 요청과 잘못된 token의 거부를 각각 확인한다. health의
   `/api` 응답은 인증·kernel 증거가 아니다.

@@ -20,7 +20,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 
 ## Scope
 
-- **Systems**: 정상 root가 include하는 `infra/**/{compose,docker-compose}*.{yml,yaml}`와 독립 `labs/*.yml` entrypoint.
+- **Systems**: 정상 root가 include하는 `infra/**/{compose,docker-compose}*.{yml,yaml}`와 독립 `labs/*/docker-compose.yml` entrypoint.
 - **Optional overlays**: 아래 typed 계약으로 분류한 추적된 root 서비스 확장 소스. 독립 entrypoint나 새 서비스 inventory가 아니다.
 - **Environments**: HOME, DEV, OPTIONAL, LAB 및 명시적 migration/maintenance 작업. LAB은 root의 profile 선택 대상이 아니다.
 
@@ -63,17 +63,17 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `experience` | capability | 관리자 전용 공유 Storybook 정적 UI 검토와 원격 문서 MCP | `storybook`, `storybook-mcp` | No | 정적 origin startup; `unless-stopped` 재시작 정책은 명시적 중지 전 reboot에도 유지 | current |
 | `graph` | role | 그래프 데이터 저장 | `neo4j` | No | normal service startup | current |
 | `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인; Terrakube state는 `storage`와 함께 선택 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
-| `jupyterlab` | topology | 독립 LAB `labs/jupyterlab.yml`의 token 보호 단일 사용자 notebook(SPEC-0262) | `jupyterlab` | No | `${LAB_DATA_DIR}/jupyterlab/work` bind; host port는 `LAB_HOST_BIND_IP`에만; MLflow endpoint는 선택 입력 | current |
-| `lab-dbt` | topology | 독립 LAB `labs/dbt.yml`의 dbt 변환 작업(SPEC-0262) | `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기; `LAB_DBT_DB_HOST` 승인 전 렌더링 전용 | current |
+| `jupyterlab` | topology | 독립 LAB `labs/jupyterlab/docker-compose.yml`의 token 보호 단일 사용자 notebook(SPEC-0262) | `jupyterlab` | No | `${LAB_DATA_DIR}/jupyterlab/work` bind; host port는 `LAB_HOST_BIND_IP`에만; MLflow endpoint는 선택 입력 | current |
+| `lab-dbt` | topology | 독립 LAB `labs/dbt/docker-compose.yml`의 dbt 변환 작업(SPEC-0262) | `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기; `LAB_DBT_DB_HOST` 승인 전 렌더링 전용 | current |
 | `lab-kafka` | topology | 독립 LAB Kafka 3-broker KRaft 구성·exporter·초기화 | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init` | No | initialization: lab-kafka-init | current |
-| `lab-lakehouse` | topology | 독립 LAB `labs/lakehouse.yml`의 Iceberg batch·유지보수, SQL 조회, streaming 적재, 데이터 품질 검사(SPEC-0262) | `seaweedfs-table-bucket`, `spark`, `trino`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations` | No | initialization: seaweedfs-table-bucket (table bucket·policy·namespace); 기본 `spark` 명령은 namespace 조회만; S3·catalog endpoint 승인 전 렌더링 전용 | current |
-| `lab-locust` | topology | root에서 분리된 Locust master/worker headless 부하 LAB | `lab-locust-master`, `lab-locust-worker` | No | `labs/locust.yml`의 별도 project/network/volume; target 승인 후에만 트래픽 생성 | current |
-| `lab-superset` | topology | 독립 LAB `labs/superset.yml`의 Superset BI 웹; Keycloak native OIDC(SPEC-0262) | `superset-db-provision`, `superset-init`, `superset` | No | initialization: superset-db-provision (role·database), superset-init (migration·role 동기화·`lakehouse` DB 등록); `LAB_SUPERSET_DB_HOST` 승인 전 렌더링 전용 | current |
+| `lab-lakehouse` | topology | 독립 LAB `labs/lakehouse/docker-compose.yml`의 Iceberg batch·유지보수, SQL 조회, streaming 적재, 데이터 품질 검사(SPEC-0262) | `seaweedfs-table-bucket`, `spark`, `trino`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations` | No | initialization: seaweedfs-table-bucket (table bucket·policy·namespace); 기본 `spark` 명령은 namespace 조회만; S3·catalog endpoint 승인 전 렌더링 전용 | current |
+| `lab-locust` | topology | root에서 분리된 Locust master/worker headless 부하 LAB | `lab-locust-master`, `lab-locust-worker` | No | `labs/locust/docker-compose.yml`의 별도 project/network/volume; target 승인 후에만 트래픽 생성 | current |
+| `lab-superset` | topology | 독립 LAB `labs/superset/docker-compose.yml`의 Superset BI 웹; Keycloak native OIDC(SPEC-0262) | `superset-db-provision`, `superset-init`, `superset` | No | initialization: superset-db-provision (role·database), superset-init (migration·role 동기화·`lakehouse` DB 등록); `LAB_SUPERSET_DB_HOST` 승인 전 렌더링 전용 | current |
 | `lakehouse` | capability | SeaweedFS S3·Iceberg REST catalog 저장소; 엔진은 LAB `lab-lakehouse`(SPEC-0262) | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `mailpit` | No | initialization: mng-pg-init; monitoring initialization: mng-pg-monitor-provision | current |
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `mail-dev` | capability | 개발 SMTP 캡처 | `mailpit` | No | normal service startup | current |
-| `mail-server` | topology | 독립 LAB `labs/stalwart.yml`의 자체 완결 메일 서버; relay 없음, SMTP는 LAB network에만, 관리 UI는 `LAB_HOST_BIND_IP` loopback 게시(SPEC-0262) | `stalwart`, `stalwart-config` | No | initialization: stalwart-config (도메인·listener·relay 금지 plan 적용; listener 변경은 재시작 후) | current |
+| `mail-server` | topology | 독립 LAB `labs/stalwart/docker-compose.yml`의 자체 완결 메일 서버; relay 없음, SMTP는 LAB network에만, 관리 UI는 `LAB_HOST_BIND_IP` loopback 게시(SPEC-0262) | `stalwart`, `stalwart-config` | No | initialization: stalwart-config (도메인·listener·relay 금지 plan 적용; listener 변경은 재시작 후) | current |
 | `messaging` | domain | Kafka broker·schema·connect·REST·관리 UI | `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
 | `messaging-admin` | role | Kafka 관리 UI와 직접 종속 서비스 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafbat-ui`, `kafka-exporter` | No | normal service startup | current |
 | `messaging-broker` | role | Kafka 단일 broker·초기화·exporter | `kafka-1`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
@@ -98,13 +98,13 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `quality-results` | capability | 공용 시험 결과 `perf_db`와 명시적 one-shot provision | `dev-pg`, `dev-perf-provision`, `dev-pg-monitor-provision`, `dev-pg-exporter` | No | initialization: dev-perf-provision; HOME 실행·프로젝트 로그인 발급은 별도 승인; monitoring initialization: dev-pg-monitor-provision | current |
 | `qdrant` | capability | vector 검색 저장소 | `qdrant` | No | normal service startup | current |
 | `registry` | role | 개발 컨테이너 registry | `registry` | No | normal service startup | current |
-| `sast` | topology | 독립 LAB `labs/sonarqube.yml`의 소스 정적 분석(SPEC-0262) | `sonarqube` | No | `${LAB_DATA_DIR}/sonarqube` bind; HOME mng-pg는 `LAB_SONARQUBE_DB_HOST` 승인 전 렌더링 전용 | current |
+| `sast` | topology | 독립 LAB `labs/sonarqube/docker-compose.yml`의 소스 정적 분석(SPEC-0262) | `sonarqube` | No | `${LAB_DATA_DIR}/sonarqube` bind; HOME mng-pg는 `LAB_SONARQUBE_DB_HOST` 승인 전 렌더링 전용 | current |
 | `seaweedfs` | capability | 분산 파일·S3 호환 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `secrets` | role | OpenBao secret 관리·Agent | `openbao`, `openbao-agent` | No | normal service startup | current |
 | `security` | domain | OpenBao 보안 기반 | `openbao`, `openbao-agent` | No | normal service startup | current |
 | `storage` | role | HOME 단일 object 저장소와 bucket 초기화 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `storage-seaweedfs` | role | SeaweedFS object/file 저장 역할 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
-| `supabase` | topology | 정상 root와 분리된 자체 호스팅 backend LAB | `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor` | No | `labs/supabase.yml`의 별도 project/network/state; `lab.py` 목적·lease·preflight 필요 | current |
+| `supabase` | topology | 정상 root와 분리된 자체 호스팅 backend LAB | `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor` | No | `labs/supabase/docker-compose.yml`의 별도 project/network/state; `lab.py` 목적·lease·preflight 필요 | current |
 | `surrealdb` | capability | 독립 multi-model 데이터 저장소 | `surrealdb` | No | normal service startup | current |
 | `testing` | automation | k6 이미지 확인용 단발 job; root 기본 명령은 `version` | `k6` | No | 비트래픽 version job; 부하는 승인된 격리 runner에서만 실행 | current |
 | `tooling` | capability | 개발 registry; SonarQube는 LAB `sast`(SPEC-0262) | `registry` | No | normal service startup | current |
@@ -235,20 +235,20 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 | --- | --- |
 | nginx with core/local/dev | 기본 ingress 80/443 중복을 해소하거나 gateway 하나만 선택 |
 | dedicated-valkey with application profiles | HOST·secret 매핑도 전환; profile만 추가하면 broker가 자동 선택되지 않음 |
-| lab-kafka | `labs/kafka-cluster.yml`의 별도 project·cluster ID·data directory가 필요하다. 3 broker, replication factor 3, `min.insync.replicas=2`로 같은 host의 broker 하나 손실을 견디지만 host HA가 아니다. HOME `kafka-1`은 replication factor 1의 단일 broker이며 장애 내성이 없다 |
-| lab-locust | `labs/locust.yml`의 별도 project·network·scenario/result volume을 사용하며 root `testing` profile에 포함되지 않음 |
+| lab-kafka | `labs/kafka-cluster/docker-compose.yml`의 별도 project·cluster ID·data directory가 필요하다. 3 broker, replication factor 3, `min.insync.replicas=2`로 같은 host의 broker 하나 손실을 견디지만 host HA가 아니다. HOME `kafka-1`은 replication factor 1의 단일 broker이며 장애 내성이 없다 |
+| lab-locust | `labs/locust/docker-compose.yml`의 별도 project·network·scenario/result volume을 사용하며 root `testing` profile에 포함되지 않음 |
 | opensearch with opensearch-cluster | 서로 다른 Compose project의 대체 토폴로지; LAB은 별도 network·state·credential을 사용 |
 | dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
 | testing | root는 k6 버전만 확인; 격리 runner의 부하·샘플 데이터 생성은 대상과 실행량을 별도 승인 |
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
-| tooling | root는 registry만 선택; SonarQube는 LAB `sast` profile로 `labs/sonarqube.yml`에서만 선택; update/IaC/load 작업 제외 |
-| supabase LAB with surrealdb/notebook/admin | `labs/supabase.yml`은 정상 root와 분리되지만 같은 host의 loopback port와 자원을 공유한다. SurrealDB host8000을 별도 활성화하면 Supabase Kong과 충돌 여부를 controller preflight로 확인한 뒤 binding을 조정한다. |
+| tooling | root는 registry만 선택; SonarQube는 LAB `sast` profile로 `labs/sonarqube/docker-compose.yml`에서만 선택; update/IaC/load 작업 제외 |
+| supabase LAB with surrealdb/notebook/admin | `labs/supabase/docker-compose.yml`은 정상 root와 분리되지만 같은 host의 loopback port와 자원을 공유한다. SurrealDB host8000을 별도 활성화하면 Supabase Kong과 충돌 여부를 controller preflight로 확인한 뒤 binding을 조정한다. |
 | mlops / data-science / analytics-engineering / cdc / contract-testing / bi | 도구 metadata는 `mng-pg`·`mng-pg-init`을 사용한다. dbt·CDC 업무 원천은 `dev-pg`·`dev-platform-provision`을 요구한다. dbt·Superset LAB은 HOME network에 합류하지 않으므로 같은 profile 이름의 root 선택은 그 DB를 LAB에 도달 가능하게 만들지 않는다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
 | cdc with dev-pg | 새 원천의 publication·slot·offset·snapshot은 이전 mng-pg LSN에서 이어지지 않는다. connector 등록과 writer/reader 전환은 별도 승인 후 시행한다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
 | crawl4ai | internal network만 사용하고 외부로는 `crawl4ai-egress`만 통과; 소비자는 승인된 변경으로 `crawl4ai_net`에 합류 |
 | contract-testing | UI·API는 plain HTTP basic auth이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; heartbeat만 공개 |
-| lakehouse | 엔진은 `labs/lakehouse.yml` LAB에만 있고 HOME S3·catalog는 `LAB_LAKEHOUSE_*` 입력으로만 찾는다. `spark`는 one-shot 작업이며 `up`은 namespace 조회만 수행; 테이블 쓰기·`rewrite_data_files`·`expire_snapshots`는 `run --rm spark`로 대상 table을 명시. `trino`는 인증 없는 HTTP API이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음. `flink-*`도 같으며 REST JAR 업로드는 끔(`web.submit.enable=false`); Flink는 HOME `kafka_net`에 합류하지 않으며 Kafka에는 승인된 도달 가능 endpoint가 필요. `great-expectations`는 one-shot이며 기본 명령은 suite 목록만 출력 |
+| lakehouse | 엔진은 `labs/lakehouse/docker-compose.yml` LAB에만 있고 HOME S3·catalog는 `LAB_LAKEHOUSE_*` 입력으로만 찾는다. `spark`는 one-shot 작업이며 `up`은 namespace 조회만 수행; 테이블 쓰기·`rewrite_data_files`·`expire_snapshots`는 `run --rm spark`로 대상 table을 명시. `trino`는 인증 없는 HTTP API이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음. `flink-*`도 같으며 REST JAR 업로드는 끔(`web.submit.enable=false`); Flink는 HOME `kafka_net`에 합류하지 않으며 Kafka에는 승인된 도달 가능 endpoint가 필요. `great-expectations`는 one-shot이며 기본 명령은 suite 목록만 출력 |
 | bi | Superset LAB은 gateway route 없이 `LAB_HOST_BIND_IP`의 `LAB_SUPERSET_HOST_PORT`에만 게시; native OIDC redirect의 LAB origin 등록은 미결정; 가입 사용자는 `Gamma`(데이터 접근 없음) |
 | api-mock | 인증 없는 admin API가 있으므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; 컨테이너 소비자는 project default network에서 `wiremock:8080` 사용 |
 | experience | Storybook은 `internal: true`인 `experience_ingress_net`에만 연결; Traefik만 이 망과 `edge_net`을 함께 사용. 원격 문서 MCP `storybook-mcp`는 `edge_net`에서 Keycloak issuer를 읽고 Traefik TLS 뒤에서 자기 URL을 audience로 가진 `/admins` bearer token만 받음. HOME 기본 선택에는 포함하지 않음. 브라우저는 기존 `/admins` 인증을 먼저 수행 |
@@ -304,20 +304,20 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | Airflow | 예약 batch·backfill DAG | DAG, Flower | 11 / 9984 | `airflow-dags`·`-config`·`-plugins`·`-logs`, `airflow-valkey-data` | HOME 유지 | 예약 DAG가 없어질 때 | 실행 |
 | n8n | 외부 이벤트·webhook·알림 | workflow | 6 / 5120 | `n8n-data`, task runner·Valkey volume | HOME 유지 | 이벤트 workflow가 없어질 때 | 실행 |
 | Mailpit | 개발 SMTP 캡처 | 앱 메일 시험 | 1 / 512 | `mailpit-data` | DEV on-demand | 메일 시험이 없을 때 | 미실행 |
-| Stalwart | 실제 메일 서버 | 이름 있는 소비자 없음 | 1.5 / 768 | `stalwart-data`(SPEC-0262 이후 `${LAB_DATA_DIR}/stalwart/data`) | 2026-11-04 LAB `labs/stalwart.yml`로 이전 | 메일 수신 계획이 없으면 퇴역 검토 | 미실행 |
+| Stalwart | 실제 메일 서버 | 이름 있는 소비자 없음 | 1.5 / 768 | `stalwart-data`(SPEC-0262 이후 `${LAB_DATA_DIR}/stalwart/data`) | 2026-11-04 LAB `labs/stalwart/docker-compose.yml`로 이전 | 메일 수신 계획이 없으면 퇴역 검토 | 미실행 |
 | Kafka `kafka-1`, Schema Registry, Connect, REST Proxy, kafbat UI | 단일 broker 메시징·CDC | Debezium Avro connector, kafbat | 8 / 6144 | `kafka-1-data`, `kafka-connect-data` | OPTIONAL `messaging`·`cdc`; Avro 소비자가 있으므로 Schema Registry 유지 | CDC·메시징 소비자가 없어질 때 | 실행 |
-| Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | 8 / 7936 | `flink-checkpoints`(SPEC-0262 이후 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`); 데이터는 object store | 2026-11-04 LAB `labs/lakehouse.yml`로 이전; one-shot·예산 검사 | 기능·학습 시나리오가 없을 때 선택하지 않음 | 미실행 |
-| Superset | BI | 운영자 | 2.5 / 1792 | MNG PostgreSQL DB | 2026-11-04 LAB `labs/superset.yml`로 이전 | 대시보드 소비자가 없을 때 | 미실행 |
+| Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | 8 / 7936 | `flink-checkpoints`(SPEC-0262 이후 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`); 데이터는 object store | 2026-11-04 LAB `labs/lakehouse/docker-compose.yml`로 이전; one-shot·예산 검사 | 기능·학습 시나리오가 없을 때 선택하지 않음 | 미실행 |
+| Superset | BI | 운영자 | 2.5 / 1792 | MNG PostgreSQL DB | 2026-11-04 LAB `labs/superset/docker-compose.yml`로 이전 | 대시보드 소비자가 없을 때 | 미실행 |
 | Neo4j | graph | 이름 있는 소비자 없음 | 1 / 512 | `neo4j-data` | OPTIONAL | graph 시나리오가 없으면 퇴역 검토 | 미실행 |
 | Supabase LAB (13 services) | BaaS 실험 | 이름 있는 소비자 없음 | 14.5 / 10496 | `${LAB_DATA_DIR}/supabase` bind | LAB; `lab.py`로만 실행 | BaaS 시나리오가 없으면 퇴역 검토 | 미실행 |
 | RedisInsight | Valkey UI | 운영자 | 1 / 512 | `redisinsight-data`(연결 정의) | OPTIONAL `admin` | Valkey 조회 수요가 없을 때 | 실행 |
 | Terrakube | IaC server | 운영자 | 4 / 3072 | MNG PostgreSQL DB | DEV; 상주 금지 | IaC 실습이 없을 때 | 미실행 |
-| JupyterLab, MLflow | data science·실험 추적 | MLflow는 JupyterLab | 3.5 / 3328 | MNG PostgreSQL DB, object store artifact | MLflow OPTIONAL; JupyterLab은 2026-11-04 LAB `labs/jupyterlab.yml`로 이전 | 실험 추적 수요가 없을 때 | 미실행 |
+| JupyterLab, MLflow | data science·실험 추적 | MLflow는 JupyterLab | 3.5 / 3328 | MNG PostgreSQL DB, object store artifact | MLflow OPTIONAL; JupyterLab은 2026-11-04 LAB `labs/jupyterlab/docker-compose.yml`로 이전 | 실험 추적 수요가 없을 때 | 미실행 |
 | Open Notebook, SurrealDB | notebook | 이름 있는 소비자 없음 | 1.5 / 768 | `open-notebook-data`, `surrealdb-data` | OPTIONAL | 소비자가 없으면 퇴역 검토 | 미실행 |
 | Crawl4AI | crawling API | 없음 | 2 / 4096 | 없음 | OPTIONAL; 소비자가 생기지 않으면 퇴역 검토 | 다음 검토까지 소비자가 없을 때 | 미실행 |
 | ComfyUI | GPU 이미지 생성 | HOME `ai-image` | 2 / 4096 | `comfyui-models` 등 7개 volume | HOME 유지; GPU를 Ollama와 공유 | 이미지 생성 수요가 없을 때 | 실행 |
-| Pact Broker, SonarQube | contract·SAST | 이름 있는 소비자 없음 | 3.5 / 2816 | `sonarqube-*` volume, MNG PostgreSQL DB | Pact Broker OPTIONAL; SonarQube는 2026-11-04 LAB `labs/sonarqube.yml`로 이전 | 계약·SAST 소비자가 없을 때 | 미실행 |
-| 독립 `labs/*.yml` | HA·replica·backend·부하 실습 | 실습 목적별 | LAB별 렌더 | `LAB_DATA_DIR` 아래 LAB별 경로 | LAB; `lab.py`로만 실행 | 실습 목적이 없어지면 해당 LAB 퇴역 | `hy-home-lab-*` project 없음 |
+| Pact Broker, SonarQube | contract·SAST | 이름 있는 소비자 없음 | 3.5 / 2816 | `sonarqube-*` volume, MNG PostgreSQL DB | Pact Broker OPTIONAL; SonarQube는 2026-11-04 LAB `labs/sonarqube/docker-compose.yml`로 이전 | 계약·SAST 소비자가 없을 때 | 미실행 |
+| 독립 `labs/*/docker-compose.yml` | HA·replica·backend·부하 실습 | 실습 목적별 | LAB별 렌더 | `LAB_DATA_DIR` 아래 LAB별 경로 | LAB; `lab.py`로만 실행 | 실습 목적이 없어지면 해당 LAB 퇴역 | `hy-home-lab-*` project 없음 |
 
 LAB 안의 exporter(`pg-*-exporter`, `valkey-cluster-exporter`, `lab-kafka-exporter`)는 LAB
 내부 network에만 있으며 HOME Prometheus가 수집하지 않는다(`test_lab_isolation`). 실습 중
@@ -343,7 +343,7 @@ source·문서·secret을 함께 제거한다.
 ### Traceability
 
 - [Workspace catalog](../../README.md)
-- [Independent LAB entrypoints](../../../../labs/postgresql-ha.md)
+- [Independent LAB entrypoints](../../../../labs/postgresql-ha/README.md)
 - [Supabase LAB source](../../../../labs/supabase/README.md)
 - Convergence specification: SPEC-0180 (retired)
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
@@ -366,7 +366,7 @@ public synthetic env를 쓰면 `--env-file <prepared-public-env>`와 HOME에 겹
 정리한다.
 실행 전 LAB 전용 변수와 secret 참조는 `labs/.env.example`, LAB별 README 및
 `secrets/labs/` 계약을 확인한다. 기존 canonical secret을 공유하는 Supabase는
-[Compose secret declarations](../../../../labs/supabase.yml)의 exact 11개 상대 경로와
+[Compose secret declarations](../../../../labs/supabase/docker-compose.yml)의 exact 11개 상대 경로와
 [source README](../../../../labs/supabase/README.md)의 `LAB_SECRETS_GID` 계약을 사용하며
 값을 LAB로 복제하지 않는다. 두 번째는 정상
 root에 포함된 infra Compose와 독립 LAB Compose의 profile 이름·서비스 표 일치,

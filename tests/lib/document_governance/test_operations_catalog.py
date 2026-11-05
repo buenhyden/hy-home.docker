@@ -1341,8 +1341,8 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
 
     def test_standalone_lab_profile_is_catalogued_but_excluded_from_root(self) -> None:
         root = self._repo()
-        lab = root / "labs/cluster.yml"
-        lab.parent.mkdir()
+        lab = root / "labs/cluster/docker-compose.yml"
+        lab.parent.mkdir(parents=True)
         lab.write_text(
             "name: isolated-lab\nservices:\n  lab-node:\n    profiles: [lab-cluster]\n",
             encoding="utf-8",
@@ -1360,12 +1360,14 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
         self.assertEqual([], self._findings(root))
         compose = root / "docker-compose.yml"
         compose.write_text(
-            compose.read_text(encoding="utf-8") + "  - labs/cluster.yml\n",
+            compose.read_text(encoding="utf-8")
+            + "  - labs/cluster/docker-compose.yml\n",
             encoding="utf-8",
         )
         self.assertTrue(
             any(
-                code == "compose-include-drift" and "labs/cluster.yml" in message
+                code == "compose-include-drift"
+                and "labs/cluster/docker-compose.yml" in message
                 for code, _, message in self._findings(root)
             )
         )
@@ -1486,7 +1488,7 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
         for relative in (
             "infra/new/Dockerfile",
             "infra/new/compose.yml",
-            "labs/new.yml",
+            "labs/new/docker-compose.yml",
         ):
             with self.subTest(path=relative):
                 root = self._conftest_repo()
@@ -2860,9 +2862,9 @@ implementation_services:
 
     def test_lab_guide_binding_is_valid_without_adding_lab_to_home_inventory(self):
         root = self._repo()
-        lab_path = pathlib.PurePosixPath("labs/cluster.yml")
+        lab_path = pathlib.PurePosixPath("labs/cluster/docker-compose.yml")
         lab = root / lab_path
-        lab.parent.mkdir()
+        lab.parent.mkdir(parents=True)
         lab.write_text(
             "name: hy-home-lab-cluster\nservices:\n  lab-node:\n"
             "    profiles: [lab-cluster]\n    image: example/node:1.0.0\n"
@@ -2872,9 +2874,9 @@ implementation_services:
             guide.read_text().replace(
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]",
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]\n"
-                "  labs/cluster.yml: [lab-node]",
+                "  labs/cluster/docker-compose.yml: [lab-node]",
             )
-            + "[LAB Compose](../../../../labs/cluster.yml)\n"
+            + "[LAB Compose](../../../../labs/cluster/docker-compose.yml)\n"
         )
         paths = (*self.paths, lab_path)
         with mock.patch.object(
@@ -2890,7 +2892,8 @@ implementation_services:
             )
             self.assertNotIn((str(lab_path), "lab-node"), sources)
             self.assertNotIn(
-                "labs/cluster.yml", operations_catalog.render_service_inventory(root)
+                "labs/cluster/docker-compose.yml",
+                operations_catalog.render_service_inventory(root),
             )
             self.assertEqual(set(), self._codes(root))
             guide.write_text(guide.read_text().replace("[lab-node]", "[removed-node]"))
@@ -2898,17 +2901,17 @@ implementation_services:
 
     def test_lab_binding_rejects_malformed_or_overlay_services(self):
         root = self._repo()
-        lab_path = pathlib.PurePosixPath("labs/cluster.yml")
+        lab_path = pathlib.PurePosixPath("labs/cluster/docker-compose.yml")
         lab = root / lab_path
-        lab.parent.mkdir()
+        lab.parent.mkdir(parents=True)
         guide = root / self.guide
         guide.write_text(
             guide.read_text().replace(
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]",
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]\n"
-                "  labs/cluster.yml: [lab-node]",
+                "  labs/cluster/docker-compose.yml: [lab-node]",
             )
-            + "[LAB Compose](../../../../labs/cluster.yml)\n"
+            + "[LAB Compose](../../../../labs/cluster/docker-compose.yml)\n"
         )
         paths = (*self.paths, lab_path)
         for model in (
@@ -2927,18 +2930,18 @@ implementation_services:
 
     def test_lab_binding_does_not_follow_source_symlink(self):
         root = self._repo()
-        lab_path = pathlib.PurePosixPath("labs/cluster.yml")
+        lab_path = pathlib.PurePosixPath("labs/cluster/docker-compose.yml")
         lab = root / lab_path
-        lab.parent.mkdir()
+        lab.parent.mkdir(parents=True)
         lab.symlink_to(root / self.compose)
         guide = root / self.guide
         guide.write_text(
             guide.read_text().replace(
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]",
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]\n"
-                "  labs/cluster.yml: [database]",
+                "  labs/cluster/docker-compose.yml: [database]",
             )
-            + "[LAB Compose](../../../../labs/cluster.yml)\n"
+            + "[LAB Compose](../../../../labs/cluster/docker-compose.yml)\n"
         )
         paths = (*self.paths, lab_path)
         with self.assertRaises(operations_catalog.OperationsAuthorityError):
@@ -2948,17 +2951,17 @@ implementation_services:
 
     def test_bound_lab_source_requires_every_declared_service_owner(self):
         root = self._repo()
-        lab_path = pathlib.PurePosixPath("labs/cluster.yml")
+        lab_path = pathlib.PurePosixPath("labs/cluster/docker-compose.yml")
         lab = root / lab_path
-        lab.parent.mkdir()
+        lab.parent.mkdir(parents=True)
         guide = root / self.guide
         guide.write_text(
             guide.read_text().replace(
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]",
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]\n"
-                "  labs/cluster.yml: [lab-node]",
+                "  labs/cluster/docker-compose.yml: [lab-node]",
             )
-            + "[LAB Compose](../../../labs/cluster.yml)\n"
+            + "[LAB Compose](../../../labs/cluster/docker-compose.yml)\n"
         )
         paths = (*self.paths, lab_path)
         for extra, expected in (
@@ -2985,17 +2988,17 @@ implementation_services:
 
     def test_untracked_lab_binding_is_rejected(self):
         root = self._repo()
-        lab = root / "labs/cluster.yml"
-        lab.parent.mkdir()
+        lab = root / "labs/cluster/docker-compose.yml"
+        lab.parent.mkdir(parents=True)
         lab.write_text("services: {lab-node: {profiles: [lab-cluster]}}\n")
         guide = root / self.guide
         guide.write_text(
             guide.read_text().replace(
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]",
                 "  infra/04-data/example/docker-compose.yml: [database, exporter]\n"
-                "  labs/cluster.yml: [lab-node]",
+                "  labs/cluster/docker-compose.yml: [lab-node]",
             )
-            + "[LAB Compose](../../../labs/cluster.yml)\n"
+            + "[LAB Compose](../../../labs/cluster/docker-compose.yml)\n"
         )
         self.assertIn("service-operations-removed", self._codes(root))
 

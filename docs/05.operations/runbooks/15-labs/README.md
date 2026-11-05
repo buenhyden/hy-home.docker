@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 런북"
-version: "0.2.0"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 layer: "operations"
 ---
 
@@ -24,11 +24,11 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [Valkey Cluster Health Runbook](0022-valkey-cluster.md) | `RUN-0022` | LAB 전용 Valkey Cluster(`labs/valkey-cluster.yml`)의 정적 점검, 백업 계획, 격리 복원 절차를 다룬다. |
+| [Valkey Cluster Health Runbook](0022-valkey-cluster.md) | `RUN-0022` | LAB 전용 Valkey Cluster(`labs/valkey-cluster/docker-compose.yml`)의 정적 점검, 백업 계획, 격리 복원 절차를 다룬다. |
 | [Cassandra Health and Recovery Triage Runbook](0025-cassandra.md) | `RUN-0025` | 독립 Cassandra 단일 노드 LAB의 정적 점검과 승인 후 read-only triage 순서다. 이번 변경에서 실제 서비스·데이터를 실행하지 않았다. |
 | [CouchDB Cluster Triage Runbook](0026-couchdb.md) | `RUN-0026` | 범위: LAB 전용 CouchDB 3노드 cluster의 상태, cluster-init 결과, membership, 격리 network의 route 한계를 점검한다. 이 런북은 현재 compose에 맞는 점검 순서와, 별도 승인 후 수행할 fresh  |
 | [MongoDB Replica Set Triage Runbook](0027-mongodb.md) | `RUN-0027` | 범위: LAB 전용 MongoDB replica set의 상태, init job 결과, Mongo Express 접속을 파괴적 데이터 작업 없이 점검한다. 이 런북은 현재 compose에 맞는 점검 순서와, 별도 승인 후 수행할 oplog-consis |
-| [Supabase Stack Health Runbook](0029-supabase.md) | `RUN-0029` | 이 런북은 health triage와 별도 승인 후 수행할 coherent Supabase backup의 격리 복원 rehearsal 계약을 제공한다. 정상 root와 분리된 `labs/supabase.yml` LAB의 controller prefli |
+| [Supabase Stack Health Runbook](0029-supabase.md) | `RUN-0029` | 이 런북은 health triage와 별도 승인 후 수행할 coherent Supabase backup의 격리 복원 rehearsal 계약을 제공한다. 정상 root와 분리된 `labs/supabase/docker-compose.yml` LAB의 controller prefli |
 | [PostgreSQL Cluster Health and Recovery Triage Runbook](0031-postgresql-cluster.md) | `RUN-0031` | 범위: LAB 전용 PostgreSQL HA cluster의 상태, etcd quorum 증상, HAProxy routing, Patroni leadership, init job 상태, exporter readiness를 파괴적 데이터 작업 없이 점검 |
 | [Locust Recovery Runbook](0062-locust.md) | `RUN-0062` | Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다. 시나리오 파일 복구와 승인된 upgrade canary도 다룬다. |
 | [SonarQube Runbook](0066-sonarqube.md) | `RUN-0066` | SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다. |
@@ -37,6 +37,9 @@ layer: "operations"
 | [dbt Recovery Runbook](0090-dbt.md) | `RUN-0090` | dbt LAB의 프로비저닝 실패, 연결·권한 오류, 잘못된 모델 실행, 크리덴셜 교체를 다루는 런북이다. |
 | [Lakehouse Recovery Runbook](0094-lakehouse.md) | `RUN-0094` | lakehouse LAB의 Spark·Trino·Flink·Great Expectations 실패, 카탈로그 오류, 접근 거부, 테이블 롤백을 다루는 런북이다. |
 | [Superset Runbook](0097-superset.md) | `RUN-0097` | Superset LAB의 최초 설정, 로그인 실패, 웹 서버 비정상, 업그레이드를 다루는 런북이다. |
+| [LAB Promotion Runbook](0107-lab-promotion.md) | `RUN-0107` | readiness 검사 실행과 `add`, `replace-same`, `replace-substitute` 승격 절차를 다룬다. |
+| [Kafka Cluster LAB Runbook](0108-kafka-cluster.md) | `RUN-0108` | Kafka LAB의 정적 점검, `lab.py` 기동·정지, broker 진단과 복구 계획이다. |
+| [OpenSearch Cluster LAB Runbook](0109-opensearch-cluster.md) | `RUN-0109` | OpenSearch LAB의 정적 점검, `lab.py` 기동·정지, cluster 진단과 복구 계획이다. |
 
 ## Usage
 

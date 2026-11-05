@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 현재 source 구성을 데이터 보호, 보안, 자원, 수명주기 통제와 독립적으로 검증 가능한 운영 통제에 묶는다. 대상은 `labs/valkey-cluster.yml`의 LAB 전용 Valkey Cluster이다.
+이 정책은 현재 source 구성을 데이터 보호, 보안, 자원, 수명주기 통제와 독립적으로 검증 가능한 운영 통제에 묶는다. 대상은 `labs/valkey-cluster/docker-compose.yml`의 LAB 전용 Valkey Cluster이다.
 
 ## Scope
 
@@ -25,7 +25,7 @@ created: "2026-05-17"
 
 ## Rules
 
-- `labs/valkey-cluster.yml` 독립 Compose project와 정확한 `valkey-cluster` profile로만 stack을 선택한다. root include에는 넣지 않는다.
+- `labs/valkey-cluster/docker-compose.yml` 독립 Compose project와 정확한 `valkey-cluster` profile로만 stack을 선택한다. root include에는 넣지 않는다.
 - 여섯 개 data volume을 모두 분리해서 유지한다. 두 node가 한 디렉터리를
   가리키게 하거나 recovery target에서 live `nodes.conf` identity를 재사용하지
   않는다.
@@ -79,7 +79,7 @@ lifecycle 변경 이후, 그리고 보존되는 동안 최소 연 1회 검토한
 
 ### Traceability
 
-- Runtime source: [Valkey Cluster Compose](../../../../labs/valkey-cluster.yml).
+- Runtime source: [Valkey Cluster Compose](../../../../labs/valkey-cluster/docker-compose.yml).
 - Artifact: `POL-0022`; parent: `AD-0004`.
 - Runtime authority는 연결된 Compose/source 파일에 남는다; 정확한 pin도 그 파일에 있다.
 

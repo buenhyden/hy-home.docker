@@ -112,6 +112,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_locust_telemetry",
                 "tests.validation.test_lab_isolation",
                 "tests.validation.test_lab_controller",
+                "tests.validation.test_lab_layout",
                 "tests.validation.test_storybook_image",
                 "tests.validation.test_crawl4ai_egress",
                 "tests.validation.test_crawl4ai_adapter",

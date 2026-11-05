@@ -1,0 +1,55 @@
+# SPEC-0263 promotion manifest for the opensearch-cluster LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+kind: replace-same
+target:
+  folder: infra/04-data/opensearch/
+  profile: opensearch
+replaces:
+- compose_path: infra/04-data/opensearch/docker-compose.yml
+  services:
+  - opensearch
+  - opensearch-dashboards
+  consumers:
+  - infra/01-gateway/traefik/dynamic/middleware.yml
+  - infra/06-observability/prometheus/config/prometheus.yml
+  - infra/06-observability/prometheus/config/prometheus.dev.yml
+  - infra/06-observability/docker-compose.yml
+integrations:
+- kind: gateway-route
+  owner: infra/01-gateway/traefik/
+- kind: observability
+  owner: infra/06-observability/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-012
+  destination: secrets/data/opensearch/opensearch_admin_password.txt
+- row: LAB-013
+  destination: secrets/data/opensearch/opensearch_dashboard_password.txt
+- row: LAB-014
+  destination: secrets/data/opensearch/opensearch_exporter_password.txt
+- row: LAB-015
+  destination: secrets/data/opensearch/opensearch_security_cookie.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0109-opensearch-cluster.md
+  runbook: docs/05.operations/runbooks/15-labs/0109-opensearch-cluster.md
+  guide_target: docs/05.operations/guides/05-databases-and-storage/
+  runbook_target: docs/05.operations/runbooks/05-databases-and-storage/
+resources:
+  services:
+    lab-opensearch-dashboards:
+      cpus: 1.0
+      memory_mib: 512
+    opensearch-node1:
+      cpus: 2.0
+      memory_mib: 2048
+    opensearch-node2:
+      cpus: 2.0
+      memory_mib: 2048
+    opensearch-node3:
+      cpus: 2.0
+      memory_mib: 2048
+  disk_gib:
+    data: 30
+    images: 3

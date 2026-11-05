@@ -23,6 +23,7 @@ from scripts.lib.ops.smtp_contract import (
     source_hashes,
     verify_proof,
 )
+from scripts.lib.ops.smtp_public_source import LAB_SMTP_SOURCE_FILE
 
 NOW = datetime(2026, 10, 10, 10, 0, tzinfo=UTC)
 ROOT = Path(__file__).parents[3]
@@ -119,24 +120,20 @@ class SMTPProofTests(unittest.TestCase):
                 }
             )
         )
-        lab = self.root / "labs/supabase.yml"
+        lab = self.root / "labs/supabase/docker-compose.yml"
         lab.parent.mkdir(parents=True, exist_ok=True)
         lab.write_text(
             yaml.safe_dump(
                 {
                     "name": "hy-home-lab-supabase",
-                    "secrets": {
-                        "smtp_password": {
-                            "file": "../secrets/communication/smtp/smtp_password.txt"
-                        }
-                    },
+                    "secrets": {"smtp_password": {"file": LAB_SMTP_SOURCE_FILE}},
                     "services": {
                         "auth": {
                             "profiles": ["supabase"],
                             "image": "supabase/gotrue:v2.197.0",
                             "labels": {"hy-home.tier": "lab"},
                             "extends": {
-                                "file": "../infra/common-optimizations.yml",
+                                "file": "../../infra/common-optimizations.yml",
                                 "service": "template-infra-med",
                             },
                             "entrypoint": [

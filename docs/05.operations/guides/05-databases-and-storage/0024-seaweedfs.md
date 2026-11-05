@@ -45,7 +45,7 @@ rehearsal로 구성을 확인하는 것이다.
 `seaweedfs-buckets`를 정의한다. profile `seaweedfs`와
 `storage-seaweedfs`가 네 service와 `seaweedfs-buckets`를 모두 선택하고, root `lakehouse`
 profile도 이 SeaweedFS 서비스만 선택한다. table bucket 작업 `seaweedfs-table-bucket`은
-SPEC-0262에서 독립 LAB [`labs/lakehouse.yml`](../../../../labs/lakehouse.yml)로 옮겨졌다
+SPEC-0262에서 독립 LAB [`labs/lakehouse/docker-compose.yml`](../../../../labs/lakehouse/docker-compose.yml)로 옮겨졌다
 ([Lakehouse guide](../15-labs/0094-lakehouse.md)). 각 service는 UID 1000으로
 [`config/hyhome-seaweedfs.sh`](../../../../infra/04-data/seaweedfs/config/hyhome-seaweedfs.sh)를
 통해 시작한다. 이 script는 `security.toml`(volume과 filer JWT key, gRPC

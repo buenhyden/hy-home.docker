@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 import importlib.util
 import json
+import os
 import pathlib
 import subprocess
 import tempfile
@@ -76,13 +77,14 @@ class LabSourceContainmentTests(unittest.TestCase):
         family = ROOT / "labs"
         for name in ("postgresql-ha", "valkey-cluster", "locust"):
             with self.subTest(lab=name):
-                self.assertEqual(f"labs/{name}.yml", lab.lab_file(name))
-                source = family / f"{name}.yml"
+                self.assertEqual(f"labs/{name}/docker-compose.yml", lab.lab_file(name))
+                source = family / name / "docker-compose.yml"
+                base = source.parent
                 document = yaml.safe_load(source.read_text())
                 self.assertTrue(document["services"])
                 for service in document["services"].values():
                     if "build" in service:
-                        context = (family / service["build"]["context"]).resolve()
+                        context = (base / service["build"]["context"]).resolve()
                         self.assertTrue(context.is_relative_to(family))
                         self.assertTrue((context / "Dockerfile").is_file())
                     for mount in service.get("volumes", []):
@@ -91,12 +93,12 @@ class LabSourceContainmentTests(unittest.TestCase):
                         asset = mount.split(":", 1)[0]
                         if not asset.startswith("."):
                             continue  # Named state volumes are not source artifacts.
-                        path = (family / asset).resolve()
+                        path = (base / asset).resolve()
                         self.assertTrue(path.is_relative_to(family), path)
                         self.assertTrue(path.is_file(), path)
                         self.assertTrue(mount.endswith(":ro"), mount)
                     if "extends" in service:
-                        shared = (family / service["extends"]["file"]).resolve()
+                        shared = (base / service["extends"]["file"]).resolve()
                         self.assertEqual(
                             ROOT / "infra/common-optimizations.yml", shared
                         )
@@ -309,6 +311,79 @@ class CollisionAndBudgetTests(unittest.TestCase):
             with self.subTest(case=name):
                 self.assertTrue(lab.collisions({"x": selected}, root, []))
 
+    def test_read_only_secrets_backup_owns_no_lab_secret_copy(self) -> None:
+        # restic binds the repo's secrets/ read-only to back it up. A LAB's
+        # read-only copy under secrets/labs/<name>/ is not HOME data; a
+        # writable HOME bind, a HOME secret, the whole LAB secrets tree or a
+        # writable LAB bind still clash.
+        def home(read_only=True):
+            spec = service("restic")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": str(ROOT / "secrets"),
+                    "target": "/src/host/secrets",
+                    "read_only": read_only,
+                }
+            ]
+            # root_footprint makes every HOME sensitive input HOME state.
+            return lab.root_footprint(
+                model("hy-home-infra", {"restic": spec}, data_root="/data/home")
+            )
+
+        def lab_secret(path):
+            rendered = model("hy-home-lab-x", {"x": service("lab-x")})
+            rendered["secrets"] = {"s": {"name": "s", "file": path}}
+            return lab.footprint(rendered)
+
+        def lab_bind(path):
+            spec = service("lab-x")
+            spec["volumes"] = [{"type": "bind", "source": path, "target": "/x"}]
+            return lab.footprint(model("hy-home-lab-x", {"x": spec}))
+
+        def writable_repo():
+            spec = service("w")
+            spec["volumes"] = [{"type": "bind", "source": str(ROOT), "target": "/r"}]
+            return lab.root_footprint(
+                model("hy-home-infra", {"w": spec}, data_root="/data/home")
+            )
+
+        copy = str(ROOT / "secrets/labs/x/password.txt")
+        other = str(ROOT / "secrets/labs/y/password.txt")
+        env = {"LAB_DATA_DIR": "/lab-data"}
+        self.assertEqual([], lab.collisions({"x": lab_secret(copy)}, home(), []))
+        self.assertEqual(
+            [], lab.source_allowlist_problems({"x": lab_secret(copy)}, env, home())
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            link = os.path.join(directory, "password.txt")
+            os.symlink(other, link)
+            symlinked = lab_secret(link)
+        escaping = lab_secret(str(ROOT / "secrets/labs/x/../y/password.txt"))
+        for name, selected in (
+            ("another LAB's copy", lab_secret(other)),
+            ("symlink to another LAB's copy", symlinked),
+            ("..-escaping copy", escaping),
+        ):
+            with self.subTest(case=name):
+                self.assertTrue(lab.collisions({"x": selected}, home(), []))
+                self.assertTrue(
+                    lab.source_allowlist_problems({"x": selected}, env, home())
+                )
+        for name, selected, root in (
+            ("writable root ancestor bind", lab_secret(copy), writable_repo()),
+            ("writable HOME bind", lab_secret(copy), home(read_only=False)),
+            (
+                "HOME secret",
+                lab_secret(str(ROOT / "secrets/auth/example_password.txt")),
+                home(),
+            ),
+            ("whole LAB secrets tree", lab_secret(str(ROOT / "secrets/labs")), home()),
+            ("writable LAB bind", lab_bind(str(ROOT / "secrets/labs/x")), home()),
+        ):
+            with self.subTest(case=name):
+                self.assertTrue(lab.collisions({"x": selected}, root, []))
+
     def test_host_root_observer_exemption_keeps_home_secrets_env_and_docker(self):
         # With HOME's read-only / exempt, assets no HOME bind covers must be
         # footprinted explicitly: top-level secret files, the root env file
@@ -380,7 +455,7 @@ class CollisionAndBudgetTests(unittest.TestCase):
         # non-sensitive repo files; everything else is refused.
         env = {
             "LAB_DATA_DIR": "/lab-data",
-            "LAB_SECRET_DIR": "../secrets/labs",
+            "LAB_SECRET_DIR": "../../secrets/labs",
             "LAB_SUPERSET_CA_FILE": "/srv/ca/rootCA.pem",
             "LAB_LOCUST_RESULT_DIR": "/srv/locust-results",
         }
@@ -401,7 +476,7 @@ class CollisionAndBudgetTests(unittest.TestCase):
         with mock.patch.object(lab, "_tracked_only", lambda p: p == tracked):
             for source, read_only in (
                 ("/lab-data/x/state", False),
-                (str(ROOT / "secrets/labs/dbt/password.txt"), True),
+                (str(ROOT / "secrets/labs/x/password.txt"), True),
                 ("/srv/ca/rootCA.pem", True),
                 (tracked, True),
                 ("/srv/locust-results/run-1", False),
@@ -420,7 +495,10 @@ class CollisionAndBudgetTests(unittest.TestCase):
                 (str(ROOT / ".env.oidc.tmp"), True),
                 (str(pathlib.Path.home() / ".ssh"), True),
                 ("/run/docker.sock", True),
-                (str(ROOT / "secrets/labs/dbt/password.txt"), False),
+                (str(ROOT / "secrets/labs/x/password.txt"), False),
+                # Another LAB's copy, and the whole LAB secrets tree.
+                (str(ROOT / "secrets/labs/dbt/password.txt"), True),
+                (str(ROOT / "secrets/labs"), True),
                 ("/srv/ca/rootCA.pem", False),
                 (tracked, False),
             ):
@@ -464,7 +542,7 @@ class CollisionAndBudgetTests(unittest.TestCase):
                     True,
                 ),
                 (
-                    {"LAB_SECRET_DIR": "../secrets"},
+                    {"LAB_SECRET_DIR": "../../secrets"},
                     repo + "/secrets/.retired/a.txt",
                     True,
                 ),
@@ -570,9 +648,9 @@ class CollisionAndBudgetTests(unittest.TestCase):
             return {"x": lab.footprint(rendered)}
 
         for value, source in (
-            ("../secrets/.retired", "secrets/.retired/auth/key.txt"),
-            ("../secrets/db", "secrets/db/mng-pg/password.txt"),
-            ("../.git", ".git/config"),
+            ("../../secrets/.retired", "secrets/.retired/auth/key.txt"),
+            ("../../secrets/db", "secrets/db/mng-pg/password.txt"),
+            ("../../.git", ".git/config"),
         ):
             with self.subTest(value=value):
                 self.assertTrue(
@@ -585,10 +663,23 @@ class CollisionAndBudgetTests(unittest.TestCase):
         self.assertEqual(
             [],
             lab.source_allowlist_problems(
-                secret(str(ROOT / "secrets/labs/dbt/p.txt")),
-                {**env, "LAB_SECRET_DIR": "../secrets/labs"},
+                secret(str(ROOT / "secrets/labs/x/p.txt")),
+                {**env, "LAB_SECRET_DIR": "../../secrets/labs"},
                 ROOTFP,
             ),
+        )
+        # Outside the repo the per-LAB rule is <LAB_SECRET_DIR>/<name>/ too.
+        outside = {**env, "LAB_SECRET_DIR": "/srv/lab-secrets"}
+        self.assertEqual(
+            [],
+            lab.source_allowlist_problems(
+                secret("/srv/lab-secrets/x/p.txt"), outside, ROOTFP
+            ),
+        )
+        self.assertTrue(
+            lab.source_allowlist_problems(
+                secret("/srv/lab-secrets/y/p.txt"), outside, ROOTFP
+            )
         )
 
     def test_symlinked_secrets_tree_keeps_the_secrets_labs_rule(self) -> None:
@@ -921,8 +1012,247 @@ class AdmissionGuardTests(unittest.TestCase):
         self.assertEqual([True, False], [item["running"] for item in found])
 
 
+def manifest(**changes) -> dict:
+    """A valid promotion manifest for a LAB with one service `node`."""
+    found = {
+        "kind": "replace-same",
+        "target": {"folder": "infra/04-data/mng-db/valkey/", "profile": "data"},
+        "replaces": [
+            {
+                "service": "valkey",
+                "compose_path": "infra/04-data/mng-db/valkey/docker-compose.yml",
+                "consumers": ["infra/07-workflow/airflow/docker-compose.yml"],
+            }
+        ],
+        "integrations": [
+            {"kind": "gateway-route", "owner": "infra/01-gateway/traefik/"}
+        ],
+        "secrets": [
+            {"row": "LAB-001", "destination": "secrets/data/valkey/password.txt"}
+        ],
+        "documents": {"guide": "docs/guide.md", "runbook": "docs/runbook.md"},
+        "resources": {
+            "services": {"node": {"cpus": 0.5, "memory_mib": 512}},
+            "disk_gib": {"data": 5, "images": 1},
+        },
+    }
+    found.update(changes)
+    return found
+
+
+def lab_repo(root: pathlib.Path, name: str, promotion: dict) -> pathlib.Path:
+    """A repository holding one folder LAB, its manifest, documents and catalog."""
+    folder = root / "labs" / name
+    folder.mkdir(parents=True)
+    (folder / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
+    (folder / "promotion.yaml").write_text(yaml.safe_dump(promotion), "utf-8")
+    (root / "docs").mkdir()
+    for document in ("guide.md", "runbook.md"):
+        (root / "docs" / document).write_text("# doc\n", encoding="utf-8")
+    catalog = root / "infra/03-security/openbao/secret-catalog.json"
+    catalog.parent.mkdir(parents=True)
+    catalog.write_text(json.dumps({"entries": [{"id": "LAB-001"}]}), "utf-8")
+    return root
+
+
+class LabLayoutAndManifestTests(unittest.TestCase):
+    """SPEC-0263 sections 1-3: folder entrypoint, manifest, socket exception."""
+
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.repo = lab_repo(pathlib.Path(self.tmp.name), "x", manifest())
+        patcher = mock.patch.object(lab, "ROOT", self.repo)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.lab = lab.footprint(
+            model(
+                "hy-home-lab-x",
+                {"node": service("lab-node", cpus=0.5, memory=512 * 2**20)},
+            )
+        )
+
+    def problems(self, promotion: dict) -> list[str]:
+        return lab.manifest_problems("x", promotion, self.lab, {"LAB-001"})
+
+    def assert_problem(self, phrase: str, promotion: dict) -> None:
+        found = self.problems(promotion)
+        self.assertTrue(any(phrase in item for item in found), found)
+
+    def test_lab_file_resolves_folder_entrypoint(self) -> None:
+        self.assertEqual("labs/x/docker-compose.yml", lab.lab_file("x"))
+        self.assertEqual("replace-same", lab.load_manifest("x")["kind"])
+        for name in ("missing", "../x", "X"):
+            with self.subTest(name=name), self.assertRaises(lab.LabError) as raised:
+                lab.lab_file(name)
+            self.assertIn("unknown LAB", str(raised.exception))
+        (self.repo / "labs/x/promotion.yaml").unlink()
+        with self.assertRaises(lab.LabError):
+            lab.load_manifest("x")
+
+    def test_lab_file_refuses_flat_file(self) -> None:
+        (self.repo / "labs/flat.yml").write_text("services: {}\n", encoding="utf-8")
+        with self.assertRaises(lab.LabError) as raised:
+            lab.lab_file("flat")
+        self.assertEqual(
+            "flat: flat labs/flat.yml is retired; use labs/flat/docker-compose.yml",
+            str(raised.exception),
+        )
+
+    def test_manifest_unknown_kind(self) -> None:
+        self.assert_problem("unknown kind", manifest(kind="promote"))
+
+    def test_manifest_undecided_with_target(self) -> None:
+        self.assert_problem("target", manifest(kind="undecided", replaces=[]))
+        missing = manifest(kind="add", replaces=[])
+        del missing["target"]
+        self.assert_problem("target", missing)
+
+    def test_manifest_target_outside_infra(self) -> None:
+        for folder in ("labs/valkey/", "infra/valkey/", "infra/04-data/../../x"):
+            with self.subTest(folder=folder):
+                self.assert_problem(
+                    "outside infra/<tier>/",
+                    manifest(target={"folder": folder, "profile": "data"}),
+                )
+
+    def test_manifest_replacement_needs_replaces(self) -> None:
+        for kind in ("replace-same", "replace-substitute"):
+            with self.subTest(kind=kind):
+                self.assert_problem("replaces", manifest(kind=kind, replaces=[]))
+
+    def test_manifest_unknown_integration(self) -> None:
+        self.assert_problem(
+            "integration",
+            manifest(integrations=[{"kind": "telepathy", "owner": "infra/"}]),
+        )
+
+    def test_manifest_secret_without_catalog_row(self) -> None:
+        self.assert_problem(
+            "no catalog row",
+            manifest(secrets=[{"row": "LAB-999", "destination": "secrets/x"}]),
+        )
+
+    def test_manifest_resources_disagree_with_render(self) -> None:
+        self.lab = lab.footprint(
+            model(
+                "hy-home-lab-x",
+                {"node": service("lab-node", cpus=1, memory=512 * 2**20)},
+            )
+        )
+        self.assertEqual(
+            {"node": {"cpus": 1.0, "memory": float(512 * 2**20)}}, self.lab["services"]
+        )
+        self.assert_problem("disagrees with rendered limits", manifest())
+        extra = manifest()
+        extra["resources"]["services"]["ghost"] = {"cpus": 1, "memory_mib": 1}
+        self.assert_problem("disagrees with rendered limits", extra)
+
+    def test_manifest_missing_document(self) -> None:
+        self.assert_problem(
+            "documents",
+            manifest(documents={"guide": "docs/none.md", "runbook": "docs/runbook.md"}),
+        )
+
+    def test_manifest_valid_passes(self) -> None:
+        self.assertEqual([], self.problems(manifest()))
+        undecided = manifest(kind="undecided", replaces=[])
+        del undecided["target"]
+        self.assertEqual([], self.problems(undecided))
+
+    def test_socket_allowed_only_for_supabase_vector_read_only(self) -> None:
+        env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../../secrets/labs"}
+
+        def bind(name, service_name, source, read_only):
+            spec = service(f"lab-{service_name}")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": "/var/run/docker.sock",
+                    "read_only": read_only,
+                }
+            ]
+            found = lab.footprint(model(f"hy-home-lab-{name}", {service_name: spec}))
+            return lab.source_allowlist_problems({name: found}, env, ROOTFP)
+
+        self.assertEqual([], bind("supabase", "vector", "/var/run/docker.sock", True))
+        for case in (
+            ("supabase", "vector", "/var/run/docker.sock", False),
+            ("supabase", "kong", "/var/run/docker.sock", True),
+            ("supabase", "vector", "/run/user/1000/docker.sock", True),
+            ("other", "vector", "/var/run/docker.sock", True),
+        ):
+            with self.subTest(case=case):
+                self.assertTrue(bind(*case))
+
+    def test_socket_exception_holds_across_the_check_path(self) -> None:
+        # The checks check() composes over sources and paths: integrity,
+        # allowlist and HOME collisions. HOME binds the socket read-only too.
+        env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../../secrets/labs"}
+        socket = "/var/run/docker.sock"
+
+        def mount(source, read_only):
+            return {
+                "type": "bind",
+                "source": source,
+                "target": socket,
+                "read_only": read_only,
+            }
+
+        home = service("hy-alloy")
+        home["volumes"] = [mount(socket, True)]
+        root = lab.root_footprint(
+            model("hy-home-infra", {"alloy": home}, data_root="/data/home"),
+            docker_root="/var/lib/docker-data",
+        )
+
+        def problems(name, service_name, source, read_only):
+            spec = service(f"lab-{service_name}")
+            spec["volumes"] = [mount(source, read_only)]
+            found = {
+                name: lab.footprint(model(f"hy-home-lab-{name}", {service_name: spec}))
+            }
+            return {
+                "integrity": lab.path_integrity_problems(found),
+                "allowlist": lab.source_allowlist_problems(found, env, root),
+                "collisions": lab.collisions(found, root, []),
+            }
+
+        # Real path facts on every host: the socket exists and /var/run is a
+        # symlink to /run, as on this server.
+        with (
+            mock.patch.object(lab.os.path, "lexists", return_value=True),
+            mock.patch.object(lab.pathlib.Path, "exists", return_value=True),
+            mock.patch.object(lab, "_has_symlink_component", return_value=True),
+        ):
+            allowed = problems("supabase", "vector", socket, True)
+            self.assertEqual(
+                {"integrity": [], "allowlist": [], "collisions": []}, allowed
+            )
+            for case in (
+                ("supabase", "vector", socket, False),
+                ("supabase", "kong", socket, True),
+                ("other", "vector", socket, True),
+                ("supabase", "vector", "/run/user/1000/docker.sock", True),
+            ):
+                found = problems(*case)
+                with self.subTest(case=case):
+                    self.assertTrue(found["allowlist"])
+                    # Integrity checks read-only sources only.
+                    if case[3]:
+                        self.assertTrue(found["integrity"])
+                    if case[2] == socket:  # shared with HOME
+                        self.assertTrue(found["collisions"])
+
+
 class LifecycleTests(unittest.TestCase):
     def setUp(self) -> None:
+        # Hermetic: read_env lets exported LAB_* values win over the env file.
+        clean = {k: v for k, v in os.environ.items() if not k.startswith("LAB_")}
+        env = mock.patch.dict(os.environ, clean, clear=True)
+        env.start()
+        self.addCleanup(env.stop)
         self.tmp = tempfile.TemporaryDirectory()
         self.data = pathlib.Path(self.tmp.name) / "lab-data"
         self.env_file = pathlib.Path(self.tmp.name) / "lab.env"
@@ -935,6 +1265,17 @@ class LifecycleTests(unittest.TestCase):
             f'LAB_FIXTURE_RESULT_DIR="{self.outside}"\n',
             encoding="utf-8",
         )
+        # A fixture repository: the LAB folder, its manifest and the catalog.
+        cassandra = manifest(
+            kind="add",
+            target={"folder": "infra/04-data/nosql/cassandra/", "profile": "data"},
+            replaces=[],
+            resources={"services": {"c": {"cpus": 1, "memory_mib": 1024}}},
+        )
+        repo = lab_repo(pathlib.Path(self.tmp.name) / "repo", "cassandra", cassandra)
+        patcher = mock.patch.object(lab, "ROOT", repo)
+        patcher.start()
+        self.addCleanup(patcher.stop)
         self.calls: list[list[str]] = []
         self.home_data = pathlib.Path(self.tmp.name) / "home-data"
         self.rendered = model(
@@ -1231,6 +1572,590 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(0, self.main("reap"))
         self.assertTrue(any("down" in call for call in self.calls))
         self.assertEqual("stopped", self.ledger()["state"])
+
+
+GIB, MIB = 2**30, 2**20
+
+
+def readiness_case(cpus=1.0, memory=GIB, **changes):
+    """A promotion candidate that passes every readiness criterion."""
+    candidate = service(cpus=cpus, memory=int(memory))
+    candidate["user"] = "999:999"
+    case = {
+        "manifest": manifest(
+            kind="add",
+            target={"folder": "infra/04-data/promo-candidate/", "profile": "dev-data"},
+            replaces=[],
+            integrations=[
+                {"kind": "observability", "owner": "infra/06-observability/"}
+            ],
+            documents={
+                "guide": "docs/05.operations/guides/15-labs/0022-valkey-cluster.md",
+                "runbook": "docs/05.operations/runbooks/15-labs/0022-valkey-cluster.md",
+            },
+            resources={
+                "services": {"node": {"cpus": cpus, "memory_mib": memory / MIB}},
+                "disk_gib": {"data": 5, "images": 1},
+            },
+        ),
+        "lab": lab.footprint(model("hy-home-lab-candidate", {"node": candidate})),
+        "host": {
+            "NCPU": {"value": 12, "source": "docker info"},
+            "MemTotal": {"value": 32 * GIB, "source": "docker info"},
+            "DockerRootDir": {"value": "/var/lib/docker", "source": "docker info"},
+            "docker_version": {"value": "29.9.2", "source": "docker info"},
+            "compose_version": {"value": "5.6.1", "source": "docker compose"},
+            "cgroup_version": {"value": "2", "source": "docker info"},
+            "disk_data": {
+                "value": {"free": 100 * GIB, "total": 200 * GIB},
+                "source": "shutil.disk_usage",
+            },
+            "disk_docker": {
+                "value": {"free": 100 * GIB, "total": 200 * GIB},
+                "source": "shutil.disk_usage",
+            },
+        },
+        "running": [
+            {
+                "name": "home-1",
+                "project": "hy-home",
+                "ports": set(),
+                "cpus": 2.0,
+                "memory": 2 * GIB,
+                "running": True,
+            },
+        ],
+        "root": lab.footprint(model("hy-home", {"home": service("home-1")})),
+    }
+    case.update(changes)
+    return case
+
+
+def readiness(case: dict) -> dict:
+    return lab.readiness("candidate", **case)
+
+
+DEV_DB = ROOT / "infra/04-data/dev-db"
+
+
+def dev_db_root() -> dict:
+    """A root render with dev-valkey (bind under valkey/) and dev-pg (build
+    context pg/), as infra/04-data/dev-db/docker-compose.yml declares."""
+    pg = service("dev-pg", ports=[("0.0.0.0", 5432)])
+    pg["build"] = {"context": str(DEV_DB / "pg"), "dockerfile": "Dockerfile"}
+    valkey = service(
+        "dev-valkey", ports=[("0.0.0.0", 6379)], binds=[str(DEV_DB / "valkey/config")]
+    )
+    return lab.footprint(
+        model(
+            "hy-home",
+            {"home": service("home-1"), "dev-valkey": valkey, "dev-pg": pg},
+        )
+    )
+
+
+def replacement_case(folder: str, services: list[str], kind="replace-same") -> dict:
+    case = readiness_case(root=dev_db_root())
+    case["manifest"].update(
+        kind=kind,
+        target={"folder": folder, "profile": "dev-data"},
+        replaces=[
+            {
+                "compose_path": "infra/04-data/dev-db/docker-compose.yml",
+                "services": services,
+                "consumers": [],
+            }
+        ],
+    )
+    return case
+
+
+class ReadinessTests(unittest.TestCase):
+    """SPEC-0263 section 5: the promotion readiness check fails closed."""
+
+    def result(self, report: dict, criterion: str) -> str:
+        return report["criteria"][criterion]["result"]
+
+    def test_readiness_passes_within_budget(self) -> None:
+        report = readiness(readiness_case())
+        self.assertEqual("add", report["kind"])
+        for criterion in ("tier", "docker", "resources"):
+            found = report["criteria"][criterion]
+            self.assertEqual("PASS", found["result"], (criterion, found))
+        for found in report["criteria"].values():
+            self.assertTrue(all("source" in v for v in found["values"].values()))
+        # Spec section 5 sub-checks the code never measures stay visible and
+        # keep linux and composition, and so the report, at NOT_RUN.
+        for criterion in ("linux", "composition"):
+            found = report["criteria"][criterion]
+            self.assertEqual("NOT_RUN", found["result"], (criterion, found))
+            self.assertEqual(1, len(found["problems"]), found)
+        self.assertEqual("NOT_RUN", report["result"])
+        fit = report["criteria"]["tier"]["values"]["function_fit"]
+        self.assertEqual("NOT_RUN", fit["value"])
+        self.assertIn("owner judgment", fit["source"])
+        self.assertEqual(
+            "NOT_RUN",
+            report["criteria"]["linux"]["values"]["groups_and_file_modes"]["value"],
+        )
+        self.assertEqual(
+            "NOT_RUN",
+            report["criteria"]["composition"]["values"]["profile_and_consumer_clashes"][
+                "value"
+            ],
+        )
+
+    def test_readiness_fails_over_cpu_budget(self) -> None:
+        # 12 CPUs minus the 2-CPU reserve leaves 10; 9.5 running plus 1 is 10.5.
+        case = readiness_case()
+        case["running"][0]["cpus"] = 9.5
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "resources"))
+        self.assertEqual("FAIL", report["result"])
+        values = report["criteria"]["resources"]["values"]
+        self.assertEqual(10.0, values["cpu_budget"]["value"])
+        self.assertEqual(12, values["NCPU"]["value"])
+        self.assertEqual(10.5, values["cpus_needed"]["value"])
+
+    def test_readiness_compares_memory_bytes_with_mib(self) -> None:
+        # Budget: (4096 reserve + 3072) MiB total leaves 3072 MiB; 2 GiB runs.
+        case = readiness_case(memory=1024 * MIB)
+        case["host"]["MemTotal"]["value"] = (4096 + 3072) * MIB
+        self.assertEqual("PASS", self.result(readiness(case), "resources"))
+        case = readiness_case(memory=1025 * MIB)
+        case["host"]["MemTotal"]["value"] = (4096 + 3072) * MIB
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "resources"))
+        values = report["criteria"]["resources"]["values"]
+        self.assertEqual(3072, values["memory_budget_mib"]["value"])
+        self.assertEqual(3073, values["memory_needed_mib"]["value"])
+
+    def test_readiness_unlimited_container_is_not_run(self) -> None:
+        case = readiness_case()
+        case["running"].append(
+            {"name": "free-1", "project": "hy-home", "ports": set(),
+             "cpus": 0, "memory": GIB, "running": True}
+        )  # fmt: skip
+        report = readiness(case)
+        self.assertEqual("NOT_RUN", self.result(report, "resources"))
+        self.assertEqual("NOT_RUN", report["result"])
+        self.assertTrue(
+            any("free-1" in p for p in report["criteria"]["resources"]["problems"])
+        )
+
+    def test_readiness_replacement_subtracts_only_running_retired(self) -> None:
+        def case(retired_running: bool) -> dict:
+            found = readiness_case()
+            found["manifest"].update(
+                kind="replace-same",
+                target={
+                    "folder": "infra/04-data/dev-db/valkey/",
+                    "profile": "dev-data",
+                },
+                replaces=[
+                    {
+                        "compose_path": "infra/04-data/dev-db/docker-compose.yml",
+                        "services": ["dev-valkey"],
+                        "consumers": [],
+                    }
+                ],
+            )
+            found["lab"]["ports"] = {"127.0.0.1:6379"}
+            found["root"] = dev_db_root()
+            found["running"][0]["cpus"] = 7.0
+            found["running"].append(
+                {"name": "dev-valkey", "project": "hy-home",
+                 "ports": {"0.0.0.0:6379"}, "cpus": 3.0, "memory": GIB,
+                 "running": retired_running}
+            )  # fmt: skip
+            return found
+
+        # Running: 7 + 3 retired + 1 candidate, minus the 3 retired once.
+        report = readiness(case(True))
+        for criterion in ("tier", "resources"):
+            self.assertEqual("PASS", self.result(report, criterion), report)
+        values = report["criteria"]["resources"]["values"]
+        self.assertEqual(3.0, values["retired_cpus"]["value"])
+        self.assertEqual(8.0, values["cpus_needed"]["value"])
+        # Stopped: never counted, so nothing is subtracted.
+        report = readiness(case(False))
+        for criterion in ("tier", "resources"):
+            self.assertEqual("PASS", self.result(report, criterion), report)
+        values = report["criteria"]["resources"]["values"]
+        self.assertEqual(0.0, values["retired_cpus"]["value"])
+        self.assertEqual(8.0, values["cpus_needed"]["value"])
+
+    def test_readiness_undecided_fails_tier(self) -> None:
+        case = readiness_case()
+        case["manifest"]["kind"] = "undecided"
+        del case["manifest"]["target"]
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "tier"))
+        self.assertEqual("FAIL", report["result"])
+
+    def test_readiness_refuses_a_target_outside_the_tier(self) -> None:
+        case = readiness_case()
+        case["manifest"]["target"]["folder"] = "infra/04-data/../../etc/"
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_add_does_not_honor_replaces(self) -> None:
+        # Reviewer repro: an add candidate naming a "root" service hid a real
+        # port and network clash with root.
+        case = readiness_case()
+        case["root"]["ports"] = {"0.0.0.0:8080"}
+        case["lab"]["ports"] = {"0.0.0.0:8080"}
+        case["root"]["networks"] = case["root"]["networks"] | {"shared"}
+        case["lab"]["networks"] = case["lab"]["networks"] | {"shared"}
+        case["manifest"]["replaces"] = [
+            {"compose_path": "infra/04-data/x/docker-compose.yml", "services": ["root"]}
+        ]
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+        problems = report["criteria"]["composition"]["problems"]
+        self.assertTrue(any("8080" in p for p in problems), problems)
+        self.assertTrue(any("shared" in p for p in problems), problems)
+
+    def test_readiness_retired_name_filters_no_other_clash(self) -> None:
+        # Reviewer repro: retiring "held" dropped "host port ... held by other".
+        for services in (["held"], ["dev-valkey"]):
+            with self.subTest(services=services):
+                case = replacement_case("infra/04-data/dev-db/valkey/", services)
+                case["lab"]["ports"] = {"0.0.0.0:6380"}
+                case["running"].append(
+                    {"name": "other-svc", "project": "hy-home",
+                     "ports": {"0.0.0.0:6380"}, "cpus": 1, "memory": GIB,
+                     "running": True}
+                )  # fmt: skip
+                report = readiness(case)
+                self.assertEqual("FAIL", self.result(report, "composition"))
+                problems = report["criteria"]["composition"]["problems"]
+                self.assertTrue(any("other-svc" in p for p in problems), problems)
+
+    def test_readiness_retired_service_must_exist(self) -> None:
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["ghost"])
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+        problems = report["criteria"]["composition"]["problems"]
+        self.assertTrue(any("ghost" in p for p in problems), problems)
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["dev-valkey"])
+        case["manifest"]["replaces"][0]["compose_path"] = "infra/04-data/nope.yml"
+        self.assertEqual("FAIL", self.result(readiness(case), "composition"))
+
+    def test_readiness_tier_needs_the_folder_of_a_retired_service(self) -> None:
+        # Reviewer repro: the valkey manifest claimed dev-db/pg/ (dev-pg stays).
+        case = replacement_case("infra/04-data/dev-db/pg/", ["dev-valkey"])
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+        case = replacement_case("infra/04-data/dev-db/pg/", ["dev-pg"])
+        self.assertEqual("PASS", self.result(readiness(case), "tier"))
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["dev-valkey"], "add")
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_tier_needs_exclusive_ownership(self) -> None:
+        # Review probes A3 and A5: a retired service binding a file in a kept
+        # folder, or a parent folder that still holds dev-pg.
+        case = replacement_case("infra/04-data/qdrant/", ["dev-valkey"])
+        case["root"] = lab.footprint(
+            model(
+                "hy-home",
+                {
+                    "dev-valkey": service(
+                        "dev-valkey",
+                        binds=[str(ROOT / "infra/04-data/qdrant/README.md")],
+                    ),
+                    "qdrant": service(
+                        "qdrant", binds=[str(ROOT / "infra/04-data/qdrant/config")]
+                    ),
+                },
+            )
+        )
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+        # Probe shape: no qdrant in root; qdrant/docker-compose.yml still
+        # declares the kept qdrant service.
+        del case["root"]["by_service"]["qdrant"]
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+        case = replacement_case("infra/04-data/dev-db/", ["dev-valkey"])
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "tier"))
+        self.assertTrue(
+            any("dev-pg" in p for p in report["criteria"]["tier"]["problems"])
+        )
+
+    def test_readiness_shared_provision_file_claims_no_folder(self) -> None:
+        # kafka binds mng-pg's provisioning script; retiring kafka-1 cannot
+        # claim mng-db/pg/, which mng-pg keeps.
+        provision = ROOT / "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
+        case = readiness_case()
+        case["manifest"].update(
+            kind="replace-same",
+            target={"folder": "infra/04-data/mng-db/pg/", "profile": "dev-data"},
+            replaces=[
+                {
+                    "compose_path": "infra/05-messaging/kafka/docker-compose.yml",
+                    "services": ["kafka-1"],
+                }
+            ],
+        )
+        case["root"] = lab.footprint(
+            model(
+                "hy-home",
+                {
+                    "kafka-1": read_only_service("kafka-1", str(provision)),
+                    "mng-pg": service(
+                        "mng-pg", binds=[str(ROOT / "infra/04-data/mng-db/pg/config")]
+                    ),
+                },
+            )
+        )
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_keeps_a_port_a_kept_service_declares(self) -> None:
+        # Review probe B: a stopped kept service publishes the retired port.
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["dev-valkey"])
+        root = dev_db_root()
+        extra = lab.footprint(
+            model("hy-home", {"other": service("other-1", ports=[("0.0.0.0", 6379)])})
+        )
+        root["by_service"]["other"] = extra["by_service"]["other"]
+        root["containers"] |= extra["containers"]
+        case["root"] = root
+        case["lab"]["ports"] = {"0.0.0.0:6379"}
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+
+    def test_readiness_add_cannot_claim_an_existing_folder(self) -> None:
+        # Reviewer repro: add with a made-up compose_path claimed qdrant/.
+        case = readiness_case()
+        case["manifest"].update(
+            target={"folder": "infra/04-data/qdrant/", "profile": "dev-data"},
+            replaces=[
+                {"compose_path": "infra/04-data/qdrant/nope.yml", "services": []}
+            ],
+        )
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_fails_tier_on_manifest_problems(self) -> None:
+        case = readiness_case()
+        case["manifest"]["secrets"] = [{"row": "NO-SUCH-ROW", "destination": "x"}]
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "tier"))
+        self.assertTrue(
+            any("NO-SUCH-ROW" in p for p in report["criteria"]["tier"]["problems"])
+        )
+
+    def test_readiness_over_budget_with_unlimited_stays_fail(self) -> None:
+        # Ruling: the known lower bound already exceeds the budget.
+        case = readiness_case()
+        case["running"][0]["cpus"] = 9.5
+        case["running"].append(
+            {"name": "free-1", "project": "hy-home", "ports": set(),
+             "cpus": 0, "memory": GIB, "running": True}
+        )  # fmt: skip
+        self.assertEqual("FAIL", self.result(readiness(case), "resources"))
+
+    def test_measure_host_omits_unparsable_docker_info(self) -> None:
+        answers = [
+            subprocess.CompletedProcess([], 0, "not json", ""),
+            subprocess.CompletedProcess([], 1, "", ""),
+        ]
+        with (
+            mock.patch.object(lab, "run", side_effect=answers),
+            mock.patch.object(lab.shutil, "disk_usage", side_effect=OSError),
+        ):
+            host = lab.measure_host("docker", "/data/home")
+        self.assertEqual({}, host)
+        self.assertEqual("NOT_RUN", readiness(readiness_case(host=host))["result"])
+
+    def test_readiness_candidate_without_limits_is_not_run(self) -> None:
+        # Review probe: a candidate with no limits summed as 0 and passed.
+        report = readiness(readiness_case(cpus=0, memory=0))
+        self.assertEqual("NOT_RUN", self.result(report, "resources"))
+        problems = report["criteria"]["resources"]["problems"]
+        self.assertTrue(any("candidate service node" in p for p in problems))
+        self.assertEqual("FAIL", self.result(report, "tier"))
+
+    def test_manifest_refuses_a_zero_or_missing_limit(self) -> None:
+        rendered = {"services": {"node": {"cpus": 0.0, "memory": 0.0}}}
+        for declared in ({"cpus": 0, "memory_mib": 0}, {}):
+            with self.subTest(declared=declared):
+                found = manifest(resources={"services": {"node": declared}})
+                problems = lab.manifest_problems("x", found, rendered, {"LAB-001"})
+                self.assertTrue(any("no cpus or memory" in p for p in problems))
+
+    def test_readiness_tier_refuses_an_unreadable_or_escaping_subtree(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = pathlib.Path(tmp) / "repo"
+            folder = repo / "infra/04-data/x"
+            (folder / "docker-compose.yml").mkdir(parents=True)  # unreadable
+            outside = pathlib.Path(tmp) / "outside"
+            outside.mkdir()
+            (folder / "linked").symlink_to(outside, target_is_directory=True)
+            (repo / "infra/04-data/escape").symlink_to(outside)
+            case = readiness_case()
+            with mock.patch.object(lab, "ROOT", repo):
+                case["manifest"]["target"]["folder"] = "infra/04-data/x/"
+                problems = readiness(case)["criteria"]["tier"]["problems"]
+                self.assertTrue(any("cannot be read" in p for p in problems), problems)
+                self.assertTrue(any("symlinked directory" in p for p in problems))
+                case["manifest"]["target"]["folder"] = "infra/04-data/escape/"
+                problems = readiness(case)["criteria"]["tier"]["problems"]
+                self.assertTrue(any("outside the repository" in p for p in problems))
+
+    def test_manifest_paths_stay_inside_the_repository(self) -> None:
+        self.assertIsNone(lab._repo_path("/etc/passwd"))
+        self.assertIsNone(lab._repo_path("docs/../../etc"))
+        self.assertIsNone(lab._repo_path(None))
+        self.assertEqual(ROOT / "docs", lab._repo_path("docs"))
+        found = manifest(documents={"guide": "/etc/hostname", "runbook": "../x"})
+        problems = lab.manifest_problems(
+            "x", found, {"services": {"node": {"cpus": 0.5, "memory": 512.0 * MIB}}},
+            {"LAB-001"},
+        )  # fmt: skip
+        self.assertTrue(any("guide" in p for p in problems), problems)
+        self.assertTrue(any("runbook" in p for p in problems), problems)
+        case = readiness_case()
+        case["manifest"]["integrations"] = [{"kind": "network", "owner": "/etc"}]
+        self.assertEqual("FAIL", self.result(readiness(case), "composition"))
+        case = readiness_case()
+        case["manifest"]["target"]["folder"] = "infra/04-data/../../etc/"
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_compose_path_must_be_a_root_include(self) -> None:
+        # labs/valkey-cluster/docker-compose.yml declares valkey-node-0, but
+        # root does not include it, so it cannot retire anything.
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["valkey-node-0"])
+        case["manifest"]["replaces"][0]["compose_path"] = (
+            "labs/valkey-cluster/docker-compose.yml"
+        )
+        case["root"]["by_service"]["valkey-node-0"] = {
+            "containers": set(), "ports": set(), "dirs": set()
+        }  # fmt: skip
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+        problems = report["criteria"]["composition"]["problems"]
+        self.assertTrue(any("not included by root" in p for p in problems), problems)
+
+    def test_readiness_bad_input_is_a_lab_error(self) -> None:
+        case = readiness_case()
+        case["manifest"]["resources"]["disk_gib"]["data"] = "lots"
+        with self.assertRaises(lab.LabError) as raised:
+            readiness(case)
+        self.assertEqual(2, raised.exception.code)
+        with (
+            mock.patch.object(lab, "catalog_ids", side_effect=KeyError("id")),
+            self.assertRaises(lab.LabError) as raised,
+        ):
+            readiness(readiness_case())
+        self.assertEqual(2, raised.exception.code)
+        with tempfile.TemporaryDirectory() as tmp:
+            catalog = pathlib.Path(tmp) / lab.SECRET_CATALOG
+            catalog.parent.mkdir(parents=True)
+            catalog.write_text(json.dumps({"entries": [{}]}), "utf-8")
+            with (
+                mock.patch.object(lab, "ROOT", pathlib.Path(tmp)),
+                self.assertRaises(lab.LabError),
+            ):
+                lab.catalog_ids()
+
+    def test_readiness_unknown_profile_fails_composition(self) -> None:
+        case = readiness_case()
+        case["manifest"]["target"]["profile"] = "no-such-profile"
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+        self.assertEqual("FAIL", report["result"])
+
+    def test_readiness_old_docker_fails(self) -> None:
+        case = readiness_case()
+        case["manifest"]["host"] = {"docker": "30.0", "compose": "2.20"}
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "docker"))
+        self.assertTrue(
+            any("30.0" in p for p in report["criteria"]["docker"]["problems"])
+        )
+
+    def test_readiness_unmeasured_value_is_not_run(self) -> None:
+        case = readiness_case()
+        del case["host"]["NCPU"]
+        report = readiness(case)
+        self.assertEqual("NOT_RUN", self.result(report, "resources"))
+        self.assertEqual("NOT_RUN", report["result"])
+
+    def test_readiness_checks_rendered_users(self) -> None:
+        for user, expected in (
+            # A valid user leaves linux at NOT_RUN (groups and modes unmeasured).
+            ("999:999", "NOT_RUN"), ("postgres", "NOT_RUN"), ("0", "NOT_RUN"),
+            ("70000", "FAIL"), ("1000:", "FAIL"),
+        ):  # fmt: skip
+            with self.subTest(user=user):
+                case = readiness_case()
+                case["lab"]["users"]["node"] = user
+                self.assertEqual(expected, self.result(readiness(case), "linux"))
+
+    def test_measure_host_records_sources_and_omits_failures(self) -> None:
+        info = {"NCPU": 12, "MemTotal": 32 * GIB, "DockerRootDir": "/var/lib/docker",
+                "ServerVersion": "29.9.2", "CgroupVersion": "2"}  # fmt: skip
+        answers = [
+            subprocess.CompletedProcess([], 0, json.dumps(info), ""),
+            subprocess.CompletedProcess([], 1, "", "no compose"),
+        ]
+        usage = mock.Mock(free=5 * GIB, total=10 * GIB)
+        with (
+            mock.patch.object(lab, "run", side_effect=answers) as called,
+            mock.patch.object(lab.shutil, "disk_usage", return_value=usage),
+        ):
+            host = lab.measure_host("docker", "/data/home")
+        self.assertEqual(
+            ["docker", "info", "--format", "{{json .}}"],
+            called.call_args_list[0].args[0],
+        )
+        self.assertEqual(12, host["NCPU"]["value"])
+        self.assertIn("docker info", host["NCPU"]["source"])
+        self.assertEqual("2", host["cgroup_version"]["value"])
+        self.assertNotIn("compose_version", host)
+        self.assertEqual(5 * GIB, host["disk_data"]["value"]["free"])
+        self.assertEqual("/var/lib/docker", host["disk_docker"]["value"]["path"])
+
+    def test_readiness_cli_writes_the_report_and_exits_on_result(self) -> None:
+        for result, code in (("PASS", 0), ("NOT_RUN", 3)):
+            with (
+                self.subTest(result=result),
+                tempfile.TemporaryDirectory() as tmp,
+                mock.patch.object(lab, "render", return_value=model("p", {})),
+                mock.patch.object(lab, "docker_root", return_value="/var/lib/docker"),
+                mock.patch.object(
+                    lab, "root_footprint", return_value={"home_data_root": "/d"}
+                ),
+                mock.patch.object(lab, "measure_host", return_value={}),
+                mock.patch.object(lab, "running_containers", return_value=[]),
+                mock.patch.object(lab, "load_manifest", return_value={}),
+                mock.patch.object(
+                    lab, "lab_file", return_value="labs/x/docker-compose.yml"
+                ),
+                mock.patch.object(lab, "readiness", return_value={"result": result}),
+                mock.patch("sys.stdout"),
+            ):
+                path = pathlib.Path(tmp) / "report.json"
+                self.assertEqual(
+                    code, lab.main(["readiness", "x", "--report", str(path)])
+                )
+                self.assertEqual(result, json.loads(path.read_text())["result"])
+
+    def test_reserve_matches_policy(self) -> None:
+        policy = (
+            ROOT / "docs/05.operations/policies/15-labs/0107-lab-promotion.md"
+        ).read_text(encoding="utf-8")
+        rows = {}
+        for line in policy.splitlines():
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if len(cells) == 2 and cells[0] in {"CPUs", "Memory MiB", "Disk percent"}:
+                rows[cells[0]] = float(cells[1])
+        self.assertEqual(
+            {
+                "CPUs": lab.PROMOTION_RESERVE["cpus"],
+                "Memory MiB": lab.PROMOTION_RESERVE["memory_mib"],
+                "Disk percent": lab.PROMOTION_RESERVE["disk_percent"],
+            },
+            rows,
+        )
 
 
 if __name__ == "__main__":

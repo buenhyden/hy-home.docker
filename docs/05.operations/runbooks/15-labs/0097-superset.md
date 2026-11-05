@@ -1,10 +1,10 @@
 ---
 title: "Superset Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 layer: "operations"
 artifact_id: "RUN-0097"
 parent_ids:
@@ -35,8 +35,8 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 ## Procedure
 
 1. 최초 설정(각 단계는 승인을 받으며, 값은 로그나 문서에 절대 남기지 않는다). Superset은
-   독립 LAB `labs/superset.yml`이며(SPEC-0262) 아래 `LAB`은
-   `docker compose --env-file labs/.env -f labs/superset.yml --profile lab-superset`다. `LAB config` 외 명령은
+   독립 LAB `labs/superset/docker-compose.yml`이며(SPEC-0262) 아래 `LAB`은
+   `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset`다. `LAB config` 외 명령은
    `python3 scripts/operations/lab.py up superset`의 활성 lease 안에서만 쓰고, 승인된
    `LAB_SUPERSET_DB_HOST` endpoint가 없으면 렌더링까지만 한다(미결정 항목):
    1. Keycloak realm `hy-home.realm`: standard flow만 사용하고 PKCE `S256`으로 confidential
@@ -46,11 +46,12 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
       추가한다(미결정 항목).
    2. 해당 client secret을 HOME `secrets/auth/superset/superset_oidc_client_secret.txt`로
       저장한다(IAM-013, 한 줄, 모드 `0640`). LAB은 LAB 전용 secret만 읽으므로 이 값과 mng-pg
-      관리자·Superset DB 비밀번호, signing key의 LAB 사본을 `${LAB_SECRET_DIR:-../secrets/labs}/superset/`
-      아래(정확한 파일명은 `labs/superset.yml`의 `secrets:`가 소유) 별도 승인으로 준비한다(미결정 항목).
-   3. `bash scripts/operations/gen-secrets.sh --sync-metadata`를 실행한 다음
-      `bash scripts/operations/gen-secrets.sh`를 실행해 PG-028과 AUTO-020을
-      생성한다.
+      관리자·Superset DB 비밀번호, signing key의 LAB 사본을 `${LAB_SECRET_DIR:-../../secrets/labs}/superset/`
+      아래(정확한 파일명은 `labs/superset/docker-compose.yml`의 `secrets:`가 소유) 별도 승인으로 준비한다(미결정 항목).
+   3. LAB 사본은 LAB-030(mng-pg 관리자), LAB-031(Superset DB), LAB-032(signing key),
+      LAB-033(OIDC client secret) 행이 소유한다. PG-028과 AUTO-020은 LAB-031과 LAB-032의
+      퇴역 alias다. `gen-secrets.sh`는 LAB 값을 생성하지 않으므로 소유자가 사본을 준비하고,
+      `bash scripts/operations/gen-secrets.sh --sync-metadata`로 공개 메타데이터만 맞춘다.
    4. `LAB build superset`를 실행한 다음 `LAB up -d superset`를 실행한다.
    5. 최초 Admin은 named OIDC identity와 FAB username mapping을 먼저 확인한다. 비공개 TTY에서 `LAB exec superset superset fab create-admin`의 interactive identity/password/confirmation prompt를 사용한다. 승인된 password manager의 강한 값을 masked prompt에만 입력하고 custody한다. `--password`, shell substitution, 환경 변수, 터미널 출력/녹화·trace, stdin pipe와 `exec -T`는 금지한다. TTY/custody/정확한 identity가 없거나 prompt가 masking되지 않으면 중단한다. 폼 로그인 비활성화는 password hash를 비민감 정보로 만들지 않는다. 생성 후 named 사용자의 OIDC login과 Admin 권한만 별도 승인 검증하고 등록 Gamma 정책을 바꾸지 않는다.
 
@@ -92,5 +93,5 @@ credential을 넣으라는 요청이 있으면 중단하고 @buenhyden에게 전
 - SPEC-0262 Analytics labs migration
 
 - [Superset package README](../../../../labs/superset/README.md)
-- [Superset Compose source](../../../../labs/superset.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
+- [Superset Compose source](../../../../labs/superset/docker-compose.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [Backup and restore runbook](../10-platform-and-backup/0021-backup-and-restore.md)

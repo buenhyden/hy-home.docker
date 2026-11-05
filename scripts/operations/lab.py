@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run one standalone LAB (`labs/<name>.yml`) under a lease (SPEC-0215).
+"""Run one standalone LAB (`labs/<name>/docker-compose.yml`) under a lease (SPEC-0215).
 
 Commands:
   check LAB [LAB...]          refuse collisions, HOME data overlap, budget or
@@ -12,6 +12,10 @@ Commands:
   down LAB                    stop only that project; never removes volumes
   reap                        stop every LAB whose lease has expired
   status                      print ledger entries and whether each runs
+  readiness LAB [--report PATH]
+                              read-only promotion readiness report
+                              (SPEC-0263); exit 0 only when every
+                              criterion is PASS
 
 The ledger lives in `${LAB_DATA_DIR}/.ledger/<lab>.json` and names the exact
 containers, networks and data paths an operator may later remove by hand.
@@ -30,6 +34,7 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -56,6 +61,8 @@ BUILD_KEYS = frozenset(
 )
 # Tracked source trees HOME tools may read whole; see _path_conflict.
 SOURCE_TREES = frozenset(os.path.realpath(ROOT / name) for name in ("infra", "labs"))
+SECRETS_TREE = os.path.realpath(ROOT / "secrets")
+LAB_SECRETS_TREE = os.path.realpath(ROOT / "secrets" / "labs")
 
 
 class LabError(Exception):
@@ -122,20 +129,35 @@ def footprint(model: dict) -> dict:
     sources = []
     cluster_ids = set()
     cpus = memory = 0.0
+    limits, users = {}, {}
+    # Per-service identities, so a replacement can retire exactly its own
+    # services' containers, ports and folders (readiness).
+    by_service: dict[str, dict[str, set]] = {}
     for name, service in model.get("services", {}).items():
         replicas = int((service.get("deploy") or {}).get("replicas") or 1)
+        own = by_service[name] = {"containers": set(), "ports": set(), "dirs": set()}
         if service.get("container_name"):
-            containers.add(service["container_name"])
+            own["containers"].add(service["container_name"])
         else:
-            containers |= {f"{project}-{name}-{i}" for i in range(1, replicas + 1)}
+            own["containers"] |= {
+                f"{project}-{name}-{i}" for i in range(1, replicas + 1)
+            }
+        containers |= own["containers"]
         for port in service.get("ports", []) or []:
             if port.get("published"):
-                ports.add(f"{port.get('host_ip', '0.0.0.0')}:{port['published']}")
+                own["ports"].add(
+                    f"{port.get('host_ip', '0.0.0.0')}:{port['published']}"
+                )
+        ports |= own["ports"]
+        build = service.get("build")
+        if isinstance(build, dict) and isinstance(build.get("context"), str):
+            own["dirs"].add(os.path.realpath(build["context"]))
         for mount in service.get("volumes", []) or []:
             if mount.get("type") == "bind":
                 # realpath: a symlinked root must not hide an overlap.
                 declared = mount["source"]
                 path = os.path.realpath(declared)
+                own["dirs"].add(path)
                 read_only = bool(mount.get("read_only"))
                 paths.add(path)
                 if read_only:
@@ -147,7 +169,13 @@ def footprint(model: dict) -> dict:
                 else:
                     state.add(path)
                 sources.append(
-                    {"declared": declared, "real": path, "read_only": read_only}
+                    {
+                        "declared": declared,
+                        "real": path,
+                        "read_only": read_only,
+                        "service": name,
+                        "target": mount.get("target"),
+                    }
                 )
             elif mount.get("type") == "volume":
                 if not mount.get("read_only"):
@@ -157,8 +185,14 @@ def footprint(model: dict) -> dict:
         environment = service.get("environment") or {}
         if isinstance(environment, dict) and environment.get("CLUSTER_ID"):
             cluster_ids.add(str(environment["CLUSTER_ID"]))
-        cpus += float(service.get("cpus") or 0) * replicas
-        memory += int(service.get("mem_limit") or 0) * replicas
+        # Per-container limits as declared; the totals count replicas.
+        limits[name] = {
+            "cpus": float(service.get("cpus") or 0),
+            "memory": float(int(service.get("mem_limit") or 0)),
+        }
+        cpus += limits[name]["cpus"] * replicas
+        users[name] = service.get("user")
+        memory += limits[name]["memory"] * replicas
     devices = {}
     for key, volume in (model.get("volumes") or {}).items():
         device = (volume.get("driver_opts") or {}).get("device")
@@ -230,6 +264,12 @@ def footprint(model: dict) -> dict:
             if not base or not _within(resolved, base):
                 build_forbidden.append(f"{name}: build dockerfile outside the context")
     networks = {net.get("name") for net in (model.get("networks") or {}).values()}
+    # Compose defaults: bridge for a network, local for a volume.
+    drivers = {
+        (item or {}).get("driver") or default
+        for key, default in (("networks", "bridge"), ("volumes", "local"))
+        for item in (model.get(key) or {}).values()
+    }
     return {
         "build_inputs": build_inputs,
         "build_forbidden": build_forbidden,
@@ -247,6 +287,10 @@ def footprint(model: dict) -> dict:
         "volume_devices": devices,
         "cpus": cpus,
         "memory": memory,
+        "services": limits,
+        "users": users,
+        "drivers": drivers,
+        "by_service": by_service,
     }
 
 
@@ -301,6 +345,8 @@ def root_footprint(
     found["home_data_root"] = home_data_root
     found["paths"].add(home_data_root)
     found["state"].add(home_data_root)
+    # Writable binds only, before sensitive inputs are promoted to state.
+    found["bound_state"] = set(found["state"])
     for path in set(found["sensitive_inputs"]):
         found["state"].add(path)
     if env_file is not None:
@@ -354,7 +400,13 @@ def _port_clash(a: str, b: str) -> bool:
     return port_a == port_b and bool(host_a == host_b or {host_a, host_b} & wildcard)
 
 
-def _path_conflict(path: str, owner: dict, other_path: str, other: dict) -> bool:
+def _path_conflict(
+    path: str,
+    owner: dict,
+    other_path: str,
+    other: dict,
+    owner_name: str | None = None,
+) -> bool:
     if not _nested(path, other_path):
         return False
     # A read-only bind of the host root (cadvisor, node-exporter) contains
@@ -382,6 +434,20 @@ def _path_conflict(path: str, owner: dict, other_path: str, other: dict) -> bool
         and _tracked_only(path)
     ):
         return False
+    # restic backs up the repo's secrets/ through a read-only bind; it owns
+    # none of the owner LAB's read-only copies under secrets/labs/<owner>/.
+    # A writable bind of secrets/, a HOME secret, another LAB's copy, the
+    # whole LAB tree or a writable LAB bind still clashes.
+    if (
+        owner_name
+        and other_path == SECRETS_TREE
+        and other_path in other["inputs"]
+        and other_path not in other.get("bound_state", other["state"])
+        and path.startswith(os.path.join(LAB_SECRETS_TREE, owner_name) + os.sep)
+        and path in owner["inputs"]
+        and path not in owner["state"]
+    ):
+        return False
     shared_public_input = (
         path == other_path
         and path in owner["inputs"]
@@ -401,6 +467,12 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
     problems: list[str] = []
     others = [("root", root)] + [(f"lab {n}", f) for n, f in selected.items()]
     for name, lab in selected.items():
+        # The allowed Docker socket is shared with HOME by design; a path that
+        # also arrives through any other source keeps its treatment.
+        sources = lab.get("sources", [])
+        shared_socket = {s["real"] for s in sources if _socket_exception(name, s)} - {
+            s["real"] for s in sources if not _socket_exception(name, s)
+        }
         for other_name, other in others:
             if other is lab:
                 continue
@@ -410,9 +482,11 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
             for port in sorted(lab["ports"]):
                 if any(_port_clash(port, p) for p in other["ports"]):
                     problems.append(f"{name}: host port {port} also in {other_name}")
-            for path in sorted(lab["paths"]):
+            for path in sorted(lab["paths"] - shared_socket):
                 conflicts = [
-                    p for p in other["paths"] if _path_conflict(path, lab, p, other)
+                    p
+                    for p in other["paths"]
+                    if _path_conflict(path, lab, p, other, owner_name=name)
                 ]
                 if conflicts:
                     if (
@@ -524,7 +598,8 @@ def path_integrity_problems(selected: dict[str, dict]) -> list[str]:
             if not os.path.lexists(declared):
                 problems.append(f"{name}: read-only source does not exist")
                 continue
-            if _has_symlink_component(declared):
+            # /var/run is a symlink to /run on most hosts.
+            if _has_symlink_component(declared) and not _socket_exception(name, source):
                 problems.append(f"{name}: read-only source contains a symlink")
             if not declared.exists():
                 problems.append(f"{name}: read-only source target does not exist")
@@ -537,6 +612,19 @@ def _within(path: str, root: str) -> bool:
 
 def _covers(root: str, path: str) -> bool:
     return _within(path, root)
+
+
+def _socket_exception(name: str, source: dict) -> bool:
+    """SPEC-0263 section 3: supabase `vector` alone may bind the Docker socket,
+    read-only, for log collection. Decided on the declared path, since
+    /var/run is a symlink to /run on most hosts."""
+    return (
+        name == "supabase"
+        and source.get("service") == "vector"
+        and source["declared"] == "/var/run/docker.sock"
+        and source.get("target") == "/var/run/docker.sock"
+        and source["read_only"] is True
+    )
 
 
 def source_allowlist_problems(
@@ -570,9 +658,10 @@ def source_allowlist_problems(
     if data and (unsafe(data) or _within(data, repo)):
         problems.append(f"LAB_DATA_DIR {data} covers or sits in a protected path")
         data = None
-    secret_value = env.get("LAB_SECRET_DIR") or "../secrets/labs"
-    # Compose resolves a relative LAB_SECRET_DIR against labs/.
-    secret = os.path.realpath(ROOT / "labs" / secret_value)
+    secret_value = env.get("LAB_SECRET_DIR") or "../../secrets/labs"
+    # Compose resolves a relative LAB_SECRET_DIR against the LAB folder
+    # labs/<name>/; every LAB folder sits at that one depth (SPEC-0263).
+    secret = os.path.realpath(ROOT / "labs" / "lab" / secret_value)
     # Decided from the resolved secrets tree too: a symlinked secrets/ must
     # not let a sibling of secrets/labs pass as outside the repo.
     secrets_root = os.path.realpath(ROOT / "secrets")
@@ -604,13 +693,15 @@ def source_allowlist_problems(
 
     operator, results = operator_roots(False), operator_roots(True)
 
-    def allowed(real: str, read_only: bool) -> bool:
+    def allowed(real: str, read_only: bool, name: str) -> bool:
+        # Each LAB reads only its own copies, <LAB_SECRET_DIR>/<name>/.
+        own = os.path.join(secret, name) if secret else None
         if _sensitive_input(real, None):
-            # Secrets and sockets only from the LAB secret copies.
-            return bool(read_only and secret and _within(real, secret))
+            # Secrets and sockets only from this LAB's secret copies.
+            return bool(read_only and own and _within(real, own))
         if data and _within(real, data):
             return True
-        if read_only and secret and _within(real, secret):
+        if read_only and own and _within(real, own):
             return True
         if read_only and any(_within(real, item) for item in operator | results):
             return True
@@ -626,12 +717,14 @@ def source_allowlist_problems(
 
     for name, lab in selected.items():
         for source in lab["sources"]:
-            if not allowed(source["real"], source["read_only"]):
+            if _socket_exception(name, source):
+                continue
+            if not allowed(source["real"], source["read_only"], name):
                 problems.append(
                     f"{name}: source {source['real']} is outside the LAB allowlist"
                 )
         for context in lab.get("build_inputs", []):
-            if not allowed(context, True):
+            if not allowed(context, True, name):
                 problems.append(
                     f"{name}: build context {context} is outside the LAB allowlist"
                 )
@@ -665,12 +758,562 @@ def data_root_problems(env: dict[str, str], root: dict) -> list[str]:
 
 
 def lab_file(name: str) -> str:
-    if (
-        not re.fullmatch(r"[a-z0-9-]+", name)
-        or not (ROOT / f"labs/{name}.yml").is_file()
+    """SPEC-0263 section 1: a LAB is the folder `labs/<name>/`."""
+    if re.fullmatch(r"[a-z0-9-]+", name):
+        if (ROOT / f"labs/{name}/docker-compose.yml").is_file():
+            return f"labs/{name}/docker-compose.yml"
+        if (ROOT / f"labs/{name}.yml").is_file():
+            raise LabError(
+                f"{name}: flat labs/{name}.yml is retired; "
+                f"use labs/{name}/docker-compose.yml"
+            )
+    raise LabError(f"unknown LAB {name!r}")
+
+
+MANIFEST_KINDS = frozenset({"add", "replace-same", "replace-substitute", "undecided"})
+REPLACEMENT_KINDS = frozenset({"replace-same", "replace-substitute"})
+INTEGRATION_KINDS = frozenset(
+    {
+        "gateway-route",
+        "oidc-client",
+        "database-role",
+        "observability",
+        "openbao",
+        "network",
+    }
+)
+TARGET_FOLDER = re.compile(r"^infra/\d\d-[a-z0-9-]+/.+/$")
+SECRET_CATALOG = "infra/03-security/openbao/secret-catalog.json"
+MIB_BYTES = 2**20
+
+
+def _repo_path(value: object) -> pathlib.Path | None:
+    """A manifest path: repo-relative, no `..`, and resolving inside ROOT."""
+    if not isinstance(value, str) or not value or os.path.isabs(value):
+        return None
+    if ".." in pathlib.PurePosixPath(value).parts:
+        return None
+    path = ROOT / value
+    root = os.path.realpath(ROOT)
+    return path if _within(os.path.realpath(path), root) else None
+
+
+def load_manifest(name: str) -> dict:
+    import yaml
+
+    path = ROOT / f"labs/{name}/promotion.yaml"
+    if not path.is_file():
+        raise LabError(f"{name}: no promotion manifest labs/{name}/promotion.yaml")
+    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        raise LabError(f"{name}: promotion manifest is not a mapping")
+    return loaded
+
+
+def catalog_ids() -> set[str]:
+    try:
+        catalog = json.loads((ROOT / SECRET_CATALOG).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise LabError(f"secret catalog {SECRET_CATALOG} is unreadable: {exc}") from exc
+    try:
+        return {entry["id"] for entry in catalog.get("entries", [])}
+    except (AttributeError, KeyError, TypeError) as exc:
+        raise LabError(f"secret catalog {SECRET_CATALOG} is malformed: {exc}") from exc
+
+
+def manifest_problems(
+    name: str, manifest: dict, lab: dict, catalog_ids: set[str]
+) -> list[str]:
+    """SPEC-0263 section 2: a manifest consistent with its rendered LAB."""
+    problems = []
+    kind = manifest.get("kind")
+    if kind not in MANIFEST_KINDS:
+        problems.append(f"{name}: unknown kind {kind!r}")
+    target = manifest.get("target")
+    if kind == "undecided" and "target" in manifest:
+        problems.append(f"{name}: target is not allowed on kind undecided")
+    elif kind in MANIFEST_KINDS - {"undecided"} and not isinstance(target, dict):
+        problems.append(f"{name}: target is required for kind {kind}")
+    if isinstance(target, dict):
+        folder = target.get("folder")
+        if (
+            not isinstance(folder, str)
+            or not TARGET_FOLDER.fullmatch(folder)
+            or ".." in folder.split("/")
+        ):
+            problems.append(
+                f"{name}: target folder {folder!r} is outside infra/<tier>/"
+            )
+    if kind in REPLACEMENT_KINDS and not manifest.get("replaces"):
+        problems.append(f"{name}: kind {kind} needs a non-empty replaces")
+    for item in manifest.get("integrations") or []:
+        integration = item.get("kind") if isinstance(item, dict) else item
+        if integration not in INTEGRATION_KINDS:
+            problems.append(f"{name}: unknown integration kind {integration!r}")
+    for item in manifest.get("secrets") or []:
+        row = item.get("row") if isinstance(item, dict) else item
+        if row not in catalog_ids:
+            problems.append(f"{name}: secret row {row!r} has no catalog row")
+    declared = (manifest.get("resources") or {}).get("services") or {}
+    rendered = lab["services"]
+    for service in sorted(set(declared) | set(rendered)):
+        want, have = declared.get(service), rendered.get(service)
+        if isinstance(want, dict) and (
+            not want.get("cpus") or not want.get("memory_mib")
+        ):
+            problems.append(
+                f"{name}: resources.services {service} has no cpus or memory"
+            )
+        if (
+            not isinstance(want, dict)
+            or have is None
+            or float(want.get("cpus") or 0) != have["cpus"]
+            or float(want.get("memory_mib") or 0) * 2**20 != have["memory"]
+        ):
+            problems.append(
+                f"{name}: resources.services {service} disagrees with rendered limits"
+            )
+    documents = manifest.get("documents") or {}
+    for key in ("guide", "runbook", "guide_target", "runbook_target"):
+        path = documents.get(key)
+        if path is None and key in {"guide", "runbook"}:
+            problems.append(f"{name}: documents {key} is missing")
+        elif path is not None and not (
+            _repo_path(path) is not None and _repo_path(path).exists()
+        ):
+            problems.append(
+                f"{name}: documents {key} {path} does not exist in the repo"
+            )
+    return problems
+
+
+# SPEC-0263 section 5: the OS and Docker reserve kept off the promotion
+# budget (owner decision C, 2026-11-05; policy 0107 holds the same table).
+PROMOTION_RESERVE = {"cpus": 2.0, "memory_mib": 4096, "disk_percent": 10}
+ALLOWED_DRIVERS = frozenset({"local", "bridge", "overlay"})
+MAX_ID = 65534
+NAME = re.compile(r"[a-z_][a-z0-9_.-]*", re.IGNORECASE)
+INFO_SOURCE = "docker info --format '{{json .}}'"
+
+
+@functools.cache
+def profile_vocabulary() -> frozenset[str]:
+    """POL-0078 profile names, through the reader the profile gates use."""
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from scripts.lib.document_governance.operations_catalog import (
+        _conftest_profile_names,
+    )
+
+    return _conftest_profile_names(ROOT)
+
+
+def measure_host(docker: str, data_root: str) -> dict:
+    """Read-only HOME measurements, each `{"value": ..., "source": ...}`.
+    A value that cannot be read is left out, so readiness reports NOT_RUN."""
+    host = {}
+    info = run([docker, "info", "--format", "{{json .}}"])
+    try:
+        data = json.loads(info.stdout) if info.returncode == 0 else {}
+    except ValueError:  # unparsable output is unmeasured, not a crash
+        data = {}
+    data = data if isinstance(data, dict) else {}
+    for key, name in (
+        ("NCPU", "NCPU"),
+        ("MemTotal", "MemTotal"),
+        ("DockerRootDir", "DockerRootDir"),
+        ("ServerVersion", "docker_version"),
+        ("CgroupVersion", "cgroup_version"),
     ):
-        raise LabError(f"unknown LAB {name!r}")
-    return f"labs/{name}.yml"
+        if data.get(key) not in (None, ""):
+            host[name] = {"value": data[key], "source": f"{INFO_SOURCE} .{key}"}
+    compose = run([docker, "compose", "version", "--short"])
+    if compose.returncode == 0 and compose.stdout.strip():
+        host["compose_version"] = {
+            "value": compose.stdout.strip(),
+            "source": "docker compose version --short",
+        }
+    docker_data = (host.get("DockerRootDir") or {}).get("value")
+    for name, path in (("disk_data", data_root), ("disk_docker", docker_data)):
+        if not path:
+            continue
+        try:
+            usage = shutil.disk_usage(path)
+        except OSError:
+            continue
+        host[name] = {
+            "value": {"path": path, "free": usage.free, "total": usage.total},
+            "source": f"shutil.disk_usage({path})",
+        }
+    return host
+
+
+def _compose_services(path: str) -> set[str] | None:
+    """Service names a repository Compose file declares, or None if absent."""
+    import yaml
+
+    file = _repo_path(path)
+    if file is None or not file.is_file():
+        return None
+    try:
+        loaded = yaml.safe_load(file.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
+        return None
+    return (
+        set((loaded or {}).get("services") or {}) if isinstance(loaded, dict) else set()
+    )
+
+
+def _root_includes() -> set[str]:
+    """Compose files the root docker-compose.yml includes."""
+    import yaml
+
+    try:
+        loaded = yaml.safe_load((ROOT / "docker-compose.yml").read_text("utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
+        return set()
+    items = (loaded or {}).get("include") or [] if isinstance(loaded, dict) else []
+    return {str(item.get("path") if isinstance(item, dict) else item) for item in items}
+
+
+def _version(text: object) -> tuple[int, ...]:
+    return tuple(int(part) for part in re.findall(r"\d+", str(text))[:3])
+
+
+def _user_valid(user: str) -> bool:
+    """uid[:gid], each numeric in 0..65534 or a name the image resolves."""
+    parts = user.split(":")
+    return len(parts) <= 2 and all(
+        (part.isdigit() and int(part) <= MAX_ID) or NAME.fullmatch(part)
+        for part in parts
+    )
+
+
+def _criterion(values: dict, failed: list[str], unmeasured: list[str]) -> dict:
+    result = "FAIL" if failed else "NOT_RUN" if unmeasured else "PASS"
+    return {"result": result, "values": values, "problems": failed + unmeasured}
+
+
+def readiness(
+    name: str,
+    manifest: dict,
+    lab: dict,
+    host: dict,
+    running: list[dict],
+    root: dict,
+) -> dict:
+    """SPEC-0263 section 5: a fail-closed promotion readiness report."""
+    source = f"labs/{name}/promotion.yaml"
+    kind = manifest.get("kind")
+    target = manifest.get("target") or {}
+    # Only a replacement kind retires anything. Each retired service must be
+    # declared in an existing compose_path and rendered in root; a claim that
+    # fails is a composition problem and retires nothing.
+    replaces = manifest.get("replaces") if kind in REPLACEMENT_KINDS else None
+    retired: set[str] = set()
+    covering: list[str] = []  # compose files that declare the retired services
+    replace_problems = []
+    includes = _root_includes() if replaces else set()
+    for item in replaces or []:
+        item = item if isinstance(item, dict) else {}
+        path = str(item.get("compose_path"))
+        services = [str(s) for s in item.get("services") or [item.get("service")] if s]
+        declared = _compose_services(path)
+        missing = [
+            s
+            for s in services
+            if s not in (declared or ()) or s not in root.get("by_service", {})
+        ]
+        if declared is None:
+            replace_problems.append(f"replaces compose_path {path} does not exist")
+        elif path not in includes:
+            replace_problems.append(
+                f"replaces compose_path {path} is not included by root"
+            )
+        elif not services or missing:
+            replace_problems.append(
+                f"replaces {path}: services {missing or services} are not "
+                "declared there and rendered in root"
+            )
+        else:
+            retired |= set(services)
+            covering.append(path)
+    by_service = root.get("by_service", {})
+    kept_identity = {
+        key: set().union(*(v[key] for s, v in by_service.items() if s not in retired))
+        for key in ("containers", "ports", "dirs")
+    }
+    # A port or container name that a kept service also declares stays.
+    retired_identity = {
+        key: set().union(*(by_service[s][key] for s in retired)) - kept_identity[key]
+        for key in ("containers", "ports", "dirs")
+    }
+    criteria = {}
+
+    # Tier fit.
+    failed: list[str] = []
+    folder = target.get("folder")
+    values = {
+        "kind": {"value": kind, "source": source},
+        "folder": {"value": folder, "source": source},
+        # Spec section 5 "matches the service function" is an owner judgment;
+        # it is shown, not measured, and does not block PASS (narrowing in
+        # POL-0107 awaiting owner acceptance).
+        "function_fit": {"value": "NOT_RUN", "source": "owner judgment, not measured"},
+    }
+    if kind not in MANIFEST_KINDS - {"undecided"}:
+        failed.append(f"kind {kind!r} has no promotion target")
+    if (
+        not isinstance(folder, str)
+        or not TARGET_FOLDER.fullmatch(folder)
+        or ".." in folder.split("/")
+    ):
+        failed.append(f"target folder {folder!r} is outside infra/<tier>/")
+    elif _repo_path(folder) is None:
+        failed.append(f"target folder {folder} resolves outside the repository")
+    else:
+        tier = "/".join(folder.split("/")[:2])
+        values["tier_exists"] = {"value": (ROOT / tier).is_dir(), "source": tier}
+        if not (ROOT / tier).is_dir():
+            failed.append(f"tier folder {tier} does not exist")
+        exists = (ROOT / folder).exists()
+        values["folder_exists"] = {"value": exists, "source": folder}
+
+        # An existing folder is a declared replacement only when retired
+        # services own it exclusively: it holds a verified retired Compose
+        # file or a retired service's build context or bind source, and no
+        # kept service's build context or bind source lies inside it. Derived
+        # from the root render, not from the manifest.
+        real = os.path.realpath(ROOT / folder)
+        claimed = any(path.startswith(folder) for path in covering) or any(
+            _within(item, real) for item in retired_identity["dirs"]
+        )
+        shared = {
+            s
+            for s, v in by_service.items()
+            if s not in retired and any(_within(item, real) for item in v["dirs"])
+        }
+        # The filesystem too: every service a Compose file inside the folder
+        # declares must be retired (dev-db/ still declares dev-pg).
+        if exists and pathlib.Path(real).is_dir():
+            # rglob does not follow a symlinked directory, so one hides files.
+            linked = [
+                p
+                for p in pathlib.Path(real).rglob("*")
+                if p.is_symlink() and p.is_dir()
+            ]
+            if linked:
+                failed.append(f"target folder {folder} holds a symlinked directory")
+            for found in pathlib.Path(real).rglob("*compose*.y*ml"):
+                path = os.path.relpath(found, os.path.realpath(ROOT))
+                declared = _compose_services(path)
+                if declared is None:
+                    failed.append(f"compose file {path} in the target cannot be read")
+                    continue
+                shared |= declared - retired
+        shared = sorted(shared)
+        if exists and (not claimed or shared):
+            failed.append(
+                f"target folder {folder} exists and is not a replacement"
+                + (f"; kept services use it: {', '.join(shared)}" if shared else "")
+            )
+    unmeasured = []
+    try:
+        failed += manifest_problems(name, manifest, lab, catalog_ids())
+    except LabError as exc:
+        unmeasured.append(str(exc))
+    except (AttributeError, KeyError, TypeError, ValueError) as exc:
+        raise LabError(f"{name}: invalid manifest or catalog: {exc!r}", 2) from exc
+    criteria["tier"] = _criterion(values, failed, unmeasured)
+
+    # Service composition. The retired services' own containers and ports
+    # are removed from root and running before collisions(); networks and
+    # data paths stay, since retiring a service frees neither.
+    failed, unmeasured = list(replace_problems), []
+    kept_root = dict(root)
+    for key in ("containers", "ports"):
+        kept_root[key] = root[key] - retired_identity[key]
+    kept_running = [
+        c for c in running if c["name"] not in retired_identity["containers"]
+    ]
+    clashes = collisions({name: lab}, kept_root, kept_running)
+    failed += clashes
+    profile = target.get("profile")
+    values = {
+        "collisions": {
+            "value": len(clashes),
+            "source": "collisions() against the root render and docker inspect",
+        },
+        "retired_services": {"value": sorted(retired), "source": source},
+        "profile": {"value": profile, "source": source},
+        # Spec section 5 profile and consumer clashes are not measured.
+        "profile_and_consumer_clashes": {"value": "NOT_RUN", "source": "not measured"},
+    }
+    unmeasured.append("profile and consumer clashes are not measured")
+    try:
+        if profile not in profile_vocabulary():
+            failed.append(f"profile {profile!r} is not in the POL-0078 vocabulary")
+    except Exception as exc:  # an unreadable policy cannot pass
+        unmeasured.append(f"POL-0078 vocabulary unreadable: {exc}")
+    for item in manifest.get("integrations") or []:
+        owner = item.get("owner") if isinstance(item, dict) else None
+        path = _repo_path(owner)
+        if path is None or not path.exists():
+            failed.append(f"integration owner {owner!r} does not exist")
+    criteria["composition"] = _criterion(values, failed, unmeasured)
+
+    # Linux.
+    failed, unmeasured = [], []
+    requirements = manifest.get("host") or {}
+    cgroup = (host.get("cgroup_version") or {}).get("value")
+    values = {
+        "cgroup_version": {
+            "value": cgroup,
+            "source": (host.get("cgroup_version") or {}).get("source", INFO_SOURCE),
+        }
+    }
+    # Spec section 5 groups and file modes are not measured.
+    values["groups_and_file_modes"] = {"value": "NOT_RUN", "source": "not measured"}
+    unmeasured.append("groups and file modes are not measured")
+    features = [str(f) for f in requirements.get("kernel_features") or []]
+    if lab["cpus"] or lab["memory"] or "cgroup2" in features:
+        if cgroup is None:
+            unmeasured.append("cgroup version was not measured")
+        elif str(cgroup) != "2":
+            failed.append(f"declared limits need cgroup v2, host has v{cgroup}")
+    for service, user in sorted(lab.get("users", {}).items()):
+        if user is None:
+            continue
+        values[f"user {service}"] = {
+            "value": str(user),
+            "source": f"rendered compose services.{service}.user"
+            + ("" if str(user).replace(":", "").isdigit() else "; resolved in image"),
+        }
+        if not _user_valid(str(user)):
+            failed.append(f"{service}: user {user!r} is not a valid uid[:gid]")
+    unmeasured += [
+        f"kernel feature {f} cannot be measured" for f in features if f != "cgroup2"
+    ]
+    criteria["linux"] = _criterion(values, failed, unmeasured)
+
+    # Docker.
+    failed, unmeasured = [], []
+    values = {}
+    for key, measured in (("docker", "docker_version"), ("compose", "compose_version")):
+        found = host.get(measured)
+        values[measured] = found or {"value": None, "source": INFO_SOURCE}
+        if found is None:
+            unmeasured.append(f"{key} version was not measured")
+        elif key in requirements and _version(found["value"]) < _version(
+            requirements[key]
+        ):
+            failed.append(f"{key} {found['value']} is older than {requirements[key]}")
+    drivers = sorted(lab.get("drivers", set()))
+    values["drivers"] = {"value": drivers, "source": "rendered compose"}
+    failed += [
+        f"driver {d} is not allowed" for d in drivers if d not in ALLOWED_DRIVERS
+    ]
+    data_root = host.get("DockerRootDir")
+    values["DockerRootDir"] = data_root or {"value": None, "source": INFO_SOURCE}
+    if data_root is None:
+        unmeasured.append("Docker data root was not measured")
+    elif not os.path.isabs(str(data_root["value"])):
+        failed.append(f"Docker data root {data_root['value']} is not absolute")
+    criteria["docker"] = _criterion(values, failed, unmeasured)
+
+    # Server resources: limits in bytes, reported in MiB.
+    failed, unmeasured = [], []
+    counted = [
+        c for c in running if c.get("running", True) and c["project"] != lab["project"]
+    ]
+    retiring = [c for c in counted if c["name"] in retired_identity["containers"]]
+    kept = [c for c in counted if c not in retiring]
+    unlimited = sorted(c["name"] for c in kept if not c["cpus"] or not c["memory"])
+    unmeasured += [f"running container {c} declares no limit" for c in unlimited]
+    # A candidate service without a limit cannot be summed either.
+    unmeasured += [
+        f"candidate service {s} declares no limit"
+        for s, v in sorted(lab["services"].items())
+        if not v["cpus"] or not v["memory"]
+    ]
+    ncpu, memtotal = host.get("NCPU"), host.get("MemTotal")
+    inspect = "docker inspect HostConfig.NanoCpus/Memory of running containers"
+    values = {
+        "running_cpus": {"value": sum(c["cpus"] for c in counted), "source": inspect},
+        "retired_cpus": {"value": sum(c["cpus"] for c in retiring), "source": inspect},
+        "candidate_cpus": {"value": lab["cpus"], "source": "rendered compose"},
+        "running_memory_mib": {
+            "value": sum(c["memory"] for c in counted) / MIB_BYTES,
+            "source": inspect,
+        },
+        "retired_memory_mib": {
+            "value": sum(c["memory"] for c in retiring) / MIB_BYTES,
+            "source": inspect,
+        },
+        "candidate_memory_mib": {
+            "value": lab["memory"] / MIB_BYTES,
+            "source": "rendered compose",
+        },
+        "unlimited_containers": {"value": unlimited, "source": inspect},
+    }
+    cpus = sum(c["cpus"] for c in kept) + lab["cpus"]
+    memory = sum(c["memory"] for c in kept) + lab["memory"]
+    values["cpus_needed"] = {"value": cpus, "source": "running - retired + candidate"}
+    values["memory_needed_mib"] = {
+        "value": memory / MIB_BYTES,
+        "source": "running - retired + candidate",
+    }
+    if ncpu is None or memtotal is None:
+        unmeasured.append("host CPU count or memory was not measured")
+    else:
+        values["NCPU"], values["MemTotal"] = ncpu, memtotal
+        cpu_budget = float(ncpu["value"]) - PROMOTION_RESERVE["cpus"]
+        memory_budget = (
+            float(memtotal["value"]) - PROMOTION_RESERVE["memory_mib"] * MIB_BYTES
+        )
+        values["cpu_budget"] = {"value": cpu_budget, "source": "NCPU - reserve"}
+        values["memory_budget_mib"] = {
+            "value": memory_budget / MIB_BYTES,
+            "source": "MemTotal - reserve",
+        }
+        if cpus > cpu_budget:
+            failed.append(f"CPUs {cpus:g} exceed budget {cpu_budget:g}")
+        if memory > memory_budget:
+            failed.append(
+                f"memory {memory / MIB_BYTES:.0f} MiB exceeds budget "
+                f"{memory_budget / MIB_BYTES:.0f} MiB"
+            )
+    need = (manifest.get("resources") or {}).get("disk_gib") or {}
+    for disk, key in (("disk_data", "data"), ("disk_docker", "images")):
+        found = host.get(disk)
+        if found is None or key not in need:
+            unmeasured.append(f"{disk} free space or disk_gib.{key} is missing")
+            continue
+        usage = found["value"]
+        values[disk] = found
+        free = usage["free"] - usage["total"] * PROMOTION_RESERVE["disk_percent"] / 100
+        values[f"{disk}_usable_gib"] = {
+            "value": round(free / 2**30, 1),
+            "source": found.get("source", "shutil.disk_usage"),
+        }
+        try:
+            needed = float(need[key]) * 2**30
+        except (TypeError, ValueError) as exc:
+            raise LabError(f"{name}: disk_gib.{key} is not a number", 2) from exc
+        if free < needed:
+            failed.append(
+                f"{disk}: {free / 2**30:.1f} GiB usable, disk_gib.{key} needs "
+                f"{need[key]}"
+            )
+    # Over budget stays FAIL even with unlimited containers: the known lower
+    # bound already exceeds the budget. NOT_RUN only when the measured sum fits.
+    criteria["resources"] = _criterion(values, failed, unmeasured)
+
+    results = {c["result"] for c in criteria.values()}
+    overall = (
+        "PASS" if results == {"PASS"} else "FAIL" if "FAIL" in results else "NOT_RUN"
+    )
+    return {"lab": name, "kind": kind, "result": overall, "criteria": criteria}
 
 
 def ledger_dir(env: dict[str, str]) -> pathlib.Path:
@@ -723,6 +1366,13 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         docker_root=docker_root(args.docker),
     )
     running = running_containers(args.docker)
+    ids = catalog_ids()
+    manifests = []
+    for name, lab in selected.items():
+        try:
+            manifests += manifest_problems(name, load_manifest(name), lab, ids)
+        except LabError as exc:  # a missing manifest is a problem, not a crash
+            manifests.append(str(exc))
     report = {
         "labs": {
             name: {
@@ -748,7 +1398,8 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         ]
         + collisions(selected, root, running)
         + budget(selected, running, env)
-        + stale_volumes(args.docker, selected),
+        + stale_volumes(args.docker, selected)
+        + manifests,
     }
     return report, selected
 
@@ -971,6 +1622,29 @@ def cmd_run(args, env) -> int:
     return code or stopped
 
 
+def cmd_readiness(args) -> int:
+    """Read HOME state only: renders, docker info/inspect and disk usage."""
+    candidate = footprint(render(args.docker, args.env_file, lab_file(args.lab)))
+    root = root_footprint(
+        render(args.docker, args.root_env_file, None),
+        env_file=args.root_env_file,
+        docker_root=docker_root(args.docker),
+    )
+    report = readiness(
+        args.lab,
+        load_manifest(args.lab),
+        candidate,
+        measure_host(args.docker, root["home_data_root"]),
+        running_containers(args.docker),
+        root,
+    )
+    text = json.dumps(report, indent=2) + "\n"
+    if args.report:
+        args.report.write_text(text, encoding="utf-8")
+    print(text, end="")
+    return 0 if report["result"] == "PASS" else 3
+
+
 def entries(env) -> list[dict]:
     directory = ledger_dir(env)
     if not directory.is_dir():
@@ -1016,6 +1690,9 @@ def main(argv: list[str] | None = None) -> int:
     commands.add_parser("down").add_argument("lab")
     commands.add_parser("reap")
     commands.add_parser("status")
+    ready = commands.add_parser("readiness")
+    ready.add_argument("lab")
+    ready.add_argument("--report", type=pathlib.Path)
     args = parser.parse_args(argv)
     env = read_env(args.env_file)
     try:
@@ -1031,6 +1708,8 @@ def main(argv: list[str] | None = None) -> int:
             return stop(args, env, args.lab)
         if args.command == "reap":
             return cmd_reap(args, env)
+        if args.command == "readiness":
+            return cmd_readiness(args)
         projects = {
             c["project"] for c in running_containers(args.docker) if c["running"]
         }

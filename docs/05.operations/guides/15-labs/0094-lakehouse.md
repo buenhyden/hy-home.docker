@@ -10,7 +10,7 @@ artifact_id: "GDE-0094"
 parent_ids:
 - "POL-0094"
 implementation_services:
-  labs/lakehouse.yml:
+  labs/lakehouse/docker-compose.yml:
   - seaweedfs-table-bucket
   - flink-jobmanager
   - flink-taskmanager
@@ -24,7 +24,7 @@ created: "2026-09-23"
 
 ## Overview
 
-레이크하우스는 root Compose에서 분리된 독립 LAB이며 `labs/lakehouse.yml`의 `lab-lakehouse`
+레이크하우스는 root Compose에서 분리된 독립 LAB이며 `labs/lakehouse/docker-compose.yml`의 `lab-lakehouse`
 profile로 선택된다(SPEC-0262). 테이블은 HOME SeaweedFS `lakehouse` 테이블 버킷 안의
 Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다. Spark는 배치와 테이블
 유지보수 엔진, Trino는 대화형 SQL 엔진, Flink는 스트리밍 엔진으로 모두 같은 카탈로그를
@@ -64,7 +64,7 @@ Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다.
 
 - **Catalog.** HOME `seaweedfs-s3`가 REST 카탈로그를 제공하며 요청은 S3 identity로 SigV4
   서명된다. `lakehouse` 테이블 버킷은 `dev`와 `test` 네임스페이스를 가지며, LAB 작업
-  `seaweedfs-table-bucket`([lakehouse LAB Compose](../../../../labs/lakehouse.yml))이 설정된
+  `seaweedfs-table-bucket`([lakehouse LAB Compose](../../../../labs/lakehouse/docker-compose.yml))이 설정된
   S3 endpoint에 버킷, 정책, 네임스페이스를 생성한다.
 - **Identity.** 모든 엔진은 `lakehouse` S3 identity(STRG-015)를 사용한다.
   이 identity의 S3 작업은 `lakehouse` 버킷에만 미치며, 테이블 버킷
@@ -109,18 +109,18 @@ Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
-| `seaweedfs-table-bucket` | table bucket/policy/namespace provisioning job; policy 매번 재작성 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse.yml) |
-| `flink-jobmanager` | session/job coordination; shared checkpoint | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse.yml) |
-| `flink-taskmanager` | task execution/slots; shared checkpoint, JM 등록 확인 | JM `/taskmanagers` 등록 ID healthcheck; 해당 job·checkpoint·복원은 별도 확인 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse.yml) |
-| `great-expectations` | one-shot list/validate; ephemeral context, DB read 의도 | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse.yml) |
-| `spark` | one-shot local SQL; table mutation은 명시 command | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse.yml) |
-| `trino` | single-node SQL; username은 인증/권한 경계 아님 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse.yml) |
+| `seaweedfs-table-bucket` | table bucket/policy/namespace provisioning job; policy 매번 재작성 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse/docker-compose.yml) |
+| `flink-jobmanager` | session/job coordination; shared checkpoint | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse/docker-compose.yml) |
+| `flink-taskmanager` | task execution/slots; shared checkpoint, JM 등록 확인 | JM `/taskmanagers` 등록 ID healthcheck; 해당 job·checkpoint·복원은 별도 확인 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse/docker-compose.yml) |
+| `great-expectations` | one-shot list/validate; ephemeral context, DB read 의도 | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse/docker-compose.yml) |
+| `spark` | one-shot local SQL; table mutation은 명시 command | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse/docker-compose.yml) |
+| `trino` | single-node SQL; username은 인증/권한 경계 아님 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../labs/lakehouse/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 LAB Compose가 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### Commands and side effects
 
-아래 명령은 저장소 루트에서 `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse`
+아래 명령은 저장소 루트에서 `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`
 접두사(표에서 `LAB`)로 실행한다. 렌더링만 하는 `LAB config`는 안전하다. 무언가를 시작하는
 명령은 `python3 scripts/operations/lab.py check|up|down lakehouse`의 목적·lease·충돌·예산
 규칙을 따르는 활성 lease 안에서만 쓰며, 승인된 S3·카탈로그 endpoint가 없으면 실행하지 않는다.
@@ -165,7 +165,7 @@ Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다.
 
 ### Common Checks
 
-- `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse config --quiet`
+- `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `python3 scripts/validation/check-operations-catalog.py`
 

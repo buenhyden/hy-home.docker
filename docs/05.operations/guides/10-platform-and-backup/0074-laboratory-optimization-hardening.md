@@ -17,7 +17,7 @@ created: "2026-05-17"
 ## Overview
 
 이 가이드는 Data·Observability·AI·Analytics tier에 흩어진 관리·실험 기능(dozzle, redisinsight,
-open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다. jupyterlab은 SPEC-0262 이후 독립 LAB `labs/jupyterlab.yml`이며 root에 포함되지 않는다.
+open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다. jupyterlab은 SPEC-0262 이후 독립 LAB `labs/jupyterlab/docker-compose.yml`이며 root에 포함되지 않는다.
 관리 UI 보안 경계, 네트워크 표준화, 최소권한 적용, 기준선 검증 절차를 다룬다.
 `system-guide | how-to` 유형이다.
 

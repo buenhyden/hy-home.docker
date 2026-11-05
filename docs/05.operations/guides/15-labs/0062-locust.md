@@ -16,7 +16,7 @@ created: "2026-05-10"
 
 ## Overview
 
-Locust는 `labs/locust.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다.
+Locust는 `labs/locust/docker-compose.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다.
 HOME root Compose와 `testing` profile에는 포함되지 않는다.
 
 ## Scope
@@ -31,17 +31,17 @@ LAB 선택 방법, 실행 흐름, 종료 결과 해석 기준을 확인하는 �
 
 Locust는 DEV 전용 distributed load generator LAB다. Coordinating master와 하나 이상의
 worker가 필요한 Python-based scenario 실습을 위해 유지된다. 정상 root Compose와
-`testing` profile에는 포함되지 않으며, 독립 `labs/locust.yml` entrypoint만 사용한다. Test run은 지정된 target에 external effect를 주므로
+`testing` profile에는 포함되지 않으며, 독립 `labs/locust/docker-compose.yml` entrypoint만 사용한다. Test run은 지정된 target에 external effect를 주므로
 target-owner 승인, limit, stop condition이 필요하다.
 
 ## Usage
 
 ### Implementation and data flow
 
-- Source: [Locust LAB Compose](../../../../labs/locust.yml)와
+- Source: [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)와
   [실행 이미지](../../../../labs/locust/Dockerfile). Dockerfile/build 선언이
   image source를 소유하며, LAB Compose가 master/worker closure를 소유한다.
-- LAB selection: repository root에서 `docker compose -f labs/locust.yml --env-file labs/.env ...`.
+- LAB selection: repository root에서 `docker compose -f labs/locust/docker-compose.yml --env-file labs/.env ...`.
   root HOME project, network, volume, secret을 공유하지 않는다.
 - 접속 흐름: master와 worker는 `lab_locust_net`에서 통신한다. 기본 host UI port는
   게시하지 않고 headless 결과를 `LAB_LOCUST_RESULT_DIR`에 쓴다.
@@ -61,7 +61,7 @@ Scenario directory와 result directory에는 target URL, credential, payload, te
 
 1. 대상·테스트 소유자·최대 사용자 수·생성 속도·지속 시간·중단 SLI·worker 수를
    기록한다.
-2. `LAB_LOCUST_SCENARIO_DIR`와 fresh `LAB_LOCUST_RESULT_DIR`을 준비하고 `docker compose -f labs/locust.yml --env-file labs/.env config --quiet`를
+2. `LAB_LOCUST_SCENARIO_DIR`와 fresh `LAB_LOCUST_RESULT_DIR`을 준비하고 `docker compose -f labs/locust/docker-compose.yml --env-file labs/.env config --quiet`를
    실행한다.
 3. scenario directory에 있는 `locustfile.py`와 fixture를 검토한다. 정확히 그 effect를
    승인받지 않았다면 production data를 수정할 수 없는지 확인한다.
@@ -124,13 +124,13 @@ LAB 서비스는 job template을 사용하며 정상 root 재시작 정책을 �
 
 ### Common Checks
 
-- `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust.yml --env-file labs/.env.example --profile lab-locust config --quiet`
-- `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust.yml --env-file labs/.env.example --profile lab-locust config --services`
+- `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust config --quiet`
+- `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust config --services`
 - `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
 ## Related Documents
 
 - [Locust distributed load generation](https://docs.locust.io/en/stable/running-distributed.html)
 - [Locust running without the web UI](https://docs.locust.io/en/stable/running-without-web-ui.html)
-- [Locust LAB Compose](../../../../labs/locust.yml)
+- [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)
 - [Operations index](../../README.md)

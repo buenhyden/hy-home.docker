@@ -1553,7 +1553,7 @@ owned files changed no SMTP implementation or this Task.
 Root `smtp_password` still has one source at
 `secrets/communication/smtp/smtp_password.txt`. The former
 `infra/04-data/supabase/docker-compose.yml` is absent; current source is
-`labs/supabase.yml`, retaining the target alias and wrapper. LAB execution is
+`labs/supabase/docker-compose.yml`, retaining the target alias and wrapper. LAB execution is
 excluded. Relative to supplied input, the selected SMTP files changed only
 root Compose documentation routing and `test_smtp_proof.py` runbook routing;
 no SMTP behavior fix was needed. PR #413 merged as

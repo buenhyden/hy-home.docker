@@ -961,7 +961,7 @@ These are source/unit or static receipts only; the historical 223-test result
 retains its dated scope.
 
 `tests.lib.ops.test_smtp_contract` (51 tests) is NOT_RUN in this fresh run
-because it reads `labs/supabase.yml` and GoTrue consumer/image-pin paths. It is
+because it reads `labs/supabase/docker-compose.yml` and GoTrue consumer/image-pin paths. It is
 not replaced by the 235 executed tests. The full aggregate and remote PR gate
 remain NOT_RUN: their selected routes include infrastructure hardening's
 `04Supabase`, template controls' LAB renders and `labs` environment example,

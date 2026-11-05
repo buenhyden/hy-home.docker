@@ -66,9 +66,9 @@ progress under the approved parents. Hosted CI passed on PR #747, merged as
 
 ### Decisions
 
-- Grouping: one LAB per Stage 05 document set, `labs/lakehouse.yml`,
-  `labs/dbt.yml`, `labs/superset.yml`, `labs/jupyterlab.yml`,
-  `labs/sonarqube.yml` and `labs/stalwart.yml`. Assets moved with `git mv` to
+- Grouping: one LAB per Stage 05 document set, `labs/lakehouse/docker-compose.yml`,
+  `labs/dbt/docker-compose.yml`, `labs/superset/docker-compose.yml`, `labs/jupyterlab/docker-compose.yml`,
+  `labs/sonarqube/docker-compose.yml` and `labs/stalwart/docker-compose.yml`. Assets moved with `git mv` to
   `labs/lakehouse/{spark,flink,trino,great-expectations}/`,
   `labs/lakehouse/seaweedfs-table-bucket.sh`, `labs/dbt/`, `labs/superset/`,
   `labs/jupyterlab/`, `labs/sonarqube/` and `labs/stalwart/`. The Stage 05

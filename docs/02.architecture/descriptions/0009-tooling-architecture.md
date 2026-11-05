@@ -34,7 +34,7 @@ This section preserves the system boundaries, consumption relationships, non-goa
 - **Owns**:
   - IaC CLI helper (`OpenTofu`) and automation platform (`Terrakube`)
   - Static code analysis engine (`SonarQube`)
-  - Explicit load-testing jobs (`k6`, the default load tool); Locust is an optional standalone LAB (`labs/locust.yml`), not a Compose service of this tier
+  - Explicit load-testing jobs (`k6`, the default load tool); Locust is an optional standalone LAB (`labs/locust/docker-compose.yml`), not a Compose service of this tier
   - Private package/image storage (`Registry`)
   - Manual dependency update jobs (`Renovate`)
   - Cross-platform backup orchestration (`Restic` and its SQLite export helper)
@@ -79,7 +79,7 @@ Data and control flows include only the interactions specified in this section a
 - **Runtime / Platform**: Docker Compose using the current root Compose include and profile contract.
 - **Deployment Model**: The root `docker-compose.yml` includes every leaf, and
   a profile selects the service. `tooling` selects only Registry (SonarQube is the
-  standalone LAB `labs/sonarqube.yml` since SPEC-0262); `testing` selects k6 (`infra/11-quality/k6`); no Locust service exists in the root model; `iac`
+  standalone LAB `labs/sonarqube/docker-compose.yml` since SPEC-0262); `testing` selects k6 (`infra/11-quality/k6`); no Locust service exists in the root model; `iac`
   selects OpenTofu and the Terrakube API/UI/executor together;
   `dependency-update` selects only Renovate. `registry` and `sast` each
   select that single role. `analytics-engineering` selects dbt and its DB

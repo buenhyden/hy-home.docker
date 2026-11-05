@@ -1,16 +1,16 @@
 ---
 title: "Supabase Usage Guide"
-version: "1.0.8"
+version: "1.0.9"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-05"
 layer: "operations"
 artifact_id: "GDE-0029"
 parent_ids:
 - "POL-0029"
 implementation_services:
-  labs/supabase.yml:
+  labs/supabase/docker-compose.yml:
   - 'analytics'
   - 'auth'
   - 'db'
@@ -31,7 +31,7 @@ created: "2026-05-10"
 
 ## Overview
 
-`supabase`는 정상 root에서 분리된 [LAB Compose](../../../../labs/supabase.yml)의
+`supabase`는 정상 root에서 분리된 [LAB Compose](../../../../labs/supabase/docker-compose.yml)의
 exact `supabase` profile 기반 통합 백엔드 실험 환경이다. 13개 서비스가 PostgreSQL,
 Kong, Auth, REST, Realtime, Storage, Studio, Functions, analytics/logging과 pooler를
 전용 `hy-home-lab-supabase-core` network에서 구성한다. 이 서비스들은 하나의 recovery
@@ -46,16 +46,19 @@ Supabase stack을 운영하거나 사용하는 운영자, 개발자, SRE, AI 에
 
 ### SMTP 원본과 소비 경로
 
-공용 SMTP password 원본은 COMM-002 하나입니다. Auth는 공용 `smtp_password`
-source를 `/run/secrets/supabase_smtp_password`로 마운트합니다. COMM-003은 값 없는
+HOME SMTP password 원본은 COMM-002입니다. Supabase LAB은 그 값을 복사한 LAB-037
+`secrets/labs/supabase/smtp_password.txt`만 읽고 HOME 경로를 읽지 않습니다. Auth는
+LAB `smtp_password` source를 `/run/secrets/supabase_smtp_password`로 마운트합니다.
+COMM-003은 값 없는
 퇴역 ID이며 별도 파일이나 OpenBao KV 값을 생성하지 않습니다. 향후 OpenBao 전환도
 canonical entry 하나와 서비스별 필요한 render를 사용합니다.
 
 GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv를 보존합니다.
 값은 실행 프로세스 환경에만 전달되므로 Docker/호스트 관리자와 환경 접근 위험을
 관리해야 합니다. SMTP의 격리 capture·인증 결과와 DB/JWT/전체 platform readiness는
-다른 증거입니다. LAB source 이동은 11개 secret 파일을 읽거나 이동·복제·삭제하지
-않았고 현재 Supabase 비선택 상태를 바꾸어 전체 stack을 가동하지 않았습니다.
+다른 증거입니다. SPEC-0263 이후 11개 secret은 모두 `secrets/labs/supabase/`의 LAB
+사본이며 소유자가 직접 배치했습니다. 에이전트는 값을 읽거나 옮기지 않았고 전체
+stack을 가동하지 않았습니다.
 
 ## Concepts
 
@@ -66,11 +69,11 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
 | Project | `hy-home-lab-supabase` |
 | Services | `analytics`, `auth`, `db`, `functions`, `imgproxy`, `kong`, `meta`, `realtime`, `rest`, `storage`, `studio`, `supavisor`, `vector` |
 | Consumer and data rationale | PostgreSQL, Auth, API, Realtime, object, function, pooling을 격리 검증하는 독립 LAB. 현재 이름 있는 production consumer는 없다. |
-| Source / updater | [Compose](../../../../labs/supabase.yml)가 13개 이미지 선언을 소유하며, 조율된 upstream 호환성 검토가 필요하다. |
+| Source / updater | [Compose](../../../../labs/supabase/docker-compose.yml)가 13개 이미지 선언을 소유하며, 조율된 upstream 호환성 검토가 필요하다. |
 | Services / profile | frontmatter에 매핑된 13개 서비스; exact `supabase`. |
 | Flow / dependency | Kong이 API 경로 앞단에 있고, PostgreSQL이 메타데이터/데이터 코어이며, Storage가 메타데이터를 object 파일과 결합하고, Supavisor가 데이터베이스 트래픽을 pooling한다. |
 | Exposure / persistence | Kong/analytics/Supavisor host port는 `LAB_SUPABASE_*` 변수로 loopback에 게시되며, Studio는 직접 포트가 없고, `${LAB_DATA_DIR}/supabase`가 data/config를 소유한다. |
-| Environment / secrets | 공개 입력은 `labs/.env`의 `LAB_*` 계약을 사용한다. 11개 secret declaration은 기존 canonical root 파일을 참조하며 값을 LAB로 복사하지 않는다. SMTP는 COMM-002 한 원본이다. |
+| Environment / secrets | 공개 입력은 `labs/.env`의 `LAB_*` 계약을 사용한다. 11개 secret declaration은 `${LAB_SECRET_DIR}/supabase/`의 LAB 사본(SUPA-002, SUPA-004~011, AI-001, LAB-037)만 참조하고 HOME secret 경로는 읽지 않는다. SMTP 값은 HOME COMM-002를 복사한 LAB-037이다. |
 | Health / resources | 서비스별 healthcheck와 의존성 그래프; 각 서비스는 Compose에 선언된 공유 템플릿을 사용하므로 총 용량을 검토해야 한다. |
 | Security | Kong 경계, secret mount, JWT/provider 일관성, 생성된 증거에 credential 자료가 없어야 함. |
 | Backup / upgrade | PostgreSQL + Storage + config/functions + Auth/secret reference가 하나의 recovery set을 이루며, upstream update config backup만으로는 부족하다. |
@@ -84,19 +87,19 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
-| `analytics` | Logflare; mounted config/DB 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `auth` | Auth/JWT; DB/secret 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `db` | Supabase PG; 자체 database data/init/config | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `functions` | edge runtime; mounted functions serve command 미완결 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `imgproxy` | 이미지 변환; local source backend 설정 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `kong` | API gateway; mounted temp config의 loader 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `meta` | PG metadata API; DB/secret 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `realtime` | Realtime; DB/migration/secret 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `rest` | PostgREST API; DB/secret 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `storage` | Storage API; object files와 DB metadata 동시 보존 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `studio` | 관리 UI; 직접 host publication 없음 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `supavisor` | session/transaction pooler; host SQL publication 소유 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
-| `vector` | log collector; Docker socket API 권한과 private config | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase.yml) |
+| `analytics` | Logflare; mounted config/DB 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `auth` | Auth/JWT; DB/secret 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `db` | Supabase PG; 자체 database data/init/config | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `functions` | edge runtime; mounted functions serve command 미완결 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `imgproxy` | 이미지 변환; local source backend 설정 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `kong` | API gateway; mounted temp config의 loader 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `meta` | PG metadata API; DB/secret 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `realtime` | Realtime; DB/migration/secret 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `rest` | PostgREST API; DB/secret 입력 수용 미검증 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `storage` | Storage API; object files와 DB metadata 동시 보존 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `studio` | 관리 UI; 직접 host publication 없음 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `supavisor` | session/transaction pooler; host SQL publication 소유 | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
+| `vector` | log collector; Docker socket API 권한과 private config | process 생존만; API/auth/DB readiness 미증명 | [선택·의존·접속·입력·mount](../../../../labs/supabase/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
@@ -182,4 +185,4 @@ GoTrue SMTP `_FILE`은 source wrapper가 처리하고 원래 user·명령·argv�
 - [Operations policy](../../policies/15-labs/0029-supabase.md)
 - [Recovery runbook](../../runbooks/15-labs/0029-supabase.md)
 - [Supabase LAB source README](../../../../labs/supabase/README.md)
-- [Compose implementation: labs/supabase.yml](../../../../labs/supabase.yml)
+- [Compose implementation: labs/supabase/docker-compose.yml](../../../../labs/supabase/docker-compose.yml)

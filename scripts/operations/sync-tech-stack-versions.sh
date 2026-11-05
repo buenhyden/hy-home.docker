@@ -117,7 +117,7 @@ IMAGE = re.compile(
 COMPOSE_NAME = re.compile(r"(?:docker-)?compose[^/]*\.ya?ml\Z")
 SOURCE_OF_TRUTH = (
     "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} and "
-    "labs/*.{yml,yaml} service image declarations"
+    "labs/*/docker-compose.yml service image declarations"
 )
 LOCAL_REPOSITORY_PREFIXES = ("hy/", "hyhome/", "hy-home/")
 
@@ -190,9 +190,9 @@ def tracked_compose_files():
             raise ContractError("invalid tracked compose path") from exc
         path = pathlib.PurePosixPath(relative)
         if (path.parts[0] == "infra" and COMPOSE_NAME.fullmatch(path.name)) or (
-            len(path.parts) == 2
+            len(path.parts) == 3
             and path.parts[0] == "labs"
-            and path.suffix in (".yml", ".yaml")
+            and path.name == "docker-compose.yml"
         ):
             paths.append(relative)
     return sorted(paths)

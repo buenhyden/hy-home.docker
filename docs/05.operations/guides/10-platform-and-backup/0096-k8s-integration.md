@@ -46,7 +46,7 @@ hy-home.k8s 클러스터를 이 스택과 연결하는 운영자를 위한 문�
 | Istio 트레이스 → Alloy OTLP | `192.168.0.13:4317`(gRPC), `4318`(HTTP) | 없음 | [Alloy](../07-observability/0040-alloy.md) |
 | OpenBao에서 클러스터로 | `https://192.168.0.13:6550` (k3d API) | `auth/kubernetes/config`의 클러스터 CA | OpenBao |
 
-제공하지 않는 것: HOME의 PostgreSQL HA endpoint(PostgreSQL HA는 LAB 전용 `labs/postgresql-ha.yml`), 호스트 포트나 익명 접근을 통한 Grafana(오너 결정;
+제공하지 않는 것: HOME의 PostgreSQL HA endpoint(PostgreSQL HA는 LAB 전용 `labs/postgresql-ha/docker-compose.yml`), 호스트 포트나 익명 접근을 통한 Grafana(오너 결정;
 Kiali는 대신 Viewer 토큰을 사용). `config.home.alloy`는 `4317`/`4318`에
 `otelcol.receiver.otlp`를 두며 이 포트는 `HOST_LAN_BIND_IP`(기본값
 `192.168.0.13`)에 게시된다. Traefik에는 `*.k8s.hy.home.arpa` 라우트가

@@ -199,14 +199,14 @@ class NextToolCandidates(unittest.TestCase):
         self.assertEqual(
             lines, ["great-expectations==1.24.0", "trino[sqlalchemy]==0.340.0"]
         )
-        service = services("labs/lakehouse.yml")["great-expectations"]
+        service = services("labs/lakehouse/docker-compose.yml")["great-expectations"]
         self.assertEqual(service["image"], "hy-home/great-expectations:1.24.0-local")
         self.assertEqual(service["command"], ["list"])
         self.assertEqual(service["environment"]["GX_ANALYTICS_ENABLED"], "false")
         self.assertEqual(service["environment"]["HOME"], "/tmp")
         self.assertEqual(
             service["volumes"],
-            ["./lakehouse/great-expectations/suites:/opt/hyhome/suites:ro"],
+            ["./great-expectations/suites:/opt/hyhome/suites:ro"],
         )
         dockerfile = (GX / "Dockerfile").read_text()
         self.assertIn("COPY requirements.txt /tmp/requirements.txt", dockerfile)

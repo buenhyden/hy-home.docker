@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 created: "2026-09-23"
 ---
 
@@ -15,7 +15,7 @@ created: "2026-09-23"
 
 ## Overview
 
-Superset은 독립 Compose project인 [Superset LAB](../superset.yml)(`lab-superset`
+Superset은 독립 Compose project인 [Superset LAB](docker-compose.yml)(`lab-superset`
 profile)입니다. root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traefik
 route도 없습니다. UI는 `${LAB_HOST_BIND_IP}:${LAB_SUPERSET_HOST_PORT:-18092}`에만
 게시됩니다. metadata는 `LAB_SUPERSET_DB_HOST`가 가리키는 mng-pg의 feature 소유
@@ -53,7 +53,9 @@ lakehouse database(`trino://superset@trino:8080/lakehouse`)는 `trino` host에 �
 ## Structure
 
 ```text
-superset/
+labs/superset/
+├── docker-compose.yml      # 독립 LAB entrypoint
+├── promotion.yaml          # SPEC-0263 승격 manifest
 ├── README.md               # 이 파일
 ├── Dockerfile              # apache/superset와 requirements.txt
 ├── requirements.txt        # PostgreSQL driver, Authlib, Trino dialect(Renovate)
@@ -63,7 +65,7 @@ superset/
 ```
 
 서비스 정의(`superset-db-provision`, `superset-init`, `superset`)는
-[labs/superset.yml](../superset.yml)이 소유합니다.
+[labs/superset/docker-compose.yml](docker-compose.yml)이 소유합니다.
 
 ## Tech Stack
 
@@ -98,7 +100,7 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 ## Available Scripts
 
 아래 `LAB`은 저장소 루트에서
-`docker compose --env-file labs/.env -f labs/superset.yml --profile lab-superset`입니다.
+`docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down superset`의 lease 규칙
 ([LAB 안내](../README.md#usage))을 따르며, 최초 설정은 RUN-0097을 따릅니다.
@@ -111,7 +113,7 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 
 ## Validation
 
-- `docker compose --env-file labs/.env -f labs/superset.yml --profile lab-superset config --quiet`
+- `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
 
@@ -138,7 +140,7 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 | Purpose | Superset LAB; services: `superset-db-provision`, `superset-init`, `superset` |
 | Config files | `Dockerfile`, `requirements.txt`, `superset_config.py`, `provisioning/mng-pg.sql` |
 | Config values | profiles: `lab-superset` |
-| Compose linkage | 독립 Compose project `hy-home-lab-superset`([labs/superset.yml](../superset.yml)); root include 없음 |
+| Compose linkage | 독립 Compose project `hy-home-lab-superset`([labs/superset/docker-compose.yml](docker-compose.yml)); root include 없음 |
 | Networks | `lab_superset_net`(`hy-home-lab-superset`); HOME network 없음 |
 | Volumes | `./superset/superset_config.py:/app/pythonpath/superset_config.py:ro`, `${LAB_SUPERSET_CA_FILE}:/etc/ssl/certs/hy-home-rootCA.pem:ro` |
 | Ports | `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}:8088`; Traefik route 없음 |
@@ -155,5 +157,5 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 2. 모든 credential은 `superset_config.py`가 읽는 secret 파일에 유지하십시오.
 3. named user에게만 role을 부여하십시오. 등록은 계속 `Gamma`입니다.
 
-런타임 이미지 권한은 [labs/superset.yml](../superset.yml)이 소유하며
+런타임 이미지 권한은 [labs/superset/docker-compose.yml](docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../infra/tech-stack.versions.json)은 drift 증거입니다.

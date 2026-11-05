@@ -33,7 +33,7 @@ from tests.validation._supabase_smtp_fixture_storage import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "labs/supabase.yml"
+SOURCE = ROOT / "labs/supabase/docker-compose.yml"
 LEGACY_SOURCE = ROOT / "infra/04-data/supabase/docker-compose.yml"
 AUTH = "supabase/gotrue:v2.197.0@sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b"
 MAIL = "axllent/mailpit:v1.31.2@sha256:74d609a42ec279aa63c6b4622a6fa9b5408d1ad5b1d76a1c4be40a265ce0863d"
@@ -54,18 +54,22 @@ EXPECTED_SERVICES = {
     "vector",
     "supavisor",
 }
+# SPEC-0263: every file is a LAB copy under LAB_SECRET_DIR/supabase/.
 EXPECTED_SECRET_FILES = {
-    "smtp_password": "../secrets/communication/smtp/smtp_password.txt",
-    "supabase_db_password": "../secrets/db/mng-pg/supabase_password.txt",
-    "supabase_jwt_secret": "../secrets/data/supabase/supabase_jwt_secret.txt",
-    "supabase_anon_key": "../secrets/data/supabase/supabase_anon_key.txt",
-    "supabase_service_key": "../secrets/data/supabase/supabase_service_key.txt",
-    "supabase_dashboard_password": "../secrets/data/supabase/supabase_dashboard_password.txt",
-    "supabase_secret_key_base": "../secrets/data/supabase/supabase_secret_key_base.txt",
-    "supabase_vault_enc_key": "../secrets/data/supabase/supabase_vault_enc_key.txt",
-    "supabase_pg_meta_crypto_key": "../secrets/data/supabase/supabase_pg_meta_crypto_key.txt",
-    "supabase_openai_api_key": "../secrets/data/supabase/supabase_openai_api_key.txt",
-    "supabase_logflare_private_token": "../secrets/data/supabase/supabase_logflare_private_token.txt",
+    name: "${LAB_SECRET_DIR:-../../secrets/labs}/supabase/" + name + ".txt"
+    for name in (
+        "smtp_password",
+        "supabase_db_password",
+        "supabase_jwt_secret",
+        "supabase_anon_key",
+        "supabase_service_key",
+        "supabase_dashboard_password",
+        "supabase_secret_key_base",
+        "supabase_vault_enc_key",
+        "supabase_pg_meta_crypto_key",
+        "supabase_openai_api_key",
+        "supabase_logflare_private_token",
+    )
 }
 EXPECTED_IMAGES = {
     "studio": "supabase/studio:2026.09.14-sha-4dd8a95",
@@ -150,7 +154,7 @@ class SupabaseLabSourceContractTests(unittest.TestCase):
                 self.assertEqual("lab", service.get("labels", {}).get("hy-home.tier"))
                 self.assertEqual({"supabase_net": {}}, service.get("networks"))
                 self.assertEqual(
-                    "../infra/common-optimizations.yml",
+                    "../../infra/common-optimizations.yml",
                     service.get("extends", {}).get("file"),
                 )
                 if "group_add" in service:
@@ -160,7 +164,7 @@ class SupabaseLabSourceContractTests(unittest.TestCase):
             self.model.get("networks", {}).get("supabase_net"),
         )
 
-    def test_secret_sources_are_canonical_and_value_free(self):
+    def test_secret_sources_are_lab_copies_and_value_free(self):
         self.assertEqual(
             EXPECTED_SECRET_FILES,
             {

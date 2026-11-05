@@ -39,7 +39,7 @@ OTel exporter 전달과 perf_db import는 이 시험이 증명하지 않습니�
 
 [현재 Locust 이미지 원본](../../../labs/locust/Dockerfile)의 2.46.6 및 기존
 WireMock 이미지의 실행 시 확인한 linux/amd64 digest를 사용합니다. 구성 원본은
-[labs/locust.yml](../../../labs/locust.yml)입니다. 공식
+[labs/locust/docker-compose.yml](../../../labs/locust/docker-compose.yml)입니다. 공식
 [request-event](https://docs.locust.io/en/stable/extending-locust.html)와
 [requests client timeout](https://docs.locust.io/en/stable/api.html#locust.clients.HttpSession.request)
 계약을 따릅니다. SDK 자동 계측 지원을 가정하지 않습니다.
@@ -90,6 +90,6 @@ controller scratch를 정리하며, 실제 Docker 정리가 실패한 경우에�
 
 ## Related Documents
 
-- [Locust LAB 계약](../../../labs/locust.md)
+- [Locust LAB 계약](../../../labs/locust/README.md)
 - [품질 문서](../../../labs/locust/README.md)
 - [문서 허브](../../../docs/README.md)

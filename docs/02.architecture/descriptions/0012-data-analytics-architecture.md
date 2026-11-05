@@ -20,8 +20,8 @@ created: "2026-03-26"
 
 The analytics tier groups stream/batch processing, SQL queries, transformation,
 data quality and BI for data engineers and analysts. Since SPEC-0262 its packages
-are standalone LAB entrypoints (`labs/lakehouse.yml`, `labs/dbt.yml`,
-`labs/superset.yml`, `labs/jupyterlab.yml`) that join no HOME network and reach
+are standalone LAB entrypoints (`labs/lakehouse/docker-compose.yml`, `labs/dbt/docker-compose.yml`,
+`labs/superset/docker-compose.yml`, `labs/jupyterlab/docker-compose.yml`) that join no HOME network and reach
 HOME stores only through approved LAB endpoint inputs; `infra/12-analytics` holds
 no root package. The former description
 covered only `04-data/analytics` storage engines; ADR-0045 makes the storage

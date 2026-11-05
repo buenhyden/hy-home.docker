@@ -37,7 +37,9 @@ class LocustTelemetryTests(unittest.TestCase):
     def test_lab_workers_and_expected_count_share_one_bounded_input(self):
         import yaml
 
-        lab = yaml.safe_load((PATH.parents[3] / "labs/locust.yml").read_text())
+        lab = yaml.safe_load(
+            (PATH.parents[3] / "labs/locust/docker-compose.yml").read_text()
+        )
         master = lab["services"]["lab-locust-master"]["command"]
         worker = lab["services"]["lab-locust-worker"]
         expected = master[master.index("--expect-workers") + 1]
@@ -54,7 +56,9 @@ class LocustTelemetryTests(unittest.TestCase):
     def test_only_the_master_is_the_job_lab_run_supervises(self):
         import yaml
 
-        lab = yaml.safe_load((PATH.parents[3] / "labs/locust.yml").read_text())
+        lab = yaml.safe_load(
+            (PATH.parents[3] / "labs/locust/docker-compose.yml").read_text()
+        )
         services = lab["services"]
         self.assertEqual(
             "true", services["lab-locust-master"]["labels"]["hy-home.lab.job"]
@@ -66,7 +70,9 @@ class LocustTelemetryTests(unittest.TestCase):
     def test_lab_readiness_uses_image_python_not_external_pgrep(self):
         import yaml
 
-        lab = yaml.safe_load((PATH.parents[3] / "labs/locust.yml").read_text())
+        lab = yaml.safe_load(
+            (PATH.parents[3] / "labs/locust/docker-compose.yml").read_text()
+        )
         for name in ("lab-locust-master", "lab-locust-worker"):
             self.assertEqual(
                 lab["services"][name]["healthcheck"]["test"][:2], ["CMD", "python"]

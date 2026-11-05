@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 독립 LAB `labs/sonarqube.yml`의 SonarQube Community Build 배포를 다루며 유료 에디션 기능,
+이 정책은 독립 LAB `labs/sonarqube/docker-compose.yml`의 SonarQube Community Build 배포를 다루며 유료 에디션 기능,
 네이티브 Keycloak 통합, 범용 CI 게이트는 가정하지 않는다.
 
 ## Scope
@@ -26,7 +26,7 @@ created: "2026-05-17"
 
 ## Rules
 
-- **Activation:** LAB profile `sast`를 `labs/sonarqube.yml`에서만 사용하고
+- **Activation:** LAB profile `sast`를 `labs/sonarqube/docker-compose.yml`에서만 사용하고
   `scripts/operations/lab.py` lease로 기동한다. root에 include하지 않고 HOME 밖에 유지한다.
 - **Exposure:** gateway route와 SSO가 없다. UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}` bind의
   `LAB_SONARQUBE_HOST_PORT`에만 게시하며 loopback 밖 bind는 별도 보안 검토가 필요하다. LAB은
@@ -81,6 +81,6 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- [SonarQube Compose 소스](../../../../labs/sonarqube.yml)
+- [SonarQube Compose 소스](../../../../labs/sonarqube/docker-compose.yml)
 - [Community Build 인증](https://docs.sonarsource.com/sonarqube-community-build/instance-administration/authentication/overview)
 - [SonarQube 토큰 관리](https://docs.sonarsource.com/sonarqube-community-build/user-guide/managing-tokens)

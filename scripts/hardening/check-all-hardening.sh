@@ -517,7 +517,7 @@ check_04_data() {
   local tier="04-data"
   start_tier "$tier"
 
-  local supabase_compose="labs/supabase.yml"
+  local supabase_compose="labs/supabase/docker-compose.yml"
   local valkey_compose="infra/04-data/dev-db/docker-compose.yml"
 
   check_file "$supabase_compose"
@@ -658,8 +658,8 @@ check_10_communication() {
   local tier="10-communication"
   start_tier "$tier"
 
-  # Stalwart is a standalone LAB (SPEC-0262), checked here like labs/supabase.yml.
-  local mail_compose="labs/stalwart.yml"
+  # Stalwart is a standalone LAB (SPEC-0262), checked here like labs/supabase/docker-compose.yml.
+  local mail_compose="labs/stalwart/docker-compose.yml"
   check_file "$mail_compose"
   check_contains "$mail_compose" "service: template-infra-readonly-med" "stalwart template inheritance missing"
   # SPEC-0180 S17: no relaying, secret only through the wrapper; the admin UI
@@ -679,7 +679,7 @@ check_11_quality() {
   local tier="11-quality"
   start_tier "$tier"
 
-  local sonarqube_compose="labs/sonarqube.yml"
+  local sonarqube_compose="labs/sonarqube/docker-compose.yml"
   check_file "$sonarqube_compose"
   # SonarQube is a standalone LAB (SPEC-0262) without a gateway route.
   check_contains "$sonarqube_compose" '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}:9000' "sonarqube LAB port must use the LAB bind address"
@@ -722,7 +722,7 @@ MAILPIT_HEALTH
 check_12_analytics() {
   local tier="12-analytics"
   start_tier "$tier"
-  # Analytics LAB sources (SPEC-0262), outside the root like labs/supabase.yml.
+  # Analytics LAB sources (SPEC-0262), outside the root like labs/supabase/docker-compose.yml.
   # Lakehouse (SPEC-0180 S12): an edited catalog key degrades silently at run
   # time, and the table identity must never gain policy or bucket deletion.
   local table_bucket="labs/lakehouse/seaweedfs-table-bucket.sh"
@@ -736,7 +736,7 @@ check_12_analytics() {
   check_contains "$spark_wrapper" "rest.signing-name s3" "spark catalog signing name must be s3"
   check_contains "$spark_wrapper" "s3.path-style-access true" "spark S3 must use path-style access"
   check_contains "$spark_wrapper" "io-impl org.apache.iceberg.aws.s3.S3FileIO" "spark must use S3FileIO"
-  local lakehouse_compose="labs/lakehouse.yml"
+  local lakehouse_compose="labs/lakehouse/docker-compose.yml"
   local trino_compose="$lakehouse_compose"
   local trino_catalog="labs/lakehouse/trino/catalog/lakehouse.properties"
   check_file "$trino_compose"
@@ -758,10 +758,10 @@ check_12_analytics() {
   check_contains "$flink_wrapper" "'io-impl' = 'org.apache.iceberg.aws.s3.S3FileIO'" "flink must use S3FileIO"
   local gx_compose="$lakehouse_compose"
   check_contains "$gx_compose" "GX_ANALYTICS_ENABLED: 'false'" "great-expectations must not send usage events"
-  check_contains "$gx_compose" "./lakehouse/great-expectations/suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
+  check_contains "$gx_compose" "./great-expectations/suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
   check_contains "$gx_compose" "service: template-job-med" "great-expectations must use the read-only job template"
   # Superset (SPEC-0180 S16): native Keycloak OIDC, secrets from files only.
-  local superset_compose="labs/superset.yml"
+  local superset_compose="labs/superset/docker-compose.yml"
   local superset_config="labs/superset/superset_config.py"
   check_file "$superset_compose"
   check_file "$superset_config"
@@ -773,11 +773,11 @@ check_12_analytics() {
   check_contains "$superset_compose" '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}:8088' "superset LAB port must use the LAB bind address"
   check_not_contains "$superset_compose" "traefik.http" "superset LAB must not have a gateway route"
   check_not_contains "$superset_compose" "sso-auth" "superset double-auth middleware must not be enabled"
-  local dbt_compose="labs/dbt.yml"
+  local dbt_compose="labs/dbt/docker-compose.yml"
   check_file "$dbt_compose"
   check_contains "$dbt_compose" "service: template-job-med" "dbt must use the read-only job template"
-  check_contains "$dbt_compose" "./dbt/projects:/workspace:ro" "dbt project must remain read-only"
-  check_contains "$dbt_compose" "./dbt/profiles:/config:ro" "dbt profiles must remain read-only"
+  check_contains "$dbt_compose" "./projects:/workspace:ro" "dbt project must remain read-only"
+  check_contains "$dbt_compose" "./profiles:/config:ro" "dbt profiles must remain read-only"
 }
 
 # --- Tier 13: Experience ---

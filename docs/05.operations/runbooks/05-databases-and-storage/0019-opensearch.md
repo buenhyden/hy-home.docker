@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-정상 단일 OpenSearch의 준비 상태 점검과 별도 standalone LAB의 정적·운영 경계를 다룬다. 정상 root는 `opensearch` profile의 `opensearch`와 `opensearch-dashboards`를 선택한다. 세 노드와 `lab-opensearch-dashboards`는 standalone `labs/opensearch-cluster.yml`의 별도 project이며 HOME 서비스가 아니다. 소스 검증만 승인된 경우 서비스 기동·중단·복구는 `NOT_RUN`으로 기록한다.
+정상 단일 OpenSearch의 준비 상태 점검과 별도 standalone LAB의 정적·운영 경계를 다룬다. 정상 root는 `opensearch` profile의 `opensearch`와 `opensearch-dashboards`를 선택한다. 세 노드와 `lab-opensearch-dashboards`는 standalone `labs/opensearch-cluster/docker-compose.yml`의 별도 project이며 HOME 서비스가 아니다. 소스 검증만 승인된 경우 서비스 기동·중단·복구는 `NOT_RUN`으로 기록한다.
 
 - HTTPS와 Docker Secret 기반 healthcheck를 사용한다.
 - 정상 root와 별도 LAB project를 혼동하지 않는다.
@@ -58,7 +58,7 @@ Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 �
 
    ```bash
    test -f infra/04-data/opensearch/docker-compose.yml
-   test -f labs/opensearch-cluster.yml
+   test -f labs/opensearch-cluster/docker-compose.yml
    python3 scripts/validation/check-document-links.py --mode all
    ```
 
@@ -80,7 +80,7 @@ Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 �
    명시적 LAB 실행 승인 후에만 합니다.
 
    ```bash
-   docker compose --env-file labs/.env.example -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet
+   docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet
    ```
 
    `${LAB_SECRET_DIR}`과 `${LAB_OPENSEARCH_CERT_DIR}`는 승인된 LAB 전용 경로여야 합니다. 정적 render에는 합성 경로를 사용할 수 있지만 비밀 파일 원문을 출력하지 않습니다.
@@ -135,7 +135,7 @@ health가 계속 red/unavailable이거나, shard 변경이 필요하거나, secr
 - Subject peers: [Guide](../../guides/05-databases-and-storage/0019-opensearch.md) (`GDE-0019`), [Policy](../../policies/05-databases-and-storage/0019-opensearch.md) (`POL-0019`)
 
 - [Compose implementation: infra/04-data/opensearch/docker-compose.yml](../../../../infra/04-data/opensearch/docker-compose.yml)
-- [Standalone LAB Compose](../../../../labs/opensearch-cluster.yml) 및 [LAB 설명](../../../../labs/opensearch-cluster.md)
+- [Standalone LAB Compose](../../../../labs/opensearch-cluster/docker-compose.yml) 및 [LAB 설명](../../../../labs/opensearch-cluster/README.md)
 - [Custom image source: infra/04-data/opensearch/Dockerfile](../../../../infra/04-data/opensearch/Dockerfile)
 
 - [OpenSearch snapshot and restore](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)

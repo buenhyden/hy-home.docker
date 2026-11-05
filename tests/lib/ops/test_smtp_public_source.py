@@ -69,7 +69,7 @@ def _lab(root: Path, *, auth_overrides=None, text=None) -> Path:
     auth = {
         "profiles": ["supabase"],
         "extends": {
-            "file": "../infra/common-optimizations.yml",
+            "file": "../../infra/common-optimizations.yml",
             "service": "template-infra-med",
         },
         "image": "supabase/gotrue:v2.197.0",
@@ -85,7 +85,9 @@ def _lab(root: Path, *, auth_overrides=None, text=None) -> Path:
         yaml.safe_dump(
             {
                 "name": "hy-home-lab-supabase",
-                "secrets": {CANONICAL: {"file": "../" + CANONICAL_PATH}},
+                "secrets": {
+                    CANONICAL: {"file": smtp_public_source.LAB_SMTP_SOURCE_FILE}
+                },
                 "services": {"auth": auth},
             }
         )
@@ -120,6 +122,34 @@ class SMTPPublicSourceTests(unittest.TestCase):
             set(hashes),
             {str(lab.relative_to(self.root)), str(common.relative_to(self.root))},
         )
+
+    def test_repository_lab_reads_its_own_smtp_copy(self):
+        root = Path(__file__).resolve().parents[3]
+        hashes, present = smtp_public_source.validate_lab_sources(
+            root,
+            canonical=CANONICAL,
+            canonical_path=CANONICAL_PATH,
+            old=OLD,
+            old_path=OLD_PATH,
+            grants=grants,
+            error=ContractError,
+        )
+        self.assertTrue(present)
+        self.assertIn(smtp_public_source.LAB_SUPABASE_PATH, hashes)
+
+    def test_lab_reading_the_home_smtp_source_is_rejected(self):
+        # SPEC-0263: the LAB reads its LAB-037 copy, never HOME COMM-002.
+        _common(self.root)
+        for source in ("../../" + CANONICAL_PATH, "../" + CANONICAL_PATH):
+            with self.subTest(source=source):
+                path = _lab(self.root)
+                path.write_text(
+                    path.read_text().replace(
+                        smtp_public_source.LAB_SMTP_SOURCE_FILE, source
+                    )
+                )
+                with self.assertRaises(ContractError):
+                    _validate(self.root)
 
     def test_duplicate_shadow_target_rejects_auth_grants(self):
         _common(self.root)

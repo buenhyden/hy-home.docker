@@ -497,7 +497,7 @@ def _source_inventory():
 
     _conftest_untracked_candidates(ROOT)
     tracked = _tracked_paths(ROOT, MAX_TRACKED_FILES)
-    labs = sorted((ROOT / "labs").glob("*.yml"))
+    labs = sorted((ROOT / "labs").glob("*/docker-compose.yml"))
     snapshot_paths = (
         {path.as_posix() for path in tracked if _is_infra_compose_file(path)}
         | {p.relative_to(ROOT).as_posix() for p in labs}
@@ -573,7 +573,7 @@ def render_models() -> dict[str, tuple[dict, dict[str, str], tuple[str, ...]]]:
             models[f"overlay:{relative}"] = (selected, owners, roots)
         for lab in labs:
             relative = lab.relative_to(ROOT).as_posix()
-            models[f"lab:{lab.stem}"] = (
+            models[f"lab:{lab.parent.name}"] = (
                 _compose(
                     [
                         "--env-file",
@@ -712,7 +712,9 @@ def main(argv: list[str]) -> int:
         _, census = expected_from_root(ROOT)
         source_paths = [ROOT / row["path"] for row in census["input_files"]]
         findings.extend(
-            template_findings([*source_paths, *(ROOT / "labs").glob("*.yml")])
+            template_findings(
+                [*source_paths, *(ROOT / "labs").glob("*/docker-compose.yml")]
+            )
         )
         _validate_source_snapshot(models.fingerprints)
     except (ValueError, OSError, yaml.YAMLError, TypeError) as error:

@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 created: "2026-09-23"
 ---
 
@@ -15,7 +15,7 @@ created: "2026-09-23"
 
 ## Overview
 
-Spark는 독립 Compose project인 [lakehouse LAB](../../lakehouse.yml)
+Spark는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 one-shot 작업입니다. root Compose에 포함되지 않고
 HOME network에 연결되지 않으며 Traefik route도 없습니다. catalog와 S3는 필수
 LAB 입력 `LAB_LAKEHOUSE_CATALOG_URI`, `LAB_LAKEHOUSE_S3_ENDPOINT`로 지정하고
@@ -52,7 +52,7 @@ spark/
 └── hyhome-spark.sh    # spark-defaults.conf를 tmpfs에 쓰고 secret을 export함
 ```
 
-서비스 정의는 [labs/lakehouse.yml](../../lakehouse.yml)이 소유합니다.
+서비스 정의는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
 ## Tech Stack
 
@@ -81,7 +81,7 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 ## Available Scripts
 
 아래 `LAB`은 저장소 루트에서
-`docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse`입니다.
+`docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down lakehouse`의 lease 규칙
 ([LAB 안내](../../README.md#usage))을 따릅니다.
@@ -94,7 +94,7 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 
 ## Validation
 
-- `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse config --quiet`
+- `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
 ## Troubleshooting
@@ -119,7 +119,7 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 | Purpose | lakehouse LAB의 Spark job leaf; services: `spark` |
 | Config files | `Dockerfile`, `hyhome-spark.sh` |
 | Config values | profiles: `lab-lakehouse` |
-| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse.yml](../../lakehouse.yml)); root include 없음 |
+| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse/docker-compose.yml](../docker-compose.yml)); root include 없음 |
 | Networks | `lab_lakehouse_net`(`hy-home-lab-lakehouse`); HOME network 없음 |
 | Volumes | `./lakehouse/spark/hyhome-spark.sh:/opt/hyhome/hyhome-spark.sh:ro` |
 | Ports | 게시되지 않음 |
@@ -136,5 +136,5 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 2. Renovate는 `FROM` 이미지만 갱신하며 Iceberg jar는 수동 소유이다.
 3. 테이블 삭제·snapshot 만료는 대상 table과 사유를 기록한 뒤에만 실행한다.
 
-런타임 이미지 권한은 [Dockerfile](Dockerfile)과 [labs/lakehouse.yml](../../lakehouse.yml)이 소유하며
+런타임 이미지 권한은 [Dockerfile](Dockerfile)과 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.

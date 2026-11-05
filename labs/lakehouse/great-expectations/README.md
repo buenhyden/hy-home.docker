@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 created: "2026-09-23"
 ---
 
@@ -15,7 +15,7 @@ created: "2026-09-23"
 
 ## Overview
 
-Great Expectations(GX Core)는 독립 Compose project인 [lakehouse LAB](../../lakehouse.yml)
+Great Expectations(GX Core)는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 one-shot 작업입니다. HOME network에 연결되지 않고
 Traefik route도 없습니다. `suites/`의 suite 파일마다 대상 table과 expectation을 적고
 작업은 같은 LAB network의 Trino(`trino:8080`, catalog `lakehouse`)로 table을 읽어
@@ -55,7 +55,7 @@ great-expectations/
     └── lakehouse-rehearsal.json   # rehearsal이 test.gx_rehearsal에 대해 실행하는 suite
 ```
 
-서비스 정의는 [labs/lakehouse.yml](../../lakehouse.yml)이 소유합니다.
+서비스 정의는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
 ## Tech Stack
 
@@ -91,7 +91,7 @@ Secret 없음: Trino에 인증이 없습니다.
 ## Available Scripts
 
 아래 `LAB`은 저장소 루트에서
-`docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse`입니다.
+`docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
 `config`는 render만 합니다. job 실행은
 `python3 scripts/operations/lab.py check|up|down lakehouse`의 lease 규칙
 ([LAB 안내](../../README.md#usage))을 따릅니다. `--no-deps`는 table-bucket
@@ -105,7 +105,7 @@ provisioning과 Trino가 이미 준비된 경우에만 씁니다.
 
 ## Validation
 
-- `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse config --quiet`
+- `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
 ## Troubleshooting
@@ -132,7 +132,7 @@ provisioning과 Trino가 이미 준비된 경우에만 씁니다.
 | Purpose | lakehouse LAB의 Great Expectations leaf; services: `great-expectations` |
 | Config files | `Dockerfile`, `requirements.txt`, `hyhome-gx.py`, `suites/*.json` |
 | Config values | profiles: `lab-lakehouse` |
-| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse.yml](../../lakehouse.yml)); root include 없음 |
+| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse/docker-compose.yml](../docker-compose.yml)); root include 없음 |
 | Networks | `lab_lakehouse_net`(`hy-home-lab-lakehouse`); HOME network 없음 |
 | Volumes | `./lakehouse/great-expectations/suites:/opt/hyhome/suites:ro` |
 | Ports | 없음 |
@@ -146,16 +146,16 @@ provisioning과 Trino가 이미 준비된 경우에만 씁니다.
 ## Usage
 
 1. `suites/` 아래에 JSON 파일 하나로 suite를 추가하십시오. rehearsal용 `test.gx_rehearsal`은 유지합니다.
-2. Renovate가 `requirements.txt`와 `FROM` 이미지를 갱신합니다. GX 버전이 오르면 `labs/lakehouse.yml`의 `image:` tag와 버전 투영(`scripts/operations/sync-tech-stack-versions.sh`)도 바뀝니다. 어느 쪽이든 변경 후 재빌드하고 rehearsal을 다시 실행하십시오.
+2. Renovate가 `requirements.txt`와 `FROM` 이미지를 갱신합니다. GX 버전이 오르면 `labs/lakehouse/docker-compose.yml`의 `image:` tag와 버전 투영(`scripts/operations/sync-tech-stack-versions.sh`)도 바뀝니다. 어느 쪽이든 변경 후 재빌드하고 rehearsal을 다시 실행하십시오.
 3. Suite는 table을 읽기만 합니다. 쓰기가 필요한 검사는 Spark나 Trino의 몫입니다.
 
-런타임 이미지 권한은 [labs/lakehouse.yml](../../lakehouse.yml)이 소유하며
+런타임 이미지 권한은 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
 
 ### SEC01 후보와 검증 경계
 
 GX의 단일 의존성 원본은 [requirements.txt](requirements.txt), 로컬 이미지 태그는
-[labs/lakehouse.yml](../../lakehouse.yml)이 소유한다. Trino 의존성, Python 빌드 소스,
+[labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유한다. Trino 의존성, Python 빌드 소스,
 UID 1000, 합성 suite 읽기 전용 마운트, 기본 `list` 명령과
 `GX_ANALYTICS_ENABLED=false`는 유지한다.
 [공식 변경 이력](https://docs.greatexpectations.io/docs/core/changelog/)과

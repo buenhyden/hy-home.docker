@@ -1,0 +1,48 @@
+# SPEC-0263 promotion manifest for the kafka-cluster LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+kind: replace-same
+target:
+  folder: infra/05-messaging/kafka/
+  profile: messaging
+replaces:
+- compose_path: infra/05-messaging/kafka/docker-compose.yml
+  services:
+  - kafka-1
+  - kafka-exporter
+  - kafka-init
+  consumers:
+  - infra/05-messaging/kafka/docker-compose.yml
+  - infra/06-observability/prometheus/config/prometheus.yml
+  - infra/06-observability/prometheus/config/prometheus.dev.yml
+integrations:
+- kind: observability
+  owner: infra/06-observability/
+- kind: network
+  owner: infra/05-messaging/kafka/
+secrets: []
+documents:
+  guide: docs/05.operations/guides/15-labs/0108-kafka-cluster.md
+  runbook: docs/05.operations/runbooks/15-labs/0108-kafka-cluster.md
+  guide_target: docs/05.operations/guides/06-messaging-and-cdc/
+  runbook_target: docs/05.operations/runbooks/06-messaging-and-cdc/
+resources:
+  services:
+    lab-kafka-1:
+      cpus: 0.75
+      memory_mib: 1536
+    lab-kafka-2:
+      cpus: 0.75
+      memory_mib: 1536
+    lab-kafka-3:
+      cpus: 0.75
+      memory_mib: 1536
+    lab-kafka-exporter:
+      cpus: 0.5
+      memory_mib: 256
+    lab-kafka-init:
+      cpus: 0.5
+      memory_mib: 256
+  disk_gib:
+    data: 30
+    images: 2

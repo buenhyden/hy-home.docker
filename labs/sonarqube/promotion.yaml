@@ -1,0 +1,30 @@
+# SPEC-0263 promotion manifest for the sonarqube LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+# kind undecided: the owner has not named a promotion target yet.
+kind: undecided
+integrations:
+- kind: gateway-route
+  owner: infra/01-gateway/traefik/
+- kind: oidc-client
+  owner: infra/02-auth/keycloak/
+- kind: database-role
+  owner: infra/04-data/mng-db/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-035
+  destination: secrets/tools/sonarqube/db_password.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0066-sonarqube.md
+  runbook: docs/05.operations/runbooks/15-labs/0066-sonarqube.md
+  guide_target: docs/05.operations/guides/12-testing-and-quality/
+  runbook_target: docs/05.operations/runbooks/12-testing-and-quality/
+resources:
+  services:
+    sonarqube:
+      cpus: 2.0
+      memory_mib: 2048
+  disk_gib:
+    data: 10
+    images: 2

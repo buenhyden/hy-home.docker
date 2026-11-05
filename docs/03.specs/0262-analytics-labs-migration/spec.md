@@ -40,8 +40,8 @@ its own cluster; all are OPTIONAL in the service consolidation ledger.
 
 ### In Scope
 
-- LAB entrypoints `labs/lakehouse.yml`, `labs/dbt.yml`, `labs/superset.yml`,
-  `labs/jupyterlab.yml`, `labs/sonarqube.yml` and `labs/stalwart.yml`, with
+- LAB entrypoints `labs/lakehouse/docker-compose.yml`, `labs/dbt/docker-compose.yml`, `labs/superset/docker-compose.yml`,
+  `labs/jupyterlab/docker-compose.yml`, `labs/sonarqube/docker-compose.yml` and `labs/stalwart/docker-compose.yml`, with
   their build and bind assets moved under `labs/`.
 - Removal of their root includes and of root secrets only they used.
 - Every current reference: tests, hardening, the secret catalog, the

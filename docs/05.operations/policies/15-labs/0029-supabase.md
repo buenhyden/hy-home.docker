@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 정상 root에서 분리된 `labs/supabase.yml`의 exact `supabase` profile LAB
+이 정책은 정상 root에서 분리된 `labs/supabase/docker-compose.yml`의 exact `supabase` profile LAB
 운영 기준을 정의한다. 핵심 통제는 controller lease, Kong 중심 공개 접근, canonical
 Docker Secrets, `${LAB_DATA_DIR}/supabase/...` 격리 mount와
 database/storage/config를 하나의 recovery unit으로 관리하는 것이다.
@@ -24,7 +24,7 @@ database/storage/config를 하나의 recovery unit으로 관리하는 것이다.
 ## Scope
 
 - **Systems**: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`
-- **Configs**: `labs/supabase.yml`, `${LAB_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config
+- **Configs**: `labs/supabase/docker-compose.yml`, `${LAB_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config
 - **Networks**: project `hy-home-lab-supabase`, network `hy-home-lab-supabase-core`
 - **Ports**: Kong `8000`/`8443`, analytics `4000`, Supavisor session `5432`, transaction `6543`, 모두 `LAB_SUPABASE_*` host-port 변수로 `127.0.0.1`에만 게시한다
 
@@ -117,7 +117,7 @@ Stage 05 운영 audit 동안 검토한다.
 
 ## Related Documents
 
-- [Compose implementation: labs/supabase.yml](../../../../labs/supabase.yml)
+- [Compose implementation: labs/supabase/docker-compose.yml](../../../../labs/supabase/docker-compose.yml)
 
 - [Supabase self-hosted restore guidance](https://supabase.com/docs/guides/self-hosting/restore-from-platform)
 - [Supabase self-hosted update guidance](https://supabase.com/docs/guides/self-hosting/updating)

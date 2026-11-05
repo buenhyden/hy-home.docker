@@ -1,0 +1,109 @@
+# Independent Locust LAB entrypoint; never included by the normal root.
+name: hy-home-lab-locust
+
+x-tier-label: &tier-label
+  hy-home.tier: lab
+
+x-locust: &locust
+  profiles: [lab-locust]
+  extends:
+    file: ../../infra/common-optimizations.yml
+    service: template-job-med
+  build:
+    context: .
+  read_only: true
+  volumes:
+    - lab-locust-scenario:/mnt/locust/scenario:ro
+  networks:
+    lab_locust_net: {}
+  labels:
+    <<: *tier-label
+    traefik.enable: 'false'
+
+volumes:
+  lab-locust-scenario:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_LOCUST_SCENARIO_DIR:?set an approved Locust scenario directory}
+  lab-locust-results:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_LOCUST_RESULT_DIR:?set a fresh Locust result directory}
+
+networks:
+  lab_locust_net:
+    name: ${LAB_LOCUST_NETWORK_NAME:-hy-home-lab-locust}
+
+services:
+  lab-locust-master:
+    <<: *locust
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+      # `lab.py run` waits for this job and stops it at the deadline.
+      hy-home.lab.job: 'true'
+    volumes:
+      - lab-locust-scenario:/mnt/locust/scenario:ro
+      - lab-locust-results:/mnt/locust/results:rw
+    command:
+      - -f
+      - /mnt/locust/scenario/locustfile.py
+      - --master
+      - --headless
+      # Workers and the expected count come from one input; a shortage ends the
+      # run non-zero after the bounded wait instead of waiting forever.
+      - --expect-workers
+      - '${LAB_LOCUST_EXPECT_WORKERS:-2}'
+      - --expect-workers-max-wait
+      - '${LAB_LOCUST_EXPECT_WORKERS_MAX_WAIT:-60}'
+      - --users
+      - '${LAB_LOCUST_USERS:-10}'
+      - --spawn-rate
+      - '${LAB_LOCUST_SPAWN_RATE:-1}'
+      - --run-time
+      - '${LAB_LOCUST_RUN_TIME:-30s}'
+      - --stop-timeout
+      - '${LAB_LOCUST_STOP_TIMEOUT:-5}'
+      - --exit-code-on-error
+      - '${LAB_LOCUST_EXIT_CODE_ON_ERROR:-1}'
+      - --csv
+      - /mnt/locust/results/locust
+      - --csv-full-history
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import socket; socket.create_connection(('127.0.0.1', 5557), timeout=1).close()"
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
+
+  lab-locust-worker:
+    <<: *locust
+    command:
+      - -f
+      - /mnt/locust/scenario/locustfile.py
+      - --worker
+      - --master-host
+      - lab-locust-master
+    depends_on:
+      lab-locust-master:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import pathlib,sys; sys.exit(not any(b'--worker' in p.read_bytes().split(b'\\0') for p in pathlib.Path('/proc').glob('[0-9]*/cmdline')))"
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
+    deploy:
+      replicas: ${LAB_LOCUST_EXPECT_WORKERS:-2}

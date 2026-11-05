@@ -38,9 +38,9 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
 
 1. 저장소 루트에서 validate하고 bounded state를 캡처한다.
 
-   - `docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast config --quiet`
+   - `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --quiet`
    - `python3 scripts/operations/lab.py status`
-   - `docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast logs --tail=200 sonarqube`
+   - `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast logs --tail=200 sonarqube`
 
    첫 명령만 render-only다. 기동·재기동·정지는 `lab.py check|up|down sonarqube` lease
    규칙을 따른다. HOME mng-pg endpoint(`LAB_SONARQUBE_DB_HOST`)가 승인되지 않았다면 DB 연결
@@ -125,7 +125,7 @@ plugin 호환성을 알 수 없거나, queue/index failure가 지속되거나, a
 
 - [Guide](../../guides/15-labs/0066-sonarqube.md) (`GDE-0066`)
 - [Policy](../../policies/15-labs/0066-sonarqube.md) (`POL-0066`)
-- [SonarQube Compose](../../../../labs/sonarqube.yml)
+- [SonarQube Compose](../../../../labs/sonarqube/docker-compose.yml)
 - SPEC-0262 Analytics labs migration(LAB 이전)
 
 - [SonarQube backup/restore](https://docs.sonarsource.com/sonarqube-server/9.9/instance-administration/backup-and-restore)

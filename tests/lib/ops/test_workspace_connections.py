@@ -50,7 +50,7 @@ class WorkspaceConnectionTests(WorkspaceConnectionFixture, unittest.TestCase):
             "compose",
         )
         # SPEC-0262: a LAB entrypoint is outside the HOME connection census.
-        self.assertIsNone(candidate_kind("labs/superset.yml"))
+        self.assertIsNone(candidate_kind("labs/superset/docker-compose.yml"))
         self.assertIsNone(candidate_kind("infra/demo/README.md"))
         self.assertTrue(public_source_path("infra/demo/docker-compose.yml"))
         self.assertFalse(public_source_path("secrets/docker-compose.yml"))

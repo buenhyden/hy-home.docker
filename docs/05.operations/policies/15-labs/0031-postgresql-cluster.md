@@ -16,11 +16,11 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 독립 LAB인 PostgreSQL HA 실습 cluster 운영 기준을 정의한다. 세 node가 한 host를 공유하므로 host HA가 아니며 HOME·DEV PostgreSQL은 단일 node다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../../labs/postgresql-ha.yml) tag, HAProxy [haproxy image declaration](../../../../labs/postgresql-ha.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../../labs/postgresql-ha.yml), init job [postgres image declaration](../../../../labs/postgresql-ha.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../../labs/postgresql-ha.yml), Docker Secret 기반 credential 구성이다.
+이 정책은 `hy-home.docker`의 독립 LAB인 PostgreSQL HA 실습 cluster 운영 기준을 정의한다. 세 node가 한 host를 공유하므로 host HA가 아니며 HOME·DEV PostgreSQL은 단일 node다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../../labs/postgresql-ha/docker-compose.yml) tag, HAProxy [haproxy image declaration](../../../../labs/postgresql-ha/docker-compose.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../../labs/postgresql-ha/docker-compose.yml), init job [postgres image declaration](../../../../labs/postgresql-ha/docker-compose.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../../labs/postgresql-ha/docker-compose.yml), Docker Secret 기반 credential 구성이다.
 
 ## Scope
 
-- `labs/postgresql-ha.yml`
+- `labs/postgresql-ha/docker-compose.yml`
 - `etcd-1`, `etcd-2`, `etcd-3`
 - `pg-router`, `pg-cluster-init`
 - `pg-0`, `pg-1`, `pg-2`
@@ -32,7 +32,7 @@ created: "2026-05-17"
 ## Rules
 
 - **Required**: 문서는 cluster를 정확한 `postgres-ha` profile 아래에서만
-  서비스가 해석되는 독립 `labs/postgresql-ha.yml` Compose로 식별해야 하며 root include 또는 `core` surface의 일부로 기술해서는 안 된다.
+  서비스가 해석되는 독립 `labs/postgresql-ha/docker-compose.yml` Compose로 식별해야 하며 root include 또는 `core` surface의 일부로 기술해서는 안 된다.
 - **Required**: Application 연결 가이드는 `pg-0`, `pg-1`, `pg-2`에 직접 쓰지
   않고 `pg-router`의 write/read endpoint를 사용해야 한다.
 - **Required**: Credential 가이드는 Docker Secret mount와 secret-aware
@@ -88,10 +88,10 @@ N/A - 현재 승인된 예외 없음.
 - Compose 변경 후 이 정책을
   [PostgreSQL cluster guide](../../guides/15-labs/0031-postgresql-cluster.md),
   [PostgreSQL cluster runbook](../../runbooks/15-labs/0031-postgresql-cluster.md),
-  [LAB 설명](../../../../labs/postgresql-ha.md)와
+  [LAB 설명](../../../../labs/postgresql-ha/README.md)와
   비교한다.
 - 서비스 이름, image, route, secret, port, volume 문서 갱신을 승인하기 전에
-  `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/postgresql-ha.yml --profile postgres-ha config --quiet`를 실행한다.
+  `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/postgresql-ha/docker-compose.yml --profile postgres-ha config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
 ## Related Documents
@@ -103,4 +103,4 @@ N/A - 현재 승인된 예외 없음.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/15-labs/0031-postgresql-cluster.md)
 - [Recovery runbook](../../runbooks/15-labs/0031-postgresql-cluster.md)
-- [LAB 설명](../../../../labs/postgresql-ha.md)
+- [LAB 설명](../../../../labs/postgresql-ha/README.md)

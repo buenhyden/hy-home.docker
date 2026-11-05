@@ -30,7 +30,7 @@ created: "2026-05-10"
 
 ### Current implementation
 
-[`labs/valkey-cluster.yml`](../../../../labs/valkey-cluster.yml)은 독립 LAB Compose project이며 root는 이를 include하지 않는다. 정확한 profile `valkey-cluster`는 `valkey-node-0`부터
+[`labs/valkey-cluster/docker-compose.yml`](../../../../labs/valkey-cluster/docker-compose.yml)은 독립 LAB Compose project이며 root는 이를 include하지 않는다. 정확한 profile `valkey-cluster`는 `valkey-node-0`부터
 `valkey-node-5`까지, one-shot `valkey-cluster-init`, `valkey-cluster-exporter`를
 선택한다. initializer는 `lab_valkey_core_net`에 primary 3개와 replica 3개를 구성한다.
 
@@ -52,14 +52,14 @@ Compose template에서 오며 선택하기 전에 렌더링된 LAB configuration
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
-| `valkey-cluster-exporter` | node0 target exporter; dependency6개와 scrape 범위 구분 | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster.yml) |
-| `valkey-cluster-init` | one-shot cluster create; 비정상 기존 상태는 실패 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster.yml) |
-| `valkey-node-0` | cluster node 0; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster.yml) |
-| `valkey-node-1` | cluster node 1; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster.yml) |
-| `valkey-node-2` | cluster node 2; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster.yml) |
-| `valkey-node-3` | cluster node 3; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster.yml) |
-| `valkey-node-4` | cluster node 4; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster.yml) |
-| `valkey-node-5` | cluster node 5; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster.yml) |
+| `valkey-cluster-exporter` | node0 target exporter; dependency6개와 scrape 범위 구분 | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster/docker-compose.yml) |
+| `valkey-cluster-init` | one-shot cluster create; 비정상 기존 상태는 실패 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster/docker-compose.yml) |
+| `valkey-node-0` | cluster node 0; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster/docker-compose.yml) |
+| `valkey-node-1` | cluster node 1; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster/docker-compose.yml) |
+| `valkey-node-2` | cluster node 2; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster/docker-compose.yml) |
+| `valkey-node-3` | cluster node 3; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster/docker-compose.yml) |
+| `valkey-node-4` | cluster node 4; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster/docker-compose.yml) |
+| `valkey-node-5` | cluster node 5; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../labs/valkey-cluster/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
@@ -76,13 +76,13 @@ Compose template에서 오며 선택하기 전에 렌더링된 LAB configuration
 
 ### Static preflight and normal use
 
-이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/valkey-cluster.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
+이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/valkey-cluster/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
 
-repository root에서 독립 `labs/valkey-cluster.yml`을 지정한다. `labs/.env.example`은 정적 검증용이며, 실제 실행 전에 승인된 `labs/.env`와 `LAB_DATA_DIR`, LAB secret root를 준비한다.
+repository root에서 독립 `labs/valkey-cluster/docker-compose.yml`을 지정한다. `labs/.env.example`은 정적 검증용이며, 실제 실행 전에 승인된 `labs/.env`와 `LAB_DATA_DIR`, LAB secret root를 준비한다.
 
 ```bash
-LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster.yml --profile valkey-cluster config --quiet
-LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster.yml --profile valkey-cluster config --services
+LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster/docker-compose.yml --profile valkey-cluster config --quiet
+LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster/docker-compose.yml --profile valkey-cluster config --services
 ```
 
 profile을 시작하거나, test key를 쓰거나, membership을 변경하거나, node를
@@ -121,7 +121,7 @@ BSD 3-Clause license를 사용하며, client와 image는 자체 license를 유�
 ### Traceability
 
 - Artifact: `GDE-0022`; governing policy: `POL-0022`.
-- Runtime authority: `labs/valkey-cluster.yml`.
+- Runtime authority: `labs/valkey-cluster/docker-compose.yml`.
 
 ## Troubleshooting
 

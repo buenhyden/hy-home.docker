@@ -15,7 +15,7 @@ created: "2026-03-26"
 
 ### Problem and Goals
 
-This document preserves the former Laboratory obligations across capability tiers: RedisInsight in `04-data`, Dozzle in `06-observability`, Open Notebook/SurrealDB and MLflow in `08-ai`, and JupyterLab as the standalone LAB entrypoint `labs/jupyterlab.yml` (SPEC-0262). The retired directory does not retire these requirements. It sets out the unified dashboard and admin UI requirements so system administrators, developers, and AI agents can check and manage the access points and state of distributed infrastructure services in one place.
+This document preserves the former Laboratory obligations across capability tiers: RedisInsight in `04-data`, Dozzle in `06-observability`, Open Notebook/SurrealDB and MLflow in `08-ai`, and JupyterLab as the standalone LAB entrypoint `labs/jupyterlab/docker-compose.yml` (SPEC-0262). The retired directory does not retire these requirements. It sets out the unified dashboard and admin UI requirements so system administrators, developers, and AI agents can check and manage the access points and state of distributed infrastructure services in one place.
 
 ### Problem Statement
 
@@ -60,7 +60,7 @@ N/A
 
 - **REQ-0012-FR-0001**: Every active infrastructure service must be exposed on the dashboard, either automatically or through manual configuration.
 - **REQ-0012-FR-0002**: Every admin tool UI route must preserve its approved gateway, authentication and allowlist boundary. RedisInsight uses ForwardAuth; Dozzle uses native OIDC with the gateway CIDR control; Open Notebook uses its password-file authentication with the gateway CIDR control. These existing service-specific exceptions are recorded in POL-0073 and the corresponding source, not introduced by relocation. The MLflow browser route uses ForwardAuth; direct network/API paths require separate access evidence. JupyterLab, as a LAB, has no gateway route: it is published only on the LAB bind address and keeps its mandatory server token.
-- **REQ-0012-FR-0004**: Root Compose validation must cover `admin` (Dozzle and RedisInsight), `notebook` (Open Notebook and SurrealDB), `surrealdb`, `mlops` (MLflow and its provisioner), and `data-science` (MLflow and its provisioner), preserving existing selections. JupyterLab is outside root Compose validation; its standalone LAB entrypoint `labs/jupyterlab.yml` must render on its own and select no root service.
+- **REQ-0012-FR-0004**: Root Compose validation must cover `admin` (Dozzle and RedisInsight), `notebook` (Open Notebook and SurrealDB), `surrealdb`, `mlops` (MLflow and its provisioner), and `data-science` (MLflow and its provisioner), preserving existing selections. JupyterLab is outside root Compose validation; its standalone LAB entrypoint `labs/jupyterlab/docker-compose.yml` must render on its own and select no root service.
 - **REQ-0012-FR-0005**: The operator and knowledge-work capabilities are optional and outside HOME, and their absence must not affect core traffic. Their broad visibility into Docker, Redis/Valkey, provider APIs and notebook content makes them an admin security boundary, not a harmless dashboard layer.
 
 ### Non-functional Requirements

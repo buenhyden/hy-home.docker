@@ -46,7 +46,7 @@ backup 책임 경계를 다룬다.
     capacity 추이와 storage usage를 점검한다.
   - Grafana dashboard backup은 `infra/06-observability/grafana/dashboards/`
     JSON assets를 version-controlled source로 유지한다. LAB 서비스 dashboard는
-    SPEC-0225부터 `labs/dashboards/`에서 따로 관리한다.
+    SPEC-0225부터 각 LAB 폴더의 `labs/<name>/dashboards/`에서 따로 관리한다.
   - High-cardinality labels(user IDs, IP addresses, request IDs 등)는
     metrics/log labels에 직접 추가하지 않는다.
 - **Allowed**:

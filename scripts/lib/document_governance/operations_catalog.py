@@ -1142,7 +1142,7 @@ def _compose_sources(
 def _conftest_source_kind(path: pathlib.PurePosixPath) -> str | None:
     if _is_infra_compose_file(path):
         return "compose"
-    if len(path.parts) == 2 and path.parts[0] == "labs" and path.suffix == ".yml":
+    if _is_lab_compose_file(path):
         return "compose"
     if path.parts[0] == "infra" and path.name.startswith("Dockerfile"):
         return "dockerfile"
@@ -1341,11 +1341,18 @@ def validate_compose_profile_vocabulary(
         root, _tracked_paths(root, MAX_TRACKED_FILES)
     ).regular
     lab_root = pathlib.PurePosixPath("labs")
+    # SPEC-0263: a LAB is the folder labs/<name>/ with its docker-compose.yml.
     lab_files = (
         tuple(
-            lab_root / entry.name
+            lab_root / entry.name / "docker-compose.yml"
             for entry in _directory_entries_bounded(root, lab_root, max_entries=64)
-            if entry.name.endswith(".yml") and entry.is_regular
+            if entry.is_directory
+            and any(
+                child.name == "docker-compose.yml" and child.is_regular
+                for child in _directory_entries_bounded(
+                    root, lab_root / entry.name, max_entries=256
+                )
+            )
         )
         if (root / lab_root).is_dir()
         else ()
@@ -2805,8 +2812,11 @@ def _role_family(path: pathlib.PurePosixPath) -> pathlib.PurePosixPath | None:
 
 
 def _is_lab_compose_file(path: str | pathlib.PurePosixPath) -> bool:
-    """The controller's flat LAB source family; no nested or escaping path."""
-    return bool(re.fullmatch(r"labs/[a-z0-9]+(?:-[a-z0-9]+)*\.yml", str(path)))
+    """The controller's LAB entrypoint labs/<name>/docker-compose.yml (SPEC-0263);
+    no deeper or escaping path."""
+    return bool(
+        re.fullmatch(r"labs/[a-z0-9]+(?:-[a-z0-9]+)*/docker-compose\.yml", str(path))
+    )
 
 
 def _inventory_bindings(

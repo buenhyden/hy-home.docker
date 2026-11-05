@@ -96,7 +96,7 @@ class TierLayoutTests(unittest.TestCase):
         self.assertLessEqual(set(exceptions), seen)
 
     def test_supabase_naming_exceptions_have_one_lab_owner(self):
-        model = yaml.safe_load((ROOT / "labs/supabase.yml").read_text())
+        model = yaml.safe_load((ROOT / "labs/supabase/docker-compose.yml").read_text())
         rows = json.loads((ROOT / "labs/supabase/naming-exceptions.json").read_text())[
             "naming_exceptions"
         ]
@@ -166,15 +166,14 @@ class TierLayoutTests(unittest.TestCase):
         locust = ROOT / "labs/locust"
         self.assertTrue((locust / "Dockerfile").is_file())
         self.assertTrue((locust / "README.md").is_file())
-        self.assertFalse((locust / "docker-compose.yml").exists())
-        self.assertTrue((ROOT / "labs/locust.yml").is_file())
+        self.assertTrue((ROOT / "labs/locust/docker-compose.yml").is_file())
         for package in ("opentofu", "terrakube", "registry", "renovate", "restic"):
             self.assertTrue(
                 (
                     ROOT / "infra/09-platform-ops" / package / "docker-compose.yml"
                 ).is_file()
             )
-        self.assertTrue((ROOT / "labs/stalwart.yml").is_file())
+        self.assertTrue((ROOT / "labs/stalwart/docker-compose.yml").is_file())
         self.assertFalse((ROOT / "infra/10-communication/mailpit").exists())
 
     def test_transferred_hardening_retains_controls(self):
@@ -184,7 +183,7 @@ class TierLayoutTests(unittest.TestCase):
         fixtures = (
             "scripts/lib/hardening-lib.sh",
             "infra/tech-stack.versions.json",
-            "labs/supabase.yml",
+            "labs/supabase/docker-compose.yml",
             "infra/04-data/dev-db/docker-compose.yml",
             "labs/lakehouse/seaweedfs-table-bucket.sh",
             "infra/06-observability/docker-compose.yml",
@@ -194,7 +193,7 @@ class TierLayoutTests(unittest.TestCase):
             "infra/04-data/redisinsight/docker-compose.yml",
             "infra/06-observability/dozzle/docker-compose.yml",
             "infra/08-ai/open-notebook/docker-compose.yml",
-            "labs/sonarqube.yml",
+            "labs/sonarqube/docker-compose.yml",
             "infra/11-quality/wiremock/docker-compose.yml",
             "infra/11-quality/pact-broker/docker-compose.yml",
             "infra/11-quality/mailpit/docker-compose.yml",
@@ -399,8 +398,8 @@ class TierLayoutTests(unittest.TestCase):
                 self.assertIn(relative, includes)
         for lab, packages in ANALYTICS_LABS.items():
             with self.subTest(lab=lab):
-                self.assertTrue((ROOT / "labs" / f"{lab}.yml").is_file())
-                self.assertNotIn(f"labs/{lab}.yml", includes)
+                self.assertTrue((ROOT / "labs" / lab / "docker-compose.yml").is_file())
+                self.assertNotIn(f"labs/{lab}/docker-compose.yml", includes)
                 for package in packages:
                     self.assertTrue((ROOT / "labs" / package / "README.md").is_file())
         for tier in ("10-communication", "12-analytics"):
@@ -440,7 +439,6 @@ class TierLayoutTests(unittest.TestCase):
             shutil.copy2(ROOT / "scripts/lib/hardening-lib.sh", library)
             for lab in ("lakehouse", "superset", "dbt"):
                 shutil.copytree(ROOT / "labs" / lab, fixture / "labs" / lab)
-                shutil.copy2(ROOT / "labs" / f"{lab}.yml", fixture / "labs")
             wrapper = fixture / "labs/lakehouse/spark/hyhome-spark.sh"
             wrapper.write_text(
                 wrapper.read_text().replace(

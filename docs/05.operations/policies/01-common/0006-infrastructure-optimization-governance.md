@@ -13,7 +13,7 @@ created: "2026-06-04"
 
 ## Overview
 
-이 정책은 root Compose가 include하는 정상 서비스와 `labs/*.yml`에서 독립 실행하는 LAB 서비스의 공통 운영 통제와 개선 백로그를 소유한다. 현재 12개 티어를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
+이 정책은 root Compose가 include하는 정상 서비스와 `labs/*/docker-compose.yml`에서 독립 실행하는 LAB 서비스의 공통 운영 통제와 개선 백로그를 소유한다. 현재 12개 티어를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
 범위는 Docker Compose 기반 운영 표준(가용성, 보안, 관측성, 복구 용이성)이며, 실행 절차는 해당 서비스 Runbook과 공통 RUN-0086에서 관리한다.
 
 ## Scope
@@ -22,7 +22,7 @@ created: "2026-06-04"
 - 목적: 공통 운영 기준 통일 + 서비스별 개선 백로그 우선순위화
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
-- **Systems**: root에 include된 정상 Compose service identity와 별도 `labs/*.yml` entrypoint의 LAB identity. 정상 binding은 Guide와 operations catalog가 소유하고 LAB 목록은 각 독립 Compose가 소유한다.
+- **Systems**: root에 include된 정상 Compose service identity와 별도 `labs/*/docker-compose.yml` entrypoint의 LAB identity. 정상 binding은 Guide와 operations catalog가 소유하고 LAB 목록은 각 독립 Compose가 소유한다.
 - **Environments**: Local, Dev, Stage, Production-like
 
 > Historical evidence (not current authority; source: Git history):
@@ -52,9 +52,8 @@ created: "2026-06-04"
   image projection/update owner, package README와 Guide/Policy/Runbook을 함께 갱신한다.
   정상 service를 소유한 Guide의 `implementation_services`는 root가 include하는 `infra/`
   Compose path와 정확한 service identity만 매핑한다. LAB 서비스는 root에서 제외한 독립
-  `labs/<topology>.yml`, 함께 둔 `labs/<topology>.md` 또는
-  `labs/<topology>/README.md`, `labs/.env.example`/비공개 `labs/.env`와 필요한 LAB
-  source를 함께 갱신한다. LAB 전용 secret은 `secrets/labs/`에 두되 기존 canonical
+  `labs/<topology>/docker-compose.yml`, 같은 폴더의 `README.md`와 `promotion.yaml`,
+  `labs/.env.example`/비공개 `labs/.env`와 필요한 LAB source를 함께 갱신한다. LAB 전용 secret은 `secrets/labs/`에 두되 기존 canonical
   secret을 소비하는 경우 값을 복제하지 않고 검토된 상대 경로만 참조한다. Supabase의
   COMM-002 SMTP 원본과 10개 기존 secret source가 이 공유 참조 계약을 사용한다.
   Guide는 독립 LAB Compose와 정확한 service identity를 직접 연결하며 별도 registry를
@@ -142,17 +141,17 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
   - [opensearch](../../../../infra/04-data/opensearch/README.md): 인덱스 lifecycle(rollover/ISM) 표준화, 쿼리 가드레일(검색 폭주 제한) 추가
     ([OPER](../../guides/05-databases-and-storage/0019-opensearch.md), [RUN](../../runbooks/05-databases-and-storage/0019-opensearch.md))
 - Cache & KV
-  - [valkey-cluster](../../../../labs/valkey-cluster.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
+  - [valkey-cluster](../../../../labs/valkey-cluster/README.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
     ([OPER](../../guides/15-labs/0022-valkey-cluster.md), [RUN](../../runbooks/15-labs/0022-valkey-cluster.md))
 - Lake & Object
   - [seaweedfs](../../../../infra/04-data/seaweedfs/README.md): 볼륨 성장 정책, 마스터 quorum/복구 점검 자동화
     ([OPER](../../guides/05-databases-and-storage/0024-seaweedfs.md), [RUN](../../runbooks/05-databases-and-storage/0024-seaweedfs.md))
 - NoSQL
-  - [cassandra](../../../../labs/cassandra.md): compaction/repair 윈도우 자동화, consistency level 기준(읽기/쓰기) 문서화
+  - [cassandra](../../../../labs/cassandra/README.md): compaction/repair 윈도우 자동화, consistency level 기준(읽기/쓰기) 문서화
     ([OPER](../../guides/15-labs/0025-cassandra.md), [RUN](../../runbooks/15-labs/0025-cassandra.md))
-  - [couchdb](../../../../labs/couchdb.md): shard/replica 균형 점검, 디자인문서 배포 절차 표준화
+  - [couchdb](../../../../labs/couchdb/README.md): shard/replica 균형 점검, 디자인문서 배포 절차 표준화
     ([OPER](../../guides/15-labs/0026-couchdb.md), [RUN](../../runbooks/15-labs/0026-couchdb.md))
-  - [mongodb](../../../../labs/mongodb.md): replicaset 선출 안정성(heartbeat/timeout) 튜닝, 백업 복구 드릴 정례화
+  - [mongodb](../../../../labs/mongodb/README.md): replicaset 선출 안정성(heartbeat/timeout) 튜닝, 백업 복구 드릴 정례화
     ([OPER](../../guides/15-labs/0027-mongodb.md), [RUN](../../runbooks/15-labs/0027-mongodb.md))
 - Operational
   - [mng-db](../../../../infra/04-data/mng-db/README.md): 운영 DB 파라미터 baseline 확정, 슬로우쿼리 게이트와 회귀 점검 추가
@@ -161,7 +160,7 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
     헬스체크 갭 보강, 내부 서비스별 최소 자원 상한 지정, 핵심 컴포넌트 외부노출 재검토
     ([OPER](../../guides/15-labs/0029-supabase.md), [RUN](../../runbooks/15-labs/0029-supabase.md))
 - Relational
-  - [postgresql-cluster](../../../../labs/postgresql-ha.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
+  - [postgresql-cluster](../../../../labs/postgresql-ha/README.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
     ([OPER](../../guides/15-labs/0031-postgresql-cluster.md), [RUN](../../runbooks/15-labs/0031-postgresql-cluster.md))
 - Specialized
   - [neo4j](../../../../infra/04-data/neo4j/README.md): graph 백업(online/offline) 정책, 대형 질의 timeout/메모리 가드레일 적용
@@ -237,7 +236,7 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 - [k6](../../../../infra/11-quality/k6/README.md): 성능 회귀 기준선 저장/비교 자동화, 시나리오 태그 표준화
   ([OPER](../../guides/12-testing-and-quality/0061-k6.md), [RUN](../../runbooks/12-testing-and-quality/0061-k6.md))
 
-- [Locust LAB](../../../../labs/locust.md): 분산 실행 토폴로지와 테스트 데이터 초기화/정리 루틴 표준화
+- [Locust LAB](../../../../labs/locust/README.md): 분산 실행 토폴로지와 테스트 데이터 초기화/정리 루틴 표준화
   ([OPER](../../guides/15-labs/0062-locust.md), [RUN](../../runbooks/15-labs/0062-locust.md))
 
 ## Exceptions

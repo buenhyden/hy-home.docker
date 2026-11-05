@@ -1,0 +1,31 @@
+# SPEC-0263 promotion manifest for the dbt LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+# kind undecided: the owner has not named a promotion target yet.
+kind: undecided
+integrations:
+- kind: database-role
+  owner: infra/04-data/dev-db/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-028
+  destination: secrets/db/dev-pg/dev_pg_admin_password.txt
+- row: LAB-029
+  destination: secrets/tools/dbt/db_password.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0090-dbt.md
+  runbook: docs/05.operations/runbooks/15-labs/0090-dbt.md
+  guide_target: docs/05.operations/guides/13-analytics-and-data-quality/
+  runbook_target: docs/05.operations/runbooks/13-analytics-and-data-quality/
+resources:
+  services:
+    dbt:
+      cpus: 1.0
+      memory_mib: 512
+    dbt-db-provision:
+      cpus: 0.5
+      memory_mib: 256
+  disk_gib:
+    data: 1
+    images: 2

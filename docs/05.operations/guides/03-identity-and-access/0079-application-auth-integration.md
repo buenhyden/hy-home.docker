@@ -243,12 +243,12 @@ OAuth2 Proxy 뒤에 있다는 사실만으로 애플리케이션 권한 모델�
 | Terrakube | Direct issuer 선언은 있으나 미기동; API 외부 JWT 경로에서 명시적 audience 검사 미확인 | `iac` profile을 켤 때 처리(owner 결정 2026-09-24): 전용 public client `home-terrakube`, API route의 ForwardAuth 제거, audience/RBAC 실행 검증. 그 전까지 gateway 유지. API route의 ForwardAuth는 cookie가 없는 Terraform CLI·API token 호출과, `terrakube-api.` 공개 주소로 API를 부르는 `terrakube-executor`를 막는다. executor를 내부 주소로 돌릴지와 executor route의 SSO도 같은 시점에 정한다 |
 | n8n Community | [공식 SSO 안내](https://docs.n8n.io/deploy/host-n8n/configure-n8n/security/configure-sso)는 self-hosted Business/Enterprise만 지원 | 유료 기능 도입 없이 ForwardAuth 유지 |
 | Flower | [공식 인증 안내](https://flower.readthedocs.io/en/latest/auth.html)는 provider별 OAuth와 custom handler 제공; generic Keycloak OIDC 계약 없음 | custom 인증 코드 추가 없이 ForwardAuth 유지 |
-| Stalwart WebUI | [OIDC backend](https://stalw.art/docs/auth/backend/oidc/)는 클라이언트가 제시한 bearer token 검증; 서버가 browser OIDC를 시작하지 않음 | mail/JMAP OIDC 지원을 WebUI SSO로 오인하지 않음. SPEC-0262 이후 독립 LAB `labs/stalwart.yml`이며 gateway·SSO route 없이 loopback에만 게시 |
+| Stalwart WebUI | [OIDC backend](https://stalw.art/docs/auth/backend/oidc/)는 클라이언트가 제시한 bearer token 검증; 서버가 browser OIDC를 시작하지 않음 | mail/JMAP OIDC 지원을 WebUI SSO로 오인하지 않음. SPEC-0262 이후 독립 LAB `labs/stalwart/docker-compose.yml`이며 gateway·SSO route 없이 loopback에만 게시 |
 | RedisInsight | [공식 설정](https://redis.io/docs/latest/operate/redisinsight/configuration/)에서 UI OIDC 연동 설정 미확인; DB 연결 인증과 구분 | native 지원 미검증으로 유지; 불가능하다고 단정하지 않음 |
 | Open Notebook | [upstream OIDC 요청](https://github.com/lfnovo/open-notebook/issues/607)과 현재 배포의 password 인증 | native 계약 미확인; router는 ForwardAuth 없이 IP allowlist와 앱 password (2026-09 `b90b74837`) |
 | ComfyUI | [custom OIDC 요청](https://github.com/Comfy-Org/ComfyUI/issues/12558); Comfy 계정 로그인과 Keycloak 연동은 별개 | 유지 |
 | Mailpit, Ollama | [Mailpit HTTP 인증](https://mailpit.axllent.org/docs/configuration/http/), [Ollama 인증](https://docs.ollama.com/api/authentication)은 native Keycloak browser login 모델이 아님 | 유지 |
-| SonarQube Community | [공식 인증 목록](https://docs.sonarsource.com/sonarqube-server/2025.4/instance-administration/authentication/overview/)의 SAML/위임 인증과 OIDC를 구분 | 설치판에서 native OIDC 미확인. SPEC-0262 이후 독립 LAB `labs/sonarqube.yml`이며 gateway·SSO route 없이 loopback에만 게시 |
+| SonarQube Community | [공식 인증 목록](https://docs.sonarsource.com/sonarqube-server/2025.4/instance-administration/authentication/overview/)의 SAML/위임 인증과 OIDC를 구분 | 설치판에서 native OIDC 미확인. SPEC-0262 이후 독립 LAB `labs/sonarqube/docker-compose.yml`이며 gateway·SSO route 없이 loopback에만 게시 |
 | Prometheus, Alertmanager, Pushgateway, Loki, Tempo, Alloy, Pyroscope, cAdvisor | 현재 배포의 browser OIDC 계약 미확인; Grafana/API/reverse-proxy 보호 사용 | 유지 |
 
 Open WebUI는 OAuth role/group 자동 관리를 끄고 기존 로컬 관리자 역할을 보존한다.

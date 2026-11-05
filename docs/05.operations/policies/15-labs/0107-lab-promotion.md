@@ -1,0 +1,185 @@
+---
+title: "LAB Promotion Policy"
+version: "0.1.0"
+type: "operation/policy"
+status: "draft"
+owner: "@buenhyden"
+updated: "2026-11-05"
+layer: "operations"
+artifact_id: "POL-0107"
+parent_ids:
+- "AD-0026"
+created: "2026-11-05"
+---
+
+# LAB Promotion Policy
+
+## Overview
+
+이 정책은 `labs/` 아래 LAB을 `infra/`로 승격할 때 지켜야 하는 구조, 승격 manifest, secret,
+목적지와 readiness 통제를 정한다. 계약의 정본은
+[SPEC-0263](../../../03.specs/0263-lab-promotion-contract/spec.md)이고, 이 정책은 그 계약을
+운영 통제로 옮긴 것이다. 실행 절차는
+[RUN-0107](../../runbooks/15-labs/0107-lab-promotion.md)이 소유한다.
+
+## Scope
+
+현재 15개 LAB 전부와 이후 추가되는 LAB에 적용된다. 이 정책은 어떤 LAB도 승격하지 않는다.
+각 승격은 이 정책을 따르는 별도 Task이며 그 Task에 owner 승인과 운영 window가 필요하다.
+컨테이너 기동·정지·재생성, live data 이동과 OpenBao KV 변경은 이 정책의 승인 범위가 아니다.
+
+## Rules
+
+### Standard layout
+
+- 모든 LAB은 폴더 하나 `labs/<name>/`이며 `infra/<tier>/<service>/`와 같은 모양을 갖는다.
+- 폴더에는 진입점 `docker-compose.yml`, [infra 서비스 문서 기준](../../../../infra/README.md)을
+  따르는 `README.md`, 승격 manifest `promotion.yaml`과 LAB이 쓰는 build source, mount 설정,
+  helper, Grafana 대시보드가 함께 있다.
+- `labs/` root에는 [labs/README.md](../../../../labs/README.md)와 공유 `labs/.env.example`만 둔다.
+- LAB은 `hy-home-lab-`로 시작하는 자신의 Compose project(예: `hy-home-lab-kafka`,
+  `hy-home-lab-opensearch`), LAB network, `LAB_*` endpoint 입력,
+  `LAB_DATA_DIR` 아래 데이터와 `lab.py check`의 격리를 유지한다.
+
+### Promotion manifest
+
+`labs/<name>/promotion.yaml`은 LAB이 어디로, 어떻게 승격될지 선언한다.
+`python3 scripts/operations/lab.py check`가 이를 검증한다.
+
+| Field | 내용 |
+| --- | --- |
+| `kind` | `add`, `replace-same`, `replace-substitute`, 또는 목적지가 아직 없는 `undecided`. `undecided`는 `target`이 없고 readiness 검사가 거부한다 |
+| `target` | 목적지 폴더 `infra/<tier>/<service>/`와 합류할 POL-0078 profile |
+| `replaces` | 두 대체 kind에서 은퇴하는 HOME 서비스, 그 Compose 경로와 소비자 |
+| `integrations` | 필요한 `infra` 연동(gateway route, OIDC client, DB role과 provisioning, observability scrape·log, OpenBao secret 전달, 공유 network)과 그 `infra` 소유자 |
+| `secrets` | LAB secret 사본마다 catalog 행과 `infra` 목적지 경로 |
+| `documents` | Guide와 Runbook의 현재 `15-labs` 경로와 목적지 `docs/05.operations` 역할 폴더 |
+| `resources` | 서비스별 선언 CPU·memory와 데이터·image에 필요한 disk |
+| `host` (선택) | Compose가 표현하지 못하는 최소 Docker·Compose 버전과 kernel 기능 |
+
+`lab.py check`는 알 수 없는 `kind`, `infra/<tier>/` 밖의 `target`, catalog 행이 없는 secret,
+렌더링된 limit과 다른 `resources`를 문제로 보고한다.
+
+### Secrets
+
+- LAB 단계의 모든 secret 파일은 `secrets/labs/<name>/` 아래 LAB 사본이다. 사본마다 catalog 행
+  (`LAB-*`, scope `lab`)과 공개 registry placeholder 행을 따로 갖는다.
+- LAB은 HOME secret 경로를 읽지 않는다. HOME도 쓰는 값(예: SMTP)은 HOME 값을 LAB 위치로
+  복사하고, LAB만 쓰는 값은 LAB 위치로 옮긴다. 파일 복사와 이동은 owner가 한다.
+- 승격 때 LAB secret 값은 승격하지 않는다. 승격된 서비스는 manifest의 목적지 경로에서 `infra`
+  secret을 받는다. 새 값이거나, 대체 승격이면 secret 정책에 따라 rotate한 기존 HOME secret이다.
+- 승격 때 각 LAB 사본과 그 catalog 행을 은퇴시키고 registry도 따라간다. 목적지마다 새 `root`
+  catalog 행을 만들거나 기존 행에 새 소비자를 더한다.
+- 공개 registry `secrets/SENSITIVE_ENV_VARS.md.example`은 생성 파일이 아니다. catalog와
+  일치해야 하므로 owner가 손으로 편집한다. agent는 placeholder 편집안만 준비한다.
+
+### Docker socket exception
+
+허용되는 socket bind는 supabase `vector` 서비스 하나다. source와 target이 모두
+`/var/run/docker.sock`이고 `read_only: true`여야 한다. `lab.py check`는 쓰기 가능한 bind, 다른
+supabase 서비스의 같은 bind, 다른 이름의 `.sock` source를 모두 거부한다.
+
+### Destination rules
+
+| LAB source | 승격 목적지 |
+| --- | --- |
+| `labs/<name>/docker-compose.yml` | root가 include하는 `infra/<tier>/<service>/docker-compose.yml`; LAB 전용 입력은 `infra` 연동으로 바꾼다 |
+| `labs/<name>/README.md` | 목적지 폴더의 서비스 README |
+| `labs/<name>/` 자산 | 같은 상대 경로로 목적지 폴더 |
+| `15-labs`의 Guide와 Runbook | 목적지 역할 폴더; artifact 식별자와 생성일을 유지한다 |
+| `secrets/labs/<name>/*` | 은퇴; 서비스는 manifest가 지정한 `infra` secret을 쓴다 |
+| `promotion.yaml` | 삭제; 그 사실은 승격 Task에 기록한다 |
+
+tier는 서비스 기능을 따른다. 운영 문서는 서비스 domain을 따르며 tier 번호와 같을 필요가 없다.
+파일, 문서, secret, catalog 행의 LAB 사본은 하나도 남기지 않는다.
+
+### Readiness rules
+
+승격 전 `lab.py readiness <name>`은 fail-closed 보고서를 만든다. 측정하지 못한 값은
+`NOT_RUN`이며 통과가 아니다. 다섯 기준이 모두 `PASS`일 때만 승격할 수 있다.
+
+- **Manifest 경로.** `documents.*`, `integrations[].owner`, `replaces[].compose_path`,
+  `target.folder`는 repository 안의 상대 경로여야 한다. 절대 경로와 `..` 탈출은 거부한다.
+- **은퇴 서비스.** `replace-same`과 `replace-substitute`만 서비스를 은퇴시킨다. 은퇴 서비스는
+  root `docker-compose.yml`이 include하는 `compose_path`에 선언되어 있고 root render에 나타나야
+  한다. 아니면 composition이 실패하고 아무것도 은퇴하지 않는다.
+- **Tier.** 이미 있는 목적지 폴더는 은퇴 서비스가 독점할 때만 대체로 인정한다. 은퇴 서비스가
+  그 폴더를 점유하고, 유지되는 서비스의 build·bind source가 그 안에 없으며, 그 아래
+  `*compose*.y*ml` 파일이 선언한 모든 서비스가 은퇴해야 한다. 그 아래 Compose 파일을 읽을 수
+  없거나, symlink 디렉터리가 있거나, 폴더가 repository 밖으로 풀리면 실패한다.
+- **Composition.** port와 container 이름은 유지되는 서비스가 선언하지 않을 때만 뺀다. network와
+  데이터 경로는 빼지 않는다.
+- **Resources.** 실행 중 container의 선언 limit 합에 후보를 더하고 실행 중인 은퇴 서비스를 뺀
+  값이 측정된 host 용량에서 아래 reserve를 뺀 예산 안에 있어야 한다. limit이 없는 실행 중
+  container가 있으면 `NOT_RUN`이고, 측정된 합이 이미 예산을 넘으면 `FAIL`이다. limit이 없는
+  후보 서비스도 `NOT_RUN`이며, manifest는 0이거나 빠진 limit을 거부한다. disk는 데이터 root와
+  Docker data root의 여유에서 전체의 reserve 비율을 뺀 값이 `disk_gib`를 덮어야 한다.
+- **측정하지 않는 하위 검사.** Spec 5절의 세 하위 검사는 측정하지 않는다. 보고서 `values`에
+  `NOT_RUN`으로 드러나며, 아래 Exceptions의 축소로 다룬다.
+
+### Host reserve
+
+OS와 Docker를 위해 남기는 reserve다. 2026-11-05 owner가 승인했고 `lab.py`의
+`PROMOTION_RESERVE`가 이 표와 같아야 한다.
+
+| Resource | Reserve |
+| --- | --- |
+| CPUs | 2 |
+| Memory MiB | 4096 |
+| Disk percent | 10 |
+
+## Exceptions
+
+### Unmeasured section 5 sub-checks
+
+SPEC-0263 5절의 다음 하위 검사는 `lab.py readiness`가 측정하지 않는다. 이것은 owner 수락을
+기다리는 Spec 5절의 축소다.
+
+| 하위 검사 | 보고서 값 | 기준 결과 |
+| --- | --- | --- |
+| Tier: 목적지 tier가 서비스 기능에 맞는가 | `tier.values.function_fit` = `NOT_RUN`, source "owner judgment, not measured" | owner 판단 항목이며 `PASS`를 막지 않는다 |
+| Linux: 서비스에 필요한 group과 file mode | `linux.values.groups_and_file_modes` = `NOT_RUN` | linux를 `NOT_RUN`으로 둔다 |
+| Composition: profile과 consumer 충돌 | `composition.values.profile_and_consumer_clashes` = `NOT_RUN` | composition을 `NOT_RUN`으로 둔다 |
+
+따라서 지금은 어떤 후보도 전체 `PASS`를 받지 못한다. owner가 이 축소를 수락하거나 두 하위
+검사가 측정될 때까지 승격 Task가 각 항목을 직접 확인하고 기록한다. 예외 owner는 @buenhyden이다.
+
+### Current HOME resource state
+
+2026-11-05 HOME readiness 실행에서 `valkey-cluster`와 `postgresql-ha`는 resources 기준에서
+`FAIL`이었다. linux와 composition은 위 축소 때문에 `NOT_RUN`이고, 나머지는 `PASS`였다. 12 CPU host의 예산은 10 CPU, 27924 MiB인데 실행 중 HOME container의 선언 limit만
+약 64 CPU, 59904 MiB이고 `k3d-hyhome-*` container 다섯 개는 limit이 없다. 따라서 현재 규칙에서는
+어떤 대체 후보도 통과할 수 없다. 규칙은 바꾸지 않았고, 다음 중 하나를 owner가 결정한다.
+
+| 선택지 | 내용 | 비고 |
+| --- | --- | --- |
+| (a) | HOME limit을 줄이고 k3d container에 limit을 준다 | runtime 변경과 운영 window 필요 |
+| (b) | limit 대신 reservation으로 판정한다 | Spec 변경 필요; 권장 |
+| (c) | 측정 사용량으로 판정한다 | 측정 방법과 기간 결정 필요 |
+
+이 결정 전까지 resource `FAIL`은 승격 거부다. 예외 owner는 @buenhyden이다.
+
+### Review Cadence
+
+reserve, host 사양, readiness 규칙 또는 LAB 목록이 바뀔 때와 승격 Task를 열기 전마다 검토한다.
+
+### Traceability
+
+- Contract: [SPEC-0263](../../../03.specs/0263-lab-promotion-contract/spec.md) section 1–5.
+- Implementation: `scripts/operations/lab.py`의 `check`, `readiness`, `PROMOTION_RESERVE`.
+- Artifact: `POL-0107`; parent: `AD-0026`.
+
+## Verification
+
+- `python3 scripts/operations/lab.py check <name>`가 layout, manifest, secret 경로를 검증한다.
+- `tests/validation/test_lab_controller.py`의 `test_reserve_matches_policy`가 위 reserve 표와
+  `PROMOTION_RESERVE`의 일치를 검증한다.
+- `tests/validation/test_lab_isolation.py`와 `tests/validation/test_lab_layout.py`가 격리와
+  layout을 검증한다.
+
+## Related Documents
+
+- [LAB promotion runbook](../../runbooks/15-labs/0107-lab-promotion.md)
+- [LAB README](../../../../labs/README.md)
+- [Spec](../../../03.specs/0263-lab-promotion-contract/spec.md)
+- [Domain catalog](../../README.md)

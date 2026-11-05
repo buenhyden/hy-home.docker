@@ -30,15 +30,15 @@ PATCH_STABLE_IMAGES = {
         "renovate",
     ): "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1",
     (
-        "labs/sonarqube.yml",
+        "labs/sonarqube/docker-compose.yml",
         "sonarqube",
     ): "sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8",
     (
-        "labs/stalwart.yml",
+        "labs/stalwart/docker-compose.yml",
         "stalwart",
     ): "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c",
     (
-        "labs/supabase.yml",
+        "labs/supabase/docker-compose.yml",
         "imgproxy",
     ): "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d",
 }
@@ -76,7 +76,7 @@ class CandidateContract(unittest.TestCase):
                 self.assertEqual(compose["services"][service]["image"], expected)
 
         stalwart_compose = yaml.safe_load(
-            (ROOT / "labs/stalwart.yml").read_text(encoding="utf-8")
+            (ROOT / "labs/stalwart/docker-compose.yml").read_text(encoding="utf-8")
         )
         self.assertEqual(
             stalwart_compose["services"]["stalwart-config"]["image"],
@@ -85,7 +85,9 @@ class CandidateContract(unittest.TestCase):
         dockerfile = (ROOT / "labs/stalwart/config/Dockerfile").read_text(
             encoding="utf-8"
         )
-        stalwart_image = PATCH_STABLE_IMAGES[("labs/stalwart.yml", "stalwart")]
+        stalwart_image = PATCH_STABLE_IMAGES[
+            ("labs/stalwart/docker-compose.yml", "stalwart")
+        ]
         self.assertIn(f"FROM {stalwart_image}", dockerfile)
 
     def test_openwebui_minor_refresh_keeps_exact_cuda_variant(self):
@@ -129,7 +131,9 @@ class CandidateContract(unittest.TestCase):
         package = ROOT / "infra/04-data/opensearch"
         dashboards = "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8"
         root = yaml.safe_load((package / "docker-compose.yml").read_text())
-        lab = yaml.safe_load((ROOT / "labs/opensearch-cluster.yml").read_text())
+        lab = yaml.safe_load(
+            (ROOT / "labs/opensearch-cluster/docker-compose.yml").read_text()
+        )
         self.assertEqual(dashboards, root["services"]["opensearch-dashboards"]["image"])
         self.assertEqual(
             {
@@ -158,9 +162,9 @@ class CandidateContract(unittest.TestCase):
         )
 
     def test_trino_candidate_uses_official_launcher_and_keeps_secret_boundary(self):
-        service = yaml.safe_load((ROOT / "labs/lakehouse.yml").read_text())["services"][
-            "trino"
-        ]
+        service = yaml.safe_load(
+            (ROOT / "labs/lakehouse/docker-compose.yml").read_text()
+        )["services"]["trino"]
         self.assertEqual(
             "trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f",
             service["image"],
@@ -182,7 +186,7 @@ class CandidateContract(unittest.TestCase):
             service["secrets"],
         )
         self.assertIn(
-            "./lakehouse/trino/hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro",
+            "./trino/hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro",
             service["volumes"],
         )
         self.assertTrue(all(port.startswith("127.0.0.1:") for port in service["ports"]))
@@ -223,7 +227,7 @@ class CandidateContract(unittest.TestCase):
         root_image = "oliver006/redis_exporter:v1.93.0-alpine"
         lab_image = "oliver006/redis_exporter:v1.91.1-alpine"
         root_source = "infra/02-auth/oauth2-proxy/docker-compose.yml"
-        lab_source = "labs/valkey-cluster.yml"
+        lab_source = "labs/valkey-cluster/docker-compose.yml"
 
         def registry(images, sources):
             return {

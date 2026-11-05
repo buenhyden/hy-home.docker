@@ -43,7 +43,7 @@ The confirming evidence for this decision is limited to the Architecture Descrip
 
 **Spilo (Zalando's PostgreSQL + Patroni)** is selected for the PostgreSQL HA
 topology. SPEC-0215 narrows where it runs: the topology exists only in the
-standalone LAB `labs/postgresql-ha.yml`. HOME `mng-pg` and DEV `dev-pg` are
+standalone LAB `labs/postgresql-ha/docker-compose.yml`. HOME `mng-pg` and DEV `dev-pg` are
 single nodes without failover, and the LAB nodes share one host, so the LAB
 exercises replication and failover but is not host HA.
 

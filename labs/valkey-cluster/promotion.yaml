@@ -1,0 +1,65 @@
+# SPEC-0263 promotion manifest for the valkey-cluster LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+# kind replace-same: owner decision A (2026-11-05) retires the dev-db
+# single Valkey node.
+kind: replace-same
+target:
+  folder: infra/04-data/dev-db/valkey/
+  profile: dev-data
+replaces:
+- compose_path: infra/04-data/dev-db/docker-compose.yml
+  services:
+  - dev-valkey
+  - dev-valkey-exporter
+  consumers:
+  - infra/04-data/dev-db/docker-compose.yml
+  - infra/04-data/redisinsight/docker-compose.yml
+  - infra/06-observability/prometheus/config/prometheus.yml
+  - infra/06-observability/prometheus/config/prometheus.dev.yml
+  - infra/06-observability/prometheus/config/alert_rules/alert_rules.local.datastores.yml
+  - infra/06-observability/prometheus/config/alert_rules/alert_rules.local.selection.yml
+  - infra/06-observability/prometheus/scripts/start.sh
+  - scripts/lib/ops/compose_start.py
+integrations:
+- kind: observability
+  owner: infra/06-observability/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-006
+  destination: secrets/db/valkey-cluster/password.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0022-valkey-cluster.md
+  runbook: docs/05.operations/runbooks/15-labs/0022-valkey-cluster.md
+  guide_target: docs/05.operations/guides/05-databases-and-storage/
+  runbook_target: docs/05.operations/runbooks/05-databases-and-storage/
+resources:
+  services:
+    valkey-cluster-exporter:
+      cpus: 0.5
+      memory_mib: 256
+    valkey-cluster-init:
+      cpus: 0.5
+      memory_mib: 256
+    valkey-node-0:
+      cpus: 1.0
+      memory_mib: 512
+    valkey-node-1:
+      cpus: 1.0
+      memory_mib: 512
+    valkey-node-2:
+      cpus: 1.0
+      memory_mib: 512
+    valkey-node-3:
+      cpus: 1.0
+      memory_mib: 512
+    valkey-node-4:
+      cpus: 1.0
+      memory_mib: 512
+    valkey-node-5:
+      cpus: 1.0
+      memory_mib: 512
+  disk_gib:
+    data: 10
+    images: 1
