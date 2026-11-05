@@ -1,10 +1,10 @@
 ---
 title: "Analytics Labs Migration Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 layer: "specs"
 artifact_id: "SPEC-0262-TSK-0001"
 parent_ids:
@@ -52,7 +52,8 @@ The owner decisions authorize this Spec and Plan as written.
 ### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
-progress under the approved parents. Hosted CI has not run.
+progress under the approved parents. Hosted CI passed on PR #747, merged as
+`729d16da7`.
 
 ### Lifecycle Events
 
@@ -138,6 +139,35 @@ system Python, exactly as on `main` `1425b017b` with the same interpreter
 (jsonschema 4.10.3 lacks `referencing`). The branch adds no failure there;
 Hosted CI with the locked dependencies is the deciding run.
 
+### LAB check follow-up (2026-11-05)
+
+The owner's 2026-11-05 request to review the remaining work and continue led
+to a `lab.py check` run. Branch `fix/lab-root-observer-overlap` from
+`f0ce46fda`. The run used the tracked `.env.example` and `labs/.env.example`,
+the synthetic `LAB_*` inputs that `compose_controls.LAB_INPUTS` already uses,
+and a synthetic 64 CPU / 131072 MiB budget. It did not read the private root
+`.env`, and `check` starts nothing.
+
+Every LAB was refused with "data path … overlaps root", even for
+`/nonexistent/…` paths. There were three causes:
+
+- `cadvisor` and `node-exporter` bind `/` read-only, so the bind nested with
+  every LAB path. A read-only `/` bind now owns no path. A LAB that binds `/`
+  itself still meets root's data paths (`e5ac910bf`).
+- HOME provision jobs and the dbt/superset LABs mount the same tracked
+  `run-feature-provision.sh` read-only. It joins `SHARED_PUBLIC_INPUTS`
+  (`e5ac910bf`).
+- `conftest` binds the `infra/` and `labs/` source trees read-only. The owner
+  chose "도구 마운트 무시 (권장)". A read-only, non-sensitive HOME bind of
+  exactly one of those trees owns no read-only, non-sensitive LAB path
+  strictly inside it. Writable, secret or whole-tree LAB binds, and a
+  writable HOME bind of the tree, still conflict (`8b231c5e3`).
+
+After the fix no LAB reports an overlap. The remaining problems come from
+the synthetic inputs. The 64 CPU budget is below HOME's roughly 64 declared
+CPUs on this 12-core host, and the synthetic Superset CA file is absent.
+The real budget is an operator input.
+
 ### Changed
 
 - `42413743a`: this package, the Registry `spec` high-water 262 and next
@@ -164,13 +194,10 @@ Hosted CI with the locked dependencies is the deciding run.
 
 - Operator: provide the `LAB_*` endpoints and LAB secret copies before a
   HOME-dependent LAB runs, and approve a Superset LAB redirect URI.
-- The local Python has jsonschema 4.10.3 without the `referencing` module, so
-  catalog schema checks error here (one catalog test, the SMTP generator
-  dry run, and two modules that fail to import); a supported environment must
-  rerun them.
-- `lab.py check` needs the root `.env`, which this worktree has not and the
-  Task must not read; it was not run.
-- Hosted CI has not run.
+- Operator: set `LAB_HOST_BUDGET_CPUS` and `LAB_HOST_BUDGET_MEMORY_MIB`. HOME
+  already declares about 64 CPUs on a 12-core host, so the budget is a
+  policy decision; an empty budget refuses.
+- `lab.py check` with the real root `.env` and real LAB inputs is NOT_RUN.
 
 ## Evidence
 
@@ -189,6 +216,11 @@ Hosted CI with the locked dependencies is the deciding run.
 | E11 | 5 | W4 | links | `check-document-links.py --mode all` on `db86e8c95` | PASS | 882 documents, 8017 links, zero failures | required | - |
 | E12 | 5 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py`, default and `--base-ref b08e1bdbf`, on `db86e8c95` | PASS | lifecycle zero, occupancy zero | required | - |
 | E13 | 5 | W4 | hosted-ci | GitHub Actions | NOT_RUN | branch not pushed | required | - |
+| E14 | 3 | W2 | unit-tests | `python -m unittest discover -s tests -t .` with the locked controller venv (Python 3.12.3, `--require-hashes`) on `280b6f8fd` | PASS | 3272 tests OK, skipped=108 (opt-in container tests) | required | E6, E7 |
+| E15 | 5 | W4 | hosted-ci | GitHub Actions on PR #747 | PASS | candidate-quality pass 16m19s; merged as `729d16da7` | required | E13 |
+| E16 | 2 | W1 | lab-controller-overlap | `lab.py --env-file <synthetic> --root-env-file .env.example check <lab>` on `f0ce46fda` | FAIL | every LAB refused: "overlaps root" from read-only `/` and source-tree binds | required | - |
+| E17 | 2 | W1 | lab-controller-overlap | same synthetic check on `8b231c5e3` | PASS | six LABs: zero overlap problems; only the synthetic budget and absent synthetic CA remain | required | E16 |
+| E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `8b231c5e3` | PASS | new observer, provision allowlist and source-tree tests GREEN after RED | required | - |
 
 ## Criterion Acceptance
 
@@ -202,8 +234,9 @@ Hosted CI with the locked dependencies is the deciding run.
 
 ## Review and Completion
 
-Local checks are recorded above. Independent review and hosted CI have not
-run, and no criterion is accepted yet.
+Local checks and hosted CI for PR #747 are recorded above. The LAB check
+follow-up awaits independent review and its own hosted CI, and no criterion
+is accepted yet.
 
 ## Related Documents
 
