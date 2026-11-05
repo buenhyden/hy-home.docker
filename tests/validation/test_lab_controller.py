@@ -169,6 +169,25 @@ class FootprintTests(unittest.TestCase):
         self.assertEqual({"hy-home-lab-x-core"}, found["networks"])
         self.assertEqual(2.5, found["cpus"])
         self.assertEqual(2**30 + 3 * 2**20, found["memory"])
+        # Reservations are multiplied by replicas like the limits.
+        self.assertEqual(2.5, found["reserved_cpus"])
+        self.assertEqual(2**30 + 3 * 2**20, found["reserved_memory"])
+
+    def test_footprint_reads_limits_from_deploy_resources(self) -> None:
+        spec = {
+            "deploy": {
+                "resources": {
+                    "limits": {"cpus": "4.0", "memory": str(8 * 2**30)},
+                    "reservations": {"cpus": "0.05", "memory": str(4 * 2**30)},
+                }
+            }
+        }
+        found = lab.footprint(model("hy-home-lab-x", {"o": spec}))
+        self.assertEqual(
+            {"cpus": 4.0, "memory": float(8 * 2**30)}, found["services"]["o"]
+        )
+        self.assertEqual(4.0, found["cpus"])
+        self.assertEqual(0.05, found["reserved_cpus"])
 
 
 class CollisionAndBudgetTests(unittest.TestCase):
@@ -944,7 +963,7 @@ class CollisionAndBudgetTests(unittest.TestCase):
         problems = lab.budget({"one": self.lab1}, running, env, known)
         self.assertTrue(any("mng-pg" in p and "reservation" in p for p in problems))
         with self.assertRaises(lab.LabError):
-            lab.budget({"one": self.lab1}, running, {"LAB_HOST_BUDGET_CPUS": ""})
+            lab.budget({"one": self.lab1}, running, {"LAB_HOST_BUDGET_CPUS": ""}, {})
         # The concurrency limit still counts running LAB projects.
         other = lab.footprint(model("hy-home-lab-old", {"o": service("lab-old")}))
         old = [container_record("hy-home-lab-old", name="lab-old", service="o")]

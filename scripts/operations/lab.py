@@ -600,7 +600,7 @@ def budget(
     selected: dict[str, dict],
     running: list[dict],
     env: dict[str, str],
-    known: dict[str, dict] | None = None,
+    known: dict[str, dict],
 ) -> list[str]:
     """`lab.py check`: the section 5 reservation sum against LAB_HOST_BUDGET_*."""
     try:
@@ -613,7 +613,7 @@ def budget(
     kept = [
         c for c in running if c["project"] not in projects and c.get("running", True)
     ]
-    summed = reservation_sum(kept, known or {})
+    summed = reservation_sum(kept, known)
     problems = summed["failed"] + summed["unmeasured"]
     for name, lab in selected.items():
         failed, unmeasured = candidate_problems(lab)
