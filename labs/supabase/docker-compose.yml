@@ -17,34 +17,34 @@ networks:
 
 secrets:
   smtp_password:
-    file: ../secrets/communication/smtp/smtp_password.txt
+    file: ../../secrets/communication/smtp/smtp_password.txt
   supabase_db_password:
-    file: ../secrets/db/mng-pg/supabase_password.txt
+    file: ../../secrets/db/mng-pg/supabase_password.txt
   supabase_jwt_secret:
-    file: ../secrets/data/supabase/supabase_jwt_secret.txt
+    file: ../../secrets/data/supabase/supabase_jwt_secret.txt
   supabase_anon_key:
-    file: ../secrets/data/supabase/supabase_anon_key.txt
+    file: ../../secrets/data/supabase/supabase_anon_key.txt
   supabase_service_key:
-    file: ../secrets/data/supabase/supabase_service_key.txt
+    file: ../../secrets/data/supabase/supabase_service_key.txt
   supabase_dashboard_password:
-    file: ../secrets/data/supabase/supabase_dashboard_password.txt
+    file: ../../secrets/data/supabase/supabase_dashboard_password.txt
   supabase_secret_key_base:
-    file: ../secrets/data/supabase/supabase_secret_key_base.txt
+    file: ../../secrets/data/supabase/supabase_secret_key_base.txt
   supabase_vault_enc_key:
-    file: ../secrets/data/supabase/supabase_vault_enc_key.txt
+    file: ../../secrets/data/supabase/supabase_vault_enc_key.txt
   supabase_pg_meta_crypto_key:
-    file: ../secrets/data/supabase/supabase_pg_meta_crypto_key.txt
+    file: ../../secrets/data/supabase/supabase_pg_meta_crypto_key.txt
   supabase_openai_api_key:
-    file: ../secrets/data/supabase/supabase_openai_api_key.txt
+    file: ../../secrets/data/supabase/supabase_openai_api_key.txt
   supabase_logflare_private_token:
-    file: ../secrets/data/supabase/supabase_logflare_private_token.txt
+    file: ../../secrets/data/supabase/supabase_logflare_private_token.txt
 
 services:
   studio:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-studio
     hostname: studio
@@ -86,7 +86,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-kong
     hostname: kong
@@ -131,7 +131,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-auth
     hostname: auth
@@ -186,7 +186,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-low
     container_name: supabase-rest
     hostname: rest
@@ -222,7 +222,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
     hostname: realtime
@@ -259,7 +259,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-storage
     hostname: storage
@@ -304,7 +304,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-low
     container_name: supabase-imgproxy
     hostname: imgproxy
@@ -331,7 +331,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-low
     container_name: supabase-meta
     hostname: meta
@@ -365,7 +365,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-high
     container_name: supabase-edge-functions
     hostname: functions
@@ -405,7 +405,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-high
     container_name: supabase-analytics
     hostname: analytics
@@ -439,7 +439,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-high
     container_name: supabase-db
     hostname: db
@@ -519,7 +519,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-vector
     hostname: vector
@@ -554,7 +554,7 @@ services:
     profiles:
       - supabase
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-med
     container_name: supabase-pooler
     hostname: supavisor

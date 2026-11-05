@@ -1,0 +1,84 @@
+# SPEC-0263 promotion manifest for the supabase LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+# kind undecided: the owner has not named a promotion target yet.
+kind: undecided
+integrations:
+- kind: gateway-route
+  owner: infra/01-gateway/traefik/
+- kind: database-role
+  owner: infra/04-data/mng-db/
+- kind: openbao
+  owner: infra/03-security/openbao/
+- kind: observability
+  owner: infra/06-observability/
+secrets:
+- row: SUPA-002
+  destination: secrets/db/mng-pg/supabase_password.txt
+- row: SUPA-004
+  destination: secrets/data/supabase/supabase_dashboard_password.txt
+- row: SUPA-005
+  destination: secrets/data/supabase/supabase_secret_key_base.txt
+- row: SUPA-006
+  destination: secrets/data/supabase/supabase_pg_meta_crypto_key.txt
+- row: SUPA-007
+  destination: secrets/data/supabase/supabase_logflare_private_token.txt
+- row: SUPA-008
+  destination: secrets/data/supabase/supabase_vault_enc_key.txt
+- row: SUPA-009
+  destination: secrets/data/supabase/supabase_service_key.txt
+- row: SUPA-010
+  destination: secrets/data/supabase/supabase_jwt_secret.txt
+- row: SUPA-011
+  destination: secrets/data/supabase/supabase_anon_key.txt
+- row: AI-001
+  destination: secrets/data/supabase/supabase_openai_api_key.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0029-supabase.md
+  runbook: docs/05.operations/runbooks/15-labs/0029-supabase.md
+  guide_target: docs/05.operations/guides/05-databases-and-storage/
+  runbook_target: docs/05.operations/runbooks/05-databases-and-storage/
+resources:
+  services:
+    analytics:
+      cpus: 2.0
+      memory_mib: 2048
+    auth:
+      cpus: 1.0
+      memory_mib: 512
+    db:
+      cpus: 2.0
+      memory_mib: 2048
+    functions:
+      cpus: 2.0
+      memory_mib: 2048
+    imgproxy:
+      cpus: 0.5
+      memory_mib: 256
+    kong:
+      cpus: 1.0
+      memory_mib: 512
+    meta:
+      cpus: 0.5
+      memory_mib: 256
+    realtime:
+      cpus: 1.0
+      memory_mib: 512
+    rest:
+      cpus: 0.5
+      memory_mib: 256
+    storage:
+      cpus: 1.0
+      memory_mib: 512
+    studio:
+      cpus: 1.0
+      memory_mib: 512
+    supavisor:
+      cpus: 1.0
+      memory_mib: 512
+    vector:
+      cpus: 1.0
+      memory_mib: 512
+  disk_gib:
+    data: 20
+    images: 8

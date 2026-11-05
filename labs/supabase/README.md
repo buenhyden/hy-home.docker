@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-05"
 created: "2025-11-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2025-11-12"
 
 ## Overview
 
-이 폴더는 독립 LAB Compose 진입점인 [supabase.yml](../supabase.yml)의 공개 입력
+이 폴더는 독립 LAB Compose 진입점인 [docker-compose.yml](docker-compose.yml)의 공개 입력
 계약을 설명합니다. GoTrue를 포함한 13개 Supabase 서비스는 root Compose include에서
 분리되며, `scripts/operations/lab.py`가 검토된 예산·경로·lease 안에서 실행을
 조정하는 유일한 runtime 진입점입니다. 이번 이동은 source 경로만 바꾸며 실행 중인
@@ -22,12 +22,13 @@ container, 비밀값, 데이터 디렉터리 또는 복구 상태를 변경하�
 
 ```text
 labs/
-├── .env                 # LAB controller가 소비하는 단일 실제 public 환경 파일(추적 제외)
-├── supabase.yml         # 독립 Compose 프로젝트
+├── .env                       # LAB controller가 소비하는 단일 실제 public 환경 파일(추적 제외)
 └── supabase/
-    ├── .env.example     # labs/.env에 옮길 public key 안내
+    ├── docker-compose.yml     # 독립 Compose 프로젝트
+    ├── promotion.yaml         # SPEC-0263 승격 manifest
+    ├── .env.example           # labs/.env에 옮길 public key 안내
     ├── naming-exceptions.json # 이 LAB의 정확한 container 이름 예외
-    └── README.md        # 이 문서
+    └── README.md              # 이 문서
 ```
 
 ## Scope
@@ -63,7 +64,7 @@ Vector의 Docker socket bind는 read-only여도 Docker API 권한 경계가 아�
 
 ## Tech Stack
 
-정확한 엔진 버전은 [supabase.yml](../supabase.yml)이 소유합니다.
+정확한 엔진 버전은 [docker-compose.yml](docker-compose.yml)이 소유합니다.
 
 | Service | Technology | Role |
 | :--- | :--- | :--- |
