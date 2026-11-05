@@ -306,6 +306,71 @@ class CollisionAndBudgetTests(unittest.TestCase):
             with self.subTest(case=name):
                 self.assertTrue(lab.collisions({"x": selected}, root, []))
 
+    def test_host_root_observer_exemption_keeps_home_secrets_env_and_docker(self):
+        # With HOME's read-only / exempt, assets no HOME bind covers must be
+        # footprinted explicitly: top-level secret files, the root env file
+        # and Docker's data root (security review 2026-11-05).
+        observer = service("cadvisor")
+        observer["volumes"] = [
+            {"type": "bind", "source": "/", "target": "/rootfs", "read_only": True}
+        ]
+        rendered = model(
+            "hy-home-infra", {"cadvisor": observer}, data_root="/data/home"
+        )
+        secret = str(ROOT / "secrets/auth/example_password.txt")
+        rendered["secrets"] = {"example": {"name": "example", "file": secret}}
+        root = lab.root_footprint(
+            rendered, env_file=ROOT / ".env", docker_root="/var/lib/docker-data"
+        )
+        for name, source, read_only in (
+            ("HOME secret", secret, True),
+            ("root env", str(ROOT / ".env"), True),
+            ("docker volumes", "/var/lib/docker-data/volumes", False),
+        ):
+            spec = service("lab-x")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": "/x",
+                    "read_only": read_only,
+                }
+            ]
+            selected = lab.footprint(model("hy-home-lab-x", {"x": spec}))
+            with self.subTest(case=name):
+                self.assertTrue(lab.collisions({"x": selected}, root, []))
+        # A LAB compose secret that reuses a HOME secret file is refused too.
+        reuse = model("hy-home-lab-x", {"x": service("lab-x")})
+        reuse["secrets"] = {"s": {"name": "s", "file": secret}}
+        self.assertTrue(lab.collisions({"x": lab.footprint(reuse)}, root, []))
+
+    def test_source_tree_exemption_needs_a_tracked_non_env_path(self) -> None:
+        tree = service("conftest")
+        tree["volumes"] = [
+            {
+                "type": "bind",
+                "source": str(ROOT / "infra"),
+                "target": "/project/infra",
+                "read_only": True,
+            }
+        ]
+        root = lab.footprint(model("hy-home-infra", {"conftest": tree}))
+        for source in (
+            str(ROOT / "infra/05-messaging/kafka/.env"),
+            str(ROOT / "infra/05-messaging/kafka/untracked-p05-review.txt"),
+        ):
+            spec = read_only_service("lab-x", source)
+            with self.subTest(source=source):
+                self.assertTrue(
+                    lab.collisions(
+                        {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))},
+                        root,
+                        [],
+                    )
+                )
+        self.assertTrue(lab._sensitive_input(str(ROOT / "labs/.env"), None))
+        self.assertFalse(lab._sensitive_input(str(ROOT / "labs/.env.example"), None))
+
     def test_symlink_into_home_data_is_still_an_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             home = pathlib.Path(tmp) / "home-data"
@@ -611,6 +676,9 @@ class LifecycleTests(unittest.TestCase):
                 else model("hy-home-infra", {}, data_root=str(self.home_data))
             )
             return subprocess.CompletedProcess(command, 0, json.dumps(payload), "")
+        if command[1] == "info":
+            # Docker's data root joins the HOME footprint.
+            return subprocess.CompletedProcess(command, 0, "/var/lib/docker-test\n", "")
         if command[1:] == ["ps", "--all", "--quiet"]:
             return subprocess.CompletedProcess(command, 0, "", "")
         if command[1:3] == ["ps", "--all"]:

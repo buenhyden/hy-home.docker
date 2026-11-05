@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import functools
 import json
 import os
 import pathlib
@@ -161,6 +162,16 @@ def footprint(model: dict) -> dict:
                 elif path in SHARED_PUBLIC_INPUTS and pathlib.Path(path).is_file():
                     public_inputs.add(path)
             sources.append({"declared": device, "real": path, "read_only": read_only})
+    # Compose secret files are mounted without a bind entry; each is a
+    # sensitive input of the model that declares it.
+    for secret in (model.get("secrets") or {}).values():
+        source = (secret or {}).get("file")
+        if isinstance(source, str) and source:
+            path = os.path.realpath(source)
+            paths.add(path)
+            inputs.add(path)
+            sensitive_inputs.add(path)
+            sources.append({"declared": source, "real": path, "read_only": True})
     networks = {net.get("name") for net in (model.get("networks") or {}).values()}
     return {
         "project": project,
@@ -183,7 +194,13 @@ def footprint(model: dict) -> dict:
 def _sensitive_input(source: str, target: object) -> bool:
     target_path = os.path.normpath(target) if isinstance(target, str) else ""
     source_path = pathlib.Path(source)
-    lexical_secret = "secrets" in source_path.parts
+    lexical_secret = "secrets" in source_path.parts or (
+        source_path.name == ".env"
+        or (
+            source_path.name.startswith(".env.")
+            and not source_path.name.endswith(".example")
+        )
+    )
     protected_target = target_path == "/var/run/docker.sock" or (
         target_path == "/run/secrets" or target_path.startswith("/run/secrets/")
     )
@@ -191,8 +208,17 @@ def _sensitive_input(source: str, target: object) -> bool:
     return lexical_secret or protected_target or source_is_socket
 
 
-def root_footprint(model: dict) -> dict:
-    """Root footprint bound to Compose's rendered DEFAULT_DATA_DIR marker."""
+def root_footprint(
+    model: dict,
+    env_file: pathlib.Path | str | None = None,
+    docker_root: str | None = None,
+) -> dict:
+    """Root footprint bound to Compose's rendered DEFAULT_DATA_DIR marker.
+
+    HOME's read-only / observers own no path, so every HOME asset no bind
+    covers is recorded here: secret files, the root env file and Docker's
+    data root are HOME state, and the first two are sensitive.
+    """
     marker = model.get("x-hyhome-data-root")
     if not isinstance(marker, str) or not os.path.isabs(marker):
         raise LabError("root x-hyhome-data-root must be an absolute path")
@@ -201,7 +227,35 @@ def root_footprint(model: dict) -> dict:
     found["home_data_root"] = home_data_root
     found["paths"].add(home_data_root)
     found["state"].add(home_data_root)
+    for path in set(found["sensitive_inputs"]):
+        found["state"].add(path)
+    if env_file is not None:
+        path = os.path.realpath(env_file)
+        found["paths"].add(path)
+        found["state"].add(path)
+        found["sensitive_inputs"].add(path)
+    if docker_root:
+        path = os.path.realpath(docker_root)
+        found["paths"].add(path)
+        found["state"].add(path)
     return found
+
+
+@functools.cache
+def _tracked_only(path: str) -> bool:
+    """True when path is a tracked file, or a directory with tracked files
+    and no untracked or ignored ones (which may hold local secrets)."""
+    relative = os.path.relpath(path, os.path.realpath(ROOT))
+    tracked = run(["git", "ls-files", "-z", "--", relative])
+    others = run(
+        ["git", "ls-files", "-z", "--others", "--", relative]
+    )  # untracked, including ignored
+    return (
+        tracked.returncode == 0
+        and others.returncode == 0
+        and bool(tracked.stdout)
+        and not others.stdout
+    )
 
 
 def _nested(a: str, b: str) -> bool:
@@ -243,6 +297,7 @@ def _path_conflict(path: str, owner: dict, other_path: str, other: dict) -> bool
         and path in owner["inputs"]
         and path not in owner["state"]
         and path not in owner["sensitive_inputs"]
+        and _tracked_only(path)
     ):
         return False
     shared_public_input = (
@@ -444,12 +499,24 @@ def stale_volumes(docker: str, selected: dict[str, dict]) -> list[str]:
     return problems
 
 
+def docker_root(docker: str) -> str:
+    result = run([docker, "info", "--format", "{{.DockerRootDir}}"])
+    root = result.stdout.strip()
+    if result.returncode != 0 or not os.path.isabs(root):
+        raise LabError("Docker data root unavailable; refusing without it")
+    return root
+
+
 def check(args, env) -> tuple[dict, dict[str, dict]]:
     selected = {
         name: footprint(render(args.docker, args.env_file, lab_file(name)))
         for name in args.labs
     }
-    root = root_footprint(render(args.docker, args.root_env_file, None))
+    root = root_footprint(
+        render(args.docker, args.root_env_file, None),
+        env_file=args.root_env_file,
+        docker_root=docker_root(args.docker),
+    )
     running = running_containers(args.docker)
     report = {
         "labs": {
