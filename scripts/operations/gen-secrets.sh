@@ -688,17 +688,28 @@ def clean(cell):
 
 def rows(text, strict):
     result = {}
+    # Two-cell rows are skipped only inside the Retired ID table.
+    in_aliases = False
     for line in text.splitlines(keepends=True):
         if not line.lstrip().startswith("|"):
+            in_aliases = False
             continue
         cells = line.split("|")
         if len(cells) == 4:
             alias = (clean(cells[1]), clean(cells[2]))
-            if alias in (("Retired ID", "Canonical ID"), ("---", "---")) or all(
-                re.fullmatch(r"[A-Z][A-Z0-9]{1,15}-[0-9]{3}", item) for item in alias
+            if alias == ("Retired ID", "Canonical ID"):
+                in_aliases = True
+                continue
+            if in_aliases and (
+                alias == ("---", "---")
+                or all(
+                    re.fullmatch(r"[A-Z][A-Z0-9]{1,15}-[0-9]{3}", item)
+                    for item in alias
+                )
             ):
                 continue
             raise ValueError("malformed retired registry alias")
+        in_aliases = False
         if strict and len(cells) != 10:
             raise ValueError("malformed registry row")
         identity = clean(cells[1]) if len(cells) > 1 else ""
