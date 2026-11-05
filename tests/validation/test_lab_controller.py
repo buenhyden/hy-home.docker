@@ -526,6 +526,9 @@ class CollisionAndBudgetTests(unittest.TestCase):
             {"context": str(ROOT / "labs/dbt"), "network": "host"},
             {"context": str(ROOT / "labs/dbt"), "entitlements": ["network.host"]},
             {"context": str(ROOT / "labs/dbt"), "dockerfile": "/etc/Dockerfile"},
+            {"context": str(ROOT / "labs/dbt"), "dockerfile": "../../secrets/x"},
+            {"context": str(ROOT / "labs/dbt"), "privileged": True},
+            {"context": str(ROOT / "labs/dbt"), "dockerfile_inline": "FROM x"},
         ):
             spec = service("lab-x")
             spec["build"] = build
@@ -535,6 +538,28 @@ class CollisionAndBudgetTests(unittest.TestCase):
                         "build_forbidden"
                     ]
                 )
+
+    def test_lab_include_is_refused_in_any_yaml_style(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = pathlib.Path(tmp) / "x.yml"
+            for text in (
+                "include:\n  - path: ./inc.yml\n    env_file: ../.env\n",
+                '{"include": [{path: ./inc.yml, env_file: ../.env}], services: {}}\n',
+            ):
+                raw.write_text(text, encoding="utf-8")
+                with self.subTest(text=text[:20]):
+                    self.assertTrue(lab.include_problems("x", raw))
+            raw.write_text("services:\n  x:\n    image: busybox\n", encoding="utf-8")
+            self.assertEqual([], lab.include_problems("x", raw))
+            raw.write_text("- not a mapping\n", encoding="utf-8")
+            self.assertTrue(lab.include_problems("x", raw))
+
+    def test_plain_build_inside_its_context_is_allowed(self) -> None:
+        spec = service("lab-x")
+        spec["build"] = {"context": str(ROOT / "labs/dbt"), "dockerfile": "Dockerfile"}
+        self.assertEqual(
+            [], lab.footprint(model("hy-home-lab-x", {"x": spec}))["build_forbidden"]
+        )
 
     def test_secret_root_in_the_repo_must_be_secrets_labs(self) -> None:
         env = {"LAB_DATA_DIR": "/lab-data"}

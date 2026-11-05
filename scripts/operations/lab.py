@@ -50,6 +50,10 @@ SHARED_PUBLIC_INPUTS = frozenset(
 )
 
 
+# Compose build keys a LAB may use; see footprint.
+BUILD_KEYS = frozenset(
+    {"context", "dockerfile", "args", "target", "labels", "tags", "additional_contexts"}
+)
 # Tracked source trees HOME tools may read whole; see _path_conflict.
 SOURCE_TREES = frozenset(os.path.realpath(ROOT / name) for name in ("infra", "labs"))
 
@@ -212,17 +216,19 @@ def footprint(model: dict) -> dict:
             for item in contexts
             if isinstance(item, str) and item
         ]
-        # Host side effects outside the allowlist: secrets, SSH agent, local
-        # cache import/export, host network, entitlements, a Dockerfile
-        # outside the context.
-        for key in ("ssh", "secrets", "cache_to", "cache_from", "entitlements"):
-            if build.get(key):
-                build_forbidden.append(f"{name}: build {key}")
-        if build.get("network") == "host":
-            build_forbidden.append(f"{name}: build network host")
+        # Allowlist of build keys: anything else (ssh, secrets, cache_to,
+        # cache_from, network, entitlements, privileged, dockerfile_inline,
+        # future keys) is refused.
+        for key in sorted(set(build) - BUILD_KEYS):
+            build_forbidden.append(f"{name}: build {key}")
+        # The Dockerfile resolves against its context and must stay inside it.
+        context = build.get("context")
         dockerfile = build.get("dockerfile")
-        if isinstance(dockerfile, str) and os.path.isabs(dockerfile):
-            build_forbidden.append(f"{name}: build dockerfile outside the context")
+        if isinstance(dockerfile, str) and dockerfile:
+            base = os.path.realpath(context) if isinstance(context, str) else ""
+            resolved = os.path.realpath(os.path.join(base, dockerfile))
+            if not base or not _within(resolved, base):
+                build_forbidden.append(f"{name}: build dockerfile outside the context")
     networks = {net.get("name") for net in (model.get("networks") or {}).values()}
     return {
         "build_inputs": build_inputs,
@@ -546,7 +552,7 @@ def source_allowlist_problems(
     root = root or {}
     protected = {
         repo,
-        os.path.join(repo, "secrets"),
+        os.path.realpath(ROOT / "secrets"),
         os.path.realpath(pathlib.Path.home()),
         *(
             item
@@ -569,7 +575,7 @@ def source_allowlist_problems(
     secret = os.path.realpath(ROOT / "labs" / secret_value)
     if unsafe(secret) or (
         _within(secret, repo)
-        and not _within(secret, os.path.join(repo, "secrets", "labs"))
+        and not _within(secret, os.path.realpath(ROOT / "secrets" / "labs"))
     ):
         # Inside the repo only secrets/labs holds LAB copies; elsewhere would
         # admit HOME secret subdirectories or .git.
@@ -630,6 +636,19 @@ def source_allowlist_problems(
             f"{name}: {item} is refused" for item in lab.get("build_forbidden", [])
         ]
     return problems
+
+
+def include_problems(name: str, path: pathlib.Path | str) -> list[str]:
+    """A top-level include may carry its own env_file, which the rendered
+    model resolves and drops, so a LAB file may not include anything."""
+    try:
+        import yaml
+    except ImportError as exc:  # fail closed without a parser
+        raise LabError("PyYAML is required to check LAB includes") from exc
+    loaded = yaml.safe_load(pathlib.Path(path).read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        return [f"{name}: LAB file is not a Compose mapping"]
+    return [f"{name}: include is refused in a LAB"] if "include" in loaded else []
 
 
 def data_root_problems(env: dict[str, str], root: dict) -> list[str]:
@@ -719,6 +738,11 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         "problems": data_root_problems(env, root)
         + path_integrity_problems(selected)
         + source_allowlist_problems(selected, env, root)
+        + [
+            item
+            for name in selected
+            for item in include_problems(name, ROOT / lab_file(name))
+        ]
         + collisions(selected, root, running)
         + budget(selected, running, env)
         + stale_volumes(args.docker, selected),
