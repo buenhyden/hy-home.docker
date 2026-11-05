@@ -119,6 +119,11 @@ Supabase 선례처럼 15개 행은 현재 ROOT 장부에서 빼고 원래 행을
 다시 연결했고, P08 공개 관찰의 이전 서비스 대응은 `relocated_lab_service_mapping`에 보존했다.
 이 정합화는 공급자 재조회·서명·SBOM/scan·native·HOME 배포·복구 결과를 만들지 않는다.
 
+2026-11-06 `SPEC-0263` W7이 HOME Compose 입력 10개에 `deploy.resources.reservations`만
+더해 그 입력 SHA가 바뀌었다. image·build 선언은 바뀌지 않았으므로 42개 현재 행의
+`source_input_sha256`과 `include_inputs`의 source binding만 다시 연결했다. 이 정합화도
+공급자 재조회·서명·SBOM/scan·native·HOME 배포 결과를 만들지 않는다.
+
 ## Structure
 
 | 파일 | 용도 |
