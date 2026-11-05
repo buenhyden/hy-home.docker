@@ -24,6 +24,12 @@ services:
 
     cpus: '1.00'
     mem_limit: 1g
+    # Reservation (not running when measured: equals the limit; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 1024M
 
     environment:
       RENOVATE_PLATFORM: github

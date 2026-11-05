@@ -276,6 +276,12 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     mem_limit: 384m
+    # Reservation (measured; capped at the limit; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 384M
     read_only: false
     command: triggerer
     networks:
@@ -421,6 +427,12 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     mem_limit: 384m
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 64M
     read_only: false
     command: celery flower
     networks:

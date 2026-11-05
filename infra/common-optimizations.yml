@@ -26,15 +26,31 @@ x-healthcheck-dev: &healthcheck-dev
 
 # pids_limit values are initial budgets (SPEC-0218): about four times the
 # highest idle count measured in each tier on 2026-10-09, not load-tested optima.
+# Reservations are the declared budget the promotion readiness check and
+# `lab.py check` sum (SPEC-0263 section 5): the highest member peak of three or
+# more `docker stats` samples times 1.5, rounded up to 0.05 CPU and 32 MiB and
+# capped at the limit. An anchor with no running member reserves its limit
+# until measured. Samples: SPEC-0263-TSK-0002 Measurements (2026-11-06).
+# Docker does not enforce a CPU reservation; a memory reservation is soft.
 x-resource-dev-tiny: &resource-dev-tiny
   cpus: "0.10"
   mem_limit: 64m
   pids_limit: 128
+  deploy:
+    resources:
+      reservations:
+        cpus: "0.10"
+        memory: 64M
 
 x-resource-dev-small: &resource-dev-small
   cpus: "0.20"
   mem_limit: 128m
   pids_limit: 128
+  deploy:
+    resources:
+      reservations:
+        cpus: "0.20"
+        memory: 128M
 
 x-restart-default: &restart-default
   restart: unless-stopped
@@ -56,26 +72,51 @@ x-resource-low: &resource-low
   cpus: "0.50"
   mem_limit: 256m
   pids_limit: 256
+  deploy:
+    resources:
+      reservations:
+        cpus: "0.10"
+        memory: 128M
 
 x-resource-med: &resource-med
   cpus: "1.00"
   mem_limit: 512m
   pids_limit: 512
+  deploy:
+    resources:
+      reservations:
+        cpus: "0.30"
+        memory: 352M
 
 x-resource-obs-high: &resource-obs-high
   cpus: "1.50"
   mem_limit: 1g
   pids_limit: 1024
+  deploy:
+    resources:
+      reservations:
+        cpus: "1.50"
+        memory: 1024M
 
 x-resource-high: &resource-high
   cpus: "2.00"
   mem_limit: 2g
   pids_limit: 1024
+  deploy:
+    resources:
+      reservations:
+        cpus: "0.10"
+        memory: 864M
 
 x-resource-db: &resource-db
   cpus: "2.00"
   mem_limit: 2g
   pids_limit: 1024
+  deploy:
+    resources:
+      reservations:
+        cpus: "2.00"
+        memory: 704M
 
 services:
   base-security:
@@ -166,6 +207,11 @@ services:
     cpus: "1.00"
     mem_limit: 512m
     pids_limit: 512
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.15"
+          memory: 128M
     read_only: false
 
   template-stateful-db-high:
@@ -183,6 +229,11 @@ services:
     cpus: "2.00"
     mem_limit: 2g
     pids_limit: 1024
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     read_only: false
 
   template-dev-tiny:

@@ -328,6 +328,12 @@ services:
     # 512 MiB (template) peaked at 97% in the SPEC-0182 W8 window; SPEC-0193 W7
     # confirms the value from the final W8 figures.
     mem_limit: ${GRAFANA_MEM_LIMIT:-1g}
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 480M
     environment:
       GF_SERVER_ROOT_URL: https://grafana.${DEFAULT_URL}
       GF_SERVER_DOMAIN: grafana.${DEFAULT_URL}
@@ -562,6 +568,12 @@ services:
       service: template-host-observer-med
     cpus: ${CADVISOR_CPUS:-1.50}
     mem_limit: ${CADVISOR_MEM_LIMIT:-1g}
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 64M
     image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
     container_name: cadvisor
     hostname: cadvisor

@@ -38,6 +38,12 @@ services:
     user: appuser
     # Chromium needs more memory and processes than the high template allows.
     mem_limit: 4g
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 128M
     pids_limit: 512
     shm_size: 1gb
     read_only: true

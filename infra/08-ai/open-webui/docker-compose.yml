@@ -23,6 +23,12 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     mem_limit: 2g
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 800M
     cpus: "2.00"
     entrypoint:
       - /usr/local/bin/open-webui-oidc-entrypoint.sh

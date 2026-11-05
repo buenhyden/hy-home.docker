@@ -35,6 +35,12 @@ services:
     cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
     cpus: '2.00'
     mem_limit: 2g
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 96M
     shm_size: 256mb
     pids_limit: 256
     environment:

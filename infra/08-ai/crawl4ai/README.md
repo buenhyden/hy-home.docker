@@ -64,7 +64,7 @@ Apache 2.0 본문과 별도의 공개 사용·배포 출처 표시 조건을 포
 | Network / port | `crawl4ai`는 `crawl4ai_net`(소비자용)과 `crawl4ai_egress_net`(`10.250.200.0/29`)에만 참여하며 둘 다 internal; 내부 `11235`를 `expose`로 노출; 호스트 포트·Traefik 라우트 없음. `crawl4ai-egress`(`10.250.200.2`)만 일반 bridge `crawl4ai_outbound_net`에 참여 |
 | Egress | 크롤러의 `dns`와 `CRAWL4AI_UPSTREAM_PROXY`가 gateway를 가리킴; gateway는 전역 IPv4의 80·443만 허용하고 IPv6는 모두 거절하며 host와 주소만 기록 |
 | Authentication | 시크릿 `crawl4ai_api_token`(AI-006)이 `CRAWL4AI_API_TOKEN`으로 내보내짐; protected data/admin API의 Bearer/JWT 인증과 health·root·monitor·token·UI/static 예외를 구분함; 정확한 버전별 범위와 `/token` 제한은 GDE/POL-0091 참조 |
-| Hardening | `template-infra-high`, `cap_drop: ALL`, `no-new-privileges`, tmpfs 작업 경로를 사용하는 읽기 전용 루트, `mem_limit: 4g`, `pids_limit: 512`, 전용 `shm_size`. gateway는 `template-infra-readonly-low`, `65534:65534`, capability 대신 `net.ipv4.ip_unprivileged_port_start=53` |
+| Hardening | `template-infra-high`, `cap_drop: ALL`, `no-new-privileges`, tmpfs 작업 경로를 사용하는 읽기 전용 루트, `mem_limit: 4g`, 측정 기반 reservation 0.10 CPU·128 MiB(POL-0107), `pids_limit: 512`, 전용 `shm_size`. gateway는 `template-infra-readonly-low`, `65534:65534`, capability 대신 `net.ipv4.ip_unprivileged_port_start=53` |
 | Persistence | 없음; 출력과 캐시는 tmpfs |
 | Health | `GET /health` (설계상 인증 없음); API 응답 여부만 증명하며 브라우저 렌더링을 증명하지는 않음 |
 

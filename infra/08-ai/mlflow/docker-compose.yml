@@ -57,6 +57,12 @@ services:
     # Measured 2026-09-21: the CLI parent (~210 MB) plus two uvicorn workers
     # (~240 MB each) need ~500 MB; 512m caused repeated OOM kills.
     mem_limit: 1g
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 64M
     build:
       context: .
       dockerfile: Dockerfile
