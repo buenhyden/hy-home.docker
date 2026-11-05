@@ -267,6 +267,45 @@ class CollisionAndBudgetTests(unittest.TestCase):
         )
         self.assertIn("overlaps root", text)
 
+    def test_read_only_source_tree_tool_owns_no_lab_config(self) -> None:
+        # conftest binds the infra/ and labs/ source trees read-only. A LAB's
+        # own read-only config inside them is not HOME data; writable,
+        # secret or whole-tree LAB binds, or a writable HOME bind, still are.
+        def home(read_only=True):
+            spec = service("conftest")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": str(ROOT / "labs"),
+                    "target": "/project/labs",
+                    "read_only": read_only,
+                }
+            ]
+            return lab.footprint(model("hy-home-infra", {"conftest": spec}))
+
+        def lab_with(source, read_only=True, target="/etc/lab/config"):
+            spec = service("lab-x")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": target,
+                    "read_only": read_only,
+                }
+            ]
+            return lab.footprint(model("hy-home-lab-x", {"x": spec}))
+
+        config = str(ROOT / "labs/dbt/profiles")
+        self.assertEqual([], lab.collisions({"x": lab_with(config)}, home(), []))
+        for name, selected, root in (
+            ("writable LAB path", lab_with(config, read_only=False), home()),
+            ("secret LAB path", lab_with(str(ROOT / "labs/x/secrets/a")), home()),
+            ("whole tree", lab_with(str(ROOT / "labs")), home()),
+            ("writable HOME tree", lab_with(config), home(read_only=False)),
+        ):
+            with self.subTest(case=name):
+                self.assertTrue(lab.collisions({"x": selected}, root, []))
+
     def test_symlink_into_home_data_is_still_an_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             home = pathlib.Path(tmp) / "home-data"

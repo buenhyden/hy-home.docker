@@ -49,6 +49,10 @@ SHARED_PUBLIC_INPUTS = frozenset(
 )
 
 
+# Tracked source trees HOME tools may read whole; see _path_conflict.
+SOURCE_TREES = frozenset(os.path.realpath(ROOT / name) for name in ("infra", "labs"))
+
+
 class LabError(Exception):
     def __init__(self, message: str, code: int = 2) -> None:
         super().__init__(message)
@@ -224,6 +228,21 @@ def _path_conflict(path: str, owner: dict, other_path: str, other: dict) -> bool
         other_path == "/"
         and other_path in other["inputs"]
         and "/" not in other["state"]
+    ):
+        return False
+    # A read-only, non-sensitive bind of a tracked source tree (conftest reads
+    # infra/ and labs/) owns no LAB config inside it. Only a read-only,
+    # non-sensitive LAB path strictly inside the tree qualifies (owner
+    # decision 2026-11-05); writable, secret or whole-tree binds still clash.
+    if (
+        other_path in SOURCE_TREES
+        and path.startswith(other_path + os.sep)
+        and other_path in other["inputs"]
+        and other_path not in other["state"]
+        and other_path not in other["sensitive_inputs"]
+        and path in owner["inputs"]
+        and path not in owner["state"]
+        and path not in owner["sensitive_inputs"]
     ):
         return False
     shared_public_input = (
