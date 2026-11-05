@@ -7,10 +7,10 @@ x-tier-label: &tier-label
 x-locust: &locust
   profiles: [lab-locust]
   extends:
-    file: ../infra/common-optimizations.yml
+    file: ../../infra/common-optimizations.yml
     service: template-job-med
   build:
-    context: ./locust
+    context: .
   read_only: true
   volumes:
     - lab-locust-scenario:/mnt/locust/scenario:ro
