@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run one standalone LAB (`labs/<name>.yml`) under a lease (SPEC-0215).
+"""Run one standalone LAB (`labs/<name>/docker-compose.yml`) under a lease (SPEC-0215).
 
 Commands:
   check LAB [LAB...]          refuse collisions, HOME data overlap, budget or
@@ -122,6 +122,7 @@ def footprint(model: dict) -> dict:
     sources = []
     cluster_ids = set()
     cpus = memory = 0.0
+    limits = {}
     for name, service in model.get("services", {}).items():
         replicas = int((service.get("deploy") or {}).get("replicas") or 1)
         if service.get("container_name"):
@@ -147,7 +148,13 @@ def footprint(model: dict) -> dict:
                 else:
                     state.add(path)
                 sources.append(
-                    {"declared": declared, "real": path, "read_only": read_only}
+                    {
+                        "declared": declared,
+                        "real": path,
+                        "read_only": read_only,
+                        "service": name,
+                        "target": mount.get("target"),
+                    }
                 )
             elif mount.get("type") == "volume":
                 if not mount.get("read_only"):
@@ -157,8 +164,13 @@ def footprint(model: dict) -> dict:
         environment = service.get("environment") or {}
         if isinstance(environment, dict) and environment.get("CLUSTER_ID"):
             cluster_ids.add(str(environment["CLUSTER_ID"]))
-        cpus += float(service.get("cpus") or 0) * replicas
-        memory += int(service.get("mem_limit") or 0) * replicas
+        # Per-container limits as declared; the totals count replicas.
+        limits[name] = {
+            "cpus": float(service.get("cpus") or 0),
+            "memory": float(int(service.get("mem_limit") or 0)),
+        }
+        cpus += limits[name]["cpus"] * replicas
+        memory += limits[name]["memory"] * replicas
     devices = {}
     for key, volume in (model.get("volumes") or {}).items():
         device = (volume.get("driver_opts") or {}).get("device")
@@ -247,6 +259,7 @@ def footprint(model: dict) -> dict:
         "volume_devices": devices,
         "cpus": cpus,
         "memory": memory,
+        "services": limits,
     }
 
 
@@ -539,6 +552,19 @@ def _covers(root: str, path: str) -> bool:
     return _within(path, root)
 
 
+def _socket_exception(name: str, source: dict) -> bool:
+    """SPEC-0263 section 3: supabase `vector` alone may bind the Docker socket,
+    read-only, for log collection. Decided on the declared path, since
+    /var/run is a symlink to /run on most hosts."""
+    return (
+        name == "supabase"
+        and source.get("service") == "vector"
+        and source["declared"] == "/var/run/docker.sock"
+        and source.get("target") == "/var/run/docker.sock"
+        and source["read_only"] is True
+    )
+
+
 def source_allowlist_problems(
     selected: dict[str, dict], env: dict[str, str], root: dict | None = None
 ) -> list[str]:
@@ -626,6 +652,8 @@ def source_allowlist_problems(
 
     for name, lab in selected.items():
         for source in lab["sources"]:
+            if _socket_exception(name, source):
+                continue
             if not allowed(source["real"], source["read_only"]):
                 problems.append(
                     f"{name}: source {source['real']} is outside the LAB allowlist"
@@ -665,12 +693,108 @@ def data_root_problems(env: dict[str, str], root: dict) -> list[str]:
 
 
 def lab_file(name: str) -> str:
-    if (
-        not re.fullmatch(r"[a-z0-9-]+", name)
-        or not (ROOT / f"labs/{name}.yml").is_file()
-    ):
-        raise LabError(f"unknown LAB {name!r}")
-    return f"labs/{name}.yml"
+    """SPEC-0263 section 1: a LAB is the folder `labs/<name>/`."""
+    if re.fullmatch(r"[a-z0-9-]+", name):
+        if (ROOT / f"labs/{name}/docker-compose.yml").is_file():
+            return f"labs/{name}/docker-compose.yml"
+        if (ROOT / f"labs/{name}.yml").is_file():
+            raise LabError(
+                f"{name}: flat labs/{name}.yml is retired; "
+                f"use labs/{name}/docker-compose.yml"
+            )
+    raise LabError(f"unknown LAB {name!r}")
+
+
+MANIFEST_KINDS = frozenset({"add", "replace-same", "replace-substitute", "undecided"})
+REPLACEMENT_KINDS = frozenset({"replace-same", "replace-substitute"})
+INTEGRATION_KINDS = frozenset(
+    {
+        "gateway-route",
+        "oidc-client",
+        "database-role",
+        "observability",
+        "openbao",
+        "network",
+    }
+)
+TARGET_FOLDER = re.compile(r"^infra/\d\d-[a-z0-9-]+/.+/$")
+SECRET_CATALOG = "infra/03-security/openbao/secret-catalog.json"
+
+
+def load_manifest(name: str) -> dict:
+    import yaml
+
+    path = ROOT / f"labs/{name}/promotion.yaml"
+    if not path.is_file():
+        raise LabError(f"{name}: no promotion manifest labs/{name}/promotion.yaml")
+    loaded = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        raise LabError(f"{name}: promotion manifest is not a mapping")
+    return loaded
+
+
+def catalog_ids() -> set[str]:
+    try:
+        catalog = json.loads((ROOT / SECRET_CATALOG).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise LabError(f"secret catalog {SECRET_CATALOG} is unreadable: {exc}") from exc
+    return {entry["id"] for entry in catalog.get("entries", [])}
+
+
+def manifest_problems(
+    name: str, manifest: dict, lab: dict, catalog_ids: set[str]
+) -> list[str]:
+    """SPEC-0263 section 2: a manifest consistent with its rendered LAB."""
+    problems = []
+    kind = manifest.get("kind")
+    if kind not in MANIFEST_KINDS:
+        problems.append(f"{name}: unknown kind {kind!r}")
+    target = manifest.get("target")
+    if kind == "undecided" and "target" in manifest:
+        problems.append(f"{name}: target is not allowed on kind undecided")
+    elif kind in MANIFEST_KINDS - {"undecided"} and not isinstance(target, dict):
+        problems.append(f"{name}: target is required for kind {kind}")
+    if isinstance(target, dict):
+        folder = target.get("folder")
+        if (
+            not isinstance(folder, str)
+            or not TARGET_FOLDER.fullmatch(folder)
+            or ".." in folder.split("/")
+        ):
+            problems.append(
+                f"{name}: target folder {folder!r} is outside infra/<tier>/"
+            )
+    if kind in REPLACEMENT_KINDS and not manifest.get("replaces"):
+        problems.append(f"{name}: kind {kind} needs a non-empty replaces")
+    for item in manifest.get("integrations") or []:
+        integration = item.get("kind") if isinstance(item, dict) else item
+        if integration not in INTEGRATION_KINDS:
+            problems.append(f"{name}: unknown integration kind {integration!r}")
+    for item in manifest.get("secrets") or []:
+        row = item.get("row") if isinstance(item, dict) else item
+        if row not in catalog_ids:
+            problems.append(f"{name}: secret row {row!r} has no catalog row")
+    declared = (manifest.get("resources") or {}).get("services") or {}
+    rendered = lab["services"]
+    for service in sorted(set(declared) | set(rendered)):
+        want, have = declared.get(service), rendered.get(service)
+        if (
+            not isinstance(want, dict)
+            or have is None
+            or float(want.get("cpus") or 0) != have["cpus"]
+            or float(want.get("memory_mib") or 0) * 2**20 != have["memory"]
+        ):
+            problems.append(
+                f"{name}: resources.services {service} disagrees with rendered limits"
+            )
+    documents = manifest.get("documents") or {}
+    for key in ("guide", "runbook", "guide_target", "runbook_target"):
+        path = documents.get(key)
+        if path is None and key in {"guide", "runbook"}:
+            problems.append(f"{name}: documents {key} is missing")
+        elif path is not None and not (ROOT / str(path)).exists():
+            problems.append(f"{name}: documents {key} {path} does not exist")
+    return problems
 
 
 def ledger_dir(env: dict[str, str]) -> pathlib.Path:
@@ -723,6 +847,13 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         docker_root=docker_root(args.docker),
     )
     running = running_containers(args.docker)
+    ids = catalog_ids()
+    manifests = []
+    for name, lab in selected.items():
+        try:
+            manifests += manifest_problems(name, load_manifest(name), lab, ids)
+        except LabError as exc:  # a missing manifest is a problem, not a crash
+            manifests.append(str(exc))
     report = {
         "labs": {
             name: {
@@ -748,7 +879,8 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         ]
         + collisions(selected, root, running)
         + budget(selected, running, env)
-        + stale_volumes(args.docker, selected),
+        + stale_volumes(args.docker, selected)
+        + manifests,
     }
     return report, selected
 

@@ -921,6 +921,181 @@ class AdmissionGuardTests(unittest.TestCase):
         self.assertEqual([True, False], [item["running"] for item in found])
 
 
+def manifest(**changes) -> dict:
+    """A valid promotion manifest for a LAB with one service `node`."""
+    found = {
+        "kind": "replace-same",
+        "target": {"folder": "infra/04-data/mng-db/valkey/", "profile": "data"},
+        "replaces": [
+            {
+                "service": "valkey",
+                "compose_path": "infra/04-data/mng-db/valkey/docker-compose.yml",
+                "consumers": ["infra/07-workflow/airflow/docker-compose.yml"],
+            }
+        ],
+        "integrations": [
+            {"kind": "gateway-route", "owner": "infra/01-gateway/traefik/"}
+        ],
+        "secrets": [
+            {"row": "LAB-001", "destination": "secrets/data/valkey/password.txt"}
+        ],
+        "documents": {"guide": "docs/guide.md", "runbook": "docs/runbook.md"},
+        "resources": {
+            "services": {"node": {"cpus": 0.5, "memory_mib": 512}},
+            "disk_gib": {"data": 5, "images": 1},
+        },
+    }
+    found.update(changes)
+    return found
+
+
+def lab_repo(root: pathlib.Path, name: str, promotion: dict) -> pathlib.Path:
+    """A repository holding one folder LAB, its manifest, documents and catalog."""
+    folder = root / "labs" / name
+    folder.mkdir(parents=True)
+    (folder / "docker-compose.yml").write_text("services: {}\n", encoding="utf-8")
+    (folder / "promotion.yaml").write_text(yaml.safe_dump(promotion), "utf-8")
+    (root / "docs").mkdir()
+    for document in ("guide.md", "runbook.md"):
+        (root / "docs" / document).write_text("# doc\n", encoding="utf-8")
+    catalog = root / "infra/03-security/openbao/secret-catalog.json"
+    catalog.parent.mkdir(parents=True)
+    catalog.write_text(json.dumps({"entries": [{"id": "LAB-001"}]}), "utf-8")
+    return root
+
+
+class LabLayoutAndManifestTests(unittest.TestCase):
+    """SPEC-0263 sections 1-3: folder entrypoint, manifest, socket exception."""
+
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.repo = lab_repo(pathlib.Path(self.tmp.name), "x", manifest())
+        patcher = mock.patch.object(lab, "ROOT", self.repo)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.lab = lab.footprint(
+            model(
+                "hy-home-lab-x",
+                {"node": service("lab-node", cpus=0.5, memory=512 * 2**20)},
+            )
+        )
+
+    def problems(self, promotion: dict) -> list[str]:
+        return lab.manifest_problems("x", promotion, self.lab, {"LAB-001"})
+
+    def assert_problem(self, phrase: str, promotion: dict) -> None:
+        found = self.problems(promotion)
+        self.assertTrue(any(phrase in item for item in found), found)
+
+    def test_lab_file_resolves_folder_entrypoint(self) -> None:
+        self.assertEqual("labs/x/docker-compose.yml", lab.lab_file("x"))
+        self.assertEqual("replace-same", lab.load_manifest("x")["kind"])
+        for name in ("missing", "../x", "X"):
+            with self.subTest(name=name), self.assertRaises(lab.LabError) as raised:
+                lab.lab_file(name)
+            self.assertIn("unknown LAB", str(raised.exception))
+        (self.repo / "labs/x/promotion.yaml").unlink()
+        with self.assertRaises(lab.LabError):
+            lab.load_manifest("x")
+
+    def test_lab_file_refuses_flat_file(self) -> None:
+        (self.repo / "labs/flat.yml").write_text("services: {}\n", encoding="utf-8")
+        with self.assertRaises(lab.LabError) as raised:
+            lab.lab_file("flat")
+        self.assertEqual(
+            "flat: flat labs/flat.yml is retired; use labs/flat/docker-compose.yml",
+            str(raised.exception),
+        )
+
+    def test_manifest_unknown_kind(self) -> None:
+        self.assert_problem("unknown kind", manifest(kind="promote"))
+
+    def test_manifest_undecided_with_target(self) -> None:
+        self.assert_problem("target", manifest(kind="undecided", replaces=[]))
+        missing = manifest(kind="add", replaces=[])
+        del missing["target"]
+        self.assert_problem("target", missing)
+
+    def test_manifest_target_outside_infra(self) -> None:
+        for folder in ("labs/valkey/", "infra/valkey/", "infra/04-data/../../x"):
+            with self.subTest(folder=folder):
+                self.assert_problem(
+                    "outside infra/<tier>/",
+                    manifest(target={"folder": folder, "profile": "data"}),
+                )
+
+    def test_manifest_replacement_needs_replaces(self) -> None:
+        for kind in ("replace-same", "replace-substitute"):
+            with self.subTest(kind=kind):
+                self.assert_problem("replaces", manifest(kind=kind, replaces=[]))
+
+    def test_manifest_unknown_integration(self) -> None:
+        self.assert_problem(
+            "integration",
+            manifest(integrations=[{"kind": "telepathy", "owner": "infra/"}]),
+        )
+
+    def test_manifest_secret_without_catalog_row(self) -> None:
+        self.assert_problem(
+            "no catalog row",
+            manifest(secrets=[{"row": "LAB-999", "destination": "secrets/x"}]),
+        )
+
+    def test_manifest_resources_disagree_with_render(self) -> None:
+        self.lab = lab.footprint(
+            model(
+                "hy-home-lab-x",
+                {"node": service("lab-node", cpus=1, memory=512 * 2**20)},
+            )
+        )
+        self.assertEqual(
+            {"node": {"cpus": 1.0, "memory": float(512 * 2**20)}}, self.lab["services"]
+        )
+        self.assert_problem("disagrees with rendered limits", manifest())
+        extra = manifest()
+        extra["resources"]["services"]["ghost"] = {"cpus": 1, "memory_mib": 1}
+        self.assert_problem("disagrees with rendered limits", extra)
+
+    def test_manifest_missing_document(self) -> None:
+        self.assert_problem(
+            "documents",
+            manifest(documents={"guide": "docs/none.md", "runbook": "docs/runbook.md"}),
+        )
+
+    def test_manifest_valid_passes(self) -> None:
+        self.assertEqual([], self.problems(manifest()))
+        undecided = manifest(kind="undecided", replaces=[])
+        del undecided["target"]
+        self.assertEqual([], self.problems(undecided))
+
+    def test_socket_allowed_only_for_supabase_vector_read_only(self) -> None:
+        env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../secrets/labs"}
+
+        def bind(name, service_name, source, read_only):
+            spec = service(f"lab-{service_name}")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": "/var/run/docker.sock",
+                    "read_only": read_only,
+                }
+            ]
+            found = lab.footprint(model(f"hy-home-lab-{name}", {service_name: spec}))
+            return lab.source_allowlist_problems({name: found}, env, ROOTFP)
+
+        self.assertEqual([], bind("supabase", "vector", "/var/run/docker.sock", True))
+        for case in (
+            ("supabase", "vector", "/var/run/docker.sock", False),
+            ("supabase", "kong", "/var/run/docker.sock", True),
+            ("supabase", "vector", "/run/user/1000/docker.sock", True),
+            ("other", "vector", "/var/run/docker.sock", True),
+        ):
+            with self.subTest(case=case):
+                self.assertTrue(bind(*case))
+
+
 class LifecycleTests(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()
@@ -935,6 +1110,17 @@ class LifecycleTests(unittest.TestCase):
             f'LAB_FIXTURE_RESULT_DIR="{self.outside}"\n',
             encoding="utf-8",
         )
+        # A fixture repository: the LAB folder, its manifest and the catalog.
+        cassandra = manifest(
+            kind="add",
+            target={"folder": "infra/04-data/nosql/cassandra/", "profile": "data"},
+            replaces=[],
+            resources={"services": {"c": {"cpus": 1, "memory_mib": 1024}}},
+        )
+        repo = lab_repo(pathlib.Path(self.tmp.name) / "repo", "cassandra", cassandra)
+        patcher = mock.patch.object(lab, "ROOT", repo)
+        patcher.start()
+        self.addCleanup(patcher.stop)
         self.calls: list[list[str]] = []
         self.home_data = pathlib.Path(self.tmp.name) / "home-data"
         self.rendered = model(
