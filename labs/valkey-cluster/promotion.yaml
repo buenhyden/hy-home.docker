@@ -41,8 +41,8 @@ resources:
       cpus: 0.5
       memory_mib: 256
       reservations:
-        cpus: 0.5
-        memory_mib: 256
+        cpus: 0.05
+        memory_mib: 32
     valkey-cluster-init:
       cpus: 0.5
       memory_mib: 256
@@ -53,38 +53,38 @@ resources:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.1
+        memory_mib: 32
     valkey-node-1:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.1
+        memory_mib: 32
     valkey-node-2:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.1
+        memory_mib: 32
     valkey-node-3:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.1
+        memory_mib: 32
     valkey-node-4:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.1
+        memory_mib: 32
     valkey-node-5:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.1
+        memory_mib: 32
   disk_gib:
     data: 10
     images: 1
