@@ -22,8 +22,8 @@ integrations:
   owner: infra/05-messaging/kafka/
 secrets: []
 documents:
-  guide: labs/kafka-cluster/README.md
-  runbook: labs/kafka-cluster/README.md
+  guide: docs/05.operations/guides/15-labs/0108-kafka-cluster.md
+  runbook: docs/05.operations/runbooks/15-labs/0108-kafka-cluster.md
   guide_target: docs/05.operations/guides/06-messaging-and-cdc/
   runbook_target: docs/05.operations/runbooks/06-messaging-and-cdc/
 resources:

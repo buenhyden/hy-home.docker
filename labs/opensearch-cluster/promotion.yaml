@@ -32,8 +32,8 @@ secrets:
 - row: LAB-015
   destination: secrets/data/opensearch/opensearch_security_cookie.txt
 documents:
-  guide: labs/opensearch-cluster/README.md
-  runbook: labs/opensearch-cluster/README.md
+  guide: docs/05.operations/guides/15-labs/0109-opensearch-cluster.md
+  runbook: docs/05.operations/runbooks/15-labs/0109-opensearch-cluster.md
   guide_target: docs/05.operations/guides/05-databases-and-storage/
   runbook_target: docs/05.operations/runbooks/05-databases-and-storage/
 resources:

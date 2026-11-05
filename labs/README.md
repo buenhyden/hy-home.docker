@@ -1,6 +1,6 @@
 ---
 title: "독립 LAB source"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -13,8 +13,10 @@ created: "2026-10-12"
 ## Overview
 
 이 디렉터리는 정상 root Compose와 분리된 LAB entrypoint, 공개 안내와
-LAB 전용 build·bind source를 보관합니다. 운영 문서의 LAB 분류 위치는
-`docs/05.operations/`의 유형별 `labs/`이며 이 runtime source family와 구분합니다.
+LAB 전용 build·bind source를 보관합니다. LAB 운영 문서는
+`docs/05.operations/`의 역할별 `15-labs/` 폴더에 있으며 이 runtime source family와 구분합니다.
+승격 통제와 절차는 `15-labs`의 LAB 승격 정책과 런북(OPS-0107)이 소유하며,
+각 LAB의 Guide와 Runbook도 같은 폴더에 있습니다. [운영 문서 탐색](../docs/05.operations/README.md)에서 찾습니다.
 
 ## Audience
 
