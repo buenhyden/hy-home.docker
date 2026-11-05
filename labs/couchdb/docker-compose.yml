@@ -53,7 +53,7 @@ services:
     profiles:
       - couchdb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-med
     image: couchdb:3.5.2
     container_name: lab-couchdb-couchdb-1
@@ -97,7 +97,7 @@ services:
     profiles:
       - couchdb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-med
     image: couchdb:3.5.2
     container_name: lab-couchdb-couchdb-2
@@ -138,7 +138,7 @@ services:
     profiles:
       - couchdb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-med
     image: couchdb:3.5.2
     container_name: lab-couchdb-couchdb-3
@@ -181,7 +181,7 @@ services:
     profiles:
       - couchdb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-low
     restart: 'no'
     image: curlimages/curl:8.22.0
@@ -217,6 +217,6 @@ networks:
     name: ${LAB_COUCHDB_EDGE_NETWORK_NAME:-hy-home-lab-couchdb-edge}
 secrets:
   lab_couchdb_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/couchdb/password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/couchdb/password.txt
   lab_couchdb_cookie:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/couchdb/cookie.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/couchdb/cookie.txt

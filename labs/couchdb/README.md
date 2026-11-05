@@ -4,7 +4,7 @@ version: "1.0.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-11-05"
 created: "2025-11-12"
 ---
 
@@ -37,7 +37,7 @@ created: "2025-11-12"
 
 | Category | Source of truth | Boundary |
 | --- | --- | --- |
-| Compose | [couchdb.yml](./couchdb.yml) | 독립 LAB project |
+| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
 | State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
 | Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
 | Networks | LAB 전용 network declarations | root network와 미공유 |
@@ -45,17 +45,18 @@ created: "2025-11-12"
 ## Structure
 
 ```text
-labs/
-├── couchdb.yml
-├── couchdb-cluster-init.sh
-└── couchdb.md
+labs/couchdb/
+├── README.md               # 서비스 README
+├── couchdb-cluster-init.sh # 클러스터 초기화 helper
+├── docker-compose.yml      # 독립 LAB entrypoint
+└── promotion.yaml          # SPEC-0263 승격 manifest
 ```
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Entry point | [couchdb.yml](./couchdb.yml) |
+| Entry point | [docker-compose.yml](./docker-compose.yml) |
 | Project | `hy-home-lab-couchdb` |
 | Services | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` |
 | State | `${LAB_DATA_DIR:?set isolated LAB data root}/couchdb/data-{1..3}` |
@@ -68,7 +69,7 @@ labs/
 ## Usage
 
 1. `LAB_DATA_DIR`과 LAB secret reference directory를 독립 경로로 지정한다.
-2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-couchdb-static docker compose --env-file labs/.env.example -f labs/couchdb.yml --profile '*' config --quiet`로 렌더링한다.
+2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-couchdb-static docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile '*' config --quiet`로 렌더링한다.
 3. LAB Compose project, network, volume, port와 secret reference가 HOME 또는 management 경로와 겹치지 않는지 검토한다.
 4. 기동은 `python3 scripts/operations/lab.py up couchdb --purpose "<목적>" --lease <30m|4h>`로만 한다. 이 명령은 다른 LAB·HOME과의 이름·port·data 경로 충돌, 예산과 동시 LAB 수를 먼저 검사하고 `${LAB_DATA_DIR}/.ledger/couchdb.json`에 정리 대상을 기록한다. 종료는 `lab.py down couchdb`이며 volume과 data를 지우지 않는다. 만료 lease는 `lab.py reap`이 정지한다 (정책 `POL-0078`).
 
@@ -76,7 +77,7 @@ labs/
 
 | Command | Description |
 | --- | --- |
-| `LAB_DATA_DIR=/tmp/hyhome-couchdb-static docker compose --env-file labs/.env.example -f labs/couchdb.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
+| `LAB_DATA_DIR=/tmp/hyhome-couchdb-static docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
 
 ## Configuration
 
@@ -109,5 +110,5 @@ cluster 결성은 격리 실행 전까지 검증되지 않았습니다. 재실�
 
 ## Related Documents
 
-- [Architecture index](../docs/02.architecture/README.md)
-- [Operations index](../docs/05.operations/README.md)
+- [Architecture index](../../docs/02.architecture/README.md)
+- [Operations index](../../docs/05.operations/README.md)
