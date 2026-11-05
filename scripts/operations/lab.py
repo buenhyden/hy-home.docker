@@ -83,7 +83,19 @@ def render(docker: str, env_file: pathlib.Path, compose_file: str | None) -> dic
     command = [docker, "compose", "--env-file", str(env_file)]
     if compose_file:
         command += ["-f", compose_file]
-    result = run([*command, "--profile", "*", "config", "--format", "json"])
+    # --no-env-resolution keeps services[*].env_file (merged through extends
+    # and include) instead of inlining it, so a LAB env_file can be refused.
+    result = run(
+        [
+            *command,
+            "--profile",
+            "*",
+            "config",
+            "--no-env-resolution",
+            "--format",
+            "json",
+        ]
+    )
     if result.returncode != 0:
         raise LabError(
             f"render failed for {compose_file or 'root'}: {result.stderr.strip()}", 1
@@ -186,6 +198,8 @@ def footprint(model: dict) -> dict:
     # read-only source rules. Build secrets and SSH forwarding are refused.
     build_inputs, build_forbidden = [], []
     for name, service in model.get("services", {}).items():
+        if service.get("env_file"):
+            build_forbidden.append(f"{name}: env_file")
         build = service.get("build")
         if not isinstance(build, dict):
             continue
@@ -198,9 +212,17 @@ def footprint(model: dict) -> dict:
             for item in contexts
             if isinstance(item, str) and item
         ]
-        for key in ("ssh", "secrets"):
+        # Host side effects outside the allowlist: secrets, SSH agent, local
+        # cache import/export, host network, entitlements, a Dockerfile
+        # outside the context.
+        for key in ("ssh", "secrets", "cache_to", "cache_from", "entitlements"):
             if build.get(key):
                 build_forbidden.append(f"{name}: build {key}")
+        if build.get("network") == "host":
+            build_forbidden.append(f"{name}: build network host")
+        dockerfile = build.get("dockerfile")
+        if isinstance(dockerfile, str) and os.path.isabs(dockerfile):
+            build_forbidden.append(f"{name}: build dockerfile outside the context")
     networks = {net.get("name") for net in (model.get("networks") or {}).values()}
     return {
         "build_inputs": build_inputs,
@@ -545,8 +567,13 @@ def source_allowlist_problems(
     secret_value = env.get("LAB_SECRET_DIR") or "../secrets/labs"
     # Compose resolves a relative LAB_SECRET_DIR against labs/.
     secret = os.path.realpath(ROOT / "labs" / secret_value)
-    if unsafe(secret):
-        problems.append(f"LAB_SECRET_DIR {secret} covers a protected path")
+    if unsafe(secret) or (
+        _within(secret, repo)
+        and not _within(secret, os.path.join(repo, "secrets", "labs"))
+    ):
+        # Inside the repo only secrets/labs holds LAB copies; elsewhere would
+        # admit HOME secret subdirectories or .git.
+        problems.append(f"LAB_SECRET_DIR {secret} is not a LAB secret location")
         secret = None
 
     def operator_roots(results: bool) -> set[str]:
@@ -569,6 +596,9 @@ def source_allowlist_problems(
     operator, results = operator_roots(False), operator_roots(True)
 
     def allowed(real: str, read_only: bool) -> bool:
+        if _sensitive_input(real, None):
+            # Secrets and sockets only from the LAB secret copies.
+            return bool(read_only and secret and _within(real, secret))
         if data and _within(real, data):
             return True
         if read_only and secret and _within(real, secret):
@@ -600,16 +630,6 @@ def source_allowlist_problems(
             f"{name}: {item} is refused" for item in lab.get("build_forbidden", [])
         ]
     return problems
-
-
-_ENV_FILE = re.compile(r"^\s*env_file\s*:", re.MULTILINE)
-
-
-def raw_lab_problems(name: str, path: pathlib.Path | str) -> list[str]:
-    """Rendered models inline env_file contents and drop the path, so the
-    LAB file itself is scanned: an env_file could read HOME's .env."""
-    text = pathlib.Path(path).read_text(encoding="utf-8")
-    return [f"{name}: env_file is refused in a LAB"] if _ENV_FILE.search(text) else []
 
 
 def data_root_problems(env: dict[str, str], root: dict) -> list[str]:
@@ -699,11 +719,6 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         "problems": data_root_problems(env, root)
         + path_integrity_problems(selected)
         + source_allowlist_problems(selected, env, root)
-        + [
-            item
-            for name in selected
-            for item in raw_lab_problems(name, ROOT / lab_file(name))
-        ]
         + collisions(selected, root, running)
         + budget(selected, running, env)
         + stale_volumes(args.docker, selected),

@@ -511,12 +511,75 @@ class CollisionAndBudgetTests(unittest.TestCase):
                             root,
                         )
                     )
-        with tempfile.TemporaryDirectory() as tmp:
-            raw = pathlib.Path(tmp) / "x.yml"
-            raw.write_text("services:\n  x:\n    env_file: ../.env\n", encoding="utf-8")
-            self.assertTrue(lab.raw_lab_problems("x", raw))
-            raw.write_text("services:\n  x:\n    image: busybox\n", encoding="utf-8")
-            self.assertEqual([], lab.raw_lab_problems("x", raw))
+        # The model is rendered with --no-env-resolution, so env_file survives
+        # whatever YAML style, extends or include put it there.
+        spec = service("lab-x")
+        spec["env_file"] = [{"path": str(ROOT / ".env")}]
+        selected = {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))}
+        self.assertTrue(lab.source_allowlist_problems(selected, env, root))
+        for build in (
+            {"context": str(ROOT / "labs/dbt"), "cache_to": ["type=local,dest=/tmp/c"]},
+            {
+                "context": str(ROOT / "labs/dbt"),
+                "cache_from": ["type=local,src=/tmp/c"],
+            },
+            {"context": str(ROOT / "labs/dbt"), "network": "host"},
+            {"context": str(ROOT / "labs/dbt"), "entitlements": ["network.host"]},
+            {"context": str(ROOT / "labs/dbt"), "dockerfile": "/etc/Dockerfile"},
+        ):
+            spec = service("lab-x")
+            spec["build"] = build
+            with self.subTest(build=sorted(build)):
+                self.assertTrue(
+                    lab.footprint(model("hy-home-lab-x", {"x": spec}))[
+                        "build_forbidden"
+                    ]
+                )
+
+    def test_secret_root_in_the_repo_must_be_secrets_labs(self) -> None:
+        env = {"LAB_DATA_DIR": "/lab-data"}
+
+        def secret(source):
+            rendered = model("hy-home-lab-x", {"x": service("lab-x")})
+            rendered["secrets"] = {"s": {"name": "s", "file": source}}
+            return {"x": lab.footprint(rendered)}
+
+        for value, source in (
+            ("../secrets/.retired", "secrets/.retired/auth/key.txt"),
+            ("../secrets/db", "secrets/db/mng-pg/password.txt"),
+            ("../.git", ".git/config"),
+        ):
+            with self.subTest(value=value):
+                self.assertTrue(
+                    lab.source_allowlist_problems(
+                        secret(str(ROOT / source)),
+                        {**env, "LAB_SECRET_DIR": value},
+                        ROOTFP,
+                    )
+                )
+        self.assertEqual(
+            [],
+            lab.source_allowlist_problems(
+                secret(str(ROOT / "secrets/labs/dbt/p.txt")),
+                {**env, "LAB_SECRET_DIR": "../secrets/labs"},
+                ROOTFP,
+            ),
+        )
+
+    def test_sensitive_source_needs_the_secret_root_even_under_other_roots(self):
+        spec = service("lab-x")
+        spec["volumes"] = [
+            {
+                "type": "bind",
+                "source": "/run/docker.sock",
+                "target": "/s",
+                "read_only": True,
+            }
+        ]
+        selected = {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))}
+        for env in ({"LAB_X": "/run"}, {"LAB_DATA_DIR": "/run"}):
+            with self.subTest(env=env):
+                self.assertTrue(lab.source_allowlist_problems(selected, env, ROOTFP))
 
     def test_tracked_only_uses_literal_pathspecs_and_rejects_ignored_files(self):
         calls = []
