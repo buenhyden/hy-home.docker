@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import importlib.util
+import io
 import json
 import os
 import pathlib
@@ -1549,6 +1550,23 @@ class LifecycleTests(unittest.TestCase):
         self.calls.clear()
         self.assertEqual(2, self.main("down", "cassandra"))
         self.assertFalse(any("down" in call for call in self.calls))
+
+    def test_malformed_render_exits_two_without_a_traceback(self) -> None:
+        # A rendered value of an unexpected type (deploy as a string) raised
+        # AttributeError out of main as a traceback with exit 1.
+        self.rendered["services"]["c"]["deploy"] = "bogus"
+        for argv in (["check", "cassandra"], ["readiness", "cassandra"]):
+            with self.subTest(argv=argv):
+                stderr = io.StringIO()
+                with (
+                    mock.patch.object(lab, "run", side_effect=self.fake_run),
+                    mock.patch("sys.stdout"),
+                    mock.patch("sys.stderr", stderr),
+                ):
+                    code = lab.main(["--env-file", str(self.env_file), *argv])
+                self.assertEqual(2, code)
+                self.assertIn("invalid input", stderr.getvalue())
+                self.assertNotIn("Traceback", stderr.getvalue())
 
     def test_bad_inputs_exit_two_instead_of_crashing(self) -> None:
         with self.env_file.open("a", encoding="utf-8") as handle:

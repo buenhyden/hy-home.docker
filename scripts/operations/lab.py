@@ -1907,8 +1907,9 @@ def main(argv: list[str] | None = None) -> int:
     except LabError as exc:
         print(f"lab.py: {exc}", file=sys.stderr)
         return exc.code
-    except (KeyError, TypeError, ValueError) as exc:
-        # Bad env values or a hand-edited ledger are invalid input, not a crash.
+    except (AttributeError, KeyError, TypeError, ValueError) as exc:
+        # Bad env values, a hand-edited ledger or a rendered value of an
+        # unexpected type are invalid input, not a crash.
         print(f"lab.py: invalid input: {exc}", file=sys.stderr)
         return 2
 
