@@ -33,8 +33,11 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 - 승격 Task가 있고, 그 Task가 대상 LAB, kind, 목적지와 운영 window를 기록한다.
 - **HOME runtime을 건드리는 모든 단계(기동, 정지, 재생성, 데이터 export·import, 소비자 전환,
   은퇴)는 owner가 승인한 운영 window 안에서만 실행한다.** 이 런북의 명령 목록은 승인이 아니다.
-- `labs/.env`에 대상 LAB의 필수 입력(`LAB_DATA_DIR`과 LAB별 입력)이 있다. agent는 이 파일과
-  `secrets/`를 읽지 않는다.
+- `labs/.env`(`--env-file`, 기본 `labs/.env`)에 대상 LAB의 필수 입력(`LAB_DATA_DIR`과 LAB별 입력)이
+  있다.
+- root `.env`(`--root-env-file`, 기본 `.env`)가 있다. readiness는 이 파일로 root Compose를 render해
+  HOME footprint를 만든다.
+- agent는 두 env 파일과 `secrets/`를 읽지 않는다.
 - 대체 승격이면 은퇴할 서비스의 최신 backup과 격리 복원 증거가 있다.
 
 ## Procedure
@@ -64,19 +67,21 @@ python3 scripts/operations/lab.py --env-file labs/.env readiness <name> --report
 
 ### add
 
-1. 목적지 규칙에 따라 Compose, README, 자산, Guide·Runbook을 옮긴다. 문서는 artifact 식별자와
+1. 파일을 옮기기 전에 LAB 위치에서 [readiness 검사](#readiness-run)를 실행한다. 0이 아니면 절차를
+   멈춘다. readiness는 `labs/<name>/docker-compose.yml`과 `promotion.yaml`을 읽고, 문서가 있는지
+   확인하며, 목적지 폴더가 없거나 선언된 대체일 것을 요구하므로 이동 뒤에는 통과할 수 없다.
+2. 목적지 규칙에 따라 Compose, README, 자산, Guide·Runbook을 옮긴다. 문서는 artifact 식별자와
    생성일을 유지하고 `git mv`로 옮긴다. 상대 경로는 새 폴더 기준으로 다시 맞춘다.
-2. manifest의 `integrations`를 연결한다(gateway route, OIDC client, DB role, observability,
+3. manifest의 `integrations`를 연결한다(gateway route, OIDC client, DB role, observability,
    OpenBao 전달, 공유 network).
-3. secret을 옮기지 않고 은퇴시킨다. 아래 [Secret retirement](#secret-retirement)를 따른다.
-4. readiness 검사를 실행한다. 0이 아니면 멈춘다.
+4. secret을 옮기지 않고 은퇴시킨다. 아래 [Secret retirement](#secret-retirement)를 따른다.
 5. root render와 관련 test를 실행한다.
 6. 승인된 운영 window에서 서비스를 시작하고 health와 사용자 기능을 확인한다.
 7. `promotion.yaml`을 삭제하고 그 사실을 승격 Task에 기록한다.
 
 ### replace-same
 
-`add`의 모든 단계에 다음을 더한다. 6단계(기동)는 아래 순서 안에서 실행한다.
+`add`의 모든 단계에 다음을 더한다. readiness(1단계)는 여기서도 가장 먼저 실행한다. 6단계(기동)는 아래 순서 안에서 실행한다.
 
 #### Consumer inventory
 
@@ -139,11 +144,11 @@ secret을 쓴다.
    ```
 
 4. `--sync-metadata-prune`은 private registry가 COMM-003을 갖고 있는 동안 막힌다. COMM-003은
-   SMTP01 은퇴(`--retire-supabase-smtp`, [RUN-0029](0029-supabase.md))만 제거한다.
-5. catalog를 검사한다. root는 절대 경로여야 하므로 `.`이 아니라 `--root "$PWD"`를 쓴다.
+   SMTP01 은퇴만 제거하며, 그 절차와 audit proof 입력은 [RUN-0029](0029-supabase.md)를 따른다.
+5. catalog를 검사한다. `--root`는 상위 parser 옵션이므로 `check` 앞에 두고, 절대 경로여야 하므로 `.`이 아니라 `"$PWD"`를 쓴다.
 
    ```bash
-   python3 scripts/operations/secret-catalog.py check --root "$PWD"
+   python3 scripts/operations/secret-catalog.py --root "$PWD" check
    ```
 
 6. owner가 LAB 사본 파일을 제거한다.

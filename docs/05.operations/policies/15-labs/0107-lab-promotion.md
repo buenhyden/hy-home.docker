@@ -37,7 +37,8 @@ created: "2026-11-05"
   따르는 `README.md`, 승격 manifest `promotion.yaml`과 LAB이 쓰는 build source, mount 설정,
   helper, Grafana 대시보드가 함께 있다.
 - `labs/` root에는 [labs/README.md](../../../../labs/README.md)와 공유 `labs/.env.example`만 둔다.
-- LAB은 자신의 Compose project `hy-home-lab-<name>`, LAB network, `LAB_*` endpoint 입력,
+- LAB은 `hy-home-lab-`로 시작하는 자신의 Compose project(예: `hy-home-lab-kafka`,
+  `hy-home-lab-opensearch`), LAB network, `LAB_*` endpoint 입력,
   `LAB_DATA_DIR` 아래 데이터와 `lab.py check`의 격리를 유지한다.
 
 ### Promotion manifest

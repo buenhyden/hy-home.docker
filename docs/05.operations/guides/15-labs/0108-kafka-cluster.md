@@ -61,8 +61,8 @@ include하지 않는다. 세 broker가 한 host를 공유하므로 host 장애 �
 ### Operator input
 
 `LAB_KAFKA_CLUSTER_ID`는 필수이며 HOME `KAFKA_CLUSTER_ID`와 달라야 하고 KRaft 형식이어야 한다.
-2026-11-05 현재 `labs/.env`에 이 값이 없어 이 LAB은 HOME 입력으로 render된 적이 없다. owner가
-`labs/.env`에 값을 넣어야 HOME render, `lab.py check`와 readiness 검사를 실행할 수 있다.
+HOME 입력의 render는 `NOT_RUN`이다. 2026-11-05 controller 보고에 따르면 `labs/.env`에 이 값이
+없다(agent는 그 파일을 읽지 않는다). owner가 `labs/.env`에 값을 넣어야 HOME render, `lab.py check`와 readiness 검사를 실행할 수 있다.
 
 ### Static check
 

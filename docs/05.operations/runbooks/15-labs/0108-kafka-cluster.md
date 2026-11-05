@@ -25,8 +25,9 @@ Kafka LAB의 정적 검증, 승인된 실험 기동, broker·topic 이상 진단
 
 ## Prerequisites
 
-- `labs/.env`에 `LAB_DATA_DIR`과 HOME과 다른 `LAB_KAFKA_CLUSTER_ID`가 있다. 2026-11-05 현재
-  `LAB_KAFKA_CLUSTER_ID`가 없어 HOME render는 실행되지 않았다. owner가 값을 넣는다.
+- `labs/.env`에 `LAB_DATA_DIR`과 HOME과 다른 `LAB_KAFKA_CLUSTER_ID`가 있다. HOME 입력의
+  render는 `NOT_RUN`이다. 2026-11-05 controller 보고에 따르면 `LAB_KAFKA_CLUSTER_ID`가 없다.
+  owner가 값을 넣는다.
 - 기동 전 Docker context, project 이름, network·volume, 가용 CPU·memory·disk, `${LAB_DATA_DIR}/kafka/`
   의 UID/GID와 정리 대상을 owner가 승인한다.
 - 이 런북의 모든 runtime 단계는 별도 승인이 필요하다. 이 문서 작성에서는 아무것도 실행하지 않았다.

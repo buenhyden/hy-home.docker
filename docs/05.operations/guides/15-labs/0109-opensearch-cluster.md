@@ -66,8 +66,9 @@ created: "2026-11-05"
 
 ### Operator input
 
-`LAB_OPENSEARCH_CERT_DIR`는 필수이며 값이 없으면 정적 render도 실패한다. 2026-11-05 현재
-`labs/.env`에 이 값이 없어 이 LAB은 현재 HOME 입력으로 render되지 않았다. owner가 LAB 전용 인증서
+`LAB_OPENSEARCH_CERT_DIR`는 필수이며 값이 없으면 정적 render도 실패한다. 현재 HOME
+입력의 render는 `NOT_RUN`이다. 2026-11-05 controller 보고에 따르면 `labs/.env`에 이 값이 없다(agent는
+그 파일을 읽지 않는다). owner가 LAB 전용 인증서
 디렉터리를 준비하고 `labs/.env`에 넣어야 HOME render, `lab.py check`와 readiness 검사를 실행할 수 있다.
 LAB README는 SPEC-0215 TSK-0002의 이전 기동 기록을 담고 있으나, 이 가이드는 현재 layout에서 그
 결과를 다시 관찰하지 않았다.

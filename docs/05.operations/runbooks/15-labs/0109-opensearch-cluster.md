@@ -26,8 +26,8 @@ OpenSearch LAB의 정적 검증, 승인된 실험 기동, node·Dashboards 이�
 
 ## Prerequisites
 
-- `labs/.env`에 `LAB_DATA_DIR`, `LAB_SECRET_DIR`, `LAB_OPENSEARCH_CERT_DIR`가 있다. 2026-11-05 현재
-  `LAB_OPENSEARCH_CERT_DIR`가 없어 현재 HOME render는 실행되지 않았다. owner가 LAB 전용 CA와 node
+- `labs/.env`에 `LAB_DATA_DIR`, `LAB_SECRET_DIR`, `LAB_OPENSEARCH_CERT_DIR`가 있다. 현재 HOME 입력의
+  render는 `NOT_RUN`이다. 2026-11-05 controller 보고에 따르면 `LAB_OPENSEARCH_CERT_DIR`가 없다. owner가 LAB 전용 CA와 node
   인증서를 준비하고 값을 넣는다.
 - `secrets/labs/opensearch-cluster/`에 네 LAB secret 사본이 있다. owner가 준비하며 agent는 읽지 않는다.
 - 기동 전 Docker context, network·volume, 가용 CPU·memory·disk(high watermark 90% 미만), bind

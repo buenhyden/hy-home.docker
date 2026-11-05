@@ -59,8 +59,8 @@ image, 인증서, secret, network, 데이터 경로, 승격 manifest가 바뀔 �
 ## Verification
 
 [RUN-0109](../../runbooks/15-labs/0109-opensearch-cluster.md)의 정적 render와
-`lab.py check opensearch-cluster`로 검증한다. 2026-11-05 현재 `labs/.env`에 `LAB_OPENSEARCH_CERT_DIR`가
-없어 현재 HOME 입력의 render와 runtime은 미검증이다.
+`lab.py check opensearch-cluster`로 검증한다. 현재 HOME 입력의 render와 runtime은 `NOT_RUN`이다.
+2026-11-05 controller 보고에 따르면 `labs/.env`에 `LAB_OPENSEARCH_CERT_DIR`가 없으며, agent는 그 파일을 읽지 않았다.
 
 ## Related Documents
 
