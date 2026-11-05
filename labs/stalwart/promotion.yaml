@@ -1,0 +1,29 @@
+# SPEC-0263 promotion manifest for the stalwart LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+# kind undecided: the owner has not named a promotion target yet.
+kind: undecided
+integrations:
+- kind: gateway-route
+  owner: infra/01-gateway/traefik/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-036
+  destination: secrets/communication/stalwart/password.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0070-mail.md
+  runbook: docs/05.operations/runbooks/15-labs/0070-mail.md
+  guide_target: docs/05.operations/guides/11-mail-and-notifications/
+  runbook_target: docs/05.operations/runbooks/11-mail-and-notifications/
+resources:
+  services:
+    stalwart:
+      cpus: 1.0
+      memory_mib: 512
+    stalwart-config:
+      cpus: 0.5
+      memory_mib: 256
+  disk_gib:
+    data: 5
+    images: 1

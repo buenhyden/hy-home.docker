@@ -4,7 +4,7 @@ version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 created: "2025-12-03"
 ---
 
@@ -12,7 +12,7 @@ created: "2025-12-03"
 
 ## Overview
 
-Stalwart는 독립 Compose project인 [Stalwart LAB](../stalwart.yml)(`mail-server`
+Stalwart는 독립 Compose project인 [Stalwart LAB](docker-compose.yml)(`mail-server`
 profile)의 메일 서버 실험입니다. root Compose에 포함되지 않고 HOME network에 연결되지
 않으며 Traefik route도 없습니다. 어떤 HOME 컨테이너도 이 서버로 메일을 보내지 않으며
 HOME 메일 캡처는 Mailpit(subject `0084-mailpit`)이 담당합니다. 외부 relay는 없고
@@ -31,18 +31,20 @@ Stalwart의 SMTP/IMAP/JMAP, 관리 UI, 비밀 참조와 데이터 저장 선언�
 ## Structure
 
 ```text
-stalwart/
-├── README.md
-└── config/              # datastore config, plan.ndjson, start/apply scripts, CLI Dockerfile
+labs/stalwart/
+├── README.md          # 서비스 README
+├── docker-compose.yml # 독립 LAB entrypoint
+├── promotion.yaml     # SPEC-0263 승격 manifest
+└── config/            # datastore config, plan.ndjson, start/apply scripts, CLI Dockerfile
 ```
 
-서비스 정의(`stalwart`, `stalwart-config`)는 [labs/stalwart.yml](../stalwart.yml)이 소유한다.
+서비스 정의(`stalwart`, `stalwart-config`)는 [labs/stalwart/docker-compose.yml](docker-compose.yml)이 소유한다.
 
 ## Usage
 
 Guide `GDE-0070`(`docs/05.operations/guides/15-labs/0070-mail.md`), Policy `POL-0070`,
 Runbook `RUN-0070`을 따른다. 명령은 저장소 루트에서
-`docker compose --env-file labs/.env -f labs/stalwart.yml --profile mail-server` 접두사로
+`docker compose --env-file labs/.env -f labs/stalwart/docker-compose.yml --profile mail-server` 접두사로
 실행한다. `config`는 render만 하며, 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down stalwart`의 lease 규칙
 ([LAB 안내](../README.md#usage))을 따른다. 시작 전 DNS, TLS, 인증, 데이터 복구 증거를 확보한다.
@@ -51,8 +53,8 @@ Runbook `RUN-0070`을 따른다. 명령은 저장소 루트에서
 
 | Setting | Source / behavior |
 | --- | --- |
-| Profile | `mail-server` / `labs/stalwart.yml` |
-| Image | [Compose](../stalwart.yml); [derived Compose image projection](../../infra/tech-stack.versions.json) |
+| Profile | `mail-server` / `labs/stalwart/docker-compose.yml` |
+| Image | [Compose](docker-compose.yml); [derived Compose image projection](../../infra/tech-stack.versions.json) |
 | Data | `${LAB_DATA_DIR}/stalwart/data` → `/var/lib/stalwart` (첫 기동 전 빈 디렉터리로 존재해야 하며 이미지 사용자 UID 2000 소유가 복사됨; 실제 경로의 소유권·권한은 별도 확인) |
 | Configuration | `config/plan.ndjson`을 `stalwart-config`가 적용; listener 변경은 다음 재시작부터. 메일 도메인은 `LAB_STALWART_DEFAULT_URL` |
 | Secret | `${LAB_SECRET_DIR}/stalwart/password.txt`의 LAB 전용 `lab_stalwart_password` → `/run/secrets/stalwart_password` → recovery admin; Compose에 credential 없음. 한 줄, `:` 없는 값이어야 함(`user:password`로 조합). HOME 값 복사는 별도 승인 |
@@ -64,7 +66,7 @@ Runbook `RUN-0070`을 따른다. 명령은 저장소 루트에서
 
 ## Service Readiness
 
-서비스와 healthcheck는 [Compose](../stalwart.yml)에 선언되어 있다. `/healthz/live` healthcheck는 배달·TLS·인증 검증을 대신하지 않는다. 실제 메일함 데이터, 백업 및 복원 성공 여부는 별도 운영 증거가 필요하다. 개발 테스트는 Mailpit 가이드(`GDE-0084`)를 따른다.
+서비스와 healthcheck는 [Compose](docker-compose.yml)에 선언되어 있다. `/healthz/live` healthcheck는 배달·TLS·인증 검증을 대신하지 않는다. 실제 메일함 데이터, 백업 및 복원 성공 여부는 별도 운영 증거가 필요하다. 개발 테스트는 Mailpit 가이드(`GDE-0084`)를 따른다.
 
 서버 패치의 Compose 이미지와 config builder의 서버 `FROM`은 같은 tag/index로
 변경합니다. CLI는 독립 공급자 버전과 soak 조건을 따르며, 이번 서버 후보 준비에서
@@ -77,8 +79,8 @@ Runbook `RUN-0070`을 따른다. 명령은 저장소 루트에서
 저장소 루트에서 render-only로 검사한다. 공개 예시 입력으로 렌더링하며, 실제 실행은 승인된 `labs/.env`를 쓴다.
 
 ```bash
-docker compose --env-file labs/.env.example -f labs/stalwart.yml --profile mail-server config --quiet
-docker compose --env-file labs/.env.example -f labs/stalwart.yml --profile mail-server config --services
+docker compose --env-file labs/.env.example -f labs/stalwart/docker-compose.yml --profile mail-server config --quiet
+docker compose --env-file labs/.env.example -f labs/stalwart/docker-compose.yml --profile mail-server config --services
 python3 -m unittest tests.validation.test_lab_isolation
 ```
 

@@ -25,7 +25,7 @@ networks:
 # at its original /run/secrets name, which the LAB scripts read.
 secrets:
   lab_stalwart_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/stalwart/password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/stalwart/password.txt
 
 services:
   # Mail server on the LAB network only. Containers on lab_stalwart_net submit
@@ -36,7 +36,7 @@ services:
     profiles:
       - mail-server
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-readonly-med
     image: stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c
     container_name: stalwart
@@ -55,8 +55,8 @@ services:
       STALWART_ADMIN_USER: admin
     volumes:
       - stalwart-data:/var/lib/stalwart:rw
-      - ./stalwart/config/config.json:/etc/stalwart/config.json:ro
-      - ./stalwart/config/start.sh:/opt/hyhome/start.sh:ro
+      - ./config/config.json:/etc/stalwart/config.json:ro
+      - ./config/start.sh:/opt/hyhome/start.sh:ro
     secrets:
       - source: lab_stalwart_password
         target: stalwart_password
@@ -80,10 +80,10 @@ services:
     profiles:
       - mail-server
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-low
     build:
-      context: ./stalwart/config
+      context: ./config
       dockerfile: Dockerfile
     image: hy-home/stalwart-config:0.16.27-cli1.0.13-local
     container_name: stalwart-config
@@ -102,8 +102,8 @@ services:
       # Same name as STALWART_ADMIN_USER in stalwart above.
       STALWART_USER: admin
     volumes:
-      - ./stalwart/config/apply-plan.sh:/opt/hyhome/apply-plan.sh:ro
-      - ./stalwart/config/plan.ndjson:/opt/hyhome/plan.ndjson:ro
+      - ./config/apply-plan.sh:/opt/hyhome/apply-plan.sh:ro
+      - ./config/plan.ndjson:/opt/hyhome/plan.ndjson:ro
     secrets:
       - source: lab_stalwart_password
         target: stalwart_password
