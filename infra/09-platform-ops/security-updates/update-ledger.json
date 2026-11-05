@@ -125,15 +125,15 @@
     },
     {
       "path": "infra/03-security/openbao/docker-compose.yml",
-      "sha256": "f8eac484b704836fb06ff1b435d405213d0449c311df32863ea53a22ffeed638"
+      "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
     },
     {
       "path": "infra/04-data/dev-db/docker-compose.yml",
-      "sha256": "32fbf2270df338f3669f8ac1723916f884e931ce54c799c39b412abc0e93fbf0"
+      "sha256": "652e9f63af765913dbeece0264124128dfa023702405c0d694b271f99ed426f9"
     },
     {
       "path": "infra/04-data/mng-db/docker-compose.yml",
-      "sha256": "b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471"
+      "sha256": "45659d2e79b24098ca39aa05a1212b70bba0580b0687ae3be83777c52dcb6b11"
     },
     {
       "path": "infra/04-data/neo4j/docker-compose.yml",
@@ -153,7 +153,7 @@
     },
     {
       "path": "infra/04-data/seaweedfs/docker-compose.yml",
-      "sha256": "588300277b9dba8e53edbe15543ff71d2b196a7abc711afe7e5d253e504c207c"
+      "sha256": "4f8ebbf3150c33f32a40f1c34e84a127317d3873906d0d2f495b02041c275a42"
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
@@ -161,11 +161,11 @@
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
-      "sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8"
+      "sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961"
     },
     {
       "path": "infra/06-observability/dozzle/docker-compose.yml",
-      "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
+      "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
     },
     {
       "path": "infra/07-workflow/airflow/docker-compose.yml",
@@ -173,7 +173,7 @@
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e"
+      "sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -1837,7 +1837,7 @@
       "upstream_reported_tag": "v0.34.1",
       "next_fact_command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1979,7 +1979,7 @@
       "upstream_reported_tag": "v1.20.1",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/alloy:v1.20.1",
@@ -2242,7 +2242,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "ghcr.io/google/cadvisor:v0.60.6",
@@ -2926,7 +2926,7 @@
       "upstream_reported_tag": "4.8.4",
       "next_fact_command": "gh release view --repo NVIDIA/dcgm-exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3169,7 +3169,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "32fbf2270df338f3669f8ac1723916f884e931ce54c799c39b412abc0e93fbf0",
+      "source_input_sha256": "652e9f63af765913dbeece0264124128dfa023702405c0d694b271f99ed426f9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3331,7 +3331,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "32fbf2270df338f3669f8ac1723916f884e931ce54c799c39b412abc0e93fbf0",
+      "source_input_sha256": "652e9f63af765913dbeece0264124128dfa023702405c0d694b271f99ed426f9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3472,7 +3472,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "32fbf2270df338f3669f8ac1723916f884e931ce54c799c39b412abc0e93fbf0",
+      "source_input_sha256": "652e9f63af765913dbeece0264124128dfa023702405c0d694b271f99ed426f9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3620,7 +3620,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "32fbf2270df338f3669f8ac1723916f884e931ce54c799c39b412abc0e93fbf0",
+      "source_input_sha256": "652e9f63af765913dbeece0264124128dfa023702405c0d694b271f99ed426f9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3759,7 +3759,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "32fbf2270df338f3669f8ac1723916f884e931ce54c799c39b412abc0e93fbf0",
+      "source_input_sha256": "652e9f63af765913dbeece0264124128dfa023702405c0d694b271f99ed426f9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3910,7 +3910,7 @@
       "upstream_reported_tag": "9.1.3",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "32fbf2270df338f3669f8ac1723916f884e931ce54c799c39b412abc0e93fbf0",
+      "source_input_sha256": "652e9f63af765913dbeece0264124128dfa023702405c0d694b271f99ed426f9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4162,7 +4162,7 @@
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "32fbf2270df338f3669f8ac1723916f884e931ce54c799c39b412abc0e93fbf0",
+      "source_input_sha256": "652e9f63af765913dbeece0264124128dfa023702405c0d694b271f99ed426f9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
@@ -4285,7 +4285,7 @@
       "upstream_reported_tag": "v11.3.0",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436",
+      "source_input_sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "amir20/dozzle:v11.3.1@sha256:ba65da5af3d2147cfc2ee68ea5a6e35b75d2dff7eeff226151a65c9d77831c02",
@@ -4598,7 +4598,7 @@
       "upstream_reported_tag": "v5.37.0",
       "next_fact_command": "gh release view --repo TwiN/gatus --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5076,7 +5076,7 @@
       "upstream_reported_tag": "v13.2.4",
       "next_fact_command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f",
@@ -5258,7 +5258,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6488,7 +6488,7 @@
       "upstream_reported_tag": "v3.7.8",
       "next_fact_command": "gh release view --repo grafana/loki --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7036,7 +7036,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471",
+      "source_input_sha256": "45659d2e79b24098ca39aa05a1212b70bba0580b0687ae3be83777c52dcb6b11",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7179,7 +7179,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471",
+      "source_input_sha256": "45659d2e79b24098ca39aa05a1212b70bba0580b0687ae3be83777c52dcb6b11",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7331,7 +7331,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471",
+      "source_input_sha256": "45659d2e79b24098ca39aa05a1212b70bba0580b0687ae3be83777c52dcb6b11",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7471,7 +7471,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471",
+      "source_input_sha256": "45659d2e79b24098ca39aa05a1212b70bba0580b0687ae3be83777c52dcb6b11",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7602,7 +7602,7 @@
       "upstream_reported_tag": "9.1.3",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471",
+      "source_input_sha256": "45659d2e79b24098ca39aa05a1212b70bba0580b0687ae3be83777c52dcb6b11",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7857,7 +7857,7 @@
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471",
+      "source_input_sha256": "45659d2e79b24098ca39aa05a1212b70bba0580b0687ae3be83777c52dcb6b11",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
@@ -7988,7 +7988,7 @@
       "upstream_reported_tag": "2.45.7",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e",
+      "source_input_sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.45.7-local",
@@ -8209,7 +8209,7 @@
       "upstream_reported_tag": "2.45.7",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e",
+      "source_input_sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "n8nio/runners:2.45.7",
@@ -8424,7 +8424,7 @@
       "upstream_reported_tag": "2.45.7",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e",
+      "source_input_sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "n8nio/runners:2.45.7",
@@ -8620,7 +8620,7 @@
       "upstream_reported_tag": "9.1.3",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e",
+      "source_input_sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8854,7 +8854,7 @@
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e",
+      "source_input_sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
@@ -8985,7 +8985,7 @@
       "upstream_reported_tag": "2.45.7",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e",
+      "source_input_sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.45.7-local",
@@ -9480,7 +9480,7 @@
       "upstream_reported_tag": "v1.12.1",
       "next_fact_command": "gh release view --repo prometheus/node_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -10629,7 +10629,7 @@
       "upstream_reported_tag": "v2.7.1",
       "next_fact_command": "gh release view --repo openbao/openbao --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "f8eac484b704836fb06ff1b435d405213d0449c311df32863ea53a22ffeed638",
+      "source_input_sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8",
@@ -11038,7 +11038,7 @@
       "upstream_reported_tag": "v2.7.1",
       "next_fact_command": "gh release view --repo openbao/openbao --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "f8eac484b704836fb06ff1b435d405213d0449c311df32863ea53a22ffeed638",
+      "source_input_sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8",
@@ -12299,7 +12299,7 @@
       "upstream_reported_tag": "v3.15.1",
       "next_fact_command": "Run the owner steps in SPEC-0204-TSK-0021: approved pull, offline scan, promtool checks, HOME recreation.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/prometheus:v3.15.1",
@@ -12432,7 +12432,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/pushgateway:v1.11.4",
@@ -12553,7 +12553,7 @@
       "upstream_reported_tag": "v2.4.0",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/pyroscope:2.4.0",
@@ -13583,7 +13583,7 @@
       "upstream_reported_tag": "2.37.12",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "588300277b9dba8e53edbe15543ff71d2b196a7abc711afe7e5d253e504c207c",
+      "source_input_sha256": "4f8ebbf3150c33f32a40f1c34e84a127317d3873906d0d2f495b02041c275a42",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "amazon/aws-cli:2.37.12",
@@ -13720,7 +13720,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "588300277b9dba8e53edbe15543ff71d2b196a7abc711afe7e5d253e504c207c",
+      "source_input_sha256": "4f8ebbf3150c33f32a40f1c34e84a127317d3873906d0d2f495b02041c275a42",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -13865,7 +13865,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "588300277b9dba8e53edbe15543ff71d2b196a7abc711afe7e5d253e504c207c",
+      "source_input_sha256": "4f8ebbf3150c33f32a40f1c34e84a127317d3873906d0d2f495b02041c275a42",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -13994,7 +13994,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "588300277b9dba8e53edbe15543ff71d2b196a7abc711afe7e5d253e504c207c",
+      "source_input_sha256": "4f8ebbf3150c33f32a40f1c34e84a127317d3873906d0d2f495b02041c275a42",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -14123,7 +14123,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "588300277b9dba8e53edbe15543ff71d2b196a7abc711afe7e5d253e504c207c",
+      "source_input_sha256": "4f8ebbf3150c33f32a40f1c34e84a127317d3873906d0d2f495b02041c275a42",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -14806,7 +14806,7 @@
       "upstream_reported_tag": "v3.1.0",
       "next_fact_command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6e5591c14c58b664d91be26918e375f4ff7b1e9d1e81e0f1a4b3dbd903ff69b8",
+      "source_input_sha256": "407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "hy/tempo:3.1.0-seaweedfs",
@@ -15563,7 +15563,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: external producer/source contract not inspected",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e",
+      "source_input_sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],

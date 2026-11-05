@@ -18,6 +18,13 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-med
     container_name: dozzle
+    # Own reservation: peak 0.066 CPU / 25 MiB, above its template's other members;
+    # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 64M
     hostname: dozzle
     group_add:
       - '${SECRETS_GID:-1000}'

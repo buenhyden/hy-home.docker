@@ -75,7 +75,7 @@ x-resource-low: &resource-low
   deploy:
     resources:
       reservations:
-        cpus: "0.10"
+        cpus: "0.05"
         memory: 128M
 
 x-resource-med: &resource-med
@@ -85,8 +85,8 @@ x-resource-med: &resource-med
   deploy:
     resources:
       reservations:
-        cpus: "0.30"
-        memory: 352M
+        cpus: "0.05"
+        memory: 192M
 
 x-resource-obs-high: &resource-obs-high
   cpus: "1.50"

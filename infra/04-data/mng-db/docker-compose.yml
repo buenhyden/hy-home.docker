@@ -26,6 +26,13 @@ services:
       service: template-stateful-low
     image: valkey/valkey:9.1.2-alpine
     container_name: mng-valkey
+    # Own reservation: peak 0.042 CPU / 7 MiB, above its template's other members;
+    # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 32M
     hostname: mng-valkey
     group_add:
       - '${SECRETS_GID:-1000}'
