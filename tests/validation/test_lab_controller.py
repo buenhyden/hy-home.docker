@@ -55,6 +55,9 @@ def read_only_service(container, source, target="/etc/example/config.yml"):
     return spec
 
 
+ROOTFP = {"home_data_root": "/data/home", "docker_root": "/var/lib/docker-data"}
+
+
 def container_record(project, *, name="", ports=(), cpus=0.0, memory=0, running=True):
     return {
         "name": name,
@@ -241,6 +244,415 @@ class CollisionAndBudgetTests(unittest.TestCase):
         with mock.patch.object(lab.subprocess, "run", side_effect=inspect("/new/v")):
             self.assertEqual([], lab.stale_volumes("docker", selected))
 
+    def test_read_only_host_root_observer_owns_no_lab_path(self) -> None:
+        # cadvisor and node-exporter bind / read-only to observe the host.
+        # That contains every path but owns none, so it must not refuse
+        # every LAB; a LAB that itself binds / is still refused.
+        rendered = model(
+            "hy-home-infra",
+            {"pg": service("mng-pg", binds=["/data/home/pg"])},
+        )
+        rendered["services"]["cadvisor"] = service("cadvisor")
+        rendered["services"]["cadvisor"]["volumes"] = [
+            {"type": "bind", "source": "/", "target": "/rootfs", "read_only": True}
+        ]
+        root = lab.footprint(rendered)
+        self.assertEqual([], lab.collisions({"one": self.lab1}, root, []))
+        greedy = model("hy-home-lab-g", {"x": service("lab-g")})
+        greedy["services"]["x"]["volumes"] = [
+            {"type": "bind", "source": "/", "target": "/host", "read_only": True}
+        ]
+        text = "\n".join(lab.collisions({"g": lab.footprint(greedy)}, root, []))
+        self.assertIn("data path / overlaps root", text)
+        writable = model("hy-home-infra", {"w": service("w", binds=["/"])})
+        text = "\n".join(
+            lab.collisions({"one": self.lab1}, lab.footprint(writable), [])
+        )
+        self.assertIn("overlaps root", text)
+
+    def test_read_only_source_tree_tool_owns_no_lab_config(self) -> None:
+        # conftest binds the infra/ and labs/ source trees read-only. A LAB's
+        # own read-only config inside them is not HOME data; writable,
+        # secret or whole-tree LAB binds, or a writable HOME bind, still are.
+        def home(read_only=True):
+            spec = service("conftest")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": str(ROOT / "labs"),
+                    "target": "/project/labs",
+                    "read_only": read_only,
+                }
+            ]
+            return lab.footprint(model("hy-home-infra", {"conftest": spec}))
+
+        def lab_with(source, read_only=True, target="/etc/lab/config"):
+            spec = service("lab-x")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": target,
+                    "read_only": read_only,
+                }
+            ]
+            return lab.footprint(model("hy-home-lab-x", {"x": spec}))
+
+        config = str(ROOT / "labs/dbt/profiles")
+        self.assertEqual([], lab.collisions({"x": lab_with(config)}, home(), []))
+        for name, selected, root in (
+            ("writable LAB path", lab_with(config, read_only=False), home()),
+            ("secret LAB path", lab_with(str(ROOT / "labs/x/secrets/a")), home()),
+            ("whole tree", lab_with(str(ROOT / "labs")), home()),
+            ("writable HOME tree", lab_with(config), home(read_only=False)),
+        ):
+            with self.subTest(case=name):
+                self.assertTrue(lab.collisions({"x": selected}, root, []))
+
+    def test_host_root_observer_exemption_keeps_home_secrets_env_and_docker(self):
+        # With HOME's read-only / exempt, assets no HOME bind covers must be
+        # footprinted explicitly: top-level secret files, the root env file
+        # and Docker's data root (security review 2026-11-05).
+        observer = service("cadvisor")
+        observer["volumes"] = [
+            {"type": "bind", "source": "/", "target": "/rootfs", "read_only": True}
+        ]
+        rendered = model(
+            "hy-home-infra", {"cadvisor": observer}, data_root="/data/home"
+        )
+        secret = str(ROOT / "secrets/auth/example_password.txt")
+        rendered["secrets"] = {"example": {"name": "example", "file": secret}}
+        root = lab.root_footprint(
+            rendered, env_file=ROOT / ".env", docker_root="/var/lib/docker-data"
+        )
+        for name, source, read_only in (
+            ("HOME secret", secret, True),
+            ("root env", str(ROOT / ".env"), True),
+            ("docker volumes", "/var/lib/docker-data/volumes", False),
+        ):
+            spec = service("lab-x")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": "/x",
+                    "read_only": read_only,
+                }
+            ]
+            selected = lab.footprint(model("hy-home-lab-x", {"x": spec}))
+            with self.subTest(case=name):
+                self.assertTrue(lab.collisions({"x": selected}, root, []))
+        # A LAB compose secret that reuses a HOME secret file is refused too.
+        reuse = model("hy-home-lab-x", {"x": service("lab-x")})
+        reuse["secrets"] = {"s": {"name": "s", "file": secret}}
+        self.assertTrue(lab.collisions({"x": lab.footprint(reuse)}, root, []))
+
+    def test_source_tree_exemption_needs_a_tracked_non_env_path(self) -> None:
+        tree = service("conftest")
+        tree["volumes"] = [
+            {
+                "type": "bind",
+                "source": str(ROOT / "infra"),
+                "target": "/project/infra",
+                "read_only": True,
+            }
+        ]
+        root = lab.footprint(model("hy-home-infra", {"conftest": tree}))
+        for source in (
+            str(ROOT / "infra/05-messaging/kafka/.env"),
+            str(ROOT / "infra/05-messaging/kafka/untracked-p05-review.txt"),
+        ):
+            spec = read_only_service("lab-x", source)
+            with self.subTest(source=source):
+                self.assertTrue(
+                    lab.collisions(
+                        {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))},
+                        root,
+                        [],
+                    )
+                )
+        self.assertTrue(lab._sensitive_input(str(ROOT / "labs/.env"), None))
+        self.assertFalse(lab._sensitive_input(str(ROOT / "labs/.env.example"), None))
+
+    def test_lab_sources_must_be_on_the_allowlist(self) -> None:
+        # Owner decision 2026-11-05: LAB data, read-only LAB secrets,
+        # read-only operator LAB_* path inputs and read-only tracked
+        # non-sensitive repo files; everything else is refused.
+        env = {
+            "LAB_DATA_DIR": "/lab-data",
+            "LAB_SECRET_DIR": "../secrets/labs",
+            "LAB_SUPERSET_CA_FILE": "/srv/ca/rootCA.pem",
+            "LAB_LOCUST_RESULT_DIR": "/srv/locust-results",
+        }
+
+        def one(source, read_only):
+            spec = service("lab-x")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": "/x",
+                    "read_only": read_only,
+                }
+            ]
+            return {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))}
+
+        tracked = str(ROOT / "labs/dbt/profiles")
+        with mock.patch.object(lab, "_tracked_only", lambda p: p == tracked):
+            for source, read_only in (
+                ("/lab-data/x/state", False),
+                (str(ROOT / "secrets/labs/dbt/password.txt"), True),
+                ("/srv/ca/rootCA.pem", True),
+                (tracked, True),
+                ("/srv/locust-results/run-1", False),
+            ):
+                with self.subTest(allowed=source):
+                    self.assertEqual(
+                        [],
+                        lab.source_allowlist_problems(
+                            one(source, read_only), env, ROOTFP
+                        ),
+                    )
+            for source, read_only in (
+                (str(ROOT / ".git/hooks"), False),
+                (str(ROOT / "scripts"), True),
+                (str(ROOT / "secrets/.retired/auth/key.txt"), True),
+                (str(ROOT / ".env.oidc.tmp"), True),
+                (str(pathlib.Path.home() / ".ssh"), True),
+                ("/run/docker.sock", True),
+                (str(ROOT / "secrets/labs/dbt/password.txt"), False),
+                ("/srv/ca/rootCA.pem", False),
+                (tracked, False),
+            ):
+                with self.subTest(refused=source, read_only=read_only):
+                    self.assertTrue(
+                        lab.source_allowlist_problems(
+                            one(source, read_only), env, ROOTFP
+                        )
+                    )
+
+    def test_allowlist_roots_cannot_cover_home_or_the_repo(self) -> None:
+        # A LAB_* value equal to or above the repo, its secrets, HOME data,
+        # Docker's root or the user home admits nothing (re-review B).
+        home = str(pathlib.Path.home())
+        repo = str(ROOT)
+        root = {"home_data_root": "/data/home", "docker_root": "/var/lib/docker-data"}
+
+        def bind(source, read_only):
+            spec = service("lab-x")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": "/x",
+                    "read_only": read_only,
+                }
+            ]
+            return {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))}
+
+        base = {"LAB_DATA_DIR": "/lab-data"}
+        with mock.patch.object(lab, "_tracked_only", lambda p: False):
+            for env, source, read_only in (
+                ({"LAB_X": "/"}, home + "/.ssh/id_ed25519", True),
+                ({"LAB_X": home}, home + "/.ssh/id_ed25519", True),
+                ({"LAB_X": repo}, repo + "/secrets/.retired/a.txt", True),
+                ({"LAB_X_RESULT_DIR": repo}, repo + "/.git/hooks", False),
+                ({"LAB_X_RESULT_DIR": home}, home + "/.ssh/authorized_keys", False),
+                (
+                    {"LAB_SUPABASE_DOCKER_SOCKET_LOCATION": "/var/run/docker.sock"},
+                    "/var/run/docker.sock",
+                    True,
+                ),
+                (
+                    {"LAB_SECRET_DIR": "../secrets"},
+                    repo + "/secrets/.retired/a.txt",
+                    True,
+                ),
+            ):
+                with self.subTest(env=env):
+                    self.assertTrue(
+                        lab.source_allowlist_problems(
+                            bind(source, read_only), {**base, **env}, root
+                        )
+                    )
+            for data in (home, repo, "/"):
+                with self.subTest(data=data):
+                    self.assertTrue(
+                        lab.source_allowlist_problems(
+                            bind(data + "/x", False), {"LAB_DATA_DIR": data}, root
+                        )
+                    )
+
+    def test_config_files_build_inputs_and_env_files_are_checked(self) -> None:
+        root = {"home_data_root": "/data/home", "docker_root": "/var/lib/docker-data"}
+        env = {"LAB_DATA_DIR": "/lab-data"}
+        rendered = model("hy-home-lab-x", {"x": service("lab-x")})
+        rendered["configs"] = {"k": {"file": str(ROOT / "secrets/.retired/a.txt")}}
+        with mock.patch.object(lab, "_tracked_only", lambda p: False):
+            self.assertTrue(
+                lab.source_allowlist_problems({"x": lab.footprint(rendered)}, env, root)
+            )
+            for build in (
+                {"context": str(ROOT)},
+                {"context": str(ROOT / "labs/dbt"), "ssh": ["default"]},
+                {"context": str(ROOT / "labs/dbt"), "secrets": ["s"]},
+                {
+                    "context": str(ROOT / "labs/dbt"),
+                    "additional_contexts": {"e": str(ROOT)},
+                },
+            ):
+                spec = service("lab-x")
+                spec["build"] = build
+                with self.subTest(build=sorted(build)):
+                    self.assertTrue(
+                        lab.source_allowlist_problems(
+                            {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))},
+                            env,
+                            root,
+                        )
+                    )
+        # The model is rendered with --no-env-resolution, so env_file survives
+        # whatever YAML style, extends or include put it there.
+        spec = service("lab-x")
+        spec["env_file"] = [{"path": str(ROOT / ".env")}]
+        selected = {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))}
+        self.assertTrue(lab.source_allowlist_problems(selected, env, root))
+        for build in (
+            {"context": str(ROOT / "labs/dbt"), "cache_to": ["type=local,dest=/tmp/c"]},
+            {
+                "context": str(ROOT / "labs/dbt"),
+                "cache_from": ["type=local,src=/tmp/c"],
+            },
+            {"context": str(ROOT / "labs/dbt"), "network": "host"},
+            {"context": str(ROOT / "labs/dbt"), "entitlements": ["network.host"]},
+            {"context": str(ROOT / "labs/dbt"), "dockerfile": "/etc/Dockerfile"},
+            {"context": str(ROOT / "labs/dbt"), "dockerfile": "../../secrets/x"},
+            {"context": str(ROOT / "labs/dbt"), "privileged": True},
+            {"context": str(ROOT / "labs/dbt"), "dockerfile_inline": "FROM x"},
+        ):
+            spec = service("lab-x")
+            spec["build"] = build
+            with self.subTest(build=sorted(build)):
+                self.assertTrue(
+                    lab.footprint(model("hy-home-lab-x", {"x": spec}))[
+                        "build_forbidden"
+                    ]
+                )
+
+    def test_lab_include_is_refused_in_any_yaml_style(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = pathlib.Path(tmp) / "x.yml"
+            for text in (
+                "include:\n  - path: ./inc.yml\n    env_file: ../.env\n",
+                '{"include": [{path: ./inc.yml, env_file: ../.env}], services: {}}\n',
+            ):
+                raw.write_text(text, encoding="utf-8")
+                with self.subTest(text=text[:20]):
+                    self.assertTrue(lab.include_problems("x", raw))
+            raw.write_text("services:\n  x:\n    image: busybox\n", encoding="utf-8")
+            self.assertEqual([], lab.include_problems("x", raw))
+            raw.write_text("- not a mapping\n", encoding="utf-8")
+            self.assertTrue(lab.include_problems("x", raw))
+
+    def test_plain_build_inside_its_context_is_allowed(self) -> None:
+        spec = service("lab-x")
+        spec["build"] = {"context": str(ROOT / "labs/dbt"), "dockerfile": "Dockerfile"}
+        self.assertEqual(
+            [], lab.footprint(model("hy-home-lab-x", {"x": spec}))["build_forbidden"]
+        )
+
+    def test_secret_root_in_the_repo_must_be_secrets_labs(self) -> None:
+        env = {"LAB_DATA_DIR": "/lab-data"}
+
+        def secret(source):
+            rendered = model("hy-home-lab-x", {"x": service("lab-x")})
+            rendered["secrets"] = {"s": {"name": "s", "file": source}}
+            return {"x": lab.footprint(rendered)}
+
+        for value, source in (
+            ("../secrets/.retired", "secrets/.retired/auth/key.txt"),
+            ("../secrets/db", "secrets/db/mng-pg/password.txt"),
+            ("../.git", ".git/config"),
+        ):
+            with self.subTest(value=value):
+                self.assertTrue(
+                    lab.source_allowlist_problems(
+                        secret(str(ROOT / source)),
+                        {**env, "LAB_SECRET_DIR": value},
+                        ROOTFP,
+                    )
+                )
+        self.assertEqual(
+            [],
+            lab.source_allowlist_problems(
+                secret(str(ROOT / "secrets/labs/dbt/p.txt")),
+                {**env, "LAB_SECRET_DIR": "../secrets/labs"},
+                ROOTFP,
+            ),
+        )
+
+    def test_symlinked_secrets_tree_keeps_the_secrets_labs_rule(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, vault = pathlib.Path(tmp) / "repo", pathlib.Path(tmp) / "vault"
+            (vault / "secrets/.retired").mkdir(parents=True)
+            (vault / "secrets/labs").mkdir()
+            repo.mkdir()
+            (repo / "secrets").symlink_to(vault / "secrets")
+            rendered = model("hy-home-lab-x", {"x": service("lab-x")})
+            rendered["secrets"] = {
+                "s": {"name": "s", "file": str(vault / "secrets/.retired/key.txt")}
+            }
+            selected = {"x": lab.footprint(rendered)}
+            env = {
+                "LAB_DATA_DIR": "/lab-data",
+                "LAB_SECRET_DIR": str(vault / "secrets/.retired"),
+            }
+            with mock.patch.object(lab, "ROOT", repo):
+                self.assertTrue(lab.source_allowlist_problems(selected, env, ROOTFP))
+
+    def test_sensitive_source_needs_the_secret_root_even_under_other_roots(self):
+        spec = service("lab-x")
+        spec["volumes"] = [
+            {
+                "type": "bind",
+                "source": "/run/docker.sock",
+                "target": "/s",
+                "read_only": True,
+            }
+        ]
+        selected = {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))}
+        for env in ({"LAB_X": "/run"}, {"LAB_DATA_DIR": "/run"}):
+            with self.subTest(env=env):
+                self.assertTrue(lab.source_allowlist_problems(selected, env, ROOTFP))
+
+    def test_tracked_only_uses_literal_pathspecs_and_rejects_ignored_files(self):
+        calls = []
+
+        def fake(command, **kwargs):
+            calls.append(command)
+            if "diff" in command:
+                return subprocess.CompletedProcess(
+                    command, 1 if fake.mode == "dirty" else 0, "", ""
+                )
+            if "--others" in command:
+                out = "labs/dbt/profiles/.user.yml\0" if "ignored" in fake.mode else ""
+            else:
+                out = "labs/dbt/profiles/profiles.yml\0"
+            return subprocess.CompletedProcess(command, 0, out, "")
+
+        for mode, expected in (("clean", True), ("ignored", False), ("dirty", False)):
+            fake.mode = mode
+            lab._tracked_only.cache_clear()
+            with (
+                self.subTest(mode=mode),
+                mock.patch.object(lab, "run", side_effect=fake),
+            ):
+                self.assertIs(
+                    expected, lab._tracked_only(str(ROOT / "labs/dbt/profiles"))
+                )
+        lab._tracked_only.cache_clear()
+        self.assertTrue(all("--literal-pathspecs" in command for command in calls))
+
     def test_symlink_into_home_data_is_still_an_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             home = pathlib.Path(tmp) / "home-data"
@@ -299,6 +711,22 @@ class CollisionAndBudgetTests(unittest.TestCase):
         one = readonly("hy-home-lab-one", "lab-one-x", shared)
         two = readonly("hy-home-lab-two", "lab-two-x", shared)
         self.assertEqual([], lab.collisions({"one": one, "two": two}, self.root, []))
+        provision = str(
+            ROOT / "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
+        )
+        home_job = readonly("hy-home-infra", "grafana-db-provision", provision)
+        lab_job = readonly("hy-home-lab-dbt", "dbt-provision", provision)
+        self.assertEqual([], lab.collisions({"dbt": lab_job}, home_job, []))
+        # Any identical git-tracked, non-sensitive file both sides mount
+        # read-only is a shared public input (HOME opensearch and the LAB
+        # mount the same tracked security config).
+        tracked_file = str(
+            ROOT
+            / "infra/04-data/opensearch/opensearch/config/opensearch-security/roles.yml"
+        )
+        home_reader = readonly("hy-home-infra", "opensearch", tracked_file)
+        lab_reader = readonly("hy-home-lab-os", "lab-os", tracked_file)
+        self.assertEqual([], lab.collisions({"os": lab_reader}, home_reader, []))
 
         writable = lab.footprint(
             model(
@@ -498,13 +926,16 @@ class LifecycleTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.data = pathlib.Path(self.tmp.name) / "lab-data"
         self.env_file = pathlib.Path(self.tmp.name) / "lab.env"
+        self.outside = pathlib.Path(self.tmp.name) / "outside"
+        # A writable operator path outside LAB_DATA_DIR, as LAB_LOCUST_RESULT_DIR
+        # is; the allowlist admits only *_RESULT_DIR inputs for writes.
         self.env_file.write_text(
             f'LAB_DATA_DIR="{self.data}"\nLAB_HOST_BUDGET_CPUS="8"\n'
-            'LAB_HOST_BUDGET_MEMORY_MIB="8192"\nLAB_MAX_CONCURRENT="1"\n',
+            'LAB_HOST_BUDGET_MEMORY_MIB="8192"\nLAB_MAX_CONCURRENT="1"\n'
+            f'LAB_FIXTURE_RESULT_DIR="{self.outside}"\n',
             encoding="utf-8",
         )
         self.calls: list[list[str]] = []
-        self.outside = pathlib.Path(self.tmp.name) / "outside"
         self.home_data = pathlib.Path(self.tmp.name) / "home-data"
         self.rendered = model(
             "hy-home-lab-cassandra",
@@ -540,6 +971,9 @@ class LifecycleTests(unittest.TestCase):
                 else model("hy-home-infra", {}, data_root=str(self.home_data))
             )
             return subprocess.CompletedProcess(command, 0, json.dumps(payload), "")
+        if command[1] == "info":
+            # Docker's data root joins the HOME footprint.
+            return subprocess.CompletedProcess(command, 0, "/var/lib/docker-test\n", "")
         if command[1:] == ["ps", "--all", "--quiet"]:
             return subprocess.CompletedProcess(command, 0, "", "")
         if command[1:3] == ["ps", "--all"]:
@@ -605,6 +1039,9 @@ class LifecycleTests(unittest.TestCase):
     ) -> None:
         fixture = pathlib.Path(self.tmp.name) / "fixture.json"
         fixture.write_text('{"input":true}\n', encoding="utf-8")
+        # An operator read-only input, as LAB_LOCUST_SCENARIO_DIR is.
+        with self.env_file.open("a", encoding="utf-8") as handle:
+            handle.write(f'LAB_FIXTURE_INPUT="{fixture}"\n')
         before = (fixture.read_bytes(), fixture.stat().st_mode)
         self.rendered["services"]["c"]["volumes"].append(
             {
