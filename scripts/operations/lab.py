@@ -172,8 +172,39 @@ def footprint(model: dict) -> dict:
             inputs.add(path)
             sensitive_inputs.add(path)
             sources.append({"declared": source, "real": path, "read_only": True})
+    # Compose config files reach the container like secrets, without a bind.
+    for config in (model.get("configs") or {}).values():
+        source = (config or {}).get("file")
+        if isinstance(source, str) and source:
+            path = os.path.realpath(source)
+            paths.add(path)
+            inputs.add(path)
+            if _sensitive_input(path, None):
+                sensitive_inputs.add(path)
+            sources.append({"declared": source, "real": path, "read_only": True})
+    # A build context is sent whole to the builder: it must meet the
+    # read-only source rules. Build secrets and SSH forwarding are refused.
+    build_inputs, build_forbidden = [], []
+    for name, service in model.get("services", {}).items():
+        build = service.get("build")
+        if not isinstance(build, dict):
+            continue
+        contexts = [
+            build.get("context"),
+            *(build.get("additional_contexts") or {}).values(),
+        ]
+        build_inputs += [
+            os.path.realpath(item)
+            for item in contexts
+            if isinstance(item, str) and item
+        ]
+        for key in ("ssh", "secrets"):
+            if build.get(key):
+                build_forbidden.append(f"{name}: build {key}")
     networks = {net.get("name") for net in (model.get("networks") or {}).values()}
     return {
+        "build_inputs": build_inputs,
+        "build_forbidden": build_forbidden,
         "project": project,
         "containers": containers,
         "ports": ports,
@@ -249,6 +280,7 @@ def root_footprint(
         found["paths"].add(path)
         found["state"].add(path)
         found["sensitive_inputs"].add(path)
+    found["docker_root"] = os.path.realpath(docker_root) if docker_root else None
     if docker_root:
         path = os.path.realpath(docker_root)
         found["paths"].add(path)
@@ -266,9 +298,15 @@ def _tracked_only(path: str) -> bool:
     others = run(  # untracked, including ignored
         ["git", "--literal-pathspecs", "ls-files", "-z", "--others", "--", relative]
     )
+    # Local edits to a tracked file are not public (opensearch.yml is
+    # tracked but meant to be edited locally).
+    clean = run(
+        ["git", "--literal-pathspecs", "diff", "--quiet", "HEAD", "--", relative]
+    )
     return (
         tracked.returncode == 0
         and others.returncode == 0
+        and clean.returncode == 0
         and bool(tracked.stdout)
         and not others.stdout
     )
@@ -469,57 +507,109 @@ def _within(path: str, root: str) -> bool:
     return path == root or path.startswith(root.rstrip(os.sep) + os.sep)
 
 
+def _covers(root: str, path: str) -> bool:
+    return _within(path, root)
+
+
 def source_allowlist_problems(
-    selected: dict[str, dict], env: dict[str, str]
+    selected: dict[str, dict], env: dict[str, str], root: dict | None = None
 ) -> list[str]:
-    """Owner decision 2026-11-05: a LAB may only use its own data, read-only
-    LAB secret copies, read-only operator LAB_* path inputs and read-only,
-    non-sensitive, git-tracked repo files. Overlap with HOME is checked
-    separately; this refuses anything else, such as .git, scripts, retired
-    secrets, host credentials or the Docker socket."""
-    data = os.path.realpath(env.get("LAB_DATA_DIR") or "/nonexistent-lab-data")
+    """Owner decisions 2026-11-05: a LAB may only use its own data, read-only
+    LAB secret copies, read-only operator LAB_* inputs, writable
+    LAB_*_RESULT_DIR outputs and read-only, non-sensitive, clean git-tracked
+    repo paths. No root may cover the repo, its secrets, HOME data, Docker's
+    root or the user home, and operator roots may not lie inside the repo.
+    Overlap with HOME is checked separately."""
+    repo = os.path.realpath(ROOT)
+    root = root or {}
+    protected = {
+        repo,
+        os.path.join(repo, "secrets"),
+        os.path.realpath(pathlib.Path.home()),
+        *(
+            item
+            for item in (root.get("home_data_root"), root.get("docker_root"))
+            if item
+        ),
+    }
+    problems = []
+
+    def unsafe(path: str) -> bool:
+        return any(_covers(path, item) for item in protected)
+
+    data_value = env.get("LAB_DATA_DIR")
+    data = os.path.realpath(data_value) if data_value else None
+    if data and (unsafe(data) or _within(data, repo)):
+        problems.append(f"LAB_DATA_DIR {data} covers or sits in a protected path")
+        data = None
     secret_value = env.get("LAB_SECRET_DIR") or "../secrets/labs"
     # Compose resolves a relative LAB_SECRET_DIR against labs/.
     secret = os.path.realpath(ROOT / "labs" / secret_value)
-    operator = {
-        os.path.realpath(value)
-        for key, value in env.items()
-        if key.startswith("LAB_")
-        and key not in {"LAB_DATA_DIR", "LAB_SECRET_DIR"}
-        and os.path.isabs(value)
-    }
-    # Owner decision 2026-11-05: only an operator *_RESULT_DIR input (the
-    # Locust results) may be written; other operator paths are read-only.
-    results = {
-        os.path.realpath(value)
-        for key, value in env.items()
-        if key.startswith("LAB_")
-        and key.endswith("_RESULT_DIR")
-        and os.path.isabs(value)
-    }
-    repo = os.path.realpath(ROOT)
-    problems = []
-    for name, lab in selected.items():
-        for source in lab["sources"]:
-            real, read_only = source["real"], source["read_only"]
-            if _within(real, data) and not _within(data, repo):
-                continue
-            if read_only and _within(real, secret):
-                continue
-            if read_only and any(_within(real, item) for item in operator):
-                continue
-            if any(_within(real, item) for item in results):
-                continue
+    if unsafe(secret):
+        problems.append(f"LAB_SECRET_DIR {secret} covers a protected path")
+        secret = None
+
+    def operator_roots(results: bool) -> set[str]:
+        found = set()
+        for key, value in env.items():
             if (
-                read_only
-                and _within(real, repo)
-                and real != repo
-                and not _sensitive_input(real, None)
-                and _tracked_only(real)
+                not key.startswith("LAB_")
+                or key in {"LAB_DATA_DIR", "LAB_SECRET_DIR"}
+                or not os.path.isabs(value)
+                or key.endswith("_RESULT_DIR") is not results
             ):
                 continue
-            problems.append(f"{name}: source {real} is outside the LAB allowlist")
+            path = os.path.realpath(value)
+            # An unsafe or sensitive root (the Docker socket) admits nothing.
+            if unsafe(path) or _within(path, repo) or _sensitive_input(path, None):
+                continue
+            found.add(path)
+        return found
+
+    operator, results = operator_roots(False), operator_roots(True)
+
+    def allowed(real: str, read_only: bool) -> bool:
+        if data and _within(real, data):
+            return True
+        if read_only and secret and _within(real, secret):
+            return True
+        if read_only and any(_within(real, item) for item in operator | results):
+            return True
+        if any(_within(real, item) for item in results):
+            return True
+        return (
+            read_only
+            and _within(real, repo)
+            and real != repo
+            and not _sensitive_input(real, None)
+            and _tracked_only(real)
+        )
+
+    for name, lab in selected.items():
+        for source in lab["sources"]:
+            if not allowed(source["real"], source["read_only"]):
+                problems.append(
+                    f"{name}: source {source['real']} is outside the LAB allowlist"
+                )
+        for context in lab.get("build_inputs", []):
+            if not allowed(context, True):
+                problems.append(
+                    f"{name}: build context {context} is outside the LAB allowlist"
+                )
+        problems += [
+            f"{name}: {item} is refused" for item in lab.get("build_forbidden", [])
+        ]
     return problems
+
+
+_ENV_FILE = re.compile(r"^\s*env_file\s*:", re.MULTILINE)
+
+
+def raw_lab_problems(name: str, path: pathlib.Path | str) -> list[str]:
+    """Rendered models inline env_file contents and drop the path, so the
+    LAB file itself is scanned: an env_file could read HOME's .env."""
+    text = pathlib.Path(path).read_text(encoding="utf-8")
+    return [f"{name}: env_file is refused in a LAB"] if _ENV_FILE.search(text) else []
 
 
 def data_root_problems(env: dict[str, str], root: dict) -> list[str]:
@@ -608,7 +698,12 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         ),
         "problems": data_root_problems(env, root)
         + path_integrity_problems(selected)
-        + source_allowlist_problems(selected, env)
+        + source_allowlist_problems(selected, env, root)
+        + [
+            item
+            for name in selected
+            for item in raw_lab_problems(name, ROOT / lab_file(name))
+        ]
         + collisions(selected, root, running)
         + budget(selected, running, env)
         + stale_volumes(args.docker, selected),

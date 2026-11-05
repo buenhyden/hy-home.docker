@@ -55,6 +55,9 @@ def read_only_service(container, source, target="/etc/example/config.yml"):
     return spec
 
 
+ROOTFP = {"home_data_root": "/data/home", "docker_root": "/var/lib/docker-data"}
+
+
 def container_record(project, *, name="", ports=(), cpus=0.0, memory=0, running=True):
     return {
         "name": name,
@@ -405,7 +408,10 @@ class CollisionAndBudgetTests(unittest.TestCase):
             ):
                 with self.subTest(allowed=source):
                     self.assertEqual(
-                        [], lab.source_allowlist_problems(one(source, read_only), env)
+                        [],
+                        lab.source_allowlist_problems(
+                            one(source, read_only), env, ROOTFP
+                        ),
                     )
             for source, read_only in (
                 (str(ROOT / ".git/hooks"), False),
@@ -420,21 +426,114 @@ class CollisionAndBudgetTests(unittest.TestCase):
             ):
                 with self.subTest(refused=source, read_only=read_only):
                     self.assertTrue(
-                        lab.source_allowlist_problems(one(source, read_only), env)
+                        lab.source_allowlist_problems(
+                            one(source, read_only), env, ROOTFP
+                        )
                     )
+
+    def test_allowlist_roots_cannot_cover_home_or_the_repo(self) -> None:
+        # A LAB_* value equal to or above the repo, its secrets, HOME data,
+        # Docker's root or the user home admits nothing (re-review B).
+        home = str(pathlib.Path.home())
+        repo = str(ROOT)
+        root = {"home_data_root": "/data/home", "docker_root": "/var/lib/docker-data"}
+
+        def bind(source, read_only):
+            spec = service("lab-x")
+            spec["volumes"] = [
+                {
+                    "type": "bind",
+                    "source": source,
+                    "target": "/x",
+                    "read_only": read_only,
+                }
+            ]
+            return {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))}
+
+        base = {"LAB_DATA_DIR": "/lab-data"}
+        with mock.patch.object(lab, "_tracked_only", lambda p: False):
+            for env, source, read_only in (
+                ({"LAB_X": "/"}, home + "/.ssh/id_ed25519", True),
+                ({"LAB_X": home}, home + "/.ssh/id_ed25519", True),
+                ({"LAB_X": repo}, repo + "/secrets/.retired/a.txt", True),
+                ({"LAB_X_RESULT_DIR": repo}, repo + "/.git/hooks", False),
+                ({"LAB_X_RESULT_DIR": home}, home + "/.ssh/authorized_keys", False),
+                (
+                    {"LAB_SUPABASE_DOCKER_SOCKET_LOCATION": "/var/run/docker.sock"},
+                    "/var/run/docker.sock",
+                    True,
+                ),
+                (
+                    {"LAB_SECRET_DIR": "../secrets"},
+                    repo + "/secrets/.retired/a.txt",
+                    True,
+                ),
+            ):
+                with self.subTest(env=env):
+                    self.assertTrue(
+                        lab.source_allowlist_problems(
+                            bind(source, read_only), {**base, **env}, root
+                        )
+                    )
+            for data in (home, repo, "/"):
+                with self.subTest(data=data):
+                    self.assertTrue(
+                        lab.source_allowlist_problems(
+                            bind(data + "/x", False), {"LAB_DATA_DIR": data}, root
+                        )
+                    )
+
+    def test_config_files_build_inputs_and_env_files_are_checked(self) -> None:
+        root = {"home_data_root": "/data/home", "docker_root": "/var/lib/docker-data"}
+        env = {"LAB_DATA_DIR": "/lab-data"}
+        rendered = model("hy-home-lab-x", {"x": service("lab-x")})
+        rendered["configs"] = {"k": {"file": str(ROOT / "secrets/.retired/a.txt")}}
+        with mock.patch.object(lab, "_tracked_only", lambda p: False):
+            self.assertTrue(
+                lab.source_allowlist_problems({"x": lab.footprint(rendered)}, env, root)
+            )
+            for build in (
+                {"context": str(ROOT)},
+                {"context": str(ROOT / "labs/dbt"), "ssh": ["default"]},
+                {"context": str(ROOT / "labs/dbt"), "secrets": ["s"]},
+                {
+                    "context": str(ROOT / "labs/dbt"),
+                    "additional_contexts": {"e": str(ROOT)},
+                },
+            ):
+                spec = service("lab-x")
+                spec["build"] = build
+                with self.subTest(build=sorted(build)):
+                    self.assertTrue(
+                        lab.source_allowlist_problems(
+                            {"x": lab.footprint(model("hy-home-lab-x", {"x": spec}))},
+                            env,
+                            root,
+                        )
+                    )
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = pathlib.Path(tmp) / "x.yml"
+            raw.write_text("services:\n  x:\n    env_file: ../.env\n", encoding="utf-8")
+            self.assertTrue(lab.raw_lab_problems("x", raw))
+            raw.write_text("services:\n  x:\n    image: busybox\n", encoding="utf-8")
+            self.assertEqual([], lab.raw_lab_problems("x", raw))
 
     def test_tracked_only_uses_literal_pathspecs_and_rejects_ignored_files(self):
         calls = []
 
         def fake(command, **kwargs):
             calls.append(command)
+            if "diff" in command:
+                return subprocess.CompletedProcess(
+                    command, 1 if fake.mode == "dirty" else 0, "", ""
+                )
             if "--others" in command:
                 out = "labs/dbt/profiles/.user.yml\0" if "ignored" in fake.mode else ""
             else:
                 out = "labs/dbt/profiles/profiles.yml\0"
             return subprocess.CompletedProcess(command, 0, out, "")
 
-        for mode, expected in (("clean", True), ("ignored", False)):
+        for mode, expected in (("clean", True), ("ignored", False), ("dirty", False)):
             fake.mode = mode
             lab._tracked_only.cache_clear()
             with (
