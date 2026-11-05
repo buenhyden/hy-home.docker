@@ -4,7 +4,7 @@ version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-11-05"
 created: "2025-11-12"
 ---
 
@@ -37,7 +37,7 @@ created: "2025-11-12"
 
 | Category | Source of truth | Boundary |
 | --- | --- | --- |
-| Compose | [mongodb.yml](./mongodb.yml) | 독립 LAB project |
+| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
 | State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
 | Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
 | Networks | LAB 전용 network declarations | root network와 미공유 |
@@ -45,16 +45,27 @@ created: "2025-11-12"
 ## Structure
 
 ```text
-labs/
-├── mongodb.yml
-└── mongodb.md
+labs/mongodb/
+├── README.md          # 서비스 README
+├── docker-compose.yml # 독립 LAB entrypoint
+├── promotion.yaml     # SPEC-0263 승격 manifest
+└── dashboards/        # LAB 전용 Grafana 대시보드
 ```
+
+| Dashboard | UID | Source |
+| --- | --- | --- |
+| [`mongodb.json`](./dashboards/mongodb.json) | `hyhome-mongodb` | grafana.com dashboard 16490 revision 1 (2022-06-24) |
+
+HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하므로
+이 대시보드는 HOME에 표시되지 않고, HOME Prometheus는 LAB 서비스를 수집하지
+않습니다. LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Prometheus·Grafana가
+이 파일을 읽도록 구성하며, HOME provisioning 경로로 옮기지 않습니다.
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Entry point | [mongodb.yml](./mongodb.yml) |
+| Entry point | [docker-compose.yml](./docker-compose.yml) |
 | Project | `hy-home-lab-mongodb` |
 | Services | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` |
 | State | `mongo-key`, `mongodb{1,2,3}-data`를 `${LAB_DATA_DIR}/mongodb/` 아래에 bind. 이전 project named volume은 이동·삭제하지 않음 (SPEC-0215) |
@@ -67,7 +78,7 @@ labs/
 ## Usage
 
 1. `LAB_DATA_DIR`과 LAB secret reference directory를 독립 경로로 지정한다.
-2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-mongodb-static docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile '*' config --quiet`로 렌더링한다.
+2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-mongodb-static docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile '*' config --quiet`로 렌더링한다.
 3. LAB Compose project, network, volume, port와 secret reference가 HOME 또는 management 경로와 겹치지 않는지 검토한다.
 4. 기동은 `python3 scripts/operations/lab.py up mongodb --purpose "<목적>" --lease <30m|4h>`로만 한다. 이 명령은 다른 LAB·HOME과의 이름·port·data 경로 충돌, 예산과 동시 LAB 수를 먼저 검사하고 `${LAB_DATA_DIR}/.ledger/mongodb.json`에 정리 대상을 기록한다. 종료는 `lab.py down mongodb`이며 volume과 data를 지우지 않는다. 만료 lease는 `lab.py reap`이 정지한다 (정책 `POL-0078`).
 
@@ -75,7 +86,7 @@ labs/
 
 | Command | Description |
 | --- | --- |
-| `LAB_DATA_DIR=/tmp/hyhome-mongodb-static docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
+| `LAB_DATA_DIR=/tmp/hyhome-mongodb-static docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
 
 ## Configuration
 
@@ -113,5 +124,5 @@ healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer는
 
 ## Related Documents
 
-- [Architecture index](../docs/02.architecture/README.md)
-- [Operations index](../docs/05.operations/README.md)
+- [Architecture index](../../docs/02.architecture/README.md)
+- [Operations index](../../docs/05.operations/README.md)

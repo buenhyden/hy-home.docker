@@ -35,7 +35,7 @@ services:
     profiles:
       - mongodb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-low
     image: mongo:8.3.11-noble
     container_name: lab-mongodb-mongo-key-generator
@@ -75,7 +75,7 @@ services:
     profiles:
       - mongodb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-high
     image: mongo:8.3.11-noble
     restart: unless-stopped
@@ -115,7 +115,7 @@ services:
     profiles:
       - mongodb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-high
     image: mongo:8.3.11-noble
     restart: unless-stopped
@@ -155,7 +155,7 @@ services:
     profiles:
       - mongodb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-med
     image: mongo:8.3.11-noble
     container_name: lab-mongodb-mongodb-arbiter
@@ -190,7 +190,7 @@ services:
     profiles:
       - mongodb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-low
     restart: 'no'
     image: mongo:8.3.11-noble
@@ -235,7 +235,7 @@ services:
     profiles:
       - mongodb
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-low
     image: mongo-express:1-18-alpine3.19
     container_name: lab-mongodb-mongo-express
@@ -290,6 +290,6 @@ networks:
 
 secrets:
   lab_mongodb_root_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/mongodb/root_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/mongodb/root_password.txt
   lab_mongo_express_basicauth_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/mongodb/express_basicauth_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/mongodb/express_basicauth_password.txt
