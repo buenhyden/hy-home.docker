@@ -217,18 +217,27 @@ policy reserve table.
 
 The check makes these calls:
 
-- **Tier.** The target folder may exist when it holds a retired Compose
-  file, or when it sits inside the folder of a retired Compose file that is
-  deeper than the tier. Decision A needs this, because `dev-db/valkey/` sits
-  inside `dev-db/`, which holds `docker-compose.yml`.
-- **Composition.** A problem from `collisions()` that names a retired
-  service as a word is not counted. A port or path clash reported against
-  `root` names no container, so it still fails.
+- **Retired services.** Only `replace-same` and `replace-substitute`
+  retire anything. Each retired service must be declared in an existing
+  `compose_path` and rendered in root; otherwise composition fails and
+  nothing is retired.
+- **Tier.** An existing target folder counts as a replacement when it holds
+  a retired Compose file, or when a retired service's build context or bind
+  source in the root render lies inside it. `dev-valkey` binds files under
+  `dev-db/valkey/`, so that folder qualifies and `dev-db/pg/` does not. The
+  tier criterion also fails on any `manifest_problems` result.
+- **Composition.** The retired services' own containers and ports are
+  removed from the root footprint and the running list before
+  `collisions()`. Networks and data paths stay, because retiring a service
+  frees neither.
 - **Profiles.** The POL-0078 vocabulary comes from
   `operations_catalog._conftest_profile_names`, the reader the profile gates
   use.
 - **Resources.** Limits are compared in bytes and reported in MiB. A retired
-  container is subtracted only when it is running.
+  container is subtracted only when it is running. A sum over budget stays
+  `FAIL` even when some container has no limit, because the known lower
+  bound already exceeds the budget; `NOT_RUN` applies only when the
+  measured sum fits.
 
 **HOME run, 2026-11-05.**
 
@@ -240,7 +249,10 @@ The check makes these calls:
    owner.
 2. A supplementary run used the same flags with `LAB_DATA_DIR` set to an
    unused scratch path. The run only renders, and the path was not created.
-   The result is `FAIL`:
+   The result is `FAIL`.
+3. After the owner set `LAB_DATA_DIR` in `labs/.env`, the instructed command
+   wrote a report at `24225a7da`. The result is `FAIL` with the same values
+   as the supplementary run:
 
 | Criterion | Result | Measured values and sources |
 | --- | --- | --- |
@@ -274,6 +286,10 @@ The check makes these calls:
 | E18 | 5 | W4 | full unit suite | `python -m unittest discover -s tests -t .` with the controller venv first on `PATH`, at `d1b6747e4` | PASS | 3318 tests, 0 failures, 108 skipped, 1 expected failure | required | - |
 | E19 | 5 | W4 | hardening and script manifest | `bash scripts/hardening/check-all-hardening.sh`, `check-script-manifest.py` | PASS | all checks passed; manifest valid | required | - |
 | E20 | 5 | W4 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` on the W4 working tree | PASS | selected=136 violations=0; link mode all PASS | required | - |
+| E21 | 5 | W4 | RED tests | the review repros in `ReadinessTests` before the retirement fix, at `a738a5618` | FAIL | 7 failures and 1 error: `add` honored `replaces`, retired-name text hid clashes, `dev-db/pg/` and `qdrant/` passed tier, unparsable `docker info` raised | required | - |
+| E22 | 5 | W4 | LAB suites | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout` at `24225a7da` | PASS | 99 tests; 1 expected failure until W5 | required | - |
+| E23 | 5 | W4 | HOME readiness, as instructed | `lab.py --env-file labs/.env readiness valkey-cluster --report <scratchpad>` at `24225a7da` | FAIL | report written; tier, composition, linux and docker PASS; resources FAIL: 70 CPUs and 62976 MiB needed against 10 CPUs and 27924 MiB, and 5 `k3d-hyhome-*` containers without limits; supersedes the E16 NOT_RUN, which a FAIL row cannot resolve | required | - |
+| E24 | 5 | W4 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` after the fix | PASS | violations=0; link mode all PASS | required | - |
 
 ## Criterion Acceptance
 
@@ -290,8 +306,8 @@ The check makes these calls:
 ## Review and Completion
 
 W1 to W4 have changed the repository. Criterion 3 waits for the owner's
-registry edit and sync (E9). Criterion 5 waits for a HOME readiness run
-with the owner's `labs/.env` (E16). No criterion is accepted.
+registry edit and sync (E9). The HOME readiness run (E23) refuses
+`valkey-cluster` on resources. No criterion is accepted.
 
 ## Related Documents
 
