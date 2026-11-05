@@ -3053,7 +3053,7 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
       "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -5497,7 +5497,7 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
       "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -5648,7 +5648,7 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
       "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -5945,7 +5945,7 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
       "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -6073,7 +6073,7 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
       "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -6203,7 +6203,7 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
       "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -13448,7 +13448,7 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
       "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -24327,7 +24327,7 @@
       "meaning": "15 services moved to standalone LAB entrypoints (labs/dbt/docker-compose.yml, labs/jupyterlab/docker-compose.yml, labs/lakehouse/docker-compose.yml, labs/sonarqube/docker-compose.yml, labs/stalwart/docker-compose.yml, labs/superset/docker-compose.yml) and their original ROOT rows are preserved in historical_lab_entries. Only ROOT membership, include hashes and the SeaweedFS source binding changed. No new vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     },
     {
-      "source_revision": "5989bf1c9",
+      "source_revision": "ed67f3e7bfdd025585295ca1e98af712c167e804",
       "refreshed_at": "2026-11-06T09:00:00+00:00",
       "revision_scope": "Local branch chore/debezium-3-7 with the Debezium 3.7.0.Final pin; not a committed/build/native acceptance receipt",
       "input_manifest_sha256": "e05d5b9f832df3a76d622d940ade6dfb0a135e5c9527d7c66d0e29616ab6a235",
@@ -24521,7 +24521,7 @@
       "updated_services": [
         "kafka-connect"
       ],
-      "meaning": "Debezium base image of the kafka-connect build moved to 3.7.0.Final; the other kafka Compose services only had their file hash re-bound. Build, plugin loading, scan, offset/slot recovery and HOME recreation are NOT_RUN."
+      "meaning": "Debezium base image of the kafka-connect build moved to 3.7.0.Final; the other kafka Compose services only had their file hash re-bound; their source_refreshed_at is unchanged. Build, plugin loading, scan, offset/slot recovery and HOME recreation are NOT_RUN."
     }
   ],
   "delivery_preconditions": {
