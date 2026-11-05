@@ -59,6 +59,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0261 | [REQ-0027 승인](./0261-req-0027-approval/) | REQ-0027 요구사항 승인과, 구현과 일치하는 AD-0031, AD-0032, Stage 05 문서의 승격을 다룹니다 |
 | SPEC-0260 | [SPEC-0209·0231 삭제](./0260-spec-0209-0231-retirement/) | generation 5·6 migration proof를 generation 6 revision에서 읽게 하고, proof를 지녔던 두 package를 삭제해 번호를 Registry `reserved_history`에 예약함 |
 | SPEC-0262 | [분석 서비스 LAB 이전](./0262-analytics-labs-migration/) | Lakehouse, dbt, Superset, JupyterLab, SonarQube, Stalwart를 root Compose에서 독립 LAB entrypoint로 옮기고, 참조와 Stage 05 문서를 `15-labs`로 정리함 |
+| SPEC-0263 | [LAB 이전 계약](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
