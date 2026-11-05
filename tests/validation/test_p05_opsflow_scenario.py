@@ -227,11 +227,13 @@ class MemoryFixture:
             stdout=json.dumps(value),
         )
 
-    def wait_until(self, condition, _message, _seconds):
+    def wait_until(self, condition, message, _seconds):
         if self.settle_pending:
             self.settle()
         if not condition():
-            raise native.RehearsalFailure("synthetic wait incomplete")
+            # The real message, so callers that tolerate one timeout run the
+            # refusal that follows it.
+            raise native.RehearsalFailure(message)
 
 
 class ScenarioModel:
@@ -320,7 +322,9 @@ class ScenarioModel:
                 }
             retried = str(len(f.executions) + 1)
             f.executions[retried] = "error"
-            f.retries[payload["executionId"]] = retried
+            f.retries[payload["executionId"]] = (
+                "999" if self.fail == "retry-id-mismatch" else retried
+            )
             if self.fail == "retry-resend":
                 f.captured.extend(f.held_runs)
             pending = [r for r, st in f.rows.items() if st == "pending"]
@@ -686,6 +690,15 @@ class P05ScenarioStateTests(unittest.TestCase):
         )
         self.assertTrue(receipt["execution_retry"]["fresh_execution_delivered"])
 
+    def test_late_retry_is_refused_after_its_wait_not_by_the_wait(self):
+        model = ScenarioModel("retry-late")
+        with self.assertRaisesRegex(
+            native.RehearsalFailure, "retry changed notification state"
+        ):
+            model.run()
+        self.assertTrue(model.fixture.receipt["execution_retry_created"])
+        self.assertNotIn("recovery_barrier_facts", model.fixture.receipt)
+
     def test_main_restart_and_retry_violations_block_the_barrier(self):
         for failure in (
             "no-startup-recovery",
@@ -694,6 +707,7 @@ class P05ScenarioStateTests(unittest.TestCase):
             "retry-claims",
             "retry-has-stack",
             "retry-late",
+            "retry-id-mismatch",
         ):
             with self.subTest(failure=failure):
                 model = ScenarioModel(failure)

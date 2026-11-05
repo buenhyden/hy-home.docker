@@ -199,7 +199,9 @@ def validate_main_restart_recovery(facts):
     # no WorkflowRunner awaits it, so the execution stays running. The leader
     # main's ScalingService.setupQueue runs scheduleQueueRecovery(0) at start:
     # an in-progress execution with no active or waiting job becomes crashed.
-    # The probe must precede lock expiry, or the job may already be gone.
+    # The probe should precede lock expiry. The bound counts from the kill
+    # signal, but the lock was last renewed before it, so it is approximate;
+    # jobs_before_restart == 1 is the evidence that the job survived.
     probe_ms = facts.get("kill_to_probe_ms") if isinstance(facts, dict) else None
     if (
         facts

@@ -928,7 +928,8 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         value = self.fixture.psql(
             "n8n",
             "n8n",
-            "SELECT coalesce(string_agg(id||':'||status,',' ORDER BY id),'') "
+            "SELECT coalesce(string_agg(id||':'||coalesce(status,'null'),',' "
+            "ORDER BY id),'') "
             f"FROM execution_entity WHERE \"retryOf\"='{execution}';",
             container="metadata-pg",
         ).stdout.strip()
@@ -946,7 +947,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         f = self.fixture
         fresh = self.publish_input(b"p05-retry", "2026-12-01T00:00:00Z")
         baseline = self.outbox_snapshot()
-        statuses, stacks, attempts = [], [], []
+        statuses, stacks, attempts, returned = [], [], [], []
         for execution in crashed:
             # Closed node names only: where the retry starts from.
             trace = self.api("trace", executionId=execution)
@@ -955,6 +956,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             if result.get("retryOf") != execution:
                 raise RehearsalFailure("retry was not bound to the crashed execution")
             statuses.append(str(result.get("status")))
+            returned.append((statuses[-1], str(result.get("id"))))
             attempts.append(
                 {
                     "status": statuses[-1],
@@ -985,6 +987,12 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             if str(error) != "n8n retry executions did not settle":
                 raise
         terminal = retries_terminal()
+        # The id n8n returned must be the one retryOf row the DB holds, or the
+        # lookup missed it and the barrier would not cover it.
+        for execution, (status, returned_id) in zip(crashed, returned, strict=True):
+            ids = [identifier for identifier, _ in settled.get(execution, [])]
+            if status != "not_started" and ids != [returned_id]:
+                raise RehearsalFailure("retry execution id not found in metadata")
         created = [identifier for rows in settled.values() for identifier, _ in rows]
         f.receipt["execution_retry_created"] = created
         self.execution_ids.extend(created)
