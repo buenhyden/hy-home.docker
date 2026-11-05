@@ -1,6 +1,6 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.4.1"
+version: "0.5.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -673,6 +673,85 @@ The guarded operator step is in the
 [n8n Runbook](../../../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md#강제-종료된-worker의-queue-job과-실행-기록).
 HOME execution is NOT_RUN. An independent review of this increment is NOT_RUN.
 
+### Main restart, crashed-execution retry and HOME check (2026-11-05)
+
+The owner's 2026-11-05 request asked to apply the recovery procedure to HOME
+operations (approval given), to cover a main restart, and to apply a replay
+of the n8n execution itself, then to finish the remaining T05 items. Branch
+`test/opsflow-notifier-main-restart-and-retry` from `f0ce46fda`.
+
+#### HOME application
+
+Read-only inspection on 2026-11-05 used the `mnginspector` Valkey account
+and a read-only metadata session. The `n8n:jobs` active, wait, delayed,
+paused and failed keys were all absent, and no execution was `new` or
+`running`. The Opsflow notifier workflow is not installed in HOME; the only
+active workflow is `HermesBlogIngest`. The queue settings are the n8n
+defaults the rehearsal assumes. With no target the procedure restarts
+nothing, so the HOME worker and main restarts were not run. The read-only
+step is now step 0 of RUN-0053.
+
+#### Source review
+
+Read from the declared image `n8nio/n8n:2.43.6`:
+
+- `ScalingService.setupQueue` runs `scheduleQueueRecovery(0)` on the leader
+  at startup. `recoverFromQueue` marks `new`/`running` executions with no
+  active or waiting job `crashed`. The next check is
+  `N8N_EXECUTIONS_QUEUE_RECOVERY_INTERVAL` (180 minutes) later.
+- `ExecutionService.retry` copies the stored execution data. A run with no
+  `executionData` is refused, and `UnexpectedError("The retry did not start
+  for an unknown reason.")` is thrown when no post-execute result is
+  attached.
+
+#### Native result
+
+Attempt 12 on code `ef2ca463a` (candidate `9dea1967…`, binding
+`d4b51cee…`) passed in 999.998 seconds with cleanup PASS and zero owned
+residue:
+
+- Main alive: SIGKILL mid-DATA (open session, body-to-kill 4495 ms), job
+  1→0 and execution 6 `crashed` in 38.918 seconds.
+- Main also killed: job 1 at 11861 ms after the kill, before lock expiry.
+  The worker deleted it (0) while execution 8 stayed `running`. After the
+  main restart it was `crashed` in 59.833 seconds, with its data row kept
+  (1→1) and REST readable. The interrupted row became
+  `unknown|1|lease_expired_delivery_unknown` with no resend.
+- Retry: both crashed executions had an empty start stack and no run data.
+  n8n's retry ended `error` once and `not_started` (HTTP 500) once. It
+  claimed nothing, resent nothing and left the outbox unchanged, with a
+  claimable fresh row present. A new execution then delivered that row on
+  its first attempt.
+- Barrier passed with executions 1–9 and 11 terminal and no jobs. The
+  restore was identical (20 rows, 10 outbox: 6 accepted, 4 unknown). Replay
+  gave 10 replayed and 0 claimable; the next claim was fresh-only.
+- Receipt `native-run12-receipt.json` SHA256 is
+  `17a61823b209b1c1ef2ff0bc609c3c7d2de217ed7649fac280a7933b5aa741d7`.
+
+So n8n's own retry cannot replay a worker-killed notifier execution. The
+replay is a new execution of the workflow, and the interrupted row stays
+`unknown` for reconciliation.
+
+#### Failed attempts
+
+Each attempt's cleanup passed with zero owned residue. Logs are in the
+ignored `_workspace/repo-support/analysis/p05/main-restart-retry/`.
+
+| Attempt | Stop | Cause and correction |
+| --- | --- | --- |
+| 1 | Preflight, 0.4 s | Image selection variables omitted |
+| 2 | Publish, 546 s | SQL003 one run per source per UTC date; inputs given own dates (`404713ac7`) |
+| 3 | Settle probe, 504 s | Bull `getJobs` returns null for a job removed mid-scan; probe skips it (`fe30fd4bd`) |
+| 4 | Main-restart check, 683 s | REST read 404; status now read from metadata DB (`92b0166d8`) |
+| 5 | DEV provision, 115 s | Socket readiness passed on the init server; TCP readiness (`068c21e6c`) |
+| 6–8 | Retry, 742–793 s | Retry delivered nothing; traces showed the empty stack (`07a601c88`, `22675499d`, `393620db4`, `16fc953d3`) |
+| 9 | Post-restart execution, 767 s | Stale runner registration line; count must increase (`cc115befd`) |
+| 10 | Interruption, 424 s | Kill time included the stop wait; timed at signal (`6db614394`) |
+| 11 | Retry, 713 s | Retry answered 500 "did not start"; recorded as `not_started` (`ef2ca463a`) |
+
+RUN-0053 1.10.0 adds steps 0, 6 and 7. HOME worker and main restarts remain
+NOT_RUN because there is no target.
+
 ### Actual isolated SQL-only verification
 
 The first guarded attempt stopped before007 after the driver expected a different
@@ -883,13 +962,18 @@ P03 global explain/admission failure remains unresolved by these local checks.
 | Stall-recovery changed metadata corrected | 73 | W78 | Changed-document metadata against origin/main | Runbook names the Dockerfile N8N_VERSION instead of a tag | PASS | check-changed selected2 violations0; links mode all PASS; corpus lifecycle 0; operations catalog PASS | required | Stall-recovery changed metadata initial |
 | Independent stall-recovery code review | 73 | W78 | Independent code review of the stall-recovery increment | Commits 54194cbbc,1d76b7135 | NOT_RUN | No independent reviewer ran in this session | required | - |
 | Independent stall-recovery code re-review | 73 | W78 | Independent code review of the stall-recovery increment | Commits 54194cbbc, 1d76b7135, 04df40b4d, 155e8d579 plus the minor-finding fix | PASS | APPROVED, no Critical/Important: assertions need n8n-driven job removal and a `crashed` execution (probe scans all job states, exact 1/0 ints); no queue deletion or barrier weakening; 150 s bound derived from lock and stall intervals; session cookie stripped from receipts; runbook step approval-gated. Minor findings fixed: only the settle timeout is tolerated, the job count uses the full probe result via `broker_job_count` (new test RED then GREEN, P05 suites 38 tests OK, 1 native skip) | required | Independent stall-recovery code review |
+| Main-restart and retry guards initial RED | 73 | W78 | Main-restart queue recovery and crashed-execution retry guards | New guards before validate_main_restart_recovery and validate_execution_retry existed | FAIL | 20 tests: 2 errors (missing validators), 1 native SKIP | required | - |
+| Main-restart and retry guards GREEN | 73 | W78 | Main-restart queue recovery and crashed-execution retry guards | Commits 69e47d4ec through ef2ca463a and scenario doubles | PASS | P05 unit and scenario tests all OK, 1 native SKIP; doubles refuse no startup recovery, stale runner, retry claim/resend/unbound, non-empty stack, same-date input | required | Main-restart and retry guards initial RED |
+| Native main-restart and retry attempts 1-11 | 73 | W78 | Current-artifact native main-restart recovery and crashed-execution retry rehearsal | Commits 69e47d4ec through 6db614394 | FAIL | main-restart-retry/native-attempt*.log: causes in the Failed attempts table; cleanup PASS, owned residue 0 each | required | - |
+| Native main-restart and retry rehearsal | 73 | W78 | Current-artifact native main-restart recovery and crashed-execution retry rehearsal | Commit ef2ca463a, candidate 9dea1967/binding d4b51cee | PASS | native-run12-receipt.json 17a61823: 999.998 s; main-restart job 1→0, running→crashed 59.833 s, data 1→1; retry error/not_started, 0 claimed, 0 resent, outbox unchanged; new execution delivered; barrier, restore, replay PASS | required | Native main-restart and retry attempts 1-11 |
+| HOME n8n recovery target inspection | 73 | W78 | Read-only HOME queue and execution target check | mng-valkey mnginspector and read-only n8n metadata session, 2026-11-05 | PASS | jobs active/wait/delayed/paused/failed absent; 0 new/running executions; Opsflow notifier not installed; no restart run | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 72 | pending | Issued P05 baseline and leases, P08 source-binding parity GREEN, Final workspace inventory and comparisons | REUSE_ACCEPTED only for original C19/C22 scope; current source/image/runtime equivalence separate. | SPEC-0212 TSK-0044 |
-| 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review, n8n stall-recovery guards GREEN, Post-restore capture-order guard GREEN, Native stall-recovery restore rehearsal, Independent stall-recovery code re-review | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; isolated same-input replay, restored outbox-state equivalence and next-claim PASS; the stopped-worker interruption result was superseded by review, and the SIGKILL mid-DATA interruption with lease-expiry recovery PASS (Native kill-based interruption rehearsal); the correction passed independent re-review. The two former residuals pass in the isolated fixture through n8n 2.43.6's own stall recovery (Native stall-recovery restore rehearsal): the surviving job was removed by n8n, the interrupted execution became `crashed`, and the strengthened barrier then accepted restore. The criterion passed independent review; it stays TEST_RESIDUAL because the same-input replay covers repeated publication, not replay of an n8n execution, and HOME operation is NOT_RUN. | SPEC-0212 TSK-0044 |
+| 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review, n8n stall-recovery guards GREEN, Post-restore capture-order guard GREEN, Native stall-recovery restore rehearsal, Independent stall-recovery code re-review, Main-restart and retry guards GREEN, Native main-restart and retry rehearsal, HOME n8n recovery target inspection | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; isolated same-input replay, restored outbox-state equivalence and next-claim PASS; the stopped-worker interruption result was superseded by review, and the SIGKILL mid-DATA interruption with lease-expiry recovery PASS (Native kill-based interruption rehearsal); the correction passed independent re-review. The two former residuals pass in the isolated fixture through n8n 2.43.6's own stall recovery (Native stall-recovery restore rehearsal): the surviving job was removed by n8n, the interrupted execution became `crashed`, and the strengthened barrier then accepted restore. The criterion passed independent review; it stays TEST_RESIDUAL because the same-input replay covers repeated publication, not replay of an n8n execution, and HOME operation is NOT_RUN. | SPEC-0212 TSK-0044 |
 | 74 | pending | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. | SPEC-0212 TSK-0044 |
 | 75 | pending | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | SOURCE_READY with scoped actual native increment PASS; formal owner acceptance, actual P06 producer and operating rotation remain separate. | SPEC-0212 TSK-0044 |
 
@@ -904,8 +988,11 @@ restored outbox-state equivalence and SIGKILL mid-DATA interruption with
 lease-expiry recovery have isolated native PASS. The review's
 CHANGES_REQUESTED finding is fixed and passed re-review. Restore after an
 interrupted broker job now has isolated native PASS through n8n's own stall
-recovery, and the interrupted execution is recorded `crashed`. Independent
-review of that increment and HOME operation are NOT_RUN. P03 global CI
+recovery, and the interrupted execution is recorded `crashed`. With main also
+restarted, the leader's startup queue recovery records it `crashed` (isolated
+native PASS). n8n's retry of a crashed execution was measured as a no-op, and
+replay is a new execution. HOME inspection found no target, so the HOME
+restarts are NOT_RUN. P03 global CI
 admission remains an explicit residual.
 All future outcomes must bind exact source, actor, environment, time and receipt
 without cancelling accepted history or promoting a lower evidence axis.
