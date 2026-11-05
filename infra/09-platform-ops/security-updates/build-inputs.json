@@ -973,12 +973,12 @@
     {
       "service": "kafka-connect",
       "build_input": "infra/05-messaging/kafka/Dockerfile.connect",
-      "input_sha256": "e945300b042a80dc9dc7cc8397fbee205a551dbdf82b16547cb9fa0970f8f401",
+      "input_sha256": "0c22e84abf4e1937a3a5d08c62696e3916576fe9344715095431bf328d26092f",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 1,
-          "declaration": "FROM quay.io/debezium/connect:3.6.3.Final AS debezium"
+          "declaration": "FROM quay.io/debezium/connect:3.7.0.Final AS debezium"
         },
         {
           "line": 3,

@@ -401,6 +401,26 @@ passed both tests in 345.1 s: stream decode, schema evolution and resume, and
 heartbeat writes advancing the slot, with the connector that no longer carries
 schema-history keys. Owned residue was zero.
 
+### T03 D09 Debezium 3.7.0.Final source pin
+
+The owner decided on 2026-11-06 ("D09 Debezium 3.7 — 정적 변경만 PR") to raise the
+declared Debezium image as a static change only. The `kafka-connect` build now
+takes the PostgreSQL connector plugin from `quay.io/debezium/connect:3.7.0.Final`
+(was `3.6.3.Final`) and the local image tag is
+`hy-home/kafka-connect:8.3.2-debezium-3.7.0` (was `...-3.6.3`); the Confluent
+base `cp-kafka-connect:8.3.2` is unchanged. A read-only quay.io tag lookup on
+2026-11-06 shows `3.7.0.Final` as the only stable 3.7 tag (index digest
+`sha256:9716a72bce5313186d7528cf5ea00f3e2d1a0a71ba84156d38417d0262cf3599`); the
+Dockerfile pins by tag, as before, so no digest is added. The 3.7 release
+summary of 2026-09-29 lists breaking changes only for the Oracle, JDBC sink and
+Cassandra connectors, none for PostgreSQL, so `postgres-connector.json` is
+unchanged. The tech-stack projection, the Compose tag, the Dockerfile and the
+security-updates ledger and build-input records follow the pin; the observed
+running 3.6.3 image and the dated lookups stay as history. Image build, plugin
+loading, snapshot/offset/restart/recovery on the existing slot, scan and HOME
+recreation are NOT_RUN: the messaging stack is stopped and this Task starts
+nothing.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -447,6 +467,7 @@ schema-history keys. Owned residue was zero.
 | Final independent document review | 66 | W71 | Independent current document and curated-data review | Exact13-path final-doc-source-packet at2026-11-02T09:00:08Z | PASS | /root/p04_uri APPROVED: contiguous typed Evidence, same-scope Resolutions, truthful unresolved native FAIL/ERROR, actual whole-body reader attribution and exact writer/handoff hashes. Generated inventory review covers P04 curation plus CLI consistency, not semantic review of every row. Later whitespace/comments/evidence-only changes reuse unaffected proof. | required | - |
 | Normal local staged wrapper retry | 67 | W72 | Registered local staged validation | Exact35 staged public paths after one README blank-line correction and two AST-identical synthetic fixture comments | PASS | Actual normal local-staged hooks all PASS, including markdownlint, gitleaks, Ruff and Dockerfile checks; no hook skip or broad scan bypass. Cached diff check PASS. This closes only the earlier staged-wrapper failure, not native execution or hosted CI. | required | Initial local staged wrapper |
 | Registry-backed document integration | 66 | W71 | Registered metadata, links, catalog and corpus lifecycle | Current registry/build profiles and corrected local document/projection packet | PASS | Actual changed metadata, alignment links and operations catalog exit0; corpus lifecycle loaded Stage99 Registry/build profiles and passed. Independent narrow13-path document/curation re-review APPROVED after formatting/comment metadata refresh. Historical unexecuted operating/remote axes remain separate. | required | - |
+| D09 Debezium 3.7.0.Final source pin | 68 | W73 | Read-only quay.io tag lookup, 3.7 release-summary breaking-change readback and edit of Dockerfile.connect, kafka Compose tag, tech-stack projection and security-updates ledger/build-input records | Owner decision 2026-11-06 (static change only); `quay.io/debezium/connect:3.6.3.Final` to `3.7.0.Final`; `hy-home/kafka-connect:8.3.2-debezium-3.6.3` to `8.3.2-debezium-3.7.0` | PASS | Index digest sha256:9716a72bce5313186d7528cf5ea00f3e2d1a0a71ba84156d38417d0262cf3599; no PostgreSQL breaking change listed, connector JSON unchanged. Compose config, supply-chain policy, operations catalog, hardening, Compose baseline/DEV-boundary/wiring/tech-stack suites and the update-ledger gates pass. Build, plugin loading, snapshot/offset/recovery, scan and HOME recreation NOT_RUN; the CDC stream rehearsal was not re-run (it starts containers) and the earlier PASS covers 3.6.3 only. | required | - |
 | Graphify AST freshness | 66 | W71 | graphify update . | Final executable source; AST-only, no API cost | PASS | Actual command exited0; no graph files changed. Parser limits remain:18 SQL and9 HCL inputs lack tree-sitter dependencies, and5 files yielded no symbols. This is bounded AST refresh, not whole-source semantic coverage or SQL/runtime validation. No parser dependency was installed to manufacture success. | required | - |
 
 ## Criterion Acceptance

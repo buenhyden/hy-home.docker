@@ -1682,7 +1682,7 @@
         "hy-home/kafka-connect": "local-custom"
       },
       "images": [
-        "hy-home/kafka-connect:8.3.2-debezium-3.6.3"
+        "hy-home/kafka-connect:8.3.2-debezium-3.7.0"
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml"
@@ -1691,7 +1691,7 @@
         {
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
           "images": [
-            "hy-home/kafka-connect:8.3.2-debezium-3.6.3"
+            "hy-home/kafka-connect:8.3.2-debezium-3.7.0"
           ]
         }
       ]

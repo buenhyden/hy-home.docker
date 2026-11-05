@@ -157,7 +157,7 @@
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
-      "sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984"
+      "sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8"
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
@@ -3053,8 +3053,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5497,8 +5497,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5648,8 +5648,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5709,7 +5709,7 @@
       "service": "kafka-connect",
       "scope": "root",
       "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-      "current_declared": "hy-home/kafka-connect:8.3.2-debezium-3.6.3",
+      "current_declared": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
       "profiles_declared": [
         "messaging",
         "messaging-connect",
@@ -5756,13 +5756,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_CONNECTOR_MIGRATION",
+      "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
       "blocker": {
         "owner": "SEC01",
         "discovered_at": "2026-10-26T10:32:14.784990+00:00",
         "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "CP8.3.2 is current. Current3.6 is still vendorstable;3.7 release29Sep matured but connector/ConnectKafka4.3/JDK/config/offset/DBslot migration compatibility not established.",
-        "exit_condition": "Exact3.7Postgrespluginartifact and release notes, pluginloading+snapshot/offset/restart/recovery checks; preserve existing slots/offsets.",
+        "reason": "Debezium PostgreSQL connector source pin raised from 3.6.3.Final to 3.7.0.Final (quay.io/debezium/connect:3.7.0.Final, index sha256:9716a72bce5313186d7528cf5ea00f3e2d1a0a71ba84156d38417d0262cf3599, read-only quay API 2026-11-06) by owner decision 2026-11-06 (static change only). The 3.7 release notes list no PostgreSQL breaking change. Image build, plugin loading, snapshot/offset/restart/recovery checks, scan and HOME recreation are NOT_RUN; the messaging stack is stopped.",
+        "exit_condition": "Owner steps: approved build, offline Syft/Grype scan, plugin loading plus snapshot/offset/restart/recovery checks preserving existing slots/offsets, then re-run the latest/security gates at the delivery head.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -5779,12 +5779,12 @@
         "buildx",
         "imagetools",
         "inspect",
-        "hy-home/kafka-connect:8.3.2-debezium-3.6.3",
+        "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5811,21 +5811,21 @@
         "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
         "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
         "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "CP8.3.2 with Debezium3.7.0.Final latest or maintained3.6.3.Final",
-        "decision": "DEFER_CONNECTOR_MIGRATION",
-        "reason": "CP8.3.2 is current. Current3.6 is still vendorstable;3.7 release29Sep matured but connector/ConnectKafka4.3/JDK/config/offset/DBslot migration compatibility not established.",
-        "exit_condition": "Exact3.7Postgrespluginartifact and release notes, pluginloading+snapshot/offset/restart/recovery checks; preserve existing slots/offsets.",
+        "candidate": "CP8.3.2 with Debezium 3.7.0.Final (adopted in source)",
+        "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+        "reason": "Debezium PostgreSQL connector source pin raised from 3.6.3.Final to 3.7.0.Final (quay.io/debezium/connect:3.7.0.Final, index sha256:9716a72bce5313186d7528cf5ea00f3e2d1a0a71ba84156d38417d0262cf3599, read-only quay API 2026-11-06) by owner decision 2026-11-06 (static change only). The 3.7 release notes list no PostgreSQL breaking change. Image build, plugin loading, snapshot/offset/restart/recovery checks, scan and HOME recreation are NOT_RUN; the messaging stack is stopped.",
+        "exit_condition": "Owner steps: approved build, offline Syft/Grype scan, plugin loading plus snapshot/offset/restart/recovery checks preserving existing slots/offsets, then re-run the latest/security gates at the delivery head.",
         "eligible_after_7_days": "NOT_CLAIMED",
         "evidence_refs": [
           "confluent-release",
           "https://docs.confluent.io/platform/current/release-notes/index.html"
         ],
-        "fact_checked_at": "2026-10-26T09:45:12.544894+00:00",
+        "fact_checked_at": "2026-11-06T09:00:00+00:00",
         "service": "kafka-connect",
         "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-        "current_declared": "hy-home/kafka-connect:8.3.2-debezium-3.6.3",
+        "current_declared": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
         "resolved_source": {
-          "image": "hy-home/kafka-connect:8.3.2-debezium-3.6.3",
+          "image": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
           "build": {
             "context": ".",
             "dockerfile": "Dockerfile.connect"
@@ -5836,7 +5836,7 @@
           ]
         },
         "existing_target_version": "UNKNOWN",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00",
+        "assessed_at": "2026-11-06T09:00:00+00:00",
         "selected_component": {
           "latest": "8.3.2",
           "current_source_target": "8.3.2",
@@ -5854,17 +5854,18 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "hy-home/kafka-connect:8.3.2-debezium-3.6.3",
+      "target_source_image": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
       "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
       "current_target_artifact_binding": {
         "source_version": "8.3.2",
-        "source_image": "hy-home/kafka-connect:8.3.2-debezium-3.6.3",
+        "source_image": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
-      }
+      },
+      "source_release_note": "Tag and index digest read through the anonymous quay.io tag API on 2026-11-06; no pull, signature, scan, build, runtime or HOME deployment was performed. current_running keeps the 3.6.3 build observed on 2026-10-10."
     },
     {
       "service": "kafka-exporter",
@@ -5944,8 +5945,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6072,8 +6073,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6202,8 +6203,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -13447,8 +13448,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+      "source_input_sha256": "123e5fffe77e0062c7f6ec13e75977b56fb85f3314e9d08c9742c95d934df2e8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -24324,6 +24325,203 @@
         "trino"
       ],
       "meaning": "15 services moved to standalone LAB entrypoints (labs/dbt/docker-compose.yml, labs/jupyterlab/docker-compose.yml, labs/lakehouse/docker-compose.yml, labs/sonarqube/docker-compose.yml, labs/stalwart/docker-compose.yml, labs/superset/docker-compose.yml) and their original ROOT rows are preserved in historical_lab_entries. Only ROOT membership, include hashes and the SeaweedFS source binding changed. No new vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "5989bf1c9",
+      "refreshed_at": "2026-11-06T09:00:00+00:00",
+      "revision_scope": "Local branch chore/debezium-3-7 with the Debezium 3.7.0.Final pin; not a committed/build/native acceptance receipt",
+      "input_manifest_sha256": "e05d5b9f832df3a76d622d940ade6dfb0a135e5c9527d7c66d0e29616ab6a235",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "4a86ebcab70ebb1796dbbbb94c0483034941aa933b65b3d5d99d2a0d7b99a069"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "4b0c9a0d170c721bed25000a1b3f34ee2711b309edd2f78b063cc4dc995dde0b"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "bda416f399d071abc554db5251b67e0e2228e98608cd80c0bb078e20792f9707"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "6a3bbb2dd657e2a975b2c7da1e8e7297acc599f7f18c9baf8e90c040cb4bd22a"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "f8eac484b704836fb06ff1b435d405213d0449c311df32863ea53a22ffeed638"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "95415facc07ab7aa4798c570871c61fa3adcead9de566a3345c313af6a7253fc"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "588300277b9dba8e53edbe15543ff71d2b196a7abc711afe7e5d253e504c207c"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "555bbb09e3e05f1b9de005c2d7210a9931eceb6552f5855a7d524ac14d6d4aa4"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "9dadacb2a6c914fa7a79a2eb0ec6d332db984a97aa7ee3abc806d98c1e3b2436"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "621bcf244286dc784c0004ef2b51a3af8fca93b1b483f28fe1340cd54df3fc9b"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "f603ed35a889029a1eee9071d26c0de3e650e7fe8c4e18226e0778998a81827e"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "c5f39f53255c7c02ee6eacddc8b3d5935f87b431e606523ef63386a0d50c5d88"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "b376aa8baa055254f9fc6038a6fc36f7a8a7a2eab3e4f8bcd017170181b27540"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "fb0a48715f9cfcdfae34e39281580c28c8c212fe84cd60624edbff5290c38bb5"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/08-ai/open-webui/docker-compose.yml",
+          "sha256": "718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "ee186d89e880c81fc93346c70771f59898f76d1b85fa4fd86353e1d834a89a3c"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "e51da00556f4daa005f9cf96c2febc18c67e78a1a1ccbdb687139f726684aa2f"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "bd7244aa6c65a2dd37cb0a51798bf166bb25c2795039e7c70f3caf393d94625a"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "9b812e0c04256d9f3f2144835d46b07b44f0c4ca6c42cc058a1512bbd97ca3ae"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "b5c0110557e5e8c82e12224cbfd9152b6a6186ba431fcd930f8a1774b6c41b76"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "48abf33e7d9e3222f722107b28adcc258f10d87dc15023babe9ea815243d5262"
+        }
+      ],
+      "changed_inputs": [
+        "infra/05-messaging/kafka/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "debezium-db-provision",
+          "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "kafbat-ui",
+          "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "kafka-1",
+          "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "kafka-connect",
+          "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "kafka-exporter",
+          "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "kafka-init",
+          "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "kafka-rest-proxy",
+          "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "schema-registry",
+          "source_input_sha256": "352dad66924bfe9b6e8d9ada2a8300480768df86c9b1232e648a6a5d0471c984",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        }
+      ],
+      "updated_services": [
+        "kafka-connect"
+      ],
+      "meaning": "Debezium base image of the kafka-connect build moved to 3.7.0.Final; the other kafka Compose services only had their file hash re-bound. Build, plugin loading, scan, offset/slot recovery and HOME recreation are NOT_RUN."
     }
   ],
   "delivery_preconditions": {
