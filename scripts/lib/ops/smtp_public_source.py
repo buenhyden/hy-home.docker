@@ -18,9 +18,13 @@ from scripts.lib.document_governance.operations_catalog import _ComposeLoader
 LAB_SUPABASE_PATH = "labs/supabase/docker-compose.yml"
 LAB_COMMON_EXTENDS_PATH = "infra/common-optimizations.yml"
 LAB_COMMON_EXTENDS = {
-    "file": "../" + LAB_COMMON_EXTENDS_PATH,
+    "file": "../../" + LAB_COMMON_EXTENDS_PATH,
     "service": "template-infra-med",
 }
+# SPEC-0263: the LAB reads its own LAB-037 copy, never HOME COMM-002's file.
+LAB_SMTP_SOURCE_FILE = (
+    "${LAB_SECRET_DIR:-../../secrets/labs}/supabase/smtp_password.txt"
+)
 LAB_SMTP_TARGET = "supabase_smtp_password"
 LAB_SMTP_TARGET_FILE = "/run/secrets/" + LAB_SMTP_TARGET
 LAB_AUTH_IMAGE = "supabase/gotrue:v2.197.0"
@@ -454,9 +458,11 @@ def _lab_auth_service(
     secrets = _mapping(document.get("secrets"), "invalid_lab_source", error)
     services = _mapping(document.get("services"), "invalid_lab_source", error)
     smtp = secrets.get(canonical)
-    if not isinstance(smtp, dict) or smtp.get("file") != "../" + canonical_path:
+    if not isinstance(smtp, dict) or smtp.get("file") != LAB_SMTP_SOURCE_FILE:
         raise error("invalid_lab_source")
     serialized = _json_dump(document, error)
+    if canonical_path in serialized:
+        raise error("invalid_lab_source")
     if old in secrets or old_path in serialized:
         raise error("source_cutover_pending")
     auth = _mapping(services.get("auth"), "invalid_lab_source", error)

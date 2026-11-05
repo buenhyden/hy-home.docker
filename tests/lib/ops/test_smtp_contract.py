@@ -32,6 +32,7 @@ from scripts.lib.ops.smtp_contract import (
     summarize,
     unify,
 )
+from scripts.lib.ops.smtp_public_source import LAB_SMTP_SOURCE_FILE
 
 
 def model():
@@ -134,7 +135,7 @@ def lab_source(
     service = {
         "profiles": ["supabase"] if profiles is None else profiles,
         "extends": {
-            "file": "../infra/common-optimizations.yml",
+            "file": "../../infra/common-optimizations.yml",
             "service": "template-infra-med",
         }
         if extends is None
@@ -148,7 +149,7 @@ def lab_source(
     selected_command = ["auth"] if command is None else command
     if not missing_wrapper:
         service["command"] = selected_command
-    secrets = {"smtp_password": {"file": "../" + CANONICAL_PATH}}
+    secrets = {"smtp_password": {"file": LAB_SMTP_SOURCE_FILE}}
     if old_source:
         secrets["supabase_smtp_password"] = {"file": "../" + OLD_PATH}
         service["secrets"] = ["supabase_smtp_password"]
@@ -780,7 +781,7 @@ class SMTPContractTests(unittest.TestCase):
             (
                 "escape",
                 {
-                    "file": "../../infra/common-optimizations.yml",
+                    "file": "../../../infra/common-optimizations.yml",
                     "service": "template-infra-med",
                 },
                 {},
@@ -788,7 +789,7 @@ class SMTPContractTests(unittest.TestCase):
             (
                 "wrong_service",
                 {
-                    "file": "../infra/common-optimizations.yml",
+                    "file": "../../infra/common-optimizations.yml",
                     "service": "template-infra-low",
                 },
                 {},
@@ -796,7 +797,7 @@ class SMTPContractTests(unittest.TestCase):
             (
                 "old_path",
                 {
-                    "file": "../infra/common-optimizations.yml",
+                    "file": "../../infra/common-optimizations.yml",
                     "service": "template-infra-med",
                 },
                 {"old_path": True},
