@@ -573,8 +573,11 @@ def source_allowlist_problems(
     secret_value = env.get("LAB_SECRET_DIR") or "../secrets/labs"
     # Compose resolves a relative LAB_SECRET_DIR against labs/.
     secret = os.path.realpath(ROOT / "labs" / secret_value)
+    # Decided from the resolved secrets tree too: a symlinked secrets/ must
+    # not let a sibling of secrets/labs pass as outside the repo.
+    secrets_root = os.path.realpath(ROOT / "secrets")
     if unsafe(secret) or (
-        _within(secret, repo)
+        (_within(secret, repo) or _within(secret, secrets_root))
         and not _within(secret, os.path.realpath(ROOT / "secrets" / "labs"))
     ):
         # Inside the repo only secrets/labs holds LAB copies; elsewhere would

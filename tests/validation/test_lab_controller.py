@@ -591,6 +591,25 @@ class CollisionAndBudgetTests(unittest.TestCase):
             ),
         )
 
+    def test_symlinked_secrets_tree_keeps_the_secrets_labs_rule(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, vault = pathlib.Path(tmp) / "repo", pathlib.Path(tmp) / "vault"
+            (vault / "secrets/.retired").mkdir(parents=True)
+            (vault / "secrets/labs").mkdir()
+            repo.mkdir()
+            (repo / "secrets").symlink_to(vault / "secrets")
+            rendered = model("hy-home-lab-x", {"x": service("lab-x")})
+            rendered["secrets"] = {
+                "s": {"name": "s", "file": str(vault / "secrets/.retired/key.txt")}
+            }
+            selected = {"x": lab.footprint(rendered)}
+            env = {
+                "LAB_DATA_DIR": "/lab-data",
+                "LAB_SECRET_DIR": str(vault / "secrets/.retired"),
+            }
+            with mock.patch.object(lab, "ROOT", repo):
+                self.assertTrue(lab.source_allowlist_problems(selected, env, ROOTFP))
+
     def test_sensitive_source_needs_the_secret_root_even_under_other_roots(self):
         spec = service("lab-x")
         spec["volumes"] = [
