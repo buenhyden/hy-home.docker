@@ -1095,6 +1095,65 @@ class LabLayoutAndManifestTests(unittest.TestCase):
             with self.subTest(case=case):
                 self.assertTrue(bind(*case))
 
+    def test_socket_exception_holds_across_the_check_path(self) -> None:
+        # The checks check() composes over sources and paths: integrity,
+        # allowlist and HOME collisions. HOME binds the socket read-only too.
+        env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../secrets/labs"}
+        socket = "/var/run/docker.sock"
+
+        def mount(source, read_only):
+            return {
+                "type": "bind",
+                "source": source,
+                "target": socket,
+                "read_only": read_only,
+            }
+
+        home = service("hy-alloy")
+        home["volumes"] = [mount(socket, True)]
+        root = lab.root_footprint(
+            model("hy-home-infra", {"alloy": home}, data_root="/data/home"),
+            docker_root="/var/lib/docker-data",
+        )
+
+        def problems(name, service_name, source, read_only):
+            spec = service(f"lab-{service_name}")
+            spec["volumes"] = [mount(source, read_only)]
+            found = {
+                name: lab.footprint(model(f"hy-home-lab-{name}", {service_name: spec}))
+            }
+            return {
+                "integrity": lab.path_integrity_problems(found),
+                "allowlist": lab.source_allowlist_problems(found, env, root),
+                "collisions": lab.collisions(found, root, []),
+            }
+
+        # Real path facts on every host: the socket exists and /var/run is a
+        # symlink to /run, as on this server.
+        with (
+            mock.patch.object(lab.os.path, "lexists", return_value=True),
+            mock.patch.object(lab.pathlib.Path, "exists", return_value=True),
+            mock.patch.object(lab, "_has_symlink_component", return_value=True),
+        ):
+            allowed = problems("supabase", "vector", socket, True)
+            self.assertEqual(
+                {"integrity": [], "allowlist": [], "collisions": []}, allowed
+            )
+            for case in (
+                ("supabase", "vector", socket, False),
+                ("supabase", "kong", socket, True),
+                ("other", "vector", socket, True),
+                ("supabase", "vector", "/run/user/1000/docker.sock", True),
+            ):
+                found = problems(*case)
+                with self.subTest(case=case):
+                    self.assertTrue(found["allowlist"])
+                    # Integrity checks read-only sources only.
+                    if case[3]:
+                        self.assertTrue(found["integrity"])
+                    if case[2] == socket:  # shared with HOME
+                        self.assertTrue(found["collisions"])
+
 
 class LifecycleTests(unittest.TestCase):
     def setUp(self) -> None:

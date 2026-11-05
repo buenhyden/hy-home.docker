@@ -414,6 +414,12 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
     problems: list[str] = []
     others = [("root", root)] + [(f"lab {n}", f) for n, f in selected.items()]
     for name, lab in selected.items():
+        # The allowed Docker socket is shared with HOME by design; a path that
+        # also arrives through any other source keeps its treatment.
+        sources = lab.get("sources", [])
+        shared_socket = {s["real"] for s in sources if _socket_exception(name, s)} - {
+            s["real"] for s in sources if not _socket_exception(name, s)
+        }
         for other_name, other in others:
             if other is lab:
                 continue
@@ -423,7 +429,7 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
             for port in sorted(lab["ports"]):
                 if any(_port_clash(port, p) for p in other["ports"]):
                     problems.append(f"{name}: host port {port} also in {other_name}")
-            for path in sorted(lab["paths"]):
+            for path in sorted(lab["paths"] - shared_socket):
                 conflicts = [
                     p for p in other["paths"] if _path_conflict(path, lab, p, other)
                 ]
@@ -537,7 +543,8 @@ def path_integrity_problems(selected: dict[str, dict]) -> list[str]:
             if not os.path.lexists(declared):
                 problems.append(f"{name}: read-only source does not exist")
                 continue
-            if _has_symlink_component(declared):
+            # /var/run is a symlink to /run on most hosts.
+            if _has_symlink_component(declared) and not _socket_exception(name, source):
                 problems.append(f"{name}: read-only source contains a symlink")
             if not declared.exists():
                 problems.append(f"{name}: read-only source target does not exist")
