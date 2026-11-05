@@ -12,6 +12,10 @@ Commands:
   down LAB                    stop only that project; never removes volumes
   reap                        stop every LAB whose lease has expired
   status                      print ledger entries and whether each runs
+  readiness LAB [--report PATH]
+                              read-only promotion readiness report
+                              (SPEC-0263); exit 0 only when every
+                              criterion is PASS
 
 The ledger lives in `${LAB_DATA_DIR}/.ledger/<lab>.json` and names the exact
 containers, networks and data paths an operator may later remove by hand.
@@ -29,7 +33,9 @@ import functools
 import json
 import os
 import pathlib
+import posixpath
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -124,7 +130,7 @@ def footprint(model: dict) -> dict:
     sources = []
     cluster_ids = set()
     cpus = memory = 0.0
-    limits = {}
+    limits, users = {}, {}
     for name, service in model.get("services", {}).items():
         replicas = int((service.get("deploy") or {}).get("replicas") or 1)
         if service.get("container_name"):
@@ -172,6 +178,7 @@ def footprint(model: dict) -> dict:
             "memory": float(int(service.get("mem_limit") or 0)),
         }
         cpus += limits[name]["cpus"] * replicas
+        users[name] = service.get("user")
         memory += limits[name]["memory"] * replicas
     devices = {}
     for key, volume in (model.get("volumes") or {}).items():
@@ -244,6 +251,12 @@ def footprint(model: dict) -> dict:
             if not base or not _within(resolved, base):
                 build_forbidden.append(f"{name}: build dockerfile outside the context")
     networks = {net.get("name") for net in (model.get("networks") or {}).values()}
+    # Compose defaults: bridge for a network, local for a volume.
+    drivers = {
+        (item or {}).get("driver") or default
+        for key, default in (("networks", "bridge"), ("volumes", "local"))
+        for item in (model.get(key) or {}).values()
+    }
     return {
         "build_inputs": build_inputs,
         "build_forbidden": build_forbidden,
@@ -262,6 +275,8 @@ def footprint(model: dict) -> dict:
         "cpus": cpus,
         "memory": memory,
         "services": limits,
+        "users": users,
+        "drivers": drivers,
     }
 
 
@@ -755,6 +770,7 @@ INTEGRATION_KINDS = frozenset(
 )
 TARGET_FOLDER = re.compile(r"^infra/\d\d-[a-z0-9-]+/.+/$")
 SECRET_CATALOG = "infra/03-security/openbao/secret-catalog.json"
+MIB_BYTES = 2**20
 
 
 def load_manifest(name: str) -> dict:
@@ -831,6 +847,298 @@ def manifest_problems(
         elif path is not None and not (ROOT / str(path)).exists():
             problems.append(f"{name}: documents {key} {path} does not exist")
     return problems
+
+
+# SPEC-0263 section 5: the OS and Docker reserve kept off the promotion
+# budget (owner decision C, 2026-11-05; policy 0107 holds the same table).
+PROMOTION_RESERVE = {"cpus": 2.0, "memory_mib": 4096, "disk_percent": 10}
+ALLOWED_DRIVERS = frozenset({"local", "bridge", "overlay"})
+MAX_ID = 65534
+NAME = re.compile(r"[a-z_][a-z0-9_.-]*", re.IGNORECASE)
+INFO_SOURCE = "docker info --format '{{json .}}'"
+
+
+@functools.cache
+def profile_vocabulary() -> frozenset[str]:
+    """POL-0078 profile names, through the reader the profile gates use."""
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from scripts.lib.document_governance.operations_catalog import (
+        _conftest_profile_names,
+    )
+
+    return _conftest_profile_names(ROOT)
+
+
+def measure_host(docker: str, data_root: str) -> dict:
+    """Read-only HOME measurements, each `{"value": ..., "source": ...}`.
+    A value that cannot be read is left out, so readiness reports NOT_RUN."""
+    host = {}
+    info = run([docker, "info", "--format", "{{json .}}"])
+    data = json.loads(info.stdout) if info.returncode == 0 and info.stdout else {}
+    for key, name in (
+        ("NCPU", "NCPU"),
+        ("MemTotal", "MemTotal"),
+        ("DockerRootDir", "DockerRootDir"),
+        ("ServerVersion", "docker_version"),
+        ("CgroupVersion", "cgroup_version"),
+    ):
+        if data.get(key) not in (None, ""):
+            host[name] = {"value": data[key], "source": f"{INFO_SOURCE} .{key}"}
+    compose = run([docker, "compose", "version", "--short"])
+    if compose.returncode == 0 and compose.stdout.strip():
+        host["compose_version"] = {
+            "value": compose.stdout.strip(),
+            "source": "docker compose version --short",
+        }
+    docker_data = (host.get("DockerRootDir") or {}).get("value")
+    for name, path in (("disk_data", data_root), ("disk_docker", docker_data)):
+        if not path:
+            continue
+        try:
+            usage = shutil.disk_usage(path)
+        except OSError:
+            continue
+        host[name] = {
+            "value": {"path": path, "free": usage.free, "total": usage.total},
+            "source": f"shutil.disk_usage({path})",
+        }
+    return host
+
+
+def _version(text: object) -> tuple[int, ...]:
+    return tuple(int(part) for part in re.findall(r"\d+", str(text))[:3])
+
+
+def _user_valid(user: str) -> bool:
+    """uid[:gid], each numeric in 0..65534 or a name the image resolves."""
+    parts = user.split(":")
+    return len(parts) <= 2 and all(
+        (part.isdigit() and int(part) <= MAX_ID) or NAME.fullmatch(part)
+        for part in parts
+    )
+
+
+def _criterion(values: dict, failed: list[str], unmeasured: list[str]) -> dict:
+    result = "FAIL" if failed else "NOT_RUN" if unmeasured else "PASS"
+    return {"result": result, "values": values, "problems": failed + unmeasured}
+
+
+def readiness(
+    name: str,
+    manifest: dict,
+    lab: dict,
+    host: dict,
+    running: list[dict],
+    root: dict,
+) -> dict:
+    """SPEC-0263 section 5: a fail-closed promotion readiness report."""
+    source = f"labs/{name}/promotion.yaml"
+    kind = manifest.get("kind")
+    target = manifest.get("target") or {}
+    replaces = manifest.get("replaces") or []
+    retired = {
+        service
+        for item in replaces
+        if isinstance(item, dict)
+        for service in (item.get("services") or [item.get("service")])
+        if service
+    }
+    criteria = {}
+
+    # Tier fit.
+    failed: list[str] = []
+    folder = target.get("folder")
+    values = {
+        "kind": {"value": kind, "source": source},
+        "folder": {"value": folder, "source": source},
+    }
+    if kind not in MANIFEST_KINDS - {"undecided"}:
+        failed.append(f"kind {kind!r} has no promotion target")
+    if not isinstance(folder, str) or not TARGET_FOLDER.fullmatch(folder):
+        failed.append(f"target folder {folder!r} is outside infra/<tier>/")
+    else:
+        tier = "/".join(folder.split("/")[:2])
+        values["tier_exists"] = {"value": (ROOT / tier).is_dir(), "source": tier}
+        if not (ROOT / tier).is_dir():
+            failed.append(f"tier folder {tier} does not exist")
+        exists = (ROOT / folder).exists()
+        values["folder_exists"] = {"value": exists, "source": folder}
+
+        def covered(path: str) -> bool:
+            # The folder holds the retired Compose file, or sits inside the
+            # service folder of a Compose file below the tier (dev-db/valkey/).
+            parent = posixpath.dirname(path)
+            return path.startswith(folder) or (
+                folder.startswith(parent + "/") and len(parent.split("/")) >= 3
+            )
+
+        paths = [str(i.get("compose_path")) for i in replaces if isinstance(i, dict)]
+        if exists and not any(covered(path) for path in paths):
+            failed.append(f"target folder {folder} exists and is not a replacement")
+    criteria["tier"] = _criterion(values, failed, [])
+
+    # Service composition. A clash with a retired service is not counted.
+    failed, unmeasured = [], []
+    clashes = collisions({name: lab}, root, running)
+    failed += [p for p in clashes if not set(p.split()) & retired]
+    profile = target.get("profile")
+    values = {
+        "collisions": {
+            "value": len(clashes),
+            "source": "collisions() against the root render and docker inspect",
+        },
+        "retired_services": {"value": sorted(retired), "source": source},
+        "profile": {"value": profile, "source": source},
+    }
+    try:
+        if profile not in profile_vocabulary():
+            failed.append(f"profile {profile!r} is not in the POL-0078 vocabulary")
+    except Exception as exc:  # an unreadable policy cannot pass
+        unmeasured.append(f"POL-0078 vocabulary unreadable: {exc}")
+    for item in manifest.get("integrations") or []:
+        owner = item.get("owner") if isinstance(item, dict) else None
+        if not owner or not (ROOT / str(owner)).exists():
+            failed.append(f"integration owner {owner!r} does not exist")
+    criteria["composition"] = _criterion(values, failed, unmeasured)
+
+    # Linux.
+    failed, unmeasured = [], []
+    requirements = manifest.get("host") or {}
+    cgroup = (host.get("cgroup_version") or {}).get("value")
+    values = {
+        "cgroup_version": {
+            "value": cgroup,
+            "source": (host.get("cgroup_version") or {}).get("source", INFO_SOURCE),
+        }
+    }
+    features = [str(f) for f in requirements.get("kernel_features") or []]
+    if lab["cpus"] or lab["memory"] or "cgroup2" in features:
+        if cgroup is None:
+            unmeasured.append("cgroup version was not measured")
+        elif str(cgroup) != "2":
+            failed.append(f"declared limits need cgroup v2, host has v{cgroup}")
+    for service, user in sorted(lab.get("users", {}).items()):
+        if user is None:
+            continue
+        values[f"user {service}"] = {
+            "value": str(user),
+            "source": f"rendered compose services.{service}.user"
+            + ("" if str(user).replace(":", "").isdigit() else "; resolved in image"),
+        }
+        if not _user_valid(str(user)):
+            failed.append(f"{service}: user {user!r} is not a valid uid[:gid]")
+    unmeasured += [
+        f"kernel feature {f} cannot be measured" for f in features if f != "cgroup2"
+    ]
+    criteria["linux"] = _criterion(values, failed, unmeasured)
+
+    # Docker.
+    failed, unmeasured = [], []
+    values = {}
+    for key, measured in (("docker", "docker_version"), ("compose", "compose_version")):
+        found = host.get(measured)
+        values[measured] = found or {"value": None, "source": INFO_SOURCE}
+        if found is None:
+            unmeasured.append(f"{key} version was not measured")
+        elif key in requirements and _version(found["value"]) < _version(
+            requirements[key]
+        ):
+            failed.append(f"{key} {found['value']} is older than {requirements[key]}")
+    drivers = sorted(lab.get("drivers", set()))
+    values["drivers"] = {"value": drivers, "source": "rendered compose"}
+    failed += [
+        f"driver {d} is not allowed" for d in drivers if d not in ALLOWED_DRIVERS
+    ]
+    data_root = host.get("DockerRootDir")
+    values["DockerRootDir"] = data_root or {"value": None, "source": INFO_SOURCE}
+    if data_root is None:
+        unmeasured.append("Docker data root was not measured")
+    elif not os.path.isabs(str(data_root["value"])):
+        failed.append(f"Docker data root {data_root['value']} is not absolute")
+    criteria["docker"] = _criterion(values, failed, unmeasured)
+
+    # Server resources: limits in bytes, reported in MiB.
+    failed, unmeasured = [], []
+    counted = [
+        c for c in running if c.get("running", True) and c["project"] != lab["project"]
+    ]
+    retiring = [c for c in counted if c["name"] in retired or c["project"] in retired]
+    kept = [c for c in counted if c not in retiring]
+    unlimited = sorted(c["name"] for c in kept if not c["cpus"] or not c["memory"])
+    unmeasured += [f"running container {c} declares no limit" for c in unlimited]
+    ncpu, memtotal = host.get("NCPU"), host.get("MemTotal")
+    inspect = "docker inspect HostConfig.NanoCpus/Memory of running containers"
+    values = {
+        "running_cpus": {"value": sum(c["cpus"] for c in counted), "source": inspect},
+        "retired_cpus": {"value": sum(c["cpus"] for c in retiring), "source": inspect},
+        "candidate_cpus": {"value": lab["cpus"], "source": "rendered compose"},
+        "running_memory_mib": {
+            "value": sum(c["memory"] for c in counted) / MIB_BYTES,
+            "source": inspect,
+        },
+        "retired_memory_mib": {
+            "value": sum(c["memory"] for c in retiring) / MIB_BYTES,
+            "source": inspect,
+        },
+        "candidate_memory_mib": {
+            "value": lab["memory"] / MIB_BYTES,
+            "source": "rendered compose",
+        },
+        "unlimited_containers": {"value": unlimited, "source": inspect},
+    }
+    cpus = sum(c["cpus"] for c in kept) + lab["cpus"]
+    memory = sum(c["memory"] for c in kept) + lab["memory"]
+    values["cpus_needed"] = {"value": cpus, "source": "running - retired + candidate"}
+    values["memory_needed_mib"] = {
+        "value": memory / MIB_BYTES,
+        "source": "running - retired + candidate",
+    }
+    if ncpu is None or memtotal is None:
+        unmeasured.append("host CPU count or memory was not measured")
+    else:
+        values["NCPU"], values["MemTotal"] = ncpu, memtotal
+        cpu_budget = float(ncpu["value"]) - PROMOTION_RESERVE["cpus"]
+        memory_budget = (
+            float(memtotal["value"]) - PROMOTION_RESERVE["memory_mib"] * MIB_BYTES
+        )
+        values["cpu_budget"] = {"value": cpu_budget, "source": "NCPU - reserve"}
+        values["memory_budget_mib"] = {
+            "value": memory_budget / MIB_BYTES,
+            "source": "MemTotal - reserve",
+        }
+        if cpus > cpu_budget:
+            failed.append(f"CPUs {cpus:g} exceed budget {cpu_budget:g}")
+        if memory > memory_budget:
+            failed.append(
+                f"memory {memory / MIB_BYTES:.0f} MiB exceeds budget "
+                f"{memory_budget / MIB_BYTES:.0f} MiB"
+            )
+    need = (manifest.get("resources") or {}).get("disk_gib") or {}
+    for disk, key in (("disk_data", "data"), ("disk_docker", "images")):
+        found = host.get(disk)
+        if found is None or key not in need:
+            unmeasured.append(f"{disk} free space or disk_gib.{key} is missing")
+            continue
+        usage = found["value"]
+        values[disk] = found
+        free = usage["free"] - usage["total"] * PROMOTION_RESERVE["disk_percent"] / 100
+        values[f"{disk}_usable_gib"] = {
+            "value": round(free / 2**30, 1),
+            "source": found.get("source", "shutil.disk_usage"),
+        }
+        if free < float(need[key]) * 2**30:
+            failed.append(
+                f"{disk}: {free / 2**30:.1f} GiB usable, disk_gib.{key} needs "
+                f"{need[key]}"
+            )
+    criteria["resources"] = _criterion(values, failed, unmeasured)
+
+    results = {c["result"] for c in criteria.values()}
+    overall = (
+        "PASS" if results == {"PASS"} else "FAIL" if "FAIL" in results else "NOT_RUN"
+    )
+    return {"lab": name, "kind": kind, "result": overall, "criteria": criteria}
 
 
 def ledger_dir(env: dict[str, str]) -> pathlib.Path:
@@ -1139,6 +1447,29 @@ def cmd_run(args, env) -> int:
     return code or stopped
 
 
+def cmd_readiness(args) -> int:
+    """Read HOME state only: renders, docker info/inspect and disk usage."""
+    candidate = footprint(render(args.docker, args.env_file, lab_file(args.lab)))
+    root = root_footprint(
+        render(args.docker, args.root_env_file, None),
+        env_file=args.root_env_file,
+        docker_root=docker_root(args.docker),
+    )
+    report = readiness(
+        args.lab,
+        load_manifest(args.lab),
+        candidate,
+        measure_host(args.docker, root["home_data_root"]),
+        running_containers(args.docker),
+        root,
+    )
+    text = json.dumps(report, indent=2) + "\n"
+    if args.report:
+        args.report.write_text(text, encoding="utf-8")
+    print(text, end="")
+    return 0 if report["result"] == "PASS" else 3
+
+
 def entries(env) -> list[dict]:
     directory = ledger_dir(env)
     if not directory.is_dir():
@@ -1184,6 +1515,9 @@ def main(argv: list[str] | None = None) -> int:
     commands.add_parser("down").add_argument("lab")
     commands.add_parser("reap")
     commands.add_parser("status")
+    ready = commands.add_parser("readiness")
+    ready.add_argument("lab")
+    ready.add_argument("--report", type=pathlib.Path)
     args = parser.parse_args(argv)
     env = read_env(args.env_file)
     try:
@@ -1199,6 +1533,8 @@ def main(argv: list[str] | None = None) -> int:
             return stop(args, env, args.lab)
         if args.command == "reap":
             return cmd_reap(args, env)
+        if args.command == "readiness":
+            return cmd_readiness(args)
         projects = {
             c["project"] for c in running_containers(args.docker) if c["running"]
         }

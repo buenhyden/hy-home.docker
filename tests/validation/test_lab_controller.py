@@ -1569,5 +1569,264 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual("stopped", self.ledger()["state"])
 
 
+GIB, MIB = 2**30, 2**20
+
+
+def readiness_case(cpus=1.0, memory=GIB, **changes):
+    """A promotion candidate that passes every readiness criterion."""
+    candidate = service(cpus=cpus, memory=int(memory))
+    candidate["user"] = "999:999"
+    case = {
+        "manifest": manifest(
+            kind="add",
+            target={"folder": "infra/04-data/promo-candidate/", "profile": "dev-data"},
+            replaces=[],
+            integrations=[
+                {"kind": "observability", "owner": "infra/06-observability/"}
+            ],
+            resources={
+                "services": {"node": {"cpus": cpus, "memory_mib": memory / MIB}},
+                "disk_gib": {"data": 5, "images": 1},
+            },
+        ),
+        "lab": lab.footprint(model("hy-home-lab-candidate", {"node": candidate})),
+        "host": {
+            "NCPU": {"value": 12, "source": "docker info"},
+            "MemTotal": {"value": 32 * GIB, "source": "docker info"},
+            "DockerRootDir": {"value": "/var/lib/docker", "source": "docker info"},
+            "docker_version": {"value": "29.9.2", "source": "docker info"},
+            "compose_version": {"value": "5.6.1", "source": "docker compose"},
+            "cgroup_version": {"value": "2", "source": "docker info"},
+            "disk_data": {
+                "value": {"free": 100 * GIB, "total": 200 * GIB},
+                "source": "shutil.disk_usage",
+            },
+            "disk_docker": {
+                "value": {"free": 100 * GIB, "total": 200 * GIB},
+                "source": "shutil.disk_usage",
+            },
+        },
+        "running": [
+            {
+                "name": "home-1",
+                "project": "hy-home",
+                "ports": set(),
+                "cpus": 2.0,
+                "memory": 2 * GIB,
+                "running": True,
+            },
+        ],
+        "root": lab.footprint(model("hy-home", {"home": service("home-1")})),
+    }
+    case.update(changes)
+    return case
+
+
+def readiness(case: dict) -> dict:
+    return lab.readiness("candidate", **case)
+
+
+class ReadinessTests(unittest.TestCase):
+    """SPEC-0263 section 5: the promotion readiness check fails closed."""
+
+    def result(self, report: dict, criterion: str) -> str:
+        return report["criteria"][criterion]["result"]
+
+    def test_readiness_passes_within_budget(self) -> None:
+        report = readiness(readiness_case())
+        self.assertEqual("PASS", report["result"], report)
+        self.assertEqual("add", report["kind"])
+        for criterion in ("tier", "composition", "linux", "docker", "resources"):
+            found = report["criteria"][criterion]
+            self.assertEqual("PASS", found["result"], (criterion, found))
+            self.assertTrue(all("source" in v for v in found["values"].values()))
+
+    def test_readiness_fails_over_cpu_budget(self) -> None:
+        # 12 CPUs minus the 2-CPU reserve leaves 10; 9.5 running plus 1 is 10.5.
+        case = readiness_case()
+        case["running"][0]["cpus"] = 9.5
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "resources"))
+        self.assertEqual("FAIL", report["result"])
+        values = report["criteria"]["resources"]["values"]
+        self.assertEqual(10.0, values["cpu_budget"]["value"])
+        self.assertEqual(12, values["NCPU"]["value"])
+        self.assertEqual(10.5, values["cpus_needed"]["value"])
+
+    def test_readiness_compares_memory_bytes_with_mib(self) -> None:
+        # Budget: (4096 reserve + 3072) MiB total leaves 3072 MiB; 2 GiB runs.
+        case = readiness_case(memory=1024 * MIB)
+        case["host"]["MemTotal"]["value"] = (4096 + 3072) * MIB
+        self.assertEqual("PASS", self.result(readiness(case), "resources"))
+        case = readiness_case(memory=1025 * MIB)
+        case["host"]["MemTotal"]["value"] = (4096 + 3072) * MIB
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "resources"))
+        values = report["criteria"]["resources"]["values"]
+        self.assertEqual(3072, values["memory_budget_mib"]["value"])
+        self.assertEqual(3073, values["memory_needed_mib"]["value"])
+
+    def test_readiness_unlimited_container_is_not_run(self) -> None:
+        case = readiness_case()
+        case["running"].append(
+            {"name": "free-1", "project": "hy-home", "ports": set(),
+             "cpus": 0, "memory": GIB, "running": True}
+        )  # fmt: skip
+        report = readiness(case)
+        self.assertEqual("NOT_RUN", self.result(report, "resources"))
+        self.assertEqual("NOT_RUN", report["result"])
+        self.assertTrue(
+            any("free-1" in p for p in report["criteria"]["resources"]["problems"])
+        )
+
+    def test_readiness_replacement_subtracts_only_running_retired(self) -> None:
+        def case(retired_running: bool) -> dict:
+            found = readiness_case()
+            found["manifest"].update(
+                kind="replace-same",
+                target={
+                    "folder": "infra/04-data/dev-db/valkey/",
+                    "profile": "dev-data",
+                },
+                replaces=[
+                    {
+                        "compose_path": "infra/04-data/dev-db/docker-compose.yml",
+                        "services": ["dev-valkey"],
+                        "consumers": [],
+                    }
+                ],
+            )
+            found["lab"]["ports"] = {"127.0.0.1:6379"}
+            found["running"][0]["cpus"] = 7.0
+            found["running"].append(
+                {"name": "dev-valkey", "project": "hy-home",
+                 "ports": {"0.0.0.0:6379"}, "cpus": 3.0, "memory": GIB,
+                 "running": retired_running}
+            )  # fmt: skip
+            return found
+
+        # Running: 7 + 3 retired + 1 candidate, minus the 3 retired once.
+        report = readiness(case(True))
+        self.assertEqual("PASS", report["result"], report)
+        values = report["criteria"]["resources"]["values"]
+        self.assertEqual(3.0, values["retired_cpus"]["value"])
+        self.assertEqual(8.0, values["cpus_needed"]["value"])
+        # Stopped: never counted, so nothing is subtracted.
+        report = readiness(case(False))
+        self.assertEqual("PASS", report["result"], report)
+        values = report["criteria"]["resources"]["values"]
+        self.assertEqual(0.0, values["retired_cpus"]["value"])
+        self.assertEqual(8.0, values["cpus_needed"]["value"])
+
+    def test_readiness_undecided_fails_tier(self) -> None:
+        case = readiness_case()
+        case["manifest"]["kind"] = "undecided"
+        del case["manifest"]["target"]
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "tier"))
+        self.assertEqual("FAIL", report["result"])
+
+    def test_readiness_unknown_profile_fails_composition(self) -> None:
+        case = readiness_case()
+        case["manifest"]["target"]["profile"] = "no-such-profile"
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+        self.assertEqual("FAIL", report["result"])
+
+    def test_readiness_old_docker_fails(self) -> None:
+        case = readiness_case()
+        case["manifest"]["host"] = {"docker": "30.0", "compose": "2.20"}
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "docker"))
+        self.assertTrue(
+            any("30.0" in p for p in report["criteria"]["docker"]["problems"])
+        )
+
+    def test_readiness_unmeasured_value_is_not_run(self) -> None:
+        case = readiness_case()
+        del case["host"]["NCPU"]
+        report = readiness(case)
+        self.assertEqual("NOT_RUN", self.result(report, "resources"))
+        self.assertEqual("NOT_RUN", report["result"])
+
+    def test_readiness_checks_rendered_users(self) -> None:
+        for user, expected in (
+            ("999:999", "PASS"), ("postgres", "PASS"), ("0", "PASS"),
+            ("70000", "FAIL"), ("1000:", "FAIL"),
+        ):  # fmt: skip
+            with self.subTest(user=user):
+                case = readiness_case()
+                case["lab"]["users"]["node"] = user
+                self.assertEqual(expected, self.result(readiness(case), "linux"))
+
+    def test_measure_host_records_sources_and_omits_failures(self) -> None:
+        info = {"NCPU": 12, "MemTotal": 32 * GIB, "DockerRootDir": "/var/lib/docker",
+                "ServerVersion": "29.9.2", "CgroupVersion": "2"}  # fmt: skip
+        answers = [
+            subprocess.CompletedProcess([], 0, json.dumps(info), ""),
+            subprocess.CompletedProcess([], 1, "", "no compose"),
+        ]
+        usage = mock.Mock(free=5 * GIB, total=10 * GIB)
+        with (
+            mock.patch.object(lab, "run", side_effect=answers) as called,
+            mock.patch.object(lab.shutil, "disk_usage", return_value=usage),
+        ):
+            host = lab.measure_host("docker", "/data/home")
+        self.assertEqual(
+            ["docker", "info", "--format", "{{json .}}"],
+            called.call_args_list[0].args[0],
+        )
+        self.assertEqual(12, host["NCPU"]["value"])
+        self.assertIn("docker info", host["NCPU"]["source"])
+        self.assertEqual("2", host["cgroup_version"]["value"])
+        self.assertNotIn("compose_version", host)
+        self.assertEqual(5 * GIB, host["disk_data"]["value"]["free"])
+        self.assertEqual("/var/lib/docker", host["disk_docker"]["value"]["path"])
+
+    def test_readiness_cli_writes_the_report_and_exits_on_result(self) -> None:
+        for result, code in (("PASS", 0), ("NOT_RUN", 3)):
+            with (
+                self.subTest(result=result),
+                tempfile.TemporaryDirectory() as tmp,
+                mock.patch.object(lab, "render", return_value=model("p", {})),
+                mock.patch.object(lab, "docker_root", return_value="/var/lib/docker"),
+                mock.patch.object(
+                    lab, "root_footprint", return_value={"home_data_root": "/d"}
+                ),
+                mock.patch.object(lab, "measure_host", return_value={}),
+                mock.patch.object(lab, "running_containers", return_value=[]),
+                mock.patch.object(lab, "load_manifest", return_value={}),
+                mock.patch.object(
+                    lab, "lab_file", return_value="labs/x/docker-compose.yml"
+                ),
+                mock.patch.object(lab, "readiness", return_value={"result": result}),
+                mock.patch("sys.stdout"),
+            ):
+                path = pathlib.Path(tmp) / "report.json"
+                self.assertEqual(
+                    code, lab.main(["readiness", "x", "--report", str(path)])
+                )
+                self.assertEqual(result, json.loads(path.read_text())["result"])
+
+    @unittest.expectedFailure  # until W5 adds the policy reserve table
+    def test_reserve_matches_policy(self) -> None:
+        policy = (
+            ROOT / "docs/05.operations/policies/15-labs/0107-lab-promotion.md"
+        ).read_text(encoding="utf-8")
+        rows = {}
+        for line in policy.splitlines():
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if len(cells) == 2 and cells[0] in {"CPUs", "Memory MiB", "Disk percent"}:
+                rows[cells[0]] = float(cells[1])
+        self.assertEqual(
+            {
+                "CPUs": lab.PROMOTION_RESERVE["cpus"],
+                "Memory MiB": lab.PROMOTION_RESERVE["memory_mib"],
+                "Disk percent": lab.PROMOTION_RESERVE["disk_percent"],
+            },
+            rows,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
