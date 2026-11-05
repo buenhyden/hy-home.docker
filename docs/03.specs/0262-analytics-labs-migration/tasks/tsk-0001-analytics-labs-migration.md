@@ -224,6 +224,11 @@ The confirm pass and an automated review raised three more gaps. Commit
   context.
 - The protected `secrets` paths are resolved with `realpath`.
 
+The last confirm pass approved those fixes except one case: with `secrets/`
+symlinked out of the repository, a `LAB_SECRET_DIR` inside the resolved
+tree skipped the `secrets/labs` rule. Commit `6f4eb08dc` decides the rule from
+the resolved tree as well.
+
 Container-escape options (`devices`, `volumes_from`, `pid`/`network_mode:
 host`, `cap_add`, `privileged` under a `cadvisor` name) are outside this
 check and remain a recorded residual risk.
@@ -295,9 +300,9 @@ The real budget is an operator input.
 | E14 | 3 | W2 | unit-tests | `python -m unittest discover -s tests -t .` with the locked controller venv (Python 3.12.3, `--require-hashes`) on `280b6f8fd` | PASS | 3272 tests OK, skipped=108 (opt-in container tests) | required | E6, E7 |
 | E15 | 5 | W4 | hosted-ci | GitHub Actions on PR #747 | PASS | candidate-quality pass 16m19s; merged as `729d16da7` | required | E13 |
 | E16 | 2 | W1 | lab-controller-overlap | `lab.py --env-file <synthetic> --root-env-file .env.example check <lab>` on `f0ce46fda` | FAIL | every LAB refused: "overlaps root" from read-only `/` and source-tree binds | required | - |
-| E17 | 2 | W1 | lab-controller-overlap | same synthetic check on `ba34798d5` | PASS | six LABs: zero overlap problems; only the synthetic budget and absent synthetic LAB secret and CA files remain | required | E16 |
-| E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `ba34798d5`, plus script manifest, CI routing and compose baseline modules | PASS | observer, shared tracked file, source-tree, HOME secret/env/Docker-root, tracked/clean, literal pathspec, allowlist, root validation, configs/build/env_file tests GREEN after RED | required | - |
-| E20 | 2 | W1 | lab-controller-allowlist | synthetic check of all 16 LABs on `ba34798d5` | PASS | 15 LABs: no overlap or allowlist problem; supabase refused as decided (HOME secrets; Docker socket refused by the allowlist) | required | - |
+| E17 | 2 | W1 | lab-controller-overlap | same synthetic check on `6f4eb08dc` | PASS | six LABs: zero overlap problems; only the synthetic budget and absent synthetic LAB secret and CA files remain | required | E16 |
+| E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `6f4eb08dc`, plus script manifest, CI routing and compose baseline modules | PASS | observer, shared tracked file, source-tree, HOME secret/env/Docker-root, tracked/clean, literal pathspec, allowlist, root validation, configs/build/env_file tests GREEN after RED | required | - |
+| E20 | 2 | W1 | lab-controller-allowlist | synthetic check of all 16 LABs on `6f4eb08dc` | PASS | 15 LABs: no overlap or allowlist problem; supabase refused as decided (HOME secrets; Docker socket refused by the allowlist) | required | - |
 | E19 | 2 | W1 | security-review | Independent review of the LAB overlap change through `8b231c5e3` | FAIL | CHANGES_REQUESTED: 2 Important (HOME secrets, root env and Docker root uncovered; gitignored .env accepted), 1 Minor (tests) | required | - |
 
 ## Criterion Acceptance
