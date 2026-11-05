@@ -1,0 +1,42 @@
+# SPEC-0263 promotion manifest for the superset LAB.
+# resources.services copies the rendered per-container limits; disk_gib is an
+# estimate. Secret destinations are a plan only and are never created here.
+# kind undecided: the owner has not named a promotion target yet.
+kind: undecided
+integrations:
+- kind: gateway-route
+  owner: infra/01-gateway/traefik/
+- kind: oidc-client
+  owner: infra/02-auth/keycloak/
+- kind: database-role
+  owner: infra/04-data/mng-db/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-030
+  destination: secrets/db/mng-pg/mng_postgres_password.txt
+- row: LAB-031
+  destination: secrets/tools/superset/db_password.txt
+- row: LAB-032
+  destination: secrets/tools/superset/secret_key.txt
+- row: LAB-033
+  destination: secrets/auth/superset/oidc_client_secret.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0097-superset.md
+  runbook: docs/05.operations/runbooks/15-labs/0097-superset.md
+  guide_target: docs/05.operations/guides/13-analytics-and-data-quality/
+  runbook_target: docs/05.operations/runbooks/13-analytics-and-data-quality/
+resources:
+  services:
+    superset:
+      cpus: 1.0
+      memory_mib: 1024
+    superset-db-provision:
+      cpus: 0.5
+      memory_mib: 256
+    superset-init:
+      cpus: 1.0
+      memory_mib: 512
+  disk_gib:
+    data: 2
+    images: 2

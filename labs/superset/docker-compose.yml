@@ -11,7 +11,7 @@ x-superset-common: &superset-common
   profiles:
     - lab-superset
   build:
-    context: ./superset
+    context: .
     dockerfile: Dockerfile
   image: hy-home/superset:6.1.0-local
   environment:
@@ -26,7 +26,7 @@ x-superset-common: &superset-common
   tmpfs:
     - /app/superset_home:uid=1000,gid=1000
   volumes:
-    - ./superset/superset_config.py:/app/pythonpath/superset_config.py:ro
+    - ./superset_config.py:/app/pythonpath/superset_config.py:ro
     - ${LAB_SUPERSET_CA_FILE:?set the HOME root CA certificate file}:/etc/ssl/certs/hy-home-rootCA.pem:ro
   secrets:
     - source: lab_superset_secret_key
@@ -48,13 +48,13 @@ networks:
 # at its original /run/secrets name, which the LAB scripts read.
 secrets:
   lab_superset_mng_postgres_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/mng_postgres_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/superset/mng_postgres_password.txt
   lab_superset_db_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/db_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/superset/db_password.txt
   lab_superset_secret_key:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/secret_key.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/superset/secret_key.txt
   lab_superset_oidc_client_secret:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/superset/oidc_client_secret.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/superset/oidc_client_secret.txt
 
 services:
   # Feature-owned metadata database provisioning on the configured mng-pg.
@@ -62,7 +62,7 @@ services:
     profiles:
       - lab-superset
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-low
     image: postgres:18.6-alpine
     container_name: superset-db-provision
@@ -84,8 +84,8 @@ services:
       SUPERSET_DB_USER: '${LAB_SUPERSET_DB_USER:-superset}'
       SUPERSET_DB_NAME: '${LAB_SUPERSET_DB_NAME:-superset}'
     volumes:
-      - ../infra/04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
-      - ./superset/provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
+      - ../../infra/04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
     secrets:
       - source: lab_superset_mng_postgres_password
         target: mng_postgres_password
@@ -102,7 +102,7 @@ services:
   superset-init:
     <<: *superset-common
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-med
     container_name: superset-init
     hostname: superset-init
@@ -123,7 +123,7 @@ services:
   superset:
     <<: *superset-common
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-readonly-med
     mem_limit: 1g
     container_name: superset
