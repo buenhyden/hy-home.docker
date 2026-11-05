@@ -105,8 +105,8 @@ The owner decided these on 2026-11-05:
 | 1 | Copy the HOME SMTP password into `secrets/labs/supabase/smtp_password.txt` | DONE by the owner on 2026-11-05 |
 | 2 | Place `secrets/labs/supabase/supabase_db_password.txt` from the mng-pg file | DONE by the owner on 2026-11-05 |
 | 3 | Move the nine `secrets/data/supabase/*.txt` files to `secrets/labs/supabase/` | DONE by the owner on 2026-11-05 |
-| 4 | Apply the prepared rows below to `secrets/SENSITIVE_ENV_VARS.md.example` | PENDING, owner |
-| 5 | Run the private-registry sync below | PENDING, owner |
+| 4 | Apply the prepared rows below to `secrets/SENSITIVE_ENV_VARS.md.example` | DONE by the owner on 2026-11-05, commit `8ad19acc5` |
+| 5 | Run the private-registry sync below | DONE by the owner on 2026-11-05, without prune |
 
 The controller checked steps 1 to 3 against an owner-run `find`. It saw the
 11 file names in `secrets/labs/supabase/` and no values. `secrets/data/supabase/`
@@ -171,21 +171,20 @@ backticks are ignored by the parser.
 `jsonschema` and `referencing`, for example the controller venv. Without
 them every metadata mode prints `METADATA rejected` and exits 2.
 
-1. `python3 scripts/operations/secret-catalog.py --root . check`. Expect
-   `P02_METADATA_VALID` with 156 entries and 6 aliases. Before step 4 it
-   prints `P02_METADATA_BLOCKED` and exits 2, because the catalog and the
-   public registry differ.
-2. `bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check`.
-   Expect `METADATA files_changed=N values=preserved secret_files=untouched`
-   and exit 1 while the private registry still holds the five retired rows.
-   Exit 2 means a rejected input. One cause is a COMM-003 row still in the
-   private registry: only SMTP01 removes it.
-3. `bash scripts/operations/gen-secrets.sh --sync-metadata-prune`. Expect the
-   same line and exit 0. It drops the five retired private rows; their values
-   stay in the LAB copies. LAB-037 gets the public placeholder. Other value
-   cells and `.env` values are kept.
-4. Run `--sync-metadata-prune-check` again. Expect `files_changed=0` and
-   exit 0.
+The owner ran this sequence on 2026-11-05, as reported to the controller:
+
+1. `python3 scripts/operations/secret-catalog.py --root "$PWD" check`.
+   `--root` is a top-level option and must be absolute, so `.` does not
+   work. After the hand-applied registry (`8ad19acc5`), `load_catalog`
+   succeeded.
+2. `bash scripts/operations/gen-secrets.sh --sync-metadata-check` reported
+   `files_changed=3`.
+3. `bash scripts/operations/gen-secrets.sh --sync-metadata` applied them, and
+   a second `--sync-metadata-check` reported `files_changed=0`.
+4. `--sync-metadata-prune` was rejected, because the private registry still
+   holds COMM-003, and only the SMTP01 retirement removes it. COMM-003 and
+   the five retired rows stay in the private registry as private-only rows.
+   Their values stay in the LAB copies.
 
 **Root `secrets/` overlap.** E6 showed every LAB secret copy overlapping
 root's read-only restic bind of `secrets/`. This is not a W2 or W3
@@ -286,9 +285,23 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
   approved owner window and that SPEC-0263 promotes nothing.
 - **OPS-0108 `kafka-cluster` and OPS-0109 `opensearch-cluster`.** Each has a
   Guide and a Runbook in `15-labs`, built from the LAB README and Compose
-  file. Neither claims a runtime result. `labs/.env` lacks
-  `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR`, so neither LAB has
-  rendered with HOME inputs; the documents record both as operator inputs.
+  file. Neither claims a runtime result. The HOME-input render of both LABs
+  is `NOT_RUN`. The controller reported on 2026-11-05 that `labs/.env` lacks
+  `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR`; the agent did not
+  read that file. The documents record both as operator inputs.
+- **Procedure order (review fix).** RUN-0107 runs readiness first, from the
+  LAB location, and a non-zero exit stops the procedure. The move, the
+  wiring, render and test, and the start follow. Readiness reads
+  `labs/<name>/docker-compose.yml` and `promotion.yaml`, checks that the
+  documents exist, and requires the target folder to be absent or a
+  declared replacement, so it can never pass after the move. Spec section 5
+  ("before any promotion") governs the step numbering in section 6, per the
+  controller's ruling.
+- **Review text fixes.** `secret-catalog.py --root "$PWD" check` replaces a
+  form that exits 2, because `--root` is a top-level option. RUN-0107 lists
+  the root `.env` (`--root-env-file`) as a readiness input and defers the
+  SMTP01 flags to RUN-0029. POL-0107 names the `hy-home-lab-` project
+  prefix.
 - **Extra policies.** The Guides name their services in
   `implementation_services`, and `check-operations-catalog.py` then requires
   a current policy per slug (`service-operations-owner`). POL-0108 and
@@ -354,7 +367,9 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | E32 | 4, 6 | W5 | links and lifecycle | `check-document-links.py --mode all`, `check-document-corpus-lifecycle.py` at `e33f174b3` | PASS | link failures=0; lifecycle violations=0 | required | - |
 | E33 | 4, 6 | W5 | markdownlint and staged hooks | `scripts/validation/run-ci-precommit.sh --mode local-staged` on each W5 commit's staged files | PASS | markdownlint-cli2, check json, ruff and secret detection passed | required | - |
 | E34 | 6 | W5 | static renders | `docker compose --env-file labs/.env.example ... config --services` for kafka-cluster and opensearch-cluster with synthetic `LAB_*` inputs | PASS | 5 and 4 services, exit 0; no container started | required | - |
-| E35 | 6 | W5 | HOME render of the cluster LABs | `lab.py --env-file labs/.env check kafka-cluster opensearch-cluster` | NOT_RUN | `labs/.env` lacks `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR`; operator input pending | required | - |
+| E35 | 6 | W5 | HOME render of the cluster LABs | `lab.py --env-file labs/.env check kafka-cluster opensearch-cluster` | NOT_RUN | not run by the agent; the controller reported on 2026-11-05 that `labs/.env` lacks `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR`; operator input pending | required | - |
+| E36 | 3 | W3 | owner registry and sync | owner run on 2026-11-05: registry hand-applied in `8ad19acc5`, `secret-catalog.py --root "$PWD" check`, `--sync-metadata-check`, `--sync-metadata`, `--sync-metadata-check` | PASS | `load_catalog` OK; files_changed=3 then 0 after sync; prune rejected while COMM-003 remains, by design | required | E9 |
+| E37 | 4, 6 | W5 | review fix checks | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all`, `check-operations-catalog.py`, staged markdownlint, `test_reserve_matches_policy` after the review fixes | PASS | violations=0; link failures=0; catalog PASS; markdownlint passed; 1 test OK | required | - |
 
 ## Criterion Acceptance
 
@@ -373,8 +388,8 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 W1 to W5 have changed the repository. W5 wrote the promotion operations
 documents (E27 to E34). The HOME render of the two cluster LABs waits for
 operator inputs (E35), and the resource rule waits for the owner decision
-recorded in POL-0107. Criterion 3 waits for the owner's registry edit and
-sync (E9). The HOME readiness runs (E23, E25) refuse `valkey-cluster` and
+recorded in POL-0107. The owner registry edit and sync are done (E36
+resolves E9). The HOME readiness runs (E23, E25) refuse `valkey-cluster` and
 `postgresql-ha` on resources. No criterion is accepted.
 
 ## Related Documents
