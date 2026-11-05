@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 created: "2025-11-12"
 ---
 
@@ -16,7 +16,7 @@ created: "2025-11-12"
 ## Overview
 
 SonarQube는 정적 애플리케이션 보안 테스트(SAST)와 코드 품질 지표를 제공합니다.
-독립 Compose project인 [SonarQube LAB](../sonarqube.yml)(`sast` profile)이며 root
+독립 Compose project인 [SonarQube LAB](docker-compose.yml)(`sast` profile)이며 root
 Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traefik route도 없습니다. UI는
 `${LAB_HOST_BIND_IP}:${LAB_SONARQUBE_HOST_PORT:-18094}`에만 게시됩니다. 데이터베이스는
 `LAB_SONARQUBE_DB_HOST`가 가리키는 mng-pg이며 HOME `mng-pg-init`이 `sonarqube` role을
@@ -49,17 +49,19 @@ endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 ## Structure
 
 ```text
-sonarqube/
-└── README.md           # This file
+labs/sonarqube/
+├── README.md          # 서비스 README
+├── docker-compose.yml # 독립 LAB entrypoint
+└── promotion.yaml     # SPEC-0263 승격 manifest
 ```
 
-서비스 정의는 [labs/sonarqube.yml](../sonarqube.yml)이 소유합니다.
+서비스 정의는 [labs/sonarqube/docker-compose.yml](docker-compose.yml)이 소유합니다.
 
 ## Tech Stack
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | SonarQube Community Build | 런타임 이미지는 [Compose](../sonarqube.yml)에만 선언됨 |
+| **Service** | SonarQube Community Build | 런타임 이미지는 [Compose](docker-compose.yml)에만 선언됨 |
 | **Database** | PostgreSQL | `LAB_SONARQUBE_DB_HOST`의 승인된 endpoint |
 | **Network** | `lab_sonarqube_net` | HOME network·Traefik 없음 |
 | **Storage** | Bind Mount | `${LAB_DATA_DIR}/sonarqube/{data,logs}` |
@@ -87,7 +89,7 @@ backup·복원 절차가 필요합니다.
 ## Available Scripts
 
 아래 `LAB`은 저장소 루트에서
-`docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast`입니다.
+`docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down sonarqube`의 lease 규칙
 ([LAB 안내](../README.md#usage))을 따릅니다.
@@ -99,7 +101,7 @@ backup·복원 절차가 필요합니다.
 
 ## Validation
 
-- `docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast config --quiet`
+- `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
 ## Troubleshooting
@@ -122,7 +124,7 @@ backup·복원 절차가 필요합니다.
 | Field | Evidence |
 | --- | --- |
 | Purpose | SonarQube LAB; 서비스: `sonarqube` |
-| Config files | [labs/sonarqube.yml](../sonarqube.yml) |
+| Config files | [labs/sonarqube/docker-compose.yml](docker-compose.yml) |
 | Config values | env 키: `SONAR_JDBC_URL`, `SONAR_JDBC_USERNAME`, `SONAR_JDBC_PASSWORD`(entrypoint가 secret `sonarqube_db_password`에서 export; image는 `_FILE` 형식을 읽지 않음), `SONAR_WEB_JAVAOPTS`, `SONAR_SEARCH_JAVAOPTS`; 프로필: `sast` |
 | Compose linkage | 독립 Compose project `hy-home-lab-sonarqube`; root include 없음 |
 | Networks | `lab_sonarqube_net`(`hy-home-lab-sonarqube`); HOME network 없음 |
@@ -137,7 +139,7 @@ backup·복원 절차가 필요합니다.
 
 ## Usage
 
-1. [labs/sonarqube.yml](../sonarqube.yml)과 [LAB 안내](../README.md)를 먼저 확인한다.
+1. [labs/sonarqube/docker-compose.yml](docker-compose.yml)과 [LAB 안내](../README.md)를 먼저 확인한다.
 2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.

@@ -29,13 +29,13 @@ networks:
 # at its original /run/secrets name, which the LAB scripts read.
 secrets:
   lab_sonarqube_db_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/sonarqube/db_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/sonarqube/db_password.txt
 
 services:
   sonarqube:
     profiles:
       - sast
-    extends: { file: ../infra/common-optimizations.yml, service: template-stateful-high }
+    extends: { file: ../../infra/common-optimizations.yml, service: template-stateful-high }
     image: sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8
     container_name: sonarqube
     hostname: sonarqube
