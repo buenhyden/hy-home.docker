@@ -214,6 +214,13 @@ services:
     <<: *airflow-common
     container_name: airflow-dag-processor
     hostname: airflow-dag-processor
+    # Its own reservation: DAG parsing peaked at 1.65 CPU and 329 MiB, far
+    # above the other x-resource-db members (owner decision, 2026-11-06).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 512M
     group_add:
       - '${SECRETS_GID:-1000}'
     read_only: false

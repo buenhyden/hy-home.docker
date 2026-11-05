@@ -115,7 +115,7 @@ x-resource-db: &resource-db
   deploy:
     resources:
       reservations:
-        cpus: "2.00"
+        cpus: "0.15"
         memory: 704M
 
 services:
