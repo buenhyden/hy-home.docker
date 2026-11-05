@@ -33,6 +33,8 @@ secrets:
   destination: secrets/data/supabase/supabase_anon_key.txt
 - row: AI-001
   destination: secrets/data/supabase/supabase_openai_api_key.txt
+- row: LAB-037
+  destination: secrets/communication/smtp/smtp_password.txt
 documents:
   guide: docs/05.operations/guides/15-labs/0029-supabase.md
   runbook: docs/05.operations/runbooks/15-labs/0029-supabase.md

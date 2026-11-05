@@ -37,40 +37,18 @@ REGISTRY_PATH_EXCEPTIONS = {
     "OBS-013": "secrets/observability/prometheus/prometheus_api_password.txt",
     "SEC-003": "secrets/security/openbao/openbao_unseal_keys.txt",
 }
-# SPEC-0262: root files whose only consumer moved to a LAB-only copy. They stay
-# as the LAB provisioning and rollback source; IAM-013 also feeds the OpenBao
-# import (consumer-migration/oidc-client-secrets.sh).
+# SPEC-0262: a root file whose only consumer moved to a LAB-only copy. IAM-013
+# stays because it feeds the OpenBao import
+# (consumer-migration/oidc-client-secrets.sh). SPEC-0263 retired the other
+# relocated rows into aliases of their LAB-* copies.
 LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS = {
-    "AUTO-020": "secrets/tools/superset/superset_secret_key.txt",
-    "AI-007": "secrets/tools/jupyterlab/jupyter_token.txt",
-    "COMM-006": "secrets/communication/stalwart/stalwart_password.txt",
     "IAM-013": "secrets/auth/superset/superset_oidc_client_secret.txt",
-    "PG-023": "secrets/db/dev-pg/dbt_password.txt",
-    "PG-028": "secrets/db/mng-pg/superset_password.txt",
 }
 CUTOVER_REGISTRY_PATH_EXCEPTIONS = {
     "PG-020": "secrets/db/legacy-app/service_password.txt",
     **LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS,
 }
 HOST_INTERPOLATION_KEYS = {"HOME"}
-SUPABASE_CANONICAL_SECRET_PATHS = {
-    "smtp_password": "secrets/communication/smtp/smtp_password.txt",
-    "supabase_db_password": "secrets/db/mng-pg/supabase_password.txt",
-    **{
-        name: f"secrets/data/supabase/{name}.txt"
-        for name in (
-            "supabase_jwt_secret",
-            "supabase_anon_key",
-            "supabase_service_key",
-            "supabase_dashboard_password",
-            "supabase_secret_key_base",
-            "supabase_vault_enc_key",
-            "supabase_pg_meta_crypto_key",
-            "supabase_openai_api_key",
-            "supabase_logflare_private_token",
-        )
-    },
-}
 CONFIG_SUFFIXES = {
     "",
     ".cfg",
@@ -721,34 +699,20 @@ def secret_contract(
                 )
                 if path.startswith("../") or path == "..":
                     raise AssertionError(f"secret escaped repository: {name}")
-                shared_supabase = relative == "labs/supabase/docker-compose.yml"
-                if (
-                    shared_supabase
-                    and SUPABASE_CANONICAL_SECRET_PATHS.get(name) != path
-                ):
-                    raise AssertionError(
-                        f"Supabase LAB secret is not canonical: {name}"
-                    )
-                if (
-                    relative.startswith("labs/")
-                    and not shared_supabase
-                    and not path.startswith("secrets/labs/")
+                if relative.startswith("labs/") and not path.startswith(
+                    "secrets/labs/"
                 ):
                     raise AssertionError(f"LAB secret escaped isolated path: {name}")
                 if not relative.startswith("labs/") and path.startswith(
                     "secrets/labs/"
                 ):
                     raise AssertionError(f"root secret entered LAB path: {name}")
-                if name in declarations:
-                    if not (
-                        shared_supabase
-                        and name == "smtp_password"
-                        and declaration_paths.get(name) == path
-                    ):
-                        raise AssertionError(f"duplicate secret declaration: {name}")
-                else:
-                    declarations[name] = value
-                    declaration_paths[name] = path
+                # Each LAB is its own Compose project, so a LAB name may repeat
+                # a root name; the path rule above keeps it off root files.
+                if name in declarations and not relative.startswith("labs/"):
+                    raise AssertionError(f"duplicate secret declaration: {name}")
+                declarations.setdefault(name, value)
+                declaration_paths[(relative, name)] = path
         for service_name, contract in service_secret_contract(
             root, domain, source_context
         ).items():
@@ -814,7 +778,8 @@ def secret_contract(
 
 
 class ComposeSchemaTagTests(unittest.TestCase):
-    def test_supabase_lab_shares_only_the_exact_canonical_smtp_source(self):
+    def test_supabase_lab_smtp_reads_its_own_copy_not_the_home_source(self):
+        # SPEC-0263: the LAB-037 copy replaces the shared HOME COMM-002 file.
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             subprocess.run(["git", "init", "-q", str(root)], check=True)
@@ -823,7 +788,8 @@ class ComposeSchemaTagTests(unittest.TestCase):
                 'LAB_SECRET_DIR="../../secrets/labs"\n'
             )
             home = "secrets:\n  smtp_password:\n    file: ./secrets/communication/smtp/smtp_password.txt\n"
-            lab = "secrets:\n  smtp_password:\n    file: ../../secrets/communication/smtp/smtp_password.txt\n"
+            lab = "secrets:\n  smtp_password:\n    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/smtp_password.txt\n"
+            shared = "secrets:\n  smtp_password:\n    file: ../../secrets/communication/smtp/smtp_password.txt\n"
             found = secret_contract(
                 root,
                 {"docker-compose.yml": home, "labs/supabase/docker-compose.yml": lab},
@@ -832,22 +798,18 @@ class ComposeSchemaTagTests(unittest.TestCase):
             )
             self.assertEqual({"smtp_password"}, found["declarations"])
             self.assertEqual(
-                {"secrets/communication/smtp/smtp_password.txt"},
+                {
+                    "secrets/communication/smtp/smtp_password.txt",
+                    "secrets/labs/supabase/smtp_password.txt",
+                },
                 found["declaration_paths"],
             )
             for route, text in (
-                ("labs/other/docker-compose.yml", lab),
+                ("labs/supabase/docker-compose.yml", shared),
+                ("labs/other/docker-compose.yml", shared),
                 (
                     "labs/supabase/docker-compose.yml",
-                    lab.replace("communication/smtp", "security/openbao"),
-                ),
-                (
-                    "labs/supabase/docker-compose.yml",
-                    lab.replace("smtp_password:", "openbao_token:"),
-                ),
-                (
-                    "labs/supabase/docker-compose.yml",
-                    lab.replace("../../secrets/", "../../../secrets/"),
+                    shared.replace("../../secrets/", "../../../secrets/"),
                 ),
             ):
                 with self.subTest(route=route, text=text):
@@ -858,6 +820,24 @@ class ComposeSchemaTagTests(unittest.TestCase):
                             PublicMetadataHelperTests.registry,
                             set(),
                         )
+
+    def test_supabase_reads_no_home_secret(self):
+        # SPEC-0263: supabase reads only its LAB copies, SMTP included.
+        relative = "labs/supabase/docker-compose.yml"
+        lab_secret_dir = env_assignments((ROOT / "labs/.env.example").read_text())[
+            "LAB_SECRET_DIR"
+        ].strip('"')
+        document = yaml.load((ROOT / relative).read_text(), Loader=_ComposeLoader)
+        self.assertTrue(document["secrets"])
+        for name, value in document["secrets"].items():
+            source = re.sub(
+                r"^\$\{LAB_SECRET_DIR(?::[-?][^}]*)?\}", lab_secret_dir, value["file"]
+            )
+            path = posixpath.normpath(
+                posixpath.join(posixpath.dirname(relative), source)
+            )
+            with self.subTest(secret=name):
+                self.assertTrue(path.startswith("secrets/labs/supabase/"), path)
 
     def test_compose_tags_preserve_values_and_references_without_unsafe_loading(self):
         text = (
@@ -1138,6 +1118,19 @@ class SecretMetadataSyncTests(unittest.TestCase):
         )
         self.assertFalse((self.root / "secrets/test.txt").exists())
         self.assertEqual(0, self.run_mode().returncode)
+
+    def test_sync_accepts_a_retired_row_alias_beyond_the_smtp_alias(self):
+        # SPEC-0263 retires relocated rows as aliases of their LAB-* copies.
+        alias = "| TEST-009 | TEST-001 |\n"
+        self.assertTrue(self.example.read_text().endswith("| COMM-003 | COMM-002 |\n"))
+        self.example.write_text(self.example.read_text() + alias)
+        result = self.run_mode()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn(alias, self.target.read_text())
+        self.example.write_text(
+            self.example.read_text().replace(alias, "| TEST-009 | not an id |\n")
+        )
+        self.assertEqual(2, self.run_mode().returncode)
 
     def test_generation_preserves_existing_derived_htpasswd_custody(self):
         rows = (
@@ -1814,7 +1807,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 self.assertGreaterEqual(len(Path(row["path"]).parts), 4, identity)
                 self.assertNotIn("common", Path(row["path"]).parts)
                 self.assertNotIn("surreal_db", Path(row["path"]).parts)
-        self.assertEqual("secrets/db/dev-pg/dbt_password.txt", rows["PG-023"]["path"])
+        # SPEC-0263 retired PG-023 into an alias of its LAB-029 copy.
+        self.assertNotIn("PG-023", rows)
         self.assertEqual(
             "secrets/db/dev-pg/debezium_password.txt", rows["PG-025"]["path"]
         )

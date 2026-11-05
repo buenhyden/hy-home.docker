@@ -54,18 +54,22 @@ EXPECTED_SERVICES = {
     "vector",
     "supavisor",
 }
+# SPEC-0263: every file is a LAB copy under LAB_SECRET_DIR/supabase/.
 EXPECTED_SECRET_FILES = {
-    "smtp_password": "../../secrets/communication/smtp/smtp_password.txt",
-    "supabase_db_password": "../../secrets/db/mng-pg/supabase_password.txt",
-    "supabase_jwt_secret": "../../secrets/data/supabase/supabase_jwt_secret.txt",
-    "supabase_anon_key": "../../secrets/data/supabase/supabase_anon_key.txt",
-    "supabase_service_key": "../../secrets/data/supabase/supabase_service_key.txt",
-    "supabase_dashboard_password": "../../secrets/data/supabase/supabase_dashboard_password.txt",
-    "supabase_secret_key_base": "../../secrets/data/supabase/supabase_secret_key_base.txt",
-    "supabase_vault_enc_key": "../../secrets/data/supabase/supabase_vault_enc_key.txt",
-    "supabase_pg_meta_crypto_key": "../../secrets/data/supabase/supabase_pg_meta_crypto_key.txt",
-    "supabase_openai_api_key": "../../secrets/data/supabase/supabase_openai_api_key.txt",
-    "supabase_logflare_private_token": "../../secrets/data/supabase/supabase_logflare_private_token.txt",
+    name: "${LAB_SECRET_DIR:-../../secrets/labs}/supabase/" + name + ".txt"
+    for name in (
+        "smtp_password",
+        "supabase_db_password",
+        "supabase_jwt_secret",
+        "supabase_anon_key",
+        "supabase_service_key",
+        "supabase_dashboard_password",
+        "supabase_secret_key_base",
+        "supabase_vault_enc_key",
+        "supabase_pg_meta_crypto_key",
+        "supabase_openai_api_key",
+        "supabase_logflare_private_token",
+    )
 }
 EXPECTED_IMAGES = {
     "studio": "supabase/studio:2026.09.14-sha-4dd8a95",
@@ -160,7 +164,7 @@ class SupabaseLabSourceContractTests(unittest.TestCase):
             self.model.get("networks", {}).get("supabase_net"),
         )
 
-    def test_secret_sources_are_canonical_and_value_free(self):
+    def test_secret_sources_are_lab_copies_and_value_free(self):
         self.assertEqual(
             EXPECTED_SECRET_FILES,
             {

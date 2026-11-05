@@ -162,7 +162,6 @@ class LabRenderTests(unittest.TestCase):
     def test_lab_secret_paths_use_lab_root(self) -> None:
         self.assert_secret_paths(name for name in LABS if name != "supabase")
 
-    @unittest.expectedFailure  # W3 moves supabase onto secrets/labs/supabase/.
     def test_lab_secret_paths_use_lab_root_supabase(self) -> None:
         self.assert_secret_paths(["supabase"])
 

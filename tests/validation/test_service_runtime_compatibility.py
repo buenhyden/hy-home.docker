@@ -30,11 +30,12 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         self.assertFalse((ROOT / "infra/04-data/supabase").exists())
         self.assertTrue((ROOT / "labs/supabase/docker-compose.yml").is_file())
 
-    def test_supabase_lab_keeps_canonical_smtp_and_isolated_state(self):
+    def test_supabase_lab_keeps_its_smtp_copy_and_isolated_state(self):
+        # SPEC-0263: LAB-037 copies the HOME COMM-002 value for the LAB.
         lab = compose("labs/supabase/docker-compose.yml")
         self.assertEqual("hy-home-lab-supabase", lab["name"])
         self.assertEqual(
-            "../../secrets/communication/smtp/smtp_password.txt",
+            "${LAB_SECRET_DIR:-../../secrets/labs}/supabase/smtp_password.txt",
             lab["secrets"]["smtp_password"]["file"],
         )
         self.assertEqual(

@@ -694,7 +694,9 @@ def rows(text, strict):
         cells = line.split("|")
         if len(cells) == 4:
             alias = (clean(cells[1]), clean(cells[2]))
-            if alias in (("Retired ID", "Canonical ID"), ("---", "---"), ("COMM-003", "COMM-002")):
+            if alias in (("Retired ID", "Canonical ID"), ("---", "---")) or all(
+                re.fullmatch(r"[A-Z][A-Z0-9]{1,15}-[0-9]{3}", item) for item in alias
+            ):
                 continue
             raise ValueError("malformed retired registry alias")
         if strict and len(cells) != 10:

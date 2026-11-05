@@ -17,27 +17,27 @@ networks:
 
 secrets:
   smtp_password:
-    file: ../../secrets/communication/smtp/smtp_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/smtp_password.txt
   supabase_db_password:
-    file: ../../secrets/db/mng-pg/supabase_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_db_password.txt
   supabase_jwt_secret:
-    file: ../../secrets/data/supabase/supabase_jwt_secret.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_jwt_secret.txt
   supabase_anon_key:
-    file: ../../secrets/data/supabase/supabase_anon_key.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_anon_key.txt
   supabase_service_key:
-    file: ../../secrets/data/supabase/supabase_service_key.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_service_key.txt
   supabase_dashboard_password:
-    file: ../../secrets/data/supabase/supabase_dashboard_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_dashboard_password.txt
   supabase_secret_key_base:
-    file: ../../secrets/data/supabase/supabase_secret_key_base.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_secret_key_base.txt
   supabase_vault_enc_key:
-    file: ../../secrets/data/supabase/supabase_vault_enc_key.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_vault_enc_key.txt
   supabase_pg_meta_crypto_key:
-    file: ../../secrets/data/supabase/supabase_pg_meta_crypto_key.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_pg_meta_crypto_key.txt
   supabase_openai_api_key:
-    file: ../../secrets/data/supabase/supabase_openai_api_key.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_openai_api_key.txt
   supabase_logflare_private_token:
-    file: ../../secrets/data/supabase/supabase_logflare_private_token.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/supabase/supabase_logflare_private_token.txt
 
 services:
   studio:
