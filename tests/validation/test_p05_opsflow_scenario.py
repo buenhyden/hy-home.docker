@@ -44,6 +44,13 @@ class MemoryFixture:
         self.active = True
         # Bull jobs that outlived their worker (active, lock expiring).
         self.jobs = set()
+        # A restarted worker settles stalled jobs once their lock expires,
+        # modelled as the next wait after the start.
+        self.settle_pending = False
+        # Runner registrations logged by worker processes, cumulative.
+        self.registrations = 1
+        # Crashed execution id -> the execution n8n created for its retry.
+        self.retries = {}
 
     def event(self, name):
         self.events.append(name)
@@ -71,6 +78,21 @@ class MemoryFixture:
 
     def psql(self, role, database, sql, **kwargs):
         self.event("sql:" + role)
+        if (
+            database == "n8n"
+            and kwargs.get("container") == "metadata-pg"
+            and ("retryOf" in sql)
+        ):
+            crashed = re.search(r"\"retryOf\"='([0-9]+)'", sql)[1]
+            retried = self.retries.get(crashed)
+            state = "running" if self.fail == "retry-late" else "error"
+            value = f"{retried}:{state}" if retried else ""
+            return SimpleNamespace(stdout=value + "\n", stderr="", returncode=0)
+        if database == "n8n" and kwargs.get("container") == "metadata-pg":
+            execution = re.search(r"WHERE id=([0-9]+)\)", sql)[1]
+            return SimpleNamespace(
+                stdout=self.executions[execution] + "|1\n", stderr="", returncode=0
+            )
         if database != "opsflow_dev":
             raise AssertionError("unexpected database")
         return SimpleNamespace(stdout="", stderr="", returncode=0)
@@ -101,6 +123,8 @@ class MemoryFixture:
     def kill(self, role):
         self.event("kill:" + role)
         self.running[role] = False
+        self.killed_wall_ms = int(native.time.time() * 1000)
+        self.killed_monotonic = native.time.monotonic()
         if role == "worker" and self.session == "held":
             # A killed worker records nothing; the variants model a transport
             # timeout (unknown) and a silent success that must both fail.
@@ -126,20 +150,39 @@ class MemoryFixture:
     def start(self, role):
         self.event("start:" + role)
         self.running[role] = True
-        if role == "worker" and self.jobs and self.fail != "no-stall-recovery":
-            # n8n 2.43.6: the restarted worker's Bull stall check fails the
-            # job (maxStalledCount 0) and deletes it (keepLastFailed 0); main
-            # then marks its execution crashed.
-            for execution in self.jobs:
-                if self.fail != "not-crashed":
+        if role == "worker" and self.fail != "stale-runner":
+            self.registrations += 1
+        if role == "worker" and self.jobs:
+            self.settle_pending = True
+        if role == "main" and self.fail != "no-startup-recovery":
+            # The leader main's startup queue recovery: an in-progress
+            # execution with no active or waiting job is marked crashed.
+            for execution, status in self.executions.items():
+                if status == "running" and execution not in self.jobs:
                     self.executions[execution] = "crashed"
-            self.jobs.clear()
+
+    def settle(self):
+        # n8n 2.43.6: the restarted worker's Bull stall check fails the job
+        # (maxStalledCount 0) and deletes it (keepLastFailed 0). Only a main
+        # that still awaits the job marks its execution crashed.
+        self.settle_pending = False
+        if self.fail == "no-stall-recovery":
+            return
+        for execution in self.jobs:
+            if self.running["main"] and self.fail != "not-crashed":
+                self.executions[execution] = "crashed"
+        self.jobs.clear()
 
     def start_smtp_hold(self):
         if self.running["mailpit"]:
             raise native.RehearsalFailure("capture still running")
         self.event("smtp-hold")
         self.running[native.HOLD] = True
+
+    def log_count(self, role, pattern):
+        if role != "worker" or pattern != native.RUNNER_REGISTERED:
+            raise AssertionError("unexpected log count")
+        return self.registrations
 
     def logs_contain(self, role, pattern):
         if role != "worker":
@@ -165,8 +208,10 @@ class MemoryFixture:
 
     def exec_result(self, role, *args, input_=None):
         self.event("old-job-probe")
-        if role != "main" or args[:2] != ("node", "-e"):
+        if role not in {"main", "worker"} or args[:2] != ("node", "-e"):
             raise AssertionError("unexpected probe")
+        if not self.running[role]:
+            return SimpleNamespace(returncode=1, stdout="")
         ids = json.loads(input_)["ids"]
         value = {
             "scanned": True,
@@ -182,9 +227,13 @@ class MemoryFixture:
             stdout=json.dumps(value),
         )
 
-    def wait_until(self, condition, _message, _seconds):
+    def wait_until(self, condition, message, _seconds):
+        if self.settle_pending:
+            self.settle()
         if not condition():
-            raise native.RehearsalFailure("synthetic wait incomplete")
+            # The real message, so callers that tolerate one timeout run the
+            # refusal that follows it.
+            raise native.RehearsalFailure(message)
 
 
 class ScenarioModel:
@@ -250,6 +299,45 @@ class ScenarioModel:
 
     def api(self, action, **payload):
         f = self.fixture
+        if not f.running["main"]:
+            raise native.RehearsalFailure("n8n REST operation failed (main down)")
+        if action == "trace":
+            stored = f.executions.get(payload["executionId"])
+            # A crashed execution keeps no start stack (n8n 2.43.6).
+            stack = ["Claim"] if self.fail == "retry-has-stack" else []
+            return {
+                "stack": stack if stored in {"crashed", "error"} else ["Manual"],
+                "runNodes": [],
+                "last": "",
+                "error": None,
+            }
+        if action == "retry":
+            if f.executions[payload["executionId"]] != "crashed":
+                raise native.RehearsalFailure("synthetic retry conflict")
+            if self.fail == "retry-not-started":
+                return {
+                    "id": "",
+                    "retryOf": payload["executionId"],
+                    "status": "not_started",
+                }
+            retried = str(len(f.executions) + 1)
+            f.executions[retried] = "error"
+            f.retries[payload["executionId"]] = (
+                "999" if self.fail == "retry-id-mismatch" else retried
+            )
+            if self.fail == "retry-resend":
+                f.captured.extend(f.held_runs)
+            pending = [r for r, st in f.rows.items() if st == "pending"]
+            if self.fail == "retry-claims" and pending:
+                f.rows[pending[0]] = "accepted_by_smtp"
+                f.captured.append(pending[0])
+            return {
+                "id": retried,
+                "retryOf": "999"
+                if self.fail == "retry-unbound"
+                else payload["executionId"],
+                "status": f.executions[retried],
+            }
         if action == "setup":
             return {
                 "id": "bad/id"
@@ -311,6 +399,11 @@ class ScenarioModel:
         # no outbox row, which the shared publish() helper refuses.
         if captured <= getattr(f, "latest_capture", ""):
             raise native.RehearsalFailure("synthetic publication failed")
+        # SQL003 runs_source_business_date_uidx: one run per source per UTC date.
+        days = f.__dict__.setdefault("capture_days", set())
+        if captured[:10] in days:
+            raise native.RehearsalFailure("synthetic publication failed")
+        days.add(captured[:10])
         f.latest_capture = captured
         f.rows[digest] = "pending"
         f.event("publish")
@@ -339,6 +432,7 @@ class ScenarioModel:
             if self.fail != "job-not-surviving":
                 f.jobs.add(execution)
             f.session, f.held = "held", (run, execution)
+            f.held_runs = [*getattr(f, "held_runs", []), run]
             f.body_at = int(native.time.time() * 1000)
             f.event("execute:held")
             return execution
@@ -421,6 +515,7 @@ class P05ScenarioStateTests(unittest.TestCase):
             with self.subTest(failure=failure):
                 model = ScenarioModel(failure)
                 model.scenario.secrets = {"notifier": ("synthetic", None)}
+                model.fixture.running["main"] = True
                 del model.scenario.bind_and_import
                 with mock.patch.object(
                     native.historical.OpsflowN8nNativeRehearsal, "api", model.api
@@ -486,13 +581,46 @@ class P05ScenarioStateTests(unittest.TestCase):
             receipt["interrupted_execution_id"],
             receipt["recovery_barrier"]["old_execution_ids"],
         )
-        self.assertEqual(7, receipt["same_input_replay"]["replayed"])
         self.assertEqual(
-            {"accepted_by_smtp": 4, "unknown": 3},
+            {
+                "jobs_before_restart": 1,
+                "kill_to_probe_ms": receipt["main_restart_recovery"][
+                    "kill_to_probe_ms"
+                ],
+                "jobs_after_worker_recovery": 0,
+                "status_while_main_down": "running",
+                "execution_status": "crashed",
+            },
+            receipt["main_restart_recovery"],
+        )
+        self.assertEqual(
+            "main_down", receipt["main_restart_interruption"]["execution_status"]
+        )
+        self.assertEqual("unknown", receipt["main_restart_quarantine"]["state"])
+        self.assertEqual(
+            {
+                "retried": 2,
+                "statuses": ["error", "error"],
+                "start_stacks_empty": True,
+                "claimed_by_retry": 0,
+                "interrupted_resent": 0,
+                "rows_unchanged_by_retry": True,
+                "retry_executions_terminal": True,
+                "fresh_execution_delivered": True,
+            },
+            receipt["execution_retry"],
+        )
+        self.assertIn(
+            receipt["main_restart_execution_id"],
+            receipt["recovery_barrier"]["old_execution_ids"],
+        )
+        self.assertEqual(10, receipt["same_input_replay"]["replayed"])
+        self.assertEqual(
+            {"accepted_by_smtp": 6, "unknown": 4},
             receipt["restored_outbox_equivalence"]["states"],
         )
-        self.assertEqual(3, list(model.fixture.rows.values()).count("unknown"))
-        self.assertEqual(5, list(model.fixture.rows.values()).count("accepted_by_smtp"))
+        self.assertEqual(4, list(model.fixture.rows.values()).count("unknown"))
+        self.assertEqual(7, list(model.fixture.rows.values()).count("accepted_by_smtp"))
         self.assertEqual("same-smtp-id", model.fixture.metadata["smtp_id"])
         self.assertEqual(2, model.fixture.generation)
         events = model.fixture.events
@@ -506,6 +634,10 @@ class P05ScenarioStateTests(unittest.TestCase):
             ("execute:held", "stop:worker"),
             ("remove:" + native.HOLD, "start:worker"),
             ("start:worker", "deactivate"),
+            # Main is killed only in the second interruption and restarted
+            # after the worker has settled the job, before any retry.
+            ("kill:main", "start:main"),
+            ("start:main", "deactivate"),
             ("destroy-old-databases", "restore-metadata"),
             ("restore-metadata", "restore-dev"),
         ):
@@ -535,6 +667,7 @@ class P05ScenarioStateTests(unittest.TestCase):
             "job-not-surviving",
             "no-stall-recovery",
             "not-crashed",
+            "stale-runner",
         ):
             with self.subTest(failure=failure):
                 model = ScenarioModel(failure)
@@ -548,6 +681,42 @@ class P05ScenarioStateTests(unittest.TestCase):
                 self.assertNotEqual(
                     "PASS", model.fixture.receipt.get("live_inflight_interruption")
                 )
+
+    def test_retry_that_did_not_start_is_the_same_no_op(self):
+        receipt = ScenarioModel("retry-not-started").run()
+        self.assertEqual("PASS", receipt["native"])
+        self.assertEqual(
+            ["not_started", "not_started"], receipt["execution_retry"]["statuses"]
+        )
+        self.assertTrue(receipt["execution_retry"]["fresh_execution_delivered"])
+
+    def test_late_retry_is_refused_after_its_wait_not_by_the_wait(self):
+        model = ScenarioModel("retry-late")
+        with self.assertRaisesRegex(
+            native.RehearsalFailure, "retry changed notification state"
+        ):
+            model.run()
+        self.assertTrue(model.fixture.receipt["execution_retry_created"])
+        self.assertNotIn("recovery_barrier_facts", model.fixture.receipt)
+
+    def test_main_restart_and_retry_violations_block_the_barrier(self):
+        for failure in (
+            "no-startup-recovery",
+            "retry-resend",
+            "retry-unbound",
+            "retry-claims",
+            "retry-has-stack",
+            "retry-late",
+            "retry-id-mismatch",
+        ):
+            with self.subTest(failure=failure):
+                model = ScenarioModel(failure)
+                with self.assertRaises(native.RehearsalFailure):
+                    model.run()
+                self.assertIn("kill:main", model.fixture.events)
+                self.assertNotIn("recovery_barrier_facts", model.fixture.receipt)
+                self.assertNotIn("destroy-old-databases", model.fixture.events)
+                self.assertNotEqual("PASS", model.fixture.receipt.get("native"))
 
     def test_replay_and_next_claim_violations_cannot_pass(self):
         for failure in (

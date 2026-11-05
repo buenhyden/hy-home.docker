@@ -646,7 +646,10 @@ class NativeFixture:
         env = (f"POSTGRES_USER={user}", f"POSTGRES_DB={database}", "POSTGRES_PASSWORD_FILE=/run/secrets/postgres-password", "PGDATA=/var/lib/postgresql/18/docker")
         self.create(role, PG_REF, "70:70", ("ctl",) if role == "metadata-pg" else ("dev",), env=env, mounts=(bind_mount(secret, "/run/secrets/postgres-password"), *dump_mounts), command=("postgres", "-c", "max_connections=40", "-c", "shared_buffers=64MB"))
         self.start(role)
-        self.wait_until(lambda: self.exec_result(role, "pg_isready", "-U", user, "-d", database).returncode == 0, f"{role} readiness expired")
+        # TCP, not the socket: the image's init server runs with
+        # listen_addresses='' and restarts, so a socket probe can pass before
+        # the final server is up (P05 native attempt 5 under load 7.7).
+        self.wait_until(lambda: self.exec_result(role, "pg_isready", "-h", "127.0.0.1", "-U", user, "-d", database).returncode == 0, f"{role} readiness expired")
     def psql(self, role: str, database: str, sql: str, *, check: bool = True, container: str = "dev-pg"):
         result = self.exec_result(container, "psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1", "-v", "VERBOSITY=verbose", "-U", role, "-d", database, input_=sql)
         if check and result.returncode:

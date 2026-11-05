@@ -77,7 +77,7 @@ def validate_replay(results, before, after, claimable):
     return {"replayed": len(results), "claimable": 0}
 
 
-def _run_id(line):
+def run_id_of(line):
     fields = line.split("|")
     if fields[0] == "outbox" and len(fields) > 2:
         return fields[2]
@@ -89,7 +89,7 @@ def _run_id(line):
 def validate_next_claim(before, after, fresh):
     row = _outbox(after).get(fresh)
     if (
-        tuple(line for line in after if _run_id(line) != fresh) != tuple(before)
+        tuple(line for line in after if run_id_of(line) != fresh) != tuple(before)
         or row is None
         or row[3] != "accepted_by_smtp"
         or row[4] != "1"
@@ -194,6 +194,77 @@ def validate_queue_recovery(facts):
     return dict(facts)
 
 
+def validate_main_restart_recovery(facts):
+    # Main killed too: the restarted worker still deletes the stalled job, but
+    # no WorkflowRunner awaits it, so the execution stays running. The leader
+    # main's ScalingService.setupQueue runs scheduleQueueRecovery(0) at start:
+    # an in-progress execution with no active or waiting job becomes crashed.
+    # The probe should precede lock expiry. The bound counts from the kill
+    # signal, but the lock was last renewed before it, so it is approximate;
+    # jobs_before_restart == 1 is the evidence that the job survived.
+    probe_ms = facts.get("kill_to_probe_ms") if isinstance(facts, dict) else None
+    if (
+        facts
+        != {
+            "jobs_before_restart": 1,
+            "kill_to_probe_ms": probe_ms,
+            "jobs_after_worker_recovery": 0,
+            "status_while_main_down": "running",
+            "execution_status": "crashed",
+        }
+        or type(probe_ms) is not int
+        or not 0 <= probe_ms < N8N_LOCK_DURATION_SECONDS * 1000
+        or type(facts["jobs_before_restart"]) is not int
+        or type(facts["jobs_after_worker_recovery"]) is not int
+    ):
+        raise RehearsalFailure("main-restart queue recovery rejected")
+    return dict(facts)
+
+
+def validate_execution_retry(facts):
+    # n8n 2.43.6 records a worker-killed execution with an empty start stack
+    # and only the stall error; ExecutionService.retry copies that data, so
+    # the retry runs no node, claims nothing and ends error (native attempt 8).
+    # Replay is a new execution: it claims only claimable rows, while each
+    # interrupted row stays unknown for reconciliation.
+    # A run that ends before n8n attaches its result promise makes retry
+    # throw "The retry did not start" (HTTP 500, native attempt 11): the same
+    # no-op, recorded as not_started.
+    count = facts.get("retried") if isinstance(facts, dict) else None
+    statuses = facts.get("statuses") if isinstance(facts, dict) else None
+    if (
+        type(count) is not int
+        or count < 1
+        or not isinstance(statuses, list)
+        or len(statuses) != count
+        or any(status not in {"error", "not_started"} for status in statuses)
+        or facts
+        != {
+            "retried": count,
+            "statuses": statuses,
+            "start_stacks_empty": True,
+            "claimed_by_retry": 0,
+            "interrupted_resent": 0,
+            "rows_unchanged_by_retry": True,
+            "retry_executions_terminal": True,
+            "fresh_execution_delivered": True,
+        }
+        or type(facts["claimed_by_retry"]) is not int
+        or type(facts["interrupted_resent"]) is not int
+        or any(
+            type(facts[key]) is not bool
+            for key in (
+                "start_stacks_empty",
+                "rows_unchanged_by_retry",
+                "retry_executions_terminal",
+                "fresh_execution_delivered",
+            )
+        )
+    ):
+        raise RehearsalFailure("n8n execution retry outcome rejected")
+    return dict(facts)
+
+
 # Fixture-only STARTTLS endpoint under the capture alias with the owned
 # synthetic certificate. It answers up to DATA, then never replies, so the
 # client's session stays mid-DATA. It stores nothing and prints closed facts.
@@ -254,6 +325,8 @@ def validate_barrier(value):
     return {**value, "old_execution_ids": list(ids)}
 
 
+# Bull getJobs lists ids, then reads each hash: a job n8n removes in between
+# is null. A null is an absent job, never a match, and must not fail the probe.
 QUEUE_PROBE = r"""const fs=require('fs');
 const data=JSON.parse(fs.readFileSync(0,'utf8'));
 const Bull=require('/usr/local/lib/node_modules/n8n/node_modules/bull');
@@ -262,7 +335,7 @@ const password=fs.readFileSync('/run/secrets/n8n_valkey_password','utf8').replac
 const q=new Bull('jobs',{prefix:'opsflow_native',redis:{host:'n8n-valkey',port:6379,password}});
 try {
  const jobs=await q.getJobs(['waiting','active','delayed','paused','completed','failed']);
- const found=jobs.filter(j=>data.ids.includes(String(j.data?.executionId)));
+ const found=jobs.filter(j=>j!==null&&data.ids.includes(String(j.data?.executionId)));
  process.stdout.write(JSON.stringify({scanned:true,matching:found.length,ids:data.ids}));
 } finally {await q.close();}
 })().catch(()=>{process.stderr.write('owned queue inspection failed');process.exitCode=1});
