@@ -71,8 +71,8 @@ owner records an answer here, and the step that needs it does not start before.
 | O3 | The worker S3 identity is not in the SeaweedFS S3 configuration. What is its access key name, its secret file path, and how is it loaded into `seaweedfs-s3`? | Step 3 |
 | O4 | The workload README installs the code through `compose.workflow.override.yml` bind mounts (`OPSFLOW_CODE_DIR`); the handoff copies files into `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. Which one? Either way `airflow-worker` needs `/run/opsflow` (`pg.json`, `s3.json`) and `dev_data_net`/`object_net`, which the base Compose file does not give it. | Step 4 |
 | O5 | Does the running Airflow image carry the workload's Python dependencies, or is a reviewed `OPSFLOW_AIRFLOW_IMAGE` required? | Step 4 |
-| O6 | What are the admin user names on `dev-pg` and `mng-pg`, and the backup target directory? | Step 1 |
-| O7 | Which synthetic input key and body are used (the repository fixture is `fixtures/2026-10-10.json` for source `hy-home.docker`), and how does the one triggered run proceed while the DAG stays paused? | Step 5 |
+| O6 | What are the admin user names on `dev-pg` and `mng-pg`, and the backup target directory, and is that admin password file mounted inside each container? | Step 1 |
+| O7 | Which synthetic input key and body are used (the repository fixture is `fixtures/2026-10-10.json` for source `hy-home.docker`), and how does the one triggered run proceed while the DAG stays paused? The invalid-input case needs a different `business_date` and starts only after the first run ends (`max_active_runs=1`, source and business-date uniqueness); any run still queued must be recorded before step 6 unpauses. | Step 5 |
 | O8 | Which existing audit administrator login runs `008_checks.sql`? Its header and the `005`/`007` headers limit them to an approved isolated DB; does the owner approve running them on HOME `opsflow_dev`? | Step 2 |
 
 ## Evidence
@@ -80,7 +80,7 @@ owner records an answer here, and the step that needs it does not start before.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Step 1 backups | 103 | W108 | Backup existence, size and SHA-256 | HOME `dev-pg`, `mng-pg`, `opsflow-dev` | NOT_RUN | Not started; waits for an approved operator, window and O6. | required | - |
-| Step 2 migrations | 103 | W108 | `008_checks.sql` | `opsflow_dev` after `001`-`007` | NOT_RUN | Not started; waits for O1, O2 and O8. | required | - |
+| Step 2 migrations | 103 | W108 | `008_checks.sql` | `opsflow_dev` after `001`, `003`, `004`, `005` and `007` | NOT_RUN | Not started; waits for O1, O2 and O8. | required | - |
 | Step 3 bucket and canaries | 103 | W108 | Permission canaries | `opsflow-dev` bucket and worker identity | NOT_RUN | Not started; waits for O3. | required | - |
 | Step 4 code install | 103 | W108 | File hashes and paused DAG import | DAG directory and `airflow-worker` mounts | NOT_RUN | Not started; waits for O1, O4 and O5. | required | - |
 | Step 5 synthetic run | 103 | W108 | Rows and quarantine readback | Pool `manifest_ingest`, one synthetic and one invalid input | NOT_RUN | Not started; waits for O7. | required | - |
