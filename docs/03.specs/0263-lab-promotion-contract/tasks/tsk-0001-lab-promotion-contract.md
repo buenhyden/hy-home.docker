@@ -62,12 +62,12 @@ review.
 These are agent calls, made in the Plan for the owner to check:
 
 - **Manifest kinds.** `opensearch-cluster` and `kafka-cluster` are
-  `replace-same`. `valkey-cluster` and `postgresql-ha` are `undecided`,
-  because HOME runs both an `mng-db` and a `dev-db` node of each. The other
-  11 are `undecided`.
+  `replace-same`. The agent left `valkey-cluster` and `postgresql-ha` as
+  `undecided`, because HOME runs both an `mng-db` and a `dev-db` node of
+  each; owner decision A below settles them. The other 11 are `undecided`.
 - **Reserve.** The first reserve is 2 CPUs, 4096 MiB of memory and 10% of
   each filesystem kept free. The host measured on 2026-11-05 has 12 CPUs and
-  32020 MiB.
+  32020 MiB. Owner decision C below approves it.
 - **New operations subjects.**
   - OPS-0107 is `lab-promotion`, with a policy and a runbook.
   - OPS-0108 is `kafka-cluster`.
@@ -79,6 +79,19 @@ These are agent calls, made in the Plan for the owner to check:
   confirmation.
 - **The readiness check.** It is a `lab.py readiness` subcommand, not a new
   script.
+
+The owner decided these on 2026-11-05:
+
+- **A.** `valkey-cluster` and `postgresql-ha` are `replace-same` against
+  the `dev-db` single nodes. The targets are `infra/04-data/dev-db/valkey/`
+  and `infra/04-data/dev-db/pg/`, both with the `dev-data` profile that
+  `dev-valkey` and `dev-pg` carry. The retired services are `dev-valkey` and
+  `dev-valkey-exporter`, and `dev-pg`, `dev-pg-monitor-provision` and
+  `dev-pg-exporter`. Both live in `infra/04-data/dev-db/docker-compose.yml`.
+  The consumers listed in each manifest come from `git grep`.
+- **B.** The other 11 LABs stay `undecided`.
+- **C.** The reserve is approved as
+  `PROMOTION_RESERVE = {"cpus": 2.0, "memory_mib": 4096, "disk_percent": 10}`.
 
 ### W3: supabase on LAB secret copies
 
@@ -194,6 +207,49 @@ that names the HOME SMTP path. Its fixed `extends` file is now
 handle the COMM-003 duplicate and needed no change. `gen-secrets.sh` now
 accepts any well-formed retired-row alias, not only COMM-003.
 
+### W4: Promotion readiness check
+
+`lab.py readiness <name> [--report PATH]` reads HOME state only: the LAB and
+root renders, `docker info`, `docker inspect` and disk usage. It prints the
+section 5 report and exits 0 only when all five criteria are `PASS`.
+`test_reserve_matches_policy` is an expected failure until W5 adds the
+policy reserve table.
+
+The check makes these calls:
+
+- **Tier.** The target folder may exist when it holds a retired Compose
+  file, or when it sits inside the folder of a retired Compose file that is
+  deeper than the tier. Decision A needs this, because `dev-db/valkey/` sits
+  inside `dev-db/`, which holds `docker-compose.yml`.
+- **Composition.** A problem from `collisions()` that names a retired
+  service as a word is not counted. A port or path clash reported against
+  `root` names no container, so it still fails.
+- **Profiles.** The POL-0078 vocabulary comes from
+  `operations_catalog._conftest_profile_names`, the reader the profile gates
+  use.
+- **Resources.** Limits are compared in bytes and reported in MiB. A retired
+  container is subtracted only when it is running.
+
+**HOME run, 2026-11-05.**
+
+1. As instructed, `lab.py --env-file labs/.env readiness valkey-cluster`
+   exited 1 before writing a report. Compose said `required variable
+   LAB_DATA_DIR is missing a value`. `lab.py --env-file labs/.env check
+   valkey-cluster` fails the same way, so `labs/.env` still gives Compose no
+   `LAB_DATA_DIR`. The agent does not read that file. This waits for the
+   owner.
+2. A supplementary run used the same flags with `LAB_DATA_DIR` set to an
+   unused scratch path. The run only renders, and the path was not created.
+   The result is `FAIL`:
+
+| Criterion | Result | Measured values and sources |
+| --- | --- | --- |
+| tier | PASS | `replace-same`; `infra/04-data/dev-db/valkey/` exists, inside the retired `dev-db/docker-compose.yml` folder (manifest, filesystem) |
+| composition | PASS | 0 collisions (`collisions()` against the root render and `docker inspect`); profile `dev-data` is in POL-0078 |
+| linux | PASS | cgroup `2` (`docker info .CgroupVersion`); no rendered `user` |
+| docker | PASS | Docker `29.9.2` (`docker info .ServerVersion`), Compose `5.6.1` (`docker compose version --short`); drivers `bridge`, `local`; data root `/home/hyunyoun/storage/docker-root/docker` (`docker info .DockerRootDir`) |
+| resources | FAIL | NCPU 12 and MemTotal 33575419904 B (`docker info`). The budget is 10 CPUs and 27924 MiB. Running limits are 64 CPUs and 59904 MiB (`docker inspect`). Retired `dev-valkey` frees 1 CPU and 512 MiB. The candidate adds 7 CPUs and 3584 MiB, so it needs 70 CPUs and 62976 MiB. Five running `k3d-hyhome-*` containers declare no limit. Usable disk is 2105.3 GiB on the data root and on the Docker root (`shutil.disk_usage`) |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -210,6 +266,14 @@ accepts any well-formed retired-row alias, not only COMM-003.
 | E10 | 3 | W3 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` on the W3 working tree | PASS | violations=0; failures=0 | required | - |
 | E11 | 3 | W3 | RED test | `test_read_only_secrets_backup_owns_no_lab_secret_copy` with root's read-only `secrets/` bind through `root_footprint`, before the `lab.py` fix | FAIL | the LAB copy "overlaps root" | required | - |
 | E12 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs after the `secrets/` and per-LAB fixes, also run for all 15 LABs | FAIL | no overlap or allowlist problem left; remaining problems are environment seed files (LAB_DATA_DIR seeds, synthetic operator files, ignored lakehouse `__pycache__`) | required | - |
+| E13 | 5 | W4 | decision A manifests | `manifest_problems` for `valkey-cluster` and `postgresql-ha` against their `labs/.env.example` renders with a temporary `LAB_DATA_DIR`, at `f4e94cae9` | PASS | no problem for either | required | - |
+| E14 | 5 | W4 | RED tests | `ReadinessTests` in `test_lab_controller` before `readiness` existed | FAIL | 14 errors: `readiness` undefined and no `users` in the footprint | required | - |
+| E15 | 5 | W4 | LAB suites | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout` at `8fc269531` | PASS | 91 tests; 1 expected failure, `test_reserve_matches_policy`, until W5 | required | - |
+| E16 | 5 | W4 | HOME readiness, as instructed | `lab.py --env-file labs/.env readiness valkey-cluster --report <scratchpad>` | NOT_RUN | render refused: `labs/.env` gives Compose no `LAB_DATA_DIR`; no report written; `check` fails the same way | required | - |
+| E17 | 5 | W4 | HOME readiness, supplementary | the E16 command with `LAB_DATA_DIR` set to an unused scratch path | FAIL | tier, composition, linux and docker PASS; resources FAIL: 70 CPUs and 62976 MiB needed against 10 CPUs and 27924 MiB, and 5 `k3d-hyhome-*` containers without limits; see the W4 Work Log | required | - |
+| E18 | 5 | W4 | full unit suite | `python -m unittest discover -s tests -t .` with the controller venv first on `PATH`, at `d1b6747e4` | PASS | 3318 tests, 0 failures, 108 skipped, 1 expected failure | required | - |
+| E19 | 5 | W4 | hardening and script manifest | `bash scripts/hardening/check-all-hardening.sh`, `check-script-manifest.py` | PASS | all checks passed; manifest valid | required | - |
+| E20 | 5 | W4 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` on the W4 working tree | PASS | selected=136 violations=0; link mode all PASS | required | - |
 
 ## Criterion Acceptance
 
@@ -225,8 +289,9 @@ accepts any well-formed retired-row alias, not only COMM-003.
 
 ## Review and Completion
 
-W1 to W3 have changed the repository. Criterion 3 waits for the owner's
-registry edit and sync (E9). No criterion is accepted.
+W1 to W4 have changed the repository. Criterion 3 waits for the owner's
+registry edit and sync (E9). Criterion 5 waits for a HOME readiness run
+with the owner's `labs/.env` (E16). No criterion is accepted.
 
 ## Related Documents
 
