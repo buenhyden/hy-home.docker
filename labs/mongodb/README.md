@@ -105,7 +105,7 @@ network, secret reference, state path를 사용합니다. 같은 host의 여러 
 host-level HA를 증명하지 않습니다. 정적 render 통과는 실행·인증·복구 증거가
 아닙니다.
 
-MongoDB key job은 같은 공식 `mongo:8.3.11-noble` 이미지의 `mongosh --nodb`와
+MongoDB key job은 같은 공식 `mongo` 이미지(tag는 [docker-compose.yml](docker-compose.yml) 소유)의 `mongosh --nodb`와
 Node `crypto`로 keyfile을 네트워크 없이 생성합니다. 재실행은 기존 key를
 바꾸지 않고 길이·base64·소유자·권한을 검사합니다. `mongo-init`은 arbiter의
 healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer는
@@ -118,7 +118,7 @@ healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer는
 - keyfile 소유자·0400 권한이 맞지 않으면 원인을 확인하고 기존 key를 보존한다. secret file 누락은 LAB secret reference를 준비해야 하는 상태이며 값의 공개나 root secret 재사용 사유가 아니다.
 - 실제 cluster 재초기화·volume 삭제·restore는 별도 승인 없이는 실행하지 않는다.
 
-## Bind State Ownership
+### Bind State Ownership
 
 `lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 999 (`mongodb`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. 그래서 rep1·rep2·arbiter는 `user: '999:999'`로 실행하고, `mongo-key-generator`는 `CHOWN`·`DAC_OVERRIDE`·`FOWNER`만 더해 keyfile을 uid 999 소유로 만든다. `gosu`는 보조 group을 버리므로 root entrypoint 경로로는 secret을 읽지 못한다. SPEC-0215 TSK-0002에서 합성 입력으로 기동해 `PRIMARY,SECONDARY,ARBITER`를 확인했고, `down` 뒤 container·network는 0개였다. 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
 

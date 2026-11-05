@@ -80,7 +80,11 @@ def candidate_kind(path: str) -> str | None:
         return "n8n-policy"
     if "/n8n/workloads/" in path and path.endswith("/hermes-plugin/tools.py"):
         return "n8n-source-url"
-    if re.search(r"(?:^|/)(?:docker-)?compose[^/]*\.ya?ml\Z", path):
+    # A LAB entrypoint labs/<name>/docker-compose.yml stays outside the HOME
+    # connection census (SPEC-0262, SPEC-0263).
+    if not path.startswith("labs/") and re.search(
+        r"(?:^|/)(?:docker-)?compose[^/]*\.ya?ml\Z", path
+    ):
         return "compose"
     return None
 

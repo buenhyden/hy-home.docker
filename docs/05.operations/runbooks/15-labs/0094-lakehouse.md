@@ -36,18 +36,18 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-1. 저장소 루트에서 승인된 대상만 점검한다. 이 엔진들은 독립 LAB `labs/lakehouse.yml`에
+1. 저장소 루트에서 승인된 대상만 점검한다. 이 엔진들은 독립 LAB `labs/lakehouse/docker-compose.yml`에
    있으며(SPEC-0262) 아래에서 `LAB`은
-   `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse`를 뜻한다.
+   `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`를 뜻한다.
    `LAB config`는 렌더링만 한다. 그 외 명령은 `python3 scripts/operations/lab.py up lakehouse`로
    얻은 활성 lease 안에서만 쓰고, 소유자가 승인한 `LAB_LAKEHOUSE_S3_ENDPOINT`·
    `LAB_LAKEHOUSE_CATALOG_URI`가 없으면 멈춘다(HOME은 기본적으로 이 endpoint를 LAB network에
    게시하지 않는 미결정 항목). `--no-deps` 예시는 table-bucket provisioning과 Trino가 이미 준비된
    경우만 해당한다. 준비되지 않았으면 멈추며 진단을 위해 provisioning을 암묵 실행하지 않는다.
 
-   - `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse config --quiet`
-   - `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse logs --tail=100 seaweedfs-table-bucket`
-   - `docker compose --env-file labs/.env -f labs/lakehouse.yml --profile lab-lakehouse run --rm --no-deps spark`
+   - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
+   - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse logs --tail=100 seaweedfs-table-bucket`
+   - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse run --rm --no-deps spark`
 
    마지막 명령은 네임스페이스를 나열해 카탈로그 접근을 처음부터 끝까지
    증명한다. HOME `seaweedfs-s3` 로그는 HOME root project에서 따로 본다
@@ -119,7 +119,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - [SeaweedFS runbook](../05-databases-and-storage/0024-seaweedfs.md)
 - SPEC-0262 Analytics labs migration
 
-- [Lakehouse LAB Compose](../../../../labs/lakehouse.yml)와 [독립 LAB source](../../../../labs/README.md)
+- [Lakehouse LAB Compose](../../../../labs/lakehouse/docker-compose.yml)와 [독립 LAB source](../../../../labs/README.md)
 - [Spark 패키지 README](../../../../labs/lakehouse/spark/README.md)
 - [Trino 패키지 README](../../../../labs/lakehouse/trino/README.md)
 - [Flink 패키지 README](../../../../labs/lakehouse/flink/README.md)

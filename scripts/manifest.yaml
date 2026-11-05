@@ -942,7 +942,7 @@ files:
   lifecycle: active
   mutation: runtime
   consumers:
-  - labs/postgresql-ha.md
+  - labs/postgresql-ha/README.md
   disposition: retain
   successor: null
   tests:

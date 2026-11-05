@@ -144,7 +144,9 @@ networks: {local: {}}
 
     def test_labs_declaration_and_invalid_yaml_are_separate(self):
         paths = [
-            self.write("labs/sample.yml", "services: {lab: {image: 'lab:1'}}"),
+            self.write(
+                "labs/sample/docker-compose.yml", "services: {lab: {image: 'lab:1'}}"
+            ),
             self.write("compose-bad.yaml", "services: [PRIVATE_BAD]"),
             self.write("other/not-compose.yml", "PRIVATE_NOT_A_CANDIDATE"),
         ]

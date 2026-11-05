@@ -39,9 +39,9 @@ JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실,
 1. 저장소 루트에서 점검한다. JupyterLab은 독립 LAB이다(SPEC-0262). `config`는 렌더링만 하며,
    기동·재시작은 `python3 scripts/operations/lab.py check|up|down jupyterlab`의 lease 규칙을 따른다.
 
-   - `docker compose --env-file labs/.env -f labs/jupyterlab.yml --profile jupyterlab config --quiet`
-   - `docker compose --env-file labs/.env -f labs/jupyterlab.yml --profile jupyterlab ps -a jupyterlab`
-   - `docker compose --env-file labs/.env -f labs/jupyterlab.yml --profile jupyterlab logs --tail=100 jupyterlab`
+   - `docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab config --quiet`
+   - `docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab ps -a jupyterlab`
+   - `docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab logs --tail=100 jupyterlab`
 
 2. 명시적 길이 검사는 `64`로 종료하지만 secret 누락·읽기 실패는 앞선 shell 단계에서
    다른 코드로 실패할 수 있다. bind 오류는 경로 부재·종류·권한을 구분한다.
@@ -50,7 +50,7 @@ JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실,
    `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work`의 notebook은 자동으로 옮겨지지 않았으며 재배치는
    별도 승인 아래 수동으로 한다.
 3. 토큰 노출이 의심될 경우: 서비스를 정지하고, 등록된 시크릿 워크플로로
-   LAB 전용 token 파일(`${LAB_SECRET_DIR:-../secrets/labs}/jupyterlab/` 아래, 정확한 파일명은 `labs/jupyterlab.yml`의 `secrets:`가 소유)을 교체하고, 예상치 못한 파일이 있는지
+   LAB 전용 token 파일(`${LAB_SECRET_DIR:-../secrets/labs}/jupyterlab/` 아래, 정확한 파일명은 `labs/jupyterlab/docker-compose.yml`의 `secrets:`가 소유)을 교체하고, 예상치 못한 파일이 있는지
    작업 디렉터리를 검토한다. 단일 파일 bind 교체를 반영하도록 공통 정책에 따라
    승인된 재생성을 수행한다. 재시작·재생성만으로 기존 cookie 폐기를 보장하지 않는다.
    선택한 base의 cookie-secret 동작을 확인하고 이전 token과 기존 cookie 거부를 각각
@@ -114,7 +114,7 @@ client version을 server와 맞춘다.
 
 - [Guide](../../guides/15-labs/0089-jupyterlab.md) (`GDE-0089`)
 - [Policy](../../policies/15-labs/0089-jupyterlab.md) (`POL-0089`)
-- [JupyterLab Compose](../../../../labs/jupyterlab.yml)
+- [JupyterLab Compose](../../../../labs/jupyterlab/docker-compose.yml)
 - SPEC-0262 Analytics labs migration
 
 - [이미지 Dockerfile](../../../../labs/jupyterlab/Dockerfile)과

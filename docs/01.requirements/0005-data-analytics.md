@@ -19,7 +19,7 @@ This document defines the platform's analytics requirements. Time-series history
 
 ### Problem Statement
 
-The current implementation holds OpenSearch compose under `infra/04-data`, and Flink and Trino in the standalone lakehouse LAB `labs/lakehouse.yml` (SPEC-0262). This PRD defines the requirement that these engines remain an optional tier separate from core transactional data: even though the root compose unconditionally includes the files, they do not belong to the `core` profile and do not start without a separate profile selection. ksqlDB and StarRocks, which previously handled stream processing and OLAP, were removed in SPEC-0180 S19 after the Flink and Trino live acceptance (2026-09-24).
+The current implementation holds OpenSearch compose under `infra/04-data`, and Flink and Trino in the standalone lakehouse LAB `labs/lakehouse/docker-compose.yml` (SPEC-0262). This PRD defines the requirement that these engines remain an optional tier separate from core transactional data: even though the root compose unconditionally includes the files, they do not belong to the `core` profile and do not start without a separate profile selection. ksqlDB and StarRocks, which previously handled stream processing and OLAP, were removed in SPEC-0180 S19 after the Flink and Trino live acceptance (2026-09-24).
 
 ## Scope
 

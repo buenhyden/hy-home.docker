@@ -43,7 +43,7 @@ Provide a robust, dedicated messaging infrastructure that lowers coupling betwee
 ### Constraints
 
 - **In Scope**:
-  - Single-broker Kafka (KRaft, replication factor 1); the three-broker topology is the LAB `labs/kafka-cluster.yml` (SPEC-0215)
+  - Single-broker Kafka (KRaft, replication factor 1); the three-broker topology is the LAB `labs/kafka-cluster/docker-compose.yml` (SPEC-0215)
   - Schema Registry & Kafka Connect
   - RabbitMQ Broker
   - Kafka REST Proxy
@@ -62,14 +62,14 @@ Provide a robust, dedicated messaging infrastructure that lowers coupling betwee
 ### Risks
 
 - **Risks**: Possible delayed partition rebalancing after a Kafka node failure. Risk of backward-compatibility violations on schema changes.
-- **Dependencies**: Depends on the `02-auth` tier for authentication and authorization management. The Flink consumer/processing boundary is the optional lakehouse LAB `labs/lakehouse.yml` (SPEC-0262), which joins no messaging network and reaches Kafka only through an approved endpoint.
+- **Dependencies**: Depends on the `02-auth` tier for authentication and authorization management. The Flink consumer/processing boundary is the optional lakehouse LAB `labs/lakehouse/docker-compose.yml` (SPEC-0262), which joins no messaging network and reaches Kafka only through an approved endpoint.
 - **Assumptions**: All nodes communicate within `kafka_net` and store data on dedicated volumes.
 
 ## Requirements
 
 ### Functional Requirements
 
-- **REQ-0006-FR-0001**: Provide Apache Kafka (KRaft mode). The root `docker-compose.yml` includes the single-broker `infra/05-messaging/kafka/docker-compose.yml` definition. Three-broker training uses the separate `labs/kafka-cluster.yml` Compose project, cluster ID, data directory and network.
+- **REQ-0006-FR-0001**: Provide Apache Kafka (KRaft mode). The root `docker-compose.yml` includes the single-broker `infra/05-messaging/kafka/docker-compose.yml` definition. Three-broker training uses the separate `labs/kafka-cluster/docker-compose.yml` Compose project, cluster ID, data directory and network.
 - **REQ-0006-FR-0002**: Support the standard AMQP 0-9-1 protocol via RabbitMQ.
 - **REQ-0006-FR-0003**: Provide Schema Registry for Avro/JSON schema management.
 - **REQ-0006-FR-0004**: Provide web-based management UIs (Kafbat, RabbitMQ Management).

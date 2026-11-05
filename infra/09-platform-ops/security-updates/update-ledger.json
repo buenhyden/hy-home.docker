@@ -23032,7 +23032,7 @@
             "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
           },
           {
-            "path": "labs/opensearch-cluster.yml",
+            "path": "labs/opensearch-cluster/docker-compose.yml",
             "sha256": "8624025272a7c053b039c9f13bdccaa0aca62e5529d3b026d0570cafbf26fa21"
           }
         ],
@@ -24323,7 +24323,7 @@
         "superset-init",
         "trino"
       ],
-      "meaning": "15 services moved to standalone LAB entrypoints (labs/dbt.yml, labs/jupyterlab.yml, labs/lakehouse.yml, labs/sonarqube.yml, labs/stalwart.yml, labs/superset.yml) and their original ROOT rows are preserved in historical_lab_entries. Only ROOT membership, include hashes and the SeaweedFS source binding changed. No new vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+      "meaning": "15 services moved to standalone LAB entrypoints (labs/dbt/docker-compose.yml, labs/jupyterlab/docker-compose.yml, labs/lakehouse/docker-compose.yml, labs/sonarqube/docker-compose.yml, labs/stalwart/docker-compose.yml, labs/superset/docker-compose.yml) and their original ROOT rows are preserved in historical_lab_entries. Only ROOT membership, include hashes and the SeaweedFS source binding changed. No new vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {
@@ -25531,7 +25531,7 @@
     {
       "service": "analytics",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "analytics",
@@ -25593,7 +25593,7 @@
     {
       "service": "auth",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "auth",
@@ -25655,7 +25655,7 @@
     {
       "service": "db",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "db",
@@ -25717,7 +25717,7 @@
     {
       "service": "functions",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "functions",
@@ -25779,7 +25779,7 @@
     {
       "service": "imgproxy",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "imgproxy",
@@ -25834,7 +25834,7 @@
     {
       "service": "kong",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "kong",
@@ -25896,7 +25896,7 @@
     {
       "service": "meta",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "meta",
@@ -25958,7 +25958,7 @@
     {
       "service": "realtime",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "realtime",
@@ -26020,7 +26020,7 @@
     {
       "service": "rest",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "rest",
@@ -26082,7 +26082,7 @@
     {
       "service": "storage",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "storage",
@@ -26144,7 +26144,7 @@
     {
       "service": "studio",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "studio",
@@ -26206,7 +26206,7 @@
     {
       "service": "supavisor",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "supavisor",
@@ -26268,7 +26268,7 @@
     {
       "service": "vector",
       "current_scope": "lab",
-      "current_compose_file": "labs/supabase.yml",
+      "current_compose_file": "labs/supabase/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "vector",
@@ -26330,7 +26330,7 @@
     {
       "service": "dbt",
       "current_scope": "lab",
-      "current_compose_file": "labs/dbt.yml",
+      "current_compose_file": "labs/dbt/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "dbt",
@@ -26487,7 +26487,7 @@
     {
       "service": "dbt-db-provision",
       "current_scope": "lab",
-      "current_compose_file": "labs/dbt.yml",
+      "current_compose_file": "labs/dbt/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "dbt-db-provision",
@@ -26608,7 +26608,7 @@
     {
       "service": "flink-jobmanager",
       "current_scope": "lab",
-      "current_compose_file": "labs/lakehouse.yml",
+      "current_compose_file": "labs/lakehouse/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "flink-jobmanager",
@@ -26756,7 +26756,7 @@
     {
       "service": "flink-taskmanager",
       "current_scope": "lab",
-      "current_compose_file": "labs/lakehouse.yml",
+      "current_compose_file": "labs/lakehouse/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "flink-taskmanager",
@@ -26904,7 +26904,7 @@
     {
       "service": "great-expectations",
       "current_scope": "lab",
-      "current_compose_file": "labs/lakehouse.yml",
+      "current_compose_file": "labs/lakehouse/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "great-expectations",
@@ -27027,7 +27027,7 @@
     {
       "service": "jupyterlab",
       "current_scope": "lab",
-      "current_compose_file": "labs/jupyterlab.yml",
+      "current_compose_file": "labs/jupyterlab/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "jupyterlab",
@@ -27179,7 +27179,7 @@
     {
       "service": "seaweedfs-table-bucket",
       "current_scope": "lab",
-      "current_compose_file": "labs/lakehouse.yml",
+      "current_compose_file": "labs/lakehouse/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "seaweedfs-table-bucket",
@@ -27295,7 +27295,7 @@
     {
       "service": "sonarqube",
       "current_scope": "lab",
-      "current_compose_file": "labs/sonarqube.yml",
+      "current_compose_file": "labs/sonarqube/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "sonarqube",
@@ -27467,7 +27467,7 @@
     {
       "service": "spark",
       "current_scope": "lab",
-      "current_compose_file": "labs/lakehouse.yml",
+      "current_compose_file": "labs/lakehouse/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "spark",
@@ -27615,7 +27615,7 @@
     {
       "service": "stalwart",
       "current_scope": "lab",
-      "current_compose_file": "labs/stalwart.yml",
+      "current_compose_file": "labs/stalwart/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "stalwart",
@@ -27774,7 +27774,7 @@
     {
       "service": "stalwart-config",
       "current_scope": "lab",
-      "current_compose_file": "labs/stalwart.yml",
+      "current_compose_file": "labs/stalwart/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "stalwart-config",
@@ -27918,7 +27918,7 @@
     {
       "service": "superset",
       "current_scope": "lab",
-      "current_compose_file": "labs/superset.yml",
+      "current_compose_file": "labs/superset/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "superset",
@@ -28051,7 +28051,7 @@
     {
       "service": "superset-db-provision",
       "current_scope": "lab",
-      "current_compose_file": "labs/superset.yml",
+      "current_compose_file": "labs/superset/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "superset-db-provision",
@@ -28172,7 +28172,7 @@
     {
       "service": "superset-init",
       "current_scope": "lab",
-      "current_compose_file": "labs/superset.yml",
+      "current_compose_file": "labs/superset/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "superset-init",
@@ -28305,7 +28305,7 @@
     {
       "service": "trino",
       "current_scope": "lab",
-      "current_compose_file": "labs/lakehouse.yml",
+      "current_compose_file": "labs/lakehouse/docker-compose.yml",
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "trino",

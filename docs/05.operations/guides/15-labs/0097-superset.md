@@ -10,7 +10,7 @@ artifact_id: "GDE-0097"
 parent_ids:
 - "POL-0097"
 implementation_services:
-  labs/superset.yml:
+  labs/superset/docker-compose.yml:
   - superset-db-provision
   - superset-init
   - superset
@@ -21,7 +21,7 @@ created: "2026-09-23"
 
 ## Overview
 
-Superset은 root Compose에서 분리된 독립 LAB `labs/superset.yml`의 BI 웹 애플리케이션이며 LAB
+Superset은 root Compose에서 분리된 독립 LAB `labs/superset/docker-compose.yml`의 BI 웹 애플리케이션이며 LAB
 profile `lab-superset`으로 선택된다(SPEC-0262). Trino를 통해 레이크하우스 테이블을 탐색하고 차트로 만드는
 용도다. Grafana는 운영 관측 도구로 남고, Superset은 데이터 분석용이다. root `bi` profile은
 이제 HOME mng-pg 기반만 선택하고 Superset을 선택하지 않는다.
@@ -36,7 +36,7 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
 
 ### Current implementation
 
-- **Image.** [Superset Compose](../../../../labs/superset.yml)는
+- **Image.** [Superset Compose](../../../../labs/superset/docker-compose.yml)는
   `apache/superset`에 PostgreSQL 드라이버, Authlib, `requirements.txt`에
   고정된 Trino 다이얼렉트를 더해 빌드한다.
 - **LAB boundary.** `hy-home-lab-superset` project의 `lab_superset_net` 하나만 사용하고 HOME
@@ -80,15 +80,15 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
-| `superset-db-provision` | metadata role/database provisioning job | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../labs/superset.yml) |
-| `superset-init` | migration/role init/Trino URI 등록 job | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../labs/superset.yml) |
-| `superset` | OIDC BI app; metadata는 공유 PG | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../labs/superset.yml) |
+| `superset-db-provision` | metadata role/database provisioning job | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../labs/superset/docker-compose.yml) |
+| `superset-init` | migration/role init/Trino URI 등록 job | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../labs/superset/docker-compose.yml) |
+| `superset` | OIDC BI app; metadata는 공유 PG | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../labs/superset/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### Commands and side effects
 
-표의 `LAB`은 `docker compose --env-file labs/.env -f labs/superset.yml --profile lab-superset`다. `LAB config`
+표의 `LAB`은 `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset`다. `LAB config`
 렌더링만 승인 없이 안전하며, 그 외 명령은 `python3 scripts/operations/lab.py check|up|down superset`의
 목적·lease·충돌·예산 규칙을 따르는 활성 lease 안에서, 승인된 mng-pg endpoint가 있을 때만 쓴다.
 
@@ -115,12 +115,12 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
 
 ### Common Checks
 
-- `docker compose --env-file labs/.env -f labs/superset.yml --profile lab-superset config --quiet`
+- `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
 
 ## Related Documents
 
 - [Superset package README](../../../../labs/superset/README.md)
-- [Superset Compose source](../../../../labs/superset.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
+- [Superset Compose source](../../../../labs/superset/docker-compose.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [Superset configuration](https://superset.apache.org/docs/configuration/configuring-superset)

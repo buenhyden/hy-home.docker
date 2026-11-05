@@ -98,5 +98,4 @@ docker compose --env-file labs/.env.example -f labs/lakehouse/docker-compose.yml
 ## Related Documents
 
 - [LAB 탐색](../README.md)
-- [Lakehouse 가이드](../../docs/05.operations/guides/15-labs/0094-lakehouse.md)
-- [Lakehouse 런북](../../docs/05.operations/runbooks/15-labs/0094-lakehouse.md)
+- [운영 문서 색인](../../docs/05.operations/README.md) — `GDE-0094`, `POL-0094`, `RUN-0094`

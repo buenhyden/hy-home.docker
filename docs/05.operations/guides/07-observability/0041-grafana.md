@@ -101,7 +101,7 @@ created: "2026-05-10"
 ### Dashboard catalog (SPEC-0193)
 
 - **Coverage**: [Grafana README](../../../../infra/06-observability/grafana/README.md)의 Service Coverage 표가 Compose 서비스 전체(정지·OPTIONAL·LAB 포함)를 한 줄씩 나열하고, 서비스마다 메트릭 소스(scrape job)와 대시보드를 적는다. 메트릭 소스가 없는 서비스(ComfyUI, Open WebUI, Dozzle 등)는 `Infrastructure/containers`(cAdvisor)와 Logs Drilldown으로 본다.
-- **LAB dashboard**: SPEC-0225부터 LAB 서비스(HAProxy, Valkey Cluster, MongoDB, Cassandra, etcd)의 대시보드는 `labs/dashboards/`에 있고 HOME Grafana에는 provisioning되지 않는다.
+- **LAB dashboard**: SPEC-0225부터 LAB 서비스(HAProxy, Valkey Cluster, MongoDB, Cassandra, etcd)의 대시보드는 각 LAB 폴더의 `labs/<name>/dashboards/`에 있고 HOME Grafana에는 provisioning되지 않는다.
 - **One role per dashboard**: 같은 소스를 같은 목적으로 그리는 대시보드는 하나만 둔다. 계약 테스트가 두 대시보드의 쿼리가 절반 이상 겹치면 실패한다.
 - **External first**: 서비스가 방출하는 메트릭 이름과 맞는 벤더 저장소, monitoring-mixins, grafana.com 대시보드가 있으면 그것을 쓴다. 파일에 넣을 때 `__inputs`를 provisioned UID로 풀고, `hyhome-*` UID를 붙이고, `description`에 출처와 revision(또는 commit)을 남긴다. README의 Dashboard Sources 표가 전체 출처 목록이다. 로컬 대시보드는 맞는 외부 대시보드가 없을 때만 둔다(Ollama, OAuth2 Proxy, Flower, Pyroscope, Airflow Runs (DB)).
 - **Label contract**: 모든 scrape target에 `cluster="hy-home"`, `namespace="hy-home"`가 붙는다. mixin 대시보드의 `cluster`/`namespace` 변수가 이 라벨로 채워진다. Kafka job 이름 `kafka-broker`, `kafka-connect`, `schema-registry`와 `kafka_connect_cluster_id`, `env` 라벨은 Confluent 대시보드가 그대로 동작하도록 맞춘 값이다.
@@ -132,7 +132,7 @@ created: "2026-05-10"
 | 벤더 대시보드 채택 | Traefik(`contrib/grafana`), Keycloak(`keycloak-grafana-dashboard`의 troubleshooting·capacity planning), SeaweedFS(`other/metrics`), Kafka·Connect·Schema Registry(Confluent `jmx-monitoring-stacks`), Gatus(예제), NVIDIA DCGM, redis_exporter contrib |
 | mixin 채택 | Prometheus, Alertmanager, Grafana, Alloy, Loki, Tempo, Airflow, etcd, OpenSearch |
 | grafana.com 채택 | Node Exporter Full 1860, cAdvisor 19792, PostgreSQL 9628, Qdrant 24603, HAProxy 12693, Valkey Cluster 21914, MongoDB 16490, Cassandra 6400, Kafka consumer lag 7589, k6 19665, OpenBao 23725, Docker Registry 9621, n8n 24474·24475 |
-| LAB 이동(SPEC-0225) | HAProxy 12693, Valkey Cluster 21914, MongoDB 16490, Cassandra 6400, etcd mixin은 `labs/dashboards/`로 옮겨져 HOME에 provisioning되지 않는다 |
+| LAB 이동(SPEC-0225) | HAProxy 12693, Valkey Cluster 21914, MongoDB 16490, Cassandra 6400, etcd mixin은 각 LAB 폴더의 `labs/<name>/dashboards/`로 옮겨져 HOME에 provisioning되지 않는다 |
 | 맞는 것 없음 | OAuth2 Proxy(`oauth2_proxy_*`를 쓰는 대시보드가 없다), Ollama(lucabecker42 exporter와 다른 exporter를 가정), Pyroscope(공식 대시보드가 Kubernetes 라벨 전용), Supabase(Cloud 전용 메트릭) |
 | 버림 | Keycloak 14390(Keycloak 26이 방출하지 않는 `base_*` 이름), Qdrant 공식 대시보드(Kubernetes·Cloud 전용), Neo4j 12046(Community 판에 메트릭 endpoint가 없다), vLLM 24756(vLLM 서비스가 없다) |
 

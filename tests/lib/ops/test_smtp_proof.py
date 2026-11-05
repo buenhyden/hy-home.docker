@@ -119,7 +119,7 @@ class SMTPProofTests(unittest.TestCase):
                 }
             )
         )
-        lab = self.root / "labs/supabase.yml"
+        lab = self.root / "labs/supabase/docker-compose.yml"
         lab.parent.mkdir(parents=True, exist_ok=True)
         lab.write_text(
             yaml.safe_dump(

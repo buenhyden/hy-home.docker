@@ -919,7 +919,7 @@ class MailpitHealthContractTests(unittest.TestCase):
             for name in (
                 "scripts/hardening/check-all-hardening.sh",
                 "scripts/lib/hardening-lib.sh",
-                "labs/sonarqube.yml",
+                "labs/sonarqube/docker-compose.yml",
                 "infra/11-quality/wiremock/docker-compose.yml",
                 "infra/11-quality/pact-broker/docker-compose.yml",
                 "infra/11-quality/mailpit/docker-compose.yml",
@@ -1014,7 +1014,7 @@ class OllamaPortContractTests(unittest.TestCase):
 
 
 MNG_DB_COMPOSE = "infra/04-data/mng-db/docker-compose.yml"
-PG_CLUSTER_COMPOSE = "labs/postgresql-ha.yml"
+PG_CLUSTER_COMPOSE = "labs/postgresql-ha/docker-compose.yml"
 PROVISION_RUNNER = "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
 # Feature-owned mng-pg provisioning jobs: (compose file, job, SQL file, profiles).
 FEATURE_JOBS = (
@@ -1025,7 +1025,7 @@ FEATURE_JOBS = (
         {"mlops", "data-science"},
     ),
     (
-        "labs/dbt.yml",
+        "labs/dbt/docker-compose.yml",
         "dbt-db-provision",
         "labs/dbt/provisioning/dev-pg.sql",
         {"lab-dbt"},
@@ -1043,7 +1043,7 @@ FEATURE_JOBS = (
         {"contract-testing"},
     ),
     (
-        "labs/superset.yml",
+        "labs/superset/docker-compose.yml",
         "superset-db-provision",
         "labs/superset/provisioning/mng-pg.sql",
         {"lab-superset"},
@@ -1747,7 +1747,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         # SPEC-0180 S16: provisioning, the init job's own command twice, then
         # the web server; the password carries a quote, a backslash and an @.
         self.assertEqual(0, self.provision("superset-db-provision").returncode)
-        compose = "labs/superset.yml"
+        compose = "labs/superset/docker-compose.yml"
         init = _compose_service(compose, "superset-init")
         image = init["image"]
         built = subprocess.run(
@@ -4678,7 +4678,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             {},
         )
         lab = render(
-            ["--env-file", "labs/.env.example", "-f", "labs/lakehouse.yml",
+            ["--env-file", "labs/.env.example", "-f", "labs/lakehouse/docker-compose.yml",
              "--profile", "lakehouse"],
             {
                 "LAB_DATA_DIR": str(cls.dir / "lab"),
@@ -5821,7 +5821,9 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         import yaml
 
         normal = self._services()
-        lab = yaml.safe_load((ROOT / "labs/opensearch-cluster.yml").read_text())
+        lab = yaml.safe_load(
+            (ROOT / "labs/opensearch-cluster/docker-compose.yml").read_text()
+        )
         for index in (1, 2, 3):
             name = f"opensearch-node{index}"
             self.assertNotIn(name, normal)
@@ -6165,7 +6167,7 @@ class StalwartRehearsalTests(unittest.TestCase):
                     "--env-file",
                     "labs/.env.example",
                     "-f",
-                    "labs/stalwart.yml",
+                    "labs/stalwart/docker-compose.yml",
                     "--profile",
                     "mail-server",
                     "config",
@@ -6798,14 +6800,23 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
             d for row in rows for d in re.findall(r"`([A-Z]\w+/[a-z0-9-]+)`", row[3])
         }
         self.assertEqual(set(self._dashboards()), referenced)
-        lab_dashboards = ROOT / "labs/dashboards"
-        lab_readme = (lab_dashboards / "README.md").read_text(encoding="utf-8")
-        lab_referenced = set(
-            re.findall(r"^\| `([a-z0-9-]+)` \|", lab_readme, re.MULTILINE)
-        )
-        self.assertEqual(
-            {path.stem for path in lab_dashboards.glob("*.json")}, lab_referenced
-        )
+        # SPEC-0263: each LAB keeps its dashboards and their provenance rows.
+        for lab_dashboards in sorted((ROOT / "labs").glob("*/dashboards")):
+            lab_readme = (lab_dashboards.parent / "README.md").read_text(
+                encoding="utf-8"
+            )
+            lab_referenced = set(
+                re.findall(
+                    r"^\| \[`([a-z0-9-]+)\.json`\]\(\./dashboards/\1\.json\) \|",
+                    lab_readme,
+                    re.MULTILINE,
+                )
+            )
+            with self.subTest(lab=lab_dashboards.parent.name):
+                self.assertEqual(
+                    {path.stem for path in lab_dashboards.glob("*.json")},
+                    lab_referenced,
+                )
 
     def test_both_prometheus_files_hold_one_labelled_scrape_set(self) -> None:
         import yaml

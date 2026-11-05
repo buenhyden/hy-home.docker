@@ -10,7 +10,7 @@ artifact_id: "GDE-0066"
 parent_ids:
 - "POL-0066"
 implementation_services:
-  labs/sonarqube.yml:
+  labs/sonarqube/docker-compose.yml:
   - sonarqube
 created: "2026-05-10"
 ---
@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ## Overview
 
-SonarQube Community Build는 독립 LAB `labs/sonarqube.yml`(project `hy-home-lab-sonarqube`)의
+SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(project `hy-home-lab-sonarqube`)의
 `sonarqube` service로 운영하는 코드 품질·SAST 도구다. LAB profile `sast`에서만
 선택되며 root Compose와 HOME에는 포함되지 않는다(SPEC-0262).
 
@@ -44,7 +44,7 @@ SonarQube Community Build는 LAB profile `sast` 하위의 온디맨드 **LAB**
 
 ### 현재 구현과 흐름
 
-- [SonarQube Compose](../../../../labs/sonarqube.yml)가
+- [SonarQube Compose](../../../../labs/sonarqube/docker-compose.yml)가
   런타임 이미지, profile, DB secret, JVM heap, host port, 볼륨, health를 정의한다.
 - gateway route와 SSO는 없다. 브라우저와 스캐너는
   `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}`로 SonarQube에 직접 접속한다.
@@ -70,7 +70,7 @@ SonarQube Community Build는 LAB profile `sast` 하위의 온디맨드 **LAB**
 
 ### 일반적인 사용
 
-1. 루트에서 `docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast config --quiet`로
+1. 루트에서 `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --quiet`로
    렌더링만 검증한다(부수 효과 없음). 승인된 mng-pg endpoint와 role/DB 준비를 별도로 확인한다.
 2. 기동은 `python3 scripts/operations/lab.py check|up|down sonarqube`의 목적·lease 규칙만 따른다.
    system health를 기다린 다음 SonarQube 로그인과 권한을 확인한다.
@@ -110,8 +110,8 @@ LAB Compose는 다른 project의 PostgreSQL을 기다리는 의존성을 선언�
 
 ### Common Checks
 
-- `docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast config --quiet`
-- `docker compose --env-file labs/.env -f labs/sonarqube.yml --profile sast config --services`
+- `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --quiet`
+- `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --services`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
 ## Related Documents

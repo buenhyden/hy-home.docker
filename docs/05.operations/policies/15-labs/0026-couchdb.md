@@ -16,11 +16,11 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 [couchdb image declaration](../../../../labs/couchdb.yml), [curlimages/curl image declaration](../../../../labs/couchdb.yml), `couchdb-cluster-init`, Traefik sticky route, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
+이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 [couchdb image declaration](../../../../labs/couchdb/docker-compose.yml), [curlimages/curl image declaration](../../../../labs/couchdb/docker-compose.yml), `couchdb-cluster-init`, Traefik sticky route, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
 
 ## Scope
 
-- `labs/couchdb.yml`
+- `labs/couchdb/docker-compose.yml`
 - `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`
 - `couchdb1-data`, `couchdb2-data`, `couchdb3-data`
 - `lab_couchdb_password`, `lab_couchdb_cookie`, `LAB_COUCHDB_USERNAME`
@@ -82,9 +82,9 @@ N/A - 현재 승인된 예외 없음.
 
 - Compose 변경 후 이 정책을 [CouchDB guide](../../guides/15-labs/0026-couchdb.md),
   [CouchDB runbook](../../runbooks/15-labs/0026-couchdb.md),
-  [LAB 설명](../../../../labs/couchdb.md)와 비교한다.
+  [LAB 설명](../../../../labs/couchdb/README.md)와 비교한다.
 - 서비스 이름, port, Traefik, secret, cluster-init 문서 갱신을 승인하기 전에
-  `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb.yml --profile couchdb config --quiet`를 실행한다.
+  `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile couchdb config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
 ## Related Documents
@@ -96,4 +96,4 @@ N/A - 현재 승인된 예외 없음.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/15-labs/0026-couchdb.md)
 - [Recovery runbook](../../runbooks/15-labs/0026-couchdb.md)
-- [LAB 설명](../../../../labs/couchdb.md)
+- [LAB 설명](../../../../labs/couchdb/README.md)

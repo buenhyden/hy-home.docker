@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 정상 root의 단일 OpenSearch와 별도 standalone LAB 클러스터의 운영 경계를 정의합니다. 정상 구성은 `infra/04-data/opensearch/docker-compose.yml`의 선언된 OpenSearch custom build와 Dashboards 이미지입니다. 세 노드는 [LAB Compose](../../../../labs/opensearch-cluster.yml)에서만 선택하며 root에는 include되지 않습니다. 소스나 문서의 변경은 기동·중단·복구 승인을 부여하지 않습니다.
+이 문서는 정상 root의 단일 OpenSearch와 별도 standalone LAB 클러스터의 운영 경계를 정의합니다. 정상 구성은 `infra/04-data/opensearch/docker-compose.yml`의 선언된 OpenSearch custom build와 Dashboards 이미지입니다. 세 노드는 [LAB Compose](../../../../labs/opensearch-cluster/docker-compose.yml)에서만 선택하며 root에는 include되지 않습니다. 소스나 문서의 변경은 기동·중단·복구 승인을 부여하지 않습니다.
 
 ## Scope
 
@@ -27,7 +27,7 @@ created: "2026-05-17"
 
 ## Rules
 
-- **Activation**: 정상은 `docker compose --profile opensearch config --quiet`, LAB는 `docker compose --env-file labs/.env.example -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet`로 각각 정적 검증합니다. LAB에는 별도 `LAB_SECRET_DIR` 및 `LAB_OPENSEARCH_CERT_DIR`가 필요합니다. 두 project의 선택과 실행 승인을 따로 기록합니다.
+- **Activation**: 정상은 `docker compose --profile opensearch config --quiet`, LAB는 `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet`로 각각 정적 검증합니다. LAB에는 별도 `LAB_SECRET_DIR` 및 `LAB_OPENSEARCH_CERT_DIR`가 필요합니다. 두 project의 선택과 실행 승인을 따로 기록합니다.
 - **Security**: 정상 TLS, 인증서, security plugin, secret-backed user, gateway middleware를 보존합니다. LAB는 별도 CA/node 인증서와 secret, 내부 네트워크, 기본 내부 인증만 사용하며 정상 gateway/OIDC 및 데이터를 연결하지 않습니다. `.opendistro_security`를 유일한 security backup으로 snapshot하지 않는다; 검토된 security configuration을 별도로 보존하고 그 credential을 제한한다.
 - **Retention and backup**: ingest 전에 index/ISM retention을 정의한다. live data volume 밖에 repository를 등록하고, 완료된 snapshot state를 요구하며, storage class에 맞게 repository를 암호화·제한하고, 격리된 restore를 rehearse한다.
 - **Resources**: LAB 노드당 2 CPU/2 GiB, Dashboard, disk, JVM overhead를 재측정하지 않고 시작하지 않습니다. Promotion에는 측정된 shard와 restore capacity가 필요하다.
@@ -36,7 +36,7 @@ created: "2026-05-17"
 - **Required**: OpenSearch API check는 HTTPS와 secret-backed admin authentication을 사용해야 한다.
 - **Required**: 정상 작업은 root의 `opensearch`를, LAB 작업은 별도 project의 `opensearch-node1..3`과 `lab-opensearch-dashboards`를 명시적으로 대상으로 합니다.
 - **Required**: secret 값과 생성된 internal user material은 문서나 command history에 복사하지 않는다.
-- **Allowed**: `-f labs/opensearch-cluster.yml --profile opensearch-cluster`를 명시한 LAB 정적 render. 이는 기동 허가가 아닙니다.
+- **Allowed**: `-f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster`를 명시한 LAB 정적 render. 이는 기동 허가가 아닙니다.
 - **Disallowed**: unauthenticated bulk load, HTTP-only health check, 또는 index/ISM evidence 없이 replica policy가 존재한다는 주장.
 
 ### Accountable lifecycle boundary
@@ -60,14 +60,14 @@ created: "2026-05-17"
 ## Verification
 
 - `test -f infra/04-data/opensearch/docker-compose.yml`
-- `test -f labs/opensearch-cluster.yml`
+- `test -f labs/opensearch-cluster/docker-compose.yml`
 - 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Related Documents
 
 - [Compose implementation: infra/04-data/opensearch/docker-compose.yml](../../../../infra/04-data/opensearch/docker-compose.yml)
 - [Custom image source: infra/04-data/opensearch/Dockerfile](../../../../infra/04-data/opensearch/Dockerfile)
-- [LAB Compose](../../../../labs/opensearch-cluster.yml) 및 [LAB 설명](../../../../labs/opensearch-cluster.md)
+- [LAB Compose](../../../../labs/opensearch-cluster/docker-compose.yml) 및 [LAB 설명](../../../../labs/opensearch-cluster/README.md)
 
 - [OpenSearch snapshot and restore](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
 - [Operations policies index](../../README.md)

@@ -76,13 +76,14 @@ class LabSourceContainmentTests(unittest.TestCase):
         family = ROOT / "labs"
         for name in ("postgresql-ha", "valkey-cluster", "locust"):
             with self.subTest(lab=name):
-                self.assertEqual(f"labs/{name}.yml", lab.lab_file(name))
-                source = family / f"{name}.yml"
+                self.assertEqual(f"labs/{name}/docker-compose.yml", lab.lab_file(name))
+                source = family / name / "docker-compose.yml"
+                base = source.parent
                 document = yaml.safe_load(source.read_text())
                 self.assertTrue(document["services"])
                 for service in document["services"].values():
                     if "build" in service:
-                        context = (family / service["build"]["context"]).resolve()
+                        context = (base / service["build"]["context"]).resolve()
                         self.assertTrue(context.is_relative_to(family))
                         self.assertTrue((context / "Dockerfile").is_file())
                     for mount in service.get("volumes", []):
@@ -91,12 +92,12 @@ class LabSourceContainmentTests(unittest.TestCase):
                         asset = mount.split(":", 1)[0]
                         if not asset.startswith("."):
                             continue  # Named state volumes are not source artifacts.
-                        path = (family / asset).resolve()
+                        path = (base / asset).resolve()
                         self.assertTrue(path.is_relative_to(family), path)
                         self.assertTrue(path.is_file(), path)
                         self.assertTrue(mount.endswith(":ro"), mount)
                     if "extends" in service:
-                        shared = (family / service["extends"]["file"]).resolve()
+                        shared = (base / service["extends"]["file"]).resolve()
                         self.assertEqual(
                             ROOT / "infra/common-optimizations.yml", shared
                         )

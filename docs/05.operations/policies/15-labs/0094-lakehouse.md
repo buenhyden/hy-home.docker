@@ -25,7 +25,7 @@ Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 
 
 ## Rules
 
-- 엔진은 독립 LAB `labs/lakehouse.yml`의 `lab-lakehouse` profile로만 선택한다(SPEC-0262). root
+- 엔진은 독립 LAB `labs/lakehouse/docker-compose.yml`의 `lab-lakehouse` profile로만 선택한다(SPEC-0262). root
   include, HOME network 합류, HOME 이름 선택 추가를 금지한다. root `lakehouse` profile은 HOME
   SeaweedFS만 선택한다.
 - LAB은 HOME 서비스를 `LAB_LAKEHOUSE_S3_ENDPOINT`·`LAB_LAKEHOUSE_CATALOG_URI` 필수 입력으로만
@@ -84,6 +84,6 @@ Compose 렌더링, 카탈로그 확인, 그리고 범위가 한정된 identity�
 
 ## Related Documents
 
-- [Lakehouse LAB Compose source](../../../../labs/lakehouse.yml)
+- [Lakehouse LAB Compose source](../../../../labs/lakehouse/docker-compose.yml)
 - [LAB 공개 입력 예시](../../../../labs/.env.example)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)

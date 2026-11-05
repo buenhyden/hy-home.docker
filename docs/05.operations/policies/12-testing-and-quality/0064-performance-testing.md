@@ -28,7 +28,7 @@ created: "2026-05-17"
 
 - `infra/11-quality/k6/`와 실행별 원본·판정·적재 계약
 - `infra/11-quality/wiremock/`의 기능/부하 모의 모드
-- `labs/locust.yml`의 독립 실습 실행
+- `labs/locust/docker-compose.yml`의 독립 실습 실행
 - 개발 `perf_db`의 프로젝트별 조회·적재·판정 권한
 - 승인된 local·development·homelab 성능 테스트 시간대
 

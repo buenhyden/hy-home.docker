@@ -29,7 +29,7 @@ class DevDataBoundaryTests(unittest.TestCase):
         self.assertNotIn("service_postgres_db", sql)
 
     def test_dbt_and_cdc_target_named_dev_fixture(self):
-        dbt = compose("labs/dbt.yml")
+        dbt = compose("labs/dbt/docker-compose.yml")
         kafka = compose("infra/05-messaging/kafka/docker-compose.yml")
         connector = json.loads(
             (
@@ -90,9 +90,9 @@ class DevDataBoundaryTests(unittest.TestCase):
                     with self.subTest(service=name, key=key):
                         self.assertNotIn("POSTGRES_PORT", str(value))
                         self.assertNotIn("POSTGRES_DEFAULT_DB", str(value))
-        # SPEC-0262 moved the two dbt consumers to labs/dbt.yml, checked below.
+        # SPEC-0262 moved the two dbt consumers to labs/dbt/docker-compose.yml, checked below.
         self.assertGreaterEqual(consumers, 2)
-        for name, service in compose("labs/dbt.yml").items():
+        for name, service in compose("labs/dbt/docker-compose.yml").items():
             for key, value in (service.get("environment") or {}).items():
                 with self.subTest(service=name, key=key):
                     self.assertNotIn("POSTGRES_PORT", str(value))

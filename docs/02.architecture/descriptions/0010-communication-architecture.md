@@ -18,7 +18,7 @@ created: "2026-03-26"
 
 ### Context and Stakeholders
 
-The mail requirements separate development message capture in `11-quality/mailpit` from the optional mail server, which since SPEC-0262 is the standalone LAB `labs/stalwart.yml` and joins no HOME network. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
+The mail requirements separate development message capture in `11-quality/mailpit` from the optional mail server, which since SPEC-0262 is the standalone LAB `labs/stalwart/docker-compose.yml` and joins no HOME network. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
 `mail-dev`. Stalwart is selected only by `mail-server` and requires mail-domain,
 DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 

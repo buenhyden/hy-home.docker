@@ -103,7 +103,7 @@ services:
 
   # Batch and table-maintenance job over the Iceberg tables in the REST
   # catalog. The default command only lists namespaces; any write is an
-  # explicit `docker compose -f labs/lakehouse.yml run --rm spark spark-sql ...`.
+  # explicit `docker compose -f labs/lakehouse/docker-compose.yml run --rm spark spark-sql ...`.
   spark:
     profiles:
       - lab-lakehouse
@@ -196,7 +196,7 @@ services:
 
   # Data quality job: checks Iceberg tables through Trino against the tracked
   # suites. The default command only lists suites; checking is an explicit
-  # `docker compose -f labs/lakehouse.yml run --rm great-expectations validate [SUITE...]`,
+  # `docker compose -f labs/lakehouse/docker-compose.yml run --rm great-expectations validate [SUITE...]`,
   # which reads tables and exits 1 when an expectation fails.
   great-expectations:
     profiles:

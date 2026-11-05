@@ -120,7 +120,7 @@ def lab_source(
 ):
     if write_common:
         common_source(tree)
-    lab = tree / "labs/supabase.yml"
+    lab = tree / "labs/supabase/docker-compose.yml"
     lab.parent.mkdir(parents=True, exist_ok=True)
     if entrypoint is None:
         entrypoint = [
@@ -635,7 +635,8 @@ class SMTPContractTests(unittest.TestCase):
         lab = lab_source(self.root)
         hashes = source_hashes(self.root)
         self.assertEqual(
-            hashlib.sha256(lab.read_bytes()).hexdigest(), hashes["labs/supabase.yml"]
+            hashlib.sha256(lab.read_bytes()).hexdigest(),
+            hashes["labs/supabase/docker-compose.yml"],
         )
         self.assertTrue(set(hashes) >= {"docker-compose.yml", "infra/auth.yml"})
 
@@ -647,7 +648,7 @@ class SMTPContractTests(unittest.TestCase):
         rootfile.write_text(yaml.safe_dump(document))
         lab_source(self.root)
         hashes = source_hashes(self.root)
-        self.assertIn("labs/supabase.yml", hashes)
+        self.assertIn("labs/supabase/docker-compose.yml", hashes)
 
     def test_lab_source_rejects_root_gotrue_reintroduction(self):
         self._prepare()
@@ -766,7 +767,8 @@ class SMTPContractTests(unittest.TestCase):
         lab = lab_source(self.root, write_common=False)
         hashes = source_hashes(self.root)
         self.assertEqual(
-            hashlib.sha256(lab.read_bytes()).hexdigest(), hashes["labs/supabase.yml"]
+            hashlib.sha256(lab.read_bytes()).hexdigest(),
+            hashes["labs/supabase/docker-compose.yml"],
         )
         self.assertEqual(
             hashlib.sha256(common.read_bytes()).hexdigest(),
@@ -831,7 +833,7 @@ class SMTPContractTests(unittest.TestCase):
                 "--",
                 "docker-compose.yml",
                 "infra/auth.yml",
-                "labs/supabase.yml",
+                "labs/supabase/docker-compose.yml",
             ],
             cwd=self.root,
             check=True,

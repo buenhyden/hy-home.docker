@@ -46,18 +46,20 @@ created: "2025-11-12"
 
 ```text
 labs/cassandra/
+├── README.md          # 서비스 README
 ├── docker-compose.yml # 독립 LAB entrypoint
 ├── promotion.yaml     # SPEC-0263 승격 manifest
-├── README.md
-└── dashboards/
-    └── cassandra.json # LAB 전용 Grafana 대시보드
+└── dashboards/        # LAB 전용 Grafana 대시보드
 ```
 
-[cassandra.json](./dashboards/cassandra.json)(UID `hyhome-cassandra`)은 grafana.com
-dashboard 6400 revision 2(2018-06-14)에서 왔습니다. HOME Grafana는
-`infra/06-observability/grafana/dashboards/`만 provisioning하므로 이 파일은 HOME에
-표시되지 않습니다. LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Grafana가 이
-파일을 읽도록 구성하며, HOME provisioning 경로로 옮기지 않습니다.
+| Dashboard | UID | Source |
+| --- | --- | --- |
+| [`cassandra.json`](./dashboards/cassandra.json) | `hyhome-cassandra` | grafana.com dashboard 6400 revision 2 (2018-06-14) |
+
+HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하므로
+이 대시보드는 HOME에 표시되지 않고, HOME Prometheus는 LAB 서비스를 수집하지
+않습니다. LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Prometheus·Grafana가
+이 파일을 읽도록 구성하며, HOME provisioning 경로로 옮기지 않습니다.
 
 ## Service Readiness
 

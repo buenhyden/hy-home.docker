@@ -119,7 +119,7 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 - 관측 실패가 절차와 맞지 않으면 변경을 멈추고 근거를 보존한 뒤 `## Escalation`을 따른다.
 
 - [ ] 롤백 대상 파일
-  - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`; JupyterLab LAB은 `labs/jupyterlab.yml`과 `labs/jupyterlab/`
+  - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`; JupyterLab LAB은 `labs/jupyterlab/docker-compose.yml`과 `labs/jupyterlab/`
   - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
   - `.github/workflows/ci-quality.yml`
 - [ ] 파일 되돌림이나 runtime 재시작이 필요하면 승인자와 영향 범위를 기록한 뒤 수행

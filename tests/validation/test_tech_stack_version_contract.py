@@ -829,7 +829,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
                 {
                     "source_of_truth": (
                         "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} and "
-                        "labs/*.{yml,yaml} service image declarations"
+                        "labs/*/docker-compose.yml service image declarations"
                     ),
                     "local_repository_prefixes": ["hy/", "hyhome/", "hy-home/"],
                     "entries": [
@@ -953,16 +953,18 @@ class TechStackSynchronizationTests(unittest.TestCase):
     def test_standalone_lab_image_is_projected(self) -> None:
         baseline = self.run_sync("--write")
         self.assertEqual(0, baseline.returncode, baseline.stderr)
-        lab = self.root / "labs/example.yml"
-        lab.parent.mkdir()
+        lab = self.root / "labs/example/docker-compose.yml"
+        lab.parent.mkdir(parents=True)
         lab.write_text("services:\n  experiment:\n    image: example/lab:1\n")
-        subprocess.run(["git", "add", "labs/example.yml"], cwd=self.root, check=True)
+        subprocess.run(
+            ["git", "add", "labs/example/docker-compose.yml"], cwd=self.root, check=True
+        )
         self.assertEqual(1, self.run_sync("--check").returncode)
         self.assertEqual(0, self.run_sync("--write").returncode)
         entries = json.loads(self.registry.read_text())["entries"]
         entry = next(item for item in entries if item["images"] == ["example/lab:1"])
         self.assertEqual("lab", entry["tier"])
-        self.assertEqual(["labs/example.yml"], entry["compose_files"])
+        self.assertEqual(["labs/example/docker-compose.yml"], entry["compose_files"])
         self.assertEqual(0, self.run_sync("--check").returncode)
 
     def test_hyphenated_compose_filename_is_in_source_universe(self) -> None:
@@ -1283,7 +1285,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
     ) -> None:
         for relative in (
             pathlib.Path("infra/example/docker-compose.yml"),
-            pathlib.Path("labs/example.yml"),
+            pathlib.Path("labs/example/docker-compose.yml"),
         ):
             with self.subTest(relative=relative):
                 target = self.root / relative
@@ -1394,7 +1396,12 @@ class TechStackSynchronizationTests(unittest.TestCase):
             "invalid",
             [{"compose_file": "../escape.yml", "variables": ["IMAGE"]}],
             [{"compose_file": "/infra/example/compose.yml", "variables": ["IMAGE"]}],
-            [{"compose_file": "labs/example.yml", "variables": ["IMAGE"]}],
+            [
+                {
+                    "compose_file": "labs/example/docker-compose.yml",
+                    "variables": ["IMAGE"],
+                }
+            ],
             [{"compose_file": "infra/example/not-compose.yml", "variables": ["IMAGE"]}],
             [{"compose_file": "infra/example/compose.yml", "variables": []}],
             [{"compose_file": "infra/example/compose.yml", "variables": ["9IMAGE"]}],

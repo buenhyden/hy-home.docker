@@ -15,7 +15,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class LabCredentialArgvTest(unittest.TestCase):
     def test_haproxy_password_is_not_passed_to_sed_argv(self):
-        compose = yaml.safe_load((ROOT / "labs/postgresql-ha.yml").read_text())
+        compose = yaml.safe_load(
+            (ROOT / "labs/postgresql-ha/docker-compose.yml").read_text()
+        )
         command = compose["services"]["pg-router"]["command"][2]
         fixture_value = "HAp9+#%"
 
@@ -92,18 +94,18 @@ class LabCredentialArgvTest(unittest.TestCase):
         self.assertIn('hash.sh" -env OPENSEARCH_HASH_PASSWORD', entrypoint)
 
     def test_passwords_do_not_enter_cli_arguments(self):
-        valkey = (ROOT / "labs/valkey-cluster.yml").read_text()
-        mongo = (ROOT / "labs/mongodb.yml").read_text()
-        pg = (ROOT / "labs/postgresql-ha.yml").read_text()
-        couch = (ROOT / "labs/couchdb.yml").read_text()
-        opensearch = (ROOT / "labs/opensearch-cluster.yml").read_text()
+        valkey = (ROOT / "labs/valkey-cluster/docker-compose.yml").read_text()
+        mongo = (ROOT / "labs/mongodb/docker-compose.yml").read_text()
+        pg = (ROOT / "labs/postgresql-ha/docker-compose.yml").read_text()
+        couch = (ROOT / "labs/couchdb/docker-compose.yml").read_text()
+        opensearch = (ROOT / "labs/opensearch-cluster/docker-compose.yml").read_text()
         valkey_start = (
             ROOT / "labs/valkey-cluster/scripts/valkey-start.sh"
         ).read_text()
         valkey_init = (
             ROOT / "labs/valkey-cluster/scripts/valkey-cluster-init.sh"
         ).read_text()
-        couch_init = (ROOT / "labs/couchdb-cluster-init.sh").read_text()
+        couch_init = (ROOT / "labs/couchdb/couchdb-cluster-init.sh").read_text()
 
         self.assertNotIn("valkey-cli -a", valkey + valkey_init)
         self.assertNotIn('--requirepass "$password"', valkey_start)
@@ -126,7 +128,9 @@ class LabCredentialArgvTest(unittest.TestCase):
     def test_opensearch_lab_escapes_its_password_and_configures_dashboards(self):
         import yaml
 
-        lab = yaml.safe_load((ROOT / "labs/opensearch-cluster.yml").read_text())
+        lab = yaml.safe_load(
+            (ROOT / "labs/opensearch-cluster/docker-compose.yml").read_text()
+        )
         services = lab["services"]
         # Escaped for curl's config syntax instead of refusing characters, so
         # a strong password cannot leave a green cluster marked unhealthy.
@@ -145,7 +149,9 @@ class LabCredentialArgvTest(unittest.TestCase):
         )
         mount = "./opensearch-cluster-dashboards.config:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro"
         self.assertIn(mount, dashboards["volumes"])
-        config = (ROOT / "labs/opensearch-cluster-dashboards.config").read_text()
+        config = (
+            ROOT / "labs/opensearch-cluster/opensearch-cluster-dashboards.config"
+        ).read_text()
         self.assertIn("opensearch.password: ${OPENSEARCH_PASSWORD}", config)
         self.assertIn(
             "opensearch_security.cookie.password: ${OPENSEARCH_SECURITY_COOKIE_PASSWORD}",
@@ -154,7 +160,7 @@ class LabCredentialArgvTest(unittest.TestCase):
         self.assertIn("https://opensearch-node3:9200", config)
 
     def test_couch_system_database_replay_accepts_existing_and_fails_other_errors(self):
-        source = (ROOT / "labs/couchdb-cluster-init.sh").read_text()
+        source = (ROOT / "labs/couchdb/couchdb-cluster-init.sh").read_text()
         function = (
             "ensure_system_databases() {"
             + source.split("ensure_system_databases() {", 1)[1].split("\n}\n", 1)[0]
@@ -201,9 +207,9 @@ class LabCredentialArgvTest(unittest.TestCase):
             self.assertIn("_replicator (HTTP 500)", result.stderr)
 
     def test_lab_image_and_restart_boundaries(self):
-        cassandra = (ROOT / "labs/cassandra.yml").read_text()
-        mongo = (ROOT / "labs/mongodb.yml").read_text()
-        couch_init = (ROOT / "labs/couchdb-cluster-init.sh").read_text()
+        cassandra = (ROOT / "labs/cassandra/docker-compose.yml").read_text()
+        mongo = (ROOT / "labs/mongodb/docker-compose.yml").read_text()
+        couch_init = (ROOT / "labs/couchdb/couchdb-cluster-init.sh").read_text()
         valkey_init = (
             ROOT / "labs/valkey-cluster/scripts/valkey-cluster-init.sh"
         ).read_text()

@@ -52,7 +52,7 @@ non-prerelease 표기는 stable·이미지 digest·보안·호환·실기동 수
 Debezium 최신 stable과 현재 minor의 stable, PostgreSQL 지원 major와 RC,
 NGINX stable/mainline 등 서로 다른 channel은 업그레이드 판단에서 구분합니다.
 이번 ROOT include 재계산에서는 111개 서비스와 44개 입력이 관측됐습니다.
-Supabase/GoTrue 13개 행은 `labs/supabase.yml`에 속하므로 현재 ROOT 장부에서
+Supabase/GoTrue 13개 행은 `labs/supabase/docker-compose.yml`에 속하므로 현재 ROOT 장부에서
 제외하고 원래 행은 `historical_lab_entries`에 보존했습니다. 이 정합화는 실제
 scan·공급자 재조회·HOME 배포 결과를 만들지 않습니다.
 
@@ -111,8 +111,8 @@ pull·scan·독립 검토·config 검사·HOME 재생성·rollback은 `NOT_RUN`�
 `SPEC-0204-TSK-0021`이 owner 단계로 기록한다.
 
 2026-11-04 `SPEC-0262`로 분석 lakehouse·dbt·Superset·JupyterLab과 SonarQube·Stalwart
-15개 서비스가 ROOT include에서 빠져 `labs/lakehouse.yml`, `labs/dbt.yml`,
-`labs/superset.yml`, `labs/jupyterlab.yml`, `labs/sonarqube.yml`, `labs/stalwart.yml`의
+15개 서비스가 ROOT include에서 빠져 `labs/lakehouse/docker-compose.yml`, `labs/dbt/docker-compose.yml`,
+`labs/superset/docker-compose.yml`, `labs/jupyterlab/docker-compose.yml`, `labs/sonarqube/docker-compose.yml`, `labs/stalwart/docker-compose.yml`의
 단독 LAB entrypoint로 옮겨졌다. ROOT include를 다시 계산하니 97개 서비스와 35개 입력이었다.
 Supabase 선례처럼 15개 행은 현재 ROOT 장부에서 빼고 원래 행을 `historical_lab_entries`에
 보존했다. SeaweedFS Compose 입력 SHA가 바뀌어 남은 SeaweedFS 다섯 행의 source binding만

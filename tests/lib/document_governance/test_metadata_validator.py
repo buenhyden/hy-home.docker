@@ -28,7 +28,7 @@ class LabDocumentSelectionTests(unittest.TestCase):
         from scripts.lib.document_governance.registry import load_registry
 
         profiles = build_registry_profiles(load_registry(PROFILES))
-        routes = ("labs/locust/README.md", "labs/postgresql-ha.md")
+        routes = ("labs/locust/README.md", "labs/postgresql-ha/README.md")
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             subprocess.run(["git", "init", "-q", str(root)], check=True)

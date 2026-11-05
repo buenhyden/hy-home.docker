@@ -325,7 +325,7 @@
       "minProperties": 1,
       "propertyNames": {
         "type": "string",
-        "pattern": "^(?:infra/(?:[a-z0-9][a-z0-9._-]*/)+docker-compose(?:[.-][a-z0-9][a-z0-9._-]*)?\\.ya?ml|labs/[a-z0-9]+(?:-[a-z0-9]+)*\\.yml)$"
+        "pattern": "^(?:infra/(?:[a-z0-9][a-z0-9._-]*/)+docker-compose(?:[.-][a-z0-9][a-z0-9._-]*)?\\.ya?ml|labs/[a-z0-9]+(?:-[a-z0-9]+)*/docker-compose\\.yml)$"
       },
       "additionalProperties": {
         "type": "array",

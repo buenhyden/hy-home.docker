@@ -1,4 +1,4 @@
-# Rehearsal overlay for the authored labs/locust.yml; no root include.
+# Rehearsal overlay for the authored labs/locust/docker-compose.yml; no root include.
 services:
   lab-locust-master:
     image: ${QUALITY_LOCUST_IMAGE:?approved immutable Locust image}

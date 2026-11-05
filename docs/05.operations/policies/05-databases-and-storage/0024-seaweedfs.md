@@ -25,7 +25,7 @@ SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다. HO
 S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`, `nginx`,
 `mlops`, `data-science`, `lakehouse`)은 4개 서비스와 `seaweedfs-buckets`도 함께
 선택하며, `seaweedfs`와 `storage-seaweedfs` profile도 마찬가지다. root `lakehouse`는 SeaweedFS만
-선택하고, `seaweedfs-table-bucket`은 SPEC-0262에서 독립 LAB `labs/lakehouse.yml`로 옮겨졌다. Terrakube(`iac`, HOME이 제외하는 자동화
+선택하고, `seaweedfs-table-bucket`은 SPEC-0262에서 독립 LAB `labs/lakehouse/docker-compose.yml`로 옮겨졌다. Terrakube(`iac`, HOME이 제외하는 자동화
 profile)는 `storage`와 함께 동작한다.
 
 ## Rules

@@ -1917,7 +1917,7 @@
           "sha256": "28fadc79672f3c9c2f3e7f5050c65ead5048fac1b56b72932b17f53c6fe82f2f"
         },
         {
-          "path": "labs/opensearch-cluster.yml",
+          "path": "labs/opensearch-cluster/docker-compose.yml",
           "sha256": "8624025272a7c053b039c9f13bdccaa0aca62e5529d3b026d0570cafbf26fa21"
         }
       ],

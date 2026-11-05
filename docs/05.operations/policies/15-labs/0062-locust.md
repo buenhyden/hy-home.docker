@@ -23,13 +23,13 @@ Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는
 
 ## Scope
 
-`labs/locust.yml`의 `lab-locust-master`와 `lab-locust-worker` service,
+`labs/locust/docker-compose.yml`의 `lab-locust-master`와 `lab-locust-worker` service,
 bind-backed scenario/result 디렉터리, target authorization, result handling,
 scaling, image upgrade.
 
 ## Rules
 
-- **Activation:** `labs/locust.yml` entrypoint와 `lab-locust` profile만 선택하고 Locust LAB service를
+- **Activation:** `labs/locust/docker-compose.yml` entrypoint와 `lab-locust` profile만 선택하고 Locust LAB service를
   명시한다. 모든 run은 target owner, duration, user/spawn limit, worker
   count, abort SLI, stop owner를 기록한다. 규모와 무관하게 각 테스트의 정확한
   대상·부하 한도·시간대를 [공통 성능 정책](../12-testing-and-quality/0064-performance-testing.md)에 따라 승인한다.
@@ -87,7 +87,7 @@ stopped state를 포함해야 한다.
 
 ## Related Documents
 
-- [Locust LAB Compose](../../../../labs/locust.yml)
+- [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)
 - [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
 - [Locust documentation](https://docs.locust.io/en/stable/)
 - [Operations index](../../README.md)

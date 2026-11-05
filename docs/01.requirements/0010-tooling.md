@@ -67,8 +67,8 @@ N/A
 ### Functional Requirements
 
 - **REQ-0010-FR-0001**: Support an OpenTofu CLI helper for IaC execution and state management, plus centralized orchestration (Terrakube).
-- **REQ-0010-FR-0002**: Support multi-language static code analysis and quality gate enforcement (SonarQube). Since SPEC-0262 SonarQube is the standalone LAB entrypoint `labs/sonarqube.yml`, outside root Compose, reaching HOME `mng-pg` only through an approved endpoint.
-- **REQ-0010-FR-0003**: Provide k6 as the default load tool; Locust is an optional standalone LAB (`labs/locust.yml`), not a Compose service.
+- **REQ-0010-FR-0002**: Support multi-language static code analysis and quality gate enforcement (SonarQube). Since SPEC-0262 SonarQube is the standalone LAB entrypoint `labs/sonarqube/docker-compose.yml`, outside root Compose, reaching HOME `mng-pg` only through an approved endpoint.
+- **REQ-0010-FR-0003**: Provide k6 as the default load tool; Locust is an optional standalone LAB (`labs/locust/docker-compose.yml`), not a Compose service.
 - **REQ-0010-FR-0004**: Provide a single-node private image registry for internal service deployment.
 
 ### Non-functional Requirements

@@ -13,7 +13,7 @@ created: "2026-10-01"
 ## Overview
 
 소프트웨어·설정·계약·성능과 테스트 메일을 검증하는 패키지를 모았습니다.
-데이터 품질 검증인 Great Expectations는 [lakehouse LAB](../../labs/lakehouse.yml)에
+데이터 품질 검증인 Great Expectations는 [lakehouse LAB](../../labs/lakehouse/docker-compose.yml)에
 남습니다. 폴더 이름은 profile·기동 순서·network 격리를 대신하지 않습니다.
 
 ## Audience
@@ -29,7 +29,7 @@ created: "2026-10-01"
 - [Pact Broker](pact-broker/README.md)는 pact와 검증 결과를 기능 전용 management
   DB에 저장합니다.
 - [Conftest](conftest/README.md), [Mailpit](mailpit/README.md)은 각 package 문서의
-  권한·상태 경계를 따릅니다. SonarQube는 독립 [LAB](../../labs/sonarqube.yml)으로
+  권한·상태 경계를 따릅니다. SonarQube는 독립 [LAB](../../labs/sonarqube/docker-compose.yml)으로
   옮겼습니다(SPEC-0262).
 
 ## Structure

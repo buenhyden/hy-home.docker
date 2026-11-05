@@ -47,7 +47,7 @@ Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. 정상 root에는 단일
 ### Current implementation
 
 [`infra/05-messaging/kafka/docker-compose.yml`](../../../../infra/05-messaging/kafka/docker-compose.yml)은
-정상 서비스 8개를 정의한다. [`Kafka LAB 안내`](../../../../labs/kafka-cluster.md)와 [`labs/kafka-cluster.yml`](../../../../labs/kafka-cluster.yml)은
+정상 서비스 8개를 정의한다. [`Kafka LAB 안내`](../../../../labs/kafka-cluster/README.md)와 [`labs/kafka-cluster/docker-compose.yml`](../../../../labs/kafka-cluster/docker-compose.yml)은
 LAB 전용 브로커 3개·exporter·init 5개를 독립 Compose project로 정의하며 정상 root가 include하지 않는다.
 
 | Service | Role | Selector |
@@ -98,7 +98,7 @@ connector의 schema ID 이력을, Connect는 connector config/offset/status를
 | `kafka-init` | RF1 topic creation job; 단일 broker 필요 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `kafka-rest-proxy` | HTTP→Kafka 변환; native auth 선언 없음 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `schema-registry` | schema-ID/history; Kafka state에 의존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/05-messaging/kafka/docker-compose.yml) |
-| `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init` | 격리 KRaft RF3 실습 | 실제 quorum·topic 상태 미검증 | [LAB 선택·상태](../../../../labs/kafka-cluster.md) |
+| `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init` | 격리 KRaft RF3 실습 | 실제 quorum·topic 상태 미검증 | [LAB 선택·상태](../../../../labs/kafka-cluster/README.md) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 

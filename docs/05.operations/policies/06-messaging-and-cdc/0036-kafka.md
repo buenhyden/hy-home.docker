@@ -28,7 +28,7 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
 ## Rules
 
 - 정상 Kafka는 root의 `messaging` 계열 profile로만 선택한다. 세 broker
-  topology는 root에 include하지 않는 `labs/kafka-cluster.yml`의 독립 LAB이며,
+  topology는 root에 include하지 않는 `labs/kafka-cluster/docker-compose.yml`의 독립 LAB이며,
   별도 project, cluster ID, data directory만 사용한다.
 - broker와 Connect volume을 구분하고, `kafka_net`, health check, shared
   resource limit을 유지한다.
@@ -109,7 +109,7 @@ lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다
 ### Traceability
 
 - Runtime source: [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml),
-  [LAB Compose](../../../../labs/kafka-cluster.yml), [LAB 설명](../../../../labs/kafka-cluster.md),
+  [LAB Compose](../../../../labs/kafka-cluster/docker-compose.yml), [LAB 설명](../../../../labs/kafka-cluster/README.md),
   [Connect image Dockerfile](../../../../infra/05-messaging/kafka/Dockerfile.connect).
 - Artifact: `POL-0036`; parent: `AD-0005`.
 - Runtime authority는 연결된 Compose/source file에 남는다; exact pin은

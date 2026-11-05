@@ -28,13 +28,13 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         )
         self.assertIn("smtp_password", root["secrets"])
         self.assertFalse((ROOT / "infra/04-data/supabase").exists())
-        self.assertTrue((ROOT / "labs/supabase.yml").is_file())
+        self.assertTrue((ROOT / "labs/supabase/docker-compose.yml").is_file())
 
     def test_supabase_lab_keeps_canonical_smtp_and_isolated_state(self):
-        lab = compose("labs/supabase.yml")
+        lab = compose("labs/supabase/docker-compose.yml")
         self.assertEqual("hy-home-lab-supabase", lab["name"])
         self.assertEqual(
-            "../secrets/communication/smtp/smtp_password.txt",
+            "../../secrets/communication/smtp/smtp_password.txt",
             lab["secrets"]["smtp_password"]["file"],
         )
         self.assertEqual(
@@ -46,7 +46,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
             self.assertEqual(["supabase"], service["profiles"])
             self.assertEqual("lab", service["labels"]["hy-home.tier"])
             self.assertEqual(
-                "../infra/common-optimizations.yml", service["extends"]["file"]
+                "../../infra/common-optimizations.yml", service["extends"]["file"]
             )
             for mount in service.get("volumes", []):
                 source = (
@@ -673,7 +673,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
                         )
 
     def test_cassandra_remains_an_independent_official_image_lab(self):
-        lab = compose("labs/cassandra.yml")
+        lab = compose("labs/cassandra/docker-compose.yml")
         service = lab["services"]["cassandra-node1"]
         self.assertTrue(service["image"].startswith("cassandra:"))
         self.assertEqual("hy-home-lab-cassandra", lab["name"])
@@ -690,7 +690,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         # Bitnami stopped publishing free versioned images; a namespace swap
         # alone would keep its env, UID and data path, so none may remain.
         tracked = subprocess.run(
-            ["git", "ls-files", "--", "*docker-compose*.yml", "labs/*.yml",
+            ["git", "ls-files", "--", "*docker-compose*.yml",
              "*Dockerfile", "infra/tech-stack.versions.json"],
             cwd=ROOT, capture_output=True, text=True, check=True,
         ).stdout.split()  # fmt: skip
@@ -725,7 +725,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
             }
             for source, env_file in (
                 ("docker-compose.yml", ROOT / ".env.example"),
-                ("labs/supabase.yml", lab_env),
+                ("labs/supabase/docker-compose.yml", lab_env),
             ):
                 rendered = _run_config(
                     ["docker", "compose", "--env-file", str(env_file), "-f", source,
@@ -793,7 +793,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
     def test_sonarqube_exports_its_jdbc_password_from_the_secret(self):
         # The image has no _FILE support; the wrapper refuses an empty secret
         # and keeps the image entrypoint.
-        service = compose("labs/sonarqube.yml")["services"]["sonarqube"]
+        service = compose("labs/sonarqube/docker-compose.yml")["services"]["sonarqube"]
         script = service["entrypoint"][2]
         self.assertIn("cat /run/secrets/sonarqube_db_password", script)
         self.assertIn('[ -n "$$SONAR_JDBC_PASSWORD" ] ||', script)
@@ -801,7 +801,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         self.assertFalse([e for e in service["environment"] if "PASSWORD_FILE" in e])
 
     def test_supabase_smtp_wrapper_consumes_file_and_preserves_arguments(self):
-        service = compose("labs/supabase.yml")["services"]["auth"]
+        service = compose("labs/supabase/docker-compose.yml")["services"]["auth"]
         self.assertEqual(["auth"], service.get("command"))
         script = service["entrypoint"][2].replace("$$", "$")
         with tempfile.TemporaryDirectory() as directory:

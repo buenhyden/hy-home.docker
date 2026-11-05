@@ -49,7 +49,7 @@ created: "2026-05-17"
    ```
 
 2. Locust LAB가 선택된 경우 승인된 고유 프로젝트명과 `labs/.env`를
-   사용해 `labs/locust.yml`의 master/worker 상태를 따로 확인하고
+   사용해 `labs/locust/docker-compose.yml`의 master/worker 상태를 따로 확인하고
    [Locust 런북](../15-labs/0062-locust.md)의 중단 절차를 따른다. root의 `testing`
    프로필은 Locust를 포함하지 않는다.
 

@@ -30,9 +30,9 @@ created: "2026-05-10"
 
 - **Required**:
   - Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
-  - SonarQube LAB(`labs/sonarqube.yml`, SPEC-0262)은 gateway route를 두지 않고 `LAB_HOST_BIND_IP` bind의 loopback port만 게시한다.
+  - SonarQube LAB(`labs/sonarqube/docker-compose.yml`, SPEC-0262)은 gateway route를 두지 않고 `LAB_HOST_BIND_IP` bind의 loopback port만 게시한다.
   - tooling 서비스는 root Compose가 정의한 선언된 network bridge에 연결한다.
-  - `labs/locust.yml`의 Locust LAB worker healthcheck를 유지한다.
+  - `labs/locust/docker-compose.yml`의 Locust LAB worker healthcheck를 유지한다.
   - k6 volume 계약(`k6-data:/scripts:ro`)을 유지한다.
   - tooling 변경은 `check-all-hardening.sh 09-platform-ops 11-quality` 및 CI `infrastructure-hardening`을 통과해야 한다.
   - optimization-hardening 문서(PRD~Procedure) 링크를 유지해야 한다.

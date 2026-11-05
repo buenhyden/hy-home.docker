@@ -61,7 +61,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 3. 증상별로 복구한다.
    - Middleware drift: Terrakube 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 복원한다.
    - Network drift: tooling 서비스의 선언된 network 연결과 root Compose network 정의를 복원한다.
-   - Locust LAB drift: `labs/locust.yml`의 `lab-locust-worker` command와 worker process healthcheck를 복원한다. root profile에는 다시 추가하지 않는다.
+   - Locust LAB drift: `labs/locust/docker-compose.yml`의 `lab-locust-worker` command와 worker process healthcheck를 복원한다. root profile에는 다시 추가하지 않는다.
    - k6 drift: `k6` service name과 `k6-data:/scripts:ro` volume 계약을 복원한다.
    - Documentation drift: active docs에서 없는 worker/route/version/service-local standalone claims를 제거한다.
 
@@ -84,7 +84,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 3. 네트워크 경계 표준화
    - tooling 서비스의 선언된 network 연결과 root Compose의 network 정의를 함께 확인한다. service-local compose 파일은 root network/secret context 없이 단독 config 대상으로 취급하지 않는다.
 4. 테스트 런타임 안정화
-   - `labs/locust.yml`의 Locust LAB worker healthcheck를 별도 entrypoint로 확인한다.
+   - `labs/locust/docker-compose.yml`의 Locust LAB worker healthcheck를 별도 entrypoint로 확인한다.
    - k6 leaf는 `k6` 단일 작업이며, `k6-data:/scripts:ro` volume 계약을 유지한다.
 5. 기준선 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`

@@ -13,7 +13,7 @@ created: "2025-11-12"
 ## Overview
 
 이 tier에는 현재 root Compose가 include하는 패키지가 없다. 운영 메일 서버
-Stalwart와 설정 helper는 SPEC-0262에서 독립 [Stalwart LAB](../../labs/stalwart.yml)으로
+Stalwart와 설정 helper는 SPEC-0262에서 독립 [Stalwart LAB](../../labs/stalwart/docker-compose.yml)으로
 옮겼다. 개발용 SMTP 캡처 Mailpit은 [11 Quality](../11-quality/README.md)에서
 `dev`, `local`, `mail-dev` profile로 관리하며 `mail_net`을 계속 사용한다.
 
@@ -30,7 +30,7 @@ ADR-0046 capability tier 이름과 메일 경계 안내만 유지한다. 메일 
 
 | 대상 | 위치 | 운영 소유자 |
 | --- | --- | --- |
-| Stalwart LAB | [labs/stalwart.yml](../../labs/stalwart.yml), [설정 자산](../../labs/stalwart/README.md) | `GDE-0070`, `POL-0070`, `RUN-0070` (`docs/05.operations/*/15-labs/`) |
+| Stalwart LAB | [labs/stalwart/docker-compose.yml](../../labs/stalwart/docker-compose.yml), [설정 자산](../../labs/stalwart/README.md) | `GDE-0070`, `POL-0070`, `RUN-0070` (`docs/05.operations/*/15-labs/`) |
 | Mailpit | [11 Quality](../11-quality/mailpit/README.md) | `GDE-0084`, `POL-0084`, `RUN-0084` |
 
 ## Usage

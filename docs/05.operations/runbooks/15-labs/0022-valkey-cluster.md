@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-LAB 전용 Valkey Cluster(`labs/valkey-cluster.yml`)의 정적 점검, 백업 계획, 격리 복원 절차를 다룬다.
+LAB 전용 Valkey Cluster(`labs/valkey-cluster/docker-compose.yml`)의 정적 점검, 백업 계획, 격리 복원 절차를 다룬다.
 
 ## Trigger
 
@@ -48,13 +48,13 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-정적 검사는 `labs/.env.example`과 `labs/valkey-cluster.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
+정적 검사는 `labs/.env.example`과 `labs/valkey-cluster/docker-compose.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
 
 repository root에서 독립 LAB 파일을 지정해 정적 렌더링한다. `labs/.env.example`은 합성 입력만 담고 실제 `labs/.env`와 secret은 실행 승인 후 별도 준비한다.
 
 ```bash
-LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster.yml --profile valkey-cluster config --quiet
-LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster.yml --profile valkey-cluster config --services
+LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster/docker-compose.yml --profile valkey-cluster config --quiet
+LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster/docker-compose.yml --profile valkey-cluster config --services
 ```
 
 6개 node service, init job, exporter; 6개의 서로 다른 data volume; `lab_valkey_core_net`/`lab_valkey_obs_net`;
@@ -120,7 +120,7 @@ slot, replica drift, persistence를 repair/truncate하라는 요청이 있으면
 
 ### Traceability
 
-- Runtime source: [Valkey Cluster Compose](../../../../labs/valkey-cluster.yml).
+- Runtime source: [Valkey Cluster Compose](../../../../labs/valkey-cluster/docker-compose.yml).
 - Artifact: `RUN-0022`; parent guide: `GDE-0022`.
 - dated verification record가 실행 사실을 명시하지 않는 한, 이 절차는 계획 단계다.
 

@@ -32,7 +32,7 @@ created: "2026-09-19"
 ### Purpose and classification
 
 Mailpit은 application과 integration test를 위한 DEV mail-capture
-service이다. delivery MTA가 아니며 독립 LAB `labs/stalwart.yml`의 Stalwart를 대체하지 않는다. Stalwart는 HOME network에 없으므로 HOME 앱 메일 캡처는 Mailpit만 받는다.
+service이다. delivery MTA가 아니며 독립 LAB `labs/stalwart/docker-compose.yml`의 Stalwart를 대체하지 않는다. Stalwart는 HOME network에 없으므로 HOME 앱 메일 캡처는 Mailpit만 받는다.
 `dev`, `local`, `mail-dev`에 속하며 HOME에서는 제외된다. UI와 SMTP host
 port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅된다.
 

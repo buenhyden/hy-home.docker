@@ -118,7 +118,7 @@ def compose_sources(root=ROOT):
 def lab_compose_sources(root=ROOT):
     return {
         str(path.relative_to(root)): path.read_text()
-        for path in sorted((root / "labs").glob("*.yml"))
+        for path in sorted((root / "labs").glob("*/docker-compose.yml"))
     }
 
 
@@ -721,7 +721,7 @@ def secret_contract(
                 )
                 if path.startswith("../") or path == "..":
                     raise AssertionError(f"secret escaped repository: {name}")
-                shared_supabase = relative == "labs/supabase.yml"
+                shared_supabase = relative == "labs/supabase/docker-compose.yml"
                 if (
                     shared_supabase
                     and SUPABASE_CANONICAL_SECRET_PATHS.get(name) != path
@@ -820,13 +820,13 @@ class ComposeSchemaTagTests(unittest.TestCase):
             subprocess.run(["git", "init", "-q", str(root)], check=True)
             (root / "labs").mkdir()
             (root / "labs/.env.example").write_text(
-                'LAB_SECRET_DIR="../secrets/labs"\n'
+                'LAB_SECRET_DIR="../../secrets/labs"\n'
             )
             home = "secrets:\n  smtp_password:\n    file: ./secrets/communication/smtp/smtp_password.txt\n"
-            lab = "secrets:\n  smtp_password:\n    file: ../secrets/communication/smtp/smtp_password.txt\n"
+            lab = "secrets:\n  smtp_password:\n    file: ../../secrets/communication/smtp/smtp_password.txt\n"
             found = secret_contract(
                 root,
-                {"docker-compose.yml": home, "labs/supabase.yml": lab},
+                {"docker-compose.yml": home, "labs/supabase/docker-compose.yml": lab},
                 PublicMetadataHelperTests.registry,
                 set(),
             )
@@ -836,13 +836,19 @@ class ComposeSchemaTagTests(unittest.TestCase):
                 found["declaration_paths"],
             )
             for route, text in (
-                ("labs/other.yml", lab),
+                ("labs/other/docker-compose.yml", lab),
                 (
-                    "labs/supabase.yml",
+                    "labs/supabase/docker-compose.yml",
                     lab.replace("communication/smtp", "security/openbao"),
                 ),
-                ("labs/supabase.yml", lab.replace("smtp_password:", "openbao_token:")),
-                ("labs/supabase.yml", lab.replace("../secrets/", "../../secrets/")),
+                (
+                    "labs/supabase/docker-compose.yml",
+                    lab.replace("smtp_password:", "openbao_token:"),
+                ),
+                (
+                    "labs/supabase/docker-compose.yml",
+                    lab.replace("../../secrets/", "../../../secrets/"),
+                ),
             ):
                 with self.subTest(route=route, text=text):
                     with self.assertRaises(AssertionError):
@@ -1861,7 +1867,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         )
 
     def test_lab_secret_must_be_declared_in_its_own_entrypoint(self):
-        path = "labs/couchdb.yml"
+        path = "labs/couchdb/docker-compose.yml"
         couchdb = yaml.load(self.lab_compose_texts[path], Loader=_ComposeLoader)
         name = next(iter(couchdb["secrets"]))
         couchdb["secrets"].pop(name)

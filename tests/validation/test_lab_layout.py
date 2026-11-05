@@ -133,7 +133,14 @@ class LabRenderTests(unittest.TestCase):
         for name in LABS:
             secrets = os.path.realpath(ROOT / "secrets/labs" / name)
             found = lab.footprint(rendered(name))
-            sources = [s["real"] for s in found["sources"]]
+            # Secret files are held by test_lab_secret_paths_use_lab_root.
+            secret_files = {
+                os.path.realpath(item["file"])
+                for item in (rendered(name).get("secrets") or {}).values()
+            }
+            sources = [
+                s["real"] for s in found["sources"] if s["real"] not in secret_files
+            ]
             for source in [*sources, *found["build_inputs"]]:
                 with self.subTest(lab=name, source=source):
                     self.assertTrue(

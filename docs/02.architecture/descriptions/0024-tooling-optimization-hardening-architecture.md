@@ -35,7 +35,7 @@ platform operational quality.
 
 - IaC: OpenTofu/Terrakube
 - Quality: sonarqube
-- Performance: k6 (Locust is an optional standalone LAB in `labs/locust.yml`)
+- Performance: k6 (Locust is an optional standalone LAB in `labs/locust/docker-compose.yml`)
 - Artifact storage: registry
 
 Every public management path must be policy-controlled behind the Traefik
@@ -120,7 +120,7 @@ section and the existing infrastructure/deployment descriptions.
   branch/security rule sets
 - **k6**: automating performance regression baseline storage/comparison,
   standardizing scenario tags
-- **Locust LAB** (`labs/locust.yml`, standalone): standardizing test data
+- **Locust LAB** (`labs/locust/docker-compose.yml`, standalone): standardizing test data
   initialization/cleanup routine
 
 ## Quality and Risks

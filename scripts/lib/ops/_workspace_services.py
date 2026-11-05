@@ -206,10 +206,7 @@ def _links(source, doc, gaps):
 
 def _load_sources(root, allowed, gaps):
     pending = sorted(
-        path
-        for path in allowed
-        if COMPOSE.fullmatch(PurePosixPath(path).name)
-        or (path.startswith("labs/") and path.endswith((".yml", ".yaml")))
+        path for path in allowed if COMPOSE.fullmatch(PurePosixPath(path).name)
     )
     documents, sources, relations, snapshots = {}, [], [], {}
     visited = set()
@@ -405,7 +402,8 @@ def inspect_services(root: Path, source_paths: list[str]) -> dict:
     """Read only explicitly allowed public paths; no env, secret or Docker IO.
 
     Candidate basenames are compose*.yml/yaml and docker-compose*.yml/yaml,
-    plus labs/*.yml/yaml. References can add arbitrary allowlisted YAML files.
+    including labs/<name>/docker-compose.yml. References can add arbitrary
+    allowlisted YAML files.
     Every source+service is a declaration, never an independently deployed count.
     """
     gaps, allowed = [], set()

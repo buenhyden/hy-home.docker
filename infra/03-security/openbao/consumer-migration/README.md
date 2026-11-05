@@ -315,7 +315,7 @@ bind합니다(`create_host_path: false`). 각 `<stem>.txt`는 `0640`, `<stem>.ve
 | `open-webui` | `08-ai/open-webui` | `open-webui/openwebui_oidc_client_secret.txt` | `OPENWEBUI_OIDC_CLIENT_SECRET_FILE` |
 | `superset` | `12-analytics/superset` | `superset/superset_oidc_client_secret.txt` | `SUPERSET_OIDC_CLIENT_SECRET_FILE` |
 
-SPEC-0262 이후 Superset은 `labs/superset.yml` LAB이며 LAB 전용 secret을 읽습니다. Agent는
+SPEC-0262 이후 Superset은 `labs/superset/docker-compose.yml` LAB이며 LAB 전용 secret을 읽습니다. Agent는
 `12-analytics/superset` 출력을 계속 render하지만 이를 bind하는 root 소비자는 없습니다.
 
 모든 KV field 이름은 `client_secret`입니다. `health-agent.sh`는 이제 `agent.hcl`에서 template

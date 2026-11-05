@@ -3,7 +3,7 @@
   "effective_date": "2026-09-19",
   "owner_role": "Infra Lead",
   "review_cadence": "monthly",
-  "source_of_truth": "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} and labs/*.{yml,yaml} service image declarations",
+  "source_of_truth": "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} and labs/*/docker-compose.yml service image declarations",
   "local_repository_prefixes": [
     "hy/",
     "hyhome/",
@@ -83,14 +83,14 @@
         "infra/06-observability/docker-compose.yml",
         "infra/08-ai/mlflow/docker-compose.yml",
         "infra/11-quality/pact-broker/docker-compose.yml",
-        "labs/dbt.yml",
-        "labs/postgresql-ha.yml",
-        "labs/supabase.yml",
-        "labs/superset.yml"
+        "labs/dbt/docker-compose.yml",
+        "labs/postgresql-ha/docker-compose.yml",
+        "labs/supabase/docker-compose.yml",
+        "labs/superset/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/postgresql-ha.yml",
+          "compose_file": "labs/postgresql-ha/docker-compose.yml",
           "images": [
             "ghcr.io/zalando/spilo-17:4.0-p3"
           ]
@@ -126,25 +126,25 @@
           ]
         },
         {
-          "compose_file": "labs/dbt.yml",
+          "compose_file": "labs/dbt/docker-compose.yml",
           "images": [
             "postgres:18.6-alpine"
           ]
         },
         {
-          "compose_file": "labs/postgresql-ha.yml",
+          "compose_file": "labs/postgresql-ha/docker-compose.yml",
           "images": [
             "postgres:18.6-alpine"
           ]
         },
         {
-          "compose_file": "labs/superset.yml",
+          "compose_file": "labs/superset/docker-compose.yml",
           "images": [
             "postgres:18.6-alpine"
           ]
         },
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "supabase/postgres:17.6.1.173"
           ]
@@ -167,7 +167,7 @@
         "infra/04-data/mng-db/docker-compose.yml",
         "infra/07-workflow/airflow/docker-compose.yml",
         "infra/07-workflow/n8n/docker-compose.yml",
-        "labs/valkey-cluster.yml"
+        "labs/valkey-cluster/docker-compose.yml"
       ],
       "sources": [
         {
@@ -201,7 +201,7 @@
           ]
         },
         {
-          "compose_file": "labs/valkey-cluster.yml",
+          "compose_file": "labs/valkey-cluster/docker-compose.yml",
           "images": [
             "valkey/valkey:9.1.2-alpine"
           ]
@@ -220,7 +220,7 @@
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml",
-        "labs/kafka-cluster.yml"
+        "labs/kafka-cluster/docker-compose.yml"
       ],
       "sources": [
         {
@@ -230,7 +230,7 @@
           ]
         },
         {
-          "compose_file": "labs/kafka-cluster.yml",
+          "compose_file": "labs/kafka-cluster/docker-compose.yml",
           "images": [
             "confluentinc/cp-kafka:8.3.2"
           ]
@@ -768,7 +768,7 @@
         "infra/04-data/mng-db/docker-compose.yml",
         "infra/07-workflow/airflow/docker-compose.yml",
         "infra/07-workflow/n8n/docker-compose.yml",
-        "labs/valkey-cluster.yml"
+        "labs/valkey-cluster/docker-compose.yml"
       ],
       "sources": [
         {
@@ -802,7 +802,7 @@
           ]
         },
         {
-          "compose_file": "labs/valkey-cluster.yml",
+          "compose_file": "labs/valkey-cluster/docker-compose.yml",
           "images": [
             "oliver006/redis_exporter:v1.91.1-alpine"
           ]
@@ -886,11 +886,11 @@
         "cassandra:5.0.9"
       ],
       "compose_files": [
-        "labs/cassandra.yml"
+        "labs/cassandra/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/cassandra.yml",
+          "compose_file": "labs/cassandra/docker-compose.yml",
           "images": [
             "cassandra:5.0.9"
           ]
@@ -974,11 +974,11 @@
         "couchdb:3.5.2"
       ],
       "compose_files": [
-        "labs/couchdb.yml"
+        "labs/couchdb/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/couchdb.yml",
+          "compose_file": "labs/couchdb/docker-compose.yml",
           "images": [
             "couchdb:3.5.2"
           ]
@@ -996,11 +996,11 @@
         "curlimages/curl:8.22.0"
       ],
       "compose_files": [
-        "labs/couchdb.yml"
+        "labs/couchdb/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/couchdb.yml",
+          "compose_file": "labs/couchdb/docker-compose.yml",
           "images": [
             "curlimages/curl:8.22.0"
           ]
@@ -1019,7 +1019,7 @@
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml",
-        "labs/kafka-cluster.yml"
+        "labs/kafka-cluster/docker-compose.yml"
       ],
       "sources": [
         {
@@ -1029,7 +1029,7 @@
           ]
         },
         {
-          "compose_file": "labs/kafka-cluster.yml",
+          "compose_file": "labs/kafka-cluster/docker-compose.yml",
           "images": [
             "danielqsj/kafka-exporter:v1.10.0"
           ]
@@ -1047,11 +1047,11 @@
         "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d"
           ]
@@ -1069,11 +1069,11 @@
         "haproxy:3.4.4"
       ],
       "compose_files": [
-        "labs/postgresql-ha.yml"
+        "labs/postgresql-ha/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/postgresql-ha.yml",
+          "compose_file": "labs/postgresql-ha/docker-compose.yml",
           "images": [
             "haproxy:3.4.4"
           ]
@@ -1113,11 +1113,11 @@
         "kong:3.9.3"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "kong:3.9.3"
           ]
@@ -1157,11 +1157,11 @@
         "mongo:8.3.11-noble"
       ],
       "compose_files": [
-        "labs/mongodb.yml"
+        "labs/mongodb/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/mongodb.yml",
+          "compose_file": "labs/mongodb/docker-compose.yml",
           "images": [
             "mongo:8.3.11-noble"
           ]
@@ -1179,11 +1179,11 @@
         "mongo-express:1-18-alpine3.19"
       ],
       "compose_files": [
-        "labs/mongodb.yml"
+        "labs/mongodb/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/mongodb.yml",
+          "compose_file": "labs/mongodb/docker-compose.yml",
           "images": [
             "mongo-express:1-18-alpine3.19"
           ]
@@ -1247,7 +1247,7 @@
       ],
       "compose_files": [
         "infra/04-data/opensearch/docker-compose.yml",
-        "labs/opensearch-cluster.yml"
+        "labs/opensearch-cluster/docker-compose.yml"
       ],
       "sources": [
         {
@@ -1257,7 +1257,7 @@
           ]
         },
         {
-          "compose_file": "labs/opensearch-cluster.yml",
+          "compose_file": "labs/opensearch-cluster/docker-compose.yml",
           "images": [
             "opensearchproject/opensearch-dashboards:3.8.0"
           ]
@@ -1275,11 +1275,11 @@
         "postgrest/postgrest:v16.3"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "postgrest/postgrest:v16.3"
           ]
@@ -1321,7 +1321,7 @@
       "compose_files": [
         "infra/04-data/dev-db/docker-compose.yml",
         "infra/04-data/mng-db/docker-compose.yml",
-        "labs/postgresql-ha.yml"
+        "labs/postgresql-ha/docker-compose.yml"
       ],
       "sources": [
         {
@@ -1337,7 +1337,7 @@
           ]
         },
         {
-          "compose_file": "labs/postgresql-ha.yml",
+          "compose_file": "labs/postgresql-ha/docker-compose.yml",
           "images": [
             "prometheuscommunity/postgres-exporter:v0.20.1"
           ]
@@ -1355,11 +1355,11 @@
         "quay.io/coreos/etcd:v3.7.1"
       ],
       "compose_files": [
-        "labs/postgresql-ha.yml"
+        "labs/postgresql-ha/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/postgresql-ha.yml",
+          "compose_file": "labs/postgresql-ha/docker-compose.yml",
           "images": [
             "quay.io/coreos/etcd:v3.7.1"
           ]
@@ -1399,11 +1399,11 @@
         "sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8"
       ],
       "compose_files": [
-        "labs/sonarqube.yml"
+        "labs/sonarqube/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/sonarqube.yml",
+          "compose_file": "labs/sonarqube/docker-compose.yml",
           "images": [
             "sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8"
           ]
@@ -1421,11 +1421,11 @@
         "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c"
       ],
       "compose_files": [
-        "labs/stalwart.yml"
+        "labs/stalwart/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/stalwart.yml",
+          "compose_file": "labs/stalwart/docker-compose.yml",
           "images": [
             "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c"
           ]
@@ -1443,11 +1443,11 @@
         "supabase/edge-runtime:v1.76.2"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "supabase/edge-runtime:v1.76.2"
           ]
@@ -1465,11 +1465,11 @@
         "supabase/gotrue:v2.197.0"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "supabase/gotrue:v2.197.0"
           ]
@@ -1487,11 +1487,11 @@
         "supabase/logflare:1.50.15"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "supabase/logflare:1.50.15"
           ]
@@ -1509,11 +1509,11 @@
         "supabase/postgres-meta:v0.99.0"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "supabase/postgres-meta:v0.99.0"
           ]
@@ -1531,11 +1531,11 @@
         "supabase/realtime:v2.138.1"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "supabase/realtime:v2.138.1"
           ]
@@ -1553,11 +1553,11 @@
         "supabase/storage-api:v1.79.4"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "supabase/storage-api:v1.79.4"
           ]
@@ -1575,11 +1575,11 @@
         "supabase/studio:2026.09.14-sha-4dd8a95"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "supabase/studio:2026.09.14-sha-4dd8a95"
           ]
@@ -1597,11 +1597,11 @@
         "supabase/supavisor:2.9.13"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "supabase/supavisor:2.9.13"
           ]
@@ -1619,11 +1619,11 @@
         "timberio/vector:0.58.0-alpine"
       ],
       "compose_files": [
-        "labs/supabase.yml"
+        "labs/supabase/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/supabase.yml",
+          "compose_file": "labs/supabase/docker-compose.yml",
           "images": [
             "timberio/vector:0.58.0-alpine"
           ]
@@ -1641,11 +1641,11 @@
         "hy-home/dbt-postgres:1.11-local"
       ],
       "compose_files": [
-        "labs/dbt.yml"
+        "labs/dbt/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/dbt.yml",
+          "compose_file": "labs/dbt/docker-compose.yml",
           "images": [
             "hy-home/dbt-postgres:1.11-local"
           ]
@@ -1663,11 +1663,11 @@
         "hy-home/jupyterlab:scipy-local"
       ],
       "compose_files": [
-        "labs/jupyterlab.yml"
+        "labs/jupyterlab/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/jupyterlab.yml",
+          "compose_file": "labs/jupyterlab/docker-compose.yml",
           "images": [
             "hy-home/jupyterlab:scipy-local"
           ]
@@ -1848,7 +1848,7 @@
       ],
       "compose_files": [
         "infra/04-data/seaweedfs/docker-compose.yml",
-        "labs/lakehouse.yml"
+        "labs/lakehouse/docker-compose.yml"
       ],
       "sources": [
         {
@@ -1858,7 +1858,7 @@
           ]
         },
         {
-          "compose_file": "labs/lakehouse.yml",
+          "compose_file": "labs/lakehouse/docker-compose.yml",
           "images": [
             "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce"
           ]
@@ -1920,11 +1920,11 @@
         "hy-home/spark-iceberg:4.1.3-iceberg1.11.0-local"
       ],
       "compose_files": [
-        "labs/lakehouse.yml"
+        "labs/lakehouse/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/lakehouse.yml",
+          "compose_file": "labs/lakehouse/docker-compose.yml",
           "images": [
             "hy-home/spark-iceberg:4.1.3-iceberg1.11.0-local"
           ]
@@ -1964,11 +1964,11 @@
         "trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f"
       ],
       "compose_files": [
-        "labs/lakehouse.yml"
+        "labs/lakehouse/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/lakehouse.yml",
+          "compose_file": "labs/lakehouse/docker-compose.yml",
           "images": [
             "trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f"
           ]
@@ -1986,11 +1986,11 @@
         "hy-home/flink-iceberg:2.1.3-iceberg1.11.0-local"
       ],
       "compose_files": [
-        "labs/lakehouse.yml"
+        "labs/lakehouse/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/lakehouse.yml",
+          "compose_file": "labs/lakehouse/docker-compose.yml",
           "images": [
             "hy-home/flink-iceberg:2.1.3-iceberg1.11.0-local"
           ]
@@ -2008,11 +2008,11 @@
         "hy-home/great-expectations:1.24.0-local"
       ],
       "compose_files": [
-        "labs/lakehouse.yml"
+        "labs/lakehouse/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/lakehouse.yml",
+          "compose_file": "labs/lakehouse/docker-compose.yml",
           "images": [
             "hy-home/great-expectations:1.24.0-local"
           ]
@@ -2030,11 +2030,11 @@
         "hy-home/superset:6.1.0-local"
       ],
       "compose_files": [
-        "labs/superset.yml"
+        "labs/superset/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/superset.yml",
+          "compose_file": "labs/superset/docker-compose.yml",
           "images": [
             "hy-home/superset:6.1.0-local"
           ]
@@ -2052,11 +2052,11 @@
         "hy-home/stalwart-config:0.16.27-cli1.0.13-local"
       ],
       "compose_files": [
-        "labs/stalwart.yml"
+        "labs/stalwart/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "labs/stalwart.yml",
+          "compose_file": "labs/stalwart/docker-compose.yml",
           "images": [
             "hy-home/stalwart-config:0.16.27-cli1.0.13-local"
           ]

@@ -26,7 +26,7 @@ backup, 제거.
 
 ## Rules
 
-- 독립 LAB `labs/jupyterlab.yml`의 LAB profile `jupyterlab`으로만 선택한다(SPEC-0262). root
+- 독립 LAB `labs/jupyterlab/docker-compose.yml`의 LAB profile `jupyterlab`으로만 선택한다(SPEC-0262). root
   include, HOME network 합류, HOME 이름 선택 추가를 금지한다.
 - 빈 토큰이나 비활성화된 인증으로 절대 실행하지 않는다. gateway route와 SSO는 더 이상 없으므로
   token이 유일한 server 인증이다. host 포트는 `LAB_HOST_BIND_IP`(기본 `127.0.0.1`)의
@@ -67,12 +67,12 @@ work 복구본과 원본은 격리하고 파일·노트북 출력의 민감성�
 
 ## Verification
 
-정적 렌더링(`docker compose --env-file labs/.env -f labs/jupyterlab.yml --profile jupyterlab config --quiet`)과
+정적 렌더링(`docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab config --quiet`)과
 `tests.validation.test_lab_isolation` 후, lease 아래 런타임 검사: 토큰 없는 요청과 잘못된 토큰의
 거부, 게시 port가 `LAB_HOST_BIND_IP`에만 bind됨, kernel 시작과 WebSocket.
 
 ## Related Documents
 
 - [Image Dockerfile](../../../../labs/jupyterlab/Dockerfile) and [derived version projection](../../../../infra/tech-stack.versions.json)
-- [JupyterLab Compose source](../../../../labs/jupyterlab.yml)
+- [JupyterLab Compose source](../../../../labs/jupyterlab/docker-compose.yml)
 - [Jupyter Server security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)

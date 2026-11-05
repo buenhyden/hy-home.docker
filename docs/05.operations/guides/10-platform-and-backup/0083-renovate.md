@@ -46,7 +46,7 @@ request를 생성하거나 갱신할 수 있다.
 - [Repository configuration](../../../../renovate.json5)
 - [Dependency-version policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md) (`POL-0086`)
 
-`renovate.json5`의 `docker-compose` manager는 `labs/*.yml`, `infra/07-workflow/n8n`, `infra/08-ai/crawl4ai`,
+`renovate.json5`의 `docker-compose` manager는 `labs/*/docker-compose.yml`, `infra/07-workflow/n8n`, `infra/08-ai/crawl4ai`,
 `infra/08-ai/ollama`, `infra/08-ai/open-webui`의 Compose 파일을 추적한다. 추적 목록은 [renovate.json5](../../../../renovate.json5)가 소유한다.
 
 `POL-0086`은 manager, release age, security update, automerge, updater

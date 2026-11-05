@@ -45,11 +45,11 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-정적 검사는 `labs/.env.example`과 `labs/couchdb.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
+정적 검사는 `labs/.env.example`과 `labs/couchdb/docker-compose.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
 
 먼저 다음을 확인한다.
 
-- [ ] `labs/couchdb.yml`의 독립 project와 `couchdb` profile을 확인하고 root include에서 제외됐는지 기록한다.
+- [ ] `labs/couchdb/docker-compose.yml`의 독립 project와 `couchdb` profile을 확인하고 root include에서 제외됐는지 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`로만 기록한다.
 - [ ] 수동 재조인, compaction, shard 변경, cookie 교체가 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
@@ -57,19 +57,19 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 1. compose 렌더링을 확인한다.
 
    ```bash
-   LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb.yml --profile couchdb config --quiet
+   LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile couchdb config --quiet
    ```
 
 2. 컨테이너와 init job 상태를 확인한다.
 
    ```bash
-   docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb.yml ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
    ```
 
 3. 각 노드와 init job 로그를 확인한다.
 
    ```bash
-   docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb.yml logs --tail=120 couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml logs --tail=120 couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
    ```
 
 4. `couchdb-1` 내부에서 health endpoint를 확인한다.
@@ -77,7 +77,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    실제 TTY를 가진 비공개 운영 terminal에서만 client 자체 password prompt를 사용한다. tracing/verbose/terminal recording과 redirected stdin, `exec -T`를 금지한다. 승인된 custody에서 받은 credential을 prompt에만 입력하며 shell 변수·환경·argv·URL로 전달하지 않는다. prompt/권한/CA/endpoint가 없거나 인증이 실패하면 중단한다. root/Docker 관리자의 메모리 관찰까지 차단한다고 주장하지 않는다.
 
    ```bash
-   docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb.yml exec couchdb-1 sh -c 'exec curl -fsS --user "$COUCHDB_USER" "http://localhost:${COUCHDB_PORT:-5984}/_up"'
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml exec couchdb-1 sh -c 'exec curl -fsS --user "$COUCHDB_USER" "http://localhost:${COUCHDB_PORT:-5984}/_up"'
    ```
 
 5. membership을 확인한다.
@@ -85,7 +85,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    실제 TTY를 가진 비공개 운영 terminal에서만 client 자체 password prompt를 사용한다. tracing/verbose/terminal recording과 redirected stdin, `exec -T`를 금지한다. 승인된 custody에서 받은 credential을 prompt에만 입력하며 shell 변수·환경·argv·URL로 전달하지 않는다. prompt/권한/CA/endpoint가 없거나 인증이 실패하면 중단한다. root/Docker 관리자의 메모리 관찰까지 차단한다고 주장하지 않는다.
 
    ```bash
-   docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb.yml exec couchdb-1 sh -c 'exec curl -fsS --user "$COUCHDB_USER" "http://localhost:${COUCHDB_PORT:-5984}/_membership"'
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml exec couchdb-1 sh -c 'exec curl -fsS --user "$COUCHDB_USER" "http://localhost:${COUCHDB_PORT:-5984}/_membership"'
    ```
 
 6. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
@@ -109,17 +109,17 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log와 membership 요약을 기록한다.
 - secret 값, cookie 값 또는 민감한 field를 포함한 인증된 HTTP 전체 출력은 기록하지 않는다.
-- runtime session에 선택한 profile을 기록한다. root는 `labs/couchdb.yml`을 include하지 않는다.
+- runtime session에 선택한 profile을 기록한다. root는 `labs/couchdb/docker-compose.yml`을 include하지 않는다.
 
 ### Verification Steps
 
-- `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb.yml ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init`에서 세 노드가 running 또는 healthy 상태인지 확인한다.
+- `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init`에서 세 노드가 running 또는 healthy 상태인지 확인한다.
 - `_membership` 결과에 `couchdb@couchdb-1.infra_net`, `couchdb@couchdb-2.infra_net`, `couchdb@couchdb-3.infra_net`가 포함되는지 확인한다.
 - `couchdb-cluster-init` 로그가 cluster setup completion 또는 idempotent success/failure evidence를 제공하는지 확인한다.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb.yml logs --tail=120 couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init`
+- **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml logs --tail=120 couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init`
 - **Health**: `/_up`, `/_membership`, `/_scheduler/docs`
 - **Route**: HOME Traefik label 없음; `couchdb-1` loopback port `${LAB_COUCHDB_HOST_PORT:-35984}`만 게시 (SPEC-0215)
 
@@ -144,7 +144,7 @@ membership에 예상한 node 3개가 나타나지 않거나, cluster-init이 반
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](../../guides/15-labs/0026-couchdb.md) (`GDE-0026`), [Policy](../../policies/15-labs/0026-couchdb.md) (`POL-0026`)
 
-- [Compose implementation: labs/couchdb.yml](../../../../labs/couchdb.yml)
+- [Compose implementation: labs/couchdb/docker-compose.yml](../../../../labs/couchdb/docker-compose.yml)
 
 - [CouchDB backup guidance](https://docs.couchdb.org/en/stable/maintenance/backups.html)
 - [CouchDB upgrade guidance](https://docs.couchdb.org/en/stable/install/upgrading.html)
@@ -153,4 +153,4 @@ membership에 예상한 node 3개가 나타나지 않거나, cluster-init이 반
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/15-labs/0026-couchdb.md)
 - [Operations policy](../../policies/15-labs/0026-couchdb.md)
-- [Infra README](../../../../labs/couchdb.md)
+- [Infra README](../../../../labs/couchdb/README.md)

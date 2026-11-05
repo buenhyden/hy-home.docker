@@ -29,10 +29,10 @@ MLflow는 [08 AI](../08-ai/README.md)에 남습니다.
 
 | LAB | Entry point | 서비스 | Source 자산 |
 | --- | --- | --- | --- |
-| Lakehouse | [labs/lakehouse.yml](../../labs/lakehouse.yml) | `seaweedfs-table-bucket`, `spark`, `trino`, `great-expectations`, `flink-jobmanager`, `flink-taskmanager` | `labs/lakehouse/` |
-| dbt | [labs/dbt.yml](../../labs/dbt.yml) | `dbt-db-provision`, `dbt` | `labs/dbt/` |
-| Superset | [labs/superset.yml](../../labs/superset.yml) | `superset-db-provision`, `superset-init`, `superset` | `labs/superset/` |
-| JupyterLab | [labs/jupyterlab.yml](../../labs/jupyterlab.yml) | `jupyterlab` | `labs/jupyterlab/` |
+| Lakehouse | [labs/lakehouse/docker-compose.yml](../../labs/lakehouse/docker-compose.yml) | `seaweedfs-table-bucket`, `spark`, `trino`, `great-expectations`, `flink-jobmanager`, `flink-taskmanager` | `labs/lakehouse/` |
+| dbt | [labs/dbt/docker-compose.yml](../../labs/dbt/docker-compose.yml) | `dbt-db-provision`, `dbt` | `labs/dbt/` |
+| Superset | [labs/superset/docker-compose.yml](../../labs/superset/docker-compose.yml) | `superset-db-provision`, `superset-init`, `superset` | `labs/superset/` |
+| JupyterLab | [labs/jupyterlab/docker-compose.yml](../../labs/jupyterlab/docker-compose.yml) | `jupyterlab` | `labs/jupyterlab/` |
 
 ## Usage
 

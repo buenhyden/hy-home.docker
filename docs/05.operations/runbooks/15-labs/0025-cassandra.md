@@ -32,14 +32,14 @@ created: "2026-05-17"
 
 먼저 다음을 확인한다.
 
-- [ ] root include에 LAB가 없고 `labs/cassandra.yml`만 서비스 정의를 소유하는지 확인한다.
+- [ ] root include에 LAB가 없고 `labs/cassandra/docker-compose.yml`만 서비스 정의를 소유하는지 확인한다.
 - [ ] `/var/lib/cassandra` mount와 `lab_cassandra_core_net`의 peer를 확인한다.
 - [ ] 과거 데이터·snapshot 소유권을 확인하기 전 재생성·정리를 중단한다.
 
 1. 정적 구성만 확인한다.
 
    ```bash
-   LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra.yml --profile cassandra config --quiet
+   LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile cassandra config --quiet
    ```
 
 2. 별도 실행 승인이 있을 때만 지정한 `labs/.env`와 context에서 `ps cassandra-node1`, `exec cassandra-node1 nodetool status`를 수행한다. `UN`은 프로세스 상태이며 인증·읽기·복원을 증명하지 않는다.
@@ -78,4 +78,4 @@ Compose health와 요약된 node 상태를 사용한다. exporter는 현재 LAB�
 
 - [Guide](../../guides/15-labs/0025-cassandra.md)
 - [Policy](../../policies/15-labs/0025-cassandra.md)
-- [LAB 설명](../../../../labs/cassandra.md)
+- [LAB 설명](../../../../labs/cassandra/README.md)

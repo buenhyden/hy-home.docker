@@ -26,7 +26,7 @@ MinIO를 대체했습니다.
 `storage-seaweedfs` profile과 모든 S3 소비자 profile(`storage`, `obs`, `logs`,
 `tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`)이 `seaweedfs-buckets`와
 함께 이들을 선택합니다. Iceberg table bucket job은 SPEC-0262에서
-[lakehouse LAB](../../../labs/lakehouse.yml)으로 옮겼고, root `lakehouse`는 SeaweedFS만 선택합니다.
+[lakehouse LAB](../../../labs/lakehouse/docker-compose.yml)으로 옮겼고, root `lakehouse`는 SeaweedFS만 선택합니다.
 S3가 유일한 인터페이스입니다. FUSE mount는 S04에서 제거되었고 master와
 filer에는 route가 없습니다.
 

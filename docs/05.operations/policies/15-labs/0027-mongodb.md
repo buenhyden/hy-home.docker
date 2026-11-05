@@ -20,7 +20,7 @@ created: "2026-05-17"
 
 ## Scope
 
-- `labs/mongodb.yml`
+- `labs/mongodb/docker-compose.yml`
 - `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`
 - `mongo-key`, `mongodb1-data`, `mongodb2-data`, `mongodb3-data` (`${LAB_DATA_DIR}/mongodb/` bind)
 - `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password`, `LAB_MONGODB_ROOT_USERNAME`, `LAB_MONGO_EXPRESS_USERNAME`
@@ -81,14 +81,14 @@ N/A - 현재 승인된 예외 없음.
 
 - Compose 변경 후 이 정책을 [MongoDB guide](../../guides/15-labs/0027-mongodb.md),
   [MongoDB runbook](../../runbooks/15-labs/0027-mongodb.md),
-  [LAB 설명](../../../../labs/mongodb.md)와 비교한다.
+  [LAB 설명](../../../../labs/mongodb/README.md)와 비교한다.
 - 서비스 이름, replica set, route, secret, keyfile 문서 갱신을
-  승인하기 전에 `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile mongodb config --quiet`를 실행한다.
+  승인하기 전에 `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile mongodb config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
 ## Related Documents
 
-- [Compose implementation: labs/mongodb.yml](../../../../labs/mongodb.yml)
+- [Compose implementation: labs/mongodb/docker-compose.yml](../../../../labs/mongodb/docker-compose.yml)
 
 - [MongoDB backup and restore tools](https://www.mongodb.com/docs/v8.0/tutorial/backup-and-restore-tools/)
 - [MongoDB security hardening](https://www.mongodb.com/docs/v8.0/core/security-hardening/)
@@ -97,4 +97,4 @@ N/A - 현재 승인된 예외 없음.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/15-labs/0027-mongodb.md)
 - [Recovery runbook](../../runbooks/15-labs/0027-mongodb.md)
-- [LAB 설명](../../../../labs/mongodb.md)
+- [LAB 설명](../../../../labs/mongodb/README.md)

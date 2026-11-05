@@ -15,7 +15,7 @@ import yaml
 
 from scripts.lib.document_governance.operations_catalog import _ComposeLoader
 
-LAB_SUPABASE_PATH = "labs/supabase.yml"
+LAB_SUPABASE_PATH = "labs/supabase/docker-compose.yml"
 LAB_COMMON_EXTENDS_PATH = "infra/common-optimizations.yml"
 LAB_COMMON_EXTENDS = {
     "file": "../" + LAB_COMMON_EXTENDS_PATH,

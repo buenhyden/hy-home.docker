@@ -27,7 +27,7 @@ created: "2026-05-10"
 
 정상 messaging 변경은 root Compose validity, explicit profile, health check,
 resource limit, persistence ownership, `kafka_net`, secret file, 실행 가능한
-recovery owner를 보존해야 한다. `labs/kafka-cluster.yml` 변경은 별도 LAB
+recovery owner를 보존해야 한다. `labs/kafka-cluster/docker-compose.yml` 변경은 별도 LAB
 project·network·cluster ID·data directory를 보존하며 root에 포함하지 않는다.
 현재 유일한 broker family는 Kafka다.
 
@@ -59,7 +59,7 @@ offset, schema, Connect state, KRaft identity를 포함해야 하며, promotion
 
 정상 `messaging`은 [GDE-0037](../../guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)의
 exact root-profile `config --quiet` command로 검증한다. LAB은
-`docker compose --env-file labs/.env.example -f labs/kafka-cluster.yml --profile lab-kafka config --quiet`로
+`docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --quiet`로
 별도 렌더링한 뒤 scoped `05-messaging` hardening script를 사용한다. Static
 pass는 configuration evidence일 뿐이다. Runtime startup, OIDC login, load
 또는 failover에는 명시적 승인과 기록된 rollback이 필요하다.

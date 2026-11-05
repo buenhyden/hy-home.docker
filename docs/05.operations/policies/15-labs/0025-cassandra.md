@@ -20,7 +20,7 @@ created: "2026-05-17"
 
 ## Scope
 
-`labs/cassandra.yml`의 `cassandra-node1`, `cassandra-node1-volume`, `lab_cassandra_core_net`와 연결 문서에 적용한다. exporter와 Cassandra password secret은 현재 구현에 없다.
+`labs/cassandra/docker-compose.yml`의 `cassandra-node1`, `cassandra-node1-volume`, `lab_cassandra_core_net`와 연결 문서에 적용한다. exporter와 Cassandra password secret은 현재 구현에 없다.
 
 ## Rules
 
@@ -51,10 +51,10 @@ created: "2026-05-17"
 
 ## Verification
 
-`LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra.yml --profile cassandra config --quiet`와 문서 링크 검사를 수행한다. 실제 CQL·복원은 `NOT_RUN`으로 기록한다.
+`LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile cassandra config --quiet`와 문서 링크 검사를 수행한다. 실제 CQL·복원은 `NOT_RUN`으로 기록한다.
 
 ## Related Documents
 
-- [LAB Compose](../../../../labs/cassandra.yml)
-- [LAB 설명](../../../../labs/cassandra.md)
+- [LAB Compose](../../../../labs/cassandra/docker-compose.yml)
+- [LAB 설명](../../../../labs/cassandra/README.md)
 - [Cassandra backup](https://cassandra.apache.org/doc/stable/cassandra/managing/operating/backups.html)

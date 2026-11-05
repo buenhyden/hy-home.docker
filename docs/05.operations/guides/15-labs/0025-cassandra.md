@@ -16,7 +16,7 @@ created: "2026-05-10"
 
 ## Overview
 
-독립 `labs/cassandra.yml`은 공식 `labs/cassandra.yml`에 선언된 공식 Cassandra 이미지의 단일 `cassandra-node1` 실습용 정의다. HOME root는 include하지 않으며 확인된 HOME 소비자는 없다. 이미지 선언 버전은 Compose가 소유한다. 현재 공식 이미지의 기본 `AllowAllAuthenticator`/`AllowAllAuthorizer`는 계정 인증을 제공하지 않는다. 이를 인증된 업무 저장소로 사용하지 않는다.
+독립 `labs/cassandra/docker-compose.yml`은 공식 `labs/cassandra/docker-compose.yml`에 선언된 공식 Cassandra 이미지의 단일 `cassandra-node1` 실습용 정의다. HOME root는 include하지 않으며 확인된 HOME 소비자는 없다. 이미지 선언 버전은 Compose가 소유한다. 현재 공식 이미지의 기본 `AllowAllAuthenticator`/`AllowAllAuthorizer`는 계정 인증을 제공하지 않는다. 이를 인증된 업무 저장소로 사용하지 않는다.
 
 ## Scope
 
@@ -49,7 +49,7 @@ created: "2026-05-10"
 
 실행 전 Docker context, 독립 project, 새 디렉터리·volume, network, 포트, 자원, 정확한 정리 범위를 확인한다. 실제 기동·복구는 별도 승인 범위다.
 
-정적 렌더만 수행한다. `LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra.yml --profile cassandra config --quiet`. 실제 건강·CQL 검증은 [런북](../../runbooks/15-labs/0025-cassandra.md)의 실행 경계를 따른다.
+정적 렌더만 수행한다. `LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile cassandra config --quiet`. 실제 건강·CQL 검증은 [런북](../../runbooks/15-labs/0025-cassandra.md)의 실행 경계를 따른다.
 
 ### Common Checks
 
@@ -70,6 +70,6 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- [LAB Compose](../../../../labs/cassandra.yml)
-- [LAB 설명](../../../../labs/cassandra.md)
+- [LAB Compose](../../../../labs/cassandra/docker-compose.yml)
+- [LAB 설명](../../../../labs/cassandra/README.md)
 - [운영 정책](../../policies/15-labs/0025-cassandra.md)

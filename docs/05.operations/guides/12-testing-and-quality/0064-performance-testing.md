@@ -89,7 +89,7 @@ request-level 원본이 없거나 잘리면 증거를 incomplete로 처리하며
 객체 upload/restore는 프로젝트별로 승인된 endpoint·bucket/prefix·quota 계약과
 SHA256 대조가 필요하다. 실제 SeaweedFS 호환성·writer 발급은 별도 인수 대상이다.
 
-[Locust LAB](../../../../labs/locust.md)은 client별 request-event/timeout 계약을
+[Locust LAB](../../../../labs/locust/README.md)은 client별 request-event/timeout 계약을
 소유한다. 합성 HttpUser.requests 실행은 counter·ms histogram·master CSV를
 대조하며 SDK exporter 전달을 대신 증명하지 않는다. 실행 도구는 신뢰 가능한
 Docker 경로와 빈 임시 HOME/config를 사용하고 결과 파일과 정리 범위를 제한한다.
@@ -120,7 +120,7 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 
 - 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))는 변경 경로의
   소스·문서 회귀를 검사한다. 통과해도 실행 대상의 준비 상태는 증명하지 않는다.
-- root `--profile '*'` 렌더에 Locust가 없고, 독립 `labs/locust.yml`의
+- root `--profile '*'` 렌더에 Locust가 없고, 독립 `labs/locust/docker-compose.yml`의
   master/worker closure가 별도 프로젝트·네트워크·볼륨을 사용하는지 본다.
 - WireMock 기능 모드의 journal·reset과 부하 모드의 journal 비활성화를
   구분한다. 무저널 모드에서 `GET /__admin/requests`의 HTTP 500은 빈 저널의

@@ -45,11 +45,11 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-정적 검사는 `labs/.env.example`과 `labs/mongodb.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
+정적 검사는 `labs/.env.example`과 `labs/mongodb/docker-compose.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
 
 먼저 다음을 확인한다.
 
-- [ ] `labs/mongodb.yml`의 독립 project와 `mongodb` profile을 확인하고 root include에서 제외됐는지 기록한다.
+- [ ] `labs/mongodb/docker-compose.yml`의 독립 project와 `mongodb` profile을 확인하고 root include에서 제외됐는지 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] destructive resync, data directory deletion, forced election, keyfile rotation, credential rotation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] replica set name은 compose-declared `MyReplicaSet`으로만 기록한다.
@@ -57,19 +57,19 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 1. compose 렌더링을 확인한다.
 
    ```bash
-   LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile mongodb config --quiet
+   LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile mongodb config --quiet
    ```
 
 2. key generator, replica member, init job, UI 상태를 확인한다.
 
    ```bash
-   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml ps mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml ps mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express
    ```
 
 3. init job과 replica nodes 로그를 확인한다.
 
    ```bash
-   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter
    ```
 
 4. replica set 상태를 승인된 custody와 client native password prompt로 확인한다.
@@ -77,7 +77,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    실제 TTY를 가진 비공개 운영 terminal에서만 client 자체 password prompt를 사용한다. tracing/verbose/terminal recording과 redirected stdin, `exec -T`를 금지한다. 승인된 custody에서 받은 credential을 prompt에만 입력하며 shell 변수·환경·argv·URL로 전달하지 않는다. prompt/권한/CA/endpoint가 없거나 인증이 실패하면 중단한다. root/Docker 관리자의 메모리 관찰까지 차단한다고 주장하지 않는다.
 
    ```bash
-   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml exec mongodb-rep1 sh -c 'exec mongosh --username "$MONGO_INITDB_ROOT_USERNAME" --authenticationDatabase admin --eval "rs.status().members.map(m => ({name:m.name,state:m.stateStr}))"'
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml exec mongodb-rep1 sh -c 'exec mongosh --username "$MONGO_INITDB_ROOT_USERNAME" --authenticationDatabase admin --eval "rs.status().members.map(m => ({name:m.name,state:m.stateStr}))"'
    ```
 
 5. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
@@ -89,7 +89,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 6. Mongo Express는 `127.0.0.1:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}` loopback port로만 확인한다. HOME Traefik route는 없다. Password 값은 출력하지 않는다.
 
    ```bash
-   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=80 mongo-express
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml logs --tail=80 mongo-express
    ```
 
 현재 key/init 경로는 비밀값을 argv에 싣지 않는다. 실제 key 생성·replica 결성 결과는 SPEC-0215 TSK-0002(삭제됨, Git history)의 LAB 실행 기록에 남아 있다. member name/state만 기록한다.
@@ -107,17 +107,17 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log와 replica member 상태 요약을 기록한다.
 - secret 값, MongoDB document 전체 또는 password를 담은 credential 기반 URI 문자열은 기록하지 않는다.
-- `mongodb`를 선택했음을 기록한다. root는 `labs/mongodb.yml`을 include하지 않는다.
+- `mongodb`를 선택했음을 기록한다. root는 `labs/mongodb/docker-compose.yml`을 include하지 않는다.
 
 ### Verification Steps
 
-- `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml ps ...`에서 `mongodb-rep1`과 `mongodb-rep2`가 healthy 또는 running 상태인지 확인한다.
+- `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml ps ...`에서 `mongodb-rep1`과 `mongodb-rep2`가 healthy 또는 running 상태인지 확인한다.
 - `rs.status()` member summary가 `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`를 포함하는지 확인한다.
 - `mongo-init`가 completed 상태인지 확인한다.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter`
+- **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter`
 - **Replica evidence**: sanitized `rs.status()` member summary
 - **Route**: HOME gateway 경로 없음; Mongo Express loopback port만 게시 (SPEC-0215)
 - **Metrics**: 이 LAB에는 exporter가 없다. 고정했던 exporter image가 존재하지 않았고, 현재 image에는 secret을 읽을 shell이 없으며, LAB은 HOME Prometheus에 수집되지 않아 소비자가 없었다(SPEC-0215).
@@ -143,7 +143,7 @@ primary를 확인할 수 없거나, `mongo-init`이 반복 실패하거나, repl
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Guide](../../guides/15-labs/0027-mongodb.md) (`GDE-0027`), [Policy](../../policies/15-labs/0027-mongodb.md) (`POL-0027`)
 
-- [Compose implementation: labs/mongodb.yml](../../../../labs/mongodb.yml)
+- [Compose implementation: labs/mongodb/docker-compose.yml](../../../../labs/mongodb/docker-compose.yml)
 
 - [MongoDB backup and restore tools](https://www.mongodb.com/docs/v8.0/tutorial/backup-and-restore-tools/)
 - [MongoDB security hardening](https://www.mongodb.com/docs/v8.0/core/security-hardening/)
@@ -152,4 +152,4 @@ primary를 확인할 수 없거나, `mongo-init`이 반복 실패하거나, repl
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/15-labs/0027-mongodb.md)
 - [Operations policy](../../policies/15-labs/0027-mongodb.md)
-- [Infra README](../../../../labs/mongodb.md)
+- [Infra README](../../../../labs/mongodb/README.md)

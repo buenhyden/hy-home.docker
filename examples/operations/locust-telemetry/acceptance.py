@@ -288,7 +288,7 @@ def main():
                 "--project-name",
                 project,
                 "-f",
-                str(ROOT / "labs/locust.yml"),
+                str(ROOT / "labs/locust/docker-compose.yml"),
                 "-f",
                 str(HERE / "compose.override.yml"),
                 "--profile",
