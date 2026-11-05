@@ -166,6 +166,19 @@ them every metadata mode prints `METADATA rejected` and exits 2.
 4. Run `--sync-metadata-prune-check` again. Expect `files_changed=0` and
    exit 0.
 
+**Root `secrets/` overlap.** E6 showed every LAB secret copy overlapping
+root's read-only restic bind of `secrets/`. This is not a W2 or W3
+regression. A check of stalwart at `6f4eb08dc` with the tracked
+`labs/.env.example` gives the same overlap. SPEC-0262 E20 used the synthetic
+`compose_controls.LAB_INPUTS`, which set `LAB_SECRET_DIR` to
+`/nonexistent/lab-secrets`, so it never met the in-repo copies.
+`root_footprint` turns every HOME sensitive input into HOME state, so the
+read-only bind looked like owned state. `lab.py` now records the writable
+binds as `bound_state` before that step. A read-only root bind of
+`secrets/` owns no read-only LAB path under `secrets/labs/<name>/`. A
+writable root bind, a HOME secret, the whole `secrets/labs` tree and a
+writable LAB bind still clash.
+
 **SMTP retirement path.** `scripts/lib/ops/smtp_public_source.py` now
 requires the supabase LAB to read its LAB-037 copy and refuses any LAB file
 that names the HOME SMTP path. Its fixed `extends` file is now
@@ -187,7 +200,9 @@ accepts any well-formed retired-row alias, not only COMM-003.
 | E7 | 3 | W3 | hardening | `bash scripts/hardening/check-all-hardening.sh` | PASS | all checks passed | required | - |
 | E8 | 3 | W3 | operations catalog and script manifest | `check-operations-catalog.py`, `check-script-manifest.py` | PASS | both PASS | required | - |
 | E9 | 3 | W3 | owner registry and sync | prepared rows and the sync sequence in the W3 Work Log | NOT_RUN | owner step 4 and 5 pending | required | - |
-| E10 | 7 | W3 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` on the W3 working tree | PASS | violations=0; failures=0 | required | - |
+| E10 | 3 | W3 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` on the W3 working tree | PASS | violations=0; failures=0 | required | - |
+| E11 | 3 | W3 | RED test | `test_read_only_secrets_backup_owns_no_lab_secret_copy` with root's read-only `secrets/` bind through `root_footprint`, before the `lab.py` fix | FAIL | the LAB copy "overlaps root" | required | - |
+| E12 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs after the fix, also run for all 15 LABs | PASS | no overlap problem in any LAB; only empty LAB_DATA_DIR seed files, absent synthetic operator files, and lakehouse's ignored local `great-expectations/__pycache__/` remain | required | E6 |
 
 ## Criterion Acceptance
 
