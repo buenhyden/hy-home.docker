@@ -163,9 +163,20 @@ Every LAB was refused with "data path … overlaps root", even for
   strictly inside it. Writable, secret or whole-tree LAB binds, and a
   writable HOME bind of the tree, still conflict (`8b231c5e3`).
 
+A security review returned CHANGES_REQUESTED with two Important findings:
+
+- With the `/` observers exempt, no HOME path covered the top-level secret
+  files, the root env file or Docker's data root.
+- The source-tree exemption accepted gitignored `.env` files.
+
+`c94497269` fixes both. Compose secret files are sensitive inputs of the model
+that declares them, the root env file and `DockerRootDir` are HOME state,
+`.env` files are sensitive, and only git-tracked paths qualify.
+
 After the fix no LAB reports an overlap. The remaining problems come from
 the synthetic inputs. The 64 CPU budget is below HOME's roughly 64 declared
-CPUs on this 12-core host, and the synthetic Superset CA file is absent.
+CPUs on this 12-core host, and the synthetic LAB secret files and Superset CA
+file are absent.
 The real budget is an operator input.
 
 ### Changed
@@ -219,8 +230,9 @@ The real budget is an operator input.
 | E14 | 3 | W2 | unit-tests | `python -m unittest discover -s tests -t .` with the locked controller venv (Python 3.12.3, `--require-hashes`) on `280b6f8fd` | PASS | 3272 tests OK, skipped=108 (opt-in container tests) | required | E6, E7 |
 | E15 | 5 | W4 | hosted-ci | GitHub Actions on PR #747 | PASS | candidate-quality pass 16m19s; merged as `729d16da7` | required | E13 |
 | E16 | 2 | W1 | lab-controller-overlap | `lab.py --env-file <synthetic> --root-env-file .env.example check <lab>` on `f0ce46fda` | FAIL | every LAB refused: "overlaps root" from read-only `/` and source-tree binds | required | - |
-| E17 | 2 | W1 | lab-controller-overlap | same synthetic check on `8b231c5e3` | PASS | six LABs: zero overlap problems; only the synthetic budget and absent synthetic CA remain | required | E16 |
-| E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `8b231c5e3` | PASS | new observer, provision allowlist and source-tree tests GREEN after RED | required | - |
+| E17 | 2 | W1 | lab-controller-overlap | same synthetic check on `c94497269` | PASS | six LABs: zero overlap problems; only the synthetic budget and absent synthetic LAB secret and CA files remain | required | E16 |
+| E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `c94497269` | PASS | observer, provision allowlist, source-tree, HOME secret/env/Docker-root and tracked-only tests GREEN after RED | required | - |
+| E19 | 2 | W1 | security-review | Independent review of the LAB overlap change through `8b231c5e3` | FAIL | CHANGES_REQUESTED: 2 Important (HOME secrets, root env and Docker root uncovered; gitignored .env accepted), 1 Minor (tests) | required | - |
 
 ## Criterion Acceptance
 
