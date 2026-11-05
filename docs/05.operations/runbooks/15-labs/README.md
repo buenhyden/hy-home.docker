@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 런북"
-version: "0.2.0"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 layer: "operations"
 ---
 
@@ -37,6 +37,9 @@ layer: "operations"
 | [dbt Recovery Runbook](0090-dbt.md) | `RUN-0090` | dbt LAB의 프로비저닝 실패, 연결·권한 오류, 잘못된 모델 실행, 크리덴셜 교체를 다루는 런북이다. |
 | [Lakehouse Recovery Runbook](0094-lakehouse.md) | `RUN-0094` | lakehouse LAB의 Spark·Trino·Flink·Great Expectations 실패, 카탈로그 오류, 접근 거부, 테이블 롤백을 다루는 런북이다. |
 | [Superset Runbook](0097-superset.md) | `RUN-0097` | Superset LAB의 최초 설정, 로그인 실패, 웹 서버 비정상, 업그레이드를 다루는 런북이다. |
+| [LAB Promotion Runbook](0107-lab-promotion.md) | `RUN-0107` | readiness 검사 실행과 `add`, `replace-same`, `replace-substitute` 승격 절차를 다룬다. |
+| [Kafka Cluster LAB Runbook](0108-kafka-cluster.md) | `RUN-0108` | Kafka LAB의 정적 점검, `lab.py` 기동·정지, broker 진단과 복구 계획이다. |
+| [OpenSearch Cluster LAB Runbook](0109-opensearch-cluster.md) | `RUN-0109` | OpenSearch LAB의 정적 점검, `lab.py` 기동·정지, cluster 진단과 복구 계획이다. |
 
 ## Usage
 

@@ -1,0 +1,68 @@
+---
+title: "Kafka Cluster LAB Operations Policy"
+version: "0.1.0"
+type: "operation/policy"
+status: "draft"
+owner: "@buenhyden"
+updated: "2026-11-05"
+layer: "operations"
+artifact_id: "POL-0108"
+parent_ids:
+- "AD-0026"
+created: "2026-11-05"
+---
+
+# Kafka Cluster LAB Operations Policy
+
+## Overview
+
+이 정책은 `labs/kafka-cluster/docker-compose.yml`의 LAB 전용 세 broker KRaft cluster를 격리, 데이터,
+자원과 승격 통제에 묶는다.
+
+## Scope
+
+LAB 전용 `lab-kafka` profile과 project `hy-home-lab-kafka`에 적용된다. HOME 단일 broker를 대체하거나
+승격하는 것은 승인하지 않는다. 승격은 [POL-0107](0107-lab-promotion.md)을 따르는 별도 Task다.
+
+## Rules
+
+- 독립 Compose project와 정확한 `lab-kafka` profile로만 선택한다. root include에는 넣지 않는다.
+- `LAB_KAFKA_CLUSTER_ID`는 HOME `KAFKA_CLUSTER_ID`와 달라야 한다. HOME cluster의 metadata, offset,
+  broker 디렉터리를 재사용하지 않는다.
+- 세 broker data는 `${LAB_DATA_DIR}/kafka/{1,2,3}`에 분리해 유지한다. HOME
+  `${DEFAULT_MESSAGE_BROKER_DIR}`를 가리키지 않는다.
+- `lab_kafka_net`은 internal로 유지한다. host port, HOME `kafka_net`, Traefik route를 추가하지 않는다.
+  현재 source는 인증과 TLS 없이 PLAINTEXT이므로 LAB network 밖으로 열지 않는다.
+- 선언된 limit, healthcheck, replication factor 3과 `min.insync.replicas` 2를 유지한다. 세 broker가
+  한 host에 있으므로 host 가용성을 주장하지 않는다.
+- 기동·정지는 `scripts/operations/lab.py`만 쓰며 `down -v`와 volume prune을 쓰지 않는다.
+- 데이터 보존과 삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)과 별도 승인을
+  따른다. 이 LAB 데이터는 HOME 데이터와 섞지 않는다.
+
+## Exceptions
+
+명명된 실험이 없을 때 LAB은 정지 상태로 둘 수 있다. 예외는 runtime 변경, HOME 데이터 재사용, host
+노출을 승인하지 않는다.
+
+### Review Cadence
+
+image, profile, network, 데이터 경로, 승격 manifest가 바뀔 때와 승격 Task를 열기 전에 검토한다.
+
+### Traceability
+
+- Runtime source: [Kafka LAB Compose](../../../../labs/kafka-cluster/docker-compose.yml).
+- Artifact: `POL-0108`; parent: `AD-0026`.
+- Version projection: [tech-stack versions](../../../../infra/tech-stack.versions.json)는 Compose에서 파생된 drift 증거이며 정확한 pin은 Compose가 소유한다.
+
+## Verification
+
+[RUN-0108](../../runbooks/15-labs/0108-kafka-cluster.md)의 정적 render와 `lab.py check kafka-cluster`로
+검증한다. 2026-11-05 현재 `labs/.env`에 `LAB_KAFKA_CLUSTER_ID`가 없어 HOME 입력의 render와 runtime은
+미검증이다.
+
+## Related Documents
+
+- [Kafka LAB guide](../../guides/15-labs/0108-kafka-cluster.md)
+- [Kafka LAB runbook](../../runbooks/15-labs/0108-kafka-cluster.md)
+- [LAB promotion policy](0107-lab-promotion.md)
+- [Domain catalog](../../README.md)

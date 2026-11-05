@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 정책"
-version: "0.2.0"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 layer: "operations"
 ---
 
@@ -37,6 +37,9 @@ layer: "operations"
 | [dbt Operations Policy](0090-dbt.md) | `POL-0090` | dbt LAB의 권한은 source 읽기와 target schema 소유로 제한하며 HOME dev-pg endpoint는 별도 승인으로만 연다. |
 | [Lakehouse Operations Policy](0094-lakehouse.md) | `POL-0094` | lakehouse LAB 엔진의 identity 범위, 파괴적 유지보수, 테스트 데이터 분리와 HOME catalog endpoint 승인을 통제한다. |
 | [Superset Operations Policy](0097-superset.md) | `POL-0097` | Superset LAB의 native OIDC 로그인, role 부여, 자격 증명 처리와 HOME mng-pg endpoint 승인을 통제한다. |
+| [LAB Promotion Policy](0107-lab-promotion.md) | `POL-0107` | LAB 구조, 승격 manifest, secret, 목적지 규칙, readiness 규칙과 host reserve를 정한다. |
+| [Kafka Cluster LAB Operations Policy](0108-kafka-cluster.md) | `POL-0108` | Kafka LAB의 cluster ID 분리, internal network, 데이터 경로와 승격 경계를 통제한다. |
+| [OpenSearch Cluster LAB Operations Policy](0109-opensearch-cluster.md) | `POL-0109` | OpenSearch LAB의 LAB secret·인증서, internal network, 데이터 경로와 승격 경계를 통제한다. |
 
 ## Usage
 

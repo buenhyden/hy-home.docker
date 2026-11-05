@@ -2020,7 +2020,6 @@ class ReadinessTests(unittest.TestCase):
                 )
                 self.assertEqual(result, json.loads(path.read_text())["result"])
 
-    @unittest.expectedFailure  # until W5 adds the policy reserve table
     def test_reserve_matches_policy(self) -> None:
         policy = (
             ROOT / "docs/05.operations/policies/15-labs/0107-lab-promotion.md"

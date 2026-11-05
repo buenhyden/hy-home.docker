@@ -5104,8 +5104,8 @@
     "operations-subject": {
       "prefix": "OPS-",
       "width": 4,
-      "high_water": 106,
-      "next_number": 107,
+      "high_water": 109,
+      "next_number": 110,
       "reserved_history": [
         5,
         7,
