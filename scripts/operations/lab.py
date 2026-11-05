@@ -557,9 +557,10 @@ def service_problems(model: dict, service: str, label: str) -> tuple[list, list]
 def reservation_sum(running: list[dict], known: dict[str, dict]) -> dict:
     """Reservations of running containers, each from its rendered service
     (`com.docker.compose.project` and `.service` labels). A container outside
-    every known project counts only through the external-workload allowance,
-    which the caller adds once; a running LAB project without a render
-    cannot be summed."""
+    any Compose project (k3d and other plain containers) counts only through
+    the external-workload allowance, which the caller adds once. A running
+    Compose project without a render, LAB or not, cannot be summed (owner
+    decision, 2026-11-06)."""
     found = {"cpus": 0.0, "memory": 0.0, "external": [], "failed": [], "unmeasured": []}
     for container in running:
         if not container.get("running", True):
@@ -567,7 +568,7 @@ def reservation_sum(running: list[dict], known: dict[str, dict]) -> dict:
         project, name = container["project"], container["name"]
         model = known.get(project)
         if model is None:
-            if project.startswith(LAB_PROJECT_PREFIX):
+            if project:
                 found["unmeasured"].append(
                     f"running container {name} of {project} has no render"
                 )

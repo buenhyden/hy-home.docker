@@ -1912,6 +1912,15 @@ class ReadinessTests(unittest.TestCase):
         )
         found = readiness(case)["criteria"]["resources"]
         self.assertEqual("NOT_RUN", found["result"], found)
+        # Nor is any other Compose project without a render, such as a HOME
+        # stack started on its own; only plain containers are external.
+        unknown = readiness_case()
+        unknown["running"].append(
+            container_record("ollama", name="ollama", service="ollama")
+        )
+        found = readiness(unknown)["criteria"]["resources"]
+        self.assertEqual("NOT_RUN", found["result"], found)
+        self.assertTrue(any("ollama" in p for p in found["problems"]), found)
         # With its render, the LAB counts by its reservation.
         other = lab.footprint(
             model("hy-home-lab-other", {"o": service("lab-o", reserve=(0.5, GIB))})
