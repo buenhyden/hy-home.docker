@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Policy"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0107"
 parent_ids:
@@ -54,11 +54,11 @@ created: "2026-11-05"
 | `integrations` | 필요한 `infra` 연동(gateway route, OIDC client, DB role과 provisioning, observability scrape·log, OpenBao secret 전달, 공유 network)과 그 `infra` 소유자 |
 | `secrets` | LAB secret 사본마다 catalog 행과 `infra` 목적지 경로 |
 | `documents` | Guide와 Runbook의 현재 `15-labs` 경로와 목적지 `docs/05.operations` 역할 폴더 |
-| `resources` | 서비스별 선언 CPU·memory와 데이터·image에 필요한 disk |
+| `resources` | 서비스별 선언 CPU·memory limit(`cpus`, `memory_mib`)과 reservation(`reservations.cpus`, `reservations.memory_mib`), 데이터·image에 필요한 disk |
 | `host` (선택) | Compose가 표현하지 못하는 최소 Docker·Compose 버전과 kernel 기능 |
 
 `lab.py check`는 알 수 없는 `kind`, `infra/<tier>/` 밖의 `target`, catalog 행이 없는 secret,
-렌더링된 limit과 다른 `resources`를 문제로 보고한다.
+렌더링된 limit 또는 reservation과 다른 `resources`를 문제로 보고한다.
 
 ### Secrets
 
@@ -109,13 +109,48 @@ tier는 서비스 기능을 따른다. 운영 문서는 서비스 domain을 따�
   없거나, symlink 디렉터리가 있거나, 폴더가 repository 밖으로 풀리면 실패한다.
 - **Composition.** port와 container 이름은 유지되는 서비스가 선언하지 않을 때만 뺀다. network와
   데이터 경로는 빼지 않는다.
-- **Resources.** 실행 중 container의 선언 limit 합에 후보를 더하고 실행 중인 은퇴 서비스를 뺀
-  값이 측정된 host 용량에서 아래 reserve를 뺀 예산 안에 있어야 한다. limit이 없는 실행 중
-  container가 있으면 `NOT_RUN`이고, 측정된 합이 이미 예산을 넘으면 `FAIL`이다. limit이 없는
-  후보 서비스도 `NOT_RUN`이며, manifest는 0이거나 빠진 limit을 거부한다. disk는 데이터 root와
-  Docker data root의 여유에서 전체의 reserve 비율을 뺀 값이 `disk_gib`를 덮어야 한다.
-- **측정하지 않는 하위 검사.** Spec 5절의 세 하위 검사는 측정하지 않는다. 보고서 `values`에
-  `NOT_RUN`으로 드러나며, 아래 Exceptions의 축소로 다룬다.
+- **Resources.** 판정 대상은 limit이 아니라 선언 reservation이다. 실행 중 container마다
+  `com.docker.compose.project`와 `com.docker.compose.service` label로 root 또는 실행 중 LAB
+  render의 서비스를 찾아 그 reservation을 더한다. 여기에 후보 render의 reservation과 아래
+  외부 workload allowance를 한 번 더하고, 실행 중인 은퇴 서비스를 뺀다. 그 합이 측정된 host
+  용량에서 아래 reserve를 뺀 예산 안에 있어야 한다. 알려진 project 밖의 container(k3d 등)는
+  개수와 관계없이 allowance로만 센다. render가 없는 실행 중 LAB project, render에 없는 서비스,
+  reservation이 없는 서비스, limit이 없는 서비스는 합할 수 없어 `NOT_RUN`이다. 후보 서비스도
+  같다. reservation이 limit보다 크면 `FAIL`이고, 알려진 합이 이미 예산을 넘으면 `NOT_RUN`이
+  있어도 `FAIL`이다. manifest는 0이거나 빠진 limit과 render와 다른 reservation을 거부한다.
+  disk는 데이터 root와 Docker data root의 여유에서 전체의 reserve 비율을 뺀 값이
+  `disk_gib`를 덮어야 한다.
+- **Owner 확인 항목.** 아래 Owner check items의 세 하위 검사는 측정값도 차단도 아니다.
+  보고서는 이를 `OWNER_JUDGMENT`로 보이고 `owner_checks`에 나열한다. 기준과 전체 결과는
+  `PASS`, `FAIL`, `NOT_RUN`만 갖고, 측정된 기준이 모두 `PASS`여야 `PASS`다.
+
+### Reservation rule
+
+- 공유 resource template(`infra/common-optimizations.yml`의 `x-resource-*` anchor와 limit을
+  직접 쓰는 template)과, limit을 직접 쓰는 모든 HOME·LAB 서비스는
+  `deploy.resources.reservations.cpus`와 `.memory`를 선언한다. limit은 기존 short form
+  (`cpus`, `mem_limit`)을 유지한다. 자체 `deploy` 블록(GPU device 등)이 있는 서비스는 기존
+  key를 지우지 않고 reservation을 합친다.
+- 크기는 실행 중 구성원의 `docker stats --no-stream` 표본 세 개 이상에서 구성원별 최대값을
+  잡고, anchor 안에서 가장 큰 값에 1.5를 곱해 CPU는 0.05, memory는 32 MiB 단위로 올린다.
+  결과는 limit을 넘지 않고, 측정값의 하한은 0.05 CPU와 32 MiB다.
+- 측정하지 않은 reservation은 limit과 같다. 재측정하면 낮아진다. LAB은 상시 실행하지
+  않으므로 승인된 LAB lease 실행(`lab.py run`)에서 측정할 때까지 limit과 같다.
+- Docker는 CPU reservation을 강제하지 않는다. 선언된 예산일 뿐이다. memory reservation은 soft
+  limit이다. HOME 서비스는 owner window에서 재생성될 때 새 reservation을 받는다.
+- 표본과 결과는 [SPEC-0263-TSK-0002](../../../03.specs/0263-lab-promotion-contract/tasks/tsk-0002-lab-promotion-reservations.md)의
+  Measurements에 있다.
+
+### Owner check items
+
+`lab.py readiness`가 측정하지 않는 SPEC-0263 5절 하위 검사다. 보고서 값은 `OWNER_JUDGMENT`이고
+기준 결과를 바꾸지 않는다. 각 승격 Task가 owner의 판단을 checklist로 기록한다.
+
+| 하위 검사 | 보고서 값 |
+| --- | --- |
+| Tier: 목적지 tier가 서비스 기능에 맞는가 | `tier.values.function_fit` |
+| Linux: 서비스에 필요한 group과 file mode | `linux.values.groups_and_file_modes` |
+| Composition: profile과 consumer 충돌 | `composition.values.profile_and_consumer_clashes` |
 
 ### Host reserve
 
@@ -128,52 +163,50 @@ OS와 Docker를 위해 남기는 reserve다. 2026-11-05 owner가 승인했고 `l
 | Memory MiB | 4096 |
 | Disk percent | 10 |
 
+### External-workload allowance
+
+HOME과 LAB Compose project 밖의 workload(k3d 등)를 위한 고정 allowance다. 실행 중인 외부
+container 수와 관계없이 resource 합에 한 번 더한다. 2026-11-06 k3d container 다섯 개가 약
+1.0 CPU와 4.1 GiB를 썼다. `lab.py`의 `PROMOTION_EXTERNAL_ALLOWANCE`가 이 표와 같아야 한다.
+
+| Resource | Allowance |
+| --- | --- |
+| Allowance CPUs | 2 |
+| Allowance MiB | 6144 |
+
 ## Exceptions
-
-### Unmeasured section 5 sub-checks
-
-SPEC-0263 5절의 다음 하위 검사는 `lab.py readiness`가 측정하지 않는다. 이것은 owner 수락을
-기다리는 Spec 5절의 축소다.
-
-| 하위 검사 | 보고서 값 | 기준 결과 |
-| --- | --- | --- |
-| Tier: 목적지 tier가 서비스 기능에 맞는가 | `tier.values.function_fit` = `NOT_RUN`, source "owner judgment, not measured" | owner 판단 항목이며 `PASS`를 막지 않는다 |
-| Linux: 서비스에 필요한 group과 file mode | `linux.values.groups_and_file_modes` = `NOT_RUN` | linux를 `NOT_RUN`으로 둔다 |
-| Composition: profile과 consumer 충돌 | `composition.values.profile_and_consumer_clashes` = `NOT_RUN` | composition을 `NOT_RUN`으로 둔다 |
-
-따라서 지금은 어떤 후보도 전체 `PASS`를 받지 못한다. owner가 이 축소를 수락하거나 두 하위
-검사가 측정될 때까지 승격 Task가 각 항목을 직접 확인하고 기록한다. 예외 owner는 @buenhyden이다.
 
 ### Current HOME resource state
 
-2026-11-05 HOME readiness 실행에서 `valkey-cluster`와 `postgresql-ha`는 resources 기준에서
-`FAIL`이었다. linux와 composition은 위 축소 때문에 `NOT_RUN`이고, 나머지는 `PASS`였다. 12 CPU host의 예산은 10 CPU, 27924 MiB인데 실행 중 HOME container의 선언 limit만
-약 64 CPU, 59904 MiB이고 `k3d-hyhome-*` container 다섯 개는 limit이 없다. 따라서 현재 규칙에서는
-어떤 대체 후보도 통과할 수 없다. 규칙은 바꾸지 않았고, 다음 중 하나를 owner가 결정한다.
-
-| 선택지 | 내용 | 비고 |
-| --- | --- | --- |
-| (a) | HOME limit을 줄이고 k3d container에 limit을 준다 | runtime 변경과 운영 window 필요 |
-| (b) | limit 대신 reservation으로 판정한다 | Spec 변경 필요; 권장 |
-| (c) | 측정 사용량으로 판정한다 | 측정 방법과 기간 결정 필요 |
-
-이 결정 전까지 resource `FAIL`은 승격 거부다. 예외 owner는 @buenhyden이다.
+2026-11-06 owner가 limit 대신 reservation으로 판정하기로 결정했다(SPEC-0263 0.3.0). 같은 날
+read-only HOME readiness에서 `valkey-cluster`와 `postgresql-ha`는 tier, composition, linux,
+docker가 `PASS`이고 resources가 `FAIL`이었다. 12 CPU host의 예산은 10 CPU와 27924 MiB다.
+실행 중 HOME container의 reservation 합은 27.75 CPU와 22080 MiB이며, 그중 `x-resource-db`
+구성원 10개가 20 CPU다. 이 anchor의 표본에서 `airflow-dag-processor`가 1.65 CPU까지 올라가
+reservation이 limit인 2.00 CPU가 되었다. 후보는 측정 전이라 reservation이 limit과 같다
+(`valkey-cluster` 7.0 CPU, `postgresql-ha` 10.5 CPU). 이 값은 render에서 오므로 HOME
+container를 재생성하지 않아도 같다. resource `FAIL`은 승격 거부다. 예외 owner는 @buenhyden이다.
 
 ### Review Cadence
 
-reserve, host 사양, readiness 규칙 또는 LAB 목록이 바뀔 때와 승격 Task를 열기 전마다 검토한다.
+reserve, allowance, reservation 값, host 사양, readiness 규칙 또는 LAB 목록이 바뀔 때와 승격
+Task를 열기 전마다 검토한다.
 
 ### Traceability
 
 - Contract: [SPEC-0263](../../../03.specs/0263-lab-promotion-contract/spec.md) section 1–5.
-- Implementation: `scripts/operations/lab.py`의 `check`, `readiness`, `PROMOTION_RESERVE`.
+- Implementation: `scripts/operations/lab.py`의 `check`, `readiness`, `budget`,
+  `PROMOTION_RESERVE`, `PROMOTION_EXTERNAL_ALLOWANCE`; `infra/common-optimizations.yml`의
+  resource template.
 - Artifact: `POL-0107`; parent: `AD-0026`.
 
 ## Verification
 
 - `python3 scripts/operations/lab.py check <name>`가 layout, manifest, secret 경로를 검증한다.
-- `tests/validation/test_lab_controller.py`의 `test_reserve_matches_policy`가 위 reserve 표와
-  `PROMOTION_RESERVE`의 일치를 검증한다.
+- `tests/validation/test_lab_controller.py`의 `test_reserve_matches_policy`와
+  `test_allowance_matches_policy`가 위 reserve·allowance 표와 `PROMOTION_RESERVE`,
+  `PROMOTION_EXTERNAL_ALLOWANCE`의 일치를 검증한다. `test_shared_templates_declare_reservations`가
+  모든 공유 template의 reservation이 limit 이하인지 검증한다.
 - `tests/validation/test_lab_isolation.py`와 `tests/validation/test_lab_layout.py`가 격리와
   layout을 검증한다.
 

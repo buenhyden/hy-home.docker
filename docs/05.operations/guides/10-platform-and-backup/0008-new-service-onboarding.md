@@ -1,10 +1,10 @@
 ---
 title: "New Service Onboarding Guide"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0008"
 parent_ids:
@@ -43,7 +43,7 @@ bounded change를 유효한 Spec Package로 기록할 수 있게 한다.
 
 1. `examples/sample-web-service/`를 새 서비스 디렉터리로 복사하고 구현 Compose/Dockerfile source를 확정한다.
 2. 이름, base image pin 또는 digest, 포트, 네트워크, 볼륨을 서비스에 맞게 수정한다. Compose/Dockerfile 선언이 runtime pin authority이며 derived projection에는 Compose image만 동기화한다.
-3. 하드닝 기본값을 유지한다: non-root 실행, `read_only: true` + `tmpfs`, `cap_drop: [ALL]`, `no-new-privileges:true`, 리소스 제한, healthcheck, 로그 회전.
+3. 하드닝 기본값을 유지한다: non-root 실행, `read_only: true` + `tmpfs`, `cap_drop: [ALL]`, `no-new-privileges:true`, 리소스 제한(`cpus`/`mem_limit`)과 reservation(`deploy.resources.reservations`; 공통 template이 주며, limit을 직접 쓰는 서비스는 [POL-0107](../../policies/15-labs/0107-lab-promotion.md#reservation-rule)에 따라 직접 선언), healthcheck, 로그 회전.
 4. root `docker-compose.yml` include, 각 service `profiles:`, 그리고 POL-0078 canonical profile membership을 함께 갱신한다. HOME 편입은 named profile만으로 정하지 않고 current consumer, persistence, recovery, resource evidence로 판단한다.
 5. public env/secret schema와 secret-file reference를 추가한다. 민감값은 Docker Secrets/OpenBao 참조로 주입한다. seed의 `env_file`은 비밀이 아닌 설정 예제이며 credential 전달 방식으로 확대하지 않는다.
 6. service Guide에 `implementation_services` mapping을 반드시 두어 exact Compose path와 service 이름을 연결하고 Policy/Runbook, service README, 필요 Spec/Task를 함께 갱신한다. operations catalog가 이 binding과 global join을 검증하므로 병렬 registry/checker를 만들지 않는다.
