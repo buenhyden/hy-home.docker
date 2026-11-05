@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-05"
 created: "2026-09-21"
 ---
 
@@ -18,7 +18,7 @@ JupyterLab은 한 명의 운영자를 위해 하나의 Jupyter Server를 실행�
 **아니며** 접근하는 사용자마다 별도로 생성되는 프로세스도, 커널 격리도,
 파일시스템 격리도 없습니다. 서버 토큰이 있는 모든 사람은 컨테이너의 UID 1000으로
 코드를 실행하고 터미널을 열고 전체 작업 디렉터리를 읽을 수 있습니다.
-독립 Compose project인 [JupyterLab LAB](../jupyterlab.yml)(`jupyterlab` profile)이며
+독립 Compose project인 [JupyterLab LAB](docker-compose.yml)(`jupyterlab` profile)이며
 root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traefik route와 SSO도
 없습니다.
 
@@ -36,12 +36,14 @@ root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traef
 
 ```text
 .
+├── docker-compose.yml  # 독립 LAB entrypoint
+├── promotion.yaml      # SPEC-0263 승격 manifest
 ├── Dockerfile          # scipy-notebook base + pinned requirements
 ├── requirements.txt    # Pinned notebook libraries (MLflow client matches the server)
 └── README.md
 ```
 
-서비스 정의는 [labs/jupyterlab.yml](../jupyterlab.yml)이 소유합니다.
+서비스 정의는 [labs/jupyterlab/docker-compose.yml](docker-compose.yml)이 소유합니다.
 
 ## Tech Stack
 
@@ -57,7 +59,7 @@ root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traef
 
 | Field | Value |
 | --- | --- |
-| Profile | `jupyterlab` / `labs/jupyterlab.yml` |
+| Profile | `jupyterlab` / `labs/jupyterlab/docker-compose.yml` |
 | Network / port | `lab_jupyterlab_net`(`hy-home-lab-jupyterlab`); HOME network 없음; `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_JUPYTERLAB_HOST_PORT:-18888}` -> 8888 |
 | Route | 없음(Traefik route·게이트웨이 SSO 없음); labels `hy-home.tier: lab`, `traefik.enable: 'false'` |
 | Authentication | Jupyter Server 토큰만 사용합니다. `${LAB_SECRET_DIR}/jupyterlab/token.txt`의 LAB 전용 `lab_jupyterlab_token`을 `/run/secrets/jupyter_token`으로 마운트해 `JUPYTER_TOKEN`으로 내보냅니다. 토큰이 16자 미만이면 시작이 실패합니다. 빈 토큰은 게시 포트의 모든 client에 커널, 터미널, REST API를 열기 때문에 허용되지 않습니다. HOME 값 복사는 별도 승인입니다 |
@@ -68,14 +70,14 @@ root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traef
 
 ## Validation
 
-- `docker compose --env-file labs/.env -f labs/jupyterlab.yml --profile jupyterlab config --quiet`
+- `docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - 이미지 빌드는 저장소 검사 대상이 아니므로, 승인된 환경에서만 빌드합니다.
 
 ## Usage
 
 명령은 저장소 루트에서
-`docker compose --env-file labs/.env -f labs/jupyterlab.yml --profile jupyterlab` 접두사로 실행합니다.
+`docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab` 접두사로 실행합니다.
 `config`는 render만 하며, 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down jupyterlab`의 lease 규칙
 ([LAB 안내](../README.md#usage))을 따릅니다.

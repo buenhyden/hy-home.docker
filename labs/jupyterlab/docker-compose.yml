@@ -25,18 +25,18 @@ networks:
 # at its original /run/secrets name, which the LAB scripts read.
 secrets:
   lab_jupyterlab_token:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/jupyterlab/token.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/jupyterlab/token.txt
 
 services:
   jupyterlab:
     profiles:
       - jupyterlab
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-high
     # The base tag is the Dockerfile ARG default, the single Renovate-owned pin.
     build:
-      context: ./jupyterlab
+      context: .
       dockerfile: Dockerfile
     image: hy-home/jupyterlab:scipy-local
     container_name: jupyterlab
