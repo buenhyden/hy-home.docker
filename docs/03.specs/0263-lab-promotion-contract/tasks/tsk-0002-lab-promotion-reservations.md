@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -99,6 +99,20 @@ version 0.3.0 on 2026-11-06 ("승인").
 - **TDD.** RED: with only the constant added, `test_lab_controller` ran 98
   tests with 10 failures and 33 errors, all in the new or changed contracts.
   GREEN: `test_lab_controller` and `test_lab_isolation` ran 109 tests OK.
+- **Task review fixes.** The independent task review passed spec compliance
+  and approved quality with four Minor findings. `budget` now requires
+  `known`, so a caller can no longer omit the HOME render and sum only the
+  allowance. The footprint tests now assert reservations multiplied by
+  replicas and the `deploy.resources.limits` fallback; with the fallback
+  removed, the new test fails.
+- **Deferred TSK-0001 minor.** `c79e51526` closes the final-review minor
+  "alias skip scope in private parse": the metadata sync skips a two-cell row
+  only inside the `| Retired ID | Canonical ID |` table. A two-cell row
+  anywhere else in either registry is refused (exit 2) instead of silently
+  dropping out of the parse. RED with the old parser, GREEN after;
+  `test_secret_metadata_sync` passes in the controller venv. Under system
+  `python3` it errors because `referencing` (jsonschema) is missing, which
+  also explains the 15 local failures seen earlier.
 
 ### Measurements
 
@@ -210,12 +224,14 @@ DAGs; the next member peak is 0.077 CPU.
 | E14 | 8 | W7 | operations catalog | `check-operations-catalog.py` after the inventory re-projection in `493efe01c` (`render_service_inventory`; only the Resources column changed, in 96 rows) | PASS | operations-catalog: PASS | required | E13 |
 | E15 | 8 | W7 | full unit suite | `env -u LAB_DATA_DIR PATH=~/.local/share/hy-home/controller-venv-py312/bin:$PATH python -m unittest discover -s tests -t .` at `493efe01c` | FAIL | 3344 tests, failures=44, skipped=108: 43 in `test_update_gates` (stale Compose source SHAs) and 1 in `test_service_wiring_contracts` (open-webui `deploy`) | required | - |
 | E16 | 8 | W7 | full unit suite | the E15 command at `ed5ddeccb` (with this Task edit in the working tree) | PASS | 3344 tests OK, skipped=108 | required | E15 |
+| E17 | 8 | W7 | task review | independent review of `5e270cf08..3cf6dde9e` | PASS | spec compliance PASS, quality APPROVED; 4 Minor findings: 2 fixed (E18), 2 recorded under Review and Completion | required | - |
+| E18 | 8 | W7 | LAB suites | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout` after the review fixes | PASS | 117 tests OK; the new limits-fallback test fails with the fallback removed | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16 | - | @buenhyden |
+| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18 | - | @buenhyden |
 
 ## Review and Completion
 
@@ -235,6 +251,17 @@ recreation. The owner decides the next step:
 
 The memory reservations take effect in Docker only when the owner recreates
 the HOME services in an owner window.
+
+Two review findings wait for the owner:
+
+- `ollama` keeps its authored 4G memory reservation for model loading. The
+  measured peak was 47 MiB, so the sizing rule would give 96M. Keeping 4G is
+  the safe direction, but it adds about 4 GiB to every HOME readiness sum.
+  The owner either accepts it as an exception or lowers it to 96M.
+- A container from a Compose project that is not rendered (for example a
+  HOME stack started on its own, or a third-party stack) counts only through
+  the external-workload allowance, as the work unit specified. The owner may
+  instead make any non-empty unknown project `NOT_RUN`.
 
 ## Related Documents
 
