@@ -444,16 +444,27 @@ leaves empty (E39; they render with synthetic inputs, E40). The local full CI
 gate is BLOCKED by the host Python (E47) and hosted CI is NOT_RUN until the
 branch is pushed (E48). No criterion is accepted.
 
+Owner decisions on 2026-11-06:
+
+- **Resource rule:** judge the declared `deploy.resources.reservations`
+  instead of limits. This needs a Spec amendment, reservations on the HOME
+  services and a readiness change. That is a follow-up Task under this Spec;
+  E53 and E54 keep refusing on resources until it lands.
+- **Section 5 narrowing:** accepted as owner check items. Groups and file
+  modes, and profile and consumer clashes, become checklist items in each
+  promotion Task. The follow-up Task amends the Spec and makes those
+  readiness entries owner-judgment, non-blocking.
+- **Secret-name uniqueness:** the dropped root/LAB name uniqueness is
+  accepted, because the per-LAB path rule keeps the copies apart.
+- **Delivery:** push the branch and open a PR; the owner merges after
+  hosted CI.
+
 Open owner items:
 
-- the resource-rule decision (limits, reservations or measured usage) recorded
-  in POL-0107; E53 and E54 refuse `valkey-cluster` and `postgresql-ha` on
-  resources until then;
-- acceptance of the section 5 narrowing in POL-0107;
 - `labs/.env` `LAB_HOST_BUDGET_*` for `lab.py check` (E58);
 - `labs/.env` `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR` (E35);
 - SMTP01 removing COMM-003;
-- owner confirmation of the dropped secret-name uniqueness.
+- retiring the unused `secrets/db/mng-pg/supabase_password.txt`.
 
 ## Related Documents
 
