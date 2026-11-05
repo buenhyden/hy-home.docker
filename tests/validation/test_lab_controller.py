@@ -241,6 +241,32 @@ class CollisionAndBudgetTests(unittest.TestCase):
         with mock.patch.object(lab.subprocess, "run", side_effect=inspect("/new/v")):
             self.assertEqual([], lab.stale_volumes("docker", selected))
 
+    def test_read_only_host_root_observer_owns_no_lab_path(self) -> None:
+        # cadvisor and node-exporter bind / read-only to observe the host.
+        # That contains every path but owns none, so it must not refuse
+        # every LAB; a LAB that itself binds / is still refused.
+        rendered = model(
+            "hy-home-infra",
+            {"pg": service("mng-pg", binds=["/data/home/pg"])},
+        )
+        rendered["services"]["cadvisor"] = service("cadvisor")
+        rendered["services"]["cadvisor"]["volumes"] = [
+            {"type": "bind", "source": "/", "target": "/rootfs", "read_only": True}
+        ]
+        root = lab.footprint(rendered)
+        self.assertEqual([], lab.collisions({"one": self.lab1}, root, []))
+        greedy = model("hy-home-lab-g", {"x": service("lab-g")})
+        greedy["services"]["x"]["volumes"] = [
+            {"type": "bind", "source": "/", "target": "/host", "read_only": True}
+        ]
+        text = "\n".join(lab.collisions({"g": lab.footprint(greedy)}, root, []))
+        self.assertIn("data path / overlaps root", text)
+        writable = model("hy-home-infra", {"w": service("w", binds=["/"])})
+        text = "\n".join(
+            lab.collisions({"one": self.lab1}, lab.footprint(writable), [])
+        )
+        self.assertIn("overlaps root", text)
+
     def test_symlink_into_home_data_is_still_an_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             home = pathlib.Path(tmp) / "home-data"
@@ -299,6 +325,12 @@ class CollisionAndBudgetTests(unittest.TestCase):
         one = readonly("hy-home-lab-one", "lab-one-x", shared)
         two = readonly("hy-home-lab-two", "lab-two-x", shared)
         self.assertEqual([], lab.collisions({"one": one, "two": two}, self.root, []))
+        provision = str(
+            ROOT / "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
+        )
+        home_job = readonly("hy-home-infra", "grafana-db-provision", provision)
+        lab_job = readonly("hy-home-lab-dbt", "dbt-provision", provision)
+        self.assertEqual([], lab.collisions({"dbt": lab_job}, home_job, []))
 
         writable = lab.footprint(
             model(

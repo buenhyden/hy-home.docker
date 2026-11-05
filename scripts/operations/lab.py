@@ -38,7 +38,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 LAB_PROJECT_PREFIX = "hy-home-lab-"
 LEASE = re.compile(r"^([1-9][0-9]*)([mh])$")
 SHARED_PUBLIC_INPUTS = frozenset(
-    {os.path.realpath(ROOT / "infra/common-optimizations.yml")}
+    {
+        os.path.realpath(ROOT / "infra/common-optimizations.yml"),
+        # The tracked PostgreSQL provisioning entry point: HOME provision jobs
+        # and the dbt/superset LAB provisioners mount the same file read-only.
+        os.path.realpath(
+            ROOT / "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
+        ),
+    }
 )
 
 
@@ -209,6 +216,15 @@ def _port_clash(a: str, b: str) -> bool:
 
 def _path_conflict(path: str, owner: dict, other_path: str, other: dict) -> bool:
     if not _nested(path, other_path):
+        return False
+    # A read-only bind of the host root (cadvisor, node-exporter) contains
+    # every path but owns none; without this every LAB overlaps root. A LAB
+    # binding / itself still meets root's own data paths.
+    if (
+        other_path == "/"
+        and other_path in other["inputs"]
+        and "/" not in other["state"]
+    ):
         return False
     shared_public_input = (
         path == other_path
