@@ -55,6 +55,16 @@ The owner stated the following on 2026-11-05:
   `secrets/labs/<name>/`, and promotion moves them to their `infra` location.
 - **supabase.** It stays a LAB and is brought into this structure.
 
+The owner answered three open questions on 2026-11-05:
+
+- **Host budget.** The budget is the measured host capacity minus a reserve
+  for the OS and Docker. Only running services count, and a replacement
+  subtracts the resources of the service it retires.
+- **supabase secret copies.** They copy the HOME values. The secrets only
+  supabase uses move into the LAB location, `secrets/labs/supabase/`.
+- **Docker socket.** supabase's Docker socket bind is allowed by the LAB
+  check.
+
 #### Observed state
 
 Observed on 2026-11-05 at `c1db5ef65`:
@@ -161,8 +171,15 @@ During the LAB phase every secret file is a LAB copy under
 `secrets/labs/<name>/`. Each copy has its own catalog row (`LAB-*`, scope
 `lab`) and its own placeholder row in the public registry.
 
-A LAB never reads a HOME secret path. This includes a shared secret such as
-SMTP: the LAB gets its own copy.
+A LAB never reads a HOME secret path. A secret HOME also uses, such as SMTP,
+is copied into the LAB location with the HOME value. A secret only the LAB
+uses moves into the LAB location. The owner copies and moves the files. The
+agent changes Compose, catalog rows and tests, and prepares the registry
+edits.
+
+The single exception is supabase's `vector` service. It may bind the Docker
+socket read-only for log collection. `lab.py check` allows exactly that bind
+and refuses every other socket bind, including a writable one.
 
 On promotion:
 
@@ -207,8 +224,11 @@ It covers:
   drivers, and the location of Docker's data root are all compatible. The
   requirements come from the same sources.
 - **Server resources.** Measured on the HOME host:
-  - the CPU and memory limits of every running service plus the candidate stay
-    within the host budget;
+  - the host budget is the measured CPU count and memory minus the OS and
+    Docker reserve set in an operations policy;
+  - the declared CPU and memory limits of every running container, plus the
+    candidate, minus the services a replacement retires, stay within that
+    budget;
   - free disk on the data root and on Docker's data root covers the declared
     need.
 
@@ -216,7 +236,9 @@ It covers:
   the services already running is not promoted.
 
 The report records each measured value and its source. A value that cannot be
-measured is `NOT_RUN`, not passed.
+measured is `NOT_RUN`, not passed. A running container without declared
+limits cannot be summed, so it makes the resource criterion `NOT_RUN` until
+it declares limits.
 
 #### 6. Promotion procedures
 
@@ -257,6 +279,8 @@ These were decided while drafting the Spec, not by the owner:
 - the names `promotion.yaml`, `docker-compose.yml`, `add`, `replace-same`,
   `replace-substitute` and `undecided`;
 - the rule that LAB secret values are never promoted;
+- the OS and Docker reserve is a value in an operations policy, with its
+  first value proposed in the Plan;
 - dashboards move into each LAB folder;
 - Linux and Docker requirements come from the rendered Compose plus the
   optional `host` field.
@@ -286,8 +310,9 @@ and creation dates. No secret value is read or written.
    `labs/` root.
 2. Every LAB has a valid `promotion.yaml`, and `lab.py check` refuses a missing
    or inconsistent one.
-3. No LAB reads a HOME secret path. supabase uses LAB copies under
-   `secrets/labs/supabase/`, each with its catalog and registry rows.
+3. No LAB reads a HOME secret path. supabase uses `secrets/labs/supabase/`
+   for every secret, each with its catalog and registry rows. Only its
+   `vector` service's read-only Docker socket bind is allowed as a socket.
 4. The destination rules and the three promotion procedures are written as
    operations documents. The replacement procedures cover data migration,
    consumer cutover, rollback and retirement.
