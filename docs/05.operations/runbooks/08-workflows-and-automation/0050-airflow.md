@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.3.6"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -152,6 +152,77 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 3. 확인: 기존 cookie의 요청이 `401`을 받고, 새로 로그인하면 DAGs, Pools,
    Assets, HITL이 `403` 없이 열린다. 증거는 경로와 상태 코드만 남긴다.
 
+### 시나리오 5: Opsflow 첫 HOME 설치 (D12)
+
+상태: **계획됨·미실행**. 실행 기록과 미확정 owner 항목(O1–O7)은
+[TSK-0051](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0051-opsflow-home-installation.md)이 소유한다.
+승인된 운영자와 실행 창이 TSK-0051에 기록되기 전에는 어떤 단계도 시작하지 않는다.
+각 단계는 앞 단계 검사가 PASS로 기록된 뒤에만 시작한다. 이미지는 바꾸지 않는다.
+
+값은 placeholder로만 적는다. `<...>`는 운영자가 채우며 secret은 `secrets/` 아래 파일 경로로만
+전달하고 argv·환경 변수 출력·로그에 값을 남기지 않는다. 공통 변수:
+`W=infra/07-workflow/airflow/workloads/manifest-pipeline`, `REV=<검토한 commit>`,
+`BK=<백업 디렉터리, O6>`.
+
+1. **백업** (O6 필요)
+   - 명령:
+     `docker exec dev-pg pg_dump -U <dev-pg admin> -Fc opsflow_dev > "$BK/opsflow_dev.dump"`
+     (DB가 없으면 "없음"을 기록하고 건너뛴다),
+     `docker exec mng-pg pg_dump -U <mng-pg admin> -Fc airflow > "$BK/airflow.dump"`,
+     승인된 admin 자격으로 `opsflow-dev` 목록 저장(bucket이 없으면 "없음" 기록),
+     `sha256sum "$BK"/* > "$BK/SHA256SUMS"`.
+   - 기대 결과: 파일 크기가 0이 아니고 checksum이 기록된다.
+   - 중단 조건: dump 실패, 크기 0, 디스크 부족.
+   - Rollback: 없음(읽기 전용). 백업은 삭제하지 않는다.
+2. **SQL 001–008** (O1, O2 필요)
+   - 명령: `$W/sql/README.md`의 순서
+     `001` → `002` → `003` → `002` → `004` → `005` → `006` → `007` → `008`를 따른다.
+     각 파일은 `opsflow_migrator`로
+     `psql -h dev-pg -d opsflow_dev -U opsflow_migrator -v ON_ERROR_STOP=1 -v migration_sha256=<해당 파일 SHA-256> -f <파일>`
+     로 실행하고 비밀번호는 `PGPASSFILE=<secrets/ 아래 경로, O1>`로만 준다.
+     검사 파일은 README가 지정한 migration의 SHA-256을 받는다(`008`은 `007`의 값).
+   - 기대 결과: `008_checks.sql`이 오류 없이 ROLLBACK으로 끝난다.
+   - 중단 조건: 어떤 파일이든 오류, 기존 receipt/fingerprint 불일치, 역할·ACL 사전 검사 거부.
+   - Rollback: commit 전 실패는 transaction이 되돌린다. Commit 뒤에는 schema를 임의로 지우지 않고
+     DAG를 pause한 채 1단계 백업을 별도 빈 대상에서 검증한다. 이전부터 있던 객체는 drop하지 않는다.
+3. **Bucket·정책·canary** (O3 필요)
+   - 명령: 승인된 admin 자격으로 `opsflow-dev` bucket을 만들고 worker identity(manifest-input 읽기,
+     manifest-validated·manifest-quarantine 읽기/쓰기)와 `WorkerCannotDelete` bucket policy를 적용한다.
+     정책 모양은 `tests/validation/_opsflow_airflow_native_data.py`의 `worker_bucket_policy`를 따른다.
+     `manifest-input/permission-canary`에 `synthetic` body를 admin으로 올린 뒤 worker 자격으로 canary를 실행한다.
+   - 기대 결과: allowed_read·allowed_write 200, foreign_bucket·foreign_prefix·input_write·foreign_write·delete·list 403.
+   - 중단 조건: 기대와 다른 상태 코드 하나라도.
+   - Rollback: 이번에 만든 canary 객체와 worker identity·policy만 제거한다. 이전부터 있던 bucket은 지우지 않는다.
+4. **코드 설치** (O1, O4, O5 필요)
+   - 명령: 설치 방식은 O4 결정을 따른다. 복사 방식이면
+     `git -C <저장소> archive "$REV" $W/dags/source_manifest_ingest.py $W/workflow_lib`를
+     `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에 풀고(`/opt/airflow/dags`로 bind),
+     `sha256sum`을 commit의 blob과 비교한다. `airflow-worker`의 `/run/opsflow`(`pg.json`, `s3.json`)와
+     `dev_data_net`·`object_net`은 O4 결정 없이는 붙이지 않는다.
+     확인: `docker exec airflow-scheduler airflow dags list-import-errors`,
+     `docker exec airflow-scheduler airflow dags details source_manifest_ingest`.
+   - 기대 결과: import 오류가 없고 DAG가 paused다.
+   - 중단 조건: hash 불일치, import 오류, DAG unpaused.
+   - Rollback: 설치한 파일만 제거한다. 디렉터리의 기존 파일은 건드리지 않는다.
+5. **Pool·합성 실행** (O7 필요)
+   - 명령: `docker exec airflow-scheduler airflow pools set manifest_ingest 1 "Opsflow manifest ingest"`.
+     DAG는 paused로 둔 채 합성 입력을 `manifest-input/<source>/<business_date>.json`에 올리고
+     `airflow dags test source_manifest_ingest` 또는 승인된 단일 trigger로 한 업무일만 실행한다.
+     이어서 잘못된 입력 하나로 같은 절차를 반복한다.
+   - 기대 결과: `opsflow_dev`에 raw·validated·published·outbox 행이 생기고
+     `manifest-validated/<source>/...json` 객체가 남는다. 잘못된 입력은
+     `manifest-quarantine/<source>/<business_date>/<digest>.json`에 `ContentType: application/json`으로 격리되고
+     게시 행이 생기지 않는다.
+   - 중단 조건: 행·객체 누락, quarantine ContentType 불일치, 잘못된 입력의 게시.
+   - Rollback: pool과 이번 합성 객체만 제거한다. 게시 장부·outbox 행은 지우지 않고 DAG를 paused로 둔다.
+6. **Unpause**
+   - 명령: `docker exec airflow-scheduler airflow dags unpause source_manifest_ingest`.
+   - 기대 결과: paused=False이며 계획 밖 run이 생기지 않는다(`schedule=None`).
+   - 중단 조건: 예상 밖 run.
+   - Rollback: `airflow dags pause source_manifest_ingest`.
+
+전체 rollback은 설치한 파일을 제거하고 백업을 보존하며 1단계 이전부터 있던 것은 drop하지 않는다.
+
 ## Verification
 
 - [ ] `docker compose exec airflow-apiserver airflow dags list` 명령어로 정상 로드 여부 확인.
@@ -215,3 +286,4 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/08-workflows-and-automation/0050-airflow.md)
 - [Operations policy](../../policies/08-workflows-and-automation/0050-airflow.md)
+- [Opsflow HOME 설치 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0051-opsflow-home-installation.md)
