@@ -1726,6 +1726,11 @@ class ReadinessTests(unittest.TestCase):
         self.assertEqual("FAIL", self.result(report, "tier"))
         self.assertEqual("FAIL", report["result"])
 
+    def test_readiness_refuses_a_target_outside_the_tier(self) -> None:
+        case = readiness_case()
+        case["manifest"]["target"]["folder"] = "infra/04-data/../../etc/"
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
     def test_readiness_unknown_profile_fails_composition(self) -> None:
         case = readiness_case()
         case["manifest"]["target"]["profile"] = "no-such-profile"

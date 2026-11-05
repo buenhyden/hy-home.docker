@@ -955,7 +955,11 @@ def readiness(
     }
     if kind not in MANIFEST_KINDS - {"undecided"}:
         failed.append(f"kind {kind!r} has no promotion target")
-    if not isinstance(folder, str) or not TARGET_FOLDER.fullmatch(folder):
+    if (
+        not isinstance(folder, str)
+        or not TARGET_FOLDER.fullmatch(folder)
+        or ".." in folder.split("/")
+    ):
         failed.append(f"target folder {folder!r} is outside infra/<tier>/")
     else:
         tier = "/".join(folder.split("/")[:2])
