@@ -98,18 +98,24 @@ tier는 서비스 기능을 따른다. 운영 문서는 서비스 domain을 따�
 승격 전 `lab.py readiness <name>`은 fail-closed 보고서를 만든다. 측정하지 못한 값은
 `NOT_RUN`이며 통과가 아니다. 다섯 기준이 모두 `PASS`일 때만 승격할 수 있다.
 
+- **Manifest 경로.** `documents.*`, `integrations[].owner`, `replaces[].compose_path`,
+  `target.folder`는 repository 안의 상대 경로여야 한다. 절대 경로와 `..` 탈출은 거부한다.
 - **은퇴 서비스.** `replace-same`과 `replace-substitute`만 서비스를 은퇴시킨다. 은퇴 서비스는
-  존재하는 `compose_path`에 선언되어 있고 root render에 나타나야 한다. 아니면 composition이
-  실패하고 아무것도 은퇴하지 않는다.
+  root `docker-compose.yml`이 include하는 `compose_path`에 선언되어 있고 root render에 나타나야
+  한다. 아니면 composition이 실패하고 아무것도 은퇴하지 않는다.
 - **Tier.** 이미 있는 목적지 폴더는 은퇴 서비스가 독점할 때만 대체로 인정한다. 은퇴 서비스가
   그 폴더를 점유하고, 유지되는 서비스의 build·bind source가 그 안에 없으며, 그 아래
-  `*compose*.y*ml` 파일이 선언한 모든 서비스가 은퇴해야 한다.
+  `*compose*.y*ml` 파일이 선언한 모든 서비스가 은퇴해야 한다. 그 아래 Compose 파일을 읽을 수
+  없거나, symlink 디렉터리가 있거나, 폴더가 repository 밖으로 풀리면 실패한다.
 - **Composition.** port와 container 이름은 유지되는 서비스가 선언하지 않을 때만 뺀다. network와
   데이터 경로는 빼지 않는다.
 - **Resources.** 실행 중 container의 선언 limit 합에 후보를 더하고 실행 중인 은퇴 서비스를 뺀
   값이 측정된 host 용량에서 아래 reserve를 뺀 예산 안에 있어야 한다. limit이 없는 실행 중
-  container가 있으면 `NOT_RUN`이고, 측정된 합이 이미 예산을 넘으면 `FAIL`이다. disk는 데이터
-  root와 Docker data root의 여유에서 전체의 reserve 비율을 뺀 값이 `disk_gib`를 덮어야 한다.
+  container가 있으면 `NOT_RUN`이고, 측정된 합이 이미 예산을 넘으면 `FAIL`이다. limit이 없는
+  후보 서비스도 `NOT_RUN`이며, manifest는 0이거나 빠진 limit을 거부한다. disk는 데이터 root와
+  Docker data root의 여유에서 전체의 reserve 비율을 뺀 값이 `disk_gib`를 덮어야 한다.
+- **측정하지 않는 하위 검사.** Spec 5절의 세 하위 검사는 측정하지 않는다. 보고서 `values`에
+  `NOT_RUN`으로 드러나며, 아래 Exceptions의 축소로 다룬다.
 
 ### Host reserve
 
@@ -124,10 +130,24 @@ OS와 Docker를 위해 남기는 reserve다. 2026-11-05 owner가 승인했고 `l
 
 ## Exceptions
 
+### Unmeasured section 5 sub-checks
+
+SPEC-0263 5절의 다음 하위 검사는 `lab.py readiness`가 측정하지 않는다. 이것은 owner 수락을
+기다리는 Spec 5절의 축소다.
+
+| 하위 검사 | 보고서 값 | 기준 결과 |
+| --- | --- | --- |
+| Tier: 목적지 tier가 서비스 기능에 맞는가 | `tier.values.function_fit` = `NOT_RUN`, source "owner judgment, not measured" | owner 판단 항목이며 `PASS`를 막지 않는다 |
+| Linux: 서비스에 필요한 group과 file mode | `linux.values.groups_and_file_modes` = `NOT_RUN` | linux를 `NOT_RUN`으로 둔다 |
+| Composition: profile과 consumer 충돌 | `composition.values.profile_and_consumer_clashes` = `NOT_RUN` | composition을 `NOT_RUN`으로 둔다 |
+
+따라서 지금은 어떤 후보도 전체 `PASS`를 받지 못한다. owner가 이 축소를 수락하거나 두 하위
+검사가 측정될 때까지 승격 Task가 각 항목을 직접 확인하고 기록한다. 예외 owner는 @buenhyden이다.
+
 ### Current HOME resource state
 
-2026-11-05 HOME readiness 실행에서 `valkey-cluster`와 `postgresql-ha`는 resources 기준만
-`FAIL`이었다. 12 CPU host의 예산은 10 CPU, 27924 MiB인데 실행 중 HOME container의 선언 limit만
+2026-11-05 HOME readiness 실행에서 `valkey-cluster`와 `postgresql-ha`는 resources 기준에서
+`FAIL`이었다. linux와 composition은 위 축소 때문에 `NOT_RUN`이고, 나머지는 `PASS`였다. 12 CPU host의 예산은 10 CPU, 27924 MiB인데 실행 중 HOME container의 선언 limit만
 약 64 CPU, 59904 MiB이고 `k3d-hyhome-*` container 다섯 개는 limit이 없다. 따라서 현재 규칙에서는
 어떤 대체 후보도 통과할 수 없다. 규칙은 바꾸지 않았고, 다음 중 하나를 owner가 결정한다.
 

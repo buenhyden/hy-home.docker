@@ -63,7 +63,10 @@ python3 scripts/operations/lab.py --env-file labs/.env readiness <name> --report
 | 3 | 하나 이상의 기준이 `FAIL` 또는 `NOT_RUN` |
 
 종료 코드가 0이 아니면 승격을 멈추고 보고서와 종료 코드를 승격 Task에 기록한다. `NOT_RUN`은
-측정하지 못한 값이며 통과가 아니다.
+측정하지 못한 값이며 통과가 아니다. [POL-0107](../../policies/15-labs/0107-lab-promotion.md)의
+축소에 따라 linux와 composition은 group·file mode와 profile·consumer 충돌을 측정하지 않아 항상
+`NOT_RUN`이다. owner가 그 축소를 수락하기 전까지는 이 두 항목과 `tier.values.function_fit`을
+승격 Task에서 직접 확인한다.
 
 ### add
 
@@ -136,7 +139,8 @@ secret을 쓴다.
    행을 만들거나 기존 행에 소비자를 더한다.
 2. `secrets/SENSITIVE_ENV_VARS.md.example`은 생성되지 않는다. `load_catalog`가 catalog와의 일치를
    요구하므로 owner가 agent가 준비한 행을 손으로 편집한다.
-3. owner가 controller venv를 `PATH` 맨 앞에 두고 확인 후 동기화한다.
+3. owner가 `jsonschema`와 `referencing`을 가진 `python3`를 `PATH` 맨 앞에 두고 확인 후
+   동기화한다. 아래 venv 경로는 예시이며, 같은 package를 가진 다른 환경이어도 된다.
 
    ```bash
    PATH="$HOME/.local/share/hy-home/controller-venv-py312/bin:$PATH" bash scripts/operations/gen-secrets.sh --sync-metadata-check

@@ -79,6 +79,23 @@ These are agent calls, made in the Plan for the owner to check:
   confirmation.
 - **The readiness check.** It is a `lab.py readiness` subcommand, not a new
   script.
+- **LAB secret row IDs (deliberate deviation from Spec section 3).** The
+  Spec says each LAB copy gets a `LAB-*` row. SUPA-002 to SUPA-011 and
+  AI-001 keep their IDs and carry scope `lab` instead, because catalog IDs
+  are never renumbered.
+- **Spec section 5 narrowing (controller ruling, awaiting owner
+  acceptance).** Readiness does not measure three section 5 sub-checks. Each
+  is shown in the report as `NOT_RUN`:
+  - tier "matches the service function" (`tier.values.function_fit`) is an
+    owner-judgment item and does not block `PASS`;
+  - linux "groups and file modes" (`linux.values.groups_and_file_modes`)
+    keeps linux at `NOT_RUN`;
+  - composition "profiles or consumers" clashes
+    (`composition.values.profile_and_consumer_clashes`) keeps composition at
+    `NOT_RUN`.
+
+  No candidate gets an overall `PASS` until the owner accepts this narrowing
+  or the two sub-checks are measured. POL-0107 and RUN-0107 record it.
 
 The owner decided these on 2026-11-05:
 
@@ -214,27 +231,34 @@ accepts any well-formed retired-row alias, not only COMM-003.
 `lab.py readiness <name> [--report PATH]` reads HOME state only: the LAB and
 root renders, `docker info`, `docker inspect` and disk usage. It prints the
 section 5 report and exits 0 only when all five criteria are `PASS`.
-`test_reserve_matches_policy` is an expected failure until W5 adds the
-policy reserve table.
+`test_reserve_matches_policy` was an expected failure until W5 added the
+policy reserve table. Bad manifest, catalog or `disk_gib` input raises
+`LabError` with exit 2.
 
 The check makes these calls:
 
+- **Manifest paths.** `documents.*`, `integrations[].owner`,
+  `replaces[].compose_path` and `target.folder` must be repo-relative paths
+  that resolve inside the repository, with no absolute path and no `..`.
 - **Retired services.** Only `replace-same` and `replace-substitute`
   retire anything. Each retired service must be declared in an existing
-  `compose_path` and rendered in root; otherwise composition fails and
-  nothing is retired.
+  `compose_path` that the root `docker-compose.yml` includes, and must be
+  rendered in root. Otherwise composition fails and nothing is retired.
 - **Tier.** An existing target folder counts as a replacement only when the
   retired services own it exclusively. All three of these must hold:
   - it holds a verified retired Compose file, or a retired service's build
     context or bind source in the root render lies inside it;
   - no kept service's build context or bind source lies inside it;
-  - every service that a Compose file inside the folder declares is
-    retired.
+  - every service that a `*compose*.y*ml` file inside the folder declares
+    is retired.
 
-  `dev-valkey` binds files under `dev-db/valkey/`, and nothing else uses
-  that folder, so it qualifies. `dev-db/` does not, because it still
-  declares `dev-pg`. The tier criterion also fails on any
-  `manifest_problems` result.
+  Tier also fails when such a file cannot be read, when the folder holds a
+  symlinked directory (the glob does not follow one), or when the folder
+  resolves outside the repository. `dev-valkey` binds files under
+  `dev-db/valkey/`, and nothing else uses that folder, so it qualifies.
+  `dev-db/` does not, because it still declares `dev-pg`. The tier criterion
+  also fails on any `manifest_problems` result, and `manifest_problems`
+  refuses a zero or missing service limit.
 - **Composition.** The retired services' own containers and ports are
   removed from the root footprint and the running list before
   `collisions()`. A port or container name stays when a kept service also
@@ -247,7 +271,8 @@ The check makes these calls:
   container is subtracted only when it is running. A sum over budget stays
   `FAIL` even when some container has no limit, because the known lower
   bound already exceeds the budget; `NOT_RUN` applies only when the
-  measured sum fits.
+  measured sum fits. A candidate service without a CPU or memory limit also
+  makes resources `NOT_RUN`.
 
 **HOME run, 2026-11-05.**
 
@@ -336,20 +361,20 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | E1 | 7 | W6 | metadata | `check-document-metadata.py --mode check-changed --base-ref main` on the Plan working tree over `56446f74c` | PASS | selected=4 violations=0 | required | - |
 | E2 | 3 | W3 | RED tests | `test_lab_secret_paths_use_lab_root_supabase`, `test_supabase_reads_no_home_secret` and `test_repository_lab_reads_its_own_smtp_copy` before the Compose change, over `a8d6e4299` | FAIL | 11 HOME paths, and `invalid_lab_source` | required | - |
 | E3 | 3 | W3 | focused unit suites | `tests.lib.ops` SMTP, catalog, structure and retirement modules, `test_supabase_smtp_rehearsal`, `test_lab_layout`, `test_smtp_generator`, `test_service_runtime_compatibility` on the W3 working tree | PASS | 0 failures | required | - |
-| E4 | 3 | W3 | full unit suite | `python -m unittest discover -s tests -t .` with the controller venv first on `PATH`, on the W3 working tree | FAIL | 4 failures and 1 error, all against the unapplied public registry | required | - |
+| E4 | 3 | W3 | full unit suite | `python -m unittest discover -s tests -t .` with the controller venv first on `PATH`, on the W3 working tree | FAIL | 4 failures and 1 error, all against the unapplied public registry; superseded by the clean-env PASS rows E42 and E55, which a W3 row cannot cite as Resolves | required | - |
 | E5 | 3 | W3 | registry round trip | `render_views` of the W3 catalog parsed back by `parse_public_table` | PASS | entries and aliases equal the catalog | required | - |
-| E6 | 3 | W3 | `lab.py check supabase` render-only | `--env-file labs/.env.example --root-env-file .env.example`, a temporary `LAB_DATA_DIR` and synthetic budgets | FAIL | no socket or catalog problem; the 11 secret paths overlap the root `restic` read-only `secrets/` bind, as stalwart's does; the other problems are empty LAB_DATA_DIR seed files and the synthetic budget | required | - |
+| E6 | 3 | W3 | `lab.py check supabase` render-only | `--env-file labs/.env.example --root-env-file .env.example`, a temporary `LAB_DATA_DIR` and synthetic budgets | FAIL | no socket or catalog problem; the 11 secret paths overlap the root `restic` read-only `secrets/` bind, as stalwart's does; the other problems are empty LAB_DATA_DIR seed files and the synthetic budget; superseded by E12 and the final `check supabase` row E58 | required | - |
 | E7 | 3 | W3 | hardening | `bash scripts/hardening/check-all-hardening.sh` | PASS | all checks passed | required | - |
 | E8 | 3 | W3 | operations catalog and script manifest | `check-operations-catalog.py`, `check-script-manifest.py` | PASS | both PASS | required | - |
 | E9 | 3 | W3 | owner registry and sync | prepared rows and the sync sequence in the W3 Work Log | NOT_RUN | owner step 4 and 5 pending | required | - |
 | E10 | 3 | W3 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` on the W3 working tree | PASS | violations=0; failures=0 | required | - |
 | E11 | 3 | W3 | RED test | `test_read_only_secrets_backup_owns_no_lab_secret_copy` with root's read-only `secrets/` bind through `root_footprint`, before the `lab.py` fix | FAIL | the LAB copy "overlaps root" | required | - |
-| E12 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs after the `secrets/` and per-LAB fixes, also run for all 15 LABs | FAIL | no overlap or allowlist problem left; remaining problems are environment seed files (LAB_DATA_DIR seeds, synthetic operator files, ignored lakehouse `__pycache__`) | required | - |
+| E12 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs after the `secrets/` and per-LAB fixes, also run for all 15 LABs | FAIL | no overlap or allowlist problem left; remaining problems are environment seed files (LAB_DATA_DIR seeds, synthetic operator files, ignored lakehouse `__pycache__`); superseded by E58; the `lab.py check supabase` FAIL rows have no later PASS | required | - |
 | E13 | 5 | W4 | decision A manifests | `manifest_problems` for `valkey-cluster` and `postgresql-ha` against their `labs/.env.example` renders with a temporary `LAB_DATA_DIR`, at `f4e94cae9` | PASS | no problem for either | required | - |
 | E14 | 5 | W4 | RED tests | `ReadinessTests` in `test_lab_controller` before `readiness` existed | FAIL | 14 errors: `readiness` undefined and no `users` in the footprint | required | - |
 | E15 | 5 | W4 | LAB suites | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout` at `8fc269531` | PASS | 91 tests; 1 expected failure, `test_reserve_matches_policy`, until W5 | required | - |
 | E16 | 5 | W4 | HOME readiness, as instructed | `lab.py --env-file labs/.env readiness valkey-cluster --report <scratchpad>` | NOT_RUN | render refused: `labs/.env` gives Compose no `LAB_DATA_DIR`; no report written; `check` fails the same way | required | - |
-| E17 | 5 | W4 | HOME readiness, supplementary | the E16 command with `LAB_DATA_DIR` set to an unused scratch path | FAIL | tier, composition, linux and docker PASS; resources FAIL: 70 CPUs and 62976 MiB needed against 10 CPUs and 27924 MiB, and 5 `k3d-hyhome-*` containers without limits; see the W4 Work Log | required | - |
+| E17 | 5 | W4 | HOME readiness, supplementary | the E16 command with `LAB_DATA_DIR` set to an unused scratch path | FAIL | tier, composition, linux and docker PASS; resources FAIL: 70 CPUs and 62976 MiB needed against 10 CPUs and 27924 MiB, and 5 `k3d-hyhome-*` containers without limits; see the W4 Work Log; superseded by E23 and the final-HEAD run E53 | required | - |
 | E18 | 5 | W4 | full unit suite | `python -m unittest discover -s tests -t .` with the controller venv first on `PATH`, at `d1b6747e4` | PASS | 3318 tests, 0 failures, 108 skipped, 1 expected failure | required | - |
 | E19 | 5 | W4 | hardening and script manifest | `bash scripts/hardening/check-all-hardening.sh`, `check-script-manifest.py` | PASS | all checks passed; manifest valid | required | - |
 | E20 | 5 | W4 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` on the W4 working tree | PASS | selected=136 violations=0; link mode all PASS | required | - |
@@ -381,6 +406,16 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | E47 | 7 | W6 | local full CI gate | `python3 scripts/validation/run-ci-gate.py` | NOT_RUN | BLOCKED, not run: it needs Python 3.14.8 with memfd sealing; this host has 3.12 and uv's build lacks sealing, as the earlier Tasks record | required | - |
 | E48 | 7 | W6 | hosted CI | pull request checks | NOT_RUN | the branch is not pushed and no pull request is open | required | - |
 | E37 | 4, 6 | W5 | review fix checks | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all`, `check-operations-catalog.py`, staged markdownlint, `test_reserve_matches_policy` after the review fixes | PASS | violations=0; link failures=0; catalog PASS; markdownlint passed; 1 test OK | required | - |
+| E49 | 1 | W2 | layout tests | `test_lab_layout` with the controller venv at `4bec12fa2` | PASS | 6 tests OK | required | - |
+| E50 | 2 | W1 | manifest and `check` tests | `test_lab_controller` `LabLayoutAndManifestTests` and `AdmissionGuardTests` at `4bec12fa2` | PASS | 17 tests OK | required | - |
+| E51 | 5 | W4 | RED tests | final-review repros in `ReadinessTests`; `LifecycleTests` with `LAB_DATA_DIR` exported, before `4bec12fa2` | FAIL | 6 failures and 2 errors (candidate without limits, zero limit, unreadable or escaping subtree, repo paths, root include, bad input, unmeasured sub-checks); `LifecycleTests` 11 failures | required | - |
+| E52 | 5 | W4 | LAB suites | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout` at `4bec12fa2`; `LifecycleTests` again with `LAB_DATA_DIR` exported | PASS | 108 tests OK; `LifecycleTests` OK with the variable exported | required | - |
+| E53 | 5 | W4 | HOME readiness `valkey-cluster` | `lab.py --env-file labs/.env readiness valkey-cluster --report <scratchpad>` at `4bec12fa2` | FAIL | tier PASS; composition NOT_RUN and linux NOT_RUN (unmeasured section 5 sub-checks); docker PASS; resources FAIL: 70 CPUs and 62976 MiB needed against 10 CPUs and 27924 MiB, and 5 `k3d-hyhome-*` containers without limits | required | - |
+| E54 | 5 | W4 | HOME readiness `postgresql-ha` | the E53 command for `postgresql-ha` at `4bec12fa2` | FAIL | tier PASS; composition NOT_RUN and linux NOT_RUN; docker PASS; resources FAIL: 72 CPUs and 66048 MiB needed against 10 CPUs and 27924 MiB, and 5 `k3d-hyhome-*` containers without limits | required | - |
+| E55 | 7 | W6 | full unit suite | `python -m unittest discover -s tests -t .` with the controller venv first on `PATH` and every `LAB_*` variable unset, at `4bec12fa2` | PASS | Ran 3336 tests, 0 failures, 0 errors, 108 skipped | required | - |
+| E56 | 7 | W6 | hardening, operations catalog and script manifest | `bash scripts/hardening/check-all-hardening.sh`, `check-operations-catalog.py`, `check-script-manifest.py` at `4bec12fa2` | PASS | ALL checks passed; operations-catalog PASS; manifest valid | required | - |
+| E57 | 7 | W6 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main` and `--mode check-active`, `check-document-links.py --mode all`, on the final fix wave working tree | PASS | check-changed selected=144 violations=0; check-active selected=543 violations=0; link mode all PASS | required | - |
+| E58 | 3 | W3 | `lab.py check supabase` with owner inputs | `lab.py --env-file labs/.env check supabase` at `4bec12fa2` | NOT_RUN | exit 2 before any report: `labs/.env` gives no numeric `LAB_HOST_BUDGET_CPUS` | required | - |
 
 ## Criterion Acceptance
 
@@ -396,6 +431,11 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 
 ## Review and Completion
 
+The final review fix wave (E49 to E58) re-ran the checks at `4bec12fa2`.
+Readiness now shows the unmeasured section 5 sub-checks as `NOT_RUN`, a
+narrowing that awaits the owner's acceptance. Hosted CI stays NOT_RUN (E48)
+until the controller pushes.
+
 All work units W1 to W6 are done. W6 ran the Verification Plan at
 `b79bd797a` (E38 to E48): the unit suite, hardening, metadata, links, lifecycle,
 catalog and manifest checks pass, and 7 of 15 LABs render from
@@ -407,8 +447,10 @@ branch is pushed (E48). No criterion is accepted.
 Open owner items:
 
 - the resource-rule decision (limits, reservations or measured usage) recorded
-  in POL-0107; E23 and E25 refuse `valkey-cluster` and `postgresql-ha` on
+  in POL-0107; E53 and E54 refuse `valkey-cluster` and `postgresql-ha` on
   resources until then;
+- acceptance of the section 5 narrowing in POL-0107;
+- `labs/.env` `LAB_HOST_BUDGET_*` for `lab.py check` (E58);
 - `labs/.env` `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR` (E35);
 - SMTP01 removing COMM-003;
 - owner confirmation of the dropped secret-name uniqueness.
