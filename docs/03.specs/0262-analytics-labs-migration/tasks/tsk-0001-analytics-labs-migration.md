@@ -189,6 +189,26 @@ one of:
 An identical tracked file that both sides mount read-only counts as a
 shared public input, and git uses literal pathspecs.
 
+The next re-review found two more Important gaps. First, a single
+`LAB_*` value such as `/`, `$HOME`, the repository, `../secrets` or the
+shipped Docker socket path widened the allowlist. Second, `configs`,
+`env_file` and build inputs bypassed it. Commit `900aaf350` fixes both:
+
+- A data, secret, operator or results root that covers the repository, its
+  `secrets/`, HOME data, Docker's root or the user home admits nothing.
+- Operator roots may not sit in the repository, and a sensitive operator
+  root, such as the socket, is dropped.
+- Config files are footprinted.
+- Build contexts must meet the read-only rules, and build `ssh` and
+  `secrets` are refused.
+- A LAB `env_file` is refused by scanning the raw LAB file, because the
+  rendered model inlines its contents.
+- A tracked path with local edits no longer counts as public.
+
+Container-escape options (`devices`, `volumes_from`, `pid`/`network_mode:
+host`, `cap_add`, `privileged` under a `cadvisor` name) are outside this
+check and remain a recorded residual risk.
+
 All 16 LABs were checked. In 15 of them no overlap or allowlist problem
 remains. supabase is refused, which matches the owner decision
 "LAB_SECRET_DIR 복사본으로 전환 (권장)". It reads 11 HOME secret files
@@ -230,6 +250,9 @@ The real budget is an operator input.
   already declares about 64 CPUs on a 12-core host, so the budget is a
   policy decision; an empty budget refuses.
 - `lab.py check` with the real root `.env` and real LAB inputs is NOT_RUN.
+- Residual: lab.py does not check container-escape options (`devices`,
+  `volumes_from`, host `pid`/`network_mode`, `cap_add`, a privileged
+  service named `cadvisor`).
 - supabase: move its 11 secrets to `LAB_SECRET_DIR` copies (owner decision).
   Its Docker socket bind stays BLOCKED until an exception is approved.
 
@@ -253,9 +276,9 @@ The real budget is an operator input.
 | E14 | 3 | W2 | unit-tests | `python -m unittest discover -s tests -t .` with the locked controller venv (Python 3.12.3, `--require-hashes`) on `280b6f8fd` | PASS | 3272 tests OK, skipped=108 (opt-in container tests) | required | E6, E7 |
 | E15 | 5 | W4 | hosted-ci | GitHub Actions on PR #747 | PASS | candidate-quality pass 16m19s; merged as `729d16da7` | required | E13 |
 | E16 | 2 | W1 | lab-controller-overlap | `lab.py --env-file <synthetic> --root-env-file .env.example check <lab>` on `f0ce46fda` | FAIL | every LAB refused: "overlaps root" from read-only `/` and source-tree binds | required | - |
-| E17 | 2 | W1 | lab-controller-overlap | same synthetic check on `9fa48a5a5` | PASS | six LABs: zero overlap problems; only the synthetic budget and absent synthetic LAB secret and CA files remain | required | E16 |
-| E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `9fa48a5a5` | PASS | observer, shared tracked file, source-tree, HOME secret/env/Docker-root, tracked-only, literal pathspec and source allowlist tests GREEN after RED | required | - |
-| E20 | 2 | W1 | lab-controller-allowlist | synthetic check of all 16 LABs on `9fa48a5a5` | PASS | 15 LABs: no overlap or allowlist problem; supabase refused as decided (HOME secrets, Docker socket) | required | - |
+| E17 | 2 | W1 | lab-controller-overlap | same synthetic check on `900aaf350` | PASS | six LABs: zero overlap problems; only the synthetic budget and absent synthetic LAB secret and CA files remain | required | E16 |
+| E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `900aaf350` | PASS | observer, shared tracked file, source-tree, HOME secret/env/Docker-root, tracked/clean, literal pathspec, allowlist, root validation, configs/build/env_file tests GREEN after RED | required | - |
+| E20 | 2 | W1 | lab-controller-allowlist | synthetic check of all 16 LABs on `900aaf350` | PASS | 15 LABs: no overlap or allowlist problem; supabase refused as decided (HOME secrets; Docker socket refused by the allowlist) | required | - |
 | E19 | 2 | W1 | security-review | Independent review of the LAB overlap change through `8b231c5e3` | FAIL | CHANGES_REQUESTED: 2 Important (HOME secrets, root env and Docker root uncovered; gitignored .env accepted), 1 Minor (tests) | required | - |
 
 ## Criterion Acceptance
