@@ -24,7 +24,7 @@ x-lab-kafka-env: &lab-kafka-env
 x-lab-kafka-broker: &lab-kafka-broker
   image: confluentinc/cp-kafka:8.3.2
   extends:
-    file: ../infra/common-optimizations.yml
+    file: ../../infra/common-optimizations.yml
     service: template-stateful-high
   cpus: '0.75'
   mem_limit: 1536m
@@ -103,7 +103,7 @@ services:
   lab-kafka-exporter:
     profiles: [lab-kafka]
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-low
     image: danielqsj/kafka-exporter:v1.10.0
     read_only: true
@@ -133,7 +133,7 @@ services:
   lab-kafka-init:
     profiles: [lab-kafka]
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-low
     restart: 'no'
     image: confluentinc/cp-kafka:8.3.2

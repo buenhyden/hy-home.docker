@@ -4,7 +4,7 @@ version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-05"
 created: "2026-10-03"
 ---
 
@@ -12,7 +12,7 @@ created: "2026-10-03"
 
 ## Overview
 
-[`kafka-cluster.yml`](kafka-cluster.yml)은 독립 Compose project
+[`docker-compose.yml`](docker-compose.yml)은 독립 Compose project
 `hy-home-lab-kafka`입니다. 정상 root는 이 파일을 include하지 않습니다.
 `lab-kafka-1/2/3` KRaft broker/controller, `lab-kafka-exporter`,
 `lab-kafka-init`가 전체 closure이며 모두 `lab-kafka` 프로파일에 속합니다.
@@ -28,7 +28,15 @@ created: "2026-10-03"
 
 ## Structure
 
-`kafka-cluster.yml`이 전체 LAB closure를 정의하고 이 문서가 사용·복구 경계를 소유한다.
+```text
+labs/kafka-cluster/
+├── docker-compose.yml # 독립 LAB entrypoint
+├── promotion.yaml     # SPEC-0263 승격 manifest
+└── README.md          # 서비스 README
+```
+
+`docker-compose.yml`이 전체 LAB closure를 정의하고 이 문서가 사용·복구 경계를 소유한다.
+[promotion manifest](promotion.yaml)는 HOME 단일 broker를 같은 형태로 대체하는 승격 계획이다.
 
 ## Configuration
 
@@ -47,7 +55,7 @@ created: "2026-10-03"
 저장소 루트에서 합성된 LAB 경로와 정상 cluster와 다른 LAB ID를 공급하여 다음 명령을 실행합니다. 이 명령은 서비스를 시작하지 않습니다.
 
 ```bash
-LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk docker compose --env-file labs/.env.example -f labs/kafka-cluster.yml --profile lab-kafka config --quiet
+LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --quiet
 ```
 
 실행 전 Docker context, project name, 모든 port·network·volume, 가용 CPU/RAM/디스크, host bind UID/GID와 정확한 정리 대상이 별도로 승인되어야 합니다. 기동·종료는 `python3 scripts/operations/lab.py up kafka-cluster --purpose "<목적>" --lease <기간>`과 `lab.py down kafka-cluster`로 하며 충돌·예산 검사와 정리 대상 ledger를 남깁니다. 이 문서 갱신에서 LAB를 실행·정지하거나 상태를 삭제하지 않았습니다. `down -v` 또는 volume prune은 사용하지 않습니다. source 선언만으로 이전 정상 root의 broker 2/3 컨테이너가 정지되지는 않습니다.
@@ -60,5 +68,5 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 
 ## Related Documents
 
-- [Kafka LAB Compose](kafka-cluster.yml)
-- [운영 가이드 목록](../docs/05.operations/guides/README.md)
+- [Kafka LAB Compose](docker-compose.yml)
+- [운영 가이드 목록](../../docs/05.operations/guides/README.md)
