@@ -369,6 +369,17 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | E34 | 6 | W5 | static renders | `docker compose --env-file labs/.env.example ... config --services` for kafka-cluster and opensearch-cluster with synthetic `LAB_*` inputs | PASS | 5 and 4 services, exit 0; no container started | required | - |
 | E35 | 6 | W5 | HOME render of the cluster LABs | `lab.py --env-file labs/.env check kafka-cluster opensearch-cluster` | NOT_RUN | not run by the agent; the controller reported on 2026-11-05 that `labs/.env` lacks `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR`; operator input pending | required | - |
 | E36 | 3 | W3 | owner registry and sync | owner run on 2026-11-05: registry hand-applied in `8ad19acc5`, `secret-catalog.py --root "$PWD" check`, `--sync-metadata-check`, `--sync-metadata`, `--sync-metadata-check` | PASS | `load_catalog` OK; files_changed=3 then 0 after sync; prune rejected while COMM-003 remains, by design | required | E9 |
+| E38 | 7 | W6 | root render | `docker compose --env-file .env.example config -q` at `b79bd797a` | PASS | exit 0; no container started | required | - |
+| E39 | 7 | W6 | LAB renders, example inputs | `docker compose --env-file labs/.env.example -f labs/<name>/docker-compose.yml config -q` for the 15 LABs, `LAB_DATA_DIR` a temporary absolute scratch path, at `b79bd797a` | FAIL | 7 render (cassandra, couchdb, jupyterlab, mongodb, postgresql-ha, supabase, valkey-cluster); 8 refuse on a required variable that `labs/.env.example` leaves empty by design (dbt, kafka-cluster, lakehouse, locust, opensearch-cluster, sonarqube, stalwart, superset), for example `LAB_KAFKA_CLUSTER_ID is missing a value`; no path or secret error | required | - |
+| E40 | 7 | W6 | LAB renders, synthetic owner inputs | the E39 command for the 8 refusing LABs with the 12 missing `LAB_*` variables set to synthetic hosts and scratch directories, at `b79bd797a` | PASS | all 8 exit 0; no container started | required | - |
+| E41 | 7 | W6 | full unit suite | `python -m unittest discover -s tests -t .` with the controller venv first on `PATH`, at `b79bd797a`, run from a shell that had exported `LAB_DATA_DIR` | FAIL | Ran 3330, failures=11, skipped=108; all 11 in `test_lab_controller.LifecycleTests` (`0 != 3`); the cause was the exported `LAB_DATA_DIR` in the runner, and `test_lab_controller` alone passed in a clean shell | required | - |
+| E42 | 7 | W6 | full unit suite | the E41 command in a shell with no `LAB_*` variable, at `b79bd797a` | PASS | Ran 3330 tests, 0 failures, 0 errors, 108 skipped | required | E41 |
+| E43 | 7 | W6 | hardening | `bash scripts/hardening/check-all-hardening.sh` at `b79bd797a` | PASS | ALL checks passed successfully | required | - |
+| E44 | 7 | W6 | metadata | `check-document-metadata.py --mode check-changed --base-ref main` and `--mode check-active` at `b79bd797a` | PASS | check-changed selected=144 violations=0; check-active selected=543 violations=0 | required | - |
+| E45 | 7 | W6 | links and lifecycle | `check-document-links.py --mode all`, `check-document-corpus-lifecycle.py` at `b79bd797a` | PASS | documents=892 failures=0; lifecycle violations=0 | required | - |
+| E46 | 7 | W6 | operations catalog and script manifest | `check-operations-catalog.py`, `check-script-manifest.py` at `b79bd797a` | PASS | operations-catalog PASS; script manifest valid | required | - |
+| E47 | 7 | W6 | local full CI gate | `python3 scripts/validation/run-ci-gate.py` | NOT_RUN | BLOCKED, not run: it needs Python 3.14.8 with memfd sealing; this host has 3.12 and uv's build lacks sealing, as the earlier Tasks record | required | - |
+| E48 | 7 | W6 | hosted CI | pull request checks | NOT_RUN | the branch is not pushed and no pull request is open | required | - |
 | E37 | 4, 6 | W5 | review fix checks | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all`, `check-operations-catalog.py`, staged markdownlint, `test_reserve_matches_policy` after the review fixes | PASS | violations=0; link failures=0; catalog PASS; markdownlint passed; 1 test OK | required | - |
 
 ## Criterion Acceptance
@@ -385,12 +396,22 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 
 ## Review and Completion
 
-W1 to W5 have changed the repository. W5 wrote the promotion operations
-documents (E27 to E34). The HOME render of the two cluster LABs waits for
-operator inputs (E35), and the resource rule waits for the owner decision
-recorded in POL-0107. The owner registry edit and sync are done (E36
-resolves E9). The HOME readiness runs (E23, E25) refuse `valkey-cluster` and
-`postgresql-ha` on resources. No criterion is accepted.
+All work units W1 to W6 are done. W6 ran the Verification Plan at
+`b79bd797a` (E38 to E48): the unit suite, hardening, metadata, links, lifecycle,
+catalog and manifest checks pass, and 7 of 15 LABs render from
+`labs/.env.example` as is. The other 8 need owner inputs that the example
+leaves empty (E39; they render with synthetic inputs, E40). The local full CI
+gate is BLOCKED by the host Python (E47) and hosted CI is NOT_RUN until the
+branch is pushed (E48). No criterion is accepted.
+
+Open owner items:
+
+- the resource-rule decision (limits, reservations or measured usage) recorded
+  in POL-0107; E23 and E25 refuse `valkey-cluster` and `postgresql-ha` on
+  resources until then;
+- `labs/.env` `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR` (E35);
+- SMTP01 removing COMM-003;
+- owner confirmation of the dropped secret-name uniqueness.
 
 ## Related Documents
 
