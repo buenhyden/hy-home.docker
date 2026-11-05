@@ -41,6 +41,12 @@ secrets:
 
 services:
   studio:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - supabase
     extends:
@@ -83,6 +89,12 @@ services:
       start_period: 20s
 
   kong:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - supabase
     extends:
@@ -128,6 +140,12 @@ services:
       start_period: 20s
 
   auth:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - supabase
     extends:
@@ -183,6 +201,12 @@ services:
       start_period: 20s
 
   rest:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - supabase
     extends:
@@ -219,6 +243,12 @@ services:
       start_period: 20s
 
   realtime:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - supabase
     extends:
@@ -256,6 +286,12 @@ services:
       start_period: 20s
 
   storage:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - supabase
     extends:
@@ -301,6 +337,12 @@ services:
       start_period: 20s
 
   imgproxy:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - supabase
     extends:
@@ -328,6 +370,12 @@ services:
       start_period: 20s
 
   meta:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - supabase
     extends:
@@ -362,6 +410,12 @@ services:
       start_period: 20s
 
   functions:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     profiles:
       - supabase
     extends:
@@ -402,6 +456,12 @@ services:
       start_period: 20s
 
   analytics:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     profiles:
       - supabase
     extends:
@@ -436,6 +496,12 @@ services:
       start_period: 20s
 
   db:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     profiles:
       - supabase
     extends:
@@ -516,6 +582,12 @@ services:
       start_period: 30s
 
   vector:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - supabase
     extends:
@@ -551,6 +623,12 @@ services:
       start_period: 20s
 
   supavisor:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - supabase
     extends:

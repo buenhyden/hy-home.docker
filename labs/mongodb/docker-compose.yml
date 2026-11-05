@@ -30,6 +30,12 @@ volumes:
 
 services:
   mongo-key-generator:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     labels:
       <<: *tier-label
     profiles:
@@ -72,6 +78,12 @@ services:
         }
 
   mongodb-rep1:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     profiles:
       - mongodb
     extends:
@@ -112,6 +124,12 @@ services:
       <<: *tier-label
 
   mongodb-rep2:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     profiles:
       - mongodb
     extends:
@@ -152,6 +170,12 @@ services:
       <<: *tier-label
 
   mongodb-arbiter:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - mongodb
     extends:
@@ -185,6 +209,12 @@ services:
       <<: *tier-label
 
   mongo-init:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     labels:
       <<: *tier-label
     profiles:
@@ -232,6 +262,12 @@ services:
       - lab_mongodb_root_password
 
   mongo-express:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - mongodb
     extends:

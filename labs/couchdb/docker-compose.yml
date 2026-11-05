@@ -50,6 +50,12 @@ volumes:
 
 services:
   couchdb-1:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - couchdb
     extends:
@@ -94,6 +100,12 @@ services:
       traefik.enable: 'false'
 
   couchdb-2:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - couchdb
     extends:
@@ -135,6 +147,12 @@ services:
       traefik.enable: 'false'
 
   couchdb-3:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - couchdb
     extends:
@@ -176,6 +194,12 @@ services:
       traefik.enable: 'false'
 
   couchdb-cluster-init:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     labels:
       <<: *tier-label
     profiles:

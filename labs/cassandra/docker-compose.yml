@@ -12,6 +12,12 @@ volumes:
 
 services:
   cassandra-node1:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     profiles:
       - cassandra
     extends:

@@ -24,6 +24,12 @@ services:
   # It needs the dev-pg `platform_dev` fixture that HOME `dev-platform-provision`
   # creates; run that first in HOME.
   dbt-db-provision:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - lab-dbt
     extends:
@@ -68,6 +74,12 @@ services:
   # the profile and connection; `compile` renders SQL without writing to the
   # database, while `run`, `build` and `--full-refresh` write to DBT_SCHEMA.
   dbt:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - lab-dbt
     extends:

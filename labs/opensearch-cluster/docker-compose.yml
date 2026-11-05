@@ -143,6 +143,12 @@ volumes:
 
 services:
   opensearch-node1:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     <<: *lab-node
     hostname: opensearch-node1
     group_add:
@@ -166,6 +172,12 @@ services:
       - ../../infra/04-data/opensearch/opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
 
   opensearch-node2:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     <<: *lab-node
     hostname: opensearch-node2
     group_add:
@@ -189,6 +201,12 @@ services:
       - ../../infra/04-data/opensearch/opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
 
   opensearch-node3:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     <<: *lab-node
     hostname: opensearch-node3
     group_add:
@@ -212,6 +230,12 @@ services:
       - ../../infra/04-data/opensearch/opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
 
   lab-opensearch-dashboards:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles: [opensearch-cluster]
     extends:
       file: ../../infra/common-optimizations.yml

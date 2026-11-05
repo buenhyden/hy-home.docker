@@ -33,6 +33,12 @@ secrets:
 
 services:
   sonarqube:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     profiles:
       - sast
     extends: { file: ../../infra/common-optimizations.yml, service: template-stateful-high }

@@ -67,6 +67,12 @@ volumes:
 
 services:
   valkey-node-0:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-0
     group_add:
@@ -87,6 +93,12 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-1:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-1
     group_add:
@@ -107,6 +119,12 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-2:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-2
     group_add:
@@ -127,6 +145,12 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-3:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-3
     group_add:
@@ -147,6 +171,12 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-4:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-4
     group_add:
@@ -167,6 +197,12 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-5:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-5
     group_add:
@@ -187,6 +223,12 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-cluster-init:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - valkey-cluster
     extends:
@@ -220,6 +262,12 @@ services:
     networks:
       lab_valkey_core_net: {}
   valkey-cluster-exporter:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - valkey-cluster
     extends:

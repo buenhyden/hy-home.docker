@@ -1,6 +1,7 @@
 # SPEC-0263 promotion manifest for the cassandra LAB.
-# resources.services copies the rendered per-container limits; disk_gib is an
-# estimate. Secret destinations are a plan only and are never created here.
+# resources.services copies the rendered per-container limits and
+# reservations; disk_gib is an estimate.
+# Secret destinations are a plan only and are never created here.
 # kind undecided: the owner has not named a promotion target yet.
 kind: undecided
 integrations:
@@ -17,6 +18,9 @@ resources:
     cassandra-node1:
       cpus: 2.0
       memory_mib: 2048
+      reservations:
+        cpus: 2.0
+        memory_mib: 2048
   disk_gib:
     data: 20
     images: 1

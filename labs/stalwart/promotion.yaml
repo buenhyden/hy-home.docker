@@ -1,6 +1,7 @@
 # SPEC-0263 promotion manifest for the stalwart LAB.
-# resources.services copies the rendered per-container limits; disk_gib is an
-# estimate. Secret destinations are a plan only and are never created here.
+# resources.services copies the rendered per-container limits and
+# reservations; disk_gib is an estimate.
+# Secret destinations are a plan only and are never created here.
 # kind undecided: the owner has not named a promotion target yet.
 kind: undecided
 integrations:
@@ -21,9 +22,15 @@ resources:
     stalwart:
       cpus: 1.0
       memory_mib: 512
+      reservations:
+        cpus: 1.0
+        memory_mib: 512
     stalwart-config:
       cpus: 0.5
       memory_mib: 256
+      reservations:
+        cpus: 0.5
+        memory_mib: 256
   disk_gib:
     data: 5
     images: 1

@@ -59,6 +59,12 @@ secrets:
 services:
   # Feature-owned metadata database provisioning on the configured mng-pg.
   superset-db-provision:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - lab-superset
     extends:
@@ -100,6 +106,12 @@ services:
   # database entry (Trino). Idempotent; re-run after an image upgrade.
   # The Trino entry resolves only where a `trino` host is reachable.
   superset-init:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     <<: *superset-common
     extends:
       file: ../../infra/common-optimizations.yml
@@ -121,6 +133,12 @@ services:
         condition: service_completed_successfully
 
   superset:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 1024M
     <<: *superset-common
     extends:
       file: ../../infra/common-optimizations.yml

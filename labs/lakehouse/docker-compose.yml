@@ -74,6 +74,12 @@ secrets:
 services:
   # Iceberg table bucket, its policy and namespaces on the configured endpoint.
   seaweedfs-table-bucket:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - lab-lakehouse
     extends:
@@ -105,6 +111,12 @@ services:
   # catalog. The default command only lists namespaces; any write is an
   # explicit `docker compose -f labs/lakehouse/docker-compose.yml run --rm spark spark-sql ...`.
   spark:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     profiles:
       - lab-lakehouse
     extends:
@@ -147,6 +159,12 @@ services:
   # Single-node SQL engine (coordinator also runs tasks) over the Iceberg
   # tables in the REST catalog, with the same scoped identity as Spark.
   trino:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     profiles:
       - lab-lakehouse
     extends:
@@ -199,6 +217,12 @@ services:
   # `docker compose -f labs/lakehouse/docker-compose.yml run --rm great-expectations validate [SUITE...]`,
   # which reads tables and exits 1 when an expectation fails.
   great-expectations:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - lab-lakehouse
     extends:
@@ -232,6 +256,12 @@ services:
   # are submitted from the SQL client inside this container; JAR upload
   # through the REST API is disabled. HOME Kafka is not on this network.
   flink-jobmanager:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 1280M
     <<: *flink-common
     extends:
       file: ../../infra/common-optimizations.yml
@@ -264,6 +294,12 @@ services:
       start_period: 1m
 
   flink-taskmanager:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 2048M
     <<: *flink-common
     extends:
       file: ../../infra/common-optimizations.yml
