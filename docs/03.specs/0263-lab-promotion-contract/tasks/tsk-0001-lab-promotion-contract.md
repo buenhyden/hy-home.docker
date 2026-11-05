@@ -72,6 +72,11 @@ These are agent calls, made in the Plan for the owner to check:
   - OPS-0107 is `lab-promotion`, with a policy and a runbook.
   - OPS-0108 is `kafka-cluster`.
   - OPS-0109 is `opensearch-cluster`.
+- **Secret names across projects.** The tests no longer require a LAB
+  secret name to differ from a root secret name. Each LAB is its own Compose
+  project, and path isolation keeps each LAB on `secrets/labs/<name>/`, so the
+  names cannot reach each other's files. This waits for the owner's
+  confirmation.
 - **The readiness check.** It is a `lab.py readiness` subcommand, not a new
   script.
 
@@ -175,9 +180,11 @@ regression. A check of stalwart at `6f4eb08dc` with the tracked
 `root_footprint` turns every HOME sensitive input into HOME state, so the
 read-only bind looked like owned state. `lab.py` now records the writable
 binds as `bound_state` before that step. A read-only root bind of
-`secrets/` owns no read-only LAB path under `secrets/labs/<name>/`. A
-writable root bind, a HOME secret, the whole `secrets/labs` tree and a
-writable LAB bind still clash.
+`secrets/` owns no read-only path of the checked LAB under its own
+`secrets/labs/<name>/`. A writable root bind, a HOME secret, another LAB's
+copy, the whole `secrets/labs` tree and a writable LAB bind still clash. The
+LAB allowlist also takes secrets only from `<LAB_SECRET_DIR>/<name>/`, so no
+LAB reads another LAB's copy.
 
 **SMTP retirement path.** `scripts/lib/ops/smtp_public_source.py` now
 requires the supabase LAB to read its LAB-037 copy and refuses any LAB file
@@ -202,7 +209,7 @@ accepts any well-formed retired-row alias, not only COMM-003.
 | E9 | 3 | W3 | owner registry and sync | prepared rows and the sync sequence in the W3 Work Log | NOT_RUN | owner step 4 and 5 pending | required | - |
 | E10 | 3 | W3 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` on the W3 working tree | PASS | violations=0; failures=0 | required | - |
 | E11 | 3 | W3 | RED test | `test_read_only_secrets_backup_owns_no_lab_secret_copy` with root's read-only `secrets/` bind through `root_footprint`, before the `lab.py` fix | FAIL | the LAB copy "overlaps root" | required | - |
-| E12 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs after the fix, also run for all 15 LABs | PASS | no overlap problem in any LAB; only empty LAB_DATA_DIR seed files, absent synthetic operator files, and lakehouse's ignored local `great-expectations/__pycache__/` remain | required | E6 |
+| E12 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs after the `secrets/` and per-LAB fixes, also run for all 15 LABs | FAIL | no overlap or allowlist problem left; remaining problems are environment seed files (LAB_DATA_DIR seeds, synthetic operator files, ignored lakehouse `__pycache__`) | required | - |
 
 ## Criterion Acceptance
 
