@@ -273,6 +273,49 @@ The check makes these calls:
 | docker | PASS | Docker `29.9.2` (`docker info .ServerVersion`), Compose `5.6.1` (`docker compose version --short`); drivers `bridge`, `local`; data root `/home/hyunyoun/storage/docker-root/docker` (`docker info .DockerRootDir`) |
 | resources | FAIL | NCPU 12 and MemTotal 33575419904 B (`docker info`). The budget is 10 CPUs and 27924 MiB. Running limits are 64 CPUs and 59904 MiB (`docker inspect`). Retired `dev-valkey` frees 1 CPU and 512 MiB. The candidate adds 7 CPUs and 3584 MiB, so it needs 70 CPUs and 62976 MiB. Five running `k3d-hyhome-*` containers declare no limit. Usable disk is 2105.3 GiB on the data root and on the Docker root (`shutil.disk_usage`) |
 
+### W5: Promotion operations documents
+
+The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
+`operations-subject` space now has `high_water` 109 and `next_number` 110.
+
+- **OPS-0107 `lab-promotion`.** POL-0107 holds the layout, the manifest
+  fields, the secret rules, the `vector` socket exception, the destination
+  rules table, the readiness rules and the reserve table. RUN-0107 holds the
+  readiness run and the `add`, `replace-same` and `replace-substitute`
+  procedures. It states that every step touching HOME runtime needs an
+  approved owner window and that SPEC-0263 promotes nothing.
+- **OPS-0108 `kafka-cluster` and OPS-0109 `opensearch-cluster`.** Each has a
+  Guide and a Runbook in `15-labs`, built from the LAB README and Compose
+  file. Neither claims a runtime result. `labs/.env` lacks
+  `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR`, so neither LAB has
+  rendered with HOME inputs; the documents record both as operator inputs.
+- **Extra policies.** The Guides name their services in
+  `implementation_services`, and `check-operations-catalog.py` then requires
+  a current policy per slug (`service-operations-owner`). POL-0108 and
+  POL-0109 were added for that reason.
+- **Reserve table.** `test_reserve_matches_policy` reads every two-cell
+  table row whose first cell is `CPUs`, `Memory MiB` or `Disk percent` and
+  compares the second cell, as a float, with `PROMOTION_RESERVE`. Its
+  `expectedFailure` decorator is removed.
+- **Manifests.** The kafka-cluster and opensearch-cluster `documents.guide`
+  and `documents.runbook` now point at the new `15-labs` documents.
+- **`labs/README.md`.** Direct links from it to individual stage documents
+  fail `check-document-links.py` (`stage-link-outside-docs`). The README
+  therefore names the `15-labs` folders and OPS-0107 in text and links only
+  the operations entry point.
+- **Status.** The new documents start at `draft`, because the metadata check
+  refuses a new runbook at any other status. They also link
+  `infra/tech-stack.versions.json`, because the metadata check treats a
+  `kafka` or `opensearch` slug as owning the HOME runtime entries.
+- **Static renders.** With `labs/.env.example` and synthetic inputs, the
+  kafka-cluster render lists its five services and the opensearch-cluster
+  render its four, both exit 0. Neither starts anything.
+- **Open owner decision.** HOME's declared limits already exceed the host
+  budget, so no replacement candidate can pass resources. POL-0107 records
+  the options: (a) cut HOME limits and give k3d limits; (b) judge
+  reservations instead of limits, which needs a Spec change and is
+  recommended; (c) judge measured usage. The rule is unchanged.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -303,6 +346,15 @@ The check makes these calls:
 | E24 | 5 | W4 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` after the fix | PASS | violations=0; link mode all PASS | required | - |
 | E25 | 5 | W4 | HOME readiness `postgresql-ha` | `lab.py --env-file labs/.env readiness postgresql-ha --report <scratchpad>` at `dade9cf06`, after retiring its provisioning jobs; `manifest_problems` returns no problem | FAIL | tier, composition, linux and docker PASS; resources FAIL: 72 CPUs and 66048 MiB needed against 10 CPUs and 27924 MiB, and 5 `k3d-hyhome-*` containers without limits | required | - |
 | E26 | 5 | W4 | LAB suites, metadata and links | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout`; `check-document-metadata.py --mode check-changed --base-ref main`; `check-document-links.py --mode all`, after the exclusive-ownership fix `17698152c` | PASS | 102 tests and 1 expected failure; violations=0; link mode all PASS | required | - |
+| E27 | 4 | W5 | RED test | `test_reserve_matches_policy` with `expectedFailure` removed, before the policy existed, over `eac1cb6fb` | FAIL | `FileNotFoundError` for `docs/05.operations/policies/15-labs/0107-lab-promotion.md` | required | - |
+| E28 | 4 | W5 | GREEN test | `test_reserve_matches_policy` after POL-0107, at `e33f174b3` | PASS | 1 test OK | required | - |
+| E29 | 4, 6 | W5 | LAB suites | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout` with the controller venv, at `e33f174b3` | PASS | 102 tests, 0 failures, no expected failure left | required | - |
+| E30 | 4, 6 | W5 | operations catalog | `check-operations-catalog.py` at `e33f174b3` | PASS | operations-catalog PASS; an earlier run required POL-0108 and POL-0109 (`service-operations-owner`) | required | - |
+| E31 | 4, 6 | W5 | metadata | `check-document-metadata.py --mode check-changed --base-ref main` and `--mode check-active` on the W5 tree | PASS | check-changed selected=144 violations=0; check-active selected=543 violations=0 | required | - |
+| E32 | 4, 6 | W5 | links and lifecycle | `check-document-links.py --mode all`, `check-document-corpus-lifecycle.py` at `e33f174b3` | PASS | link failures=0; lifecycle violations=0 | required | - |
+| E33 | 4, 6 | W5 | markdownlint and staged hooks | `scripts/validation/run-ci-precommit.sh --mode local-staged` on each W5 commit's staged files | PASS | markdownlint-cli2, check json, ruff and secret detection passed | required | - |
+| E34 | 6 | W5 | static renders | `docker compose --env-file labs/.env.example ... config --services` for kafka-cluster and opensearch-cluster with synthetic `LAB_*` inputs | PASS | 5 and 4 services, exit 0; no container started | required | - |
+| E35 | 6 | W5 | HOME render of the cluster LABs | `lab.py --env-file labs/.env check kafka-cluster opensearch-cluster` | NOT_RUN | `labs/.env` lacks `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR`; operator input pending | required | - |
 
 ## Criterion Acceptance
 
@@ -318,9 +370,12 @@ The check makes these calls:
 
 ## Review and Completion
 
-W1 to W4 have changed the repository. Criterion 3 waits for the owner's
-registry edit and sync (E9). The HOME readiness run (E23) refuses
-`valkey-cluster` on resources. No criterion is accepted.
+W1 to W5 have changed the repository. W5 wrote the promotion operations
+documents (E27 to E34). The HOME render of the two cluster LABs waits for
+operator inputs (E35), and the resource rule waits for the owner decision
+recorded in POL-0107. Criterion 3 waits for the owner's registry edit and
+sync (E9). The HOME readiness runs (E23, E25) refuse `valkey-cluster` and
+`postgresql-ha` on resources. No criterion is accepted.
 
 ## Related Documents
 
