@@ -4,7 +4,7 @@ version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-11-05"
 created: "2025-11-12"
 ---
 
@@ -37,7 +37,7 @@ created: "2025-11-12"
 
 | Category | Source of truth | Boundary |
 | --- | --- | --- |
-| Compose | [cassandra.yml](./cassandra.yml) | 독립 LAB project |
+| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
 | State | `${LAB_DATA_DIR:?set isolated LAB data root}/cassandra/node1`을 `/var/lib/cassandra`에 mount | HOME 상태와 미공유 |
 | Authentication | 공식 Cassandra 이미지 기본값; LAB 내부망 외 노출 없음 | 비밀번호 인증 미구성 |
 | Networks | LAB 전용 network declarations | root network와 미공유 |
@@ -45,29 +45,38 @@ created: "2025-11-12"
 ## Structure
 
 ```text
-labs/
-├── cassandra.yml
-└── cassandra.md
+labs/cassandra/
+├── docker-compose.yml # 독립 LAB entrypoint
+├── promotion.yaml     # SPEC-0263 승격 manifest
+├── README.md
+└── dashboards/
+    └── cassandra.json # LAB 전용 Grafana 대시보드
 ```
+
+[cassandra.json](./dashboards/cassandra.json)(UID `hyhome-cassandra`)은 grafana.com
+dashboard 6400 revision 2(2018-06-14)에서 왔습니다. HOME Grafana는
+`infra/06-observability/grafana/dashboards/`만 provisioning하므로 이 파일은 HOME에
+표시되지 않습니다. LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Grafana가 이
+파일을 읽도록 구성하며, HOME provisioning 경로로 옮기지 않습니다.
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Entry point | [cassandra.yml](./cassandra.yml) |
+| Entry point | [docker-compose.yml](./docker-compose.yml) |
 | Project | `hy-home-lab-cassandra` |
 | Services | `cassandra-node1` |
 | State | `${LAB_DATA_DIR:?set isolated LAB data root}/cassandra/node1` → `/var/lib/cassandra` |
 | Networks | `lab_cassandra_core_net` |
 | Secret refs | 없음; 공식 이미지가 이전 Bitnami password-file 입력을 소비하지 않음 |
 | Host exposure | host port 없음; LAB network 내부 expose만 선언 |
-| Helper assets | 없음 |
+| Helper assets | [promotion manifest](./promotion.yaml), [대시보드](./dashboards/cassandra.json) |
 | Readiness | Compose healthcheck/one-shot dependency declarations only; runtime result is unverified |
 
 ## Usage
 
 1. `LAB_DATA_DIR`을 독립 상태 경로로 지정한다.
-2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra.yml --profile '*' config --quiet`로 렌더링한다.
+2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile '*' config --quiet`로 렌더링한다.
 3. LAB Compose project, network, volume, port가 HOME 또는 management 경로와 겹치지 않는지 검토한다.
 4. 기동은 `python3 scripts/operations/lab.py up cassandra --purpose "<목적>" --lease <30m|4h>`로만 한다. 이 명령은 다른 LAB·HOME과의 이름·port·data 경로 충돌, 예산과 동시 LAB 수를 먼저 검사하고 `${LAB_DATA_DIR}/.ledger/cassandra.json`에 정리 대상을 기록한다. 종료는 `lab.py down cassandra`이며 volume과 data를 지우지 않는다. 만료 lease는 `lab.py reap`이 정지한다 (정책 `POL-0078`).
 
@@ -75,7 +84,7 @@ labs/
 
 | Command | Description |
 | --- | --- |
-| `LAB_DATA_DIR=/tmp/hyhome-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
+| `LAB_DATA_DIR=/tmp/hyhome-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
 
 ## Configuration
 
@@ -107,5 +116,5 @@ host-level HA를 증명하지 않습니다. 정적 render 통과는 실행·인�
 
 ## Related Documents
 
-- [Architecture index](../docs/02.architecture/README.md)
-- [Operations index](../docs/05.operations/README.md)
+- [Architecture index](../../docs/02.architecture/README.md)
+- [Operations index](../../docs/05.operations/README.md)

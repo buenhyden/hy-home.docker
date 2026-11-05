@@ -603,9 +603,10 @@ def source_allowlist_problems(
     if data and (unsafe(data) or _within(data, repo)):
         problems.append(f"LAB_DATA_DIR {data} covers or sits in a protected path")
         data = None
-    secret_value = env.get("LAB_SECRET_DIR") or "../secrets/labs"
-    # Compose resolves a relative LAB_SECRET_DIR against labs/.
-    secret = os.path.realpath(ROOT / "labs" / secret_value)
+    secret_value = env.get("LAB_SECRET_DIR") or "../../secrets/labs"
+    # Compose resolves a relative LAB_SECRET_DIR against the LAB folder
+    # labs/<name>/; every LAB folder sits at that one depth (SPEC-0263).
+    secret = os.path.realpath(ROOT / "labs" / "lab" / secret_value)
     # Decided from the resolved secrets tree too: a symlinked secrets/ must
     # not let a sibling of secrets/labs pass as outside the repo.
     secrets_root = os.path.realpath(ROOT / "secrets")

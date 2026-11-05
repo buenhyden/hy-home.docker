@@ -15,7 +15,7 @@ services:
     profiles:
       - cassandra
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-high
     image: cassandra:5.0.9
     container_name: lab-cassandra-cassandra-node1

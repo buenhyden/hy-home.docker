@@ -380,7 +380,7 @@ class CollisionAndBudgetTests(unittest.TestCase):
         # non-sensitive repo files; everything else is refused.
         env = {
             "LAB_DATA_DIR": "/lab-data",
-            "LAB_SECRET_DIR": "../secrets/labs",
+            "LAB_SECRET_DIR": "../../secrets/labs",
             "LAB_SUPERSET_CA_FILE": "/srv/ca/rootCA.pem",
             "LAB_LOCUST_RESULT_DIR": "/srv/locust-results",
         }
@@ -464,7 +464,7 @@ class CollisionAndBudgetTests(unittest.TestCase):
                     True,
                 ),
                 (
-                    {"LAB_SECRET_DIR": "../secrets"},
+                    {"LAB_SECRET_DIR": "../../secrets"},
                     repo + "/secrets/.retired/a.txt",
                     True,
                 ),
@@ -570,9 +570,9 @@ class CollisionAndBudgetTests(unittest.TestCase):
             return {"x": lab.footprint(rendered)}
 
         for value, source in (
-            ("../secrets/.retired", "secrets/.retired/auth/key.txt"),
-            ("../secrets/db", "secrets/db/mng-pg/password.txt"),
-            ("../.git", ".git/config"),
+            ("../../secrets/.retired", "secrets/.retired/auth/key.txt"),
+            ("../../secrets/db", "secrets/db/mng-pg/password.txt"),
+            ("../../.git", ".git/config"),
         ):
             with self.subTest(value=value):
                 self.assertTrue(
@@ -586,7 +586,7 @@ class CollisionAndBudgetTests(unittest.TestCase):
             [],
             lab.source_allowlist_problems(
                 secret(str(ROOT / "secrets/labs/dbt/p.txt")),
-                {**env, "LAB_SECRET_DIR": "../secrets/labs"},
+                {**env, "LAB_SECRET_DIR": "../../secrets/labs"},
                 ROOTFP,
             ),
         )
@@ -1070,7 +1070,7 @@ class LabLayoutAndManifestTests(unittest.TestCase):
         self.assertEqual([], self.problems(undecided))
 
     def test_socket_allowed_only_for_supabase_vector_read_only(self) -> None:
-        env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../secrets/labs"}
+        env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../../secrets/labs"}
 
         def bind(name, service_name, source, read_only):
             spec = service(f"lab-{service_name}")
@@ -1098,7 +1098,7 @@ class LabLayoutAndManifestTests(unittest.TestCase):
     def test_socket_exception_holds_across_the_check_path(self) -> None:
         # The checks check() composes over sources and paths: integrity,
         # allowlist and HOME collisions. HOME binds the socket read-only too.
-        env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../secrets/labs"}
+        env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../../secrets/labs"}
         socket = "/var/run/docker.sock"
 
         def mount(source, read_only):
