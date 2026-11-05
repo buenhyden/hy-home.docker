@@ -173,7 +173,28 @@ A security review returned CHANGES_REQUESTED with two Important findings:
 that declares them, the root env file and `DockerRootDir` are HOME state,
 `.env` files are sensitive, and only git-tracked paths qualify.
 
-After the fix no LAB reports an overlap. The remaining problems come from
+The re-review approved those fixes but found one more Important gap: no
+HOME path covered `.git`, `scripts`, `secrets/.retired`, `.env.*` variants
+or host credentials. On 2026-11-05 the owner chose an allowlist,
+"목록 도입 + LAB_* 경로 허용 (권장)", and for Locust "결과 폴더만 쓰기 허용
+(권장)". Commit `9fa48a5a5` requires every LAB bind and secret source to be
+one of:
+
+- under `LAB_DATA_DIR`;
+- read-only under `LAB_SECRET_DIR`, which defaults to `secrets/labs`;
+- read-only under an operator `LAB_*` path input;
+- writable under a `LAB_*_RESULT_DIR`;
+- a read-only, non-sensitive, git-tracked repository path.
+
+An identical tracked file that both sides mount read-only counts as a
+shared public input, and git uses literal pathspecs.
+
+All 16 LABs were checked. In 15 of them no overlap or allowlist problem
+remains. supabase is refused, which matches the owner decision
+"LAB_SECRET_DIR 복사본으로 전환 (권장)". It reads 11 HOME secret files
+directly from `secrets/`, including HOME's SMTP password, and binds the
+Docker socket. Moving it to LAB copies is separate follow-up work. Its
+Docker socket stays refused until an exception is approved. The remaining problems come from
 the synthetic inputs. The 64 CPU budget is below HOME's roughly 64 declared
 CPUs on this 12-core host, and the synthetic LAB secret files and Superset CA
 file are absent.
@@ -209,6 +230,8 @@ The real budget is an operator input.
   already declares about 64 CPUs on a 12-core host, so the budget is a
   policy decision; an empty budget refuses.
 - `lab.py check` with the real root `.env` and real LAB inputs is NOT_RUN.
+- supabase: move its 11 secrets to `LAB_SECRET_DIR` copies (owner decision).
+  Its Docker socket bind stays BLOCKED until an exception is approved.
 
 ## Evidence
 
@@ -230,8 +253,9 @@ The real budget is an operator input.
 | E14 | 3 | W2 | unit-tests | `python -m unittest discover -s tests -t .` with the locked controller venv (Python 3.12.3, `--require-hashes`) on `280b6f8fd` | PASS | 3272 tests OK, skipped=108 (opt-in container tests) | required | E6, E7 |
 | E15 | 5 | W4 | hosted-ci | GitHub Actions on PR #747 | PASS | candidate-quality pass 16m19s; merged as `729d16da7` | required | E13 |
 | E16 | 2 | W1 | lab-controller-overlap | `lab.py --env-file <synthetic> --root-env-file .env.example check <lab>` on `f0ce46fda` | FAIL | every LAB refused: "overlaps root" from read-only `/` and source-tree binds | required | - |
-| E17 | 2 | W1 | lab-controller-overlap | same synthetic check on `c94497269` | PASS | six LABs: zero overlap problems; only the synthetic budget and absent synthetic LAB secret and CA files remain | required | E16 |
-| E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `c94497269` | PASS | observer, provision allowlist, source-tree, HOME secret/env/Docker-root and tracked-only tests GREEN after RED | required | - |
+| E17 | 2 | W1 | lab-controller-overlap | same synthetic check on `9fa48a5a5` | PASS | six LABs: zero overlap problems; only the synthetic budget and absent synthetic LAB secret and CA files remain | required | E16 |
+| E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `9fa48a5a5` | PASS | observer, shared tracked file, source-tree, HOME secret/env/Docker-root, tracked-only, literal pathspec and source allowlist tests GREEN after RED | required | - |
+| E20 | 2 | W1 | lab-controller-allowlist | synthetic check of all 16 LABs on `9fa48a5a5` | PASS | 15 LABs: no overlap or allowlist problem; supabase refused as decided (HOME secrets, Docker socket) | required | - |
 | E19 | 2 | W1 | security-review | Independent review of the LAB overlap change through `8b231c5e3` | FAIL | CHANGES_REQUESTED: 2 Important (HOME secrets, root env and Docker root uncovered; gitignored .env accepted), 1 Minor (tests) | required | - |
 
 ## Criterion Acceptance
