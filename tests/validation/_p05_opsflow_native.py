@@ -527,6 +527,7 @@ class P05Fixture(legacy.NativeFixture):
         # When the signal was delivered, before the stop wait below; the
         # wait can take seconds under host load (native attempt 10).
         self.killed_wall_ms = int(time.time() * 1000)
+        self.killed_monotonic = time.monotonic()
         self.wait_until(
             lambda: (
                 (self._verify_owned(record).get("State") or {}).get("Running") is False
@@ -548,6 +549,7 @@ class P05Fixture(legacy.NativeFixture):
 
 
 RUNNER_REGISTERED = 'Registered runner "'
+TERMINAL_STATUSES = frozenset({"success", "error", "canceled", "crashed"})
 
 PROFILE_API = historical.API_JS.replace(
     "else if(input.action==='credential_update')",
@@ -687,7 +689,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
         )
         held = f.hold_facts()
         f.kill("worker")
-        self.killed_at = time.monotonic()
+        self.killed_at = f.killed_monotonic
         # Host and container read the same kernel wall clock; the time the
         # kill command returned is an upper bound on the interruption point.
         killed_ms = f.killed_wall_ms - held["body_held_at_ms"]
@@ -919,6 +921,25 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             workflow, run, b"p05-after-main-restart", "2026-11-30T00:00:00Z"
         )
 
+    def retry_executions(self, execution):
+        # Closed (id, status) pairs of executions created as retries of one.
+        if not execution.isdecimal():
+            raise RehearsalFailure("crashed execution id rejected")
+        value = self.fixture.psql(
+            "n8n",
+            "n8n",
+            "SELECT coalesce(string_agg(id||':'||status,',' ORDER BY id),'') "
+            f"FROM execution_entity WHERE \"retryOf\"='{execution}';",
+            container="metadata-pg",
+        ).stdout.strip()
+        rows = [item.partition(":") for item in value.split(",") if item]
+        if any(
+            not identifier.isdecimal() or not re.fullmatch(r"[a-z]{1,16}", state)
+            for identifier, _, state in rows
+        ):
+            raise RehearsalFailure("retry execution facts rejected")
+        return [(identifier, state) for identifier, _, state in rows]
+
     def retry_crashed(self, workflow, crashed, interrupted_runs):
         # n8n's own replay of each crashed execution, with a claimable fresh
         # row present so a retry that ran would have to claim it.
@@ -944,12 +965,35 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
                 }
             )
         f.receipt["execution_retry_attempts"] = attempts
+        # Every execution n8n created for a retry, from the metadata DB: a 500
+        # can follow an enqueued job, so none may still be running before the
+        # state checks, and each joins the recovery barrier.
+        settled = {}
+
+        def retries_terminal():
+            settled.clear()
+            for execution in crashed:
+                settled[execution] = self.retry_executions(execution)
+            return all(
+                len(rows) <= 1 and all(state in TERMINAL_STATUSES for _, state in rows)
+                for rows in settled.values()
+            )
+
+        try:
+            f.wait_until(retries_terminal, "n8n retry executions did not settle", 60)
+        except RehearsalFailure as error:
+            if str(error) != "n8n retry executions did not settle":
+                raise
+        terminal = retries_terminal()
+        created = [identifier for rows in settled.values() for identifier, _ in rows]
+        f.receipt["execution_retry_created"] = created
+        self.execution_ids.extend(created)
         after_retry = self.outbox_snapshot()
         claimed = self.db_value(
             f"SELECT state FROM ops_flow.outbox WHERE run_id='{fresh}';"
         )
         resent = sum(1 for run in interrupted_runs if self.capture(run)["matched"])
-        if claimed != "pending" or after_retry != baseline:
+        if not terminal or claimed != "pending" or after_retry != baseline or resent:
             # Refuse before a new execution could mask what the retry did.
             f.receipt["execution_retry_claimed_state"] = claimed
             raise RehearsalFailure("n8n execution retry changed notification state")
@@ -963,6 +1007,7 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             "claimed_by_retry": 0 if claimed == "pending" else 1,
             "interrupted_resent": resent,
             "rows_unchanged_by_retry": after_retry == baseline,
+            "retry_executions_terminal": terminal,
             "fresh_execution_delivered": self.capture(fresh)["matched"]
             and self.db_value(
                 f"SELECT state||'|'||attempts FROM ops_flow.outbox WHERE run_id='{fresh}';"

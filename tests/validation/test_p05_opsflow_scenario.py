@@ -49,6 +49,8 @@ class MemoryFixture:
         self.settle_pending = False
         # Runner registrations logged by worker processes, cumulative.
         self.registrations = 1
+        # Crashed execution id -> the execution n8n created for its retry.
+        self.retries = {}
 
     def event(self, name):
         self.events.append(name)
@@ -76,6 +78,16 @@ class MemoryFixture:
 
     def psql(self, role, database, sql, **kwargs):
         self.event("sql:" + role)
+        if (
+            database == "n8n"
+            and kwargs.get("container") == "metadata-pg"
+            and ("retryOf" in sql)
+        ):
+            crashed = re.search(r"\"retryOf\"='([0-9]+)'", sql)[1]
+            retried = self.retries.get(crashed)
+            state = "running" if self.fail == "retry-late" else "error"
+            value = f"{retried}:{state}" if retried else ""
+            return SimpleNamespace(stdout=value + "\n", stderr="", returncode=0)
         if database == "n8n" and kwargs.get("container") == "metadata-pg":
             execution = re.search(r"WHERE id=([0-9]+)\)", sql)[1]
             return SimpleNamespace(
@@ -112,6 +124,7 @@ class MemoryFixture:
         self.event("kill:" + role)
         self.running[role] = False
         self.killed_wall_ms = int(native.time.time() * 1000)
+        self.killed_monotonic = native.time.monotonic()
         if role == "worker" and self.session == "held":
             # A killed worker records nothing; the variants model a transport
             # timeout (unknown) and a silent success that must both fail.
@@ -307,6 +320,7 @@ class ScenarioModel:
                 }
             retried = str(len(f.executions) + 1)
             f.executions[retried] = "error"
+            f.retries[payload["executionId"]] = retried
             if self.fail == "retry-resend":
                 f.captured.extend(f.held_runs)
             pending = [r for r, st in f.rows.items() if st == "pending"]
@@ -587,6 +601,7 @@ class P05ScenarioStateTests(unittest.TestCase):
                 "claimed_by_retry": 0,
                 "interrupted_resent": 0,
                 "rows_unchanged_by_retry": True,
+                "retry_executions_terminal": True,
                 "fresh_execution_delivered": True,
             },
             receipt["execution_retry"],
@@ -678,6 +693,7 @@ class P05ScenarioStateTests(unittest.TestCase):
             "retry-unbound",
             "retry-claims",
             "retry-has-stack",
+            "retry-late",
         ):
             with self.subTest(failure=failure):
                 model = ScenarioModel(failure)

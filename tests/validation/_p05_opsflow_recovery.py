@@ -244,8 +244,20 @@ def validate_execution_retry(facts):
             "claimed_by_retry": 0,
             "interrupted_resent": 0,
             "rows_unchanged_by_retry": True,
+            "retry_executions_terminal": True,
             "fresh_execution_delivered": True,
         }
+        or type(facts["claimed_by_retry"]) is not int
+        or type(facts["interrupted_resent"]) is not int
+        or any(
+            type(facts[key]) is not bool
+            for key in (
+                "start_stacks_empty",
+                "rows_unchanged_by_retry",
+                "retry_executions_terminal",
+                "fresh_execution_delivered",
+            )
+        )
     ):
         raise RehearsalFailure("n8n execution retry outcome rejected")
     return dict(facts)

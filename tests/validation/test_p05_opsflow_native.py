@@ -515,6 +515,7 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
             "claimed_by_retry": 0,
             "interrupted_resent": 0,
             "rows_unchanged_by_retry": True,
+            "retry_executions_terminal": True,
             "fresh_execution_delivered": True,
         }
         self.assertEqual(good, recovery.validate_execution_retry(good))
@@ -535,6 +536,12 @@ class P05RestoreReplayAndInterruptionGuards(unittest.TestCase):
             {"rows_unchanged_by_retry": False},
             {"fresh_execution_delivered": False},
             {"retried": True},
+            # A retry n8n queued but had not finished could still claim.
+            {"retry_executions_terminal": False},
+            # Exact types: False == 0 and 1 == True must not pass.
+            {"claimed_by_retry": False},
+            {"interrupted_resent": 0.0},
+            {"rows_unchanged_by_retry": 1},
             {"unexpected": "private-payload"},
         ):
             with (
