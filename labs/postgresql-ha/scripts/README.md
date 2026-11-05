@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-05"
 created: "2026-10-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2026-10-12"
 
 ## Overview
 
-Spilo의 LAB secret-file wrapper source를 보관합니다. service source는 root `labs/`에 있으며 실제 실행·비밀값·데이터를
+Spilo의 LAB secret-file wrapper source를 보관합니다. service 정의는 상위 [docker-compose.yml](../docker-compose.yml)에 있으며 실제 실행·비밀값·데이터를
 이 문서나 source 이동으로 변경하지 않습니다.
 
 ## Audience

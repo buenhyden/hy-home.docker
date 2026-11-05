@@ -56,7 +56,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-low
     image: quay.io/coreos/etcd:v3.7.1
     container_name: lab-pg-etcd-1
@@ -97,7 +97,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-low
     image: quay.io/coreos/etcd:v3.7.1
     container_name: lab-pg-etcd-2
@@ -138,7 +138,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-low
     image: quay.io/coreos/etcd:v3.7.1
     container_name: lab-pg-etcd-3
@@ -179,7 +179,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-med
     image: haproxy:3.4.4
     container_name: lab-pg-pg-router
@@ -189,7 +189,7 @@ services:
     tmpfs:
       - /tmp
     volumes:
-      - ./postgresql-ha/config/haproxy.cfg.tpl:/tmp/haproxy.cfg.tpl:ro
+      - ./config/haproxy.cfg.tpl:/tmp/haproxy.cfg.tpl:ro
     secrets:
       - lab_pg_haproxy_stats_password
     ports:
@@ -242,7 +242,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-low
     restart: 'no'
     image: postgres:18.6-alpine
@@ -285,7 +285,7 @@ services:
           -f /tmp/lab-secret-vars.sql \
           -f /work/init_users_dbs.sql
     volumes:
-      - ./postgresql-ha/init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
+      - ./init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
     depends_on:
       pg-router:
         condition: service_started
@@ -302,7 +302,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: lab-pg-pg-0
@@ -323,7 +323,7 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:5432
     volumes:
       - pg0-data:/home/postgres/pgdata:rw
-      - ./postgresql-ha/scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     secrets:
       - lab_pg_superuser_password
       - lab_pg_replication_password
@@ -352,7 +352,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: lab-pg-pg-1
@@ -373,7 +373,7 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:5432
     volumes:
       - pg1-data:/home/postgres/pgdata:rw
-      - ./postgresql-ha/scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     secrets:
       - lab_pg_superuser_password
       - lab_pg_replication_password
@@ -402,7 +402,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: lab-pg-pg-2
@@ -423,7 +423,7 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:5432
     volumes:
       - pg2-data:/home/postgres/pgdata:rw
-      - ./postgresql-ha/scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     secrets:
       - lab_pg_superuser_password
       - lab_pg_replication_password
@@ -452,7 +452,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: lab-pg-pg-0-exporter
@@ -489,7 +489,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: lab-pg-pg-1-exporter
@@ -526,7 +526,7 @@ services:
     profiles:
       - postgres-ha
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: lab-pg-pg-2-exporter
@@ -570,12 +570,12 @@ networks:
     internal: true
 secrets:
   lab_pg_haproxy_stats_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/postgresql-ha/haproxy_stats_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/postgresql-ha/haproxy_stats_password.txt
   lab_pg_superuser_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/postgresql-ha/superuser_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/postgresql-ha/superuser_password.txt
   lab_pg_replication_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/postgresql-ha/replication_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/postgresql-ha/replication_password.txt
   lab_pg_exporter_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/postgresql-ha/exporter_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/postgresql-ha/exporter_password.txt
   lab_pg_service_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/postgresql-ha/service_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/postgresql-ha/service_password.txt
