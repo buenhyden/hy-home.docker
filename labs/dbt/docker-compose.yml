@@ -15,9 +15,9 @@ networks:
 # at its original /run/secrets name, which the LAB scripts read.
 secrets:
   lab_dbt_dev_pg_admin_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/dbt/dev_pg_admin_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/dbt/dev_pg_admin_password.txt
   lab_dbt_db_password:
-    file: ${LAB_SECRET_DIR:-../secrets/labs}/dbt/db_password.txt
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/dbt/db_password.txt
 
 services:
   # Feature-owned analytics role on the explicit internal development fixture.
@@ -27,7 +27,7 @@ services:
     profiles:
       - lab-dbt
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-low
     image: postgres:18.6-alpine
     container_name: dbt-db-provision
@@ -52,8 +52,8 @@ services:
       DBT_SOURCE_SCHEMA: app
       DBT_SOURCE_OWNER: platform_owner
     volumes:
-      - ../infra/04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
-      - ./dbt/provisioning/dev-pg.sql:/provision/dev-pg.sql:ro
+      - ../../infra/04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./provisioning/dev-pg.sql:/provision/dev-pg.sql:ro
     secrets:
       - source: lab_dbt_dev_pg_admin_password
         target: dev_pg_admin_password
@@ -71,10 +71,10 @@ services:
     profiles:
       - lab-dbt
     extends:
-      file: ../infra/common-optimizations.yml
+      file: ../../infra/common-optimizations.yml
       service: template-job-med
     build:
-      context: ./dbt
+      context: .
       dockerfile: Dockerfile
     image: hy-home/dbt-postgres:1.11-local
     container_name: dbt
@@ -96,8 +96,8 @@ services:
     # Project and profiles are read-only; target/, logs/ and packages live on
     # the job's /tmp tmpfs (see dbt_project.yml) and vanish with the container.
     volumes:
-      - ./dbt/profiles:/config:ro
-      - ./dbt/projects:/workspace:ro
+      - ./profiles:/config:ro
+      - ./projects:/workspace:ro
     command:
       - debug
     depends_on:
