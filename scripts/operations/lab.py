@@ -787,6 +787,17 @@ SECRET_CATALOG = "infra/03-security/openbao/secret-catalog.json"
 MIB_BYTES = 2**20
 
 
+def _repo_path(value: object) -> pathlib.Path | None:
+    """A manifest path: repo-relative, no `..`, and resolving inside ROOT."""
+    if not isinstance(value, str) or not value or os.path.isabs(value):
+        return None
+    if ".." in pathlib.PurePosixPath(value).parts:
+        return None
+    path = ROOT / value
+    root = os.path.realpath(ROOT)
+    return path if _within(os.path.realpath(path), root) else None
+
+
 def load_manifest(name: str) -> dict:
     import yaml
 
@@ -804,7 +815,10 @@ def catalog_ids() -> set[str]:
         catalog = json.loads((ROOT / SECRET_CATALOG).read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         raise LabError(f"secret catalog {SECRET_CATALOG} is unreadable: {exc}") from exc
-    return {entry["id"] for entry in catalog.get("entries", [])}
+    try:
+        return {entry["id"] for entry in catalog.get("entries", [])}
+    except (AttributeError, KeyError, TypeError) as exc:
+        raise LabError(f"secret catalog {SECRET_CATALOG} is malformed: {exc}") from exc
 
 
 def manifest_problems(
@@ -844,6 +858,12 @@ def manifest_problems(
     rendered = lab["services"]
     for service in sorted(set(declared) | set(rendered)):
         want, have = declared.get(service), rendered.get(service)
+        if isinstance(want, dict) and (
+            not want.get("cpus") or not want.get("memory_mib")
+        ):
+            problems.append(
+                f"{name}: resources.services {service} has no cpus or memory"
+            )
         if (
             not isinstance(want, dict)
             or have is None
@@ -858,8 +878,12 @@ def manifest_problems(
         path = documents.get(key)
         if path is None and key in {"guide", "runbook"}:
             problems.append(f"{name}: documents {key} is missing")
-        elif path is not None and not (ROOT / str(path)).exists():
-            problems.append(f"{name}: documents {key} {path} does not exist")
+        elif path is not None and not (
+            _repo_path(path) is not None and _repo_path(path).exists()
+        ):
+            problems.append(
+                f"{name}: documents {key} {path} does not exist in the repo"
+            )
     return problems
 
 
@@ -928,13 +952,28 @@ def _compose_services(path: str) -> set[str] | None:
     """Service names a repository Compose file declares, or None if absent."""
     import yaml
 
-    file = ROOT / path
-    if ".." in pathlib.PurePosixPath(path).parts or not file.is_file():
+    file = _repo_path(path)
+    if file is None or not file.is_file():
         return None
-    loaded = yaml.safe_load(file.read_text(encoding="utf-8"))
+    try:
+        loaded = yaml.safe_load(file.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
+        return None
     return (
         set((loaded or {}).get("services") or {}) if isinstance(loaded, dict) else set()
     )
+
+
+def _root_includes() -> set[str]:
+    """Compose files the root docker-compose.yml includes."""
+    import yaml
+
+    try:
+        loaded = yaml.safe_load((ROOT / "docker-compose.yml").read_text("utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
+        return set()
+    items = (loaded or {}).get("include") or [] if isinstance(loaded, dict) else []
+    return {str(item.get("path") if isinstance(item, dict) else item) for item in items}
 
 
 def _version(text: object) -> tuple[int, ...]:
@@ -974,6 +1013,7 @@ def readiness(
     retired: set[str] = set()
     covering: list[str] = []  # compose files that declare the retired services
     replace_problems = []
+    includes = _root_includes() if replaces else set()
     for item in replaces or []:
         item = item if isinstance(item, dict) else {}
         path = str(item.get("compose_path"))
@@ -986,6 +1026,10 @@ def readiness(
         ]
         if declared is None:
             replace_problems.append(f"replaces compose_path {path} does not exist")
+        elif path not in includes:
+            replace_problems.append(
+                f"replaces compose_path {path} is not included by root"
+            )
         elif not services or missing:
             replace_problems.append(
                 f"replaces {path}: services {missing or services} are not "
@@ -1012,6 +1056,10 @@ def readiness(
     values = {
         "kind": {"value": kind, "source": source},
         "folder": {"value": folder, "source": source},
+        # Spec section 5 "matches the service function" is an owner judgment;
+        # it is shown, not measured, and does not block PASS (narrowing in
+        # POL-0107 awaiting owner acceptance).
+        "function_fit": {"value": "NOT_RUN", "source": "owner judgment, not measured"},
     }
     if kind not in MANIFEST_KINDS - {"undecided"}:
         failed.append(f"kind {kind!r} has no promotion target")
@@ -1021,6 +1069,8 @@ def readiness(
         or ".." in folder.split("/")
     ):
         failed.append(f"target folder {folder!r} is outside infra/<tier>/")
+    elif _repo_path(folder) is None:
+        failed.append(f"target folder {folder} resolves outside the repository")
     else:
         tier = "/".join(folder.split("/")[:2])
         values["tier_exists"] = {"value": (ROOT / tier).is_dir(), "source": tier}
@@ -1046,9 +1096,21 @@ def readiness(
         # The filesystem too: every service a Compose file inside the folder
         # declares must be retired (dev-db/ still declares dev-pg).
         if exists and pathlib.Path(real).is_dir():
+            # rglob does not follow a symlinked directory, so one hides files.
+            linked = [
+                p
+                for p in pathlib.Path(real).rglob("*")
+                if p.is_symlink() and p.is_dir()
+            ]
+            if linked:
+                failed.append(f"target folder {folder} holds a symlinked directory")
             for found in pathlib.Path(real).rglob("*compose*.y*ml"):
                 path = os.path.relpath(found, os.path.realpath(ROOT))
-                shared |= (_compose_services(path) or set()) - retired
+                declared = _compose_services(path)
+                if declared is None:
+                    failed.append(f"compose file {path} in the target cannot be read")
+                    continue
+                shared |= declared - retired
         shared = sorted(shared)
         if exists and (not claimed or shared):
             failed.append(
@@ -1060,6 +1122,8 @@ def readiness(
         failed += manifest_problems(name, manifest, lab, catalog_ids())
     except LabError as exc:
         unmeasured.append(str(exc))
+    except (AttributeError, KeyError, TypeError, ValueError) as exc:
+        raise LabError(f"{name}: invalid manifest or catalog: {exc!r}", 2) from exc
     criteria["tier"] = _criterion(values, failed, unmeasured)
 
     # Service composition. The retired services' own containers and ports
@@ -1082,7 +1146,10 @@ def readiness(
         },
         "retired_services": {"value": sorted(retired), "source": source},
         "profile": {"value": profile, "source": source},
+        # Spec section 5 profile and consumer clashes are not measured.
+        "profile_and_consumer_clashes": {"value": "NOT_RUN", "source": "not measured"},
     }
+    unmeasured.append("profile and consumer clashes are not measured")
     try:
         if profile not in profile_vocabulary():
             failed.append(f"profile {profile!r} is not in the POL-0078 vocabulary")
@@ -1090,7 +1157,8 @@ def readiness(
         unmeasured.append(f"POL-0078 vocabulary unreadable: {exc}")
     for item in manifest.get("integrations") or []:
         owner = item.get("owner") if isinstance(item, dict) else None
-        if not owner or not (ROOT / str(owner)).exists():
+        path = _repo_path(owner)
+        if path is None or not path.exists():
             failed.append(f"integration owner {owner!r} does not exist")
     criteria["composition"] = _criterion(values, failed, unmeasured)
 
@@ -1104,6 +1172,9 @@ def readiness(
             "source": (host.get("cgroup_version") or {}).get("source", INFO_SOURCE),
         }
     }
+    # Spec section 5 groups and file modes are not measured.
+    values["groups_and_file_modes"] = {"value": "NOT_RUN", "source": "not measured"}
+    unmeasured.append("groups and file modes are not measured")
     features = [str(f) for f in requirements.get("kernel_features") or []]
     if lab["cpus"] or lab["memory"] or "cgroup2" in features:
         if cgroup is None:
@@ -1159,6 +1230,12 @@ def readiness(
     kept = [c for c in counted if c not in retiring]
     unlimited = sorted(c["name"] for c in kept if not c["cpus"] or not c["memory"])
     unmeasured += [f"running container {c} declares no limit" for c in unlimited]
+    # A candidate service without a limit cannot be summed either.
+    unmeasured += [
+        f"candidate service {s} declares no limit"
+        for s, v in sorted(lab["services"].items())
+        if not v["cpus"] or not v["memory"]
+    ]
     ncpu, memtotal = host.get("NCPU"), host.get("MemTotal")
     inspect = "docker inspect HostConfig.NanoCpus/Memory of running containers"
     values = {
@@ -1219,7 +1296,11 @@ def readiness(
             "value": round(free / 2**30, 1),
             "source": found.get("source", "shutil.disk_usage"),
         }
-        if free < float(need[key]) * 2**30:
+        try:
+            needed = float(need[key]) * 2**30
+        except (TypeError, ValueError) as exc:
+            raise LabError(f"{name}: disk_gib.{key} is not a number", 2) from exc
+        if free < needed:
             failed.append(
                 f"{disk}: {free / 2**30:.1f} GiB usable, disk_gib.{key} needs "
                 f"{need[key]}"

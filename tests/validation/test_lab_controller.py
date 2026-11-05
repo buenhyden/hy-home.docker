@@ -1248,6 +1248,11 @@ class LabLayoutAndManifestTests(unittest.TestCase):
 
 class LifecycleTests(unittest.TestCase):
     def setUp(self) -> None:
+        # Hermetic: read_env lets exported LAB_* values win over the env file.
+        clean = {k: v for k, v in os.environ.items() if not k.startswith("LAB_")}
+        env = mock.patch.dict(os.environ, clean, clear=True)
+        env.start()
+        self.addCleanup(env.stop)
         self.tmp = tempfile.TemporaryDirectory()
         self.data = pathlib.Path(self.tmp.name) / "lab-data"
         self.env_file = pathlib.Path(self.tmp.name) / "lab.env"
@@ -1673,12 +1678,32 @@ class ReadinessTests(unittest.TestCase):
 
     def test_readiness_passes_within_budget(self) -> None:
         report = readiness(readiness_case())
-        self.assertEqual("PASS", report["result"], report)
         self.assertEqual("add", report["kind"])
-        for criterion in ("tier", "composition", "linux", "docker", "resources"):
+        for criterion in ("tier", "docker", "resources"):
             found = report["criteria"][criterion]
             self.assertEqual("PASS", found["result"], (criterion, found))
+        for found in report["criteria"].values():
             self.assertTrue(all("source" in v for v in found["values"].values()))
+        # Spec section 5 sub-checks the code never measures stay visible and
+        # keep linux and composition, and so the report, at NOT_RUN.
+        for criterion in ("linux", "composition"):
+            found = report["criteria"][criterion]
+            self.assertEqual("NOT_RUN", found["result"], (criterion, found))
+            self.assertEqual(1, len(found["problems"]), found)
+        self.assertEqual("NOT_RUN", report["result"])
+        fit = report["criteria"]["tier"]["values"]["function_fit"]
+        self.assertEqual("NOT_RUN", fit["value"])
+        self.assertIn("owner judgment", fit["source"])
+        self.assertEqual(
+            "NOT_RUN",
+            report["criteria"]["linux"]["values"]["groups_and_file_modes"]["value"],
+        )
+        self.assertEqual(
+            "NOT_RUN",
+            report["criteria"]["composition"]["values"]["profile_and_consumer_clashes"][
+                "value"
+            ],
+        )
 
     def test_readiness_fails_over_cpu_budget(self) -> None:
         # 12 CPUs minus the 2-CPU reserve leaves 10; 9.5 running plus 1 is 10.5.
@@ -1747,13 +1772,15 @@ class ReadinessTests(unittest.TestCase):
 
         # Running: 7 + 3 retired + 1 candidate, minus the 3 retired once.
         report = readiness(case(True))
-        self.assertEqual("PASS", report["result"], report)
+        for criterion in ("tier", "resources"):
+            self.assertEqual("PASS", self.result(report, criterion), report)
         values = report["criteria"]["resources"]["values"]
         self.assertEqual(3.0, values["retired_cpus"]["value"])
         self.assertEqual(8.0, values["cpus_needed"]["value"])
         # Stopped: never counted, so nothing is subtracted.
         report = readiness(case(False))
-        self.assertEqual("PASS", report["result"], report)
+        for criterion in ("tier", "resources"):
+            self.assertEqual("PASS", self.result(report, criterion), report)
         values = report["criteria"]["resources"]["values"]
         self.assertEqual(0.0, values["retired_cpus"]["value"])
         self.assertEqual(8.0, values["cpus_needed"]["value"])
@@ -1938,6 +1965,97 @@ class ReadinessTests(unittest.TestCase):
         self.assertEqual({}, host)
         self.assertEqual("NOT_RUN", readiness(readiness_case(host=host))["result"])
 
+    def test_readiness_candidate_without_limits_is_not_run(self) -> None:
+        # Review probe: a candidate with no limits summed as 0 and passed.
+        report = readiness(readiness_case(cpus=0, memory=0))
+        self.assertEqual("NOT_RUN", self.result(report, "resources"))
+        problems = report["criteria"]["resources"]["problems"]
+        self.assertTrue(any("candidate service node" in p for p in problems))
+        self.assertEqual("FAIL", self.result(report, "tier"))
+
+    def test_manifest_refuses_a_zero_or_missing_limit(self) -> None:
+        rendered = {"services": {"node": {"cpus": 0.0, "memory": 0.0}}}
+        for declared in ({"cpus": 0, "memory_mib": 0}, {}):
+            with self.subTest(declared=declared):
+                found = manifest(resources={"services": {"node": declared}})
+                problems = lab.manifest_problems("x", found, rendered, {"LAB-001"})
+                self.assertTrue(any("no cpus or memory" in p for p in problems))
+
+    def test_readiness_tier_refuses_an_unreadable_or_escaping_subtree(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = pathlib.Path(tmp) / "repo"
+            folder = repo / "infra/04-data/x"
+            (folder / "docker-compose.yml").mkdir(parents=True)  # unreadable
+            outside = pathlib.Path(tmp) / "outside"
+            outside.mkdir()
+            (folder / "linked").symlink_to(outside, target_is_directory=True)
+            (repo / "infra/04-data/escape").symlink_to(outside)
+            case = readiness_case()
+            with mock.patch.object(lab, "ROOT", repo):
+                case["manifest"]["target"]["folder"] = "infra/04-data/x/"
+                problems = readiness(case)["criteria"]["tier"]["problems"]
+                self.assertTrue(any("cannot be read" in p for p in problems), problems)
+                self.assertTrue(any("symlinked directory" in p for p in problems))
+                case["manifest"]["target"]["folder"] = "infra/04-data/escape/"
+                problems = readiness(case)["criteria"]["tier"]["problems"]
+                self.assertTrue(any("outside the repository" in p for p in problems))
+
+    def test_manifest_paths_stay_inside_the_repository(self) -> None:
+        self.assertIsNone(lab._repo_path("/etc/passwd"))
+        self.assertIsNone(lab._repo_path("docs/../../etc"))
+        self.assertIsNone(lab._repo_path(None))
+        self.assertEqual(ROOT / "docs", lab._repo_path("docs"))
+        found = manifest(documents={"guide": "/etc/hostname", "runbook": "../x"})
+        problems = lab.manifest_problems(
+            "x", found, {"services": {"node": {"cpus": 0.5, "memory": 512.0 * MIB}}},
+            {"LAB-001"},
+        )  # fmt: skip
+        self.assertTrue(any("guide" in p for p in problems), problems)
+        self.assertTrue(any("runbook" in p for p in problems), problems)
+        case = readiness_case()
+        case["manifest"]["integrations"] = [{"kind": "network", "owner": "/etc"}]
+        self.assertEqual("FAIL", self.result(readiness(case), "composition"))
+        case = readiness_case()
+        case["manifest"]["target"]["folder"] = "infra/04-data/../../etc/"
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_compose_path_must_be_a_root_include(self) -> None:
+        # labs/valkey-cluster/docker-compose.yml declares valkey-node-0, but
+        # root does not include it, so it cannot retire anything.
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["valkey-node-0"])
+        case["manifest"]["replaces"][0]["compose_path"] = (
+            "labs/valkey-cluster/docker-compose.yml"
+        )
+        case["root"]["by_service"]["valkey-node-0"] = {
+            "containers": set(), "ports": set(), "dirs": set()
+        }  # fmt: skip
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+        problems = report["criteria"]["composition"]["problems"]
+        self.assertTrue(any("not included by root" in p for p in problems), problems)
+
+    def test_readiness_bad_input_is_a_lab_error(self) -> None:
+        case = readiness_case()
+        case["manifest"]["resources"]["disk_gib"]["data"] = "lots"
+        with self.assertRaises(lab.LabError) as raised:
+            readiness(case)
+        self.assertEqual(2, raised.exception.code)
+        with (
+            mock.patch.object(lab, "catalog_ids", side_effect=KeyError("id")),
+            self.assertRaises(lab.LabError) as raised,
+        ):
+            readiness(readiness_case())
+        self.assertEqual(2, raised.exception.code)
+        with tempfile.TemporaryDirectory() as tmp:
+            catalog = pathlib.Path(tmp) / lab.SECRET_CATALOG
+            catalog.parent.mkdir(parents=True)
+            catalog.write_text(json.dumps({"entries": [{}]}), "utf-8")
+            with (
+                mock.patch.object(lab, "ROOT", pathlib.Path(tmp)),
+                self.assertRaises(lab.LabError),
+            ):
+                lab.catalog_ids()
+
     def test_readiness_unknown_profile_fails_composition(self) -> None:
         case = readiness_case()
         case["manifest"]["target"]["profile"] = "no-such-profile"
@@ -1963,7 +2081,8 @@ class ReadinessTests(unittest.TestCase):
 
     def test_readiness_checks_rendered_users(self) -> None:
         for user, expected in (
-            ("999:999", "PASS"), ("postgres", "PASS"), ("0", "PASS"),
+            # A valid user leaves linux at NOT_RUN (groups and modes unmeasured).
+            ("999:999", "NOT_RUN"), ("postgres", "NOT_RUN"), ("0", "NOT_RUN"),
             ("70000", "FAIL"), ("1000:", "FAIL"),
         ):  # fmt: skip
             with self.subTest(user=user):
