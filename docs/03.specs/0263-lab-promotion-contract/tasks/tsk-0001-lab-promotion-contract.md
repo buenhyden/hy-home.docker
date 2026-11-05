@@ -90,6 +90,9 @@ The owner decided these on 2026-11-05:
   `dev-pg-exporter`. Both live in `infra/04-data/dev-db/docker-compose.yml`.
   The consumers listed in each manifest come from `git grep`.
 - **B.** The other 11 LABs stay `undecided`.
+- **Ruling on decision A (controller).** `dev-platform-provision` and
+  `dev-perf-provision` are dev-pg's own provisioning jobs. Their work moves
+  to the cluster, so `postgresql-ha` retires them with `dev-pg`.
 - **C.** The reserve is approved as
   `PROMOTION_RESERVE = {"cpus": 2.0, "memory_mib": 4096, "disk_percent": 10}`.
 
@@ -221,14 +224,22 @@ The check makes these calls:
   retire anything. Each retired service must be declared in an existing
   `compose_path` and rendered in root; otherwise composition fails and
   nothing is retired.
-- **Tier.** An existing target folder counts as a replacement when it holds
-  a retired Compose file, or when a retired service's build context or bind
-  source in the root render lies inside it. `dev-valkey` binds files under
-  `dev-db/valkey/`, so that folder qualifies and `dev-db/pg/` does not. The
-  tier criterion also fails on any `manifest_problems` result.
+- **Tier.** An existing target folder counts as a replacement only when the
+  retired services own it exclusively. All three of these must hold:
+  - it holds a verified retired Compose file, or a retired service's build
+    context or bind source in the root render lies inside it;
+  - no kept service's build context or bind source lies inside it;
+  - every service that a Compose file inside the folder declares is
+    retired.
+
+  `dev-valkey` binds files under `dev-db/valkey/`, and nothing else uses
+  that folder, so it qualifies. `dev-db/` does not, because it still
+  declares `dev-pg`. The tier criterion also fails on any
+  `manifest_problems` result.
 - **Composition.** The retired services' own containers and ports are
   removed from the root footprint and the running list before
-  `collisions()`. Networks and data paths stay, because retiring a service
+  `collisions()`. A port or container name stays when a kept service also
+  declares it. Networks and data paths stay, because retiring a service
   frees neither.
 - **Profiles.** The POL-0078 vocabulary comes from
   `operations_catalog._conftest_profile_names`, the reader the profile gates
@@ -290,6 +301,8 @@ The check makes these calls:
 | E22 | 5 | W4 | LAB suites | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout` at `24225a7da` | PASS | 99 tests; 1 expected failure until W5 | required | - |
 | E23 | 5 | W4 | HOME readiness, as instructed | `lab.py --env-file labs/.env readiness valkey-cluster --report <scratchpad>` at `24225a7da` | FAIL | report written; tier, composition, linux and docker PASS; resources FAIL: 70 CPUs and 62976 MiB needed against 10 CPUs and 27924 MiB, and 5 `k3d-hyhome-*` containers without limits; supersedes the E16 NOT_RUN, which a FAIL row cannot resolve | required | - |
 | E24 | 5 | W4 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main`, `check-document-links.py --mode all` after the fix | PASS | violations=0; link mode all PASS | required | - |
+| E25 | 5 | W4 | HOME readiness `postgresql-ha` | `lab.py --env-file labs/.env readiness postgresql-ha --report <scratchpad>` at `dade9cf06`, after retiring its provisioning jobs; `manifest_problems` returns no problem | FAIL | tier, composition, linux and docker PASS; resources FAIL: 72 CPUs and 66048 MiB needed against 10 CPUs and 27924 MiB, and 5 `k3d-hyhome-*` containers without limits | required | - |
+| E26 | 5 | W4 | LAB suites, metadata and links | `test_lab_controller`, `test_lab_isolation`, `test_lab_layout`; `check-document-metadata.py --mode check-changed --base-ref main`; `check-document-links.py --mode all`, after the exclusive-ownership fix `17698152c` | PASS | 102 tests and 1 expected failure; violations=0; link mode all PASS | required | - |
 
 ## Criterion Acceptance
 
