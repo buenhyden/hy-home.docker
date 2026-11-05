@@ -154,7 +154,7 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 
 ### 시나리오 5: Opsflow 첫 HOME 설치 (D12)
 
-상태: **계획됨·미실행**. 실행 기록과 미확정 owner 항목(O1–O7)은
+상태: **계획됨·미실행**. 실행 기록과 미확정 owner 항목(O1–O8)은
 [TSK-0051](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0051-opsflow-home-installation.md)이 소유한다.
 승인된 운영자와 실행 창이 TSK-0051에 기록되기 전에는 어떤 단계도 시작하지 않는다.
 각 단계는 앞 단계 검사가 PASS로 기록된 뒤에만 시작한다. 이미지는 바꾸지 않는다.
@@ -165,55 +165,84 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 `BK=<백업 디렉터리, O6>`.
 
 1. **백업** (O6 필요)
-   - 명령:
-     `docker exec dev-pg pg_dump -U <dev-pg admin> -Fc opsflow_dev > "$BK/opsflow_dev.dump"`
+   - 명령: 인증은 owner가 지정한 `secrets/` 아래 경로의 `PGPASSFILE`로만 한다(O6). 예:
+     `docker exec -e PGPASSFILE=/run/secrets/<O6 파일> dev-pg pg_dump -U <dev-pg admin> -Fc opsflow_dev > "$BK/opsflow_dev.dump"`
      (DB가 없으면 "없음"을 기록하고 건너뛴다),
-     `docker exec mng-pg pg_dump -U <mng-pg admin> -Fc airflow > "$BK/airflow.dump"`,
-     승인된 admin 자격으로 `opsflow-dev` 목록 저장(bucket이 없으면 "없음" 기록),
-     `sha256sum "$BK"/* > "$BK/SHA256SUMS"`.
-   - 기대 결과: 파일 크기가 0이 아니고 checksum이 기록된다.
+     `docker exec -e PGPASSFILE=/run/secrets/<O6 파일> mng-pg pg_dump -U <mng-pg admin> -Fc airflow > "$BK/airflow.dump"`,
+     승인된 admin 자격으로 `opsflow-dev` 목록을 `"$BK/opsflow-dev.listing"`에 저장(bucket이 없으면 "없음" 기록),
+     `(cd "$BK" && find . -maxdepth 1 -type f ! -name SHA256SUMS -exec sha256sum {} + > SHA256SUMS)`.
+   - 기대 결과: 파일 크기가 0이 아니고 `SHA256SUMS`에 자기 자신을 뺀 모든 백업 파일이 기록된다.
    - 중단 조건: dump 실패, 크기 0, 디스크 부족.
    - Rollback: 없음(읽기 전용). 백업은 삭제하지 않는다.
-2. **SQL 001–008** (O1, O2 필요)
-   - 명령: `$W/sql/README.md`의 순서
-     `001` → `002` → `003` → `002` → `004` → `005` → `006` → `007` → `008`를 따른다.
-     각 파일은 `opsflow_migrator`로
-     `psql -h dev-pg -d opsflow_dev -U opsflow_migrator -v ON_ERROR_STOP=1 -v migration_sha256=<해당 파일 SHA-256> -f <파일>`
-     로 실행하고 비밀번호는 `PGPASSFILE=<secrets/ 아래 경로, O1>`로만 준다.
-     검사 파일은 README가 지정한 migration의 SHA-256을 받는다(`008`은 `007`의 값).
-   - 기대 결과: `008_checks.sql`이 오류 없이 ROLLBACK으로 끝난다.
+2. **SQL 001·003·004·005·007 적용과 008 검사** (O1, O2, O8 필요)
+   - HOME에서 실행하는 파일은 migration `001`, `003`, `004`, `005`, `007`과 검사 `008`뿐이다.
+     `002_checks.sql`은 합성 행을 쓰고 rollback되지 않는 identity sequence를 증가시키며
+     owner와 각 client로 SET ROLE하는 격리 감사 superuser를 요구하므로 폐기 가능한 격리 DB 전용이다.
+     `006_checks.sql`도 격리 DB 전용이며 version 4 검사라 version 5의 최종 검사가 아니다.
+     두 검사는 격리 rehearsal에 속하며 이 단계에서 실행하지 않는다.
+   - Migration 명령: 각 파일 header가 요구하는 session_user=`opsflow_migrator`,
+     current_user=`opsflow_owner`, DB=`opsflow_dev`로 실행한다. 예:
+     `PGPASSFILE=<O1 경로> PGOPTIONS='-c role=opsflow_owner' psql -h dev-pg -d opsflow_dev -U opsflow_migrator -v ON_ERROR_STOP=1 -v migration_sha256=<값> -f <파일>`.
+     파일마다 별도 session으로 실행한다.
+
+     | 파일 | 실행 role | `migration_sha256` 값 |
+     | --- | --- | --- |
+     | `001_opsflow.sql` | migrator → owner | `001` 자신의 SHA-256 |
+     | `003_business_date.sql` | migrator → owner | `003` 자신의 SHA-256 |
+     | `004_notification_quarantine.sql` | migrator → owner | `004` 자신의 SHA-256 |
+     | `005_data_version.sql` | migrator → owner | `005` 자신의 SHA-256 |
+     | `007_notification_recovery.sql` | migrator → owner | `007` 자신의 SHA-256 |
+     | `008_checks.sql` | 기존 감사 관리자(O8) | `007`의 SHA-256 |
+     | (격리 전용) `002_checks.sql` | 격리 감사 superuser | 마지막 적용 migration: `001` 뒤 `001`, `003` 뒤 `003` |
+     | (격리 전용) `006_checks.sql` | 격리 감사 관리자 | `005`의 SHA-256 |
+
+   - 검사 명령: `psql -h dev-pg -d opsflow_dev -U <O8 감사 관리자> -v ON_ERROR_STOP=1 -v migration_sha256=<007 SHA-256> -f 008_checks.sql`.
+     `008` header는 "approved isolated DB"를 요구하므로 HOME 실행은 O8에서 owner가 따로 승인해야 한다.
+     `005`·`007` header의 "no HOME apply is authorized"도 O8 승인으로만 넘어선다.
+   - 기대 결과: 다섯 migration이 각각 commit되고 `008`이 읽기 전용 transaction을 오류 없이 ROLLBACK으로 끝낸다.
    - 중단 조건: 어떤 파일이든 오류, 기존 receipt/fingerprint 불일치, 역할·ACL 사전 검사 거부.
    - Rollback: commit 전 실패는 transaction이 되돌린다. Commit 뒤에는 schema를 임의로 지우지 않고
      DAG를 pause한 채 1단계 백업을 별도 빈 대상에서 검증한다. 이전부터 있던 객체는 drop하지 않는다.
 3. **Bucket·정책·canary** (O3 필요)
-   - 명령: 승인된 admin 자격으로 `opsflow-dev` bucket을 만들고 worker identity(manifest-input 읽기,
-     manifest-validated·manifest-quarantine 읽기/쓰기)와 `WorkerCannotDelete` bucket policy를 적용한다.
-     정책 모양은 `tests/validation/_opsflow_airflow_native_data.py`의 `worker_bucket_policy`를 따른다.
+   - 명령: 승인된 admin 자격으로 `opsflow-dev` bucket을 만들고 공유 `seaweedfs-s3` 설정에 worker identity
+     하나(manifest-input 읽기, manifest-validated·manifest-quarantine 읽기/쓰기)를 추가한다.
+     `WorkerCannotDelete` bucket policy는 `tests/validation/_opsflow_airflow_native_data.py`의
+     `worker_bucket_policy` 모양을 따르되, 시험용 principal
+     `arn:aws:iam::000000000000:user/synthetic-worker`를 O3의 실제 worker identity로 바꾼다.
+     설정 reload는 service 동작이므로 별도 승인 뒤에만 한다.
      `manifest-input/permission-canary`에 `synthetic` body를 admin으로 올린 뒤 worker 자격으로 canary를 실행한다.
    - 기대 결과: allowed_read·allowed_write 200, foreign_bucket·foreign_prefix·input_write·foreign_write·delete·list 403.
    - 중단 조건: 기대와 다른 상태 코드 하나라도.
-   - Rollback: 이번에 만든 canary 객체와 worker identity·policy만 제거한다. 이전부터 있던 bucket은 지우지 않는다.
+   - Rollback: 이번에 만든 canary 객체와 bucket policy, 공유 설정에서 추가한 worker identity 항목 하나만 제거한다.
+     다른 identity는 건드리지 않으며 reload는 다시 승인이 필요하다. 이전부터 있던 bucket은 지우지 않는다.
 4. **코드 설치** (O1, O4, O5 필요)
-   - 명령: 설치 방식은 O4 결정을 따른다. 복사 방식이면
-     `git -C <저장소> archive "$REV" $W/dags/source_manifest_ingest.py $W/workflow_lib`를
-     `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에 풀고(`/opt/airflow/dags`로 bind),
-     `sha256sum`을 commit의 blob과 비교한다. `airflow-worker`의 `/run/opsflow`(`pg.json`, `s3.json`)와
+   - 명령: 설치 방식은 O4 결정을 따른다. 복사 방식이면 subtree로 풀어 저장소 상대 경로를 없앤다:
+     `git -C <저장소> archive --format=tar "$REV:$W" dags/source_manifest_ingest.py workflow_lib | tar -x -C <임시 디렉터리>`.
+     `dags/README.md`는 넣지 않는다. 임시 디렉터리의 `dags/source_manifest_ingest.py`와 `workflow_lib/`를
+     `${DEFAULT_WORKFLOW_DIR}/airflow/dags/`(`/opt/airflow/dags`로 bind) 바로 아래에 두고,
+     설치한 모든 파일 경로를 `"$BK/installed-files.txt"`에 기록한다. 대상에 같은 이름이 이미 있으면 중단한다.
+     각 파일 `sha256sum`을 commit의 blob과 비교한다. `airflow-worker`의 `/run/opsflow`(`pg.json`, `s3.json`)와
      `dev_data_net`·`object_net`은 O4 결정 없이는 붙이지 않는다.
      확인: `docker exec airflow-scheduler airflow dags list-import-errors`,
      `docker exec airflow-scheduler airflow dags details source_manifest_ingest`.
    - 기대 결과: import 오류가 없고 DAG가 paused다.
-   - 중단 조건: hash 불일치, import 오류, DAG unpaused.
-   - Rollback: 설치한 파일만 제거한다. 디렉터리의 기존 파일은 건드리지 않는다.
+   - 중단 조건: hash 불일치, 이름 충돌, import 오류, DAG unpaused.
+   - Rollback: `"$BK/installed-files.txt"`에 적힌 파일만 제거한다. 디렉터리의 기존 파일은 건드리지 않는다.
 5. **Pool·합성 실행** (O7 필요)
+   - DAG task는 `/run/opsflow/pg.json`과 `s3.json`을 읽고 DEV DB와 object network가 필요하다.
+     이것은 `airflow-worker`만 받으므로 scheduler에서 `airflow dags test`로 실행하지 않는다.
    - 명령: `docker exec airflow-scheduler airflow pools set manifest_ingest 1 "Opsflow manifest ingest"`.
-     DAG는 paused로 둔 채 합성 입력을 `manifest-input/<source>/<business_date>.json`에 올리고
-     `airflow dags test source_manifest_ingest` 또는 승인된 단일 trigger로 한 업무일만 실행한다.
+     합성 입력을 `manifest-input/<source>/<business_date>.json`에 올린다. DAG는 `schedule=None`이며
+     업무일은 DAG param `business_date`(기본값 `2026-10-10`)와 `source`(기본값 `hy-home.docker`)로 받는다.
+     DAG는 paused로 둔 채 Celery가 worker에서 실행하는 단일 run을 만든다:
+     `docker exec airflow-scheduler airflow dags trigger source_manifest_ingest --conf '{"source":"<source>","business_date":"<YYYY-MM-DD>"}'`.
+     Paused DAG의 run은 queued로 남으므로 이 run 하나만 진행시키는 방법(일시 unpause 후 즉시 pause 등)은 O7에서 owner가 정한다.
      이어서 잘못된 입력 하나로 같은 절차를 반복한다.
    - 기대 결과: `opsflow_dev`에 raw·validated·published·outbox 행이 생기고
      `manifest-validated/<source>/...json` 객체가 남는다. 잘못된 입력은
      `manifest-quarantine/<source>/<business_date>/<digest>.json`에 `ContentType: application/json`으로 격리되고
      게시 행이 생기지 않는다.
-   - 중단 조건: 행·객체 누락, quarantine ContentType 불일치, 잘못된 입력의 게시.
+   - 중단 조건: 행·객체 누락, quarantine ContentType 불일치, 잘못된 입력의 게시, 계획 밖 run.
    - Rollback: pool과 이번 합성 객체만 제거한다. 게시 장부·outbox 행은 지우지 않고 DAG를 paused로 둔다.
 6. **Unpause**
    - 명령: `docker exec airflow-scheduler airflow dags unpause source_manifest_ingest`.

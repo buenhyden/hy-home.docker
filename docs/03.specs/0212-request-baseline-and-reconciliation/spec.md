@@ -747,7 +747,7 @@ hold, authorization and recovery requirements have been established.
      external Windows handoff. Live routes, credentials, service restart, remote
      CI and external repository changes remain outside this local Task.
 103. D12 installs the Opsflow manifest workload in HOME in six ordered steps
-     (backup, SQL 001-008, bucket and canaries, code install, paused synthetic
+     (backup, migrations with the 008 check, bucket and canaries, code install, paused synthetic
      run, unpause), each with its own recorded check, in an owner-approved
      window. Rollback removes installed files, keeps backups and drops nothing
      that existed before.

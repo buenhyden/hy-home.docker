@@ -50,10 +50,10 @@ this Task does not copy them.
 | Step | Scope | Check | Open owner items | Status |
 | --- | --- | --- | --- | --- |
 | 1 | Back up `opsflow_dev` on `dev-pg`, the Airflow metadata DB `airflow` on `mng-pg` and the `opsflow-dev` bucket listing | Backup files exist, have nonzero size and recorded SHA-256; listing saved | O6 | not run |
-| 2 | Apply `001`-`008` from `infra/07-workflow/airflow/workloads/manifest-pipeline/sql/` to `opsflow_dev` as `opsflow_migrator`, in the order the SQL README sets | `008_checks.sql` with the `007` SHA-256 ends in ROLLBACK without error | O1, O2 | not run |
+| 2 | Apply migrations `001`, `003`, `004`, `005`, `007` from `infra/07-workflow/airflow/workloads/manifest-pipeline/sql/` to `opsflow_dev` with session_user `opsflow_migrator` and current_user `opsflow_owner`, each with its own SHA-256; `002` and `006` are isolated-only and do not run in HOME | `008_checks.sql`, run as the audit administrator with the `007` SHA-256, ends its read-only transaction in ROLLBACK without error | O1, O2, O8 | not run |
 | 3 | Create bucket `opsflow-dev`, apply the worker identity and the `WorkerCannotDelete` bucket policy | Eight permission canaries return the expected statuses | O3 | not run |
-| 4 | Install `dags/source_manifest_ingest.py` and `workflow_lib/` at the reviewed commit, image unchanged | File SHA-256 match the commit; `airflow dags list` shows the DAG paused with no import error | O1, O4, O5 | not run |
-| 5 | Create pool `manifest_ingest` (1 slot), keep the DAG paused, run one synthetic business date and one invalid input | Raw, validated, published and outbox rows exist; the invalid input is quarantined with `application/json` | O7 | not run |
+| 4 | Install `dags/source_manifest_ingest.py` and `workflow_lib/` at the reviewed commit, image unchanged, recording every installed path in the backup directory | File SHA-256 match the commit; `airflow dags list` shows the DAG paused with no import error | O1, O4, O5 | not run |
+| 5 | Create pool `manifest_ingest` (1 slot), keep the DAG paused, run one synthetic business date and one invalid input on `airflow-worker` through Celery | Raw, validated, published and outbox rows exist; the invalid input is quarantined with `application/json` | O7 | not run |
 | 6 | Unpause `source_manifest_ingest` | DAG reports unpaused; no unplanned run started | - | not run |
 
 Rollback removes the installed files, keeps every backup and drops nothing that
@@ -72,14 +72,15 @@ owner records an answer here, and the step that needs it does not start before.
 | O4 | The workload README installs the code through `compose.workflow.override.yml` bind mounts (`OPSFLOW_CODE_DIR`); the handoff copies files into `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. Which one? Either way `airflow-worker` needs `/run/opsflow` (`pg.json`, `s3.json`) and `dev_data_net`/`object_net`, which the base Compose file does not give it. | Step 4 |
 | O5 | Does the running Airflow image carry the workload's Python dependencies, or is a reviewed `OPSFLOW_AIRFLOW_IMAGE` required? | Step 4 |
 | O6 | What are the admin user names on `dev-pg` and `mng-pg`, and the backup target directory? | Step 1 |
-| O7 | Which synthetic input key and body are used? The repository fixture is `fixtures/2026-10-10.json` for source `hy-home.docker`. | Step 5 |
+| O7 | Which synthetic input key and body are used (the repository fixture is `fixtures/2026-10-10.json` for source `hy-home.docker`), and how does the one triggered run proceed while the DAG stays paused? | Step 5 |
+| O8 | Which existing audit administrator login runs `008_checks.sql`? Its header and the `005`/`007` headers limit them to an approved isolated DB; does the owner approve running them on HOME `opsflow_dev`? | Step 2 |
 
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Step 1 backups | 103 | W108 | Backup existence, size and SHA-256 | HOME `dev-pg`, `mng-pg`, `opsflow-dev` | NOT_RUN | Not started; waits for an approved operator, window and O6. | required | - |
-| Step 2 migrations | 103 | W108 | `008_checks.sql` | `opsflow_dev` after `001`-`007` | NOT_RUN | Not started; waits for O1 and O2. | required | - |
+| Step 2 migrations | 103 | W108 | `008_checks.sql` | `opsflow_dev` after `001`-`007` | NOT_RUN | Not started; waits for O1, O2 and O8. | required | - |
 | Step 3 bucket and canaries | 103 | W108 | Permission canaries | `opsflow-dev` bucket and worker identity | NOT_RUN | Not started; waits for O3. | required | - |
 | Step 4 code install | 103 | W108 | File hashes and paused DAG import | DAG directory and `airflow-worker` mounts | NOT_RUN | Not started; waits for O1, O4 and O5. | required | - |
 | Step 5 synthetic run | 103 | W108 | Rows and quarantine readback | Pool `manifest_ingest`, one synthetic and one invalid input | NOT_RUN | Not started; waits for O7. | required | - |
