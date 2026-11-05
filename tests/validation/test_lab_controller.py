@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 import importlib.util
 import json
+import os
 import pathlib
 import subprocess
 import tempfile
@@ -340,9 +341,37 @@ class CollisionAndBudgetTests(unittest.TestCase):
             spec["volumes"] = [{"type": "bind", "source": path, "target": "/x"}]
             return lab.footprint(model("hy-home-lab-x", {"x": spec}))
 
+        def writable_repo():
+            spec = service("w")
+            spec["volumes"] = [{"type": "bind", "source": str(ROOT), "target": "/r"}]
+            return lab.root_footprint(
+                model("hy-home-infra", {"w": spec}, data_root="/data/home")
+            )
+
         copy = str(ROOT / "secrets/labs/x/password.txt")
+        other = str(ROOT / "secrets/labs/y/password.txt")
+        env = {"LAB_DATA_DIR": "/lab-data"}
         self.assertEqual([], lab.collisions({"x": lab_secret(copy)}, home(), []))
+        self.assertEqual(
+            [], lab.source_allowlist_problems({"x": lab_secret(copy)}, env, home())
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            link = os.path.join(directory, "password.txt")
+            os.symlink(other, link)
+            symlinked = lab_secret(link)
+        escaping = lab_secret(str(ROOT / "secrets/labs/x/../y/password.txt"))
+        for name, selected in (
+            ("another LAB's copy", lab_secret(other)),
+            ("symlink to another LAB's copy", symlinked),
+            ("..-escaping copy", escaping),
+        ):
+            with self.subTest(case=name):
+                self.assertTrue(lab.collisions({"x": selected}, home(), []))
+                self.assertTrue(
+                    lab.source_allowlist_problems({"x": selected}, env, home())
+                )
         for name, selected, root in (
+            ("writable root ancestor bind", lab_secret(copy), writable_repo()),
             ("writable HOME bind", lab_secret(copy), home(read_only=False)),
             (
                 "HOME secret",
@@ -447,7 +476,7 @@ class CollisionAndBudgetTests(unittest.TestCase):
         with mock.patch.object(lab, "_tracked_only", lambda p: p == tracked):
             for source, read_only in (
                 ("/lab-data/x/state", False),
-                (str(ROOT / "secrets/labs/dbt/password.txt"), True),
+                (str(ROOT / "secrets/labs/x/password.txt"), True),
                 ("/srv/ca/rootCA.pem", True),
                 (tracked, True),
                 ("/srv/locust-results/run-1", False),
@@ -466,7 +495,10 @@ class CollisionAndBudgetTests(unittest.TestCase):
                 (str(ROOT / ".env.oidc.tmp"), True),
                 (str(pathlib.Path.home() / ".ssh"), True),
                 ("/run/docker.sock", True),
-                (str(ROOT / "secrets/labs/dbt/password.txt"), False),
+                (str(ROOT / "secrets/labs/x/password.txt"), False),
+                # Another LAB's copy, and the whole LAB secrets tree.
+                (str(ROOT / "secrets/labs/dbt/password.txt"), True),
+                (str(ROOT / "secrets/labs"), True),
                 ("/srv/ca/rootCA.pem", False),
                 (tracked, False),
             ):
@@ -631,10 +663,23 @@ class CollisionAndBudgetTests(unittest.TestCase):
         self.assertEqual(
             [],
             lab.source_allowlist_problems(
-                secret(str(ROOT / "secrets/labs/dbt/p.txt")),
+                secret(str(ROOT / "secrets/labs/x/p.txt")),
                 {**env, "LAB_SECRET_DIR": "../../secrets/labs"},
                 ROOTFP,
             ),
+        )
+        # Outside the repo the per-LAB rule is <LAB_SECRET_DIR>/<name>/ too.
+        outside = {**env, "LAB_SECRET_DIR": "/srv/lab-secrets"}
+        self.assertEqual(
+            [],
+            lab.source_allowlist_problems(
+                secret("/srv/lab-secrets/x/p.txt"), outside, ROOTFP
+            ),
+        )
+        self.assertTrue(
+            lab.source_allowlist_problems(
+                secret("/srv/lab-secrets/y/p.txt"), outside, ROOTFP
+            )
         )
 
     def test_symlinked_secrets_tree_keeps_the_secrets_labs_rule(self) -> None:

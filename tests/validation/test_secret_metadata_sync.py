@@ -699,8 +699,9 @@ def secret_contract(
                 )
                 if path.startswith("../") or path == "..":
                     raise AssertionError(f"secret escaped repository: {name}")
+                # Each LAB reads only its own copies, secrets/labs/<lab>/.
                 if relative.startswith("labs/") and not path.startswith(
-                    "secrets/labs/"
+                    "secrets/labs/" + relative.split("/")[1] + "/"
                 ):
                     raise AssertionError(f"LAB secret escaped isolated path: {name}")
                 if not relative.startswith("labs/") and path.startswith(
@@ -810,6 +811,10 @@ class ComposeSchemaTagTests(unittest.TestCase):
                 (
                     "labs/supabase/docker-compose.yml",
                     shared.replace("../../secrets/", "../../../secrets/"),
+                ),
+                (
+                    "labs/supabase/docker-compose.yml",
+                    lab.replace("/supabase/", "/stalwart/"),
                 ),
             ):
                 with self.subTest(route=route, text=text):

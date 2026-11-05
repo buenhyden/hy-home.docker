@@ -371,7 +371,13 @@ def _port_clash(a: str, b: str) -> bool:
     return port_a == port_b and bool(host_a == host_b or {host_a, host_b} & wildcard)
 
 
-def _path_conflict(path: str, owner: dict, other_path: str, other: dict) -> bool:
+def _path_conflict(
+    path: str,
+    owner: dict,
+    other_path: str,
+    other: dict,
+    owner_name: str | None = None,
+) -> bool:
     if not _nested(path, other_path):
         return False
     # A read-only bind of the host root (cadvisor, node-exporter) contains
@@ -400,13 +406,15 @@ def _path_conflict(path: str, owner: dict, other_path: str, other: dict) -> bool
     ):
         return False
     # restic backs up the repo's secrets/ through a read-only bind; it owns
-    # none of a LAB's read-only copies under secrets/labs/<name>/. A writable
-    # bind of secrets/, a HOME secret or the whole LAB tree still clashes.
+    # none of the owner LAB's read-only copies under secrets/labs/<owner>/.
+    # A writable bind of secrets/, a HOME secret, another LAB's copy, the
+    # whole LAB tree or a writable LAB bind still clashes.
     if (
-        other_path == SECRETS_TREE
+        owner_name
+        and other_path == SECRETS_TREE
         and other_path in other["inputs"]
         and other_path not in other.get("bound_state", other["state"])
-        and path.startswith(LAB_SECRETS_TREE + os.sep)
+        and path.startswith(os.path.join(LAB_SECRETS_TREE, owner_name) + os.sep)
         and path in owner["inputs"]
         and path not in owner["state"]
     ):
@@ -447,7 +455,9 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
                     problems.append(f"{name}: host port {port} also in {other_name}")
             for path in sorted(lab["paths"] - shared_socket):
                 conflicts = [
-                    p for p in other["paths"] if _path_conflict(path, lab, p, other)
+                    p
+                    for p in other["paths"]
+                    if _path_conflict(path, lab, p, other, owner_name=name)
                 ]
                 if conflicts:
                     if (
@@ -654,13 +664,15 @@ def source_allowlist_problems(
 
     operator, results = operator_roots(False), operator_roots(True)
 
-    def allowed(real: str, read_only: bool) -> bool:
+    def allowed(real: str, read_only: bool, name: str) -> bool:
+        # Each LAB reads only its own copies, <LAB_SECRET_DIR>/<name>/.
+        own = os.path.join(secret, name) if secret else None
         if _sensitive_input(real, None):
-            # Secrets and sockets only from the LAB secret copies.
-            return bool(read_only and secret and _within(real, secret))
+            # Secrets and sockets only from this LAB's secret copies.
+            return bool(read_only and own and _within(real, own))
         if data and _within(real, data):
             return True
-        if read_only and secret and _within(real, secret):
+        if read_only and own and _within(real, own):
             return True
         if read_only and any(_within(real, item) for item in operator | results):
             return True
@@ -678,12 +690,12 @@ def source_allowlist_problems(
         for source in lab["sources"]:
             if _socket_exception(name, source):
                 continue
-            if not allowed(source["real"], source["read_only"]):
+            if not allowed(source["real"], source["read_only"], name):
                 problems.append(
                     f"{name}: source {source['real']} is outside the LAB allowlist"
                 )
         for context in lab.get("build_inputs", []):
-            if not allowed(context, True):
+            if not allowed(context, True, name):
                 problems.append(
                     f"{name}: build context {context} is outside the LAB allowlist"
                 )
