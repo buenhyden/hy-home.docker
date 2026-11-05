@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -229,12 +229,13 @@ DAGs; the next member peak is 0.077 CPU.
 | E19 | 8 | W7 | full unit suite | the E15 command at `c79e51526` (code identical at `b2c1d3658`) | PASS | 3346 tests OK, skipped=108 | required | - |
 | E20 | 8 | W7 | HOME readiness | `lab.py --env-file labs/.env readiness valkey-cluster`, read-only, after the dag-processor reservation | FAIL | resources FAIL: running 11.1 CPUs / 21888 MiB, needed 19.9 CPUs / 31360 MiB against 10 / 27924; no unrendered project | required | - |
 | E21 | 8 | W7 | HOME readiness | the E20 command for `postgresql-ha` | FAIL | resources FAIL: needed 23.45 CPUs / 36256 MiB against 10 / 27924 | required | - |
+| E22 | 8 | W7 | HOME readiness | the E20 command after the valkey-cluster lease-run reservations | FAIL | tier, composition, linux, docker PASS; resources FAIL: candidate 1.15 CPUs / 480 MiB, needed 14.05 CPUs / 28256 MiB against 10 / 27924 | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21 | - | @buenhyden |
+| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22 | - | @buenhyden |
 
 ## Review and Completion
 
@@ -271,6 +272,16 @@ Owner decisions on the review findings and the resource `FAIL` (2026-11-06):
   `include_inputs`), and the m0021 inventory is re-projected (12 rows).
 - The candidates still fail, so the next step is a LAB lease measurement in
   an owner window; until then each candidate reserves its limit.
+- **valkey-cluster lease run (2026-11-06).** The owner ran the LAB under a
+  30-minute lease with a temporarily raised LAB budget and took five
+  `docker stats` samples, all idle (no synthetic load). Node peak 0.044 CPU
+  and 7.7 MiB, applied to all six symmetric nodes, so each reserves 0.10 CPU
+  and 32M; the exporter peaked at 0.00 CPU and 17.3 MiB and reserves 0.05 CPU
+  and 32M. `valkey-cluster-init` is a one-shot job that did not run in the
+  samples, so it keeps its limit. The candidate reservation falls from 7.0
+  CPUs / 3584 MiB to 1.15 CPUs / 480 MiB (E22). Readiness still fails: the
+  running HOME sum (11.1 CPUs) alone exceeds the 10-CPU budget. Idle samples
+  understate a loaded cluster; a load run should re-measure before promotion.
 
 ## Related Documents
 
