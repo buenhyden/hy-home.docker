@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Data Path Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0043"
 parent_ids:
@@ -453,9 +453,9 @@ schema-history keys. Owned residue was zero.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 66 | pending | Issued P04 baseline and documentation leases, Current public inventory and comparison | REUSE_ACCEPTED for bounded existing ownership with current affected source regressions; operating roles and restore remain independently unaccepted. | SPEC-0212 TSK-0043 |
+| 66 | accepted | Issued P04 baseline and documentation leases, Current public inventory and comparison, Local document metadata and links, Operations catalog projection correction, Final independent document review, Registry-backed document integration, Graphify AST freshness | REUSE_ACCEPTED for bounded existing ownership with current affected source regressions; operating roles and restore remain independently unaccepted. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0043 |
 | 67 | pending | P04 local implementation and review, D04 narrow S3 permission rerun, Optimized full Worker and restore rehearsal | SOURCE_READY: S3 matrix, input quarantine, Celery publication retry/replay and independent recovery pass in the isolated native rehearsal within the unchanged deadline; HOME installation is NOT_RUN and handed to D12. | SPEC-0212 TSK-0043 |
-| 68 | pending | CDC current-consumer reconciliation, T03 HOME stream observation, T03 isolated CDC stream rehearsal rerun | SOURCE_READY; HOME stack measured idle with no consumer; the isolated CDC stream rehearsal passes; the idle stack is stopped and leftovers removed with owner approval. | SPEC-0212 TSK-0043 |
+| 68 | accepted | CDC current-consumer reconciliation, T03 HOME stream observation, T03 isolated CDC stream rehearsal rerun, T03 owner-approved stop and cleanup | SOURCE_READY; HOME stack measured idle with no consumer; the isolated CDC stream rehearsal passes; the idle stack is stopped and leftovers removed with owner approval. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0043 |
 | 69 | pending | Quality publication regressions | SOURCE_READY: current unit/adapter quality blocking is evidenced; actual Worker publication remains residual. | SPEC-0212 TSK-0043 |
 | 70 | pending | Experiment input decision | BLOCKED on actual inputs by user choice; no experiment is invented. | SPEC-0212 TSK-0043 |
 | 71 | pending | Iceberg current-workload reconciliation | REUSE_ACCEPTED only for the evidenced optional platform; workload adoption is deferred. | SPEC-0212 TSK-0043 |
