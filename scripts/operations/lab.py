@@ -994,8 +994,14 @@ def readiness(
         else:
             retired |= set(services)
             covering.append(path)
+    by_service = root.get("by_service", {})
+    kept_identity = {
+        key: set().union(*(v[key] for s, v in by_service.items() if s not in retired))
+        for key in ("containers", "ports", "dirs")
+    }
+    # A port or container name that a kept service also declares stays.
     retired_identity = {
-        key: set().union(*(root["by_service"][s][key] for s in retired))
+        key: set().union(*(by_service[s][key] for s in retired)) - kept_identity[key]
         for key in ("containers", "ports", "dirs")
     }
     criteria = {}
@@ -1023,16 +1029,32 @@ def readiness(
         exists = (ROOT / folder).exists()
         values["folder_exists"] = {"value": exists, "source": folder}
 
-        # An existing folder is a declared replacement when it holds a
-        # verified retired Compose file, or when a retired service's build
-        # context or bind source lies inside it (dev-db/valkey/ for
-        # dev-valkey): derived from the root render, not from the manifest.
+        # An existing folder is a declared replacement only when retired
+        # services own it exclusively: it holds a verified retired Compose
+        # file or a retired service's build context or bind source, and no
+        # kept service's build context or bind source lies inside it. Derived
+        # from the root render, not from the manifest.
         real = os.path.realpath(ROOT / folder)
-        covered = any(path.startswith(folder) for path in covering) or any(
+        claimed = any(path.startswith(folder) for path in covering) or any(
             _within(item, real) for item in retired_identity["dirs"]
         )
-        if exists and not covered:
-            failed.append(f"target folder {folder} exists and is not a replacement")
+        shared = {
+            s
+            for s, v in by_service.items()
+            if s not in retired and any(_within(item, real) for item in v["dirs"])
+        }
+        # The filesystem too: every service a Compose file inside the folder
+        # declares must be retired (dev-db/ still declares dev-pg).
+        if exists and pathlib.Path(real).is_dir():
+            for found in pathlib.Path(real).rglob("*compose*.y*ml"):
+                path = os.path.relpath(found, os.path.realpath(ROOT))
+                shared |= (_compose_services(path) or set()) - retired
+        shared = sorted(shared)
+        if exists and (not claimed or shared):
+            failed.append(
+                f"target folder {folder} exists and is not a replacement"
+                + (f"; kept services use it: {', '.join(shared)}" if shared else "")
+            )
     unmeasured = []
     try:
         failed += manifest_problems(name, manifest, lab, catalog_ids())

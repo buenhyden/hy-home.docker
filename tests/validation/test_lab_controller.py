@@ -1823,6 +1823,78 @@ class ReadinessTests(unittest.TestCase):
         case = replacement_case("infra/04-data/dev-db/valkey/", ["dev-valkey"], "add")
         self.assertEqual("FAIL", self.result(readiness(case), "tier"))
 
+    def test_readiness_tier_needs_exclusive_ownership(self) -> None:
+        # Review probes A3 and A5: a retired service binding a file in a kept
+        # folder, or a parent folder that still holds dev-pg.
+        case = replacement_case("infra/04-data/qdrant/", ["dev-valkey"])
+        case["root"] = lab.footprint(
+            model(
+                "hy-home",
+                {
+                    "dev-valkey": service(
+                        "dev-valkey",
+                        binds=[str(ROOT / "infra/04-data/qdrant/README.md")],
+                    ),
+                    "qdrant": service(
+                        "qdrant", binds=[str(ROOT / "infra/04-data/qdrant/config")]
+                    ),
+                },
+            )
+        )
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+        # Probe shape: no qdrant in root; qdrant/docker-compose.yml still
+        # declares the kept qdrant service.
+        del case["root"]["by_service"]["qdrant"]
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+        case = replacement_case("infra/04-data/dev-db/", ["dev-valkey"])
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "tier"))
+        self.assertTrue(
+            any("dev-pg" in p for p in report["criteria"]["tier"]["problems"])
+        )
+
+    def test_readiness_shared_provision_file_claims_no_folder(self) -> None:
+        # kafka binds mng-pg's provisioning script; retiring kafka-1 cannot
+        # claim mng-db/pg/, which mng-pg keeps.
+        provision = ROOT / "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
+        case = readiness_case()
+        case["manifest"].update(
+            kind="replace-same",
+            target={"folder": "infra/04-data/mng-db/pg/", "profile": "dev-data"},
+            replaces=[
+                {
+                    "compose_path": "infra/05-messaging/kafka/docker-compose.yml",
+                    "services": ["kafka-1"],
+                }
+            ],
+        )
+        case["root"] = lab.footprint(
+            model(
+                "hy-home",
+                {
+                    "kafka-1": read_only_service("kafka-1", str(provision)),
+                    "mng-pg": service(
+                        "mng-pg", binds=[str(ROOT / "infra/04-data/mng-db/pg/config")]
+                    ),
+                },
+            )
+        )
+        self.assertEqual("FAIL", self.result(readiness(case), "tier"))
+
+    def test_readiness_keeps_a_port_a_kept_service_declares(self) -> None:
+        # Review probe B: a stopped kept service publishes the retired port.
+        case = replacement_case("infra/04-data/dev-db/valkey/", ["dev-valkey"])
+        root = dev_db_root()
+        extra = lab.footprint(
+            model("hy-home", {"other": service("other-1", ports=[("0.0.0.0", 6379)])})
+        )
+        root["by_service"]["other"] = extra["by_service"]["other"]
+        root["containers"] |= extra["containers"]
+        case["root"] = root
+        case["lab"]["ports"] = {"0.0.0.0:6379"}
+        report = readiness(case)
+        self.assertEqual("FAIL", self.result(report, "composition"))
+
     def test_readiness_add_cannot_claim_an_existing_folder(self) -> None:
         # Reviewer repro: add with a made-up compose_path claimed qdrant/.
         case = readiness_case()
