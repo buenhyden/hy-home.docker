@@ -14,6 +14,7 @@ occurred_at: "{{OCCURRED_AT}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+<!-- Author prompt: When status becomes `resolved`, add `resolved_at` (ISO 8601 with UTC offset) after `occurred_at`; the status requires it. -->
 <!-- Author prompt: Write body prose in Korean; keep headings, paths, identifiers, and commands unchanged. -->
 
 # {{TITLE}}
