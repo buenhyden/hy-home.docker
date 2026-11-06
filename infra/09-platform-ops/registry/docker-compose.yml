@@ -3,7 +3,7 @@ x-tier-label: &tier-label
 
 
 volumes:
-  registry-data-volume:
+  registry-data:
     driver: local
     driver_opts:
       o: bind
@@ -34,7 +34,7 @@ services:
       REGISTRY_HTTP_DEBUG_PROMETHEUS_ENABLED: 'true'
       REGISTRY_HTTP_DEBUG_PROMETHEUS_PATH: /metrics
     volumes:
-      - registry-data-volume:/var/lib/registry:rw
+      - registry-data:/var/lib/registry:rw
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:5000/v2/ || exit 1']
       interval: 30s

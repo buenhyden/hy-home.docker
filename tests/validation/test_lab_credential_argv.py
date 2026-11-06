@@ -214,7 +214,7 @@ class LabCredentialArgvTest(unittest.TestCase):
             ROOT / "labs/valkey-cluster/scripts/valkey-cluster-init.sh"
         ).read_text()
 
-        self.assertIn("cassandra-node1-volume:/var/lib/cassandra:rw", cassandra)
+        self.assertIn("cassandra-node1-data:/var/lib/cassandra:rw", cassandra)
         self.assertNotIn("/bitnami/cassandra", cassandra)
         self.assertNotIn("CASSANDRA_PASSWORD_FILE", cassandra)
         self.assertNotIn("bitnami/cassandra-exporter", cassandra)

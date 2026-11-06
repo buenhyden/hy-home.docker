@@ -3,7 +3,7 @@ x-tier-label: &tier-label
   hy-home.tier: lab
 
 volumes:
-  cassandra-node1-volume:
+  cassandra-node1-data:
     driver: local
     driver_opts:
       o: bind
@@ -45,7 +45,7 @@ services:
       - MAX_HEAP_SIZE=1G
       - HEAP_NEWSIZE=200M
     volumes:
-      - cassandra-node1-volume:/var/lib/cassandra:rw
+      - cassandra-node1-data:/var/lib/cassandra:rw
     healthcheck:
       test: [ 'CMD-SHELL', "nodetool status | grep -E '^UN' || exit 1" ]
       interval: 30s

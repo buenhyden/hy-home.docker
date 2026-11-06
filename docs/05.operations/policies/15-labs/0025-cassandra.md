@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Operations Policy"
-version: "2.1.2"
+version: "2.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0025"
 parent_ids:
@@ -20,7 +20,7 @@ created: "2026-05-17"
 
 ## Scope
 
-`labs/cassandra/docker-compose.yml`의 `cassandra-node1`, `cassandra-node1-volume`, `lab_cassandra_core_net`와 연결 문서에 적용한다. exporter와 Cassandra password secret은 현재 구현에 없다.
+`labs/cassandra/docker-compose.yml`의 `cassandra-node1`, `cassandra-node1-data`, `lab_cassandra_core_net`와 연결 문서에 적용한다. exporter와 Cassandra password secret은 현재 구현에 없다.
 
 ## Rules
 
