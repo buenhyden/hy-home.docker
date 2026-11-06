@@ -123,7 +123,8 @@ class SMTPPublicSourceTests(unittest.TestCase):
             {str(lab.relative_to(self.root)), str(common.relative_to(self.root))},
         )
 
-    def test_repository_lab_reads_its_own_smtp_copy(self):
+    def test_repository_has_no_supabase_lab_source(self):
+        # The supabase LAB was removed on 2026-11-06 (SPEC-0263 W8).
         root = Path(__file__).resolve().parents[3]
         hashes, present = smtp_public_source.validate_lab_sources(
             root,
@@ -134,8 +135,7 @@ class SMTPPublicSourceTests(unittest.TestCase):
             grants=grants,
             error=ContractError,
         )
-        self.assertTrue(present)
-        self.assertIn(smtp_public_source.LAB_SUPABASE_PATH, hashes)
+        self.assertEqual(({}, False), (hashes, present))
 
     def test_lab_reading_the_home_smtp_source_is_rejected(self):
         # SPEC-0263: the LAB reads its LAB-037 copy, never HOME COMM-002.

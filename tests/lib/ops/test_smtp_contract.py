@@ -581,7 +581,6 @@ class SMTPContractTests(unittest.TestCase):
         for change in [
             "root_old",
             "include_old",
-            "missing_alias",
             "old_path",
             "include_symlink",
             "include_escape",
@@ -602,8 +601,6 @@ class SMTPContractTests(unittest.TestCase):
                             {"secrets": {"supabase_smtp_password": {"file": OLD_PATH}}}
                         )
                     )
-                elif change == "missing_alias":
-                    include.write_text("services: {}\n")
                 elif change == "old_path":
                     include.write_text(yaml.safe_dump({"x-legacy": OLD_PATH}))
                 elif change == "include_symlink":
@@ -618,6 +615,13 @@ class SMTPContractTests(unittest.TestCase):
                 root_path.write_text(yaml.safe_dump(root))
                 with self.assertRaises((ContractError, ValueError)):
                     source_hashes(public_source)
+
+    def test_missing_auth_alias_is_allowed_after_supabase_lab_removal(self):
+        # SPEC-0263 W8 (2026-11-06): no Auth consumer remains, so the alias
+        # is no longer required; the old source/path guards above still hold.
+        self._prepare()
+        (self.tree / "infra/auth.yml").write_text("services: {}\n")
+        self.assertIn("docker-compose.yml", source_hashes(self.tree))
 
     def test_service_less_include_old_path_is_rejected(self):
         self._prepare()
