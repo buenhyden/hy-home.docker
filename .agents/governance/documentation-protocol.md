@@ -249,7 +249,8 @@ corrected. Its rank and when an agent reads it are set by
 [bootstrap](bootstrap.md#authority-and-precedence); it grants no tool, path,
 permission or approval.
 A folder that carries `AGENTS.md` also carries a generated `CLAUDE.md` whose
-only content is the renderer marker and the import `@AGENTS.md`. Claude Code
+only content is the renderer marker, a heading and the import `@AGENTS.md`.
+Claude Code
 reads a folder `CLAUDE.md` but not a folder `AGENTS.md` below root `CLAUDE.md`,
 so the import is how the guide reaches it.
 `scripts/operations/provider_surface_renderer.py` writes, checks and retires

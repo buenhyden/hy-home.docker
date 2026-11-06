@@ -41,8 +41,8 @@ So neither provider reads the folder guides on its own. Claude Code does load
 a nested `CLAUDE.md` on demand when it reads a file below it, and again after
 compaction, and expands an `@AGENTS.md` import in it. Headless Claude Code
 2.1.319 loaded a folder `CLAUDE.md` holding `@AGENTS.md` on a first Read and on
-a Write without a prior Read, also when the renderer marker comment precedes
-the import.
+a Write without a prior Read, also when the renderer marker comment and a
+heading precede the import.
 
 ## Scope
 
@@ -69,7 +69,8 @@ the import.
 ### Normal Behavior
 
 Every Git-tracked folder `AGENTS.md` below the root has a generated `CLAUDE.md`
-beside it: the renderer marker comment, a blank line and `@AGENTS.md`. Claude
+beside it: the renderer marker comment, a `# <folder> Folder Guide` heading
+and `@AGENTS.md`. Claude
 Code loads that shim, and so the guide, natively. The renderer's `--check`
 reports a missing, drifted or stale shim; `--write` creates a missing one and
 quarantines one whose guide is gone.

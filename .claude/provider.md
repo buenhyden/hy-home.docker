@@ -26,7 +26,7 @@ default `claude-md-or-agents-md` mode), and the `instructionFiles` setting that
 makes it read both is ignored in project settings. Root `CLAUDE.md` is on every
 path here, so Claude does not read a folder `AGENTS.md` on its own. Each folder
 that carries an `AGENTS.md` therefore also carries a generated `CLAUDE.md`
-whose only content is the import `@AGENTS.md`. Claude loads a folder
+whose only content is a heading and the import `@AGENTS.md`. Claude loads a folder
 `CLAUDE.md` on demand the first time it reads or writes a file below that
 folder, and again on demand after compaction, so the guide reaches it
 natively. The shared PreToolUse dispatcher (`scripts/hooks/agent-event-hook.sh`,
