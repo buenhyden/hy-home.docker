@@ -39,6 +39,13 @@ try:
 except Exception:
     payload = {}
 source = payload.get("source", "") if isinstance(payload, dict) else ""
+try:
+    sys.path.insert(0, str(project))
+    from scripts.lib.hooks import folder_guides
+
+    folder_guides.reset(payload.get("session_id") if isinstance(payload, dict) else None)
+except Exception:
+    pass
 
 def run(command, fallback="unknown", timeout=3):
     try:
@@ -148,6 +155,19 @@ if (project / "graphify-out" / "graph.json").is_file() and (not tool_name or too
         "or unrelated cross-root inferred edges, corroborate against tracked source files, "
         ".agents/governance, and stage docs."
     )
+
+# Deliver the nearest folder AGENTS.md once per session; guidance only, so a
+# failure here never blocks the tool call.
+try:
+    from scripts.lib.hooks import folder_guides
+
+    additional_context.extend(folder_guides.pending_messages(
+        project,
+        folder_guides.tool_targets(data, tuple(paths)),
+        data.get("session_id"),
+    ))
+except Exception:
+    pass
 
 edit_tools = {"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"}
 if not tool_name or tool_name in edit_tools:
