@@ -1,6 +1,6 @@
 ---
 title: "Retire the Supabase LAB Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -143,12 +143,19 @@ Background records the removal. The owner approved the draft on 2026-11-06
 | E11 | 3 | W8 | operations catalog | `check-operations-catalog.py`, same tree | FAIL | exit 1, `file-unreadable` on the deleted GDE-0029, still listed by `git ls-files` | required | - |
 | E12 | 3 | W8 | script manifest | `check-script-manifest.py`, same tree | PASS | "script manifest is valid" | required | - |
 | E13 | 3 | W8 | full suite | `env -u LAB_DATA_DIR python -m unittest discover -s tests -t .`, same tree | FAIL | 3316 tests in 2449 s, failures=2, errors=16, skipped=108; 16 read the deleted files through `git ls-files`, 2 are the owner-pending registry drift | required | - |
+| E14 | 3 | W8 | LAB suites | same three modules on main `e6031ac93` after #763 merged | PASS | 116 tests OK | required | E1 |
+| E15 | 3 | W8 | secret suites | same two modules on main `e6031ac93`, after the owner removed the 12 public rows (`07bb88c2a`) | PASS | 70 tests OK | required | E2 |
+| E16 | 3 | W8 | catalog | `secret-catalog.py --root "$PWD" check` on main `e6031ac93` | PASS | `P02_METADATA_VALID`, entries=144, aliases=6 | required | E3 |
+| E17 | 3 | W8 | focused suites | SMTP, tier layout, SEC01, workflow contract, runtime compatibility and update gate modules on main `e6031ac93` | PASS | 205 tests OK, skipped=6 | required | E5 |
+| E18 | 3 | W8 | links | `check-document-links.py --mode all` on main `e6031ac93` plus this change's two navigation fixes | PASS | `PASS: document link mode all` | required | E10 |
+| E19 | 3 | W8 | operations catalog | `check-operations-catalog.py` on main `e6031ac93` | PASS | `operations-catalog: PASS` | required | E11 |
+| E20 | 3 | W8 | full suite | `env -u LAB_DATA_DIR python -m unittest discover -s tests -t .` on main `b496a291c` | PASS | 3337 tests OK, skipped=108 | required | E13 |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 3 | pending | E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E13 | open: E1, E5, E10, E11, E13 need a re-run after the commit; E2, E3 need owner step 1 | @buenhyden |
+| 3 | pending | E4, E6, E7, E8, E9, E12, E14, E15, E16, E17, E18, E19, E20 | every required row now passes; owner acceptance pending | @buenhyden |
 
 ## Review and Completion
 
@@ -158,6 +165,10 @@ commits (E1, E5, E11, E13), and the public registry keeps the 12 removed rows
 until the owner applies step 1 (E2, E3, E13). E10's `labs/.env` is the owner's
 private file, absent from this worktree. After the commit and step 1, re-run
 E1, E2, E3, E5, E10, E11 and E13; criterion 3 stays pending until then.
+
+After #763 merged and the owner applied step 1, E14 to E20 re-ran the
+failed checks on main: each now passes and resolves its earlier row.
+Criterion 3 waits only for the owner's acceptance.
 
 ## Related Documents
 
