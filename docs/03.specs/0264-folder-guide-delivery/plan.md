@@ -1,8 +1,8 @@
 ---
 title: "Folder Guide Delivery Plan"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/plan"
-status: "approved"
+status: "in-review"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"
@@ -31,6 +31,7 @@ The scope and exclusions are those of SPEC-0264.
 | W2 | 6 | Describe the delivery in both provider adapters | W1 | TSK-0001 | `provider_surface_renderer.py --check` |
 | W3 | 7 | Audit the folder `AGENTS.md` files | None | TSK-0001 | `check-agent-governance-contract.py --mode repository` |
 | W4 | 8 | Controller observes delivery in live Claude and Codex sessions (assigned by the owner) | W1, W2 | TSK-0001 | Live observation in the Task |
+| W5 | 1, 9, 10 | Render the folder `CLAUDE.md` import shims, admit them in the stage loaders and checks, and describe them in the documentation protocol | None | TSK-0001 | renderer tests in `test_validator_entrypoints`; `provider_surface_renderer.py --check`; metadata, link, contract and manifest checks |
 
 ## Verification Plan
 
@@ -43,6 +44,8 @@ Run the checks named in the table and the document checks of
 
 Native delivery may differ from the dispatcher tests; W4 catches this. Rollback
 removes the hook branch in `agent-event-hook.sh` and the provider adapter text.
+Rolling back W5 removes the shim records from the renderer, then `--write`
+quarantines the shims for manual cleanup.
 
 ## Related Documents
 
