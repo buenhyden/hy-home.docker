@@ -1,10 +1,10 @@
 ---
 title: "Airflow Usage Guide"
-version: "1.1.5"
+version: "1.1.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0050"
 parent_ids:
@@ -56,7 +56,7 @@ created: "2026-05-10"
 
 - **Docker/Compose**: 로컬 실행 환경
 - **Secrets**: `airflow_keycloak_client_secret`, `airflow_api_jwt_secret` 등 서비스 접근 권한
-- **Network**: `airflow_net` 외부 통신 가능 상태
+- **Network**: `airflow_net`과 `mng_data_net`; `airflow-apiserver`·`flower`는 `edge_net`, `flower`는 `obs_net`에도 연결된다
 
 ### 사용 절차
 
@@ -64,12 +64,15 @@ created: "2026-05-10"
 
 - Airflow는 [Dockerfile](../../../../infra/07-workflow/airflow/Dockerfile)에 선언된 upstream base와 Python constraints로 Keycloak provider를 포함한 로컬 이미지를 빌드한다. 실행 image tag는 [Compose](../../../../infra/07-workflow/airflow/docker-compose.yml)에서 확인한다.
 - 인증 manager는
- `airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`다.
- `AIRFLOW_KEYCLOAK_CLIENT_ID`, `KEYCLOAK_REALM`, `KEYCLOAK_URL`은 환경 설정으로,
- client secret은 `airflow_keycloak_client_secret` Docker Secret으로 전달한다.
+  `airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`다.
+  `AIRFLOW_KEYCLOAK_CLIENT_ID`, `KEYCLOAK_REALM`, `KEYCLOAK_URL`은 환경 설정으로,
+  client secret은 기본적으로 `airflow_keycloak_client_secret` Docker Secret에서 읽는다.
+  `AIRFLOW_CLIENT_SECRET_FILE`을 `/run/openbao/airflow` 아래 경로로 설정하면 API server가
+  OpenBao Agent 출력(`${DEFAULT_SECURITY_DIR}/openbao/out/airflow`, 읽기 전용 bind)을 읽는다.
+  이 host 디렉터리가 없으면 API server는 시작하지 않는다.
 - API server는 시작 전에 시스템 CA와 `${DEFAULT_CERT_DIR}/rootCA.pem`을 합쳐
- 임시 CA bundle을 만들고 `airflow api-server --proxy-headers`로 실행한다.
- Forwarded header 신뢰 범위는 Traefik 고정 주소 `10.250.1.2`(`edge_net`)로 제한한다.
+  임시 CA bundle을 만들고 `airflow api-server --proxy-headers`로 실행한다.
+  Forwarded header 신뢰 범위는 Traefik 고정 주소 `10.250.1.2`(`edge_net`)로 제한한다.
 - 기본 Celery broker는 `mng-valkey`다. `dedicated-valkey` profile은
   `airflow-valkey`와 exporter를 **기동만** 한다. 전용 broker를 실제로 쓰려면
   `AIRFLOW_VALKEY_HOST=airflow-valkey`와
@@ -83,7 +86,7 @@ Airflow는 다음과 같은 분산 컴포넌트로 구성됩니다:
 
 - **Scheduler & DAG Processor**: 작업 예약 및 DAG 파일 해석 (독립 실행으로 안정성 확보)
 - **Celery Workers**: 실제 태스크가 실행되는 동적 확장 노드
-- **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환. compose 파일은 `infra/07-workflow/airflow/docker-compose.yml` 하나다. `${AIRFLOW_VALKEY_HOST:-mng-valkey}`와 `${AIRFLOW_VALKEY_SECRET:-mng_valkey_password}`가 실제 선택을 결정하며, `dedicated-valkey` profile만 추가해도 이 두 기본값은 바뀌지 않는다.
+- **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환. 선택 규칙은 위 `현재 구현 변경사항`의 broker 항목을 따른다.
 - **API Server**: UI 및 외부 통합을 위한 `airflow-apiserver` 엔드포인트
 
 로그인 흐름은 `airflow.${DEFAULT_URL}`에서 Traefik HTTPS route를 거쳐
@@ -106,7 +109,7 @@ Keycloak auth manager가 처리한다. Keycloak client secret이나 JWT secret�
 HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
 
 # DAG 목록 로드 확인
-docker compose exec airflow-apiserver airflow dags list
+docker compose --profile workflow-airflow exec airflow-apiserver airflow dags list
 ```
 
 ### Service readiness and build selection
@@ -122,7 +125,7 @@ docker compose exec airflow-apiserver airflow dags list
 | `airflow-triggerer` | 지연 작업 재개와 `TriggererJob` 점검 | 정상 상태여도 대기 중인 외부 이벤트가 완료된 것은 아니다. |
 | `airflow-init` | 마이그레이션 가능한 일회성 초기화와 종료 코드 | root로 디렉터리를 만들지만 소유권은 바꾸지 않는다. HTTP 점검이나 사용자 역할 부여는 없고, 자원 점검은 용량을 강제하지 않고 경고한다. |
 | `flower` | 프록시 SSO로 보호한 Celery 모니터링 UI와 HTTP 상태 | 모니터링 가용성은 worker 상태와 다르며 독립적인 워크플로 원본 백업을 소유하지 않는다. |
-| `airflow-statsd-exporter` | 추적되는 매핑으로 StatsD 이벤트를 수집 지표로 변환 | Compose healthcheck가 없으며 이벤트 지표는 해당 이벤트가 있어야 생긴다. 매핑은 보존 대상이지만 지표 캐시는 워크플로 이력이 아니다. |
+| `airflow-statsd-exporter` | 추적되는 매핑으로 StatsD 이벤트를 수집 지표로 변환 | Compose healthcheck는 `:9102/metrics` 응답만 확인한다. 이벤트 지표는 해당 이벤트가 있어야 생긴다. 매핑은 보존 대상이지만 지표 캐시는 워크플로 이력이 아니다. |
 | `airflow-valkey` | 일치하는 호스트·secret 쌍을 선택했을 때 쓰는 OPTIONAL 전용 broker와 인증된 PONG | 기본값은 공유 `mng-valkey`다. 큐의 영속 상태만으로 정확한 재실행 여부를 판단하지 않는다. |
 | `airflow-valkey-exporter` | OPTIONAL broker 지표와 exporter HTTP 점검 | exporter 상태만으로 broker 인증이나 큐 준비 상태를 입증하지 않는다. 원본 데이터 백업은 소유하지 않는다. |
 
@@ -136,7 +139,7 @@ Init 전에 소유자 절차로 host DAG/log/plugin/config의 runtime UID 권한
 - **Profiles/source**: 코어는 `workflow`/`workflow-airflow`, 전용 broker pair는 `dedicated-valkey`; authoritative source는 [Compose](../../../../infra/07-workflow/airflow/docker-compose.yml)와 [Dockerfile](../../../../infra/07-workflow/airflow/Dockerfile)이다.
 - **상태 흐름**: DAG는 `dags` mount를 통해 들어온다. scheduler/processor는 PostgreSQL database `airflow`에 기준이 되는 metadata를 영속 저장하며 이 database는 `mng-pg`에 있다. Celery message는 선택된 Valkey를 거치며 worker는 task log를 `airflow-logs`에 쓴다. queue 내용은 처리 중인 작업을 조율하는 상태이며 영속 workflow 기록이 아니다.
 - **secret·환경 설정**: `airflow_db_password`, `airflow_fernet_key`, `airflow_api_jwt_secret`, `airflow_keycloak_client_secret`과 선택된 broker password를 보존한다. `AIRFLOW_VALKEY_HOST`와 `AIRFLOW_VALKEY_SECRET`은 같은 broker를 선택해야 한다. Fernet key는 암호화된 Connections와 분리하여 복구할 수 없다.
-- **의존성·보안**: `mng-pg`, 선택된 Valkey, Keycloak, Traefik, root CA와 `airflow_net`이 준비되어야 한다. native Keycloak Auth Manager가 Airflow UI를 보호하고 Flower는 gateway auth chain을 사용한다. 내부 scheduler, worker, broker 또는 database port를 노출하지 않는다.
+- **의존성·보안**: `mng-pg`, 선택된 Valkey, Keycloak, Traefik, root CA와 `airflow_net`·`mng_data_net`이 준비되어야 한다. native Keycloak Auth Manager가 Airflow UI를 보호하고 Flower는 gateway auth chain을 사용한다. 내부 scheduler, worker, broker 또는 database port를 노출하지 않는다.
 - **영속성·자원**: PostgreSQL metadata와 `airflow-dags`, `airflow-logs`, `airflow-plugins`, `airflow-config`가 복구 세트를 이룬다. Compose CPU/memory 값은 source limit이며 측정된 여유 용량이 아니다. 관찰된 scheduler/worker/DB/broker 부하를 근거로만 규모를 조정한다.
 - **정상 사용·수명 주기**: 저장소 root에서 `docker compose --profile workflow config --quiet`를 사용한 뒤, 대상별 기동과 upgrade는 [RUN-0050](../../runbooks/08-workflows-and-automation/0050-airflow.md)을 따른다. workflow 전체를 시작하면 n8n과 migration을 수행할 수 있는 초기화도 실행될 수 있다. pause/drain, 일관된 DB/artifact/key backup, migration, canary와 재개 결정은 Runbook이 소유한다.
 - **공식 문서·license**: [Airflow database 설정](https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html), [Connections/Fernet 지침](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html), [권장 운영 방식](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html)을 따른다. Apache Airflow에는 Apache-2.0 license가 적용된다.
@@ -145,7 +148,7 @@ Init 전에 소유자 절차로 host DAG/log/plugin/config의 runtime UID 권한
 
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
-- Runtime이 실행 중이면 `docker compose exec airflow-apiserver airflow dags list`
+- Runtime이 실행 중이면 `docker compose --profile workflow-airflow exec airflow-apiserver airflow dags list`
 
 ### Runbook Handoff
 
@@ -158,10 +161,6 @@ Init 전에 소유자 절차로 host DAG/log/plugin/config의 runtime UID 권한
 - Subject peers: [Policy](../../policies/08-workflows-and-automation/0050-airflow.md) (`POL-0050`), [Runbook](../../runbooks/08-workflows-and-automation/0050-airflow.md) (`RUN-0050`)
 
 ## Troubleshooting
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 - **Scheduler Heavy Load**: DAG 파일 내에서 DB 쿼리나 파일 시스템 접근을 직접 수행하면 스케줄러 성능이 저하됩니다.
 - **Worker Timeout**: 리소스 부족으로 워커가 종료되면 태스크가 `Queued` 상태로 멈출 수 있습니다.

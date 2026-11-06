@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Usage Guide"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -48,8 +48,7 @@ created: "2026-05-17"
 ### 사용 절차
 
 1. 정적 구성 점검
-   - `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh`
-   - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
+   - 아래 `Common Checks`의 Compose 검증을 실행한다.
    - service-local compose 파일은 root network/secrets context 없이 단독 `config` 대상으로 쓰지 않는다.
 2. Gateway/SSO 경계 정렬
    - Airflow는 `gateway-standard-chain@file`과 native Keycloak SSO를 사용한다. Flower/n8n은 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다. 변경·복구는 RUN-0054로 넘긴다.
@@ -59,11 +58,9 @@ created: "2026-05-17"
    - n8n worker/task-runner healthcheck와 task-runner dependency gating을 확인한다.
 4. n8n 이미지 하드닝 확인
    - compose가 custom image([hyhome/n8n image declaration](../../../../infra/07-workflow/n8n/docker-compose.yml))를 사용하도록 확인한다.
-   - Compose가 선택한 dev.Dockerfile(`USER node`) 또는 Dockerfile(`USER 1000`)와 각각의 entrypoint guard를 확인한다. Guard의 고정 secret과 선택 broker secret은 다를 수 있다; [n8n Guide](0053-n8n.md#build-readiness-and-runner-boundary)를 따른다.
+   - Compose가 선택한 dev.Dockerfile(`USER node`) 또는 Dockerfile(`USER 1000`)와 각각의 entrypoint guard를 확인한다. 두 entrypoint는 같은 내용이며 지원 broker 조합(host·username·secret·DB)과 선택된 secret 파일을 검사한다; [n8n Guide](0053-n8n.md#build-readiness-and-runner-boundary)를 따른다.
 5. 기준선 검증 실행
-   - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
-   - `bash scripts/validation/check-template-security-baseline.sh`
-   - `python3 scripts/validation/check-document-links.py --mode traceability`
+   - 아래 `Common Checks`의 hardening·template·traceability 검사를 실행한다.
 6. 카탈로그 확장 운영 기준 반영
    - Airflow DAG quality gate와 worker autoscale 기준을 정책 문서에 반영한다.
    - n8n workflow Git backup/OpenBao credential 기준을 정책 문서에 반영한다.
@@ -71,7 +68,7 @@ created: "2026-05-17"
 
 ### Static gate boundary
 
-`check_07_workflow`는 파일과 일부 인증 문자열을 확인하고 Airflow double proxy-auth를 거부한다. Runner 호환성, 선택 Dockerfile/guard, 모든 probe, DB/broker readiness와 로그인 성공까지 증명하지 않는다. 필수 통제에는 추가 소스 검토와 승인된 런타임 근거가 필요하다. 문자열 검사 통과로 n8n 버전·timeout·guard 결함을 닫지 않는다.
+정적 게이트의 한계는 [정책의 Static gate boundary](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md#static-gate-boundary)를 따른다.
 
 ### Common Checks
 

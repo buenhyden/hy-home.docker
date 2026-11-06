@@ -1,10 +1,10 @@
 ---
 title: "Airflow Operations Policy"
-version: "1.1.5"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0050"
 parent_ids:
@@ -20,12 +20,12 @@ created: "2026-05-17"
 
 ## Scope
 
-- Airflow 코어 컴포넌트(`airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`) 관리
+- Airflow 코어 컴포넌트(`airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter`)와 OPTIONAL `airflow-valkey`·`airflow-valkey-exporter` 관리
 - 메타데이터 DB 및 브로커(Valkey) 연결 정책
 - DAG 배포 및 운영 환경 보안 통제
 
 - **Systems**: Apache Airflow, CeleryExecutor
-- **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`dev`/`dedicated-valkey` profile, homelab operations
+- **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`workflow-airflow`/`dedicated-valkey` profile, homelab operations
 
 ## Rules
 
@@ -34,14 +34,15 @@ created: "2026-05-17"
   - 민감 정보는 반드시 Secret Backend(Docker Secrets/OpenBao) 및 Airflow Connections를 통해 관리함.
   - `dedicated-valkey` profile 선택 여부가 만드는 broker 차이(`mng-valkey` vs `airflow-valkey`)를 변경 문서에 명시함.
   - 인증 manager는 Keycloak auth manager를 사용하고, client secret은
-    `airflow_keycloak_client_secret` Docker Secret으로만 주입함.
+    `airflow_keycloak_client_secret` Docker Secret 또는 `/run/openbao/airflow` 아래의
+    OpenBao Agent 출력 파일(`AIRFLOW_CLIENT_SECRET_FILE`)로만 주입함. 환경 변수 값으로 넣지 않음.
   - Airflow 이미지는 `infra/07-workflow/airflow/Dockerfile`에서 고정된 Airflow/
     Python constraints와 Keycloak provider 버전으로 재현 가능하게 빌드함.
   - API server의 temporary CA bundle과 `--proxy-headers` 실행을 유지하고,
     `FORWARDED_ALLOW_IPS`는 신뢰된 Traefik 주소로 제한함.
   - 운영 승격 전 `AIRFLOW__CORE__LOAD_EXAMPLES` 상태를 별도 변경/evidence로 검토함.
 - **Allowed**:
-  - 워커 노드의 동적 확장 (부하에 따른 Replica 조정).
+  - 워커 확장은 검토된 Compose 변경으로만 한다. 현재 `airflow-worker`는 고정 `container_name`이라 `--scale`로 replica를 늘릴 수 없다.
   - 읽기 전용 UI 접근 (native Keycloak `Viewer` 역할을 명시적으로 부여한 사용자).
 - **Disallowed**:
   - Scheduler 노드에서의 직접적인 대용량 외부 API 호출 또는 파일 입출력.
@@ -73,7 +74,7 @@ created: "2026-05-17"
 
 점검 명령은 [가이드의 Common Checks](../../guides/08-workflows-and-automation/0050-airflow.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
 
-- **Runtime Check**: 실행 중인 환경에서 `docker compose exec airflow-apiserver airflow db check`와 `docker compose exec airflow-apiserver airflow dags list` 결과를 확인한다.
+- **Runtime Check**: 실행 중인 환경에서 `docker compose --profile workflow-airflow exec airflow-apiserver airflow db check`와 `docker compose --profile workflow-airflow exec airflow-apiserver airflow dags list` 결과를 확인한다.
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 

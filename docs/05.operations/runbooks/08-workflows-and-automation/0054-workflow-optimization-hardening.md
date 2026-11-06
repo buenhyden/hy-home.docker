@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Runbook"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0054"
 parent_ids:
@@ -22,8 +22,6 @@ created: "2026-05-17"
 - compose/script/CI 회귀를 표준 절차로 차단한다.
 
 ## Trigger
-
-### Trigger and Preconditions
 
 - `infrastructure-hardening` CI가 실패할 때
 - Airflow/Flower/n8n 경로 접근 정책이 비정상일 때
@@ -64,7 +62,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
      - healthcheck/depends_on 계약 복원
    - n8n image drift:
      - compose custom image 설정 복원
-     - 선택된 dev.Dockerfile/production Dockerfile의 non-root USER와 matching entrypoint를 복원한다. 고정 guard가 selected broker secret을 검증한다고 가정하지 않는다; [RUN-0053](0053-n8n.md) preflight를 따른다.
+     - 선택된 dev.Dockerfile/production Dockerfile의 non-root USER와 matching entrypoint를 복원한다. 두 entrypoint는 지원 broker 조합과 선택된 secret 파일을 검사하지만 broker 인증 성공을 증명하지 않는다; [RUN-0053](0053-n8n.md) preflight를 따른다.
 4. 재검증
    - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
    - `bash scripts/validation/check-template-security-baseline.sh`

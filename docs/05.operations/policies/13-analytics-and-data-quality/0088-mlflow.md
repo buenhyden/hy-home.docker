@@ -1,10 +1,10 @@
 ---
 title: "MLflow Operations Policy"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0088"
 parent_ids:
@@ -31,7 +31,7 @@ MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저
 - MLflow SQL은 feature provisioning 파일에 있다. 공유 `mng-pg-init` job은 MLflow
   secret을 읽거나 MLflow DDL을 실행해서는 안 된다.
 - MLflow 데이터베이스 role은 `LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
-  NOREPLICATION`이다. Provisioning은 administrator role과 다른 role이 소유한
+  NOREPLICATION NOBYPASSRLS`이다. Provisioning은 administrator role과 다른 role이 소유한
   데이터베이스를 인수하는 대신 거부한다.
 - 서버는 bucket-scoped SeaweedFS identity만 사용한다. MLflow나 어떤 SDK에도
   SeaweedFS admin credential이나 다른 consumer의 identity를 주지 않는다.

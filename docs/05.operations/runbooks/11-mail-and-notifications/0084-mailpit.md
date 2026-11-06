@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Runbook"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0084"
 parent_ids:
@@ -24,11 +24,6 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
 다르거나, backup/restore/upgrade가 승인된 경우에 사용한다.
 
 ## Prerequisites
-
-### Trigger and Preconditions
-
-저장소 루트에서 작업하고 캡처된
-콘텐츠를 증거로 노출하지 않는다.
 
 ### 작업 선택과 복구 전제
 
@@ -51,10 +46,10 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
 
 2. 실패를 구분한다.
    - `readyz` 실패: database 권한/lock과 여유 공간을 점검한다.
-   - SMTP 실패: 클라이언트가 `edge_net`의 서비스 DNS나 loopback host port를 사용하는지
+   - SMTP 실패: 클라이언트가 `edge_net`·`mail_net`의 서비스 DNS `mailpit`이나 loopback host port를 사용하는지
      확인한다. host bind는 열지 않는다.
    - UI 실패: Traefik/인증을 SMTP 캡처와 별도로 점검한다.
-3. 재시작이 승인되면 Mailpit만 재시작하고 고유한 비민감 식별자를 가진 synthetic 메시지
+3. 재시작이 승인되면 `docker compose --profile mail-dev restart mailpit`으로 Mailpit만 재시작하고 고유한 비민감 식별자를 가진 synthetic 메시지
    1건을 전송한다. 본문을 기록하지 않고 캡처를 검증한다.
 
 ### Consistent export and restore
@@ -66,8 +61,8 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
 3. API가 비정상이면 Mailpit을 중단하고 bind-backed 데이터 디렉터리에서 `mailpit.db`와
    SQLite `-wal`/`-shm` sidecar 파일을 복사한다. 복사하는 동안 계속 중단 상태를 유지한다.
 4. 현재 선언 버전에 맞는 CLI 옵션·인증 지원을 확인한 경우에만 `mailpit dump`와 `mailpit ingest`를 사용한다. 최신 문서만으로 옵션 호환성을 단정하지 않는다. 격리된 Mailpit 인스턴스/network로 복원한다. export한 메시지는 격리된 local SMTP
-   listener에 대해서만 `mailpit ingest`를 사용한다. 업스트림 문서에 따르면 ingest는 SMTP
-   인증·TLS 지원 여부는 선택한 버전의 공식 옵션으로 확인해야 한다.
+   listener에 대해서만 `mailpit ingest`를 사용한다. ingest의 SMTP 인증·TLS 지원 여부는
+   선택한 버전의 공식 옵션으로 확인한다.
    이 근거와 격리된 listener를 확보하지 못하면 ingest를 실행하지 않는다. 개수와 synthetic 샘플을 검증한 뒤 현재 데이터를 교체하기
    전에 승인을 받는다.
 
@@ -102,12 +97,12 @@ sidecar, 외부 노출, 또는 호환되지 않는 upgrade가 있으면 중단�
 
 ## Related Documents
 
-- [Mailpit import/export](https://mailpit.axllent.org/docs/usage/import-export/)
-- [Mailpit storage](https://mailpit.axllent.org/docs/configuration/email-storage/)
-- [운영 인덱스](../../README.md)
-
 ### Traceability
 
 - [Guide](../../guides/11-mail-and-notifications/0084-mailpit.md) (`GDE-0084`)
 - [Policy](../../policies/11-mail-and-notifications/0084-mailpit.md) (`POL-0084`)
 - [Mailpit Compose](../../../../infra/11-quality/mailpit/docker-compose.yml)
+
+- [Mailpit import/export](https://mailpit.axllent.org/docs/usage/import-export/)
+- [Mailpit storage](https://mailpit.axllent.org/docs/configuration/email-storage/)
+- [운영 인덱스](../../README.md)

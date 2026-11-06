@@ -1,10 +1,10 @@
 ---
 title: "MLflow Usage Guide"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0088"
 parent_ids:
@@ -21,8 +21,7 @@ created: "2026-09-21"
 ## Overview
 
 MLflow는 `mlops` 또는 `data-science`가 선택하는 OPTIONAL experiment tracking
-server이다. HOME에도, 현재 8개 profile 운용 명령에도 들어 있지 않다.
-추가하려면 별도로 활성화를 결정해야 한다.
+server이다. HOME 선택에 들어 있지 않으며, 추가하려면 별도로 활성화를 결정해야 한다.
 
 ## Scope
 
@@ -52,27 +51,18 @@ MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문
 
 ### Sizing
 
-현재 자원·worker·job 설정의 원본은 Compose다. job 재활성화는 측정한 메모리
-예산과 승인이 필요하다. 아래 과거 측정은 현재 이미지의 측정 결과가 아니다.
-
-원본: `docs/05.operations/guides/13-analytics-and-data-quality/0088-mlflow.md`, SPEC-0198 이전 Git 기록.
-
-> Historical evidence (not current authority; source: Git history):
->
-> 첫 시작 시 측정(2026-09-21): 기본 설정에서 MLflow 3.x는 server-job consumer
-> (`huey`, 각각 약 200 MB)와 uvicorn worker를 실행하며 512 MB template
-> limit에서는 OOM kill이 반복됐다. Compose 파일은 server-side job을
-> 비활성화하고(`MLFLOW_SERVER_ENABLE_JOB_EXECUTION=false`; GenAI scheduled
-> scorer와 trace archival은 사용하지 않음), worker 2개를 실행하며
-> `mem_limit: 1g`를 설정한다(steady state 약 560 MB). job을 다시 활성화하려면
-> 측정한 메모리 예산이 있어야 한다.
+자원·worker·job 설정의 원본은 [MLflow Compose](../../../../infra/08-ai/mlflow/docker-compose.yml)다.
+현재 선언은 uvicorn worker 2개, `mem_limit: 1g`, server-side job 비활성화
+(`MLFLOW_SERVER_ENABLE_JOB_EXECUTION=false`)다. 2026-09-21 측정에서 512 MB
+template limit은 반복 OOM kill을 일으켰고, job consumer는 각각 약 200 MB를
+더 쓴다. job 재활성화에는 측정한 메모리 예산과 승인이 필요하다.
 
 ### Authentication and identity
 
 | Path | Control | Limitation |
 | --- | --- | --- |
 | 브라우저 `https://mlflow.${DEFAULT_URL}` | Gateway SSO(`sso-auth`); OAuth2 Proxy의 `/admins` 그룹 제한 | MLflow 수준의 user, experiment 권한, group 권한 없음 |
-| `edge_net`, `ai_net`, `mng_data_net`, `object_net`의 직접 SDK (`http://mlflow:5000`) | 없음; Host header가 `--allowed-hosts`와 일치해야 함 | 네트워크 peer에 동등한 MLflow 사용자 인증·experiment별 권한 통제가 선언되지 않음 |
+| `edge_net`, `ai_net`, `mng_data_net`, `object_net`의 직접 SDK (`http://mlflow:${MLFLOW_PORT:-5000}`) | 없음; Host header가 `--allowed-hosts`와 일치해야 함 | 네트워크 peer에 동등한 MLflow 사용자 인증·experiment별 권한 통제가 선언되지 않음 |
 | Artifact storage | server만 보유한 bucket-scoped SeaweedFS identity | run soft-delete는 artifact 자동 삭제가 아니며 별도 보존·정리 승인이 필요함 |
 
 MLflow가 문서화한 OIDC route는 community `mlflow-oidc-auth` plugin
@@ -87,6 +77,12 @@ SSO 없이 route를 열지 않는다.
 ### Normal use, backup, and upgrade
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md)의 `Tracking 데이터와 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
+- `python3 -m unittest tests.validation.test_compose_baseline_gates`
+- `docker compose --profile core --profile mlops ps mlflow mlflow-db-provision`
 
 ### Runbook Handoff
 
@@ -117,15 +113,12 @@ health는 DB 복구·artifact round-trip·사용자 인가를 증명하지 않�
 - [Policy](../../policies/13-analytics-and-data-quality/0088-mlflow.md) (`POL-0088`)
 - [Runbook](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md) (`RUN-0088`)
 - [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- Current Task
 
 ## Troubleshooting
 
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
-- `python3 -m unittest tests.validation.test_compose_baseline_gates`
-- `docker compose --profile core --profile mlops ps mlflow mlflow-db-provision`
+- `mlflow`가 시작하지 않으면 `mlflow-db-provision`과 `seaweedfs-buckets` 종료 코드를 먼저 본다. 서버는 두 작업이 성공해야 시작한다.
+- 직접 SDK 요청이 거부되면 Host header가 `MLFLOW_ALLOWED_HOSTS`와 일치하는지 확인한다.
+- 기존 tracking DB의 schema revision 불일치로 시작이 거부되면 런북의 `Tracking DB schema upgrade`를 따른다.
 
 ## Related Documents
 

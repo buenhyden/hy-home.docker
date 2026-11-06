@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Guide"
-version: "0.3.1"
+version: "0.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0084"
 parent_ids:
@@ -59,7 +59,7 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
 
 1. root에서 `docker compose --profile mail-dev config --quiet`로
    validate한다.
-2. 개발용 application이 `edge_net`의
+2. 개발용 application이 `edge_net` 또는 `mail_net`의
    `mailpit:${MAILPIT_SMTP_PORT:-1025}`로 전송하도록 설정한다. host tool은
    loopback host port를 사용한다.
 3. 합성 또는 승인된 test mail만 전송한다. database에는 본문, header, 주소,
@@ -71,6 +71,12 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
 ### 접근 경계
 
 gateway 경로만 SSO를 거치고, 직접 loopback UI와 두 네트워크의 peer listener에는 동등한 네이티브 UI 인증이 없다. 통제는 [POL-0084](../../policies/11-mail-and-notifications/0084-mailpit.md)가 소유한다. 책임자 `@buenhyden`은 이 경계와 테스트 데이터 소유자를 확인한다.
+
+### Common Checks
+
+- `docker compose --profile mail-dev config --quiet`
+- `docker compose --profile mail-dev config --services`
+- `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
 ### Runbook Handoff
 
@@ -85,11 +91,8 @@ capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade�
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile mail-dev config --quiet`
-- `docker compose --profile mail-dev config --services`
-- `bash scripts/hardening/check-all-hardening.sh 11-quality`
+- `readyz` 실패, SMTP 캡처 누락, UI 접근 실패는 [RUN-0084](../../runbooks/11-mail-and-notifications/0084-mailpit.md)의 `Procedure` 진단 순서로 구분한다.
+- UI만 실패하면 gateway·SSO 경로를 SMTP 캡처와 별도로 점검한다.
 
 ## Related Documents
 
