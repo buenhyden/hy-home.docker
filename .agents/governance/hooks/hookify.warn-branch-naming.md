@@ -1,10 +1,10 @@
 ---
 title: "WARNING: branch naming rule violation"
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 action: "warn"
 enabled: true
 event: "bash"
@@ -20,7 +20,7 @@ Apply the declared `warn` action for warn-branch-naming.
 
 ## Scope
 
-Applies to the `warn-branch-naming` rule on the `bash` event. The frontmatter of this document owns the exact matcher.
+The `warn-branch-naming` rule applies on the `bash` event and matches Bash commands that match its `pattern` ("WARNING: branch naming rule violation"). The frontmatter owns the exact matcher.
 
 ## Rules
 
@@ -57,7 +57,7 @@ No exception is declared by this rule.
 
 ## Verification
 
-The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+Native event delivery is a separate observation from the frontmatter match.
 
 ## Related Documents
 

@@ -39,7 +39,6 @@ canonical_sources:
   - .agents/governance/hooks/hookify.require-logical-commits-before-stop.md
   - .agents/governance/hooks/hookify.warn-branch-naming.md
   - .agents/governance/hooks/hookify.warn-conventional-commit.md
-  - .agents/governance/hooks/hookify.warn-docker-infra-stop.md
   - .agents/governance/hooks/hookify.warn-force-push.md
   - .agents/governance/hooks/hookify.warn-governance-memory-edit.md
   - .agents/governance/hooks/hookify.warn-hook-parity-edit.md

@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: prints a secret to logs"
-version: "1.0.3"
+version: "1.0.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -26,7 +26,7 @@ Apply the declared `block` action for block-gha-secrets-in-run.
 
 ## Scope
 
-Applies to the `block-gha-secrets-in-run` rule on the `file` event. The frontmatter of this document owns the exact matcher.
+The `block-gha-secrets-in-run` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("BLOCKED: prints a secret to logs"). The frontmatter owns the exact matcher.
 
 ## Rules
 
@@ -69,7 +69,7 @@ No exception is declared by this rule.
 
 ## Verification
 
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+Native event delivery is a separate observation from the frontmatter match.
 
 ## Related Documents
 

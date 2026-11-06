@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Governance"
-version: "1.4.3"
+version: "1.4.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "agent-governance"
 ---
 
@@ -22,7 +22,7 @@ canonical home입니다. Claude와 Codex는 native adapter를 통해 이 source�
   bootstrap, SDLC 동작을 소유합니다.
   `governance/hooks/hookify.*.md`는 사람이 읽는 정책이자
   `scripts/hooks/hook_rules.py`가 읽는 machine input입니다. frontmatter의
-  `conditions`와 `action`이 hook 동작을 정하므로 형식을 바꾸면 hook도 바뀝니다.
+  `conditions`와 `action`이 hook 동작을 정하므로 형식을 바꾸면 hook도 바뀝니다. `event: stop` rule은 이 reader가 평가하지 않으며(`pattern: .*`는 자리표시자), 정지 동작은 `scripts/hooks/agent-event-hook.sh`가 소유합니다.
 - `roles/`는 안정적인 identity, 책임, permission, handoff를 소유합니다.
 - `skills/<skill_id>/SKILL.md`는 호출 가능한 절차를 소유합니다. skill-local
   `agents/openai.yaml`은 명시적 invocation을 요구합니다. skill은 자신만 실행하는

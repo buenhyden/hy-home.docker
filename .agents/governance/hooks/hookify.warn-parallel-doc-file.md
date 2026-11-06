@@ -1,10 +1,10 @@
 ---
 title: "WARNING: parallel replacement document file"
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -23,7 +23,7 @@ Apply the declared `warn` action for warn-parallel-doc-file.
 
 ## Scope
 
-Applies to the `warn-parallel-doc-file` rule on the `file` event. The frontmatter of this document owns the exact matcher.
+The `warn-parallel-doc-file` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("WARNING: parallel replacement document file"). The frontmatter owns the exact matcher.
 
 ## Rules
 
@@ -65,7 +65,7 @@ No exception is declared by this rule.
 
 ## Verification
 
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+Native event delivery is a separate observation from the frontmatter match.
 
 ## Related Documents
 

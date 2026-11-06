@@ -1,10 +1,10 @@
 ---
 title: "Operations Agent Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 ---
 
 # Operations Agent Guide
@@ -53,8 +53,7 @@ and Stage 02; change execution belongs to the Stage 03 Task.
 - Skills: [`ops-runbook-agent`](../../.agents/skills/ops-runbook-agent/SKILL.md),
   [`incident-response`](../../.agents/skills/incident-response/SKILL.md),
   [`stateful-recovery-contract-review`](../../.agents/skills/stateful-recovery-contract-review/SKILL.md).
-- Hook rules: [`warn-stage-doc-edit`](../../.agents/governance/hooks/hookify.warn-stage-doc-edit.md),
-  [`warn-docker-infra-stop`](../../.agents/governance/hooks/hookify.warn-docker-infra-stop.md).
+- Hook rules: [`warn-stage-doc-edit`](../../.agents/governance/hooks/hookify.warn-stage-doc-edit.md).
 - Provider loading: [Claude adapter](../../.claude/provider.md),
   [Codex adapter](../../.codex/provider.md).
 
