@@ -51,6 +51,7 @@ docs/02.architecture/decisions/
 ├── 0057-operations-role-and-domain-folders.md
 ├── 0058-home-tiers-versus-labs.md
 ├── 0059-native-oidc-open-webui-and-airflow.md
+├── 0060-hermes-report-source-contract.md
 └── README.md
 ```
 
@@ -130,6 +131,8 @@ docs/02.architecture/decisions/
   root include를 HOME tier 구성원으로, `labs/`를 LAB으로 나누고 tier별 소유·하드닝 gate를 정한 accepted decision. 소유자가 2026-11-06에 채택했다.
 - [`ADR-0059`](./0059-native-oidc-open-webui-and-airflow.md):
   Open WebUI와 Airflow UI를 ForwardAuth 없이 native OIDC로 두고 workflow·AI 하드닝을 잇는 accepted decision. 소유자가 2026-11-06에 채택했다.
+- [`ADR-0060`](./0060-hermes-report-source-contract.md):
+  Hermes `source_text`를 확정된 전체 일일 보고서 원문으로 두고 receipt 집합은 비공개 감사 기록으로 보존하는 proposed decision.
 
 ## Usage
 
