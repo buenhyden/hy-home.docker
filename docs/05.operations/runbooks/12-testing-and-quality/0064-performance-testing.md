@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Incident Runbook"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0064"
 parent_ids:
@@ -12,40 +12,36 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# 성능 시험 중단·복구 런북
+# Performance Testing Incident Runbook
 
 ## Overview
 
 공유 서비스에 영향을 주는 k6·Locust LAB 부하 시험을 중단하고 진단하는 공통 절차다.
-부하를 먼저 멈추고, root `k6` 작업 또는 독립 Locust LAB의 정확한 프로젝트를 확인한 뒤
+부하를 먼저 멈추고, `quality_run.py` 격리 k6 runner 또는 독립 Locust LAB의 정확한 프로젝트를 확인한 뒤
 대상 회복과 증거 완전성을 판정한다.
 
 ## Trigger
 
-성능 테스트 실행 중 target service 또는 shared gateway/auth/data tier에 영향이 생겼을 때 사용한다.
-
-## Prerequisites
-
-### Trigger and Preconditions
+성능 테스트 실행 중 다음 중 하나가 생기면 사용한다.
 
 - 테스트 중 target SLI가 승인된 한계 아래로 떨어진다.
 - Gateway/Auth/Data tier가 부하 테스트 영향으로 degraded 상태가 된다.
 - 결과 원본·checksum·summary·exit metadata가 누락되거나 바뀌어 판정 신뢰도가 떨어진다.
-- 실행 주체가 root `k6`인지 별도 Locust LAB인지 불명확하다.
+- 실행 주체가 격리 k6 runner인지 별도 Locust LAB인지 불명확하다.
+
+## Prerequisites
+
+- [ ] 테스트 owner, target service owner, platform operator에게 중단 결정을 알린다.
+- [ ] 승인된 run_id·attempt·project_id, target origin, 사용자/요청률·시간 상한, 시나리오 hash와 시작 시각을 기록한다.
+- [ ] Docker context, 격리 run 또는 LAB 프로젝트, 포트·네트워크·볼륨·자원과 정확한 중단·정리 범위를 확인한다.
 
 ## Procedure
 
-- [ ] 테스트 owner, target service owner, platform operator에게 중단 결정을 알린다.
-- [ ] 실행 중인 leaf와 service name을 확인한다.
-- [ ] 승인된 run_id·attempt·project_id, target origin, 사용자/요청률·시간 상한, 시나리오 hash와 시작 시각을 기록한다.
-- [ ] Docker context, root 또는 LAB 프로젝트, 포트·네트워크·볼륨·자원과 정확한 중단·정리 범위를 확인한다.
-
-### Steps
-
-1. 실행 중인 performance service를 확인한다.
+1. 실행 중인 격리 k6 runner를 label로 확인한다. root `testing`의 `k6`는 `version`만
+   실행하므로 부하 주체가 아니다.
 
    ```bash
-   docker compose --profile testing ps k6
+   docker ps --filter label=hyhome.quality.role=k6-runner
    ```
 
 2. Locust LAB가 선택된 경우 승인된 고유 프로젝트명과 `labs/.env`를
@@ -83,7 +79,7 @@ created: "2026-05-17"
 
 - 실행 중이던 부하 생성 서비스가 중지되었다. UI의 idle 표시만으로 중단 완료를 판정하지 않는다.
 - target SLI와 shared tier health가 정상 범위로 회복됐다.
-- 관련 guide/policy/runbook이 root k6와 독립 Locust LAB의 서비스명·경계를 유지한다.
+- 관련 guide/policy/runbook이 격리 k6 runner와 독립 Locust LAB의 서비스명·경계를 유지한다.
 - 실행 상태, 시험 판정, 증거 완전성, 적재 상태가 서로 구분돼 있다.
 
 ### Observability and Evidence Sources

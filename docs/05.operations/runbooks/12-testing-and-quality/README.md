@@ -1,10 +1,10 @@
 ---
 title: "시험과 품질 런북"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -24,11 +24,11 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [k6 Load Test Recovery Runbook](0061-k6.md) | `RUN-0061` | 승인된 isolated k6 실행이 잘못된 endpoint를 대상으로 하거나 한도를 넘거나 비정상 종료할 때 부하를 멈추고 정리하는 절차다. root Compose의 `k6`는 `version`만 실행하므로 이 절차의 대상이 아니다. |
-| [Performance Testing Incident Runbook](0064-performance-testing.md) | `RUN-0064` | 공유 서비스에 영향을 주는 k6·Locust LAB 부하 시험을 중단하고 진단하는 공통 절차다. 부하를 먼저 멈추고, root `k6` 작업 또는 독립 Locust LAB의 정확한 프로젝트를 확인한 뒤 대상 회복과 증거 완전성을 판정한다. |
-| [WireMock Recovery Runbook](0092-wiremock.md) | `RUN-0092` | WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 도달을 다루는 런북이다. |
-| [Pact Broker Recovery Runbook](0093-pact-broker.md) | `RUN-0093` | Pact Broker의 프로비저닝 실패, 비정상 상태, 401 오류, 데이터베이스 손실, 크리덴셜 교체를 다루는 복구 런북이다. |
-| [Conftest Recovery Runbook](0095-conftest.md) | `RUN-0095` | `conftest` 정책 검사 작업이 실패했을 때 원인을 찾고 수정하는 런북이다. |
+| [k6 Load Test Recovery Runbook](0061-k6.md) | `RUN-0061` | 승인된 격리 k6 실행의 준비, 취소·정리, 지표 누락 진단 |
+| [Performance Testing Incident Runbook](0064-performance-testing.md) | `RUN-0064` | 공유 서비스에 영향을 준 k6·Locust LAB 부하의 중단과 대상 회복 판정 |
+| [WireMock Recovery Runbook](0092-wiremock.md) | `RUN-0092` | 모드 이상, stub 404, 매핑 로드 실패, 메모리 한계 대응 |
+| [Pact Broker Recovery Runbook](0093-pact-broker.md) | `RUN-0093` | 프로비저닝 실패, 비정상 broker, 401, DB 손실, 자격 증명 교체 |
+| [Conftest Recovery Runbook](0095-conftest.md) | `RUN-0095` | 정책 검사 실패 단계 분리와 선언·규칙 수정 |
 
 ## Usage
 

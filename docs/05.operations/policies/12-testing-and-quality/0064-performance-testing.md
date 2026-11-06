@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Operations Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0064"
 parent_ids:
@@ -36,9 +36,9 @@ created: "2026-05-17"
 
 ## Rules
 
-- **Required**: 연결된 가이드와 구현 원본의 운영 계약을 유지한다.
-- **Allowed**: 링크와 검증 근거를 갱신하는 문서 수정을 허용한다.
-- **Disallowed**: 비밀 값, 자격 증명 덤프와 승인되지 않은 실행 환경 변경을 금지한다.
+아래 기준은 k6·WireMock·Locust 서비스별 정책(POL-0061, POL-0092, Locust 정책)이 소유한
+통제 위에 성능 시험 공통 경계만 더한다. 비밀 값과 자격 증명 덤프는 어떤 실행에서도
+기록하지 않는다.
 
 ### Operational Standards
 
@@ -49,7 +49,7 @@ created: "2026-05-17"
 
 #### 2. 환경 격리 (Environment Isolation)
 
-- **네트워크**: k6의 기존 Prometheus remote write는 `obs_net`을 사용한다. Locust는 별도 LAB Compose 프로젝트와 네트워크에서만 실행한다. 프로필·네트워크 구분만으로 호스트 자원이나 물리 장애가 격리되지는 않는다.
+- **네트워크**: k6 부하는 `quality_run.py`가 검증한 전용 internal network와 단일 WireMock peer에서만 실행하고, 지표는 run별 relay가 internal `quality_otlp_net`으로만 보낸다. root `k6` inventory job은 트래픽과 지표를 만들지 않는다. Locust는 별도 LAB Compose 프로젝트와 네트워크에서만 실행한다. 프로필·네트워크 구분만으로 호스트 자원이나 물리 장애가 격리되지는 않는다.
 - **데이터베이스**: 가능한 경우 실제 운영 DB가 아닌 복제본 또는 테스트 전용 환경을 대상으로 테스트를 수행해야 함.
 
 #### 3. 지표 관리 및 보존 (Retention)
@@ -59,12 +59,8 @@ created: "2026-05-17"
 
 ### Security Controls
 
-- **접근 제어**: k6에는 Traefik route가 없다. Locust LAB는 headless 기본 계약이며 UI를 공개하지 않는다. WireMock admin API는 인증이 없으므로 공용 경로로 노출하지 않고 내부 peer 접근도 통제한다. `perf_db`의 프로젝트별 reader/writer/verdict 권한은 SQL에서 검사한다.
+- **접근 제어**: k6에는 Traefik route와 게시 port가 없다. Locust LAB는 headless 기본 계약이며 UI를 공개하지 않는다. WireMock admin API는 인증이 없으므로 공용 경로로 노출하지 않고 내부 peer 접근도 통제한다. `perf_db`의 프로젝트별 reader/writer/verdict 권한은 SQL에서 검사한다.
 - **데이터 무결성**: 테스트 자료는 합성·비식별 fixture로 분리한다. 같은 artifact checksum의 재적재만 멱등적으로 허용하며 같은 run_id·attempt에 다른 내용이 오면 충돌로 거절한다. 성공 적재는 성능 시험 통과를 뜻하지 않는다.
-
-### Governance & Compliance
-
-이 정책은 플랫폼의 전체 성능 가용성 기준을 따르며, 모든 테스트 수행 이력은 감사(Audit) 대상이 될 수 있습니다.
 
 ## Exceptions
 

@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0093"
 parent_ids:
@@ -58,7 +58,7 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
 
 | Command | Effect |
 | --- | --- |
-| `docker compose --profile core --profile contract-testing up -d pact-broker` | 데이터베이스를 프로비저닝하고 브로커 시작 |
+| `docker compose --profile contract-testing up -d pact-broker` | `mng-pg`·`mng-pg-init` 의존성을 함께 올리고 DB를 프로비저닝한 뒤 브로커 시작 |
 | `curl -s http://127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}/diagnostic/status/heartbeat` | 자격 증명 없는 생존 확인 |
 | `pact-broker publish <dir> --consumer-app-version <sha> --broker-base-url http://127.0.0.1:${PACT_BROKER_HOST_PORT:-19292} --broker-username ${PACT_BROKER_BASIC_AUTH_USERNAME:-pact}` | 소비자 버전에 대한 pact를 기록 |
 | `pact-broker can-i-deploy --pacticipant <name> --version <sha> …` | 검증 결과를 읽음; 아무것도 쓰지 않음 |
@@ -73,14 +73,20 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
 
 ### 준비 상태·자원·데이터
 
-helper는 `mng-pg` health와 공유 init 완료를 기다린다. broker는 feature helper
-성공을 기다리며 root에서 broker 기동은 그 변경 작업을 유발할 수 있다. helper는
+`mng-pg`와 `mng-pg-init`은 `contract-testing` profile에도 속하므로 이 profile만으로
+의존성이 닫힌다. helper는 `mng-pg` health와 공유 init 완료를 기다린다. broker는
+helper 성공을 기다리므로 broker 기동은 그 DB 변경 작업을 유발할 수 있다. helper는
 자체 HTTP health가 없는 PostgreSQL 작업이다. broker health는 pact 게시·인가·검증
 이력 복구를 증명하지 않는다. 서버와 helper의 자원 한도는 Compose 템플릿이 소유한다.
 
-secret은 Compose에 값으로 적히지 않지만 wrapper가 프로세스 환경변수로 전달한다.
+secret은 Compose에 값으로 적히지 않지만 서비스 엔트리포인트가 프로세스 환경변수로 전달한다.
 이를 확인하려고 환경 전체를 출력하지 않는다. 데이터베이스가 권위 있는 영속 상태이며
 이미지·인증 변경과 삭제 전에 검증 이력·pact 보존 및 공유 DB 영향을 검토한다.
+
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES=contract-testing bash scripts/validation/validate-docker-compose.sh`
+- `python3 -m unittest tests.validation.test_compose_baseline_gates`
 
 ### Traceability
 
@@ -90,10 +96,8 @@ secret은 Compose에 값으로 적히지 않지만 wrapper가 프로세스 환�
 
 ## Troubleshooting
 
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES=contract-testing bash scripts/validation/validate-docker-compose.sh`
-- `python3 -m unittest tests.validation.test_compose_baseline_gates`
+프로비저닝 helper 실패, broker unhealthy, 401, 자격 증명 교체의 진단과 복구는
+[runbook](../../runbooks/12-testing-and-quality/0093-pact-broker.md)이 소유한다.
 
 ## Related Documents
 

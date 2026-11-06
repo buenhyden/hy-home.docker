@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0093"
 parent_ids:
@@ -45,7 +45,7 @@ verify를 할 수 있는지, 그리고 어디까지 도달할 수 있는지가 �
 
 ### 책임과 비밀 전달 경계
 
-책임자는 `@buenhyden`이다. wrapper의 프로세스 환경변수 전달은 허용된 입력 방식이나
+책임자는 `@buenhyden`이다. 서비스 엔트리포인트의 프로세스 환경변수 전달은 허용된 입력 방식이나
 Compose literal·argv·로그·pact에 비밀 값을 남기는 것은 금지된다. 새 network consumer와
 DB 보존·복원·삭제는 영향을 받는 소유자를 확인하고 승인한다. raw 환경 조회를 검증
 방법으로 사용하지 않는다.

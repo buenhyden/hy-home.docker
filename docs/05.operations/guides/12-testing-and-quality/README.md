@@ -1,10 +1,10 @@
 ---
 title: "시험과 품질 가이드"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -24,11 +24,11 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [k6 Usage Guide](0061-k6.md) | `GDE-0061` | k6는 `infra/11-quality/k6/`의 **DEV** one-shot 부하 생성기다. `testing` profile에서만 선택되며 root Compose의 `k6` service는 `version`만 실행하는 inventory/render |
-| [Performance Testing Usage Guide](0064-performance-testing.md) | `GDE-0064` | 성능 시험은 `k6`(기본 부하 발생기), WireMock(외부 HTTP 의존성 모의 서버), Locust(독립 LAB 선택 도구)로 수행한다. 이 가이드는 세 도구의 역할과 시험 입력, 결과 판정 기준을 정리한다. |
-| [WireMock Usage Guide](0092-wiremock.md) | `GDE-0092` | WireMock은 기능 검사와 mock 자체 부하 측정에 공통 `api-mock` profile로 선택되는 OPTIONAL HTTP 스텁 서버다. 개발과 테스트 중 외부 HTTP 의존성을 대신해 실제 서비스를 호출하지 않고도 소비자를 테스트할 수 있게 |
-| [Pact Broker Usage Guide](0093-pact-broker.md) | `GDE-0093` | Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소다. 소비자 테스트가 pact를 여기에 게시하고, 프로바이더 빌드가 이를 가져와 검증하며, `can-i-deploy`는 기록된 검증 결과로 답한다. 브로커 |
-| [Conftest Usage Guide](0095-conftest.md) | `GDE-0095` | Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트다. 실행 중인 컨테이너가 아니라 인프라 소스에 대해 Open Policy Agent(Rego) 규칙을 평가하므로, 시작 전에 잘못된 선언을 잡아낸다. |
+| [k6 Usage Guide](0061-k6.md) | `GDE-0061` | root `k6` inventory job과 `quality_run.py` 격리 executor의 경계, OTLP 지표 경로와 결과 해석 |
+| [Performance Testing Usage Guide](0064-performance-testing.md) | `GDE-0064` | k6·WireMock·Locust LAB의 역할, 실행 전 입력, 결과 판정과 `perf_db` 적재 기준 |
+| [WireMock Usage Guide](0092-wiremock.md) | `GDE-0092` | `api-mock` 기능·부하 모드, 추적 stub, admin API 노출 경계 |
+| [Pact Broker Usage Guide](0093-pact-broker.md) | `GDE-0093` | `contract-testing` 계약 저장소의 게시·검증 흐름, 인증, 준비 상태 |
+| [Conftest Usage Guide](0095-conftest.md) | `GDE-0095` | `policy-check` Rego 정책 검사의 규칙, 명령, 검사 범위 |
 
 ## Usage
 

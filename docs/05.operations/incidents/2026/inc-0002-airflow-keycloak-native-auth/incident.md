@@ -1,10 +1,10 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Incident"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/incident"
 status: "resolved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "inc-2026-0002"
 parent_ids:
@@ -17,8 +17,6 @@ resolved_at: "2026-09-26T22:03:08+09:00"
 # Airflow Keycloak Native Authentication Migration Incident
 
 ## Overview
-
-### Summary
 
 Airflow 3.3.1 환경에서 file ownership/DB migration 문제를 해결한 뒤
 OAuth2 Proxy ForwardAuth와 Airflow 자체 JWT가 충돌했다. Native Keycloak Auth
@@ -109,10 +107,6 @@ Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
 - `/api/v2/assets`, `/api/v2/dags/{dag}/assets/{asset}`
 - `/api/v2/dags/{dag}/dagRuns`, `/api/v2/dags/{dag}/dagRuns/{run}/hitlDetails`
 
-후속 조치의 상태는 [postmortem](postmortem.md)이 추적한다.
-
-## Follow-up
-
 ### Corrective Actions
 
 1. `RUN-0050`에 auth troubleshooting 시나리오 추가.
@@ -123,7 +117,11 @@ Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
 6. provider update 시 permission repair를 release checklist에 포함.
 7. 노출된 live token/session 폐기: 2026-09-27 완료. Keycloak `home-airflow`
    session은 0건이었고, `airflow_api_jwt_secret`을 교체해 기존 Airflow JWT를
-   무효화했다. 상세는 [postmortem](postmortem.md)에 있다.
+   무효화했다.
+
+## Follow-up
+
+후속 조치의 owner·tracking ID·검증과 상태는 [postmortem](postmortem.md)이 추적한다.
 
 ## Related Documents
 

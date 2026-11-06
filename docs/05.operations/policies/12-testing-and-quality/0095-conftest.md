@@ -1,10 +1,10 @@
 ---
 title: "Conftest Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0095"
 parent_ids:
@@ -17,8 +17,8 @@ created: "2026-09-23"
 ## Overview
 
 `infra/11-quality/conftest/policy/` 아래의 Rego 규칙은 저장소 컨테이너
-baseline의 실행 가능한 부분집합이다. 새 규칙을 추가하지 않으며 각 규칙은
-다른 정책이 이미 소유한 통제를 그대로 다시 적은 것이다.
+baseline의 실행 가능한 부분집합이다. 이 정책은 새 통제를 정의하지 않으며, 규칙을
+추가할 때도 각 규칙은 다른 정책이 이미 소유한 통제를 그대로 다시 적은 것이어야 한다.
 
 ## Scope
 
@@ -70,9 +70,11 @@ allowlist 항목이 추가될 때마다 검토한다.
 
 ## Verification
 
-`conftest verify`(정책 unit test)와 모든 Compose 파일 및 Dockerfile에 대한
-깨끗한 `conftest test`. 의도적으로 잘못된 파일은 모든 규칙에서 실패해야
-한다.
+`bash scripts/validation/check-conftest-policy.sh --mode verify`(정책 unit test)가
+통과하고, 각 규칙의 unit test가 실패 케이스를 실제로 거부해야 한다.
+`--mode corpus`는 wrapper가 준비한 Git 추적 Compose·Dockerfile corpus에서 `deny` 없이
+끝나야 한다. CI는 `leaf.conftest-policy`(`--mode corpus`)를 실행하고,
+`leaf.conftest-policy-tests`(`--mode verify`)는 local 전용이다.
 
 ## Related Documents
 
