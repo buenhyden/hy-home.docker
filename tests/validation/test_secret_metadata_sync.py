@@ -1701,7 +1701,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
         lab = self.lab_environment
         self.assertTrue(lab["required"])
         self.assertTrue(lab["optional"])
-        self.assertIn("LAB_SUPABASE_DASHBOARD_USERNAME", lab["public"])
+        self.assertFalse(
+            any(name.startswith("LAB_SUPABASE_") for name in lab["public"])
+        )
         self.assertFalse(
             any(name.startswith("SUPABASE_") for name in contract["public"])
         )
