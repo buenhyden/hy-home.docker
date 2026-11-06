@@ -143,6 +143,5 @@ absent incoming links cannot by themselves authorize deletion.
 - SPEC-0249 retired three earlier items, whose numbers stay reserved in the
   Registry: a Tombstone namespace rule, immutable Stage 98 captures, and one
   capture record per unit. Stage 98 no longer holds records.
-
 - [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)

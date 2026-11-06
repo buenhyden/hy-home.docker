@@ -19,7 +19,7 @@ and performance checks leave the platform's stability unverified. This package
 states the tooling needs of two capability tiers: platform operations
 (infrastructure as code, a private image registry, dependency updates and
 backup) and software verification (static analysis, load testing, API mocking,
-contract testing, policy checks and an SMTP sandbox). The goal is a supporting
+contract testing and policy checks; the SMTP sandbox is REQ-0011's). The goal is a supporting
 toolset that removes manual work and gives data for engineering decisions.
 
 ## Scope
@@ -62,7 +62,7 @@ toolset that removes manual work and gives data for engineering decisions.
 - **REQ-0010-FR-0002**: Provide multi-language static code analysis with quality
   gate enforcement (SonarQube) as an optional, isolated experiment capability.
   It reaches the shared management database only through an endpoint the
-  operator approves, and is reachable only from the local host until promoted.
+  operator approves, and is reachable only on the LAB host address (loopback by default) until promoted.
 - **REQ-0010-FR-0003**: Provide k6 as the default load tool. Locust is an
   optional, isolated experiment capability for Python or protocol comparisons,
   not part of the always-on HOME set.
@@ -93,7 +93,7 @@ No numbered interface requirement is issued.
   to an orchestration route is redirected to SSO.
 - **REQ-0010-FR-0002**: The static analysis capability renders on its own,
   selects no always-on HOME service, refuses to start without an approved
-  database endpoint, and publishes nothing beyond the local host.
+  database endpoint, and publishes nothing beyond the LAB host address (loopback by default).
 - **REQ-0010-FR-0003**: The default load tool reports its pinned version from
   the root composition, and the alternative load tool renders only outside it.
 - **REQ-0010-FR-0004**: The registry accepts a push and pull from the local host
@@ -110,6 +110,6 @@ No numbered interface requirement is issued.
 - **Retired requirement REQ-0021** (tooling optimization hardening): retired
   under SPEC-0169 because every clause named an implementation artifact; its
   contract lives in the tooling operations policy, and its documentation
-  traceability clause moved to REQ-0026-REQ-0010-FR-0011.
+  traceability clause moved to REQ-0026-FR-0011.
 - **Retired Terraform operations documents**: retired when OpenTofu became the
   infrastructure-as-code tool.

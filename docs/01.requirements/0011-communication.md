@@ -19,7 +19,7 @@ by mistake. This package states the mail needs of the platform: a development
 SMTP sandbox (Mailpit) that captures every test message, and a full mail
 server (Stalwart) kept as an optional, isolated experiment capability. Stalwart
 is not a HOME service: it rejects relaying, joins no HOME network and publishes
-only its admin interface on the local host. Production delivery, public
+only its admin interface on the LAB host address (loopback by default). Production delivery, public
 protocol exposure and DNS/TLS deliverability are promotion requirements, not
 current runtime claims.
 
@@ -56,8 +56,8 @@ current runtime claims.
   HOME container until a separately approved requirement adds a delivery path.
 - **REQ-0011-FR-0003**: Support UI viewing and search of captured mail.
 - **REQ-0011-FR-0004**: Mail retrieval and every browser access that leaves the
-  host must use an encrypted channel. The experimental admin interface stays
-  local-host only, and public submission over TLS is a promotion requirement.
+  host must use an encrypted channel. The experimental admin interface stays on
+  the LAB host address (loopback by default), and public submission over TLS is a promotion requirement.
 - **REQ-0011-FR-0005**: The sandbox UI requires the shared SSO (Keycloak). The
   experimental mail server's admin interface is reachable only from the local
   host and uses its own administrator credential until a promotion adds SSO.

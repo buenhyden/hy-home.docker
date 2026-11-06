@@ -20,7 +20,7 @@ processing into shared tables, and interactive SQL over those tables. Time-serie
 history is owned by the DEV TimescaleDB engine (ADR-0047) and log search by
 OpenSearch in the data tier. Stream processing and SQL analysis over Iceberg
 tables (ADR-0039) are optional capabilities that run only in the standalone
-lakehouse LAB (SPEC-0262); the root platform includes no analytics engine.
+lakehouse LAB (SPEC-0262); the root platform includes no stream-processing or SQL analytics engine.
 ksqlDB and StarRocks were removed in SPEC-0180 after the Flink and Trino live
 acceptance on 2026-09-24.
 

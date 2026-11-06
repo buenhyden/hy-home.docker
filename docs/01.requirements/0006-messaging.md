@@ -30,7 +30,7 @@ SQL processing on top of Kafka is an optional capability of the lakehouse LAB
   schema management, the connector boundary, the HTTP access path, the
   management UI, and broker and consumer metrics.
 - **Owned elsewhere**: The three-broker training topology is the
-  `kafka-cluster` LAB (SPEC-0215).
+  `kafka-cluster` LAB.
 - **Out of Scope**: Producer and consumer logic inside individual services,
   and external cloud messaging services.
 - **Non-goals**: Permanent data storage, which the data tier owns.

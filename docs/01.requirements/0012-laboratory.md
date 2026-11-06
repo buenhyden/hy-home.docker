@@ -56,7 +56,7 @@ these requirements.
   allowlist; Dozzle uses native OIDC with a gateway allowlist; Open Notebook
   uses its own password with a gateway allowlist; the MLflow browser route uses
   SSO. Direct network and API paths need separate access evidence. JupyterLab,
-  as a LAB, has no gateway route; it is reachable only on the LAB host address
+  as a LAB, has no gateway route; it is reachable only on the LAB host address (loopback by default)
   and always requires its server token.
 - **REQ-0012-FR-0004**: Root composition validation must cover the selections
   `admin` (Dozzle and RedisInsight), `notebook` (Open Notebook and SurrealDB),
@@ -114,4 +114,4 @@ No numbered interface requirement is issued.
 - **Retired requirement REQ-0022** (laboratory optimization hardening): retired
   under SPEC-0169 because every clause named an implementation artifact; its
   contract lives in the laboratory operations policy, and its documentation
-  traceability clause moved to REQ-0026-REQ-0012-FR-0011.
+  traceability clause moved to REQ-0026-FR-0011.

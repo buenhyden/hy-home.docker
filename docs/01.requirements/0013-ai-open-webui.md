@@ -76,7 +76,7 @@ No numbered interface requirement is issued.
 - **REQ-0013-FR-0001**: The interface lists the models served by the local model
   runtime over the internal AI network.
 - **REQ-0013-FR-0002**: A standard PDF is indexed in under 5 seconds with GPU
-  acceleration and is retrieved as context for a query.
+  acceleration, claimed only with separate benchmark evidence, and is retrieved as context for a query.
 - **REQ-0013-FR-0003**: History and indexed documents remain after the service
   is recreated.
 - **REQ-0013-FR-0004**: The login page offers only the identity-provider login,
