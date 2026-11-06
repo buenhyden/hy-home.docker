@@ -158,6 +158,7 @@ SPEC-0193(2026-09-30)의 rule 기준:
 #### Storage (TSDB)
 
 - Prometheus data는 `prometheus-data` volume에 저장된다.
+- Compose에는 명시적 `--storage.tsdb.retention.*` flag가 없어 upstream 기본 보존 기간이 적용된다.
 - Recording rule로 비용이 큰 PromQL expression을 미리 계산한다.
 
 ### Integration Patterns

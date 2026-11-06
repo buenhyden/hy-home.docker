@@ -175,7 +175,7 @@ Valkey 세션과 cookie/client/저장소 자격 증명은 서로 다른 복구 �
 - `trusted_ips`를 추가하거나 `trusted_proxy_ips`를 Traefik 주소 밖으로 넓혀 SSO 우회나 forwarded header spoofing 위험을 만드는 경우
 - Keycloak `/admins` group에 없는 사용자의 거부를 장애로 오해하는 경우
 
-프로세스 인자로 전달되는 Valkey credential의 증거 취급 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#rules)가 소유한다.
+Valkey credential은 프로세스 인자로 전달하지 않는다(healthcheck는 `REDISCLI_AUTH`, exporter는 `REDIS_PASSWORD`, server는 렌더된 ACL). 노출 경계와 증거 취급 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#credential-exposure-boundary)가 소유한다.
 
 ## Related Documents
 

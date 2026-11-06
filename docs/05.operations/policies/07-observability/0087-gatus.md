@@ -26,8 +26,9 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 ## Rules
 
 - 직접 host 포트는 게시하지 않고(`expose: ${GATUS_PORT}`만), 설정된 non-root identity(`${GATUS_UID:-1000}:${GATUS_GID:-1000}`),
-  read-only config bind, 쓰기 가능한 `gatus-data` mount를 Compose 소스가 선언한 그대로 유지한다.
-  `template-stateful-low`는 `read_only: false`이므로 root filesystem은 현재 쓰기 가능하다.
+  read-only root filesystem, read-only config bind, 쓰기 가능한 `gatus-data` mount를 유지한다.
+- **미준수(2026-11-06 확인):** `template-stateful-low`가 `read_only: false`라 root filesystem이 현재 쓰기
+  가능하다. owner가 기한 있는 예외로 수용하거나 Compose를 `read_only: true`와 tmpfs로 고칠 때까지 열린 항목이다.
 - UI에는 native `home-gatus` OIDC와 `gateway-standard-chain@file`을 사용한다.
   `sso-auth@file`, local-password fallback, 넓은 subject allowlist를 추가하지 않는다.
   `/metrics`는 브라우저 route 밖에 두고 승인된 모니터링 설계 없이는 외부에 노출하지

@@ -86,8 +86,9 @@ issuer를 사용한다. 경로 호환성은 미검증이며 정상 OIDC 진입�
 upstream만 `nginx.conf`에 고정돼 있다. entrypoint
 [validate-upstream-ports.sh](../../../../infra/01-gateway/nginx/scripts/validate-upstream-ports.sh)는
 두 포트가 1-65535 정수가 아니면 exit 64로 종료한 뒤에만 공식 `/docker-entrypoint.sh`를 실행한다.
-Compose가 entrypoint를 재정의하고 `command`를 두지 않으므로 image 기본 CMD가 전달되는지는
-runtime으로 확인되지 않았다. 인증서 비밀값을 공개하지 않는다. 설정은 Git,
+Compose 명세상 entrypoint를 재정의하면 image 기본 CMD도 지워진다. `command`가 없으므로 스크립트의
+`exec /docker-entrypoint.sh "$@"`는 인자 없이 실행되어 Nginx가 기동하지 않을 것으로 예상된다.
+이는 구현 결함이며 `command` 추가가 선행 조건이다(runtime 미확인). 인증서 비밀값을 공개하지 않는다. 설정은 Git,
 인증서는 private owner가 소유하고 cache/생성 설정/log/PID는 tmpfs로 재시작 시 사라질 수 있다.
 자원은 공통 `template-infra-readonly-low`(CPU 0.5, 메모리 256 MiB)를 상속한다.
 1 GiB cache 상한을 선언했다고 이 메모리 예산 안에서 그만큼 사용할 수 있다는
