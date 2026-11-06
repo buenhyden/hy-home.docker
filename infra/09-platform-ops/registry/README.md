@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 created: "2026-03-19"
 ---
 
@@ -102,7 +102,7 @@ registry/
 | Config values | 프로필: `tooling`, `registry` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-platform-ops/registry/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Networks | `obs_net`; 동일 네트워크의 peer 접근은 loopback 호스트 게시와 별개 |
-| Volumes | `registry-data-volume:/var/lib/registry:rw`, `registry-data-volume` |
+| Volumes | `registry-data:/var/lib/registry:rw`, `registry-data` |
 | Ports | `127.0.0.1:${REGISTRY_PORT:-5000}:5000`; 내부 debug/metrics 수신 포트 `5001`은 호스트에 게시하지 않음 |
 | Labels | `hy-home.tier` |
 | Secret refs | 선언되지 않음 |

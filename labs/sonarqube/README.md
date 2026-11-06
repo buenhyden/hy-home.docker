@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Code Quality"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 created: "2025-11-12"
 ---
 
@@ -128,7 +128,7 @@ backup·복원 절차가 필요합니다.
 | Config values | env 키: `SONAR_JDBC_URL`, `SONAR_JDBC_USERNAME`, `SONAR_JDBC_PASSWORD`(entrypoint가 secret `sonarqube_db_password`에서 export; image는 `_FILE` 형식을 읽지 않음), `SONAR_WEB_JAVAOPTS`, `SONAR_SEARCH_JAVAOPTS`; 프로필: `sast` |
 | Compose linkage | 독립 Compose project `hy-home-lab-sonarqube`; root include 없음 |
 | Networks | `lab_sonarqube_net`(`hy-home-lab-sonarqube`); HOME network 없음 |
-| Volumes | `sonarqube-data-volume`(`${LAB_DATA_DIR}/sonarqube/data`) -> `/opt/sonarqube/data`, `sonarqube-logs-volume`(`${LAB_DATA_DIR}/sonarqube/logs`) -> `/opt/sonarqube/logs` |
+| Volumes | `sonarqube-data`(`${LAB_DATA_DIR}/sonarqube/data`) -> `/opt/sonarqube/data`, `sonarqube-logs`(`${LAB_DATA_DIR}/sonarqube/logs`) -> `/opt/sonarqube/logs` |
 | Ports | `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}:9000` |
 | Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
 | Secret refs | `${LAB_SECRET_DIR}/sonarqube/db_password.txt`의 `lab_sonarqube_db_password`; 마운트: `/run/secrets/sonarqube_db_password` |

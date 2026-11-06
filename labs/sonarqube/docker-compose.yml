@@ -8,13 +8,13 @@ x-tier-label: &tier-label
   traefik.enable: 'false'
 
 volumes:
-  sonarqube-data-volume:
+  sonarqube-data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: ${LAB_DATA_DIR:?set isolated LAB data root}/sonarqube/data
-  sonarqube-logs-volume:
+  sonarqube-logs:
     driver: local
     driver_opts:
       o: bind
@@ -64,8 +64,8 @@ services:
         start_period: 15s,
       }
     volumes:
-      - sonarqube-data-volume:/opt/sonarqube/data:rw
-      - sonarqube-logs-volume:/opt/sonarqube/logs:rw
+      - sonarqube-data:/opt/sonarqube/data:rw
+      - sonarqube-logs:/opt/sonarqube/logs:rw
     networks:
       lab_sonarqube_net: {}
     secrets:

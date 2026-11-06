@@ -678,12 +678,10 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         service = lab["services"]["cassandra-node1"]
         self.assertTrue(service["image"].startswith("cassandra:"))
         self.assertEqual("hy-home-lab-cassandra", lab["name"])
-        self.assertIn(
-            "cassandra-node1-volume:/var/lib/cassandra:rw", service["volumes"]
-        )
+        self.assertIn("cassandra-node1-data:/var/lib/cassandra:rw", service["volumes"])
         self.assertIn(
             "${LAB_DATA_DIR:?set isolated LAB data root}",
-            lab["volumes"]["cassandra-node1-volume"]["driver_opts"]["device"],
+            lab["volumes"]["cassandra-node1-data"]["driver_opts"]["device"],
         )
         self.assertTrue(lab["networks"]["lab_cassandra_core_net"]["internal"])
 
