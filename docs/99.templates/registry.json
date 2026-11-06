@@ -136,7 +136,8 @@
       "artifact_id": "{{ARTIFACT_ID}}",
       "created": "{{CREATED}}",
       "observed_at": "{{OBSERVED_AT}}",
-      "occurred_at": "{{OCCURRED_AT}}"
+      "occurred_at": "{{OCCURRED_AT}}",
+      "review_cycle": "{{REVIEW_CYCLE}}"
     },
     "template_required_placeholders": [
       "title",
@@ -5116,7 +5117,9 @@
         242,
         243,
         246,
-        247
+        247,
+        252,
+        258
       ],
       "child_spaces": {}
     },

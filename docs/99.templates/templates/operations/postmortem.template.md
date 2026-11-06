@@ -13,6 +13,7 @@ created: "{{CREATED}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+<!-- Author prompt: When the postmortem is reviewed, add optional `reviewed_at` after `created`. -->
 <!-- Author prompt: Write body prose in Korean; keep headings, paths, identifiers, and commands unchanged. -->
 
 # {{TITLE}}

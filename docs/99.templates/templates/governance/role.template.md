@@ -22,8 +22,6 @@ skill_ids:
 
 ## Overview
 
-### Purpose
-
 {{SINGLE_RESPONSIBILITY_OF_THIS_ROLE}}
 
 ### Use When
@@ -31,6 +29,8 @@ skill_ids:
 {{INVOCATION_CONDITIONS}}
 
 ## Responsibilities
+
+### Success Criteria
 
 {{OBSERVABLE_COMPLETION_CONDITIONS}}
 
@@ -49,6 +49,8 @@ skill_ids:
 {{PRODUCED_ARTIFACTS_AND_EVIDENCE}}
 
 ## Handoff
+
+### Failure and Escalation
 
 {{STOP_CONDITIONS_AND_ESCALATION_TARGET}}
 

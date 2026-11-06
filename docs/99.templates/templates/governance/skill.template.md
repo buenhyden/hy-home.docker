@@ -22,15 +22,13 @@ metadata:
 
 {{WHEN_THIS_PROCEDURE_IS_VALID}}
 
-## Inputs
-
-### Required Inputs
-
-{{REQUIRED_INPUTS}}
-
 ### Preconditions
 
 {{PRECONDITIONS}}
+
+## Inputs
+
+{{REQUIRED_INPUTS}}
 
 ## Procedure
 
