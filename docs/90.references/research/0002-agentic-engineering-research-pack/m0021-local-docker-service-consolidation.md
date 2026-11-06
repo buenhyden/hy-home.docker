@@ -9,9 +9,9 @@ layer: "references"
 artifact_id: "RES-0002-m0021"
 parent_ids:
 - "RES-0002"
-reviewed_at: "2026-11-06"
 created: "2026-09-18"
 observed_at: "2026-09-20"
+reviewed_at: "2026-11-06"
 ---
 
 # Reference: Local Docker Service Consolidation
