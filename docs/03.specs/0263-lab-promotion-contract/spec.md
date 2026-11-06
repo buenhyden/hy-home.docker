@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Contract Specification"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -80,6 +80,11 @@ about 3 CPUs and 9 GiB:
   clashes, are owner check items in each promotion Task, not readiness
   measurements.
 
+The owner removed the supabase LAB on 2026-11-06 (version 0.4.0, work unit
+W8). This supersedes the 2026-11-05 supabase statements above: `labs/supabase/`,
+its operations documents, catalog rows and Docker socket allowance are gone,
+and no LAB binds the Docker socket.
+
 #### Observed state
 
 Observed on 2026-11-05 at `c1db5ef65`:
@@ -118,8 +123,8 @@ Observed on 2026-11-05 at `c1db5ef65`:
 - The promotion readiness check and its report.
 - Procedures for the three promotion kinds. The two replacement kinds include
   data migration, consumer cutover and rollback.
-- Bringing the 15 current LABs into the standard layout, supabase first,
-  including its move to LAB secret copies.
+- Bringing the 15 LABs present on 2026-11-05 into the standard layout, and
+  retiring the supabase LAB on 2026-11-06.
 
 ### Out of Scope
 
@@ -192,9 +197,8 @@ uses moves into the LAB location. The owner copies and moves the files. The
 agent changes Compose, catalog rows and tests, and prepares the registry
 edits.
 
-The single exception is supabase's `vector` service. It may bind the Docker
-socket read-only for log collection. `lab.py check` allows exactly that bind
-and refuses every other socket bind, including a writable one.
+No LAB binds the Docker socket. `lab.py check` refuses every socket bind,
+read-only or writable.
 
 On promotion:
 
@@ -336,9 +340,9 @@ and creation dates. No secret value is read or written.
    `labs/` root.
 2. Every LAB has a valid `promotion.yaml`, and `lab.py check` refuses a missing
    or inconsistent one.
-3. No LAB reads a HOME secret path. supabase uses `secrets/labs/supabase/`
-   for every secret, each with its catalog and registry rows. Only its
-   `vector` service's read-only Docker socket bind is allowed as a socket.
+3. No LAB reads a HOME secret path; each LAB uses `secrets/labs/<name>/` for
+   every secret, each with its catalog and registry rows. No LAB binds the
+   Docker socket.
 4. The destination rules and the three promotion procedures are written as
    operations documents. The replacement procedures cover data migration,
    consumer cutover, rollback and retirement.

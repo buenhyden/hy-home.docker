@@ -1,6 +1,6 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -29,7 +29,6 @@ Data owns its database and object-store configuration and state contracts. It
 does not own every persistent file: analytics checkpoints, application
 metadata and package-local stores stay with their consumers. Secrets, ingress
 and backup orchestration keep their owners.
-Supabase is an intact optional data platform, including its bundled interfaces.
 No package is split only to make the folder taxonomy uniform.
 
 ## Structure
@@ -42,7 +41,6 @@ No package is split only to make the folder taxonomy uniform.
 | dev-db | single TimescaleDB Community PostgreSQL and Valkey, project-scoped DB/roles and ACLs | DEV |
 | seaweedfs | shared S3 storage and Iceberg REST catalog | HOME |
 | qdrant | vector persistence for AI consumers | HOME |
-| supabase | separate application data platform | OPTIONAL |
 | neo4j | optional single-node graph persistence | OPTIONAL |
 | opensearch | optional single-node search/index storage and dashboards | OPTIONAL |
 | redisinsight | local connection/settings metadata and Redis/Valkey administration | OPTIONAL |

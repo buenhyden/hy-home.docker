@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.1.9"
+version: "1.1.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-06"
 ---
 
 # 보안 업데이트 조사 증거
@@ -54,7 +54,9 @@ NGINX stable/mainline 등 서로 다른 channel은 업그레이드 판단에서 
 이번 ROOT include 재계산에서는 111개 서비스와 44개 입력이 관측됐습니다.
 Supabase/GoTrue 13개 행은 `labs/supabase/docker-compose.yml`에 속하므로 현재 ROOT 장부에서
 제외하고 원래 행은 `historical_lab_entries`에 보존했습니다. 이 정합화는 실제
-scan·공급자 재조회·HOME 배포 결과를 만들지 않습니다.
+scan·공급자 재조회·HOME 배포 결과를 만들지 않습니다. 2026-11-06 owner 결정으로 Supabase LAB을
+제거하면서 이 13개 행의 현재 위치는 `current_scope: removed`, `current_compose_file: null`이
+되었고 원래 ROOT 행은 그대로 둡니다(SPEC-0263 W8).
 
 2026-10-22의 공개 공급자 재조회는 기존 `root_official_refresh/observations`에
 92건을 추가했습니다(85건 성공, 7건 실패 보존). 이번 해석은 같은 객체의

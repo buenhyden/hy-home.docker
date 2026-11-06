@@ -84,7 +84,7 @@ class RenderedModels(unittest.TestCase):
 
 class RootClosureTests(RenderedModels):
     def test_wildcard_root_render_selects_no_lab_service(self) -> None:
-        self.assertEqual(15, len(self.labs))
+        self.assertEqual(14, len(self.labs))
         root_services = set(self.root["services"])
         for name, lab in self.labs.items():
             with self.subTest(lab=name):

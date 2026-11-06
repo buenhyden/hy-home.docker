@@ -402,8 +402,11 @@ def source_hashes(root):
     if helper.has_root_gotrue_service(documents, selected):
         raise ContractError("root_gotrue_forbidden")
     selected_auth = selected.get("auth_alias") if not lab_present else None
+    # The supabase LAB, the last Auth consumer of the alias, was removed on
+    # 2026-11-06 (SPEC-0263 W8): an Auth alias is no longer required, and the
+    # old source/path guards stay fail-closed.
     _validate_source_documents(
-        documents, require_auth=not lab_present, selected_auth_alias=selected_auth
+        documents, require_auth=False, selected_auth_alias=selected_auth
     )
     return hashes
 

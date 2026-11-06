@@ -756,7 +756,7 @@ files:
   - tests/lib/ops/test_secret_structure.py
 - path: scripts/lib/ops/smtp_contract.py
   kind: library
-  authority: docs/05.operations/runbooks/15-labs/0029-supabase.md
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: runtime
   consumers:
@@ -771,7 +771,7 @@ files:
   - tests/validation/test_smtp_lock_inheritance.py
 - path: scripts/lib/ops/smtp_public_source.py
   kind: library
-  authority: docs/05.operations/runbooks/15-labs/0029-supabase.md
+  authority: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
   lifecycle: active
   mutation: none
   consumers:

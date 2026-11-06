@@ -25728,8 +25728,8 @@
   "historical_lab_entries": [
     {
       "service": "analytics",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "analytics",
@@ -25790,8 +25790,8 @@
     },
     {
       "service": "auth",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "auth",
@@ -25852,8 +25852,8 @@
     },
     {
       "service": "db",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "db",
@@ -25914,8 +25914,8 @@
     },
     {
       "service": "functions",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "functions",
@@ -25976,8 +25976,8 @@
     },
     {
       "service": "imgproxy",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "imgproxy",
@@ -26031,8 +26031,8 @@
     },
     {
       "service": "kong",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "kong",
@@ -26093,8 +26093,8 @@
     },
     {
       "service": "meta",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "meta",
@@ -26155,8 +26155,8 @@
     },
     {
       "service": "realtime",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "realtime",
@@ -26217,8 +26217,8 @@
     },
     {
       "service": "rest",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "rest",
@@ -26279,8 +26279,8 @@
     },
     {
       "service": "storage",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "storage",
@@ -26341,8 +26341,8 @@
     },
     {
       "service": "studio",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "studio",
@@ -26403,8 +26403,8 @@
     },
     {
       "service": "supavisor",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "supavisor",
@@ -26465,8 +26465,8 @@
     },
     {
       "service": "vector",
-      "current_scope": "lab",
-      "current_compose_file": "labs/supabase/docker-compose.yml",
+      "current_scope": "removed",
+      "current_compose_file": null,
       "disposition": "OUT_OF_SCOPE",
       "original_root_row": {
         "service": "vector",

@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -54,8 +54,7 @@ created: "2026-06-04"
   Compose path와 정확한 service identity만 매핑한다. LAB 서비스는 root에서 제외한 독립
   `labs/<topology>/docker-compose.yml`, 같은 폴더의 `README.md`와 `promotion.yaml`,
   `labs/.env.example`/비공개 `labs/.env`와 필요한 LAB source를 함께 갱신한다. LAB 전용 secret은 `secrets/labs/`에 두되 기존 canonical
-  secret을 소비하는 경우 값을 복제하지 않고 검토된 상대 경로만 참조한다. Supabase의
-  COMM-002 SMTP 원본과 10개 기존 secret source가 이 공유 참조 계약을 사용한다.
+  secret을 소비하는 경우 값을 복제하지 않고 검토된 상대 경로만 참조한다.
   Guide는 독립 LAB Compose와 정확한 service identity를 직접 연결하며 별도 registry를
   만들지 않는다.
 - HOME profile membership과 LAB 분리 vocabulary는 [POL-0078](0078-compose-profile-vocabulary.md)에서 관리한다. root의 전체 profile render도 LAB를 선택할 수 없다. root include 제외는 실행 중 container의 정지·재시작 정책 변경이나 데이터 삭제가 아니다.
@@ -156,9 +155,6 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 - Operational
   - [mng-db](../../../../infra/04-data/mng-db/README.md): 운영 DB 파라미터 baseline 확정, 슬로우쿼리 게이트와 회귀 점검 추가
     ([OPER](../../guides/05-databases-and-storage/0028-management-database.md), [RUN](../../runbooks/05-databases-and-storage/0028-management-database.md))
-  - [supabase LAB](../../../../labs/supabase/README.md): 독립 13-service source의 현재
-    헬스체크 갭 보강, 내부 서비스별 최소 자원 상한 지정, 핵심 컴포넌트 외부노출 재검토
-    ([OPER](../../guides/15-labs/0029-supabase.md), [RUN](../../runbooks/15-labs/0029-supabase.md))
 - Relational
   - [postgresql-cluster](../../../../labs/postgresql-ha/README.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
     ([OPER](../../guides/15-labs/0031-postgresql-cluster.md), [RUN](../../runbooks/15-labs/0031-postgresql-cluster.md))

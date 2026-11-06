@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Contract Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -86,6 +86,14 @@ Owner decisions on 2026-11-06, following the recommendations:
 - The LAB budget is the host budget (10 CPUs / 27924 MiB), because
   `lab.py check` sums running HOME reservations; the owner sets it in
   `labs/.env`.
+
+### Criterion 3 moved to TSK-0003
+
+On 2026-11-06 the owner removed the supabase LAB (SPEC-0263 0.4.0, W8).
+Criterion 3's acceptance row moved from this Task to
+[TSK-0003](tsk-0003-retire-supabase-lab.md), which now owns it. The open
+supabase seed-file rows E6, E12, E58 and E68 no longer have a subject; this
+Task keeps them as history and no longer gates on them.
 
 ### Decisions
 
@@ -464,7 +472,6 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | --- | --- | --- | --- | --- |
 | 1 | accepted | E49 | owner request 2026-11-05; PASS, no unresolved required row | @buenhyden |
 | 2 | accepted | E50 | owner request 2026-11-05; PASS, no unresolved required row | @buenhyden |
-| 3 | pending | E3, E5, E7, E8, E10, E36, E60, E61, E62 | open: E6, E12, E58, E68 need the supabase seed files | @buenhyden |
 | 4 | accepted | E28, E29, E30, E31, E32, E33, E37, E67 | owner request 2026-11-05; PASS, E27 resolved by E67 | @buenhyden |
 | 5 | pending | E13, E15, E18, E19, E20, E22, E24, E26, E52, E63, E64, E65, E66 | open: E25, E54 (postgresql-ha resources FAIL); owner keeps it pending, 2026-11-06 | @buenhyden |
 | 6 | accepted | E29, E30, E31, E32, E33, E34, E37, E69 | owner request 2026-11-05; PASS, E35 resolved by E69 | @buenhyden |

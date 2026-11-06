@@ -517,17 +517,12 @@ check_04_data() {
   local tier="04-data"
   start_tier "$tier"
 
-  local supabase_compose="labs/supabase/docker-compose.yml"
   local valkey_compose="infra/04-data/dev-db/docker-compose.yml"
 
-  check_file "$supabase_compose"
   check_file "$valkey_compose"
 
-  check_contains "$supabase_compose" "common-optimizations.yml" "supabase template inheritance missing"
   check_contains "$valkey_compose" "common-optimizations.yml" "valkey template inheritance missing"
 
-  check_service_healthcheck "$supabase_compose" "db"
-  check_service_healthcheck "$supabase_compose" "auth"
   check_service_healthcheck "$valkey_compose" "dev-valkey"
 
   local redisinsight_compose="infra/04-data/redisinsight/docker-compose.yml"
@@ -658,7 +653,7 @@ check_10_communication() {
   local tier="10-communication"
   start_tier "$tier"
 
-  # Stalwart is a standalone LAB (SPEC-0262), checked here like labs/supabase/docker-compose.yml.
+  # Stalwart is a standalone LAB (SPEC-0262), checked here from its labs/ folder.
   local mail_compose="labs/stalwart/docker-compose.yml"
   check_file "$mail_compose"
   check_contains "$mail_compose" "service: template-infra-readonly-med" "stalwart template inheritance missing"
@@ -722,7 +717,7 @@ MAILPIT_HEALTH
 check_12_analytics() {
   local tier="12-analytics"
   start_tier "$tier"
-  # Analytics LAB sources (SPEC-0262), outside the root like labs/supabase/docker-compose.yml.
+  # Analytics LAB sources (SPEC-0262), outside the root under labs/.
   # Lakehouse (SPEC-0180 S12): an edited catalog key degrades silently at run
   # time, and the table identity must never gain policy or bucket deletion.
   local table_bucket="labs/lakehouse/seaweedfs-table-bucket.sh"

@@ -1,6 +1,6 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.6.0"
+version: "1.6.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -55,7 +55,7 @@ networks beside it, then it left the services and the root.
 | `kafka_net` | 10.250.6.0/24 | brokers, Schema Registry, Connect, REST Proxy, kafbat UI, exporter, init | broker clients |
 | `secrets_net` | 10.250.7.0/24 | OpenBao and its agent | agent → secret store |
 | `ai_net` | 10.250.8.0/24 | Ollama, its exporter, Open WebUI, Qdrant, Open Notebook, SurrealDB, MLflow | AI clients → model, vector and tracking backends |
-| `airflow_net`, `n8n_net`, `supabase_net`, `terrakube_net` | 10.250.10–13.0/24 | the application's own services and private stores | application-internal |
+| `airflow_net`, `n8n_net`, `terrakube_net` | 10.250.10.0/24, 10.250.11.0/24, 10.250.13.0/24 | the application's own services and private stores | application-internal |
 | `mail_net` | 10.250.14.0/24 | Mailpit; no other root service joins it | SMTP capture on Mailpit 1025 |
 | `quality_otlp_net` | 10.250.17.0/24, internal | Alloy and the per-run k6 metrics relays that `metrics_relay.py` attaches | relay → authenticated Alloy OTLP receiver 4319 (SPEC-0214) |
 | `dev_data_net` | 10.250.15.0/24 | `dev-pg`, `dev-valkey`, their exporters and provision jobs, Kafka Connect, RedisInsight | development client → dev PostgreSQL/Valkey |

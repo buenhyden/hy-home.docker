@@ -571,7 +571,7 @@ class CollisionAndBudgetTests(unittest.TestCase):
                 ({"LAB_X_RESULT_DIR": repo}, repo + "/.git/hooks", False),
                 ({"LAB_X_RESULT_DIR": home}, home + "/.ssh/authorized_keys", False),
                 (
-                    {"LAB_SUPABASE_DOCKER_SOCKET_LOCATION": "/var/run/docker.sock"},
+                    {"LAB_X_DOCKER_SOCKET_LOCATION": "/var/run/docker.sock"},
                     "/var/run/docker.sock",
                     True,
                 ),
@@ -1149,7 +1149,7 @@ def lab_repo(root: pathlib.Path, name: str, promotion: dict) -> pathlib.Path:
 
 
 class LabLayoutAndManifestTests(unittest.TestCase):
-    """SPEC-0263 sections 1-3: folder entrypoint, manifest, socket exception."""
+    """SPEC-0263 sections 1-3: folder entrypoint, manifest, no Docker socket."""
 
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()
@@ -1267,7 +1267,7 @@ class LabLayoutAndManifestTests(unittest.TestCase):
         del undecided["target"]
         self.assertEqual([], self.problems(undecided))
 
-    def test_socket_allowed_only_for_supabase_vector_read_only(self) -> None:
+    def test_no_lab_may_bind_the_docker_socket(self) -> None:
         env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../../secrets/labs"}
 
         def bind(name, service_name, source, read_only):
@@ -1283,8 +1283,9 @@ class LabLayoutAndManifestTests(unittest.TestCase):
             found = lab.footprint(model(f"hy-home-lab-{name}", {service_name: spec}))
             return lab.source_allowlist_problems({name: found}, env, ROOTFP)
 
-        self.assertEqual([], bind("supabase", "vector", "/var/run/docker.sock", True))
+        # The supabase `vector` exception went with the LAB (2026-11-06).
         for case in (
+            ("supabase", "vector", "/var/run/docker.sock", True),
             ("supabase", "vector", "/var/run/docker.sock", False),
             ("supabase", "kong", "/var/run/docker.sock", True),
             ("supabase", "vector", "/run/user/1000/docker.sock", True),
@@ -1293,7 +1294,7 @@ class LabLayoutAndManifestTests(unittest.TestCase):
             with self.subTest(case=case):
                 self.assertTrue(bind(*case))
 
-    def test_socket_exception_holds_across_the_check_path(self) -> None:
+    def test_socket_refusal_holds_across_the_check_path(self) -> None:
         # The checks check() composes over sources and paths: integrity,
         # allowlist and HOME collisions. HOME binds the socket read-only too.
         env = {"LAB_DATA_DIR": "/lab-data", "LAB_SECRET_DIR": "../../secrets/labs"}
@@ -1333,11 +1334,8 @@ class LabLayoutAndManifestTests(unittest.TestCase):
             mock.patch.object(lab.pathlib.Path, "exists", return_value=True),
             mock.patch.object(lab, "_has_symlink_component", return_value=True),
         ):
-            allowed = problems("supabase", "vector", socket, True)
-            self.assertEqual(
-                {"integrity": [], "allowlist": [], "collisions": []}, allowed
-            )
             for case in (
+                ("supabase", "vector", socket, True),
                 ("supabase", "vector", socket, False),
                 ("supabase", "kong", socket, True),
                 ("other", "vector", socket, True),

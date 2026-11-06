@@ -32,7 +32,6 @@ LABS = (
     "postgresql-ha",
     "sonarqube",
     "stalwart",
-    "supabase",
     "superset",
     "valkey-cluster",
 )
@@ -160,10 +159,7 @@ class LabRenderTests(unittest.TestCase):
                     self.assertTrue(secret["file"].startswith(prefix), secret["file"])
 
     def test_lab_secret_paths_use_lab_root(self) -> None:
-        self.assert_secret_paths(name for name in LABS if name != "supabase")
-
-    def test_lab_secret_paths_use_lab_root_supabase(self) -> None:
-        self.assert_secret_paths(["supabase"])
+        self.assert_secret_paths(LABS)
 
 
 if __name__ == "__main__":

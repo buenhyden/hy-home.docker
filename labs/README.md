@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB source"
-version: "0.3.1"
+version: "0.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 created: "2026-10-12"
 ---
 
@@ -32,13 +32,12 @@ source 경로와 공개 구성의 탐색입니다. 실제 기동, 이미지 업�
 모든 LAB은 `labs/<name>/` 폴더 하나입니다(SPEC-0263). 폴더에는 진입점
 `docker-compose.yml`, 서비스 `README.md`, 승격 manifest `promotion.yaml`과 LAB이 쓰는
 build source·설정·helper·Grafana 대시보드가 함께 있습니다. `labs/` root에는 이 README와
-공유 `.env.example`만 둡니다.
+공유 `.env.example`만 둡니다. Supabase LAB은 2026-11-06 owner 결정으로 제거했습니다(SPEC-0263 W8).
 
 | LAB | Entry point와 안내 | 승격 manifest | Source 자산 |
 | --- | --- | --- | --- |
 | PostgreSQL HA | [Compose](postgresql-ha/docker-compose.yml), [안내](postgresql-ha/README.md) | [promotion.yaml](postgresql-ha/promotion.yaml) | config·wrapper·초기화 SQL·etcd·HAProxy 대시보드 |
 | Valkey Cluster | [Compose](valkey-cluster/docker-compose.yml), [안내](valkey-cluster/README.md) | [promotion.yaml](valkey-cluster/promotion.yaml) | config·scripts·대시보드 |
-| Supabase | [Compose](supabase/docker-compose.yml), [안내](supabase/README.md) | [promotion.yaml](supabase/promotion.yaml) | 독립 13개 서비스·canonical SMTP 소비자 |
 | Locust | [Compose](locust/docker-compose.yml), [안내](locust/README.md) | [promotion.yaml](locust/promotion.yaml) | build source |
 | Cassandra | [Compose](cassandra/docker-compose.yml), [안내](cassandra/README.md) | [promotion.yaml](cassandra/promotion.yaml) | 대시보드 |
 | CouchDB | [Compose](couchdb/docker-compose.yml), [안내](couchdb/README.md) | [promotion.yaml](couchdb/promotion.yaml) | [initializer](couchdb/couchdb-cluster-init.sh) |
@@ -67,7 +66,6 @@ build source·설정·helper·Grafana 대시보드가 함께 있습니다. `labs
 | [CouchDB](couchdb/README.md) | 문서 동기화 저장소 | `couchdb` | 독립 LAB |
 | [MongoDB](mongodb/README.md) | 문서 저장소·replica set | `mongodb` | 독립 LAB |
 | [OpenSearch Cluster](opensearch-cluster/README.md) | 세 노드 검색 토폴로지 | `opensearch-cluster` | HOME 단일 노드와 별개 |
-| [Supabase](supabase/README.md) | 독립 백엔드 플랫폼·GoTrue | `supabase` | LAB 상태·입력과 HOME canonical 시크릿 소비 계약 |
 | [Locust](locust/README.md) | 독립 부하 검증 image source | `labs/locust/docker-compose.yml` | root include와 HOME 상태를 공유하지 않음 |
 
 SPEC-0262로 root에서 옮긴 LAB은 다음과 같습니다. LAB은 HOME network에

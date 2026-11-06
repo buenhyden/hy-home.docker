@@ -1,10 +1,10 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.4.5"
+version: "1.4.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0001"
 created: "2026-06-04"
@@ -45,9 +45,6 @@ created: "2026-06-04"
 - **약화 예외가 아닌 것**:
   - `restart: "no"`인 job은 healthcheck가 필요 없다. lifecycle 사실이므로 예외로 등록하지 않는다.
   - secret을 읽지 않는 서비스에는 Docker secret이 필요 없다(비적용).
-  - Supabase LAB의 업스트림 서비스 키(`db`, `auth` 등)는 이유가 등록된 container
-    이름을 유지하고 `hostname`은 서비스 이름을 쓴다. 현재 예외 소유자는
-    `labs/supabase/naming-exceptions.json`이며 root naming 예외와 중복하지 않는다.
 - **Disallowed**:
   - wildcard 서비스·파일·scope, 미등록 control, 중복 예외
   - 실제 서비스가 없는 예외(고아), 서비스가 이미 기준을 지키는 예외(퇴역 대상), 실제 값과 다른 `allowed_value`
