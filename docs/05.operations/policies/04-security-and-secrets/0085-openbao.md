@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.9.0"
+version: "0.10.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -76,7 +76,7 @@ service-account/namespace/audience 바인딩을 유지한다. 실제 설치된 �
 Root 토큰은 bootstrap, break-glass, 그리고 아래 유지보수 window의 임시 root(W1c·W2·W7과 이전 root 정리) 용도로만 사용한다. 다음 사항이 모두 동일한 유지보수
 기록 안에서 검증되기 전에는 마지막으로 사용 가능한 root 토큰을 폐기하지 않는다: human
 OIDC 로그인이 성공한다, 결과로 나온 OpenBao 토큰이 기대한 non-root policy를 가진다,
-AppRole renderer 접근이 여전히 선언된 두 KV data와 해당 metadata 경로만 읽는다, 배포된 OpenBao 버전의 root
+AppRole renderer 접근이 여전히 [renderer ACL](../../../../infra/03-security/openbao/config/policies/renderer.hcl)에 선언된 9개 소비자 KV data와 해당 metadata 경로만 읽는다, 배포된 OpenBao 버전의 root
 recovery 방법이 문서화되어 있다. 그 뒤 root를 폐기하고 거부 결과를 같은 기록에 남긴다.
 
 Traceability에 문서화된 upstream OpenBao 릴리스 라인은 `operator generate-root`에
@@ -98,7 +98,7 @@ listener에서 명시적으로 승인된 break-glass 예외로만 다시 활성�
 버전 변경은 [POL-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 적용한다.
 Raft 상태와 Agent bootstrap/output, offline custody는 서로 다른 보호 입력이며
 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 OpenBao state-owner retention·암호화·복구
-기준을 함께 적용한다. renderer는 선언된 두 KV data 경로만 read하며 unused template가
+기준을 함께 적용한다. renderer는 renderer ACL에 선언된 9개 KV data 경로(Keycloak, Grafana, OAuth2 Proxy, Kafbat, Dozzle, Gatus, Airflow, Open WebUI, Superset)와 각 metadata만 read하며 unused template가
 있다는 이유로 권한을 넓히지 않는다. Agent 재생성은 secret authority 복원이 아니다.
 
 Raft upgrade 전 backup과 독립 stateful recovery 계약 검토가 필요하다. 승인된
@@ -124,6 +124,68 @@ HOME 유지보수 window(절차는 RUN-0105; SPEC-0243이 도입했고 삭제됨
 - window에서 쓴 operator token은 폐기하고, 값이나 accessor는 기록하지 않는다. 예외는 둘이다.
   server가 sealed라 폐기할 수 없는 token은 OIDC 최대 TTL(4시간) 안에 만료되며 그 사실을 기록한다.
   위 OIDC 장애로 root를 남길 때는 operator token 파일도 함께 남기고 OIDC 복구 뒤 폐기한다.
+
+### P01 Native Trust and Audit Gate
+
+정상 경로는 내부 native TLS와 검증된 CA/SAN이다. bootstrap key/CA trust는 해당
+OpenBao에만 의존하지 않는다. wrapping SecretID의 creation path·짧은 TTL·1회 사용과
+제한 role fetch/render version을 검증하며 sink 존재는 readiness가 아니다. Agent에
+Docker socket을 주거나 무제한 restart로 인증 실패를 숨기지 않는다.
+
+config-owned HMAC file audit를 유지하며 모든 필수 backend 실패 시 업무 요청의
+실패/지연을 수용한다. health 응답은 audit 증거가 아니며 audit 비활성화로 성공시키지
+않는다. 실제 filesystem 용량, rotation owner/schedule/보존, 실패 알림을 HOME에서
+검증해야 한다. rotation은 host logrotate 규칙(`/etc/logrotate.d/openbao`)과 기존
+`logrotate.timer`의 시간 단위 drop-in이 맡는다. 회전이 멈춰 `audit.json.1`이 계속 커지는 경우를
+알리는 경보는 아직 없으며, 이 운영 공백은 owner @buenhyden이 맡고 logrotate 실패나 audit 파일
+정체 경보를 더하면 닫는다. 기존 single-file custody 예외는 미해결 상태로 보존한다. P01 격리 시험은
+그 예외를 종료하거나 HOME 복구 자료를 만들어내지 않는다. P06 확대는 실제 cold boot·
+RUN-0105 5단계 custody 기록(SPEC-0242)·선정 snapshot 복구 수용 이후만 허용한다.
+
+고정 runtime의 미사용 SecretID 만료 결함(GHSA-7m59-mp95-w6ph)은 TTL·wrapping·1회 사용 선언으로
+해결됐다고 간주하지 않는다. 수정 버전 검증과 HOME gate 전에는 배포·P06 확대를 보류하며,
+미사용 발급의 명시적 폐기와 거부를 별도로 확인한다. 상세 근거는 RUN-0105의 [Current candidate and preserved residual](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md#current-candidate-and-preserved-residual)을 따른다.
+
+### Versioned issuance identity control
+
+새 renderer issuance는 `schema_version: 2` journal과 `issuance_id`를 사용하며,
+`issuance_id`와 legacy `nonce`는 동일해야 한다. v2 accessor metadata는
+`issuance_schema: "2"`, `issuance_id`, `sec01_nonce`를 모두 포함하고 두 identity 값을
+일치시켜야 한다. v1 journal과 anchor의 version 없는 역사적 정확한 형태는 호환 대상으로
+보존한다.
+
+journal과 활성 anchor의 version·identity가 정확히 같고, accessor metadata가 해당 journal
+version에서 유도한 전체 metadata와 정확히 같은 경우만 정합화할 수 있다. completion witness는
+중단된 정리의 복구를 허용하는 별도 기록이다. cross-version 조합, alias 불일치, 복수 accessor는
+accessor 폐기 전에 차단한다. 이전 발급을 정합화한 같은 실행은 새 SecretID를 발급하지 않는다.
+이 통제는 HOME의 credential, custody, snapshot 또는 recovery 수용을 증명하지 않으며 해당 실제
+입력이 확정될 때까지 HOME 적용을 금지한다.
+
+### P02 공개 catalog 통제
+
+catalog와 schema는 공개 분류·보존 계약의 단일 원천이다. 값·값의 hash·token·실제 KV
+payload를 넣거나 같은 ID를 별도 inventory로 복제하지 않는다. `source_recorded_at`은
+공개 원본의 기록 날짜이며 runtime 증거 날짜로 승격하지 않는다.
+
+destination plan의 기본값은 `BLOCKED_P01`이며 mount·field·UID/GID·mode는 null이다.
+`DEPLOYED`는 delivered lane이 `CONFIRMED`인 `IMPLEMENT` 항목에만 허용하며 실제 mount·
+KV path·field·출력 UID/GID·mode와 delivery `openbao_agent`를 기록한다. ACL·reload·
+restart·rotation은 그때도 `BLOCKED_P01`이다. 이를 바꾸려면 해당 소비자·신원·경로와
+복구 경계를 후속 검토해야 한다. `CONFIRMED` lane의 증거 pointer는 구조적 기록일 뿐,
+실제 소비·이관·rotation·복구를 별도로 확인하지 않은 수용을 허용하지 않는다.
+
+canonical `COMM-002`와 alias `COMM-003`, crypto/bootstrap/recovery/LAB/unknown/migrated/
+retired 또는 이미 observed/consumed인 항목의 재생성을 거부한다. alias는 별도 credential,
+파일 생성 또는 KV 경로를 만들 수 없다. COMM-003 실제 폐기는 SMTP01만 실행하며,
+PG-020의 초기화·복구 보존 판정을 변경하지 않는다. `UNUSED_DELETE`도 source, runtime,
+jobs, backup/restore, external 소비자와 복구 증거를 확인하기 전에는 삭제 승인이 아니다.
+
+CLI 입력은 네 추적 공개 파일로 한정한다. `render`는 operator-owned 경로와 regular,
+single-link README 및 no-follow 조건을 충족한 `.agent-work/p02-views`의 네 공개 출력만
+갱신한다. private metadata·환경·KV·HOME 또는 기존 공개 원본을 덮어쓰지 않는다.
+상속 lock은 참여하는 협력 writer의 경계이므로 CLN이나 비참여 writer의 동시 쓰기 중지는
+별도로 확인한다. staging 일치·비활성 profile·traffic zero·source search zero를 실제
+consumer zero 또는 운영 수용 증거로 보고하지 않는다.
 
 ## Exceptions
 
@@ -181,65 +243,7 @@ swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 
 | 암호화 안 된 swap | host `/swap.img`가 암호화되지 않아 tmpfs의 custody·token page가 disk로 나갈 수 있고 `shred`가 그 사본을 지우지 못한다 | swap 암호화, 또는 window 동안 swap 끄기 |
 | sealed 정리의 관리 접근 상실 | server가 sealed인 채 window가 멈추면 OIDC 확인 없이 root custody를 지운다. 복구는 share 2개로 unseal한 뒤 OIDC operator와 W1 절차 | 정리 전에 unseal할 수 있는 검토된 절차 |
 | 남겨 둔 W2 custody | W2가 INDETERMINATE로 끝나면 snapshot 전용 token(최대 720시간)이 tmpfs에 남고, 다음 window의 W2·W3는 BLOCKED다 | 검토된 W2 복구 절차 |
-| 만료 없는 renderer token | SecretID가 1회용이라 renderer AppRole은 24시간 periodic token을 준다(2026-10-21 owner 수용, 지금 HOME과 같은 방식). Agent가 갱신하는 한 만료가 없어, sink token을 복사한 쪽도 계속 갱신할 수 있다. 권한은 Keycloak·Grafana KV 2개 읽기이고 sink는 0600이며, 갱신이 멈추면 24시간 안에 만료된다. W5 재발급은 이전 Agent token을 폐기하지 않는다 | W5에서 이전 Agent token을 폐기하는 검토된 절차, 또는 재인증 없이 유지되는 유한 수명 |
-
-### P01 Native Trust and Audit Gate
-
-정상 경로는 내부 native TLS와 검증된 CA/SAN이다. bootstrap key/CA trust는 해당
-OpenBao에만 의존하지 않는다. wrapping SecretID의 creation path·짧은 TTL·1회 사용과
-제한 role fetch/render version을 검증하며 sink 존재는 readiness가 아니다. Agent에
-Docker socket을 주거나 무제한 restart로 인증 실패를 숨기지 않는다.
-
-config-owned HMAC file audit를 유지하며 모든 필수 backend 실패 시 업무 요청의
-실패/지연을 수용한다. health 응답은 audit 증거가 아니며 audit 비활성화로 성공시키지
-않는다. 실제 filesystem 용량, rotation owner/schedule/보존, 실패 알림을 HOME에서
-검증해야 한다. rotation은 host logrotate 규칙(`/etc/logrotate.d/openbao`)과 기존
-`logrotate.timer`의 시간 단위 drop-in이 맡는다. 회전이 멈춰 `audit.json.1`이 계속 커지는 경우를
-알리는 경보는 아직 없으며, 이 운영 공백은 owner @buenhyden이 맡고 logrotate 실패나 audit 파일
-정체 경보를 더하면 닫는다. 기존 single-file custody 예외는 미해결 상태로 보존한다. P01 격리 시험은
-그 예외를 종료하거나 HOME 복구 자료를 만들어내지 않는다. P06 확대는 실제 cold boot·
-RUN-0105 5단계 custody 기록(SPEC-0242)·선정 snapshot 복구 수용 이후만 허용한다.
-
-### Versioned issuance identity control
-
-새 renderer issuance는 `schema_version: 2` journal과 `issuance_id`를 사용하며,
-`issuance_id`와 legacy `nonce`는 동일해야 한다. v2 accessor metadata는
-`issuance_schema: "2"`, `issuance_id`, `sec01_nonce`를 모두 포함하고 두 identity 값을
-일치시켜야 한다. v1 journal과 anchor의 version 없는 역사적 정확한 형태는 호환 대상으로
-보존한다.
-
-journal과 활성 anchor의 version·identity가 정확히 같고, accessor metadata가 해당 journal
-version에서 유도한 전체 metadata와 정확히 같은 경우만 정합화할 수 있다. completion witness는
-중단된 정리의 복구를 허용하는 별도 기록이다. cross-version 조합, alias 불일치, 복수 accessor는
-accessor 폐기 전에 차단한다. 이전 발급을 정합화한 같은 실행은 새 SecretID를 발급하지 않는다.
-이 통제는 HOME의 credential, custody, snapshot 또는 recovery 수용을 증명하지 않으며 해당 실제
-입력이 확정될 때까지 HOME 적용을 금지한다.
-
-### P02 공개 catalog 통제
-
-catalog와 schema는 공개 분류·보존 계약의 단일 원천이다. 값·값의 hash·token·실제 KV
-payload를 넣거나 같은 ID를 별도 inventory로 복제하지 않는다. `source_recorded_at`은
-공개 원본의 기록 날짜이며 runtime 증거 날짜로 승격하지 않는다.
-
-destination plan의 기본값은 `BLOCKED_P01`이며 mount·field·UID/GID·mode는 null이다.
-`DEPLOYED`는 delivered lane이 `CONFIRMED`인 `IMPLEMENT` 항목에만 허용하며 실제 mount·
-KV path·field·출력 UID/GID·mode와 delivery `openbao_agent`를 기록한다. ACL·reload·
-restart·rotation은 그때도 `BLOCKED_P01`이다. 이를 바꾸려면 해당 소비자·신원·경로와
-복구 경계를 후속 검토해야 한다. `CONFIRMED` lane의 증거 pointer는 구조적 기록일 뿐,
-실제 소비·이관·rotation·복구를 별도로 확인하지 않은 수용을 허용하지 않는다.
-
-canonical `COMM-002`와 alias `COMM-003`, crypto/bootstrap/recovery/LAB/unknown/migrated/
-retired 또는 이미 observed/consumed인 항목의 재생성을 거부한다. alias는 별도 credential,
-파일 생성 또는 KV 경로를 만들 수 없다. COMM-003 실제 폐기는 SMTP01만 실행하며,
-PG-020의 초기화·복구 보존 판정을 변경하지 않는다. `UNUSED_DELETE`도 source, runtime,
-jobs, backup/restore, external 소비자와 복구 증거를 확인하기 전에는 삭제 승인이 아니다.
-
-CLI 입력은 네 추적 공개 파일로 한정한다. `render`는 operator-owned 경로와 regular,
-single-link README 및 no-follow 조건을 충족한 `.agent-work/p02-views`의 네 공개 출력만
-갱신한다. private metadata·환경·KV·HOME 또는 기존 공개 원본을 덮어쓰지 않는다.
-상속 lock은 참여하는 협력 writer의 경계이므로 CLN이나 비참여 writer의 동시 쓰기 중지는
-별도로 확인한다. staging 일치·비활성 profile·traffic zero·source search zero를 실제
-consumer zero 또는 운영 수용 증거로 보고하지 않는다.
+| 만료 없는 renderer token | SecretID가 1회용이라 renderer AppRole은 24시간 periodic token을 준다(2026-10-21 owner 수용, 지금 HOME과 같은 방식). Agent가 갱신하는 한 만료가 없어, sink token을 복사한 쪽도 계속 갱신할 수 있다. 권한은 renderer ACL의 9개 소비자 KV 읽기(수용 당시 Keycloak·Grafana 2개에서 확대됨)이고 sink는 0600이며, 갱신이 멈추면 24시간 안에 만료된다. W5 재발급은 이전 Agent token을 폐기하지 않는다 | W5에서 이전 Agent token을 폐기하는 검토된 절차, 또는 재인증 없이 유지되는 유한 수명 |
 
 ### Review Cadence
 
@@ -265,7 +269,3 @@ Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-
 - [Operations index](../../README.md)
 - [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)
 - [OpenBao unauthenticated generate-root deprecation](https://openbao.org/community/deprecation/unauthed-generate-root/)
-
-고정 runtime의 미사용 SecretID 만료 결함(GHSA-7m59-mp95-w6ph)은 TTL·wrapping·1회 사용 선언으로
-해결됐다고 간주하지 않는다. 수정 버전 검증과 HOME gate 전에는 배포·P06 확대를 보류하며,
-미사용 발급의 명시적 폐기와 거부를 별도로 확인한다. 상세 근거는 RUN-0105의 [Current candidate and preserved residual](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md#current-candidate-and-preserved-residual)을 따른다.

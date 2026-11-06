@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.8.0"
+version: "0.9.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -40,7 +40,8 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 현재 HOME Native OIDC 서비스는 Airflow, Dozzle, Grafana, Kafbat UI, OpenBao, Open WebUI, Gatus다.
   Superset은 SPEC-0262 이후 gateway router가 없는 독립 LAB의 native OIDC 앱이며, LAB origin의 redirect
   등록은 소유자 승인 전까지 미결정이다. JupyterLab·SonarQube·Stalwart LAB에는 ForwardAuth가 적용되지 않는다.
-- Airflow/Kafbat/OpenBao/Open WebUI/Gatus Traefik router는 `gateway-standard-chain@file`만 사용한다.
+- Airflow/Grafana/Kafbat/OpenBao/Open WebUI/Gatus Traefik router는 `gateway-standard-chain@file`만 사용한다.
+  Dozzle router는 여기에 `dozzle-admin-ip@docker` IP allowlist를 더하며 SSO chain은 쓰지 않는다.
 - Flower/n8n 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
   chain을 유지한다.
 - OAuth2 Proxy는 `allowed_groups = ["/admins"]`로 Keycloak `/admins` 그룹만
@@ -49,17 +50,17 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
   Matrix에 대체 인증을 명시한다. 인증 없는 route와 TCP route는 두지 않는다
   (`RouteAuthContractTests`). 아래에 기록한 Grafana 정적 예외만 이 규칙의 범위를
   제한한다.
-- Open WebUI, Gatus, Terrakube의 ForwardAuth 제거는 Task 0004의 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
-- Compose 기반 OIDC client secret은 Docker Secret으로 주입한다. OpenBao native
+- Open WebUI와 Gatus의 ForwardAuth 제거는 Task 0004 acceptance evidence 뒤에 완료됐다. Terrakube의 ForwardAuth 제거는 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
+- Compose 기반 OIDC client secret은 Docker Secret 또는 소비자 Compose가 선언한 OpenBao Agent
+  출력 파일(`/run/openbao/...`)로 주입한다. OpenBao native
   OIDC secret은 승인된 절차로 auth backend에 저장한다. 비밀값은 공개 설정에 넣지 않는다.
 - token/refresh token/id token 원문을 문서, incident, PR, task evidence에 기록하지 않는다.
 - local mkcert CA는 기존 public CA trust를 보존한 상태로 추가한다.
 - Airflow provider update 시 Keycloak permission migration 요구사항을 확인한다.
 - Kafbat RBAC `clusters`는 configured cluster name과 일치해야 한다.
 
-- Open WebUI 초기 전환은 가입을 비활성화하고 기존 gateway를 유지한다. 이메일 병합은
-  검증된 단일 기존 관리자 연결에 한정하며, 수용 검증 후 비활성화한다.
-- Gatus는 cookie/PKCE 보완과 전용 client·로그인 검증 전까지 gateway를 유지한다.
+- Open WebUI는 가입을 비활성화하고 OAuth role/group 자동 관리를 끈다. 이메일 병합은
+  검증된 단일 기존 관리자 연결에 한정했으며 수용 검증 후 비활성화 상태를 유지한다.
 - 미기동 Terrakube는 명시적 API audience 검증과 실행 검증 전까지 완료로 보지 않는다.
 
 ### Disallowed
@@ -118,10 +119,10 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 
 추가 검증:
 
-- Airflow/Kafbat/OpenBao/Open WebUI/Gatus router = gateway-only; Gatus는 외부 metrics 제외
+- Airflow/Grafana/Kafbat/OpenBao/Open WebUI/Gatus router = gateway-only, Dozzle = gateway + IP allowlist; Gatus는 외부 metrics 제외
 - ForwardAuth 대상 서비스 = SSO chain 유지
 - Keycloak client redirect URI/public URL 정합
-- Compose client secret의 Docker Secret mapping
+- Compose client secret의 Docker Secret 또는 OpenBao Agent 출력 mapping
 - OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 비밀값 없는 점검 절차로 확인
 - Airflow provider/Authorization Services bootstrap 상태
 

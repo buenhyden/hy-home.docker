@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Runbook"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -26,10 +26,6 @@ created: "2026-05-17"
 
 다음 경우에 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - 로그인 루프(무한 redirect)
 - OIDC issuer 접근 실패
 - callback `https://auth.${DEFAULT_URL}/oauth2/callback` 거부 또는 state/CSRF 오류
@@ -38,6 +34,9 @@ created: "2026-05-17"
 - `/ping` healthcheck 실패
 - readonly/tmpfs 관련 쓰기 오류
 - compose/config 변경 후 런타임 부팅 실패
+- Keycloak `/admins` group 사용자가 거부되거나 비허용 사용자가 통과할 때
+
+## Prerequisites
 
 ### Target, approval and safe evidence
 
@@ -73,7 +72,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
    - OAuth2 Proxy config의 `code_challenge_method = "S256"`와 Keycloak client flow가 호환되는지 확인한다.
    - state/CSRF 오류가 있으면 `cookie_domains=.${DEFAULT_URL}`, `cookie_secure=true`, HTTPS 진입, browser stale cookie를 함께 확인한다.
 4. session store 대응
-   - tracked default는 `OAUTH2_PROXY_SESSION_STORE_TYPE=redis`, `OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:6379`이다.
+   - tracked default는 `OAUTH2_PROXY_SESSION_STORE_TYPE=redis`, `OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:${VALKEY_PORT:-6379}`이다.
    - shared path는 `mng-valkey`; `dedicated-valkey` profile은 `oauth2-proxy-valkey`를 추가할 뿐이다. 실제 proxy backend 전환은 `OAUTH2_PROXY_VALKEY_HOST`, selected image, entrypoint secret path가 함께 맞을 때만 성립한다.
    - `/ping`은 process health이고 `/ready`는 Redis/Valkey 연결까지 확인한다.
    - Valkey credential rotation 후 기존 sessions는 무효화될 수 있으며 secret 값은 출력하지 않는다.
@@ -83,7 +82,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
    - 현재 tracked config만으로 모든 app logout이 Keycloak SSO를 끝낸다고 기록하지 않는다.
 6. 로그인 루프 대응
    - `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS`, `OAUTH2_PROXY_REDIRECT_URL` 정합성 확인
-   - `reverse_proxy=true`, trusted proxy/header 설정을 검토한다. Forwarded header spoofing을 허용하는 네트워크 경로가 있으면 중단하고 gateway boundary를 먼저 고친다.
+   - `reverse_proxy=true`, `trusted_proxy_ips = ["10.250.1.2/32"]`(Traefik)와 `trusted_ips` 미설정 상태를 검토한다. Forwarded header spoofing을 허용하는 네트워크 경로가 있으면 중단하고 gateway boundary를 먼저 고친다.
 7. readonly/tmpfs 장애 복구
    - 쓰기 대상 경로가 `/tmp`, `/run` 내인지 점검
    - 엔트리포인트/인증서 마운트 경로 권한 확인
@@ -92,8 +91,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
    - 적용 시간/범위/종료 조건을 티켓에 기록
    - Keycloak 정상화 즉시 기본 fail-closed로 복귀
 9. config lint 실패 롤백
-   - 직전 정상 커밋으로 compose/config 복원
-   - 재기동 후 `/ping`, `/ready`, 인증 플로우 재검증
+   - 아래 Rollback or Recovery의 파일 복원 절차를 따른다
 
 ### Lifecycle, helpers and change acceptance
 
@@ -124,9 +122,9 @@ docker compose --profile dedicated-valkey up -d --no-deps --no-build --pull neve
 docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
 ```
 
-첫 서비스 healthy가 아니면 exporter로 진행하지 않는다. exporter에는 healthcheck가
-없으므로 실행 여부와 수집기의 target UP/`redis_up`을 별도로 확인한다. 값·세션
-본문·password 인자가 포함될 수 있는 원문 health/inspect/process 출력은 금지한다.
+첫 서비스 healthy가 아니면 exporter로 진행하지 않는다. exporter healthcheck는
+`/metrics` 응답만 보므로 수집기의 target UP/`redis_up`을 별도로 확인한다. 값·세션
+본문·password 환경 변수가 포함될 수 있는 원문 health/inspect/process 출력은 금지한다.
 접속 전환은 일치하는 Proxy image·설정·Secret을 별도 승인된 재생성으로 적용한
 뒤 `/ready`와 신규 login으로 확인한다. 재시작만으로 build 선택이 바뀌지 않는다.
 중지는 Proxy 소비자 영향 확인 → exporter → 전용 Valkey 순서로 대상만 정하며
@@ -159,7 +157,7 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
-- 전용 Valkey credential의 process 인자 노출 경계는 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#rules)를 따른다. `docker inspect`, `docker top`, `/proc/*/cmdline`·`environ`, 원문 `.State.Health.Log`는 기록하지 않는다.
+- 전용 Valkey credential의 노출 경계는 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#rules)를 따른다. `docker inspect`, `docker top`, `/proc/*/cmdline`·`environ`, 원문 `.State.Health.Log`는 기록하지 않는다.
 
 ### Shared Valkey outage rehearsal (2026-09-22, owner-approved)
 
@@ -191,8 +189,9 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
   - `infra/02-auth/oauth2-proxy/Dockerfile`
   - `infra/02-auth/oauth2-proxy/dev.Dockerfile`
   - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
+  - `infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml`(사용한 경우)
 - [ ] 위 Lifecycle의 승인된 대상 재생성과 hash 점검 수행
-- [ ] `/ping` + 로그인 시나리오 재검증
+- [ ] `/ping`, `/ready`, 로그인 시나리오 재검증
 
 이미지 upgrade는 [RUN-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 따라 release와
 설정 변경을 검토한 뒤 격리된 issuer discovery, PKCE callback, ready, ForwardAuth

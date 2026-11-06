@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Usage Guide"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0014"
 parent_ids:
@@ -48,7 +48,7 @@ created: "2026-05-10"
 | 관리 health | `${KEYCLOAK_MANAGEMENT_PORT:-9000}`와 `/health/ready` | Keycloak compose healthcheck |
 | Proxy header | `KC_PROXY_HEADERS=xforwarded` | Keycloak compose |
 | Database | PostgreSQL 주소는 `jdbc:postgresql://mng-pg:${POSTGRES_PORT:-5432}/${KEYCLOAK_DBNAME}` | Keycloak compose |
-| 초기 관리자 | 사용자 이름은 `KEYCLOAK_ADMIN_USER`, password는 Docker Secret 파일에서 가져옴 | Keycloak compose; 값을 출력하지 않음 |
+| 초기 관리자 | 사용자 이름은 `KEYCLOAK_ADMIN_USER`, password는 `KEYCLOAK_ADMIN_PASSWORD_FILE`이 가리키는 파일에서 읽음. 기본값은 Docker Secret `/run/secrets/keycloak_admin_password`이고, OpenBao Agent 출력 `/run/openbao/auth` 아래 파일을 지정하면 OpenBao를 소비함(미지정 시 원복) | Keycloak compose; 값을 출력하지 않음 |
 
 공식 Keycloak hostname 문서는 Keycloak이 OIDC discovery와 email/action link에 URL을 게시하므로 hostname이 보안상 민감하다고 설명한다. reverse-proxy 문서는 proxy가 forwarded header를 덮어쓰도록 요구하며, 관리 port `9000`을 외부에 노출하지 말라고 경고한다. 확인 날짜: 2026-09-19.
 
@@ -65,7 +65,8 @@ created: "2026-05-10"
 `keycloak`은 `core`/`auth`/`dev`/`local`에서 선택하며 Compose는 upstream image를
 직접 사용한다. 같은 폴더의 [Dockerfile](../../../../infra/02-auth/keycloak/Dockerfile)은
 현재 `build`로 선택되지 않아 그 optimized build나 데모 keystore가 실행된다고
-볼 수 없다. 실제 entrypoint는 `/bin/sh -ec`로 두 Secret의 개행을 제거해
+볼 수 없다. 실제 entrypoint는 `/bin/sh -ec`로 `KEYCLOAK_ADMIN_PASSWORD_FILE`과
+`/run/secrets/keycloak_db_password`의 개행을 제거해
 `KC_BOOTSTRAP_ADMIN_PASSWORD`와 `KC_DB_PASSWORD`에 넣고 `kc.sh start`를 실행한다.
 `KC_DB_PASSWORD_FILE` 선언만이 비밀 읽기를 보장하는 것은 아니다.
 
@@ -76,7 +77,9 @@ created: "2026-05-10"
 realm/client를 자동 생성하는 init job이나 startup import도 현재 선언에 없다.
 
 필수 입력은 `KEYCLOAK_DATABASE`, `KEYCLOAK_DBNAME`, `KEYCLOAK_DB_USER`,
-`KEYCLOAK_ADMIN_USER`, `DEFAULT_URL`, `DEFAULT_AUTH_DIR`, DB/Admin Secret이다.
+`KEYCLOAK_ADMIN_USER`, `DEFAULT_URL`, `DEFAULT_AUTH_DIR`, `DEFAULT_SECURITY_DIR`, DB/Admin Secret이다.
+`${DEFAULT_SECURITY_DIR}/openbao/out/auth`는 `create_host_path: false`로 `/run/openbao/auth`에
+읽기 전용 mount되므로 이 디렉터리가 없으면 Keycloak이 기동하지 않는다.
 `keycloak-{config,providers,themes}`는 각각 host의 conf/providers/themes를 읽기
 전용으로 mount한다. private customization도 PostgreSQL 복구 시점과 맞춰 보존해야 한다.
 컨테이너에 host port는 없으며 `edge_net`/`mng_data_net`/`obs_net`을 쓴다.
@@ -95,20 +98,27 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 확인했다. release pin은 [Compose](../../../../infra/02-auth/keycloak/docker-compose.yml)가
 소유하며 현재 실행 버전·provider 호환성·로그인은 다시 측정하지 않았다.
 
-### Pitfalls
+### Common Checks
 
-- `KC_HOSTNAME`, OAuth2 Proxy issuer, Keycloak realm frontend URL이 서로 다른 host/scheme를 가리키는 경우
-- reverse proxy가 `X-Forwarded-*`를 append만 하고 overwrite하지 않아 forged issuer/redirect 문제가 생기는 경우
-- management port `9000`을 외부 route에 붙이는 경우
-- OAuth2 Proxy logout을 Keycloak SSO logout으로 오해하는 경우
-- CA trust가 깨져 OAuth2 Proxy가 issuer/JWKS를 가져오지 못하는 경우
-- OpenBao native OIDC 검증 성공을 다른 client의 login 검증으로 확대하는 경우
-
-검증 명령 모음은 다음과 같다.
-
-- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/hardening/check-all-hardening.sh 02-auth`
+1. Compose 설정 확인
+   - `template-infra-high` 적용 여부 확인
+   - `KC_DB_PASSWORD_FILE`, `keycloak_db_password`, `KEYCLOAK_ADMIN_PASSWORD_FILE`(기본 `keycloak_admin_password`) 연결 확인
+   - `KC_HOSTNAME=keycloak.${DEFAULT_URL}`, `KC_HTTP_ENABLED=true`, `KC_PROXY_HEADERS=xforwarded` 확인
+2. hostname/proxy 계약 확인
+   - Traefik이 `https://keycloak.${DEFAULT_URL}`로 TLS를 종료하고 Keycloak에는 HTTP `8080`으로 전달하는지 확인
+   - `X-Forwarded-*` 헤더가 proxy에서 overwrite되는지 확인한다. Client가 직접 Keycloak container에 접근해 forged header를 보낼 수 있으면 안 된다.
+   - management port `9000`은 외부 proxy 대상이 아니다.
+3. OIDC client 정합 확인
+   - OAuth2 Proxy client `home-proxy-client`의 Valid Redirect URI가 `https://auth.${DEFAULT_URL}/oauth2/callback`과 일치해야 한다.
+   - OpenBao client `home-openbao`는 OpenBao native OIDC callback을 사용하며 OAuth2 Proxy callback과 다르다.
+   - PKCE를 쓰는 client는 해당 client의 flow와 redirect URI가 서로 맞아야 한다.
+4. 헬스체크 계약 확인
+   - readiness는 management port `/health/ready`에서 확인한다.
+   - readiness success는 DB와 Keycloak process readiness 신호이며 application login acceptance 증거가 아니다.
+5. 정적 검증
+   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+   - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
 ### Runbook Handoff
 
@@ -129,26 +139,14 @@ realm export는 세션·event 등 전체 상태와 시점 일관성을 보장하
 
 ## Troubleshooting
 
-### Common Checks
+### Pitfalls
 
-1. Compose 설정 확인
-   - `template-infra-high` 적용 여부 확인
-   - `KC_DB_PASSWORD_FILE`, `keycloak_db_password`, `keycloak_admin_password` 연결 확인
-   - `KC_HOSTNAME=keycloak.${DEFAULT_URL}`, `KC_HTTP_ENABLED=true`, `KC_PROXY_HEADERS=xforwarded` 확인
-2. hostname/proxy 계약 확인
-   - Traefik이 `https://keycloak.${DEFAULT_URL}`로 TLS를 종료하고 Keycloak에는 HTTP `8080`으로 전달하는지 확인
-   - `X-Forwarded-*` 헤더가 proxy에서 overwrite되는지 확인한다. Client가 직접 Keycloak container에 접근해 forged header를 보낼 수 있으면 안 된다.
-   - management port `9000`은 외부 proxy 대상이 아니다.
-3. OIDC client 정합 확인
-   - OAuth2 Proxy client `home-proxy-client`의 Valid Redirect URI가 `https://auth.${DEFAULT_URL}/oauth2/callback`과 일치해야 한다.
-   - OpenBao client `home-openbao`는 OpenBao native OIDC callback을 사용하며 OAuth2 Proxy callback과 다르다.
-   - PKCE를 쓰는 client는 해당 client의 flow와 redirect URI가 서로 맞아야 한다.
-4. 헬스체크 계약 확인
-   - readiness는 management port `/health/ready`에서 확인한다.
-   - readiness success는 DB와 Keycloak process readiness 신호이며 application login acceptance 증거가 아니다.
-5. 정적 검증
-   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
-   - `bash scripts/hardening/check-all-hardening.sh 02-auth`
+- `KC_HOSTNAME`, OAuth2 Proxy issuer, Keycloak realm frontend URL이 서로 다른 host/scheme를 가리키는 경우
+- reverse proxy가 `X-Forwarded-*`를 append만 하고 overwrite하지 않아 forged issuer/redirect 문제가 생기는 경우
+- management port `9000`을 외부 route에 붙이는 경우
+- OAuth2 Proxy logout을 Keycloak SSO logout으로 오해하는 경우
+- CA trust가 깨져 OAuth2 Proxy가 issuer/JWKS를 가져오지 못하는 경우
+- OpenBao native OIDC 검증 성공을 다른 client의 login 검증으로 확대하는 경우
 
 ## Related Documents
 
