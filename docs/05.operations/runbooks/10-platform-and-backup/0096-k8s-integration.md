@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Runbook"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0096"
 parent_ids:
@@ -307,15 +307,18 @@ R auth list -format=json > /tmp/c/auth-mounts.json
 R policy write eso-read-platform /policies/eso-read-platform.hcl
 R policy write k8s-bootstrap /policies/k8s-bootstrap.hcl
 R policy write hy-home-operator /policies/operator.hcl
-R write auth/kubernetes/role/eso-read-platform bound_service_account_names=external-secrets bound_service_account_namespaces=external-secrets audience=vault token_policies=eso-read-platform token_ttl=1
+R write auth/kubernetes/role/eso-read-platform bound_service_account_names=external-secrets bound_service_account_namespaces=external-secrets audience=vault token_policies=eso-read-platform token_ttl=10m
 R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_explicit_max_ttl=2h
 R kv put secret/platform/argocd valkey_password=@/s/valkey
 R kv put secret/platform/prometheus-api username="$PROM_API_USER" password=@/s/prom
 R kv put secret/platform/grafana-api token=@/s/k8s/grafana-kiali.token
 R read -field=bound_service_account_namespaces auth/kubernetes/role/eso-read-platform
+R read -field=token_ttl auth/kubernetes/role/eso-read-platform
 ```
 
-예상 결과: `[external-secrets]`. `secret/platform/argocd`(Argo CD Valkey
+예상 결과: `[external-secrets]`와 `600`. 단위 없는 `token_ttl`은 초이므로 반드시
+`10m`처럼 단위를 붙인다. ESO는 로그인 직후 `lookup-self`로 token을 검증하고 사용 후
+폐기하므로 10분이면 충분하다. `secret/platform/argocd`(Argo CD Valkey
 비밀번호)와 `secret/platform/prometheus-api`(Prometheus API credential,
 `INFRA-007`과 같은 출처: `PROMETHEUS_API_USERNAME`과
 `prometheus_api_password.txt`), `secret/platform/grafana-api`(5.1a의 Kiali
@@ -336,9 +339,12 @@ R kv put secret/platform/grafana-api token=@/s/k8s/grafana-kiali.token
 R kv metadata get -format=json secret/platform/prometheus-api | grep '"current_version"'
 R kv metadata get -format=json secret/platform/grafana-api | grep '"current_version"'
 R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_explicit_max_ttl=2h
+R write auth/kubernetes/role/eso-read-platform bound_service_account_names=external-secrets bound_service_account_namespaces=external-secrets audience=vault token_policies=eso-read-platform token_ttl=10m
+R read -field=token_ttl auth/kubernetes/role/eso-read-platform
 ```
 
-예상 결과: `4`, `4`, 그리고 각 `current_version`이 최소 `1`이다.
+예상 결과: `4`, `4`, 각 `current_version`이 최소 `1`, 그리고 `600`이다. 마지막 두
+명령은 1.4.1 이전 절차로 `token_ttl=1`(1초) role을 만든 환경을 고친다.
 
 5.4.3 token role을 검증한 다음 root를 폐기한다:
 
@@ -579,6 +585,7 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 | `Must supply data or use -force` | 파라미터 없이 token create 실행 | `ttl=2h explicit_max_ttl=2h`를 포함(5.6) |
 | `bao token lookup <token>`에서 `403` | operator는 다른 토큰을 조회할 수 없음 | 토큰 자신으로 조회(5.7) |
 | bootstrap 토큰 TTL이 약 32일 | token role이 `token_ttl`/`token_max_ttl`을 무시하여 role에 상한이 없었음 | `BAO_TOKEN="$(cat /s/k8s/k8s-bootstrap.token)" bao token revoke -self`를 실행하여 폐기를 검증한다. 승인된 root 세션에서 role에 `token_explicit_max_ttl=2h`를 설정하고7200을 확인한 뒤에만 5.6으로 재발급 |
+| Argo CD `platform-eso-config`가 반복해서 Degraded, ClusterSecretStore `vault-backend`가 잠깐 `Ready=False`, `auth/token/lookup-self`가 `403` | `eso-read-platform` role의 `token_ttl=1`이 1초 token을 발급해 로그인과 `lookup-self` 사이에 만료됨; ExternalSecret 동기화는 유지 | 5.4.2의 role write로 `token_ttl=10m`을 적용하고 `600`을 확인한다. 이후 audit log의 새 login 응답 `token_ttl`과 `lookup-self` 403 중단을 확인 |
 | `ROOT STILL VALID` | 폐기 실패 | 중단하고 에스컬레이션, 세션은 열어 둠 |
 | credential 변경 이후 클러스터 remote write가 `401` | gateway와 OpenBao/ESO 값 불일치 가능 | 자동 회전하지 않고 BLOCKED 조건과 승인된 rollback을 확인; 원인 확인 후 owner 승인 범위에서 복구 |
 | Kiali가 Grafana에 연결할 수 없거나 `401`을 표시 | `secret/platform/grafana-api`가 없거나, 만료되었거나, 토큰이 삭제됨 | 토큰 재발급, 그다음 ESO refresh |
