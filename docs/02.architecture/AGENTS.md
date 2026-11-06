@@ -1,10 +1,10 @@
 ---
 title: "Architecture Agent Guide"
-version: "0.2.1"
+version: "0.2.2"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 ---
 
 # Architecture Agent Guide
@@ -33,9 +33,14 @@ operating procedures belong to Stage 01, Stage 03 and Stage 05.
 - A new ADR enters as `proposed`, the initial status of the
   `architecture-decision` lifecycle in the [Registry](../99.templates/registry.json);
   the [SDLC](../../.agents/governance/sdlc.md) owns the ADR states.
-- Supersede an accepted ADR only through a separately approved new ADR with
-  explicit `supersedes` metadata and links in both directions; do not rewrite
-  an accepted decision body.
+- Replace an accepted ADR only through a separately approved new ADR; do not
+  rewrite an accepted decision body. Per
+  [ADR-0051](decisions/0051-summarize-and-delete-retirement.md) and the
+  [documentation protocol](../../.agents/governance/documentation-protocol.md),
+  the new ADR summarizes the replaced decision in its Traceability, the old
+  ADR is deleted in the same change, and its number goes into the Registry
+  `reserved_history`. Stage 02 uses no `supersedes` or `superseded_by`
+  metadata and no `deprecated` or `superseded` status.
 - ADR-0002's `AI Agent Guidance` subsection is part of that accepted decision
   record, kept as written; current agent working rules come from this guide
   and canonical governance, not from that subsection.
