@@ -2783,7 +2783,7 @@
       "checked_at": "2026-11-02T10:17:50.127809+00:00",
       "source_revision": "e14ebe0fd5e562f8c7557bd9408a1985d9971c5c",
       "source_state": "SOURCE_REVIEW_ONLY: approved SPEC-0212-TSK-0044 P05 notifier source and tests are uncommitted on top of this HEAD. Current n8n Compose includes the P02 safe dedicated-Valkey listener/ACL/exporter correction and P03 runner isolation. No current image/build/module/native acceptance is inferred.",
-      "input_sha256": "07b103a9ce739ec565f5f42ef7166feadc71355d276f8fec2bfdfffe135b88e4",
+      "input_sha256": "6b921ef91e055238d92e5930fbe66a683dc25927935da87fbd6bc40fa5f48473",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -2800,7 +2800,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "63c92c3175c49cdd6610b5fb25f96cee7800fb7b67c8811ccb8d8008b384470e"
+          "sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
