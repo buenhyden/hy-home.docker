@@ -1,10 +1,10 @@
 ---
 title: "Superset Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0097"
 parent_ids:
@@ -61,7 +61,7 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
   승인한 redirect 등록이 따로 필요하다(미결정 항목). 그 전까지 LAB 로그인 성공을 주장하지 않는다.
 - **Secrets.** 서명 키, 데이터베이스 비밀번호, 클라이언트 시크릿은
   `superset_config.py`가 `/run/secrets`에서 읽는 Docker secret 파일이다. secret은 LAB 전용이며
-  이름은 `lab_superset_<purpose>`, 파일은 `${LAB_SECRET_DIR:-../secrets/labs}/superset/` 아래이고
+  이름은 `lab_superset_<purpose>`, 파일은 `${LAB_SECRET_DIR:-../../secrets/labs}/superset/` 아래이고
   원래 `/run/secrets/<name>` target에 mount된다. 값은 복사되지 않았으므로 운영자가 mng-pg 관리자·
   Superset DB 비밀번호, signing key, OIDC client secret의 LAB 사본을 별도 승인 아래 준비해야 한다
   (미결정 항목). OpenBao Agent 출력 bind(`/run/openbao/superset`)는 제거되었다. 비밀번호가 든

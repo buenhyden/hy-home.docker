@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Usage Guide"
-version: "2.2.2"
+version: "2.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0027"
 parent_ids:
@@ -62,7 +62,7 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 
 ### Preflight and normal use
 
-이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/mongodb/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
+이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/mongodb/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
 
 - [독립 LAB Compose](../../../../labs/mongodb/docker-compose.yml)는 root에 include되지 않으며 모든 서비스는 `mongodb` profile에 속한다.
 - `LAB_MONGODB_ROOT_USERNAME`, `LAB_MONGO_EXPRESS_USERNAME`, `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password`가 준비되어 있어야 한다.

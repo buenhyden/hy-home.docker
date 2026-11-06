@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0089"
 parent_ids:
@@ -43,7 +43,7 @@ JupyterLab LAB을 쓰는 노트북 사용자와 운영자를 위한 문서다. �
   시작된다.
 - server에는 `jupyter_token` secret이 필요하며 16자 미만의 token이면 시작을
   거부한다. secret은 LAB 전용이다. 이름은 `lab_jupyterlab_<purpose>`이고 파일은
-  `${LAB_SECRET_DIR:-../secrets/labs}/jupyterlab/` 아래에 있으며 원래 `/run/secrets/<name>` target에
+  `${LAB_SECRET_DIR:-../../secrets/labs}/jupyterlab/` 아래에 있으며 원래 `/run/secrets/<name>` target에
   mount되고 group은 `LAB_SECRETS_GID`다. 값은 복사되지 않았으므로 운영자가 token의 LAB 사본을
   별도 승인 아래 준비해야 한다(미결정 항목).
 

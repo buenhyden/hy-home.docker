@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Recovery Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0089"
 parent_ids:
@@ -50,7 +50,7 @@ JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실,
    `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work`의 notebook은 자동으로 옮겨지지 않았으며 재배치는
    별도 승인 아래 수동으로 한다.
 3. 토큰 노출이 의심될 경우: 서비스를 정지하고, 등록된 시크릿 워크플로로
-   LAB 전용 token 파일(`${LAB_SECRET_DIR:-../secrets/labs}/jupyterlab/` 아래, 정확한 파일명은 `labs/jupyterlab/docker-compose.yml`의 `secrets:`가 소유)을 교체하고, 예상치 못한 파일이 있는지
+   LAB 전용 token 파일(`${LAB_SECRET_DIR:-../../secrets/labs}/jupyterlab/` 아래, 정확한 파일명은 `labs/jupyterlab/docker-compose.yml`의 `secrets:`가 소유)을 교체하고, 예상치 못한 파일이 있는지
    작업 디렉터리를 검토한다. 단일 파일 bind 교체를 반영하도록 공통 정책에 따라
    승인된 재생성을 수행한다. 재시작·재생성만으로 기존 cookie 폐기를 보장하지 않는다.
    선택한 base의 cookie-secret 동작을 확인하고 이전 token과 기존 cookie 거부를 각각

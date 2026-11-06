@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0094"
 parent_ids:
@@ -56,7 +56,7 @@ Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다.
 - **데이터 경로.** Flink 체크포인트는 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`에 있다
   (이전 `${DEFAULT_DATA_DIR}/flink/checkpoints`). 기존 데이터는 옮기지 않았으며 재배치는
   별도 승인 아래 수동으로 한다. secret은 LAB 전용이다. 이름은 `lab_lakehouse_<purpose>`이고
-  파일은 `${LAB_SECRET_DIR:-../secrets/labs}/lakehouse/` 아래에 있으며 원래 `/run/secrets/<name>`
+  파일은 `${LAB_SECRET_DIR:-../../secrets/labs}/lakehouse/` 아래에 있으며 원래 `/run/secrets/<name>`
   target에 mount되고 group은 `LAB_SECRETS_GID`다. 값은 복사되지 않았으므로 운영자가 SeaweedFS
   admin·`lakehouse` key의 LAB 사본을 별도 승인 아래 준비해야 한다(미결정 항목).
 

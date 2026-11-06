@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Usage Guide"
-version: "2.0.2"
+version: "2.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0022"
 parent_ids:
@@ -76,7 +76,7 @@ Compose template에서 오며 선택하기 전에 렌더링된 LAB configuration
 
 ### Static preflight and normal use
 
-이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/valkey-cluster/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
+이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/valkey-cluster/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
 
 repository root에서 독립 `labs/valkey-cluster/docker-compose.yml`을 지정한다. `labs/.env.example`은 정적 검증용이며, 실제 실행 전에 승인된 `labs/.env`와 `LAB_DATA_DIR`, LAB secret root를 준비한다.
 

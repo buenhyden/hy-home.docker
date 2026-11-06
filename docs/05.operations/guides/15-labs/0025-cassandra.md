@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Usage Guide"
-version: "2.1.2"
+version: "2.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0025"
 parent_ids:
@@ -34,7 +34,7 @@ created: "2026-05-10"
 | --- | --- |
 | 서비스·선택 | `cassandra-node1`, 독립 Compose의 `cassandra` profile |
 | 연결 | `lab_cassandra_core_net` 내부 CQL, host port·gateway route 없음 |
-| 영속 | 새 `${LAB_DATA_DIR}/cassandra/node1` bind → `/var/lib/cassandra`; 기존 HOME 또는 과거 anonymous volume을 자동 연결하지 않음 |
+| 영속 | named volume `cassandra-node1-data`(새 `${LAB_DATA_DIR}/cassandra/node1` bind) → `/var/lib/cassandra`; 기존 HOME 또는 과거 anonymous volume을 자동 연결하지 않음 |
 | 입력 | `labs/.env.example`과 비공개 `labs/.env`의 `LAB_DATA_DIR`; 인증 secret·exporter 없음 |
 | 건강·자원 | `nodetool status` health와 Compose 한도; 실제 CQL·디스크·복원은 미검증 |
 | 백업 | schema/keyspace/topology·snapshot tag·SSTable 세트를 함께 보존하고 빈 격리 대상에 복원 검증 필요 |
