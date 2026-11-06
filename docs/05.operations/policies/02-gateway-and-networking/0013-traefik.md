@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Operations Policy"
-version: "1.3.1"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0013"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-05-17"
 
 - `infra/01-gateway/traefik/docker-compose.yml`
 - `infra/01-gateway/traefik/dynamic/middleware.yml`
-- Gateway 소유 라우터(`dashboard` 등) 라벨 정책 and root `core` profile validation boundary
+- Gateway 소유 라우터(`dashboard` 등) 라벨 정책과 root `core` profile 검증 경계
 
 - **Systems**: Traefik v3 (gateway tier)
 - **Environments**: Local, Dev, Stage, Production-like
@@ -57,7 +57,7 @@ created: "2026-05-17"
 
 2026-10-20 @buenhyden이 burst를 50에서 200으로 올리는 조정을 승인했다. 24시간 access log의
 최대치는 한 출발지·라우터 기준 open-webui 123 req/s, prometheus-api 33 req/s였다.
-Traefik 3.7.14는 average 100에서 최대 지연이 5ms라 bucket을 넘는 요청에 바로 429를 준다.
+당시 Traefik은 average 100에서 최대 지연이 5ms라 bucket을 넘는 요청에 바로 429를 준다.
 bucket은 라우터·출발지별이다. host와 k3d 요청은 docker-proxy를 지나 `edge_net`
 게이트웨이 주소로 들어오므로 라우터마다 한 bucket을 함께 쓴다. 속도 제한은 인증·인가를
 대신하지 않는다. HOME 적용 뒤의 라우터별 수용 증거는 SPEC-0204 TSK-0011이 소유하며,
@@ -99,9 +99,9 @@ SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 ### Recovery and Upgrade Controls
 
 Config rollback과 certificate rollback을 구분한다. 이전 config와 certificate가
-호환되는지 isolated route에서 확인한 후 80/443 traffic을 수용한다. Image upgrade는
-official migration/release notes, config validation, dashboard authentication,
-representative routes, metrics, and explicit prior-image rollback을 요구한다.
+호환되는지 격리 route에서 확인한 후 80/443 트래픽을 수용한다. Image upgrade는
+공식 migration/release note 검토, config 검증, dashboard 인증, 대표 route, metrics와
+명시적인 이전 image rollback을 요구한다.
 
 ### Review Cadence
 

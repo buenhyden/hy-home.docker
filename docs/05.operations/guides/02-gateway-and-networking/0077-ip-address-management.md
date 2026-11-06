@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Usage Guide"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0077"
 parent_ids:
@@ -47,8 +47,9 @@ networks:
 ```
 
 고정 주소는 다른 곳이 해당 주소를 신뢰하는 경우에만 부여하고 Compose 주석으로
-이유를 남긴다. Traefik trusted-proxy 주소와 OpenSearch node announce 주소가
-현재 예다. 대부분의 서비스는 dynamic 주소를 받는다. 고정 주소는 같은 network의
+이유를 남긴다. 현재 예는 Traefik trusted-proxy 주소(`edge_net` `10.250.1.2`),
+RedisInsight의 `RI_APP_HOST`·healthcheck 주소(`redisinsight_ingress_net` `10.250.18.3`),
+Crawl4AI egress gateway·crawler 주소(`crawl4ai_egress_net` `10.250.200.2`/`.3`)다. 대부분의 서비스는 dynamic 주소를 받는다. 고정 주소는 같은 network의
 subnet 안, dynamic pool 밖이어야 하며 다른 service와 겹치지 않아야 한다.
 
 root include는 파일을 읽고 profile·직접 service target은 실행 대상을 정한다.
@@ -69,6 +70,13 @@ Docker network를 공유하지 않으며 기존 LAN endpoint 연동은
 - 필요한 Compose 기능은 [개발환경 Guide](../10-platform-and-backup/0002-developer-environment.md)를 따른다.
   쓰기·runtime 권한이 없어도 공개 선언을 읽을 수 있지만 변경·조회 승인은 별도다.
 
+### Common Checks
+
+root/leaf network 선언, peer와 endpoint, static 주소 이유, host 노출과 profile을
+함께 대조한다. [RUN-0077](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)의 승인된
+공개 구성 검증은 live 연결이나 static-IP 무충돌의 완전한 증거가 아니다.
+선택·준비 상태의 차이는 [시스템 Guide](../01-common/0099-system-operations.md)를 따른다.
+
 ### Runbook Handoff
 
 membership·주소 변경, 충돌 진단과 scoped rollback은
@@ -82,12 +90,8 @@ membership·주소 변경, 충돌 진단과 scoped rollback은
 
 ## Troubleshooting
 
-### Common Checks
-
-root/leaf network 선언, peer와 endpoint, static 주소 이유, host 노출과 profile을
-함께 대조한다. [RUN-0077](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)의 승인된
-공개 구성 검증은 live 연결이나 static-IP 무충돌의 완전한 증거가 아니다.
-선택·준비 상태의 차이는 [시스템 Guide](../01-common/0099-system-operations.md)를 따른다.
+위 "흔한 함정"의 DNS·bind·중복 주소 증상부터 확인하고, 변경이나 충돌 진단은
+[RUN-0077](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)로 넘긴다.
 
 ## Related Documents
 

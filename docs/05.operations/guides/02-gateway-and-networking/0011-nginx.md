@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Usage Guide"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0011"
 parent_ids:
@@ -80,8 +80,15 @@ issuer를 사용한다. 경로 호환성은 미검증이며 정상 OIDC 진입�
 ### Configuration, state and signals
 
 필수 입력은 `DEFAULT_CERT_DIR`의 `cert.pem`, `key.pem`, `rootCA.pem`과
-읽기 전용 설정 파일이다. 인증서 비밀값을 공개하지 않는다. 설정은 Git,
-인증서는 private owner가 소유하고 cache/log/PID는 tmpfs로 재시작 시 사라질 수 있다.
+읽기 전용 설정 파일이다. `oauth2_proxy_upstream`과 `keycloak` upstream은
+[upstreams.conf.template](../../../../infra/01-gateway/nginx/config/upstreams.conf.template)에서
+`OAUTH2_PROXY_PORT`/`KEYCLOAK_PORT`로 tmpfs `/etc/nginx/conf.d`에 생성되고, `seaweedfs_s3`
+upstream만 `nginx.conf`에 고정돼 있다. entrypoint
+[validate-upstream-ports.sh](../../../../infra/01-gateway/nginx/scripts/validate-upstream-ports.sh)는
+두 포트가 1-65535 정수가 아니면 exit 64로 종료한 뒤에만 공식 `/docker-entrypoint.sh`를 실행한다.
+Compose가 entrypoint를 재정의하고 `command`를 두지 않으므로 image 기본 CMD가 전달되는지는
+runtime으로 확인되지 않았다. 인증서 비밀값을 공개하지 않는다. 설정은 Git,
+인증서는 private owner가 소유하고 cache/생성 설정/log/PID는 tmpfs로 재시작 시 사라질 수 있다.
 자원은 공통 `template-infra-readonly-low`(CPU 0.5, 메모리 256 MiB)를 상속한다.
 1 GiB cache 상한을 선언했다고 이 메모리 예산 안에서 그만큼 사용할 수 있다는
 뜻은 아니다. worker 연결 상한·cache·무제한 Keycloak upload의 실제 사용량과
@@ -92,7 +99,7 @@ OOM을 함께 본다. Nginx 로그 경로는 tmpfs `/var/log/nginx`이며 Docker
 
 ### Common Checks
 
-1. Compose 하드닝: [docker-compose.yml](../../../../infra/01-gateway/nginx/docker-compose.yml)에 readonly 템플릿, 필수 tmpfs, `/ping` healthcheck가 있는지 본다.
+1. Compose 하드닝: [docker-compose.yml](../../../../infra/01-gateway/nginx/docker-compose.yml)에 readonly 템플릿, 필수 tmpfs(`/var/cache/nginx`, `/etc/nginx/conf.d`, `/var/log/nginx`, `/var/run`), `/ping` healthcheck가 있는지 본다.
 2. Nginx config 하드닝: `infra/01-gateway/nginx/config/nginx.conf`에서 `server_tokens off`, timeout 3종, `proxy_next_upstream`, upstream `max_fails/fail_timeout`, 정적 캐시 location을 본다.
 3. 정적 검증과 runtime lint는 아래 명령을 쓴다.
 
@@ -101,9 +108,7 @@ OOM을 함께 본다. Nginx 로그 경로는 tmpfs `/var/log/nginx`이며 Docker
 
 ### Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/02-gateway-and-networking/0011-nginx.md)을 따른다.
-
-구성·인증서 복구, 변경 적용과 업그레이드는 [Runbook](../../runbooks/02-gateway-and-networking/0011-nginx.md#rollback-or-recovery)이 소유한다. tmpfs는 업무 데이터 백업 대상이 아니다.
+장애 대응, 구성·인증서 복구, 변경 적용, 업그레이드와 escalation은 [Runbook](../../runbooks/02-gateway-and-networking/0011-nginx.md)이 소유한다. tmpfs는 업무 데이터 백업 대상이 아니다.
 
 ### Traceability
 
@@ -113,7 +118,8 @@ OOM을 함께 본다. Nginx 로그 경로는 tmpfs `/var/log/nginx`이며 Docker
 
 ## Troubleshooting
 
-- readonly 전환 후 `/var/cache/nginx`, `/var/log/nginx`, `/var/run` tmpfs가 빠졌는지 본다.
+- readonly 전환 후 `/var/cache/nginx`, `/etc/nginx/conf.d`, `/var/log/nginx`, `/var/run` tmpfs가 빠졌는지 본다.
+- 기동 직후 `nginx: invalid upstream port`와 exit 64는 `OAUTH2_PROXY_PORT` 또는 `KEYCLOAK_PORT` 입력 오류다.
 - `proxy_pass`의 끝 슬래시 처리를 잘못하면 경로 재작성 오류가 난다.
 - timeout 전역값과 location별 override가 충돌하는지 본다.
 

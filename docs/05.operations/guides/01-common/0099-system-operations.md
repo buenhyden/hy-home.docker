@@ -1,10 +1,10 @@
 ---
 title: "System Operations Guide"
-version: "0.2.0"
+version: "0.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -95,8 +95,10 @@ loopback, 관리 Valkey는 설정된 LAN 주소에 게시된다. 직접 접속�
 
 [OpenBao 선언](../../../../infra/03-security/openbao/docker-compose.yml)의 healthcheck는
 `bao status` 종료 코드 0(unsealed)만 허용한다. 공식 [status 설명](https://openbao.org/docs/2.6.x/commands/status/)에서
-2는 sealed 상태이며 Agent의 시작은 서버 health를 기다린다. Agent 검사는 token 파일의 비어 있지 않음만 확인한다.
-따라서 두 컨테이너가 healthy여도 Agent 재인증·출력 갱신은 별도로 검증해야 한다.
+2는 sealed 상태이며 Agent의 시작은 서버 health를 기다린다. Agent 검사
+[health-agent.sh](../../../../infra/03-security/openbao/scripts/health-agent.sh)는 token 파일·`bao token lookup`과
+`agent.hcl`의 각 template 출력 byte·권한·KV version을 대조하지만 앱의 소비는 확인하지 않는다.
+따라서 두 컨테이너가 healthy여도 소비자 갱신은 별도로 검증해야 한다.
 [Agent 설정](../../../../infra/03-security/openbao/config/agent.hcl)의 출력 mount와
 root Docker Secret 파일 소비 경로도 별개다. 자동 전달이나 모든 credential의
 자동 회전을 추론하지 않는다. bootstrap·사람 로그인·SecretID 전달은
@@ -143,15 +145,32 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 | 01 Gateway | [Traefik](../02-gateway-and-networking/0013-traefik.md), [Nginx 대안](../02-gateway-and-networking/0011-nginx.md): 도메인 요청 진입 | 인증 경로와 대상 앱의 network·readiness; ingress 실패는 여러 웹 앱에 영향 |
 | 02 Auth | [Keycloak](../03-identity-and-access/0014-keycloak.md), [OAuth2 Proxy](../03-identity-and-access/0015-oauth2-proxy.md): 로그인과 세션 | 관리 PostgreSQL·Valkey, gateway·CA; 여러 앱 로그인에 공통 영향 |
 | 03 Security | [OpenBao](../04-security-and-secrets/0085-openbao.md): secret authority와 renderer | owner unseal·인증, 보존된 Raft·Agent 상태; healthy만으로 소비자 갱신 불명 |
-| 04 Data | [관리 DB](../05-databases-and-storage/0028-management-database.md), [객체 저장소](../05-databases-and-storage/0024-seaweedfs.md), [Qdrant](../09-ai-and-search/0034-qdrant.md), [RedisInsight](../05-databases-and-storage/0076-redisinsight.md) | 공유 상태와 선택적 DB 관리; 대상 데이터와 관리 UI 상태를 구분 |
+| 04 Data | [관리 DB](../05-databases-and-storage/0028-management-database.md), [개발 DB](../05-databases-and-storage/0100-development-database.md), [객체 저장소](../05-databases-and-storage/0024-seaweedfs.md), [OpenSearch](../05-databases-and-storage/0019-opensearch.md), [Neo4j](../05-databases-and-storage/0033-neo4j.md), [Qdrant](../09-ai-and-search/0034-qdrant.md), [RedisInsight](../05-databases-and-storage/0076-redisinsight.md) | 공유 상태와 선택적 DB 관리; 대상 데이터와 관리 UI 상태를 구분 |
 | 05 Messaging | [Kafka](../06-messaging-and-cdc/0036-kafka.md): 메시지·schema·connector | broker와 초기화; CDC 선택은 관리 DB 준비도 필요, 재처리 여부는 서비스 판단 |
 | 06 Observability | [LGTM](../07-observability/0042-lgtm-stack.md), [Dozzle](../07-observability/0072-dozzle.md) | 공유 객체 저장소·host/GPU 가시성; Dozzle leaf는 기존 admin 선택 유지 |
 | 07 Workflow | [Airflow](../08-workflows-and-automation/0050-airflow.md), [n8n](../08-workflows-and-automation/0053-n8n.md): 스케줄·작업 실행 | 관리 DB·broker·초기화·worker·runner; 화면 성공은 작업 성공이 아님 |
-| 08 AI | [Ollama](../09-ai-and-search/0056-ollama.md), [Open WebUI](../09-ai-and-search/0057-open-webui.md), [ComfyUI](../09-ai-and-search/0081-comfyui.md), [Open Notebook](../09-ai-and-search/0073-open-notebook.md), [MLflow](../13-analytics-and-data-quality/0088-mlflow.md) | 추론·이미지·지식 앱·실험 상태; SurrealDB·관리 DB·객체 저장소·GPU 경계 |
+| 08 AI | [Ollama](../09-ai-and-search/0056-ollama.md), [Open WebUI](../09-ai-and-search/0057-open-webui.md), [ComfyUI](../09-ai-and-search/0081-comfyui.md), [Open Notebook](../09-ai-and-search/0073-open-notebook.md), [Crawl4AI](../09-ai-and-search/0091-crawl4ai.md), [MLflow](../13-analytics-and-data-quality/0088-mlflow.md) | 추론·이미지·지식 앱·실험 상태; SurrealDB·관리 DB·객체 저장소·GPU 경계 |
 | 09 Platform Operations | [Terrakube](../10-platform-and-backup/0069-terrakube.md), [OpenTofu](../10-platform-and-backup/0082-opentofu.md), [Registry](../10-platform-and-backup/0065-registry.md), [Renovate](../10-platform-and-backup/0083-renovate.md), [백업](../10-platform-and-backup/0021-backup-and-restore.md) | IaC·아티팩트·의존성·공통 복구 작업; 공유 데이터 의존성 |
-| 10 Communication | [Stalwart LAB](../15-labs/0070-mail.md) | 독립 LAB 메일 서버와 설정 helper; HOME network 밖이며 외부 배달은 별도 범위 |
-| 11 Quality | [성능 검사](../12-testing-and-quality/0064-performance-testing.md), [SonarQube LAB](../15-labs/0066-sonarqube.md), [WireMock](../12-testing-and-quality/0092-wiremock.md), [Pact](../12-testing-and-quality/0093-pact-broker.md), [Conftest](../12-testing-and-quality/0095-conftest.md), [Mailpit](../11-mail-and-notifications/0084-mailpit.md) | 승인된 대상·합성 데이터·계약·정책 검사; 개발 캡처와 운영 메일 구분 |
-| 12 Analytics | [Lakehouse](../15-labs/0094-lakehouse.md), [Superset](../15-labs/0097-superset.md), [dbt](../15-labs/0090-dbt.md), [JupyterLab](../15-labs/0089-jupyterlab.md)(모두 독립 LAB) | 공유 객체·catalog·관리 DB와 명시적 분석 작업; 선택이 전체 파이프라인 기동을 뜻하지 않음 |
+| 10 Communication | `infra/10-communication`에는 Compose 서비스가 없다. [Stalwart LAB](../15-labs/0070-mail.md)은 `labs/stalwart` | 독립 LAB 메일 서버와 설정 helper; HOME network 밖이며 외부 배달은 별도 범위 |
+| 11 Quality | [k6](../12-testing-and-quality/0061-k6.md), [성능 검사](../12-testing-and-quality/0064-performance-testing.md), [SonarQube LAB](../15-labs/0066-sonarqube.md), [WireMock](../12-testing-and-quality/0092-wiremock.md), [Pact](../12-testing-and-quality/0093-pact-broker.md), [Conftest](../12-testing-and-quality/0095-conftest.md), [Mailpit](../11-mail-and-notifications/0084-mailpit.md) | 승인된 대상·합성 데이터·계약·정책 검사; 개발 캡처와 운영 메일 구분 |
+| 12 Analytics | `infra/12-analytics`에는 Compose 서비스가 없다. [Lakehouse](../15-labs/0094-lakehouse.md), [Superset](../15-labs/0097-superset.md), [dbt](../15-labs/0090-dbt.md), [JupyterLab](../15-labs/0089-jupyterlab.md)(모두 `labs/`의 독립 LAB) | 공유 객체·catalog·관리 DB와 명시적 분석 작업; 선택이 전체 파이프라인 기동을 뜻하지 않음 |
+| 13 Experience | [Storybook](../14-design-system/0101-storybook.md): design system 미리보기 | `experience_ingress_net`의 gateway route; 다른 앱 상태와 무관 |
+
+### Common Checks
+
+| 운영 필요 | 공통 소유자와 점검 범위 | 확인되지 않았을 때의 경계 |
+| --- | --- | --- |
+| 기동·재부팅 | [RUN-0098](../../runbooks/01-common/0098-cold-start-and-reboot.md), [선택 Policy](../../policies/01-common/0078-compose-profile-vocabulary.md) | owner unseal·인증·각 앱 확인 없이 무인 복귀를 주장하지 않는다 |
+| 인증·secret | [앱 인증 Policy](../../policies/03-identity-and-access/0079-application-auth-integration.md), [OpenBao Policy](../../policies/04-security-and-secrets/0085-openbao.md) | route 통과, 사용자 권한, renderer 전달을 각각 확인; 미구현 통합은 @buenhyden이 구현 변경을 별도 결정 |
+| 백업·복구 | [0021 Guide](../10-platform-and-backup/0021-backup-and-restore.md), [Policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md), [Runbook](../../runbooks/10-platform-and-backup/0021-backup-and-restore.md) | snapshot 존재·원격 copy·정적 검사만으로 전체 export·앱 복원 성공을 주장하지 않는다. 호환되는 격리 복원 증거가 없으면 @buenhyden과 해당 상태 소유자가 별도 리허설을 준비 |
+| 버전·구성 변경 | [0086 Guide](../10-platform-and-backup/0086-dependency-version-management.md), [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md), [공통 적용 통제](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary) | 선언 pin과 실제 실행 버전은 별도; Git rollback은 DB migration rollback이 아님 |
+| 용량·경합 | [공통 자원 통제](../../policies/01-common/0006-infrastructure-optimization-governance.md), [저장소 진단](../../runbooks/05-databases-and-storage/0035-storage-exhaustion.md), [GPU 진단](../../runbooks/09-ai-and-search/0055-gpu-recovery.md) | 자동 전체 부하 조정이나 용량 보장은 미검증; @buenhyden이 측정·대상별 제한 조정을 결정 |
+| 여러 서비스 동시 장애 | [시스템 진단](../../runbooks/01-common/0099-system-operations.md), [network Policy](../../policies/02-gateway-and-networking/0077-ip-address-management.md) | 공통 원인 후보를 구분한 뒤 기존 서비스 절차로 전달; 근거 없는 전체 restart·복원 금지 |
+
+이 표가 공통 통제의 진입점이므로 별도 시스템 Policy는 두지 않는다. 실제 통제는
+연결된 기존 Policy가 소유한다. 출력에는 secret 값, 인증 헤더·cookie, raw payload,
+비공개 resolved path를 넣지 않는다. 읽지 않았거나 실행하지 않은 항목은 `NOT_RUN`으로
+남긴다. source와 공식 문서 비교는 정적 근거이며 현재 운영·복구 결과가 아니다.
 
 ### Runbook Handoff
 
@@ -169,21 +188,8 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 
 ## Troubleshooting
 
-### Common Checks
-
-| 운영 필요 | 공통 소유자와 점검 범위 | 확인되지 않았을 때의 경계 |
-| --- | --- | --- |
-| 기동·재부팅 | [RUN-0098](../../runbooks/01-common/0098-cold-start-and-reboot.md), [선택 Policy](../../policies/01-common/0078-compose-profile-vocabulary.md) | owner unseal·인증·각 앱 확인 없이 무인 복귀를 주장하지 않는다 |
-| 인증·secret | [앱 인증 Policy](../../policies/03-identity-and-access/0079-application-auth-integration.md), [OpenBao Policy](../../policies/04-security-and-secrets/0085-openbao.md) | route 통과, 사용자 권한, renderer 전달을 각각 확인; 미구현 통합은 @buenhyden이 구현 변경을 별도 결정 |
-| 백업·복구 | [0021 Guide](../10-platform-and-backup/0021-backup-and-restore.md), [Policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md), [Runbook](../../runbooks/10-platform-and-backup/0021-backup-and-restore.md) | snapshot 존재·원격 copy·정적 검사만으로 전체 export·앱 복원 성공을 주장하지 않는다. 호환되는 격리 복원 증거가 없으면 @buenhyden과 해당 상태 소유자가 별도 리허설을 준비 |
-| 버전·구성 변경 | [0086 Guide](../10-platform-and-backup/0086-dependency-version-management.md), [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md), [공통 적용 통제](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary) | 선언 pin과 실제 실행 버전은 별도; Git rollback은 DB migration rollback이 아님 |
-| 용량·경합 | [공통 자원 통제](../../policies/01-common/0006-infrastructure-optimization-governance.md), [저장소 진단](../../runbooks/05-databases-and-storage/0035-storage-exhaustion.md), [GPU 진단](../../runbooks/09-ai-and-search/0055-gpu-recovery.md) | 자동 전체 부하 조정이나 용량 보장은 미검증; @buenhyden이 측정·대상별 제한 조정을 결정 |
-| 여러 서비스 동시 장애 | [시스템 진단](../../runbooks/01-common/0099-system-operations.md), [network Policy](../../policies/02-gateway-and-networking/0077-ip-address-management.md) | 공통 원인 후보를 구분한 뒤 기존 서비스 절차로 전달; 근거 없는 전체 restart·복원 금지 |
-
-이 표가 공통 통제의 진입점이므로 별도 시스템 Policy는 두지 않는다. 실제 통제는
-연결된 기존 Policy가 소유한다. 출력에는 secret 값, 인증 헤더·cookie, raw payload,
-비공개 resolved path를 넣지 않는다. 읽지 않았거나 실행하지 않은 항목은 `NOT_RUN`으로
-남긴다. source와 공식 문서 비교는 정적 근거이며 현재 운영·복구 결과가 아니다.
+여러 서비스가 함께 실패하면 위 Common Checks 표에서 공통 소유자를 찾고, 관찰과 분기는
+[RUN-0099](../../runbooks/01-common/0099-system-operations.md)로 넘긴다.
 
 ## Related Documents
 

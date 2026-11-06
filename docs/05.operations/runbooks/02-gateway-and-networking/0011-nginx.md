@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Runbook"
-version: "1.1.2"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0011"
 parent_ids:
@@ -18,24 +18,19 @@ created: "2026-05-17"
 
 이 런북은 Nginx readonly/tmpfs 전환 이후 발생 가능한 장애, `nginx -t` 실패, `/ping` 헬스체크 실패 상황의 복구 절차를 정의한다.
 
-> Scope: Nginx Special-path Proxy Recovery
-
 목적은 readonly/tmpfs 운영 안정성 확보, config lint 실패 시 안전 롤백, 특수 경로 프록시(`/oauth2/`, `/keycloak/`, `/cdn/`) 정상성 회복이다.
 
 ## Trigger
 
 다음 경우에 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - `nginx -t` 실패
+- 기동 직후 `nginx: invalid upstream port`(exit 64)
 - `/ping` healthcheck 반복 실패
-- readonly 전환 후 캐시/로그/PID 쓰기 오류
+- readonly 전환 후 캐시/생성 설정/로그/PID 쓰기 오류
 - 백엔드 장애 전환(failover) 동작 이상
 
-### Target and prerequisites
+## Prerequisites
 
 저장소 루트와 승인된 Docker context에서 `nginx`만 대상으로 한다. root network,
 `seaweedfs-s3`, `oauth2-proxy`, `keycloak`의 주소·준비 상태와 80/443 비점유를
@@ -61,8 +56,9 @@ bash scripts/hardening/check-all-hardening.sh 01-gateway
 docker compose exec -T nginx nginx -t
 ```
 
-exit 0이 필요하다. DNS 오류는 세 upstream의 준비, 쓰기 오류는
-`/var/cache/nginx`, `/var/log/nginx`, `/var/run` tmpfs, TLS 오류는 인증서 파일명과
+exit 0이 필요하다. DNS 오류는 세 upstream(`seaweedfs_s3`, 생성된 `oauth2_proxy_upstream`,
+`keycloak`)의 준비, exit 64는 `OAUTH2_PROXY_PORT`/`KEYCLOAK_PORT` 값, 쓰기 오류는
+`/var/cache/nginx`, `/etc/nginx/conf.d`, `/var/log/nginx`, `/var/run` tmpfs, TLS 오류는 인증서 파일명과
 CA/hostname을 확인한다. 오류 위치만 정제해 남기며 private key·원문 요청 로그는
 첨부하지 않는다. Compose나 설정 수정은 별도 승인 범위에서 수행한다.
 
@@ -94,7 +90,7 @@ reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s re
   비활성화로 숨기지 않는다. 이 불일치는 별도 구현 수정 대상이다.
 - `/oauth2/`의 실제 로그인/callback/거부와 `/keycloak/` prefix·issuer 호환성을
   따로 확인한다. 200만으로 SSO가 작동한다고 기록하지 않는다.
-- `/cdn/` 루트는404, 알려진 공개 객체 GET/HEAD만 허용하고 쓰기/삭제는 거부되어야
+- `/cdn/` 루트는 404, 알려진 공개 객체 GET/HEAD만 허용하고 쓰기/삭제는 거부되어야
   한다. 시험 쓰기나 삭제는 별도 승인이 없으면 수행하지 않는다.
 - `/app/` placeholder 200은 `auth_request` 이전 종료이므로 보호 검증에서 제외한다.
   backend proxy는 주석이다. 실제 앱 연결 전에 구현 수정과 독립 인증 검증이 필요하다.
@@ -118,7 +114,7 @@ reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s re
 3. upgrade는 [RUN-0086](../10-platform-and-backup/0086-dependency-version-management.md)에 따라 실제 이미지
    identity와 이전 identity를 보존하고 OAuth2/Keycloak/read-only CDN을 canary에서
    검증한다. mutable tag 문자열만으로 이전 byte 복구를 보장하지 않는다.
-4. cache/log/PID tmpfs는 복원 대상이 아니다. 중지와 인증서·설정 삭제를 혼동하지
+4. cache/생성 설정/log/PID tmpfs는 복원 대상이 아니다. 중지와 인증서·설정 삭제를 혼동하지
    않으며 정리는 [Policy](../../policies/02-gateway-and-networking/0011-nginx.md)의 승인·보존 기준을 따른다.
 
 격리 검증 환경과 현재 Nginx route 수용 결과는 제공되지 않았다. 기존 2026-09-20

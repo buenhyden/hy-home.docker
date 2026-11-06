@@ -1,10 +1,10 @@
 ---
 title: "System Operations Diagnostic Runbook"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0099"
 parent_ids:
@@ -23,14 +23,10 @@ created: "2026-10-01"
 여러 앱의 접속·로그인·작업·저장이 함께 실패하거나, 앱과 관측 화면의 장애가
 같은 원인인지 모를 때 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
-공유 host·gateway·인증·DB·broker·객체 저장소
-후보를 좁히고 기존 서비스 Runbook으로 전달하는 읽기 전용 진단이다.
 예정된 재부팅 또는 재부팅 직후의 정해진 확인은
 [RUN-0098](0098-cold-start-and-reboot.md)이 소유한다.
+
+## Prerequisites
 
 운영 checkout과 실제 Docker context를 알고, 대상 daemon의 읽기 권한이 있는
 운영자가 저장소 루트에서 실행한다. 승인 범위가 문서·정적 검증뿐이면 아래
@@ -80,7 +76,7 @@ docker inspect --format '{{.Name}} state={{.State.Status}} health={{if .State.He
 정상 daemon의 기대값은 `state=running`, 선언된 healthcheck의 통과,
 `oom=false`다. `health=none`은 검사 성공이 아니다. restart 수는 누적값이므로
 한 번의 값만으로 현재 반복 실패를 단정하지 않고 기존 기록과 비교한다.
-OpenBao와 Agent의 `healthy`는 unseal·인증·렌더링 성공을 증명하지 않는다.
+OpenBao의 `healthy`는 unseal만, Agent의 `healthy`는 token과 template 출력·KV version 대조만 뜻하며 앱의 secret 소비를 증명하지 않는다.
 각 소스가 정의한 한계는 [시스템 Guide](../../guides/01-common/0099-system-operations.md#request-and-authentication-paths)에서 확인한다.
 
 ### 3. Choose the next owner from the observed symptom
@@ -139,11 +135,11 @@ Docker 대상 불명, 여러 HOME 기능의 지속 장애, 반복 OOM, 공유 �
 
 ## Related Documents
 
-- [전체 Runbook](../../../../README.md), [Operations](../../README.md)
-- [기동·재부팅](0098-cold-start-and-reboot.md), [백업·복구](../10-platform-and-backup/0021-backup-and-restore.md), [network](../02-gateway-and-networking/0077-ip-address-management.md), [버전 변경](../10-platform-and-backup/0086-dependency-version-management.md)
-
 ### Traceability
 
 - [GDE-0099](../../guides/01-common/0099-system-operations.md): 사용자·데이터 경로와 공통 의존성.
 - [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md): 호스트 구조와 실패 영역.
 - [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md), [POL-0078](../../policies/01-common/0078-compose-profile-vocabulary.md): 공통 통제와 선택.
+
+- [전체 Runbook](../../../../README.md), [Operations](../../README.md)
+- [기동·재부팅](0098-cold-start-and-reboot.md), [백업·복구](../10-platform-and-backup/0021-backup-and-restore.md), [network](../02-gateway-and-networking/0077-ip-address-management.md), [버전 변경](../10-platform-and-backup/0086-dependency-version-management.md)

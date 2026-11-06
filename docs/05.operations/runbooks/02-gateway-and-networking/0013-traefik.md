@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Runbook"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0013"
 parent_ids:
@@ -18,27 +18,21 @@ created: "2026-05-17"
 
 이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
 
-> Scope: Traefik Primary Gateway Recovery
-
 목적은 `gateway-standard-chain` 회귀 시 신속 복구, Dashboard 인증/접근 장애 진단, Traefik 서비스 정상성 복원이다.
 
 ## Trigger
 
 다음 경우에 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - dashboard 접근 실패(401 loop, 429 burst, 5xx)
 - 미들웨어 체인 누락/오타/잘못된 순서
 - Traefik healthcheck 실패
 
-### Target and prerequisites
+## Prerequisites
 
 저장소 루트, 승인된 Docker context의 `traefik`만 대상으로 한다. `core`/`dev`/
 `local` 중 기존 선택과 Nginx 비활성, host bind/80·443, root network, 인증서와
-BasicAuth Secret 참조를 확인한다. Docker socket은 host 제어 접근이므로 전체 API
+BasicAuth Secret 참조, `${DEFAULT_SECURITY_DIR}/openbao/tls/ca.pem` 존재를 확인한다. Docker socket은 host 제어 접근이므로 전체 API
 응답이나 secret mount 내용을 증거로 출력하지 않는다. config/image 변경·restart는
 서비스 영향과 이전 config/certificate/image identity가 확인된 별도 승인이 필요하다.
 
@@ -75,7 +69,7 @@ docker compose exec -T traefik traefik healthcheck --ping
 ### Startup, shutdown and apply
 
 기존 로컬 image와 network·secret·cert 입력이 준비됐고 runtime 변경이 승인된
-경우에만 아래를 실행한다. start는80/443을 점유하며 stop은 모든 해당 route를 중단한다.
+경우에만 아래를 실행한다. start는 80/443을 점유하며 stop은 모든 해당 route를 중단한다.
 
 ```bash
 docker compose --profile core up -d --no-deps --no-build --pull never traefik
