@@ -26,7 +26,7 @@ PY
 fi
 
 session_start() {
-  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" <<'PY'
+  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" <<'PY'
 import json
 import os
 import pathlib
@@ -40,7 +40,7 @@ except Exception:
     payload = {}
 source = payload.get("source", "") if isinstance(payload, dict) else ""
 try:
-    sys.path.insert(0, str(project))
+    sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
     import scripts.lib.hooks.folder_guides as folder_guides
 
     folder_guides.reset(payload.get("session_id") if isinstance(payload, dict) else None)
@@ -155,19 +155,6 @@ if (project / "graphify-out" / "graph.json").is_file() and (not tool_name or too
         "or unrelated cross-root inferred edges, corroborate against tracked source files, "
         ".agents/governance, and stage docs."
     )
-
-# Deliver the nearest folder AGENTS.md once per session; guidance only, so a
-# failure here never blocks the tool call.
-try:
-    import scripts.lib.hooks.folder_guides as folder_guides
-
-    additional_context.extend(folder_guides.pending_messages(
-        project,
-        folder_guides.tool_targets(data, tuple(paths)),
-        data.get("session_id"),
-    ))
-except Exception:
-    pass
 
 edit_tools = {"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"}
 if not tool_name or tool_name in edit_tools:
@@ -289,6 +276,20 @@ if denials:
         "permissionDecisionReason": "\n\n".join(rule.message for rule in denials),
     }}))
     sys.exit(0)
+
+# Deliver the nearest tracked folder AGENTS.md once per session (a subagent
+# keeps its own record). It runs only after the call is allowed, so a denied
+# call never marks a guide delivered; guidance only, so a failure never blocks.
+try:
+    import scripts.lib.hooks.folder_guides as folder_guides
+
+    additional_context.extend(folder_guides.pending_messages(
+        project,
+        folder_guides.tool_targets(data, tuple(paths)),
+        folder_guides.session_key(data),
+    ))
+except Exception:
+    pass
 
 if not system_messages and not additional_context:
     sys.exit(0)

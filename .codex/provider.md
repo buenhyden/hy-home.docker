@@ -24,9 +24,9 @@ read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
 Codex merges `AGENTS.md` files from the repository root down to its working
 directory only, so a session started at the root does not load a folder guide
 below it. The shared PreToolUse dispatcher (`scripts/hooks/agent-event-hook.sh`,
-through `scripts/lib/hooks/folder_guides.py`) adds the nearest folder guide to
-the model context the first time a session's `apply_patch` touches a file
-below it, and again after SessionStart. A shell read does not trigger it. The
+through `scripts/lib/hooks/folder_guides.py`) adds the nearest Git-tracked
+folder guide to the model context the first time a session's `apply_patch`
+touches a file below it, and again after SessionStart. A shell read does not trigger it. The
 bootstrap step that requires reading that guide applies when the hook does not
 run.
 

@@ -5,8 +5,9 @@ directory, and Claude Code skips AGENTS.md wherever a CLAUDE.md is on the
 path. Neither reads `infra/AGENTS.md` when a session started at the root edits
 `infra/...`, so the shared PreToolUse dispatcher hands the guide to the model.
 Each guide is delivered once per session; SessionStart clears the record, so a
-compacted or resumed session receives it again. The record lives in a
-per-user state directory that must be owned by this user with mode 0700.
+compacted or resumed session receives it again; a subagent keeps its own
+record. Only guides Git tracks are delivered. The record lives in a per-user
+state directory that must be owned by this user with mode 0700.
 """
 
 from __future__ import annotations
@@ -15,12 +16,13 @@ import json
 import os
 import re
 import stat
+import subprocess
 import tempfile
 from pathlib import Path, PurePosixPath
 
 GUIDE_NAME = "AGENTS.md"
 MAX_GUIDE_BYTES = 16 * 1024
-_SESSION_ID = re.compile(r"[A-Za-z0-9._-]{1,128}")
+_SESSION_ID = re.compile(r"[A-Za-z0-9._-]{1,256}")
 
 
 def _state_directory() -> Path | None:
@@ -62,14 +64,40 @@ def _relative(root: Path, value: object) -> PurePosixPath | None:
     return candidate if candidate.parts else None
 
 
-def nearest_guide(root: Path, target: PurePosixPath) -> str | None:
-    """Return the closest folder guide above `target`, never the root shim."""
+def tracked_guides(root: Path) -> frozenset[str]:
+    """Folder guides Git tracks; an ignored or vendored AGENTS.md is data."""
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z", "--", ":(glob)**/" + GUIDE_NAME],
+            capture_output=True,
+            timeout=2,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return frozenset()
+    if result.returncode != 0:
+        return frozenset()
+    names = result.stdout.decode("utf-8", errors="replace").split("\0")
+    return frozenset(name for name in names if name and name != GUIDE_NAME)
+
+
+def nearest_guide(
+    root: Path, target: PurePosixPath, tracked: frozenset[str]
+) -> str | None:
+    """Return the closest tracked folder guide above `target`, never the root shim."""
     for parent in target.parents:
         if not parent.parts:
             return None
-        path = root / parent / GUIDE_NAME
-        if path.is_file() and not path.is_symlink():
-            return (parent / GUIDE_NAME).as_posix()
+        guide = (parent / GUIDE_NAME).as_posix()
+        if guide not in tracked:
+            continue
+        path = root / guide
+        try:
+            # The root is canonical, so any symlink component changes the path.
+            if path.resolve(strict=True) == path and path.is_file():
+                return guide
+        except OSError:
+            return None
     return None
 
 
@@ -82,13 +110,25 @@ def tool_targets(data: dict[str, object], edits: tuple[str, ...]) -> list[object
     return targets
 
 
+def session_key(data: dict[str, object]) -> object:
+    """A subagent has its own context, so it gets its own delivery record."""
+    session_id = data.get("session_id")
+    agent_id = data.get("agent_id")
+    if isinstance(session_id, str) and isinstance(agent_id, str) and agent_id:
+        return f"{session_id}-{agent_id}"
+    return session_id
+
+
 def pending_messages(
     root: Path, targets: list[object], session_id: object
 ) -> list[str]:
+    relatives = [rel for rel in (_relative(root, value) for value in targets) if rel]
+    if not relatives:
+        return []
+    tracked = tracked_guides(root)
     guides: list[str] = []
-    for value in targets:
-        relative = _relative(root, value)
-        guide = nearest_guide(root, relative) if relative else None
+    for relative in relatives:
+        guide = nearest_guide(root, relative, tracked)
         if guide and guide not in guides:
             guides.append(guide)
     if not guides:
@@ -101,19 +141,35 @@ def pending_messages(
         except (OSError, ValueError, TypeError):
             seen = set()
     fresh = [guide for guide in guides if guide not in seen]
-    if not fresh:
-        return []
-    if state:
-        with tempfile.NamedTemporaryFile(
-            "w", dir=state.parent, delete=False, encoding="utf-8"
-        ) as handle:
-            json.dump(sorted(seen | set(fresh)), handle)
-        os.replace(handle.name, state)
-    return [_message(root, guide) for guide in fresh]
+    # Build every message before recording delivery, so a read failure never
+    # marks a guide as seen.
+    messages = [_message(root, guide) for guide in fresh]
+    if messages and state:
+        _write_state(state, seen | set(fresh))
+    return messages
+
+
+def _write_state(state: Path, guides: set[str]) -> None:
+    with tempfile.NamedTemporaryFile(
+        "w", dir=state.parent, delete=False, encoding="utf-8"
+    ) as handle:
+        name = handle.name
+        try:
+            json.dump(sorted(guides), handle)
+        except BaseException:
+            handle.close()
+            os.unlink(name)
+            raise
+    try:
+        os.replace(name, state)
+    except BaseException:
+        os.unlink(name)
+        raise
 
 
 def _message(root: Path, guide: str) -> str:
-    raw = (root / guide).read_bytes()
+    with open(root / guide, "rb") as handle:
+        raw = handle.read(MAX_GUIDE_BYTES + 1)
     text = raw[:MAX_GUIDE_BYTES].decode("utf-8", errors="replace")
     if len(raw) > MAX_GUIDE_BYTES:
         text += f"\n\n[truncated at {MAX_GUIDE_BYTES} bytes; read `{guide}` in full]"

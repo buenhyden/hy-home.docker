@@ -20,15 +20,17 @@ Root `CLAUDE.md` imports the shared
 [bootstrap policy](../.agents/governance/bootstrap.md) and this authored adapter.
 Load the active Spec Package and current Task when repository state changes.
 Read the selected canonical role and procedure before acting.
-Claude Code reads `AGENTS.md` only where no `CLAUDE.md` sits on the path
-(its default `claude-md-or-agents-md` mode), and root `CLAUDE.md` is on every
-path here, so it does not read a folder `AGENTS.md` on its own. The setting
-that would make it read both is ignored in project settings. The shared
+Per the [Claude Code memory documentation](https://code.claude.com/docs/en/memory),
+Claude Code reads `AGENTS.md` only where no `CLAUDE.md` sits on the path (its
+default `claude-md-or-agents-md` mode), and the `instructionFiles` setting that
+makes it read both is ignored in project settings. Root `CLAUDE.md` is on every
+path here, so Claude does not read a folder `AGENTS.md` on its own. The shared
 PreToolUse dispatcher (`scripts/hooks/agent-event-hook.sh`, through
-`scripts/lib/hooks/folder_guides.py`) therefore adds the nearest folder guide
-to the model context the first time a session reads or edits a file below it,
-and again after SessionStart. The bootstrap step that requires reading that
-guide applies when the hook does not run. No folder `CLAUDE.md` pointer is
+`scripts/lib/hooks/folder_guides.py`) therefore adds the nearest Git-tracked
+folder guide to the model context the first time a session, or a subagent,
+uses the Read, Edit, Write or MultiEdit tool on a file below it, and again
+after SessionStart. The bootstrap step that requires reading that guide
+applies when the hook does not run. No folder `CLAUDE.md` pointer is
 added, because it would be a second copy of the same route.
 `.agents/knowledge/` and `.agents/prompts/` are canonical categories read
 directly, in the order the bootstrap policy sets. Claude has no generated
