@@ -1,6 +1,6 @@
 ---
 title: "HOME Tiers versus LABs"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -99,8 +99,8 @@ This record replaces six accepted ADRs, deleted in the same change
   namespace, not start order or isolation. It rejected keeping eight Data
   categories and flattening all seventeen packages. Its Data list included
   supabase, the PostgreSQL and Valkey clusters, Cassandra, CouchDB and MongoDB;
-  those are LABs now (supabase is being removed), and Analytics has no HOME
-  member.
+  the others are LABs now (supabase was removed on 2026-11-06), and Analytics
+  has no HOME member.
 - [ADR-0046](0046-capability-tiers-and-quality-boundary.md) stays accepted and is not replaced: a
   completed Task links to it, and a completed Task body cannot change (owner
   decision, 2026-11-06). Its capability tiers still hold. Where it placed
