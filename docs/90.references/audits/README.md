@@ -1,10 +1,10 @@
 ---
 title: "Audit Packages"
-version: "2.0.3"
+version: "2.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -27,7 +27,7 @@ finding과 후속 조치는 해당 package 또는 이를 소유하는 Stage 03 T
 SPEC-0158이 이 범주를 은퇴시켰습니다. 현재 tree가 Stage 90 package 집합을
 정의합니다: package는 README가 존재하고 자신의 Stage 99 profile을 만족할 때
 존재합니다. package는 필요한 의미를 canonical owner로 옮기고 모든 inbound consumer를
-갱신하고 아래 표의 행을 제거하는 같은 변경에서 제거되어 은퇴합니다.
+갱신하고 이 README의 package 목록에서 제거하는 같은 변경에서 제거되어 은퇴합니다.
 archive ledger가 membership을 결정하지 않으므로 package를 은퇴시키는
 작업은 더 이상 Stage 99 개정이 아닙니다.
 
@@ -49,7 +49,8 @@ Stage 간 audit은 자신을 관장하는 Spec 아래의 Task에 둡니다. 이�
 matrix generator, 그 경로를 이름 붙이던 metadata profile의 path
 allow-list입니다. 이 넷 모두 같은 변경에서 제거되었습니다. AUD-0019부터
 AUD-0032까지의 본문은 Git 이력에 있으며 그 번호는 Registry `reserved_history`가
-보관합니다.
+보관합니다. Registry는 AUD-0001부터 AUD-0097까지 발급된 모든 번호를
+`reserved_history`로 보관합니다.
 
 ### Dated Historical Snapshots
 
@@ -63,8 +64,6 @@ guide로 옮겨졌습니다. 본문은 Git 이력에 있으며 그 번호는 Reg
 `reserved_history`가 보관합니다.
 
 ## Usage
-
-### Usage
 
 package는 `audits/####-<slug>/` 아래에만 만들고 대응하는 Stage 99
 템플릿을 사용합니다. 관찰 날짜, 인용, provenance, 활성 owner

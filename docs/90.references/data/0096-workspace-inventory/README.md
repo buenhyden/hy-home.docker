@@ -1,10 +1,10 @@
 ---
 title: "Workspace Inventory"
-version: "0.8.3"
+version: "0.8.4"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "DATA-0096"
 parent_ids:
@@ -81,7 +81,7 @@ SPEC-0212 TSK-0040과 후속 P02–P12 인계로 확정했다. 서비스 구현�
 결과는 로컬 비교용이며, 렌더를 요청하지 않으므로 구성·서비스를 실행하지 않는다.
 
 ```bash
-rtk python3 scripts/operations/workspace-inventory.py scan --root . --output _workspace/repo-support/analysis/<run>/reviewed-public.yaml --reviews _workspace/repo-support/analysis/<run>/doc-reviews.yaml
+python3 scripts/operations/workspace-inventory.py scan --root . --output _workspace/repo-support/analysis/<run>/reviewed-public.yaml --reviews _workspace/repo-support/analysis/<run>/doc-reviews.yaml
 ```
 
 검토 기록의 필수 필드는 `path`, `reviewer`, `observed_at`, `sha256`, `scope`다.
@@ -205,12 +205,12 @@ owned loopback 검사는 실제 n8n Worker/Mailpit·DB native 수용과 구분�
 
 선택 notifier는 binary를 소비하지 않고 신규 저장소를 만들지 않는다. 고정 release
 source의 queue 기본값과 최신 generic 문서의 기본값을 구분하며 실제 override를
-읽었다고 주장하지 않는다. P08의17-input SOURCE_REVIEW_ONLY binding 갱신은
+읽었다고 주장하지 않는다. P08의 17-input SOURCE_REVIEW_ONLY binding 갱신은
 이전 이력을 보존한 공개 소스 지문 보정이다. 서명·새 이미지 build·HOME 적용·복원
 성공으로 승격하지 않는다. P12 offline quarantine seam 보정도 실제 Airflow→n8n
 종단 수용이나 P04 Worker/복원 잔여를 닫지 않는다.
 
-P05의 최종 owned editor-REST 시험은747.701초와 cleanup PASS로 끝났다. 실제
+P05의 최종 owned editor-REST 시험은 747.701초와 cleanup PASS로 끝났다. 실제
 Worker/Bull/인증 STARTTLS, 잘못된 old/new 자격의 unknown 보존, 같은 ID의 다음 실행
 갱신과 gen2 DB/metadata+같은 합성 encryption key를 통한 fresh 실행을 확인했다.
 복원은 해당 기록된 범위로만 수용하며 같은 입력 replay·기존 unknown/accepted와
