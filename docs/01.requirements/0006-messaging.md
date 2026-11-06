@@ -98,6 +98,6 @@ No separately numbered solution-independent interface requirement is defined.
 ### Traceability
 
 - **Architecture Description**: [Messaging architecture](../02.architecture/descriptions/0005-messaging-architecture.md)
-- **ADR**: [Kafka vs RabbitMQ selection decision](../02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md) (historical; RabbitMQ is not implemented)
+- **ADR**: [ADR-0052 Kafka as the Only Messaging Broker](../02.architecture/decisions/0052-kafka-only-messaging-broker.md) (historical; RabbitMQ is not implemented)
 - **Retired domain Spec SPEC-0006** (messaging): replaced by the messaging guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
 - **Retired requirement REQ-0017** (messaging optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the messaging operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

@@ -81,4 +81,4 @@ No numbered interface requirement is issued.
 ## Related Documents
 
 - **Architecture Description**: [Compose network segmentation](../02.architecture/descriptions/0026-standardize-infra-net.md)
-- **ADR**: [infra_net standardization decision (superseded single-mesh model)](../02.architecture/decisions/0026-standardize-infra-net.md)
+- **ADR**: [ADR-0055 Segmented Per-Flow Networks](../02.architecture/decisions/0055-segmented-per-flow-networks.md)

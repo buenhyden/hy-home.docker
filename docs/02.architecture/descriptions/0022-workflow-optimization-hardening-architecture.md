@@ -113,7 +113,7 @@ active workflow architecture scope.
 
 - **Requirement**: [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
 - **Tier Architecture Description**: [AD-0007 Workflow Tier (07-workflow) Architecture Description](0007-workflow-architecture.md)
-- **ADR**: [ADR-0022 Workflow hardening and HA expansion](../decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
+- **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../decisions/0059-native-oidc-open-webui-and-airflow.md)
 - **Guide**: [Workflow optimization hardening guide](../../05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 - **Policy**: [Workflow optimization hardening policy](../../05.operations/policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 - **Runbook**: [Workflow optimization hardening runbook](../../05.operations/runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md)

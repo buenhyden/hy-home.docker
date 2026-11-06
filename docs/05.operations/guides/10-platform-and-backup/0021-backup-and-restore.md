@@ -59,7 +59,7 @@ HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackR
 orchestrator는 자신이 보호하는 데이터와 같은 filesystem이나 그 내부에 있는
 repository를 거부한다. 오프사이트로는 로컬 Restic backup/check가 성공하면(앞선 export 실패 여부와 별개로)
 `restic-offsite`가 두 Restic repository(state set에 `pgbackrest/`와 `dev-pgbackrest/` 포함)를
-Cloudflare R2 repository 하나로 복사한다(ADR-0041). owner가
+Cloudflare R2 repository 하나로 복사한다(ADR-0056). owner가
 [RUN-0021](../../runbooks/10-platform-and-backup/0021-backup-and-restore.md) 8단계의 R2 설정을 마치기
 전까지는 모든 복사본이 한 host에 있어 offsite recovery를 할 수 없다.
 

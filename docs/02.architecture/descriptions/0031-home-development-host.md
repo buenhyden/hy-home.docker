@@ -34,7 +34,7 @@ is an existing implementation's trust boundary, and this design does not
 prove complete network isolation.
 
 Storage and Redis administration packages are flat under `04-data`; processing, data quality, BI, dbt and JupyterLab are standalone LAB entrypoints under `labs/` (SPEC-0262). Software verification and development mail capture belong to `11-quality`; platform tools remain in `09-platform-ops`. Dozzle belongs to Observability; Open Notebook/SurrealDB and MLflow belong to AI. This is source organization only and does
-not change HOME selection or the root Compose project (ADR-0045).
+not change HOME selection or the root Compose project (ADR-0058).
 
 ## Structure
 

@@ -116,7 +116,7 @@ No numbered interface requirement is issued.
 ## Related Documents
 
 - **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/0009-tooling-architecture.md)
-- **ADR**: [0009-tooling-services.md](../02.architecture/decisions/0009-tooling-services.md)
+- **ADR**: [ADR-0058 HOME Tiers versus LABs](../02.architecture/decisions/0058-home-tiers-versus-labs.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
   and [SPEC-0263 LAB promotion contract](../03.specs/0263-lab-promotion-contract/spec.md)
 - **Retired domain Spec SPEC-0010** (tooling): replaced by the tooling guides,

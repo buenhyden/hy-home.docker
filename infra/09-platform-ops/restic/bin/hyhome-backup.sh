@@ -8,7 +8,7 @@
 #   4. Restic backup and check of both repositories
 #   5. remove the plaintext exports from staging, on success or failure
 #   6. offsite: restic copy of both repositories to Cloudflare R2 once the
-#      owner has set BACKUP_OFFSITE_R2_* (ADR-0041); weekly remote check
+#      owner has set BACKUP_OFFSITE_R2_* (ADR-0056); weekly remote check
 # Paths come from the rendered Compose model; .env is never sourced.
 set -euo pipefail
 umask 077
@@ -274,7 +274,7 @@ fi
 # changes only; pgBackRest is bounded by retention, Restic until forget-prune.
 echo "repository sizes: state=$(( $(size_kib "$state_repo") / 1024 ))MiB (budget ${max_gib}GiB) host=$(( $(size_kib "$host_repo/restic") / 1024 ))MiB" || true
 
-# Offsite (ADR-0041). Staging is emptied and vacuum resumed first, so neither
+# Offsite (ADR-0056). Staging is emptied and vacuum resumed first, so neither
 # waits for the upload. Unconfigured: logged and skipped. Configured: a failed
 # copy or check fails the unit like any other step, local results stay valid.
 cleanup
@@ -288,7 +288,7 @@ elif [[ "$restic_ok" == true ]]; then
     printf '%s\n' "${offsite_log:-}"
     offsite_bytes="$(sed -n 's/^R2 repository size: \([0-9][0-9]*\) bytes$/\1/p' <<<"${offsite_log:-}")"
     # The R2 size feeds the free-tier alert on every run that measured it,
-    # failed or refused ones included (ADR-0041; owner cap 10 GB).
+    # failed or refused ones included (ADR-0056; owner cap 10 GB).
     if [[ -n "$offsite_bytes" ]]; then
         offsite_dir="$state_repo/metrics"
         if ! { mkdir -p "$offsite_dir" && chmod 0755 "$offsite_dir" &&

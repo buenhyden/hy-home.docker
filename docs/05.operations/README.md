@@ -20,7 +20,7 @@ layer: "operations"
 먼저 무엇이 필요한지로 찾는다. 맥락과 전제를 이해하려면 Guide, 허용 여부와
 승인·보안·예외 경계를 확인하려면 Policy, 실행할 명령 흐름이 필요하면
 Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이다.
-구조 결정은 [ADR-0043](../02.architecture/decisions/0043-operations-role-layout.md)이
+구조 결정은 [ADR-0057](../02.architecture/decisions/0057-operations-role-and-domain-folders.md)이
 소유한다.
 
 ### Audience

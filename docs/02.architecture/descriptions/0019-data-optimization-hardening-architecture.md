@@ -90,7 +90,7 @@ Requirement and ADR.
 ### Traceability
 
 - [REQ-0004](../../01.requirements/0004-data.md)
-- [ADR-0040](../decisions/0040-data-hardening-gate-and-staged-expansion.md) (supersedes ADR-0019)
+- [ADR-0058](../decisions/0058-home-tiers-versus-labs.md)
 - [SPEC-0004](0004-data-architecture.md)
 - [Data hardening guide](../../05.operations/guides/05-databases-and-storage/0030-data-optimization-hardening.md)
 - [Data hardening policy](../../05.operations/policies/05-databases-and-storage/0030-data-optimization-hardening.md)

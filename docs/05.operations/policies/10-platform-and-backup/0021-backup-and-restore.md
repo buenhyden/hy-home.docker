@@ -65,7 +65,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
    `BACKUP_STATE_REPO_DIR`(system SSD)는 data-disk state의 복사본을,
    `BACKUP_HOST_REPO_DIR`(data disk)는 `secrets/`와 `.env`의 복사본을 담는다;
    orchestrator는 자신의 source와 같은 filesystem에 있거나 그 안에 있는
-   repository를 거부한다. 서로 다른 filesystem이 같은 physical disk일 수 있으므로 물리 매핑 검증은 별도 필수다. 오프사이트(ADR-0041): 로컬 backup과 check가
+   repository를 거부한다. 서로 다른 filesystem이 같은 physical disk일 수 있으므로 물리 매핑 검증은 별도 필수다. 오프사이트(ADR-0056): 로컬 backup과 check가
    성공하면 `restic-offsite`가 두 Restic repository의 snapshot을, state
    set 안의 pgBackRest repository까지 포함해 bucket lock이 걸린 Cloudflare R2
    repository 하나로 복사한다. host의 token은 object를 쓸 수 있지만 bucket을

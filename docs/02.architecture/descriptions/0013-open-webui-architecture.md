@@ -85,6 +85,6 @@ none is current.
 
 - [REQ-0013 Open WebUI requirement](../../01.requirements/0013-ai-open-webui.md)
 - [AD-0008 AI infrastructure](0008-ai-architecture.md)
-- [ADR-0016 Open WebUI implementation](../decisions/0016-open-webui-implementation.md)
+- [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../decisions/0059-native-oidc-open-webui-and-airflow.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

@@ -86,4 +86,4 @@ No numbered interface requirement is issued.
 
 - **Architecture Description**: [Open WebUI architecture](../02.architecture/descriptions/0013-open-webui-architecture.md)
   and [AI architecture](../02.architecture/descriptions/0008-ai-architecture.md)
-- **ADR**: [Open WebUI implementation decision](../02.architecture/decisions/0016-open-webui-implementation.md)
+- **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../02.architecture/decisions/0059-native-oidc-open-webui-and-airflow.md)

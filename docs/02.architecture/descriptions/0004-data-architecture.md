@@ -20,7 +20,7 @@ Data provides storage and data-platform packages for HOME applications and
 explicitly selected development workloads. Operators need to tell shared HOME
 state apart from OPTIONAL packages and LAB topologies. Root packages are
 direct children of `infra/04-data`; LAB topologies are standalone entrypoints
-under `labs/`. Analytics processing follows ADR-0045 and, since SPEC-0262,
+under `labs/`. Analytics processing follows ADR-0058 and, since SPEC-0262,
 runs as LAB entrypoints.
 
 ## Scope
@@ -111,7 +111,7 @@ LAB promotion contract.
 
 - [REQ-0004 Data requirements](../../01.requirements/0004-data.md)
 - [REQ-0027 HOME development host](../../01.requirements/0027-home-development-host.md)
-- [ADR-0045 Data storage and analytics boundary](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
+- [ADR-0058 HOME tiers versus LABs](../decisions/0058-home-tiers-versus-labs.md)
 - [Data packages](../../../infra/04-data/README.md)
 - [LAB entrypoints](../../../labs/README.md)
 - [Analytics architecture](0012-data-analytics-architecture.md)

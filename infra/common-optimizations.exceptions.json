@@ -117,7 +117,7 @@
       "reason": "The offsite copy reads both local repositories whose files are owned by root and UID 70",
       "impact": "The process can read any mounted file",
       "mitigation": "Read-only repository mounts; egress only to the configured R2 endpoint",
-      "verification": "Offsite copy contract (ADR-0041, RUN-0021)",
+      "verification": "Offsite copy contract (ADR-0056, RUN-0021)",
       "reviewed": "2026-10-09",
       "review_by": "2027-04-07",
       "release_condition": "Remove when the repositories are readable through a backup group"

@@ -97,7 +97,7 @@ _ROLE_SECTION_ALIASES = {
 }
 _ACTIVE_ROUTE_PATTERNS = (
     re.compile(r"docs/05\.operations/[^\s`)'\"]+/ops-(?:#{4}|\*|[0-9]{4})(?:[-/])"),
-    # ADR-0043 retired the domain catalog; its routes are history, not current.
+    # ADR-0057 retired the domain catalog; its routes are history, not current.
     re.compile(r"docs/05\.operations/catalog(?:[/`)'\"\s.,;:]|$)"),
 )
 _RELEASE_ROLE_PATTERN = re.compile(

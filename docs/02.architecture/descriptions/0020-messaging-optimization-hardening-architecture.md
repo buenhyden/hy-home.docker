@@ -102,7 +102,7 @@ boundary.
 
 - **Requirement**: [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
 - **Tier Architecture Description**: [AD-0005 Messaging Architecture Description](0005-messaging-architecture.md)
-- **ADR**: [ADR-0020 Messaging hardening and HA expansion](../decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
+- **ADR**: [ADR-0052 Kafka as the only messaging broker](../decisions/0052-kafka-only-messaging-broker.md)
 - **Guide**: [Messaging optimization hardening guide](../../05.operations/guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
 - **Policy**: [Messaging optimization hardening policy](../../05.operations/policies/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
 - **Runbook**: [Messaging optimization hardening runbook](../../05.operations/runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)

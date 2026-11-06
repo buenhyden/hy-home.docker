@@ -68,7 +68,7 @@ networks beside it, then it left the services and the root.
 | `crawl4ai_net` | leaf-owned, internal | Crawl4AI and admitted consumers (POL-0091) | consumer → Crawl4AI API; no egress |
 | `crawl4ai_egress_net` | 10.250.200.0/29, leaf-owned, internal (named egress-isolation exception in REQ-0023-FR-0002) | Crawl4AI (fixed .3) and `crawl4ai-egress` (fixed .2) | crawler → egress gateway |
 | `crawl4ai_outbound_net` | leaf-owned | `crawl4ai-egress` | gateway → public addresses on ports 80/443 only; non-global and IPv6 addresses refused |
-| `restic_offsite_net` | leaf-owned | `restic-offsite` | backup egress to Cloudflare R2 only (ADR-0041) |
+| `restic_offsite_net` | leaf-owned | `restic-offsite` | backup egress to Cloudflare R2 only (ADR-0056) |
 
 Services with no container peer (Renovate, OpenTofu) use the project default
 network. WireMock also uses it until a named consumer exists;
@@ -128,7 +128,7 @@ Compose configuration.
 ## Related Documents
 
 - [REQ-0023 Compose network segmentation](../../01.requirements/0023-standardize-infra-net.md)
-- [ADR-0026 Standardize infra_net (the superseded single-mesh decision)](../decisions/0026-standardize-infra-net.md)
+- [ADR-0055 Segmented per-flow networks](../decisions/0055-segmented-per-flow-networks.md)
 - SPEC-0180 HOME development convergence and SPEC-0098 (retired; version history)
 - [IP address management guide](../../05.operations/guides/02-gateway-and-networking/0077-ip-address-management.md)
 - [IP address management policy](../../05.operations/policies/02-gateway-and-networking/0077-ip-address-management.md)

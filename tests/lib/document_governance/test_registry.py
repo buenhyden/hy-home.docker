@@ -1038,7 +1038,7 @@ class DocumentRegistryTests(unittest.TestCase):
         )
 
     def test_retired_catalog_subject_identity_is_not_a_registrable_shape(self) -> None:
-        # ADR-0043 removed the only subject-member profiles; the relation and its
+        # ADR-0057 removed the only subject-member profiles; the relation and its
         # `{subject_number}` token cannot come back as a current path contract.
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         guide = next(item for item in raw["profiles"] if item["id"] == "guide")

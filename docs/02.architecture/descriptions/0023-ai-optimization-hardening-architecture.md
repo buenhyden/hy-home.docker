@@ -107,7 +107,7 @@ structure itself is in [AD-0008](0008-ai-architecture.md).
 - **PRD**: [REQ-0009](../../01.requirements/0009-ai.md)
 - **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](0008-ai-architecture.md)
 - **Open WebUI Architecture Description**: [AD-0013](0013-open-webui-architecture.md)
-- **ADR**: [ADR-0023](../decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
+- **ADR**: [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md)
 - **Guide**: [AI optimization hardening guide](../../05.operations/guides/09-ai-and-search/0058-ai-optimization-hardening.md)
 - **Policy**: [AI optimization hardening policy](../../05.operations/policies/09-ai-and-search/0058-ai-optimization-hardening.md)
 - **Runbook**: [AI optimization hardening runbook](../../05.operations/runbooks/09-ai-and-search/0058-ai-optimization-hardening.md)

@@ -41,7 +41,7 @@ ANALYTICS_LABS = {
     "sonarqube": ("sonarqube",),
     "stalwart": ("stalwart",),
 }
-# ADR-0046 capability tiers; a renamed or retired tier fails here.
+# ADR-0058 capability tiers; a renamed or retired tier fails here.
 TIERS = (
     "01-gateway",
     "02-auth",

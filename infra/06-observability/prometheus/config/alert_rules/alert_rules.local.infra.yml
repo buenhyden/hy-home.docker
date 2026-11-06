@@ -100,7 +100,7 @@ groups:
 
       # [What] R2 offsite repository near the free tier / R2 무료 한도 근접
       # R2 bills stored bytes above 10 GB a month; 8 GB leaves room for the
-      # owner's monthly remote forget-prune (RUN-0021 8.5, ADR-0041).
+      # owner's monthly remote forget-prune (RUN-0021 8.5, ADR-0056).
       - alert: HyhomeOffsiteRepoNearFreeTier
         expr: hyhome_backup_offsite_repo_bytes > 8e9
         for: 1h

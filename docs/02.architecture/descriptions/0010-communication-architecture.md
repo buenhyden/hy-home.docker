@@ -86,7 +86,7 @@ rendered; profile rendering is not a stop operation.
 ## Related Documents
 
 - [Communication requirement](../../01.requirements/0011-communication.md)
-- [Communication decision](../decisions/0010-communication-services.md)
+- [ADR-0054 Mailpit in HOME and Stalwart as a LAB](../decisions/0054-mailpit-home-stalwart-lab.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the
 [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

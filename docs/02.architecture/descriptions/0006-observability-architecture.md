@@ -104,5 +104,5 @@ change.
 ## Related Documents
 
 - [REQ-0007 Observability requirements](../../01.requirements/0007-observability.md)
-- [ADR-0006 LGTM stack selection](../decisions/0006-lgtm-stack-selection.md)
+- [ADR-0053 Observability object storage on SeaweedFS](../decisions/0053-observability-storage-on-seaweedfs.md)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
