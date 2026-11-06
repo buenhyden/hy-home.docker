@@ -1,10 +1,10 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.0.1"
+version: "3.0.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -14,8 +14,6 @@ created: "2026-09-01"
 
 ## Overview
 
-### Problem and Goals
-
 Retention rules must outlive the change that introduced them. A document remains
 current while it owns current meaning; when it leaves, readers must still find
 what it held, why it left, and its current owner. Its still-current substance is
@@ -24,12 +22,6 @@ record of the removed body, and its number stays retired. Age, corpus size, and
 absent incoming links cannot by themselves authorize deletion.
 
 ## Scope
-
-### Stakeholders and User Needs
-
-- Maintainers need durable retention and review criteria independent of old Tasks.
-- Agents need enforceable lifecycle, approval, retirement, and citation boundaries.
-- Auditors need discoverable lineage and the original context of decisions.
 
 ### Constraints
 
@@ -43,18 +35,6 @@ absent incoming links cannot by themselves authorize deletion.
 - Restore history into a separately explained current owner; do not silently
   recreate a removed record as current authority. Secret exposure requires
   separately authorized security response, not ordinary retirement.
-
-### Traceability
-
-- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
-- [Document lifecycle architecture](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0051 Summarize-and-delete retirement](../02.architecture/decisions/0051-summarize-and-delete-retirement.md)
-- [ADR-0037 Package waiting and Task cancellation](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
-- ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
-- SPEC-0249 retired three earlier items, whose numbers stay reserved in the
-  Registry: a Tombstone namespace rule, immutable Stage 98 captures, and one
-  capture record per unit. Stage 98 no longer holds records.
 
 ## Requirements
 
@@ -119,12 +99,19 @@ absent incoming links cannot by themselves authorize deletion.
   `resolved_at` value. Its bundle and corrective-work owner preserve closure
   evidence without claiming all corrective work is complete.
 
+### Stakeholders and User Needs
+
+- Maintainers need durable retention and review criteria independent of old Tasks.
+- Agents need enforceable lifecycle, approval, retirement, and citation boundaries.
+- Auditors need discoverable lineage and the original context of decisions.
+
 ### Non-functional Requirements
 
-- **REQ-0026-NFR-0006**: Checks derive judgments from the selected tree and that
+- **REQ-0026-NFR-0006 — Determinism**: Checks derive judgments from the selected tree and that
   tree's own Registry. A missing, symlinked, unreadable, or invalid Registry
   reserves nothing. Fixed corpus counts and custom digest or expected-commit
-  ledgers do not decide retention.
+  ledgers do not decide retention; measure: the same
+  tree and Registry give the same verdict.
 
 ## Acceptance Criteria
 
@@ -145,5 +132,16 @@ absent incoming links cannot by themselves authorize deletion.
 
 ## Related Documents
 
+### Traceability
+
+- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
+- [Document lifecycle architecture](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0051 Summarize-and-delete retirement](../02.architecture/decisions/0051-summarize-and-delete-retirement.md)
+- [ADR-0037 Package waiting and Task cancellation](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
+- ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
+- SPEC-0249 retired three earlier items, whose numbers stay reserved in the
+  Registry: a Tombstone namespace rule, immutable Stage 98 captures, and one
+  capture record per unit. Stage 98 no longer holds records.
 - [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)

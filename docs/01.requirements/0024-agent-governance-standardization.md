@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.6.1"
+version: "1.7.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0024"
 created: "2026-06-01"
@@ -13,8 +13,6 @@ created: "2026-06-01"
 
 ## Overview
 
-### Problem and Goals
-
 The AI agents in this repository must follow one governance model and one
 SDLC even when their execution format differs by provider. The goal is to
 separate the owners of policy, provider translation, document format, and
@@ -22,18 +20,6 @@ execution evidence, and to keep `.claude/` and `.codex/` from degrading into
 independent policy sources.
 
 ## Scope
-
-### Stakeholders and User Needs
-
-- The maintainer must be able to immediately tell which document is
-  canonical in case of a conflict.
-- An AI agent must load only the minimum policy, role, skill, Spec, and Task
-  needed for the request.
-- A reviewer must be able to reproduce the difference between provider
-  projection and the canonical source, the approval boundary, and the
-  verification result.
-- An operator needs an explicit approval boundary so agent work does not
-  expand into secrets, runtime, deployment, or remote state.
 
 ### Constraints
 
@@ -88,7 +74,8 @@ independent policy sources.
   or fixed file counts.
 - **REQ-0024-FR-0014**: `.agents/`'s canonical categories are limited to
   governance, role, invocable skill, verified navigational knowledge, and
-  reusable prompt contract, and paired Skill evaluation evidence.
+  reusable prompt contract, and paired Skill evaluation evidence; evaluation
+  data is not loaded as execution instructions.
   Markdown instruction categories have a registered Stage 99 profile and
   canonical root inventory. Retired evaluator code, fixtures and event proofs
   must not remain recurring QA prerequisites. Knowledge and prompt content
@@ -110,26 +97,44 @@ independent policy sources.
   them. What a record may hold is owned by the environment constraints policy,
   section 5.
 
+### Stakeholders and User Needs
+
+- The maintainer must be able to immediately tell which document is
+  canonical in case of a conflict.
+- An AI agent must load only the minimum policy, role, skill, Spec, and Task
+  needed for the request.
+- A reviewer must be able to reproduce the difference between provider
+  projection and the canonical source, the approval boundary, and the
+  verification result.
+- An operator needs an explicit approval boundary so agent work does not
+  expand into secrets, runtime, deployment, or remote state.
+
 ### Non-functional Requirements
 
-- **REQ-0024-NFR-0009**: Rule interpretation and provider projection
-  verification must be deterministic and fail closed, with no conflicting
-  fallback.
-- **REQ-0024-NFR-0010**: Newly authored shared agent explanations default to
-  Korean. Existing English originals remain readable without a bulk translation;
-  native keys, required headings, commands, quotations and preserved evidence
-  retain their original syntax. Profile languages and READMEs follow the
+- **REQ-0024-NFR-0009 — Determinism**: Rule interpretation and provider
+  projection verification must be deterministic and fail closed, with no
+  conflicting fallback; measure: the same tree yields the same projection
+  verdict on every run.
+- **REQ-0024-NFR-0010 — Language consistency**: Governance, role, skill,
+  knowledge and prompt documents and the authored provider guidance are
+  English, and every `README.md` is Korean; native keys, required headings,
+  commands, quotations and preserved evidence retain their original syntax.
+  Profile languages follow the
   [document language rule](../../.agents/governance/documentation-protocol.md#document-language).
-  Provider adapters must not lose meaning.
-- **REQ-0024-NFR-0011**: Agent permissions must be minimum scope and must not
+  Provider adapters must not lose meaning; measure: registered metadata
+  checks report no language-rule violation.
+- **REQ-0024-NFR-0011 — Least privilege**: Agent permissions must be minimum scope and must not
   expose or change secrets, credentials, private keys, tokens, or
-  unapproved external state.
-- **REQ-0024-NFR-0012**: A verification failure must be able to identify its
+  unapproved external state; measure: no tracked
+  permission grants a write outside the approved scope.
+- **REQ-0024-NFR-0012 — Diagnosability**: A verification failure must be able to identify its
   owner and the target to fix, and a duplicate aggregate gate must not own
-  the same predicate more than once.
-- **REQ-0024-NFR-0013**: The current document must match the tracked
+  the same predicate more than once; measure: each failing check
+  names one owner.
+- **REQ-0024-NFR-0013 — Currency**: The current document must match the tracked
   implementation, and legacy, deprecated, or conflicting rules must be
-  removed from the current surface.
+  removed from the current surface; measure: registered governance suites
+  pass on the current tree.
 
 ## Acceptance Criteria
 

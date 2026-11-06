@@ -1,88 +1,117 @@
 ---
 title: "Administration and Experimentation Requirements"
-version: "1.4.0"
+version: "1.5.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0012"
 created: "2026-03-26"
 ---
+
 # Administration and Experimentation Requirements
 
 ## Overview
 
-### Problem and Goals
-
-This document preserves the former Laboratory obligations across capability tiers: RedisInsight in `04-data`, Dozzle in `06-observability`, Open Notebook/SurrealDB and MLflow in `08-ai`, and JupyterLab as the standalone LAB entrypoint `labs/jupyterlab/docker-compose.yml` (SPEC-0262). The retired directory does not retire these requirements. It sets out the unified dashboard and admin UI requirements so system administrators, developers, and AI agents can check and manage the access points and state of distributed infrastructure services in one place.
-
-### Problem Statement
-
-When infrastructure service access points, container state, data store debugging tools, and local notebook-style experiment tools are scattered, operators waste time on status checks and incident response. Shared Operations navigation must make RedisInsight, Dozzle and Open Notebook discoverable while preserving each service's approved authentication and gateway boundary.
+When service access points, container state, data store debugging tools and
+notebook-style experiment tools are scattered, operators waste time on status
+checks and incident response. This package keeps the former Laboratory
+obligations across capability tiers: RedisInsight (data), Dozzle
+(observability), Open Notebook with SurrealDB and MLflow (AI), and JupyterLab
+as an isolated LAB. It states how administrators, developers and AI agents find
+and safely use these tools, and how an isolated LAB is kept apart from HOME
+until the owner promotes it. The retired Laboratory directory does not retire
+these requirements.
 
 ## Scope
 
-### Stakeholders and User Needs
+- **In scope**: RedisInsight, Dozzle, Open Notebook with SurrealDB, MLflow and
+  JupyterLab; the isolation and promotion readiness of every LAB.
+- **Out of scope**: admin UIs of individual business applications.
+- **Non-goals**: hardware-level monitoring, owned by the observability tier;
+  one aggregated dashboard, which is not provided.
 
-These capabilities provide shared operational navigation and explicitly selected experimentation surfaces; directory placement does not establish isolation for system administrators and developers. It visualizes distributed infrastructure services and builds an intuitive management interface for container and data resources to maximize operational efficiency.
+### Assumptions
 
-### Personas
-
-- **System Administrator**: monitors overall container state and controls running services.
-- **Backend Developer**: visually inspects and debugs data in data stores such as Redis.
-- **AI Agent**: understands infrastructure configuration and checks service access points.
-
-### Key Use Cases
-
-- **Checking container logs**: checks approved container logs through Dozzle.
-- **Data visualization**: analyzes key distribution and performance of the Redis cluster through RedisInsight.
-- **Notebook-style experimentation**: performs local knowledge work and SurrealDB-backed experiments through Open Notebook.
-
-### Constraints
-
-- **In Scope**: configuring and integrating RedisInsight, Dozzle, Open Notebook/SurrealDB, MLflow and JupyterLab.
-- **Out of Scope**: admin UIs of individual business applications.
-- **Non-goals**: hardware-level monitoring (owned by 06-observability).
-
-### AI Agent Requirements
-
-N/A
+- The shared SSO (Keycloak) is available for SSO-protected routes.
+- No LAB is promoted now; each promotion is a separate, owner-approved change.
 
 ### Risks
 
-- **Dependency**: `02-auth` (Keycloak) availability for SSO.
-- **Risk**: Exposing Docker Socket to Dozzle; bounded by the read-only mount and native OIDC; a read-only socket mount does not restrict Docker API reads.
+- Dozzle reads the Docker socket. A read-only mount does not restrict Docker
+  API reads, so native OIDC and the gateway allowlist are its boundary.
+- These tools see Docker, Redis/Valkey, provider APIs and notebook content, so
+  a weak boundary exposes the whole host.
 
 ## Requirements
 
 ### Functional Requirements
 
-- **REQ-0012-FR-0001**: Every active infrastructure service must be exposed on the dashboard, either automatically or through manual configuration.
-- **REQ-0012-FR-0002**: Every admin tool UI route must preserve its approved gateway, authentication and allowlist boundary. RedisInsight uses ForwardAuth; Dozzle uses native OIDC with the gateway CIDR control; Open Notebook uses its password-file authentication with the gateway CIDR control. These existing service-specific exceptions are recorded in POL-0073 and the corresponding source, not introduced by relocation. The MLflow browser route uses ForwardAuth; direct network/API paths require separate access evidence. JupyterLab, as a LAB, has no gateway route: it is published only on the LAB bind address and keeps its mandatory server token.
-- **REQ-0012-FR-0004**: Root Compose validation must cover `admin` (Dozzle and RedisInsight), `notebook` (Open Notebook and SurrealDB), `surrealdb`, `mlops` (MLflow and its provisioner), and `data-science` (MLflow and its provisioner), preserving existing selections. JupyterLab is outside root Compose validation; its standalone LAB entrypoint `labs/jupyterlab/docker-compose.yml` must render on its own and select no root service.
-- **REQ-0012-FR-0005**: The operator and knowledge-work capabilities are optional and outside HOME, and their absence must not affect core traffic. Their broad visibility into Docker, Redis/Valkey, provider APIs and notebook content makes them an admin security boundary, not a harmless dashboard layer.
+- **REQ-0012-FR-0001**: Every administration and experimentation tool must have
+  one documented access point that an operator or agent can find from the
+  shared operations navigation.
+- **REQ-0012-FR-0002**: Every admin tool route must keep its approved gateway,
+  authentication and allowlist boundary: RedisInsight uses SSO with a gateway
+  allowlist; Dozzle uses native OIDC with a gateway allowlist; Open Notebook
+  uses its own password with a gateway allowlist; the MLflow browser route uses
+  SSO. Direct network and API paths need separate access evidence. JupyterLab,
+  as a LAB, has no gateway route; it is reachable only on the LAB host address (loopback by default)
+  and always requires its server token.
+- **REQ-0012-FR-0004**: Root composition validation must cover the selections
+  `admin` (Dozzle and RedisInsight), `notebook` (Open Notebook and SurrealDB),
+  `surrealdb`, and `mlops` and `data-science` (each MLflow and its database
+  provisioner). JupyterLab is outside root validation; it renders on its own
+  and selects no root service.
+- **REQ-0012-FR-0005**: These capabilities are optional and outside the
+  always-on HOME set; their absence must not affect core traffic. Each LAB keeps
+  its own project, network, endpoint inputs, data root and secret copies, and
+  declares where and how it would be promoted. A LAB is promoted only when the
+  owner approves it and a fail-closed readiness report passes, judged on
+  declared resource reservations; an unmeasured value is not a pass.
+
+### Stakeholders and User Needs
+
+- **System administrator**: monitors container state and logs (Dozzle).
+- **Backend developer**: inspects and debugs Redis data (RedisInsight).
+- **AI agent**: finds service access points and configuration.
+- **Researcher**: runs notebook-style work and experiments (Open Notebook,
+  JupyterLab) and tracks models (MLflow).
 
 ### Non-functional Requirements
 
-No separately numbered non-functional requirement was identified in the source package.
+No numbered non-functional requirement is issued.
 
 ### Interface Requirements
 
-No separately numbered solution-independent external interface requirement was identified in the source package.
+No numbered interface requirement is issued.
 
 ## Acceptance Criteria
 
-- **REQ-0012-FR-0001**: root validation renders the administration and experimentation profile selections without failure; this is not evidence of a running dashboard or live access.
-- **REQ-0012-FR-0002**: RedisInsight, Dozzle and Open Notebook retain their declared gateway and service-specific authentication/CIDR controls. Validate direct network access separately; a gateway check does not prove that peer-network access is denied.
+- **REQ-0012-FR-0001**: Each tool in scope has a guide in the operations catalog
+  that names its access point.
+- **REQ-0012-FR-0002**: RedisInsight, Dozzle, Open Notebook and MLflow keep their
+  declared gateway and authentication controls, and JupyterLab refuses to start
+  with a missing or short token. A gateway check does not prove that
+  peer-network access is denied.
+- **REQ-0012-FR-0004**: Root validation renders each listed selection without
+  failure, and the JupyterLab LAB renders alone; this is not evidence of a
+  running service.
+- **REQ-0012-FR-0005**: Every LAB passes the LAB isolation check, and no LAB is
+  promoted without an owner-approved readiness report whose criteria all pass.
 
 ## Related Documents
 
-### Traceability
-
-- **Architecture Description**: [Laboratory architecture descriptions](../02.architecture/descriptions/0011-laboratory-architecture.md)
-- **Spec**: [Laboratory technical specification](../02.architecture/descriptions/0011-laboratory-architecture.md)
-- **Plan**: Laboratory standardization plan
-- **Retired ADR-0011** (laboratory services): deleted on 2026-11-04; its surviving tool selection is summarized in AD-0011 Traceability.
-- **Retired domain Spec SPEC-0012** (laboratory): replaced by the laboratory guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.
-- **Retired requirement REQ-0022** (laboratory optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the laboratory operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.
+- **Architecture Description**: [Laboratory architecture](../02.architecture/descriptions/0011-laboratory-architecture.md)
+- **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
+  and [SPEC-0263 LAB promotion contract](../03.specs/0263-lab-promotion-contract/spec.md)
+- **Policy**: [LAB promotion](../05.operations/policies/15-labs/0107-lab-promotion.md)
+- **Retired ADR-0011** (laboratory services): deleted on 2026-11-04; its
+  surviving tool selection is summarized in AD-0011 Traceability.
+- **Retired domain Spec SPEC-0012** (laboratory): replaced by the laboratory
+  guides, policies and runbooks in the operations catalog under
+  `docs/05.operations/`.
+- **Retired requirement REQ-0022** (laboratory optimization hardening): retired
+  under SPEC-0169 because every clause named an implementation artifact; its
+  contract lives in the laboratory operations policy, and its documentation
+  traceability clause moved to REQ-0026-FR-0011.

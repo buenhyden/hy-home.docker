@@ -1,95 +1,89 @@
 ---
 title: "Open WebUI Requirements"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0013"
 created: "2026-03-27"
 ---
+
 # Open WebUI Requirements
 
 ## Overview
 
-### Problem and Goals
-
-This document defines the product requirements for Open WebUI. Open WebUI provides a comprehensive web interface for interacting with local LLMs and orchestrating RAG (Retrieval-Augmented Generation). It clarifies user value, problem definition, and success criteria to serve as the basis for subsequent design and implementation.
-
-### Problem Statement
-
-Interacting with local LLMs often requires CLI knowledge or fragmented tools. Users need a unified, visual, and secure interface that supports multi-user collaboration, document indexing, and seamless integration with existing AI/Data tiers (Ollama, Qdrant).
+Talking to local LLMs often needs CLI knowledge or fragmented tools. Users need
+one visual, secure interface for chat with local models and for querying their
+own documents through retrieval-augmented generation (RAG). This package states
+the needs that Open WebUI meets for the platform: model selection from the
+local model runtime (Ollama), document indexing and retrieval, persistent
+history, and access through the gateway with the shared identity provider.
 
 ## Scope
 
-### Stakeholders and User Needs
+- **In scope**: the web interface, its RAG behavior (embedding through the local
+  model runtime and a vector store it owns), gateway routing and
+  authentication.
+- **Out of scope**: model weight downloads, owned by the model runtime; the
+  shared vector database (Qdrant), which Open WebUI does not use.
+- **Non-goals**: a custom LLM training platform.
 
-Provide a premium, ChatGPT-like interface for the `hy-home.docker` ecosystem that empowers users to interact with local LLMs and manage document-based knowledge sharing via RAG.
+### Assumptions
 
-### Personas
-
-- **Persona 1**: **End User** (Chat interface for daily tasks)
-- **Persona 2**: **AI Engineer** (RAG orchestration & prompt engineering)
-- **Persona 3**: **Operator** (Resource monitoring & SSO integration)
-
-### Key Use Cases
-
-- **STORY-01**: As an end user, I want to chat with local models (Ollama) through a beautiful web UI.
-- **STORY-02**: As an AI engineer, I want to upload PDF/Text documents and query them using RAG.
-- **STORY-03**: As an operator, I want to ensure only authenticated users can access the AI interface via SSO.
-
-### Constraints
-
-- **In Scope**:
-  - Web interface (Svelte-based) configuration.
-  - RAG orchestration logic (Embedding engine selection).
-  - Traefik routing and SSO labels.
-- **Out of Scope**:
-  - Managing model weight downloads (Handled by Ollama).
-  - Hardening the Qdrant database (Handled by Data Tier).
-- **Non-goals**:
-  - Building a custom LLM training platform.
-
-### AI Agent Requirements
-
-- **Allowed Actions**: Updating documentation links, adjusting environment variables in `docker-compose.yml`.
-- **Disallowed Actions**: Disabling SSO middlewares without approval.
-- **Human-in-the-loop Requirement**: Required for upgrading major image versions.
+- The local model runtime is healthy for inference and embedding.
+- The host has enough GPU memory for accelerated embedding and inference.
+- Disabling the identity-provider login or upgrading a major image version
+  needs owner approval.
 
 ### Risks
 
-- **Dependency**: Requires `ollama` service to be healthy for inference.
-- **Dependency**: Requires `qdrant` service for vector storage.
-- **Assumption**: Users have sufficient GPU memory for CUDA-accelerated embedding/inference.
+- A model runtime outage stops chat and indexing.
+- RAG vectors live in the interface's own data store, so losing that store
+  loses the document index together with chat history.
 
 ## Requirements
 
 ### Functional Requirements
 
-- **REQ-0013-FR-0001**: Support multi-model selection from the Ollama backend.
-- **REQ-0013-FR-0002**: Provide a RAG engine integrating with Qdrant for document indexing and retrieval.
-- **REQ-0013-FR-0003**: Support persistent chat history and document metadata storage.
-- **REQ-0013-FR-0004**: Integration with Traefik for SSL termination and SSO middleware.
+- **REQ-0013-FR-0001**: Support multi-model selection from the local model
+  runtime (Ollama).
+- **REQ-0013-FR-0002**: Provide a RAG engine that embeds documents through the
+  local model runtime and keeps vectors in a store owned by Open WebUI.
+- **REQ-0013-FR-0003**: Persist chat history, document metadata and the vector
+  index across restarts.
+- **REQ-0013-FR-0004**: Serve the interface only through the gateway with TLS,
+  and authenticate every user through the shared identity provider (Keycloak)
+  with password login and self sign-up disabled.
+
+### Stakeholders and User Needs
+
+- **End user**: chats with local models through a web UI.
+- **AI engineer**: uploads PDF or text documents and queries them with RAG.
+- **Operator**: ensures only identity-provider users reach the interface.
 
 ### Non-functional Requirements
 
-No separately numbered non-functional requirement was identified in the source package.
+No numbered non-functional requirement is issued.
 
 ### Interface Requirements
 
-No separately numbered solution-independent external interface requirement was identified in the source package.
+No numbered interface requirement is issued.
 
 ## Acceptance Criteria
 
-- **REQ-0013-FR-0001**: Successful connection to Ollama and Qdrant services within the local network.
-- **REQ-0013-FR-0002**: Document indexing latency under 5 seconds for standard PDF files (using CUDA acceleration).
+- **REQ-0013-FR-0001**: The interface lists the models served by the local model
+  runtime over the internal AI network.
+- **REQ-0013-FR-0002**: A standard PDF is indexed in under 5 seconds with GPU
+  acceleration, claimed only with separate benchmark evidence, and is retrieved as context for a query.
+- **REQ-0013-FR-0003**: History and indexed documents remain after the service
+  is recreated.
+- **REQ-0013-FR-0004**: The login page offers only the identity-provider login,
+  and the interface publishes no host port outside the gateway.
 
 ## Related Documents
 
-### Traceability
-
-- **Architecture Description**: [Open WebUI architecture descriptions](../02.architecture/descriptions/0013-open-webui-architecture.md)
-- **Spec**: [Open WebUI technical specification](../02.architecture/descriptions/0008-ai-architecture.md)
-- **Plan**: Open WebUI plan
+- **Architecture Description**: [Open WebUI architecture](../02.architecture/descriptions/0013-open-webui-architecture.md)
+  and [AI architecture](../02.architecture/descriptions/0008-ai-architecture.md)
 - **ADR**: [Open WebUI implementation decision](../02.architecture/decisions/0016-open-webui-implementation.md)

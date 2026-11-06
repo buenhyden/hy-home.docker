@@ -1,98 +1,129 @@
 ---
 title: "Platform Operations and Software Verification Requirements"
-version: "2.2.0"
+version: "2.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0010"
 created: "2026-03-26"
 ---
+
 # Platform Operations and Software Verification Requirements
 
 ## Overview
 
-### Problem and Goals
-
-This document retains the tooling requirements across `09-platform-ops` platform operations and `11-quality` software verification. IaC, Registry, Renovate and Restic remain in Platform Operations; SonarQube, k6, WireMock, Pact Broker, Conftest and Mailpit belong to Quality under SPEC-0197. Issued functional requirement identities remain unchanged. The tier provides supporting services across the whole development cycle, aiming to build a stable and efficient development environment by supporting IaC (Infrastructure as Code) automation, code quality analysis, and large-scale performance testing.
-
-### Problem Statement
-
-When infrastructure changes are managed manually, tracking becomes difficult, and code quality and performance verification are fragmented, so a centralized tool is needed to guarantee the system's overall stability.
+Manual infrastructure changes are hard to track, and fragmented code quality
+and performance checks leave the platform's stability unverified. This package
+states the tooling needs of two capability tiers: platform operations
+(infrastructure as code, a private image registry, dependency updates and
+backup) and software verification (static analysis, load testing, API mocking,
+contract testing and policy checks; the SMTP sandbox is REQ-0011's). The goal is a supporting
+toolset that removes manual work and gives data for engineering decisions.
 
 ## Scope
 
-### Stakeholders and User Needs
+- **In scope**: infrastructure automation and its orchestration, the private
+  image registry, static code analysis, load testing, and the shared
+  verification tools of the quality tier.
+- **Out of scope**: servers that run business logic; service monitoring and
+  logging, owned by the observability tier; mail capture requirements, owned by
+  REQ-0011.
+- **Non-goals**: general-purpose public cloud services.
+- The file synchronization obligation of former REQ-0010-FR-0005 was withdrawn on
+  2026-09-19 with the Syncthing runtime. It is not reallocated, and number 5
+  stays reserved in the Registry `reserved_history`.
 
-Build an integrated tooling ecosystem spanning code quality checks to infrastructure provisioning automation, minimizing manual work and supporting data-driven engineering decisions.
+### Assumptions
 
-### Personas
-
-- **DevOps Engineer**: Wants to manage infrastructure consistently through IaC automation and reduce deployment time.
-- **Developer**: Wants to check quality metrics for code under development and share deployment artifacts via an internal image registry.
-- **QA/Performance Engineer**: Wants to easily configure and run large-scale load tests to measure the system's limits.
-
-### Key Use Cases
-
-- **STORY-01**: A DevOps engineer automatically reviews and deploys an infrastructure plan through Terrakube on every code change.
-- **STORY-02**: A developer automatically receives analysis of bugs, vulnerabilities, and code smells through SonarQube on every source push.
-- **STORY-03**: A performance engineer uses k6, the default load tool, to run load scenarios and find bottlenecks; Locust is an optional standalone LAB for Python or protocol comparisons.
-
-### Constraints
-
-Following removal of the Syncthing runtime, the file synchronization obligation of the former functional allocation `0005` was withdrawn on 2026-09-19. It is not currently a provided obligation and is not reallocated to another feature. The high-water mark of `REQ-0010.FR` is kept, and number 5 is permanently preserved in the Stage 99 Registry's `reserved_history`. The acceptance criteria above are verification targets and do not imply evidence that they are achieved on the current host.
-
-- **In Scope**:
-  - Infrastructure automation tools and management platform.
-  - Supporting environment for development productivity and quality improvement.
-  - Resource-shared infrastructure under internal security controls.
-- **Out of Scope**:
-  - Servers running actual business logic.
-  - Service monitoring and logging system (owned by 06-observability).
-- **Non-goals**:
-  - Providing general-purpose public cloud services.
-
-### AI Agent Requirements
-
-N/A
+- Infrastructure orchestration and static analysis use the shared management
+  database and the shared authentication boundary.
+- Static analysis and the alternative load tool are optional experiment
+  capabilities outside the always-on HOME set; no LAB is promoted until the
+  owner decides it.
+- The acceptance criteria are verification targets, not evidence that they are
+  met on the current host.
 
 ### Risks
 
-- **Risks**: Risk of blocked infrastructure changes during a Terrakube API failure.
-- **Dependencies**: Selected services such as Terrakube/SonarQube use the declared `04-data` backend and `02-auth` boundary. The registry and OpenTofu helper are currently local/bind-mount centric. Preserving a single host's volume alone does not guarantee backup or host failure recovery.
+- An orchestration API failure blocks infrastructure changes.
+- The registry and the infrastructure-as-code helper keep state on the single
+  host; preserving that host's storage alone is not backup or host-failure
+  recovery.
 
 ## Requirements
 
 ### Functional Requirements
 
-- **REQ-0010-FR-0001**: Support an OpenTofu CLI helper for IaC execution and state management, plus centralized orchestration (Terrakube).
-- **REQ-0010-FR-0002**: Support multi-language static code analysis and quality gate enforcement (SonarQube). Since SPEC-0262 SonarQube is the standalone LAB entrypoint `labs/sonarqube/docker-compose.yml`, outside root Compose, reaching HOME `mng-pg` only through an approved endpoint.
-- **REQ-0010-FR-0003**: Provide k6 as the default load tool; Locust is an optional standalone LAB (`labs/locust/docker-compose.yml`), not a Compose service.
-- **REQ-0010-FR-0004**: Provide a single-node private image registry for internal service deployment.
+- **REQ-0010-FR-0001**: Provide an infrastructure-as-code command-line helper
+  for execution and state management, plus a centralized orchestration service
+  (Terrakube) whose browser and API routes require the shared SSO.
+- **REQ-0010-FR-0002**: Provide multi-language static code analysis with quality
+  gate enforcement (SonarQube) as an optional, isolated experiment capability.
+  It reaches the shared management database only through an endpoint the
+  operator approves, and is reachable only on the LAB host address
+  (loopback by default) until promoted.
+- **REQ-0010-FR-0003**: Provide k6 as the default load tool. Locust is an
+  optional, isolated experiment capability for Python or protocol comparisons,
+  not part of the always-on HOME set.
+- **REQ-0010-FR-0004**: Provide a single-node private image registry for
+  internal service deployment, reachable only from the local host.
+- **REQ-0010-FR-0006**: Propose dependency and image updates automatically for
+  review, and take scheduled encrypted backups with both a local and an
+  offsite copy.
+- **REQ-0010-FR-0007**: Provide shared verification tools: API mocking,
+  consumer contract testing through a contract broker, and policy checks over
+  tracked configuration.
+
+### Stakeholders and User Needs
+
+- **DevOps engineer**: manages infrastructure consistently through IaC and has
+  every infrastructure plan reviewed before it is applied (Terrakube).
+- **Developer**: sees bugs, vulnerabilities and code smells for each change
+  (SonarQube) and shares images through the internal registry.
+- **QA or performance engineer**: runs load scenarios with k6 to find
+  bottlenecks, and uses Locust only for comparison runs.
 
 ### Non-functional Requirements
 
-No separately numbered non-functional requirement was identified in the source package.
+No numbered non-functional requirement is issued.
 
 ### Interface Requirements
 
-No separately numbered solution-independent external interface requirement was identified in the source package.
+No numbered interface requirement is issued.
 
 ## Acceptance Criteria
 
-- **REQ-0010-FR-0001**: 100% IaC adoption rate for all infrastructure changes.
-- **REQ-0010-FR-0002**: Keep the technical debt ratio of key service code under 5%.
-- **REQ-0010-FR-0003**: Reduce new environment build time by 70% or more.
+- **REQ-0010-FR-0001**: Every tracked infrastructure change is applied through
+  the IaC helper or the orchestration service, and an unauthenticated request
+  to an orchestration route is redirected to SSO.
+- **REQ-0010-FR-0002**: The static analysis capability renders on its own,
+  selects no always-on HOME service, refuses to start without an approved
+  database endpoint, and publishes nothing beyond the LAB host address
+  (loopback by default).
+- **REQ-0010-FR-0003**: The default load tool reports its pinned version from
+  the root composition, and the alternative load tool renders only outside it.
+- **REQ-0010-FR-0004**: The registry accepts a push and pull from the local host
+  and publishes no port on a non-loopback address.
+- **REQ-0010-FR-0006**: The update tool opens reviewable change requests and
+  applies nothing itself, and a backup run leaves an encrypted snapshot in the
+  local and the offsite repository.
+- **REQ-0010-FR-0007**: The mock server, the contract broker and the policy
+  checker each render in the quality tier, and the policy check runs as a
+  registered CI gate.
 
 ## Related Documents
 
-### Traceability
-
 - **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/0009-tooling-architecture.md)
-- Current convergence Spec
-- Current convergence Plan
 - **ADR**: [0009-tooling-services.md](../02.architecture/decisions/0009-tooling-services.md)
-- **Retired domain Spec SPEC-0010** (tooling): replaced by the tooling guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.
-- **Retired requirement REQ-0021** (tooling optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the tooling operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.
-- **Retired Terraform operations documents**: the Terraform guide, policy, and runbook were retired when OpenTofu became the infrastructure-as-code tool.
+- **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
+  and [SPEC-0263 LAB promotion contract](../03.specs/0263-lab-promotion-contract/spec.md)
+- **Retired domain Spec SPEC-0010** (tooling): replaced by the tooling guides,
+  policies and runbooks in the operations catalog under `docs/05.operations/`.
+- **Retired requirement REQ-0021** (tooling optimization hardening): retired
+  under SPEC-0169 because every clause named an implementation artifact; its
+  contract lives in the tooling operations policy, and its documentation
+  traceability clause moved to REQ-0026-FR-0011.
+- **Retired Terraform operations documents**: retired when OpenTofu became the
+  infrastructure-as-code tool.
