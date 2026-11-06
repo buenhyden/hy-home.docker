@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Contract Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -66,16 +66,14 @@ On 2026-11-05 the owner asked to accept criteria 1 to 7 and to move the Plan
 and both Tasks forward. The Plan is `approved` and this Task is
 `in-progress`; it cannot be `completed` while criteria stay pending. On
 2026-11-06 the RED, full-suite and valkey-cluster readiness rows were re-run
-at `961b5d475` (E60 to E68) and resolve their earlier non-PASS rows. Criteria 1, 2
-and 4 are accepted. These stay pending, each on a real result:
+at `961b5d475` (E60 to E68) and resolve their earlier non-PASS rows. Criteria 1, 2,
+4 and 6 are accepted (6 after E69). These stay pending, each on a real result:
 
 - 3: `lab.py check supabase` (E6, E12, E58) needs the ten supabase seed files
   that the operator places under `LAB_DATA_DIR`; they are not tracked.
 - 5: postgresql-ha readiness (E25, E54) still refuses on resources (10.45
   CPUs against 10, TSK-0002 E27). The owner promotes no LAB now, and the
   refusal is the check working, but it is a required non-PASS row.
-- 6: the cluster LAB check (E35) needs a `LAB_KAFKA_CLUSTER_ID` distinct
-  from HOME.
 - 7: example renders (E39) leave required inputs empty by design, and the
   local full CI gate (E47) needs Python 3.14.8 with memfd sealing.
 
@@ -458,6 +456,7 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | E66 | 5 | W4 | HOME readiness `valkey-cluster` | the E64 command at `961b5d475` | PASS | all five criteria PASS | required | E53 |
 | E67 | 4 | W5 | RED test | `test_reserve_matches_policy` at `961b5d475` | PASS | OK | required | E27 |
 | E68 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs (`labs/.env.example`, `.env.example`, empty scratch `LAB_DATA_DIR`, synthetic budgets) at `961b5d475` | FAIL | exit 3; the only problems are the ten untracked seed files (`db/*.sql`, `api/kong.yml`, `pooler/pooler.exs`, `logs/vector.yml`) | required | - |
+| E69 | 6 | W5 | HOME render of the cluster LABs | `docker compose --env-file labs/.env -f labs/<name>/docker-compose.yml config -q` for kafka-cluster and opensearch-cluster, after the owner set `LAB_KAFKA_CLUSTER_ID` and the host budget, at `339a6d7be` | PASS | both exit 0; `lab.py check` reports no cluster ID or certificate problem, only the budget and the one-LAB limit for this pair | required | E35 |
 
 ## Criterion Acceptance
 
@@ -468,7 +467,7 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | 3 | pending | E3, E5, E7, E8, E10, E36, E60, E61, E62 | open: E6, E12, E58, E68 need the supabase seed files | @buenhyden |
 | 4 | accepted | E28, E29, E30, E31, E32, E33, E37, E67 | owner request 2026-11-05; PASS, E27 resolved by E67 | @buenhyden |
 | 5 | pending | E13, E15, E18, E19, E20, E22, E24, E26, E52, E63, E64, E65, E66 | open: E25, E54 (postgresql-ha resources FAIL); owner keeps it pending, 2026-11-06 | @buenhyden |
-| 6 | pending | E29, E30, E31, E32, E33, E34, E37 | open: E35 needs `LAB_KAFKA_CLUSTER_ID` | @buenhyden |
+| 6 | accepted | E29, E30, E31, E32, E33, E34, E37, E69 | owner request 2026-11-05; PASS, E35 resolved by E69 | @buenhyden |
 | 7 | pending | E1, E38, E40, E42, E43, E44, E45, E46, E55, E56, E57, E59 | open: E39 (example inputs empty by owner decision), E47 (local CI gate, Python 3.14.8) | @buenhyden |
 
 ## Review and Completion

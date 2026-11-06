@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -240,12 +240,13 @@ DAGs; the next member peak is 0.077 CPU.
 | E28 | 8 | W7 | RED | `test_lab_controller` at `961b5d475` | PASS | 100 tests OK | required | E2 |
 | E29 | 8 | W7 | HOME readiness | `lab.py --env-file labs/.env readiness valkey-cluster`, read-only, at `961b5d475` | PASS | all five criteria PASS; needed 9.8 CPUs / 25536 MiB against 10 / 27924 | required | E8, E20 |
 | E30 | 8 | W7 | LAB check | `lab.py --env-file labs/.env check valkey-cluster`, read-only, at `961b5d475` | FAIL | exit 3; only the LAB budget: 9.95 CPUs / 25696 MiB against `LAB_HOST_BUDGET_*` 4 / 8192 | required | - |
+| E31 | 8 | W7 | LAB check | `lab.py --env-file labs/.env check valkey-cluster`, read-only, with the host budget 10 / 27924, at `339a6d7be` | PASS | exit 0, no problem | required | E10, E30 |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26, E27, E28, E29, E30 | - | @buenhyden |
+| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26, E27, E28, E29, E30, E31 | - | @buenhyden |
 
 ## Review and Completion
 
