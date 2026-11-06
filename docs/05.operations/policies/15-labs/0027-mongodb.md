@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Operations Policy"
-version: "2.1.4"
+version: "2.1.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0027"
 parent_ids:
@@ -37,7 +37,7 @@ created: "2026-05-17"
   Docker Secret mount를 참조해야 한다.
 - **Required**: Keyfile 가이드는 `mongo-key-generator`가 생성하는 `mongo-key`
   bind volume(`${LAB_DATA_DIR}/mongodb/mongo-key`)을 참조해야 한다.
-- **Required**: 일곱 개 서비스 모두 정확한 `mongodb` profile을 사용하며, 동일
+- **Required**: 여섯 개 서비스 모두 정확한 `mongodb` profile을 사용하며, 동일
   host topology를 host-level HA로 기술해서는 안 된다.
 - **Required**: Backup은 data-bearing replica-set member에 대해 인증된
   `mongodump --oplog`를 사용하며, 필요한 모든 database와 user/role, index,

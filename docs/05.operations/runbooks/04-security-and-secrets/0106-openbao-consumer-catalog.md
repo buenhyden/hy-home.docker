@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Consumer Migration and Secret Catalog"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -193,7 +193,7 @@ private metadata·환경·credential 파일, HOME 서비스에 접속하지 않�
 checkout을 `--root`로 지정하지 않는다. 먼저 읽기 전용 검사를 실행한다.
 
 ```bash
-rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check
+python3 scripts/operations/secret-catalog.py --root "$PWD" check
 ```
 
 네 입력은 catalog, schema, `secrets/SENSITIVE_ENV_VARS.md.example`,
@@ -210,8 +210,8 @@ staging이 필요한 경우에만 operator-owned `.agent-work`와 그 안의 reg
 소유자가 확인된 전용 checkout에서만 만들고 그 목적을 README에 기록한다.
 
 ```bash
-rtk python3 scripts/operations/secret-catalog.py --root "$PWD" render
-rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-views
+python3 scripts/operations/secret-catalog.py --root "$PWD" render
+python3 scripts/operations/secret-catalog.py --root "$PWD" check-views
 ```
 
 `render`는 `.agent-work/p02-views`에 정확히 네 공개 출력 파일을 만들며
@@ -229,8 +229,8 @@ private 파일 삭제나 runtime rollback을 이 절차의 정리로 수행하�
 정상 예상 결과이며, 일반 shell의 실패 코드와 구별해 기록한다.
 
 ```bash
-rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-generation COMM-002
-rtk python3 scripts/operations/secret-catalog.py --root "$PWD" check-generation COMM-003
+python3 scripts/operations/secret-catalog.py --root "$PWD" check-generation COMM-002
+python3 scripts/operations/secret-catalog.py --root "$PWD" check-generation COMM-003
 ```
 
 거절 대신 성공하거나 예상 출력과 다르면 중단하고 P02 catalog 담당자와 검토한다.

@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Policy"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -24,7 +24,7 @@ created: "2026-11-05"
 
 ## Scope
 
-현재 15개 LAB 전부와 이후 추가되는 LAB에 적용된다. 이 정책은 어떤 LAB도 승격하지 않는다.
+현재 14개 LAB 전부와 이후 추가되는 LAB에 적용된다. 이 정책은 어떤 LAB도 승격하지 않는다.
 각 승격은 이 정책을 따르는 별도 Task이며 그 Task에 owner 승인과 운영 window가 필요하다.
 컨테이너 기동·정지·재생성, live data 이동과 OpenBao KV 변경은 이 정책의 승인 범위가 아니다.
 

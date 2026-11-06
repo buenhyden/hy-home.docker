@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Usage Guide"
-version: "2.1.3"
+version: "2.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0026"
 parent_ids:
@@ -60,7 +60,7 @@ couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin
 
 ### Preflight and normal use
 
-이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/couchdb/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
+이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/couchdb/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
 
 - [독립 LAB Compose](../../../../labs/couchdb/docker-compose.yml)는 root에 include되지 않으며 네 서비스는 `couchdb` profile에 속한다.
 - `LAB_DATA_DIR`, `LAB_COUCHDB_HOST_PORT`, `LAB_COUCHDB_USERNAME`, `lab_couchdb_password`, `lab_couchdb_cookie`가 준비되어 있어야 한다.

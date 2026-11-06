@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0066"
 parent_ids:
@@ -55,11 +55,11 @@ SonarQube Community Build는 LAB profile `sast` 하위의 온디맨드 **LAB**
   접속한다. HOME은 기본적으로 mng-pg를 LAB network에 게시하지 않으므로 소유자가 도달 가능한
   endpoint를 승인하기 전까지 이 LAB은 render-only이다(미결정, 별도 승인). role과 DB는 계속 HOME
   `mng-pg-init`이 준비한다.
-- `/opt/sonarqube/data`(로컬 검색 인덱스)와 `/opt/sonarqube/logs`는
-  `${LAB_DATA_DIR}/sonarqube/{data,logs}` bind다. 이전 `${DEFAULT_TOOLING_DIR}/sonarqube/...`의
+- `/opt/sonarqube/data`(로컬 검색 인덱스)와 `/opt/sonarqube/logs`는 named volume
+  `sonarqube-data`, `sonarqube-logs`이며 `${LAB_DATA_DIR}/sonarqube/{data,logs}` bind다. 이전 `${DEFAULT_TOOLING_DIR}/sonarqube/...`의
   데이터는 옮기지 않았으며, 옮기려면 별도 승인 아래 수동으로 이전한다. Compose에는 영속적인
   extensions/plugins/config 볼륨이 없다.
-- DB 비밀번호는 LAB 전용 secret(`lab_sonarqube_*`, 파일은 `${LAB_SECRET_DIR:-../secrets/labs}/sonarqube/` 아래)으로
+- DB 비밀번호는 LAB 전용 secret(`lab_sonarqube_*`, 파일은 `${LAB_SECRET_DIR:-../../secrets/labs}/sonarqube/` 아래)으로
   원래 `/run/secrets/` 대상 경로에 mount되며 group은 `LAB_SECRETS_GID`다. HOME 값은 복사하지 않았다.
   HOME mng-pg `sonarqube` role 비밀번호의 LAB 사본 준비는 별도 승인 대상이다(미결정). 분석 토큰은 SonarQube에서
   생성되며 Compose나 증거에는 절대 포함되지 않는다.

@@ -1,6 +1,6 @@
 ---
 title: "PostgreSQL Logical Upgrade and Restore Rehearsal Runbook"
-version: "1.0.8"
+version: "1.0.9"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -14,7 +14,7 @@ created: "2026-07-22"
 
 ## Overview
 
-이 런북은 repository-owned synthetic fixture를 source PostgreSQL image에서 custom-format logical backup으로 캡처하고 target-major isolated image에 복원한 뒤 metadata-only oracle을 비교하는 로컬 rehearsal 절차다. 이 결과는 rollback boundary evidence이며 production recovery, live Supabase/Spilo data, physical backup, PITR, HA, retention, remote storage 또는 조직 RTO/RPO를 증명하지 않는다.
+이 런북은 repository-owned synthetic fixture를 source PostgreSQL image에서 custom-format logical backup으로 캡처하고 target-major isolated image에 복원한 뒤 metadata-only oracle을 비교하는 로컬 rehearsal 절차다. 이 결과는 rollback boundary evidence이며 production recovery, live Spilo data, physical backup, PITR, HA, retention, remote storage 또는 조직 RTO/RPO를 증명하지 않는다.
 
 이 문서는 `infra/04-data`의 새 service를 설명하지 않는다. 실제 구현은 repository operation entrypoint와 `examples/operations/postgres-logical-upgrade/`에 있는 reusable non-service harness다.
 

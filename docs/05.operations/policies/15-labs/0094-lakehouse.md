@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Operations Policy"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0094"
 parent_ids:
@@ -32,7 +32,7 @@ Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 
   찾는다. 소유자가 LAB에서 도달 가능한 endpoint를 승인하기 전까지 LAB은 렌더링 전용이며, 이를
   위해 HOME 카탈로그나 S3를 LAB network·host port·route에 임의로 게시하지 않는다(미결정, 별도
   승인). Kafka bootstrap endpoint도 같다.
-- HOME 카탈로그는 `object_net`에서만 접근 가능해야 하고 라우트/host port를 금지한다. 현재 all-interface S3 listener는 edge_net/seaweed_internal에도8181을 열어 이 통제가 미준수다(POL-0024). route/host port 부재와 authenticated catalog 동작은 더 좁은 통제이며 network 격리를 대신하지 않는다. 별도 구현 수정 전 compliant로 인정하지 않는다. 엔진은
+- HOME 카탈로그는 `object_net`에서만 접근 가능해야 하고 라우트/host port를 금지한다. 현재 all-interface S3 listener는 edge_net/seaweed_internal에도 8181을 열어 이 통제가 미준수다(POL-0024). route/host port 부재와 authenticated catalog 동작은 더 좁은 통제이며 network 격리를 대신하지 않는다. 별도 구현 수정 전 compliant로 인정하지 않는다. 엔진은
   `lakehouse` identity로 서명하며, 이 identity의 S3 액션과 테이블 버킷
   정책은 lakehouse 버킷만 다룬다. 정책은 열 개의 namespace 및 테이블 액션을
   나열하며 정책 변경과 버킷 삭제는 제외한다. 새 엔진은 이 identity를 재사용
@@ -53,7 +53,7 @@ Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 
   `remove_orphan_files`, `DROP … PURGE`는 파일을 삭제하므로 명시된 테이블과
   기록된 이유가 필요하다. Trino의 `DROP TABLE`과 그 `expire_snapshots`/
   `remove_orphan_files` 테이블 프로시저도 동일하다.
-- 불변 build input과 호환성 검토를 요구한다. 현재 checksum은 Flink5개/Spark2개 JAR ADD만 고정하며 base image tag·OS/Python 의존성은 불변 lock이 아니다. Flink/Spark Iceberg를 함께 검토하고 Trino는 자체 내장 connector version과 상호 읽기/쓰기를 검증한다. 현 Flink Hadoop3.5.0은 Iceberg1.11 baseline3.4.3과 달라 통합 검증이 필요하다.
+- 불변 build input과 호환성 검토를 요구한다. 현재 checksum은 Flink 5개/Spark 2개 JAR ADD만 고정하며 base image tag·OS/Python 의존성은 불변 lock이 아니다. Flink/Spark Iceberg를 함께 검토하고 Trino는 자체 내장 connector version과 상호 읽기/쓰기를 검증한다. 현 Flink Hadoop 3.5.0은 Iceberg 1.11 baseline 3.4.3과 달라 통합 검증이 필요하다.
 
 ### Accountable lifecycle boundary
 

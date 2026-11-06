@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.14.1"
+version: "1.14.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -176,18 +176,8 @@ DEV/HOME 실행·복구가 검증된 것은 아니다.
 | --- | --- | --- |
 | HOME | `core`, `mng`, `ai`, `workflow`, `obs-core`, `obs-host`, `availability`, `logs`, `alerting`, `storage`, `tracing`, `profiling`, `obs-gpu`, `registry` | `automation`, `lifecycle`, `topology` |
 
-> Historical evidence (not current authority; source: Git history):
-> Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, POL-0078 HOME activation.
-> 소유자가 2026-09-21 현재 운영 중이라고 밝힌 명령은 `local`, `core`, `mng`, `ai`,
-> `dev`, `workflow`, `obs`, `admin` 8개 profile 조합이다. 이는 관측된 운영 선택이며
-> 재실행·재시작·새 기능 활성화 승인이 아니다. 이 조합은 `mlops`, `data-science`,
-> `analytics-engineering`, `cdc`, `obs-gpu`, `crawl4ai`, `notebook`을 선택하지 않고,
-> 2026-09-21 변경 전후 렌더링 서비스 이름 집합이 같다. 새 기능은 필요할 때 이
-> 조합에 profile을 명시적으로 추가한다.
-
-새 `dev-data`는 과거 HOME 선택의 `dev`·`local`에 포함되지 않는다. 현재 선택은
-위 HOME 행과 소유자가 승인한 exact profile을 따른다. 과거 조합에
-대한 추가 지침은 현재 activation 권한이 아니다.
+`dev-data`는 `dev`·`local`에 포함되지 않는다. 현재 선택은 위 HOME 행과 소유자가 승인한
+exact profile을 따르며, 과거에 관측된 profile 조합은 현재 activation 권한이 아니다.
 
 HOME은 위 profile의 이름 있는 선택이며 새 Compose profile이 아니다. 이 선택은 HOME
 후보 선택이다. 사용자가 AI와 workflow 상시 필요를 확인했으므로 관리 DB·공유
@@ -262,13 +252,15 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
   `LAB_MAX_LEASE_MINUTES` 이하의 lease를 요구하고, 실행 전 rendered root, 함께 선택한
   LAB, 실행 중 container와의 container·network·host port·쓰기 data 경로 충돌을 거부한다.
   LAB data root가 HOME data 경로와 겹쳐도 거부한다.
-- 예산은 실행 중 container의 선언 CPU·memory 한도와 선택 LAB의 선언 한도 합계를
-  `LAB_HOST_BUDGET_CPUS`·`LAB_HOST_BUDGET_MEMORY_MIB`와 비교하고, 동시 LAB 수를
-  `LAB_MAX_CONCURRENT`(기본 1)로 제한한다. 값이 비어 있으면 거부한다. 선언 한도는
-  실측이 아니며, 2026-10-08 HOME은 선언 한도만으로 host(12 CPU, 31 GiB)를 초과했다.
-  따라서 운영자는 overcommit을 명시한 예산을 정한다. 한도 없는 container는 합산하지
-  않고 목록으로 보고한다. GPU는 선언 한도에 없으므로 ComfyUI·Ollama 동시 사용은
-  DCGM의 VRAM 여유를 확인한 뒤 결정한다. 실측 없이 절감량을 발표하지 않는다.
+- 예산은 실행 중 container와 선택 LAB의 선언 reservation(`deploy.resources.reservations`) 합계에
+  [POL-0107](../15-labs/0107-lab-promotion.md#external-workload-allowance)의 외부 workload
+  allowance를 한 번 더한 값을 `LAB_HOST_BUDGET_CPUS`·`LAB_HOST_BUDGET_MEMORY_MIB`와 비교하고, 동시
+  LAB 수를 `LAB_MAX_CONCURRENT`(기본 1)로 제한한다. 값이 비어 있거나 숫자가 아니면 거부한다.
+  render가 없는 실행 중 Compose project, reservation 또는 limit이 없는 서비스는 합할 수 없어
+  거부 사유로 보고한다. reservation은 측정 전에는 limit과 같으며 실측이 아니다. 2026-10-08 HOME은
+  선언 한도만으로 host(12 CPU, 31 GiB)를 초과했으므로 운영자는 overcommit을 명시한 예산을
+  정한다. GPU는 선언 한도에 없으므로 ComfyUI·Ollama 동시 사용은 DCGM의 VRAM 여유를 확인한 뒤
+  결정한다. 실측 없이 절감량을 발표하지 않는다.
 - `down`은 그 LAB project만 `-v` 없이 정지한다. LAB data와 volume 삭제는 ledger
   (`${LAB_DATA_DIR}/.ledger/<lab>.json`)에 기록된 경로만 대상으로 별도 승인 후 수행하며
   `docker volume prune`·`system prune`은 사용하지 않는다. 만료 lease는 `lab.py reap`이
