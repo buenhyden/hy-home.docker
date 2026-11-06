@@ -232,12 +232,14 @@ DAGs; the next member peak is 0.077 CPU.
 | E22 | 8 | W7 | HOME readiness | the E20 command after the valkey-cluster lease-run reservations | FAIL | tier, composition, linux, docker PASS; resources FAIL: candidate 1.15 CPUs / 480 MiB, needed 14.05 CPUs / 28256 MiB against 10 / 27924 | required | - |
 | E23 | 8 | W7 | HOME readiness | `lab.py --env-file labs/.env readiness valkey-cluster`, read-only, after the HOME outlier reservations | PASS | all five criteria PASS; needed 9.8 CPUs / 25536 MiB against 10 / 27924 | required | E22 |
 | E24 | 8 | W7 | HOME readiness | the E23 command for `postgresql-ha` | FAIL | resources FAIL: candidate unmeasured at its limit, needed 19.2 CPUs / 33440 MiB | required | - |
+| E25 | 8 | W7 | full unit suite | the E15 command at `19d6040b2` | FAIL | 3346 tests, failures=2: `test_workflow_version_bundle` (stale n8n source binding) and `test_sec01_ci_routing`, which runs it | required | - |
+| E26 | 8 | W7 | full unit suite | the E15 command at `63d5b78a0`, after re-pinning the current n8n source binding in the update ledger and build inputs | PASS | 3346 tests OK, skipped=108 | required | E25 |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24 | - | @buenhyden |
+| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26 | - | @buenhyden |
 
 ## Review and Completion
 
