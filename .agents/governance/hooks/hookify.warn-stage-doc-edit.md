@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Stage document edit"
-version: "1.1.2"
+version: "1.1.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -23,7 +23,7 @@ Apply the declared `warn` action for warn-stage-doc-edit.
 
 ## Scope
 
-Applies to the `warn-stage-doc-edit` rule on the `file` event. The frontmatter of this document owns the exact matcher.
+The `warn-stage-doc-edit` rule applies on the `file` event and matches file edits whose path meets its structured `conditions` entry ("WARNING: Stage document edit"). The frontmatter owns the exact matcher.
 
 ## Rules
 
@@ -31,13 +31,13 @@ Applies to the `warn-stage-doc-edit` rule on the `file` event. The frontmatter o
 
 `docs/01` through `docs/99` are **read-only by default**.
 
-**Canonical environment policy:**
-> `docs/01` to `docs/99` are read-only by default; modify only with explicit user instruction.
+**Canonical bootstrap policy (`bootstrap.md#hard-constraints`):**
+> "Stage documents are read-only unless the request authorizes change."
 
 **Before editing, confirm:**
 
 - [ ] The user explicitly authorized the stage document edit.
-- [ ] The target is inside an active stage artifact directory (`docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, `docs/99.templates`).
+- [ ] The target is inside an active stage artifact directory (the stages listed in [stage-authoring-matrix.md](../stage-authoring-matrix.md)).
 - [ ] The edit is in-place; no parallel replacement file is being created.
 - [ ] This rule applies whether the path arrives as `docs/...` or `/.../docs/...`.
 
@@ -57,7 +57,7 @@ No exception is declared by this rule.
 
 ## Verification
 
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+Native event delivery is a separate observation from the frontmatter match.
 
 ## Related Documents
 

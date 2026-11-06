@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.7.1"
+version: "1.7.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 ---
 
 # GitHub Governance Policy
@@ -12,7 +12,7 @@ updated: "2026-11-04"
 ## Overview
 
 Normative policy baseline aligning agent behavior with GitHub repository operations.
-Repo-local stricter rules always override this document; never weaken them on the basis of this policy.
+A stricter rule in another canonical governance owner prevails over this document.
 
 ## Scope
 
@@ -28,9 +28,9 @@ Repository protection, pull requests, hosted workflows, and separately authorize
   read back for the named repository.
 - "No exceptions" is mandatory agent behavior even when GitHub admin enforcement or repository rulesets do not fully enforce the same boundary.
 - Remote branch protection and ruleset state must be authenticated and read
-  back before claiming enforcement. The tracked desired-state proposal lives
-  in `.github/rulesets/main-protection.md`; tracked files do not prove applied
-  control-plane state.
+  back before claiming enforcement. `.github/rulesets/main-protection.md`
+  records the target settings and dated authenticated read-backs; tracked
+  files do not prove applied control-plane state.
 - If remote enforcement is absent or unknown, agents must still follow protected-branch discipline locally and report the remote enforcement state as blocked or unverified.
 - Required status checks listed in `.github/rulesets/main-protection.md` define
   the local desired contract. Agents must not declare a PR ready to merge
@@ -44,23 +44,22 @@ Issues provide intake, coordination, and branch links. The current Task owns
 approval, evidence, and lifecycle state; closing a stale Issue does not
 transition a Task. This repository uses no GitHub Project: with one developer,
 Issues cover intake and priority and Tasks cover execution, so a Project
-would only repeat Task state. Adding one needs the owner's approval naming
-it, and its fields stay coordination data, never Task execution authority.
+would only repeat Task state. Adding one, or an automation permission for it, needs the owner's approval
+naming it, and its fields stay coordination data, never Task execution authority.
 Keep Issue intake and priority plus Spec/Task links, without copying their
 full bodies or bidirectional state synchronization. A remote Issue, tag, or release mutation requires approval naming the exact
 target and action.
 
-- A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved BLOCK-severity findings remain.
+- A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved `blocker` findings remain.
 - Draft/WIP PRs are allowed for collaboration; section 3 owns what that means for merge readiness.
 - Agents must not self-approve or bypass required reviewers.
 - This repository has one developer and no second reviewer. That risk is
   handled by the required `candidate-quality` check, a review of the final diff
   in a fresh context separate from the one that wrote it, and the owner's own
-  merge. The review path calls no AI-agent API: no workflow, hook, or script
-  sends the diff to a model provider, and an agent review runs only inside the
-  developer's own interactive session. One person's review is never recorded as
-  two independent approvals, and an automated check, App, or signature does not
-  stand in for the owner's acceptance.
+  merge. The review path calls no model API, under the
+  [agentic policy](agentic.md#execution-rules). One person's review is never
+  recorded as two independent approvals, and an automated check, App, or
+  signature does not stand in for the owner's acceptance.
 - When agents propose changes, they must list which CODEOWNERS paths are touched and which review gates apply.
 - Git history is the recovery mechanism. A current Task may name a temporary
   recovery commit, but must not turn a branch tip, expected SHA, checksum, or
@@ -70,7 +69,8 @@ target and action.
 
 This section is the single owner of merge and branch-lifecycle rules. Both the
 Git workflow policy and `.github/rulesets/main-protection.md` defer here; the
-ruleset file records the observed remote state and issues no rule of its own.
+ruleset file records the target settings and dated read-backs and issues no
+rule of its own.
 
 - Deliver every change to `main` through a pull request. Agents do not push to
   `main` directly, do not force-push it, and do not bypass a required check,
@@ -91,14 +91,15 @@ ruleset file records the observed remote state and issues no rule of its own.
 ### 4. GitHub Actions Security Contract
 
 - Workflows must use least-privilege `GITHUB_TOKEN` — request only the permissions the job actually needs.
-- Prefer OIDC-based cloud credentials over long-lived secrets stored as repository secrets. When proposing or reviewing workflow changes, flag any use of long-lived cloud secrets as a WARN finding.
+- Prefer OIDC-based cloud credentials over long-lived secrets stored as repository secrets. When proposing or reviewing workflow changes, flag any use of long-lived cloud secrets as a `medium` finding.
 - Pin actions to a specific commit SHA or a digest-verified tag, not a floating branch or `@latest`.
 - `.github/workflow-contract.yml` records the locally verified manifest URL,
   retrieval date, runtime, approved consumers, and security disposition for
-  every direct external Action. The focused checker rejects unregistered
-  Actions and Node 20 runtime evidence.
-- Secrets must never appear in log output (`echo $SECRET`, `run: env`, etc.). Flag any such pattern as BLOCK.
-- Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — flag as BLOCK.
+  every direct external Action. The focused checker
+  (`scripts/lib/gate/github_workflow_contract.py`) rejects unregistered Actions
+  and any runtime other than `node24` or `composite`.
+- Secrets must never appear in log output (`echo $SECRET`, `run: env`, etc.). Raise a `blocker` finding for any such pattern.
+- Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — raise a `blocker` finding.
 - Reusable workflows called from external repositories must be pinned and reviewed before use.
 
 ### 5. Execution Boundary (Local vs Remote)
@@ -186,8 +187,12 @@ implicitly.
   - folder agent guides: the `AGENTS.md` files the Registry
     `folder-agent-guide` profile lists, ranked below canonical governance and
     routing only, per the [documentation protocol](documentation-protocol.md#readme-and-agentsmd)
-  - runtime controls: `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, `.claude/skills/`
-  - Codex runtime hooks: `.codex/hooks.json`
+  - authored adapters: `.claude/provider.md`, `.codex/provider.md`
+- Native runtime controls and generated projections consume that authority and
+  own none of it, per [bootstrap](bootstrap.md#authority-and-precedence):
+  `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`,
+  `.claude/skills/`, `.claude/output-styles/`, `.codex/hooks.json`,
+  `.codex/config.toml`.
 - GitHub is used here for repository protection, PR workflow, and Actions execution; it is not the canonical home of agent instruction policy.
 - Any future GitHub-native instruction file must be treated as out-of-scope until the repository governance explicitly adopts it.
 
@@ -219,13 +224,11 @@ Never introduce an administrative bypass when source and remote state differ.
 
 #### Issues and Projects
 
-Issue forms collect problem/request, priority and optional contract/execution
-links. Specs retain AC/contracts; Tasks retain actual commands, results,
-acceptance and authorization. A Project may show owner, priority and linked
-Issue/PR state as a view; it must not overwrite document lifecycle or duplicate
-an execution ledger. No Project exists today (§2), and adding one or its
-automation permission needs the owner's approval. GitHub's repository token cannot access Projects; do
-not add an App/PAT just to mirror Task state. See
+Issue forms (`.github/ISSUE_TEMPLATE/`) collect problem/request, priority and
+optional contract/execution links. Specs retain AC/contracts; Tasks retain
+actual commands, results, acceptance and authorization. The Project rule is in
+§2. GitHub's repository token cannot access Projects; do not add an App/PAT
+just to mirror Task state. See
 [Project automation](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/automating-projects-using-actions).
 
 ### References
@@ -247,7 +250,7 @@ Before an agent declares any PR-related task complete, it must confirm:
 
 1. All required status checks are green (or note which are pending and why), and remote branch protection state is verified or explicitly reported as unverified.
 2. All required reviews are approved (or note which are outstanding and who owns them).
-3. No BLOCK-severity findings remain from code review or security audit.
+3. No `blocker` findings remain from code review or security audit.
 4. CODEOWNERS-triggered reviewers have been notified if paths are owned and remote protection enforces owner review; when it does not, state that instead of claiming a review.
 5. No secrets, long-lived credentials, or unpinned action references were introduced.
 
@@ -255,13 +258,13 @@ If any gate is unmet, the task status is "blocked" not "done."
 
 ## Related Documents
 
-- `.agents/governance/git-workflow.md`
-- `.agents/governance/quality-standards.md`
-- `.agents/governance/standards.md`
-- `.agents/governance/bootstrap.md`
-- `.agents/governance/providers/README.md`
-- `.claude/provider.md`
-- `.codex/provider.md`
-- `.github/repository-surface.md`
-- `.github/rulesets/main-protection.md`
-- `docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md`
+- [Git workflow](git-workflow.md)
+- [Quality standards](quality-standards.md)
+- [AI agent standards](standards.md)
+- [Bootstrap policy](bootstrap.md)
+- [Provider index](providers/README.md)
+- [Claude adapter](../../.claude/provider.md)
+- [Codex adapter](../../.codex/provider.md)
+- [Repository surface](../../.github/repository-surface.md)
+- [Main protection](../../.github/rulesets/main-protection.md)
+- [Platform and backup runbooks](../../docs/05.operations/runbooks/10-platform-and-backup/README.md)

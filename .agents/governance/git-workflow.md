@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.6.0"
+version: "1.6.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 ---
 
 # Git Workflow Governance
@@ -63,13 +63,12 @@ automatic enforcement from configuration alone.
 ### 2. Branching Strategy
 
 - Protected baseline: `main`
-- Short-lived human branches use `<type>/<short-description>`; an existing
-  intake Issue ID may precede the description. Do not create a duplicate Issue
-  or copy the Spec/Task merely to satisfy a branch name.
+- Short-lived human branches use `<type>/<short-description>`, where `type` is
+  a `.cz.toml` change type; an existing intake Issue ID may precede the
+  description. Do not create a duplicate Issue or copy the Spec/Task merely to
+  satisfy a branch name.
 - Emergency hotfix branches use `hotfix/<short-description>` and preserve the
   same PR, validation and explicit runtime authorization boundaries.
-- Other human-authored branches use `<type>/<short-description>`, where `type`
-  is an admitted `.cz.toml` change type other than `feat` or `fix`.
 - Automation branch exceptions: `dependabot/**` and `codex/**` are allowed for
   tool-generated PR branches only. They must still merge through the PR
   protocol and required checks.
@@ -108,27 +107,23 @@ automatic enforcement from configuration alone.
 
 ### 4. Operational Best Practices
 
-- Keep commits atomic.
 - Use `fix` for user-visible or operational defect corrections and include regression evidence.
 - Use `refactor` only for behavior-preserving structure changes and list checks that demonstrate unchanged behavior.
-- Never commit plaintext secrets.
 - Reference issue IDs, ADR IDs, or plan/task IDs when applicable.
-- `.cz.toml` owns the one Commitizen grammar; `.gitmessage` is an authoring
-  aid. Explicit Commitizen validation gives local feedback; hook delivery is
-  claimed only when actually observed. The remote
-  candidate verifies its authenticated contributor commit range because client
-  hook installation is not trusted evidence. Default Merge/fixup prefix escapes
-  are disabled; GitHub's synthetic candidate merge is outside that range. Feature push does not add another public gate.
+- `.gitmessage` is an authoring aid for the `.cz.toml` grammar. Commitizen's
+  default Merge/fixup prefix escapes are disabled (`allowed_prefixes=[]`);
+  GitHub's synthetic candidate merge is outside the validated contributor
+  commit range.
 - Main-targeted release-preparation PRs maintain `CHANGELOG.md` in Keep a
   Changelog form. No development push generates or publishes a changelog.
-- Future release tags are `v` plus strict SemVer. The manual main-only release
-  workflow is their sole producer and owns create-only tag plus draft Release,
-  complete assets, then publication. Do not push a tag independently or add a
-  moving channel producer. Existing non-SemVer historical refs remain evidence;
-  deleting or rewriting one needs the owner's approval for that ref.
+- Future release tags are `v` plus strict SemVer (`.cz.toml` `tag_format`). Do
+  not push a tag independently; the release producer is defined in
+  `.agents/governance/github-governance.md` section 8. Existing non-SemVer
+  historical refs remain evidence; deleting or rewriting one needs the owner's
+  approval for that ref.
 - A specific release publication still requires its exact version, commit,
   approved target and recovery path. Select `RUN-0009` through the
-  [Operations runbook index](../../docs/05.operations/runbooks/README.md#cross-cutting-workspace).
+  [platform and backup runbook index](../../docs/05.operations/runbooks/10-platform-and-backup/README.md).
 
 ### 5. Agent Completion Commit Discipline
 
@@ -158,6 +153,7 @@ GitHub-specific enforcement rules (branch protection, required checks, CODEOWNER
 
 ## Related Documents
 
-- `.agents/governance/github-governance.md`
-- `.agents/governance/quality-standards.md`
+- [GitHub governance](github-governance.md)
+- [Quality standards](quality-standards.md)
+- [Bootstrap policy](bootstrap.md)
 - [Operations runbook index](../../docs/05.operations/runbooks/README.md)

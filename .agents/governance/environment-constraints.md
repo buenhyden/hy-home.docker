@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.8.0"
+version: "1.9.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 ---
 
 # Environment Constraints
@@ -21,19 +21,12 @@ Local repository work, infrastructure execution, secrets handling, verification 
 
 ### 1. Hard Constraints
 
-- `docs/01` to `docs/99` are read-only by default; modify only with explicit user instruction.
-- Active stage artifacts belong only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`.
 - `_workspace` is an ignored repo-support staging surface, not an active stage.
   The seven contract READMEs listed in `_workspace/README.md` are its only
   tracked files. Runtime artifacts must stay under `_workspace/diagnostics/`
   or `_workspace/repo-support/` and must not contain diagnostics dumps, local logs,
   raw logs, auth files, tokens, credentials, private keys, shell history, or
   secret values.
-- Run checks listed by the active rules and primary scope before declaring completion.
-- Most-specific in-scope instruction file wins when multiple repository instructions apply.
-- System, developer, and direct user instructions always override repository instruction files.
-- Use in-place refactors only; do not create parallel replacement files for canonical docs.
-- Never write plaintext secrets; use Docker Secrets or `secrets/` mounts.
 - Resolve the authority for every protected operation through
   [Approval boundaries](approval-boundaries.md#authorization-source-and-records).
   This policy supplies environment-specific protocols; its Task evidence fields
@@ -52,10 +45,10 @@ Local repository work, infrastructure execution, secrets handling, verification 
 - **Networking**: inter-service traffic MUST stay on the repository-owned
   Compose networks, and a service joins one only for a peer it uses. Direct
   external exposure is PROHIBITED except via authorized gateways.
-- **Storage**: use named volumes following the `[Service]-[Data]-[Volume]`
-  convention.
-- **Security**: `no-new-privileges: true` is mandatory for all containers. Use
-  Docker Secrets for production credentials.
+- **Storage**: use named volumes named `<service>-<data>`, for example `tempo-data`.
+- **Security**: `no-new-privileges: true` is mandatory for all containers.
+  Deliver credentials through Docker Secrets or `secrets/` mounts, never as
+  plaintext values.
 - **Container build review**: for Dockerfile or image-build changes, review
   multi-stage builds, pinned base image tags or digests, `.dockerignore`
   hygiene, non-root users, health checks, layer ordering, and secret-free image
@@ -123,7 +116,7 @@ This project has a graphify knowledge graph at `graphify-out/`.
 
 ### 5. Shared Agent Memory
 
-- Claude and Codex share one memory store,
+- Every supported provider shares one memory store,
   `.workspace-memory/memory.sqlite3` in the main checkout, which Git ignores.
   Every linked worktree reaches it through `git rev-parse --git-common-dir`;
   no worktree keeps its own store. Removing a worktree or cleaning
@@ -218,7 +211,7 @@ Approved secrets work follows the scoped, redacted protocol in [Approved secrets
 ### 3. Verification
 
 - For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
-- For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode all` and link/stale-reference checks for edited files.
+- For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode all`.
 - The [execution boundary](quality-standards.md#4-execution-boundary) owns the
   local, CI-only, and approved all-files pre-commit route. Its wrapper limits
   remain Git-visible repository evidence only; this environment policy does not
@@ -231,15 +224,11 @@ Approved secrets work follows the scoped, redacted protocol in [Approved secrets
   quarantine is a nonzero cleanup handoff, not successful regeneration; follow
   the exact-path procedure in `.agents/governance/providers/README.md`
   before rerunning write and check.
-- Repository script-reference validation is bounded to 4,096 scanned surfaces,
-  8,192 discovery entries, 16 MiB per regular file, and 64 MiB in aggregate.
-  These validator-owned ceilings are immutable contract safety limits; a limit
-  failure is value-free and requires an explicit validator review rather than
-  a caller override.
 
 ## Related Documents
 
-- `../README.md`
-- `agentic.md`
-- `github-governance.md`
-- `quality-standards.md`
+- [Governance navigation](../README.md)
+- [Bootstrap policy](bootstrap.md)
+- [Agentic policy](agentic.md)
+- [GitHub governance](github-governance.md)
+- [Quality standards](quality-standards.md)

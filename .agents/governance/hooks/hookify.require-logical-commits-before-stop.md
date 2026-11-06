@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: incomplete logical commits"
-version: "1.0.5"
+version: "1.0.7"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 action: "block"
 enabled: true
 event: "stop"
@@ -20,7 +20,7 @@ Apply the declared `block` action for require-logical-commits-before-stop.
 
 ## Scope
 
-Applies to the `require-logical-commits-before-stop` rule on the `stop` event. The frontmatter of this document owns the exact matcher.
+The `require-logical-commits-before-stop` rule applies on the `stop` event and matches the end of an agent turn ("BLOCKED: incomplete logical commits"); [Verification](#verification) states how it is enforced.
 
 ## Rules
 
@@ -51,7 +51,7 @@ No exception is declared by this rule.
 
 ## Verification
 
-The declared `stop` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+`scripts/hooks/hook_rules.py` does not evaluate `event: stop` rules; their `pattern: .*` is a placeholder. The enforcing code is `logical_commit_stop_gate` in `scripts/hooks/agent-event-hook.sh`. Native event delivery remains a separate observation.
 
 ## Related Documents
 

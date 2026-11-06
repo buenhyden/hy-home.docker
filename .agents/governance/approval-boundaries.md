@@ -1,10 +1,10 @@
 ---
 title: "Approval Boundaries"
-version: "1.3.0"
+version: "1.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 ---
 
 # Approval Boundaries
@@ -108,8 +108,8 @@ redaction boundary are defined by
 - `doc-writer` may edit approved documentation.
 - All other roles are read-only unless their Task explicitly includes a
   documentation update.
-- `workflow-supervisor`, `rules-engineer`, `eval-engineer`, and
-  `code-reviewer` remain read-only even when they route or review writable work.
+- A role whose canonical `permission_profile` is `read-only` remains read-only
+  even when it routes or reviews writable work.
 - Policy changes require `rules-engineer` review.
 
 ## Exceptions

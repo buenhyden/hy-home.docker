@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: plaintext secrets"
-version: "1.0.3"
+version: "1.0.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -26,15 +26,20 @@ Apply the declared `block` action for block-plaintext-secret-compose.
 
 ## Scope
 
-Applies to the `block-plaintext-secret-compose` rule on the `file` event. The frontmatter of this document owns the exact matcher.
+The `block-plaintext-secret-compose` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("BLOCKED: plaintext secrets"). The frontmatter owns the exact matcher.
 
 ## Rules
 
 **Plaintext secret detected in Docker Compose file (project rule)**
 
-`.agents/governance/environment-constraints.md` — Hard Constraints violation:
+`.agents/governance/bootstrap.md#hard-constraints`:
 
-> "Never write plaintext secrets; use Docker Secrets or `secrets/` mounts."
+> "Never write plaintext credentials or secret values."
+
+`.agents/governance/environment-constraints.md` — Security:
+
+> "Deliver credentials through Docker Secrets or `secrets/` mounts, never as
+> plaintext values."
 
 `.agents/governance/quality-standards.md` — Requirements:
 
@@ -86,7 +91,7 @@ No exception is declared by this rule.
 
 ## Verification
 
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+Native event delivery is a separate observation from the frontmatter match.
 
 ## Related Documents
 

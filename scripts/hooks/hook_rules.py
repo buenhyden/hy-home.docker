@@ -14,7 +14,7 @@ import would break every call; the accepted schema is small enough to read
 directly. Invalid configured rules raise an error so the dispatcher can deny
 the tool call instead of silently dropping policy.
 
-`event: stop` rules are deliberately not evaluated. Both carry `pattern: .*`,
+`event: stop` rules are deliberately not evaluated. They carry `pattern: .*`,
 which is a placeholder rather than a condition — evaluating
 `require-logical-commits-before-stop` generically would block every stop. Their
 real conditions are contextual and already live in the dispatcher's

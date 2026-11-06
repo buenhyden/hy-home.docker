@@ -1,10 +1,10 @@
 ---
 title: "WARNING: canonical governance root authority edit"
-version: "1.0.3"
+version: "1.0.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -12,18 +12,18 @@ conditions:
   pattern: "(^|/)\\.agents/(README\\.md|governance/sdlc\\.md)$"
 enabled: true
 event: "file"
-name: "warn-stage00-root-edit"
+name: "warn-governance-memory-edit"
 ---
 
 # WARNING: canonical governance root authority edit
 
 ## Overview
 
-Apply the declared `warn` action for warn-stage00-root-edit.
+Apply the declared `warn` action for warn-governance-memory-edit.
 
 ## Scope
 
-Applies to the `warn-stage00-root-edit` rule on the `file` event. The frontmatter of this document owns the exact matcher.
+The `warn-governance-memory-edit` rule applies on the `file` event and matches file edits whose path meets its structured `conditions` entry ("WARNING: canonical governance root authority edit"). The frontmatter owns the exact matcher.
 
 ## Rules
 
@@ -39,7 +39,7 @@ No exception is declared by this rule.
 
 ## Verification
 
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+Native event delivery is a separate observation from the frontmatter match.
 
 ## Related Documents
 

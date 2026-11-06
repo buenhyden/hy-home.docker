@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: floating reference"
-version: "1.0.3"
+version: "1.0.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -26,7 +26,7 @@ Apply the declared `block` action for block-unpinned-gha-action.
 
 ## Scope
 
-Applies to the `block-unpinned-gha-action` rule on the `file` event. The frontmatter of this document owns the exact matcher.
+The `block-unpinned-gha-action` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("BLOCKED: floating reference"). The frontmatter owns the exact matcher.
 
 ## Rules
 
@@ -65,7 +65,7 @@ No exception is declared by this rule.
 
 ## Verification
 
-The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+Native event delivery is a separate observation from the frontmatter match.
 
 ## Related Documents
 

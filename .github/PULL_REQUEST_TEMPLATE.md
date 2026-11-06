@@ -1,7 +1,7 @@
 # Pull Request
 
 > **Warning**: Your PR title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `.agents/governance/git-workflow.md`.
-> Human `feat/` and `fix/` source branches MUST include an issue ID segment, for example `feat/123-add-service`.
+> Human `feat/` and `fix/` source branches may include an issue ID segment, for example `feat/123-add-service`.
 
 ## Related Specification
 

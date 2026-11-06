@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Agent Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 ---
 
 # Infrastructure Agent Guide
@@ -56,8 +56,7 @@ service.
   [`infra-validate`](../.agents/skills/infra-validate/SKILL.md),
   [`infra-cross-validate`](../.agents/skills/infra-cross-validate/SKILL.md),
   [`container-threat-modeling`](../.agents/skills/container-threat-modeling/SKILL.md).
-- Hook rules: [`block-plaintext-secret-compose`](../.agents/governance/hooks/hookify.block-plaintext-secret-compose.md),
-  [`warn-docker-infra-stop`](../.agents/governance/hooks/hookify.warn-docker-infra-stop.md);
+- Hook rules: [`block-plaintext-secret-compose`](../.agents/governance/hooks/hookify.block-plaintext-secret-compose.md);
   Claude delivers the Compose pre-check through `.claude/hooks/docker-compose-pre.sh`,
   Codex through `.codex/hooks.json`.
 - Provider loading: [Claude adapter](../.claude/provider.md),

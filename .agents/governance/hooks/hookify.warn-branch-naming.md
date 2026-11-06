@@ -1,10 +1,10 @@
 ---
 title: "WARNING: branch naming rule violation"
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 action: "warn"
 enabled: true
 event: "bash"
@@ -20,7 +20,7 @@ Apply the declared `warn` action for warn-branch-naming.
 
 ## Scope
 
-Applies to the `warn-branch-naming` rule on the `bash` event. The frontmatter of this document owns the exact matcher.
+The `warn-branch-naming` rule applies on the `bash` event and matches Bash commands that match its `pattern` ("WARNING: branch naming rule violation"). The frontmatter owns the exact matcher.
 
 ## Rules
 
@@ -33,9 +33,9 @@ The branch name does not follow the Branching Strategy in
 
 | prefix | Purpose |
 | ------ | ------- |
-| `feat/<issue-id>-<description>` | new feature |
-| `fix/<issue-id>-<description>` | bug fix |
-| `hotfix/<issue-id>-<description>` | urgent production fix |
+| `feat/[<issue-id>-]<description>` | new feature |
+| `fix/[<issue-id>-]<description>` | bug fix |
+| `hotfix/<description>` | urgent production fix |
 | `<type>/<description>` | any other type admitted by `.cz.toml` |
 | `dependabot/**`, `codex/**` | automation-owned branches |
 
@@ -44,7 +44,8 @@ The branch name does not follow the Branching Strategy in
 ```bash
 git checkout -b feat/42-add-nginx-service
 git checkout -b fix/17-fix-volume-mount
-git checkout -b hotfix/99-patch-secret-leak
+git checkout -b hotfix/patch-secret-leak
+git checkout -b feat/add-nginx-service
 git checkout -b deps/update-python-pins
 git checkout -b release/publish-v1.0.0
 ```
@@ -57,7 +58,7 @@ No exception is declared by this rule.
 
 ## Verification
 
-The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+Native event delivery is a separate observation from the frontmatter match.
 
 ## Related Documents
 

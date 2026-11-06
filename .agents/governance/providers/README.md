@@ -1,10 +1,10 @@
 ---
 title: "Provider Adapters"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-06"
 ---
 
 # Provider Adapters
@@ -31,7 +31,6 @@ stop, document-profile 규칙은 소유하지 않습니다.
 
 - [Claude provider](../../../.claude/provider.md) — Claude의 authored loading 방식과 runtime 동작.
 - [Codex provider](../../../.codex/provider.md) — Codex의 authored loading 방식과 runtime 동작.
-- `registry.yaml` — 형식화된 provider와 projection fact.
 
 ## Usage
 

@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.7.1"
+version: "1.7.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 ---
 
 # Agentic Engineering Policy
@@ -55,11 +55,11 @@ Provider-neutral agent execution, delegation, capability intake, and Task eviden
 - The shared PostToolUse hook validates and never rewrites. It reports changed
   Markdown, shell, YAML, and JSON text with trailing whitespace or a missing
   final newline, runs `shellcheck` and `yamllint` on changed files where those
-  tools are available, and runs `git diff --check` before repository
-  validators. It passes the lint arguments that `.pre-commit-config.yaml`
-  registers. A failure reaches the model as `additionalContext` with exit 0,
+  tools are available with the lint arguments that `.pre-commit-config.yaml`
+  registers, then runs `git diff --check`, a JSON syntax check, and `bash -n`.
+  A failure reaches the model as `additionalContext` with exit 0,
   because neither provider shows a hook's other non-zero exits to the model.
-  `post-tool-validate.sh --write` is the explicit fix, under
+  `scripts/hooks/post-tool-validate.sh --write` is the explicit fix, under
   [formatting ownership](quality-standards.md#10-formatting-and-linting-ownership).
 - Editor shortcuts, code actions, and inline edit are not repository surfaces.
   They are personal IDE settings, and `.vscode/` and `.idea/` stay out of Git;
@@ -82,8 +82,8 @@ and retry ceilings, the shared-budget identity and remaining allocation, and the
 authorization source and scope. Those fields are structural records, not
 authentication; their validity is resolved through approval boundaries.
 Unsupported fields are recorded unknown. It refuses an unapproved fallback,
-extra spend, or silent resume. A supervisor may request one narrower retry after
-a failed check. Every agent loop has five exits: success, failure, no progress,
+extra spend, or silent resume. A retry after a failed check stays within the
+[workflows.md](workflows.md) bound. Every agent loop has five exits: success, failure, no progress,
 budget, and cancellation. An iteration that changes no file, check result, or
 Task record counts as no progress, and a second one in a row ends the loop.
 A cancellation from the user or supervisor ends it at once, without another

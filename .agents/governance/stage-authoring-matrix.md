@@ -1,10 +1,10 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.3.1"
+version: "1.3.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 ---
 
 # Stage Authoring Matrix
@@ -52,9 +52,9 @@ document; the kind names its role inside that family.
 | `sdlc` | 01, 02, 03 | `requirement`, `architecture-description`, `architecture-decision`, `spec`, `plan`, `task`, `data-model`, `openapi`, `graphql`, `proto` |
 | `operation` | 05 | `guide`, `policy`, `runbook`, `incident`, `postmortem` |
 | `reference` | 90 | `research-pack`, `research`, `audit-pack`, `audit`, `data-pack`, `data` |
-| `archive` | 98 | `catalog`, `route` (registered scheme only; no records are held) |
 | `common` | any | `readme`, `agent-guide` (folder `AGENTS.md`); supporting `template-source`, `unsupported` |
 
+Stage 98 registers no `archive` type; its README uses `common/readme`.
 A Stage 90 `*-pack` kind is the container index; the bare kind is one `m####`
 member inside it.
 

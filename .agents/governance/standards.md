@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Standards"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 ---
 
 # AI Agent Standards
@@ -27,23 +27,19 @@ Loading cost, language, stage gates, execution discipline, and GitHub delivery s
 
 ### 2. Language Standard
 
-- Every `README.md` and every `docs/05.operations/` body is Korean. Other
-  `docs/` documents, governance, role, skill, knowledge, and prompt
-  documents, and provider guidance are English. Native keys, required
-  headings, commands, code, and quotations keep their original form.
-  `.agents/governance/documentation-protocol.md#document-language` owns the
-  per-profile decision.
+- Document language is owned by
+  `.agents/governance/documentation-protocol.md#document-language`.
 - Conversational responses follow the user's active language preference under
   `.agents/governance/output-style.md`.
 
-### 4. Execution Discipline
+### 3. Execution Discipline
 
 - Use checklists from `.agents/governance/task-checklists.md` before, during, and after work.
 - Use templates from `docs/99.templates/` when creating new stage docs.
 - Prefer small, isolated changes with explicit verification evidence.
 - Remove stale commands and dead links in editable scope immediately.
 
-### 5. GitHub Repository and PR Standards
+### 4. GitHub Repository and PR Standards
 
 GitHub-specific repository, PR, and CI policy is governed by `.agents/governance/github-governance.md`.
 This section is intentionally thin to avoid duplication. Refer to that document for:
@@ -51,7 +47,7 @@ This section is intentionally thin to avoid duplication. Refer to that document 
 - Branch protection and ruleset expectations.
 - PR completion gate (required checks, required reviews, CODEOWNERS).
 - GitHub Actions security baseline (least-privilege, OIDC, pinned actions, secret safety).
-- Local instruction authority boundary (`.agents/` + `.claude/` vs. GitHub-native instruction files).
+- Local instruction authority boundary (`.agents/`, `.claude/` and `.codex/` vs. GitHub-native instruction files).
 
 ## Exceptions
 
@@ -59,7 +55,7 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ## Verification
 
-### 3. Stage-Gate Compliance
+### Stage-Gate Compliance
 
 - Treat `docs/01` to `docs/99` as project SSoT.
 - Do not bypass `docs/01.requirements` and `docs/03.specs` for implementation work.
