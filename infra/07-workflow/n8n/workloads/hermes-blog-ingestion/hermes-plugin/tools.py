@@ -29,6 +29,7 @@ METRICS_DIR = Path.home() / "backups" / "metrics"
 METRICS_FILE = "hermes_research.prom"
 # Private state behind the gauges, so values survive across runs.
 METRICS_STATE_DIR = HERMES_HOME / "data" / "research-metrics"
+METRICS_LOCK_SECONDS = 1.0
 APPROVED_WEBHOOK_URL = "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion"
 WEBHOOK_URL_DEFAULT = APPROVED_WEBHOOK_URL
 SECRET_FILE = HERMES_HOME / "secrets" / "research-webhook.secret"
@@ -302,7 +303,7 @@ _METRIC_HELP = (
     (
         "hermes_research_last_success_timestamp_seconds",
         "gauge",
-        "Unix time of the last submitted or stored_no_items outcome; 0 if none.",
+        "Unix time of the last submitted or stored_no_items outcome, else first seen.",
     ),
     (
         "hermes_research_last_report_bytes",
@@ -342,21 +343,55 @@ def _record_metrics(args: Any, result: dict[str, Any]) -> None:
         pass
 
 
+def _valid_entry(entry: Any) -> bool:
+    """One job kind's state as _update_metrics writes it; anything else is reset."""
+    if not isinstance(entry, dict) or type(entry.get("first_seen")) not in (int, float):
+        return False
+    outcomes, blocked = entry.get("outcomes", {}), entry.get("blocked", {})
+    return (
+        set(entry) <= {"first_seen", "success", "bytes", "outcomes", "blocked"}
+        and type(entry.get("success", 0)) in (int, float)
+        and type(entry.get("bytes", 0)) is int
+        and isinstance(outcomes, dict)
+        and set(outcomes) <= set(METRIC_OUTCOMES)
+        and all(type(value) in (int, float) for value in outcomes.values())
+        and isinstance(blocked, dict)
+        and set(blocked) <= set(METRIC_BLOCKED_REASONS)
+        and all(type(value) is int and value >= 0 for value in blocked.values())
+    )
+
+
 def _update_metrics(kind: str, outcome: str, result: dict[str, Any], size) -> None:
     _, _, records = _modules()
     store = records.PrivateRecords(METRICS_STATE_DIR)
     try:
-        with store.lock("metrics"):
+        # A busy lock skips metrics instead of holding up the tool result.
+        with store.lock("metrics", timeout=METRICS_LOCK_SECONDS):
             try:
                 state = json.loads(store.read("state.json") or b"{}")
+            except (records.RecordError, OSError) as error:
+                if str(error) not in ("unsafe_record", "record_too_large") and (
+                    type(error) is records.RecordError
+                ):
+                    raise
+                # An unsafe state file (mode, links, symlink, size) would
+                # refuse every later write, so it is dropped and restarted.
+                os.unlink("state.json", dir_fd=store.fd)
+                state = {}
             except ValueError:
                 state = {}
             if not isinstance(state, dict):
                 state = {}
-            entry = state.get(kind)
-            if not isinstance(entry, dict):
-                entry = state[kind] = {}
             now = time.time()
+            # first_seen starts each kind's success clock, so a kind that has not
+            # run yet is not "26 h without success" right after install.
+            state = {
+                each: state[each]
+                if _valid_entry(state.get(each))
+                else {"first_seen": now}
+                for each in sorted(set(_ALLOWED_JOBS.values()))
+            }
+            entry = state[kind]
             entry.setdefault("outcomes", {})[outcome] = now
             if outcome in ("submitted", "stored_no_items"):
                 entry["success"] = now
@@ -367,7 +402,7 @@ def _update_metrics(kind: str, outcome: str, result: dict[str, Any], size) -> No
                 if reason not in METRIC_BLOCKED_REASONS:
                     reason = "other"
                 blocked = entry.setdefault("blocked", {})
-                blocked[reason] = int(blocked.get(reason, 0)) + 1
+                blocked[reason] = blocked.get(reason, 0) + 1
             store.write("state.json", _record_bytes(state))
             if METRICS_DIR.is_dir():
                 _write_metrics(_metrics_text(state))
@@ -392,7 +427,8 @@ def _metrics_text(state: dict[str, Any]) -> str:
                 samples["hermes_research_last_outcome_timestamp_seconds"].append(
                     f'{{job_kind="{kind}",outcome="{outcome}"}} {value:.3f}'
                 )
-        success = _number(entry.get("success")) or 0.0
+        success = _number(entry.get("success")) or _number(entry.get("first_seen"))
+        success = success or 0.0
         samples["hermes_research_last_success_timestamp_seconds"].append(
             f'{{job_kind="{kind}"}} {success:.3f}'
         )
@@ -430,6 +466,11 @@ def _write_metrics(text: str) -> None:
             os.fchmod(stream.fileno(), 0o644)
             os.fsync(stream.fileno())
         os.replace(temporary, METRICS_DIR / METRICS_FILE)
+        directory = os.open(METRICS_DIR, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
     except BaseException:
         try:
             os.unlink(temporary)

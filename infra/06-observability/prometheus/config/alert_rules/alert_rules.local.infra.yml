@@ -133,7 +133,8 @@ groups:
       # [What] No successful report for a job kind in 26 h / 26시간 동안 성공한 보고서 없음
       # The Hermes plugin writes hermes_research.prom into the node-exporter
       # textfile directory after every submit_research_report call. A job kind
-      # that never succeeded reads 0, so it fires once the file exists.
+      # without a success reads the time the plugin first recorded metrics, so
+      # it fires 26 h after install, not at once.
       - alert: HermesResearchNoSuccess
         expr: time() - hermes_research_last_success_timestamp_seconds > 26 * 3600
         for: 30m

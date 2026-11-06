@@ -5,6 +5,7 @@ import hashlib
 import os
 import secrets
 import stat
+import time
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -89,7 +90,8 @@ class PrivateRecords:
         return name
 
     @contextmanager
-    def lock(self, key):
+    def lock(self, key, timeout=None):
+        """Exclusive lock; with timeout (seconds) a busy lock is lock_busy."""
         self._check_root()
         name = ".lock-" + hashlib.sha256(key.encode("utf-8")).hexdigest()
         descriptor = os.open(
@@ -100,7 +102,18 @@ class PrivateRecords:
         )
         try:
             _check_file(os.fstat(descriptor))
-            fcntl.flock(descriptor, fcntl.LOCK_EX)
+            if timeout is None:
+                fcntl.flock(descriptor, fcntl.LOCK_EX)
+            else:
+                deadline = time.monotonic() + timeout
+                while True:
+                    try:
+                        fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        break
+                    except BlockingIOError:
+                        if time.monotonic() >= deadline:
+                            raise RecordError("lock_busy") from None
+                        time.sleep(0.05)
             self._lock = (name, descriptor)
             self._check_lock()
             yield

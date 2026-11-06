@@ -1462,8 +1462,7 @@ class ResearchMetricsTests(unittest.TestCase):
             mock.patch.object(tools, "METRICS_STATE_DIR", self.state_dir),
             mock.patch.object(tools.time, "time", return_value=self.now),
         ):
-            if context is not None:
-                self.context = context
+            self.context = context if context is not None else CronRun()
             return ReportSourceContractTests.run_submit(self, args)
 
     def samples(self):
@@ -1590,6 +1589,101 @@ class ResearchMetricsTests(unittest.TestCase):
         for path in state.iterdir():
             self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600, path.name)
 
+    def gauge(self, name, **labels):
+        _, found = self.samples()
+        return found.get((name, tuple(labels.items())))
+
+    def test_first_seen_starts_the_success_clock_of_every_kind(self):
+        self.run_submit(self.with_report(""))
+        installed = self.now
+        self.now += 100
+        self.run_submit(self.with_report(""), context=CronRun(job_id="6eabd835f969"))
+        for kind in ("business_ideas", "devops", "news"):
+            self.assertEqual(
+                self.gauge(
+                    "hermes_research_last_success_timestamp_seconds", job_kind=kind
+                ),
+                installed,
+                kind,
+            )
+        self.now += 100
+        self.run_submit(submission_args())
+        self.assertEqual(self.success(), self.now)
+
+    def state_file(self):
+        return self.state_dir / "state.json"
+
+    def test_corrupt_state_resets_only_what_is_bad_and_continues(self):
+        self.run_submit(self.with_report(""), context=CronRun(job_id="6eabd835f969"))
+        news_seen = self.now
+        cases = {
+            "unreadable": b"not json",
+            "not an object": b"[]",
+            "nested outcomes": None,
+            "count type": None,
+        }
+        for name, raw in cases.items():
+            with self.subTest(case=name):
+                if raw is None:
+                    state = json.loads(self.state_file().read_bytes())
+                    state["devops"] = (
+                        {"first_seen": 1, "outcomes": []}
+                        if name == "nested outcomes"
+                        else {"first_seen": 1, "blocked": {"report_required": "x"}}
+                    )
+                    raw = json.dumps(state).encode()
+                self.state_file().write_bytes(raw)
+                self.now += 1
+                self.run_submit(self.with_report(""))
+                self.assertEqual(self.outcome("blocked"), self.now)
+                self.assertEqual(
+                    self.gauge(
+                        "hermes_research_blocked_total",
+                        job_kind="devops",
+                        blocked_reason="report_required",
+                    ),
+                    1,
+                )
+                news = self.gauge(
+                    "hermes_research_last_outcome_timestamp_seconds",
+                    job_kind="news",
+                    outcome="blocked",
+                )
+                # Only an unreadable file loses the other kinds.
+                if raw in (b"not json", b"[]"):
+                    self.assertIsNone(news)
+                else:
+                    self.assertIsNotNone(news)
+                if name == "not an object":
+                    self.run_submit(
+                        self.with_report(""), context=CronRun(job_id="6eabd835f969")
+                    )
+                    news_seen = self.now
+        self.assertTrue(news_seen)
+        # A state file the records layer refuses (mode 0644) is replaced too.
+        os.chmod(self.state_file(), 0o644)
+        self.now += 1
+        self.run_submit(self.with_report(""))
+        self.assertEqual(self.outcome("blocked"), self.now)
+        self.assertEqual(stat.S_IMODE(self.state_file().stat().st_mode), 0o600)
+
+    def test_a_busy_metrics_lock_skips_metrics_promptly(self):
+        import fcntl
+        import time as clock
+
+        self.run_submit(self.with_report(""))
+        before = (self.metrics / "hermes_research.prom").read_bytes()
+        lock = self.state_dir / (".lock-" + hashlib.sha256(b"metrics").hexdigest())
+        holder = os.open(lock, os.O_RDWR)
+        self.addCleanup(os.close, holder)
+        fcntl.flock(holder, fcntl.LOCK_EX)
+        self.now += 1
+        started = clock.monotonic()
+        result = self.run_submit(self.with_report(""))
+        self.assertLess(clock.monotonic() - started, tools.METRICS_LOCK_SECONDS + 1)
+        self.assertEqual(result, tools._blocked("report_required"))
+        self.assertEqual((self.metrics / "hermes_research.prom").read_bytes(), before)
+
     def test_textfile_is_replaced_atomically_with_mode_0644(self):
         self.run_submit(self.with_report(""))
         target = self.metrics / "hermes_research.prom"
@@ -1707,3 +1801,17 @@ class ResearchMetricsTests(unittest.TestCase):
             check=False,
         )  # fmt: skip
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+        # The plugin's own text must also lint as Prometheus exposition format.
+        self.drive_every_outcome()
+        lint = subprocess.run(
+            [
+                "docker", "run", "-i", "--rm", "--network", "none", "--read-only",
+                "--entrypoint", "/bin/promtool", image, "check", "metrics",
+            ],
+            input=(self.metrics / "hermes_research.prom").read_text(encoding="utf-8"),
+            capture_output=True,
+            text=True,
+            check=False,
+        )  # fmt: skip
+        self.assertEqual(0, lint.returncode, lint.stdout + lint.stderr)

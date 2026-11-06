@@ -1,6 +1,6 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.5.0"
+version: "0.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -126,7 +126,7 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
   남아 실행 사이에 이어집니다. 지표는 `job_kind`별
   `hermes_research_last_outcome_timestamp_seconds{outcome}`(`submitted`,
   `stored_no_items`, `gateway_error`, `blocked`, `conflict`, `store_failed`),
-  `hermes_research_last_success_timestamp_seconds`(성공 없으면 0),
+  `hermes_research_last_success_timestamp_seconds`(성공 전에는 처음 기록한 시각),
   `hermes_research_last_report_bytes`, `hermes_research_blocked_total{blocked_reason}`이고
   label 값은 고정 enum뿐입니다. 지표 실패는 도구 결과를 바꾸지 않습니다. 경보는
   `HermesResearchNoSuccess`(26시간 성공 없음, 30분)와 `HermesResearchBlocked`(마지막
