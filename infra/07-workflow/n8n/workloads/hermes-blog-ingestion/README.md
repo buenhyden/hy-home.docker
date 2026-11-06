@@ -88,15 +88,15 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
 - 저장 먼저: 도구는 보고서를 검증한 뒤 cron 실행을 확인하고, Gateway 경로보다 먼저
   `~/.hermes/data/research-report-store/<job_id>-<execution_id>/`(0700)에 `report.md`
   (정확한 바이트), `email.html`, `telegram.txt`, `manifest.json`(job·execution·scheduled
-  시각, 각 출력 다이제스트, `gateway`)을 한 번만 만듭니다(0600, 완성된 임시 파일의 link로
+  시각, 각 출력 다이제스트)을 한 번만 만듭니다(0600, 완성된 임시 파일의 link로
   생성, 덮어쓰기 없음). receipt가 있을 때만 `source-set.json`을 더합니다. 같은 실행의
   재제출은 `report.md` 바이트만 비교해 같으면 저장된 출력을 다시 렌더링하지 않고 돌려주고
   (플러그인 갱신 뒤 렌더러가 바뀌어도 충돌이 아님), 다르면 파일을 바꾸지 않고
-  `report_conflict`로 멈춥니다. 잠금을 쥔 채 이 실행 디렉터리에 남은 `.tmp-*`를 먼저
+  `report_conflict`와 함께 먼저 저장된 보고서의 경로를 돌려줍니다. 잠금을 쥔 채 이 실행 디렉터리에 남은 `.tmp-*`를 먼저
   지워 중단된 생성(링크 2개)을 복구합니다. Hermes cron 출력 보존 기간과 무관하게
   플러그인이 소유합니다.
 - 항목이 없는 날: `items`와 `source_receipts`가 모두 빈 목록이면 보고서를 저장·렌더링하고
-  `gateway: "skipped_no_items"`를 결과와 manifest에 남기며 Gateway에는 보내지 않습니다
+  `gateway: "skipped_no_items"`를 결과에 남기며 Gateway에는 보내지 않습니다
   (`ingestion-v1`은 항목 1~100개).
 - 파생 출력: 이메일 HTML과 Telegram 텍스트는 저장된 `report.md`에서만 표준 라이브러리
   렌더러로 만듭니다(모든 텍스트 escape, 제목·문단·목록, 링크는 평문 URL). 이메일에는

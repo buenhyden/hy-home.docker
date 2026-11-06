@@ -142,7 +142,9 @@ _ITEM_FIELDS = frozenset(
 # One item is one article: its own title and a summary of what the page says.
 # Report titles and filler stand in for content the page never backs.
 # Matched against the whole value, so headlines that merely mention these words pass.
-_FILLER = r"test item|report submitted|untitled|placeholder|tbd|n/a|lorem ipsum.*"
+# `(?s:.*)` consumes to the end in one step; a bare `.*` stops at a newline and
+# makes `\W*` backtrack quadratically on long input.
+_FILLER = r"test item|report submitted|untitled|placeholder|tbd|n/a|lorem ipsum(?s:.*)"
 _PLACEHOLDER_TITLE = re.compile(
     rf"\s*(?:{_FILLER}|.*\bdaily brief\b.*|.*\bresearch report)\s*", re.IGNORECASE
 )
@@ -442,7 +444,7 @@ def _report_directory(run) -> Path:
     return REPORT_DIR / f"{run.job_id}-{run.execution_id}"
 
 
-def _store_report(records, run, scheduled, report_raw: bytes, gateway: str):
+def _store_report(records, run, scheduled, report_raw: bytes):
     """Write the report once per execution, then derive the email and Telegram text.
 
     Every file is created exclusively with mode 0600 in a 0700 directory bound to
@@ -480,7 +482,6 @@ def _store_report(records, run, scheduled, report_raw: bytes, gateway: str):
                     "execution_id": run.execution_id,
                     "scheduled_at": scheduled,
                     "report_sha256": report_sha,
-                    "gateway": gateway,
                     "outputs": outputs,
                 }
                 store.create("manifest.json", _record_bytes(manifest))
@@ -488,6 +489,11 @@ def _store_report(records, run, scheduled, report_raw: bytes, gateway: str):
         store.close()
     if stored != report_raw:  # create() guarantees this; never send other bytes
         raise records.RecordError("record_conflict")
+    return _report_files(run, report_sha)
+
+
+def _report_files(run, report_sha: str) -> dict[str, str]:
+    directory = _report_directory(run)
     return {
         "contract_version": SUBMIT_CONTRACT_VERSION,
         "report_sha256": report_sha,
@@ -495,6 +501,22 @@ def _store_report(records, run, scheduled, report_raw: bytes, gateway: str):
         "email_path": str(directory / "email.html"),
         "telegram_path": str(directory / "telegram.txt"),
     }
+
+
+def _stored_report_files(records, run) -> dict[str, str] | None:
+    """Paths of the report this execution already stored, for a conflicting call."""
+    store = records.PrivateRecords(_report_directory(run))
+    try:
+        with store.lock("report"):
+            stored = store.read("report.md")
+            if stored is None or None in (
+                store.read("email.html"),
+                store.read("telegram.txt"),
+            ):
+                return None
+    finally:
+        store.close()
+    return _report_files(run, hashlib.sha256(stored).hexdigest())
 
 
 def _store_source_set(records, run, source_set_raw: bytes) -> None:
@@ -526,19 +548,19 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
     no_items = items == [] and receipt_ids == []
     _, _, records = _modules()
     try:
-        report_files = _store_report(
-            records,
-            run,
-            scheduled,
-            report_raw,
-            "skipped_no_items" if no_items else "submit",
-        )
+        report_files = _store_report(records, run, scheduled, report_raw)
     except records.RecordError as error:
-        return _blocked(
-            "report_conflict"
-            if str(error) == "record_conflict"
-            else "report_store_unavailable"
-        )
+        if str(error) != "record_conflict":
+            return _blocked("report_store_unavailable")
+        # This execution already stored a different report: point at that one,
+        # so the agent sends the stored files instead of a self-rendered email.
+        try:
+            earlier = _stored_report_files(records, run)
+        except Exception:
+            earlier = None
+        if earlier is None:
+            return _blocked("report_conflict")
+        return {"ok": False, "error": "report_conflict", "report": earlier}
     except Exception:
         return _blocked("report_store_unavailable")
     if no_items:

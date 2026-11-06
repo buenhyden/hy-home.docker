@@ -1217,7 +1217,8 @@ class ReportSourceContractTests(unittest.TestCase):
 
         changed = self.run_submit(self.with_report(REPORT + "\nA later edit.\n"))
         self.assertEqual(
-            changed, {"ok": False, "error": "report_conflict", "state": "BLOCKED"}
+            changed,
+            {"ok": False, "error": "report_conflict", "report": first["report"]},
         )
         self.assertEqual(
             {p.name: p.read_bytes() for p in self.directory.iterdir()}, before
@@ -1326,7 +1327,7 @@ class ReportSourceContractTests(unittest.TestCase):
             tools.render_telegram(REPORT),
         )
         manifest = json.loads((self.directory / "manifest.json").read_bytes())
-        self.assertEqual(manifest["gateway"], "skipped_no_items")
+        self.assertNotIn("gateway", manifest)
         self.assertFalse((self.directory / "source-set.json").exists())
         self.assertFalse((self.root / "outbox").exists())
 
@@ -1364,6 +1365,23 @@ class ReportSourceContractTests(unittest.TestCase):
         self.assertEqual(report.stat().st_nlink, 1)
         self.assertFalse((self.directory / ".tmp-0123456789abcdef").exists())
         self.assertTrue((self.directory / "email.html").is_file())
+
+    def test_placeholder_check_is_linear_on_long_reports(self):
+        import time
+
+        n = 250_000
+        for text in (
+            "lorem ipsum" + "!" * n + "\n" + "!" * n + "a",
+            "placeholder" + "!" * n + "a",
+        ):
+            with self.subTest(text=text[:11]):
+                started = time.monotonic()
+                tools._report_error(text)
+                self.assertLess(time.monotonic() - started, 2.0)
+        self.assertEqual(
+            tools._report_error("Lorem ipsum dolor sit amet,\nconsectetur " * 3),
+            "report_not_final",
+        )
 
     def test_pathological_lines_render_in_linear_time(self):
         import time
