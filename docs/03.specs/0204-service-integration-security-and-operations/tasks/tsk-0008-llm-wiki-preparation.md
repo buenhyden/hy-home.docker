@@ -546,5 +546,5 @@ facts in its own approved Task; preparation completion does not grant that work.
 - [SPEC-0204 Plan](../plan.md)
 - [REQ-0027](../../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)
-- [ADR-0058](../../../02.architecture/decisions/0058-home-tiers-versus-labs.md)
+- [ADR-0046](../../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
 - [Project registration](../../../../infra/09-platform-ops/project-registration/README.md)
