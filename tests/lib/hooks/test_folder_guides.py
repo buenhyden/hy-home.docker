@@ -139,6 +139,46 @@ class FolderGuideTests(IsolatedState):
             self.assertEqual(1, len(messages))
             self.assertIn("Folder guide for this edit: `infra/AGENTS.md`", messages[0])
 
+    def claude_edit(self) -> list[str]:
+        return folder_guides.pending_messages(
+            self.root,
+            ["infra/a.yml"],
+            self.session,
+            edits=("infra/a.yml",),
+            full=False,
+        )
+
+    def test_claude_gets_full_text_only_when_the_shim_cannot_import(self) -> None:
+        shim = self.root / "infra/CLAUDE.md"
+        outside = tempfile.TemporaryDirectory()
+        self.addCleanup(outside.cleanup)
+        linked = Path(outside.name) / "CLAUDE.md"
+        linked.write_text("@AGENTS.md\n")
+        for state in ("missing", "symlink", "no-import", "shim"):
+            with self.subTest(state=state):
+                folder_guides.reset(self.session)
+                shim.unlink(missing_ok=True)
+                if state == "symlink":
+                    shim.symlink_to(linked)
+                elif state == "no-import":
+                    shim.write_text("# infra\n")
+                elif state == "shim":
+                    shim.write_text(
+                        "<!-- m -->\n\n# infra Folder Guide\n\n@AGENTS.md\n"
+                    )
+                full_text = any("infra rules" in m for m in self.claude_edit())
+                self.assertEqual(state != "shim", full_text)
+
+    def test_a_claude_read_skips_git(self) -> None:
+        with mock.patch.object(folder_guides, "tracked_guides") as tracked:
+            self.assertEqual(
+                [],
+                folder_guides.pending_messages(
+                    self.root, ["infra/a.yml"], self.session, full=False
+                ),
+            )
+        tracked.assert_not_called()
+
     def test_restart_message_lists_tracked_guides(self) -> None:
         message = folder_guides.restart_message(self.root)
         self.assertIn("- `infra/AGENTS.md`", message)

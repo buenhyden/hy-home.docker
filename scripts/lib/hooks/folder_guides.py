@@ -3,8 +3,11 @@
 Codex loads AGENTS.md only from the repository root down to its working
 directory, and Claude Code skips AGENTS.md wherever a CLAUDE.md is on the
 path. Neither reads `infra/AGENTS.md` when a session started at the root edits
-`infra/...`, so the shared PreToolUse dispatcher hands the guide to the model.
-Each guide is delivered once per session; SessionStart clears the record, so a
+`infra/...`. Claude reaches each guide through the folder's generated
+`CLAUDE.md` import, so the shared PreToolUse dispatcher hands the full guide
+text to Codex only, and to Claude only when a folder's shim is missing or no
+longer imports `AGENTS.md`. Every edit also names its guide for both providers.
+Full text is delivered once per session; SessionStart clears the record, so a
 compacted or resumed session receives it again; a subagent keeps its own
 record. Only guides Git tracks are delivered. The record lives in a per-user
 state directory that must be owned by this user with mode 0700.
@@ -22,6 +25,8 @@ import time
 from pathlib import Path, PurePosixPath
 
 GUIDE_NAME = "AGENTS.md"
+SHIM_NAME = "CLAUDE.md"
+SHIM_IMPORT = b"@AGENTS.md"
 MAX_GUIDE_BYTES = 16 * 1024
 STATE_MAX_AGE_SECONDS = 7 * 24 * 3600
 _SESSION_ID = re.compile(r"[A-Za-z0-9._-]{1,256}")
@@ -147,12 +152,15 @@ def pending_messages(
     edits: tuple[str, ...] = (),
     full: bool = True,
 ) -> list[str]:
-    """Full guide text once per session (when `full`), and a path reminder on
-    every edit so a compacted session that kept only a summary re-reads it."""
+    """Full guide text once per session, and a path reminder on every edit so
+    a compacted session that kept only a summary re-reads it. Without `full`
+    (Claude), text goes only to a guide whose shim cannot import it."""
+    if not full and not edits:
+        return []  # A Claude Read needs no reminder, so skip `git ls-files`.
     if not any(_relative(root, value) for value in [*targets, *edits]):
         return []
     tracked = tracked_guides(root)
-    delivered = _full_messages(root, targets, session_id, tracked) if full else []
+    delivered = _full_messages(root, targets, session_id, tracked, full=full)
     shown = {guide for guide, _ in delivered}
     reminders = [
         f"Folder guide for this edit: `{guide}`. Re-read it if its text is no "
@@ -163,10 +171,32 @@ def pending_messages(
     return [message for _, message in delivered] + reminders
 
 
+def has_shim(root: Path, guide: str) -> bool:
+    """True when the guide's folder holds a regular CLAUDE.md importing it."""
+    shim = root / PurePosixPath(guide).with_name(SHIM_NAME)
+    try:
+        if not stat.S_ISREG(shim.lstat().st_mode):
+            return False
+        with open(shim, "rb") as handle:
+            lines = handle.read(MAX_GUIDE_BYTES).splitlines()
+    except OSError:
+        return False
+    return any(line.strip() == SHIM_IMPORT for line in lines)
+
+
 def _full_messages(
-    root: Path, targets: list[object], session_id: object, tracked: frozenset[str]
+    root: Path,
+    targets: list[object],
+    session_id: object,
+    tracked: frozenset[str],
+    *,
+    full: bool = True,
 ) -> list[tuple[str, str]]:
-    guides = _guides_for(root, targets, tracked)
+    guides = [
+        guide
+        for guide in _guides_for(root, targets, tracked)
+        if full or not has_shim(root, guide)
+    ]
     if not guides:
         return []
     state = _state_file(session_id)

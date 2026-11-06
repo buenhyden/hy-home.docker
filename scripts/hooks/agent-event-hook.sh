@@ -284,14 +284,16 @@ if denials:
     }}))
     sys.exit(0)
 
-# Deliver the nearest tracked folder AGENTS.md once per session (a subagent
-# keeps its own record). It runs only after the call is allowed, so a denied
-# call never marks a guide delivered; guidance only, so a failure never blocks.
+# Name the nearest tracked folder AGENTS.md on every edit and deliver its text
+# once per session (a subagent keeps its own record). It runs only after the
+# call is allowed, so a denied call never marks a guide delivered; guidance
+# only, so a failure never blocks.
 try:
     import scripts.lib.hooks.folder_guides as folder_guides
 
-    # Claude loads guide text through each folder's generated CLAUDE.md import;
-    # Codex has no such import, so it receives the text here.
+    # Full guide text goes to Codex only, which has no folder import. Claude
+    # loads it through each folder's generated CLAUDE.md import and receives
+    # the text here only when that shim is missing or does not import it.
     additional_context.extend(folder_guides.pending_messages(
         project,
         folder_guides.tool_targets(data, tuple(paths)),
