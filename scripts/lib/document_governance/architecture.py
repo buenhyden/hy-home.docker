@@ -285,10 +285,12 @@ def load_architecture_documents(
             "docs/02.architecture/requirements is forbidden"
         )
     allowed_root_entries = {"README.md", "descriptions", "decisions"}
-    actual_root_entries = {entry.name for entry in stage_root.iterdir()} - {
-        "AGENTS.md",
-        "CLAUDE.md",
-    }
+    root_names = {entry.name for entry in stage_root.iterdir()}
+    if "CLAUDE.md" in root_names and "AGENTS.md" not in root_names:
+        raise ArchitectureDocumentError(
+            "Stage 02 CLAUDE.md requires AGENTS.md beside it"
+        )
+    actual_root_entries = root_names - {"AGENTS.md", "CLAUDE.md"}
     unexpected = sorted(actual_root_entries - allowed_root_entries)
     missing = sorted(allowed_root_entries - actual_root_entries)
     if unexpected or missing:
