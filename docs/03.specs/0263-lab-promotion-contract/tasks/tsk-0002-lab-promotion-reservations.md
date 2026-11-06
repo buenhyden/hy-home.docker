@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.2.4"
+version: "0.2.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -234,12 +234,13 @@ DAGs; the next member peak is 0.077 CPU.
 | E24 | 8 | W7 | HOME readiness | the E23 command for `postgresql-ha` | FAIL | resources FAIL: candidate unmeasured at its limit, needed 19.2 CPUs / 33440 MiB | required | - |
 | E25 | 8 | W7 | full unit suite | the E15 command at `19d6040b2` | FAIL | 3346 tests, failures=2: `test_workflow_version_bundle` (stale n8n source binding) and `test_sec01_ci_routing`, which runs it | required | - |
 | E26 | 8 | W7 | full unit suite | the E15 command at `63d5b78a0`, after re-pinning the current n8n source binding in the update ledger and build inputs | PASS | 3346 tests OK, skipped=108 | required | E25 |
+| E27 | 8 | W7 | HOME readiness | `lab.py --env-file labs/.env readiness` for the six measured LABs, read-only, at `ea012d83b` | FAIL | postgresql-ha resources FAIL (10.45 CPUs / 10); opensearch-cluster resources FAIL (31808 / 27924 MiB); cassandra, couchdb, jupyterlab, mongodb resources PASS, tier and composition FAIL (destination undecided); valkey-cluster PASS | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26 | - | @buenhyden |
+| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26, E27 | - | @buenhyden |
 
 ## Review and Completion
 
@@ -298,6 +299,21 @@ Owner decisions on the review findings and the resource `FAIL` (2026-11-06):
   and `include_inputs` (7); a first blanket replacement that also touched
   historical bindings was discarded before commit. valkey-cluster now passes
   resources with 0.2 CPU of headroom (E23); postgresql-ha still fails (E24).
+- **Six more LAB lease runs (2026-11-06, `ea012d83b`).** The owner measured
+  cassandra, couchdb, jupyterlab, mongodb, opensearch-cluster and
+  postgresql-ha with five idle `docker stats` samples each. Symmetric replicas
+  share their group peak; one-shot init jobs that did not run keep their
+  limit. The first postgresql-ha run failed because the pg data directories
+  were `1000:1000 770` and Spilo runs as `101:103` (`initdb: Permission
+  denied`), an instance of the `groups_and_file_modes` owner check; the owner
+  changed their ownership and re-ran. Readiness (E27):
+  - postgresql-ha: candidate 1.75 CPUs / 1664 MiB; resources `FAIL`, 10.45
+    CPUs against 10. `pg-cluster-init` is unmeasured and reserves 0.50 CPU.
+  - opensearch-cluster: candidate 0.65 CPUs / 6592 MiB; resources `FAIL` on
+    memory (31808 against 27924 MiB); each node's JVM peak (1630 MiB x 1.5)
+    is capped at its 2048M limit.
+  - cassandra, couchdb, jupyterlab and mongodb: resources `PASS`; tier and
+    composition `FAIL` because their destination `kind` is `undecided`.
 
 ## Related Documents
 
