@@ -41,7 +41,7 @@ except Exception:
 source = payload.get("source", "") if isinstance(payload, dict) else ""
 try:
     sys.path.insert(0, str(project))
-    from scripts.lib.hooks import folder_guides
+    import scripts.lib.hooks.folder_guides as folder_guides
 
     folder_guides.reset(payload.get("session_id") if isinstance(payload, dict) else None)
 except Exception:
@@ -159,7 +159,7 @@ if (project / "graphify-out" / "graph.json").is_file() and (not tool_name or too
 # Deliver the nearest folder AGENTS.md once per session; guidance only, so a
 # failure here never blocks the tool call.
 try:
-    from scripts.lib.hooks import folder_guides
+    import scripts.lib.hooks.folder_guides as folder_guides
 
     additional_context.extend(folder_guides.pending_messages(
         project,

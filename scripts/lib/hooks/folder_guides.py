@@ -5,7 +5,8 @@ directory, and Claude Code skips AGENTS.md wherever a CLAUDE.md is on the
 path. Neither reads `infra/AGENTS.md` when a session started at the root edits
 `infra/...`, so the shared PreToolUse dispatcher hands the guide to the model.
 Each guide is delivered once per session; SessionStart clears the record, so a
-compacted or resumed session receives it again.
+compacted or resumed session receives it again. The record lives in a
+per-user state directory that must be owned by this user with mode 0700.
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import stat
 import tempfile
 from pathlib import Path, PurePosixPath
 
@@ -21,11 +23,29 @@ MAX_GUIDE_BYTES = 16 * 1024
 _SESSION_ID = re.compile(r"[A-Za-z0-9._-]{1,128}")
 
 
+def _state_directory() -> Path | None:
+    """A per-user state directory this user owns, never a shared /tmp name."""
+    base = os.environ.get("XDG_STATE_HOME") or str(Path.home() / ".local/state")
+    directory = Path(base) / "hy-home" / "folder-guides"
+    try:
+        directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+        info = directory.lstat()
+    except OSError:
+        return None
+    if (
+        not stat.S_ISDIR(info.st_mode)
+        or info.st_uid != os.getuid()
+        or info.st_mode & 0o077
+    ):
+        return None
+    return directory
+
+
 def _state_file(session_id: object) -> Path | None:
     if not isinstance(session_id, str) or not _SESSION_ID.fullmatch(session_id):
         return None
-    directory = Path(tempfile.gettempdir()) / f"hy-home-folder-guides-{os.getuid()}"
-    return directory / f"{session_id}.json"
+    directory = _state_directory()
+    return directory / f"{session_id}.json" if directory else None
 
 
 def _relative(root: Path, value: object) -> PurePosixPath | None:
@@ -84,10 +104,11 @@ def pending_messages(
     if not fresh:
         return []
     if state:
-        state.parent.mkdir(mode=0o700, exist_ok=True)
-        temporary = state.with_suffix(".tmp")
-        temporary.write_text(json.dumps(sorted(seen | set(fresh))), encoding="utf-8")
-        temporary.replace(state)
+        with tempfile.NamedTemporaryFile(
+            "w", dir=state.parent, delete=False, encoding="utf-8"
+        ) as handle:
+            json.dump(sorted(seen | set(fresh)), handle)
+        os.replace(handle.name, state)
     return [_message(root, guide) for guide in fresh]
 
 
