@@ -87,7 +87,7 @@ class GatewayAdapterTests(unittest.TestCase):
             "openapi-v1.json": (
                 "602705cfb4fbf06953776a5e6b19344bdbcd7e1c35771d58cdd612917d46ba67"
             ),
-            "ingestion-v1.schema.json": "17a56a5746a3c2a3b36c34553e9038159ec04f3a2fea02325b86f5b8ed8d00d9",
+            "ingestion-v1.schema.json": "820333eee0d816d1194e6b091e0a221300d755513dda1e75b1e9302e3de65271",
             "responses-v1.schema.json": "b1d918b3accacc85f260f34d2e9156d44e7d51fcf39c0da7886419d1498322b6",
             "synthetic-report.json": "2971ac9ae77612ca16334fe7b22de07ebfb7d367df21fa947b09d08305d50fbc",
         }
