@@ -1,6 +1,13 @@
 ---
 name: "{{NAME}}"
 description: "{{DESCRIPTION}}"
+tools:
+- "{{TOOL}}"
+model: "{{MODEL}}"
+effort: "{{EFFORT}}"
+permissionMode: "{{PERMISSION_MODE}}"
+skills:
+- "{{SKILL_ID}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
