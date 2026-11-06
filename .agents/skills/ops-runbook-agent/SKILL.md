@@ -3,11 +3,11 @@ name: "ops-runbook-agent"
 description: "Use when implemented and verified operational behavior needs an executable runbook with expected signals, recovery, and escalation."
 metadata:
   title: "ops-runbook-agent"
-  version: "1.3.0"
+  version: "1.3.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-06"
   function_id: "ops-runbook-agent"
   scope: "ops"
   owner_agent: "doc-writer"
@@ -46,7 +46,7 @@ Operational behavior must be implemented and verified; commands, expected outcom
 
 ## Outputs
 
-- One typed runbook at `docs/05.operations/runbooks/####-<slug>.md` with executable, topic-specific procedure.
+- One typed runbook at ####-<slug>.md` with executable, topic-specific procedure.
 
 ## Verification
 

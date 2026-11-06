@@ -3,11 +3,11 @@ name: "style-validation"
 description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership. Reach for it when someone says the files they just changed need a style or lint pass, asks which checks apply to a change, asks whether an all-files run is allowed, or wants to be sure a formatter has not rewritten a generated file. Do NOT use it to judge whether the code is correct, to review a design, or to decide whether a change should ship; those are review questions, not style ones."
 metadata:
   title: "style-validation"
-  version: "1.4.0"
+  version: "1.4.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-06"
   function_id: "style-validation"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -64,7 +64,7 @@ Changed authored files and their language/document style contracts must be ident
 
 ## Verification
 
-- `scripts/classify-changed-files.sh` was run, and no file in its `generated` bucket was rewritten by a formatter.
+- `.agents/skills/style-validation/scripts/classify-changed-files.sh` was run, and no file in its `generated` bucket was rewritten by a formatter.
 - `scripts/validation/run-ci-precommit.sh --mode local-staged` passes on the reviewed index.
 - Skipped and CI-only checks are listed, and no lint finding was silenced by deleting content or by a blanket suppression.
 
