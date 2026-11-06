@@ -1667,6 +1667,20 @@ class ResearchMetricsTests(unittest.TestCase):
         self.assertEqual(self.outcome("blocked"), self.now)
         self.assertEqual(stat.S_IMODE(self.state_file().stat().st_mode), 0o600)
 
+    def test_non_finite_state_values_are_reset(self):
+        for value in (float("nan"), float("inf"), float("-inf")):
+            with self.subTest(value=value):
+                self.assertFalse(tools._valid_entry({"first_seen": value}))
+                self.assertFalse(
+                    tools._valid_entry({"first_seen": 1.0, "success": value})
+                )
+                self.assertFalse(
+                    tools._valid_entry(
+                        {"first_seen": 1.0, "outcomes": {"blocked": value}}
+                    )
+                )
+        self.assertTrue(tools._valid_entry({"first_seen": 1.0, "success": 2}))
+
     def test_a_busy_metrics_lock_skips_metrics_promptly(self):
         import fcntl
         import time as clock

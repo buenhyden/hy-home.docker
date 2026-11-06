@@ -4,6 +4,7 @@ import base64
 import hashlib
 import html
 import json
+import math
 import os
 import re
 import stat
@@ -343,18 +344,23 @@ def _record_metrics(args: Any, result: dict[str, Any]) -> None:
         pass
 
 
+def _finite(value: Any) -> bool:
+    # json.loads accepts NaN and Infinity, which _record_bytes refuses to write.
+    return type(value) in (int, float) and math.isfinite(value)
+
+
 def _valid_entry(entry: Any) -> bool:
     """One job kind's state as _update_metrics writes it; anything else is reset."""
-    if not isinstance(entry, dict) or type(entry.get("first_seen")) not in (int, float):
+    if not isinstance(entry, dict) or not _finite(entry.get("first_seen")):
         return False
     outcomes, blocked = entry.get("outcomes", {}), entry.get("blocked", {})
     return (
         set(entry) <= {"first_seen", "success", "bytes", "outcomes", "blocked"}
-        and type(entry.get("success", 0)) in (int, float)
+        and _finite(entry.get("success", 0))
         and type(entry.get("bytes", 0)) is int
         and isinstance(outcomes, dict)
         and set(outcomes) <= set(METRIC_OUTCOMES)
-        and all(type(value) in (int, float) for value in outcomes.values())
+        and all(_finite(value) for value in outcomes.values())
         and isinstance(blocked, dict)
         and set(blocked) <= set(METRIC_BLOCKED_REASONS)
         and all(type(value) is int and value >= 0 for value in blocked.values())
