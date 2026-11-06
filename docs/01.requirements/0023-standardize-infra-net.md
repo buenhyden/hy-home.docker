@@ -1,89 +1,84 @@
 ---
 title: "Compose Network Segmentation Requirements"
-version: "1.2.0"
+version: "1.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0023"
 created: "2026-04-01"
 ---
+
 # Compose Network Segmentation Requirements
 
 ## Overview
 
-### Problem and Goals
-
-This document defines product requirements to split the Docker network membership of infrastructure services in the project by traffic flow and guarantee the subnet of each network. This standardizes inter-service communication and enables predictable IP management.
-
-### Problem Statement
-
-Multiple `docker-compose` files are fragmented, once all services shared a single `infra_net` mesh and could reach each other, and some services may have no declared network or ambiguous subnet settings. This raises inter-microservice communication complexity and can cause confusion during troubleshooting.
+All services once shared one `infra_net` mesh and could reach each other, and
+some had no declared network or an ambiguous subnet. That made inter-service
+communication hard to reason about and to troubleshoot. This package requires
+that the HOME composition split network membership by traffic flow and give
+each repository-owned network a predictable address block.
 
 ## Scope
 
-### Stakeholders and User Needs
+- **In scope**: every service in the root composition and its included service
+  files; the subnets of repository-owned networks.
+- **Out of scope**: networks the repository does not own (for example
+  `project_net`); each LAB's own isolated network, which follows the LAB
+  isolation requirement in REQ-0012; service logic inside containers.
 
-Infrastructure services communicate safely and efficiently through networks split by traffic flow, and clear IP block management prevents network conflicts and increases operational transparency.
+### Assumptions
 
-### Personas
-
-- **Infrastructure Engineer**: must manage the overall network structure and resolve inter-service communication issues.
-- **DevOps Engineer**: must be guaranteed a standard network environment when adding a new service.
-
-### Key Use Cases
-
-- **STORY-01**: An admin wants the network boundary guaranteed so each service can only communicate with the peers it actually uses.
-- **STORY-02**: An operator wants to predictably manage each network's `10.250.x.0/24` block and whether fixed addresses are used.
-- **STORY-03**: An operator wants unused external integrations (k3d) to not be connected to Compose services.
-
-### Constraints
-
-- **In Scope**:
-  - Modifying the root `docker-compose.yml` and every `include`d `docker-compose` file.
-  - Standardizing the subnets of separated networks.
-- **Out of Scope**:
-  - Changing the subnet of networks not owned by the repository (e.g. `project_net`, `k3d-hyhome`).
-  - Modifying service logic inside containers.
-
-### AI Agent Requirements
-
-N/A
+- The root composition merges every included service file into one model.
 
 ### Risks
 
-- **Risks**: possibility of IP conflicts (if IPs were previously assigned manually).
-- **Dependencies**: depends on the `networks` base definitions in the root `docker-compose.yml`.
-- **Assumptions**: configuration is merged using the `include` feature of `docker compose` V2.
+- A manually assigned address can collide when a subnet changes.
 
 ## Requirements
 
 ### Functional Requirements
 
-- **REQ-0023-FR-0001**: Every active service must connect only to networks with peers it actually uses, and use the project default network when it has no peer.
-- **REQ-0023-FR-0002**: Each network's subnet must be declared as `10.250.x.0/24` in the root Compose. Exception: a small, leaf-owned, internal network used only to isolate one service's egress may declare a narrower subnet in its own Compose file; it must be named here. The one exception is `crawl4ai_egress_net` (`10.250.200.0/29`, `infra/08-ai/crawl4ai/docker-compose.yml`).
-- **REQ-0023-FR-0003**: No service connects to the `k3d-hyhome` network (k3d integration removed by owner decision on 2026-09-23).
+- **REQ-0023-FR-0001**: Every active service connects only to networks with
+  peers it actually uses, and uses the composition's default network when it
+  has no peer.
+- **REQ-0023-FR-0002**: Each repository-owned network declares a
+  `10.250.x.0/24` subnet in the root composition. Exception: a small,
+  leaf-owned internal network that only isolates one service's egress may
+  declare a narrower subnet in its own service file and must be named here.
+  The one exception is `crawl4ai_egress_net` (`10.250.200.0/29`).
+- **REQ-0023-FR-0003**: No service connects to the `k3d-hyhome` network (k3d
+  integration removed by owner decision on 2026-09-23).
+
+### Stakeholders and User Needs
+
+- **Infrastructure engineer**: needs each service limited to the peers it uses,
+  to keep the structure clear and resolve communication issues.
+- **DevOps engineer**: needs a standard network and a predictable address block
+  when adding a service.
+- **Operator**: needs removed external integrations (k3d) kept off every
+  service.
 
 ### Non-functional Requirements
 
-No separately numbered non-functional requirement was identified in the source package.
+No numbered non-functional requirement is issued.
 
 ### Interface Requirements
 
-No separately numbered solution-independent external interface requirement was identified in the source package.
+No numbered interface requirement is issued.
 
 ## Acceptance Criteria
 
-- **REQ-0023-FR-0001**: In `docker-compose config` output, each service's network matches its declared flow.
-- **REQ-0023-FR-0002**: Each network's IPAM setting points to the declared `10.250.x.0/24` block, or, for a named egress-isolation exception, to the subnet its leaf Compose declares.
+- **REQ-0023-FR-0001**: In the rendered root composition, each service's
+  networks match its declared traffic flow.
+- **REQ-0023-FR-0002**: Each repository-owned network's address setting is its
+  declared `10.250.x.0/24` block, or, for the named exception, the subnet its
+  service file declares.
+- **REQ-0023-FR-0003**: No service in the rendered root composition lists
+  `k3d-hyhome`.
 
 ## Related Documents
 
-### Traceability
-
-- **Architecture Description**: [Compose network segmentation architecture description](../02.architecture/descriptions/0026-standardize-infra-net.md)
+- **Architecture Description**: [Compose network segmentation](../02.architecture/descriptions/0026-standardize-infra-net.md)
 - **ADR**: [infra_net standardization decision (superseded single-mesh model)](../02.architecture/decisions/0026-standardize-infra-net.md)
-- **Spec**: infra_net technical specification
-- **Plan**: infra_net implementation plan
-- **Task**: infra_net task evidence
