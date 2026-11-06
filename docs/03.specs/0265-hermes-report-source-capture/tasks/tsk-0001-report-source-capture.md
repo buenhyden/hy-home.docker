@@ -1,6 +1,6 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -19,8 +19,8 @@ created: "2026-11-06"
 ### Objective
 
 Record the execution and evidence of work units W1 to W9 of the Plan. W1 to
-W6 are implemented in the repository (plugin 0.4.0); no runtime operation (W7
-to W9) has run.
+W6 are implemented in the repository: W1 to W4 and W6 in plugin 0.4.0, W5 in
+plugin 0.4.1; no runtime operation (W7 to W9) has run.
 
 ## Inputs and Authorization
 
@@ -123,8 +123,9 @@ before the controller's commit:
   results apart and never resends an email; the statement that the full report
   is not preserved is gone. `update-cron-prompts.sh` requires exactly one
   marker per prompt (else it names the job and count before any edit) and
-  leaves a job already on the current block unchanged. `update-hermes-plugin.sh` refusals name the path, octal mode, uid
-  and link count. The umask-dependent fixtures (seven update-script tests and
+  leaves a job already on the current block unchanged.
+  `update-hermes-plugin.sh` refusals name the path, octal mode, uid and link
+  count. The umask-dependent fixtures (seven update-script tests and
   the address policy test) set their modes explicitly.
 - W5: done in the W5 round below. The unused `metric_lines` of the first round
   was deleted in fix round 1.
@@ -195,8 +196,9 @@ quadratic: `lorem ipsum.*` stops at a newline, so `\W*` backtracks across it
 on input such as `lorem ipsum` + `!`*N + newline + `!`*M + `a`; with the old
 pattern 8000 characters took 1.8 s. `(?s:.*)` now consumes to the end in one
 step, and a test bounds 250000-character inputs. A `report_conflict` now
-returns the paths of the report this execution stored first, and the prompt tells the agent to send those stored files and never submit
-again for that run, so no second, self-rendered email follows. The immutable
+returns the paths of the report this execution stored first, and the prompt
+tells the agent to send those stored files and never submit again for that
+run, so no second, self-rendered email follows. The immutable
 manifest no longer records a Gateway outcome; the result carries it.
 
 ### Metrics collection approval (criterion 10)
@@ -231,7 +233,8 @@ On the worktree of `800ebf788`, before the controller's commit:
 - Gauges per `job_kind`: `hermes_research_last_outcome_timestamp_seconds`
   by `outcome` (`submitted`, `stored_no_items`, `gateway_error`, `blocked`,
   `conflict`, `store_failed`), `hermes_research_last_success_timestamp_seconds`
-  (`submitted` or `stored_no_items`; 0 if none, emitted for all three kinds),
+  (`submitted` or `stored_no_items`, else the kind's `first_seen`; emitted
+  for all three kinds),
   `hermes_research_last_report_bytes`; counter
   `hermes_research_blocked_total` by `blocked_reason` (the BLOCKED codes plus
   `other`). The text is rendered by iterating the enums, so no other label
@@ -246,6 +249,31 @@ On the worktree of `800ebf788`, before the controller's commit:
 - `tests/e2e_collect_harness.py` points both metrics paths into its work
   directory.
 
+### W5 fix round
+
+The independent review of the W5 commits (`e98dafde0`..`94530091a`) found
+seven items; the controller ruled on each, and all are fixed:
+
+- Medium: `HermesResearchNoSuccess` would fire about 30 m after install for a
+  kind that had not run yet. Each kind now carries `first_seen` (set for all
+  three kinds on the first recorded outcome), and the success gauge is the
+  last success or else `first_seen`.
+- Low: invalid nested state stopped metrics for good. Under the lock each
+  kind entry is validated and only a bad one is reset; an unreadable or
+  non-object file restarts the state, and a state file the records layer
+  refuses (mode, links, symlink, size) is unlinked and rewritten.
+- Low: the metrics lock was unbounded. `PrivateRecords.lock` takes an
+  optional `timeout`; metrics use 1 s of `LOCK_NB` retries, then skip.
+- Nits: the metrics directory is fsynced after `os.replace`; the promtool test
+  also runs `promtool check metrics` on the plugin's own text; promtool cases
+  cover a kind first seen at 1 h, a kind that never succeeds and a
+  `store_failed` outcome newer than the last success; the Objective and list
+  spacing above are corrected.
+
+The three new plugin tests were not run against the reviewed commits (that
+scratch-copy run was refused); the first-seen case fails there by
+construction, because those commits emit 0.
+
 ### Design deviations
 
 - Outcome mapping: `report_store_unavailable` and `record_unavailable` are
@@ -257,8 +285,8 @@ On the worktree of `800ebf788`, before the controller's commit:
   `HermesResearchNoSuccess` does not fire on such days.
 - The metrics follow the Hermes account's home: a Hermes run under another
   account has no `~/backups/metrics` and writes no textfile.
-- Plugin version is 0.4.1: 0.4.0 was installed on server A at 2026-11-06 23:41 KST, so the metrics change ships as its own release.
-
+- Plugin version is 0.4.1: 0.4.0 was installed on server A at 2026-11-06
+  23:41 KST, so the metrics change ships as its own release.
 - Spec Normal Behavior 6 puts the email and Telegram steps before submission;
   they now follow `submit_research_report`, because the plugin renders them
   from the stored report it returns.
@@ -308,6 +336,7 @@ obtained). Controller recommendations, not owner answers:
 | E4 | 7, 8, 9 | W4 | same suite: `test_deploy_scripts.py` prompt, marker-count, `email_body.html` guard and rerun tests; `test_plugin_bundle.py` message tests; `bash -n` and `shellcheck` on both deploy scripts | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | 436 tests, OK; shellcheck clean; live prompts verified at W9 | required | - |
 | E5 | 10 | W5 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`ResearchMetricsTests`: every outcome, persistence across runs, atomic 0644 replace, missing directory skipped, failure isolation, label enums with no URL/UUID/hex, promtool `test rules` on `tests/fixtures/hermes-research-alerts.test.yml` with the cached `prom/prometheus` image under `--network none`); new tests failed on `800ebf788` (`METRICS_DIR` missing); a mutated `HermesResearchBlocked` comparison fails the promtool cases; `promtool check rules`; `tests.validation.test_compose_baseline_gates`, `test_lab_isolation`, `test_quality_observability`, `test_p03_hermes_gate`, `test_p11_hermes_gate`; `check-p03-hermes.py`, `check-p11-hermes.py`, `e2e-cache-contract.sh`, script manifest, workflow contract, ruff; `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment`, `check-document-corpus-lifecycle.py` | W5 working tree on `800ebf788` | PASS | 445 tests OK under both umasks; promtool 10 rules, cases pass; repo suites 142 (31 skipped) and 53 OK; gates PASS; ruff clean; metadata 0 violations, links 898 documents 0 failures, lifecycle 0 violations | required | - |
 | E11 | 10 | W5 | live node-exporter scrape of `hermes_research.prom`, alert firing and dashboard rendering | runtime observation after the W9 install | NOT_RUN | - | required | - |
+| E12 | 10 | W5 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`test_first_seen_starts_the_success_clock_of_every_kind`, `test_corrupt_state_resets_only_what_is_bad_and_continues`, `test_a_busy_metrics_lock_skips_metrics_promptly`, promtool `test rules` with the first-seen, never-succeeds and `store_failed` cases plus `check metrics`); `e2e-cache-contract.sh`; ruff; `ObservabilityDashboardContractTests`, `test_lab_isolation`, `test_p03_hermes_gate`, `test_p11_hermes_gate`; `check-p03-hermes.py`, `check-p11-hermes.py`; `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | W5 fix round working tree above `94530091a` | PASS | 448 tests OK under both umasks; e2e exit 0; ruff clean; repo tests OK; gates PASS; metadata 0 violations; links 0 failures | required | - |
 | E6 | 11 | W6 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`; `python3 scripts/validation/check-document-links.py --mode alignment`; `python3 scripts/validation/check-document-corpus-lifecycle.py` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | metadata: 0 violations; links: 898 documents, 0 failures; lifecycle: 0 violations | required | - |
 | E7 | 12 | W7 | schema-4 backup, restore test on a copy, cutover | owner approval pending | NOT_RUN | - | required | - |
 | E8 | 13 | W8 | `backfill-reports` dry run shows the 16 reports excluded; apply | Blog-data capability and owner approval pending | NOT_RUN | - | required | - |
@@ -327,7 +356,7 @@ obtained). Controller recommendations, not owner answers:
 | 7 | pending | E4 | owner acceptance | @buenhyden |
 | 8 | pending | E4 | owner acceptance | @buenhyden |
 | 9 | pending | E4 | owner acceptance | @buenhyden |
-| 10 | pending | E5, E11 | owner acceptance | @buenhyden |
+| 10 | pending | E5, E11, E12 | owner acceptance | @buenhyden |
 | 11 | pending | E6 | owner acceptance | @buenhyden |
 | 12 | pending | E7, E9 | owner acceptance | @buenhyden |
 | 13 | pending | E8 | owner acceptance | @buenhyden |
