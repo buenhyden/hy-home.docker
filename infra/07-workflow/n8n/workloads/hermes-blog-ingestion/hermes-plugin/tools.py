@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import html
 import json
 import os
 import re
@@ -19,6 +20,8 @@ else:  # Direct source-tree unit tests, not the installed plugin entry point.
 HERMES_HOME = Path.home() / ".hermes"
 OUTBOX_DIR = HERMES_HOME / "data" / "research-report-outbox"
 SOURCE_DIR = HERMES_HOME / "data" / "research-source-evidence"
+# One private directory per cron execution: the report bytes and what derives from them.
+REPORT_DIR = HERMES_HOME / "data" / "research-report-store"
 APPROVED_WEBHOOK_URL = "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion"
 WEBHOOK_URL_DEFAULT = APPROVED_WEBHOOK_URL
 SECRET_FILE = HERMES_HOME / "secrets" / "research-webhook.secret"
@@ -41,6 +44,11 @@ SOURCE_QUOTE_MAX = 500
 GATEWAY_MAX_SOURCE_CHARACTERS = 524288
 GATEWAY_MAX_REQUEST_BYTES = 1024 * 1024
 SCHEMA_VERSION = "1.0"
+# submit_research_report argument contract; 2 adds report_markdown.
+SUBMIT_CONTRACT_VERSION = 2
+_SUBMIT_ARGS = frozenset({"payload", "source_receipts", "report_markdown"})
+# Controls other than tab, newline and carriage return, including C1 and DEL.
+_REPORT_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
 
 
 def _load_url() -> str:
@@ -325,6 +333,181 @@ def _record_bytes(record):
     ).encode("utf-8")
 
 
+def _blocked(code: str) -> dict[str, Any]:
+    """The original report cannot be delivered as is; nothing is sent or truncated."""
+    return {"ok": False, "error": code, "state": "BLOCKED"}
+
+
+def _report_error(report: Any) -> str | None:
+    if not isinstance(report, str) or not report.strip():
+        return "report_required"
+    try:
+        report.encode("utf-8")
+    except UnicodeEncodeError:  # a lone surrogate is not well-formed UTF-8
+        return "report_malformed"
+    if _REPORT_CONTROL.search(report):
+        return "report_malformed"
+    if len(report) > GATEWAY_MAX_SOURCE_CHARACTERS:
+        return "request_too_large"
+    if len(report.strip()) < BODY_MIN or _PLACEHOLDER_BODY.fullmatch(report):
+        return "report_not_final"
+    return None
+
+
+_LINK = re.compile(r"\[([^\]\n]*)\]\(([^()\s]+)\)")
+_HEADING = re.compile(r"(#{1,6})\s+(.*?)[\s#]*")
+_BULLET = re.compile(r"\s*[-*+]\s+(.*)")
+
+
+def _blocks(markdown: str) -> list[tuple]:
+    """Headings, bullet lists and paragraphs; links become 'text (url)' plain text."""
+    blocks: list[tuple | None] = []
+    for line in markdown.splitlines():
+        line = _LINK.sub(
+            lambda m: f"{m[1]} ({m[2]})" if m[1].strip() else m[2], line
+        ).rstrip()
+        heading, bullet = _HEADING.fullmatch(line), _BULLET.fullmatch(line)
+        last = blocks[-1] if blocks else None
+        if not line.strip():
+            blocks.append(None)
+        elif heading:
+            blocks.append(("h", len(heading[1]), heading[2]))
+        elif bullet:
+            if last and last[0] == "ul":
+                last[1].append(bullet[1])
+            else:
+                blocks.append(("ul", [bullet[1]]))
+        elif last and last[0] == "p":
+            last[1].append(line.strip())
+        else:
+            blocks.append(("p", [line.strip()]))
+    return [block for block in blocks if block]
+
+
+def render_email(markdown: str, report_sha256: str) -> str:
+    """Email HTML derived only from the stored report; every text is escaped."""
+    parts = [
+        "<!DOCTYPE html>",
+        '<html><head><meta charset="utf-8">'
+        f'<meta name="report-sha256" content="{report_sha256}"></head><body>',
+    ]
+    for block in _blocks(markdown):
+        if block[0] == "h":
+            parts.append(f"<h{block[1]}>{html.escape(block[2])}</h{block[1]}>")
+        elif block[0] == "ul":
+            items = "".join(f"<li>{html.escape(item)}</li>" for item in block[1])
+            parts.append(f"<ul>{items}</ul>")
+        else:
+            parts.append(
+                "<p>" + "<br>\n".join(html.escape(x) for x in block[1]) + "</p>"
+            )
+    parts.append("</body></html>")
+    return "\n".join(parts) + "\n"
+
+
+def render_telegram(markdown: str) -> str:
+    """Plain text derived only from the stored report; Hermes chunks long text."""
+    parts = []
+    for block in _blocks(markdown):
+        if block[0] == "h":
+            parts.append(block[2])
+        elif block[0] == "ul":
+            parts.append("\n".join("• " + item for item in block[1]))
+        else:
+            parts.append("\n".join(block[1]))
+    return "\n\n".join(parts) + "\n"
+
+
+def _store_report(records, run, scheduled, report_raw: bytes, source_set_raw: bytes):
+    """Write the report once per execution, then derive the email and Telegram text.
+
+    Every file is created exclusively with mode 0600 in a 0700 directory bound to
+    job_id and execution_id; manifest.json adds the scheduled instant and digests.
+    """
+    directory = REPORT_DIR / f"{run.job_id}-{run.execution_id}"
+    store = records.PrivateRecords(directory)
+    try:
+        with store.lock("report"):
+            store.create("report.md", report_raw)
+            stored = store.read("report.md")
+            report_sha = hashlib.sha256(stored).hexdigest()
+            markdown = stored.decode("utf-8")
+            email = render_email(markdown, report_sha).encode("utf-8")
+            telegram = render_telegram(markdown).encode("utf-8")
+            manifest = {
+                "schema_version": "hermes-report-store/1",
+                "job_id": run.job_id,
+                "execution_id": run.execution_id,
+                "scheduled_at": scheduled,
+                "report_sha256": report_sha,
+                "source_set_sha256": hashlib.sha256(source_set_raw).hexdigest(),
+                "outputs": {
+                    "email.html": {
+                        "sha256": hashlib.sha256(email).hexdigest(),
+                        "derived_from_sha256": report_sha,
+                    },
+                    "telegram.txt": {
+                        "sha256": hashlib.sha256(telegram).hexdigest(),
+                        "derived_from_sha256": report_sha,
+                    },
+                },
+            }
+            for name, raw in (
+                ("source-set.json", source_set_raw),
+                ("email.html", email),
+                ("telegram.txt", telegram),
+                ("manifest.json", _record_bytes(manifest)),
+            ):
+                store.create(name, raw)
+    finally:
+        store.close()
+    return stored, {
+        "contract_version": SUBMIT_CONTRACT_VERSION,
+        "report_sha256": report_sha,
+        "report_path": str(directory / "report.md"),
+        "email_path": str(directory / "email.html"),
+        "telegram_path": str(directory / "telegram.txt"),
+    }
+
+
+METRIC_OUTCOMES = frozenset(
+    {"persisted", "already_persisted", "rejected", "blocked", "failed", "uncertain"}
+)
+METRIC_REASONS = frozenset(
+    {
+        "none",
+        "report_required",
+        "report_malformed",
+        "report_not_final",
+        "request_too_large",
+        "report_conflict",
+        "source_set_too_large",
+        "report_store_unavailable",
+        "other",
+    }
+)
+_SIZE_BUCKETS = ((65536, "le_64k"), (262144, "le_256k"), (1048576, "le_1m"))
+
+
+def metric_lines(report_kind: str, outcome: str, reason: str, size: int) -> list[str]:
+    """Pushgateway text lines; every label value comes from a fixed enumeration.
+
+    ponytail: built but not pushed; the workload has no Pushgateway path yet.
+    """
+    if report_kind not in _ALLOWED_JOBS.values() or outcome not in METRIC_OUTCOMES:
+        raise ValueError("metric_label")
+    reason = reason if reason in METRIC_REASONS else "other"
+    bucket = next((name for limit, name in _SIZE_BUCKETS if size <= limit), "over_1m")
+    labels = (
+        f'job_kind="{report_kind}",outcome="{outcome}",'
+        f'reason="{reason}",size_bucket="{bucket}"'
+    )
+    return [
+        "# TYPE hermes_report_submission gauge",
+        f"hermes_report_submission{{{labels}}} 1",
+    ]
+
+
 def _submit(args: dict[str, Any]) -> dict[str, Any]:
     try:
         run, scheduled = _cron()
@@ -337,11 +520,13 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
         return {"ok": False, "error": "invalid_schema_version"}
     if "source_receipts" not in args:
         return {"ok": False, "error": "source_receipts_required"}
-    if set(payload) != {"schema_version", "items"} or set(args) != {
-        "payload",
-        "source_receipts",
-    }:
+    if set(payload) != {"schema_version", "items"} or not set(args) <= _SUBMIT_ARGS:
         return {"ok": False, "error": "invalid_submission_fields"}
+    report = args.get("report_markdown")
+    error = _report_error(report)
+    if error:
+        return _blocked(error)
+    report_raw = report.encode("utf-8")
     items, receipt_ids = payload.get("items"), args.get("source_receipts")
     if (
         not isinstance(items, list)
@@ -387,19 +572,19 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
     except (TypeError, ValueError, UnicodeError, RecursionError):
         return {"ok": False, "error": "invalid_submission_fields"}
     if len(input_raw) > GATEWAY_MAX_REQUEST_BYTES:
-        return {"ok": False, "error": "request_too_large"}
+        return _blocked("request_too_large")
     collection, receipt_validator, records = _modules()
     try:
         rows = collection.resolve(
             SOURCE_DIR, run.job_id, run.execution_id, scheduled, items, receipt_ids
         )
         input_sha = hashlib.sha256(input_raw).hexdigest()
-        source_text = json.dumps(
+        # The receipt-set JSON is the audit record behind source_ref, not the report.
+        source_set_raw = json.dumps(
             rows, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-        )
-        if len(source_text) > GATEWAY_MAX_SOURCE_CHARACTERS:
-            return {"ok": False, "error": "request_too_large"}
-        source_sha = hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+        ).encode("utf-8")
+        if len(source_set_raw) > records.MAX_RECORD:
+            return _blocked("source_set_too_large")
         now = collection.timestamp(datetime.now(UTC))
         if any(
             collection._time(row["fetched_at"]) > collection._time(now) for row in rows
@@ -415,9 +600,10 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
             "scheduled_at": scheduled,
             "generated_at": now,
             "collected_at": max(row["fetched_at"] for row in rows),
-            "source_ref": "hermes-source-set:" + source_sha,
-            "source_text": source_text,
-            "source_sha256": source_sha,
+            "source_ref": "hermes-source-set:"
+            + hashlib.sha256(source_set_raw).hexdigest(),
+            "source_text": report,
+            "source_sha256": hashlib.sha256(report_raw).hexdigest(),
         }
         gateway_payload.pop("fire_id", None)
         error = _validate(gateway_payload)
@@ -433,7 +619,7 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
         if len(payload_bytes) > min(
             webhook_transport.MAX_REQUEST_BYTES, GATEWAY_MAX_REQUEST_BYTES
         ):
-            return {"ok": False, "error": "request_too_large"}
+            return _blocked("request_too_large")
     except Exception as error:
         allowed = {
             "source_receipts_required",
@@ -450,6 +636,38 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
         )
         return {"ok": False, "error": code}
 
+    try:
+        stored, report_files = _store_report(
+            records, run, scheduled, report_raw, source_set_raw
+        )
+    except records.RecordError as error:
+        code = str(error)
+        return _blocked(
+            "report_conflict"
+            if code == "record_conflict"
+            else "report_store_unavailable"
+        )
+    except Exception:
+        return _blocked("report_store_unavailable")
+    if stored != report_raw:  # create() guarantees this; never send other bytes
+        return _blocked("report_conflict")
+    result = _send(
+        run,
+        gateway_payload,
+        payload_bytes,
+        input_sha,
+        items,
+        records,
+        receipt_validator,
+    )
+    # Email and Telegram come from these files whatever the Gateway answered.
+    return {**result, "report": report_files}
+
+
+def _send(
+    run, gateway_payload, payload_bytes, input_sha, items, records, receipt_validator
+):
+    collection, _, _ = _modules()
     key = f"{run.job_id}:{gateway_payload['idempotency_key']}"
     name = key + ".json"
     store = None
@@ -702,6 +920,11 @@ COLLECT_RESEARCH_SOURCE_SCHEMA = {
 SUBMIT_RESEARCH_REPORT_SCHEMA = {
     "name": "submit_research_report",
     "description": (
+        "Contract v2. Call once, after the full daily report is final: report_markdown "
+        "is that exact report (Markdown, at most 524288 characters, never a draft, "
+        "summary or truncation). The tool stores it once per run, sends it as the "
+        "report source and returns report_path, email_path and telegram_path derived "
+        "from the stored bytes; send the email and Telegram from those files only. "
         "Submit this scheduled run's research items using one collector receipt per item. "
         "The tool sets the run identity, timestamps, source and idempotency key. "
         "One item per article: title is that article's own headline, never the report "
@@ -783,7 +1006,12 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
                 "maxItems": 100,
                 "items": _STRING,
             },
+            "report_markdown": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": GATEWAY_MAX_SOURCE_CHARACTERS,
+            },
         },
-        "required": ["payload", "source_receipts"],
+        "required": ["payload", "source_receipts", "report_markdown"],
     },
 }

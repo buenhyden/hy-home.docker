@@ -50,6 +50,13 @@ ARTICLES = {
 }
 
 
+REPORT = (
+    "# Synthetic DevOps report\n\n"
+    + "\n".join(f"- {item['title']}: {item['body']}" for item in ITEMS)
+    + "\n"
+)
+
+
 def main(config_file: str) -> int:
     config = json.loads(Path(config_file).read_text(encoding="utf-8"))
     address = ipaddress.ip_address(config["address"])
@@ -115,6 +122,7 @@ def main(config_file: str) -> int:
         stack.enter_context(patch.object(tools, "_CTX", ctx))
         stack.enter_context(patch.object(tools, "SOURCE_DIR", work / "plugin-sources"))
         stack.enter_context(patch.object(tools, "OUTBOX_DIR", work / "plugin-outbox"))
+        stack.enter_context(patch.object(tools, "REPORT_DIR", work / "plugin-reports"))
         stack.enter_context(
             patch.object(source_collection.source_fetch, "fetch", fetch)
         )
@@ -139,6 +147,7 @@ def main(config_file: str) -> int:
         submission = {
             "payload": {"schema_version": "1.0", "items": ITEMS},
             "source_receipts": receipts,
+            "report_markdown": REPORT,
         }
         result = json.loads(tools.handle_submit_report(submission))
         if not result.get("ok") or result.get("status") != "persisted":

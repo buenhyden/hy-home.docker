@@ -6,6 +6,8 @@ import base64
 import copy
 import hashlib
 import json
+import re
+import stat
 import sys
 import tempfile
 import threading
@@ -49,6 +51,24 @@ BASE_PAYLOAD = {
 }
 
 
+REPORT = (
+    "# DevOps Daily Brief\n\n"
+    "Example released version 2.1 of its build tool on 31 October.\n\n"
+    "- [Release notes](https://example.com/news/2-1)\n"
+)
+_REPORT_ROOT = None
+
+
+def setUpModule():
+    """No test may reach the real Hermes report store under the home directory."""
+    global _REPORT_ROOT
+    _REPORT_ROOT = tempfile.TemporaryDirectory()
+    patcher = mock.patch.object(tools, "REPORT_DIR", Path(_REPORT_ROOT.name) / "r")
+    patcher.start()
+    unittest.addModuleCleanup(patcher.stop)
+    unittest.addModuleCleanup(_REPORT_ROOT.cleanup)
+
+
 def make_payload(**item_overrides):
     payload = copy.deepcopy(BASE_PAYLOAD)
     if item_overrides:
@@ -67,6 +87,7 @@ def submission_args(payload=None):
         "source_receipts": [
             f"{index + 1:032x}" for index, _ in enumerate(payload.get("items", []))
         ],
+        "report_markdown": REPORT,
     }
 
 
@@ -265,8 +286,13 @@ class ToolSchemaTests(unittest.TestCase):
     def test_payload_schema_lists_exactly_the_accepted_fields(self):
         parameters = tools.SUBMIT_RESEARCH_REPORT_SCHEMA["parameters"]
         self.assertFalse(parameters["additionalProperties"])
-        self.assertEqual(set(parameters["properties"]), {"payload", "source_receipts"})
-        self.assertEqual(set(parameters["required"]), {"payload", "source_receipts"})
+        arguments = {"payload", "source_receipts", "report_markdown"}
+        self.assertEqual(set(parameters["properties"]), arguments)
+        self.assertEqual(set(parameters["required"]), arguments)
+        self.assertEqual(tools.SUBMIT_CONTRACT_VERSION, 2)
+        self.assertIn("Contract v2", tools.SUBMIT_RESEARCH_REPORT_SCHEMA["description"])
+        report = parameters["properties"]["report_markdown"]
+        self.assertEqual(report["maxLength"], tools.GATEWAY_MAX_SOURCE_CHARACTERS)
         payload = parameters["properties"]["payload"]
         self.assertFalse(payload["additionalProperties"])
         self.assertEqual(set(payload["properties"]), {"schema_version", "items"})
@@ -343,29 +369,37 @@ class DestinationAuthorityTests(unittest.TestCase):
             ),
         ):
             result = json.loads(tools.handle_submit_report(submission_args()))
+        result.pop("report")  # stored before delivery; the agent still sends it
         self.assertEqual(result, {"ok": False, "error": "disallowed_url"})
         secret.assert_not_called()
         post.assert_not_called()
 
     def test_oversize_request_is_rejected_before_policy_or_credential(self):
-        import json
-        from unittest import mock
-
-        payload = make_payload()
-        rows = resolved_sources(payload["items"])
-        rows[0]["text"] = "x" * (tools.webhook_transport.MAX_REQUEST_BYTES + 1)
-        with (
-            mock.patch.object(tools, "_CTX", CronRun()),
-            mock.patch.object(tools, "_load_address_policy") as policy,
-            mock.patch.object(tools, "_load_secret") as secret,
-            mock.patch.object(tools.webhook_transport, "post") as post,
-            mock.patch.object(source_collection, "resolve", return_value=rows),
+        # Within the code point limit, but three UTF-8 bytes each: over 1 MiB.
+        for report in (
+            "x" * (tools.GATEWAY_MAX_SOURCE_CHARACTERS + 1),
+            "\u20ac" * tools.GATEWAY_MAX_SOURCE_CHARACTERS,
         ):
-            result = json.loads(tools.handle_submit_report(submission_args(payload)))
-        self.assertEqual(result, {"ok": False, "error": "request_too_large"})
-        policy.assert_not_called()
-        secret.assert_not_called()
-        post.assert_not_called()
+            args = submission_args()
+            args["report_markdown"] = report
+            with (
+                self.subTest(characters=len(report)),
+                mock.patch.object(tools, "_CTX", CronRun(execution_id="oversize")),
+                mock.patch.object(tools, "_load_address_policy") as policy,
+                mock.patch.object(tools, "_load_secret") as secret,
+                mock.patch.object(tools.webhook_transport, "post") as post,
+                mock.patch.object(
+                    source_collection, "resolve", side_effect=resolve_submitted
+                ),
+            ):
+                result = json.loads(tools.handle_submit_report(args))
+            self.assertEqual(
+                result, {"ok": False, "error": "request_too_large", "state": "BLOCKED"}
+            )
+            policy.assert_not_called()
+            secret.assert_not_called()
+            post.assert_not_called()
+            self.assertFalse((tools.REPORT_DIR / "25674fbc0bf3-oversize").exists())
 
 
 class AddressPolicyLoaderTests(unittest.TestCase):
@@ -389,6 +423,7 @@ class AddressPolicyLoaderTests(unittest.TestCase):
             root = Path(tmp)
             policy = root / "policy"
             policy.write_text("10.250.1.128/32", encoding="utf-8")
+            policy.chmod(0o600)  # independent of the host umask
             with (
                 mock.patch.object(tools, "ADDRESS_POLICY_FILE", policy),
                 mock.patch.dict("os.environ", {}, clear=True),
@@ -486,6 +521,7 @@ class DeliveryBudgetTests(unittest.TestCase):
             ),
         ):
             result = json.loads(tools.handle_submit_report(submission_args()))
+        result.pop("report")
         self.assertEqual(result, {"ok": False, "error": "invalid_credential"})
         post.assert_not_called()
 
@@ -514,6 +550,7 @@ class DeliveryBudgetTests(unittest.TestCase):
             ),
         ):
             result = json.loads(tools.handle_submit_report(submission_args()))
+        result.pop("report")
         self.assertEqual(result, {"ok": False, "error": "missing_address_policy"})
         secret.assert_not_called()
         post.assert_not_called()
@@ -857,6 +894,7 @@ class P11DirectDeliveryRegressionTests(unittest.TestCase):
         record_path.write_bytes(tampered_bytes)
         post = mock.Mock(return_value=self.receipt())
         result = self.run_submit(post)
+        result.pop("report")
         self.assertEqual(result, {"ok": False, "error": "record_unverifiable"})
         post.assert_not_called()
         self.assertEqual(record_path.read_bytes(), tampered_bytes)
@@ -1002,6 +1040,7 @@ class P11CollectionToolTests(unittest.TestCase):
             mock.patch.object(tools, "_CTX", context),
             mock.patch.object(tools, "SOURCE_DIR", Path(source_dir)),
             mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+            mock.patch.object(tools, "REPORT_DIR", Path(outbox) / "reports"),
             mock.patch.dict(
                 "os.environ",
                 {
@@ -1031,6 +1070,7 @@ class P11CollectionToolTests(unittest.TestCase):
                     {
                         "payload": {"schema_version": "1.0", "items": [item]},
                         "source_receipts": [collected["receipt_id"]],
+                        "report_markdown": REPORT,
                     }
                 )
             )
@@ -1061,3 +1101,255 @@ class P11CollectionToolTests(unittest.TestCase):
             )
         self.assertEqual(result, {"ok": False, "error": "content_encoding"})
         fetch.assert_called_once_with("https://example.org/article")
+
+
+class ReportSourceContractTests(unittest.TestCase):
+    """SPEC-0265: source_text is the stored report; outputs derive from its bytes."""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.context = CronRun()
+        self.directory = self.root / "reports" / "25674fbc0bf3-0123456789abcdef"
+        self.sent = []
+
+    def post(self, url, body, token, policy, *, timeout):
+        self.sent.append(body)
+        return P11DirectDeliveryRegressionTests.receipt()
+
+    def run_submit(self, args):
+        with (
+            mock.patch.object(tools, "_CTX", self.context),
+            mock.patch.object(tools, "OUTBOX_DIR", self.root / "outbox"),
+            mock.patch.object(tools, "REPORT_DIR", self.root / "reports"),
+            mock.patch.dict(
+                "os.environ",
+                {
+                    "RESEARCH_WEBHOOK_URL": approved_url(),
+                    "RESEARCH_WEBHOOK_SECRET": "synthetic",
+                    "RESEARCH_WEBHOOK_ALLOWED_CIDRS": "10.250.1.128/32",
+                },
+            ),
+            mock.patch.object(tools.webhook_transport, "post", side_effect=self.post),
+            mock.patch.object(
+                source_collection, "resolve", side_effect=resolve_submitted
+            ),
+        ):
+            return json.loads(tools.handle_submit_report(args))
+
+    def with_report(self, report):
+        args = submission_args()
+        args["report_markdown"] = report
+        return args
+
+    def test_request_validates_against_the_unchanged_ingestion_schema(self):
+        import jsonschema
+
+        schema = json.loads(
+            (WORKLOAD / "tests/fixtures/ingestion-v1.schema.json").read_bytes()
+        )
+        result = self.run_submit(submission_args())
+        self.assertTrue(result["ok"], result)
+        (body,) = self.sent
+        request = json.loads(body)
+        self.assertEqual(set(request), set(schema["properties"]) - {"fire_id"})
+        # The pinned upstream fixture predates source_quotes, which the n8n screen
+        # and the 0.3.0 plugin already carry; every other field is checked as is.
+        self.assertEqual(set(request["items"][0]), tools._ITEM_FIELDS)
+        request["items"] = [
+            {k: v for k, v in item.items() if k != "source_quotes"}
+            for item in request["items"]
+        ]
+        jsonschema.validate(request, schema, format_checker=jsonschema.FormatChecker())
+
+    def test_source_text_is_the_stored_report_bytes(self):
+        report = "# Brief\r\n\r\nCafé résumé — kept byte for byte.\n\n\n"
+        result = self.run_submit(self.with_report(report + "x" * 40))
+        self.assertTrue(result["ok"], result)
+        stored = (self.directory / "report.md").read_bytes()
+        request = json.loads(self.sent[0])
+        self.assertEqual(stored, (report + "x" * 40).encode("utf-8"))
+        self.assertEqual(request["source_text"], stored.decode("utf-8"))
+        self.assertEqual(request["source_sha256"], hashlib.sha256(stored).hexdigest())
+        self.assertEqual(result["report"]["report_sha256"], request["source_sha256"])
+        self.assertEqual(result["report"]["contract_version"], 2)
+
+    def test_source_ref_digest_is_the_private_receipt_set_record(self):
+        result = self.run_submit(submission_args())
+        self.assertTrue(result["ok"], result)
+        record = self.directory / "source-set.json"
+        raw = record.read_bytes()
+        expected = json.dumps(
+            resolved_sources(make_payload()["items"]),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        self.assertEqual(raw, expected)
+        self.assertEqual(
+            json.loads(self.sent[0])["source_ref"],
+            "hermes-source-set:" + hashlib.sha256(raw).hexdigest(),
+        )
+        self.assertEqual(stat.S_IMODE(record.stat().st_mode), 0o600)
+
+    def test_report_store_is_private_bound_and_written_once(self):
+        first = self.run_submit(submission_args())
+        self.assertTrue(first["ok"], first)
+        self.assertEqual(stat.S_IMODE(self.directory.stat().st_mode), 0o700)
+        names = {"report.md", "source-set.json", "email.html", "telegram.txt"}
+        names.add("manifest.json")
+        files = [p for p in self.directory.iterdir() if not p.name.startswith(".")]
+        self.assertEqual({p.name for p in files}, names)
+        for path in files:
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600, path.name)
+        manifest = json.loads((self.directory / "manifest.json").read_bytes())
+        self.assertEqual(
+            (manifest["job_id"], manifest["execution_id"], manifest["scheduled_at"]),
+            ("25674fbc0bf3", "0123456789abcdef", "2026-11-01T00:00:00.000Z"),
+        )
+        before = {p.name: p.read_bytes() for p in self.directory.iterdir()}
+
+        replay = self.run_submit(submission_args())
+        self.assertTrue(replay["ok"], replay)
+        self.assertEqual(replay["status"], "already_persisted")
+        self.assertEqual(replay["report"], first["report"])
+
+        changed = self.run_submit(self.with_report(REPORT + "\nA later edit.\n"))
+        self.assertEqual(
+            changed, {"ok": False, "error": "report_conflict", "state": "BLOCKED"}
+        )
+        self.assertEqual(
+            {p.name: p.read_bytes() for p in self.directory.iterdir()}, before
+        )
+        self.assertEqual(len(self.sent), 1)
+
+    def test_gateway_email_and_telegram_share_one_stored_digest(self):
+        result = self.run_submit(submission_args())
+        self.assertTrue(result["ok"], result)
+        files = result["report"]
+        stored = Path(files["report_path"]).read_bytes()
+        digest = hashlib.sha256(stored).hexdigest()
+        email = Path(files["email_path"]).read_text(encoding="utf-8")
+        telegram = Path(files["telegram_path"]).read_text(encoding="utf-8")
+        manifest = json.loads((self.directory / "manifest.json").read_bytes())
+        self.assertEqual(json.loads(self.sent[0])["source_sha256"], digest)
+        self.assertEqual(files["report_sha256"], digest)
+        self.assertEqual(manifest["report_sha256"], digest)
+        self.assertIn(f'<meta name="report-sha256" content="{digest}">', email)
+        self.assertEqual(email, tools.render_email(stored.decode("utf-8"), digest))
+        self.assertEqual(telegram, tools.render_telegram(stored.decode("utf-8")))
+        for name, text in (("email.html", email), ("telegram.txt", telegram)):
+            output = manifest["outputs"][name]
+            self.assertEqual(output["derived_from_sha256"], digest)
+            self.assertEqual(
+                output["sha256"], hashlib.sha256(text.encode()).hexdigest()
+            )
+
+    def test_invalid_or_unfinished_reports_are_blocked_without_network(self):
+        cases = (
+            (None, "report_required"),
+            ("", "report_required"),
+            ("  \n\t", "report_required"),
+            (12, "report_required"),
+            ("TBD", "report_not_final"),
+            ("placeholder", "report_not_final"),
+            ("# Brief\n\nsoon", "report_not_final"),
+            ("broken \ud800 surrogate " + "x" * 40, "report_malformed"),
+            ("nul \x00 byte " + "x" * 40, "report_malformed"),
+            ("escape \x1b[31m red " + "x" * 40, "report_malformed"),
+            ("x" * (tools.GATEWAY_MAX_SOURCE_CHARACTERS + 1), "request_too_large"),
+        )
+        for report, code in cases:
+            args = submission_args()
+            if report is None:
+                del args["report_markdown"]
+            else:
+                args["report_markdown"] = report
+            with self.subTest(code=code, report=repr(report)[:30]):
+                result = self.run_submit(args)
+                self.assertEqual(
+                    result, {"ok": False, "error": code, "state": "BLOCKED"}
+                )
+        self.assertEqual(self.sent, [])
+        self.assertFalse((self.root / "reports").exists())
+
+    def test_extra_argument_is_rejected_without_network(self):
+        for extra in ("source_text", "source_sha256", "email_html"):
+            args = submission_args()
+            args[extra] = "model supplied"
+            with self.subTest(extra=extra):
+                result = self.run_submit(args)
+                self.assertEqual(
+                    result, {"ok": False, "error": "invalid_submission_fields"}
+                )
+        self.assertEqual(self.sent, [])
+
+    def test_renderers_escape_and_flatten_markdown(self):
+        markdown = (
+            "# Title <b>\n\nLine one & two\nline <script>x</script>\n\n"
+            "- [Docs](https://example.com/a?b=1&c=2)\n* plain item\n"
+        )
+        email = tools.render_email(markdown, "a" * 64)
+        self.assertIn("<h1>Title &lt;b&gt;</h1>", email)
+        self.assertIn("<p>Line one &amp; two<br>\nline &lt;script&gt;", email)
+        self.assertIn("<li>Docs (https://example.com/a?b=1&amp;c=2)</li>", email)
+        self.assertNotIn("<script>", email)
+        self.assertNotIn("<a ", email)
+        self.assertEqual(
+            tools.render_telegram(markdown),
+            "Title <b>\n\nLine one & two\nline <script>x</script>\n\n"
+            "• Docs (https://example.com/a?b=1&c=2)\n• plain item\n",
+        )
+
+    def test_metric_labels_are_fixed_low_cardinality_values(self):
+        identifier = re.compile(
+            r"https?://|[0-9a-f]{8}-[0-9a-f]{4}-|\b[0-9a-f]{32}\b|\b[0-9a-f]{64}\b"
+        )
+        hostile = (
+            "https://example.com/x",
+            "11111111-1111-1111-1111-111111111111",
+            "a" * 32,
+            "b" * 64,
+            "report_conflict",
+        )
+        for kind in tools._ALLOWED_JOBS.values():
+            for outcome in tools.METRIC_OUTCOMES:
+                for reason in hostile:
+                    for size in (0, 70000, 300000, 2**21):
+                        (series,) = tools.metric_lines(kind, outcome, reason, size)[1:]
+                        values = re.findall(r'="([^"]*)"', series)
+                        self.assertEqual(len(values), 4)
+                        for value in values:
+                            self.assertIsNone(identifier.search(value), series)
+                            self.assertRegex(value, r"^[a-z0-9_]{1,24}$")
+        with self.assertRaises(ValueError):
+            tools.metric_lines("https://example.com", "persisted", "none", 1)
+        with self.assertRaises(ValueError):
+            tools.metric_lines("news", "a" * 32, "none", 1)
+
+
+class PrivateRecordCreateTests(unittest.TestCase):
+    def test_create_is_exclusive_and_idempotent(self):
+        from publisher import private_records
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = private_records.PrivateRecords(Path(tmp) / "store")
+            self.addCleanup(store.close)
+            with store.lock("k"):
+                self.assertTrue(store.create("a", b"one"))
+                self.assertFalse(store.create("a", b"one"))
+                with self.assertRaises(private_records.RecordError) as raised:
+                    store.create("a", b"two")
+                self.assertEqual(str(raised.exception), "record_conflict")
+                self.assertEqual(store.read("a"), b"one")
+            path = Path(tmp) / "store" / "a"
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+            self.assertEqual(path.stat().st_nlink, 1)
+            self.assertEqual(
+                sorted(p.name for p in path.parent.iterdir() if p.name != "a")[:1],
+                [".lock-" + hashlib.sha256(b"k").hexdigest()],
+            )
+            self.assertFalse(
+                any(p.name.startswith(".tmp-") for p in path.parent.iterdir())
+            )
