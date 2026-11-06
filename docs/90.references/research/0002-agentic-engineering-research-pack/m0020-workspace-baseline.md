@@ -1,17 +1,17 @@
 ---
 title: "Reference: Agentic Engineering Workspace Baseline"
-version: "2.2.1"
+version: "2.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0020"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -815,7 +815,7 @@ review_cycle: "on-source-change"
 
 ## Findings
 
-### Findings
+> Revalidated 2026-11-06: `.claude/settings.local.json` is an ignored local file (`.gitignore:112`), not tracked state; `docs/04.execution/` is retired; Tasks now live under `docs/03.specs/<package>/tasks/`; `tests/lib/agent_governance/test_agent_governance_contract.py` and `tests/validation/test_agent_governance_contract.py` are absent; the current suite is `tests/validation/test_agent_governance_ci_routing.py`, with `scripts/validation/check-agent-governance-contract.py`; Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); 5 workflows (old: 7), 66 gate_nodes (old: 80), `.claude/hooks/` 7 wrappers (old: 24 hooks), 24 skills, 14 roles. The dated values above are preserved as observed.
 
 ## Limitations
 
@@ -885,7 +885,7 @@ instructions are preserved history and are not executed by this refresh.
 > | Governance artifact contract (retired path: `../../../00.agent-governance/contracts/agent-governance-artifacts.yaml`) | 2026-08-14 | Tracked mutable        | Newly cited. 25 artifact profiles, 7 path-authority records, 3 families, 3 shims, 3 README profiles.                                                                                                                                            |
 > | [Persona protocol](../../../../.agents/governance/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows confirmed at lines 25-38; unchanged since 2026-05-15.                                                                                                                                           |
 > | [Governance contract validator](../../../../scripts/validation/check-agent-governance-contract.py)     | 2026-08-14 | Local observation      | Newly cited. Executed in both interpreters; results recorded verbatim above.                                                                                                                                                                    |
-> | [Governance contract tests](../../../../tests/lib/agent_governance/test_agent_governance_contract.py)            | 2026-08-14 | Local observation      | Newly cited. 159 tests executed, `OK` in the isolated environment; `scope_names` enumerates 13 of 14 scopes.                                                                                                                                    |
+> | Governance contract tests (retired path: `tests/lib/agent_governance/test_agent_governance_contract.py`)            | 2026-08-14 | Local observation      | Newly cited. 159 tests executed, `OK` in the isolated environment; `scope_names` enumerates 13 of 14 scopes.                                                                                                                                    |
 > | [Workflow contract](../../../../.github/workflow-contract.yml)                                         | 2026-08-14 | Tracked mutable        | Newly cited. Parsed; 16 `job_roots`, 80 `gate_nodes`, 3 `profile_roots`, 8 pinned actions.                                                                                                                                                      |
 > | [Branch-protection ruleset record](../../../../.github/rulesets/main-protection.md)                    | 2026-08-14 | Tracked mutable        | Newly cited. The file itself declares control-plane verification `unverified` and lists the same 16 checks.                                                                                                                                     |
 > | [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)                 | 2026-08-14 | Tracked mutable        | Re-verified directly; Stage 90 remains advisory.                                                                                                                                                                                                |
@@ -902,3 +902,7 @@ instructions are preserved history and are not executed by this refresh.
 > <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners>.
 > It is held outside the table only so one long URL does not widen every row.
 >
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

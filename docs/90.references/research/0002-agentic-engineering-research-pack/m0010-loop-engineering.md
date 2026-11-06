@@ -1,17 +1,17 @@
 ---
 title: "Reference: Loop Engineering"
-version: "1.2.0"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0010"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -486,6 +486,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > ten analytical patterns into retry policy without a reviewed canonical agent governance/03/04
 > change.
 
+> Revalidated 2026-11-06: roles and skills cited are current (`.agents/roles/` 14, `.agents/skills/` 24); no path drift found. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -510,3 +512,7 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | C-m0010-05 | Evidence-based continuation | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents; [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2024-12-19 / 2025-11-26 | 2026-09-27 | Native client/environment or working design; see source owner | Recommendation | Separately approved bounded task | Not assessed in this run |
 
 Native originals were opened 2026-09-27; publication dates are not displayed. Version limits are explicit in m0012. No unverified academic success statistic, current event count or historical retry value becomes a product guarantee.
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

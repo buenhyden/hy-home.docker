@@ -1,17 +1,17 @@
 ---
 title: "Reference: Quality, CI, and Formatting"
-version: "1.3.1"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0014"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-08"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -627,6 +627,8 @@ candidate/diff and selected evidence, with absent checks stated explicitly.
 > configuration, local execution, CI definition, hosted result, remote
 > enforcement, runtime acceptance, and deployment evidence in separate fields.
 
+> Revalidated 2026-11-06: `.github/workflows/` holds 5 workflows (ci-quality, greetings, pr-labeler, publish-release, stale) and `.github/workflow-contract.yml` lists 5 workflows and 66 gate_nodes; `scripts/validation/github_workflow_contract.py` is replaced by `scripts/validation/check-github-workflow-contract.py`; `.github/actions/` does not exist. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -681,3 +683,7 @@ upstream capability only. `Not supplied` means no visible publication date.
 | S-playwright-retries | [Playwright retries](https://playwright.dev/docs/test-retries) |
 | S-stryker-mutant-metrics | [Stryker states and metrics](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/) |
 | S-vitest-coverage-config | [Vitest coverage configuration](https://vitest.dev/config/coverage.html) |
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

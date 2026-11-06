@@ -1,17 +1,17 @@
 ---
 title: "Reference: Agent Instructions and Bounded Vibe Coding"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0001"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -417,6 +417,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > Preserve the five evidence states above and never infer live compliance from a
 > tracked file.
 
+> Revalidated 2026-11-06: `.claude/settings.local.json` is an ignored local file (`.gitignore:112`), not tracked state; `.claude/rules/` does not exist; Claude native surfaces are `.claude/agents/` (14), `.claude/skills/`, `.claude/hooks/` (7 wrappers), `.claude/output-styles/`, `.claude/settings.json`; Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles). The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -444,3 +446,7 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | S-learn-chatgpt-com-agents-md | [Original](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI current mutable documentation; no installed version/stability guarantee checked | Legacy developer URL redirected; loading not exercised |
 | S-code-claude-com-memory | [Original](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Claude Code bundled plugin v2.1.277+, exceptions before v2.1.281; mutable docs | InstructionsLoaded/import behavior remains native; memory mechanics in m0012 |
 | S-anthropic-com-building-effective-agents | [Original](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Historical engineering design advice, not product support contract | Later landscape acknowledged; no local outcome established |
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

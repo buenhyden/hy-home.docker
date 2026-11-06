@@ -1,17 +1,17 @@
 ---
 title: "Reference: Documentation Architecture and Diataxis Reader Modes"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0007"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -467,6 +467,8 @@ Original observations, source checks, corrections, measurements, access failures
 > | `DOCARCH-COMP-001` | `documentation-architecture.md` | synthesis-only | `—` |
 >
 
+> Revalidated 2026-11-06: `docs/90.references/learning/` is retired; the categories are `audits/`, `data/`, `research/` (`docs/90.references/`). The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -528,3 +530,7 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | [Scope application matrix](./m0015-scope-application-matrix.md)                                                                                    | 2026-08-08                | Workspace tracked draft           | Fourteen-scope applicability and catalog reachability.                                                                                           |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                                  | 2026-08-08                | Workspace tracked stale/advisory  | Built from `f8a72211`; not used as proof.                                                                                                        |
 >
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

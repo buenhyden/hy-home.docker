@@ -1,17 +1,17 @@
 ---
 title: "Reference: LLM Wiki Navigation, Safety, and Freshness System"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0009"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -446,6 +446,8 @@ separate approved package and canonical ownership decision.
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
 
+> Revalidated 2026-11-06: the local LLM Wiki is retired: `scripts/knowledge/generate-llm-wiki.py`, `docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md`, `docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/`, and `docs/90.references/data/0082-llm-wiki-index/repository-map.md` are absent; navigation now uses `.agents/knowledge/` and the Graphify output. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -504,3 +506,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > | Maintenance policy (retired path: `../../../05.operations/policies/00-workspace/llm-wiki-maintenance.md`)                                    | 2026-08-08 | Workspace tracked                | Refresh triggers, exclusions, exception, and no-hook boundary.                                                                                                        |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                   | 2026-08-08 | Workspace tracked stale/advisory | Built from `f8a72211`; corroborated against direct sources and excluded from generator evidence.                                                                      |
 >
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

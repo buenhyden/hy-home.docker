@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.4.2"
+version: "2.5.0"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002"
 parent_ids:
@@ -19,6 +19,8 @@ observed_at: "2026-09-05"
 
 ### Overview
 
+에이전트 엔지니어링(harness, loop, instruction, 모델 선택, 기억, SDD·SDLC 문서, Compose·인프라, CI/CD, 품질, 보안)에 관한 외부 근거와 과거 워크스페이스 관측을 멤버 m0001–m0021로 묶은 비규범 연구 묶음이다. 현재 규칙은 [거버넌스](../../../../.agents/README.md)와 해당 Stage 문서가 소유한다.
+
 ## Scope
 
 ### Scope
@@ -27,7 +29,7 @@ observed_at: "2026-09-05"
 | --- | --- |
 | `repository_baseline` | `f30b168e2fbb0959e4a31749935568fd5b3942f1`; 2026-09-27 fetch한 `origin/main`과 일치 |
 | `external_sources_checked_at` | 2026-09-27; 원문별 실제 확인 기록은 멤버의 source/claim 표 |
-| `document_updated_at` | 2026-09-27 |
+| `document_updated_at` | 2026-11-06 (멤버별 `Revalidated 2026-11-06` 주석으로 저장소 경로·수치 재검증; 원래 관측값은 유지) |
 | `historical_workspace_observation` | 기존 관측의 원래 날짜·커밋·범위 유지; frontmatter `observed_at`은 2026-09-05 역사 관측 |
 | 내부 적용 상태 | `Not assessed in this run` |
 
@@ -39,6 +41,30 @@ observed_at: "2026-09-05"
 ## Structure
 
 ### Structure
+
+| Path | Purpose |
+| --- | --- |
+| [`m0001-agent-instructions-vibe-coding.md`](m0001-agent-instructions-vibe-coding.md) | Agent Instructions and Bounded Vibe Coding |
+| [`m0002-agent-model-selection.md`](m0002-agent-model-selection.md) | Task-Aware Agent Model Selection |
+| [`m0003-ai-agent-catalogs.md`](m0003-ai-agent-catalogs.md) | External AI-Agent Catalogs and Local Intake |
+| [`m0004-automation-pipeline-workflow.md`](m0004-automation-pipeline-workflow.md) | Automation Pipeline and Workflow Topology |
+| [`m0005-docker-compose-infrastructure.md`](m0005-docker-compose-infrastructure.md) | Docker Compose and Infrastructure |
+| [`m0006-document-metadata-lifecycle.md`](m0006-document-metadata-lifecycle.md) | Document Metadata and Lifecycle |
+| [`m0007-documentation-architecture.md`](m0007-documentation-architecture.md) | Documentation Architecture and Diataxis Reader Modes |
+| [`m0008-harness-engineering.md`](m0008-harness-engineering.md) | Harness Engineering |
+| [`m0009-llm-wiki-system.md`](m0009-llm-wiki-system.md) | LLM Wiki Navigation, Safety, and Freshness System |
+| [`m0010-loop-engineering.md`](m0010-loop-engineering.md) | Loop Engineering |
+| [`m0011-memory-hierarchy.md`](m0011-memory-hierarchy.md) | Agent Memory Hierarchy and Lifecycle |
+| [`m0012-provider-implementation-comparison.md`](m0012-provider-implementation-comparison.md) | Claude and Codex Implementation Comparison |
+| [`m0013-provider-model-landscape.md`](m0013-provider-model-landscape.md) | Provider Model Landscape at the Evidence Cutoff |
+| [`m0014-quality-ci-formatting.md`](m0014-quality-ci-formatting.md) | Quality, CI, and Formatting |
+| [`m0015-scope-application-matrix.md`](m0015-scope-application-matrix.md) | Agentic Engineering Scope Application Matrix |
+| [`m0016-sdlc-document-roles.md`](m0016-sdlc-document-roles.md) | SDLC Document Roles |
+| [`m0017-security-governance.md`](m0017-security-governance.md) | Security Governance and Secure Delivery |
+| [`m0018-spec-driven-sdlc.md`](m0018-spec-driven-sdlc.md) | Spec-Driven Development and SDLC |
+| [`m0019-verification-validation.md`](m0019-verification-validation.md) | Verification and Validation System |
+| [`m0020-workspace-baseline.md`](m0020-workspace-baseline.md) | Agentic Engineering Workspace Baseline |
+| [`m0021-local-docker-service-consolidation.md`](m0021-local-docker-service-consolidation.md) | Local Docker Service Consolidation |
 
 ## Usage
 
@@ -102,8 +128,6 @@ SPEC-0158의 보호 대상과 기존 식별자를 유지한다. 고유 관측·�
 - `m0019-verification-validation.md`
 - `m0020-workspace-baseline.md`
 - `m0021-local-docker-service-consolidation.md`
-
-### Findings
 
 ### Request Coverage and Member Navigation
 

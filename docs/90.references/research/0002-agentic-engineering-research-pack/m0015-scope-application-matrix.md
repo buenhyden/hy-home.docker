@@ -1,17 +1,17 @@
 ---
 title: "Reference: Agentic Engineering Scope Application Matrix"
-version: "1.3.2"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0015"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -793,6 +793,8 @@ access dates do not mean those sources were reopened in this refresh.
 > | `SCOPE-COMP-001` | `scope-application-matrix.md` | synthesis-only | `—` |
 >
 
+> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); the Stage 00 scope files ("14 scopes") are retired; persona routing is in `.agents/governance/persona.md`; `docs/00.agent-governance/contracts/agent-catalog.yaml` is retired; roles are `.agents/roles/*.md` (14) and provider facts are `.agents/governance/providers/registry.yaml`; `tests/lib/agent_governance/test_agent_governance_contract.py` and `tests/validation/test_agent_governance_contract.py` are absent; the current suite is `tests/validation/test_agent_governance_ci_routing.py`, with `scripts/validation/check-agent-governance-contract.py`; `.claude/hooks/` has 7 wrappers (old: 24 hooks); 5 workflows (old: 7). The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -861,7 +863,7 @@ risk/approval rows. This matrix routes them without replacing their criteria.
 > | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Parsed for projection targets; unchanged since 2026-07-26.                                                                                                                                                                          |
 > | All scope files (retired path: `../../../00.agent-governance/scopes/`)                                                | 2026-08-14 | Tracked mutable        | All fourteen read in full; structural tiers, sizes, and ownership tables derived directly.                                                                                                                                          |
 > | [Governance contract validator](../../../../scripts/validation/check-agent-governance-contract.py)     | 2026-08-14 | Local observation      | Newly cited. Executed; `PASS` in both modes under an isolated environment, dependency-blocked by default.                                                                                                                           |
-> | [Governance contract tests](../../../../tests/lib/agent_governance/test_agent_governance_contract.py)            | 2026-08-14 | Local observation      | Newly cited. 159 tests `OK`; `scope_names` at lines 1955-1967 enumerates 13 of 14 scopes.                                                                                                                                           |
+> | Governance contract tests (retired path: `tests/lib/agent_governance/test_agent_governance_contract.py`)            | 2026-08-14 | Local observation      | Newly cited. 159 tests `OK`; `scope_names` at lines 1955-1967 enumerates 13 of 14 scopes.                                                                                                                                           |
 > | [Contract validator module](../../../../scripts/lib/agent_governance/agent_governance_contract.py)               | 2026-08-14 | Tracked mutable        | Newly cited. Scope-enum membership enforced at lines 2661 and 2778 against the catalog's own list only.                                                                                                                             |
 > | Repository contract script (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                   | 2026-08-14 | Tracked mutable        | Newly cited. Scans the scopes directory for path placeholders; requires 11 CODEOWNERS patterns.                                                                                                                                     |
 > | [`.github/CODEOWNERS`](../../../../.github/CODEOWNERS)                                                 | 2026-08-14 | Tracked mutable        | Newly cited. 30 path rules, all assigning one GitHub account; no scope or agent vocabulary.                                                                                                                                         |
@@ -876,3 +878,7 @@ risk/approval rows. This matrix routes them without replacing their criteria.
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                            | 2026-08-08 | Tracked stale/advisory | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                                  |
 > | Predecessor scope matrix, retiring 2026-07-05 pack                                                     | 2026-08-14 | Historical retained    | Read for structural comparison only; its dispositions were re-derived rather than carried forward. Cited without a path because pre-deletion gate 4 admits no clickable link and the canonical router surface carries no allowlist. |
 >
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

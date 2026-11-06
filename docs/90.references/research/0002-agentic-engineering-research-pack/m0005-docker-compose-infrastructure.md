@@ -1,17 +1,17 @@
 ---
 title: "Reference: Docker Compose and Infrastructure"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0005"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -707,6 +707,10 @@ in [m0021](m0021-local-docker-service-consolidation.md#current-external-research
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
 
+> Revalidated 2026-11-06: root `docker-compose.yml` now declares 23 networks (`docker-compose.yml:4`), 82 secret IDs (`docker-compose.yml:165`), and 34 includes (`docker-compose.yml:375`); `infra/**/docker-compose*.yml` holds 39 files with 84 literal `image:` lines / 62 distinct, literal `restart:` values `unless-stopped` (21) and `'no'` (10), and 15 files containing `deploy:`; `infra/image-tag-policy.exceptions.json` registers `nginx:alpine`, `yanwk/comfyui-boot:cu126-slim`, and `debian:bookworm-slim`; `scripts/validation/validate-docker-compose.sh` is 454 lines. The 2026-08 values above are preserved as observed.
+
+> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); `infra/04-data/analytics/ksql/`, `infra/04-data/cache-and-kv/valkey-cluster/`, `infra/04-data/lake-and-object/minio/`, and `infra/06-observability/docker-compose.dev.yml` are absent; Valkey cluster is now `labs/valkey-cluster/`; compose files across infra and the root declare 60 distinct profile names. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -806,3 +810,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | [Image-tag floating exceptions](../../../../infra/image-tag-policy.exceptions.json)                                                             | 2026-08-14                | Workspace tracked                 | Read in full; confirmed all 4 registered floating images (`nginx:alpine`, `portainer/portainer-ce:sts`, `lfnovo/open_notebook:v1-latest-single`, `b4bz/homer`) carry owner, reason, and monthly cadence.                                                                                  |
 > | Direct `rg` re-scan of `infra/**/docker-compose*.yml` for `image:`, `restart:`, `deploy:`, `mem_limit:`, `cpus:`, `healthcheck:`                | 2026-08-14                | Workspace tracked                 | 137 image declarations / 82 distinct, 0 literal `:latest`, 1 untagged (registered); restart values limited to `unless-stopped` (45) and `'no'` (13); only 2 files declare `deploy.resources`.                                                                                             |
 >
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

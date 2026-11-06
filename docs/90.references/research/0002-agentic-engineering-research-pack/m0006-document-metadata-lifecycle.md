@@ -1,17 +1,17 @@
 ---
 title: "Reference: Document Metadata and Lifecycle"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0006"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -465,6 +465,8 @@ Original observations, source checks, corrections, measurements, access failures
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
 
+> Revalidated 2026-11-06: `docs/04.execution/` is retired; Tasks now live under `docs/03.specs/<package>/tasks/`; `docs/99.templates/registry.json` now defines 44 profiles and 38 template roles. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -514,3 +516,7 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-14 | Workspace tracked executable | 5,630-line script re-read directly; confirmed 4 `--mode` values and the `--transition-override-file` schema/mode-binding. |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; no uncorroborated graph inference used.                                                            |
 >
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

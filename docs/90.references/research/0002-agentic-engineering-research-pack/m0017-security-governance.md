@@ -1,17 +1,17 @@
 ---
 title: "Reference: Security Governance and Secure Delivery"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0017"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -667,6 +667,8 @@ mode, capabilities, host paths, effective access and justified exceptions.
 > release evidence separate. Owner: Documentation maintainers with independent
 > Security, QA, Infra, and Operations review.
 
+> Revalidated 2026-11-06: 5 workflows now (old: 7) in `.github/workflows/`; cited security paths still exist. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -738,3 +740,7 @@ is not inferred from a crawl timestamp.
 | S-mcp-security-2025-11-25 | [MCP 2025-11-25 security guide](https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices) |
 | S-docker-bind-mounts | [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/); current Engine docs, publication date not supplied; checked 2026-09-27; recursive read-only kernel/version constraints retained |
 | S-docker-engine-security | [Docker Engine security](https://docs.docker.com/engine/security/) |
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

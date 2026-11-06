@@ -1,17 +1,17 @@
 ---
 title: "Reference: Claude and Codex Implementation Comparison"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0012"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -432,6 +432,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > silently reuse an earlier retrieval, and keep local adoption gaps separate from
 > provider limitations.
 
+> Revalidated 2026-11-06: `.claude/rules/` does not exist; Claude native surfaces are `.claude/agents/` (14), `.claude/skills/`, `.claude/hooks/` (7 wrappers), `.claude/output-styles/`, `.claude/settings.json`; roles are 14 (`.agents/roles/`), matching `.claude/agents/` 14. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -493,3 +495,7 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | S-learn-chatgpt-com-codex-ide | [Original](https://learn.chatgpt.com/docs/codex/ide); selected/open-file context and review | Not displayed | 2026-09-27 | Codex VS Code-compatible; other IDEs distinct | No universal shortcut/terminal behavior |
 | S-code-claude-com-scheduled-tasks | [Original](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry | Not displayed | 2026-09-27 | Claude scheduler environments; current docs | Availability/data reach/expiry distinct; no schedule created |
 | S-learn-chatgpt-com-automations | [Original](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | Codex local app versus web automation | Host/project conditions; no web local continuity |
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

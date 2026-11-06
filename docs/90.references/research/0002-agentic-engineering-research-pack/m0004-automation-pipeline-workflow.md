@@ -1,17 +1,17 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0004"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -657,6 +657,8 @@ Measure accepted findings and defect detection, not comments/tests produced.
 > monitoring change. Record authenticated remote observations separately with
 > target and timestamp; never promote tracked intent to applied state.
 
+> Revalidated 2026-11-06: `.github/workflows/` holds 5 workflows (ci-quality, greetings, pr-labeler, publish-release, stale) and `.github/workflow-contract.yml` lists 5 workflows and 66 gate_nodes; `scripts/validation/github_workflow_contract.py` is replaced by `scripts/validation/check-github-workflow-contract.py`; `.github/actions/` does not exist. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -735,3 +737,7 @@ date. Feature state is the official label where given, otherwise documented.
 | S-github-copilot-pricing | [Copilot pricing](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing) |
 | S-github-copilot-billing-change | [June billing release](https://github.blog/changelog/2026-06-01-updates-to-github-copilot-billing-and-plans/) |
 | S-github-copilot-write-tests | [Copilot tests](https://docs.github.com/en/copilot/tutorials/write-tests) |
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)
