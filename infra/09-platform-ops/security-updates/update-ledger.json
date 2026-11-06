@@ -213,7 +213,7 @@
     },
     {
       "path": "infra/09-platform-ops/restic/docker-compose.yml",
-      "sha256": "48e6ccac79e9f456e0bec89c950eee5c111b1593b885c8b142ca6387e8d1eb0b"
+      "sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3"
     },
     {
       "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
@@ -2089,7 +2089,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "48e6ccac79e9f456e0bec89c950eee5c111b1593b885c8b142ca6387e8d1eb0b",
+      "source_input_sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -13177,7 +13177,7 @@
       "upstream_reported_tag": "v0.19.1",
       "next_fact_command": "gh release view --repo restic/restic --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "48e6ccac79e9f456e0bec89c950eee5c111b1593b885c8b142ca6387e8d1eb0b",
+      "source_input_sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -13298,7 +13298,7 @@
       "upstream_reported_tag": "v0.19.1",
       "next_fact_command": "gh release view --repo restic/restic --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "48e6ccac79e9f456e0bec89c950eee5c111b1593b885c8b142ca6387e8d1eb0b",
+      "source_input_sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
