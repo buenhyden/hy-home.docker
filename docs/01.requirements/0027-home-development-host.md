@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -13,8 +13,6 @@ created: "2026-09-19"
 # Home and Development Host Requirements
 
 ## Overview
-
-### Problem and Goals
 
 Operate real HOME services and development work on a single Linux host.
 Remove inconsistencies in implementation, operations documentation,
@@ -25,15 +23,6 @@ Authoring documents and implementation does not imply approval to deploy real
 services or change data.
 
 ## Scope
-
-### Stakeholders and User Needs
-
-- A HOME user must be able to use the access/authentication foundation and
-  AI/workflow features at all times.
-- A developer must be able to select the development/experiment features
-  they need and know the impact on HOME availability.
-- An operator must align configuration without exposing values and verify
-  state and recoverability before and after a change.
 
 ### Constraints
 
@@ -84,20 +73,29 @@ needed.
   administrators, both built from one source commit, and must stay outside
   the default HOME selection.
 
+### Stakeholders and User Needs
+
+- A HOME user must be able to use the access/authentication foundation and
+  AI/workflow features at all times.
+- A developer must be able to select the development/experiment features
+  they need and know the impact on HOME availability.
+- An operator must align configuration without exposing values and verify
+  state and recoverability before and after a change.
+
 ### Non-functional Requirements
 
 - **REQ-0027-NFR-0001 — Confidentiality**: Passwords, tokens, keys, and
   local secret values must not appear in output, reports, model context, or
-  version control.
+  version control; measure: scans of tracked files and reports find no secret value.
 - **REQ-0027-NFR-0002 — Recoverability**: Distinguish configuration restore
   from data restore, and do not claim recoverability from an unverified
-  backup.
+  backup; measure: each recoverability claim cites a verified restore.
 - **REQ-0027-NFR-0003 — Maintainability**: Documentation must not duplicate
   ownership of the implementation's exact patch version, and any needed
-  exception must state its reason and basis.
+  exception must state its reason and basis; measure: each exact version has one owning declaration.
 - **REQ-0027-NFR-0004 — Verifiability**: Verification must run against the
   latest main, and unexecuted, failed, or blocked results must not be
-  recorded as success.
+  recorded as success; measure: every non-PASS result is recorded as such.
 
 ## Acceptance Criteria
 
@@ -118,4 +116,4 @@ needed.
 ### Traceability
 
 - [Home and Development Host Architecture](../02.architecture/descriptions/0031-home-development-host.md)
-- Convergence Specification
+- [SPEC-0261 REQ-0027 Approval](../03.specs/0261-req-0027-approval/spec.md)

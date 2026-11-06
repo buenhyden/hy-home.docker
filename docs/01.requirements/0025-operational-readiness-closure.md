@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.0.3"
+version: "1.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
@@ -13,8 +13,6 @@ created: "2026-07-19"
 
 ## Overview
 
-### Problem and Goals
-
 Static documents and Compose rendering alone cannot prove startup/readiness,
 data recovery, artifact trust, or promotion/rollback behavior. This
 requirement reproduces the four behaviors in a locally isolated environment
@@ -22,17 +20,6 @@ using sample artifacts and synthetic state owned by the repository, and
 records the actually verified scope without overstatement.
 
 ## Scope
-
-### Stakeholders and User Needs
-
-- The maintainer must distinguish implemented readiness behavior from
-  unapproved remote operations.
-- The operator needs a guarantee that the rehearsal does not change another
-  Docker project or real data.
-- The security reviewer must confirm that supply-chain verdicts are bound to
-  the same image digest.
-- The release reviewer must reproduce that a failed canary is not promoted
-  and is rolled back to the previous digest.
 
 ### Constraints
 
@@ -48,7 +35,7 @@ records the actually verified scope without overstatement.
 
 ### Functional Requirements
 
-- **REQ-0025-FR-0001**: The approved `core` service set must start under a
+- **REQ-0025-FR-0001**: The approved core service set must start under a
   unique Compose project and provide bounded readiness and teardown results.
 - **REQ-0025-FR-0002**: The runtime rehearsal must use synthetic
   configuration and task-owned network/volume/project identity.
@@ -56,7 +43,7 @@ records the actually verified scope without overstatement.
   restore, a representative major-version upgrade, and integrity comparison
   of synthetic state.
 - **REQ-0025-FR-0004**: SBOM, vulnerability verdict, provenance, and
-  signature verification for `examples/sample-web-service` must be bound to
+  signature verification for the repository sample web service must be bound to
   the same image digest and reject tampering and identity mismatch.
 - **REQ-0025-FR-0005**: Supply-chain tools must use the version and container
   image identity declared by the repository and must not require a
@@ -76,34 +63,45 @@ records the actually verified scope without overstatement.
   process-local temporary storage; durable evidence must contain only a
   secret-scrubbed summary and immutable subject identity.
 
+### Stakeholders and User Needs
+
+- The maintainer must distinguish implemented readiness behavior from
+  unapproved remote operations.
+- The operator needs a guarantee that the rehearsal does not change another
+  Docker project or real data.
+- The security reviewer must confirm that supply-chain verdicts are bound to
+  the same image digest.
+- The release reviewer must reproduce that a failed canary is not promoted
+  and is rolled back to the previous digest.
+
 ### Non-functional Requirements
 
 - **REQ-0025-NFR-0011 — Isolation**: Every resource must be identified by a
-  task-owned identity, and cleanup must apply only to that resource.
+  task-owned identity, and cleanup must apply only to that resource; measure: every cleanup targets only task-owned identities.
 - **REQ-0025-NFR-0012 — Security**: Secrets, private keys, tokens, raw auth
-  logs, and production data must not be stored in tracked evidence.
+  logs, and production data must not be stored in tracked evidence; measure: tracked evidence contains no secret value.
 - **REQ-0025-NFR-0013 — Determinism**: A blocking gate must reproduce the
   same pass/fail result without network access, using versioned inputs and
-  fixtures.
+  fixtures; measure: repeated offline runs give identical verdicts.
 - **REQ-0025-NFR-0014 — Fail closed**: Target ambiguity, digest or integrity
-  mismatch, and cleanup failure must not be treated as success or skip.
+  mismatch, and cleanup failure must not be treated as success or skip; measure: each listed condition yields a failure exit.
 - **REQ-0025-NFR-0015 — Traceability**: Traceability must be maintained
   between this Requirement, AD-0028, ADR-0028, the implementation scripts,
-  the Operations procedure, and current Task results.
+  the Operations procedure, and current Task results; measure: every link in the chain resolves.
 - **REQ-0025-NFR-0016 — Honest scope**: Local rehearsal success must not be
   overstated as production readiness, full-profile coverage, live recovery,
-  or remote release completion.
+  or remote release completion; measure: Task evidence names the verified scope only.
 
 ## Acceptance Criteria
 
-- `check-compose-core-readiness.sh` verifies readiness, timeout, and cleanup
+- The core readiness rehearsal verifies readiness, timeout, and cleanup
   boundaries.
-- `rehearse-postgres-logical-upgrade.sh` verifies backup/restore and the
-  integrity oracle of synthetic state.
-- `verify-sample-service-supply-chain.sh` and `check-supply-chain-policy.py`
-  verify digest-bound positive/negative verdicts.
-- `rehearse-sample-service-delivery.sh` verifies canary, promotion, injected
-  failure, and rollback.
+- The PostgreSQL rehearsal verifies backup/restore and the integrity oracle
+  of synthetic state.
+- The supply-chain verification and policy check produce digest-bound
+  positive and negative verdicts.
+- The delivery rehearsal verifies canary, promotion, injected failure, and
+  rollback.
 - Related focused tests and the registered full profile pass, and Task
   evidence contains no secrets or raw runtime logs.
 
@@ -119,3 +117,4 @@ records the actually verified scope without overstatement.
   `scripts/validation/check-supply-chain-policy.py`,
   `scripts/operations/rehearse-sample-service-delivery.sh`
 - **Sample artifact**: `examples/sample-web-service/`
+- **Operations**: [Release management runbook](../05.operations/runbooks/10-platform-and-backup/0009-release-management.md)

@@ -1,10 +1,10 @@
 ---
 title: "Requirement Packages"
-version: "1.1.5"
+version: "1.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "requirements"
 ---
 
@@ -14,15 +14,14 @@ layer: "requirements"
 
 `docs/01.requirements`는 제품의 문제, 이해관계자 가치, 범위, 요구사항과
 수용 기준을 하나의 Requirement Package로 관리한다. 구현 구조는 Stage 02와
-Stage 03, 실행 증거는 현재 변경 패킷, 운영 절차는 Stage 05가 소유한다.
+Stage 03, 실행 증거는 Stage 03 Spec Package의 현재 Task, 운영 절차는 Stage 05가 소유한다.
 
 ## Scope
 
 이 디렉터리는 현재 Requirement Package를 관리한다. 각 패키지는
 functional, non-functional, solution-independent interface 요구사항을 같은
-경계에서 관리한다. 별도 역할 문서를 병렬로 만들지 않는다. 이 README는
-개별 패키지를 하나씩 나열하지 않으며 전체 목록은 실제 디렉터리의 파일
-목록이 소유한다.
+경계에서 관리한다. 별도 역할 문서를 병렬로 만들지 않는다. 아래 색인은 현재 패키지를
+안내하며, 패키지가 추가·변경·삭제되면 같은 변경에서 갱신한다.
 
 Requirement Package는 문제와 이해관계자, 요구사항, 수용 기준, 제약,
 위험과 추적성을 소유한다. 아키텍처 구조, 선택의 근거, 구현 계약과 운영
@@ -37,6 +36,29 @@ non-functional 요구사항과 수용 기준, solution-independent interface 요
 profile이나 병렬 문서로 만들지 않는다. 실행 가능한 interface payload는
 Stage 03 Spec의 contract가 소유한다.
 
+### Package Index
+
+| ID | 패키지 | 상태 |
+| --- | --- | --- |
+| REQ-0001 | [Gateway Tier (01-gateway) Requirements](0001-gateway.md) | `approved` |
+| REQ-0002 | [02-Auth Requirements](0002-auth.md) | `approved` |
+| REQ-0003 | [Security Tier (03-security) Requirements](0003-security.md) | `approved` |
+| REQ-0004 | [Data Tier (04-data) Requirements](0004-data.md) | `approved` |
+| REQ-0005 | [Analytics Services Requirements](0005-data-analytics.md) | `approved` |
+| REQ-0006 | [Messaging Tier (05-messaging) Requirements](0006-messaging.md) | `approved` |
+| REQ-0007 | [Observability Tier Requirements](0007-observability.md) | `approved` |
+| REQ-0008 | [Workflow Tier (07-workflow) Requirements](0008-workflow.md) | `approved` |
+| REQ-0009 | [AI Infrastructure Tier (08-ai) Requirements](0009-ai.md) | `approved` |
+| REQ-0010 | [Platform Operations and Software Verification Requirements](0010-tooling.md) | `approved` |
+| REQ-0011 | [Communication Tier (10-communication) Requirements](0011-communication.md) | `approved` |
+| REQ-0012 | [Administration and Experimentation Requirements](0012-laboratory.md) | `approved` |
+| REQ-0013 | [Open WebUI Requirements](0013-ai-open-webui.md) | `approved` |
+| REQ-0023 | [Compose Network Segmentation Requirements](0023-standardize-infra-net.md) | `approved` |
+| REQ-0024 | [Agent Governance Standardization Requirements](0024-agent-governance-standardization.md) | `approved` |
+| REQ-0025 | [Operational Readiness Closure Requirements](0025-operational-readiness-closure.md) | `approved` |
+| REQ-0026 | [Document Retention and Retirement Requirements](0026-document-retention-and-retirement.md) | `approved` |
+| REQ-0027 | [Home and Development Host Requirements](0027-home-development-host.md) | `approved` |
+
 ## Structure
 
 ```text
@@ -48,6 +70,7 @@ docs/01.requirements/
 ├── 0025-operational-readiness-closure.md
 ├── 0026-document-retention-and-retirement.md
 ├── 0027-home-development-host.md
+├── AGENTS.md
 └── README.md
 ```
 
@@ -78,9 +101,9 @@ high-water를 낮추지 않는다.
 
 - `type: sdlc/requirement`와 안정 ID를 사용한다. Registry profile `id`는
   template binding과 validator routing에만 사용하며 문서 frontmatter에 복제하지 않는다.
-- `parent_ids`는 Registry가 요구하는 구조적 관계만 기록한다. 더 넓은
-  설계·명세·운영 연결은 본문의 Traceability가 소유한다. Requirement Package의
-  필수 `parent_ids: []`는 구조적 root를 표시한다.
+- `parent_ids`는 Requirement Package에서 선택 항목이며, 사용할 때는
+  Registry가 요구하는 구조적 관계만 기록한다. 더 넓은 설계·명세·운영 연결은
+  본문의 Traceability가 소유한다.
 - 구현 방법이나 실행 순서를 요구사항으로 복사하지 않는다.
 - 비어 있는 분류를 위해 별도 요구사항 문서를 만들지 않는다.
 - 작성 의미와 역할 경계는 [공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)을 따른다.
