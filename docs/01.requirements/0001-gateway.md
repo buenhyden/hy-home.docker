@@ -1,98 +1,106 @@
 ---
 title: "Gateway Tier (01-gateway) Requirements"
-version: "1.2.0"
+version: "1.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0001"
 created: "2026-03-26"
 ---
+
 # Gateway Tier (01-gateway) Requirements
 
 ## Overview
 
-### Problem and Goals
+The `01-gateway` tier is the single entry point for external traffic into
+`hy-home.docker`. It must terminate TLS, route requests to services that opt in
+to exposure, and apply a shared access-control and traffic-protection chain, so
+that no service has to manage its own TLS or authentication front door.
 
-This document defines the product requirements for the `01-gateway` tier, the unified entry point of the `hy-home.docker` ecosystem. The current implementation consists of the Traefik edge router selected by the `core`/`dev` profiles and the Nginx special-path proxy leaf selected by the dedicated `nginx` profile, orchestrating traffic routing, TLS termination, and the security middleware chain (SSO, rate limit, and so on).
-
-### Problem Statement
-
-- With multiple microservices distributed across the platform, managing individual security settings (TLS, auth) for each service is difficult.
-- Without automated service discovery, operational complexity increases.
-- Centralized control and visibility (logging/metrics) over externally exposed paths are lacking.
+Without it, each service carries its own TLS and authentication settings,
+exposure needs manual configuration, and there is no central view of what is
+reachable from outside.
 
 ## Scope
 
-### Stakeholders and User Needs
+- **In scope**: the edge router for all external HTTP and HTTPS traffic, TLS
+  termination, automatic route discovery for opted-in services, the shared
+  middleware chain, and an optional special-path proxy for rewrites the edge
+  router does not cover.
+- **Out of scope**: business logic inside services, long-term log storage
+  (Observability tier) and the authentication server itself (Auth tier).
 
-Provide a unified, secure, and observable entry point for all external traffic to strengthen system security and simplify service exposure.
+### Assumptions
 
-### Personas
-
-- **Infrastructure Engineer**: Designs the overall traffic flow of the system and manages TLS and network security.
-- **Backend Developer**: Wants to expose their own service externally, easily and safely.
-- **Security Auditor**: Monitors compliance with authentication and authorization policy for all inbound traffic.
-
-### Key Use Cases
-
-- **STORY-01**: When a user accesses a service through a browser, the connection must be automatically upgraded to HTTPS with a valid certificate.
-- **STORY-02**: An administrator must be able to view current routing rules and service status in real time through the Traefik dashboard.
-- **STORY-03**: For specific paths (for example, `/keycloak/`, `/cdn/`), the Nginx leaf must support fine-grained path rewriting and header manipulation, and the Nginx runtime must be handled only in an explicit root network/dependency context.
-
-### Constraints
-
-- **In Scope**:
-  - Root-active dynamic routing based on Traefik (Edge Router).
-  - Nginx-based special-path proxying and header manipulation selected by the `nginx` profile.
-  - TLS termination and certificate management.
-- **Out of Scope**:
-  - Business logic internal to individual services.
-  - Long-term log storage (owned by the Observability tier).
-- **Non-goals**:
-  - Implementing a dedicated authentication server (owned by the Auth tier).
-
-### AI Agent Requirements
-
-- **Allowed Actions**: Analyze routing rules, execute health checks, read non-sensitive configuration files.
-- **Disallowed Actions**: Accessing or exfiltrating private keys/certificates, modifying global security policies without human approval.
-- **Human-in-the-loop Requirement**: Critical security policy changes and certificate renewals.
-- **Evaluation Expectation**: 100% routing accuracy for new services within 60 seconds.
+- The operator provides the TLS certificate and key before the gateway starts;
+  the gateway does not issue certificates.
+- A service is exposed only when it declares its own route; nothing is exposed
+  by default.
 
 ### Risks
 
-- **Dependency**: Docker Socket access is required for container discovery.
-- **Assumption**: The required certificates and files are prepared in advance via `scripts/operations/gen-secrets.sh`.
+- Route discovery needs read access to the container runtime, which is a
+  privileged interface.
+- The gateway is a single point of entry: when it is down, every external route
+  is down.
 
 ## Requirements
 
 ### Functional Requirements
 
-- **REQ-0001-FR-0001**: HTTP(80) traffic must be forcibly redirected to HTTPS(443).
-- **REQ-0001-FR-0002**: The system must detect container creation via the Docker Provider and automatically generate routes.
-- **REQ-0001-FR-0003**: The system must support TLS 1.2/1.3 and modern cipher suites to guarantee communication security.
-- **REQ-0001-FR-0004**: The system must integrate with OAuth2 Proxy to provide authentication (SSO) middleware for specific paths.
+- **REQ-0001-FR-0001**: Plain HTTP requests must be permanently redirected to
+  HTTPS.
+- **REQ-0001-FR-0002**: The gateway must discover a service that declares a
+  route and activate that route without a manual gateway configuration edit;
+  a service that declares no route must stay unexposed.
+- **REQ-0001-FR-0003**: The gateway must terminate external TLS with the
+  operator-provided certificate and must not accept a protocol version below
+  TLS 1.2.
+- **REQ-0001-FR-0004**: The gateway must offer a reusable single sign-on
+  access-control step, backed by the Auth tier, that a route can require.
+
+### Stakeholders and User Needs
+
+- **Infrastructure engineer**: controls traffic flow, TLS and the shared
+  security chain in one place.
+- **Service developer**: exposes a service safely by declaring a route,
+  without building TLS or login handling.
+- **Security auditor**: checks which routes require which access control.
+- **Administrator**: views current routes and their status through an
+  authenticated gateway dashboard.
+- **Special-path consumer**: a few paths (for example, `/keycloak/` and
+  `/cdn/`) need path rewriting and header handling beyond the edge router; that
+  proxy runs only when explicitly selected.
 
 ### Non-functional Requirements
 
-No separately numbered non-functional requirement was identified in the source package.
+No separately numbered non-functional requirement is defined.
 
 ### Interface Requirements
 
-No separately numbered solution-independent external interface requirement was identified in the source package.
+No separately numbered solution-independent external interface requirement is
+defined.
 
 ## Acceptance Criteria
 
-- **REQ-0001-FR-0001**: All externally exposed services must be accessed via TLS 100% of the time.
-- **REQ-0001-FR-0002**: When a new container is deployed, routing must become active within 60 seconds without any separate configuration file edits.
+- **REQ-0001-FR-0001**: An HTTP request to any external host receives a
+  permanent redirect to the HTTPS URL; every external route is served over TLS.
+- **REQ-0001-FR-0002**: A newly started service that declares a route is
+  reachable within 60 seconds without editing gateway configuration, and a
+  service without a declared route is not reachable.
+- **REQ-0001-FR-0003**: A TLS 1.0 or 1.1 handshake is refused, and a TLS 1.2 or
+  1.3 handshake presents the operator-provided certificate.
+- **REQ-0001-FR-0004**: A route that requires single sign-on sends an
+  unauthenticated browser to the sign-in flow and admits the request only after
+  a valid session.
 
 ## Related Documents
 
-### Traceability
-
-- **Architecture Description**: [Gateway architecture descriptions](../02.architecture/descriptions/0001-gateway-architecture.md)
-- **Spec**: [Gateway technical specification](../02.architecture/descriptions/0001-gateway-architecture.md)
-- **Plan**: Gateway standardization plan
-- **ADR**: [Traefik and Nginx hybrid decision](../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
-- **Retired domain Spec SPEC-0001** (gateway): replaced by the gateway guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.
+- [Gateway architecture description](../02.architecture/descriptions/0001-gateway-architecture.md)
+- [ADR-0001: Traefik and Nginx hybrid gateway](../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
+- [Traefik policy](../05.operations/policies/02-gateway-and-networking/0013-traefik.md)
+- [Nginx policy](../05.operations/policies/02-gateway-and-networking/0011-nginx.md)
+- Retired domain Spec SPEC-0001 (gateway): replaced by the gateway guides,
+  policies and runbooks under `docs/05.operations/`.

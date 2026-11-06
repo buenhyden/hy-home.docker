@@ -1,123 +1,128 @@
 ---
 title: "Security Tier (03-security) Requirements"
-version: "1.2.0"
+version: "1.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "requirements"
 artifact_id: "REQ-0003"
 created: "2026-03-26"
 ---
+
 # Security Tier (03-security) Requirements
 
 ## Overview
 
-### Problem and Goals
-
-The `03-security` tier manages eligible consumer secrets through OpenBao and
-file-based rendering. Secrets must not appear in source or plaintext environment
-values. Bootstrap, recovery and independent backup credentials keep their
-separate custody under the current OpenBao policy; central storage must not make
-recovery depend on the unavailable service being recovered.
-
-### Problem Statement
-
-When per-service secrets are scattered across files, environment variables, and manual procedures, exposure risk and audit gaps grow. `03-security` must integrate secret storage, access control, injection, and audit logging around OpenBao so that every service follows the same trust boundary.
+The `03-security` tier stores eligible consumer secrets centrally and delivers
+them to services as rendered files. When secrets are scattered across files,
+environment variables and manual steps, exposure risk and audit gaps grow.
+Secrets must not appear in source or in plaintext environment values, every
+access must be auditable, and recovery must not depend on the service being
+recovered: bootstrap, recovery and independent backup credentials keep their
+separate custody.
 
 ## Scope
 
-### Stakeholders and User Needs
+- **In scope**: the secrets server and its storage, the delivery agent that
+  renders secrets into files for consumers, access policies, unseal and recovery
+  custody, and audit logging.
+- **Out of scope**: managing the external identity provider (Auth tier) and
+  issuing browser-facing certificates (Gateway tier).
 
-- **Security**: Encrypted storage of eligible consumer secrets, independent recovery custody and least-privilege access control.
-- **Transparency**: Audit logs that capture who accessed which secret and when.
-- **Convenience**: Minimize application changes through a sidecar pattern using the OpenBao Agent.
+### Assumptions
 
-### Personas
-
-| Persona        | Role                              | Needs                                                                 |
-| -------------- | --------------------------------- | --------------------------------------------------------------------- |
-| Security Admin | Establishes and audits security policy | Fine-grained ACL policy configuration, unseal key management, audit log monitoring. |
-| Infra Engineer | Operates and manages the platform | Maintain OpenBao server high availability (Raft) and assign per-service access permissions. |
-| App Developer  | Develops and deploys services     | A mechanism to receive secrets dynamically injected from OpenBao instead of environment variables. |
-
-### Key Use Cases
-
-| ID    | Case              | Description                                                                     |
-| ----- | ----------------- | ------------------------------------------------------------------------------- |
-| UC-01 | Secret Storage    | Store per-service secrets securely using the KV (key-value) engine.             |
-| UC-02 | Sidecar Injection | Inject secrets into configuration files via templates through the OpenBao Agent at container startup. |
-| UC-03 | Dynamic Access    | Enforce per-application/per-user permission-based access control via AppRole or Userpass. |
-
-### Constraints
-
-- **In Scope**: OpenBao Server (Raft), OpenBao Agent, ACL policies, KV engine.
-- **Out of Scope**: Direct management of the external IdP (Keycloak), automated Let's Encrypt certificate issuance (owned by Gateway).
-- **Non-goals**: Direct management of the external IdP (Keycloak), automated Let's Encrypt certificate issuance (owned by Gateway).
-
-### AI Agent Requirements
-
-N/A
+- Machine consumers authenticate with a role-scoped machine identity; operators
+  authenticate through the central identity provider.
+- Per-service secret paths and their access policies are declared in source and
+  reviewed before change.
 
 ### Risks
 
-- **Risk**: If the OpenBao quorum or unseal procedure fails, secret injection may be interrupted.
-- **Dependency**: Depends on Traefik-based external exposure and the Docker/OpenBao Agent sidecar pattern.
-- **Assumption**: Per-service secret paths and ACL policy are managed through the OpenBao KV and AppRole/Userpass permission model.
+- The server runs as a single node: if it is down or sealed, secret delivery to
+  new or restarting consumers stops.
+- A lost or wrongly held unseal share or recovery credential can make the
+  stored secrets unrecoverable.
 
 ## Requirements
 
 ### Functional Requirements
 
-| ID    | Requirement           | Priority                                           |
-| ----- | --------------------- | -------------------------------------------------- |
-| REQ-0003-FR-0001 | Raft Storage          | Currently uses single-node Raft integrated storage, with HA expansion prepared as a separate transition procedure. |
-| REQ-0003-FR-0002 | Authorized TLS Access | Route authorized operator UI/API access through Traefik and preserve validated TLS on native consumer paths. This grants no new public endpoint. |
-| REQ-0003-FR-0003 | Unseal Protocols      | Manual unseal procedure and policy.                |
-| REQ-0003-FR-0004 | Audit Logging         | Enable and retain audit logs for all requests.     |
+- **REQ-0003-FR-0001**: Secrets must be kept in durable integrated storage. The
+  current deployment is a single node; expanding to a replicated quorum is a
+  separate, planned transition.
+- **REQ-0003-FR-0002**: Operator user-interface and API access must pass through
+  the gateway over TLS, and service-to-server paths must use validated TLS. No
+  new public endpoint is granted.
+- **REQ-0003-FR-0003**: Unsealing must be a manual, threshold-based operator
+  procedure whose shares and recovery credentials stay in their approved
+  separate custody.
+- **REQ-0003-FR-0004**: Every request to the secrets server must be written to
+  an audit log that does not contain secret values in plaintext.
+
+### Stakeholders and User Needs
+
+- **Security administrator**: sets fine-grained access policies, holds unseal
+  custody and reviews audit logs.
+- **Infrastructure engineer**: keeps the server available and grants each
+  service only the secret paths it needs.
+- **Service developer**: receives secrets as rendered files at startup instead
+  of environment variables, with no secret-handling code in the service.
 
 ### Non-functional Requirements
 
-| ID     | Requirement  | Description                                                            |
-| ------ | ------------ | ---------------------------------------------------------------------- |
-| REQ-0003-NFR-0005 | Availability | Clearly detect the impact of a single-node OpenBao failure, and maintain the operational procedure for future Raft quorum expansion. |
-| REQ-0003-NFR-0006 | Reliability  | Keep secret encryption algorithms current (AES-256-GCM).              |
-| REQ-0003-NFR-0007 | Performance  | Minimize secret lookup latency (local API caching).                   |
+- **REQ-0003-NFR-0005 — Recoverability**: the impact of a single-node failure
+  must be detectable, and the stored secrets must be restorable from a snapshot
+  into empty storage; measure: successful isolated restoration and elapsed
+  recovery time in seconds, on the exact image and snapshot identity, against a
+  recovery-time target the operator sets before the authorized run. A synthetic
+  pass does not accept recovery of the home deployment.
+- **REQ-0003-NFR-0006 — Confidentiality**: stored secrets must be encrypted at
+  rest with an authenticated cipher of at least 256-bit key strength; measure:
+  the server's documented storage encryption for the deployed version, checked
+  at each version change.
+- **REQ-0003-NFR-0007 — Performance**: secret lookup latency must suit each
+  consumer's workload; measure: latency distribution in milliseconds under a
+  named load, sample count and tool, against a threshold the consumer owner
+  sets before measurement. No global threshold or caching guarantee is made;
+  no baseline is recorded.
 
 ### Interface Requirements
 
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-### Quality Measurement
-
-These measures apply the product-quality, measurement and requirement concepts
-of ISO/IEC 25010, 25023 and 25030. They are local acceptance measures, not an ISO
-certification or a claim to have reviewed the paid standards' full text.
-
-| Requirement | Characteristic and measure | Environment and baseline | Acceptance and owner |
-| --- | --- | --- | --- |
-| REQ-0003-FR-0001 | Configuration correctness: failed declared Compose selections and invalid port/storage overlaps, in counts | Public source render with synthetic inputs; record the exact source and Compose version in the owning Task | Zero failures across selected declared profiles and HOME. Static render never proves live health; QA owns source acceptance. |
-| REQ-0003-FR-0003 | Access safety: unauthorized token, issuer, custody and restore actions admitted, in counts | Bounded positive/negative fixtures with isolated source and no real credentials; each changed trust boundary selects its existing regression | Zero unauthorized actions admitted; security review and the owning Task judge evidence. |
-| REQ-0003-FR-0004 | Audit reliability: required rotation/scrape failure detections and missing observations, in counts | Named deployed target and safe operational observations; source declarations and live observations remain separate | Required detections succeed; unobserved rotation remains pending in the service Task. |
-| REQ-0003-NFR-0005 | Recoverability: successful isolated restoration and elapsed recovery time, in seconds | Exact image, snapshot identity and empty storage target; live recovery baseline is not measured by source tests | Operator defines the recovery-time target before the authorized run and verifies restored state. A synthetic PASS cannot accept HOME recovery. |
-| REQ-0003-NFR-0007 | Performance: secret lookup latency distribution, in milliseconds | Named load, sample count and tool; baseline not measured | The consumer owner sets the latency threshold from the intended workload before measurement; no invented global threshold or caching guarantee. |
+No separately numbered solution-independent external interface requirement is
+defined.
 
 ## Acceptance Criteria
 
-- **REQ-0003-FR-0001**: The current OpenBao/Agent compose and documentation are managed under the root `security`/`core` profile validation and hardening gate.
-- **REQ-0003-FR-0002**: Service containers do not need to know secrets directly and start successfully after receiving them via the OpenBao Agent.
-- **REQ-0003-FR-0003**: Unseal and recovery procedures retain the approved custody and authorization boundaries; no new rekey or credential issuance is inferred.
-- **REQ-0003-FR-0004**: Audit log/remote audit enhancements are rolled out in stages after policy approval, with actual rotation and failure observations kept in the service Task.
+These are local acceptance measures that apply ISO/IEC 25010, 25023 and 25030
+concepts; they are not a certification claim.
+
+- **REQ-0003-FR-0001**: The declared deployment renders with zero failures and
+  zero storage or port overlaps across its selected profiles, using synthetic
+  inputs. A static render never proves live health.
+- **REQ-0003-FR-0002**: Consumers start with secrets delivered as files and
+  need no secret in their own configuration; operator access reaches the server
+  only through the gateway over TLS.
+- **REQ-0003-FR-0003**: Bounded positive and negative checks without real
+  credentials admit zero unauthorized token, issuer, custody or restore
+  actions; no new rekey or credential issuance is inferred.
+- **REQ-0003-FR-0004**: Audit logging is enabled on the deployed server and
+  required rotation and failure detections succeed; a rotation not yet observed
+  stays pending in the service Task.
 
 ## Related Documents
 
-### Traceability
-
-- **Architecture Description**: [Security architecture descriptions](../02.architecture/descriptions/0003-security-architecture.md)
-- **Change owner**: [Service integration and security](../03.specs/0204-service-integration-security-and-operations/spec.md)
-- **Custody policy**: [OpenBao policy](../05.operations/policies/04-security-and-secrets/0085-openbao.md)
-- **Recovery procedure**: [OpenBao runbook](../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
-- **Quality references**: [ISO/IEC 25010](https://www.iso.org/standard/78176.html), [ISO/IEC 25023](https://www.iso.org/standard/35747.html), [ISO/IEC 25030](https://www.iso.org/standard/72116.html).
-- **Secrets manager decision**: [ADR-0050](../02.architecture/decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0003
-- **Retired domain Spec SPEC-0003** (security): replaced by the security guides, policies, and runbooks in the operations catalog under `docs/05.operations/`.
-- **Retired requirement REQ-0015** (security optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the security operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.
+- [Security architecture description](../02.architecture/descriptions/0003-security-architecture.md)
+- [ADR-0050: OpenBao as secrets manager](../02.architecture/decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0003
+- [SPEC-0204: Service integration and security](../03.specs/0204-service-integration-security-and-operations/spec.md)
+- [OpenBao policy](../05.operations/policies/04-security-and-secrets/0085-openbao.md)
+- [OpenBao runbook](../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+- Quality references: [ISO/IEC 25010](https://www.iso.org/standard/78176.html),
+  [ISO/IEC 25023](https://www.iso.org/standard/35747.html),
+  [ISO/IEC 25030](https://www.iso.org/standard/72116.html).
+- Retired domain Spec SPEC-0003 (security): replaced by the security guides,
+  policies and runbooks under `docs/05.operations/`.
+- Retired requirement REQ-0015 (security optimization hardening): retired under
+  SPEC-0169 because every clause named an implementation artifact; its
+  implementation contract lives in the security operations policies and its
+  documentation traceability clause moved to REQ-0026-FR-0011.
