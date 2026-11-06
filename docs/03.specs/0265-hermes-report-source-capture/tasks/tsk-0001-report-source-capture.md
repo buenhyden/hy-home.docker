@@ -196,8 +196,8 @@ quadratic: `lorem ipsum.*` stops at a newline, so `\W*` backtracks across it
 on input such as `lorem ipsum` + `!`*N + newline + `!`*M + `a`; with the old
 pattern 8000 characters took 1.8 s. `(?s:.*)` now consumes to the end in one
 step, and a test bounds 250000-character inputs. A `report_conflict` now
-returns the paths of the report this execution stored first, so the agent
-sends those files and never a second, self-rendered email. The immutable
+returns the paths of the report this execution stored first, and the prompt tells the agent to send those stored files and never submit
+again for that run, so no second, self-rendered email follows. The immutable
 manifest no longer records a Gateway outcome; the result carries it.
 
 ### Design deviations
@@ -254,7 +254,7 @@ obtained). Controller recommendations, not owner answers:
 | E7 | 12 | W7 | schema-4 backup, restore test on a copy, cutover | owner approval pending | NOT_RUN | - | required | - |
 | E8 | 13 | W8 | `backfill-reports` dry run shows the 16 reports excluded; apply | Blog-data capability and owner approval pending | NOT_RUN | - | required | - |
 | E9 | 12, 14 | W9 | plugin install, restart, cron update, one observed run per job; rollback reading | owner approval pending | NOT_RUN | - | required | - |
-| E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports` and the conflict test | fix round 2 commit above `b9c016f10` | PASS | 437 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
+| E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports`, the conflict test and `test_prompt_sends_the_stored_report_on_a_conflict` | fix round 2 commits above `b9c016f10` | PASS | 438 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
 
 ## Criterion Acceptance
 
