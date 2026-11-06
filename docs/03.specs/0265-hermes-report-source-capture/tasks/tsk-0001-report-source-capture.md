@@ -1,8 +1,8 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"
@@ -18,8 +18,9 @@ created: "2026-11-06"
 
 ### Objective
 
-Record the execution and evidence of work units W1 to W9 of the Plan. Nothing
-is implemented or run yet.
+Record the execution and evidence of work units W1 to W9 of the Plan. W1 to
+W4 and W6 are implemented in the repository (plugin 0.4.0); W5 is partial; no
+runtime operation (W7 to W9) has run.
 
 ## Inputs and Authorization
 
@@ -44,6 +45,7 @@ failure streak) is an out-of-scope follow-up.
 | SPEC-0265 | draft | approved | #owner-approval |
 | SPEC-0265-PLAN-0001 | draft | approved | #owner-approval |
 | SPEC-0265-TSK-0001 | draft | ready | #owner-approval |
+| SPEC-0265-TSK-0001 | ready | in-progress | #implementation-w1-w6 |
 
 ### Owner approval
 
@@ -91,6 +93,65 @@ implementation:
   other than the job prompt's (owner decision pending), and the upstream
   Hermes URL policy false positive (`tools/browser_url_policy.py:113`).
 
+### Implementation W1-W6
+
+Plugin 0.4.0 (`hermes-plugin/plugin.yaml`), on the worktree of `6378597d9`
+before the controller's commit:
+
+- W1: `submit_research_report` contract v2 (`SUBMIT_CONTRACT_VERSION = 2`)
+  takes exactly `payload`, `source_receipts` and `report_markdown`; any other
+  argument is `invalid_submission_fields`. A missing, empty, placeholder,
+  malformed (lone surrogate, control character other than tab, newline and
+  carriage return) or over-limit report is refused before any write or network
+  call with a stable code and `state: "BLOCKED"`; nothing is truncated or
+  substituted. `source_text` is the report, `source_sha256` its UTF-8 digest.
+  The Source Receipt checks are unchanged.
+- W2: the canonical receipt-set JSON (the bytes 0.3.0 sent as `source_text`)
+  is `source-set.json`, created once through the new
+  `PrivateRecords.create` (complete temporary linked into place, 0600, no
+  replacement, `record_conflict` on different bytes); `source_ref` is
+  `hermes-source-set:` plus its digest.
+- W3: `report.md`, `email.html`, `telegram.txt` and `manifest.json` (job,
+  execution, scheduled instant, digests, `derived_from_sha256`) live in
+  `research-report-store/<job_id>-<execution_id>/` (0700). The stdlib
+  renderers read only the stored bytes. The tool result carries the paths and
+  digest whatever the Gateway answered; the outbox record and `response.id`
+  are unchanged.
+- W4: the prompt orders finalize, collect, submit once, then send from the
+  returned files; it forbids the shared `email_body.html`, uses `mktemp -d`
+  for any other temporary directory, keeps the email, Telegram and Gateway
+  results apart and never resends an email; the statement that the full report
+  is not preserved is gone. `update-cron-prompts.sh` requires exactly one
+  marker per prompt (else it names the job and count before any edit), checks
+  that the head is kept and leaves a job already on the current block
+  unchanged. `update-hermes-plugin.sh` refusals name the path, octal mode, uid
+  and link count. The umask-dependent fixtures (seven update-script tests and
+  the address policy test) set their modes explicitly.
+- W5 (partial): `tools.metric_lines` builds Pushgateway lines whose labels are
+  only job kind, outcome, a fixed reason enumeration and a size bucket. The
+  workload has no Pushgateway push path, so nothing is pushed; the push
+  wiring, the Alertmanager rule and the Grafana panel remain open.
+- W6: the workload README states the new `source_text` meaning, the report
+  store, the trust boundaries and the rollback order.
+
+Criterion 9 mapping: H (item identity, titles, quotes, numbers and dates),
+D-03, G-02 and G-03 are prompt text, checked by
+`test_prompt_carries_the_owner_item_rules`. D-01 is the existing
+`source_check.check_item` quote check; the Attester byte comparison is an
+investigation, not code here. D-02 (business-evidence gate), D-04 (publish
+date in the signed set) and D-05 (historical fetch-failure classification)
+need their own evaluation or Blog-data contract and are not implemented here.
+G-01's producer dedupe is prompt text; Export and ACK are untouched.
+
+Design deviations: the pinned `ingestion-v1` fixture predates
+`source_quotes`, so the schema test validates the request with the quotes
+removed and checks the item field set separately (as 0.3.0 did implicitly).
+The Telegram text records its origin in `manifest.json`, not in its visible
+body. The 0.3.0 bound of 524288 characters on the receipt-set JSON is replaced
+by the 4 MiB private-record limit (`source_set_too_large`, `BLOCKED`).
+`tests/e2e_collect_harness.py` passes a synthetic report; the owned-ingress E2E
+was not run.
+
 ### Open Items
 
 The H, D and G items come from the owner's 2026-11-06 request and are mapped
@@ -109,12 +170,13 @@ obtained). Controller recommendations, not owner answers:
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| E1 | 1, 2, 4, 6 | W1 | plugin unit tests for the report argument, store, `source_text` and rejections | not yet written | NOT_RUN | - | required | - |
-| E2 | 3 | W2 | plugin test for the receipt-set private record and `source_ref` | not yet written | NOT_RUN | - | required | - |
-| E3 | 5 | W3 | derivation test: Gateway, email and Telegram share one stored-bytes digest | not yet written | NOT_RUN | - | required | - |
-| E4 | 7, 8, 9 | W4 | deploy script and prompt tests; scratch path check | not yet written | NOT_RUN | - | required | - |
-| E5 | 10 | W5 | metric label test, rule and dashboard lint | not yet written | NOT_RUN | - | required | - |
-| E6 | 11 | W6 | document metadata, links, lifecycle and contract checks on the implementation | not yet run on the implementation | NOT_RUN | - | required | - |
+| E1 | 1, 2, 4, 6 | W1 | `python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`ReportSourceContractTests`, `ToolSchemaTests`, `PrivateRecordCreateTests`); new tests fail on `6378597d9` sources | worktree on `6378597d9`, uncommitted | PASS | 430 tests, OK under both umasks | required | - |
+| E2 | 3 | W2 | same suite: `test_source_ref_digest_is_the_private_receipt_set_record` | worktree on `6378597d9`, uncommitted | PASS | 430 tests, OK | required | - |
+| E3 | 5 | W3 | same suite: `test_gateway_email_and_telegram_share_one_stored_digest`, `test_renderers_escape_and_flatten_markdown` | worktree on `6378597d9`, uncommitted | PASS | 430 tests, OK | required | - |
+| E4 | 7, 8, 9 | W4 | same suite: `test_deploy_scripts.py` prompt, marker-count and rerun tests; `test_plugin_bundle.py` message tests; `bash -n` and `shellcheck` on both deploy scripts | worktree on `6378597d9`, uncommitted | PASS | 430 tests, OK; shellcheck clean | required | - |
+| E5 | 10 | W5 | metric label test `test_metric_labels_are_fixed_low_cardinality_values` | worktree on `6378597d9`, uncommitted | PASS | label test only; push path, Alertmanager rule and Grafana panel not built | required | - |
+| E5b | 10 | W5 | Pushgateway push, Alertmanager rule and Grafana panel lint | not built | NOT_RUN | - | required | - |
+| E6 | 11 | W6 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`; `python3 scripts/validation/check-document-links.py --mode alignment` | worktree on `6378597d9`, uncommitted | PASS | metadata: 0 violations; links: 898 documents, 0 failures; `check-document-corpus-lifecycle.py`: 0 violations | required | - |
 | E7 | 12 | W7 | schema-4 backup, restore test on a copy, cutover | owner approval pending | NOT_RUN | - | required | - |
 | E8 | 13 | W8 | `backfill-reports` dry run shows the 16 reports excluded; apply | Blog-data capability and owner approval pending | NOT_RUN | - | required | - |
 | E9 | 12, 14 | W9 | plugin install, restart, cron update, one observed run per job; rollback reading | owner approval pending | NOT_RUN | - | required | - |
@@ -140,8 +202,9 @@ obtained). Controller recommendations, not owner answers:
 
 ## Review and Completion
 
-Open. The Spec, Plan and this Task are drafts for owner review. Every evidence
-row is NOT_RUN: nothing is implemented, and no runtime operation has run.
+Open. W1 to W4 and W6 have passing repository evidence; W5 is partial
+(E5b NOT_RUN); W7 to W9 are operations and stay NOT_RUN until the owner's
+approved run and direct evidence.
 
 ## Related Documents
 
