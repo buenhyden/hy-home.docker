@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.9.0"
+version: "1.9.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -45,7 +45,9 @@ Local repository work, infrastructure execution, secrets handling, verification 
 - **Networking**: inter-service traffic MUST stay on the repository-owned
   Compose networks, and a service joins one only for a peer it uses. Direct
   external exposure is PROHIBITED except via authorized gateways.
-- **Storage**: use named volumes named `<service>-<data>`, for example `tempo-data`.
+- **Storage**: use named volumes named `<service>-<data>`, for example `tempo-data`;
+  a node-numbered service keeps its number (`pg0-data`). The `lab-kafka-*` and
+  `lab-opensearch-*` LAB volumes keep their `lab-` prefix by owner decision.
 - **Security**: `no-new-privileges: true` is mandatory for all containers.
   Deliver credentials through Docker Secrets or `secrets/` mounts, never as
   plaintext values.
