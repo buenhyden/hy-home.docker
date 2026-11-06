@@ -41,6 +41,13 @@ services:
       service: template-stateful-med
     image: hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8
     container_name: openbao
+    # Own reservation: peak 0.185 CPU / 21 MiB, above its template's other members;
+    # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.30"
+          memory: 32M
     hostname: openbao
     # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
     group_add:

@@ -67,6 +67,12 @@ services:
     hostname: comfyui
     restart: unless-stopped
     mem_limit: 4g
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 64M
     cpus: "2.00"
     gpus: all
     environment:

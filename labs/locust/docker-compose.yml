@@ -40,6 +40,12 @@ networks:
 
 services:
   lab-locust-master:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     <<: *locust
     labels:
       <<: *tier-label
@@ -106,4 +112,9 @@ services:
       retries: 6
       start_period: 5s
     deploy:
+      # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
       replicas: ${LAB_LOCUST_EXPECT_WORKERS:-2}

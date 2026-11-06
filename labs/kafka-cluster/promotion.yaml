@@ -1,6 +1,7 @@
 # SPEC-0263 promotion manifest for the kafka-cluster LAB.
-# resources.services copies the rendered per-container limits; disk_gib is an
-# estimate. Secret destinations are a plan only and are never created here.
+# resources.services copies the rendered per-container limits and
+# reservations; disk_gib is an estimate.
+# Secret destinations are a plan only and are never created here.
 kind: replace-same
 target:
   folder: infra/05-messaging/kafka/
@@ -31,18 +32,33 @@ resources:
     lab-kafka-1:
       cpus: 0.75
       memory_mib: 1536
+      reservations:
+        cpus: 0.75
+        memory_mib: 1536
     lab-kafka-2:
       cpus: 0.75
       memory_mib: 1536
+      reservations:
+        cpus: 0.75
+        memory_mib: 1536
     lab-kafka-3:
       cpus: 0.75
       memory_mib: 1536
+      reservations:
+        cpus: 0.75
+        memory_mib: 1536
     lab-kafka-exporter:
       cpus: 0.5
       memory_mib: 256
+      reservations:
+        cpus: 0.5
+        memory_mib: 256
     lab-kafka-init:
       cpus: 0.5
       memory_mib: 256
+      reservations:
+        cpus: 0.5
+        memory_mib: 256
   disk_gib:
     data: 30
     images: 2

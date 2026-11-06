@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Runbook"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0107"
 parent_ids:
@@ -44,16 +44,33 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 
 ### Readiness run
 
-repository root에서 실행한다. 이 명령은 LAB과 root render, `docker info`, `docker inspect`, disk
-사용량만 읽고 아무것도 시작하지 않는다.
+repository root에서 실행한다. 이 명령은 LAB과 root render, 실행 중 LAB project의 render,
+`docker info`, `docker inspect`, disk 사용량만 읽고 아무것도 시작하지 않는다.
 
 ```bash
 python3 scripts/operations/lab.py --env-file labs/.env readiness <name> --report <path>
 ```
 
-보고서는 JSON이며 `lab`, `kind`, `result`, `criteria`를 갖는다. `criteria`의 다섯 기준은
-`tier`, `composition`, `linux`, `docker`, `resources`이고 각각 `result`, `values`, `problems`를
-갖는다. `values`의 값마다 측정값 `value`와 출처 `source`가 붙는다.
+보고서는 JSON이며 `lab`, `kind`, `result`, `criteria`, `owner_checks`를 갖는다. `criteria`의
+다섯 기준은 `tier`, `composition`, `linux`, `docker`, `resources`이고 각각 `result`, `values`,
+`problems`를 갖는다. `values`의 값마다 측정값 `value`와 출처 `source`가 붙는다. 기준과 전체
+`result`는 `PASS`, `FAIL`, `NOT_RUN`만 갖는다.
+
+`resources.values`의 주요 값은 다음과 같다. 모든 CPU·memory 값은 limit이 아니라 render의
+reservation이다.
+
+| 값 | 의미 |
+| --- | --- |
+| `running_reserved_cpus`, `running_reserved_memory_mib` | 실행 중 HOME·LAB container의 reservation 합(은퇴 포함) |
+| `retired_reserved_cpus`, `retired_reserved_memory_mib` | 그중 실행 중인 은퇴 서비스의 reservation |
+| `candidate_reserved_cpus`, `candidate_reserved_memory_mib` | 후보 render의 reservation(replica 포함) |
+| `allowance_cpus`, `allowance_memory_mib` | POL-0107의 외부 workload allowance; 한 번만 더한다 |
+| `external_containers` | 알려진 Compose project 밖의 실행 중 container(k3d 등) |
+| `cpus_needed`, `memory_needed_mib` | 실행 중 - 은퇴 + 후보 + allowance |
+| `cpu_budget`, `memory_budget_mib` | `NCPU`·`MemTotal`에서 POL-0107 reserve를 뺀 값 |
+
+`problems`의 "declares no reservation", "is not in the ... render", "has no render"는 합할 수
+없는 서비스이며 `NOT_RUN`을 만든다. "reservation ... exceeds its limit"과 예산 초과는 `FAIL`이다.
 
 | 종료 코드 | 의미 |
 | --- | --- |
@@ -63,10 +80,23 @@ python3 scripts/operations/lab.py --env-file labs/.env readiness <name> --report
 | 3 | 하나 이상의 기준이 `FAIL` 또는 `NOT_RUN` |
 
 종료 코드가 0이 아니면 승격을 멈추고 보고서와 종료 코드를 승격 Task에 기록한다. `NOT_RUN`은
-측정하지 못한 값이며 통과가 아니다. [POL-0107](../../policies/15-labs/0107-lab-promotion.md)의
-축소에 따라 linux와 composition은 group·file mode와 profile·consumer 충돌을 측정하지 않아 항상
-`NOT_RUN`이다. owner가 그 축소를 수락하기 전까지는 이 두 항목과 `tier.values.function_fit`을
-승격 Task에서 직접 확인한다.
+측정하지 못한 값이며 통과가 아니다.
+
+reservation은 render에서 오므로 HOME container를 재생성하지 않아도 보고서에 반영된다. 실제
+Docker memory reservation은 owner window에서 서비스를 재생성할 때 적용된다. LAB 서비스의
+reservation은 승인된 LAB lease 실행(`lab.py run`)에서 측정할 때까지 limit과 같다.
+
+#### Owner checklist
+
+보고서의 `owner_checks`는 `OWNER_JUDGMENT` 값을 가진 항목이며 `PASS`를 막지 않는다. 각 승격
+Task는 readiness 결과와 함께 아래 checklist를 기록하고, 항목마다 owner의 판단과 근거를 남긴다.
+판단이 부정이면 readiness가 `PASS`여도 승격을 멈춘다.
+
+| 항목 | 보고서 값 | 승격 Task에 기록할 내용 |
+| --- | --- | --- |
+| Tier 기능 적합성 | `tier.values.function_fit` | 목적지 tier가 서비스 기능에 맞는지와 그 이유 |
+| Group과 file mode | `linux.values.groups_and_file_modes` | 서비스 user의 group, `group_add`, 데이터·secret 파일 mode가 목적지에서 맞는지 |
+| Profile과 consumer 충돌 | `composition.values.profile_and_consumer_clashes` | 합류할 profile의 기존 서비스와 consumer inventory에 충돌이 없는지 |
 
 ### add
 
@@ -180,7 +210,7 @@ readiness가 0이 아니거나, verify가 불일치하거나, 소비자 전환�
 ### Traceability
 
 - Contract: [SPEC-0263](../../../03.specs/0263-lab-promotion-contract/spec.md) section 5–6.
-- Implementation: `scripts/operations/lab.py` `readiness`.
+- Implementation: `scripts/operations/lab.py` `readiness`, `reservation_sum`, `budget`.
 - Artifact: `RUN-0107`; parent: `POL-0107`.
 
 - [LAB promotion policy](../../policies/15-labs/0107-lab-promotion.md)

@@ -68,6 +68,12 @@ networks:
 
 services:
   lab-kafka-1:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.75"
+          memory: 1536M
     <<: *lab-kafka-broker
     hostname: lab-kafka-1
     profiles: [lab-kafka]
@@ -79,6 +85,12 @@ services:
       - lab-kafka-1-data:/var/lib/kafka/data:rw
 
   lab-kafka-2:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.75"
+          memory: 1536M
     <<: *lab-kafka-broker
     hostname: lab-kafka-2
     profiles: [lab-kafka]
@@ -90,6 +102,12 @@ services:
       - lab-kafka-2-data:/var/lib/kafka/data:rw
 
   lab-kafka-3:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.75"
+          memory: 1536M
     <<: *lab-kafka-broker
     hostname: lab-kafka-3
     profiles: [lab-kafka]
@@ -101,6 +119,12 @@ services:
       - lab-kafka-3-data:/var/lib/kafka/data:rw
 
   lab-kafka-exporter:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles: [lab-kafka]
     extends:
       file: ../../infra/common-optimizations.yml
@@ -131,6 +155,12 @@ services:
       lab_kafka_net: {}
 
   lab-kafka-init:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles: [lab-kafka]
     extends:
       file: ../../infra/common-optimizations.yml

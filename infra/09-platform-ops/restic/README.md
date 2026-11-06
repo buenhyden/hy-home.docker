@@ -59,7 +59,8 @@ Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고�
 - `backup-sqlite-export`는 WAL 리더가 `-shm` 파일을 필요로 하기 때문에만
   Grafana, Gatus, Open WebUI 데이터 디렉터리를 쓰기 가능하게 마운트하며
   UID 1000이 소유하는 0600 복사본을 staging에 씁니다.
-- `restic`은 저장소 인덱스와 tmpfs 캐시에 `mem_limit: 1g`를 가지며 `cmd`는
+- `restic`은 저장소 인덱스와 tmpfs 캐시에 `mem_limit: 1g`를 가지며, 측정 전이므로
+  reservation은 limit과 같다(POL-0107). `cmd`는
   `forget`/`prune`을 거부하고 이는 `forget-prune`을 통해서만 실행됩니다.
 - 환경 변수 키: `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`,
   `BACKUP_STATE_MAX_GIB`,

@@ -35,6 +35,12 @@ services:
     cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
     cpus: '2.00'
     mem_limit: 2g
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 96M
     shm_size: 256mb
     pids_limit: 256
     environment:
@@ -237,6 +243,13 @@ services:
       service: template-stateful-low
     image: valkey/valkey:9.1.2-alpine
     container_name: dev-valkey
+    # Own reservation: peak 0.045 CPU / 3 MiB, above its template's other members;
+    # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 32M
     hostname: dev-valkey
     group_add:
       - '${SECRETS_GID:-1000}'

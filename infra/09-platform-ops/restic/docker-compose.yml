@@ -30,6 +30,12 @@ services:
     network_mode: none
     # Repository index and the tmpfs cache grow with the repository.
     mem_limit: 1g
+    # Reservation (not running when measured: equals the limit; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 1024M
     entrypoint: ['/bin/sh', '/opt/hyhome/backup.sh']
     command: ['snapshots']
     environment:
@@ -118,6 +124,12 @@ services:
     networks:
       - restic_offsite_net
     mem_limit: 1g
+    # Reservation (not running when measured: equals the limit; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 1024M
     entrypoint: ['/bin/sh', '/opt/hyhome/offsite.sh']
     command: ['snapshots']
     environment:

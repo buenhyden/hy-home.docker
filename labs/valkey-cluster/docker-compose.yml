@@ -67,6 +67,13 @@ volumes:
 
 services:
   valkey-node-0:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): node peak
+    # 0.044 CPU / 7.7 MiB, applied to all six nodes; x 1.5 with the 0.05 / 32M floor.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 32M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-0
     group_add:
@@ -87,6 +94,13 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-1:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): node peak
+    # 0.044 CPU / 7.7 MiB, applied to all six nodes; x 1.5 with the 0.05 / 32M floor.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 32M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-1
     group_add:
@@ -107,6 +121,13 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-2:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): node peak
+    # 0.044 CPU / 7.7 MiB, applied to all six nodes; x 1.5 with the 0.05 / 32M floor.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 32M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-2
     group_add:
@@ -127,6 +148,13 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-3:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): node peak
+    # 0.044 CPU / 7.7 MiB, applied to all six nodes; x 1.5 with the 0.05 / 32M floor.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 32M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-3
     group_add:
@@ -147,6 +175,13 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-4:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): node peak
+    # 0.044 CPU / 7.7 MiB, applied to all six nodes; x 1.5 with the 0.05 / 32M floor.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 32M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-4
     group_add:
@@ -167,6 +202,13 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-node-5:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): node peak
+    # 0.044 CPU / 7.7 MiB, applied to all six nodes; x 1.5 with the 0.05 / 32M floor.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.10"
+          memory: 32M
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-5
     group_add:
@@ -187,6 +229,12 @@ services:
       lab_valkey_obs_net: {}
 
   valkey-cluster-init:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - valkey-cluster
     extends:
@@ -220,6 +268,13 @@ services:
     networks:
       lab_valkey_core_net: {}
   valkey-cluster-exporter:
+    # Reservation: measured in the 2026-11-06 lease run: peak 0.00 CPU / 17.3 MiB;
+    # x 1.5 with the 0.05 / 32M floor.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 32M
     profiles:
       - valkey-cluster
     extends:

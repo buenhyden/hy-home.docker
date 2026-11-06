@@ -1137,6 +1137,14 @@ class SecretMetadataSyncTests(unittest.TestCase):
         )
         self.assertEqual(2, self.run_mode().returncode)
 
+    def test_sync_refuses_an_alias_row_outside_the_retired_id_table(self):
+        # Only the Retired ID table may hold two-cell rows; elsewhere one would
+        # silently drop out of the registry parse.
+        self.example.write_text(
+            "| TEST-009 | TEST-001 |\n\n" + self.example.read_text()
+        )
+        self.assertEqual(2, self.run_mode().returncode)
+
     def test_generation_preserves_existing_derived_htpasswd_custody(self):
         rows = (
             "| **INFRA-001** | `X` | `ID` | `(empty)` | `TRAEFIK_ADMIN_USERNAME` | | 2026-01-01 | Admin name |\n"

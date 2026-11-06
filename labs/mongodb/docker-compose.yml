@@ -30,6 +30,12 @@ volumes:
 
 services:
   mongo-key-generator:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     labels:
       <<: *tier-label
     profiles:
@@ -72,6 +78,12 @@ services:
         }
 
   mongodb-rep1:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.033 CPU / 176.1 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 288M
     profiles:
       - mongodb
     extends:
@@ -112,6 +124,12 @@ services:
       <<: *tier-label
 
   mongodb-rep2:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.033 CPU / 176.1 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 288M
     profiles:
       - mongodb
     extends:
@@ -152,6 +170,12 @@ services:
       <<: *tier-label
 
   mongodb-arbiter:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.025 CPU / 193.6 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 320M
     profiles:
       - mongodb
     extends:
@@ -185,6 +209,12 @@ services:
       <<: *tier-label
 
   mongo-init:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     labels:
       <<: *tier-label
     profiles:
@@ -232,6 +262,12 @@ services:
       - lab_mongodb_root_password
 
   mongo-express:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.003 CPU / 90.7 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 160M
     profiles:
       - mongodb
     extends:

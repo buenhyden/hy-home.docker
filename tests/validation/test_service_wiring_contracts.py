@@ -596,8 +596,15 @@ class AiRuntimeContractTests(unittest.TestCase):
         self.assertEqual("1", self.ollama_env["OLLAMA_NO_CLOUD"])
 
     def test_webui_has_no_gpu_docker_socket_or_host_shell(self) -> None:
-        for key in ("deploy", "gpus", "runtime", "devices", "privileged"):
+        for key in ("gpus", "runtime", "devices", "privileged"):
             self.assertNotIn(key, self.webui)
+        # deploy may only reserve CPU and memory (SPEC-0263 section 5); a
+        # device reservation, limits form or other deploy key stays refused.
+        deploy = self.webui.get("deploy") or {}
+        self.assertLessEqual(set(deploy), {"resources"})
+        self.assertLessEqual(set(deploy.get("resources") or {}), {"reservations"})
+        reserved = (deploy.get("resources") or {}).get("reservations") or {}
+        self.assertLessEqual(set(reserved), {"cpus", "memory"})
         self.assertNotIn("docker.sock", str(self.webui["volumes"]))
         self.assertNotIn("TERMINAL_SERVER_CONNECTIONS", self.webui["environment"])
         self.assertTrue(

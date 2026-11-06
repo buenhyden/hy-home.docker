@@ -50,6 +50,12 @@ volumes:
 
 services:
   couchdb-1:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.015 CPU / 80.1 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 128M
     profiles:
       - couchdb
     extends:
@@ -94,6 +100,12 @@ services:
       traefik.enable: 'false'
 
   couchdb-2:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.015 CPU / 80.1 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 128M
     profiles:
       - couchdb
     extends:
@@ -135,6 +147,12 @@ services:
       traefik.enable: 'false'
 
   couchdb-3:
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.015 CPU / 80.1 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 128M
     profiles:
       - couchdb
     extends:
@@ -176,6 +194,12 @@ services:
       traefik.enable: 'false'
 
   couchdb-cluster-init:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     labels:
       <<: *tier-label
     profiles:

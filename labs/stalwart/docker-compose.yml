@@ -33,6 +33,12 @@ services:
   # address only. Listeners, domain and relay policy live in the datastore and
   # come from stalwart/config/plan.ndjson through stalwart-config.
   stalwart:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.00"
+          memory: 512M
     profiles:
       - mail-server
     extends:
@@ -77,6 +83,12 @@ services:
   # the recovery admin. Idempotent; listener changes take effect on the next
   # stalwart restart.
   stalwart-config:
+    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 256M
     profiles:
       - mail-server
     extends:

@@ -397,6 +397,13 @@ services:
     image: hy-home/blog-ingestion:c05e5b88bae36ae8f5421fd27beada9b1d596a19
     pull_policy: never
     container_name: blog-ingestion
+    # Own reservation: peak 0.117 CPU / 66 MiB, above its template's other members;
+    # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.20"
+          memory: 128M
     hostname: blog-ingestion
     user: '10001:10001'
     pids_limit: 64

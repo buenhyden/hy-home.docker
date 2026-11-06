@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Task"
-version: "0.1.0"
+version: "0.2.2"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0263-TSK-0001"
 parent_ids:
@@ -56,6 +56,36 @@ review.
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0263 | draft | approved | #current-contract-decision |
+| SPEC-0263-PLAN-0001 | draft | approved | #owner-acceptance-and-status |
+| SPEC-0263-TSK-0001 | draft | ready | #owner-acceptance-and-status |
+| SPEC-0263-TSK-0001 | ready | in-progress | #owner-acceptance-and-status |
+
+### Owner acceptance and status
+
+On 2026-11-05 the owner asked to accept criteria 1 to 7 and to move the Plan
+and both Tasks forward. The Plan is `approved` and this Task is
+`in-progress`; it cannot be `completed` while criteria stay pending. On
+2026-11-06 the RED, full-suite and valkey-cluster readiness rows were re-run
+at `961b5d475` (E60 to E68) and resolve their earlier non-PASS rows. Criteria 1, 2,
+4 and 6 are accepted (6 after E69). These stay pending, each on a real result:
+
+- 3: `lab.py check supabase` (E6, E12, E58) needs the ten supabase seed files
+  that the operator places under `LAB_DATA_DIR`; they are not tracked.
+- 5: postgresql-ha readiness (E25, E54) still refuses on resources (10.45
+  CPUs against 10, TSK-0002 E27). The owner promotes no LAB now, and the
+  refusal is the check working, but it is a required non-PASS row.
+- 7: example renders (E39) leave required inputs empty by design, and the
+  local full CI gate (E47) needs Python 3.14.8 with memfd sealing.
+
+Owner decisions on 2026-11-06, following the recommendations:
+
+- `labs/.env.example` keeps its required inputs empty, so operators fill in
+  approved endpoints themselves; E39 stays unresolved by design.
+- postgresql-ha stays pending: no LAB is promoted, and its readiness refusal
+  is the check working. Criteria 5 and 8 are not closed another way.
+- The LAB budget is the host budget (10 CPUs / 27924 MiB), because
+  `lab.py check` sums running HOME reservations; the owner sets it in
+  `labs/.env`.
 
 ### Decisions
 
@@ -416,18 +446,29 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | E56 | 7 | W6 | hardening, operations catalog and script manifest | `bash scripts/hardening/check-all-hardening.sh`, `check-operations-catalog.py`, `check-script-manifest.py` at `4bec12fa2` | PASS | ALL checks passed; operations-catalog PASS; manifest valid | required | - |
 | E57 | 7 | W6 | metadata and links | `check-document-metadata.py --mode check-changed --base-ref main` and `--mode check-active`, `check-document-links.py --mode all`, on the final fix wave working tree | PASS | check-changed selected=144 violations=0; check-active selected=543 violations=0; link mode all PASS | required | - |
 | E58 | 3 | W3 | `lab.py check supabase` with owner inputs | `lab.py --env-file labs/.env check supabase` at `4bec12fa2` | NOT_RUN | exit 2 before any report: `labs/.env` gives no numeric `LAB_HOST_BUDGET_CPUS` | required | - |
+| E59 | 7 | W6 | hosted CI | pull request #753 checks on head `bce9baf4f` | PASS | CI Quality Gates run 42053991999 `candidate-quality` pass, CodeQL and GitGuardian pass; merged as `5989bf1c9` | required | E48 |
+| E60 | 3 | W3 | RED tests | `test_lab_secret_paths_use_lab_root_supabase`, `test_supabase_reads_no_home_secret`, `test_repository_lab_reads_its_own_smtp_copy` at `961b5d475` | PASS | each OK | required | E2 |
+| E61 | 3 | W3 | RED test | `test_read_only_secrets_backup_owns_no_lab_secret_copy` at `961b5d475` | PASS | OK | required | E11 |
+| E62 | 3 | W3 | full unit suite | `python -m unittest discover -s tests -t .`, controller venv, clean env, at `63d5b78a0` (contains W3) | PASS | 3346 tests OK, skipped=108 (SPEC-0263-TSK-0002 E26) | required | E4 |
+| E63 | 5 | W4 | RED tests | `ReadinessTests` and `LifecycleTests` (with `LAB_DATA_DIR` exported) in `test_lab_controller` at `961b5d475` | PASS | 37 and 15 tests OK, including the review and final-review repros | required | E14, E21, E51 |
+| E64 | 5 | W4 | HOME readiness, as instructed | `lab.py --env-file labs/.env readiness valkey-cluster --report <scratchpad>` at `961b5d475` | PASS | exit 0; report written; all five criteria PASS; needed 9.8 CPUs / 25536 MiB against 10 / 27924 | required | E16, E23 |
+| E65 | 5 | W4 | HOME readiness, supplementary | the E64 command with `LAB_DATA_DIR` set to an unused scratch path, at `961b5d475` | PASS | all five criteria PASS | required | E17 |
+| E66 | 5 | W4 | HOME readiness `valkey-cluster` | the E64 command at `961b5d475` | PASS | all five criteria PASS | required | E53 |
+| E67 | 4 | W5 | RED test | `test_reserve_matches_policy` at `961b5d475` | PASS | OK | required | E27 |
+| E68 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs (`labs/.env.example`, `.env.example`, empty scratch `LAB_DATA_DIR`, synthetic budgets) at `961b5d475` | FAIL | exit 3; the only problems are the ten untracked seed files (`db/*.sql`, `api/kong.yml`, `pooler/pooler.exs`, `logs/vector.yml`) | required | - |
+| E69 | 6 | W5 | HOME render of the cluster LABs | `docker compose --env-file labs/.env -f labs/<name>/docker-compose.yml config -q` for kafka-cluster and opensearch-cluster, after the owner set `LAB_KAFKA_CLUSTER_ID` and the host budget, at `339a6d7be` | PASS | both exit 0; `lab.py check` reports no cluster ID or certificate problem, only the budget and the one-LAB limit for this pair | required | E35 |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
-| 5 | pending | - | - | @buenhyden |
-| 6 | pending | - | - | @buenhyden |
-| 7 | pending | - | - | @buenhyden |
+| 1 | accepted | E49 | owner request 2026-11-05; PASS, no unresolved required row | @buenhyden |
+| 2 | accepted | E50 | owner request 2026-11-05; PASS, no unresolved required row | @buenhyden |
+| 3 | pending | E3, E5, E7, E8, E10, E36, E60, E61, E62 | open: E6, E12, E58, E68 need the supabase seed files | @buenhyden |
+| 4 | accepted | E28, E29, E30, E31, E32, E33, E37, E67 | owner request 2026-11-05; PASS, E27 resolved by E67 | @buenhyden |
+| 5 | pending | E13, E15, E18, E19, E20, E22, E24, E26, E52, E63, E64, E65, E66 | open: E25, E54 (postgresql-ha resources FAIL); owner keeps it pending, 2026-11-06 | @buenhyden |
+| 6 | accepted | E29, E30, E31, E32, E33, E34, E37, E69 | owner request 2026-11-05; PASS, E35 resolved by E69 | @buenhyden |
+| 7 | pending | E1, E38, E40, E42, E43, E44, E45, E46, E55, E56, E57, E59 | open: E39 (example inputs empty by owner decision), E47 (local CI gate, Python 3.14.8) | @buenhyden |
 
 ## Review and Completion
 

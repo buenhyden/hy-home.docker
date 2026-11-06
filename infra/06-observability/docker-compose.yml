@@ -241,6 +241,13 @@ services:
       service: template-infra-med
     image: grafana/alloy:v1.20.1@sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f
     container_name: alloy
+    # Own reservation: peak 0.023 CPU / 217 MiB, above its template's other members;
+    # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 352M
     hostname: alloy
     # The image runs as root, but its state directory (and the bind-backed
     # alloy-data volume) belongs to the image's alloy user (UID 473, mode 770).
@@ -328,6 +335,12 @@ services:
     # 512 MiB (template) peaked at 97% in the SPEC-0182 W8 window; SPEC-0193 W7
     # confirms the value from the final W8 figures.
     mem_limit: ${GRAFANA_MEM_LIMIT:-1g}
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 480M
     environment:
       GF_SERVER_ROOT_URL: https://grafana.${DEFAULT_URL}
       GF_SERVER_DOMAIN: grafana.${DEFAULT_URL}
@@ -562,6 +575,12 @@ services:
       service: template-host-observer-med
     cpus: ${CADVISOR_CPUS:-1.50}
     mem_limit: ${CADVISOR_MEM_LIMIT:-1g}
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 64M
     image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
     container_name: cadvisor
     hostname: cadvisor

@@ -19,7 +19,8 @@ Commands:
 
 The ledger lives in `${LAB_DATA_DIR}/.ledger/<lab>.json` and names the exact
 containers, networks and data paths an operator may later remove by hand.
-Declared CPU and memory limits are ceilings, not measured usage.
+Declared CPU and memory limits are ceilings, not measured usage; the host
+budget sums declared reservations (SPEC-0263 section 5).
 
 Exit codes: 0 success, 1 Docker or Compose failure, 2 invalid input,
 3 refused by a check.
@@ -115,7 +116,8 @@ def render(docker: str, env_file: pathlib.Path, compose_file: str | None) -> dic
 
 
 def footprint(model: dict) -> dict:
-    """Names, ports, writable state paths and declared limits of one model."""
+    """Names, ports, writable state paths, declared limits and reservations
+    of one model."""
     project = model.get("name", "")
     containers, ports, paths, state, inputs, written = (
         set(),
@@ -128,8 +130,8 @@ def footprint(model: dict) -> dict:
     sensitive_inputs, public_inputs = set(), set()
     sources = []
     cluster_ids = set()
-    cpus = memory = 0.0
-    limits, users = {}, {}
+    cpus = memory = reserved_cpus = reserved_memory = 0.0
+    limits, reservations, users = {}, {}, {}
     # Per-service identities, so a replacement can retire exactly its own
     # services' containers, ports and folders (readiness).
     by_service: dict[str, dict[str, set]] = {}
@@ -185,14 +187,27 @@ def footprint(model: dict) -> dict:
         environment = service.get("environment") or {}
         if isinstance(environment, dict) and environment.get("CLUSTER_ID"):
             cluster_ids.add(str(environment["CLUSTER_ID"]))
-        # Per-container limits as declared; the totals count replicas.
+        # Per-container limits and reservations as declared; the totals count
+        # replicas. Limits use the short form or deploy.resources.limits
+        # (ollama); Compose renders memory as bytes.
+        resources = (service.get("deploy") or {}).get("resources") or {}
+        ceiling = resources.get("limits") or {}
+        floor = resources.get("reservations") or {}
         limits[name] = {
-            "cpus": float(service.get("cpus") or 0),
-            "memory": float(int(service.get("mem_limit") or 0)),
+            "cpus": float(service.get("cpus") or ceiling.get("cpus") or 0),
+            "memory": float(
+                int(service.get("mem_limit") or ceiling.get("memory") or 0)
+            ),
+        }
+        reservations[name] = {
+            "cpus": float(floor.get("cpus") or 0),
+            "memory": float(int(floor.get("memory") or 0)),
         }
         cpus += limits[name]["cpus"] * replicas
-        users[name] = service.get("user")
         memory += limits[name]["memory"] * replicas
+        reserved_cpus += reservations[name]["cpus"] * replicas
+        reserved_memory += reservations[name]["memory"] * replicas
+        users[name] = service.get("user")
     devices = {}
     for key, volume in (model.get("volumes") or {}).items():
         device = (volume.get("driver_opts") or {}).get("device")
@@ -288,6 +303,9 @@ def footprint(model: dict) -> dict:
         "cpus": cpus,
         "memory": memory,
         "services": limits,
+        "reservations": reservations,
+        "reserved_cpus": reserved_cpus,
+        "reserved_memory": reserved_memory,
         "users": users,
         "drivers": drivers,
         "by_service": by_service,
@@ -516,9 +534,76 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
     return problems
 
 
+def service_problems(model: dict, service: str, label: str) -> tuple[list, list]:
+    """SPEC-0263 section 5: a summed service declares limits and reservations,
+    and reserves no more than its limit. Returns (failed, unmeasured)."""
+    limit = model.get("services", {}).get(service)
+    reserved = model.get("reservations", {}).get(service)
+    if limit is None or reserved is None:
+        return [], [f"{label} is not in the {model.get('project')} render"]
+    unmeasured = []
+    if not limit["cpus"] or not limit["memory"]:
+        unmeasured.append(f"{label} declares no limit")
+    if not reserved["cpus"] or not reserved["memory"]:
+        unmeasured.append(f"{label} declares no reservation")
+    failed = [
+        f"{label} reservation {key} exceeds its limit"
+        for key in ("cpus", "memory")
+        if limit[key] and reserved[key] > limit[key]
+    ]
+    return failed, unmeasured
+
+
+def reservation_sum(running: list[dict], known: dict[str, dict]) -> dict:
+    """Reservations of running containers, each from its rendered service
+    (`com.docker.compose.project` and `.service` labels). A container outside
+    any Compose project (k3d and other plain containers) counts only through
+    the external-workload allowance, which the caller adds once. A running
+    Compose project without a render, LAB or not, cannot be summed (owner
+    decision, 2026-11-06)."""
+    found = {"cpus": 0.0, "memory": 0.0, "external": [], "failed": [], "unmeasured": []}
+    for container in running:
+        if not container.get("running", True):
+            continue
+        project, name = container["project"], container["name"]
+        model = known.get(project)
+        if model is None:
+            if project:
+                found["unmeasured"].append(
+                    f"running container {name} of {project} has no render"
+                )
+            else:
+                found["external"].append(name)
+            continue
+        service = container.get("service", "")
+        failed, unmeasured = service_problems(
+            model, service, f"running container {name} ({project}/{service})"
+        )
+        found["failed"] += failed
+        found["unmeasured"] += unmeasured
+        reserved = model.get("reservations", {}).get(service)
+        if reserved:
+            found["cpus"] += reserved["cpus"]
+            found["memory"] += reserved["memory"]
+    return found
+
+
+def candidate_problems(lab: dict) -> tuple[list, list]:
+    failed, unmeasured = [], []
+    for service in sorted(lab["services"]):
+        more = service_problems(lab, service, f"candidate service {service}")
+        failed += more[0]
+        unmeasured += more[1]
+    return failed, unmeasured
+
+
 def budget(
-    selected: dict[str, dict], running: list[dict], env: dict[str, str]
+    selected: dict[str, dict],
+    running: list[dict],
+    env: dict[str, str],
+    known: dict[str, dict],
 ) -> list[str]:
+    """`lab.py check`: the section 5 reservation sum against LAB_HOST_BUDGET_*."""
     try:
         cpu_budget = float(env["LAB_HOST_BUDGET_CPUS"])
         memory_budget = float(env["LAB_HOST_BUDGET_MEMORY_MIB"]) * 2**20
@@ -529,22 +614,66 @@ def budget(
     kept = [
         c for c in running if c["project"] not in projects and c.get("running", True)
     ]
-    cpus = sum(c["cpus"] for c in kept) + sum(x["cpus"] for x in selected.values())
-    memory = sum(c["memory"] for c in kept) + sum(
-        x["memory"] for x in selected.values()
+    summed = reservation_sum(kept, known)
+    problems = summed["failed"] + summed["unmeasured"]
+    for name, lab in selected.items():
+        failed, unmeasured = candidate_problems(lab)
+        problems += [f"{name}: {item}" for item in failed + unmeasured]
+    allowance = PROMOTION_EXTERNAL_ALLOWANCE
+    cpus = (
+        summed["cpus"]
+        + sum(x["reserved_cpus"] for x in selected.values())
+        + allowance["cpus"]
+    )
+    memory = (
+        summed["memory"]
+        + sum(x["reserved_memory"] for x in selected.values())
+        + allowance["memory_mib"] * 2**20
     )
     labs = {c["project"] for c in kept if c["project"].startswith(LAB_PROJECT_PREFIX)}
-    problems = []
-    if cpus > cpu_budget:
-        problems.append(f"declared CPUs {cpus:g} exceed budget {cpu_budget:g}")
+    if cpus > cpu_budget + 1e-9:  # float sums such as 0.5 + 1 + 2
+        problems.append(
+            f"reserved CPUs {cpus:g} (running, selected and external allowance) "
+            f"exceed budget {cpu_budget:g}"
+        )
     if memory > memory_budget:
         problems.append(
-            f"declared memory {memory / 2**20:.0f} MiB exceeds budget "
-            f"{memory_budget / 2**20:.0f} MiB"
+            f"reserved memory {memory / 2**20:.0f} MiB (running, selected and "
+            f"external allowance) exceeds budget {memory_budget / 2**20:.0f} MiB"
         )
     if len(labs | projects) > max_labs:
         problems.append(f"{len(labs | projects)} LABs would run; limit is {max_labs}")
     return problems
+
+
+def lab_models(
+    docker: str, env_file: pathlib.Path, running: list[dict], skip=()
+) -> dict[str, dict]:
+    """Renders of the running LAB projects, keyed by project. A project that
+    does not render stays unknown, so its containers cannot be summed."""
+    found = {}
+    projects = {
+        c["project"]
+        for c in running
+        if c.get("running", True) and c["project"].startswith(LAB_PROJECT_PREFIX)
+    }
+    # The project is each LAB file's top-level `name:` (kafka-cluster is
+    # hy-home-lab-kafka), so only the matching LAB is rendered.
+    folders = {}
+    for path in sorted(ROOT.glob("labs/*/docker-compose.yml")):
+        match = re.search(r"^name:\s*(\S+)", path.read_text("utf-8"), re.MULTILINE)
+        if match:
+            folders.setdefault(match[1].strip("'\""), path.parent.name)
+    for project in sorted(projects - set(skip)):
+        if project not in folders:
+            continue
+        try:
+            found[project] = footprint(
+                render(docker, env_file, lab_file(folders[project]))
+            )
+        except LabError:
+            continue
+    return found
 
 
 def running_containers(docker: str) -> list[dict]:
@@ -571,6 +700,7 @@ def running_containers(docker: str) -> list[dict]:
             {
                 "name": item["Name"].lstrip("/"),
                 "project": labels.get("com.docker.compose.project", ""),
+                "service": labels.get("com.docker.compose.service", ""),
                 "ports": ports,
                 "cpus": (host.get("NanoCpus") or 0) / 1e9,
                 "memory": host.get("Memory") or 0,
@@ -592,17 +722,24 @@ def path_integrity_problems(selected: dict[str, dict]) -> list[str]:
             if not source["read_only"]:
                 continue
             declared = pathlib.Path(source["declared"])
+            # Name the source (a path, never its contents): repo-relative
+            # inside the repository, otherwise as declared.
+            shown = source["declared"]
+            if declared.is_absolute() and _within(str(declared), str(ROOT)):
+                shown = os.path.relpath(declared, ROOT)
             if not declared.is_absolute():
-                problems.append(f"{name}: read-only source must be absolute")
+                problems.append(f"{name}: read-only source {shown} must be absolute")
                 continue
             if not os.path.lexists(declared):
-                problems.append(f"{name}: read-only source does not exist")
+                problems.append(f"{name}: read-only source {shown} does not exist")
                 continue
             # /var/run is a symlink to /run on most hosts.
             if _has_symlink_component(declared) and not _socket_exception(name, source):
-                problems.append(f"{name}: read-only source contains a symlink")
+                problems.append(f"{name}: read-only source {shown} contains a symlink")
             if not declared.exists():
-                problems.append(f"{name}: read-only source target does not exist")
+                problems.append(
+                    f"{name}: read-only source {shown} target does not exist"
+                )
     return problems
 
 
@@ -873,6 +1010,19 @@ def manifest_problems(
             problems.append(
                 f"{name}: resources.services {service} disagrees with rendered limits"
             )
+        # SPEC-0263 0.3.0: each service also carries its reservations.
+        want = (want.get("reservations") if isinstance(want, dict) else None) or {}
+        have = lab.get("reservations", {}).get(service)
+        if (
+            not isinstance(want, dict)
+            or have is None
+            or float(want.get("cpus") or 0) != have["cpus"]
+            or float(want.get("memory_mib") or 0) * 2**20 != have["memory"]
+        ):
+            problems.append(
+                f"{name}: resources.services {service} reservations disagree with "
+                "rendered reservations"
+            )
     documents = manifest.get("documents") or {}
     for key in ("guide", "runbook", "guide_target", "runbook_target"):
         path = documents.get(key)
@@ -890,6 +1040,10 @@ def manifest_problems(
 # SPEC-0263 section 5: the OS and Docker reserve kept off the promotion
 # budget (owner decision C, 2026-11-05; policy 0107 holds the same table).
 PROMOTION_RESERVE = {"cpus": 2.0, "memory_mib": 4096, "disk_percent": 10}
+# SPEC-0263 0.3.0 section 5: workloads outside every HOME and LAB Compose
+# project (k3d measured at about 1.0 CPU and 4.1 GiB on 2026-11-06) count
+# once, as this allowance; policy 0107 holds the same table.
+PROMOTION_EXTERNAL_ALLOWANCE = {"cpus": 2.0, "memory_mib": 6144}
 ALLOWED_DRIVERS = frozenset({"local", "bridge", "overlay"})
 MAX_ID = 65534
 NAME = re.compile(r"[a-z_][a-z0-9_.-]*", re.IGNORECASE)
@@ -989,6 +1143,15 @@ def _user_valid(user: str) -> bool:
     )
 
 
+# SPEC-0263 0.3.0 section 5 owner check items: reported, never measured, and
+# never a block; the promotion Task records each one.
+OWNER_JUDGMENT = "OWNER_JUDGMENT"
+OWNER_CHECK = {
+    "value": OWNER_JUDGMENT,
+    "source": "owner check item; the promotion Task records the owner's decision",
+}
+
+
 def _criterion(values: dict, failed: list[str], unmeasured: list[str]) -> dict:
     result = "FAIL" if failed else "NOT_RUN" if unmeasured else "PASS"
     return {"result": result, "values": values, "problems": failed + unmeasured}
@@ -1001,8 +1164,11 @@ def readiness(
     host: dict,
     running: list[dict],
     root: dict,
+    labs: dict[str, dict] | None = None,
 ) -> dict:
-    """SPEC-0263 section 5: a fail-closed promotion readiness report."""
+    """SPEC-0263 section 5: a fail-closed promotion readiness report.
+
+    `labs` holds the renders of running LAB projects, keyed by project."""
     source = f"labs/{name}/promotion.yaml"
     kind = manifest.get("kind")
     target = manifest.get("target") or {}
@@ -1056,10 +1222,8 @@ def readiness(
     values = {
         "kind": {"value": kind, "source": source},
         "folder": {"value": folder, "source": source},
-        # Spec section 5 "matches the service function" is an owner judgment;
-        # it is shown, not measured, and does not block PASS (narrowing in
-        # POL-0107 awaiting owner acceptance).
-        "function_fit": {"value": "NOT_RUN", "source": "owner judgment, not measured"},
+        # Spec section 5 "matches the service function" is an owner check item.
+        "function_fit": dict(OWNER_CHECK),
     }
     if kind not in MANIFEST_KINDS - {"undecided"}:
         failed.append(f"kind {kind!r} has no promotion target")
@@ -1146,10 +1310,8 @@ def readiness(
         },
         "retired_services": {"value": sorted(retired), "source": source},
         "profile": {"value": profile, "source": source},
-        # Spec section 5 profile and consumer clashes are not measured.
-        "profile_and_consumer_clashes": {"value": "NOT_RUN", "source": "not measured"},
+        "profile_and_consumer_clashes": dict(OWNER_CHECK),
     }
-    unmeasured.append("profile and consumer clashes are not measured")
     try:
         if profile not in profile_vocabulary():
             failed.append(f"profile {profile!r} is not in the POL-0078 vocabulary")
@@ -1172,15 +1334,16 @@ def readiness(
             "source": (host.get("cgroup_version") or {}).get("source", INFO_SOURCE),
         }
     }
-    # Spec section 5 groups and file modes are not measured.
-    values["groups_and_file_modes"] = {"value": "NOT_RUN", "source": "not measured"}
-    unmeasured.append("groups and file modes are not measured")
+    values["groups_and_file_modes"] = dict(OWNER_CHECK)
     features = [str(f) for f in requirements.get("kernel_features") or []]
-    if lab["cpus"] or lab["memory"] or "cgroup2" in features:
+    declared = lab["cpus"] or lab["memory"] or lab.get("reserved_memory")
+    if declared or "cgroup2" in features:
         if cgroup is None:
             unmeasured.append("cgroup version was not measured")
         elif str(cgroup) != "2":
-            failed.append(f"declared limits need cgroup v2, host has v{cgroup}")
+            failed.append(
+                f"declared limits and reservations need cgroup v2, host has v{cgroup}"
+            )
     for service, user in sorted(lab.get("users", {}).items()):
         if user is None:
             continue
@@ -1221,48 +1384,60 @@ def readiness(
         failed.append(f"Docker data root {data_root['value']} is not absolute")
     criteria["docker"] = _criterion(values, failed, unmeasured)
 
-    # Server resources: limits in bytes, reported in MiB.
+    # Server resources: reservations in bytes, reported in MiB. Running
+    # containers count with their rendered service's reservation; the
+    # candidate with its own render; external workloads once, as the
+    # allowance (SPEC-0263 0.3.0).
     failed, unmeasured = [], []
+    known = {root.get("project", ""): root, **(labs or {})}
     counted = [
         c for c in running if c.get("running", True) and c["project"] != lab["project"]
     ]
     retiring = [c for c in counted if c["name"] in retired_identity["containers"]]
-    kept = [c for c in counted if c not in retiring]
-    unlimited = sorted(c["name"] for c in kept if not c["cpus"] or not c["memory"])
-    unmeasured += [f"running container {c} declares no limit" for c in unlimited]
-    # A candidate service without a limit cannot be summed either.
-    unmeasured += [
-        f"candidate service {s} declares no limit"
-        for s, v in sorted(lab["services"].items())
-        if not v["cpus"] or not v["memory"]
-    ]
-    ncpu, memtotal = host.get("NCPU"), host.get("MemTotal")
-    inspect = "docker inspect HostConfig.NanoCpus/Memory of running containers"
+    kept = reservation_sum([c for c in counted if c not in retiring], known)
+    gone = reservation_sum(retiring, known)  # only reported; problems ignored
+    failed += kept["failed"]
+    unmeasured += kept["unmeasured"]
+    more = candidate_problems(lab)
+    failed += more[0]
+    unmeasured += more[1]
+    allowance = PROMOTION_EXTERNAL_ALLOWANCE
+    render_source = "rendered deploy.resources.reservations by compose labels"
     values = {
-        "running_cpus": {"value": sum(c["cpus"] for c in counted), "source": inspect},
-        "retired_cpus": {"value": sum(c["cpus"] for c in retiring), "source": inspect},
-        "candidate_cpus": {"value": lab["cpus"], "source": "rendered compose"},
-        "running_memory_mib": {
-            "value": sum(c["memory"] for c in counted) / MIB_BYTES,
-            "source": inspect,
+        "running_reserved_cpus": {
+            "value": kept["cpus"] + gone["cpus"], "source": render_source
         },
-        "retired_memory_mib": {
-            "value": sum(c["memory"] for c in retiring) / MIB_BYTES,
-            "source": inspect,
+        "retired_reserved_cpus": {"value": gone["cpus"], "source": render_source},
+        "candidate_reserved_cpus": {
+            "value": lab["reserved_cpus"], "source": "rendered compose"
         },
-        "candidate_memory_mib": {
-            "value": lab["memory"] / MIB_BYTES,
-            "source": "rendered compose",
+        "running_reserved_memory_mib": {
+            "value": (kept["memory"] + gone["memory"]) / MIB_BYTES,
+            "source": render_source,
         },
-        "unlimited_containers": {"value": unlimited, "source": inspect},
-    }
-    cpus = sum(c["cpus"] for c in kept) + lab["cpus"]
-    memory = sum(c["memory"] for c in kept) + lab["memory"]
-    values["cpus_needed"] = {"value": cpus, "source": "running - retired + candidate"}
-    values["memory_needed_mib"] = {
-        "value": memory / MIB_BYTES,
-        "source": "running - retired + candidate",
-    }
+        "retired_reserved_memory_mib": {
+            "value": gone["memory"] / MIB_BYTES, "source": render_source
+        },
+        "candidate_reserved_memory_mib": {
+            "value": lab["reserved_memory"] / MIB_BYTES, "source": "rendered compose"
+        },
+        "allowance_cpus": {"value": allowance["cpus"], "source": "POL-0107"},
+        "allowance_memory_mib": {
+            "value": allowance["memory_mib"], "source": "POL-0107"
+        },
+        "external_containers": {
+            "value": sorted(kept["external"]),
+            "source": "running containers outside every rendered project",
+        },
+    }  # fmt: skip
+    cpus = kept["cpus"] + lab["reserved_cpus"] + allowance["cpus"]
+    memory = (
+        kept["memory"] + lab["reserved_memory"] + allowance["memory_mib"] * MIB_BYTES
+    )
+    ncpu, memtotal = host.get("NCPU"), host.get("MemTotal")
+    needed = "running - retired + candidate + allowance"
+    values["cpus_needed"] = {"value": cpus, "source": needed}
+    values["memory_needed_mib"] = {"value": memory / MIB_BYTES, "source": needed}
     if ncpu is None or memtotal is None:
         unmeasured.append("host CPU count or memory was not measured")
     else:
@@ -1276,11 +1451,12 @@ def readiness(
             "value": memory_budget / MIB_BYTES,
             "source": "MemTotal - reserve",
         }
-        if cpus > cpu_budget:
-            failed.append(f"CPUs {cpus:g} exceed budget {cpu_budget:g}")
+        # A small epsilon: 7 + 1 + 2 must not exceed 10 through float error.
+        if cpus > cpu_budget + 1e-9:
+            failed.append(f"reserved CPUs {cpus:g} exceed budget {cpu_budget:g}")
         if memory > memory_budget:
             failed.append(
-                f"memory {memory / MIB_BYTES:.0f} MiB exceeds budget "
+                f"reserved memory {memory / MIB_BYTES:.0f} MiB exceeds budget "
                 f"{memory_budget / MIB_BYTES:.0f} MiB"
             )
     need = (manifest.get("resources") or {}).get("disk_gib") or {}
@@ -1305,7 +1481,7 @@ def readiness(
                 f"{disk}: {free / 2**30:.1f} GiB usable, disk_gib.{key} needs "
                 f"{need[key]}"
             )
-    # Over budget stays FAIL even with unlimited containers: the known lower
+    # Over budget stays FAIL even with unsummable containers: the known lower
     # bound already exceeds the budget. NOT_RUN only when the measured sum fits.
     criteria["resources"] = _criterion(values, failed, unmeasured)
 
@@ -1313,7 +1489,19 @@ def readiness(
     overall = (
         "PASS" if results == {"PASS"} else "FAIL" if "FAIL" in results else "NOT_RUN"
     )
-    return {"lab": name, "kind": kind, "result": overall, "criteria": criteria}
+    owner_checks = sorted(
+        key
+        for found in criteria.values()
+        for key, value in found["values"].items()
+        if value.get("value") == OWNER_JUDGMENT
+    )
+    return {
+        "lab": name,
+        "kind": kind,
+        "result": overall,
+        "criteria": criteria,
+        "owner_checks": owner_checks,
+    }
 
 
 def ledger_dir(env: dict[str, str]) -> pathlib.Path:
@@ -1366,6 +1554,12 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         docker_root=docker_root(args.docker),
     )
     running = running_containers(args.docker)
+    known = {root["project"]: root} | lab_models(
+        args.docker,
+        args.env_file,
+        running,
+        skip={x["project"] for x in selected.values()},
+    )
     ids = catalog_ids()
     manifests = []
     for name, lab in selected.items():
@@ -1377,17 +1571,16 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
         "labs": {
             name: {
                 "project": lab["project"],
-                "declared_cpus": lab["cpus"],
-                "declared_memory_mib": round(lab["memory"] / 2**20),
+                "limit_cpus": lab["cpus"],
+                "limit_memory_mib": round(lab["memory"] / 2**20),
+                "reserved_cpus": lab["reserved_cpus"],
+                "reserved_memory_mib": round(lab["reserved_memory"] / 2**20),
             }
             for name, lab in selected.items()
         },
-        # Unlimited containers cannot be summed; they are listed, not counted.
-        "running_without_limits": sorted(
-            c["name"]
-            for c in running
-            if c["running"] and (not c["cpus"] or not c["memory"])
-        ),
+        # Outside every rendered project: counted once, as the allowance.
+        "external_containers": reservation_sum(running, known)["external"],
+        "external_allowance": PROMOTION_EXTERNAL_ALLOWANCE,
         "problems": data_root_problems(env, root)
         + path_integrity_problems(selected)
         + source_allowlist_problems(selected, env, root)
@@ -1397,7 +1590,7 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
             for item in include_problems(name, ROOT / lab_file(name))
         ]
         + collisions(selected, root, running)
-        + budget(selected, running, env)
+        + budget(selected, running, env, known)
         + stale_volumes(args.docker, selected)
         + manifests,
     }
@@ -1630,13 +1823,15 @@ def cmd_readiness(args) -> int:
         env_file=args.root_env_file,
         docker_root=docker_root(args.docker),
     )
+    running = running_containers(args.docker)
     report = readiness(
         args.lab,
         load_manifest(args.lab),
         candidate,
         measure_host(args.docker, root["home_data_root"]),
-        running_containers(args.docker),
+        running,
         root,
+        lab_models(args.docker, args.env_file, running, skip={candidate["project"]}),
     )
     text = json.dumps(report, indent=2) + "\n"
     if args.report:
@@ -1720,8 +1915,9 @@ def main(argv: list[str] | None = None) -> int:
     except LabError as exc:
         print(f"lab.py: {exc}", file=sys.stderr)
         return exc.code
-    except (KeyError, TypeError, ValueError) as exc:
-        # Bad env values or a hand-edited ledger are invalid input, not a crash.
+    except (AttributeError, KeyError, TypeError, ValueError) as exc:
+        # Bad env values, a hand-edited ledger or a rendered value of an
+        # unexpected type are invalid input, not a crash.
         print(f"lab.py: invalid input: {exc}", file=sys.stderr)
         return 2
 

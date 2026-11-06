@@ -214,6 +214,13 @@ services:
     <<: *airflow-common
     container_name: airflow-dag-processor
     hostname: airflow-dag-processor
+    # Its own reservation: DAG parsing peaked at 1.65 CPU and 329 MiB, far
+    # above the other x-resource-db members (owner decision, 2026-11-06).
+    deploy:
+      resources:
+        reservations:
+          cpus: "2.00"
+          memory: 512M
     group_add:
       - '${SECRETS_GID:-1000}'
     read_only: false
@@ -276,6 +283,12 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     mem_limit: 384m
+    # Reservation (measured; capped at the limit; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.50"
+          memory: 384M
     read_only: false
     command: triggerer
     networks:
@@ -421,6 +434,12 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     mem_limit: 384m
+    # Reservation (measured; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 64M
     read_only: false
     command: celery flower
     networks:

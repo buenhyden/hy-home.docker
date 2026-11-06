@@ -142,6 +142,13 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-med
     container_name: seaweedfs-filer
+    # Own reservation: peak 0.011 CPU / 194 MiB, above its template's other members;
+    # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 320M
     hostname: seaweedfs-filer
     group_add:
       - '${SECRETS_GID:-1000}'

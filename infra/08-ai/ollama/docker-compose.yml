@@ -57,7 +57,10 @@ services:
           cpus: '4.0'
           memory: 8G
           pids: 1024
+        # cpus is measured (SPEC-0263-TSK-0002 Measurements); the 4G memory
+        # reservation is kept as authored for model loading.
         reservations:
+          cpus: '0.05'
           memory: 4G
           devices:
             - driver: nvidia

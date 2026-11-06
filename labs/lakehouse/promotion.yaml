@@ -1,6 +1,7 @@
 # SPEC-0263 promotion manifest for the lakehouse LAB.
-# resources.services copies the rendered per-container limits; disk_gib is an
-# estimate. Secret destinations are a plan only and are never created here.
+# resources.services copies the rendered per-container limits and
+# reservations; disk_gib is an estimate.
+# Secret destinations are a plan only and are never created here.
 # kind undecided: the owner has not named a promotion target yet.
 kind: undecided
 integrations:
@@ -25,21 +26,39 @@ resources:
     flink-jobmanager:
       cpus: 1.0
       memory_mib: 1280
+      reservations:
+        cpus: 1.0
+        memory_mib: 1280
     flink-taskmanager:
       cpus: 2.0
       memory_mib: 2048
+      reservations:
+        cpus: 2.0
+        memory_mib: 2048
     great-expectations:
       cpus: 1.0
       memory_mib: 512
+      reservations:
+        cpus: 1.0
+        memory_mib: 512
     seaweedfs-table-bucket:
       cpus: 0.5
       memory_mib: 256
+      reservations:
+        cpus: 0.5
+        memory_mib: 256
     spark:
       cpus: 2.0
       memory_mib: 2048
+      reservations:
+        cpus: 2.0
+        memory_mib: 2048
     trino:
       cpus: 2.0
       memory_mib: 2048
+      reservations:
+        cpus: 2.0
+        memory_mib: 2048
   disk_gib:
     data: 20
     images: 8
