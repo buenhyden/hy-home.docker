@@ -29,12 +29,12 @@ secrets:
 
 services:
   jupyterlab:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.0 CPU / 99.7 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "2.00"
-          memory: 2048M
+          cpus: "0.05"
+          memory: 160M
     profiles:
       - jupyterlab
     extends:

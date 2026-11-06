@@ -53,12 +53,12 @@ volumes:
 
 services:
   etcd-1:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.062 CPU / 66.6 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "0.50"
-          memory: 256M
+          cpus: "0.10"
+          memory: 128M
     profiles:
       - postgres-ha
     extends:
@@ -100,12 +100,12 @@ services:
       <<: *tier-label
 
   etcd-2:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.062 CPU / 66.6 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "0.50"
-          memory: 256M
+          cpus: "0.10"
+          memory: 128M
     profiles:
       - postgres-ha
     extends:
@@ -147,12 +147,12 @@ services:
       <<: *tier-label
 
   etcd-3:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.062 CPU / 66.6 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "0.50"
-          memory: 256M
+          cpus: "0.10"
+          memory: 128M
     profiles:
       - postgres-ha
     extends:
@@ -194,12 +194,12 @@ services:
       lab_pg_obs_net: {}
 
   pg-router:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.002 CPU / 37.4 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "1.00"
-          memory: 512M
+          cpus: "0.05"
+          memory: 64M
     profiles:
       - postgres-ha
     extends:
@@ -329,12 +329,12 @@ services:
       <<: *tier-label
 
   pg-0:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.102 CPU / 186.0 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "2.00"
-          memory: 2048M
+          cpus: "0.20"
+          memory: 288M
     profiles:
       - postgres-ha
     extends:
@@ -385,12 +385,12 @@ services:
       lab_pg_core_net: {}
 
   pg-1:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.102 CPU / 186.0 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "2.00"
-          memory: 2048M
+          cpus: "0.20"
+          memory: 288M
     profiles:
       - postgres-ha
     extends:
@@ -441,12 +441,12 @@ services:
       lab_pg_core_net: {}
 
   pg-2:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.102 CPU / 186.0 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "2.00"
-          memory: 2048M
+          cpus: "0.20"
+          memory: 288M
     profiles:
       - postgres-ha
     extends:
@@ -497,12 +497,12 @@ services:
       lab_pg_core_net: {}
 
   pg-0-exporter:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.051 CPU / 15.0 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "0.50"
-          memory: 256M
+          cpus: "0.10"
+          memory: 32M
     profiles:
       - postgres-ha
     extends:
@@ -540,12 +540,12 @@ services:
       lab_pg_obs_net: {}
 
   pg-1-exporter:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.051 CPU / 15.0 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "0.50"
-          memory: 256M
+          cpus: "0.10"
+          memory: 32M
     profiles:
       - postgres-ha
     extends:
@@ -583,12 +583,12 @@ services:
       lab_pg_obs_net: {}
 
   pg-2-exporter:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.051 CPU / 15.0 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "0.50"
-          memory: 256M
+          cpus: "0.10"
+          memory: 32M
     profiles:
       - postgres-ha
     extends:

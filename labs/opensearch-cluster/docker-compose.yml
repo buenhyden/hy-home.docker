@@ -143,11 +143,11 @@ volumes:
 
 services:
   opensearch-node1:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.115 CPU / 1630.2 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "2.00"
+          cpus: "0.20"
           memory: 2048M
     <<: *lab-node
     hostname: opensearch-node1
@@ -172,11 +172,11 @@ services:
       - ../../infra/04-data/opensearch/opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
 
   opensearch-node2:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.115 CPU / 1630.2 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "2.00"
+          cpus: "0.20"
           memory: 2048M
     <<: *lab-node
     hostname: opensearch-node2
@@ -201,11 +201,11 @@ services:
       - ../../infra/04-data/opensearch/opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
 
   opensearch-node3:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.115 CPU / 1630.2 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "2.00"
+          cpus: "0.20"
           memory: 2048M
     <<: *lab-node
     hostname: opensearch-node3
@@ -230,12 +230,12 @@ services:
       - ../../infra/04-data/opensearch/opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
 
   lab-opensearch-dashboards:
-    # Reservation: unmeasured: reservation = limit until measured in an approved LAB lease run (lab.py run).
+    # Reservation: measured in the 2026-11-06 lease run (5 idle samples): peak 0.007 CPU / 288.8 MiB; x 1.5 with the 0.05 / 32M floor, capped at the limit.
     deploy:
       resources:
         reservations:
-          cpus: "1.00"
-          memory: 512M
+          cpus: "0.05"
+          memory: 448M
     profiles: [opensearch-cluster]
     extends:
       file: ../../infra/common-optimizations.yml

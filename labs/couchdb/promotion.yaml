@@ -25,20 +25,20 @@ resources:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.05
+        memory_mib: 128
     couchdb-2:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.05
+        memory_mib: 128
     couchdb-3:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.05
+        memory_mib: 128
     couchdb-cluster-init:
       cpus: 0.5
       memory_mib: 256

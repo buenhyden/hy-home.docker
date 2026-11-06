@@ -25,8 +25,8 @@ resources:
       cpus: 0.5
       memory_mib: 256
       reservations:
-        cpus: 0.5
-        memory_mib: 256
+        cpus: 0.05
+        memory_mib: 160
     mongo-init:
       cpus: 0.5
       memory_mib: 256
@@ -43,20 +43,20 @@ resources:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.05
+        memory_mib: 320
     mongodb-rep1:
       cpus: 2.0
       memory_mib: 2048
       reservations:
-        cpus: 2.0
-        memory_mib: 2048
+        cpus: 0.05
+        memory_mib: 288
     mongodb-rep2:
       cpus: 2.0
       memory_mib: 2048
       reservations:
-        cpus: 2.0
-        memory_mib: 2048
+        cpus: 0.05
+        memory_mib: 288
   disk_gib:
     data: 20
     images: 2

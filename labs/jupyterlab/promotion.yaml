@@ -23,8 +23,8 @@ resources:
       cpus: 2.0
       memory_mib: 2048
       reservations:
-        cpus: 2.0
-        memory_mib: 2048
+        cpus: 0.05
+        memory_mib: 160
   disk_gib:
     data: 10
     images: 4

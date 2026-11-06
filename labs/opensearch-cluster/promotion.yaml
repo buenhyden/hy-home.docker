@@ -43,25 +43,25 @@ resources:
       cpus: 1.0
       memory_mib: 512
       reservations:
-        cpus: 1.0
-        memory_mib: 512
+        cpus: 0.05
+        memory_mib: 448
     opensearch-node1:
       cpus: 2.0
       memory_mib: 2048
       reservations:
-        cpus: 2.0
+        cpus: 0.2
         memory_mib: 2048
     opensearch-node2:
       cpus: 2.0
       memory_mib: 2048
       reservations:
-        cpus: 2.0
+        cpus: 0.2
         memory_mib: 2048
     opensearch-node3:
       cpus: 2.0
       memory_mib: 2048
       reservations:
-        cpus: 2.0
+        cpus: 0.2
         memory_mib: 2048
   disk_gib:
     data: 30
