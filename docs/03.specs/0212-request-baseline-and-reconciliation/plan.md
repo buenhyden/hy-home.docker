@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.42.0"
+version: "1.43.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -120,6 +120,10 @@ guards, while recording the current five trust boundaries. It preserves rather
 than re-runs SPEC-0204's historical Gateway/Attester/Export 1.0 receipts;
 Windows B, live scheduling, actual credentials, routes and remote CI remain
 outside the authorized local source and owned-isolation scope.
+
+W108 records D12, the first Opsflow installation in HOME, in TSK-0051. The
+2026-11-06 owner decision authorizes the Task and Runbook procedure for review
+only; the six steps run later, one at a time, in an owner-approved window.
 
 W81–W86 implement the approved local P06 plan in TSK-0045. Existing OpenBao
 consumer acceptances and public catalog authority remain scoped to their own
@@ -251,6 +255,7 @@ Secret access or remote integration.
 | W105 | 100 | Preserve selected Export 2.0 and distinguish synthetic ACK from recorded Export 1.0 Windows ACKs | W104 | TSK-0050 | Isolated Export 2.0 manifest/fixture contract; external Windows acceptance remains NOT_RUN |
 | W106 | 101 | Bind Attester retry and SQLite backup/restore to one report's stored evidence and state | W104 | TSK-0050 | Mixed-record, tamper, interruption, concurrent replay and owned backup/restore regressions |
 | W107 | 102 | Publish current trust-boundary, route and external-receiver handoffs without mutating watched routes | W103–W106 | TSK-0050 | Documentation/readme/runbook checks, offline gate and explicit operational/remote residuals |
+| W108 | 103 | Install the Opsflow manifest workload in HOME in six ordered, separately checked steps without editing the image | W72 | TSK-0051 | Per-step backup, `008_checks.sql`, permission canary, paused import, synthetic run and unpause evidence; NOT_RUN until an approved window |
 
 ### Current v30 continuation and delivery
 
