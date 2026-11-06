@@ -7,6 +7,7 @@ owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 created: "{{CREATED}}"
 observed_at: "{{OBSERVED_AT}}"
+review_cycle: "{{REVIEW_CYCLE}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
@@ -34,7 +35,7 @@ observed_at: "{{OBSERVED_AT}}"
 
 ## Evidence
 
-### Sources
+### Provenance
 
 {{TRACKED_SOURCES_COMMIT_AND_OBSERVATION_DATE}}
 

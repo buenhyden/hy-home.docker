@@ -17,17 +17,19 @@ created: "{{CREATED}}"
 
 {{WHAT_THIS_PROMPT_PRODUCES_AND_WHY}}
 
-### Applies To
-
-{{ROLES_SKILLS_AND_EVALUATION_CRITERIA}}
-
 ## Inputs
 
 {{INPUTS_AND_THE_STOP_CONDITION_WHEN_ONE_IS_MISSING}}
 
 ## Instructions
 
+### Constraints
+
 {{CONCRETE_REFUSALS}}
+
+### Applies To
+
+{{ROLES_SKILLS_AND_EVALUATION_CRITERIA}}
 
 ## Outputs
 

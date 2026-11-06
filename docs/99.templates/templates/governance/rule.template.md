@@ -5,6 +5,10 @@ type: "governance/rule"
 status: "draft"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
+action: "warn"
+enabled: true
+event: "{{EVENT}}"
+name: "{{NAME}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
@@ -18,13 +22,7 @@ updated: "{{UPDATED}}"
 
 ## Scope
 
-### Event
-
-{{EVENT_EXPLANATION}}
-
-### Pattern
-
-{{PATTERN_EXPLANATION}}
+{{RULE_NAME_EVENT_AND_MATCHING_SCOPE}}
 
 ## Rules
 
@@ -36,17 +34,7 @@ updated: "{{UPDATED}}"
 
 ## Verification
 
-### Checks
-
-{{SCOPED_CHECKS}}
-
-### Expected Signals
-
-{{EXPECTED_SIGNALS}}
-
-### Evidence Limits
-
-{{EVIDENCE_LIMITS}}
+{{MATCHING_SCOPE_CHECKS_AND_EVIDENCE_LIMITS}}
 
 ## Related Documents
 
