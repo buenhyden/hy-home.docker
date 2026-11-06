@@ -4,7 +4,9 @@
 # the paragraph (the job's own report/email work), schedule and delivery stay.
 # Each prompt must hold the marker exactly once; an earlier mention would cut
 # the job's own text, so any other count stops the run before any edit. A job
-# whose prompt already ends with the current block is left untouched.
+# whose prompt already ends with the current block is left untouched. A job
+# whose own text still names the shared email_body.html scratch file stops the
+# run too (remove that host rule first).
 # Run as the Hermes user, without sudo:  bash deploy/update-cron-prompts.sh
 # Rollback: copy the printed jobs.json backup back and restart
 # hermes-gateway.service.
@@ -41,9 +43,11 @@ count = prompt.count(mark)
 if count != 1 or block.count(mark) != 1:
     sys.exit(f"{job_id}: {count} {mark} markers, expected exactly 1")
 head = prompt[: prompt.index(mark)]
+# The 0.4.0 block sends the plugin-rendered email; a host rule that still has
+# the agent write the shared scratch file must be removed from the job first.
+if "email_body.html" in head:
+    sys.exit(f"{job_id}: job text before {mark} still uses email_body.html")
 new = (head + block).rstrip("\n")  # what "$(cat)" below passes to hermes
-if not new.startswith(head) or new.count(mark) != 1:
-    sys.exit(f"{job_id}: job text before {mark} would change")
 # An empty stage file marks an unchanged job: rerunning the script is a no-op.
 open(out, "w").write("" if new == prompt else new)
 PY

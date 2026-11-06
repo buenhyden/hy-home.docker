@@ -104,7 +104,13 @@ class CronPromptTests(unittest.TestCase):
         )
         self.assertIn("mktemp -d", self.prompt)
         self.assertIn("report BLOCKED instead of shortening it", self.prompt)
-        self.assertNotIn("not preserved", self.prompt)
+        (fallback,) = [x for x in self.sentences() if "not preserved" in x]
+        self.assertIn("If that is still BLOCKED", fallback)
+        self.assertIn("items [] and source_receipts []", self.prompt)
+        self.assertIn("only the Gateway submission is skipped", self.prompt)
+        self.assertIn("exactly the text of telegram_path", self.prompt)
+        self.assertIn("call submit_research_report once more", self.prompt)
+        self.assertNotIn("do not call submit", self.prompt)
         self.assertNotIn("does not keep the full report", self.prompt)
 
     def test_prompt_never_uses_the_shared_scratch_file_or_disables_the_verifier(self):
@@ -265,6 +271,21 @@ class CronPromptScriptRunTests(unittest.TestCase):
         self.assertEqual([], edits)
         self.assertIn(
             f"{self.JOBS[1]}: 2 DIRECT RESEARCH SUBMISSION markers, expected exactly 1",
+            result.stderr,
+        )
+
+    def test_a_job_still_using_the_shared_scratch_file_stops_before_any_edit(self):
+        prompts = {i: "work.\n\nDIRECT RESEARCH SUBMISSION old" for i in self.JOBS}
+        prompts[self.JOBS[0]] = (
+            "8. Write the email to ~/.hermes/cache/scratch/email_body.html.\n\n"
+            "DIRECT RESEARCH SUBMISSION old"
+        )
+        result, edits = self.run_script(prompts)
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual([], edits)
+        self.assertIn(
+            f"{self.JOBS[0]}: job text before DIRECT RESEARCH SUBMISSION still uses "
+            "email_body.html",
             result.stderr,
         )
 

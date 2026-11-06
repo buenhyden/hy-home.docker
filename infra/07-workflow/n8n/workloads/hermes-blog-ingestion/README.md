@@ -1,6 +1,6 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -85,12 +85,19 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
 0.3.0까지는 이 receipt 집합 JSON이 `source_text`였고, Blog-data ADR-0097은 이를 원본
 보고서로 그대로 렌더링하므로 0.4.0 설치 전에는 Gateway schema 5로 넘어가지 않습니다.
 
-- 보고서 저장소: `~/.hermes/data/research-report-store/<job_id>-<execution_id>/`(0700)에
-  `report.md`(정확한 바이트), `source-set.json`, `email.html`, `telegram.txt`,
-  `manifest.json`(job·execution·scheduled 시각과 각 파일 다이제스트)을 한 번만
-  만듭니다(0600, 완성된 임시 파일의 link로 생성, 덮어쓰기 없음). 같은 실행의 같은
-  바이트 재제출은 멱등 재실행이고, 다른 바이트는 파일을 바꾸지 않고 `report_conflict`로
-  멈춥니다. Hermes cron 출력 보존 기간과 무관하게 플러그인이 소유합니다.
+- 저장 먼저: 도구는 보고서를 검증한 뒤 cron 실행을 확인하고, Gateway 경로보다 먼저
+  `~/.hermes/data/research-report-store/<job_id>-<execution_id>/`(0700)에 `report.md`
+  (정확한 바이트), `email.html`, `telegram.txt`, `manifest.json`(job·execution·scheduled
+  시각, 각 출력 다이제스트, `gateway`)을 한 번만 만듭니다(0600, 완성된 임시 파일의 link로
+  생성, 덮어쓰기 없음). receipt가 있을 때만 `source-set.json`을 더합니다. 같은 실행의
+  재제출은 `report.md` 바이트만 비교해 같으면 저장된 출력을 다시 렌더링하지 않고 돌려주고
+  (플러그인 갱신 뒤 렌더러가 바뀌어도 충돌이 아님), 다르면 파일을 바꾸지 않고
+  `report_conflict`로 멈춥니다. 잠금을 쥔 채 이 실행 디렉터리에 남은 `.tmp-*`를 먼저
+  지워 중단된 생성(링크 2개)을 복구합니다. Hermes cron 출력 보존 기간과 무관하게
+  플러그인이 소유합니다.
+- 항목이 없는 날: `items`와 `source_receipts`가 모두 빈 목록이면 보고서를 저장·렌더링하고
+  `gateway: "skipped_no_items"`를 결과와 manifest에 남기며 Gateway에는 보내지 않습니다
+  (`ingestion-v1`은 항목 1~100개).
 - 파생 출력: 이메일 HTML과 Telegram 텍스트는 저장된 `report.md`에서만 표준 라이브러리
   렌더러로 만듭니다(모든 텍스트 escape, 제목·문단·목록, 링크는 평문 URL). 이메일에는
   `report-sha256` meta가, manifest에는 두 출력의 `derived_from_sha256`이 기록되어
@@ -99,17 +106,20 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
   반환되며, 이메일·Telegram·Gateway 결과는 따로 판정합니다. 공유 scratch 파일
   `email_body.html`은 쓰지 않습니다.
 - 거부와 `BLOCKED`: 누락·빈 값, 확정 전 자리표시, 잘못된 UTF-8(고립 surrogate),
-  탭·개행 외 제어 문자, 524288 code point 초과 또는 전체 요청 1 MiB 초과는 고정 오류와
-  `state: "BLOCKED"`로 네트워크 호출과 저장 전에 거부합니다. 잘라내거나 receipt JSON,
+  탭·개행 외 제어 문자, 양방향 embedding·override·isolate 문자(U+202A~U+202E,
+  U+2066~U+2069, `report_bidi_control`; zero-width joiner는 허용), 524288 code point 초과
+  또는 보고서만으로 요청 1 MiB 초과는 보고서 단위 오류로, 경로 없이 `state: "BLOCKED"`를
+  돌려주고 저장·네트워크 호출 전에 멈춥니다. 저장 뒤 Gateway 쪽 실패(receipt, 항목 검증,
+  항목을 더한 요청 크기 등)는 보고서 경로와 함께 돌려줍니다. 렌더러의 링크·제목 처리는
+  역추적 없는 선형 시간입니다. 잘라내거나 receipt JSON,
   다이제스트, 모델 조각으로 대신하지 않습니다. Gateway 보고서 ID는 기존 outbox 기록의
   `response.id`로 복구합니다.
 - 신뢰 경계: 보고서 바이트는 출력의 동일성만 증명하고 내용의 진실성은 증명하지
   않습니다. collector receipt는 같은 UID의 감사 결속이지 생산자 인증·독립
   Attestation이 아니며, Attester는 `source_text`를 읽지 않고 항목을 독립 수집으로
   검증합니다. 다섯 경계는 서로 대신하지 않습니다.
-- 지표: `tools.metric_lines`가 작업 종류·결과·차단 사유·크기 구간만 label로 쓰는
-  Pushgateway 텍스트를 만듭니다. 이 워크로드에는 아직 push 경로·Alertmanager 규칙·
-  Grafana 패널이 없어 SPEC-0265 W5의 남은 작업입니다.
+- 지표: 이 워크로드에는 아직 Pushgateway push 경로·Alertmanager 규칙·Grafana 패널이
+  없습니다. 저카디널리티 지표는 SPEC-0265 W5에서 push 경로와 함께 들어옵니다.
 - Rollback: 플러그인과 프롬프트를 0.3.0과 이전 블록으로 되돌립니다(아래 플러그인
   rollback 절차). 이미 Gateway schema 5로 전환했다면 0.3.0으로 되돌리기 전에 schema 4
   백업을 복원하고 `c05e5b88` 이미지를 다시 붙여야 하며, 옛 이미지를 schema 5 DB에
@@ -117,7 +127,9 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
 
 `deploy/update-cron-prompts.sh`는 각 작업 프롬프트에 `DIRECT RESEARCH SUBMISSION`
 표지가 정확히 한 번 있어야 진행하고, 아니면 작업 ID와 개수를 출력하고 아무 작업도
-고치지 않습니다. 앞부분 보존을 확인하며, 이미 현재 블록인 작업은 건드리지 않습니다.
+고치지 않습니다. 표지 앞 작업 문구에 공유 scratch 파일 `email_body.html`이 남아 있어도
+(호스트 규칙 8) 작업 ID를 출력하고 멈추므로, 그 규칙을 먼저 지워야 0.4.0 블록이
+설치됩니다. 이미 현재 블록인 작업은 건드리지 않습니다.
 `deploy/update-hermes-plugin.sh`의 거부 메시지는 경로와 8진 mode를 함께 출력합니다.
 
 플러그인 rollback은 서비스 중지 뒤 현재 디렉터리를 보존하고, 빈 0700 대상에
