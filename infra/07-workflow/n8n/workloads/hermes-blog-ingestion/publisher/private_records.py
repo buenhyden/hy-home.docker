@@ -162,6 +162,61 @@ class PrivateRecords:
         finally:
             os.close(fd)
 
+    def remove_temporaries(self):
+        """Drop temporaries a crashed writer left; call only while holding the lock.
+
+        A crash between link() and unlink() in create() leaves the record with a
+        second link, which read() refuses until the temporary is gone.
+        """
+        self._check_lock()
+        for name in os.listdir(self.fd):
+            if name.startswith(".tmp-"):
+                try:
+                    os.unlink(name, dir_fd=self.fd)
+                except FileNotFoundError:
+                    pass
+
+    def create(self, name, raw):
+        """Create an immutable record once; True if created, False on an identical replay.
+
+        The bytes are complete before the name appears (link of a synced temporary),
+        and an existing record is never replaced: different bytes raise record_conflict.
+        """
+        self._check_lock()
+        name = self._name(name)
+        if not isinstance(raw, bytes) or len(raw) > MAX_RECORD:
+            raise RecordError("invalid_record")
+        temp = ".tmp-" + secrets.token_hex(16)
+        descriptor = os.open(
+            temp,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+            0o600,
+            dir_fd=self.fd,
+        )
+        try:
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(raw)
+                stream.flush()
+                os.fsync(stream.fileno())
+            self._check_lock()
+            try:
+                os.link(temp, name, src_dir_fd=self.fd, dst_dir_fd=self.fd)
+            except FileExistsError:
+                pass
+            else:
+                os.unlink(temp, dir_fd=self.fd)
+                os.fsync(self.fd)
+                self._check_lock()
+                return True
+        finally:
+            try:
+                os.unlink(temp, dir_fd=self.fd)
+            except FileNotFoundError:
+                pass
+        if self.read(name) != raw:
+            raise RecordError("record_conflict")
+        return False
+
     def write(self, name, raw):
         self._check_lock()
         name = self._name(name)

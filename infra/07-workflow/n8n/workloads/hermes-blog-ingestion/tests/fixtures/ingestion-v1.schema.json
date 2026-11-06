@@ -65,6 +65,12 @@
           "type": "string",
           "format": "source-url",
           "maxLength": 2048
+        },
+        "source_quotes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": { "type": "string", "minLength": 1, "maxLength": 500 }
         }
       }
     }

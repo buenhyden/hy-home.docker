@@ -102,6 +102,8 @@ class PluginBundleTests(unittest.TestCase):
 
 class UpdateScriptRefusalTests(unittest.TestCase):
     def setUp(self):
+        # Fixture modes must not depend on the host umask (0002 makes 0775 homes).
+        self.addCleanup(os.umask, os.umask(0o022))
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
@@ -193,7 +195,7 @@ class UpdateScriptRefusalTests(unittest.TestCase):
         plugins.chmod(0o770)
         result = self.run_update()
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("unsafe plugin ancestor", result.stderr)
+        self.assertIn(f"unsafe plugin ancestor: {plugins} (mode 0770", result.stderr)
         self.assertFalse((plugins / "research-report").exists())
 
     def test_group_writable_plugin_directory_is_rejected_before_install(self):
@@ -202,7 +204,7 @@ class UpdateScriptRefusalTests(unittest.TestCase):
         plugin.chmod(0o770)
         result = self.run_update()
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("unsafe plugin directory", result.stderr)
+        self.assertIn(f"unsafe plugin directory: {plugin} (mode 0770", result.stderr)
         self.assertEqual(list(plugin.iterdir()), [])
 
     def test_group_writable_installed_file_is_rejected_before_install(self):
@@ -213,7 +215,9 @@ class UpdateScriptRefusalTests(unittest.TestCase):
         installed.chmod(0o660)
         result = self.run_update()
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("unsafe installed plugin file", result.stderr)
+        self.assertIn(
+            f"unsafe installed plugin file: {installed} (mode 0660", result.stderr
+        )
         self.assertEqual(installed.read_text(encoding="utf-8"), "untouched")
 
     def test_hardlinked_installed_file_is_rejected_before_install(self):

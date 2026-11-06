@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import html
 import json
 import os
 import re
@@ -19,6 +20,8 @@ else:  # Direct source-tree unit tests, not the installed plugin entry point.
 HERMES_HOME = Path.home() / ".hermes"
 OUTBOX_DIR = HERMES_HOME / "data" / "research-report-outbox"
 SOURCE_DIR = HERMES_HOME / "data" / "research-source-evidence"
+# One private directory per cron execution: the report bytes and what derives from them.
+REPORT_DIR = HERMES_HOME / "data" / "research-report-store"
 APPROVED_WEBHOOK_URL = "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion"
 WEBHOOK_URL_DEFAULT = APPROVED_WEBHOOK_URL
 SECRET_FILE = HERMES_HOME / "secrets" / "research-webhook.secret"
@@ -41,6 +44,13 @@ SOURCE_QUOTE_MAX = 500
 GATEWAY_MAX_SOURCE_CHARACTERS = 524288
 GATEWAY_MAX_REQUEST_BYTES = 1024 * 1024
 SCHEMA_VERSION = "1.0"
+# submit_research_report argument contract; 2 adds report_markdown.
+SUBMIT_CONTRACT_VERSION = 2
+_SUBMIT_ARGS = frozenset({"payload", "source_receipts", "report_markdown"})
+# Controls other than tab, newline and carriage return, including C1 and DEL.
+_REPORT_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
+# Bidirectional embedding, override and isolate controls can disguise text.
+_REPORT_BIDI = re.compile("[\u202a-\u202e\u2066-\u2069]")
 
 
 def _load_url() -> str:
@@ -132,7 +142,9 @@ _ITEM_FIELDS = frozenset(
 # One item is one article: its own title and a summary of what the page says.
 # Report titles and filler stand in for content the page never backs.
 # Matched against the whole value, so headlines that merely mention these words pass.
-_FILLER = r"test item|report submitted|untitled|placeholder|tbd|n/a|lorem ipsum.*"
+# `(?s:.*)` consumes to the end in one step; a bare `.*` stops at a newline and
+# makes `\W*` backtrack quadratically on long input.
+_FILLER = r"test item|report submitted|untitled|placeholder|tbd|n/a|lorem ipsum(?s:.*)"
 _PLACEHOLDER_TITLE = re.compile(
     rf"\s*(?:{_FILLER}|.*\bdaily brief\b.*|.*\bresearch report)\s*", re.IGNORECASE
 )
@@ -325,22 +337,249 @@ def _record_bytes(record):
     ).encode("utf-8")
 
 
+def _blocked(code: str) -> dict[str, Any]:
+    """The original report cannot be delivered as is; nothing is sent or truncated."""
+    return {"ok": False, "error": code, "state": "BLOCKED"}
+
+
+def _report_error(report: Any) -> str | None:
+    if not isinstance(report, str) or not report.strip():
+        return "report_required"
+    try:
+        report.encode("utf-8")
+    except UnicodeEncodeError:  # a lone surrogate is not well-formed UTF-8
+        return "report_malformed"
+    if _REPORT_CONTROL.search(report):
+        return "report_malformed"
+    if _REPORT_BIDI.search(report):
+        return "report_bidi_control"
+    # The report alone must fit the Gateway's code point and whole-request limits.
+    if len(report) > GATEWAY_MAX_SOURCE_CHARACTERS or len(
+        json.dumps(report, ensure_ascii=False).encode("utf-8")
+    ) > min(webhook_transport.MAX_REQUEST_BYTES, GATEWAY_MAX_REQUEST_BYTES):
+        return "request_too_large"
+    if len(report.strip()) < BODY_MIN or _PLACEHOLDER_BODY.fullmatch(report):
+        return "report_not_final"
+    return None
+
+
+# Neither class contains its own delimiters, so a failed match never backtracks.
+_LINK = re.compile(r"\[([^\[\]\n]*)\]\(([^()\s]+)\)")
+
+
+def _heading(line: str) -> tuple[int, str] | None:
+    level = len(line) - len(line.lstrip("#"))
+    if not 1 <= level <= 6 or len(line) == level or not line[level].isspace():
+        return None
+    return level, line[level:].rstrip(" \t#").strip()
+
+
+def _bullet(line: str) -> str | None:
+    rest = line.lstrip()
+    if len(rest) < 2 or rest[0] not in "-*+" or not rest[1].isspace():
+        return None
+    return rest[1:].strip()
+
+
+def _blocks(markdown: str) -> list[tuple]:
+    """Headings, bullet lists and paragraphs; links become 'text (url)' plain text."""
+    blocks: list[tuple | None] = []
+    for line in markdown.splitlines():
+        line = _LINK.sub(
+            lambda m: f"{m[1]} ({m[2]})" if m[1].strip() else m[2], line
+        ).rstrip()
+        heading, bullet = _heading(line), _bullet(line)
+        last = blocks[-1] if blocks else None
+        if not line.strip():
+            blocks.append(None)
+        elif heading:
+            blocks.append(("h", *heading))
+        elif bullet is not None:
+            if last and last[0] == "ul":
+                last[1].append(bullet)
+            else:
+                blocks.append(("ul", [bullet]))
+        elif last and last[0] == "p":
+            last[1].append(line.strip())
+        else:
+            blocks.append(("p", [line.strip()]))
+    return [block for block in blocks if block]
+
+
+def render_email(markdown: str, report_sha256: str) -> str:
+    """Email HTML derived only from the stored report; every text is escaped."""
+    parts = [
+        "<!DOCTYPE html>",
+        '<html><head><meta charset="utf-8">'
+        f'<meta name="report-sha256" content="{report_sha256}"></head><body>',
+    ]
+    for block in _blocks(markdown):
+        if block[0] == "h":
+            parts.append(f"<h{block[1]}>{html.escape(block[2])}</h{block[1]}>")
+        elif block[0] == "ul":
+            items = "".join(f"<li>{html.escape(item)}</li>" for item in block[1])
+            parts.append(f"<ul>{items}</ul>")
+        else:
+            parts.append(
+                "<p>" + "<br>\n".join(html.escape(x) for x in block[1]) + "</p>"
+            )
+    parts.append("</body></html>")
+    return "\n".join(parts) + "\n"
+
+
+def render_telegram(markdown: str) -> str:
+    """Plain text derived only from the stored report; Hermes chunks long text."""
+    parts = []
+    for block in _blocks(markdown):
+        if block[0] == "h":
+            parts.append(block[2])
+        elif block[0] == "ul":
+            parts.append("\n".join("• " + item for item in block[1]))
+        else:
+            parts.append("\n".join(block[1]))
+    return "\n\n".join(parts) + "\n"
+
+
+def _report_directory(run) -> Path:
+    return REPORT_DIR / f"{run.job_id}-{run.execution_id}"
+
+
+def _store_report(records, run, scheduled, report_raw: bytes):
+    """Write the report once per execution, then derive the email and Telegram text.
+
+    Every file is created exclusively with mode 0600 in a 0700 directory bound to
+    job_id and execution_id; manifest.json adds the scheduled instant and digests.
+    A replay compares only report.md and returns the outputs already stored, so a
+    renderer change across a plugin upgrade is not a conflict; a missing output
+    (an interrupted first call) is rendered from the stored bytes.
+    """
+    directory = _report_directory(run)
+    store = records.PrivateRecords(directory)
+    try:
+        with store.lock("report"):
+            store.remove_temporaries()
+            store.create("report.md", report_raw)  # record_conflict if different
+            stored = store.read("report.md")
+            report_sha = hashlib.sha256(stored).hexdigest()
+            outputs = {}
+            for name, render in (
+                ("email.html", lambda text: render_email(text, report_sha)),
+                ("telegram.txt", render_telegram),
+            ):
+                raw = store.read(name)
+                if raw is None:
+                    raw = render(stored.decode("utf-8")).encode("utf-8")
+                    store.create(name, raw)
+                outputs[name] = {
+                    "sha256": hashlib.sha256(raw).hexdigest(),
+                    "derived_from_sha256": report_sha,
+                }
+            manifest = store.read("manifest.json")
+            if manifest is None:
+                manifest = {
+                    "schema_version": "hermes-report-store/1",
+                    "job_id": run.job_id,
+                    "execution_id": run.execution_id,
+                    "scheduled_at": scheduled,
+                    "report_sha256": report_sha,
+                    "outputs": outputs,
+                }
+                store.create("manifest.json", _record_bytes(manifest))
+    finally:
+        store.close()
+    if stored != report_raw:  # create() guarantees this; never send other bytes
+        raise records.RecordError("record_conflict")
+    return _report_files(run, report_sha)
+
+
+def _report_files(run, report_sha: str) -> dict[str, str]:
+    directory = _report_directory(run)
+    return {
+        "contract_version": SUBMIT_CONTRACT_VERSION,
+        "report_sha256": report_sha,
+        "report_path": str(directory / "report.md"),
+        "email_path": str(directory / "email.html"),
+        "telegram_path": str(directory / "telegram.txt"),
+    }
+
+
+def _stored_report_files(records, run) -> dict[str, str] | None:
+    """Paths of the report this execution already stored, for a conflicting call."""
+    store = records.PrivateRecords(_report_directory(run))
+    try:
+        with store.lock("report"):
+            stored = store.read("report.md")
+            if stored is None or None in (
+                store.read("email.html"),
+                store.read("telegram.txt"),
+            ):
+                return None
+    finally:
+        store.close()
+    return _report_files(run, hashlib.sha256(stored).hexdigest())
+
+
+def _store_source_set(records, run, source_set_raw: bytes) -> None:
+    store = records.PrivateRecords(_report_directory(run))
+    try:
+        with store.lock("report"):
+            store.remove_temporaries()
+            store.create("source-set.json", source_set_raw)
+    finally:
+        store.close()
+
+
 def _submit(args: dict[str, Any]) -> dict[str, Any]:
+    """Store the report and its outputs first, then try the Gateway submission."""
+    if not isinstance(args, dict) or not set(args) <= _SUBMIT_ARGS:
+        return {"ok": False, "error": "invalid_submission_fields"}
+    report = args.get("report_markdown")
+    error = _report_error(report)
+    if error:
+        return _blocked(error)
+    report_raw = report.encode("utf-8")
     try:
         run, scheduled = _cron()
     except ValueError as error:
         return {"ok": False, "error": str(error)}
-    if not isinstance(args, dict) or not isinstance(args.get("payload"), dict):
+    payload = args.get("payload")
+    items = payload.get("items") if isinstance(payload, dict) else None
+    receipt_ids = args.get("source_receipts", [] if items == [] else None)
+    no_items = items == [] and receipt_ids == []
+    _, _, records = _modules()
+    try:
+        report_files = _store_report(records, run, scheduled, report_raw)
+    except records.RecordError as error:
+        if str(error) != "record_conflict":
+            return _blocked("report_store_unavailable")
+        # This execution already stored a different report: point at that one,
+        # so the agent sends the stored files instead of a self-rendered email.
+        try:
+            earlier = _stored_report_files(records, run)
+        except Exception:
+            earlier = None
+        if earlier is None:
+            return _blocked("report_conflict")
+        return {"ok": False, "error": "report_conflict", "report": earlier}
+    except Exception:
+        return _blocked("report_store_unavailable")
+    if no_items:
+        result = {"ok": True, "status": "stored", "gateway": "skipped_no_items"}
+    else:
+        result = _gateway(args, run, scheduled, report, report_raw)
+    # Email and Telegram come from these files whatever the Gateway answered.
+    return {**result, "report": report_files}
+
+
+def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, Any]:
+    if not isinstance(args.get("payload"), dict):
         return {"ok": False, "error": "source_receipts_required"}
     payload = args["payload"]
     if payload.get("schema_version") != SCHEMA_VERSION:
         return {"ok": False, "error": "invalid_schema_version"}
     if "source_receipts" not in args:
         return {"ok": False, "error": "source_receipts_required"}
-    if set(payload) != {"schema_version", "items"} or set(args) != {
-        "payload",
-        "source_receipts",
-    }:
+    if set(payload) != {"schema_version", "items"}:
         return {"ok": False, "error": "invalid_submission_fields"}
     items, receipt_ids = payload.get("items"), args.get("source_receipts")
     if (
@@ -387,19 +626,19 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
     except (TypeError, ValueError, UnicodeError, RecursionError):
         return {"ok": False, "error": "invalid_submission_fields"}
     if len(input_raw) > GATEWAY_MAX_REQUEST_BYTES:
-        return {"ok": False, "error": "request_too_large"}
+        return _blocked("request_too_large")
     collection, receipt_validator, records = _modules()
     try:
         rows = collection.resolve(
             SOURCE_DIR, run.job_id, run.execution_id, scheduled, items, receipt_ids
         )
         input_sha = hashlib.sha256(input_raw).hexdigest()
-        source_text = json.dumps(
+        # The receipt-set JSON is the audit record behind source_ref, not the report.
+        source_set_raw = json.dumps(
             rows, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-        )
-        if len(source_text) > GATEWAY_MAX_SOURCE_CHARACTERS:
-            return {"ok": False, "error": "request_too_large"}
-        source_sha = hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+        ).encode("utf-8")
+        if len(source_set_raw) > records.MAX_RECORD:
+            return _blocked("source_set_too_large")
         now = collection.timestamp(datetime.now(UTC))
         if any(
             collection._time(row["fetched_at"]) > collection._time(now) for row in rows
@@ -415,9 +654,10 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
             "scheduled_at": scheduled,
             "generated_at": now,
             "collected_at": max(row["fetched_at"] for row in rows),
-            "source_ref": "hermes-source-set:" + source_sha,
-            "source_text": source_text,
-            "source_sha256": source_sha,
+            "source_ref": "hermes-source-set:"
+            + hashlib.sha256(source_set_raw).hexdigest(),
+            "source_text": report,
+            "source_sha256": hashlib.sha256(report_raw).hexdigest(),
         }
         gateway_payload.pop("fire_id", None)
         error = _validate(gateway_payload)
@@ -433,7 +673,7 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
         if len(payload_bytes) > min(
             webhook_transport.MAX_REQUEST_BYTES, GATEWAY_MAX_REQUEST_BYTES
         ):
-            return {"ok": False, "error": "request_too_large"}
+            return _blocked("request_too_large")
     except Exception as error:
         allowed = {
             "source_receipts_required",
@@ -449,7 +689,32 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
             else "source_unavailable"
         )
         return {"ok": False, "error": code}
+    try:
+        _store_source_set(records, run, source_set_raw)
+    except records.RecordError as error:
+        return {
+            "ok": False,
+            "error": "source_set_conflict"
+            if str(error) == "record_conflict"
+            else "record_unavailable",
+        }
+    except Exception:
+        return {"ok": False, "error": "record_unavailable"}
+    return _send(
+        run,
+        gateway_payload,
+        payload_bytes,
+        input_sha,
+        items,
+        records,
+        receipt_validator,
+    )
 
+
+def _send(
+    run, gateway_payload, payload_bytes, input_sha, items, records, receipt_validator
+):
+    collection, _, _ = _modules()
     key = f"{run.job_id}:{gateway_payload['idempotency_key']}"
     name = key + ".json"
     store = None
@@ -702,6 +967,13 @@ COLLECT_RESEARCH_SOURCE_SCHEMA = {
 SUBMIT_RESEARCH_REPORT_SCHEMA = {
     "name": "submit_research_report",
     "description": (
+        "Contract v2. Call once, after the full daily report is final: report_markdown "
+        "is that exact report (Markdown, at most 524288 characters, never a draft, "
+        "summary or truncation). The tool stores it once per run and returns "
+        "report.report_path, report.email_path and report.telegram_path derived from "
+        "the stored bytes; send the email and Telegram from those files only. With no "
+        "source-backed item, pass empty items and source_receipts: the report is "
+        "stored and rendered and only the Gateway submission is skipped. "
         "Submit this scheduled run's research items using one collector receipt per item. "
         "The tool sets the run identity, timestamps, source and idempotency key. "
         "One item per article: title is that article's own headline, never the report "
@@ -722,7 +994,7 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
                     "schema_version": {"type": "string", "enum": [SCHEMA_VERSION]},
                     "items": {
                         "type": "array",
-                        "minItems": 1,
+                        "minItems": 0,
                         "maxItems": 100,
                         "items": {
                             "type": "object",
@@ -779,11 +1051,16 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
             },
             "source_receipts": {
                 "type": "array",
-                "minItems": 1,
+                "minItems": 0,
                 "maxItems": 100,
                 "items": _STRING,
             },
+            "report_markdown": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": GATEWAY_MAX_SOURCE_CHARACTERS,
+            },
         },
-        "required": ["payload", "source_receipts"],
+        "required": ["payload", "source_receipts", "report_markdown"],
     },
 }

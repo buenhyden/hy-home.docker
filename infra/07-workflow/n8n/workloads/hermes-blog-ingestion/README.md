@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.3.7"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 ---
 
 # Hermes 수집 전송 소스
@@ -60,10 +60,11 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 다른 URL로 바꾸려면 충돌로 거부합니다. `normalized_text`와 원본 내용은 비신뢰 데이터로
 도구·파일·자격·목적지 권한을 추가하지 않습니다.
 
-`submit_research_report`는 `payload`와 항목별 `source_receipts`를 받습니다. 현재
-payload는 `schema_version: "1.0"`과 `items`를 가지며 receipt 식별자는 32 hex입니다.
-도구가 producer/execution·scheduled/created/collected 시각, 원본 집합·해시와 멱등 키를
-구성합니다. receipt의 item·순서·URL·실행·본문 해시와 기존 제목/인용/숫자/고유명
+`submit_research_report`(플러그인 0.4.0, 도구 계약 v2)는 정확히 `payload`, 항목별
+`source_receipts`, 확정된 전체 보고서 `report_markdown` 세 인자만 받고 다른 인자는
+`invalid_submission_fields`로 거부합니다. payload는 `schema_version: "1.0"`과 `items`를
+가지며 receipt 식별자는 32 hex입니다. 도구가 producer/execution·scheduled/created/collected
+시각, 보고서 원본·해시, 원본 집합 참조와 멱등 키를 구성합니다. receipt의 item·순서·URL·실행·본문 해시와 기존 제목/인용/숫자/고유명
 검사를 모두 통과해야 제출합니다. 준비한 요청 바이트는 재시도에도 바꾸지 않습니다.
 이는 직접 제출 추적일 뿐 Publisher Ed25519 서명이나 독립 Attester의 권한이 아닙니다.
 
@@ -73,6 +74,63 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
 쓰기 때문에 파일 보호는 그 UID의 침해나 비협조에 대한 위조 불가능성을 보장하지 않습니다.
 수집 원본은 항목당 최대 2 MiB, 실행당 최대 100개로 제한하지만 활성화 전에는 data owner가
 보존 기간·접근자·폐기 방법을 별도 승인해야 합니다. 이번에는 공개 원본을 수집하지 않았습니다.
+
+### 보고서 원본 계약 (SPEC-0265, ADR-0060)
+
+`ingestion-v1` 필드는 바뀌지 않고 의미만 정해집니다. `source_text`는 에이전트가
+확정한 전체 일일 보고서 Markdown의 정확한 UTF-8 바이트이고 `source_sha256`은 그
+바이트의 SHA-256입니다. 플러그인은 개행·Unicode 정규화를 하지 않습니다. `source_ref`는
+`hermes-source-set:<receipt 집합 정본 JSON의 SHA-256>`으로 유지되며, 그 JSON 바이트는
+실행별 비공개 기록 `source-set.json`으로 남아 Source Receipt 검증과 증거를 잇습니다.
+0.3.0까지는 이 receipt 집합 JSON이 `source_text`였고, Blog-data ADR-0097은 이를 원본
+보고서로 그대로 렌더링하므로 0.4.0 설치 전에는 Gateway schema 5로 넘어가지 않습니다.
+
+- 저장 먼저: 도구는 보고서를 검증한 뒤 cron 실행을 확인하고, Gateway 경로보다 먼저
+  `~/.hermes/data/research-report-store/<job_id>-<execution_id>/`(0700)에 `report.md`
+  (정확한 바이트), `email.html`, `telegram.txt`, `manifest.json`(job·execution·scheduled
+  시각, 각 출력 다이제스트)을 한 번만 만듭니다(0600, 완성된 임시 파일의 link로
+  생성, 덮어쓰기 없음). receipt가 있을 때만 `source-set.json`을 더합니다. 같은 실행의
+  재제출은 `report.md` 바이트만 비교해 같으면 저장된 출력을 다시 렌더링하지 않고 돌려주고
+  (플러그인 갱신 뒤 렌더러가 바뀌어도 충돌이 아님), 다르면 파일을 바꾸지 않고
+  `report_conflict`와 함께 먼저 저장된 보고서의 경로를 돌려줍니다. 잠금을 쥔 채 이 실행 디렉터리에 남은 `.tmp-*`를 먼저
+  지워 중단된 생성(링크 2개)을 복구합니다. Hermes cron 출력 보존 기간과 무관하게
+  플러그인이 소유합니다.
+- 항목이 없는 날: `items`와 `source_receipts`가 모두 빈 목록이면 보고서를 저장·렌더링하고
+  `gateway: "skipped_no_items"`를 결과에 남기며 Gateway에는 보내지 않습니다
+  (`ingestion-v1`은 항목 1~100개).
+- 파생 출력: 이메일 HTML과 Telegram 텍스트는 저장된 `report.md`에서만 표준 라이브러리
+  렌더러로 만듭니다(모든 텍스트 escape, 제목·문단·목록, 링크는 평문 URL). 이메일에는
+  `report-sha256` meta가, manifest에는 두 출력의 `derived_from_sha256`이 기록되어
+  Gateway·이메일·Telegram이 같은 저장 바이트에서 왔음을 비교할 수 있습니다. Telegram
+  분할은 Hermes가 합니다. 도구 결과의 `report`(경로·다이제스트)는 Gateway 응답과 관계없이
+  반환되며, 이메일·Telegram·Gateway 결과는 따로 판정합니다. 공유 scratch 파일
+  `email_body.html`은 쓰지 않습니다.
+- 거부와 `BLOCKED`: 누락·빈 값, 확정 전 자리표시, 잘못된 UTF-8(고립 surrogate),
+  탭·개행 외 제어 문자, 양방향 embedding·override·isolate 문자(U+202A~U+202E,
+  U+2066~U+2069, `report_bidi_control`; zero-width joiner는 허용), 524288 code point 초과
+  또는 보고서만으로 요청 1 MiB 초과는 보고서 단위 오류로, 경로 없이 `state: "BLOCKED"`를
+  돌려주고 저장·네트워크 호출 전에 멈춥니다. 저장 뒤 Gateway 쪽 실패(receipt, 항목 검증,
+  항목을 더한 요청 크기 등)는 보고서 경로와 함께 돌려줍니다. 렌더러의 링크·제목 처리는
+  역추적 없는 선형 시간입니다. 잘라내거나 receipt JSON,
+  다이제스트, 모델 조각으로 대신하지 않습니다. Gateway 보고서 ID는 기존 outbox 기록의
+  `response.id`로 복구합니다.
+- 신뢰 경계: 보고서 바이트는 출력의 동일성만 증명하고 내용의 진실성은 증명하지
+  않습니다. collector receipt는 같은 UID의 감사 결속이지 생산자 인증·독립
+  Attestation이 아니며, Attester는 `source_text`를 읽지 않고 항목을 독립 수집으로
+  검증합니다. 다섯 경계는 서로 대신하지 않습니다.
+- 지표: 이 워크로드에는 아직 Pushgateway push 경로·Alertmanager 규칙·Grafana 패널이
+  없습니다. 저카디널리티 지표는 SPEC-0265 W5에서 push 경로와 함께 들어옵니다.
+- Rollback: 플러그인과 프롬프트를 0.3.0과 이전 블록으로 되돌립니다(아래 플러그인
+  rollback 절차). 이미 Gateway schema 5로 전환했다면 0.3.0으로 되돌리기 전에 schema 4
+  백업을 복원하고 `c05e5b88` 이미지를 다시 붙여야 하며, 옛 이미지를 schema 5 DB에
+  붙이지 않습니다. 저장된 보고서 디렉터리는 지우지 않습니다.
+
+`deploy/update-cron-prompts.sh`는 각 작업 프롬프트에 `DIRECT RESEARCH SUBMISSION`
+표지가 정확히 한 번 있어야 진행하고, 아니면 작업 ID와 개수를 출력하고 아무 작업도
+고치지 않습니다. 표지 앞 작업 문구에 공유 scratch 파일 `email_body.html`이 남아 있어도
+(호스트 규칙 8) 작업 ID를 출력하고 멈추므로, 그 규칙을 먼저 지워야 0.4.0 블록이
+설치됩니다. 이미 현재 블록인 작업은 건드리지 않습니다.
+`deploy/update-hermes-plugin.sh`의 거부 메시지는 경로와 8진 mode를 함께 출력합니다.
 
 플러그인 rollback은 서비스 중지 뒤 현재 디렉터리를 보존하고, 빈 0700 대상에
 source-only backup의 정확한 파일 집합만 복원합니다(overlay 금지). `doctor` 확인 뒤에도
