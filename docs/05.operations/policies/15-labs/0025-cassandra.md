@@ -1,6 +1,6 @@
 ---
 title: "Cassandra Operations Policy"
-version: "2.1.3"
+version: "2.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -24,7 +24,7 @@ created: "2026-05-17"
 
 ## Rules
 
-- **Required:** 공식 Compose에 선언된 공식 Cassandra 이미지의 실제 `/var/lib/cassandra`를 새 LAB 전용 `${LAB_DATA_DIR}/cassandra/node1`에 영속한다. 기존 HOME/과거 anonymous volume은 자동 재사용·삭제하지 않는다.
+- **Required:** 공식 Compose에 선언된 공식 Cassandra 이미지의 실제 `/var/lib/cassandra`를 named volume `cassandra-node1-data`(bind 대상 `${LAB_DATA_DIR}/cassandra/node1`)에 영속한다. 기존 HOME/과거 anonymous volume은 자동 재사용·삭제하지 않는다.
 - **Required:** `AllowAllAuthenticator`/`AllowAllAuthorizer` 기본 상태를 무인증으로 취급한다. 내부 네트워크만 사용하며 host port·gateway route와 실제 업무 소비자를 추가하지 않는다.
 - **Required:** 실제 인증·권한이 필요하면 이미지 지원 설정과 무인증·오인증 거부를 격리 검증한 뒤 별도 승인된 소스 변경으로 적용한다.
 - **Required:** 백업은 release/schema/keyspace/replication/topology와 snapshot tag 및 모든 SSTable을 묶는다. restore는 새 빈 격리 대상에서만 검증한다.

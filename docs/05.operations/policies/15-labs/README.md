@@ -1,6 +1,6 @@
 ---
 title: "독립 LAB 문서 정책"
-version: "0.3.1"
+version: "0.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -26,10 +26,10 @@ layer: "operations"
 | --- | --- | --- |
 | [Valkey Cluster Operations Policy](0022-valkey-cluster.md) | `POL-0022` | 이 정책은 현재 source 구성을 데이터 보호, 보안, 자원, 수명주기 통제와 독립적으로 검증 가능한 운영 통제에 묶는다. 대상은 `labs/valkey-cluster/docker-compose.yml`의 LAB 전용 Valkey Cluster이다. |
 | [Cassandra Operations Policy](0025-cassandra.md) | `POL-0025` | 독립 Cassandra LAB의 단일 노드·데이터 보존·인증 경계를 정의한다. HOME 소비자와 공유하지 않는다. |
-| [CouchDB Operations Policy](0026-couchdb.md) | `POL-0026` | 이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 couchdb image declaration, curlimages/curl image |
-| [MongoDB Operations Policy](0027-mongodb.md) | `POL-0027` | 이 정책은 `hy-home.docker`의 `LAB` MongoDB replica set 운영 기준을 정의한다. runtime image/version은 Compose declaration이 소유하며, 정책 기준은 exact `mongodb` prof |
-| [PostgreSQL Cluster Operations Policy](0031-postgresql-cluster.md) | `POL-0031` | 이 정책은 `hy-home.docker`의 독립 LAB인 PostgreSQL HA 실습 cluster 운영 기준을 정의한다. 세 node가 한 host를 공유하므로 host HA가 아니며 HOME·DEV PostgreSQL은 단일 node다. 기준은  |
-| [Locust Operations Policy](0062-locust.md) | `POL-0062` | Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는 절대 포함되지 않는다. 이 정책은 test target을 보호하고 검토되지 않은 load, credential capture, 오해를 부르 |
+| [CouchDB Operations Policy](0026-couchdb.md) | `POL-0026` | `labs/couchdb/docker-compose.yml`의 CouchDB 3노드 LAB cluster의 loopback 접근, Docker Secret credential, 백업·복구와 제거 기준을 정의한다. |
+| [MongoDB Operations Policy](0027-mongodb.md) | `POL-0027` | `labs/mongodb/docker-compose.yml`의 MongoDB replica set LAB의 `mongodb` profile, Docker Secret credential, 백업·복구와 제거 기준을 정의한다. |
+| [PostgreSQL Cluster Operations Policy](0031-postgresql-cluster.md) | `POL-0031` | `labs/postgresql-ha/docker-compose.yml`의 PostgreSQL HA LAB(etcd·Patroni·HAProxy)의 `postgres-ha` profile, 접근 경계, 백업·복구 기준을 정의한다. |
+| [Locust Operations Policy](0062-locust.md) | `POL-0062` | Locust는 독립 LAB capability이며, 이 정책은 test target 보호와 검토되지 않은 load·credential 수집·오해를 부르는 성능 증거를 막는다. |
 | [SonarQube Operations Policy](0066-sonarqube.md) | `POL-0066` | 이 정책은 독립 LAB `labs/sonarqube/docker-compose.yml`의 SonarQube Community Build 배포를 다룬다. |
 | [Stalwart Mail Operations Policy](0070-mail.md) | `POL-0070` | Stalwart는 독립 LAB `labs/stalwart/docker-compose.yml`의 메일 서비스다. |
 | [JupyterLab Operations Policy](0089-jupyterlab.md) | `POL-0089` | JupyterLab LAB은 임의의 코드를 실행한다. mandatory token, loopback 게시, 단일 사용자와 work directory 보존을 통제한다. |

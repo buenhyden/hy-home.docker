@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0066"
 parent_ids:
@@ -38,8 +38,8 @@ created: "2026-05-17"
   SonarQube 토큰이 자동으로 폐기되지 않으며, SonarQube에서 직접 폐기해야 한다.
 - **Tokens:** 최소 범위의 만료 토큰을 발급하고, 승인된 CI 시크릿 소유자에게
   저장하며, 값을 로깅하지 않고 회전/폐기한다.
-- **Data:** PostgreSQL이 권위 있는 데이터다. 로컬 검색 인덱스는 재구축 가능하며,
-  로그는 사고/증거 보존 정책을 따른다. 데이터 볼륨만으로 백업으로 간주하지
+- **Data:** PostgreSQL이 권위 있는 데이터다. 로컬 검색 인덱스(named volume `sonarqube-data`)는 재구축 가능하며,
+  로그(`sonarqube-logs`)는 사고/증거 보존 정책을 따른다. 데이터 볼륨만으로 백업으로 간주하지
   않는다.
 - **Backup/restore:** 데이터베이스 네이티브 백업을 사용하고 이를 검증하며,
   격리된 복구와 재인덱싱을 리허설한다. 추적 중인 설정과 외부 플러그인

@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Operations Policy"
-version: "2.1.3"
+version: "2.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0026"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 [couchdb image declaration](../../../../labs/couchdb/docker-compose.yml), [curlimages/curl image declaration](../../../../labs/couchdb/docker-compose.yml), `couchdb-cluster-init`, Traefik sticky route, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
+이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 [couchdb image declaration](../../../../labs/couchdb/docker-compose.yml), [curlimages/curl image declaration](../../../../labs/couchdb/docker-compose.yml), `couchdb-cluster-init`, loopback 단일 host port, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
 
 ## Scope
 
@@ -53,7 +53,7 @@ created: "2026-05-17"
   replication/file backup evidence, node나 volume 삭제 전 별도 승인을 요구한다.
 - **Allowed**: Evidence 수집을 위한 read-only `_up`, `_membership`,
   `_scheduler/docs`, 로그 확인.
-- **Allowed**: 3-node cluster-init model과 sticky routing을 보존하는 문서 전용
+- **Allowed**: 3-node cluster-init model과 loopback-only 접근을 보존하는 문서 전용
   수정.
 - **Disallowed**: 현재 evidence와 runbook escalation 없이 제시되는 수동 node
   rejoin, compaction, cluster surgery 가이드.
