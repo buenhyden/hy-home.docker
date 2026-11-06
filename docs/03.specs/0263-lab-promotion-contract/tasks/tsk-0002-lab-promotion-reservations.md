@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.2.5"
+version: "0.2.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -314,6 +314,12 @@ Owner decisions on the review findings and the resource `FAIL` (2026-11-06):
     is capped at its 2048M limit.
   - cassandra, couchdb, jupyterlab and mongodb: resources `PASS`; tier and
     composition `FAIL` because their destination `kind` is `undecided`.
+- **Owner decision (2026-11-06): no LAB is promoted.** The owner decides
+  every promotion, and nothing in `labs/` is to be promoted now. The readiness
+  results above are measurements, not promotion requests. The open questions
+  they raised (`pg-cluster-init` measurement, opensearch heap, destinations for
+  the `undecided` LABs) are closed without action, and the manifests stay
+  as they are.
 
 ## Related Documents
 
