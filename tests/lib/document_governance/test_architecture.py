@@ -350,6 +350,19 @@ class ArchitectureDocumentTests(unittest.TestCase):
             ):
                 architecture.load_architecture_documents(stage_root)
 
+    def test_a_claude_shim_needs_its_folder_guide(self) -> None:
+        architecture = _architecture_module()
+        with tempfile.TemporaryDirectory() as directory:
+            stage_root = pathlib.Path(directory) / "docs/02.architecture"
+            _write_minimal_corpus(stage_root)
+            stage_root.joinpath("CLAUDE.md").write_text("@AGENTS.md\n")
+            with self.assertRaisesRegex(
+                architecture.ArchitectureDocumentError, "requires AGENTS.md"
+            ):
+                architecture.load_architecture_documents(stage_root)
+            stage_root.joinpath("AGENTS.md").write_text("# Guide\n")
+            self.assertTrue(architecture.load_architecture_documents(stage_root))
+
 
 if __name__ == "__main__":
     unittest.main()

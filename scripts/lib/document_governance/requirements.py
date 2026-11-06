@@ -778,6 +778,10 @@ def load_requirement_packages(
             # The folder guide and its generated Claude import shim must be
             # regular files, like every Stage 01 entry.
             _read_regular_utf8(entry)
+            if entry.name == "CLAUDE.md" and not (stage_root / "AGENTS.md").is_file():
+                raise RequirementPackageError(
+                    "Stage 01 CLAUDE.md requires AGENTS.md beside it"
+                )
             continue
         if entry.suffix.lower() in _EXECUTABLE_SUFFIXES:
             raise RequirementPackageError(

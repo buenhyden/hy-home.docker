@@ -110,8 +110,25 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         profile = next(
             item for item in registry["profiles"] if item["id"] == "folder-agent-guide"
         )
-        guides = (profile["path_pattern"], *profile["additional_paths"])
-        for guide in guides:
+        # Every tracked folder guide and its Claude shim, so a new subfolder
+        # guide under a narrower docs or infra route cannot skip the drift gate.
+        tracked = (
+            subprocess.run(
+                ["git", "-C", str(ROOT), "ls-files", "-z", "--"]
+                + [f":(glob)**/{name}" for name in ("AGENTS.md", "CLAUDE.md")],
+                capture_output=True,
+                check=True,
+            )
+            .stdout.decode()
+            .split("\0")
+        )
+        guides = {
+            profile["path_pattern"],
+            *profile["additional_paths"],
+            *(name for name in tracked if "/" in name),
+        }
+        self.assertIn("infra/CLAUDE.md", guides)
+        for guide in sorted(guides):
             with self.subTest(guide=guide):
                 self.assertIn(
                     "agent-governance",

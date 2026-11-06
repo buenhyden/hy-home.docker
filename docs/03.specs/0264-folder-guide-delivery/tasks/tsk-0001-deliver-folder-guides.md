@@ -1,6 +1,6 @@
 ---
 title: "Folder Guide Delivery Task"
-version: "0.4.0"
+version: "0.5.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -36,17 +36,41 @@ W1 to W3 are implemented on `feat/folder-agents-guide-hook`:
 manifest entry, `.claude/provider.md` 1.6.0, `.codex/provider.md` 1.5.0 and the
 audit of the 10 `AGENTS.md` files.
 
-W5 is implemented in the working tree on top of `eef26df01`, not yet
-committed. `scripts/operations/provider_surface_renderer.py` renders
-`<folder>/CLAUDE.md` (marker comment, heading, `@AGENTS.md`) beside each of
-the 9 Git-tracked folder guides, reports a stale shim, and refuses to
-overwrite a folder `CLAUDE.md` without its marker. The Stage 01, 02, 03, 05
-and 90 loaders, the trusted Requirement snapshot, the navigation check and
-`scripts/manifest.yaml` admit the shim. `documentation-protocol.md` 3.10.0,
-`.claude/provider.md` 1.7.0, `.codex/provider.md` 1.6.0 and
-`scripts/AGENTS.md` 0.2.2 describe it. The hook change that stops sending
-guide content to Claude is made in parallel in `folder_guides.py`,
-`agent-event-hook.sh` and `test_folder_guides.py` and is not recorded here.
+W5 is committed on the branch (`13b5f9ce7`, `7384253cf`, `b085cabac`, rebased
+onto `cfba0c420`).
+`scripts/operations/provider_surface_renderer.py` renders `<folder>/CLAUDE.md`
+(marker comment, heading, `@AGENTS.md`) beside each of the 9 Git-tracked
+regular folder guides, reports a stale shim, and refuses to overwrite a folder
+`CLAUDE.md` without its marker. The Stage 01, 02, 03, 05 and 90 loaders, the
+trusted Requirement snapshot, the navigation check and `scripts/manifest.yaml`
+admit the shim. `documentation-protocol.md` 3.10.0, `.claude/provider.md`,
+`.codex/provider.md` 1.6.0 and `scripts/AGENTS.md` 0.2.2 describe it.
+
+The hook change is committed as `8cc7cffe1`, its suite registration as
+`0a37f7655`:
+`folder_guides.py` and `agent-event-hook.sh` send full guide text to Codex
+only, name the nearest guide on every edit for both providers, and add a
+re-read instruction after SessionStart `compact` or `resume`;
+`test_folder_guides.py` covers it and is registered in
+`.github/workflow-contract.yml`.
+
+The #770 review round, committed as `8ac11bc58`..`13ebb04f1` on `fix/folder-guide-review` above merged main `6e37096a7`, adds:
+
+- Every tracked folder `AGENTS.md` and `CLAUDE.md` selects the
+  `agent-governance` suite, so a guide or shim change runs the renderer drift
+  gate, and a routing test covers each tracked guide and shim (I1).
+- `docs/02.architecture/AGENTS.md` 0.2.4 names the shim as a root entry (I3).
+- Claude receives full guide text when its folder shim is missing, not a
+  regular file, or does not import `@AGENTS.md`; a Claude read with no edit
+  returns before `git ls-files` (M1, M2, M3). `.claude/provider.md` 1.7.1 and
+  Spec 0.4.1 describe that fallback.
+- The renderer gives no shim to a symlinked guide, the Operations catalog
+  requires a regular `CLAUDE.md`, and the Stage 01, 02, 03 and 90 loaders
+  reject a `CLAUDE.md` without its `AGENTS.md` (M5, M6, M7); Stage 05 already
+  requires both.
+- Renderer tests cover untracked, provider-namespace, symlinked and nested
+  guides (M8); `.claude/provider.md` names the marker comment (M9); Plan W4
+  adds the Codex `compact` source check (M4).
 
 ### Lifecycle Events
 
@@ -83,13 +107,23 @@ On 2026-11-06, asked whether to approve the amended Spec, the owner answered
 "승인 (권장)", so the Spec and Plan are `approved` again and this Task is
 `in-progress`.
 
+### Review fix approval
+
+On 2026-11-06 the #770 review fix M1 changed the Spec's Normal Behavior
+(0.4.1): the hook sends Claude the full guide when the folder's `CLAUDE.md`
+shim is missing, is not a regular file or does not import `@AGENTS.md`. Asked
+whether to approve that sentence, the owner answered "승인 (권장)", so the
+Spec stays `approved`.
+
 ### Live observation (criterion 8)
 
 After merge, the controller starts a new Claude session and a new Codex
 session at the repository root. In Claude it reads a file under `infra/` and
 records whether `infra/CLAUDE.md` loads with `infra/AGENTS.md`; in Codex it
 edits a file under `infra/` and records whether the "Folder guide
-`infra/AGENTS.md`" context appears once.
+`infra/AGENTS.md`" context appears once. It also compacts the Codex session
+and records whether SessionStart arrives with `source` `compact`, because
+re-delivery after compaction depends on it.
 
 ## Evidence
 
@@ -116,28 +150,41 @@ edits a file under `infra/` and records whether the "Folder guide
 | E19 | 10 | W5 | script manifest | `check-script-manifest.py` at `d2d5ca525`, with the 9 shims committed | PASS | `PASS: script manifest is valid` | required | E14 |
 | E20 | 1, 2, 4 | W1 | hook suites | `test_folder_guides test_tool_payload test_agent_memory test_validator_entrypoints test_agent_governance_ci_routing test_script_manifest test_surface_ownership test_ci_gate_model test_ci_gate_adapters` at `d2d5ca525`, after the edit reminder, restart instruction and Codex-only full delivery (`b905f662f` rebased) and the hook-suite registration | PASS | 258 tests OK | required | - |
 | E21 | 9, 10 | W5 | surfaces, contract, metadata | `provider_surface_renderer.py --check`, `check-agent-governance-contract.py --mode repository`, `check-document-metadata.py --mode check-changed` and `--mode check-active`, `check-document-corpus-lifecycle.py`, `check-operations-catalog.py` at `d2d5ca525` | PASS | drift=0; failures=0; violations=0 (15 and 538 selected); occupancy 0; catalog PASS | required | - |
+| E22 | 1, 2, 4 | W1 | hook suites | `test_folder_guides test_tool_payload test_agent_memory test_validator_entrypoints test_agent_governance_ci_routing test_script_manifest test_surface_ownership test_ci_gate_model test_ci_gate_plan test_ci_gate_adapters test_github_workflow_contract` on the #770 review working tree above `bce91a1af` | PASS | 370 tests OK, including the shim fallback, the read-skips-git, the symlinked, untracked, provider-namespace and nested guide cases, and the guide and shim routing | required | - |
+| E23 | 10 | W5 | stage loader suites | `tests.lib.document_governance` `test_architecture`, `test_requirements`, `test_references`, `test_operations_catalog`, `test_spec_packages`, run one at a time on the #770 review working tree | PASS | 11, 24, 21, 136 and 90 tests OK | required | - |
+| E24 | 9, 10 | W5 | surfaces, contract, metadata | `provider_surface_renderer.py --check`, `check-script-manifest.py`, `check-agent-governance-contract.py --mode repository`, `check-document-metadata.py --mode check-changed --base-ref origin/main` and `--mode check-active`, `check-document-corpus-lifecycle.py`, `check-operations-catalog.py`, `check-document-links.py --mode alignment` on the #770 review working tree | PASS | drift=0; manifest valid; failures=0; violations=0 (5 and 538 selected); lifecycle and occupancy violations=0; catalog PASS; links failures=0 | required | - |
+| E25 | 6 | W2 | provider surfaces | `provider_surface_renderer.py --check` on the #770 review working tree, after `.claude/provider.md` 1.7.1 | PASS | drift=0 | required | - |
+| E26 | 8 | W4 | live Claude load | New headless Claude Code 2.1.319 session at the repository root of merged main `6e37096a7`, reading `infra/README.md` only | PASS | the session answered that `infra/CLAUDE.md` loaded on demand after the read, with `infra/AGENTS.md` imported, as a system reminder | required | - |
+| E27 | 8 | W4 | live Codex delivery | New Codex session at the repository root of merged main `6e37096a7`, editing a file under `infra/` and compacting | NOT_RUN | Codex usage limit until 2026-11-09 18:37 KST; delivery once per session and the SessionStart `compact` source are not observed | required | - |
+| E28 | 8 | W4 | Codex hook health | The same Codex start at `6e37096a7`, and again at `cfba0c420` before #770 | ERROR | Codex reported `hook: SessionStart Failed` and `hook: UserPromptSubmit Failed` at both revisions, so the failure predates #770; a manual run of `scripts/hooks/agent-event-hook.sh` with `HY_HOME_HOOK_PROVIDER=codex` exits 0. Cause unknown: hook trust in `/hooks` and the hook stderr are checked after the usage limit resets | required | - |
+| E29 | 1, 2, 4 | W1 | hook, renderer, routing and loader suites | `test_folder_guides test_validator_entrypoints test_agent_governance_ci_routing test_architecture test_operations_catalog`, then `test_spec_packages`, at committed `13ebb04f1` | PASS | 259 tests OK; 90 tests OK | required | - |
+| E30 | 9, 10 | W5 | surfaces, manifest, contract, metadata, links | `provider_surface_renderer.py --check`, `check-script-manifest.py`, `check-agent-governance-contract.py --mode repository`, `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` at `13ebb04f1` | PASS | drift=0; manifest valid; failures=0; violations=0, with 5 selected because the base is merged main `6e37096a7` and only this follow-up's documents differ; links PASS | required | - |
+| E31 | 6 | W2 | scoped review | `code-reviewer` re-review of `6e37096a7..13ebb04f1` against the #770 findings I1-I3 and M1-M9 | PASS | every finding fixed except I2's evidence revision (N1), which E29 and E30 resolve; the reviewer read `.claude/provider.md` 1.7.1 and found it names the marker comment (M9) | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E1, E2, E6, E7, E8, E9, E17, E20 | owner acceptance | @buenhyden |
-| 2 | pending | E1, E6 | owner acceptance | @buenhyden |
+| 1 | pending | E1, E2, E6, E7, E8, E9, E17, E20, E22, E29 | owner acceptance | @buenhyden |
+| 2 | pending | E1, E6, E20, E22, E29 | owner acceptance | @buenhyden |
 | 3 | pending | E1, E6 | owner acceptance | @buenhyden |
-| 4 | pending | E1, E2, E6, E7, E8 | owner acceptance | @buenhyden |
+| 4 | pending | E1, E2, E6, E7, E8, E22, E29 | owner acceptance | @buenhyden |
 | 5 | pending | E1, E6, E8 | owner acceptance | @buenhyden |
-| 6 | pending | E4 | owner acceptance | @buenhyden |
+| 6 | pending | E4, E25, E31 | owner acceptance | @buenhyden |
 | 7 | pending | E5 | owner acceptance | @buenhyden |
-| 8 | pending | - | live observation runs after merge (#live-observation-criterion-8) | @buenhyden |
-| 9 | pending | E10, E11, E21 | owner acceptance | @buenhyden |
-| 10 | pending | E12, E13, E15, E16, E18, E19, E21 | owner acceptance | @buenhyden |
+| 8 | pending | E26, E27, E28 | Claude observed; Codex observation and the Codex hook failure diagnosis rerun after 2026-11-09 18:37 KST | @buenhyden |
+| 9 | pending | E10, E11, E21, E24, E30 | owner acceptance | @buenhyden |
+| 10 | pending | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner acceptance | @buenhyden |
 
 ## Review and Completion
 
-Open: the owner must approve the amended Spec and Plan before this Task
-resumes. Criterion 8 needs the owner step, and E14 needs a PASS once the
-shims are staged. A Codex shell read does not trigger delivery, and native
-delivery in a live session of this repository is not yet observed.
+The amended Spec and Plan are approved and the #770 review findings are
+fixed in commits `8ac11bc58`..`13ebb04f1`, rechecked at `13ebb04f1` (E29, E30). Criterion 8 is observed for Claude (E26); the
+Codex observation, including the `compact` source, is NOT_RUN until the Codex
+usage limit resets on 2026-11-09 18:37 KST (E27), and Codex reports its
+SessionStart and UserPromptSubmit hooks as failed at revisions before and
+after #770 (E28). Every criterion needs owner acceptance. A Codex shell read does not trigger delivery, and native delivery
+in a live session of this repository is not yet observed.
 
 ## Related Documents
 

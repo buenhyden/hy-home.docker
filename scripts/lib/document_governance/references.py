@@ -510,6 +510,10 @@ def load_reference_packages(references_root: pathlib.Path) -> ReferenceCorpus:
                 )
             elif name == "CLAUDE.md":
                 # The generated Claude import shim is not a reference document.
+                if "AGENTS.md" not in root_names:
+                    raise ReferenceCorpusError(
+                        "docs/90.references/CLAUDE.md requires AGENTS.md beside it"
+                    )
                 _, budget = _read_regular_utf8(
                     root_descriptor, name, f"docs/90.references/{name}", budget
                 )

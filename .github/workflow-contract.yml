@@ -1523,7 +1523,11 @@
           ".claude/",
           ".codex/",
           "AGENTS.md",
-          "CLAUDE.md"
+          "CLAUDE.md",
+          "scripts/AGENTS.md",
+          "scripts/CLAUDE.md",
+          "tests/AGENTS.md",
+          "tests/CLAUDE.md"
         ],
         "suites": [
           "agent-governance",
@@ -1535,12 +1539,19 @@
       {
         "prefixes": [
           "docs/01.requirements/AGENTS.md",
+          "docs/01.requirements/CLAUDE.md",
           "docs/02.architecture/AGENTS.md",
+          "docs/02.architecture/CLAUDE.md",
           "docs/03.specs/AGENTS.md",
+          "docs/03.specs/CLAUDE.md",
           "docs/05.operations/AGENTS.md",
+          "docs/05.operations/CLAUDE.md",
           "docs/90.references/AGENTS.md",
+          "docs/90.references/CLAUDE.md",
           "docs/99.templates/AGENTS.md",
-          "infra/AGENTS.md"
+          "docs/99.templates/CLAUDE.md",
+          "infra/AGENTS.md",
+          "infra/CLAUDE.md"
         ],
         "suites": [
           "agent-governance"

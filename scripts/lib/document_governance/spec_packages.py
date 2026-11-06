@@ -2978,6 +2978,10 @@ def load_spec_packages(
         packages: list[SpecPackage] = []
         seen_numbers: set[str] = set()
         for name in entries:
+            if name == "CLAUDE.md" and "AGENTS.md" not in entries:
+                raise SpecPackageError(
+                    "Stage 03 CLAUDE.md requires AGENTS.md beside it"
+                )
             if name in {"README.md", "AGENTS.md", "CLAUDE.md"}:
                 _, budget = _read_regular_utf8_at(
                     descriptor,

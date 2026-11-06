@@ -255,3 +255,34 @@ class FolderGuideShimTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not a generated shim"):
             self.renderer.write_native_projection(self.root)
         self.assertEqual("# Hand written\n", shim.read_text(encoding="utf-8"))
+
+    def test_only_tracked_regular_guides_outside_provider_homes_get_shims(
+        self,
+    ) -> None:
+        outside = tempfile.TemporaryDirectory()
+        self.addCleanup(outside.cleanup)
+        (Path(outside.name) / "AGENTS.md").write_text("# o\n", encoding="utf-8")
+        for name in (".agents/x", ".claude/x", ".codex/x", "lab", "infra"):
+            (self.root / name).mkdir(parents=True, exist_ok=True)
+        for name in (".agents/x", ".claude/x", ".codex/x"):
+            (self.root / name / "AGENTS.md").write_text("# p\n", encoding="utf-8")
+        (self.root / "lab/AGENTS.md").symlink_to(Path(outside.name) / "AGENTS.md")
+        self.git("add", "-A")
+        (self.root / "infra/AGENTS.md").write_text("# untracked\n", encoding="utf-8")
+        self.assertEqual(
+            (pathlib.PurePosixPath("docs/03.specs/AGENTS.md"),),
+            self.renderer._folder_guides(self.root),
+        )
+
+    def test_a_nested_folder_guide_gets_its_own_shim(self) -> None:
+        nested = self.root / "docs/03.specs/0264-x"
+        nested.mkdir()
+        (nested / "AGENTS.md").write_text("# n\n", encoding="utf-8")
+        self.git("add", "-A")
+        self.assertIn(("docs/03.specs/0264-x/CLAUDE.md", "missing"), self.findings())
+        self.renderer.write_native_projection(self.root)
+        self.assertIn(
+            "# docs/03.specs/0264-x Folder Guide\n\n@AGENTS.md\n",
+            (nested / "CLAUDE.md").read_text(encoding="utf-8"),
+        )
+        self.assertEqual([], self.findings())

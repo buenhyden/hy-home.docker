@@ -1,6 +1,6 @@
 ---
 title: "Architecture Agent Guide"
-version: "0.2.3"
+version: "0.2.4"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
@@ -44,8 +44,9 @@ operating procedures belong to Stage 01, Stage 03 and Stage 05.
 - ADR-0002's `AI Agent Guidance` subsection is part of that accepted decision
   record, kept as written; current agent working rules come from this guide
   and canonical governance, not from that subsection.
-- Keep the root to `README.md`, `AGENTS.md`, `descriptions/` and `decisions/`;
-  the Stage 02 loader rejects any other root entry.
+- Keep the root to `README.md`, `AGENTS.md`, `descriptions/`, `decisions/`
+  and the generated `CLAUDE.md` import shim; the Stage 02 loader rejects any
+  other root entry.
 - Change a Description or ADR in place; do not add a replacement or redirect
   file. When summarizing a decision, keep its alternatives, rationale,
   consequences and supersession.

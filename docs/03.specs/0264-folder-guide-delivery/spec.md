@@ -1,6 +1,6 @@
 ---
 title: "Folder Guide Delivery Specification"
-version: "0.4.0"
+version: "0.4.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -75,7 +75,9 @@ Code loads that shim, and so the guide, natively. The renderer's `--check`
 reports a missing, drifted or stale shim; `--write` creates a missing one and
 quarantines one whose guide is gone.
 
-For Claude the PreToolUse hook delivers no guide content. It adds a one-line
+For Claude the PreToolUse hook delivers guide content only on an edit below a
+folder whose `CLAUDE.md` is missing, not a regular file, or does not import
+`@AGENTS.md`. Otherwise it adds a one-line
 reminder naming the nearest folder guide on each edit, and after a SessionStart
 `compact` or `resume` an instruction to re-read it. For Codex the hook adds the
 full nearest folder guide to `additionalContext` once per session, the first
