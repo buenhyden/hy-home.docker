@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Contract Plan"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -26,7 +26,8 @@ The plan has six steps:
 6. Record the checks.
 
 Every step extends `lab.py`, its tests and the existing catalogs. No new
-controller is added.
+controller is added. W7 then sizes reservations, and W8 retires the supabase
+LAB by the owner decision of 2026-11-06.
 
 **Executor rules.** Read the [Spec](spec.md) and this Plan together. Steps use
 checkboxes. Run each test through the Python 3.12 controller venv
@@ -65,6 +66,7 @@ checkboxes. Run each test through the Python 3.12 controller venv
 | W5 | 4, 6 | Promotion policy (destination rules, reserve) and Runbook (three procedures); Kafka and OpenSearch cluster Guides and Runbooks | W2, W4 | TSK-0001 | operations catalog; metadata; links |
 | W6 | 7 | Record local and hosted CI results | W1-W5 | TSK-0001 | the checks in the Verification Plan |
 | W7 | 5, 8 | Amend the resource rule to reservations plus an external-workload allowance; declare reservations in the shared templates from measurements; make the section 5 owner check items non-blocking in readiness and `lab.py check` | W1-W6 | TSK-0002 | `test_lab_controller`; readiness and check on HOME; full suite; hardening |
+| W8 | 3 | Retire the supabase LAB: delete `labs/supabase/`, its Guide, Runbook and Policy and its catalog rows; move the SMTP01 retirement sections into RUN-0106; remove the `vector` socket allowance so no LAB binds the Docker socket | W1-W7 | TSK-0003 | LAB suites; secret suites; catalog check; hardening; root render; document checks; full suite |
 
 ### Global Constraints
 
@@ -73,9 +75,8 @@ checkboxes. Run each test through the Python 3.12 controller venv
   and `labs/.env.example` stay at the `labs/` root.
 - **Kinds.** `kind` is one of `add`, `replace-same`, `replace-substitute` or
   `undecided`. A manifest with kind `undecided` has no `target`.
-- **Socket exception.** The only socket bind allowed is supabase service
-  `vector`, with source `/var/run/docker.sock`, target `/var/run/docker.sock`
-  and `read_only: true`.
+- **Docker socket.** No LAB binds the Docker socket. The supabase `vector`
+  exception went with the supabase LAB in W8.
 - **Never touched.** No secret value is read or written, and `secrets/` is not
   edited. The owner applies `secrets/SENSITIVE_ENV_VARS.md.example`.
 - **Moves.** Document moves keep `artifact_id` and `created`. Use `git mv` so
@@ -97,8 +98,9 @@ checkboxes. Run each test through the Python 3.12 controller venv
    so the value must become `../../secrets/labs`. The same applies to every
    `${LAB_SECRET_DIR:-../secrets/labs}` default. W2 asserts the rendered
    secret paths start with `secrets/labs/<name>/`.
-3. **A socket bind that only looks like the exception.** The check must still
-   refuse:
+3. **A socket bind that only looks like the exception.** W1 wrote this for the
+   supabase `vector` exception; since W8 every socket bind is refused. The
+   check must still refuse:
    - a writable bind on `vector`;
    - the same bind on another supabase service;
    - a `.sock` source under another name.
@@ -559,6 +561,35 @@ turns two section 5 sub-checks into owner check items.
 The HOME services pick up the new reservations only when they are recreated,
 in an owner window. This work unit restarts nothing.
 
+### W8: Retire the supabase LAB
+
+Spec 0.4.0 (owner decision, 2026-11-06) removes the supabase LAB. No LAB is
+promoted.
+
+**Files:**
+
+- Delete `labs/supabase/` and `docs/05.operations/{guides,runbooks,policies}/15-labs/0029-supabase.md`.
+  Fix every inbound link and README index row; leave no redirect.
+- Move the RUN-0029 sections "SMTP 전환 확인과 중복 퇴역" and "SMTP01의 root·lock·증거
+  계약" into RUN-0106, which already owns the COMM-003 alias probes and the
+  secret-structure SMTP checks.
+- Remove the supabase rows from `infra/03-security/openbao/secret-catalog.json`
+  and `infra/secret-file-support.json`; prepare the matching
+  `secrets/SENSITIVE_ENV_VARS.md.example` edit for the owner.
+- `scripts/operations/lab.py`: remove `_socket_exception`.
+- `scripts/lib/ops/smtp_contract.py`: an Auth alias is no longer required once
+  no LAB source exists.
+- Current inventories: `labs/README.md`, `labs/.env.example`,
+  `infra/tech-stack.versions.json`, the update ledger's current fields,
+  `scripts/manifest.yaml`, `scripts/hardening/check-all-hardening.sh`,
+  `docs/99.templates/registry.json`, POL-0001, POL-0006, POL-0078, POL-0107,
+  RUN-0107, GDE-0041 and AD-0004, AD-0019, AD-0026.
+- Tests that read the deleted files.
+
+**Verification:** the LAB suites, the secret suites, the catalog check,
+hardening, a root render, the document checks and the full suite, recorded in
+TSK-0003.
+
 ## Verification Plan
 
 **Local checks:**
@@ -587,7 +618,6 @@ gate.
 | --- | --- |
 | A missed relative path breaks a LAB render | `test_lab_bind_sources_resolve` |
 | The large reference rename touches terminal or Stage 90 records | W2 excludes them; the link checker decides any residue |
-| supabase cannot start until the owner copies its secrets | Recorded as `NOT_RUN`; nothing starts in this Spec |
 | The proposed reserve is too small or too large | It is one policy value plus one constant, changed together |
 
 **Rollback.** Revert the branch. No runtime, data or secret state changes.
@@ -596,4 +626,5 @@ gate.
 
 - [Spec](spec.md)
 - [Task](tasks/tsk-0001-lab-promotion-contract.md)
+- [supabase LAB retirement Task](tasks/tsk-0003-retire-supabase-lab.md)
 - [Analytics LAB migration Plan](../0262-analytics-labs-migration/plan.md)
