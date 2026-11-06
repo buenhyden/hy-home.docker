@@ -1,6 +1,6 @@
 ---
 title: "Requirement Packages"
-version: "1.1.6"
+version: "1.1.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -71,6 +71,7 @@ docs/01.requirements/
 ├── 0026-document-retention-and-retirement.md
 ├── 0027-home-development-host.md
 ├── AGENTS.md
+├── CLAUDE.md
 └── README.md
 ```
 

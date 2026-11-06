@@ -1,6 +1,6 @@
 ---
 title: "Scripts Agent Guide"
-version: "0.2.1"
+version: "0.2.2"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
@@ -38,7 +38,8 @@ becomes its owner.
   An all-files run follows the
   [execution boundary](../.agents/governance/quality-standards.md#4-execution-boundary)
   and its `scripts/validation/run-agent-precommit-all-files.sh` route.
-- Generated provider surfaces under `.claude/` and `.codex/` come from
+- Generated provider surfaces under `.claude/` and `.codex/`, and each folder
+  `CLAUDE.md` import shim beside a folder `AGENTS.md`, come from
   `scripts/operations/provider_surface_renderer.py`; re-render them, never
   hand-edit them.
 - A script never prints, logs or writes a secret value.
