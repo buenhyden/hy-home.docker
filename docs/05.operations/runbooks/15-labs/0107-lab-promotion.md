@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Runbook"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -48,7 +48,7 @@ repository root에서 실행한다. 이 명령은 LAB과 root render, 실행 중
 `docker info`, `docker inspect`, disk 사용량만 읽고 아무것도 시작하지 않는다.
 
 ```bash
-python3 scripts/operations/lab.py --env-file labs/.env readiness <name> --report <path>
+python3 scripts/operations/lab.py readiness <name> --report <path>
 ```
 
 보고서는 JSON이며 `lab`, `kind`, `result`, `criteria`, `owner_checks`를 갖는다. `criteria`의

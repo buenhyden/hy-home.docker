@@ -1,6 +1,6 @@
 ---
 title: "Operations"
-version: "2.2.2"
+version: "2.2.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -95,7 +95,7 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 ### External Release Evidence
 
 이 저장소는 [공통 Agent 거버넌스의 external-release-evidence 정책](../../.agents/governance/documentation-protocol.md#release-evidence-boundary)을
-사용한다. [Release Runbook](runbooks/10-platform-and-backup/0009-release-management.md)(`RUN-0009`)은
+사용한다. [platform and backup runbook](runbooks/10-platform-and-backup/README.md)의 Release Runbook(`RUN-0009`)은
 반복 절차를, 현재 Task는 특정 실행의 검증과 결과를 소유한다. CHANGELOG, tag,
 CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성공을 주장하지 않는다.
 별도 Release 문서 프로필은 도입하지 않는다.
