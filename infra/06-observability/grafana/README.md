@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.2.0"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2026-01-12"
 ---
 
@@ -179,7 +179,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 07-workflow | `airflow-worker` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
 | 07-workflow | `blog-ingestion` | none | `Infrastructure/containers` | own `blog-ingestion` profile; container metrics and logs only, receipt counts via Gateway `/v1/summary` |
 | 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` |  |
-| 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Infrastructure/containers` |  |
+| 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Applications/hermes-research`, `Infrastructure/containers` | `Applications/hermes-research`는 Hermes 플러그인이 node-exporter textfile로 쓰는 지표(SPEC-0265) |
 | 07-workflow | `n8n-task-runner` | none | `Infrastructure/containers` | container metrics and logs only |
 | 07-workflow | `n8n-task-runner-worker` | none | `Infrastructure/containers` | container metrics and logs only |
 | 07-workflow | `n8n-valkey` | `n8n-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
@@ -250,6 +250,7 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 | `Applications/airflow` | `hyhome-airflow` | monitoring-mixins apache-airflow/apache-airflow-overview.json (2026-03-26) |
 | `Applications/airflow-db` | `hyhome-airflow-db` | Local dashboard: no external dashboard matches airflow metadata database (read-only) |
 | `Applications/flower` | `hyhome-flower` | Local dashboard: no external dashboard matches flower |
+| `Applications/hermes-research` | `hyhome-hermes-research` | Local dashboard: no external dashboard matches the Hermes plugin textfile metrics (`hermes_research.prom`) |
 | `Applications/n8n-system-health` | `applications-n8n-system-health` | grafana.com dashboard 24474 revision 1 (2025-11-26) |
 | `Applications/n8n-workflow-analytics` | `applications-n8n-workflow-analytics` | grafana.com dashboard 24475; datasource set to the read-only n8n-db |
 | `Applications/ollama` | `applications-ollama` | local: no external dashboard matches lucabecker42/ollama-exporter |

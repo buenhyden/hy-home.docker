@@ -124,3 +124,37 @@ groups:
           summary: '시스템 디스크 여유 공간 25GiB 미만'
           description: '/ 여유 공간이 {{ $value | humanize1024 }}B입니다. 20GiB 아래로 내려가면 야간 백업이 시작되지 않습니다. 쓰지 않는 Docker 이미지와 빌드 캐시를 먼저 확인하세요.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md'
+
+  # ============================================================================
+  # [4] Hermes research reports (SPEC-0265)
+  # ============================================================================
+  - name: hermes_research_alerts
+    rules:
+      # [What] No successful report for a job kind in 26 h / 26시간 동안 성공한 보고서 없음
+      # The Hermes plugin writes hermes_research.prom into the node-exporter
+      # textfile directory after every submit_research_report call. A job kind
+      # that never succeeded reads 0, so it fires once the file exists.
+      - alert: HermesResearchNoSuccess
+        expr: time() - hermes_research_last_success_timestamp_seconds > 26 * 3600
+        for: 30m
+        labels:
+          severity: warning
+          domain: apps
+        annotations:
+          summary: 'Hermes {{ $labels.job_kind }} 보고서가 26시간 넘게 성공하지 않음'
+          description: 'Hermes {{ $labels.job_kind }} 작업의 submit_research_report가 26시간 동안 submitted 또는 stored_no_items로 끝나지 않았습니다. Cron 실행 결과와 hermes_research_last_outcome_timestamp_seconds의 outcome을 확인하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md'
+
+      # [What] Last outcome blocked or store failure / 마지막 결과가 차단 또는 저장 실패
+      - alert: HermesResearchBlocked
+        expr: |
+          max by (job_kind) (hermes_research_last_outcome_timestamp_seconds{outcome=~"blocked|store_failed"})
+            > max by (job_kind) (hermes_research_last_success_timestamp_seconds)
+        for: 5m
+        labels:
+          severity: warning
+          domain: apps
+        annotations:
+          summary: 'Hermes {{ $labels.job_kind }} 보고서가 마지막 성공 뒤 차단됨'
+          description: 'Hermes {{ $labels.job_kind }} 작업에 마지막 성공보다 늦은 blocked 또는 store_failed 결과가 있습니다. hermes_research_blocked_total의 blocked_reason을 확인하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md'
