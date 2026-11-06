@@ -1,21 +1,20 @@
 ---
 title: "Operational Readiness Closure Architecture"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0028"
 parent_ids:
 - "REQ-0025"
 created: "2026-07-19"
 ---
+
 # Operational Readiness Closure Architecture
 
 ## Overview
-
-### Context and Stakeholders
 
 This architecture aligns Compose readiness, PostgreSQL logical recovery,
 sample-service supply chain, and local delivery under one isolation
@@ -24,8 +23,6 @@ must each independently verify the subject identity, failure boundary,
 cleanup, and evidence of every lane.
 
 ## Scope
-
-### System Boundaries
 
 - Execution is limited to repository-local, task-scoped Docker resources and
   synthetic input.
@@ -40,7 +37,7 @@ cleanup, and evidence of every lane.
 
 ## Structure
 
-### Components
+### Architecture
 
 | Lane | Current implementation | Primary output |
 | --- | --- | --- |
@@ -55,7 +52,7 @@ recovery guidance without owning the architectural decision.
 
 ## Runtime and Deployment
 
-### Data Flow
+### Runtime View
 
 Each wrapper follows the `preflight → allocate → execute → verify → summarize → cleanup`
 order. The Compose lane's readiness and the
@@ -69,8 +66,8 @@ result.
 Tracked scripts, policies, schemas, sample artifacts, and fixtures define the
 execution contract. Runtime containers, volumes, networks, generated SBOM,
 signature working files, and database state are task-scoped transient
-resources. Before execution, confirm the exact target and approval boundary,
-and never run automatic cleanup or promotion against an unknown identity.
+resources. Automatic cleanup and promotion act only on an identity the lane
+allocated itself.
 
 ## Quality and Risks
 
@@ -86,9 +83,16 @@ and never run automatic cleanup or promotion against an unknown identity.
 - **Observability**: summarize the subject, transition, result, cleanup, and
   stable failure class without secrets.
 
-## Related Documents
+### Risks
 
-### Traceability
+- The lanes prove behavior on synthetic input in task-scoped resources only;
+  they establish nothing about production data or a shared runtime.
+
+### Evolution
+
+- A new lane follows the same wrapper order and isolation boundary.
+
+## Related Documents
 
 - [REQ-0025 Operational Readiness Closure](../../01.requirements/0025-operational-readiness-closure.md)
 - [ADR-0028 Local-Isolated Readiness Evidence](../decisions/0028-local-isolated-readiness-evidence.md)

@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -16,8 +16,6 @@ created: "2026-09-19"
 
 ## Overview
 
-### Context and Stakeholders
-
 One Linux server shares HOME service and development experiments. The user
 also designated AI and workflow as always-on HOME capabilities. The goal is
 to keep the service within the scope where one operator can explain state
@@ -25,8 +23,6 @@ and the recovery path. An optional capability with no confirmed real
 consumer does not push its always-on startup cost onto HOME.
 
 ## Scope
-
-### System Boundaries
 
 The root Compose owns include, and the service profile owns activation. The
 canonical owner of the vocabulary is
@@ -42,7 +38,7 @@ not change HOME selection or the root Compose project (ADR-0045).
 
 ## Structure
 
-### Components
+### Architecture
 
 | Class | Retained capability | Activation and limitation |
 | --- | --- | --- |
@@ -55,7 +51,7 @@ not change HOME selection or the root Compose project (ADR-0045).
 | DEV | Single TimescaleDB Community PostgreSQL and Valkey | `dev-data`; project database/roles and ACL prefixes are separately approved |
 | DEV | Mail capture and explicit update/IaC jobs | jobs run only for a named operation |
 | OPTIONAL | Additional application databases and analytics | enable only for a known consumer |
-| LAB | Multi-node database, broker and storage variants | rehearsal topology, not physical fault isolation |
+| LAB | Standalone projects under `labs/<name>/`: multi-node database, broker and storage variants, analytics and quality tools | outside the root project; rehearsal topology, not physical fault isolation; none promoted |
 | MIGRATE | superseded tooling awaiting acceptance | preserve data and references until migration acceptance |
 
 Traefik remains the shared gateway. Development time-series workloads use
@@ -77,7 +73,7 @@ The independent 07/08 product-planning tracks grant no runtime resource authorit
 
 ## Runtime and Deployment
 
-### Data Flow
+### Runtime View
 
 ```mermaid
 flowchart LR
@@ -110,22 +106,6 @@ Dockerfile build sources. Documents route to the applicable source or projection
 instead of repeating patch pins without context.
 Renovate owns enabled infrastructure managers and Dependabot owns Storybook npm.
 
-### Risks
-
-Single-host power, storage, Docker daemon and GPU failure affect multiple HOME
-capabilities. Existing shared networks and host-level capabilities limit isolation.
-Current backup/restore, OpenBao bootstrap and resource acceptance are not yet
-proven by this redesign. Keep these as deployment prerequisites, not PASS claims.
-
-### Evolution
-
-Measure actual application usage and restore evidence before removing persistent
-services or changing storage engines. Promote only validated optional capabilities;
-retire migrations through existing archive and identity contracts, never by
-rewriting history or deleting unverified data.
-
-Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies image drift verification.
-
 ## Quality and Risks
 
 ### Quality Attributes
@@ -141,11 +121,24 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - Security: prefer authenticated gateway ingress and loopback diagnostic ports;
   document remaining host publications and shared network grants as residual risk.
 
+### Risks
+
+Single-host power, storage, Docker daemon and GPU failure affect multiple HOME
+capabilities. Existing shared networks and host-level capabilities limit isolation.
+Current backup/restore, OpenBao bootstrap and resource acceptance are not yet
+proven by this redesign. Keep these as deployment prerequisites, not PASS claims.
+
+### Evolution
+
+Measure actual application usage and restore evidence before removing persistent
+services or changing storage engines. Promote only validated optional capabilities;
+retire migrations through the summarize-and-delete retirement contract, never
+by rewriting history or deleting unverified data.
+
 ## Related Documents
 
-### Traceability
-
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
-- SPEC-0180
+- SPEC-0180 (retired; version history)
+- [SPEC-0262 Analytics LAB migration](../../03.specs/0262-analytics-labs-migration/spec.md)
 - [Service disposition research](../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
 - [Infrastructure implementation](../../../infra/README.md)

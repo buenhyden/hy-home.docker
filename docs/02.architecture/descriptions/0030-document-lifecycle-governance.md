@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "3.0.1"
+version: "3.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -21,16 +21,12 @@ retain durable meaning, Tasks record actual execution, and version history is th
 record of removed bodies. Approval, criterion acceptance, and retirement are
 separate facts.
 
-## Scope
-
-### Context and Stakeholders
-
 Governance owns when documents remain current, leave active stages, are
 reassessed, and may be removed from the working tree. This Description explains
 which components read which authority and what their checks establish.
 Maintainers and agents use the same contracts before claiming completion.
 
-### System Boundaries
+## Scope
 
 Inside the boundary are the Stage 99 Registry, current stage trees, and
 registered document validators. Stage 98 holds only its README. Git provides
@@ -38,17 +34,9 @@ removed bodies and historical approval context. CI chooses trusted comparison
 snapshots but does not grant retirement authority. Runtime systems, secret
 access, and remote integration remain separately authorized actions.
 
-### Traceability
-
-- [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
-- ADR-0030, ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
-- [ADR-0037 Package waiting and Task cancellation](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [ADR-0051 Summarize-and-delete retirement](../decisions/0051-summarize-and-delete-retirement.md)
-- [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
-
 ## Structure
 
-### Components
+### Architecture
 
 - `scripts/lib/document_governance/registry.py` loads profiles, lifecycles, and
   identity spaces, including each space's `reserved_history` of retired
@@ -71,14 +59,10 @@ access, and remote integration remain separately authorized actions.
 - Registered metadata, document-link, and corpus-lifecycle entrypoints expose
   these judgments through gate profiles. `metadata/heading.py` enforces the
   Registry's section contracts so authored declarations and checks agree.
-- A retired document is summarized into its Stage 01 or Stage 02 owner and
-  deleted. Its number stays in the Registry `reserved_history`, and version
-  history holds its body. Stage 98 holds only a README describing the
-  disposition scheme.
 
 ## Runtime and Deployment
 
-### Data Flow
+### Runtime View
 
 Load Registry contracts before classifying documents. Enumerate the selected
 current snapshot and read the comparison base through bounded Git operations.
@@ -117,26 +101,6 @@ worktree, index, target commit, or historical source context. These read-only
 checks do not write documents or operate services. Full gate or remote runs
 retain their own authorization and execution evidence requirements.
 
-### Risks
-
-- Metadata `check-changed` compares current and base bodies with
-  `changed_boundary=True` to reject newly introduced template instructions and
-  tokens. Two template-source calls using `False` in `reference.py` do not
-  disable that production path. Existing debt and introduced violations are
-  distinct; a changed-only pass does not prove corpus-wide cleanup.
-- `TARGET_TEMPLATE_LITERALS` retains the residual `<!-- Target:` marker rule.
-  Current templates and metadata reports no longer generate the marker.
-  SPEC-0173-TSK-0006 recorded the historical cleanup evidence (retired; version history); its observed count is
-  not a permanent contract.
-- Eight domains were observed to have both base and optimization-hardening
-  Descriptions without declared relationships. REQ-0026-FR-0005 requires clear
-  ownership; unique content prevents resolving that known debt through simple
-  retirement. It needs consolidation or an explicit hierarchy.
-- A missing source object or insufficient history prevents recovering a removed
-  body. It remains an explicit limit, never a reason to keep a copy in Stage 98.
-- Deleting a document does not erase Git history, clones, caches, or forks.
-  Security response remains a separate workflow.
-
 ## Quality and Risks
 
 ### Quality Attributes
@@ -152,7 +116,37 @@ retain their own authorization and execution evidence requirements.
 - Separable: governance explains the rule without loading a package; this
   Description explains enforcement without relying on a past execution Task.
 
+### Risks
+
+- Metadata `check-changed` compares current and base bodies with
+  `changed_boundary=True` to reject newly introduced template instructions and
+  tokens. Two template-source calls using `False` in `reference.py` do not
+  disable that production path. Existing debt and introduced violations are
+  distinct; a changed-only pass does not prove corpus-wide cleanup.
+- `TARGET_TEMPLATE_LITERALS` retains the residual `<!-- Target:` marker rule.
+  Current templates and metadata reports no longer generate the marker.
+  SPEC-0173-TSK-0006 recorded the historical cleanup evidence (retired; version history); its observed count is
+  not a permanent contract.
+- Eight domains have both a tier and an optimization-hardening Description.
+  REQ-0026-FR-0005 requires clear ownership; the hardening Descriptions link
+  their tier Description, but the pairs are not consolidated, and their unique
+  content prevents resolving that through simple retirement.
+- A missing source object or insufficient history prevents recovering a removed
+  body. It remains an explicit limit, never a reason to keep a copy in Stage 98.
+- Deleting a document does not erase Git history, clones, caches, or forks.
+  Security response remains a separate workflow.
+
+### Evolution
+
+- A new lifecycle rule enters through the Registry and its validator together,
+  so the declaration and the check never diverge.
+
 ## Related Documents
 
+- [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
+- ADR-0030, ADR-0031, ADR-0033, ADR-0035 and ADR-0036 were retired; their numbers are reserved and version history holds their bodies.
+- [ADR-0037 Package waiting and Task cancellation](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [ADR-0051 Summarize-and-delete retirement](../decisions/0051-summarize-and-delete-retirement.md)
+- [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
 - [ADR-0032 Canonical agent governance home](../decisions/0032-canonical-agent-governance-home.md)
 - [ADR-0048 Authority parents and criterion acceptance](../decisions/0048-authority-parents-and-criterion-acceptance.md)

@@ -1,35 +1,32 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.5.1"
+version: "1.6.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
 - "REQ-0024"
 created: "2026-06-01"
 ---
+
 # Agent Governance Canonical Adapter Architecture
 
 ## Overview
 
 Policy, provider translation, document shape and execution evidence have
 separate canonical owners. Both providers read the same repository-owned
-instructions and shared memory interface through their native adapters.
-
-## Scope
-
-### Context and Stakeholders
-
+instructions through their native adapters and share one memory store through
+`scripts/operations/agent_memory.py`; native Claude memory is off.
 Even when several AI providers modify the same repository, policy, roles,
 skills, SDLC, and approval boundaries must stay single. The maintainer
 reviews the norm in `.agents/`, the agent consumes the same norm through the
 provider adapter in native runtime form, and the reviewer independently
 verifies projection drift.
 
-### System Boundaries
+## Scope
 
 - `.agents/` owns policy, workflow, canonical roles/skills, and the provider
   boundary.
@@ -58,7 +55,7 @@ verifies projection drift.
 
 ## Structure
 
-### Components
+### Architecture
 
 | Component | Responsibility |
 | --- | --- |
@@ -73,15 +70,14 @@ verifies projection drift.
 | Stage 99 Registry | document shape and lifecycle machine contract |
 | Validators and suites | focused predicate execution and routing |
 
-Shared explanation prose defaults to Korean for new authoring; existing English
-sources and machine syntax remain valid. The document profile declares that
-language compatibility, and the documentation protocol owns authoring behavior.
-Native adapters consume the same meaning without creating another language or
-policy authority.
+Governance, role, skill, knowledge and prompt documents are English and every
+`README.md` is Korean; each profile's Registry `language` field decides, and
+the documentation protocol owns the rule. Native adapters consume the same
+meaning without creating another language or policy authority.
 
 ## Runtime and Deployment
 
-### Data Flow
+### Runtime View
 
 Bootstrap moves from the root shim to the shared agent governance policy and
 the matching provider adapter. It selectively loads only the canonical
@@ -119,9 +115,19 @@ runtime, a remote service, or secret mutation.
 - **Recoverability**: use Git diff and history instead of separate snapshots
   or SHA pins.
 
-## Related Documents
+### Risks
 
-### Traceability
+- Static renderer parity proves tracked adoption only; native invocation, hook
+  trust and runtime acceptance need direct evidence.
+- A provider runtime change can alter loading behavior that the authored
+  adapter describes.
+
+### Evolution
+
+- A new provider enters through a Provider Registry entry and an authored
+  adapter, never a second policy copy.
+
+## Related Documents
 
 - [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
 - [ADR-0032 Canonical Agent Governance Home](../decisions/0032-canonical-agent-governance-home.md)

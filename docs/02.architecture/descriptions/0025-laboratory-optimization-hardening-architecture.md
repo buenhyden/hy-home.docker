@@ -1,137 +1,122 @@
 ---
 title: "Admin and Experiment Tools Hardening Architecture Description"
-version: "1.2.0"
+version: "1.3.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0025"
 parent_ids:
 - "REQ-0012"
 created: "2026-03-28"
 ---
+
 # Admin and Experiment Tools Hardening Architecture Description
 
 ## Overview
 
-### Context and Stakeholders
-
-This document defines the optimization/hardening reference architecture of
-administration and experimentation capabilities across Data, Observability, AI and Analytics. Existing source-specific authentication remains authoritative: RedisInsight ForwardAuth, Dozzle native OIDC, and Open Notebook password-file authentication with gateway CIDR controls. These exceptions predate relocation (POL-0073); the move grants no new authentication exemption. CI checks source drift, not live access acceptance.
+This Description records the hardening structure of the administration and
+experimentation tools spread across the Data, Observability and AI tiers, and
+of the standalone LABs. These tools expose high-privilege UIs, so the design
+puts the security boundary first. Each tool keeps its own authentication:
+RedisInsight uses ForwardAuth, Dozzle native OIDC, and Open Notebook a
+password file with a gateway CIDR allowlist. These exceptions predate the
+relocation recorded in POL-0073, and the move grants no new exemption. The
+tier structure is in [AD-0011](0011-laboratory-architecture.md).
 
 ## Scope
 
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded
-in this section and the following views. Only concerns confirmed in the
-existing document are covered here.
-
-The distributed administration capability is a management tool set for operator productivity,
-but a "security boundary first" design is needed because it handles
-high-privilege UIs.
-
-- Container/Log Admin UI: dozzle
-- Data Admin UI: redisinsight
-- Local notebook lab: open-notebook, surrealdb
-
-### System Boundaries
-
-This section preserves the system boundary, consumption relationships,
-non-goals, and constraints already recorded in the current document.
-
-- **Owns**:
-  - Service-specific UI ingress boundary contract (gateway chain, authentication and declared allowlist)
-  - network boundary contract
-  - prohibition of unapproved direct host exposure; Open Notebook retains its existing loopback API publication
-  - dozzle least-privilege (socket read-only) contract
-  - open-notebook UI password/allowlist/large-body boundary and Docker
-    Secret injection contract
-  - laboratory hardening CI policy gate
-- **Consumes**:
-  - `01-gateway` Traefik middleware
-  - `02-auth` SSO middleware
-  - Docker Engine / Valkey-Redis endpoints
-- **Does Not Own**:
-  - Keycloak realm detailed policy
-  - Traefik global entrypoints
-- **Non-goals**:
-  - promoting an experimental service to the production workload tier
-  - a full replatform of the management tools
-
-### Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+- **Owns**: the per-tool ingress contract (gateway chain, authentication and
+  allowlist), the no-direct-host-exposure rule with Open Notebook's loopback
+  API as its one exception, Dozzle's read-only Docker socket, Open Notebook's
+  password, allowlist, large-body and Docker Secret contract, and the checks
+  of the hardening gate for these tools.
+- **Consumes**: the `01-gateway` Traefik middleware, the `02-auth` SSO
+  middleware and Keycloak, the Docker Engine, and the Valkey/Redis endpoints.
+- **Does not own**: Keycloak realm policy, Traefik global entrypoints, and the
+  LAB promotion contract, which SPEC-0263 owns.
+- **Non-goals**: promoting an experimental service to the HOME tier and
+  replatforming the management tools.
 
 ## Structure
 
-### Viewpoints and Views
+### Architecture
 
-The context, component, or deployment representation in this section serves
-as the view for that concern.
+| Tool | Package | Ingress chain | Authentication |
+| --- | --- | --- | --- |
+| Dozzle | `infra/06-observability/dozzle` (`admin`) | `gateway-standard-chain`, `dozzle-admin-ip` | native Keycloak OIDC; Docker socket read-only |
+| RedisInsight | `infra/04-data/redisinsight` (`admin`) | `gateway-standard-chain`, `redisinsight-admin-ip`, `sso-errors`, `sso-auth` | ForwardAuth |
+| Open Notebook and SurrealDB | `infra/08-ai/open-notebook` (`notebook`) | `gateway-standard-chain`, `open-notebook-admin-ip`, `large-body` | password file; API on `127.0.0.1` only |
+| MLflow | `infra/08-ai/mlflow` (`mlops`) | `gateway-standard-chain`, `sso-errors`, `sso-auth` | ForwardAuth |
 
-- **Ingress path**:
-  - Operator -> Traefik(websecure) -> dozzle/redisinsight/open-notebook
-- **Control path**:
-  - dozzle -> Docker socket
-  - redisinsight -> valkey/redis endpoints
-  - open-notebook -> surrealdb
+Sources: `infra/06-observability/dozzle/docker-compose.yml:35,48,74`,
+`infra/04-data/redisinsight/docker-compose.yml:74`,
+`infra/08-ai/open-notebook/docker-compose.yml:33,101`,
+`infra/08-ai/mlflow/docker-compose.yml:141`.
+
+Control paths: Dozzle reads the Docker socket, RedisInsight reaches the Valkey
+and Redis endpoints on `dev_data_net` and `mng_data_net`, and Open Notebook
+reaches SurrealDB on `ai_net`; SurrealDB publishes no host port.
+
+**LABs**: each LAB is one folder `labs/<name>/` with its `docker-compose.yml`,
+`README.md` and `promotion.yaml`, run as a standalone project outside the root
+Compose project, with secrets under `secrets/labs/<name>/` (SPEC-0263);
+`labs/README.md` lists the current LABs. No LAB is promoted; the owner
+decides promotion.
 
 ## Runtime and Deployment
 
-### Data and Control Flows
+### Runtime View
 
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
-
-This hardening Architecture Description does not introduce production data ownership for the laboratory tier. Data access remains limited to management metadata, Docker socket visibility, log streams, Valkey/Redis endpoint inspection, and Open Notebook local laboratory state described in the control path.
+This architecture introduces no production data ownership. Data access is
+limited to management metadata, Docker socket visibility, log streams,
+Valkey/Redis inspection, MLflow tracking metadata and Open Notebook's local
+state.
 
 ### Deployment View
 
-- **Runtime / Platform**: Docker Compose (`infra/04-data/redisinsight`, `infra/06-observability/dozzle`, `infra/08-ai/open-notebook`, `infra/08-ai/mlflow`, `labs/jupyterlab`)
-- **Deployment Model**:
-  - per-service compose + a common template (`infra/common-optimizations.yml`)
-- **Operational Evidence**:
-  - compose static checks
-  - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
-  - CI `infrastructure-hardening` job
-
-### Evolution
-
-- **Management UI**: keeping the approved service-specific authentication and ingress controls, applying an automatic
-  expiration policy for experimental services
-- **dozzle**: restricting the log viewing scope (rule blocking access to
-  production logs), ongoing review of least-privilege
-- **redisinsight**: minimizing access permission, prohibiting direct
-  production cache changes and strengthening the audit log policy
-- **open-notebook**: keeping secret-file credential injection, notebook data
-  retention/expiration policy, direct API/DB host-port exposure review
-  before production promotion
+- **Platform**: the root `docker-compose.yml` includes the four packages
+  above under their own profiles; `infra/common-optimizations.yml` supplies the
+  shared template. LABs start only through their own project.
+- **Evidence**: `scripts/hardening/check-all-hardening.sh 04-data
+  06-observability 08-ai` and the CI `infrastructure-hardening` job. These are
+  static source-drift checks, not live access acceptance.
 
 ## Quality and Risks
 
-### Quality Scenarios
+### Quality Attributes
 
-The quality scenarios point to the existing configuration, failure boundary,
-and verification expectation to which the attributes below apply. Concrete
-execution evidence is owned by the related Spec and Operations documents.
+- **Security**: each declared gateway and authentication boundary holds, with
+  the Open Notebook loopback API as the only host publication.
+- **Reliability**: the Compose contract and healthchecks give minimum runtime
+  stability.
+- **Operability**: regression recovery follows the CI gate and the runbook.
 
-- **Security**: preserves each declared gateway/authentication boundary and the Open Notebook loopback API exception; peer-network bypass requires separate evidence
-- **Reliability**: secures minimum runtime stability based on the compose
-  contract and healthcheck
-- **Operability**: standardizes regression recovery based on the CI
-  hardening gate and runbook
-- **Scalability**: expands the catalog-based policy (expiration/approval/
-  audit) in stages
+### Risks
+
+- Peer services on a shared network can reach a tool without the gateway;
+  proving no bypass needs separate runtime evidence.
+- Dozzle and Open Notebook do not use gateway ForwardAuth, so their own
+  authentication configuration is their access boundary.
+
+### Evolution
+
+- **Management UIs**: an expiry policy for experimental services.
+- **Dozzle**: narrowing the visible log scope and reviewing least privilege.
+- **RedisInsight**: minimal access, no direct production cache change, and an
+  audit-log policy.
+- **Open Notebook**: notebook data retention and a host-exposure review before
+  any promotion.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
+- **PRD**: [REQ-0012](../../01.requirements/0012-laboratory.md)
 - **Tier Architecture Description**: [AD-0011 Administration and Experimentation Architecture Description](0011-laboratory-architecture.md)
-- **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/0074-laboratory-optimization-hardening.md](../../05.operations/guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/0074-laboratory-optimization-hardening.md](../../05.operations/policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/0074-laboratory-optimization-hardening.md](../../05.operations/runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
+- **ADR**: [ADR-0025](../decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
+- **Spec**: [SPEC-0263 LAB promotion contract](../../03.specs/0263-lab-promotion-contract/spec.md)
+- **Guide**: [Laboratory optimization hardening guide](../../05.operations/guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
+- **Policy**: [Laboratory optimization hardening policy](../../05.operations/policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
+- **Runbook**: [Laboratory optimization hardening runbook](../../05.operations/runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
