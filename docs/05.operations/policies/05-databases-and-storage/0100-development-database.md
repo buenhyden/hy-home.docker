@@ -1,10 +1,10 @@
 ---
 title: "Development Database Operations Policy"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0100"
 parent_ids:
@@ -43,7 +43,7 @@ queue, 기존 PGDATA와 backup chain은 이 정책으로 변경하지 않는다.
 - `dev-valkey`는 project ACL과 key prefix를 보안 경계로 사용한다. TTL, persistence,
   maxmemory와 eviction의 업무 의미는 프로젝트 계약에서 명시한다. queue의 `noeviction`과
   cache LRU를 같은 instance에 혼합하는 변경은 별도 sizing decision을 요구한다.
-- pgBackRest source declaration은 backup/PITR 보장이 아니다. archive activation, retention
+- pgBackRest source declaration(`archive_mode=on`, `dev` stanza, `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest`, `dev_pgbackrest_cipher_pass`)은 backup/PITR 보장이 아니다. HOME archive 활성화(stanza 생성), retention
   변경, restore, storage 삭제와 기존 `app_db` migration은 별도 승인과 격리 검증이 필요하다.
 - 지표 수집은 `dev_pg_monitor`(통계·설정 읽기 전용 role)와 `devmonitor`(읽기 전용 ACL 사용자)만 쓴다. DEV exporter에 관리자 비밀을 주지 않는다.
 - secret은 Docker secret reference로만 소비한다. 값, rendered private configuration, raw
@@ -68,7 +68,7 @@ backup declaration 또는 external consumer가 바뀔 때 검토한다. runtime 
 
 ## Verification
 
-source change는 Compose render와 permission regression test를 통과해야 한다. fresh PGDATA,
+source change는 Compose render(`docker compose --env-file .env.example --profile dev-data config --quiet`)와 permission regression test를 통과해야 한다([RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md#procedure)). fresh PGDATA,
 repeat provision, app A/B isolation, reader write/DDL rejection, Timescale behavior, Valkey ACL,
 backup/restore, CDC replay와 external consumer switching은 runtime task에서 별도로 증명한다.
 SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다.

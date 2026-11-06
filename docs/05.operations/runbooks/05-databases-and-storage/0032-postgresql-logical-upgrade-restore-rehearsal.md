@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Logical Upgrade and Restore Rehearsal Runbook"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0032"
 created: "2026-07-22"
@@ -28,17 +28,15 @@ created: "2026-07-22"
 | --- | --- | --- |
 | PostgreSQL pin 또는 logical recovery wrapper 변경 후 representative rehearsal | Docker Compose와 exact Plan/Task approval | synthetic SQL만 사용; source/target image pin은 연결된 harness source가 소유함; host port, bind mount, external network, named/shared volume, `${DEFAULT_DATA_DIR}`, raw log, row, 비밀번호, dump evidence 없음 |
 
-Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`는 readiness semantics boundary를 설명하는 upstream evidence일 뿐 이 데이터 복구 rehearsal의 operational prerequisite가 아니다.
-
 ## Prerequisites
 
 ### Trigger and Preconditions
 
-이 런북은 그 handoff의 존재 또는 내용에 의존하지 않는다.
+Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`는 readiness semantics boundary를 설명하는 upstream evidence일 뿐이며, 이 런북은 그 handoff의 존재 또는 내용에 의존하지 않는다.
 
 ### Scope separation from actual HA recovery
 
-이 harness는 `examples/`의 digest-pinned PostgreSQL 17에서 18로의 이관 fixture와 fixture 한 DB만 다룬다. `--no-owner --no-acl`이며 globals/전체 DB/extension inventory/Patroni/etcd/pg-router를 복원하지 않는다. [RUN-0031](../15-labs/0031-postgresql-cluster.md)의 실제 HA 계약을 만족시키거나 HOME restore를 승인하지 않는다. 아래2026-07-22 기록은 그 날짜의 synthetic evidence이며 현재 source pin에 대한 새 runtime 관측이 아니다. 이미 검증된 exact-owner cleanup만 wrapper가 소유하고, 일반 실패 target 자동 삭제로 범위를 확장하지 않는다.
+이 harness는 `examples/`의 digest-pinned PostgreSQL 17에서 18로의 이관 fixture와 fixture 한 DB만 다룬다. `--no-owner --no-acl`이며 globals/전체 DB/extension inventory/Patroni/etcd/pg-router를 복원하지 않는다. [RUN-0031](../15-labs/0031-postgresql-cluster.md)의 실제 HA 계약을 만족시키거나 HOME restore를 승인하지 않는다. 아래 2026-07-22 기록은 그 날짜의 synthetic evidence이며 현재 source pin에 대한 새 runtime 관측이 아니다. 이미 검증된 exact-owner cleanup만 wrapper가 소유하고, 일반 실패 target 자동 삭제로 범위를 확장하지 않는다.
 
 ## Procedure
 
@@ -92,5 +90,5 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 - Infrastructure Task
 - [Rehearsal operation](../../../../scripts/operations/rehearse-postgres-logical-upgrade.sh)
 - [Synthetic Compose example](../../../../examples/operations/postgres-logical-upgrade/docker-compose.yml)
-- [Relational runbook index](../../../../README.md)
+- [Operations index](../../README.md)
 - [HA cluster triage runbook](../15-labs/0031-postgresql-cluster.md)

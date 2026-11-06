@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:
@@ -63,18 +63,19 @@ backup 완전성, 복구 시간, encryption at rest, 애플리케이션 호환�
 재실행하고 정확한 diff를 점검한다. 복구에는 엔진 runbook을 사용하며, 일반
 data-copy나 cleanup 명령을 적용하지 않는다.
 
+### Common Checks
+
+- 대표 profile(`mng`, `dev-data`, `seaweedfs`, `storage`, `opensearch`, `graph`, `admin-data`)의 root render와 `bash scripts/hardening/check-all-hardening.sh 04-data`. 명령 순서는 RUN-0030이 소유한다.
+
 ### Traceability
 
 - Artifact: `GDE-0030`; 거버넌스 정책: `POL-0030`.
-- Runtime authority: `root Compose plus scripts/hardening/check-all-hardening.sh`.
+- Runtime authority: root `docker-compose.yml`과 `scripts/hardening/check-all-hardening.sh`.
 
 ## Troubleshooting
 
-### Common Checks
-
-정확한 root profile, service, health/resource 제어, writable-state 소유권,
-secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
-증거일 뿐이며, runtime과 restore는 별개로 남는다.
+- render 실패: 대부분 root가 소유하는 network, secret 또는 `extends` 템플릿 누락이다. leaf를 단독 렌더링하지 말고 root에서 같은 profile로 재현한다.
+- `check-all-hardening.sh 04-data` 실패: 보고된 service의 소유 leaf Compose나 공유 템플릿을 고친다. 데이터 손실·손상 증상은 엔진별 runbook으로 넘긴다([RUN-0030](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md#regression-response)).
 
 ## Related Documents
 

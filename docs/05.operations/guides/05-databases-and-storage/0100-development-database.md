@@ -1,10 +1,10 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.2.0"
+version: "0.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -43,7 +43,7 @@ created: "2026-10-03"
 [`infra/04-data/dev-db/docker-compose.yml`](../../../../infra/04-data/dev-db/docker-compose.yml)은
 TimescaleDB Community 기반 `dev-pg`, 승인된 내부 fixture의 계정·DB를 만드는
 `dev-platform-provision`, 공용 시험 결과의 `dev-perf-provision`, project ACL을 적용하는
-`dev-valkey`를 소유한다. 지표는 `dev-data` profile의 exporter 둘이 Prometheus에 제공한다. `dev-pg-monitor-provision`이 통계·설정 읽기 권한만 가진 `dev_pg_monitor` role을 만들고, `dev-pg-exporter`(`9187`)가 이 role로 접속한다. `dev-valkey-exporter`(`9121`)는 읽기 전용 `devmonitor` ACL 사용자로 접속한다. 두 exporter는 관리자 비밀을 받지 않고 각자의 monitor secret(`dev_pg_monitor_password`, `dev_valkey_monitor_password`)만 쓴다. 두 exporter는 `dev_data_net`과 `obs_net`에 붙고 호스트 포트는 없다. DB 서비스는 `dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
+`dev-valkey`를 소유한다. 지표는 exporter 둘이 Prometheus에 제공한다(`dev-pg-exporter`는 `dev-pg`와 같은 네 profile, `dev-valkey-exporter`는 `dev-data`만). `dev-pg-monitor-provision`이 통계·설정 읽기 권한만 가진 `dev_pg_monitor` role을 만들고, `dev-pg-exporter`(`9187`)가 이 role로 접속한다. `dev-valkey-exporter`(`9121`)는 읽기 전용 `devmonitor` ACL 사용자로 접속한다. 두 exporter는 관리자 비밀을 받지 않고 각자의 monitor secret(`dev_pg_monitor_password`, `dev_valkey_monitor_password`)만 쓴다. 두 exporter는 `dev_data_net`과 `obs_net`에 붙고 호스트 포트는 없다. DB 서비스는 `dev_data_net`과 독립 bind-backed state(`dev-pg-data`, `dev-valkey-data`)를 사용한다. `dev-pg`는 `dev-data`, `analytics-engineering`, `cdc`, `quality-results`에서, `dev-valkey`는 `dev-data`에서만 선택되며, host port는 `dev-pg`의 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}`뿐이다. 내부 fixture
 `hyhome-platform` project의 `platform_dev` database role은
 `dev_pg_platform_migrator_password`, `dev_pg_platform_runtime_password`,
 `dev_pg_platform_reader_password`를 쓴다.
@@ -76,24 +76,10 @@ schema를 준비한다. 해당 job의 실행과 프로젝트별 결과 writer/re
 - 실제 표본량·쿼리·디스크·WAL을 관측해 chunk와 retention을 조정한다. 현재 수치는 실측 성능 순위나 보존 승인으로 사용하지 않는다.
 
 pgBackRest repository mount와 secret reference는 소스에 선언되어 있다.
-SPEC-0202-TSK-0002의 합성 격리 환경에서는 오프라인 전체 백업과 별도 볼륨 복원을
-확인했고, `archive_mode=off` 상태의 온라인 백업은 의도대로 거절됐다. HOME 백업,
+SPEC-0202-TSK-0002의 합성 격리 환경(당시 `archive_mode=off`)에서는 오프라인 전체 백업과 별도 볼륨 복원을
+확인했고, 온라인 백업은 의도대로 거절됐다. 현재 source는 `archive_mode=on`과 `dev` stanza로 WAL을 보관한다. HOME 백업,
 WAL 연속 보관·PITR, 관리 DB 복구, HOME 서비스 기동·정지·재시작, 실제 데이터 이관,
 기존 자격 증명 회전은 실행하지 않았으며 별도 승인 범위다.
-
-### Runbook Handoff
-
-정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md)이
-소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002가 기록했다(삭제됨, 버전 이력). HOME 기동·실제 프로젝트
-provision·운영 백업/복원·이관·전환은 각각 `NOT_RUN`이며 별도 승인이 필요하다.
-
-### Traceability
-
-- Artifact: `GDE-0100`; governing policy: `POL-0100`.
-- Source contract: `SPEC-0202`; architecture context: `AD-0031`.
-- Runtime authority: `infra/04-data/dev-db/docker-compose.yml`.
-
-## Troubleshooting
 
 ### Common Checks
 
@@ -107,8 +93,25 @@ project grant, 백업 또는 application readiness를 증명하지 않는다.
 
 `dev-pg`는 `archive_mode=on`으로 시작한다. 새 호스트에서 `dev-data`를 처음 올리기 전에
 RUN-0021의 순서대로 repository 최상위 디렉터리를 `70:70 0750`으로 두고 `dev` stanza를
-만든다. stanza 없이 시작하면 `archive_timeout`(300초)마다 archive가 실패하고
-`pg_wal`이 2 GiB 한도까지 자란 뒤 WAL이 버려진다.
+만든다. stanza 없이 시작하면 `archive_timeout`(300초)마다 archive가 실패하고, 보관되지 않은 WAL은 재활용되지 않으므로
+`pg_wal`이 data disk를 채울 때까지 자란다(`max_wal_size=2GB`는 이 증가를 막지 않는다).
+
+### Runbook Handoff
+
+정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md)이
+소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002가 기록했다(삭제됨, 버전 이력). HOME 기동·실제 프로젝트
+provision·운영 백업/복원·이관·전환은 각각 `NOT_RUN`이며 별도 승인이 필요하다.
+
+### Traceability
+
+- Artifact: `GDE-0100`; governing policy: `POL-0100`.
+- Source contract: `SPEC-0204`(SPEC-0202는 삭제된 역사적 근거); architecture context: `AD-0031`.
+- Runtime authority: `infra/04-data/dev-db/docker-compose.yml`.
+
+## Troubleshooting
+
+- `dev-pg` 디스크 증가·archive 실패 로그: `dev` stanza와 `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest` 권한을 확인하고 [RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md)과 RUN-0021로 넘긴다.
+- exporter `pg_up`/`redis_up`이 0: `dev-pg-monitor-provision` 종료 코드와 monitor secret을 확인한다.
 
 ## Related Documents
 

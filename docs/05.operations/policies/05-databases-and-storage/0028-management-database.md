@@ -1,10 +1,10 @@
 ---
 title: "Management Database Operations Policy"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -27,11 +27,11 @@ role, broker, credential 변경은 consumer를 인지하는 유지보수와 roll
 
 ## Rules
 
-- `mng`, `core`, `dev`, `local` 중 하나와 함께 root project를 통해 운영한다.
+- `mng`, `core`, `dev`, `local` 중 하나와 함께 root project를 통해 운영한다(PostgreSQL 쪽은 `mlops`, `data-science`, `contract-testing`, `bi`가 의존성 closure로도 선택한다).
   Leaf Compose 파일을 독립적으로 실행하지 않는다.
 - PostgreSQL과 Valkey를 별도의 bind-backed volume에 유지하고 `mng_data_net`,
   health check, secret 파일, 공유 리소스 제한을 보존한다.
-- `mng_postgres_password`, `mng_valkey_password`, monitor·inspector credential(`mng_pg_monitor_password`,
+- `mng_postgres_password`, `pgbackrest_cipher_pass`, `mng_valkey_password`, monitor·inspector credential(`mng_pg_monitor_password`,
   `mng_valkey_monitor_password`, `mng_valkey_inspector_password`)과 서비스 database credential을
   Docker secret 보관에 유지한다. Dump와 evidence는 plaintext 값을 포함해서는
   안 된다.
@@ -50,7 +50,7 @@ role, broker, credential 변경은 consumer를 인지하는 유지보수와 roll
 
 ### Backup and restore
 
-아래는 필수 보존 계약이다. 현 RUN-0021 automation은 physical pgBackRest/WAL+globals와RDB만 제공하며 database별 logical/AOF capture 및 앱 quiescence는 별도 구현·승인 작업이다. Restic30일 archive가 broker7일 업무 replay 승인을 대신하지 않는다.
+아래는 필수 보존 계약이다. 현 RUN-0021 automation은 physical pgBackRest/WAL+globals와 RDB만 제공하며 database별 logical/AOF capture 및 앱 quiescence는 별도 구현·승인 작업이다. Restic 30일 archive가 broker 7일 업무 replay 승인을 대신하지 않는다.
 
 PostgreSQL globals와 현재 각 database를 logical tool로 별도의 암호화된
 destination에 capture한다. Valkey의 완전한 AOF 세트와 manifest, 그리고
@@ -95,7 +95,7 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 
 ## Verification
 
-Root 구성과 범위가 지정된 static policy check를 검증한 뒤, 승격이나 cutover
+`docker compose --env-file .env.example --profile mng config --quiet`와 `tests/validation/test_compose_baseline_gates.py` contract test로 root 구성을 정적 검증한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 

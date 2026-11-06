@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Guide"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0080"
 parent_ids:
@@ -25,7 +25,7 @@ SurrealDB는 Open Notebook을 위한 `OPTIONAL` 데이터베이스로, 업스트
 정확히 `surrealdb`와 `notebook` profile 아래에 `surrealdb` 서비스 하나를 정의한다.
 `admin`은 더 이상 이를 선택하지 않는다. 커스텀 Dockerfile과 entrypoint가 서버
 프로세스를 소유하고, `surrealdb-data`가 `/mydata`를 영속화하며,
-`surreal_db_password`가 Compose에 리터럴 없이 root 인증을 제공한다.
+root 사용자 이름은 `SURREALDB_USERNAME` 환경 변수, 비밀번호는 `surreal_db_password` secret(`/run/secrets/surreal_db_password`)이 Compose에 리터럴 없이 제공한다.
 
 ## Scope
 
@@ -58,9 +58,7 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
 
 선택한 Dockerfile은 v2 이미지의 바이너리를 Debian 기반 이미지로 복사한다.
 복사된 entrypoint가 secret을 읽고 `rocksdb:/mydata/db.db`로 시작하므로 README의
-다른 저장 엔진 이름을 복구 근거로 사용하지 않는다. major 태그는 정확한 실행 버전을
-보장하지 않는다. 업그레이드·export/import 전에 resolved 이미지와 엔진 버전 및
-저장 형식 근거를 확인하며, v3 전환 금지 정책은 유지한다. 상태·준비 명령은 실제
+다른 저장 엔진 이름을 복구 근거로 사용하지 않는다. base 이미지는 Dockerfile에서 v2 계열의 정확한 태그와 digest로 고정되어 있으며, 그 선언이 실행 버전의 권위다. 업그레이드·export/import 전에 그 선언과 저장 형식 근거를 확인하며, v3 전환 금지 정책은 유지한다. 상태·준비 명령은 실제
 컨테이너 접근이므로 정적 문서 검증과 구분한다.
 
 ### Preflight and normal use
@@ -73,19 +71,16 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
   이 배포는 v2를 유지한다. 선택한 Open Notebook 이미지와의 v3 호환성 근거를
   확보하고 별도로 승인받기 전에는 v3로 변경하지 않는다.
 
-1. 선택된 surface를 렌더링한다: `docker compose --profile surrealdb config --quiet`.
-2. 선언된 서비스를 확인한다: `docker compose --profile surrealdb ps surrealdb`.
-3. credential이나 데이터 없이 준비 상태를 확인한다:
-   `docker compose exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`.
-4. `ai_net`의 애플리케이션은 `ws://surrealdb:8000/rpc`로 연결한다.
-5. 복구 인벤토리를 위해 모든 export를 엔진 버전, namespace, database, 인증 수준,
+1. 아래 Common Checks로 render, 서비스 상태, credential 없는 준비 상태를 확인한다.
+2. `ai_net`의 애플리케이션은 `ws://surrealdb:8000/rpc`로 연결한다.
+3. 복구 인벤토리를 위해 모든 export를 엔진 버전, namespace, database, 인증 수준,
    스키마/데이터 범위, checksum, 보존 기간, 격리된 복원 결과와 연결한다.
 
 ### Common Checks
 
 - `docker compose --profile surrealdb config --quiet`
 - `docker compose --profile surrealdb ps surrealdb`
-- `docker compose exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`
+- `docker compose --profile surrealdb exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`
 
 ### Runbook Handoff
 

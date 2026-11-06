@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Runbook"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0037"
 parent_ids:
@@ -43,6 +43,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
    ```bash
    docker compose --env-file .env.example --profile messaging config --quiet
+   docker compose --env-file .env.example --profile cdc config --quiet
    LAB_DATA_DIR=/tmp/hy-home-lab-kafka-static LAB_KAFKA_CLUSTER_ID=static-contract-id docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --quiet
    bash scripts/hardening/check-all-hardening.sh 05-messaging
    ```
@@ -84,12 +85,10 @@ ownership drift에서 중단하고 messaging @buenhyden에게 escalation한다.
 
 ## Related Documents
 
-- [Kafka runbook](0036-kafka.md)
-- [Hardening policy](../../policies/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
-- [Kafka runbook](0036-kafka.md)
-- [Hardening policy](../../policies/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
-
 ### Traceability
 
 - Artifact: `RUN-0037`; parent guide: `GDE-0037`.
 - 정적 evidence는 runtime이나 restore를 입증하지 않는다.
+
+- [Kafka runbook](0036-kafka.md)
+- [Hardening policy](../../policies/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)

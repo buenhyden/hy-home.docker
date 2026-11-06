@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Usage Guide"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0037"
 parent_ids:
@@ -26,10 +26,10 @@ created: "2026-05-17"
 
 ## Concepts
 
-현재 messaging surface는 Kafka 전용이며 OPTIONAL이다. hardening은
+hardening은
 root-rendered Kafka family, Kafbat native OIDC, persistence, health, 리소스,
 네트워크 exposure를 검증한다. PLAINTEXT broker listener가 안전하다거나 동일
-host의 세 broker가 host 가용성을 제공한다고 주장하지 않는다.
+host의 세 LAB broker(`labs/kafka-cluster`)가 host 가용성을 제공한다고 주장하지 않는다.
 
 ## Usage
 
@@ -59,18 +59,19 @@ static 성공은 runtime health, 인증 흐름, 성능, 데이터 내구성, res
 TLS/SASL, credential 회전, topic 변경, 서비스 재시작 같은 runtime 보안
 작업에는 명시된 계획과 rollback이 필요하다.
 
+### Common Checks
+
+- root `messaging`/`cdc` render, LAB `lab-kafka` render, `bash scripts/hardening/check-all-hardening.sh 05-messaging`. 명령 순서는 RUN-0037이 소유한다.
+
 ### Traceability
 
 - Artifact: `GDE-0037`; 거버넌스 정책: `POL-0037`.
-- Runtime authority: `root Kafka Compose plus scripts/hardening/check-all-hardening.sh`.
+- Runtime authority: `infra/05-messaging/kafka/docker-compose.yml`(root include)과 `scripts/hardening/check-all-hardening.sh`.
 
 ## Troubleshooting
 
-### Common Checks
-
-정확한 root profile, service, health/resource 제어, writable-state 소유권,
-secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
-증거일 뿐이고 runtime과 restore는 별개 문제로 남는다.
+- render 실패: root network·secret·`extends` 템플릿 누락 여부를 root에서 같은 profile로 재현한다. LAB render는 `LAB_DATA_DIR`와 `LAB_KAFKA_CLUSTER_ID`가 필요하다.
+- `check-all-hardening.sh 05-messaging` 실패: 보고된 service의 leaf Compose나 공유 템플릿을 고치고 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)을 따른다. runtime 장애는 [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md)으로 넘긴다.
 
 ## Related Documents
 

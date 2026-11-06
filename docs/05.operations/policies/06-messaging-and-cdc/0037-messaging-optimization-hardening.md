@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Operations Policy"
-version: "2.0.2"
+version: "2.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0037"
 parent_ids:
@@ -57,7 +57,7 @@ offset, schema, Connect state, KRaft identity를 포함해야 하며, promotion
 
 ### Validation contract
 
-정상 `messaging`은 [GDE-0037](../../guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)의
+정상 `messaging`은 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md#procedure)의
 exact root-profile `config --quiet` command로 검증한다. LAB은
 `docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --quiet`로
 별도 렌더링한 뒤 scoped `05-messaging` hardening script를 사용한다. Static
@@ -87,7 +87,7 @@ lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다
 
 ## Verification
 
-root 구성과 scoped static policy check를 검증한 다음, promotion이나
+RUN-0037의 root/LAB render와 `bash scripts/hardening/check-all-hardening.sh 05-messaging`로 static 구성을 검증한 다음, promotion이나
 cutover 전에 application-level acceptance를 갖춘 isolated compatible
 restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
 

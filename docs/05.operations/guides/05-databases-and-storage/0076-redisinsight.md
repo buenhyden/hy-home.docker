@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0076"
 parent_ids:
@@ -60,6 +60,13 @@ DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자를
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/05-databases-and-storage/0076-redisinsight.md)의 `승인된 사용·설정 보존·업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
+### Common Checks
+
+- `docker compose --profile admin-data config --quiet`
+- `bash scripts/hardening/check-all-hardening.sh 04-data`
+- `HYHOME_REDISINSIGHT_REHEARSAL=1 python3 -m unittest tests.validation.test_redisinsight_rehearsal`
+  (격리 망에서 접속·거부·중단·회전을 시험한다)
+
 ### Runbook Handoff
 
 인증, 설정, credential, 대상, 업그레이드 복구에는
@@ -95,9 +102,6 @@ RedisInsight는 시작할 때마다 아래 두 연결을 다시 만든다. 목�
 - 비밀번호는 secret 파일에서 `start.sh`가 읽어 환경으로만 넘기며 문서, 채팅, 로그,
   스크린샷에 남기지 않는다.
 
-연결이 실패하면 대상 Valkey 컨테이너 안에서 inspector secret으로 `PING`이 `PONG`을
-돌려주는지 확인하고, `ACL LOG`의 `username`으로 어떤 사용자로 시도했는지 본다.
-
 ### Traceability
 
 - [Policy](../../policies/05-databases-and-storage/0076-redisinsight.md) (`POL-0076`)
@@ -106,12 +110,10 @@ RedisInsight는 시작할 때마다 아래 두 연결을 다시 만든다. 목�
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile admin-data config --quiet`
-- `bash scripts/hardening/check-all-hardening.sh 04-data`
-- `HYHOME_REDISINSIGHT_REHEARSAL=1 python3 -m unittest tests.validation.test_redisinsight_rehearsal`
-  (격리 망에서 접속·거부·중단·회전을 시험한다)
+- DB 연결 실패: 대상 Valkey 컨테이너 안에서 inspector secret으로 `PING`이 `PONG`을
+  돌려주는지 확인하고, `ACL LOG`의 `username`으로 어떤 사용자로 시도했는지 본다.
+- 기동 직후 첫 요청 timeout: 25초 요청 제한 안에 시작 시 외부 조회가 끝나지 않은 경우다. 한 번 재시도한다.
+- gateway 403/로그인 반복: `redisinsight-admin-ip` CIDR(`ADMIN_UI_ALLOWED_CIDRS`)과 `sso-auth@file`을 확인하고 [Runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md)으로 넘긴다.
 
 ## Related Documents
 

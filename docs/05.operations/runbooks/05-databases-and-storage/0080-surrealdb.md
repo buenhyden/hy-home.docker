@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Runbook"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0080"
 parent_ids:
@@ -16,33 +16,26 @@ created: "2026-09-19"
 
 ## Overview
 
-이 런북은 헬스 트리아지와 계획된 격리 export/import 리허설을 제공한다. 이 문서를 고치면서 런타임, export, import, 스토리지 변경은 전혀 실행하지 않았다.
-
-안전한 증거를 수집하고, namespace, database, auth scope, 스키마와 데이터를 보존하는 반복 가능한 복구 테스트를 정의한다.
+이 런북은 `surrealdb`(`surrealdb`/`notebook` profile, `ai_net`, host port 없음)의 헬스 트리아지와 계획된 격리 export/import 리허설을 제공한다. 안전한 증거를 수집하고, namespace, database, auth scope, 스키마와 데이터를 보존하는 반복 가능한 복구 테스트를 정의한다.
 
 ## Trigger
 
 - `surrealdb`가 없거나, 비정상이거나, 접근 불가한 경우.
-
-## Prerequisites
-
-### Trigger and Preconditions
-
 - 인증, namespace/database 선택, 영속성이 의심되는 경우.
 - 승인된 backup, upgrade, 또는 격리 restore 리허설을 계획 중인 경우.
 
-## Procedure
-
-먼저 다음을 확인한다.
+## Prerequisites
 
 - [ ] 저장소 루트에서 작업하고 선택한 정확한 profile을 기록한다.
 - [ ] configuration commit, Dockerfile/[Compose](../../../../infra/08-ai/open-notebook/docker-compose.yml) 버전 권한과 [runtime version projection](../../../../infra/tech-stack.versions.json), 엔진 버전(Open Notebook에는 SurrealDB v2가 필수), namespace, database, 예상 스키마와 record invariant를 기록한다.
 - [ ] `surreal_db_password`와 원본 레코드는 증거에서 제외한다.
 - [ ] export, import, stop, upgrade, volume 작업 전에 별도 승인을 받는다.
 
+## Procedure
+
 1. 설정 렌더링: `docker compose --profile surrealdb config --quiet`.
 2. 상태 확인: `docker compose --profile surrealdb ps surrealdb`.
-3. 접근성 확인: `docker compose exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`.
+3. 접근성 확인: `docker compose --profile surrealdb exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`.
 4. 정제된 로그 검토: `docker compose --profile surrealdb logs --tail=120 surrealdb`.
 5. mount, 버전, namespace/database, 또는 인증이 선언된 상태와 다르면 증거 수집 후 중단한다.
 
@@ -59,8 +52,6 @@ created: "2026-09-19"
 
 날짜, configuration commit, 서비스/profile, source와 target 버전, namespace/database 식별자, backup checksum, exit status, 정제된 invariant, 그리고 명시적 미실행/실행 상태를 기록한다. secret 값이나 원본 database 콘텐츠는 절대 기록하지 않는다.
 
-### Verification Steps
-
 - Compose 렌더링과 서비스 상태가 정확한 source/profile과 일치한다.
 - Export checksum과 선언된 scope가 리허설 입력과 일치한다.
 - 격리된 target이 스키마, permission, count, 대표 read 검사를 통과한다.
@@ -70,7 +61,7 @@ created: "2026-09-19"
 
 ### Rollback or Recovery
 
-restore 증거는 위의 계획된 격리 리허설로만 확보한다. 프로덕션 cutover, route 변경, secret rotation, upgrade, 스토리지 교체는 별도 승인이 필요하며 여기서는 실행하지 않았다.
+restore 증거는 위의 계획된 격리 리허설로만 확보한다. 프로덕션 cutover, route 변경, secret rotation, upgrade, 스토리지 교체는 별도 승인이 필요하며 이 Runbook 범위에서 실행하지 않는다.
 
 문서 변경은 범위가 한정된 diff로 되돌린다. 리허설이 실패하면 target과 전용 volume을 격리 보존하고 추가 쓰기를 중지한다. 삭제는 별도의 승인된 정리이며 자동 롤백이 아니다. source와 보호된 export는 그대로 둔다.
 

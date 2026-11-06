@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Recovery Runbook"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0019"
 parent_ids:
@@ -67,7 +67,7 @@ Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 �
    실제 TTY를 가진 비공개 운영 terminal에서만 client 자체 password prompt를 사용한다. tracing/verbose/terminal recording과 redirected stdin, `exec -T`를 금지한다. 승인된 custody에서 받은 credential을 prompt에만 입력하며 shell 변수·환경·argv·URL로 전달하지 않는다. prompt/권한/CA/endpoint가 없거나 인증이 실패하면 중단한다. root/Docker 관리자의 메모리 관찰까지 차단한다고 주장하지 않는다.
 
    ```bash
-   docker compose exec opensearch curl -fsS --user admin --cacert /usr/share/opensearch/config/certs/rootCA.pem "https://opensearch:9200/_cluster/health?filter_path=status"
+   docker compose --profile opensearch exec opensearch curl -fsS --user admin --cacert /usr/share/opensearch/config/certs/rootCA.pem "https://opensearch:9200/_cluster/health?filter_path=status"
    ```
 
 3. Logs를 확인한다.
@@ -85,7 +85,7 @@ Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 �
 
    `${LAB_SECRET_DIR}`과 `${LAB_OPENSEARCH_CERT_DIR}`는 승인된 LAB 전용 경로여야 합니다. 정적 render에는 합성 경로를 사용할 수 있지만 비밀 파일 원문을 출력하지 않습니다.
 
-현재 healthcheck와 시작 스크립트는 비밀값을 command argv에 싣지 않도록 수정했습니다. 실제 이미지 빌드·인증·health는 격리 실행 전까지 NOT_RUN입니다. source image가 제공하는 client를 쓰며 실제 packaged prompt 동작이 다르면 우회하지 않는다. 예시는 primary만 해당한다. certificate SAN/CA가 위 hostname과 일치하지 않으면 `-k`로 우회하지 않는다. LAB는 승인된 별도 target/CA/project를 지정하며 현재 custom 이미지의 기본 엔진·plugin 빌드 호환성과 인증서 신뢰가 미검증이므로 operational acceptance는 보류합니다.
+현재 healthcheck와 시작 스크립트는 비밀값을 command argv에 싣지 않습니다. 실제 이미지 빌드·인증·health는 격리 실행 전까지 NOT_RUN입니다. source image가 제공하는 client를 쓰며 실제 packaged prompt 동작이 다르면 우회하지 않는다. 예시는 primary만 해당한다. certificate SAN/CA가 위 hostname과 일치하지 않으면 `-k`로 우회하지 않는다. LAB는 승인된 별도 target/CA/project를 지정하며 현재 custom 이미지의 기본 엔진·plugin 빌드 호환성과 인증서 신뢰가 미검증이므로 operational acceptance는 보류합니다.
 
 ### Planned isolated snapshot restore
 
@@ -108,13 +108,8 @@ Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 �
 ### Observability and Evidence Sources
 
 - **Logs**: OpenSearch와 Dashboards compose log
-- **Metrics**: 별도 exporter가 실행 중이지 않으면 N/A
-- **Evidence**: health 응답, 선택한 compose file, service log 요약, secret boundary 확인
-
-### 증거 기록
-
-- compose file, service 이름, health 상태, 로그 요약, escalation 결정을 기록한다.
-- password 값은 기록하지 않는다.
+- **Metrics**: custom image의 exporter plugin을 Prometheus `opensearch` job이 `opensearch:9200`에서 `opensearch_exporter_password`로 scrape한다(`obs_net`, `infra/06-observability/prometheus/config/prometheus.yml`).
+- **Evidence**: 선택한 compose file·service 이름, health 상태, service log 요약, escalation 결정, secret boundary 확인. password 값은 기록하지 않는다.
 
 ## Failure and Recovery
 

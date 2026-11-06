@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.7.0"
+version: "1.7.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -45,7 +45,7 @@ profile)는 `storage`와 함께 동작한다.
 - **IAM 우회 금지.** Volume과 filer HTTP는 읽기/쓰기 모두 STRG-008과 STRG-009로
   서명된 JWT를 요구한다. S3 route만 있고 master와 filer에는 Traefik route가
   없다. CDN은 S3를 통한 public-read bucket이며 filer를 거치지 않는다.
-- **내부 전송.** 모든 gRPC port는 SeaweedFS 전용 CA(`bin/gen-grpc-certs.sh`; CA
+- **내부 전송.** 모든 gRPC port는 SeaweedFS 전용 CA(`infra/04-data/seaweedfs/bin/gen-grpc-certs.sh`; CA
   key는 발급 후 폐기)로 mutual TLS를 사용한다. S3는 `object_net`에서 SigV4
   서명을 사용한 plain HTTP이며, host client에는 Traefik을 통한 HTTPS를
   제공한다. Master, volume, filer는 `seaweed_internal`(internal)과 지표 수집 전용
@@ -53,7 +53,7 @@ profile)는 `storage`와 함께 동작한다.
   Prometheus뿐이다. Master의 인증되지 않은 `/dir/assign`과 `/col/delete`에는 이 두
   network의 구성원만 접근할 수 있으므로 Prometheus도 신뢰 경계 안에 둔다.
 - **최소 노출면.** Lance listener와 내장 IAM API는 꺼져 있다. Iceberg REST
-  catalog는 `object_net`에서만 접근 가능해야 하며 route/host port를 두지 않는다. **현재 구현 미준수**: `seaweedfs-s3`의 Iceberg listener는 `0.0.0.0:8181`로 edge_net/seaweed_internal/object_net 모두에서 도달 가능하다. host port와 catalog router는 없고 데이터 관리 route는 인증 middleware를 사용한다. 단순 `expose` 제거로 격리되지 않으며 별도 source 변경과 network별 부정 접근 검증이 필요하다. 예외는 승인되지 않았다. 동일 identity(SigV4)를 사용한다. Table bucket은 `lakehouse`
+  catalog는 `object_net`에서만 접근 가능해야 하며 route/host port를 두지 않는다. **현재 구현 미준수**: `seaweedfs-s3`의 Iceberg listener는 `0.0.0.0:8181`로 edge_net/seaweed_internal/object_net 모두에서 도달 가능하다. host port와 catalog router는 없다. S3 router `s3.${DEFAULT_URL}`는 `gateway-standard-chain@file`만 쓰고 인증은 SigV4 identity가 맡는다. 단순 `expose` 제거로 격리되지 않으며 별도 source 변경과 network별 부정 접근 검증이 필요하다. 예외는 승인되지 않았다. 동일 identity(SigV4)를 사용한다. Table bucket은 `lakehouse`
   하나뿐이며 admin이 소유한다. 해당 policy는 `lakehouse` identity에 catalog와
   table action만 부여한다(policy 변경이나 bucket 삭제는 불가). Run마다
   lakehouse LAB의 `seaweedfs-table-bucket`이 이를 재작성하므로 수동 편집한 policy는 유지되지
@@ -119,7 +119,7 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 
 ## Verification
 
-Root 구성과 범위가 지정된 static policy check를 검증한 뒤, 승격이나 cutover
+`docker compose --env-file .env.example --profile seaweedfs config --quiet`로 root 구성을 정적 검증하고, 승인된 disposable rehearsal(`tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests`, [RUN-0024](../../runbooks/05-databases-and-storage/0024-seaweedfs.md#procedure))으로 identity·JWT·mTLS 거부를 확인한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 

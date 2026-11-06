@@ -1,10 +1,10 @@
 ---
 title: "04-Data Storage Exhaustion Runbook"
-version: "1.0.7"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0035"
 created: "2026-06-04"
@@ -18,7 +18,9 @@ created: "2026-06-04"
 
 ## Trigger
 
-승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
+- `HostSystemDiskLow`, `SeaweedFSDataDiskLow` 또는 `OpenSearchDiskSpaceLow` 경보가 발생했을 때
+- 데이터 서비스가 디스크 부족으로 쓰기를 거부할 때(예: SeaweedFS volume `-minFreeSpace=20GiB`, Valkey `noeviction` 쓰기 오류와 구분)
+- `dev-pg`/`mng-pg`의 WAL archive 실패로 `pg_wal`이 증가할 때
 
 ## Prerequisites
 
@@ -83,6 +85,9 @@ rollback은 client를 확장된 용량 또는 승인된 rollback 이후 이전�
 ### Escalation
 
 - Management PostgreSQL/Valkey: [RUN-0028](0028-management-database.md)
+- Development PostgreSQL/Valkey: [RUN-0100](0100-development-database.md)
+- OpenSearch: [RUN-0019](0019-opensearch.md)
+- Kafka: [RUN-0036](../06-messaging-and-cdc/0036-kafka.md)
 - LAB 전용 Valkey Cluster: [RUN-0022](../15-labs/0022-valkey-cluster.md)
 - SeaweedFS: [RUN-0024](0024-seaweedfs.md)
 - 모든 HOME state owner와 예외: [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)

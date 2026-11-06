@@ -1,10 +1,10 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.1.4"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -47,8 +47,7 @@ management database를 사용하는 서비스 소유자와 운영자를 위한 �
 [`infra/04-data/mng-db/docker-compose.yml`](../../../../infra/04-data/mng-db/docker-compose.yml)은
 `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`,
 `mng-valkey`, `mng-valkey-exporter`를 정의한다. `mng`, `core`, `dev`, `local`
-profile은 엔진과 init을 함께 선택하고, exporter와 monitor provision job은 `mng`와
-`dev`에서 선택된다.
+profile은 여섯 service를 모두 선택한다. PostgreSQL 쪽 네 service(`mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`)는 추가로 `mlops`, `data-science`, `contract-testing`, `bi`에서도 선택된다.
 
 지표는 관리자 비밀 없이 수집한다. `mng-pg-monitor-provision`이 통계·설정 읽기 권한만
 가진 `mng_pg_monitor` role을 만들고 `mng-pg-exporter`(`9187`)가 이 role로 접속한다.
@@ -72,7 +71,7 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 승인된 recreate 전까지 이전 설정을 유지한다. recreate하면 management database의
 공유 DB 연결이 중단된다. Compose는 모든 consumer를 자동 재시작하지 않는다. logical WAL은 WAL 볼륨을 소폭 늘리고, slot은
 등록된 CDC connector만 생성한다. Valkey는 `${DEFAULT_MANAGEMENT_DIR}/valkey`의
-`mng-valkey-data`를 소유하고 AOF를 활성화하며 `mng_valkey_password`를 읽는다.
+`mng-valkey-data`를 소유하고 AOF를 활성화하며 `mng_valkey_password`, `mng_valkey_monitor_password`, `mng_valkey_inspector_password`로 ACL을 만든다. n8n 전용 ACL 사용자는 opt-in overlay `infra/04-data/mng-db/docker-compose.n8n-acl.yml`(`mng_valkey_n8n_password`)로만 추가된다.
 256 MiB 컨테이너 한도 아래 `maxmemory 128mb`·`noeviction`이라, 가득 차면 OOM kill 대신
 쓰기 오류를 반환하고 기존 큐 key는 축출하지 않는다.
 둘 다 `mng_data_net`을 사용한다. PostgreSQL host port(`POSTGRES_HOST_PORT`,
@@ -91,19 +90,19 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 | --- | --- | --- | --- |
 | `mng-pg` | 공유 PG database/roles + physical backup/WAL; custom entrypoint | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/mng-db/docker-compose.yml) |
 | `mng-pg-exporter` | 공유 PG metrics | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/mng-db/docker-compose.yml) |
-| `mng-pg-monitor-provision` | `mng_pg_monitor` role 생성·갱신 job (`mng`, `dev`) | HTTP health 없음; 종료 코드 0과 exporter의 `pg_up` 확인 | [선택·의존·접속·입력·mount](../../../../infra/04-data/mng-db/docker-compose.yml) |
+| `mng-pg-monitor-provision` | `mng_pg_monitor` role 생성·갱신 job | HTTP health 없음; 종료 코드 0과 exporter의 `pg_up` 확인 | [선택·의존·접속·입력·mount](../../../../infra/04-data/mng-db/docker-compose.yml) |
 | `mng-pg-init` | base role/database provisioning job; feature DDL 제외 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/04-data/mng-db/docker-compose.yml) |
 | `mng-valkey` | 공유 workflow/session AOF state; queue replay 별도 승인 | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/mng-db/docker-compose.yml) |
 | `mng-valkey-exporter` | 공유 Valkey metrics | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/mng-db/docker-compose.yml) |
 
-선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### Images, configuration and resource controls
 
-Compose 파일은 핀된 upstream PostgreSQL, Valkey, 두 exporter 이미지 계열의
+Compose 파일은 PostgreSQL custom image `hy-home/mng-pg`(`pg/backup/Dockerfile`, pgBackRest 포함), init/monitor job의 upstream PostgreSQL, Valkey, 두 exporter 이미지의
 권위 있는 정의다. 저장소 Renovate가 업데이트를 제안하면 버전 projection은
 파생된다. PostgreSQL은 `POSTGRES_PASSWORD_FILE`, `POSTGRES_USER`,
-`POSTGRES_DB`, `PGDATA`, `POSTGRES_HOSTNAME`, `POSTGRES_PORT`를 사용하며, init은
+`POSTGRES_DB`, `PGDATA`, `POSTGRES_PORT`와 pgBackRest `PGBACKREST_*` 값을 사용하며, init은
 관리 서비스의 계정·DB 이름만 추가한다. root 포트 키가
 host binding을 제어한다. `mng-pg`는 `template-stateful-db-med`를,
 `mng-valkey`는 `template-stateful-low`를, init은 `template-job-low`를,
@@ -122,7 +121,7 @@ init은 PostgreSQL health 이후 role/database를 생성하고 exporter는 엔�
 ### Backup, recovery and upgrades
 
 PostgreSQL은 global role과 모든 데이터베이스의 logical dump가 필요하다.
-현재 자동 백업은 pgBackRest physical/WAL과globals export, Valkey RDB이며 이 logical/AOF 요구를 전부 구현하지 않는다. 완전한 앱 정합 복원은 별도 승인·검증이 필요하다. Valkey는 완전한 AOF set/manifest 하나와 RDB checkpoint 하나가 필요하며,
+현재 자동 백업은 pgBackRest physical/WAL과 globals export, Valkey RDB이며 이 logical/AOF 요구를 전부 구현하지 않는다. 완전한 앱 정합 복원은 별도 승인·검증이 필요하다. Valkey는 완전한 AOF set/manifest 하나와 RDB checkpoint 하나가 필요하며,
 incident owner가 지연된 대기 작업을 재실행해도 안전한지 판단해야 한다.
 [RUN-0028](../../runbooks/05-databases-and-storage/0028-management-database.md)이 격리된 복구 순서와
 애플리케이션 검증을 정의한다.
@@ -140,6 +139,12 @@ backup, rollback이 필요하다. 새 major PostgreSQL 이미지를 기존 `PGDA
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 
+### Common Checks
+
+정확한 root profile, service, health/resource 제어, writable-state 소유권,
+secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
+증거일 뿐이며, runtime과 restore는 별개로 남는다.
+
 ### Traceability
 
 - Artifact: `GDE-0028`; 거버넌스 정책: `POL-0028`.
@@ -147,11 +152,9 @@ backup, rollback이 필요하다. 새 major PostgreSQL 이미지를 기존 `PGDA
 
 ## Troubleshooting
 
-### Common Checks
-
-정확한 root profile, service, health/resource 제어, writable-state 소유권,
-secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
-증거일 뿐이며, runtime과 restore는 별개로 남는다.
+- consumer DB 연결 실패: `mng-pg` healthcheck(`pg_isready`)와 `mng-pg-init` 종료 코드를 먼저 확인한다. init은 base 서비스 role/database만 만들고 feature DB는 각 feature job이 만든다.
+- Airflow/n8n queue 쓰기 오류: `maxmemory 128mb`·`noeviction` 한도에 도달했을 수 있다. key 삭제나 replay는 [RUN-0028](../../runbooks/05-databases-and-storage/0028-management-database.md)의 승인 경계를 따른다.
+- exporter `pg_up`/`redis_up`이 0: monitor provision job과 monitor 계정 secret을 확인한다.
 
 ## Related Documents
 

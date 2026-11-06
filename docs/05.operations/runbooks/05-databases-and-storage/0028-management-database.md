@@ -1,10 +1,10 @@
 ---
 title: "Management Database Health and Init Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0028"
 parent_ids:
@@ -45,7 +45,7 @@ docker compose --env-file .env.example --profile mng config --quiet
 docker compose --env-file .env.example --profile mng config --services
 ```
 
-두 엔진, init, exporter, 분리된 persistent volume, secret 참조, health check,
+두 엔진, `mng-pg-init`, `mng-pg-monitor-provision`, 두 exporter, 분리된 persistent volume(`mng-pg-data`, `mng-valkey-data`), pgBackRest repository bind(`${BACKUP_STATE_REPO_DIR}/pgbackrest`), secret 참조, health check,
 `mng_data_net`을 확인한다. 환경 변수 치환으로 private value가 노출될 수 있는
 완전히 렌더링된 configuration은 출력하지 않는다.
 

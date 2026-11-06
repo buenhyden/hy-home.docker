@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Operations Policy"
-version: "2.1.3"
+version: "2.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0019"
 parent_ids:
@@ -21,7 +21,7 @@ created: "2026-05-17"
 ## Scope
 
 - **Systems**: 정상 `opensearch`/`opensearch-dashboards`; 별도 LAB의 `opensearch-node1..3`/`lab-opensearch-dashboards`
-- **Secrets**: 정상은 기존 `opensearch_*` 및 `oauth2_proxy_client_secret`; LAB는 `${LAB_SECRET_DIR}/opensearch-cluster/`의 별도 `lab_opensearch_*`만 사용
+- **Secrets**: 정상은 `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`와 API route basic auth `traefik_opensearch_basicauth_password`; LAB는 `${LAB_SECRET_DIR}/opensearch-cluster/`의 별도 `lab_opensearch_*`만 사용
 - **Persistence**: 정상 bind-backed `opensearch-data`/`opensearch-dashboards-data`; LAB는 `${LAB_DATA_DIR}/opensearch-cluster/` 아래 네 bind volume
 - **Environments**: repo-local, development, homelab, production-like rehearsal
 
@@ -61,6 +61,8 @@ created: "2026-05-17"
 
 - `test -f infra/04-data/opensearch/docker-compose.yml`
 - `test -f labs/opensearch-cluster/docker-compose.yml`
+- `docker compose --profile opensearch config --quiet`
+- `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet`
 - 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Related Documents

@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Recovery Runbook"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0076"
 parent_ids:
@@ -71,7 +71,7 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
    (MNG는 `--profile mng ... mng-valkey`이며 공유 소비자가 몇 초간 재접속한다).
 3. 이전 비밀이 `WRONGPASS`, 새 비밀이 `PONG`인지 확인한다.
 4. RedisInsight를 다시 만든다:
-   `docker compose --profile admin up -d --no-deps --force-recreate redisinsight`.
+   `docker compose --profile admin-data up -d --no-deps --force-recreate redisinsight`.
    사전 등록 연결이 새 비밀로 다시 저장되고 info가 200인지 본다.
 
 ### 기존 `/data`의 암호화 전환
@@ -107,11 +107,7 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
 파괴적 명령은 대상 소유자 승인이 필요하다. ForwardAuth는 Redis 권한을 제한하지
 않는다.
 
-`/data`를 복사하기 전에 RedisInsight를 중지한다. 백업은 credential을 담은
-자료로 보고 보호한다. UI 설정 백업은 대상 데이터베이스 백업이 아니다. 먼저 프로덕션
-Redis/Valkey에 접근할 수 없는 격리된 RedisInsight로 복원하고 같은 암호화 키를
-사용한다. 업그레이드 전에는 release와 라이선스 약관을
-검토하고 저장된 연결/history를 테스트한다. 여기서는 백업/복원을 실행하지 않았다.
+설정 보존·복원·업그레이드 순서는 위 `Settings restore and upgrade`를 따른다. UI 설정 백업은 대상 데이터베이스 백업이 아니다.
 
 ### 직접 접근 제한
 
