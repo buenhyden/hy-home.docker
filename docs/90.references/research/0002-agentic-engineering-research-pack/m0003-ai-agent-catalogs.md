@@ -1,17 +1,17 @@
 ---
 title: "Reference: External AI-Agent Catalogs and Local Intake"
-version: "1.3.0"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0003"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-06"
-reviewed_at: "2026-09-06"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -457,6 +457,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > historical and current pins separate; never replace a pin with `main` in a
 > load-bearing citation.
 
+> Revalidated 2026-11-06: the local catalog is `.agents/roles/` (14 roles) and `.agents/skills/` (24 skills). The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -487,3 +489,7 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | S-raw-githubusercontent-com-agency-codex | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/integrations/codex/README.md); conversion details/install destination | Not displayed | 2026-09-27 | Same pin; third-party Codex exporter | Installed compatibility unexamined |
 | S-raw-githubusercontent-com-agency-converter | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/scripts/convert.sh); convert_codex, opened lines 158–177 | Not displayed | 2026-09-27 | Same pin; shell source | No execution or generated result verified |
 | S-raw-githubusercontent-com-agency-license | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/LICENSE); copyright, permission and disclaimer | Copyright 2025; publication absent | 2026-09-27 | MIT at pin; not provider endorsement | Downstream provenance/suitability unverified |
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

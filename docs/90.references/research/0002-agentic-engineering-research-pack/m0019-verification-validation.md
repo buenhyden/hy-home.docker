@@ -1,17 +1,17 @@
 ---
 title: "Reference: Verification and Validation System"
-version: "1.3.2"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0019"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -691,6 +691,8 @@ questions unassessed. Those limitations are part of the result.
 > reason — a PDF fetch succeeding is not the same evidence class as reading its
 > normative clauses.
 
+> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); `docs/00.agent-governance/contracts/agent-catalog.yaml` is retired; roles are `.agents/roles/*.md` (14) and provider facts are `.agents/governance/providers/registry.yaml`; `scripts/validation/check-repo-contracts.sh` and `docs/90.references/data/security/security-automation-readiness.md` are absent; `docs/99.templates/registry.json` now defines 44 profiles and 38 template roles; 5 workflows (old: 7). The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -737,3 +739,7 @@ edition status is made from the preserved historical references.
 | --- | --- |
 | S-nasa-product-realization | [NASA product realization, verification and validation](https://www.nasa.gov/reference/5-0-product-realization/) |
 | S-nist-developer-verification | [NIST guidelines on minimum developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) |
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

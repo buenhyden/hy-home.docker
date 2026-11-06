@@ -1,17 +1,17 @@
 ---
 title: "Reference: Spec-Driven Development and SDLC"
-version: "1.2.2"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0018"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -459,6 +459,8 @@ Original observations, source checks, corrections, measurements, access failures
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
 
+> Revalidated 2026-11-06: `docs/04.execution/` is retired; Tasks now live under `docs/03.specs/<package>/tasks/`; `docs/99.templates/registry.json` now defines 44 profiles and 38 template roles. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -561,3 +563,7 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | [Document graph validator](../../../../scripts/validation/check-document-links.py)                                                                       | 2026-09-04 | Workspace tracked executable | The typed `--mode all` route owns both rendered-link traceability and current-path alignment checks.                                                      |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                                              | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; all used claims corroborated against current tracked sources.                                                                     |
 >
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

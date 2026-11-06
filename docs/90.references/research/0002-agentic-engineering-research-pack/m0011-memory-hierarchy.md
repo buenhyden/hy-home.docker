@@ -1,17 +1,17 @@
 ---
 title: "Reference: Agent Memory Hierarchy and Lifecycle"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0011"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -569,6 +569,8 @@ and the retired local wiki implementation.
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
 
+> Revalidated 2026-11-06: `docs/00.agent-governance/memory/` is retired and native Claude memory is off (`.claude/settings.json:3` `autoMemoryEnabled: false`); `docs/04.execution/` is retired; Tasks now live under `docs/03.specs/<package>/tasks/`. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -629,3 +631,7 @@ memory-write/retrieval architecture changes.
 > | [Memory in the Age of AI Agents: a Survey (paper list)](https://github.com/Shichun-Liu/Agent-Memory-Paper-List) | 2026-08-14                | External mutable         | Curated paper index; source for the 5-mechanism-family comparison, not adopted as policy.                                          |
 > | [A Survey of Context Engineering for Large Language Models](https://arxiv.org/pdf/2507.13334)                   | 2026-08-14                | External fixed           | Versioned arXiv preprint; source of the temporal-scope/substrate/control-policy taxonomy used for comparison.                      |
 >
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

@@ -1,17 +1,17 @@
 ---
 title: "Reference: SDLC Document Roles"
-version: "1.2.2"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0016"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -508,6 +508,8 @@ Original observations, source checks, corrections, measurements, access failures
 > | `SDLCDOC-ADR-003` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
 >
 
+> Revalidated 2026-11-06: SDLC templates moved from `docs/99.templates/templates/sdlc/` to `docs/99.templates/templates/requirements/` (`decision`, `description`, `requirement-package`), `architecture/`, and `specs/` (`spec`, `plan`, `task`); `templates/spec-contracts/` is now `templates/specs/contracts/`; the release template and `docs/05.operations/releases/` are absent (operations has guides, incidents, policies, runbooks); `tests/validation/test_document_metadata.py` is replaced by `tests/validation/test_document_metadata_identity_cli.py`. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -578,3 +580,7 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | Spec-contracts templates (retired path: `../../../99.templates/templates/spec-contracts/`)                                                    | 2026-08-14 | Workspace tracked            | Directory listing confirming eight registered focused-contract template files.                             |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; role relationships corroborated against current tracked owners.                     |
 >
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

@@ -1,17 +1,17 @@
 ---
 title: "Reference: Task-Aware Agent Model Selection"
-version: "1.2.0"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0002"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -473,6 +473,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > controls/defaults, evaluation fixtures, fallback capability, renderer, or
 > validators change. Never update a generated adapter alone.
 
+> Revalidated 2026-11-06: roles are `.agents/roles/*.md` (14) with native projections `.claude/agents/` (14); the Stage 00 scope files ("14 scopes") are retired; persona routing is in `.agents/governance/persona.md`. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -497,3 +499,7 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | C-m0002-05 | Diagnosed bounded fallback | [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance; [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed / Not displayed; version conditions in text | 2026-09-27 | Product/API candidates; target availability unexamined | Interpretation / recommendation | Diagnosis, budget and permission prerequisites | Not assessed in this run |
 
 Source tables in [m0013](m0013-provider-model-landscape.md#claims-and-sources) and [m0012](m0012-provider-implementation-comparison.md#claims-and-sources) record originals opened 2026-09-27, absent publication dates and version/channel limits. No entitlement, live call, routing config or cost log was inspected.
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

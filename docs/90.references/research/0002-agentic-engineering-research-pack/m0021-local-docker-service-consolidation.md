@@ -1,6 +1,6 @@
 ---
 title: "Reference: Local Docker Service Consolidation"
-version: "0.10.3"
+version: "0.11.0"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
@@ -11,6 +11,7 @@ parent_ids:
 - "RES-0002"
 created: "2026-09-18"
 observed_at: "2026-09-20"
+reviewed_at: "2026-11-06"
 ---
 
 # Reference: Local Docker Service Consolidation
@@ -766,6 +767,8 @@ marked as historical evidence, not a newly checked product or license catalogue.
 
 ### Historical workspace observations — not reassessed in this run
 
+> Revalidated 2026-11-06: `infra/**/docker-compose*.yml` now parses to about 106 service nodes and the root plus infra declare 60 distinct profiles (old: 42 files, 140 nodes, 64 profiles); root `docker-compose.yml:375` has 34 includes. The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -1015,3 +1018,7 @@ is the single authority for execution state and follow-up order.
 > - Public secret mapping now covers all root Compose file references. The three
 >   registry-only bootstrap/derived paths remain classified and preserved; values
 >   and unknown private entries are not deleted to force inventory equality.
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

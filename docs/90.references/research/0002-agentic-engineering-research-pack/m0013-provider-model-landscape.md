@@ -1,17 +1,17 @@
 ---
 title: "Reference: Provider Model Landscape at the Evidence Cutoff"
-version: "1.2.0"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0013"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -532,6 +532,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > validator changes. Preserve old cutoff evidence; append a new dated
 > observation rather than rewriting history.
 
+> Revalidated 2026-11-06: the only repository claim (14 roles) still holds (`.agents/roles/`). The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -570,3 +572,7 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | S-code-claude-com-costs | [Original](https://code.claude.com/docs/en/costs); /usage and organization access setups | Not displayed | 2026-09-27 | Claude API versus subscription/provider metering | No usage/entitlement/private logs inspected |
 | S-developers-openai-com-api-rate-limits | [Original](https://developers.openai.com/api/docs/guides/rate-limits); How limits work / Retrying with exponential backoff | Not displayed | 2026-09-27 | OpenAI API metrics and SDK-version-dependent retry | No account tier/limit checked; application and SDK bounds distinct |
 | S-platform-claude-com-api-rate-limits | [Original](https://platform.claude.com/docs/en/api/rate-limits); Rate limits / Cache-aware ITPM / Spend cap | Not displayed | 2026-09-27 | Claude Messages API and organization/workspace limits | Most-model cache exception; not subscription quota |
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)

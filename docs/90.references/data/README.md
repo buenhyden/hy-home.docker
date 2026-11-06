@@ -1,10 +1,10 @@
 ---
 title: "Data Packages"
-version: "2.1.2"
+version: "2.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "references"
 created: "2026-07-02"
 ---

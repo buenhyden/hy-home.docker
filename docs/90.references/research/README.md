@@ -1,10 +1,10 @@
 ---
 title: "Research Packages"
-version: "1.5.0"
+version: "1.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-06"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -21,18 +21,21 @@ Stage 90 authority boundary와 package lifecycle 규칙은
 
 ## Scope
 
-이 README는 현재 research package 경로를 안내합니다. research claim, 관찰 날짜,
+이 README는 현재 research package 경로와 은퇴한 번호 기록을 안내합니다. research claim, 관찰 날짜,
 인용과 provenance는 각각의 package가 소유합니다.
 
 ## Structure
 
 | Stable ID | Package |
 | :--- | :--- |
-| RES-0001 | Agentic Engineering Research Pack |
 | [RES-0002](./0002-agentic-engineering-research-pack/README.md) | Agentic Engineering Research Pack; canonical 외부 연구·역사 증거 hub |
 | [RES-0084](./0084-github-actions-platform/README.md) | Reference: GitHub Actions Platform Mechanics; RES-0002 routing 아래 전문 증거 |
 | [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment; RES-0002를 위한 보존된 날짜 증거 |
 | [RES-0096](./0096-archive-disposition-consistency/README.md) | Archive Disposition Consistency Assessment; RES-0002에서 링크되는 별도 archive-domain 증거 |
+
+RES-0001, RES-0080, RES-0081을 포함해 은퇴한 `RES-` 번호는 Registry
+`reserved_history`가 보관하며 다시 발급하지 않습니다. 본문은 Git 이력에
+있습니다.
 
 ### Consolidated Package Routing
 
@@ -48,9 +51,8 @@ Stage 90 authority boundary와 package lifecycle 규칙은
 
 이는 논리적 통합이며 삭제나 내용 병합이 아닙니다. package identity, 관찰
 날짜, lifecycle, 복구 provenance는 그대로 유지됩니다. 이전 RES-0080/RES-0081
-learning-roadmap 계열은 더 이상 활성 research package가 아닙니다.
-RES-0081은 RES-0002를 현재 routing 후속으로 두고 superseded 이력으로
-보존됩니다.
+learning-roadmap 계열은 tree에서 은퇴했으며 현재 routing 후속은
+RES-0002입니다.
 
 ### External Research Refresh
 
@@ -59,8 +61,6 @@ RES-0081은 RES-0002를 현재 routing 후속으로 두고 superseded 이력으�
 ### Historical workspace observations — not reassessed in this refresh
 
 아래 route와 채택 label은 날짜가 있는 역사 기록이며 현재 승인이나 새 평가가 아닙니다. 2026-09-10 LLM Wiki 은퇴 기록도 보존되며, 이번 갱신으로 복원하지 않습니다.
-
-#### Workspace Engineering Request Route
 
 #### Re-review Baseline
 
@@ -140,6 +140,13 @@ README에서 찾습니다.
 | Test and CI agent hooks | Automation pipeline (`m0004`) | Claude/Codex hook과 CI 정의 | 부분적 |
 | Claude/Codex context sharing | Provider comparison (`m0012`) | 공통 Agent 거버넌스 canonical source와 생성된 provider 투영 | 구조적으로 구현됨; live handoff는 여전히 부분적 |
 | README purpose and role | Documentation architecture (`m0007`) | [Repository README](../../../README.md)와 등록된 README profile | 구현됨 |
+
+Revalidated 2026-11-06: 위 표의 "Harness audit", "Loop audit", "Quality
+audit" 같은 audit 증거는 현재 tree에 없습니다. audit 범주에는 package가 없고
+(`docs/90.references/audits/README.md`), AUD-0019부터 AUD-0032와 AUD-0097은
+은퇴했습니다. GitHub Actions 행의 required check는 2026-10-16부터
+`candidate-quality` 하나입니다(`.github/rulesets/main-protection.md:88`). 표의
+label은 날짜가 있는 기록으로 보존합니다.
 
 #### Prioritized Design Gaps
 

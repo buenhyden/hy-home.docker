@@ -1,17 +1,17 @@
 ---
 title: "Reference: Harness Engineering"
-version: "1.2.0"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-11-06"
 layer: "references"
 artifact_id: "RES-0002-m0008"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-11-06"
 review_cycle: "on-source-change"
 ---
 
@@ -504,6 +504,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > preserve the evidence-depth distinctions, and route implementation changes to
 > their canonical agent governance/03/04 owner.
 
+> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); `docs/00.agent-governance/memory/` is retired and native Claude memory is off (`.claude/settings.json:3` `autoMemoryEnabled: false`); `.claude/settings.local.json` is an ignored local file (`.gitignore:112`), not tracked state; `.claude/hookify/` and `docs/00.agent-governance/rules/hooks/` are absent; hook wrappers are `.claude/hooks/` (7) routing to `.agents/governance/hooks/`; native agents are `.claude/agents/` (14, unchanged). The dated values above are preserved as observed.
+
 ## Limitations
 
 ### Future Internal Checks
@@ -531,3 +533,7 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | --- | --- | --- | --- | --- | --- |
 | S-openai-com-harness-engineering | [Original](https://openai.com/index/harness-engineering/); repository system of record and agent legibility | 2026-02-11 | 2026-09-27 | OpenAI engineering case study; not stable API specification | Blank-repository experiment; productivity not generalized |
 | S-anthropic-com-effective-harnesses-long-running-agents | [Original](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2025-11-26 | 2026-09-27 | Anthropic engineering experiment; historical design evidence | No requirement for new local progress files |
+
+## Related Documents
+
+- [Agentic Engineering Research Pack](README.md)
