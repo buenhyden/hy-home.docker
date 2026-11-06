@@ -51,6 +51,7 @@ docs/02.architecture/decisions/
 ├── 0057-operations-role-and-domain-folders.md
 ├── 0058-home-tiers-versus-labs.md
 ├── 0059-native-oidc-open-webui-and-airflow.md
+├── 0060-hermes-report-source-contract.md
 └── README.md
 ```
 
@@ -115,21 +116,23 @@ docs/02.architecture/decisions/
   SPEC-0249 병합 직후 accepted가 되었다. ADR-0037 결정 4~10과 결정 1의
   마지막 문장을 대체한다.
 - [`ADR-0052`](./0052-kafka-only-messaging-broker.md):
-  KRaft 모드 Kafka를 유일한 messaging broker로 두고 RabbitMQ를 철회하는 accepted decision. 소유자가 2026-11-06에 채택했다.
+  KRaft 모드 Kafka를 유일한 messaging broker로 두고 RabbitMQ를 철회하는 proposed decision. 소유자가 2026-11-06에 SPEC-0265 작업을 승인했고, accepted 전환은 병합 뒤 후속 변경에서 한다.
 - [`ADR-0053`](./0053-observability-storage-on-seaweedfs.md):
-  LGTM stack과 Alloy를 유지하고 Loki·Tempo object store를 SeaweedFS S3로 두는 accepted decision. 소유자가 2026-11-06에 채택했다.
+  LGTM stack과 Alloy를 유지하고 Loki·Tempo object store를 SeaweedFS S3로 두는 proposed decision. 소유자가 2026-11-06에 SPEC-0265 작업을 승인했고, accepted 전환은 병합 뒤 후속 변경에서 한다.
 - [`ADR-0054`](./0054-mailpit-home-stalwart-lab.md):
-  HOME SMTP trap은 Mailpit, Stalwart는 미승격 LAB으로 두는 accepted decision. 소유자가 2026-11-06에 채택했다.
+  HOME SMTP trap은 Mailpit, Stalwart는 미승격 LAB으로 두는 proposed decision. 소유자가 2026-11-06에 SPEC-0265 작업을 승인했고, accepted 전환은 병합 뒤 후속 변경에서 한다.
 - [`ADR-0055`](./0055-segmented-per-flow-networks.md):
-  `10.250.0.0/16` 안의 흐름별 `/24` 분리 network와 필요한 곳에만 고정 IP를 두는 accepted decision. 소유자가 2026-11-06에 채택했다.
+  `10.250.0.0/16` 안의 흐름별 `/24` 분리 network와 필요한 곳에만 고정 IP를 두는 proposed decision. 소유자가 2026-11-06에 SPEC-0265 작업을 승인했고, accepted 전환은 병합 뒤 후속 변경에서 한다.
 - [`ADR-0056`](./0056-offsite-backup-target-and-size-cap.md):
-  Cloudflare R2 offsite 사본과 10 GB 상한 아래 9 GB upload 거부를 정한 accepted decision. 소유자가 2026-11-06에 채택했다.
+  Cloudflare R2 offsite 사본과 10 GB 상한 아래 9 GB upload 거부를 정한 proposed decision. 소유자가 2026-11-06에 SPEC-0265 작업을 승인했고, accepted 전환은 병합 뒤 후속 변경에서 한다.
 - [`ADR-0057`](./0057-operations-role-and-domain-folders.md):
-  Stage 05 문서를 `<role>/<NN-domain>/####-<slug>.md`에 두고 domain 폴더마다 README를 두는 accepted decision. 소유자가 2026-11-06에 채택했다.
+  Stage 05 문서를 `<role>/<NN-domain>/####-<slug>.md`에 두고 domain 폴더마다 README를 두는 proposed decision. 소유자가 2026-11-06에 SPEC-0265 작업을 승인했고, accepted 전환은 병합 뒤 후속 변경에서 한다.
 - [`ADR-0058`](./0058-home-tiers-versus-labs.md):
-  root include를 HOME tier 구성원으로, `labs/`를 LAB으로 나누고 tier별 소유·하드닝 gate를 정한 accepted decision. 소유자가 2026-11-06에 채택했다.
+  root include를 HOME tier 구성원으로, `labs/`를 LAB으로 나누고 tier별 소유·하드닝 gate를 정한 proposed decision. 소유자가 2026-11-06에 SPEC-0265 작업을 승인했고, accepted 전환은 병합 뒤 후속 변경에서 한다.
 - [`ADR-0059`](./0059-native-oidc-open-webui-and-airflow.md):
-  Open WebUI와 Airflow UI를 ForwardAuth 없이 native OIDC로 두고 workflow·AI 하드닝을 잇는 accepted decision. 소유자가 2026-11-06에 채택했다.
+  Open WebUI와 Airflow UI를 ForwardAuth 없이 native OIDC로 두고 workflow·AI 하드닝을 잇는 proposed decision. 소유자가 2026-11-06에 SPEC-0265 작업을 승인했고, accepted 전환은 병합 뒤 후속 변경에서 한다.
+- [`ADR-0060`](./0060-hermes-report-source-contract.md):
+  Hermes `source_text`를 확정된 전체 일일 보고서 원문으로 두고 receipt 집합은 비공개 감사 기록으로 보존하는 proposed decision. 소유자가 2026-11-06에 SPEC-0265 작업을 승인했고, accepted 전환은 병합 뒤 후속 변경에서 한다.
 
 ## Usage
 
