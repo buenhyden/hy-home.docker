@@ -264,6 +264,10 @@ class NextStableCandidates(unittest.TestCase):
         self.assertTrue(storage["s3"]["forcepathstyle"])
         self.assertTrue(config["stream_over_http_enabled"])
         self.assertNotIn("cache", config)
+        # POL-0048: 24h trace retention through the Tempo 3.x backend worker.
+        compaction = config["backend_worker"]["compaction"]
+        self.assertEqual(compaction["block_retention"], "24h")
+        self.assertEqual(compaction["compacted_block_retention"], "1h")
         self.assertEqual(
             config["overrides"]["defaults"]["metrics_generator"]["processors"],
             ["service-graphs", "span-metrics"],

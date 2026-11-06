@@ -78,6 +78,15 @@ storage:
       forcepathstyle: true
 
 
+# ---------- Retention (POL-0048) ----------
+# Tempo 3.x compacts and expires blocks in the backend worker; without these
+# keys the upstream default keeps blocks for 336h.
+backend_worker:
+  compaction:
+    block_retention: 24h
+    compacted_block_retention: 1h
+
+
 # ---------- 기본 tenant override ----------
 overrides:
   defaults:
