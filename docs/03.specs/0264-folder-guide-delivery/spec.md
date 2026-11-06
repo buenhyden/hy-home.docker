@@ -1,8 +1,8 @@
 ---
 title: "Folder Guide Delivery Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"
@@ -90,7 +90,7 @@ is not used. The hook adds no tool permission or approval.
 6. `.claude/provider.md` and `.codex/provider.md` describe the delivery and its
    limits.
 7. The folder `AGENTS.md` files are audited in the same branch.
-8. The owner observes the delivery in a new Claude session and a new Codex
+8. The delivery is observed in a new Claude session and a new Codex
    session started at the repository root: editing or reading a file under
    `infra/` shows the "Folder guide `infra/AGENTS.md`" context once.
 

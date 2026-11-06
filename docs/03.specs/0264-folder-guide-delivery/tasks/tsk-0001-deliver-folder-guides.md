@@ -1,8 +1,8 @@
 ---
 title: "Folder Guide Delivery Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"
@@ -36,14 +36,25 @@ audit of the 10 `AGENTS.md` files.
 
 ### Lifecycle Events
 
-No lifecycle transition is recorded: the Spec, Plan and Task start at
-`draft`, and the owner moves them on in the pull request.
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0264 | draft | approved | #owner-approval |
+| SPEC-0264-PLAN-0001 | draft | approved | #owner-approval |
+| SPEC-0264-TSK-0001 | draft | ready | #owner-approval |
+| SPEC-0264-TSK-0001 | ready | in-progress | #owner-approval |
 
-### Owner steps
+### Owner approval
 
-1. In a new Claude session and a new Codex session started at the repository
-   root, edit or read a file under `infra/` and confirm the "Folder guide
-   `infra/AGENTS.md`" context appears once.
+On 2026-11-06 the owner approved the Spec, Plan and Task in the pull request
+("SPEC-0264(Spec·Plan·Task 초안) 승인") and assigned the live observation to
+the controller ("머지한 뒤 새 Claude 세션과 새 Codex 세션을 각각 repo root에서
+시작은 니가 한다").
+
+### Live observation (criterion 8)
+
+After merge, the controller starts a new Claude session and a new Codex
+session at the repository root, reads or edits a file under `infra/` in each,
+and records whether the "Folder guide `infra/AGENTS.md`" context appears once.
 
 ## Evidence
 
@@ -70,7 +81,7 @@ No lifecycle transition is recorded: the Spec, Plan and Task start at
 | 5 | pending | E1, E6, E8 | owner acceptance | @buenhyden |
 | 6 | pending | E4 | owner acceptance | @buenhyden |
 | 7 | pending | E5 | owner acceptance | @buenhyden |
-| 8 | pending | - | owner live observation not yet done | @buenhyden |
+| 8 | pending | - | live observation runs after merge (#live-observation-criterion-8) | @buenhyden |
 
 ## Review and Completion
 
