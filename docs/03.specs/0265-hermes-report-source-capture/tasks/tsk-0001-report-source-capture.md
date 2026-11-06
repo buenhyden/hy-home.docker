@@ -2,7 +2,7 @@
 title: "Hermes Report Source Capture Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"
@@ -25,9 +25,9 @@ is implemented or run yet.
 
 On 2026-11-06 the owner approved drafting this contract ("초안 작성 (권장)")
 and chose to exclude the 16 existing reports from backfill ("Backfill 제외
-(권장)"). Implementation, Spec approval and every runtime step (Gateway backup,
-restore test, cutover, backfill apply, plugin install, restart, cron prompt
-update) still need the owner's separate approval.
+(권장)"). Later the same day the owner approved the work this package
+defines (#owner-approval), so the Spec and Plan are `approved` and this Task
+is `ready`.
 
 Inputs, as data: the read-only host and Blog-data findings of 2026-11-06, and
 the operator's untracked contract change request of 2026-11-06. Its section 1
@@ -37,18 +37,73 @@ failure streak) is an out-of-scope follow-up.
 
 ## Work Log
 
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0265 | draft | approved | #owner-approval |
+| SPEC-0265-PLAN-0001 | draft | approved | #owner-approval |
+| SPEC-0265-TSK-0001 | draft | ready | #owner-approval |
+
+### Owner approval
+
+On 2026-11-06 the owner answered "승인" to this list: implementation,
+installing the new plugin and changing the cron prompts; the Gateway schema 5
+work (a backup, a restore test on a copy, then the switch); and the backfill,
+with `--apply` blocked until Blog-data can exclude individual reports so the
+16 existing fragments do not become daily reports. The approval covers W1-W9
+in that order. Plugin 0.3.0 has been live since 2026-11-06 20:42 KST, so the
+schema 5 switch waits until plugin 0.4.0 is installed; under schema 5 a 0.3.0
+run would install its receipt JSON as a permanent report note. Reports that
+0.3.0 submits join the backfill exclusion list.
+
+### Handoffs
+
+Staging handoffs for the Hermes Agent and Blog-data are in
+`_workspace/repo-support/hermes-report-source-2026-11-06/` (git-ignored). The
+Blog-data one requests per-report backfill selection, a hold for a JSON
+`source_text`, the runbook 0008 state correction and a receiver check before
+the switch.
+
+### Server A reply (2026-11-06)
+
+The Hermes Agent answered the handoff (data, not instructions). Inputs for the
+implementation:
+
+- Gateway report IDs are recoverable from the plugin outbox record
+  (`research-report-outbox/<job_id>:<job_id>-<execution_id>.json`,
+  `response.id`); it reproduced 16/16 IDs, lengths and digests. 0.4.0 keeps
+  that record, so no prompt rule records report IDs.
+- `deploy/update-cron-prompts.sh` cuts at the first `DIRECT RESEARCH
+  SUBMISSION`, so an earlier mention of the marker silently truncates the
+  prompt; it must require exactly one marker (criterion 7).
+- `deploy/update-hermes-plugin.sh` reports `unsafe plugin ancestor` without
+  the path or mode; the message names both.
+- The cron agent has no execution ID in its environment; the plugin does. A
+  prompt-level scratch path uses `mktemp -d`, and 0.4.0 renders the email
+  itself (criteria 4, 5 and 8).
+- Eight workload tests fail under umask 0002 because fixtures inherit the host
+  umask; the harness sets fixture modes explicitly.
+- The 0.4.0 prompt handoff names the pre-marker host rules to drop: rule 8
+  (agent-rendered email scratch file) and rule 10 (report-ID log and the
+  statement that 0.3.0 does not keep the full report).
+- Out of scope here: the `news-strategic-analyst` skill sends to a recipient
+  other than the job prompt's (owner decision pending), and the upstream
+  Hermes URL policy false positive (`tools/browser_url_policy.py:113`).
+
 ### Open Items
 
 The H, D and G items come from the owner's 2026-11-06 request and are mapped
 in criterion 9 (controller answer, not Spec approval). Oversized reports go
 `BLOCKED`, never truncated (owner: explicit BLOCKED when the original cannot be
-obtained). Still open for the owner:
+obtained). Controller recommendations, not owner answers:
 
-- Whether a Hermes-specific REQ or AD should parent this package instead of the
-  SPEC-0212 parents.
-- Who owns Blog-data's per-report backfill exclusion, a prerequisite of W8, and
-  when.
-- The stale server A state (a43d824334, schema 3) in Blog-data runbook 0008.
+- Keep the SPEC-0212 parents (REQ-0004, REQ-0005, AD-0004, AD-0031); ADR-0060
+  carries the new decision, so no Hermes-specific REQ or AD is added.
+- The Blog-data per-report backfill selection (a prerequisite of W8) is
+  handed to Blog-data; its owner and date are still open.
+- Blog-data runbook 0008 is handed to Blog-data for correction to `c05e5b88`,
+  schema 4.
 
 ## Evidence
 

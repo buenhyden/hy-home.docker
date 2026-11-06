@@ -2,7 +2,7 @@
 title: "Hermes Report Source Capture Plan"
 version: "0.1.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"

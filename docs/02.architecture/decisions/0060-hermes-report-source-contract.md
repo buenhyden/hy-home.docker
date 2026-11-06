@@ -148,8 +148,9 @@ rejected; a receipt-set record exists beside every submission.
 - Blog-data: a per-report exclusion or selection capability for
   `backfill-reports`, and its runbook correction (server A state is stale).
 - Owner-approved operations for the schema 5 rollout, outside this change.
-- Accept or reject this ADR after review; an accepted ADR is replaced only by a
-  new ADR.
+- The owner approved the SPEC-0265 work on 2026-11-06 ("승인"). A new ADR
+  must enter as `proposed`, so the move to `accepted` is a follow-up change
+  after this ADR merges; an accepted ADR is replaced only by a new ADR.
 
 ## Related Documents
 
