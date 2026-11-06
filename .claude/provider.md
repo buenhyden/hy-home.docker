@@ -1,6 +1,6 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.7.0"
+version: "1.7.1"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
@@ -26,13 +26,15 @@ default `claude-md-or-agents-md` mode), and the `instructionFiles` setting that
 makes it read both is ignored in project settings. Root `CLAUDE.md` is on every
 path here, so Claude does not read a folder `AGENTS.md` on its own. Each folder
 that carries an `AGENTS.md` therefore also carries a generated `CLAUDE.md`
-whose only content is a heading and the import `@AGENTS.md`. Claude loads a folder
+whose only content is the renderer marker comment, a heading and the import
+`@AGENTS.md`. Claude loads a folder
 `CLAUDE.md` on demand the first time it reads or writes a file below that
 folder, and again on demand after compaction, so the guide reaches it
 natively. The shared PreToolUse dispatcher (`scripts/hooks/agent-event-hook.sh`,
-through `scripts/lib/hooks/folder_guides.py`) delivers no guide content to
-Claude: it adds a one-line reminder naming the nearest folder guide on each
-edit, and after a SessionStart `compact` or `resume` an instruction to re-read
+through `scripts/lib/hooks/folder_guides.py`) delivers guide content to
+Claude only on an edit below a folder whose `CLAUDE.md` is missing or does not
+import `@AGENTS.md`. Otherwise it adds a one-line reminder naming the nearest
+folder guide on each edit, and after a SessionStart `compact` or `resume` an instruction to re-read
 it. The bootstrap step that requires reading that guide applies when neither
 route runs.
 `.agents/knowledge/` and `.agents/prompts/` are canonical categories read
