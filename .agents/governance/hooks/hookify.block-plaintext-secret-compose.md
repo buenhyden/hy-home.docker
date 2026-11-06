@@ -32,9 +32,14 @@ The `block-plaintext-secret-compose` rule applies on the `file` event and matche
 
 **Plaintext secret detected in Docker Compose file (project rule)**
 
-`.agents/governance/environment-constraints.md` — Hard Constraints violation:
+`.agents/governance/bootstrap.md#hard-constraints`:
 
-> "Never write plaintext secrets; use Docker Secrets or `secrets/` mounts."
+> "Never write plaintext credentials or secret values."
+
+`.agents/governance/environment-constraints.md` — Security:
+
+> "Deliver credentials through Docker Secrets or `secrets/` mounts, never as
+> plaintext values."
 
 `.agents/governance/quality-standards.md` — Requirements:
 

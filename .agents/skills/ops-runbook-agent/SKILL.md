@@ -46,7 +46,7 @@ Operational behavior must be implemented and verified; commands, expected outcom
 
 ## Outputs
 
-- One typed runbook at ####-<slug>.md` with executable, topic-specific procedure.
+- One typed runbook at `docs/05.operations/runbooks/<NN-domain>/####-<slug>.md` with executable, topic-specific procedure.
 
 ## Verification
 

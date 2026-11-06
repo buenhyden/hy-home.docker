@@ -23,7 +23,7 @@ Apply the declared `warn` action for warn-hook-parity-edit.
 
 ## Scope
 
-The `warn-hook-parity-edit` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("WARNING: hook parity contract review required"). The frontmatter owns the exact matcher.
+The `warn-hook-parity-edit` rule applies on the `file` event and matches file edits whose path meets its structured `conditions` entry ("WARNING: hook parity contract review required"). The frontmatter owns the exact matcher.
 
 ## Rules
 

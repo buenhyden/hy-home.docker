@@ -29,7 +29,7 @@ Repository protection, pull requests, hosted workflows, and separately authorize
 - "No exceptions" is mandatory agent behavior even when GitHub admin enforcement or repository rulesets do not fully enforce the same boundary.
 - Remote branch protection and ruleset state must be authenticated and read
   back before claiming enforcement. `.github/rulesets/main-protection.md`
-  records the target settings and the last authenticated read-back; tracked
+  records the target settings and dated authenticated read-backs; tracked
   files do not prove applied control-plane state.
 - If remote enforcement is absent or unknown, agents must still follow protected-branch discipline locally and report the remote enforcement state as blocked or unverified.
 - Required status checks listed in `.github/rulesets/main-protection.md` define
@@ -50,7 +50,7 @@ Keep Issue intake and priority plus Spec/Task links, without copying their
 full bodies or bidirectional state synchronization. A remote Issue, tag, or release mutation requires approval naming the exact
 target and action.
 
-- A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved BLOCK-severity findings remain.
+- A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved `blocker` findings remain.
 - Draft/WIP PRs are allowed for collaboration; section 3 owns what that means for merge readiness.
 - Agents must not self-approve or bypass required reviewers.
 - This repository has one developer and no second reviewer. That risk is
@@ -91,15 +91,15 @@ rule of its own.
 ### 4. GitHub Actions Security Contract
 
 - Workflows must use least-privilege `GITHUB_TOKEN` — request only the permissions the job actually needs.
-- Prefer OIDC-based cloud credentials over long-lived secrets stored as repository secrets. When proposing or reviewing workflow changes, flag any use of long-lived cloud secrets as a WARN finding.
+- Prefer OIDC-based cloud credentials over long-lived secrets stored as repository secrets. When proposing or reviewing workflow changes, flag any use of long-lived cloud secrets as a `medium` finding.
 - Pin actions to a specific commit SHA or a digest-verified tag, not a floating branch or `@latest`.
 - `.github/workflow-contract.yml` records the locally verified manifest URL,
   retrieval date, runtime, approved consumers, and security disposition for
   every direct external Action. The focused checker
   (`scripts/lib/gate/github_workflow_contract.py`) rejects unregistered Actions
-  and a `node20`, `node16`, or `node12` runtime.
-- Secrets must never appear in log output (`echo $SECRET`, `run: env`, etc.). Flag any such pattern as BLOCK.
-- Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — flag as BLOCK.
+  and any runtime other than `node24` or `composite`.
+- Secrets must never appear in log output (`echo $SECRET`, `run: env`, etc.). Raise a `blocker` finding for any such pattern.
+- Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — raise a `blocker` finding.
 - Reusable workflows called from external repositories must be pinned and reviewed before use.
 
 ### 5. Execution Boundary (Local vs Remote)
@@ -250,7 +250,7 @@ Before an agent declares any PR-related task complete, it must confirm:
 
 1. All required status checks are green (or note which are pending and why), and remote branch protection state is verified or explicitly reported as unverified.
 2. All required reviews are approved (or note which are outstanding and who owns them).
-3. No BLOCK-severity findings remain from code review or security audit.
+3. No `blocker` findings remain from code review or security audit.
 4. CODEOWNERS-triggered reviewers have been notified if paths are owned and remote protection enforces owner review; when it does not, state that instead of claiming a review.
 5. No secrets, long-lived credentials, or unpinned action references were introduced.
 

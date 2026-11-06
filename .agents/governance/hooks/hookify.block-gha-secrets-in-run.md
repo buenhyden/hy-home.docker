@@ -40,11 +40,11 @@ The `block-gha-secrets-in-run` rule applies on the `file` event and matches file
 - `run: env` — dumps all environment variables, including secrets
 - direct writes of secrets to `$GITHUB_OUTPUT` or `$GITHUB_ENV`
 
-**Why this is BLOCK-severity:**
+**Why this rule blocks:**
 
 - GitHub Actions logs are retained.
 - Exposed secrets can bypass masking.
-- This is an explicit BLOCK-severity violation in `github-governance.md`.
+- `github-governance.md` prohibits secrets in log output.
 
 **Safe alternative:**
 

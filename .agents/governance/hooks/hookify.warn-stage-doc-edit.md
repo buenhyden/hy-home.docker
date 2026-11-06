@@ -23,7 +23,7 @@ Apply the declared `warn` action for warn-stage-doc-edit.
 
 ## Scope
 
-The `warn-stage-doc-edit` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("WARNING: Stage document edit"). The frontmatter owns the exact matcher.
+The `warn-stage-doc-edit` rule applies on the `file` event and matches file edits whose path meets its structured `conditions` entry ("WARNING: Stage document edit"). The frontmatter owns the exact matcher.
 
 ## Rules
 
@@ -31,13 +31,13 @@ The `warn-stage-doc-edit` rule applies on the `file` event and matches file edit
 
 `docs/01` through `docs/99` are **read-only by default**.
 
-**Canonical environment policy:**
-> `docs/01` to `docs/99` are read-only by default; modify only with explicit user instruction.
+**Canonical bootstrap policy (`bootstrap.md#hard-constraints`):**
+> "Stage documents are read-only unless the request authorizes change."
 
 **Before editing, confirm:**
 
 - [ ] The user explicitly authorized the stage document edit.
-- [ ] The target is inside an active stage artifact directory (`docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, `docs/99.templates`).
+- [ ] The target is inside an active stage artifact directory (the stages listed in [stage-authoring-matrix.md](../stage-authoring-matrix.md)).
 - [ ] The edit is in-place; no parallel replacement file is being created.
 - [ ] This rule applies whether the path arrives as `docs/...` or `/.../docs/...`.
 

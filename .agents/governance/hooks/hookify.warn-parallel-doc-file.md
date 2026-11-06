@@ -23,15 +23,16 @@ Apply the declared `warn` action for warn-parallel-doc-file.
 
 ## Scope
 
-The `warn-parallel-doc-file` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("WARNING: parallel replacement document file"). The frontmatter owns the exact matcher.
+The `warn-parallel-doc-file` rule applies on the `file` event and matches file edits whose path meets its structured `conditions` entry ("WARNING: parallel replacement document file"). The frontmatter owns the exact matcher.
 
 ## Rules
 
 **Parallel replacement document file detected (project rule)**
 
-`.agents/governance/environment-constraints.md` — Hard Constraints violation:
+`.agents/governance/bootstrap.md#hard-constraints`:
 
-> "Use in-place refactors only; do not create parallel replacement files for canonical docs."
+> "Use in-place canonical edits; do not create legacy redirects or parallel
+> authority copies."
 
 **Forbidden file patterns:**
 

@@ -23,7 +23,7 @@ Apply the declared `warn` action for enforce-docs-templates.
 
 ## Scope
 
-The `enforce-docs-templates` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("WARNING: template use required"). The frontmatter owns the exact matcher.
+The `enforce-docs-templates` rule applies on the `file` event and matches file edits whose path meets its structured `conditions` entry ("WARNING: template use required"). The frontmatter owns the exact matcher.
 
 ## Rules
 

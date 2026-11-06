@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: git commit --no-verify"
-version: "1.1.1"
+version: "1.1.2"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 action: "block"
 enabled: true
 event: "bash"
@@ -36,7 +36,7 @@ retains the separate block on bypassing configured commit checks.
 - plaintext secret detection
 - file type and size checks
 
-**Why this is BLOCK-severity:**
+**Why this rule blocks:**
 
 - Bypassing pre-commit skips quality and security gates.
 - Accidental secret commits become more likely.

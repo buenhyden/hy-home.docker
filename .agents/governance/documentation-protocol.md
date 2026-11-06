@@ -67,7 +67,7 @@ Machine access is narrowly scoped: document-governance validators consume the
 Stage 99 registry and schemas to validate profiles and lifecycle; approved
 stage authoring reads the selected registered template to create that document;
 the Compose validator and `scripts/lib/ops/compose_start.py` read the
-profile-vocabulary machine section of policy 0078 to validate selections; `scripts/hardening/check-all-hardening.sh` reads the exact
+profile-vocabulary machine section of policy 0078 to validate selections (including `scripts/lib/document_governance/operations_catalog.py`, reached through `check-operations-catalog.py` and `scripts/operations/lab.py`); `scripts/hardening/check-all-hardening.sh` reads the exact
 security Requirement input to assert its architecture trace link. These are
 validation data reads, not imports of agent instructions.
 These exceptions identify kind, consumer, necessity and
@@ -247,7 +247,8 @@ exist. The guide routes and summarizes; it never copies a policy body, and
 when a summary and its owner disagree, the owner wins and the guide is
 corrected. Its rank and when an agent reads it are set by
 [bootstrap](bootstrap.md#authority-and-precedence); it grants no tool, path,
-permission or approval. An agent reads the nearest ancestor guide of the file it changes. A README does not carry an
+permission or approval.
+A README does not carry an
 `AI Agent Guidance` section or other agent-directed instructions; it points to
 its folder `AGENTS.md` instead.
 

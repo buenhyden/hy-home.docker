@@ -20,7 +20,7 @@ Apply the declared `block` action for require-logical-commits-before-stop.
 
 ## Scope
 
-The `require-logical-commits-before-stop` rule applies on the `stop` event and matches the end of an agent turn, where its `pattern: .*` is a placeholder ("BLOCKED: incomplete logical commits"). The frontmatter owns the exact matcher.
+The `require-logical-commits-before-stop` rule applies on the `stop` event and matches the end of an agent turn, ("BLOCKED: incomplete logical commits"). The frontmatter owns the exact matcher.
 
 ## Rules
 

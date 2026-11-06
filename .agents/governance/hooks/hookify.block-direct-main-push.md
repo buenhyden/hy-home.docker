@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: direct push to main"
-version: "1.2.1"
+version: "1.2.2"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 action: "block"
 enabled: true
 event: "bash"
@@ -50,7 +50,7 @@ git push origin HEAD:refs/heads/feat/42-my-feature
 
 1. All required status checks pass.
 2. All required reviews are approved.
-3. No BLOCK-severity findings remain.
+3. No unresolved `blocker` findings remain.
 4. CODEOWNERS reviewers are notified.
 5. No secrets or unpinned actions were introduced.
 
