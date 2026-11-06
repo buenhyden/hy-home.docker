@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.4.1"
+version: "0.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 ---
 
 # Hermes 수집 전송 소스
@@ -60,7 +60,7 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 다른 URL로 바꾸려면 충돌로 거부합니다. `normalized_text`와 원본 내용은 비신뢰 데이터로
 도구·파일·자격·목적지 권한을 추가하지 않습니다.
 
-`submit_research_report`(플러그인 0.4.0, 도구 계약 v2)는 정확히 `payload`, 항목별
+`submit_research_report`(플러그인 0.4.0 이상, 도구 계약 v2)는 정확히 `payload`, 항목별
 `source_receipts`, 확정된 전체 보고서 `report_markdown` 세 인자만 받고 다른 인자는
 `invalid_submission_fields`로 거부합니다. payload는 `schema_version: "1.0"`과 `items`를
 가지며 receipt 식별자는 32 hex입니다. 도구가 producer/execution·scheduled/created/collected
@@ -118,8 +118,21 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
   않습니다. collector receipt는 같은 UID의 감사 결속이지 생산자 인증·독립
   Attestation이 아니며, Attester는 `source_text`를 읽지 않고 항목을 독립 수집으로
   검증합니다. 다섯 경계는 서로 대신하지 않습니다.
-- 지표: 이 워크로드에는 아직 Pushgateway push 경로·Alertmanager 규칙·Grafana 패널이
-  없습니다. 저카디널리티 지표는 SPEC-0265 W5에서 push 경로와 함께 들어옵니다.
+- 지표(SPEC-0265 W5, 소유자 결정 "textfile collector"): `submit_research_report`가 끝날
+  때마다 플러그인이 `~/backups/metrics/hermes_research.prom`을 같은 디렉터리의 임시
+  파일·fsync·`os.replace`로 원자 교체합니다(0644, 비밀·식별자 없음). node-exporter
+  textfile collector가 이 디렉터리를 읽으며(`create_host_path: false`), 디렉터리가 없으면
+  쓰지 않고 만들지도 않습니다. 값은 `~/.hermes/data/research-metrics/state.json`(0600)에
+  남아 실행 사이에 이어집니다. 지표는 `job_kind`별
+  `hermes_research_last_outcome_timestamp_seconds{outcome}`(`submitted`,
+  `stored_no_items`, `gateway_error`, `blocked`, `conflict`, `store_failed`),
+  `hermes_research_last_success_timestamp_seconds`(성공 없으면 0),
+  `hermes_research_last_report_bytes`, `hermes_research_blocked_total{blocked_reason}`이고
+  label 값은 고정 enum뿐입니다. 지표 실패는 도구 결과를 바꾸지 않습니다. 경보는
+  `HermesResearchNoSuccess`(26시간 성공 없음, 30분)와 `HermesResearchBlocked`(마지막
+  성공보다 늦은 `blocked`·`store_failed`)이고 대시보드는 `Applications/hermes-research`입니다.
+  Pushgateway는 쓰지 않습니다. Hermes가 다른 계정으로 돌면 그 계정의 `~/backups/metrics`가
+  없으므로 지표가 생기지 않습니다.
 - Rollback: 플러그인과 프롬프트를 0.3.0과 이전 블록으로 되돌립니다(아래 플러그인
   rollback 절차). 이미 Gateway schema 5로 전환했다면 0.3.0으로 되돌리기 전에 schema 4
   백업을 복원하고 `c05e5b88` 이미지를 다시 붙여야 하며, 옛 이미지를 schema 5 DB에

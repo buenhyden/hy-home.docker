@@ -123,6 +123,10 @@ def main(config_file: str) -> int:
         stack.enter_context(patch.object(tools, "SOURCE_DIR", work / "plugin-sources"))
         stack.enter_context(patch.object(tools, "OUTBOX_DIR", work / "plugin-outbox"))
         stack.enter_context(patch.object(tools, "REPORT_DIR", work / "plugin-reports"))
+        stack.enter_context(patch.object(tools, "METRICS_DIR", work / "no-metrics"))
+        stack.enter_context(
+            patch.object(tools, "METRICS_STATE_DIR", work / "plugin-metrics")
+        )
         stack.enter_context(
             patch.object(source_collection.source_fetch, "fetch", fetch)
         )
