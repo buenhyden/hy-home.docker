@@ -50,7 +50,7 @@ postgresql-ha, sonarqube, stalwart, superset and valkey-cluster.
 
 ### Traceability
 
-This record replaces seven accepted ADRs, deleted in the same change
+This record replaces six accepted ADRs, deleted in the same change
 (ADR-0051). Each one's still-valid decisions carry forward below.
 
 - ADR-0009 selected the tooling stack: OpenTofu with Terrakube for IaC,
@@ -101,14 +101,11 @@ This record replaces seven accepted ADRs, deleted in the same change
   supabase, the PostgreSQL and Valkey clusters, Cassandra, CouchDB and MongoDB;
   those are LABs now (supabase is being removed), and Analytics has no HOME
   member.
-- ADR-0046 (SPEC-0197 option C, SPEC-0198) set capability tiers: Quality for
-  software verification (with Great Expectations staying data quality in
-  Analytics), Platform Operations for lifecycle packages, Dozzle moved to
-  Observability, RedisInsight to Data, Open Notebook and MLflow to AI, the
-  laboratory directory removed, identities and profiles preserved, and
-  `09-platform-ops` naming. It rejected keeping the directories (A) and a
-  six-package move (B). It placed Locust and SonarQube in Quality, Stalwart in
-  Communication and JupyterLab in Analytics; those four are LABs now.
+- [ADR-0046](0046-capability-tiers-and-quality-boundary.md) stays accepted and is not replaced: a
+  completed Task links to it, and a completed Task body cannot change (owner
+  decision, 2026-11-06). Its capability tiers still hold. Where it placed
+  Locust and SonarQube in Quality, Stalwart in Communication and JupyterLab in
+  Analytics, this record governs: those four are LABs now.
 
 Evidence is the root Compose includes, `labs/`, and
 `scripts/hardening/check-all-hardening.sh`. No runtime state is claimed.

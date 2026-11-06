@@ -37,6 +37,7 @@ docs/02.architecture/decisions/
 ├── 0038-selective-native-oidc-for-native-auth-apps.md
 ├── 0042-openbao-unseal-method.md
 ├── 0044-readme-navigation-and-document-language.md
+├── 0046-capability-tiers-and-quality-boundary.md
 ├── 0047-dev-timescale-influx-retirement-and-load-tools.md
 ├── 0048-authority-parents-and-criterion-acceptance.md
 ├── 0049-shared-agent-memory-store.md
@@ -59,14 +60,15 @@ docs/02.architecture/decisions/
   readiness evidence decisions. 위 Structure의 파일 목록이 현재 남은 번호이다.
 - 삭제된 번호 `ADR-0003`, `ADR-0005`, `ADR-0006`, `ADR-0009`~`ADR-0016`,
   `ADR-0018`~`ADR-0020`, `ADR-0022`~`ADR-0027`, `ADR-0029`~`ADR-0031`, `ADR-0033`,
-  `ADR-0035`, `ADR-0036`, `ADR-0039`~`ADR-0041`, `ADR-0043`, `ADR-0045`, `ADR-0046`은
+  `ADR-0035`, `ADR-0036`, `ADR-0039`~`ADR-0041`, `ADR-0043`, `ADR-0045`는
   Registry `reserved_history`에 있다. 계보: ADR-0050이 ADR-0003과 ADR-0018을,
   ADR-0032가 ADR-0029를, ADR-0037이 ADR-0036을 대체했다. 2026-11-06 소유자 결정으로
   ADR-0052가 ADR-0005·ADR-0020을, ADR-0053이 ADR-0006을, ADR-0054가 ADR-0010을,
   ADR-0055가 ADR-0026을, ADR-0056이 ADR-0041을, ADR-0057이 ADR-0043을,
-  ADR-0058이 ADR-0009·ADR-0024·ADR-0025·ADR-0039·ADR-0040·ADR-0045·ADR-0046(앞서
+  ADR-0058이 ADR-0009·ADR-0024·ADR-0025·ADR-0039·ADR-0040·ADR-0045(앞서
   ADR-0039·ADR-0040이 대체한 ADR-0015·ADR-0019 포함)을, ADR-0059가 ADR-0016·ADR-0022·
-  ADR-0023을 대체했다. 본문은 버전 이력에 있다.
+  ADR-0023을 대체했다. 본문은 버전 이력에 있다. ADR-0046은 완료된 Task가 링크하므로 유지하며, LAB 배치는
+  ADR-0058이 정한다.
 - [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
   local-isolated readiness evidence 전략을 채택한 accepted decision.
 - [`ADR-0032`](./0032-canonical-agent-governance-home.md):
@@ -91,6 +93,8 @@ docs/02.architecture/decisions/
 - [`ADR-0044`](./0044-readme-navigation-and-document-language.md):
   README navigation과 문서 언어를 워크스페이스 전체에서 하나의 강제 계약으로
   통합하는 accepted decision(SPEC-0184).
+- [`ADR-0046`](./0046-capability-tiers-and-quality-boundary.md):
+  Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 accepted decision(SPEC-0197). LAB 배치는 ADR-0058이 정한다.
 - [`ADR-0047`](./0047-dev-timescale-influx-retirement-and-load-tools.md):
   DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 accepted decision(SPEC-0212, SPEC-0213).
 - [`ADR-0048`](./0048-authority-parents-and-criterion-acceptance.md):
