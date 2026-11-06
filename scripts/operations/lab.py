@@ -485,12 +485,6 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
     problems: list[str] = []
     others = [("root", root)] + [(f"lab {n}", f) for n, f in selected.items()]
     for name, lab in selected.items():
-        # The allowed Docker socket is shared with HOME by design; a path that
-        # also arrives through any other source keeps its treatment.
-        sources = lab.get("sources", [])
-        shared_socket = {s["real"] for s in sources if _socket_exception(name, s)} - {
-            s["real"] for s in sources if not _socket_exception(name, s)
-        }
         for other_name, other in others:
             if other is lab:
                 continue
@@ -500,7 +494,7 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
             for port in sorted(lab["ports"]):
                 if any(_port_clash(port, p) for p in other["ports"]):
                     problems.append(f"{name}: host port {port} also in {other_name}")
-            for path in sorted(lab["paths"] - shared_socket):
+            for path in sorted(lab["paths"]):
                 conflicts = [
                     p
                     for p in other["paths"]
@@ -733,8 +727,7 @@ def path_integrity_problems(selected: dict[str, dict]) -> list[str]:
             if not os.path.lexists(declared):
                 problems.append(f"{name}: read-only source {shown} does not exist")
                 continue
-            # /var/run is a symlink to /run on most hosts.
-            if _has_symlink_component(declared) and not _socket_exception(name, source):
+            if _has_symlink_component(declared):
                 problems.append(f"{name}: read-only source {shown} contains a symlink")
             if not declared.exists():
                 problems.append(
@@ -749,19 +742,6 @@ def _within(path: str, root: str) -> bool:
 
 def _covers(root: str, path: str) -> bool:
     return _within(path, root)
-
-
-def _socket_exception(name: str, source: dict) -> bool:
-    """SPEC-0263 section 3: supabase `vector` alone may bind the Docker socket,
-    read-only, for log collection. Decided on the declared path, since
-    /var/run is a symlink to /run on most hosts."""
-    return (
-        name == "supabase"
-        and source.get("service") == "vector"
-        and source["declared"] == "/var/run/docker.sock"
-        and source.get("target") == "/var/run/docker.sock"
-        and source["read_only"] is True
-    )
 
 
 def source_allowlist_problems(
@@ -854,8 +834,6 @@ def source_allowlist_problems(
 
     for name, lab in selected.items():
         for source in lab["sources"]:
-            if _socket_exception(name, source):
-                continue
             if not allowed(source["real"], source["read_only"], name):
                 problems.append(
                     f"{name}: source {source['real']} is outside the LAB allowlist"
