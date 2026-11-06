@@ -1,6 +1,6 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.1.7"
+version: "1.1.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -37,8 +37,8 @@ created: "2026-05-10"
 사용 전에 다음을 확인한다.
 
 - `infra/06-observability/grafana/provisioning`과 `infra/06-observability/grafana/dashboards`를 읽을 수 있는 권한.
-- Docker Secret IDs `grafana_admin_password`, `grafana_client_secret`가 준비되어 있어야 한다. Secret 값은 문서, 로그, task evidence에 기록하지 않는다.
-- Keycloak groups `/admins`, `/editors` role mapping 정책을 변경하지 않는다.
+- Docker Secret IDs `grafana_admin_password`, `grafana_client_secret`(PostgreSQL datasource는 `grafana_reader_password`)가 준비되어 있어야 한다. Secret 값은 문서, 로그, task evidence에 기록하지 않는다.
+- Keycloak groups `/admins`, `/editors`, `/viewers` role mapping(`GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`) 정책을 변경하지 않는다.
 - Grafana UI `https://grafana.${DEFAULT_URL}` 접근 권한.
 
 일반 순서는 다음과 같다.
@@ -93,7 +93,7 @@ created: "2026-05-10"
 
 - **Purpose/classification/source**: `grafana`는 여러 observability profile이 선택하는 `HOME` observability UI이며, [Compose](../../../../infra/06-observability/docker-compose.yml)와 provisioning 파일이 권위 있는 정의다.
 - **State flow**: 현재 source는 `GF_DATABASE_*` 외부 데이터베이스 변수를 설정하지 않으므로, Grafana는 `grafana-data:/var/lib/grafana`의 기본 SQLite 데이터베이스를 plugin, runtime 상태와 함께 사용한다. datasource/dashboard는 추적되는 파일에서 읽기 전용으로 provision된다.
-- **Secrets/auth/dependencies**: `grafana_admin_password`와 `grafana_client_secret`가 admin bootstrap과 native Keycloak OAuth에 공급된다. PostgreSQL datasource는 `grafana_reader_password`로 접속한다. 익명 접근은 현재 source(2026-09-21)에서 비활성화되어 있다. 이전에는 로그인 없이 모든 dashboard가 노출되었다. Traefik, Keycloak, root CA, datasource, `obs_net`이 의존성이며, 익명 접근은 OAuth 관리와 별개로 평가한다.
+- **Secrets/auth/dependencies**: `grafana_admin_password`와 `grafana_client_secret`가 admin bootstrap과 native Keycloak OAuth에 공급된다. PostgreSQL datasource는 `grafana_reader_password`로 접속한다. 익명 접근은 현재 source에서 비활성화되어 있다(`GF_AUTH_ANONYMOUS_ENABLED=false`). Traefik, Keycloak, root CA, datasource, `obs_net`이 의존성이며, 익명 접근은 OAuth 관리와 별개로 평가한다.
 - **Resources/normal use**: Compose 제한은 source 값일 뿐 측정된 여유 용량이 아니다. root에서 렌더링하고 `/api/health`, OAuth 로그인, 익명 거부, datasource health, provisioned dashboard 로드를 확인한다.
 - **Lifecycle**: SQLite/`grafana-data`를 복사하기 전에 Grafana를 중지한다. provisioning과 대응하는 secret을 보존한다. plugin/schema 호환성을 검토하고, 핀된 버전을 하나씩 업그레이드하고, 재개 전에 users/teams/dashboards/alerts/datasources/OAuth를 확인한다.
 - **Upstream/license**: 공식 [installation/database default](https://grafana.com/docs/grafana/latest/setup-grafana/installation/), [backup](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/), [upgrade](https://grafana.com/docs/grafana/latest/upgrade-guide/when-to-upgrade/) 안내를 따른다. Grafana OSS는 AGPL-3.0 라이선스다.
@@ -119,9 +119,9 @@ created: "2026-05-10"
 
 - **Metrics Drilldown**: Prometheus datasource의 `timeInterval`이 scrape 간격(30 s)과 같아 `$__rate_interval`이 샘플 네 개를 덮는다.
 - **Logs Drilldown**: Loki의 `volume_enabled`, `pattern_ingester`, `discover_log_levels`가 서비스별 볼륨, 패턴, 레벨 보기를 채운다.
-- **Traces Drilldown**: Tempo 3.0.3은 TraceQL metrics를 기본으로 답한다. Tempo datasource가 검색과 metrics 결과를 streaming으로 받으므로 Tempo에 `stream_over_http_enabled: true`가 있어야 한다. 없으면 Drilldown이 "An error occurred in the query"를 띄운다(2026-09-30). trace를 보내는 서비스는 Traefik, Keycloak, Grafana이며 샘플링은 10%다. Airflow tracing은 Airflow 3.3.1에서 fork하는 프로세스를 멈추게 해 껐다(RUN-0050). <!-- runtime-version-exception: history — SPEC-0193의 2026-09-30 장애·인증 검증에 적용된 버전 근거를 보존한다. -->
+- **Traces Drilldown**: Tempo는 TraceQL metrics를 기본으로 답한다. Tempo datasource가 검색과 metrics 결과를 streaming으로 받으므로 Tempo에 `stream_over_http_enabled: true`가 있어야 한다. 없으면 Drilldown이 "An error occurred in the query"를 띄운다(2026-09-30). trace를 보내는 서비스는 Traefik, Keycloak, Grafana이며 샘플링은 10%다. Airflow tracing은 fork하는 프로세스를 멈추게 해 꺼 두었다(RUN-0050).
 - **Profiles Drilldown**: Alloy `go_services`의 10개 대상과 별도 SeaweedFS source가 `/debug/pprof`을 제공하는 총 11개(Prometheus, Alertmanager, Loki, Tempo, Alloy, Pyroscope, Grafana:6060, node-exporter, SeaweedFS S3, `mng-pg-exporter`, registry)에서 30초마다 가져온다. eBPF는 쓰지 않는다.
-- **SQL datasources**: `n8n-db`, `airflow-db`는 `grafana-db-provision`이 만든 `grafana_reader`로 접속한다. 이 role은 n8n `execution_entity`·`workflow_entity`와 Airflow `dag`·`dag_run`·`task_instance`만 `SELECT`하며, 세션은 읽기 전용이고 statement timeout 30 s, 연결 4개로 제한된다.
+- **SQL datasources**: `n8n-db`, `airflow-db`는 `grafana-db-provision`이 만든 `grafana_reader`로 접속한다. 이 role은 n8n `execution_entity`·`workflow_entity`와 Airflow `dag`·`dag_run`·`task_instance`만 `SELECT`하며, 세션은 읽기 전용이고 statement timeout 30 s, datasource마다 연결 2개(`maxOpenConns`)로 제한된다.
 
 ### External dashboard survey (2026-09-29)
 
@@ -147,8 +147,6 @@ Airflow mixin은 `airflow_dagrun_*`, `airflow_pool_*` 같은 이름을 쓰는데
 - **Provisioning drift**: UI에서만 바꾼 dashboard나 datasource는 JSON/YAML로 export해 커밋하기 전까지 current truth가 되지 않는다.
 - **Datasource identity drift**: dashboard는 provisioned UID `Prometheus`, `Loki`, `Tempo`, `alertmanager`, `Pyroscope`, `n8n-db`, `airflow-db` 또는 datasource 변수를 참조해야 한다. 기존 datasource의 UID migration은 [RUN-0041](../../runbooks/07-observability/0041-grafana.md)의 승인·backup 경계로 넘긴다. SPEC-0193 Pyroscope 사건에서 `deleteDatasources`를 사용한 이력은 일반 삭제 승인이 아니다.
 - **Dashboard identity**: 이미 provision된 dashboard의 `uid`를 바꾸거나, 지운 파일과 같은 경로에 다른 `uid`의 파일을 두면 Grafana 13이 `deprecatedInternalID ... is already in use`로 저장을 거부한다. 기존 dashboard는 `uid`를 유지하고, 교체하는 dashboard는 새 경로에 둔다.
-- **Secret evidence**: `grafana_admin_password`, `grafana_client_secret`, OAuth client secret, 렌더링된 secret 값을 증거에 복사해서는 안 된다.
-- **Role mapping drift**: `/admins`와 `/editors` mapping은 `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`가 제어한다.
 - **Dashboard edit lock**: provider `editable: false`가 provisioned dashboard를 code-owned 상태로 유지한다.
 
 ### Runbook Handoff

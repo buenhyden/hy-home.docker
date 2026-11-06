@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.1.1"
+version: "2.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -13,22 +13,17 @@ created: "2026-06-04"
 
 ## Overview
 
-이 정책은 root Compose가 include하는 정상 서비스와 `labs/*/docker-compose.yml`에서 독립 실행하는 LAB 서비스의 공통 운영 통제와 개선 백로그를 소유한다. 현재 12개 티어를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
+이 정책은 root Compose가 include하는 정상 서비스와 `labs/*/docker-compose.yml`에서 독립 실행하는 LAB 서비스의 공통 운영 통제와 개선 백로그를 소유한다. 현재 `infra/`의 13개 티어(`01-gateway`~`13-experience`)를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
 범위는 Docker Compose 기반 운영 표준(가용성, 보안, 관측성, 복구 용이성)이며, 실행 절차는 해당 서비스 Runbook과 공통 RUN-0086에서 관리한다.
 
 ## Scope
 
-- 대상: `infra/` 하위 게이트웨이/인증/보안/데이터/메시징/관측성/워크플로/AI/플랫폼 운영/커뮤니케이션/품질/분석 서비스
+- 대상: `infra/` 하위 게이트웨이/인증/보안/데이터/메시징/관측성/워크플로/AI/플랫폼 운영/커뮤니케이션/품질/분석/경험 서비스
 - 목적: 공통 운영 기준 통일 + 서비스별 개선 백로그 우선순위화
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
 - **Systems**: root에 include된 정상 Compose service identity와 별도 `labs/*/docker-compose.yml` entrypoint의 LAB identity. 정상 binding은 Guide와 operations catalog가 소유하고 LAB 목록은 각 독립 Compose가 소유한다.
 - **Environments**: Local, Dev, Stage, Production-like
-
-> Historical evidence (not current authority; source: Git history):
-> Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, POL-0006 Policy Scope.
->
-> - **Systems**: tracked Compose source의 140 service identity(2026-09-20 inventory: Compose fragment와 root include 각 42개). service directory 수는 identity 수나 activation 범위의 대체 지표가 아니다.
 
 ## Rules
 
