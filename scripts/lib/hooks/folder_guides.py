@@ -18,10 +18,12 @@ import re
 import stat
 import subprocess
 import tempfile
+import time
 from pathlib import Path, PurePosixPath
 
 GUIDE_NAME = "AGENTS.md"
 MAX_GUIDE_BYTES = 16 * 1024
+STATE_MAX_AGE_SECONDS = 7 * 24 * 3600
 _SESSION_ID = re.compile(r"[A-Za-z0-9._-]{1,256}")
 
 
@@ -40,6 +42,14 @@ def _state_directory() -> Path | None:
         or info.st_mode & 0o077
     ):
         return None
+    # ponytail: age-based pruning; records are tiny and only one survives per session.
+    cutoff = time.time() - STATE_MAX_AGE_SECONDS
+    for record in directory.glob("*.json"):
+        try:
+            if record.lstat().st_mtime < cutoff:
+                record.unlink()
+        except OSError:
+            pass
     return directory
 
 
@@ -97,7 +107,7 @@ def nearest_guide(
             if path.resolve(strict=True) == path and path.is_file():
                 return guide
         except OSError:
-            return None
+            continue
     return None
 
 

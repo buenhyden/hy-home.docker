@@ -101,6 +101,20 @@ class FolderGuideTests(IsolatedState):
         self.assertEqual([], self.deliver("linked/x.yml", session=self.session))
         self.assertEqual([], self.deliver("lab/x.yml", session=self.session))
 
+    def test_a_missing_tracked_guide_falls_back_to_an_ancestor(self) -> None:
+        (self.root / "infra/04-data/AGENTS.md").write_text("data rules\n")
+        self.git("add", "infra/04-data/AGENTS.md")
+        (self.root / "infra/04-data/AGENTS.md").unlink()
+        message = self.deliver("infra/04-data/x.yml")[0]
+        self.assertIn("`infra/AGENTS.md`", message)
+
+    def test_old_records_are_pruned(self) -> None:
+        self.deliver("infra/a", session=self.session)
+        record = folder_guides._state_file(self.session)
+        os.utime(record, (0, 0))
+        folder_guides._state_directory()
+        self.assertFalse(record.exists())
+
     def test_paths_outside_the_root_or_unsafe_are_ignored(self) -> None:
         for value in ("/etc/passwd", "../infra/x.yml", "", None, 3):
             self.assertEqual([], self.deliver(value, session=self.session))
