@@ -189,6 +189,17 @@ the fix round 1 working tree, after the independent security and code review:
   pinned digest in `test_gateway_adapter.py` follows, and the schema test
   validates the real request including `source_quotes`.
 
+### Fix round 2
+
+The scoped security re-review of fix round 1 found the placeholder pattern
+quadratic: `lorem ipsum.*` stops at a newline, so `\W*` backtracks across it
+on input such as `lorem ipsum` + `!`*N + newline + `!`*M + `a`; with the old
+pattern 8000 characters took 1.8 s. `(?s:.*)` now consumes to the end in one
+step, and a test bounds 250000-character inputs. A `report_conflict` now
+returns the paths of the report this execution stored first, so the agent
+sends those files and never a second, self-rendered email. The immutable
+manifest no longer records a Gateway outcome; the result carries it.
+
 ### Design deviations
 
 - Spec Normal Behavior 6 puts the email and Telegram steps before submission;
@@ -205,6 +216,8 @@ the fix round 1 working tree, after the independent security and code review:
   outputs.
 - On a day without items the report is stored and rendered and the Gateway
   is skipped (owner decision above).
+- A conflicting second report for the same execution is not BLOCKED: the
+  result carries `report_conflict` and the first stored report's paths.
 - The 0.3.0 bound of 524288 characters on the receipt-set JSON is replaced by
   the 4 MiB private-record limit (`source_set_too_large`, BLOCKED).
 - `tests/e2e_collect_harness.py` passes a synthetic report; the owned-ingress
@@ -232,26 +245,27 @@ obtained). Controller recommendations, not owner answers:
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| E1 | 1, 2, 4, 6 | W1 | `python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`ReportSourceContractTests`, `ToolSchemaTests`, `PrivateRecordCreateTests`); new tests fail on `6378597d9` sources; the linear-render test's patterns took 2 to 3 s at 20000 characters with the old regexes | fix round 1 working tree | PASS | 436 tests, OK under both umasks | required | - |
-| E2 | 3 | W2 | same suite: `test_source_ref_digest_is_the_private_receipt_set_record`, `test_day_without_items_stores_and_renders_but_sends_nothing` | fix round 1 working tree | PASS | 436 tests, OK | required | - |
-| E3 | 5 | W3 | same suite: `test_gateway_email_and_telegram_share_one_stored_digest`, `test_replay_returns_stored_outputs_without_rerendering`, `test_renderers_escape_and_flatten_markdown`, `test_pathological_lines_render_in_linear_time` | fix round 1 working tree | PASS | 436 tests, OK | required | - |
-| E4 | 7, 8, 9 | W4 | same suite: `test_deploy_scripts.py` prompt, marker-count, `email_body.html` guard and rerun tests; `test_plugin_bundle.py` message tests; `bash -n` and `shellcheck` on both deploy scripts | fix round 1 working tree | PASS | 436 tests, OK; shellcheck clean; live prompts verified at W9 | required | - |
+| E1 | 1, 2, 4, 6 | W1 | `python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`ReportSourceContractTests`, `ToolSchemaTests`, `PrivateRecordCreateTests`); new tests fail on `6378597d9` sources; the linear-render test's patterns took 2 to 3 s at 20000 characters with the old regexes | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | 436 tests, OK under both umasks | required | - |
+| E2 | 3 | W2 | same suite: `test_source_ref_digest_is_the_private_receipt_set_record`, `test_day_without_items_stores_and_renders_but_sends_nothing` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | 436 tests, OK | required | - |
+| E3 | 5 | W3 | same suite: `test_gateway_email_and_telegram_share_one_stored_digest`, `test_replay_returns_stored_outputs_without_rerendering`, `test_renderers_escape_and_flatten_markdown`, `test_pathological_lines_render_in_linear_time` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | 436 tests, OK | required | - |
+| E4 | 7, 8, 9 | W4 | same suite: `test_deploy_scripts.py` prompt, marker-count, `email_body.html` guard and rerun tests; `test_plugin_bundle.py` message tests; `bash -n` and `shellcheck` on both deploy scripts | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | 436 tests, OK; shellcheck clean; live prompts verified at W9 | required | - |
 | E5 | 10 | W5 | Pushgateway push, low-cardinality label test, Alertmanager rule and Grafana panel lint | not built; `metric_lines` removed in fix round 1 | NOT_RUN | - | required | - |
-| E6 | 11 | W6 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`; `python3 scripts/validation/check-document-links.py --mode alignment`; `python3 scripts/validation/check-document-corpus-lifecycle.py` | fix round 1 working tree | PASS | metadata: 0 violations; links: 898 documents, 0 failures; lifecycle: 0 violations | required | - |
+| E6 | 11 | W6 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`; `python3 scripts/validation/check-document-links.py --mode alignment`; `python3 scripts/validation/check-document-corpus-lifecycle.py` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | metadata: 0 violations; links: 898 documents, 0 failures; lifecycle: 0 violations | required | - |
 | E7 | 12 | W7 | schema-4 backup, restore test on a copy, cutover | owner approval pending | NOT_RUN | - | required | - |
 | E8 | 13 | W8 | `backfill-reports` dry run shows the 16 reports excluded; apply | Blog-data capability and owner approval pending | NOT_RUN | - | required | - |
 | E9 | 12, 14 | W9 | plugin install, restart, cron update, one observed run per job; rollback reading | owner approval pending | NOT_RUN | - | required | - |
+| E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports` and the conflict test | fix round 2 commit above `b9c016f10` | PASS | 437 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E1 | owner acceptance | @buenhyden |
+| 1 | pending | E1, E10 | owner acceptance | @buenhyden |
 | 2 | pending | E1 | owner acceptance | @buenhyden |
 | 3 | pending | E2 | owner acceptance | @buenhyden |
-| 4 | pending | E1 | owner acceptance | @buenhyden |
+| 4 | pending | E1, E10 | owner acceptance | @buenhyden |
 | 5 | pending | E3 | owner acceptance | @buenhyden |
-| 6 | pending | E1 | owner acceptance | @buenhyden |
+| 6 | pending | E1, E10 | owner acceptance | @buenhyden |
 | 7 | pending | E4 | owner acceptance | @buenhyden |
 | 8 | pending | E4 | owner acceptance | @buenhyden |
 | 9 | pending | E4 | owner acceptance | @buenhyden |
