@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Recovery Runbook"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0072"
 parent_ids:
@@ -87,10 +87,10 @@ settings 비호환이 있으면 중단한다.
 
 ## Related Documents
 
-- [Dozzle authentication](https://dozzle.dev/guide/authentication)
-
 ### Traceability
 
 - [Guide](../../guides/07-observability/0072-dozzle.md) (`GDE-0072`)
 - [Policy](../../policies/07-observability/0072-dozzle.md) (`POL-0072`)
 - [Dozzle Compose](../../../../infra/06-observability/dozzle/docker-compose.yml)
+
+- [Dozzle authentication](https://dozzle.dev/guide/authentication)

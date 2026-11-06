@@ -1,10 +1,10 @@
 ---
 title: "Gatus Policy"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0087"
 parent_ids:
@@ -25,8 +25,9 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 
 ## Rules
 
-- 직접 host 포트는 게시하지 않고, 설정된 non-root identity, read-only root filesystem,
-  쓰기 가능한 data mount를 Compose 소스가 선언한 그대로 유지한다.
+- 직접 host 포트는 게시하지 않고(`expose: ${GATUS_PORT}`만), 설정된 non-root identity(`${GATUS_UID:-1000}:${GATUS_GID:-1000}`),
+  read-only config bind, 쓰기 가능한 `gatus-data` mount를 Compose 소스가 선언한 그대로 유지한다.
+  `template-stateful-low`는 `read_only: false`이므로 root filesystem은 현재 쓰기 가능하다.
 - UI에는 native `home-gatus` OIDC와 `gateway-standard-chain@file`을 사용한다.
   `sso-auth@file`, local-password fallback, 넓은 subject allowlist를 추가하지 않는다.
   `/metrics`는 브라우저 route 밖에 두고 승인된 모니터링 설계 없이는 외부에 노출하지
@@ -57,6 +58,8 @@ Build 수용에는 source commit·checksum·local patch·생성 image digest가 
 
 예외는 owner, scope, risk, expiry, recovery condition이 필요하다.
 
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
 ### Review Cadence
 
 매월, 그리고 인증, probe inventory, 소스, storage가 변경될 때 검토한다.
@@ -70,8 +73,6 @@ Build 수용에는 source commit·checksum·local patch·생성 image digest가 
 
 정적 소스와 catalog 검사는 선언만 검증한다. 컨테이너 health, native 로그인, 세션 만료,
 probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 런타임 증거로 남는다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "관측 정책"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -24,18 +24,18 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [Alertmanager Operations Policy](0039-alertmanager.md) | `POL-0039` | 이 정책은 Alertmanager notification routing, grouping, inhibition, receiver, silence, secret boundary를 정의한다. 사용 흐름은 Alertmanager guide가, 장애 대응 절 |
-| [Alloy Operations Policy](0040-alloy.md) | `POL-0040` | 이 정책은 Grafana Alloy collector의 telemetry ingestion, discovery, relabeling, exporter, route, health, 설정 경계를 정의한다. 사용 흐름은 GDE-0040이, 장애 대응 절차는 |
-| [Grafana Operations Policy](0041-grafana.md) | `POL-0041` | 이 정책은 Grafana visualization hub의 dashboard provisioning, datasource provisioning, Keycloak role mapping, secret boundary, protected route를 정 |
-| [Loki Operations Policy](0043-loki.md) | `POL-0043` | 이 정책은 Loki log aggregation service의 retention, SeaweedFS storage, cardinality, compactor, resource, secret boundary를 정의한다. 사용 흐름은 Loki guide |
-| [Observability Optimization Hardening Policy](0044-observability-optimization-hardening.md) | `POL-0044` | 이 문서는 `06-observability` 계층의 최적화/하드닝 운영 정책을 정의한다. 게이트웨이 경계 보안, health 기반 의존성, 커스텀 이미지 런타임 하드닝, CI 기준선 검증, 카탈로그 확장 승인 조건을 통제한다. |
-| [Prometheus Operations Policy](0045-prometheus.md) | `POL-0045` | 이 정책은 scrape target registration, alerting rule management, TSDB persistence, lifecycle reload, secret file reference, protected access에 대한  |
-| [Pushgateway Operations Policy](0046-pushgateway.md) | `POL-0046` | 이 문서는 `06-observability` 계층의 Pushgateway 운영 정책을 정의한다. Pushgateway는 Prometheus pull 모델이 직접 적용되기 어려운 단기 실행 작업과 배치 작업의 메트릭을 임시로 받는 버퍼이며, 장기 저장소 |
-| [Pyroscope Operations Policy](0047-pyroscope.md) | `POL-0047` | 이 정책은 Pyroscope continuous profiling service의 ingestion, filesystem storage, capacity boundary, label/cardinality, route, health 기준을 정의한다. 사 |
-| [Retention and Performance Policies](0048-telemetry-retention.md) | `POL-0048` | 이 정책은 `06-observability` tier의 metrics, logs, traces, profiles 보관 경계와 performance guardrail을 정의한다. 현재 storage 구현과 요구되는 retention을 구분하며, exte |
-| [Tempo Operations Policy](0049-tempo.md) | `POL-0049` | 이 정책은 Tempo distributed tracing backend의 trace ingestion, SeaweedFS S3 storage, block retention, metrics generator, secret boundary, protect |
-| [Dozzle Operations Policy](0072-dozzle.md) | `POL-0072` | Dozzle은 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한은 직접적인 Docker API 접근을 보완하는 필수 통제다. |
-| [Gatus Policy](0087-gatus.md) | `POL-0087` | Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability monitor다. |
+| [Alertmanager Operations Policy](0039-alertmanager.md) | `POL-0039` | Alertmanager routing·grouping·inhibition·receiver·silence와 secret 렌더링 통제를 정한다. |
+| [Alloy Operations Policy](0040-alloy.md) | `POL-0040` | Alloy 설정 선택, discovery·relabel·exporter·route와 품질 metric 수신 통제를 정한다. |
+| [Grafana Operations Policy](0041-grafana.md) | `POL-0041` | Grafana provisioning, datasource UID, Keycloak role mapping, secret과 route 통제를 정한다. |
+| [Loki Operations Policy](0043-loki.md) | `POL-0043` | Loki retention, SeaweedFS storage, cardinality, compactor, resource와 LAN 예외 통제를 정한다. |
+| [Observability Optimization Hardening Policy](0044-observability-optimization-hardening.md) | `POL-0044` | 관측 tier의 gateway 경계, health 의존성, 커스텀 이미지 하드닝과 확장 승인 조건을 정한다. |
+| [Prometheus Operations Policy](0045-prometheus.md) | `POL-0045` | Prometheus scrape·rule·TSDB·lifecycle·secret·API route와 host·GPU exporter 통제를 정한다. |
+| [Pushgateway Operations Policy](0046-pushgateway.md) | `POL-0046` | Pushgateway의 사용 범위, label·stale group 관리와 Prometheus scrape 연동 요구를 정한다. |
+| [Pyroscope Operations Policy](0047-pyroscope.md) | `POL-0047` | Pyroscope ingestion 제한, filesystem storage, label cardinality, route와 health 통제를 정한다. |
+| [Retention and Performance Policies](0048-telemetry-retention.md) | `POL-0048` | metrics·logs·traces·profiles의 보존 요구와 현재 구현의 미준수 경계를 정한다. |
+| [Tempo Operations Policy](0049-tempo.md) | `POL-0049` | Tempo ingestion, SeaweedFS storage, metrics generator, retention gap과 LAN 예외 통제를 정한다. |
+| [Dozzle Operations Policy](0072-dozzle.md) | `POL-0072` | OPTIONAL 특권 뷰어 Dozzle의 OIDC·CIDR·socket·로그 프라이버시 통제를 정한다. |
+| [Gatus Policy](0087-gatus.md) | `POL-0087` | Gatus의 native OIDC, metrics 경계, SQLite 상태와 업그레이드 통제를 정한다. |
 
 ## Usage
 

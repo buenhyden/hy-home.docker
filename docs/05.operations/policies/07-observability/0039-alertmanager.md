@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Operations Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0039"
 parent_ids:
@@ -101,7 +101,7 @@ Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수
 - Compose service boundary:
   `rg -n 'service: template-stateful-low|image: prom/alertmanager:|smtp_username|smtp_password|slack_webhook|alertmanager.middlewares|/-/ready' infra/06-observability/docker-compose.yml`
 - Alert routing config:
-  `rg -n 'group_by: \\[\"alertname\", \"job\", \"domain\", \"severity\"\\]|repeat_interval: 4h|receiver: \"team-notifications-slack\"|receiver: \"critical-notifications\"|severity=\"critical\"|email_configs:' infra/06-observability/alertmanager/config/config.yml`
+  `rg -n 'group_by: \["alertname", "job", "domain", "severity"\]|repeat_interval: 4h|receiver: "team-notifications-slack"|receiver: "critical-notifications"|severity="critical"|email_configs:' infra/06-observability/alertmanager/config/config.yml`
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 

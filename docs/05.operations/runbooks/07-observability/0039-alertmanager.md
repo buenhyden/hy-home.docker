@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Notification Recovery Runbook"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0039"
 parent_ids:
@@ -26,15 +26,13 @@ created: "2026-05-17"
 
 다음 경우에 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - Prometheus에서 firing alert가 있는데 Alertmanager UI나 Slack receiver에서 보이지 않을 때.
 - Alertmanager UI `https://alertmanager.${DEFAULT_URL}` 또는 `/-/ready` endpoint가 실패할 때.
 - `smtp_username`, `smtp_password`, `slack_webhook` Secret 누락 또는 config rendering error가 의심될 때.
 - 잘못된 silence 또는 inhibition rule로 중요 알림이 차단된 것처럼 보일 때.
 - `config.yml` 변경 후 route, receiver, template, notification delivery 상태 검증이 필요할 때.
+
+## Prerequisites
 
 `alertmanager`를 처음 기동하면 건강한 `prometheus`·`grafana` 의존성을 요구한다. 알림 대상은 현재 Slack이며 SMTP secret도 renderer 입력으로 필요하다. 상태 점검 뒤 별도 승인한 합성 알림의 실제 도착을 확인한다. 정지 전 silence·notification 상태를 보존하고 운영 알림의 중단 영향을 승인받는다.
 
@@ -72,13 +70,13 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 3. Secret 값이 아닌 placeholder와 route/receiver config만 확인한다.
 
    ```bash
-   rg -n 'route:|group_by: \\[\"alertname\", \"job\", \"domain\", \"severity\"\\]|repeat_interval: 4h|receiver: \"team-notifications-slack\"|receiver: \"critical-notifications\"|severity=\"critical\"|inhibit_rules:|__SMTP_USERNAME__|__SMTP_PASSWORD__|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml
+   rg -n 'route:|group_by: \["alertname", "job", "domain", "severity"\]|repeat_interval: 4h|receiver: "team-notifications-slack"|receiver: "critical-notifications"|severity="critical"|inhibit_rules:|__SMTP_USERNAME__|__SMTP_PASSWORD__|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml
    ```
 
 4. Prometheus가 Alertmanager target을 사용하고 있는지 확인한다.
 
    ```bash
-   rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]|job_name: \"alertmanager\"' infra/06-observability/prometheus/config/prometheus.yml
+   rg -n 'alertmanagers:|targets: \["alertmanager:9093"\]|job_name: "alertmanager"' infra/06-observability/prometheus/config/prometheus.yml
    ```
 
 5. Grafana datasource가 같은 Alertmanager endpoint를 가리키는지 확인한다.

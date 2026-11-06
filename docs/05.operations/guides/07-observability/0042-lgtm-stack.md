@@ -1,10 +1,10 @@
 ---
 title: "LGTM Stack Usage Guide"
-version: "1.0.5"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0042"
 created: "2026-03-25"
@@ -14,7 +14,7 @@ created: "2026-03-25"
 
 ## Overview
 
-이 가이드는 `hy-home.docker`의 `06-observability` tier가 제공하는 통합 관측성 stack을 설명한다. 현재 stack은 Prometheus, Loki, Tempo, Grafana에 Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope를 더해 metrics, logs, traces, alerts, profiles를 연결한다.
+이 가이드는 `hy-home.docker`의 `06-observability` tier가 제공하는 통합 관측성 stack을 설명한다. 현재 stack은 Prometheus, Loki, Tempo, Grafana에 Alloy, Alertmanager, Pushgateway, node-exporter, cAdvisor, Pyroscope, Gatus, `obs-gpu` 전용 dcgm-exporter, 일회성 `grafana-db-provision`을 더해 metrics, logs, traces, alerts, profiles, availability를 연결한다. OPTIONAL admin 로그 뷰어 Dozzle은 `infra/06-observability/dozzle/docker-compose.yml`에 따로 있다.
 
 ## Scope
 
@@ -36,11 +36,7 @@ created: "2026-03-25"
 
 일반 순서는 다음과 같다.
 
-1. Tier service inventory를 확인한다.
-
-   ```bash
-   rg -n '^  (prometheus|loki|tempo|alloy|grafana|cadvisor|pyroscope|alertmanager|pushgateway):' infra/06-observability/docker-compose.yml
-   ```
+1. Tier service inventory를 [Common Checks](#common-checks)의 첫 `rg` 명령으로 확인한다.
 
 2. Data path를 기준으로 각 component 역할을 확인한다.
 
@@ -53,12 +49,12 @@ created: "2026-03-25"
    - **Container metrics**: cAdvisor가 container 리소스 metric을 노출한다.
    - **Host metrics**: node-exporter는 SPEC-0225부터 host network namespace에서 실행하며 `obs_net` gateway 주소에 listen한다. Prometheus와 Alloy는 `extra_hosts`의 `node-exporter:10.250.5.1`로 접근한다.
    - **Profiles**: Pyroscope가 profile backend와 Grafana datasource를 제공한다.
+   - **Availability**: Gatus가 선언된 endpoint를 probe하고 history를 SQLite `gatus-data`에 저장한다.
+   - **GPU metrics**: dcgm-exporter는 `obs-gpu`에서만 선택되며 Prometheus가 `dcgm-exporter:9400`을 scrape한다.
 
 3. Grafana datasource wiring을 확인한다.
 
-   ```bash
-   rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml
-   ```
+   명령은 [Common Checks](#common-checks)에 있다.
 
 4. Storage와 retention boundary를 확인한다.
 
@@ -76,6 +72,8 @@ created: "2026-03-25"
    - Alertmanager: alert routing과 silence
    - Pushgateway: ephemeral/batch metric
    - Pyroscope: profile
+   - Gatus: availability probe
+   - Dozzle: admin 로그 조회
 
 ## Usage
 
@@ -86,6 +84,13 @@ created: "2026-03-25"
 - **Collector assumption**: Alloy pipeline이 실패하면 Loki/Tempo/Prometheus/Grafana가 정상이어도 telemetry가 비어 보일 수 있다.
 - **Secret evidence**: SeaweedFS, Grafana, Alertmanager, Prometheus secret 값은 기록하지 않는다.
 - **Runbook scope**: 이 stack guide는 복구 절차가 아니다. 장애 대응은 service별 runbook을 따른다.
+
+### Common Checks
+
+- `docker compose --profile obs ps`
+- `rg -n '^  (prometheus|loki|tempo|alloy|grafana|grafana-db-provision|node-exporter|cadvisor|gatus|pyroscope|alertmanager|pushgateway|dcgm-exporter|dozzle):' infra/06-observability/docker-compose.yml infra/06-observability/dozzle/docker-compose.yml`
+- `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
+- `bash scripts/validation/validate-docker-compose.sh`
 
 ### Runbook Handoff
 
@@ -98,12 +103,7 @@ stack 전체를 다루는 runbook은 없다. 반복 실행 절차와 장애 대�
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile obs ps`
-- `rg -n '^  (prometheus|loki|tempo|alloy|grafana|cadvisor|pyroscope|alertmanager|pushgateway):' infra/06-observability/docker-compose.yml`
-- `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
-- `bash scripts/validation/validate-docker-compose.sh`
+위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0045](../../runbooks/07-observability/0045-prometheus.md)으로 넘긴다.
 
 ## Related Documents
 

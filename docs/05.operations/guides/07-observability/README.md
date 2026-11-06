@@ -1,10 +1,10 @@
 ---
 title: "관측 가이드"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -24,18 +24,18 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [Alertmanager Usage Guide](0039-alertmanager.md) | `GDE-0039` | 이 가이드는 `06-observability` 계층의 Alertmanager 사용 맥락과 설정 확인 방법을 설명한다. Alertmanager는 Prometheus가 보낸 알림을 grouping, deduplication, inhibition, sile |
-| [Alloy Usage Guide](0040-alloy.md) | `GDE-0040` | Grafana Alloy는 HOME 관측 계층의 telemetry collector다. 서비스 `alloy`는 `obs`, `logs`, `tracing`, `profiling` profile로 선택하며 Compose가 구현을 소유한다. Alloy는  |
-| [Grafana Usage Guide](0041-grafana.md) | `GDE-0041` | 이 가이드는 `06-observability` 계층의 Grafana 사용 맥락과 설정 확인 방법을 설명한다. Grafana는 grafana/grafana image declaration으로 실행되는 visualization hub이며 provision |
-| [LGTM Stack Usage Guide](0042-lgtm-stack.md) | `GDE-0042` | 이 가이드는 `hy-home.docker`의 `06-observability` tier가 제공하는 통합 관측성 stack을 설명한다. 현재 stack은 Prometheus, Loki, Tempo, Grafana에 Alloy, Alertmanager,  |
-| [Loki Usage Guide](0043-loki.md) | `GDE-0043` | 이 가이드는 `06-observability` 계층의 Loki 사용 맥락과 설정 확인 방법을 설명한다. Loki는 Alloy가 수집한 Docker 로그를 `http://loki:3100/loki/api/v1/push`로 수신하고, SeaweedFS S |
-| [06-Observability Optimization Hardening Usage Guide](0044-observability-optimization-hardening.md) | `GDE-0044` | 이 문서는 `06-observability` 계층의 최적화/하드닝 항목을 운영자/개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 체인+SSO 정렬, health 기반 의존성, 커스텀 이미지 하드닝, CI 검증 절차를 제공한다. |
-| [Prometheus Usage Guide](0045-prometheus.md) | `GDE-0045` | 이 가이드는 `06-observability` 계층의 Prometheus 사용 맥락과 설정 확인 방법을 설명한다. Prometheus는 `infra/06-observability/prometheus/config/prometheus.yml`의 scrap |
-| [Pushgateway Usage Guide](0046-pushgateway.md) | `GDE-0046` | 이 문서는 Pushgateway의 역할과 기본 사용법을 설명한다. Pushgateway는 Prometheus pull 모델이 직접 적용되기 어려운 단기 실행·배치 작업의 metric을 일시적으로 받아 두는 버퍼다. 장기 실행 서비스의 일반 metric |
-| [Pyroscope Usage Guide](0047-pyroscope.md) | `GDE-0047` | 이 가이드는 `06-observability` 계층의 Pyroscope 사용 맥락과 설정 확인 방법을 설명한다. Pyroscope는 profile 데이터를 로컬 filesystem backend `/var/lib/pyroscope`에 저장하고, Gra |
-| [Tempo Usage Guide](0049-tempo.md) | `GDE-0049` | 이 가이드는 `06-observability` 계층의 Tempo 사용 맥락과 설정 확인 방법을 설명한다. |
-| [Dozzle Usage Guide](0072-dozzle.md) | `GDE-0072` | 이 가이드는 OPTIONAL admin 로그 뷰어 Dozzle의 구성, 인증 경계, 일반 사용 방법을 설명한다. `admin`과 `admin-logs` profile에서만 선택된다. |
-| [Gatus Guide](0087-gatus.md) | `GDE-0087` | Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability monitor이다. native Keycloak OIDC로 보호되는 status UI와 SQLite probe history를 제공한 |
+| [Alertmanager Usage Guide](0039-alertmanager.md) | `GDE-0039` | Alertmanager의 route·receiver·inhibition·silence와 secret 렌더링 경계를 설명한다. |
+| [Alloy Usage Guide](0040-alloy.md) | `GDE-0040` | Alloy의 두 설정 파일, log·trace·profile·품질 metric 파이프라인과 구현 경계를 설명한다. |
+| [Grafana Usage Guide](0041-grafana.md) | `GDE-0041` | Grafana의 datasource·dashboard provisioning, Keycloak OAuth와 신호 연결을 설명한다. |
+| [LGTM Stack Usage Guide](0042-lgtm-stack.md) | `GDE-0042` | 관측 tier 전체 서비스, 신호별 data path와 storage 경계를 한눈에 연결한다. |
+| [Loki Usage Guide](0043-loki.md) | `GDE-0043` | Loki의 SeaweedFS 저장, retention, label cardinality, Alloy 수집과 LogQL 조회를 설명한다. |
+| [06-Observability Optimization Hardening Usage Guide](0044-observability-optimization-hardening.md) | `GDE-0044` | 관측 tier의 gateway·SSO 정렬, health 의존성, 커스텀 이미지 하드닝과 cAdvisor 경계를 설명한다. |
+| [Prometheus Usage Guide](0045-prometheus.md) | `GDE-0045` | Prometheus의 선택 config, scrape job, alert rule, TSDB와 host·GPU exporter 경계를 설명한다. |
+| [Pushgateway Usage Guide](0046-pushgateway.md) | `GDE-0046` | Pushgateway의 batch metric push·삭제와 현재 없는 Prometheus scrape 연동을 설명한다. |
+| [Pyroscope Usage Guide](0047-pyroscope.md) | `GDE-0047` | Pyroscope의 local filesystem 저장, 입력 제한, Alloy profile source와 readiness를 설명한다. |
+| [Tempo Usage Guide](0049-tempo.md) | `GDE-0049` | Tempo의 OTLP 수신, SeaweedFS 저장, metrics generator와 retention gap을 설명한다. |
+| [Dozzle Usage Guide](0072-dozzle.md) | `GDE-0072` | OPTIONAL admin 로그 뷰어 Dozzle의 native OIDC·CIDR·Docker socket 경계를 설명한다. |
+| [Gatus Guide](0087-gatus.md) | `GDE-0087` | Gatus의 native OIDC status UI, SQLite probe history와 수명 주기를 설명한다. |
 
 ## Usage
 

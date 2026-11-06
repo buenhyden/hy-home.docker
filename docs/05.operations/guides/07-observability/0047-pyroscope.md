@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Usage Guide"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0047"
 parent_ids:
@@ -56,7 +56,7 @@ created: "2026-05-10"
 3. Alloy와 Grafana가 Pyroscope endpoint를 가리키는지 확인한다.
 
    ```bash
-   rg -n 'pyroscope.write "local_pyroscope"|url = "http://pyroscope:4040"|type: grafana-pyroscope-datasource|url: http://pyroscope:4040' infra/06-observability/alloy/config/config.alloy infra/06-observability/grafana/provisioning/datasources/datasource.yml
+   rg -n 'pyroscope.write "local_pyroscope"|url = "http://pyroscope:4040"|type: grafana-pyroscope-datasource|url: http://pyroscope:4040' infra/06-observability/alloy/config/config.alloy infra/06-observability/alloy/config/config.home.alloy infra/06-observability/grafana/provisioning/datasources/datasource.yml
    ```
 
 4. Grafana의 `Explore` 메뉴에서 `Pyroscope` datasource를 선택하고 `Application` 또는 service label 기준으로 최근 profile을 조회한다.
@@ -85,6 +85,13 @@ created: "2026-05-10"
 - **Storage assumption**: 현재 backend는 local filesystem이다. 오래된 profile data 삭제나 retention 변경은 guide 범위가 아니라 runbook escalation 대상이다.
 - **Language support**: 언어와 runtime에 따라 CPU, memory, goroutine, mutex, block profile 지원 범위가 다르다.
 
+### Common Checks
+
+- `docker compose --profile obs ps pyroscope`
+- `docker logs --tail=100 pyroscope`
+- `docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}`
+- `rg -n 'ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml`
+
 ### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/07-observability/0047-pyroscope.md)을 따른다.
@@ -97,12 +104,7 @@ created: "2026-05-10"
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile obs ps pyroscope`
-- `docker logs --tail=100 pyroscope`
-- `docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}`
-- `rg -n 'ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml`
+위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0047](../../runbooks/07-observability/0047-pyroscope.md)으로 넘긴다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Usage Guide"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -45,7 +45,7 @@ created: "2026-05-17"
    - root context: `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
    - service-local context: root networks/secrets를 선언한 임시 validation overlay를 함께 사용한다.
 2. Gateway/SSO 경계 정렬
-   - 네이티브 OIDC router인 `grafana`·`gatus`는 `gateway-standard-chain@file`을 사용하며 각 애플리케이션이 인증을 담당한다.
+   - 네이티브 OIDC router인 `grafana`·`gatus`는 `gateway-standard-chain@file`을 사용하며 각 애플리케이션이 인증을 담당한다. 별도 Compose의 OPTIONAL `dozzle`도 네이티브 OIDC이며 `gateway-standard-chain@file,dozzle-admin-ip@docker`(admin CIDR 허용목록)를 쓴다.
    - 프록시로 보호하는 `prometheus`·`alloy`·`alertmanager`·`pushgateway`·`loki`·`tempo`·`pyroscope`·`cadvisor`는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 사용한다.
 3. 의존성/헬스 보강
    - Alloy/Grafana의 선언된 `service_healthy` 및 `required: false` 경계를 확인한다. Optional backend가 없을 때 전체 pipeline 수신을 주장하지 않는다.
@@ -82,6 +82,12 @@ created: "2026-05-17"
 - custom 이미지에 root 실행 경로를 재도입하는 실수
 - 하드닝 스크립트/README 인덱스를 함께 갱신하지 않는 실수
 
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
+- Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
+- `bash scripts/hardening/check-all-hardening.sh 06-observability`
+
 ### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/07-observability/0044-observability-optimization-hardening.md)을 따른다.
@@ -94,11 +100,7 @@ created: "2026-05-17"
 
 ## Troubleshooting
 
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
-- Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
-- `bash scripts/hardening/check-all-hardening.sh 06-observability`
+위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0044](../../runbooks/07-observability/0044-observability-optimization-hardening.md)으로 넘긴다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Gatus Runbook"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0087"
 parent_ids:
@@ -28,10 +28,7 @@ Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구�
 
 ## Prerequisites
 
-### Trigger and Preconditions
-
-저장소
-루트에서 작업한다. 런타임 변경 전에 설정 커밋, 실제 마운트된 데이터 경로,
+저장소 루트에서 작업한다. 런타임 변경 전에 설정 커밋, 실제 마운트된 데이터 경로,
 백업 대상을 기록한다.
 
 ## Procedure
@@ -48,15 +45,15 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 1. 렌더링된 환경을 출력하지 않고 공개 설정을 검증한다.
 
-```bash
-docker compose --env-file .env.example --profile availability config --quiet
-docker compose --profile availability ps gatus
-docker compose --profile availability exec -T gatus sh -ec 'wget -q -O /dev/null "http://127.0.0.1:${PORT}/health"'
-```
+   ```bash
+   docker compose --env-file .env.example --profile availability config --quiet
+   docker compose --profile availability ps gatus
+   docker compose --profile availability exec -T gatus sh -ec 'wget -q -O /dev/null "http://127.0.0.1:${PORT}/health"'
+   ```
 
-1. Public health/bootstrap와 protected status/history API를 구분해 인증을 확인하고, 승인된 세션을 통해 프로브 상태를
+2. Public health/bootstrap와 protected status/history API를 구분해 인증을 확인하고, 승인된 세션을 통해 프로브 상태를
    검토한다. 응답 본문, 토큰, 엔드포인트 크리덴셜을 증거에 복사하지 않는다.
-2. 승인된 배포의 경우, 검토된 Compose 선택으로 `gatus`만 빌드하고 교체한다.
+3. 승인된 배포의 경우, 검토된 Compose 선택으로 `gatus`만 빌드하고 교체한다.
    컨테이너 헬스, UI 인증, 예상 프로브 이름을 별도로 검증한다. 예상치 못한
    마운트, 권한, 이미지 식별자를 발견하면 중단한다.
 
@@ -73,7 +70,7 @@ Task 0004에
 
 클라이언트는 `home-gatus`이며, 정확한 콜백은
 `https://status.${DEFAULT_URL}/authorization-code/callback`, confidential
-code flow와 S256을 사용한다. 클라이언트 시크릿은 Docker Secret이며, 서비스는
+code flow와 S256을 사용한다. 클라이언트 시크릿은 기본적으로 Docker Secret `gatus_oidc_client_secret`이며, `GATUS_CLIENT_SECRET_FILE`을 `/run/openbao/gatus` 아래 Agent 출력으로 지정하면 OpenBao 경로를 쓴다(미설정 시 Docker Secret으로 rollback). 서비스는
 Compose-selected non-root UID/GID (default 1000)로 실행된다. Mode 0600 secret의 소유자는 선택 UID여야 한다; 기본값을 실제 private 선택으로 단정하지 않는다.
 `GATUS_OIDC_ALLOWED_SUBJECT`는 이메일이나 표시 이름이 아닌 정확한 Keycloak
 사용자 `sub`이다. 빈 allowlist는 시작 단계에 도달해서는 안 된다. 로컬 CA는
@@ -139,7 +136,7 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 ### Traceability
 
 - [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)
-- [Guide](../../guides/07-observability/0087-gatus.md), [Policy](../../policies/07-observability/0087-gatus.md), [Runbook](0087-gatus.md)
+- Subject peers: [Guide](../../guides/07-observability/0087-gatus.md) (`GDE-0087`), [Policy](../../policies/07-observability/0087-gatus.md) (`POL-0087`)
 
 - 런타임 핀은 Compose/Dockerfile 선언이 소유하며,
   [파생 Compose 이미지 프로젝션](../../../../infra/tech-stack.versions.json)이

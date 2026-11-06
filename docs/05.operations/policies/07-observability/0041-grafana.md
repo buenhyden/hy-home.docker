@@ -1,10 +1,10 @@
 ---
 title: "Grafana Operations Policy"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
@@ -57,7 +57,9 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
     `Viewer`를 두지 않으며 strict mode로 그 밖의 realm 사용자를 거부한다.
   - 익명 접근은 비활성화하고 OAuth TLS는 로컬 root CA로 검증한다.
   - `grafana_admin_password`와 `grafana_client_secret`은 Docker Secret
-    file reference로만 주입한다.
+    file reference 또는 `GRAFANA_ADMIN_PASSWORD_FILE`/`GRAFANA_CLIENT_SECRET_FILE`이
+    가리키는 OpenBao Agent 출력(`/run/openbao/observability`) file reference로만
+    주입한다. 두 변수를 비우면 Docker Secret으로 돌아간다.
   - Service는 `template-stateful-med`, image [grafana/grafana image declaration](../../../../infra/06-observability/docker-compose.yml),
     read-only provisioning/dashboard mounts, persistent `grafana-data`
     volume을 유지한다.

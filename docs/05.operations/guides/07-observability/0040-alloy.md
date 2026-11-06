@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -75,14 +75,17 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 - **node-exporter 접근**: SPEC-0225 이후 node-exporter는 host network namespace에서 `obs_net` gateway에 bind한다. Alloy는 `extra_hosts`로 `node-exporter:10.250.5.1`을 선언해 pprof 대상 이름을 그대로 유지한다.
 - **상태·보안**: config와 host log mount는 읽기 전용이다. Docker socket 접근은 민감하다. `alloy-data:/var/lib/alloy`와 `--storage.path=/var/lib/alloy/data`, UID/GID `473:473`을 유지한다. 전송 중 telemetry는 복구 자산이 아니다. 파일 inode가 바뀌었거나 port, mount, Compose 설정이 바뀌면 restart만으로 적용을 보장하지 않으며 승인된 recreate와 state 보존 검토가 필요하다.
 
-> Historical evidence (not current authority; source: Git history):
-> Source commit: `22475253cacfa452f92fb7f917585e634ea6253f`; path: `docs/05.operations/guides/07-observability/0040-alloy.md`.
->
-> - **State/security**: config and host log mounts are read-only; Docker socket access is security-sensitive. `alloy-data:/var/lib/alloy` is mounted and the command now passes `--storage.path=/var/lib/alloy/data`; the previous command override had dropped the image default, so positions and WAL lived in the container layer and were lost on recreate. The container runs as the image's `alloy` user (UID 473) with the host docker group (`DOCKER_GID`) because root without capabilities cannot write the 473-owned state directory; the first attempt as root crash-looped on `mkdir /var/lib/alloy/data: permission denied` on 2026-09-21 and was rolled back within about three minutes. The first recreate with the fix starts without the old positions, which can re-send or skip recent Docker log lines; Loki may reject out-of-order duplicates. Config edits apply through `POST /-/reload` only when the mounted file inode is unchanged; editors that replace the file need a container restart. Changing ports or mounts needs a recreate. In-flight telemetry can be lost and is not a guaranteed recovery asset.
-
 - **자원·정상 사용**: Compose의 CPU/memory limit은 여유 용량을 뜻하지 않는다. 저장소 root에서 `docker compose --profile obs config --quiet`로 렌더링하고 Alloy config를 검증한 뒤, downstream 쓰기와 retry/WAL 신호를 확인한다.
 - **수명 주기**: config와 component별로 검증된 state를 보존한다. 전송을 drain하거나 문서화된 전송 중 손실을 허용하고, 고정된 version을 하나씩 update한다. component 호환성을 검증한 뒤 log/trace/metric을 확인한다.
 - **공식 문서·license**: 공식 [Alloy 동작 방식](https://grafana.com/docs/alloy/latest/introduction/how-alloy-works/)과 [remote_write/WAL](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/) 문서를 따른다. Grafana Alloy에는 Apache-2.0 license가 적용된다.
+
+### Common Checks
+
+- `docker compose --profile obs ps alloy`
+- `docker logs --tail=100 alloy`
+- Compose 경계: `rg -n 'service: template-infra-med|image: grafana/alloy:|container_name: alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
+- Pipeline 경계: `rg -n 'discovery.docker|hy-home-infra|loki.source.docker|loki.write|pyroscope.scrape|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy infra/06-observability/alloy/config/config.home.alloy`
+- 품질 metric 수신기: `rg -n 'quality_otlp_token|otelcol.auth.bearer|0.0.0.0:4319|labelkeep' infra/06-observability/alloy/config/config.home.alloy`
 
 ### Runbook Handoff
 
@@ -95,14 +98,6 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 - Subject peers: [Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`), [Runbook](../../runbooks/07-observability/0040-alloy.md) (`RUN-0040`)
 
 ## Troubleshooting
-
-### Common Checks
-
-- `docker compose --profile obs ps alloy`
-- `docker logs --tail=100 alloy`
-- Compose 경계: `rg -n 'service: template-infra-med|image: grafana/alloy:|container_name: alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
-- Pipeline 경계: `rg -n 'discovery.docker|hy-home-infra|loki.source.docker|loki.write|pyroscope.scrape|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy`
-- 품질 metric 수신기: `rg -n 'quality_otlp_token|otelcol.auth.bearer|0.0.0.0:4319|labelkeep' infra/06-observability/alloy/config/config.home.alloy`
 
 주의할 점은 다음과 같다.
 

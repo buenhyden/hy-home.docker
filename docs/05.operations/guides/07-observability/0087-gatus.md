@@ -1,10 +1,10 @@
 ---
 title: "Gatus Guide"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0087"
 parent_ids:
@@ -29,10 +29,9 @@ Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availab
 
 ## Concepts
 
-Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability
-monitor이다. root Compose가 포함 여부를 관장하며,
+root Compose가 포함 여부를 관장하며,
 [observability Compose source](../../../../infra/06-observability/docker-compose.yml)가
-local build, UID/GID, `GATUS_PORT`, read-only 설정, healthcheck, network,
+local build(`hy/gatus:local`, `template-stateful-low`이라 root filesystem은 쓰기 가능), UID/GID, `GATUS_PORT`, read-only config bind, healthcheck, network,
 `gatus-data` mount, Traefik label을 관장한다.
 
 활성 mount는 `config.oidc.yaml`이다. Gatus는 confidential한 `home-gatus`
@@ -97,6 +96,13 @@ SQLite backup에는 조율된 quiescence나 engine이 지원하는 consistent sn
   [Gatus repository/release](https://github.com/TwiN/gatus)를 따른다. Gatus는
   Apache-2.0 license이며 patch provenance를 보존한다.
 
+### Common Checks
+
+- [Observability Compose](../../../../infra/06-observability/docker-compose.yml)에서
+  native OIDC, `/metrics` router 제외, healthcheck를 점검한다.
+- 승인된 upgrade 전에 source와 SQLite custody를 검토한다. health는 login이나
+  probe coverage를 증명하지 않는다.
+
 ### Runbook Handoff
 
 승인 게이트가 걸린 진단, 재시작, recovery에는
@@ -109,12 +115,7 @@ SQLite backup에는 조율된 quiescence나 engine이 지원하는 consistent sn
 
 ## Troubleshooting
 
-### Common Checks
-
-- [Observability Compose](../../../../infra/06-observability/docker-compose.yml)에서
-  native OIDC, `/metrics` router 제외, healthcheck를 점검한다.
-- 승인된 upgrade 전에 source와 SQLite custody를 검토한다. health는 login이나
-  probe coverage를 증명하지 않는다.
+위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0087](../../runbooks/07-observability/0087-gatus.md)으로 넘긴다.
 
 ## Related Documents
 
