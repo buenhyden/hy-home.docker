@@ -151,7 +151,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.connect
-    image: hy-home/kafka-connect:8.3.2-debezium-3.6.3
+    image: hy-home/kafka-connect:8.3.2-debezium-3.7.0
     container_name: kafka-connect
     hostname: kafka-connect
     group_add:
