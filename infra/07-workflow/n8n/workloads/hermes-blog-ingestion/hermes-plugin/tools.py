@@ -4,9 +4,11 @@ import base64
 import hashlib
 import html
 import json
+import math
 import os
 import re
 import stat
+import tempfile
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -22,6 +24,13 @@ OUTBOX_DIR = HERMES_HOME / "data" / "research-report-outbox"
 SOURCE_DIR = HERMES_HOME / "data" / "research-source-evidence"
 # One private directory per cron execution: the report bytes and what derives from them.
 REPORT_DIR = HERMES_HOME / "data" / "research-report-store"
+# node-exporter's textfile collector reads this host directory (SPEC-0192 writes
+# hyhome_backup*.prom beside it); the plugin never creates it.
+METRICS_DIR = Path.home() / "backups" / "metrics"
+METRICS_FILE = "hermes_research.prom"
+# Private state behind the gauges, so values survive across runs.
+METRICS_STATE_DIR = HERMES_HOME / "data" / "research-metrics"
+METRICS_LOCK_SECONDS = 1.0
 APPROVED_WEBHOOK_URL = "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion"
 WEBHOOK_URL_DEFAULT = APPROVED_WEBHOOK_URL
 SECRET_FILE = HERMES_HOME / "secrets" / "research-webhook.secret"
@@ -256,9 +265,224 @@ def _allowed_url(url: str) -> bool:
 def handle_submit_report(args: dict[str, Any], **kwargs) -> str:
     """Hermes tool entry point: the registry accepts only a str result."""
     try:
-        return json.dumps(_submit(args), ensure_ascii=False)
+        result = _submit(args)
+        text = json.dumps(result, ensure_ascii=False)
     except Exception:
-        return json.dumps({"ok": False, "error": "submission_unavailable"})
+        result = {"ok": False, "error": "submission_unavailable"}
+        text = json.dumps(result)
+    _record_metrics(args, result)
+    return text
+
+
+# Every label value comes from these enums; no URL, run, execution or report ID.
+METRIC_OUTCOMES = (
+    "submitted",
+    "stored_no_items",
+    "gateway_error",
+    "blocked",
+    "conflict",
+    "store_failed",
+)
+# The stable codes a BLOCKED result carries; anything else counts as "other".
+METRIC_BLOCKED_REASONS = (
+    "report_required",
+    "report_malformed",
+    "report_bidi_control",
+    "report_not_final",
+    "request_too_large",
+    "source_set_too_large",
+    "report_conflict",
+    "report_store_unavailable",
+    "other",
+)
+_METRIC_HELP = (
+    (
+        "hermes_research_last_outcome_timestamp_seconds",
+        "gauge",
+        "Unix time of the last submit_research_report outcome per job kind.",
+    ),
+    (
+        "hermes_research_last_success_timestamp_seconds",
+        "gauge",
+        "Unix time of the last submitted or stored_no_items outcome, else first seen.",
+    ),
+    (
+        "hermes_research_last_report_bytes",
+        "gauge",
+        "UTF-8 size of the last report_markdown passed to the tool.",
+    ),
+    (
+        "hermes_research_blocked_total",
+        "counter",
+        "BLOCKED results per stable reason code.",
+    ),
+)
+
+
+def _metric_outcome(result: dict[str, Any]) -> str:
+    if result.get("ok"):
+        return "stored_no_items" if result.get("status") == "stored" else "submitted"
+    error = result.get("error")
+    if error in ("report_store_unavailable", "record_unavailable"):
+        return "store_failed"
+    if error in ("report_conflict", "idempotency_conflict", "source_set_conflict"):
+        return "conflict"
+    return "blocked" if result.get("state") == "BLOCKED" else "gateway_error"
+
+
+def _record_metrics(args: Any, result: dict[str, Any]) -> None:
+    """Best effort: a metrics failure never changes the tool result or raises."""
+    try:
+        run = _CTX.current_cron_execution() if _CTX is not None else None
+        kind = _ALLOWED_JOBS.get(getattr(run, "job_id", None))
+        if kind is None:
+            return
+        report = args.get("report_markdown") if isinstance(args, dict) else None
+        size = len(report.encode("utf-8")) if isinstance(report, str) else None
+        _update_metrics(kind, _metric_outcome(result), result, size)
+    except Exception:
+        pass
+
+
+def _finite(value: Any) -> bool:
+    # json.loads accepts NaN and Infinity, which _record_bytes refuses to write.
+    return type(value) in (int, float) and math.isfinite(value)
+
+
+def _valid_entry(entry: Any) -> bool:
+    """One job kind's state as _update_metrics writes it; anything else is reset."""
+    if not isinstance(entry, dict) or not _finite(entry.get("first_seen")):
+        return False
+    outcomes, blocked = entry.get("outcomes", {}), entry.get("blocked", {})
+    return (
+        set(entry) <= {"first_seen", "success", "bytes", "outcomes", "blocked"}
+        and _finite(entry.get("success", 0))
+        and type(entry.get("bytes", 0)) is int
+        and isinstance(outcomes, dict)
+        and set(outcomes) <= set(METRIC_OUTCOMES)
+        and all(_finite(value) for value in outcomes.values())
+        and isinstance(blocked, dict)
+        and set(blocked) <= set(METRIC_BLOCKED_REASONS)
+        and all(type(value) is int and value >= 0 for value in blocked.values())
+    )
+
+
+def _update_metrics(kind: str, outcome: str, result: dict[str, Any], size) -> None:
+    _, _, records = _modules()
+    store = records.PrivateRecords(METRICS_STATE_DIR)
+    try:
+        # A busy lock skips metrics instead of holding up the tool result.
+        with store.lock("metrics", timeout=METRICS_LOCK_SECONDS):
+            try:
+                state = json.loads(store.read("state.json") or b"{}")
+            except (records.RecordError, OSError) as error:
+                if str(error) not in ("unsafe_record", "record_too_large") and (
+                    type(error) is records.RecordError
+                ):
+                    raise
+                # An unsafe state file (mode, links, symlink, size) would
+                # refuse every later write, so it is dropped and restarted.
+                os.unlink("state.json", dir_fd=store.fd)
+                state = {}
+            except ValueError:
+                state = {}
+            if not isinstance(state, dict):
+                state = {}
+            now = time.time()
+            # first_seen starts each kind's success clock, so a kind that has not
+            # run yet is not "26 h without success" right after install.
+            state = {
+                each: state[each]
+                if _valid_entry(state.get(each))
+                else {"first_seen": now}
+                for each in sorted(set(_ALLOWED_JOBS.values()))
+            }
+            entry = state[kind]
+            entry.setdefault("outcomes", {})[outcome] = now
+            if outcome in ("submitted", "stored_no_items"):
+                entry["success"] = now
+            if size is not None:
+                entry["bytes"] = size
+            if result.get("state") == "BLOCKED":
+                reason = result.get("error")
+                if reason not in METRIC_BLOCKED_REASONS:
+                    reason = "other"
+                blocked = entry.setdefault("blocked", {})
+                blocked[reason] = blocked.get(reason, 0) + 1
+            store.write("state.json", _record_bytes(state))
+            if METRICS_DIR.is_dir():
+                _write_metrics(_metrics_text(state))
+    finally:
+        store.close()
+
+
+def _number(value) -> float | None:
+    return float(value) if type(value) in (int, float) else None
+
+
+def _metrics_text(state: dict[str, Any]) -> str:
+    """Prometheus text format; label values only from the enums above."""
+    samples: dict[str, list[str]] = {name: [] for name, _, _ in _METRIC_HELP}
+    for kind in sorted(set(_ALLOWED_JOBS.values())):
+        entry = state.get(kind) if isinstance(state.get(kind), dict) else {}
+        outcomes = entry.get("outcomes")
+        outcomes = outcomes if isinstance(outcomes, dict) else {}
+        for outcome in METRIC_OUTCOMES:
+            value = _number(outcomes.get(outcome))
+            if value is not None:
+                samples["hermes_research_last_outcome_timestamp_seconds"].append(
+                    f'{{job_kind="{kind}",outcome="{outcome}"}} {value:.3f}'
+                )
+        success = _number(entry.get("success")) or _number(entry.get("first_seen"))
+        success = success or 0.0
+        samples["hermes_research_last_success_timestamp_seconds"].append(
+            f'{{job_kind="{kind}"}} {success:.3f}'
+        )
+        size = _number(entry.get("bytes"))
+        if size is not None:
+            samples["hermes_research_last_report_bytes"].append(
+                f'{{job_kind="{kind}"}} {size:.0f}'
+            )
+        blocked = entry.get("blocked")
+        blocked = blocked if isinstance(blocked, dict) else {}
+        for reason in METRIC_BLOCKED_REASONS:
+            count = _number(blocked.get(reason))
+            if count is not None:
+                samples["hermes_research_blocked_total"].append(
+                    f'{{job_kind="{kind}",blocked_reason="{reason}"}} {count:.0f}'
+                )
+    lines = []
+    for name, kind, help_text in _METRIC_HELP:
+        if samples[name]:
+            lines += [f"# HELP {name} {help_text}", f"# TYPE {name} {kind}"]
+            lines += [name + sample for sample in samples[name]]
+    return "\n".join(lines) + "\n"
+
+
+def _write_metrics(text: str) -> None:
+    """Replace the textfile atomically: a same-directory temporary, fsync, rename."""
+    descriptor, temporary = tempfile.mkstemp(
+        prefix=".hermes_research.", suffix=".tmp", dir=METRICS_DIR
+    )
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(text.encode("utf-8"))
+            stream.flush()
+            # Readable by node-exporter like hyhome_backup*.prom; no secret, no ID.
+            os.fchmod(stream.fileno(), 0o644)
+            os.fsync(stream.fileno())
+        os.replace(temporary, METRICS_DIR / METRICS_FILE)
+        directory = os.open(METRICS_DIR, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    except BaseException:
+        try:
+            os.unlink(temporary)
+        except OSError:
+            pass
+        raise
 
 
 def _modules():

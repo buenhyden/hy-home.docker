@@ -7,6 +7,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 import stat
 import sys
 import tempfile
@@ -63,9 +64,16 @@ def setUpModule():
     """No test may reach the real Hermes report store under the home directory."""
     global _REPORT_ROOT
     _REPORT_ROOT = tempfile.TemporaryDirectory()
-    patcher = mock.patch.object(tools, "REPORT_DIR", Path(_REPORT_ROOT.name) / "r")
-    patcher.start()
-    unittest.addModuleCleanup(patcher.stop)
+    root = Path(_REPORT_ROOT.name)
+    # Nor the node-exporter textfile directory or the metrics state (SPEC-0265 W5).
+    for name, value in (
+        ("REPORT_DIR", root / "r"),
+        ("METRICS_DIR", root / "no-metrics-dir"),
+        ("METRICS_STATE_DIR", root / "metrics-state"),
+    ):
+        patcher = mock.patch.object(tools, name, value)
+        patcher.start()
+        unittest.addModuleCleanup(patcher.stop)
     unittest.addModuleCleanup(_REPORT_ROOT.cleanup)
 
 
@@ -1426,3 +1434,398 @@ class PrivateRecordCreateTests(unittest.TestCase):
             self.assertFalse(
                 any(p.name.startswith(".tmp-") for p in path.parent.iterdir())
             )
+
+
+class ResearchMetricsTests(unittest.TestCase):
+    """SPEC-0265 W5: textfile-collector gauges after every submission outcome."""
+
+    URL_UUID_HEX = re.compile(
+        r"://|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        r"|[0-9a-f]{32}",
+        re.IGNORECASE,
+    )
+    SAMPLE = re.compile(r"^(hermes_research_\w+)\{([^}]*)\} (\S+)$")
+
+    def setUp(self):
+        ReportSourceContractTests.setUp(self)
+        self.metrics = self.root / "metrics"
+        self.metrics.mkdir(mode=0o755)
+        self.state_dir = self.root / "state"
+        self.now = 1_800_000_000.0
+
+    post = ReportSourceContractTests.post
+    with_report = ReportSourceContractTests.with_report
+
+    def run_submit(self, args, *, context=None):
+        with (
+            mock.patch.object(tools, "METRICS_DIR", self.metrics),
+            mock.patch.object(tools, "METRICS_STATE_DIR", self.state_dir),
+            mock.patch.object(tools.time, "time", return_value=self.now),
+        ):
+            self.context = context if context is not None else CronRun()
+            return ReportSourceContractTests.run_submit(self, args)
+
+    def samples(self):
+        text = (self.metrics / "hermes_research.prom").read_text(encoding="utf-8")
+        found = {}
+        for line in text.splitlines():
+            if line.startswith("#"):
+                continue
+            name, labels, value = self.SAMPLE.fullmatch(line).groups()
+            pairs = tuple(
+                tuple(pair.split("=", 1)) for pair in labels.split(",") if pair
+            )
+            found[(name, tuple((k, v.strip('"')) for k, v in pairs))] = float(value)
+        return text, found
+
+    def outcome(self, name):
+        _, found = self.samples()
+        key = (
+            "hermes_research_last_outcome_timestamp_seconds",
+            (("job_kind", "devops"), ("outcome", name)),
+        )
+        return found.get(key)
+
+    def success(self):
+        _, found = self.samples()
+        return found[
+            (
+                "hermes_research_last_success_timestamp_seconds",
+                (("job_kind", "devops"),),
+            )
+        ]
+
+    def drive_every_outcome(self):
+        """One submission per outcome, each at its own clock reading."""
+        results = {}
+        self.now += 1
+        results["submitted"] = self.run_submit(submission_args())
+        self.now += 1
+        results["conflict"] = self.run_submit(self.with_report(REPORT + "\nlater\n"))
+        self.now += 1
+        results["blocked"] = self.run_submit(self.with_report(""))
+        self.now += 1
+        empty = submission_args(make_payload())
+        empty["payload"]["items"], empty["source_receipts"] = [], []
+        results["stored_no_items"] = self.run_submit(
+            empty, context=CronRun(execution_id="no-items-run")
+        )
+        self.now += 1
+        bad = submission_args()
+        bad["source_receipts"] = ["not-a-receipt"]
+        results["gateway_error"] = self.run_submit(
+            bad, context=CronRun(execution_id="gateway-error-run")
+        )
+        self.now += 1
+        with mock.patch.object(tools, "_store_report", side_effect=OSError):
+            results["store_failed"] = self.run_submit(
+                submission_args(), context=CronRun(execution_id="store-failed-run")
+            )
+        return results
+
+    def test_every_outcome_writes_its_timestamp(self):
+        results = self.drive_every_outcome()
+        self.assertEqual(results["submitted"]["status"], "persisted")
+        self.assertEqual(results["conflict"]["error"], "report_conflict")
+        self.assertEqual(results["blocked"]["error"], "report_required")
+        self.assertEqual(results["stored_no_items"]["status"], "stored")
+        self.assertEqual(results["gateway_error"]["error"], "invalid_source_receipts")
+        self.assertEqual(results["store_failed"]["error"], "report_store_unavailable")
+        start = 1_800_000_000.0
+        for offset, name in enumerate(
+            (
+                "submitted",
+                "conflict",
+                "blocked",
+                "stored_no_items",
+                "gateway_error",
+                "store_failed",
+            ),
+            start=1,
+        ):
+            self.assertEqual(self.outcome(name), start + offset, name)
+        # The last success is the no-items day, the later failures leave it alone.
+        self.assertEqual(self.success(), start + 4)
+        _, found = self.samples()
+        blocked = {
+            dict(labels)["blocked_reason"]: value
+            for (name, labels), value in found.items()
+            if name == "hermes_research_blocked_total"
+        }
+        self.assertEqual(
+            blocked,
+            {"report_required": 1, "report_store_unavailable": 1},
+        )
+        self.assertEqual(
+            found[("hermes_research_last_report_bytes", (("job_kind", "devops"),))],
+            len(REPORT.encode("utf-8")),
+        )
+
+    def test_values_survive_across_runs_and_kinds(self):
+        self.run_submit(self.with_report(""))
+        self.now += 10
+        self.run_submit(self.with_report(""), context=CronRun(job_id="6eabd835f969"))
+        _, found = self.samples()
+        self.assertEqual(
+            found[
+                (
+                    "hermes_research_blocked_total",
+                    (("job_kind", "devops"), ("blocked_reason", "report_required")),
+                )
+            ],
+            1,
+        )
+        self.assertEqual(
+            found[
+                (
+                    "hermes_research_last_outcome_timestamp_seconds",
+                    (("job_kind", "news"), ("outcome", "blocked")),
+                )
+            ],
+            self.now,
+        )
+        state = self.root / "state"
+        self.assertEqual(stat.S_IMODE(state.stat().st_mode), 0o700)
+        for path in state.iterdir():
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600, path.name)
+
+    def gauge(self, name, **labels):
+        _, found = self.samples()
+        return found.get((name, tuple(labels.items())))
+
+    def test_first_seen_starts_the_success_clock_of_every_kind(self):
+        self.run_submit(self.with_report(""))
+        installed = self.now
+        self.now += 100
+        self.run_submit(self.with_report(""), context=CronRun(job_id="6eabd835f969"))
+        for kind in ("business_ideas", "devops", "news"):
+            self.assertEqual(
+                self.gauge(
+                    "hermes_research_last_success_timestamp_seconds", job_kind=kind
+                ),
+                installed,
+                kind,
+            )
+        self.now += 100
+        self.run_submit(submission_args())
+        self.assertEqual(self.success(), self.now)
+
+    def state_file(self):
+        return self.state_dir / "state.json"
+
+    def test_corrupt_state_resets_only_what_is_bad_and_continues(self):
+        self.run_submit(self.with_report(""), context=CronRun(job_id="6eabd835f969"))
+        news_seen = self.now
+        cases = {
+            "unreadable": b"not json",
+            "not an object": b"[]",
+            "nested outcomes": None,
+            "count type": None,
+        }
+        for name, raw in cases.items():
+            with self.subTest(case=name):
+                if raw is None:
+                    state = json.loads(self.state_file().read_bytes())
+                    state["devops"] = (
+                        {"first_seen": 1, "outcomes": []}
+                        if name == "nested outcomes"
+                        else {"first_seen": 1, "blocked": {"report_required": "x"}}
+                    )
+                    raw = json.dumps(state).encode()
+                self.state_file().write_bytes(raw)
+                self.now += 1
+                self.run_submit(self.with_report(""))
+                self.assertEqual(self.outcome("blocked"), self.now)
+                self.assertEqual(
+                    self.gauge(
+                        "hermes_research_blocked_total",
+                        job_kind="devops",
+                        blocked_reason="report_required",
+                    ),
+                    1,
+                )
+                news = self.gauge(
+                    "hermes_research_last_outcome_timestamp_seconds",
+                    job_kind="news",
+                    outcome="blocked",
+                )
+                # Only an unreadable file loses the other kinds.
+                if raw in (b"not json", b"[]"):
+                    self.assertIsNone(news)
+                else:
+                    self.assertIsNotNone(news)
+                if name == "not an object":
+                    self.run_submit(
+                        self.with_report(""), context=CronRun(job_id="6eabd835f969")
+                    )
+                    news_seen = self.now
+        self.assertTrue(news_seen)
+        # A state file the records layer refuses (mode 0644) is replaced too.
+        os.chmod(self.state_file(), 0o644)
+        self.now += 1
+        self.run_submit(self.with_report(""))
+        self.assertEqual(self.outcome("blocked"), self.now)
+        self.assertEqual(stat.S_IMODE(self.state_file().stat().st_mode), 0o600)
+
+    def test_non_finite_state_values_are_reset(self):
+        for value in (float("nan"), float("inf"), float("-inf")):
+            with self.subTest(value=value):
+                self.assertFalse(tools._valid_entry({"first_seen": value}))
+                self.assertFalse(
+                    tools._valid_entry({"first_seen": 1.0, "success": value})
+                )
+                self.assertFalse(
+                    tools._valid_entry(
+                        {"first_seen": 1.0, "outcomes": {"blocked": value}}
+                    )
+                )
+        self.assertTrue(tools._valid_entry({"first_seen": 1.0, "success": 2}))
+
+    def test_a_busy_metrics_lock_skips_metrics_promptly(self):
+        import fcntl
+        import time as clock
+
+        self.run_submit(self.with_report(""))
+        before = (self.metrics / "hermes_research.prom").read_bytes()
+        lock = self.state_dir / (".lock-" + hashlib.sha256(b"metrics").hexdigest())
+        holder = os.open(lock, os.O_RDWR)
+        self.addCleanup(os.close, holder)
+        fcntl.flock(holder, fcntl.LOCK_EX)
+        self.now += 1
+        started = clock.monotonic()
+        result = self.run_submit(self.with_report(""))
+        self.assertLess(clock.monotonic() - started, tools.METRICS_LOCK_SECONDS + 1)
+        self.assertEqual(result, tools._blocked("report_required"))
+        self.assertEqual((self.metrics / "hermes_research.prom").read_bytes(), before)
+
+    def test_textfile_is_replaced_atomically_with_mode_0644(self):
+        self.run_submit(self.with_report(""))
+        target = self.metrics / "hermes_research.prom"
+        first = target.stat().st_ino
+        replaced = []
+        real_replace = os.replace
+
+        def spy(source, destination, *args, **kwargs):
+            replaced.append((Path(source), Path(destination)))
+            return real_replace(source, destination, *args, **kwargs)
+
+        with mock.patch.object(tools.os, "replace", side_effect=spy):
+            self.run_submit(self.with_report(""))
+        (source, destination), *_ = [
+            pair for pair in replaced if pair[1].name == "hermes_research.prom"
+        ]
+        self.assertEqual(source.parent, self.metrics)
+        self.assertEqual(destination, target)
+        self.assertNotEqual(target.stat().st_ino, first)
+        self.assertEqual(stat.S_IMODE(target.stat().st_mode), 0o644)
+        self.assertEqual([p.name for p in self.metrics.iterdir()], [target.name])
+
+    def test_missing_textfile_directory_is_skipped_not_created(self):
+        self.metrics.rmdir()
+        result = self.run_submit(submission_args())
+        self.assertTrue(result["ok"], result)
+        self.assertFalse(self.metrics.exists())
+
+    def test_a_metrics_failure_never_changes_the_tool_result(self):
+        failures = (
+            mock.patch.object(tools, "_write_metrics", side_effect=RuntimeError),
+            mock.patch.object(tools, "_update_metrics", side_effect=RuntimeError),
+            mock.patch.object(tools.tempfile, "mkstemp", side_effect=PermissionError),
+            mock.patch.object(self, "state_dir", Path("/proc/forbidden")),
+        )
+        for index, failure in enumerate(failures):
+            with self.subTest(failure=index), failure:
+                self.assertEqual(
+                    self.run_submit(self.with_report("")),
+                    tools._blocked("report_required"),
+                )
+                result = self.run_submit(
+                    submission_args(), context=CronRun(execution_id=f"run-{index}")
+                )
+                self.assertEqual(result["status"], "persisted", result)
+        self.assertEqual(len(self.sent), len(failures))
+
+    def test_labels_come_only_from_fixed_enums(self):
+        self.drive_every_outcome()
+        self.run_submit(self.with_report(""), context=CronRun(job_id="8d0925bc571d"))
+        text, found = self.samples()
+        enums = {
+            "job_kind": set(tools._ALLOWED_JOBS.values()),
+            "outcome": set(tools.METRIC_OUTCOMES),
+            "blocked_reason": set(tools.METRIC_BLOCKED_REASONS),
+        }
+        self.assertEqual(
+            set(tools.METRIC_OUTCOMES),
+            {
+                "submitted",
+                "stored_no_items",
+                "gateway_error",
+                "blocked",
+                "conflict",
+                "store_failed",
+            },
+        )
+        self.assertTrue(found)
+        for (_name, labels), _value in found.items():
+            for key, value in labels:
+                self.assertIn(value, enums[key], key)
+                self.assertIsNone(self.URL_UUID_HEX.search(value), value)
+        self.assertIsNone(self.URL_UUID_HEX.search(text))
+        for identifier in ("25674fbc0bf3", "0123456789abcdef", "no-items-run"):
+            self.assertNotIn(identifier, text)
+        names = {
+            line.split()[2] for line in text.splitlines() if line.startswith("# TYPE")
+        }
+        self.assertEqual(names, {name for name, _ in found})
+
+    def test_alert_rules_pass_their_promtool_cases(self):
+        import subprocess
+
+        image = (
+            "sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0"
+        )
+        try:
+            present = (
+                subprocess.run(
+                    ["docker", "image", "inspect", image],
+                    capture_output=True,
+                    check=False,
+                ).returncode
+                == 0
+            )
+        except OSError:
+            present = False
+        if not present:
+            self.skipTest("cached promtool image is not available")
+        rules = (
+            WORKLOAD.parents[3]
+            / "06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml"
+        )
+        cases = WORKLOAD / "tests/fixtures/hermes-research-alerts.test.yml"
+        result = subprocess.run(
+            [
+                "docker", "run", "--rm", "--network", "none", "--read-only",
+                "--tmpfs", "/tmp:size=32m", "--entrypoint", "/bin/promtool",
+                "--mount", f"type=bind,src={rules},dst=/rules/infra.yml,readonly",
+                "--mount", f"type=bind,src={cases},dst=/p/cases.yml,readonly",
+                "--workdir", "/p", image, "test", "rules", "/p/cases.yml",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )  # fmt: skip
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+        # The plugin's own text must also lint as Prometheus exposition format.
+        self.drive_every_outcome()
+        lint = subprocess.run(
+            [
+                "docker", "run", "-i", "--rm", "--network", "none", "--read-only",
+                "--entrypoint", "/bin/promtool", image, "check", "metrics",
+            ],
+            input=(self.metrics / "hermes_research.prom").read_text(encoding="utf-8"),
+            capture_output=True,
+            text=True,
+            check=False,
+        )  # fmt: skip
+        self.assertEqual(0, lint.returncode, lint.stdout + lint.stderr)

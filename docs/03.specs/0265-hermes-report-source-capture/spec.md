@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Capture Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "specs"
 artifact_id: "SPEC-0265"
 parent_ids:
@@ -56,8 +56,8 @@ The report bytes added here prove sameness of output, not truth of content.
   report store, derived outputs), `plugin.yaml`, and the plugin tests.
 - `deploy/research-submission-prompt.txt` and `deploy/update-cron-prompts.sh`.
 - Per-execution scratch paths in the cron prompts.
-- Low-cardinality metrics and alerts on the existing Prometheus, Pushgateway,
-  Alertmanager and Grafana stack.
+- Low-cardinality metrics and alerts on the existing Prometheus, node-exporter
+  textfile collector, Alertmanager and Grafana stack.
 - The owner's H, D and G items, only as producer prompt or validator changes
   that add no `ingestion-v1` field (criterion 9).
 - The workload README description of the new contract.
@@ -210,10 +210,12 @@ file survives cron output retention because the plugin owns it, not Hermes.
      body classification lines claim no automatic classification until
      Blog-data agrees a parser contract and tests (rule 7 of
      `30_PARA/33_Resources/README.md`).
-10. Metrics (submission outcome, blocked reason, report size bucket, and
-    report-store failures) are pushed through the existing Pushgateway with only
-    low-cardinality labels; an Alertmanager rule and a Grafana panel exist; a
-    test or lint shows no label carries a URL or an ID.
+10. Metrics (submission outcome, blocked reason, last report size, and
+    report-store failures) are written by the plugin as an atomically replaced
+    `hermes_research.prom` file in the existing node-exporter textfile
+    collector directory (`~/backups/metrics`), with only low-cardinality labels;
+    an Alertmanager rule and a Grafana panel exist; a test or lint shows no
+    label carries a URL or an ID.
 11. The workload README states the new `source_text` meaning, the trust
     boundaries and the rollback rule, and the document checks pass.
 12. Operation work units for the Gateway schema 5 backup, restore test, cutover

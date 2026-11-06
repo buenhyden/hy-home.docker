@@ -1,0 +1,97 @@
+rule_files:
+- /rules/infra.yml
+evaluation_interval: 1m
+tests:
+# news never succeeded since first seen at 0; devops succeeded at 25 h.
+# 26 h is 93600 s.
+- interval: 1m
+  input_series:
+  - series: hermes_research_last_success_timestamp_seconds{job="node-exporter",job_kind="news"}
+    values: 0x1600
+  - series: hermes_research_last_success_timestamp_seconds{job="node-exporter",job_kind="devops"}
+    values: 90000x1600
+  alert_rule_test:
+  - eval_time: 26h20m
+    alertname: HermesResearchNoSuccess
+    exp_alerts: []
+  - eval_time: 26h31m
+    alertname: HermesResearchNoSuccess
+    exp_alerts:
+    - exp_labels:
+        job: node-exporter
+        job_kind: news
+        severity: warning
+        domain: apps
+      exp_annotations:
+        summary: Hermes news 보고서가 26시간 넘게 성공하지 않음
+        description: Hermes news 작업의 submit_research_report가 26시간 동안 submitted 또는 stored_no_items로 끝나지 않았습니다. Cron 실행 결과와 hermes_research_last_outcome_timestamp_seconds의 outcome을 확인하세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
+# news blocked after its last success; devops blocked before a later success.
+- interval: 1m
+  input_series:
+  - series: hermes_research_last_success_timestamp_seconds{job="node-exporter",job_kind="news"}
+    values: 50x20
+  - series: hermes_research_last_outcome_timestamp_seconds{job="node-exporter",job_kind="news",outcome="blocked"}
+    values: 100x20
+  - series: hermes_research_last_success_timestamp_seconds{job="node-exporter",job_kind="devops"}
+    values: 100x20
+  - series: hermes_research_last_outcome_timestamp_seconds{job="node-exporter",job_kind="devops",outcome="store_failed"}
+    values: 50x20
+  - series: hermes_research_last_outcome_timestamp_seconds{job="node-exporter",job_kind="devops",outcome="gateway_error"}
+    values: 200x20
+  alert_rule_test:
+  - eval_time: 3m
+    alertname: HermesResearchBlocked
+    exp_alerts: []
+  - eval_time: 6m
+    alertname: HermesResearchBlocked
+    exp_alerts:
+    - exp_labels:
+        job_kind: news
+        severity: warning
+        domain: apps
+      exp_annotations:
+        summary: Hermes news 보고서가 마지막 성공 뒤 차단됨
+        description: Hermes news 작업에 마지막 성공보다 늦은 blocked 또는 store_failed 결과가 있습니다. hermes_research_blocked_total의 blocked_reason을 확인하세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
+# A kind first seen at 1 h (no run yet) reads 3600 until it succeeds: no
+# alert before 27 h, an alert 30 m after 27 h if it never succeeds.
+- interval: 1m
+  input_series:
+  - series: hermes_research_last_success_timestamp_seconds{job="node-exporter",job_kind="business_ideas"}
+    values: 3600x1700
+  alert_rule_test:
+  - eval_time: 26h31m
+    alertname: HermesResearchNoSuccess
+    exp_alerts: []
+  - eval_time: 27h31m
+    alertname: HermesResearchNoSuccess
+    exp_alerts:
+    - exp_labels:
+        job: node-exporter
+        job_kind: business_ideas
+        severity: warning
+        domain: apps
+      exp_annotations:
+        summary: Hermes business_ideas 보고서가 26시간 넘게 성공하지 않음
+        description: Hermes business_ideas 작업의 submit_research_report가 26시간 동안 submitted 또는 stored_no_items로 끝나지 않았습니다. Cron 실행 결과와 hermes_research_last_outcome_timestamp_seconds의 outcome을 확인하세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
+# A store_failed outcome newer than the last success fires on its own.
+- interval: 1m
+  input_series:
+  - series: hermes_research_last_success_timestamp_seconds{job="node-exporter",job_kind="devops"}
+    values: 100x20
+  - series: hermes_research_last_outcome_timestamp_seconds{job="node-exporter",job_kind="devops",outcome="store_failed"}
+    values: 150x20
+  alert_rule_test:
+  - eval_time: 6m
+    alertname: HermesResearchBlocked
+    exp_alerts:
+    - exp_labels:
+        job_kind: devops
+        severity: warning
+        domain: apps
+      exp_annotations:
+        summary: Hermes devops 보고서가 마지막 성공 뒤 차단됨
+        description: Hermes devops 작업에 마지막 성공보다 늦은 blocked 또는 store_failed 결과가 있습니다. hermes_research_blocked_total의 blocked_reason을 확인하세요.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
