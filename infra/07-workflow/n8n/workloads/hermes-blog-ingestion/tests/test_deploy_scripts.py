@@ -113,6 +113,14 @@ class CronPromptTests(unittest.TestCase):
         self.assertNotIn("do not call submit", self.prompt)
         self.assertNotIn("does not keep the full report", self.prompt)
 
+    def test_prompt_sends_the_stored_report_on_a_conflict(self):
+        self.assertIn(
+            "Whenever a result carries report paths, including ok false with "
+            "report_conflict, send those stored files unchanged and never submit "
+            "again for this run.",
+            self.prompt,
+        )
+
     def test_prompt_never_uses_the_shared_scratch_file_or_disables_the_verifier(self):
         for sentence in self.sentences():
             if "email_body.html" in sentence:
