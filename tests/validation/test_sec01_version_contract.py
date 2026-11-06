@@ -37,10 +37,6 @@ PATCH_STABLE_IMAGES = {
         "labs/stalwart/docker-compose.yml",
         "stalwart",
     ): "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c",
-    (
-        "labs/supabase/docker-compose.yml",
-        "imgproxy",
-    ): "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d",
 }
 
 OPEN_WEBUI = "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25"

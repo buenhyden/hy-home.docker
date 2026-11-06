@@ -826,24 +826,6 @@ class ComposeSchemaTagTests(unittest.TestCase):
                             set(),
                         )
 
-    def test_supabase_reads_no_home_secret(self):
-        # SPEC-0263: supabase reads only its LAB copies, SMTP included.
-        relative = "labs/supabase/docker-compose.yml"
-        lab_secret_dir = env_assignments((ROOT / "labs/.env.example").read_text())[
-            "LAB_SECRET_DIR"
-        ].strip('"')
-        document = yaml.load((ROOT / relative).read_text(), Loader=_ComposeLoader)
-        self.assertTrue(document["secrets"])
-        for name, value in document["secrets"].items():
-            source = re.sub(
-                r"^\$\{LAB_SECRET_DIR(?::[-?][^}]*)?\}", lab_secret_dir, value["file"]
-            )
-            path = posixpath.normpath(
-                posixpath.join(posixpath.dirname(relative), source)
-            )
-            with self.subTest(secret=name):
-                self.assertTrue(path.startswith("secrets/labs/supabase/"), path)
-
     def test_compose_tags_preserve_values_and_references_without_unsafe_loading(self):
         text = (
             "services:\n"

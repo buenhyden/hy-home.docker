@@ -19,7 +19,8 @@ def compose(path: str) -> dict:
 
 
 class RuntimeCompatibilityTests(unittest.TestCase):
-    def test_supabase_source_is_independent_from_home_composition(self):
+    def test_supabase_is_absent_from_home_and_labs(self):
+        # The supabase LAB was removed on 2026-11-06 (SPEC-0263 W8).
         root = compose("docker-compose.yml")
         self.assertNotIn("infra/04-data/supabase/docker-compose.yml", root["include"])
         self.assertNotIn("supabase_net", root.get("networks", {}))
@@ -28,34 +29,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         )
         self.assertIn("smtp_password", root["secrets"])
         self.assertFalse((ROOT / "infra/04-data/supabase").exists())
-        self.assertTrue((ROOT / "labs/supabase/docker-compose.yml").is_file())
-
-    def test_supabase_lab_keeps_its_smtp_copy_and_isolated_state(self):
-        # SPEC-0263: LAB-037 copies the HOME COMM-002 value for the LAB.
-        lab = compose("labs/supabase/docker-compose.yml")
-        self.assertEqual("hy-home-lab-supabase", lab["name"])
-        self.assertEqual(
-            "${LAB_SECRET_DIR:-../../secrets/labs}/supabase/smtp_password.txt",
-            lab["secrets"]["smtp_password"]["file"],
-        )
-        self.assertEqual(
-            {"source": "smtp_password", "target": "supabase_smtp_password"},
-            lab["services"]["auth"]["secrets"][-1],
-        )
-        self.assertNotIn("supabase_smtp_password", lab["secrets"])
-        for service in lab["services"].values():
-            self.assertEqual(["supabase"], service["profiles"])
-            self.assertEqual("lab", service["labels"]["hy-home.tier"])
-            self.assertEqual(
-                "../../infra/common-optimizations.yml", service["extends"]["file"]
-            )
-            for mount in service.get("volumes", []):
-                source = (
-                    mount["source"] if isinstance(mount, dict) else mount.split(":/")[0]
-                )
-                self.assertNotIn("DEFAULT_DATA_DIR", source)
-                if "/supabase/" in source:
-                    self.assertTrue(source.startswith("${LAB_DATA_DIR:?"), source)
+        self.assertFalse((ROOT / "labs/supabase").exists())
 
     def test_openbao_native_tls_and_backend_ca_share_endpoint(self):
         services = compose("infra/03-security/openbao/docker-compose.yml")["services"]
@@ -707,25 +681,12 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         services = {}
         with tempfile.TemporaryDirectory() as directory:
             fixture = Path(directory)
-            lab_env = fixture / "lab-public.env"
-            lab_env.write_text(
-                re.sub(
-                    r"^LAB_DATA_DIR=.*$",
-                    f'LAB_DATA_DIR="{fixture / "lab-data"}"',
-                    (ROOT / "labs/.env.example").read_text(),
-                    flags=re.MULTILINE,
-                ),
-                encoding="utf-8",
-            )
             public_env = {
                 "PATH": os.environ["PATH"],
                 "DOCKER_CONFIG": str(fixture),
                 "COMPOSE_DISABLE_ENV_FILE": "1",
             }
-            for source, env_file in (
-                ("docker-compose.yml", ROOT / ".env.example"),
-                ("labs/supabase/docker-compose.yml", lab_env),
-            ):
+            for source, env_file in (("docker-compose.yml", ROOT / ".env.example"),):
                 rendered = _run_config(
                     ["docker", "compose", "--env-file", str(env_file), "-f", source,
                      "--profile", "*", "config", "--format", "json"],
@@ -798,71 +759,6 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         self.assertIn('[ -n "$$SONAR_JDBC_PASSWORD" ] ||', script)
         self.assertIn('exec /opt/sonarqube/docker/entrypoint.sh "$$@"', script)
         self.assertFalse([e for e in service["environment"] if "PASSWORD_FILE" in e])
-
-    def test_supabase_smtp_wrapper_consumes_file_and_preserves_arguments(self):
-        service = compose("labs/supabase/docker-compose.yml")["services"]["auth"]
-        self.assertEqual(["auth"], service.get("command"))
-        script = service["entrypoint"][2].replace("$$", "$")
-        with tempfile.TemporaryDirectory() as directory:
-            secret = Path(directory) / "smtp"
-            secret.write_text("synthetic-smtp-password\n")
-            env = {"PATH": os.environ["PATH"], "GOTRUE_SMTP_PASS_FILE": str(secret)}
-            probe = 'test "$GOTRUE_SMTP_PASS" = synthetic-smtp-password && test "$1" = argument'
-            result = subprocess.run(
-                [
-                    "/bin/sh",
-                    "-ec",
-                    script,
-                    "--",
-                    "/bin/sh",
-                    "-ec",
-                    probe,
-                    "--",
-                    "argument",
-                ],
-                env=env,
-                capture_output=True,
-                text=True,
-                timeout=5,
-                check=False,
-            )
-            self.assertEqual(0, result.returncode)
-            self.assertEqual("", result.stdout + result.stderr)
-            for value in ("", "\n"):
-                secret.write_text(value)
-                result = subprocess.run(
-                    ["/bin/sh", "-ec", script, "--", "true"],
-                    env=env,
-                    capture_output=True,
-                    text=True,
-                    timeout=5,
-                    check=False,
-                )
-                self.assertNotEqual(0, result.returncode)
-                self.assertNotIn(
-                    "synthetic-smtp-password", result.stdout + result.stderr
-                )
-            secret.unlink()
-            result = subprocess.run(
-                ["/bin/sh", "-ec", script, "--", "true"],
-                env=env,
-                capture_output=True,
-                text=True,
-                timeout=5,
-                check=False,
-            )
-            self.assertNotEqual(0, result.returncode)
-            secret.write_text("synthetic-smtp-password")
-            result = subprocess.run(
-                ["/bin/sh", "-ec", script, "--", "true"],
-                env=env | {"GOTRUE_SMTP_PASS": "synthetic-direct-password"},
-                capture_output=True,
-                text=True,
-                timeout=5,
-                check=False,
-            )
-            self.assertNotEqual(0, result.returncode)
-            self.assertNotIn("synthetic-direct-password", result.stdout + result.stderr)
 
 
 if __name__ == "__main__":

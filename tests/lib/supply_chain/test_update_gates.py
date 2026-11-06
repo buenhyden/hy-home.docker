@@ -450,6 +450,17 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         self.assertLessEqual(historical_services, set(old_census["expected_services"]))
         self.assertEqual(len(historical_services), len(historical))
         for row in historical:
+            # The supabase LAB rows lost their current file on 2026-11-06
+            # (SPEC-0263 W8); the original root row stays as history.
+            if row["current_scope"] == "removed":
+                # Only the retired supabase root rows may lose their file.
+                self.assertEqual(
+                    "infra/04-data/supabase/docker-compose.yml",
+                    row["original_root_row"]["compose_file"],
+                )
+                self.assertIsNone(row["current_compose_file"])
+                self.assertEqual("root", row["original_root_row"]["scope"])
+                continue
             self.assertEqual("lab", row["current_scope"])
             self.assertRegex(
                 row["current_compose_file"], r"^labs/[a-z0-9-]+/docker-compose\.yml$"

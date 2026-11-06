@@ -69,13 +69,11 @@
       "classification": "external",
       "repository_classifications": {
         "ghcr.io/zalando/spilo-17": "external",
-        "postgres": "external",
-        "supabase/postgres": "external"
+        "postgres": "external"
       },
       "images": [
         "ghcr.io/zalando/spilo-17:4.0-p3",
-        "postgres:18.6-alpine",
-        "supabase/postgres:17.6.1.173"
+        "postgres:18.6-alpine"
       ],
       "compose_files": [
         "infra/04-data/mng-db/docker-compose.yml",
@@ -85,7 +83,6 @@
         "infra/11-quality/pact-broker/docker-compose.yml",
         "labs/dbt/docker-compose.yml",
         "labs/postgresql-ha/docker-compose.yml",
-        "labs/supabase/docker-compose.yml",
         "labs/superset/docker-compose.yml"
       ],
       "sources": [
@@ -141,12 +138,6 @@
           "compose_file": "labs/superset/docker-compose.yml",
           "images": [
             "postgres:18.6-alpine"
-          ]
-        },
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "supabase/postgres:17.6.1.173"
           ]
         }
       ]
@@ -1037,28 +1028,6 @@
       ]
     },
     {
-      "component": "Compose image: darthsim/imgproxy",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "darthsim/imgproxy": "external"
-      },
-      "images": [
-        "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "darthsim/imgproxy:v4.0.17@sha256:db0b4b9cd690c8b3590203dea300fb759a18c4ec2af7b37424f0bdef23ce317d"
-          ]
-        }
-      ]
-    },
-    {
       "component": "Compose image: haproxy",
       "tier": "04-data",
       "classification": "external",
@@ -1098,28 +1067,6 @@
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
             "hy/gatus:local"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: kong",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "kong": "external"
-      },
-      "images": [
-        "kong:3.9.3"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "kong:3.9.3"
           ]
         }
       ]
@@ -1260,28 +1207,6 @@
           "compose_file": "labs/opensearch-cluster/docker-compose.yml",
           "images": [
             "opensearchproject/opensearch-dashboards:3.8.0"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: postgrest/postgrest",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "postgrest/postgrest": "external"
-      },
-      "images": [
-        "postgrest/postgrest:v16.3"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "postgrest/postgrest:v16.3"
           ]
         }
       ]
@@ -1428,204 +1353,6 @@
           "compose_file": "labs/stalwart/docker-compose.yml",
           "images": [
             "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: supabase/edge-runtime",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "supabase/edge-runtime": "external"
-      },
-      "images": [
-        "supabase/edge-runtime:v1.76.2"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "supabase/edge-runtime:v1.76.2"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: supabase/gotrue",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "supabase/gotrue": "external"
-      },
-      "images": [
-        "supabase/gotrue:v2.197.0"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "supabase/gotrue:v2.197.0"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: supabase/logflare",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "supabase/logflare": "external"
-      },
-      "images": [
-        "supabase/logflare:1.50.15"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "supabase/logflare:1.50.15"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: supabase/postgres-meta",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "supabase/postgres-meta": "external"
-      },
-      "images": [
-        "supabase/postgres-meta:v0.99.0"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "supabase/postgres-meta:v0.99.0"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: supabase/realtime",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "supabase/realtime": "external"
-      },
-      "images": [
-        "supabase/realtime:v2.138.1"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "supabase/realtime:v2.138.1"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: supabase/storage-api",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "supabase/storage-api": "external"
-      },
-      "images": [
-        "supabase/storage-api:v1.79.4"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "supabase/storage-api:v1.79.4"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: supabase/studio",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "supabase/studio": "external"
-      },
-      "images": [
-        "supabase/studio:2026.09.14-sha-4dd8a95"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "supabase/studio:2026.09.14-sha-4dd8a95"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: supabase/supavisor",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "supabase/supavisor": "external"
-      },
-      "images": [
-        "supabase/supavisor:2.9.13"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "supabase/supavisor:2.9.13"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: timberio/vector",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "timberio/vector": "external"
-      },
-      "images": [
-        "timberio/vector:0.58.0-alpine"
-      ],
-      "compose_files": [
-        "labs/supabase/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/supabase/docker-compose.yml",
-          "images": [
-            "timberio/vector:0.58.0-alpine"
           ]
         }
       ]
