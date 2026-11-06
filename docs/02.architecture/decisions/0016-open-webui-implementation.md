@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI as Primary AI/RAG Interface"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "ADR-0016"
 parent_ids:
@@ -17,10 +17,6 @@ created: "2026-03-27"
 
 This document records the architecture decision for selecting Open WebUI as the default AI interface and RAG (Retrieval-Augmented Generation) orchestrator of the `hy-home.docker` ecosystem.
 
-### Follow-up
-
-performance.
-
 ### Traceability
 
 The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
@@ -31,12 +27,12 @@ Local LLM interaction requires a user-friendly, feature-complete interface that 
 
 ## Options
 
-### [LibreChat]
+### LibreChat
 
 - Good: Highly customizable, supports many providers.
 - Bad: More complex setup for local RAG compared to Open WebUI's native Ollama integration.
 
-### [Ollama CLI]
+### Ollama CLI
 
 - Good: Extremely lightweight.
 - Bad: No visual RAG, no multi-user history, high barrier for non-technical users.

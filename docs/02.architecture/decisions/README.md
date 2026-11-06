@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.13"
+version: "1.6.14"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "architecture"
 ---
 
@@ -53,37 +53,20 @@ docs/02.architecture/decisions/
 
 ### Current Inventory
 
-- `ADR-0001`부터 `ADR-0010`: 기본 tier와 service selection decisions. `ADR-0011`은
-  삭제되었고 번호는 Registry `reserved_history`에 남아 있습니다.
-- `ADR-0015`, `ADR-0019`: ADR-0039, ADR-0040이 각각 supersede한 analytics engine과
-  04-data hardening decisions.
-- `ADR-0016`부터 `ADR-0026`(0019 제외): analytics, hardening, HA와 network decisions.
-- `ADR-0027`:
-  ADR-0029가 supersede한 Stage 00 adapter decision.
+- `ADR-0001`부터 `ADR-0028`: 기본 tier와 service selection, hardening, HA, network,
+  readiness evidence decisions. 위 Structure의 파일 목록이 현재 남은 번호이다.
+- 삭제된 번호 `ADR-0003`, `ADR-0011`~`ADR-0015`, `ADR-0018`, `ADR-0019`, `ADR-0027`,
+  `ADR-0029`~`ADR-0031`, `ADR-0033`, `ADR-0035`, `ADR-0036`은 Registry
+  `reserved_history`에 있다. 계보: ADR-0039가 ADR-0015를, ADR-0040이 ADR-0019를,
+  ADR-0050이 ADR-0003과 ADR-0018을, ADR-0032가 ADR-0029를, ADR-0037이 ADR-0036을
+  대체했다. 본문은 버전 이력에 있다.
 - [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
   local-isolated readiness evidence 전략을 채택한 accepted decision.
-- `ADR-0029`:
-  ADR-0032가 supersede한 이전 workspace governance authority decision.
-- `ADR-0030`:
-  ADR-0031이 supersede한 Tombstone-only preservation decision.
-- `ADR-0031`:
-  ADR-0033이 supersede한 Spec-only preservation decision.
 - [`ADR-0032`](./0032-canonical-agent-governance-home.md):
   공통 정본의 `.agents` 이전과 native 로딩 경계를 채택한 accepted decision.
-- `ADR-0033`:
-  ADR-0035가 supersede한 full package preservation decision. Spec, Plan, 모든
-  Task를 보존 단위로 두는 규칙은 ADR-0035가 다시 적어 유지한다.
 - [`ADR-0034`](./0034-canonical-knowledge-and-prompt-surfaces.md):
   `.agents/knowledge/`와 `.agents/prompts/`를 canonical category로 도입하는
   accepted decision.
-- `ADR-0035`:
-  Stage 98을 네 retention class와 두 route disposition으로 나누고 인용
-  가능성을 처분의 이름에서 도출한 decision. ADR-0033을 supersede했고 ADR-0036이
-  이것을 supersede하며 유지되는 규칙을 다시 적었다.
-- `ADR-0036`:
-  활성 package 안의 completed Task 허용, route 기록 인용 금지, 보존본과
-  catalog `Source`의 기계 비교, 종료된 Incident의 종료 시점을 요구했던 보존
-  decision. ADR-0037이 대체했다. ADR-0035를 supersede하며 그 규칙 가운데 유지되는 것을 다시 적었다.
 - [`ADR-0037`](./0037-package-disposition-wait-and-task-cancellation.md):
   모든 구성원이 terminal인 완료 package의 처분 대기와, 구조화된 취소 근거를 가진
   cancelled Task, 현재 재평가·history-only 이용 가능성·새 포착의 정확 동일성을
@@ -94,7 +77,7 @@ docs/02.architecture/decisions/
 - [`ADR-0038`](./0038-selective-native-oidc-for-native-auth-apps.md):
   Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native
   OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는
-  proposed decision.
+  accepted decision.
 - [`ADR-0039`](./0039-analytics-engines-after-lakehouse-convergence.md):
   OpenSearch를 유지하고 스트림 처리는 Flink, OLAP은 Iceberg 위의 Trino가 맡는
   accepted decision. ADR-0015를 supersede하며, 시계열 항목은 ADR-0047이 대체한다.
@@ -133,8 +116,8 @@ docs/02.architecture/decisions/
   OpenBao와 `openbao-agent`를 secrets manager로 채택하며 ADR-0003, ADR-0018을 supersede한 accepted decision.
 - [`ADR-0051`](./0051-summarize-and-delete-retirement.md):
   은퇴 문서를 01·02 문서에 요약한 뒤 삭제하고 Git 이력을 기록으로 삼으며, 폐기 번호를
-  Registry `reserved_history`에 두는 decision. 소유자가 2026-11-03에 채택을 결정해, SPEC-0249 병합 직후
-  accepted가 된 decision. ADR-0037 결정 4~10과 결정 1의
+  Registry `reserved_history`에 두는 accepted decision. 소유자가 2026-11-03에 채택을 결정했고
+  SPEC-0249 병합 직후 accepted가 되었다. ADR-0037 결정 4~10과 결정 1의
   마지막 문장을 대체한다.
 
 ## Usage

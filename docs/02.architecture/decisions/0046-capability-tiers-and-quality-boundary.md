@@ -1,10 +1,10 @@
 ---
 title: "Capability Tiers and Quality Boundary"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "ADR-0046"
 parent_ids:
@@ -64,8 +64,8 @@ Only approved source paths, tier labels and Conftest's exact entrypoint script
 path change. ADR-0045's storage/processing decision remains unchanged.
 
 The user subsequently approved the Platform Operations naming amendment.
-The retained five platform lifecycle packages use09-platform-ops and nine
-platform-ops labels; existing Compose profiles, including tooling, remain intact.
+The retained five platform lifecycle packages use `09-platform-ops` and nine
+`platform-ops` labels; existing Compose profiles, including tooling, remain intact.
 The tracked Restic unit source path follows the move; installed-unit refresh
 is a separately controlled operational handoff.
 

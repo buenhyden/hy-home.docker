@@ -1,10 +1,10 @@
 ---
 title: "Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "ADR-0005"
 parent_ids:
@@ -32,12 +32,12 @@ Trying to satisfy both needs with a single solution (Kafka or RabbitMQ) leads to
 
 ## Options
 
-### [Only Apache Kafka]
+### Only Apache Kafka
 
 - Good: convenience of operating a single stack.
 - Bad: offset management and partition assignment logic can be overkill for simple task queuing.
 
-### [Only RabbitMQ]
+### Only RabbitMQ
 
 - Good: excellent routing flexibility and simplicity.
 - Bad: lacks horizontal scalability and replay capability for large-volume data such as log streaming.

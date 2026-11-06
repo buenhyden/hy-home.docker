@@ -1,10 +1,10 @@
 ---
 title: "Traefik & Nginx Hybrid Gateway Architecture"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "ADR-0001"
 parent_ids:
@@ -30,12 +30,12 @@ The confirming evidence for this decision is limited to the Architecture Descrip
 
 ## Options
 
-### [Alternative 1: Traefik Only]
+### Alternative 1: Traefik Only
 
 - Good: The architecture becomes simpler and there are fewer management points.
 - Bad: Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases.
 
-### [Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)]
+### Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)
 
 - Good: Configuration is very powerful and familiar.
 - Bad: With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management.

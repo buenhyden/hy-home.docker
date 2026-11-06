@@ -1,10 +1,10 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.0.5"
+version: "1.0.6"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
@@ -47,8 +47,8 @@ scoped operation after recoverability and consumer checks.
 2026-10-13, replaces decision 1 except its last sentence, and the
 completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
 the completed Spec's PASS receipt, and that completion receipts are checked
-before moving. [ADR-0051](0051-summarize-and-delete-retirement.md), pending its
-acceptance (decided by the owner on 2026-11-03), supersedes decision items 4 to
+before moving. [ADR-0051](0051-summarize-and-delete-retirement.md), accepted after the
+owner decision of 2026-11-03, supersedes decision items 4 to
 10 and the last sentence of decision 1. Decision 1 is therefore fully replaced
 by ADR-0048 and ADR-0051; decisions 2 and 3 stay in force except their
 completion-receipt clauses.

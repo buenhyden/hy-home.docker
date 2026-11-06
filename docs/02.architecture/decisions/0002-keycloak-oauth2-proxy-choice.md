@@ -1,10 +1,10 @@
 ---
 title: "Choice of Keycloak and OAuth2 Proxy for IAM and SSO"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "ADR-0002"
 parent_ids:
@@ -65,10 +65,6 @@ Agents must use the OIDC discovery endpoint provided by Keycloak (`/realms/hy-ho
 - This ADR does not change runtime behavior.
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
-
-#### Additional Consequences
-
-Existing rationale, positive/negative notes, and trade-off text in this ADR remain the consequence record. This alignment section introduces no new decision outcome.
 
 ## Related Documents
 
