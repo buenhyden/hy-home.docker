@@ -508,6 +508,12 @@ def load_reference_packages(references_root: pathlib.Path) -> ReferenceCorpus:
                         pathlib.PurePosixPath("docs/90.references") / relative, text
                     )
                 )
+            elif name == "CLAUDE.md":
+                # The generated Claude import shim is not a reference document.
+                _, budget = _read_regular_utf8(
+                    root_descriptor, name, f"docs/90.references/{name}", budget
+                )
+                files.append(pathlib.PurePosixPath(name))
             elif stat.S_ISDIR(metadata.st_mode):
                 category_names.append(name)
             else:
@@ -938,6 +944,7 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
     allowed_files = {
         pathlib.PurePosixPath("README.md"),
         pathlib.PurePosixPath("AGENTS.md"),
+        pathlib.PurePosixPath("CLAUDE.md"),
         *(pathlib.PurePosixPath(category) / "README.md" for category in CATEGORIES),
         *(
             pathlib.PurePosixPath(relative).relative_to("docs/90.references")
