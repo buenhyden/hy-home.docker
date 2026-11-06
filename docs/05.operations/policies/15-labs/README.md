@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 정책"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -28,7 +28,6 @@ layer: "operations"
 | [Cassandra Operations Policy](0025-cassandra.md) | `POL-0025` | 독립 Cassandra LAB의 단일 노드·데이터 보존·인증 경계를 정의한다. HOME 소비자와 공유하지 않는다. |
 | [CouchDB Operations Policy](0026-couchdb.md) | `POL-0026` | 이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 couchdb image declaration, curlimages/curl image |
 | [MongoDB Operations Policy](0027-mongodb.md) | `POL-0027` | 이 정책은 `hy-home.docker`의 `LAB` MongoDB replica set 운영 기준을 정의한다. runtime image/version은 Compose declaration이 소유하며, 정책 기준은 exact `mongodb` prof |
-| [Supabase Operations Policy](0029-supabase.md) | `POL-0029` | 이 정책은 정상 root에서 분리된 `labs/supabase/docker-compose.yml`의 exact `supabase` profile LAB 운영 기준을 정의한다. 핵심 통제는 controller lease, Kong 중심 공개 접근, canonical Docker  |
 | [PostgreSQL Cluster Operations Policy](0031-postgresql-cluster.md) | `POL-0031` | 이 정책은 `hy-home.docker`의 독립 LAB인 PostgreSQL HA 실습 cluster 운영 기준을 정의한다. 세 node가 한 host를 공유하므로 host HA가 아니며 HOME·DEV PostgreSQL은 단일 node다. 기준은  |
 | [Locust Operations Policy](0062-locust.md) | `POL-0062` | Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는 절대 포함되지 않는다. 이 정책은 test target을 보호하고 검토되지 않은 load, credential capture, 오해를 부르 |
 | [SonarQube Operations Policy](0066-sonarqube.md) | `POL-0066` | 이 정책은 독립 LAB `labs/sonarqube/docker-compose.yml`의 SonarQube Community Build 배포를 다룬다. |

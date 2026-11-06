@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 런북"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -28,7 +28,6 @@ layer: "operations"
 | [Cassandra Health and Recovery Triage Runbook](0025-cassandra.md) | `RUN-0025` | 독립 Cassandra 단일 노드 LAB의 정적 점검과 승인 후 read-only triage 순서다. 이번 변경에서 실제 서비스·데이터를 실행하지 않았다. |
 | [CouchDB Cluster Triage Runbook](0026-couchdb.md) | `RUN-0026` | 범위: LAB 전용 CouchDB 3노드 cluster의 상태, cluster-init 결과, membership, 격리 network의 route 한계를 점검한다. 이 런북은 현재 compose에 맞는 점검 순서와, 별도 승인 후 수행할 fresh  |
 | [MongoDB Replica Set Triage Runbook](0027-mongodb.md) | `RUN-0027` | 범위: LAB 전용 MongoDB replica set의 상태, init job 결과, Mongo Express 접속을 파괴적 데이터 작업 없이 점검한다. 이 런북은 현재 compose에 맞는 점검 순서와, 별도 승인 후 수행할 oplog-consis |
-| [Supabase Stack Health Runbook](0029-supabase.md) | `RUN-0029` | 이 런북은 health triage와 별도 승인 후 수행할 coherent Supabase backup의 격리 복원 rehearsal 계약을 제공한다. 정상 root와 분리된 `labs/supabase/docker-compose.yml` LAB의 controller prefli |
 | [PostgreSQL Cluster Health and Recovery Triage Runbook](0031-postgresql-cluster.md) | `RUN-0031` | 범위: LAB 전용 PostgreSQL HA cluster의 상태, etcd quorum 증상, HAProxy routing, Patroni leadership, init job 상태, exporter readiness를 파괴적 데이터 작업 없이 점검 |
 | [Locust Recovery Runbook](0062-locust.md) | `RUN-0062` | Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다. 시나리오 파일 복구와 승인된 upgrade canary도 다룬다. |
 | [SonarQube Runbook](0066-sonarqube.md) | `RUN-0066` | SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다. |

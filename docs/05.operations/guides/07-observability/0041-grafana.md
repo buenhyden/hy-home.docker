@@ -1,10 +1,10 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
@@ -133,7 +133,7 @@ created: "2026-05-10"
 | mixin 채택 | Prometheus, Alertmanager, Grafana, Alloy, Loki, Tempo, Airflow, etcd, OpenSearch |
 | grafana.com 채택 | Node Exporter Full 1860, cAdvisor 19792, PostgreSQL 9628, Qdrant 24603, HAProxy 12693, Valkey Cluster 21914, MongoDB 16490, Cassandra 6400, Kafka consumer lag 7589, k6 19665, OpenBao 23725, Docker Registry 9621, n8n 24474·24475 |
 | LAB 이동(SPEC-0225) | HAProxy 12693, Valkey Cluster 21914, MongoDB 16490, Cassandra 6400, etcd mixin은 각 LAB 폴더의 `labs/<name>/dashboards/`로 옮겨져 HOME에 provisioning되지 않는다 |
-| 맞는 것 없음 | OAuth2 Proxy(`oauth2_proxy_*`를 쓰는 대시보드가 없다), Ollama(lucabecker42 exporter와 다른 exporter를 가정), Pyroscope(공식 대시보드가 Kubernetes 라벨 전용), Supabase(Cloud 전용 메트릭) |
+| 맞는 것 없음 | OAuth2 Proxy(`oauth2_proxy_*`를 쓰는 대시보드가 없다), Ollama(lucabecker42 exporter와 다른 exporter를 가정), Pyroscope(공식 대시보드가 Kubernetes 라벨 전용) |
 | 버림 | Keycloak 14390(Keycloak 26이 방출하지 않는 `base_*` 이름), Qdrant 공식 대시보드(Kubernetes·Cloud 전용), Neo4j 12046(Community 판에 메트릭 endpoint가 없다), vLLM 24756(vLLM 서비스가 없다) |
 
 Airflow mixin은 `airflow_dagrun_*`, `airflow_pool_*` 같은 이름을 쓰는데, 기존 statsd mapping은 DAG 파일 이름을 메트릭 이름에 넣었다. mapping을 DAG, task, pool, 파일 이름을 라벨로 옮기도록 바꾸고, 알 수 없는 긴 이름은 버린다.

@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Policy"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -73,11 +73,11 @@ created: "2026-11-05"
 - 공개 registry `secrets/SENSITIVE_ENV_VARS.md.example`은 생성 파일이 아니다. catalog와
   일치해야 하므로 owner가 손으로 편집한다. agent는 placeholder 편집안만 준비한다.
 
-### Docker socket exception
+### Docker socket
 
-허용되는 socket bind는 supabase `vector` 서비스 하나다. source와 target이 모두
-`/var/run/docker.sock`이고 `read_only: true`여야 한다. `lab.py check`는 쓰기 가능한 bind, 다른
-supabase 서비스의 같은 bind, 다른 이름의 `.sock` source를 모두 거부한다.
+어떤 LAB도 Docker socket을 bind하지 않는다. `lab.py check`는 `/var/run/docker.sock`과 다른 이름의
+`.sock` source를 읽기 전용 여부와 무관하게 모두 거부한다. 유일한 예외였던 supabase `vector`는
+2026-11-06 owner 결정으로 supabase LAB과 함께 제거되었다.
 
 ### Destination rules
 

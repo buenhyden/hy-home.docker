@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 가이드"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -28,7 +28,6 @@ layer: "operations"
 | [Cassandra Usage Guide](0025-cassandra.md) | `GDE-0025` | 독립 `labs/cassandra/docker-compose.yml`은 공식 `labs/cassandra/docker-compose.yml`에 선언된 공식 Cassandra 이미지의 단일 `cassandra-node1` 실습용 정의다. HOME root는 include하지 않으며 확인된 HOME 소비자는 |
 | [CouchDB Usage Guide](0026-couchdb.md) | `GDE-0026` | 이 문서는 CouchDB Compose 구현의 3노드 클러스터 사용 기준을 설명한다. `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`는 정확히 `couchdb` profile과 선언된 ne |
 | [MongoDB Usage Guide](0027-mongodb.md) | `GDE-0027` | 이 문서는 MongoDB Compose 구현의 replica set 사용 기준을 설명한다. 일곱 서비스는 모두 정확히 `mongodb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이고 두 da |
-| [Supabase Usage Guide](0029-supabase.md) | `GDE-0029` | `supabase`는 정상 root에서 분리된 LAB Compose의 exact `supabase` profile 기반 통합 백엔드 실험 환경이다. 13개 서비스가 PostgreSQL, Kong, Auth, REST, Realtime, Storage, |
 | [PostgreSQL Cluster Usage Guide](0031-postgresql-cluster.md) | `GDE-0031` | 이 문서는 PostgreSQL cluster Compose 구현의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 |
 | [Locust Usage Guide](0062-locust.md) | `GDE-0062` | Locust는 `labs/locust/docker-compose.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다. HOME root Compose와 `testing` profile에는 포함되지 않는다. |
 | [SonarQube Usage Guide](0066-sonarqube.md) | `GDE-0066` | SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(project `hy-home-lab-sonarqube`)의 `sonarqube` service로 운영하는 코드 품질·SAST 도구다. |

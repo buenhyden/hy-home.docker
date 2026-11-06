@@ -1,6 +1,6 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -46,7 +46,7 @@ lifecycle/recovery procedure separately.
 - Object storage: SeaweedFS
 - Specialized: Neo4j, Qdrant
 - Administration: RedisInsight
-- Operational platforms: management database, Supabase
+- Operational platforms: management database
 
 The Valkey cluster, Cassandra, CouchDB, MongoDB, PostgreSQL HA and OpenSearch
 cluster packages are standalone LABs under `labs/`, outside this tier; none is

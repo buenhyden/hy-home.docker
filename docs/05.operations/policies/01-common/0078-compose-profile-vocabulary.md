@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.14.0"
+version: "1.14.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -104,7 +104,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `security` | domain | OpenBao 보안 기반 | `openbao`, `openbao-agent` | No | normal service startup | current |
 | `storage` | role | HOME 단일 object 저장소와 bucket 초기화 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `storage-seaweedfs` | role | SeaweedFS object/file 저장 역할 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
-| `supabase` | topology | 정상 root와 분리된 자체 호스팅 backend LAB | `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor` | No | `labs/supabase/docker-compose.yml`의 별도 project/network/state; `lab.py` 목적·lease·preflight 필요 | current |
 | `surrealdb` | capability | 독립 multi-model 데이터 저장소 | `surrealdb` | No | normal service startup | current |
 | `testing` | automation | k6 이미지 확인용 단발 job; root 기본 명령은 `version` | `k6` | No | 비트래픽 version job; 부하는 승인된 격리 runner에서만 실행 | current |
 | `tooling` | capability | 개발 registry; SonarQube는 LAB `sast`(SPEC-0262) | `registry` | No | normal service startup | current |
@@ -242,7 +241,6 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 | testing | root는 k6 버전만 확인; 격리 runner의 부하·샘플 데이터 생성은 대상과 실행량을 별도 승인 |
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
 | tooling | root는 registry만 선택; SonarQube는 LAB `sast` profile로 `labs/sonarqube/docker-compose.yml`에서만 선택; update/IaC/load 작업 제외 |
-| supabase LAB with surrealdb/notebook/admin | `labs/supabase/docker-compose.yml`은 정상 root와 분리되지만 같은 host의 loopback port와 자원을 공유한다. SurrealDB host8000을 별도 활성화하면 Supabase Kong과 충돌 여부를 controller preflight로 확인한 뒤 binding을 조정한다. |
 | mlops / data-science / analytics-engineering / cdc / contract-testing / bi | 도구 metadata는 `mng-pg`·`mng-pg-init`을 사용한다. dbt·CDC 업무 원천은 `dev-pg`·`dev-platform-provision`을 요구한다. dbt·Superset LAB은 HOME network에 합류하지 않으므로 같은 profile 이름의 root 선택은 그 DB를 LAB에 도달 가능하게 만들지 않는다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
 | cdc with dev-pg | 새 원천의 publication·slot·offset·snapshot은 이전 mng-pg LSN에서 이어지지 않는다. connector 등록과 writer/reader 전환은 별도 승인 후 시행한다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
@@ -309,7 +307,6 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | 8 / 7936 | `flink-checkpoints`(SPEC-0262 이후 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`); 데이터는 object store | 2026-11-04 LAB `labs/lakehouse/docker-compose.yml`로 이전; one-shot·예산 검사 | 기능·학습 시나리오가 없을 때 선택하지 않음 | 미실행 |
 | Superset | BI | 운영자 | 2.5 / 1792 | MNG PostgreSQL DB | 2026-11-04 LAB `labs/superset/docker-compose.yml`로 이전 | 대시보드 소비자가 없을 때 | 미실행 |
 | Neo4j | graph | 이름 있는 소비자 없음 | 1 / 512 | `neo4j-data` | OPTIONAL | graph 시나리오가 없으면 퇴역 검토 | 미실행 |
-| Supabase LAB (13 services) | BaaS 실험 | 이름 있는 소비자 없음 | 14.5 / 10496 | `${LAB_DATA_DIR}/supabase` bind | LAB; `lab.py`로만 실행 | BaaS 시나리오가 없으면 퇴역 검토 | 미실행 |
 | RedisInsight | Valkey UI | 운영자 | 1 / 512 | `redisinsight-data`(연결 정의) | OPTIONAL `admin` | Valkey 조회 수요가 없을 때 | 실행 |
 | Terrakube | IaC server | 운영자 | 4 / 3072 | MNG PostgreSQL DB | DEV; 상주 금지 | IaC 실습이 없을 때 | 미실행 |
 | JupyterLab, MLflow | data science·실험 추적 | MLflow는 JupyterLab | 3.5 / 3328 | MNG PostgreSQL DB, object store artifact | MLflow OPTIONAL; JupyterLab은 2026-11-04 LAB `labs/jupyterlab/docker-compose.yml`로 이전 | 실험 추적 수요가 없을 때 | 미실행 |
@@ -344,7 +341,6 @@ source·문서·secret을 함께 제거한다.
 
 - [Workspace catalog](../../README.md)
 - [Independent LAB entrypoints](../../../../labs/postgresql-ha/README.md)
-- [Supabase LAB source](../../../../labs/supabase/README.md)
 - Convergence specification: SPEC-0180 (retired)
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
 - Original enablement decision: SPEC-0156 (retired)
@@ -365,10 +361,7 @@ public synthetic env를 쓰면 `--env-file <prepared-public-env>`와 HOME에 겹
 임시 `LAB_DATA_DIR` 및 필요한 공개 입력·read-only fixture를 함께 준비하고 종료 후
 정리한다.
 실행 전 LAB 전용 변수와 secret 참조는 `labs/.env.example`, LAB별 README 및
-`secrets/labs/` 계약을 확인한다. 기존 canonical secret을 공유하는 Supabase는
-[Compose secret declarations](../../../../labs/supabase/docker-compose.yml)의 exact 11개 상대 경로와
-[source README](../../../../labs/supabase/README.md)의 `LAB_SECRETS_GID` 계약을 사용하며
-값을 LAB로 복제하지 않는다. 두 번째는 정상
+`secrets/labs/` 계약을 확인한다. 두 번째는 정상
 root에 포함된 infra Compose와 독립 LAB Compose의 profile 이름·서비스 표 일치,
 category/purpose, 중복 행, root include 배제, 명시적 서비스 profile, HOME 안전
 category와 필수 dependency 폐포를 검사한다.

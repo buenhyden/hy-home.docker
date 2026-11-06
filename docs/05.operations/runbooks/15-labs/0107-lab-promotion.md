@@ -178,7 +178,7 @@ secret을 쓴다.
    ```
 
 4. `--sync-metadata-prune`은 private registry가 COMM-003을 갖고 있는 동안 막힌다. COMM-003은
-   SMTP01 은퇴만 제거하며, 그 절차와 audit proof 입력은 [RUN-0029](0029-supabase.md)를 따른다.
+   SMTP01 은퇴만 제거하며, 그 절차와 audit proof 입력은 [RUN-0106](../04-security-and-secrets/0106-openbao-consumer-catalog.md#smtp-전환-확인과-중복-퇴역)를 따른다.
 5. catalog를 검사한다. `--root`는 상위 parser 옵션이므로 `check` 앞에 두고, 절대 경로여야 하므로 `.`이 아니라 `"$PWD"`를 쓴다.
 
    ```bash
