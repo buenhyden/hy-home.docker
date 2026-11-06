@@ -20,8 +20,6 @@ created: "2026-05-17"
 
 ## Trigger
 
-### Trigger and Preconditions
-
 앱 또는 DB readiness 실패, 읽을 수 없는 provider key, 사라진 노트북 콘텐츠, API 노출 우려, 백업·복원, 승인된 업그레이드가 있을 때 사용한다.
 
 ## Prerequisites
@@ -34,6 +32,10 @@ created: "2026-05-17"
 [공통 수명주기 정책](../../policies/01-common/0006-infrastructure-optimization-governance.md)의
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
+
+## Procedure
+
+### 진단
 
 1. 루트에서 validate하고 점검한다.
 
@@ -50,8 +52,6 @@ created: "2026-05-17"
    않는다.
 4. database를 먼저 재시작하고 readiness를 확인한 뒤 app만 재시작한다. content와
    credential 점검이 통과할 때까지 provider/model egress를 비활성화 상태로 유지한다.
-
-## Procedure
 
 ### 모델 등록 계약의 격리 점검
 
@@ -123,12 +123,7 @@ target image를 테스트하고 content와 credential decryption을 확인한다
 노트북 콘텐츠, 소스 문서, embedding, provider 키는 민감 정보이다. SurrealDB는
 v2로 유지하고 v3로 업그레이드하지 않는다.
 
-백업할 때는 app write를 멈추고 `surreal export`로 구성된 SurrealDB
-namespace/database를 export하고 `/app/data`를 복사하고 암호화 키와 DB
-credential을 보호된 방식으로 보관한다. provider/network egress를 비활성화한
-격리된 SurrealDB로 복원하고 export를 import하고 app data를 마운트하고 같은
-암호화 키를 비공개로 제공한 다음, 개수와 합성 노트북 하나를 검증한다. 업그레이드
-전에는 floating-tag/release 변경 사항을 검토하고 이 복원을 테스트한다. 여기서는
+백업·격리 복원과 업그레이드는 위 `Backup and isolated restore`와 `Upgrade` 절차를 따른다. 여기서는
 백업, 복원, provider 호출, 업그레이드를 실행하지 않았다.
 
 ## Verification

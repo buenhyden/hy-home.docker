@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ## Overview
 
-이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 현재 구현은 `infra/08-ai/open-webui/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `open-webui`는 `ai` profile을 선택할 때 기동된다. 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검은 그 profile이 선택된 런타임을 기준으로 수행한다.
+이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 현재 구현은 `infra/08-ai/open-webui/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `open-webui`는 `ai` 또는 `ai-llm` profile을 선택할 때 기동된다. 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검은 그 profile이 선택된 런타임을 기준으로 수행한다.
 
 ## Scope
 
@@ -42,7 +42,7 @@ created: "2026-05-10"
 
 ### 사전 조건
 
-- root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`과 `infra/08-ai/open-webui/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai` profile을 선택해야 한다.
+- root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`과 `infra/08-ai/open-webui/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai` 또는 `ai-llm` profile을 선택해야 한다.
 - `open-webui`, `ollama` 컨테이너가 root compose project 안에서 기동 가능해야 한다.
 - `ollama` 컨테이너가 `http://ollama:${OLLAMA_PORT:-11434}`로 접근 가능해야 한다.
 - Open WebUI 환경변수 확인:
@@ -83,7 +83,6 @@ docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-808
 
 # Open WebUI -> Ollama connectivity (컨테이너 내부)
 docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
-
 ```
 
 #### Advanced Settings
@@ -97,7 +96,7 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 - **목적·분류**: `open-webui`는 소유자가 확인한 `HOME` chat/RAG interface다.
 - **profile·구현 소유권**: `ai`/`ai-llm`으로 서비스를 선택한다. [Compose](../../../../infra/08-ai/open-webui/docker-compose.yml), 선택된 image와 startup 환경 설정이 구현을 소유한다.
 - **흐름·의존성**: 사용자는 Traefik `gateway-standard-chain@file`을 통해 접속한다. native Keycloak OIDC는 client `home-openwebui`를 사용한다. Open WebUI는 `ai_net`으로 Ollama를 호출하고 vector를 local store에 보관한다. 현재 source는 `sso-auth@file`을 사용하지 않는다. password login/signup, email merge와 OAuth role/group 관리는 비활성화된 상태를 유지한다.
-- **상태·secret**: `open-webui:/app/backend/data`에는 기본 SQLite database, upload, chat/user state와 application data가 있다. `openwebui_oidc_client_secret`, Compose가 선언한 session/auth secret과 root CA를 보존한다. RAG vector도 같은 data volume에 있으므로 별도 vector-store backup은 적용되지 않는다. 렌더링된 config나 log에 값을 노출하지 않는다.
+- **상태·secret**: `open-webui:/app/backend/data`에는 기본 SQLite database, upload, chat/user state와 application data가 있다. `openwebui_oidc_client_secret`, data volume의 session key 파일 `.webui_secret_key`(`WEBUI_SECRET_KEY_FILE`)와 root CA를 보존한다. RAG vector도 같은 data volume에 있으므로 별도 vector-store backup은 적용되지 않는다. 렌더링된 config나 log에 값을 노출하지 않는다.
 - **자원·보안**: Compose 값은 source limit이며 측정된 여유 용량이 아니다. UI를 native OIDC와 gateway standard chain 뒤에 유지한다. incident 우회책으로 local password/signup 경로를 활성화하지 않는다.
 - **정상 사용·수명 주기**: `docker compose --profile ai config --quiet`로 렌더링하고 health, OIDC login, Ollama model 목록과 통제된 RAG query를 검증한다. 일관된 SQLite/data-volume backup 전에 Open WebUI를 중지한다. upgrade할 때는 volume과 이에 맞는 secret을 보존하고 upstream migration을 검토한 뒤 version 경계를 한 번에 하나씩 변경한다. 이후 identity/chat/upload/OIDC를 검증하고, RUN-0057을 통해 서로 대응하는 local Chroma index와 upload를 확인한다. Qdrant 의존성은 선언되어 있지 않다.
 - **공식 문서·license**: 공식 [환경 설정](https://docs.openwebui.com/reference/env-configuration/), [SSO](https://docs.openwebui.com/features/authentication-access/auth/sso/), [update/backup](https://docs.openwebui.com/getting-started/updating/), [database migration](https://docs.openwebui.com/troubleshooting/manual-database-migration/) 지침을 따른다. 재배포하거나 수정하여 배포하기 전에 고정된 Open WebUI release의 license 조건을 확인한다.

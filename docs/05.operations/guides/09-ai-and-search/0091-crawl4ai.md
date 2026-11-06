@@ -58,20 +58,26 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
 ### 새 보안 후보와 요청 본문 호환성
 
 2026-10-26 source 후보의 공식 보안 변경은 cache freshness HTTP 요청도 pinning
-proxy를 사용하고 Chromium의 기본 certificate-ignore flag를 제거합니다. Docker
+proxy를 사용하고 Chromium의 기본 certificate-ignore flag를 제거한다. Docker
 server의 untrusted 본문은 `CosineStrategy.model_name`, caller regex, JavaScript
-`wait_for`를 거부하며 delay 상한을 적용합니다. 이 필드의 HTTP 400을 없애려고
-인증·TLS·egress 검증을 완화하지 않습니다.
+`wait_for`를 거부하며 delay 상한을 적용한다. 이 필드의 HTTP 400을 없애려고
+인증·TLS·egress 검증을 완화하지 않는다.
 
-현재 ROOT consumer는 연결되지 않았습니다. 참조 adapter의 `POST /crawl`은
+현재 ROOT consumer는 연결되지 않았다. 참조 adapter의 `POST /crawl`은
 `urls`와 typed `CrawlerRunConfig`의 `cache_mode`·`page_timeout`만 전송하므로
-위의 새 거부 필드와 정적 충돌이 없습니다. 이는 새 이미지의 실제 API 호환 성공이
-아닙니다. 기존 격리 영수증은 이전 이미지에만 적용하며 새 후보의 인증·허용 수집·
-cache·TLS·거절·응답 schema와 자원 경계는 별도 격리 실행 전까지 NOT_RUN입니다.
+위의 새 거부 필드와 정적 충돌이 없다. 이는 새 이미지의 실제 API 호환 성공이
+아니다. 기존 격리 영수증은 이전 이미지에만 적용하며 새 후보의 인증·허용 수집·
+cache·TLS·거절·응답 schema와 자원 경계는 별도 격리 실행 전까지 NOT_RUN이다.
 
 ### 소비자 승인과 출처 권리
 
 consumer 연결은 [정책](../../policies/09-ai-and-search/0091-crawl4ai.md)의 승인 변경이 소유한다. 출처 registry, 제한된 job, 원본 출처 보존, 파생 결과 삭제는 소비 워크스페이스가 [수집 adapter](../../../../projects/crawl4ai/README.md)로 구현한다. 후보 프로젝트 세 가지(공공 API 문서 변경 감시, 허용 공지·법령 근거 노트, 라이선스 검증 학습자료)의 비교는 SPEC-0220 계획(삭제됨, Git history)에 기록되었으며, 아직 연결된 것은 없다.
+
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES=crawl4ai bash scripts/validation/validate-docker-compose.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 -m unittest tests.validation.test_crawl4ai_egress tests.validation.test_crawl4ai_adapter`
 
 ### Runbook Handoff
 
@@ -85,11 +91,8 @@ consumer 연결은 [정책](../../policies/09-ai-and-search/0091-crawl4ai.md)의
 
 ## Troubleshooting
 
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES=crawl4ai bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 -m unittest tests.validation.test_crawl4ai_egress tests.validation.test_crawl4ai_adapter`
+- 크롤러가 기동하지 않거나 모든 크롤링이 실패하면 [runbook](../../runbooks/09-ai-and-search/0091-crawl4ai.md)의 진단 단계(종료 코드 `64`, `crawl4ai-egress` health, `egress refused` 로그)를 따른다.
+- 새 이미지가 요청을 HTTP 400으로 거부하면 위 요청 본문 호환성 절을 확인하고, 인증·TLS·egress 검증을 완화하지 않는다.
 
 ## Related Documents
 

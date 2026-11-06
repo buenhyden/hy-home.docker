@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.9"
+version: "1.0.10"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -27,14 +27,11 @@ created: "2026-05-17"
 ## Trigger
 
 - Ollama API(`/api/tags`, `/api/generate`) 호출 실패.
-
-## Prerequisites
-
-### Trigger and Preconditions
-
 - 컨테이너 내부 GPU 미인식 또는 CPU fallback 발생.
 - 모델 로드 시 VRAM OOM으로 추론 실패.
 - Open WebUI에서 모델 목록 미표시.
+
+## Prerequisites
 
 ### Service lifecycle prerequisites
 
@@ -93,7 +90,6 @@ docker compose exec ollama ollama list
 ### Open WebUI Dependency Recheck
 
 ```bash
-
 # Open WebUI 컨테이너에서 Ollama 접근 확인
 docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 ```

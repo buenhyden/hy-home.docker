@@ -63,15 +63,15 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 ### 보안 패치 뒤 요청 거부와 인수
 
 Untrusted 요청에 model 선택·caller regex·JavaScript `wait_for`가 있으면 새
-후보는 HTTP 400으로 거부합니다. 호출자와 요청 필드만 확인하고 본문·토큰을
-로그에 복사하지 않습니다. 인증·TLS·internal 망이나 gateway를 약화해 재시도하지
-않으며, 승인된 consumer 소유자가 허용된 요청 형태로 수정합니다.
+후보는 HTTP 400으로 거부한다. 호출자와 요청 필드만 확인하고 본문·토큰을
+로그에 복사하지 않는다. 인증·TLS·internal 망이나 gateway를 약화해 재시도하지
+않으며, 승인된 consumer 소유자가 허용된 요청 형태로 수정한다.
 
-이미지 pin과 리허설의 `IMAGE`는 동일 digest여야 합니다. 이전 이미지의 격리
-성공을 새 후보에 재사용하지 않습니다. 새 후보의 실제 TLS·cache freshness
+이미지 pin과 리허설의 `IMAGE`는 동일 digest여야 한다. 이전 이미지의 격리
+성공을 새 후보에 재사용하지 않는다. 새 후보의 실제 TLS·cache freshness
 proxy 경유·SSRF·허용 요청/거부·응답 schema와 정리는 NOT_RUN이며, 실행 전
-정확한 fixture·대상·자원·정리 경계를 검토합니다. 자체 durable volume은 없지만
-재생성 전에 미완료 요청과 필요한 tmpfs 산출물을 consumer와 조정합니다.
+정확한 fixture·대상·자원·정리 경계를 검토한다. 자체 durable volume은 없지만
+재생성 전에 미완료 요청과 필요한 tmpfs 산출물을 consumer와 조정한다.
 
 ## Verification
 
