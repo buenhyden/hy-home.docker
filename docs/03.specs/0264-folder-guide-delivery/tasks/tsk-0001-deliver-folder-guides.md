@@ -38,7 +38,7 @@ audit of the 10 `AGENTS.md` files.
 
 W5 is implemented in the working tree on top of `eef26df01`, not yet
 committed. `scripts/operations/provider_surface_renderer.py` renders
-`<folder>/CLAUDE.md` (marker comment, blank line, `@AGENTS.md`) beside each of
+`<folder>/CLAUDE.md` (marker comment, heading, `@AGENTS.md`) beside each of
 the 9 Git-tracked folder guides, reports a stale shim, and refuses to
 overwrite a folder `CLAUDE.md` without its marker. The Stage 01, 02, 03, 05
 and 90 loaders, the trusted Requirement snapshot, the navigation check and
@@ -102,14 +102,17 @@ edits a file under `infra/` and records whether the "Folder guide
 | E14 | 10 | W5 | script manifest | `check-script-manifest.py` on the W5 working tree | FAIL | `path-untracked scripts/CLAUDE.md`: the shims are not yet staged | required | - |
 | E15 | 10 | W5 | script manifest | `check-script-manifest.py` with the 9 shims added to its tracked-path set in process | PASS | manifest valid | optional | - |
 | E16 | 10 | W5 | suites | `tests.validation.test_agent_governance_ci_routing`, `tests.lib.document_governance.test_spec_packages` on the W5 working tree | FAIL | 172 tests, 1 failure: `test_static_checks_stop_descendants_after_parent_exit` (docker descendant survived), run beside other heavy checks | required | - |
-| E17 | 1 | W5 | native shim load | Headless Claude Code 2.1.319 in a throwaway repository with root `CLAUDE.md`, `sub/CLAUDE.md` holding the marker comment then `@AGENTS.md`, and only `sub/data.txt` read | PASS | the `sub/AGENTS.md` codeword was answered; the trace shows one Read of `sub/data.txt` | optional | - |
+| E17 | 1 | W5 | native shim load | Headless Claude Code 2.1.319 in a throwaway repository with root `CLAUDE.md`, `sub/CLAUDE.md` holding the marker comment then `@AGENTS.md`, run again with a `# sub Folder Guide` heading between them and a new codeword, and only `sub/data.txt` read | PASS | both runs answered the `sub/AGENTS.md` codeword; each trace shows one Read of `sub/data.txt` | optional | - |
 | E18 | 10 | W5 | suites | `test_static_checks_stop_descendants_after_parent_exit` rerun alone on the W5 working tree | PASS | 1 test OK; the E16 failure is a timing failure unrelated to W5 | required | E16 |
+| E19 | 10 | W5 | script manifest | `check-script-manifest.py` at `d2d5ca525`, with the 9 shims committed | PASS | `PASS: script manifest is valid` | required | E14 |
+| E20 | 1, 2, 4 | W1 | hook suites | `test_folder_guides test_tool_payload test_agent_memory test_validator_entrypoints test_agent_governance_ci_routing test_script_manifest test_surface_ownership test_ci_gate_model test_ci_gate_adapters` at `d2d5ca525`, after the edit reminder, restart instruction and Codex-only full delivery (`b905f662f` rebased) and the hook-suite registration | PASS | 258 tests OK | required | - |
+| E21 | 9, 10 | W5 | surfaces, contract, metadata | `provider_surface_renderer.py --check`, `check-agent-governance-contract.py --mode repository`, `check-document-metadata.py --mode check-changed` and `--mode check-active`, `check-document-corpus-lifecycle.py`, `check-operations-catalog.py` at `d2d5ca525` | PASS | drift=0; failures=0; violations=0 (15 and 538 selected); occupancy 0; catalog PASS | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E1, E2, E6, E7, E8, E9, E17 | owner acceptance | @buenhyden |
+| 1 | pending | E1, E2, E6, E7, E8, E9, E17, E20 | owner acceptance | @buenhyden |
 | 2 | pending | E1, E6 | owner acceptance | @buenhyden |
 | 3 | pending | E1, E6 | owner acceptance | @buenhyden |
 | 4 | pending | E1, E2, E6, E7, E8 | owner acceptance | @buenhyden |
@@ -117,8 +120,8 @@ edits a file under `infra/` and records whether the "Folder guide
 | 6 | pending | E4 | owner acceptance | @buenhyden |
 | 7 | pending | E5 | owner acceptance | @buenhyden |
 | 8 | pending | - | live observation runs after merge (#live-observation-criterion-8) | @buenhyden |
-| 9 | pending | E10, E11 | owner acceptance | @buenhyden |
-| 10 | pending | E12, E13, E14, E15, E16, E18 | owner acceptance; E14 stays open until a PASS after the shims are staged | @buenhyden |
+| 9 | pending | E10, E11, E21 | owner acceptance | @buenhyden |
+| 10 | pending | E12, E13, E15, E16, E18, E19, E21 | owner acceptance | @buenhyden |
 
 ## Review and Completion
 
