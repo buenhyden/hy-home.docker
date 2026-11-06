@@ -1,8 +1,8 @@
 ---
 title: "Folder Guide Delivery Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "blocked"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"
@@ -59,6 +59,9 @@ guide content to Claude is made in parallel in `folder_guides.py`,
 | SPEC-0264 | approved | in-review | #owner-amendment |
 | SPEC-0264-PLAN-0001 | approved | in-review | #owner-amendment |
 | SPEC-0264-TSK-0001 | in-progress | blocked | #owner-amendment |
+| SPEC-0264 | in-review | approved | #amendment-approval |
+| SPEC-0264-PLAN-0001 | in-review | approved | #amendment-approval |
+| SPEC-0264-TSK-0001 | blocked | in-progress | #amendment-approval |
 
 ### Owner approval
 
@@ -73,6 +76,12 @@ On 2026-11-06, after approving the hook-only design, the owner chose a folder
 `CLAUDE.md` shim for Claude and the hook for Codex ("Claude는 shim, Codex는
 hook"). The Spec and Plan return to `in-review` for that amendment, and this
 Task stays `blocked` until the owner approves them again.
+
+### Amendment approval
+
+On 2026-11-06, asked whether to approve the amended Spec, the owner answered
+"승인 (권장)", so the Spec and Plan are `approved` again and this Task is
+`in-progress`.
 
 ### Live observation (criterion 8)
 

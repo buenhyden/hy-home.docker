@@ -1,8 +1,8 @@
 ---
 title: "Folder Guide Delivery Specification"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/spec"
-status: "in-review"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"
