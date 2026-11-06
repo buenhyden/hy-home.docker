@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.9.1"
+version: "3.9.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 ---
 
 # Documentation Protocol
@@ -66,8 +66,8 @@ alone does not exempt a clickable stage-document route.
 Machine access is narrowly scoped: document-governance validators consume the
 Stage 99 registry and schemas to validate profiles and lifecycle; approved
 stage authoring reads the selected registered template to create that document;
-the Compose validator reads its named profile-vocabulary machine section to
-validate selections; `scripts/hardening/check-all-hardening.sh` reads the exact
+the Compose validator and `scripts/lib/ops/compose_start.py` read the
+profile-vocabulary machine section of policy 0078 to validate selections; `scripts/hardening/check-all-hardening.sh` reads the exact
 security Requirement input to assert its architecture trace link. These are
 validation data reads, not imports of agent instructions.
 These exceptions identify kind, consumer, necessity and
@@ -94,8 +94,8 @@ retired identities.
 7. Name a Stage 90 package member `m####-<slug>.md`; a Stage 03 Task keeps its
    `tsk-####-<slug>.md` name and an incident packet keeps `inc-####-<slug>/`.
 8. Record a retired document's number in its identity space's Registry
-   `reserved_history` instead of issuing a record for it. A reserved number is
-   never issued again.
+   `reserved_history`, as [Document Retention and Retirement](#document-retention-and-retirement)
+   sets out.
 9. Declare the frontmatter its registry profile requires, in the registry's
    `common.frontmatter_order`. The registry owns which keys a profile requires
    and permits; `contracts/document-frontmatter.schema.json` owns their value shapes.
@@ -245,10 +245,9 @@ prompts and hook rules, and the `.claude/` and `.codex/` adapters and hooks
 that apply to the folder. Verification names only registered commands that
 exist. The guide routes and summarizes; it never copies a policy body, and
 when a summary and its owner disagree, the owner wins and the guide is
-corrected. Under [authority and precedence](bootstrap.md#authority-and-precedence)
-it is routing only, ranked with roles and skills: it never overrides canonical
-governance or Stage contracts, and it grants no tool, path, permission or
-approval. An agent reads the nearest ancestor guide of the file it changes. A README does not carry an
+corrected. Its rank and when an agent reads it are set by
+[bootstrap](bootstrap.md#authority-and-precedence); it grants no tool, path,
+permission or approval. An agent reads the nearest ancestor guide of the file it changes. A README does not carry an
 `AI Agent Guidance` section or other agent-directed instructions; it points to
 its folder `AGENTS.md` instead.
 
@@ -444,14 +443,6 @@ investigate, not permission to delete. Record the summary map and consumer
 cutover in the current Task. Age may trigger a disposition review. It never
 triggers a deletion.
 
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
-
- 1. Validate metadata, links, and stage-specific contracts before completion.
-
 ### Implementation coverage
 
 Every capability implemented in this workspace has one Stage 01 Requirement
@@ -459,6 +450,18 @@ owner for its obligation and one Stage 02 Description or ADR owner for its
 structure and durable decision. Retiring a Stage 03 package never removes that
 coverage: the package's implemented outcome moves to those owners before the
 package is retired.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Verification
+
+- `python scripts/validation/check-document-metadata.py --mode check-active`
+- `python scripts/validation/check-document-links.py --mode all` (links, entry
+  points, fenced command paths, navigation, language)
+- Stage checks selected by the
+  [change-type verification matrix](quality-standards.md#5-change-type-verification-matrix).
 
 ## Related Documents
 

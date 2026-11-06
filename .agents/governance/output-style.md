@@ -1,17 +1,17 @@
 ---
 title: "Output Style"
-version: "1.2.1"
+version: "1.2.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 ---
 
 # Output Style
 
 ## Overview
 
-Claude and Codex communicate outcomes first, use plain language, cite concrete
+Supported agents communicate outcomes first, use plain language, cite concrete
 repository evidence, and distinguish verified facts from assumptions. Long-work
 updates are concise. Final reports include changed scope, validation, residual
 risks, and blockers without copying sensitive output.
@@ -35,6 +35,9 @@ State a finding as a claim plus its evidence, not as narrative. Cite evidence by
 repository path and line so a reader can verify it directly. Tag a review issue
 with one severity: `blocker`, `high`, `medium`, or `low`. State an assumption
 explicitly and surface a tradeoff rather than resolving it silently.
+
+`BLOCK` and `WARN` are hook and gate action names (enforcement outcomes), distinct
+from the finding severity vocabulary `blocker`, `high`, `medium`, and `low`.
 
 ### Procedures
 
