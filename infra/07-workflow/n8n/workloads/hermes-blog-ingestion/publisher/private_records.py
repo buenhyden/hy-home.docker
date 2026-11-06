@@ -162,6 +162,20 @@ class PrivateRecords:
         finally:
             os.close(fd)
 
+    def remove_temporaries(self):
+        """Drop temporaries a crashed writer left; call only while holding the lock.
+
+        A crash between link() and unlink() in create() leaves the record with a
+        second link, which read() refuses until the temporary is gone.
+        """
+        self._check_lock()
+        for name in os.listdir(self.fd):
+            if name.startswith(".tmp-"):
+                try:
+                    os.unlink(name, dir_fd=self.fd)
+                except FileNotFoundError:
+                    pass
+
     def create(self, name, raw):
         """Create an immutable record once; True if created, False on an identical replay.
 

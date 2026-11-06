@@ -49,6 +49,8 @@ SUBMIT_CONTRACT_VERSION = 2
 _SUBMIT_ARGS = frozenset({"payload", "source_receipts", "report_markdown"})
 # Controls other than tab, newline and carriage return, including C1 and DEL.
 _REPORT_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
+# Bidirectional embedding, override and isolate controls can disguise text.
+_REPORT_BIDI = re.compile("[\u202a-\u202e\u2066-\u2069]")
 
 
 def _load_url() -> str:
@@ -347,16 +349,34 @@ def _report_error(report: Any) -> str | None:
         return "report_malformed"
     if _REPORT_CONTROL.search(report):
         return "report_malformed"
-    if len(report) > GATEWAY_MAX_SOURCE_CHARACTERS:
+    if _REPORT_BIDI.search(report):
+        return "report_bidi_control"
+    # The report alone must fit the Gateway's code point and whole-request limits.
+    if len(report) > GATEWAY_MAX_SOURCE_CHARACTERS or len(
+        json.dumps(report, ensure_ascii=False).encode("utf-8")
+    ) > min(webhook_transport.MAX_REQUEST_BYTES, GATEWAY_MAX_REQUEST_BYTES):
         return "request_too_large"
     if len(report.strip()) < BODY_MIN or _PLACEHOLDER_BODY.fullmatch(report):
         return "report_not_final"
     return None
 
 
-_LINK = re.compile(r"\[([^\]\n]*)\]\(([^()\s]+)\)")
-_HEADING = re.compile(r"(#{1,6})\s+(.*?)[\s#]*")
-_BULLET = re.compile(r"\s*[-*+]\s+(.*)")
+# Neither class contains its own delimiters, so a failed match never backtracks.
+_LINK = re.compile(r"\[([^\[\]\n]*)\]\(([^()\s]+)\)")
+
+
+def _heading(line: str) -> tuple[int, str] | None:
+    level = len(line) - len(line.lstrip("#"))
+    if not 1 <= level <= 6 or len(line) == level or not line[level].isspace():
+        return None
+    return level, line[level:].rstrip(" \t#").strip()
+
+
+def _bullet(line: str) -> str | None:
+    rest = line.lstrip()
+    if len(rest) < 2 or rest[0] not in "-*+" or not rest[1].isspace():
+        return None
+    return rest[1:].strip()
 
 
 def _blocks(markdown: str) -> list[tuple]:
@@ -366,17 +386,17 @@ def _blocks(markdown: str) -> list[tuple]:
         line = _LINK.sub(
             lambda m: f"{m[1]} ({m[2]})" if m[1].strip() else m[2], line
         ).rstrip()
-        heading, bullet = _HEADING.fullmatch(line), _BULLET.fullmatch(line)
+        heading, bullet = _heading(line), _bullet(line)
         last = blocks[-1] if blocks else None
         if not line.strip():
             blocks.append(None)
         elif heading:
-            blocks.append(("h", len(heading[1]), heading[2]))
-        elif bullet:
+            blocks.append(("h", *heading))
+        elif bullet is not None:
             if last and last[0] == "ul":
-                last[1].append(bullet[1])
+                last[1].append(bullet)
             else:
-                blocks.append(("ul", [bullet[1]]))
+                blocks.append(("ul", [bullet]))
         elif last and last[0] == "p":
             last[1].append(line.strip())
         else:
@@ -418,50 +438,57 @@ def render_telegram(markdown: str) -> str:
     return "\n\n".join(parts) + "\n"
 
 
-def _store_report(records, run, scheduled, report_raw: bytes, source_set_raw: bytes):
+def _report_directory(run) -> Path:
+    return REPORT_DIR / f"{run.job_id}-{run.execution_id}"
+
+
+def _store_report(records, run, scheduled, report_raw: bytes, gateway: str):
     """Write the report once per execution, then derive the email and Telegram text.
 
     Every file is created exclusively with mode 0600 in a 0700 directory bound to
     job_id and execution_id; manifest.json adds the scheduled instant and digests.
+    A replay compares only report.md and returns the outputs already stored, so a
+    renderer change across a plugin upgrade is not a conflict; a missing output
+    (an interrupted first call) is rendered from the stored bytes.
     """
-    directory = REPORT_DIR / f"{run.job_id}-{run.execution_id}"
+    directory = _report_directory(run)
     store = records.PrivateRecords(directory)
     try:
         with store.lock("report"):
-            store.create("report.md", report_raw)
+            store.remove_temporaries()
+            store.create("report.md", report_raw)  # record_conflict if different
             stored = store.read("report.md")
             report_sha = hashlib.sha256(stored).hexdigest()
-            markdown = stored.decode("utf-8")
-            email = render_email(markdown, report_sha).encode("utf-8")
-            telegram = render_telegram(markdown).encode("utf-8")
-            manifest = {
-                "schema_version": "hermes-report-store/1",
-                "job_id": run.job_id,
-                "execution_id": run.execution_id,
-                "scheduled_at": scheduled,
-                "report_sha256": report_sha,
-                "source_set_sha256": hashlib.sha256(source_set_raw).hexdigest(),
-                "outputs": {
-                    "email.html": {
-                        "sha256": hashlib.sha256(email).hexdigest(),
-                        "derived_from_sha256": report_sha,
-                    },
-                    "telegram.txt": {
-                        "sha256": hashlib.sha256(telegram).hexdigest(),
-                        "derived_from_sha256": report_sha,
-                    },
-                },
-            }
-            for name, raw in (
-                ("source-set.json", source_set_raw),
-                ("email.html", email),
-                ("telegram.txt", telegram),
-                ("manifest.json", _record_bytes(manifest)),
+            outputs = {}
+            for name, render in (
+                ("email.html", lambda text: render_email(text, report_sha)),
+                ("telegram.txt", render_telegram),
             ):
-                store.create(name, raw)
+                raw = store.read(name)
+                if raw is None:
+                    raw = render(stored.decode("utf-8")).encode("utf-8")
+                    store.create(name, raw)
+                outputs[name] = {
+                    "sha256": hashlib.sha256(raw).hexdigest(),
+                    "derived_from_sha256": report_sha,
+                }
+            manifest = store.read("manifest.json")
+            if manifest is None:
+                manifest = {
+                    "schema_version": "hermes-report-store/1",
+                    "job_id": run.job_id,
+                    "execution_id": run.execution_id,
+                    "scheduled_at": scheduled,
+                    "report_sha256": report_sha,
+                    "gateway": gateway,
+                    "outputs": outputs,
+                }
+                store.create("manifest.json", _record_bytes(manifest))
     finally:
         store.close()
-    return stored, {
+    if stored != report_raw:  # create() guarantees this; never send other bytes
+        raise records.RecordError("record_conflict")
+    return {
         "contract_version": SUBMIT_CONTRACT_VERSION,
         "report_sha256": report_sha,
         "report_path": str(directory / "report.md"),
@@ -470,63 +497,68 @@ def _store_report(records, run, scheduled, report_raw: bytes, source_set_raw: by
     }
 
 
-METRIC_OUTCOMES = frozenset(
-    {"persisted", "already_persisted", "rejected", "blocked", "failed", "uncertain"}
-)
-METRIC_REASONS = frozenset(
-    {
-        "none",
-        "report_required",
-        "report_malformed",
-        "report_not_final",
-        "request_too_large",
-        "report_conflict",
-        "source_set_too_large",
-        "report_store_unavailable",
-        "other",
-    }
-)
-_SIZE_BUCKETS = ((65536, "le_64k"), (262144, "le_256k"), (1048576, "le_1m"))
-
-
-def metric_lines(report_kind: str, outcome: str, reason: str, size: int) -> list[str]:
-    """Pushgateway text lines; every label value comes from a fixed enumeration.
-
-    ponytail: built but not pushed; the workload has no Pushgateway path yet.
-    """
-    if report_kind not in _ALLOWED_JOBS.values() or outcome not in METRIC_OUTCOMES:
-        raise ValueError("metric_label")
-    reason = reason if reason in METRIC_REASONS else "other"
-    bucket = next((name for limit, name in _SIZE_BUCKETS if size <= limit), "over_1m")
-    labels = (
-        f'job_kind="{report_kind}",outcome="{outcome}",'
-        f'reason="{reason}",size_bucket="{bucket}"'
-    )
-    return [
-        "# TYPE hermes_report_submission gauge",
-        f"hermes_report_submission{{{labels}}} 1",
-    ]
+def _store_source_set(records, run, source_set_raw: bytes) -> None:
+    store = records.PrivateRecords(_report_directory(run))
+    try:
+        with store.lock("report"):
+            store.remove_temporaries()
+            store.create("source-set.json", source_set_raw)
+    finally:
+        store.close()
 
 
 def _submit(args: dict[str, Any]) -> dict[str, Any]:
-    try:
-        run, scheduled = _cron()
-    except ValueError as error:
-        return {"ok": False, "error": str(error)}
-    if not isinstance(args, dict) or not isinstance(args.get("payload"), dict):
-        return {"ok": False, "error": "source_receipts_required"}
-    payload = args["payload"]
-    if payload.get("schema_version") != SCHEMA_VERSION:
-        return {"ok": False, "error": "invalid_schema_version"}
-    if "source_receipts" not in args:
-        return {"ok": False, "error": "source_receipts_required"}
-    if set(payload) != {"schema_version", "items"} or not set(args) <= _SUBMIT_ARGS:
+    """Store the report and its outputs first, then try the Gateway submission."""
+    if not isinstance(args, dict) or not set(args) <= _SUBMIT_ARGS:
         return {"ok": False, "error": "invalid_submission_fields"}
     report = args.get("report_markdown")
     error = _report_error(report)
     if error:
         return _blocked(error)
     report_raw = report.encode("utf-8")
+    try:
+        run, scheduled = _cron()
+    except ValueError as error:
+        return {"ok": False, "error": str(error)}
+    payload = args.get("payload")
+    items = payload.get("items") if isinstance(payload, dict) else None
+    receipt_ids = args.get("source_receipts", [] if items == [] else None)
+    no_items = items == [] and receipt_ids == []
+    _, _, records = _modules()
+    try:
+        report_files = _store_report(
+            records,
+            run,
+            scheduled,
+            report_raw,
+            "skipped_no_items" if no_items else "submit",
+        )
+    except records.RecordError as error:
+        return _blocked(
+            "report_conflict"
+            if str(error) == "record_conflict"
+            else "report_store_unavailable"
+        )
+    except Exception:
+        return _blocked("report_store_unavailable")
+    if no_items:
+        result = {"ok": True, "status": "stored", "gateway": "skipped_no_items"}
+    else:
+        result = _gateway(args, run, scheduled, report, report_raw)
+    # Email and Telegram come from these files whatever the Gateway answered.
+    return {**result, "report": report_files}
+
+
+def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, Any]:
+    if not isinstance(args.get("payload"), dict):
+        return {"ok": False, "error": "source_receipts_required"}
+    payload = args["payload"]
+    if payload.get("schema_version") != SCHEMA_VERSION:
+        return {"ok": False, "error": "invalid_schema_version"}
+    if "source_receipts" not in args:
+        return {"ok": False, "error": "source_receipts_required"}
+    if set(payload) != {"schema_version", "items"}:
+        return {"ok": False, "error": "invalid_submission_fields"}
     items, receipt_ids = payload.get("items"), args.get("source_receipts")
     if (
         not isinstance(items, list)
@@ -635,23 +667,18 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
             else "source_unavailable"
         )
         return {"ok": False, "error": code}
-
     try:
-        stored, report_files = _store_report(
-            records, run, scheduled, report_raw, source_set_raw
-        )
+        _store_source_set(records, run, source_set_raw)
     except records.RecordError as error:
-        code = str(error)
-        return _blocked(
-            "report_conflict"
-            if code == "record_conflict"
-            else "report_store_unavailable"
-        )
+        return {
+            "ok": False,
+            "error": "source_set_conflict"
+            if str(error) == "record_conflict"
+            else "record_unavailable",
+        }
     except Exception:
-        return _blocked("report_store_unavailable")
-    if stored != report_raw:  # create() guarantees this; never send other bytes
-        return _blocked("report_conflict")
-    result = _send(
+        return {"ok": False, "error": "record_unavailable"}
+    return _send(
         run,
         gateway_payload,
         payload_bytes,
@@ -660,8 +687,6 @@ def _submit(args: dict[str, Any]) -> dict[str, Any]:
         records,
         receipt_validator,
     )
-    # Email and Telegram come from these files whatever the Gateway answered.
-    return {**result, "report": report_files}
 
 
 def _send(
@@ -922,9 +947,11 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
     "description": (
         "Contract v2. Call once, after the full daily report is final: report_markdown "
         "is that exact report (Markdown, at most 524288 characters, never a draft, "
-        "summary or truncation). The tool stores it once per run, sends it as the "
-        "report source and returns report_path, email_path and telegram_path derived "
-        "from the stored bytes; send the email and Telegram from those files only. "
+        "summary or truncation). The tool stores it once per run and returns "
+        "report.report_path, report.email_path and report.telegram_path derived from "
+        "the stored bytes; send the email and Telegram from those files only. With no "
+        "source-backed item, pass empty items and source_receipts: the report is "
+        "stored and rendered and only the Gateway submission is skipped. "
         "Submit this scheduled run's research items using one collector receipt per item. "
         "The tool sets the run identity, timestamps, source and idempotency key. "
         "One item per article: title is that article's own headline, never the report "
@@ -945,7 +972,7 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
                     "schema_version": {"type": "string", "enum": [SCHEMA_VERSION]},
                     "items": {
                         "type": "array",
-                        "minItems": 1,
+                        "minItems": 0,
                         "maxItems": 100,
                         "items": {
                             "type": "object",
@@ -1002,7 +1029,7 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
             },
             "source_receipts": {
                 "type": "array",
-                "minItems": 1,
+                "minItems": 0,
                 "maxItems": 100,
                 "items": _STRING,
             },

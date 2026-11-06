@@ -6,7 +6,7 @@ import base64
 import copy
 import hashlib
 import json
-import re
+import os
 import stat
 import sys
 import tempfile
@@ -312,12 +312,14 @@ class HandlerResultContractTests(unittest.TestCase):
         import json
         from unittest import mock
 
-        with mock.patch.object(tools, "_CTX", CronRun()):
-            result = tools.handle_submit_report({"payload": {"schema_version": "0.9"}})
+        with mock.patch.object(tools, "_CTX", CronRun(execution_id="schema-09")):
+            result = tools.handle_submit_report(
+                {"payload": {"schema_version": "0.9"}, "report_markdown": REPORT}
+            )
         self.assertIsInstance(result, str)
-        self.assertEqual(
-            {"ok": False, "error": "invalid_schema_version"}, json.loads(result)
-        )
+        result = json.loads(result)
+        result.pop("report")  # the report is stored before the Gateway checks
+        self.assertEqual({"ok": False, "error": "invalid_schema_version"}, result)
 
     def test_args_without_payload_return_json_string(self):
         import json
@@ -824,10 +826,12 @@ class P11DirectDeliveryRegressionTests(unittest.TestCase):
                         "payload": {
                             "schema_version": "1.0",
                             "items": make_payload()["items"],
-                        }
+                        },
+                        "report_markdown": REPORT,
                     }
                 )
             )
+        result.pop("report")
         self.assertEqual(result, {"ok": False, "error": "source_receipts_required"})
         post.assert_not_called()
 
@@ -841,6 +845,7 @@ class P11DirectDeliveryRegressionTests(unittest.TestCase):
             mock.patch.object(tools.webhook_transport, "post", post),
         ):
             result = json.loads(tools.handle_submit_report(args))
+        result.pop("report")
         self.assertEqual(result, {"ok": False, "error": "invalid_source_receipts"})
         resolve.assert_not_called()
         post.assert_not_called()
@@ -853,6 +858,7 @@ class P11DirectDeliveryRegressionTests(unittest.TestCase):
             mock.patch.object(source_collection, "resolve") as resolve,
         ):
             result = json.loads(tools.handle_submit_report(submission_args(payload)))
+        result.pop("report")
         self.assertEqual(result, {"ok": False, "error": "source_receipts_required"})
         resolve.assert_not_called()
 
@@ -1154,13 +1160,7 @@ class ReportSourceContractTests(unittest.TestCase):
         (body,) = self.sent
         request = json.loads(body)
         self.assertEqual(set(request), set(schema["properties"]) - {"fire_id"})
-        # The pinned upstream fixture predates source_quotes, which the n8n screen
-        # and the 0.3.0 plugin already carry; every other field is checked as is.
-        self.assertEqual(set(request["items"][0]), tools._ITEM_FIELDS)
-        request["items"] = [
-            {k: v for k, v in item.items() if k != "source_quotes"}
-            for item in request["items"]
-        ]
+        self.assertIn("source_quotes", request["items"][0])
         jsonschema.validate(request, schema, format_checker=jsonschema.FormatChecker())
 
     def test_source_text_is_the_stored_report_bytes(self):
@@ -1258,7 +1258,10 @@ class ReportSourceContractTests(unittest.TestCase):
             ("broken \ud800 surrogate " + "x" * 40, "report_malformed"),
             ("nul \x00 byte " + "x" * 40, "report_malformed"),
             ("escape \x1b[31m red " + "x" * 40, "report_malformed"),
+            ("override \u202e txt.exe " + "x" * 40, "report_bidi_control"),
+            ("isolate \u2066 text \u2069 " + "x" * 40, "report_bidi_control"),
             ("x" * (tools.GATEWAY_MAX_SOURCE_CHARACTERS + 1), "request_too_large"),
+            ("\u20ac" * tools.GATEWAY_MAX_SOURCE_CHARACTERS, "request_too_large"),
         )
         for report, code in cases:
             args = submission_args()
@@ -1302,31 +1305,83 @@ class ReportSourceContractTests(unittest.TestCase):
             "• Docs (https://example.com/a?b=1&c=2)\n• plain item\n",
         )
 
-    def test_metric_labels_are_fixed_low_cardinality_values(self):
-        identifier = re.compile(
-            r"https?://|[0-9a-f]{8}-[0-9a-f]{4}-|\b[0-9a-f]{32}\b|\b[0-9a-f]{64}\b"
+    def test_zero_width_joiner_is_allowed(self):
+        report = "Family \U0001f468\u200d\U0001f469 emoji keeps its joiner. " + "x" * 40
+        result = self.run_submit(self.with_report(report))
+        self.assertTrue(result["ok"], result)
+
+    def test_day_without_items_stores_and_renders_but_sends_nothing(self):
+        args = submission_args()
+        args["payload"]["items"] = []
+        args["source_receipts"] = []
+        result = self.run_submit(args)
+        self.assertEqual(
+            {k: v for k, v in result.items() if k != "report"},
+            {"ok": True, "status": "stored", "gateway": "skipped_no_items"},
         )
-        hostile = (
-            "https://example.com/x",
-            "11111111-1111-1111-1111-111111111111",
-            "a" * 32,
-            "b" * 64,
-            "report_conflict",
+        self.assertEqual(self.sent, [])
+        self.assertEqual(Path(result["report"]["report_path"]).read_text(), REPORT)
+        self.assertEqual(
+            Path(result["report"]["telegram_path"]).read_text(),
+            tools.render_telegram(REPORT),
         )
-        for kind in tools._ALLOWED_JOBS.values():
-            for outcome in tools.METRIC_OUTCOMES:
-                for reason in hostile:
-                    for size in (0, 70000, 300000, 2**21):
-                        (series,) = tools.metric_lines(kind, outcome, reason, size)[1:]
-                        values = re.findall(r'="([^"]*)"', series)
-                        self.assertEqual(len(values), 4)
-                        for value in values:
-                            self.assertIsNone(identifier.search(value), series)
-                            self.assertRegex(value, r"^[a-z0-9_]{1,24}$")
-        with self.assertRaises(ValueError):
-            tools.metric_lines("https://example.com", "persisted", "none", 1)
-        with self.assertRaises(ValueError):
-            tools.metric_lines("news", "a" * 32, "none", 1)
+        manifest = json.loads((self.directory / "manifest.json").read_bytes())
+        self.assertEqual(manifest["gateway"], "skipped_no_items")
+        self.assertFalse((self.directory / "source-set.json").exists())
+        self.assertFalse((self.root / "outbox").exists())
+
+    def test_gateway_side_failure_still_returns_the_stored_files(self):
+        args = submission_args()
+        args["source_receipts"] = ["not-a-collector-receipt"]
+        result = self.run_submit(args)
+        self.assertEqual(result["error"], "invalid_source_receipts")
+        self.assertTrue(Path(result["report"]["email_path"]).is_file())
+        self.assertEqual(self.sent, [])
+
+    def test_replay_returns_stored_outputs_without_rerendering(self):
+        first = self.run_submit(submission_args())
+        email = Path(first["report"]["email_path"]).read_bytes()
+        with (
+            mock.patch.object(tools, "render_email", side_effect=AssertionError),
+            mock.patch.object(tools, "render_telegram", return_value="changed\n"),
+        ):
+            replay = self.run_submit(submission_args())
+        self.assertTrue(replay["ok"], replay)
+        self.assertEqual(replay["report"], first["report"])
+        self.assertEqual(Path(first["report"]["email_path"]).read_bytes(), email)
+
+    def test_interrupted_create_leaving_a_second_link_recovers(self):
+        self.directory.mkdir(parents=True, mode=0o700)
+        self.directory.parent.chmod(0o700)
+        self.directory.chmod(0o700)
+        report = self.directory / "report.md"
+        report.write_bytes(REPORT.encode())
+        report.chmod(0o600)
+        os.link(report, self.directory / ".tmp-0123456789abcdef")
+        self.assertEqual(report.stat().st_nlink, 2)
+        result = self.run_submit(submission_args())
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(report.stat().st_nlink, 1)
+        self.assertFalse((self.directory / ".tmp-0123456789abcdef").exists())
+        self.assertTrue((self.directory / "email.html").is_file())
+
+    def test_pathological_lines_render_in_linear_time(self):
+        import time
+
+        n = 200_000
+        for line in (
+            "[" * n,
+            "[a](" + "b" * n,
+            "# a" + "#" * n + "b",
+            "# a" + " " * n + "b",
+            "- a" + " " * n + "b",
+            "[" + " " * n + "](",
+        ):
+            with self.subTest(line=line[:8]):
+                started = time.monotonic()
+                tools.render_email(line, "a" * 64)
+                tools.render_telegram(line)
+                self.assertLess(time.monotonic() - started, 2.0)
 
 
 class PrivateRecordCreateTests(unittest.TestCase):
