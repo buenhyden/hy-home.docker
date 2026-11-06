@@ -1,8 +1,8 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.2.6"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"
@@ -50,6 +50,8 @@ version 0.3.0 on 2026-11-06 ("승인").
 | --- | --- | --- | --- |
 | SPEC-0263 | approved | in-review | #current-contract-decision |
 | SPEC-0263 | in-review | approved | #current-contract-decision |
+| SPEC-0263-TSK-0002 | draft | ready | #review-and-completion |
+| SPEC-0263-TSK-0002 | ready | in-progress | #review-and-completion |
 
 ### W7 implementation
 
@@ -235,12 +237,15 @@ DAGs; the next member peak is 0.077 CPU.
 | E25 | 8 | W7 | full unit suite | the E15 command at `19d6040b2` | FAIL | 3346 tests, failures=2: `test_workflow_version_bundle` (stale n8n source binding) and `test_sec01_ci_routing`, which runs it | required | - |
 | E26 | 8 | W7 | full unit suite | the E15 command at `63d5b78a0`, after re-pinning the current n8n source binding in the update ledger and build inputs | PASS | 3346 tests OK, skipped=108 | required | E25 |
 | E27 | 8 | W7 | HOME readiness | `lab.py --env-file labs/.env readiness` for the six measured LABs, read-only, at `ea012d83b` | FAIL | postgresql-ha resources FAIL (10.45 CPUs / 10); opensearch-cluster resources FAIL (31808 / 27924 MiB); cassandra, couchdb, jupyterlab, mongodb resources PASS, tier and composition FAIL (destination undecided); valkey-cluster PASS | required | - |
+| E28 | 8 | W7 | RED | `test_lab_controller` at `961b5d475` | PASS | 100 tests OK | required | E2 |
+| E29 | 8 | W7 | HOME readiness | `lab.py --env-file labs/.env readiness valkey-cluster`, read-only, at `961b5d475` | PASS | all five criteria PASS; needed 9.8 CPUs / 25536 MiB against 10 / 27924 | required | E8, E20 |
+| E30 | 8 | W7 | LAB check | `lab.py --env-file labs/.env check valkey-cluster`, read-only, at `961b5d475` | FAIL | exit 3; only the LAB budget: 9.95 CPUs / 25696 MiB against `LAB_HOST_BUDGET_*` 4 / 8192 | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26, E27 | - | @buenhyden |
+| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26, E27, E28, E29, E30 | - | @buenhyden |
 
 ## Review and Completion
 
@@ -260,6 +265,12 @@ recreation. The owner decides the next step:
 
 The memory reservations take effect in Docker only when the owner recreates
 the HOME services in an owner window.
+
+Status (2026-11-06): the owner asked to move this Task forward, so it is
+`in-progress`. Criterion 8 stays pending on real results: postgresql-ha
+readiness refuses on resources (E9, E21, E24, E27), and `lab.py check`
+(E10, E30) sums HOME reservations against the LAB budget of 4 CPUs / 8192
+MiB, which no LAB can meet now; 10 / 27924 would pass valkey-cluster.
 
 Owner decisions on the review findings and the resource `FAIL` (2026-11-06):
 

@@ -1,8 +1,8 @@
 ---
 title: "LAB Promotion Contract Plan"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "specs"
