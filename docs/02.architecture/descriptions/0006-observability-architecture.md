@@ -1,112 +1,108 @@
 ---
 title: "Observability Architecture Description"
-version: "1.0.8"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0006"
 parent_ids:
 - "REQ-0007"
 created: "2026-03-26"
 ---
+
 # Observability Architecture Description
 
 ## Overview
 
-### Context and Stakeholders
-
-This document defines the reference architecture of `06-observability`, the observability layer of the `hy-home.docker` platform. To secure cloud-level observability in a local environment, it integrates the currently implemented LGTM stack (Loki, Grafana, Tempo, Prometheus) with Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, and Pyroscope.
+`06-observability` collects, stores and shows platform telemetry so incidents
+can be correlated across logs, metrics, traces and profiles. It runs Loki,
+Grafana, Tempo and Prometheus with Grafana Alloy, Alertmanager, Pushgateway,
+cAdvisor, node-exporter, Gatus, Pyroscope and a DCGM GPU exporter,
+fully self-hosted.
 
 ## Scope
 
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
-
-The Observability tier collects, stores, and visualizes status information across the system, and accelerates problem resolution through correlation analysis during incidents. The current compose provides OTLP trace ingress, Docker log discovery, and Prometheus scrape/remote-write paths, and Loki/Tempo use SeaweedFS-based S3 backend storage.
-
-### System Boundaries
-
-This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
-
-- **Owns**:
-  - Centralized logging (Loki)
-  - Time-series metric collection and alerting (Prometheus/Alertmanager)
-  - Distributed tracing (Tempo)
-  - Continuous profiling (Pyroscope)
-  - Unified dashboard (Grafana)
-  - Unified telemetry collection (Alloy)
-  - Optional operator Docker-log inspection (Dozzle, separate leaf Compose)
-- **Consumes**:
-  - **SeaweedFS (04-data)**: S3 storage for log and trace data.
-  - **Keycloak (02-auth)**: OIDC provider for Grafana SSO login.
-- **Does Not Own**:
-  - Application security logs (owned by 03-security)
-  - Business statistics data (owned by the Data Warehouse)
-- **Non-goals**:
-  - Dependency on external cloud monitoring vendors (fully self-hosted orientation)
-
-### Traceability
-
-The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+- **Owns:** centralized logs (Loki), metrics and alerting (Prometheus,
+  Alertmanager), traces (Tempo), profiles (Pyroscope), dashboards (Grafana),
+  telemetry collection (Alloy), availability checks (Gatus), and optional
+  Docker-log inspection (Dozzle, a separate leaf).
+- **Consumes:** SeaweedFS (`04-data`) S3 storage for logs and traces;
+  Keycloak (`02-auth`) OIDC for Grafana, Gatus and Dozzle; `mng-pg` for
+  Grafana state. Gatus keeps a local SQLite store.
+- **Does not own:** application security logs (`03-security`) or business
+  statistics.
+- **Non-goals:** dependence on external cloud monitoring vendors.
 
 ## Structure
 
-### Viewpoints and Views
+### Architecture
 
-This section uses the context, component, or deployment representation as the view for the relevant concern.
-
-In the current source, Docker logs and OTLP traces pass through **Grafana Alloy** to Loki/Tempo, and Prometheus scrapes exporters/services directly. Prometheus scrapes Alloy self-metrics directly; the former Alloy self-remote-write loop is absent. Alloy declares pprof sources forwarding to Pyroscope, but successful end-to-end collection still needs runtime evidence. Users query each datasource in **Grafana**.
+All core services are in `infra/06-observability/docker-compose.yml`; Dozzle
+is in `infra/06-observability/dozzle/docker-compose.yml`. Alloy discovers
+Docker logs and forwards them to Loki, receives OTLP traces and forwards them
+to Tempo, and declares pprof scrape targets for Pyroscope. Prometheus scrapes
+exporters, services and Alloy self-metrics directly. Grafana queries each
+datasource. Traefik sends its own traces straight to Tempo.
 
 ## Runtime and Deployment
 
-### Data and Control Flows
+### Runtime View
 
-Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
+- **Metrics:** cAdvisor, exporters and services -> Prometheus; Alloy
+  self-metrics -> Prometheus scrape.
+- **Logs:** Docker logs -> Alloy -> Loki -> SeaweedFS `loki-bucket`
+  (`retention_period: 168h`).
+- **Traces:** application OTLP -> Alloy -> Tempo -> SeaweedFS `tempo-bucket`.
+- **Quality metrics:** k6 OTLP -> authenticated Alloy receiver
+  (`config.home.alloy`) -> Prometheus remote write. A 2026-10-08 HOME canary
+  passed for the named inputs (SPEC-0214, since deleted); that dated result
+  does not certify later source or real application load.
+- **Profiles:** declared Alloy pprof targets -> Pyroscope (local filesystem
+  backend); collection success is not verified.
 
-- **Key Entities / Flows**:
-  - **Metrics Flow**: cAdvisor/Exporters/Services -> Prometheus; Alloy self-metrics -> Prometheus scrape
-  - **Logs Flow**: Docker Logs -> Alloy -> Loki -> SeaweedFS
-  - **Traces Flow**: App (OTLP) -> Alloy -> Tempo -> SeaweedFS
-  - **Quality Metrics Flow**: k6 (OTLP) -> per-run metrics ingress -> authenticated Alloy receiver -> Prometheus. A 2026-10-08 HOME canary and live Grafana query passed for the named inputs (SPEC-0214, since deleted); this dated result does not certify later source or real application load. The current interruption-evidence continuation is separate.
-  - **Profiles Flow**: declared Alloy pprof sources -> Pyroscope; collection success remains unverified
-- **Storage Strategy**:
-  - Metrics: Prometheus local TSDB
-  - Logs: Loki SeaweedFS bucket `loki-bucket`, `retention_period: 168h`
-  - Traces: Tempo SeaweedFS bucket `tempo-bucket`; policy targets24h, but current source omits `block_retention`. The version-specific default is336h; this policy/implementation gap remains unresolved.
-  - Profiles: Pyroscope local filesystem backend
-- **Data Boundaries**: Scrapes and datasource queries use `obs_net`; object storage uses `object_net` and UI routes use `edge_net`. Approved Kubernetes LAN ingress/query exceptions remain governed by POL-0096; tier placement does not imply network-only isolation.
+Prometheus keeps a local TSDB. Scrapes and datasource queries use `obs_net`,
+object storage `object_net`, UI routes `edge_net`. Approved Kubernetes LAN
+ingress and query exceptions stay under POL-0096.
 
 ### Deployment View
 
-- **Runtime / Platform**: Container orchestration based on Docker Compose v2.x.
-- **Deployment Model**: `prometheus`, `grafana`, `loki`, `alloy`, `tempo`,
-  `pyroscope`, `node-exporter`, `cadvisor`, `gatus`, and `alertmanager` are
-  `HOME`. `pushgateway` is `OPTIONAL`. `obs` is the full
-  compatibility profile, and `obs-core`, `obs-host`, `logs`, `tracing`,
-  `profiling`, `alerting`, `availability`, and `batch-metrics` provide narrower
-  activation. A HOME profile start does not automatically stop an already
-  running optional container.
-- **Optional inspection:** `infra/06-observability/dozzle/docker-compose.yml` remains a separate leaf selected by `admin`/`admin-logs`; native OIDC, CIDR controls, socket visibility and settings persistence stay unchanged.
-- **Operational Evidence**: Grafana provisioning files, root compose profile validation, service-local compose validation with root network/secret context, and hardening script output.
+`obs` selects the full set; `obs-core` (Prometheus, Grafana), `obs-host`
+(node-exporter, cAdvisor), `logs`, `tracing`, `profiling`, `alerting`,
+`availability` (Gatus) and `batch-metrics` (Pushgateway) select narrower sets.
+`dev` selects Prometheus, Grafana, node-exporter, cAdvisor and Gatus.
+`obs-gpu` alone selects `dcgm-exporter`. Dozzle is selected by `admin` or
+`admin-logs`. Prometheus, Grafana, Loki, Alloy, Tempo, Pyroscope,
+node-exporter, cAdvisor, Gatus, Alertmanager and `dcgm-exporter` are HOME;
+Pushgateway is OPTIONAL. Starting a HOME profile does not stop an already
+running optional container.
 
 ## Quality and Risks
 
-### Quality Scenarios
+### Quality Attributes
 
-Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
+- **Performance:** Alloy batches traces before export.
+- **Security:** Grafana, Gatus and Dozzle use native Keycloak OIDC; the other
+  UIs use ForwardAuth; the Prometheus API route uses `prometheus-api-auth@file`.
+- **Reliability:** recovery covers Loki and Tempo object blocks in SeaweedFS
+  together with each service's local WAL and working state.
+- **Scalability:** the Prometheus local TSDB is the durable authority; the
+  enabled remote-write receiver does not imply an external long-term store.
+- **Observability:** the stack includes self-monitoring dashboards.
 
-- **Performance**: Minimizes application overhead through asynchronous data processing via Alloy.
-- **Security**: Applies role-based access control (RBAC) based on Keycloak OIDC.
-- **Reliability**: A recovery boundary that covers Loki/Tempo's SeaweedFS object blocks together with each service's local WAL/working state.
-- **Scalability**: For Prometheus, the local TSDB is currently the durable authority; enabling the remote-write receiver alone does not imply an external long-term store.
-- **Observability**: Includes a self-monitoring dashboard.
+### Risks
+
+The Tempo policy targets 24h retention, but `tempo/config/tempo.yaml` sets no
+`block_retention`, so the version default (336h) applies. This gap is open.
+
+### Evolution
+
+A long-term metrics store or a Tempo retention setting needs a Stage 03
+change.
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
-- **ADR**: [../decisions/0006-lgtm-stack-selection.md](../decisions/0006-lgtm-stack-selection.md)
-
-Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+- [REQ-0007 Observability requirements](../../01.requirements/0007-observability.md)
+- [ADR-0006 LGTM stack selection](../decisions/0006-lgtm-stack-selection.md)
+- [Derived Compose image projection](../../../infra/tech-stack.versions.json)

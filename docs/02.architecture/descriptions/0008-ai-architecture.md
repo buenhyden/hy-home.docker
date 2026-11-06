@@ -1,123 +1,121 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.0.5"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
 - "REQ-0009"
 created: "2026-03-26"
 ---
+
 # AI Infrastructure Architecture Description
 
 ## Overview
 
-### Context and Stakeholders
-
-This document defines the reference architecture and quality attributes of the `08-ai` layer. It provides structural guidelines on GPU resource allocation, service boundaries, and data flow for high-performance local LLM inference and RAG systems.
+`08-ai` owns privacy-preserving local inference and the interfaces that use
+it: GPU allocation, service boundaries and data flow for local LLM inference,
+RAG chat, image workflows, knowledge notebooks, experiment tracking and web
+extraction. Local inference uses NVIDIA GPUs; provider or API egress needs
+separate authorization.
 
 ## Scope
 
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
-
-The `08-ai` layer is the core area responsible for the system's "intelligence" and owns the privacy-preserving local inference engine and the UI/RAG interface that uses it. Local inference uses NVIDIA GPU resources; optional provider/API egress requires separate authorization and is not ruled out by the tier name.
-
-### System Boundaries
-
-This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
-
-- **Owns**:
-  - LLM inference engine (`Ollama`)
-  - AI user interface and RAG orchestrator (`Open WebUI`)
-  - Local model weight and configuration management
-  - ComfyUI image-workflow interface and its declared workflow mounts
-  - Open Notebook and its nested SurrealDB knowledge-work state
-  - MLflow experiment tracking and feature-owned PostgreSQL provisioning
-  - Crawl4AI extraction interface and its separate egress boundary
-- **Consumes**:
-  - GPU hardware resources (via NVIDIA Container Toolkit)
-  - Shared Qdrant for explicitly configured vector consumers; current Open WebUI uses local Chroma with `VECTOR_DB` unset
-  - Management PostgreSQL and SeaweedFS for MLflow metadata/artifacts
-  - User authentication and SSO (`02-auth/keycloak`)
-- **Does Not Own**:
-  - The vector processing server itself (the Qdrant instance is owned by the Data layer)
-  - The service monitoring collector (owned by the Observability layer)
-- **Non-goals**:
-  - High-end GPU cluster computing (focused on optimizing a single node or a single resource group)
-  - Providing a direct model training environment
-
-### Traceability
-
-The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+- **Owns:** Ollama inference and its model store; Open WebUI chat and RAG;
+  ComfyUI and its declared workflow mounts; Open Notebook with its nested
+  SurrealDB; MLflow tracking and its feature-owned PostgreSQL provisioning;
+  Crawl4AI with its separate egress gateway.
+- **Consumes:** GPUs through the NVIDIA Container Toolkit; `mng-pg` and
+  SeaweedFS for MLflow metadata and artifacts; Keycloak for SSO; shared Qdrant
+  only for consumers explicitly configured for it.
+- **Does not own:** the Qdrant instance (`04-data`), the monitoring collectors
+  (`06-observability`), or Jupyter notebooks (Analytics LAB).
+- **Non-goals:** multi-node GPU clusters and model training environments.
 
 ## Structure
 
-### Viewpoints and Views
+### Architecture
 
-This section uses the context, component, or deployment representation as the view for the relevant concern.
+1. **Inference:** `ollama` controls the model store and the GPU (NVIDIA device
+   reservation) and serves an OpenAI-compatible API; `ollama-exporter` exports
+   its metrics.
+2. **Interaction:** `open-webui` runs chat and RAG (embed, search, augment).
+   `VECTOR_DB` is unset, so vectors stay in its local Chroma store, not Qdrant.
+3. **Image:** `comfyui` uses `gpus: all`.
+4. **Knowledge and experiments:** `open_notebook` with `surrealdb`; `mlflow`
+   with `mlflow-db-provision`.
+5. **Extraction:** `crawl4ai` reaches the internet only through
+   `crawl4ai-egress`.
 
-The system operates as a hybrid structure.
-
-1. **Inference Layer (Backend)**: Ollama directly controls the model store and GPU and provides an OpenAI-compatible API.
-2. **Interaction Layer (Frontend/Orchestrator)**: Open WebUI performs RAG logic (Embedding -> Search -> Augment) alongside the chat UI. Vectors sit in Open WebUI's local storage; Qdrant is not used (`VECTOR_DB` is unset).
-
-### AI Agent Architecture
-
-- **Model/Provider Strategy**: Local Ollama is the current P03-authorized
-  source-default path. An Ollama-mediated cloud path and a direct-cloud path
-  are separate future contracts; neither is an automatic fallback or an
-  authorized current egress path. Stored product-provider state was not read
-  and remains `UNKNOWN`.
-- **Tooling Boundary**: The agent uses the Ollama API as its interface and does not directly manipulate model weights or the GPU driver.
-- **Latency / Cost Budget**: Minimize model reloads within the declared source
-  limits. P03's proposed Notebook registration names `gemma4:e2b` for chat and
-  `embeddinggemma-2:740m` for 768-dimensional embeddings; the declaration does
-  not prove either model is downloaded, registered or functional.
+Local Ollama is the current source-default model path. An Ollama-mediated
+cloud path and a direct cloud path are separate future contracts, not a
+fallback or an authorized egress path. Stored product-provider state was not
+read and is `UNKNOWN`. Consumers use the Ollama API and never touch model
+weights or the GPU driver. The proposed Notebook registration names
+`gemma4:e2b` for chat and `embeddinggemma-2:740m` for 768-dimensional
+embeddings; the declaration does not prove either model is downloaded,
+registered or working.
 
 ## Runtime and Deployment
 
-### Data and Control Flows
+### Runtime View
 
-Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
+```text
+User prompt -> Open WebUI (RAG context) -> Ollama (inference) -> streamed response
+```
 
-- **Key Entities / Flows**: User Prompt → Open WebUI (RAG Context Enrich) → Ollama (Inference) → Response Streaming.
-- **Storage Strategy**: The Compose declaration owns the Ollama model-store
-  mount and its configured `${DEFAULT_AI_MODEL_DIR}/ollama` target. This
-  architecture document does not assert a bind-mount implementation or a
-  successful model-store recovery.
-- **Data Boundaries**: Open WebUI SQLite, uploads and local Chroma belong to its data volume; Qdrant is not its configured vector backend. ComfyUI declares `/root`-based mounts, but active image `/opt` paths may differ; do not claim coverage until path reconciliation is verified. Open Notebook recovery coordinates app data, SurrealDB and its encryption key. MLflow coordinates PostgreSQL metadata with SeaweedFS artifacts; Jupyter notebooks remain owned by Analytics. Context storage/egress must be checked for the selected consumer.
+- The Compose declaration owns the Ollama model-store mount at
+  `${DEFAULT_AI_MODEL_DIR}/ollama`; no successful model-store recovery is
+  asserted.
+- Open WebUI SQLite, uploads and local Chroma live in its data volume.
+- ComfyUI declares `/root`-based mounts, but the image's `/opt` paths may
+  differ; coverage is not claimed until the paths are reconciled.
+- Open Notebook recovery coordinates app data, SurrealDB and its encryption
+  key. MLflow coordinates `mng-pg` metadata with SeaweedFS artifacts.
 
 ### Deployment View
 
-- **Runtime / Platform**: Docker Compose v3.8+ (NVIDIA Container Support).
-- **Deployment Model**: Ollama/exporter, Open WebUI, and ComfyUI are
-  owner-confirmed `HOME` capabilities. `ai` selects the full target;
-  `ai-llm` selects Ollama/Open WebUI, `ollama` selects Ollama/exporter, and
-  `ai-image` selects ComfyUI. Compose resource declarations are source limits,
-  not measured shared-GPU headroom. `notebook`/`surrealdb`, `mlops`/`data-science` and Crawl4AI retain their existing optional profiles; `ai` does not select every package now located in this directory.
-- **Operational Evidence**: Real-time GPU status check through `nvidia-smi` and the `ollama-exporter` dashboard.
+`ai` selects Ollama with its exporter, Open WebUI, ComfyUI and Qdrant;
+`ai-llm` selects Ollama, Open WebUI and Qdrant; `ollama` selects Ollama and
+its exporter; `ai-image` selects ComfyUI. These are HOME. `notebook` (Open
+Notebook and SurrealDB, SurrealDB also by `surrealdb`), `mlops` and
+`data-science` (MLflow) and `crawl4ai` are optional capability profiles; `ai`
+does not select them. Compose resource declarations are source limits, not
+measured shared-GPU headroom.
 
 ## Quality and Risks
 
-### Quality Scenarios
+### Quality Attributes
 
-Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
+- **Performance:** CUDA acceleration and quantization are workload choices; no
+  measured latency or shared-GPU capacity is established.
+- **Security:** Open WebUI uses native OIDC; Ollama, ComfyUI and the MLflow
+  browser route use ForwardAuth; Open Notebook uses password-file
+  authentication with an admin IP allow list. Crawl4AI egress and loopback
+  publications keep their explicit boundaries.
+- **Reliability:** health checks are process and application signals; an
+  unhealthy status alone neither restarts a container nor proves recovery.
+- **Scalability:** more worker or GPU capacity needs approved resource and
+  topology changes; there is no automatic scaling.
+- **Observability:** `ollama-exporter` reports model and API metrics; VRAM is
+  covered by `dcgm-exporter` under `obs-gpu`.
 
-- **Performance**: CUDA acceleration and model quantization are workload choices; source declarations do not establish measured latency or shared-GPU capacity.
-- **Security**: Authentication is service-specific. Open WebUI uses native OIDC, Open Notebook password-file authentication and gateway CIDR controls, and MLflow a browser ForwardAuth route. MLflow's direct SDK path on all four declared networks is not equivalently authenticated. Provider egress, Crawl4AI routes and loopback publications retain their explicit boundaries.
-- **Reliability**: Healthchecks provide process/application signals; an unhealthy status alone does not restart a container or prove application recovery.
-- **Scalability**: Additional worker/GPU capacity requires approved resource and topology changes; no automatic horizontal scaling is established.
-- **Observability**: Continuously monitors VRAM usage, model load status, and API call statistics through `ollama-exporter`.
+### Risks
+
+- MLflow's SDK path on `edge_net`, `ai_net`, `mng_data_net` and `object_net`
+  is not authenticated like its browser route.
+- `ai` and `ai-llm` start Qdrant although Open WebUI does not use it.
+
+### Evolution
+
+Switching Open WebUI to Qdrant or enabling a cloud model path each needs a
+Stage 03 change and egress approval.
 
 ## Related Documents
 
-- **PRD**: [009-ai.md](../../01.requirements/0009-ai.md)
-- **Spec**: [009-ai/spec.md](0008-ai-architecture.md)
-- **ADR**: [0008-ollama-openwebui-local-ai.md](../decisions/0008-ollama-openwebui-local-ai.md)
-
-Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+- [REQ-0009 AI requirements](../../01.requirements/0009-ai.md)
+- [ADR-0008 Ollama and Open WebUI local AI](../decisions/0008-ollama-openwebui-local-ai.md)
+- [Derived Compose image projection](../../../infra/tech-stack.versions.json)

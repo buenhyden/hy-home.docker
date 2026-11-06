@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -16,35 +16,25 @@ created: "2026-03-26"
 
 ## Overview
 
-### Context and Stakeholders
-
 Data provides storage and data-platform packages for HOME applications and
-explicitly selected development workloads. Operators need to distinguish
-shared HOME state from OPTIONAL platforms and LAB topologies. Package names
-are direct children of `infra/04-data`; Analytics processing follows ADR-0045
-and, since SPEC-0262, runs as standalone LAB entrypoints under `labs/`.
+explicitly selected development workloads. Operators need to tell shared HOME
+state apart from OPTIONAL packages and LAB topologies. Root packages are
+direct children of `infra/04-data`; LAB topologies are standalone entrypoints
+under `labs/`. Analytics processing follows ADR-0045 and, since SPEC-0262,
+runs as LAB entrypoints.
 
 ## Scope
 
-### System Boundaries
-
-Data owns its database/object-store configuration and state contracts. It does
-not own every persistent file in the platform: analytics checkpoints,
-application metadata and package-local stores remain with their consumers.
-Secrets, ingress and backup orchestration retain their existing owners.
+Data owns its database and object-store configuration and state contracts. It
+does not own every persistent file: analytics checkpoints, application
+metadata and package-local stores stay with their consumers. Secrets, ingress
+and backup orchestration keep their owners.
 Supabase is an intact optional data platform, including its bundled interfaces.
-No package is split solely to make a folder taxonomy more uniform.
-
-### Traceability
-
-- [REQ-0004](../../01.requirements/0004-data.md)
-- [REQ-0027](../../01.requirements/0027-home-development-host.md)
-- [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
-- SPEC-0197
+No package is split only to make the folder taxonomy uniform.
 
 ## Structure
 
-### Components
+### Architecture
 
 | Packages | Responsibility | Classification |
 | --- | --- | --- |
@@ -54,54 +44,76 @@ No package is split solely to make a folder taxonomy more uniform.
 | qdrant | vector persistence for AI consumers | HOME |
 | supabase | separate application data platform | OPTIONAL |
 | neo4j | optional single-node graph persistence | OPTIONAL |
-| opensearch | optional single-node search/index storage; independent cluster rehearsal | OPTIONAL / LAB |
-| postgresql-cluster, valkey-cluster | independent cluster rehearsals | LAB |
-| cassandra, couchdb, mongodb | selected nonrelational engines | LAB |
+| opensearch | optional single-node search/index storage and dashboards | OPTIONAL |
 | redisinsight | local connection/settings metadata and Redis/Valkey administration | OPTIONAL |
+| `labs/postgresql-ha`, `labs/valkey-cluster`, `labs/opensearch-cluster` | independent cluster rehearsals | LAB |
+| `labs/cassandra`, `labs/couchdb`, `labs/mongodb` | selected nonrelational engines | LAB |
 
-The PostgreSQL cluster retains Patroni, etcd, pg-router and exporters. Those
-components do not describe HOME's mng-pg topology. SurrealDB stays with its
-sole consumer Open Notebook in `08-ai`. RedisInsight owns only its administration metadata; target engine backups remain owned by the corresponding Data service. Restic stays in `09-platform-ops` as cross-platform orchestration.
-InfluxDB is retired (ADR-0047); DEV TimescaleDB owns time-series history.
+The PostgreSQL HA LAB keeps Patroni, etcd, the router and exporters; they do
+not describe HOME's `mng-pg`. SurrealDB stays with its only consumer, Open
+Notebook, in `08-ai`. RedisInsight owns only its administration metadata;
+target engine backups stay with the engine's Data package. Restic stays in
+`09-platform-ops` as cross-platform orchestration. InfluxDB is retired
+(ADR-0047); DEV TimescaleDB owns time-series history.
 
 ## Runtime and Deployment
 
-### Data Flow
+### Runtime View
 
-Auth, Workflow, Tooling and Analytics use declared mng-db identities. AI uses
-Qdrant. Observability, AI and Analytics share SeaweedFS with their own storage
-identities. Flink/Spark/Trino consume its Iceberg catalog; dbt transforms
-the development PostgreSQL business fixture; tool metadata remains in mng-db.
-Project migration source stays in external repositories; infra provisions only
-approved explicit DB/roles and Valkey ACLs. `perf_db` retains test results with
-project-scoped access, not raw business data in management databases. Existing Compose dependencies and profiles define actual
-activation; this description does not assert an automatic ingestion pipeline.
+Auth, Workflow, Tooling and Observability (Grafana) use declared `mng-db`
+identities; MLflow and Pact Broker provision their own `mng-pg` databases. AI
+consumers that are configured for it use Qdrant. Observability, AI and the
+analytics LABs share SeaweedFS with their own storage identities. The
+`labs/lakehouse` Flink, Spark and Trino entrypoints consume the SeaweedFS
+Iceberg catalog, and `labs/dbt` transforms the development PostgreSQL
+business fixture. Project migration source stays in external repositories;
+infra provisions only approved explicit databases, roles and Valkey ACLs.
+`perf_db` keeps test results with project-scoped access, not raw business data
+in management databases. No automatic ingestion pipeline exists.
 
 ### Deployment View
 
-The root Compose includes normal package fragments, including optional dev-db.
-Cluster/replica dependency closures are separate `labs/` entrypoints excluded
-even from root `--profile '*'`; they use distinct project, network, state and
-credential contracts. Exact profiles and networks remain in source and POL-0078. The structural move preserves service names, images,
-ports, secrets, persistent volume identities and host paths. It does not
-restart containers or reconcile existing source mounts.
+The root Compose includes every `infra/04-data` package; profiles select them:
+`mng-db` by `mng`, `core`, `dev` and `local` (`mng-pg` also by `mlops`,
+`data-science`, `contract-testing` and `bi`); `dev-db` by `dev-data`,
+`analytics-engineering`, `cdc` and `quality-results`; `seaweedfs` by
+`seaweedfs`, `storage`, the observability storage profiles, `nginx`, `mlops`,
+`data-science` and `lakehouse`; `qdrant` by `ai`, `ai-llm` and `qdrant`;
+`neo4j` by `graph`; `opensearch` by `opensearch`; `redisinsight` by `admin`
+and `admin-data`. LAB entrypoints are separate projects, excluded even from
+root `--profile '*'`, with their own network, state and credential contracts.
+POL-0078 owns the profile vocabulary.
 
 ## Quality and Risks
 
 ### Quality Attributes
 
-- HOME mng-pg and mng-valkey are shared single-instance dependencies, separate
-  from LAB PostgreSQL/Valkey clusters. Same-host replicas do not provide host HA.
-- Performance and failover require measured workload/recovery evidence; this
+- HOME `mng-pg` and `mng-valkey` are shared single-instance dependencies,
+  separate from the LAB clusters. Same-host replicas do not give host HA.
+- Performance and failover need measured workload and recovery evidence; this
   description makes no tier-wide latency or availability guarantee.
-- Preserve declared secret, network, port and persistent path boundaries.
-  A folder or Compose profile does not add isolation.
-- Recovery follows each engine's supported backup/restore process and POL-0021;
-  a volume declaration or a Git rollback is not a verified data backup.
+- Declared secret, network, port and persistent path boundaries are kept. A
+  folder or a Compose profile adds no isolation.
+- Recovery follows each engine's supported backup and restore process and
+  POL-0021; a volume declaration or a Git rollback is not a verified backup.
+
+### Risks
+
+`mng-pg` backs most HOME metadata; its loss affects Auth, Workflow, Tooling and
+Grafana together.
+
+### Evolution
+
+Promoting a LAB topology into `infra/04-data` is an owner decision under the
+LAB promotion contract.
 
 ## Related Documents
 
+- [REQ-0004 Data requirements](../../01.requirements/0004-data.md)
+- [REQ-0027 HOME development host](../../01.requirements/0027-home-development-host.md)
+- [ADR-0045 Data storage and analytics boundary](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
 - [Data packages](../../../infra/04-data/README.md)
+- [LAB entrypoints](../../../labs/README.md)
 - [Analytics architecture](0012-data-analytics-architecture.md)
 - [Backup policy](../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md)
 - [Profile vocabulary](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
