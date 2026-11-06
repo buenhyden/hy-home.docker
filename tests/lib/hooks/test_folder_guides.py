@@ -131,6 +131,19 @@ class FolderGuideTests(IsolatedState):
                 self.deliver("infra/a", session=self.session)
         self.assertEqual(1, len(self.deliver("infra/a", session=self.session)))
 
+    def test_reminders_name_the_guide_on_every_edit(self) -> None:
+        for _ in range(2):
+            messages = folder_guides.pending_messages(
+                self.root, [], self.session, edits=("infra/a.yml",), full=False
+            )
+            self.assertEqual(1, len(messages))
+            self.assertIn("Folder guide for this edit: `infra/AGENTS.md`", messages[0])
+
+    def test_restart_message_lists_tracked_guides(self) -> None:
+        message = folder_guides.restart_message(self.root)
+        self.assertIn("- `infra/AGENTS.md`", message)
+        self.assertNotIn("- `AGENTS.md`", message)
+
     def test_read_calls_count_as_targets(self) -> None:
         data = {"tool_name": "Read", "tool_input": {"file_path": "infra/a.yml"}}
         self.assertEqual(["infra/a.yml"], folder_guides.tool_targets(data, ()))
@@ -140,18 +153,25 @@ class FolderGuideTests(IsolatedState):
 
 
 class DispatcherDeliveryTests(IsolatedState):
-    def run_hook(self, event: str, payload: dict[str, object]) -> str:
+    PATCH = "*** Begin Patch\n*** Update File: {path}\n@@\n-a\n+b\n*** End Patch\n"
+
+    def run_hook(
+        self, event: str, payload: dict[str, object], *, provider: str = ""
+    ) -> str:
+        env = {
+            "PATH": "/usr/bin:/bin",
+            "CLAUDE_PROJECT_DIR": str(ROOT),
+            "XDG_STATE_HOME": self.state_home,
+        }
+        if provider:
+            env["HY_HOME_HOOK_PROVIDER"] = provider
         result = subprocess.run(
             ["bash", str(EVENT_HOOK), event],
             input=json.dumps(payload),
             capture_output=True,
             text=True,
             cwd=ROOT,
-            env={
-                "PATH": "/usr/bin:/bin",
-                "CLAUDE_PROJECT_DIR": str(ROOT),
-                "XDG_STATE_HOME": self.state_home,
-            },
+            env=env,
             timeout=60,
             check=True,
         )
@@ -160,19 +180,53 @@ class DispatcherDeliveryTests(IsolatedState):
     def payload(self, session: str, **tool: object) -> dict[str, object]:
         return {"hook_event_name": "PreToolUse", "session_id": session, **tool}
 
-    def test_pre_tool_use_injects_the_folder_guide_once(self) -> None:
-        session = f"test-{uuid.uuid4().hex}"
-        payload = self.payload(
+    def codex_patch(self, session: str, path: str) -> dict[str, object]:
+        return self.payload(
             session,
-            tool_name="Read",
-            tool_input={"file_path": str(ROOT / "scripts/README.md")},
+            tool_name="apply_patch",
+            tool_input={"command": self.PATCH.format(path=path)},
         )
-        first = json.loads(self.run_hook("PreToolUse", payload))
-        context = first["hookSpecificOutput"]["additionalContext"]
-        self.assertIn("Folder guide `scripts/AGENTS.md`", context)
-        self.assertNotIn("Folder guide", self.run_hook("PreToolUse", payload))
-        self.run_hook("SessionStart", {"session_id": session, "source": "compact"})
-        self.assertIn("Folder guide", self.run_hook("PreToolUse", payload))
+
+    def test_codex_receives_the_guide_once_and_again_after_compaction(self) -> None:
+        session = f"test-{uuid.uuid4().hex}"
+        payload = self.codex_patch(session, "tests/README.md")
+        first = self.run_hook("PreToolUse", payload, provider="codex")
+        self.assertIn("Folder guide `tests/AGENTS.md` applies", first)
+        second = self.run_hook("PreToolUse", payload, provider="codex")
+        self.assertNotIn("applies to files under", second)
+        self.assertIn("Folder guide for this edit: `tests/AGENTS.md`", second)
+        self.run_hook(
+            "SessionStart",
+            {"session_id": session, "source": "compact"},
+            provider="codex",
+        )
+        third = self.run_hook("PreToolUse", payload, provider="codex")
+        self.assertIn("Folder guide `tests/AGENTS.md` applies", third)
+
+    def test_claude_gets_a_path_reminder_on_every_edit_and_no_text(self) -> None:
+        session = f"test-{uuid.uuid4().hex}"
+        read = self.run_hook(
+            "PreToolUse",
+            self.payload(
+                session,
+                tool_name="Read",
+                tool_input={"file_path": str(ROOT / "scripts/README.md")},
+            ),
+        )
+        self.assertNotIn("Folder guide", read)
+        edit = self.payload(
+            session,
+            tool_name="Edit",
+            tool_input={
+                "file_path": "scripts/README.md",
+                "old_string": "a",
+                "new_string": "b",
+            },
+        )
+        for _ in range(2):
+            output = self.run_hook("PreToolUse", edit)
+            self.assertIn("Folder guide for this edit: `scripts/AGENTS.md`", output)
+            self.assertNotIn("applies to files under", output)
 
     def test_a_denied_call_does_not_consume_the_guide(self) -> None:
         session = f"test-{uuid.uuid4().hex}"
@@ -187,38 +241,29 @@ class DispatcherDeliveryTests(IsolatedState):
                         "content": "[x](file:///etc/hosts)\n",
                     },
                 ),
+                provider="codex",
             )
         )
         self.assertEqual("deny", denied["hookSpecificOutput"]["permissionDecision"])
         allowed = self.run_hook(
             "PreToolUse",
-            self.payload(
-                session,
-                tool_name="Read",
-                tool_input={"file_path": str(ROOT / "docs/03.specs/README.md")},
-            ),
+            self.codex_patch(session, "docs/03.specs/README.md"),
+            provider="codex",
         )
-        self.assertIn("Folder guide `docs/03.specs/AGENTS.md`", allowed)
+        self.assertIn("Folder guide `docs/03.specs/AGENTS.md` applies", allowed)
 
-    def test_codex_apply_patch_receives_the_folder_guide(self) -> None:
-        patch = (
-            "*** Begin Patch\n*** Update File: tests/README.md\n@@\n-a\n+b\n"
-            "*** End Patch\n"
-        )
-        output = json.loads(
-            self.run_hook(
-                "PreToolUse",
-                self.payload(
-                    f"test-{uuid.uuid4().hex}",
-                    tool_name="apply_patch",
-                    tool_input={"command": patch},
-                ),
+    def test_session_restart_asks_to_reread_the_folder_guides(self) -> None:
+        for source in ("compact", "resume"):
+            output = json.loads(
+                self.run_hook("SessionStart", {"session_id": "s", "source": source})
             )
+            context = output["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("re-read the nearest folder `AGENTS.md`", context)
+            self.assertIn("- `infra/AGENTS.md`", context)
+        startup = self.run_hook(
+            "SessionStart", {"session_id": "s", "source": "startup"}
         )
-        self.assertIn(
-            "Folder guide `tests/AGENTS.md`",
-            output["hookSpecificOutput"]["additionalContext"],
-        )
+        self.assertNotIn("re-read the nearest folder", startup)
 
 
 if __name__ == "__main__":

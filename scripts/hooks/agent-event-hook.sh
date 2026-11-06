@@ -92,6 +92,12 @@ Context was just compacted:
 - Preserve tracked, staged, and untracked state; do not hide unrelated work.
 """
 
+try:
+    if source in folder_guides.RESTART_SOURCES:
+        message += "\n" + folder_guides.restart_message(project) + "\n"
+except Exception:
+    pass
+
 # Both providers add `additionalContext` to the model's context; `systemMessage`
 # is only shown to the user.
 print(json.dumps({"hookSpecificOutput": {
@@ -104,6 +110,7 @@ PY
 pre_tool_use() {
   if python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" 3<<<"$INPUT" <<'PY'
 import json
+import os
 import pathlib
 import re
 import sys
@@ -283,10 +290,14 @@ if denials:
 try:
     import scripts.lib.hooks.folder_guides as folder_guides
 
+    # Claude loads guide text through each folder's generated CLAUDE.md import;
+    # Codex has no such import, so it receives the text here.
     additional_context.extend(folder_guides.pending_messages(
         project,
         folder_guides.tool_targets(data, tuple(paths)),
         folder_guides.session_key(data),
+        edits=tuple(paths),
+        full=os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex",
     ))
 except Exception:
     pass

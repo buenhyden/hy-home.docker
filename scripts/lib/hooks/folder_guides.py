@@ -129,18 +129,44 @@ def session_key(data: dict[str, object]) -> object:
     return session_id
 
 
-def pending_messages(
-    root: Path, targets: list[object], session_id: object
-) -> list[str]:
-    relatives = [rel for rel in (_relative(root, value) for value in targets) if rel]
-    if not relatives:
-        return []
-    tracked = tracked_guides(root)
+def _guides_for(root: Path, values: list[object], tracked: frozenset[str]) -> list[str]:
     guides: list[str] = []
-    for relative in relatives:
-        guide = nearest_guide(root, relative, tracked)
+    for value in values:
+        relative = _relative(root, value)
+        guide = nearest_guide(root, relative, tracked) if relative else None
         if guide and guide not in guides:
             guides.append(guide)
+    return guides
+
+
+def pending_messages(
+    root: Path,
+    targets: list[object],
+    session_id: object,
+    *,
+    edits: tuple[str, ...] = (),
+    full: bool = True,
+) -> list[str]:
+    """Full guide text once per session (when `full`), and a path reminder on
+    every edit so a compacted session that kept only a summary re-reads it."""
+    if not any(_relative(root, value) for value in [*targets, *edits]):
+        return []
+    tracked = tracked_guides(root)
+    delivered = _full_messages(root, targets, session_id, tracked) if full else []
+    shown = {guide for guide, _ in delivered}
+    reminders = [
+        f"Folder guide for this edit: `{guide}`. Re-read it if its text is no "
+        "longer in context, for example after compaction."
+        for guide in _guides_for(root, list(edits), tracked)
+        if guide not in shown
+    ]
+    return [message for _, message in delivered] + reminders
+
+
+def _full_messages(
+    root: Path, targets: list[object], session_id: object, tracked: frozenset[str]
+) -> list[tuple[str, str]]:
+    guides = _guides_for(root, targets, tracked)
     if not guides:
         return []
     state = _state_file(session_id)
@@ -153,10 +179,28 @@ def pending_messages(
     fresh = [guide for guide in guides if guide not in seen]
     # Build every message before recording delivery, so a read failure never
     # marks a guide as seen.
-    messages = [_message(root, guide) for guide in fresh]
+    messages = [(guide, _message(root, guide)) for guide in fresh]
     if messages and state:
         _write_state(state, seen | set(fresh))
     return messages
+
+
+RESTART_SOURCES = frozenset({"compact", "resume"})
+
+
+def restart_message(root: Path) -> str:
+    """Re-read instruction for a session that resumed or was compacted."""
+    guides = sorted(tracked_guides(root))
+    listing = "\n".join(f"- `{guide}`" for guide in guides) or "- none tracked"
+    return (
+        "Folder guides loaded earlier may now survive only as a summary. Before "
+        "changing a file, re-read the nearest folder `AGENTS.md` above it:\n"
+        f"{listing}\n"
+        "Recovery: `git ls-files '*/AGENTS.md'` lists them. Claude reloads a "
+        "folder's `CLAUDE.md` import when it next opens a file there, and the "
+        "PreToolUse hook delivers the guide to Codex again and names it on "
+        "every edit."
+    )
 
 
 def _write_state(state: Path, guides: set[str]) -> None:
