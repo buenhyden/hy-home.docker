@@ -62,12 +62,19 @@ toolset that removes manual work and gives data for engineering decisions.
 - **REQ-0010-FR-0002**: Provide multi-language static code analysis with quality
   gate enforcement (SonarQube) as an optional, isolated experiment capability.
   It reaches the shared management database only through an endpoint the
-  operator approves, and is reachable only on the LAB host address (loopback by default) until promoted.
+  operator approves, and is reachable only on the LAB host address
+  (loopback by default) until promoted.
 - **REQ-0010-FR-0003**: Provide k6 as the default load tool. Locust is an
   optional, isolated experiment capability for Python or protocol comparisons,
   not part of the always-on HOME set.
 - **REQ-0010-FR-0004**: Provide a single-node private image registry for
   internal service deployment, reachable only from the local host.
+- **REQ-0010-FR-0006**: Propose dependency and image updates automatically for
+  review, and take scheduled encrypted backups with both a local and an
+  offsite copy.
+- **REQ-0010-FR-0007**: Provide shared verification tools: API mocking,
+  consumer contract testing through a contract broker, and policy checks over
+  tracked configuration.
 
 ### Stakeholders and User Needs
 
@@ -93,11 +100,18 @@ No numbered interface requirement is issued.
   to an orchestration route is redirected to SSO.
 - **REQ-0010-FR-0002**: The static analysis capability renders on its own,
   selects no always-on HOME service, refuses to start without an approved
-  database endpoint, and publishes nothing beyond the LAB host address (loopback by default).
+  database endpoint, and publishes nothing beyond the LAB host address
+  (loopback by default).
 - **REQ-0010-FR-0003**: The default load tool reports its pinned version from
   the root composition, and the alternative load tool renders only outside it.
 - **REQ-0010-FR-0004**: The registry accepts a push and pull from the local host
   and publishes no port on a non-loopback address.
+- **REQ-0010-FR-0006**: The update tool opens reviewable change requests and
+  applies nothing itself, and a backup run leaves an encrypted snapshot in the
+  local and the offsite repository.
+- **REQ-0010-FR-0007**: The mock server, the contract broker and the policy
+  checker each render in the quality tier, and the policy check runs as a
+  registered CI gate.
 
 ## Related Documents
 

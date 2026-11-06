@@ -4059,13 +4059,15 @@
         "REQ-0010.FR": {
           "prefix": "REQ-0010-FR-",
           "width": 4,
-          "high_water": 5,
-          "next_number": 6,
+          "high_water": 7,
+          "next_number": 8,
           "current_issued": [
             1,
             2,
             3,
-            4
+            4,
+            6,
+            7
           ],
           "reserved_history": [
             5
