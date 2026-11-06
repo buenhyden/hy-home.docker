@@ -1,10 +1,10 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.1.3"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -17,8 +17,8 @@ created: "2026-03-28"
 
 ### Context and Stakeholders
 
-This document describes the relational, NoSQL, cache, object storage,
-analytics, and graph/vector service structure of `infra/04-data/`. The
+This document describes the relational, cache, object storage, search, and
+graph/vector service structure of `infra/04-data/`. The
 maintainer and operator manage the common Compose contract and the per-engine
 lifecycle/recovery procedure separately.
 
@@ -30,29 +30,34 @@ lifecycle/recovery procedure separately.
   configuration.
 - The Stage 03 capability Spec owns the implementation boundary, and the
   Stage 05 subject owns the operational procedure.
-- Gateway routing, Stage 03 security secret supply, and Stage 06 telemetry
-  collection are each provided by their own layer.
+- Gateway routing, `03-security` secret supply, and `06-observability`
+  telemetry collection are each provided by their own layer.
 - Product business schema/query and cloud migration are outside this
   architecture.
 
 ## Structure
 
-### Components
+### Architecture
 
-- Analytics: OpenSearch
-- Cache and KV: Valkey cluster
+- Development databases: `dev-db` (PostgreSQL and Valkey with provisioners
+  and exporters)
+- Management database: `mng-db`
+- Search: OpenSearch
 - Object storage: SeaweedFS
-- NoSQL: Cassandra, CouchDB, MongoDB
-- Operational platforms: management database, Supabase
-- Relational: PostgreSQL cluster
 - Specialized: Neo4j, Qdrant
+- Administration: RedisInsight
+- Operational platforms: management database, Supabase
+
+The Valkey cluster, Cassandra, CouchDB, MongoDB, PostgreSQL HA and OpenSearch
+cluster packages are standalone LABs under `labs/`, outside this tier; none is
+promoted.
 
 Each component keeps its own configuration and volume, and combines the
 common optimization, secret, healthcheck, and network contract in Compose.
 
 ## Runtime and Deployment
 
-### Data Flow
+### Runtime View
 
 Services connect explicitly through SQL, Redis/Valkey, S3-compatible, search,
 vector, and graph protocols. Persistent state keeps a per-service volume
@@ -85,7 +90,7 @@ Requirement and ADR.
 ### Traceability
 
 - [REQ-0004](../../01.requirements/0004-data.md)
-- [ADR-0040](../decisions/0040-data-hardening-gate-and-staged-expansion.md) (supersedes ADR-0019)
+- [ADR-0058](../decisions/0058-home-tiers-versus-labs.md)
 - [SPEC-0004](0004-data-architecture.md)
 - [Data hardening guide](../../05.operations/guides/05-databases-and-storage/0030-data-optimization-hardening.md)
 - [Data hardening policy](../../05.operations/policies/05-databases-and-storage/0030-data-optimization-hardening.md)

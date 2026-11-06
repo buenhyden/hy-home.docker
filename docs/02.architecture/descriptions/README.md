@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.2.2"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "architecture"
 ---
 
@@ -13,9 +13,9 @@ layer: "architecture"
 ## Overview
 
 `docs/02.architecture/descriptions`는 시스템 또는 관심사별 현재 아키텍처를
-설명한다. 각 문서는 이해관계자 관심사, 경계와 제약, 품질 속성과 시나리오,
-viewpoints와 views, 데이터·제어 흐름, 인프라, 요구사항 disposition과 관련
-ADR을 기록한다.
+설명한다. 각 문서는 이해관계자와 경계, 구성 요소, runtime과 배포 view,
+품질 속성·위험·발전 방향, 관련 Requirement·ADR·Spec·Operations 문서를
+기록한다.
 
 ## Scope
 
@@ -28,10 +28,11 @@ Current Inventory와 실제 파일 목록이 권위이다.
 
 C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
 [공통 Agent 거버넌스 작성 정책](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
-소유한다. 현재 등록된 `System Boundaries`, `Components`, `Data Flow`,
-`Deployment View`, `Quality Attributes`에 해당 내용을 배치하고 필요할 때만
-optional `Risks`와 `Evolution`을 사용한다. 빈 framework section이나 병렬
-문서를 만들지 않으며 선택·대안·근거는 ADR이 소유한다.
+소유한다. 템플릿의 `Overview`, `Scope`, `Structure`의 `Architecture`,
+`Runtime and Deployment`의 `Runtime View`와 `Deployment View`, `Quality and
+Risks`의 `Quality Attributes`, `Risks`, `Evolution`에 해당 내용을 배치한다.
+빈 framework section이나 병렬 문서를 만들지 않으며 선택·대안·근거는 ADR이
+소유한다.
 
 ## Structure
 
@@ -44,23 +45,44 @@ docs/02.architecture/descriptions/
 ├── 0028-operational-readiness-closure.md
 ├── 0030-document-lifecycle-governance.md
 ├── 0031-home-development-host.md
+├── 0032-experience-architecture.md
 └── README.md
 ```
 
 ### Current Inventory
 
-- `AD-0001`부터 `AD-0013`: 기본 tier와 서비스 아키텍처.
-- `AD-0018`부터 `AD-0026`: hardening, HA와 network 후속 아키텍처.
-- [`AD-0027`](./0027-agent-governance-canonical-adapter.md):
-  canonical agent governance adapter 아키텍처.
-- [`AD-0028`](./0028-operational-readiness-closure.md):
-  local-isolated readiness evidence 아키텍처.
-- [`AD-0030`](./0030-document-lifecycle-governance.md):
-  문서 lifecycle 거버넌스 아키텍처.
-- [`AD-0031`](./0031-home-development-host.md):
-  home and development host 아키텍처.
-- [`AD-0032`](./0032-experience-architecture.md):
-  13-experience Storybook 아키텍처.
+`AD-0001`부터 `AD-0013`은 기본 tier와 서비스, `AD-0018`부터 `AD-0025`는
+각 tier의 hardening, `AD-0026` 이후는 network와 cross-cutting 아키텍처이다.
+
+| ID | 제목 | 상태 |
+| --- | --- | --- |
+| [`AD-0001`](./0001-gateway-architecture.md) | Gateway Tier Architecture Description | `active` |
+| [`AD-0002`](./0002-auth-architecture.md) | 02-Auth Architecture Description | `active` |
+| [`AD-0003`](./0003-security-architecture.md) | Security Tier Architecture Description | `active` |
+| [`AD-0004`](./0004-data-architecture.md) | Data Tier (04-data) Architecture Description | `active` |
+| [`AD-0005`](./0005-messaging-architecture.md) | Messaging Architecture Description | `active` |
+| [`AD-0006`](./0006-observability-architecture.md) | Observability Architecture Description | `active` |
+| [`AD-0007`](./0007-workflow-architecture.md) | Workflow Tier (07-workflow) Architecture Description | `active` |
+| [`AD-0008`](./0008-ai-architecture.md) | AI Infrastructure Architecture Description | `active` |
+| [`AD-0009`](./0009-tooling-architecture.md) | Platform Operations and Software Verification Architecture Description | `active` |
+| [`AD-0010`](./0010-communication-architecture.md) | Communication Tier Architecture Description | `active` |
+| [`AD-0011`](./0011-laboratory-architecture.md) | Administration and Experimentation Architecture Description | `active` |
+| [`AD-0012`](./0012-data-analytics-architecture.md) | Analytics Tier Architecture Description | `active` |
+| [`AD-0013`](./0013-open-webui-architecture.md) | Open WebUI Architecture Description | `active` |
+| [`AD-0018`](./0018-security-optimization-hardening-architecture.md) | Security Optimization and Hardening Architecture | `active` |
+| [`AD-0019`](./0019-data-optimization-hardening-architecture.md) | Data Optimization and Hardening Architecture | `active` |
+| [`AD-0020`](./0020-messaging-optimization-hardening-architecture.md) | 05-Messaging Optimization Hardening Architecture Description | `active` |
+| [`AD-0021`](./0021-observability-optimization-hardening-architecture.md) | 06-Observability Optimization Hardening Architecture Description | `active` |
+| [`AD-0022`](./0022-workflow-optimization-hardening-architecture.md) | 07-Workflow Optimization Hardening Architecture Description | `active` |
+| [`AD-0023`](./0023-ai-optimization-hardening-architecture.md) | 08-AI Optimization Hardening Architecture Description | `active` |
+| [`AD-0024`](./0024-tooling-optimization-hardening-architecture.md) | Platform Operations and Quality Optimization Hardening Architecture Description | `active` |
+| [`AD-0025`](./0025-laboratory-optimization-hardening-architecture.md) | Admin and Experiment Tools Hardening Architecture Description | `active` |
+| [`AD-0026`](./0026-standardize-infra-net.md) | Compose Network Segmentation Architecture Description | `active` |
+| [`AD-0027`](./0027-agent-governance-canonical-adapter.md) | Agent Governance Canonical Adapter Architecture | `active` |
+| [`AD-0028`](./0028-operational-readiness-closure.md) | Operational Readiness Closure Architecture | `active` |
+| [`AD-0030`](./0030-document-lifecycle-governance.md) | Document Lifecycle Governance Architecture | `active` |
+| [`AD-0031`](./0031-home-development-host.md) | Home and Development Host Architecture | `active` |
+| [`AD-0032`](./0032-experience-architecture.md) | Experience Tier Architecture Description | `active` |
 
 ## Usage
 

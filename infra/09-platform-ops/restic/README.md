@@ -13,7 +13,7 @@ updated: "2026-10-10"
 
 HOME 상태를 서로 다른 물리 디스크에 있는 두 개의 암호화된 Restic 저장소로
 스냅샷하고, 두 저장소를 오프사이트의 Cloudflare R2 저장소 하나로 복사하는
-1회성 작업입니다(ADR-0041). `mng-pg`의 pgBackRest도 함께 구동하는 호스트
+1회성 작업입니다(ADR-0056). `mng-pg`의 pgBackRest도 함께 구동하는 호스트
 오케스트레이터와 타이머를 포함합니다.
 
 ## Audience
@@ -118,4 +118,4 @@ allowlist 한 줄을 추가하고, live 엔진은 `bin/hyhome-backup.sh`에 내�
 
 [documentation entry point](../../../docs/README.md)를 통해 Stage 05 대상
 `04-data/0021-backup-and-restore`(GDE/POL/RUN-0021)로 이동합니다. 오프사이트
-대상 결정은 `docs/02.architecture/decisions/0041-offsite-backup-target.md`(ADR-0041)를 참고합니다.
+대상 결정은 `docs/02.architecture/decisions/0056-offsite-backup-target-and-size-cap.md`(ADR-0056)를 참고합니다.

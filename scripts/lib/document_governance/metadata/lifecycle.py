@@ -947,7 +947,7 @@ def _governance_moved_body_baseline(
     return Record(target, previous, profile_id, frontmatter_present=True), text
 
 
-# ADR-0043 moved every Operations member out of the domain catalog.
+# ADR-0057 moved every Operations member out of the domain catalog.
 _OPERATIONS_ROLE_PROFILES = frozenset({"guide", "policy", "runbook"})
 _RETIRED_OPERATIONS_CATALOG = "docs/05.operations/catalog/"  # retired-route-record
 

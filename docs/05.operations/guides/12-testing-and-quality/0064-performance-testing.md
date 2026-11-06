@@ -119,7 +119,7 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 - [POL-0064](../../policies/12-testing-and-quality/0064-performance-testing.md)
 - [RUN-0064](../../runbooks/12-testing-and-quality/0064-performance-testing.md)
 - SPEC-0203
-- [ADR-0046](../../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
+- [ADR-0058](../../../02.architecture/decisions/0058-home-tiers-versus-labs.md)
 
 ## Troubleshooting
 

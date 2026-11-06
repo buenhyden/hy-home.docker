@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.1.4"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0022"
 parent_ids:
@@ -24,12 +24,6 @@ roadmap from an architecture perspective.
 
 ## Scope
 
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded
-in this section and the following views. Only concerns confirmed in the
-existing document are covered here.
-
 The workflow tier operates with two execution planes.
 
 - Airflow (code-first orchestration)
@@ -39,9 +33,6 @@ The management plane of both systems shares standard middleware+SSO behind
 the Traefik TLS boundary.
 
 ### System Boundaries
-
-This section preserves the system boundary, consumption relationships,
-non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
   - Workflow management path security contract
@@ -59,31 +50,21 @@ non-goals, and constraints already recorded in the current document.
   - immediate multi-region/cluster workflow operation
   - immediate full activation of a new workflow service deployment
 
-### Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
-
 ## Structure
 
-### Viewpoints and Views
-
-The context, component, or deployment representation in this section serves
-as the view for that concern.
+### Architecture
 
 - **Ingress path**:
   - Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI
 - **Control plane**:
-  - Airflow API/Scheduler/Worker/Triggerer + Flower
-  - n8n main/worker/task-runner
+  - Airflow API server, scheduler, DAG processor, worker, triggerer and Flower
+  - n8n main, worker, task runners, plus the `blog-ingestion` service under its own profile
 - **Data/control dependencies**:
   - PostgreSQL (metadata), Valkey (queue/broker), SSO middleware
 
 ## Runtime and Deployment
 
-### Data and Control Flows
-
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
+### Runtime View
 
 - **Key Entities / Flows**:
   - DAG metadata, workflow executions, queue tasks
@@ -99,10 +80,8 @@ section and the existing infrastructure/deployment descriptions.
 - **Deployment Model**:
   - Airflow distributed components; the `dedicated-valkey` profile starts `airflow-valkey`, and without it `${AIRFLOW_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
   - n8n queue mode + external runner; the `dedicated-valkey` profile starts `n8n-valkey`, and without it `${N8N_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
-- **Operational Evidence**:
-  - `docker compose config` checks
-  - `scripts/hardening/check-all-hardening.sh 07-workflow`
-  - CI `infrastructure-hardening` job
+- **Verification**: the registered `infrastructure-hardening` gate in
+  `.github/workflow-contract.yml` and Compose validation
 
 ### Evolution
 
@@ -117,11 +96,7 @@ active workflow architecture scope.
 
 ## Quality and Risks
 
-### Quality Scenarios
-
-The quality scenarios point to the existing configuration, failure boundary,
-and verification expectation to which the attributes below apply. Concrete
-execution evidence is owned by the related Spec and Operations documents.
+### Quality Attributes
 
 - **Performance**: reduces initial failure/restart bursts through
   health-based boot order.
@@ -132,16 +107,15 @@ execution evidence is owned by the related Spec and Operations documents.
 - **Scalability**: prepares Airflow worker autoscale criteria and a queue
   metrics-based expansion policy.
 - **Observability**: verifies workflow stack health at the compose/CI level.
-- **Operability**: uses `check-all-hardening.sh 07-workflow` as the
-  operational baseline.
+- **Operability**: uses the registered hardening gate as the baseline.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0008-workflow.md](../../01.requirements/0008-workflow.md)
+- **Requirement**: [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
 - **Tier Architecture Description**: [AD-0007 Workflow Tier (07-workflow) Architecture Description](0007-workflow-architecture.md)
-- **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
+- **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+- **Guide**: [Workflow optimization hardening guide](../../05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
+- **Policy**: [Workflow optimization hardening policy](../../05.operations/policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
+- **Runbook**: [Workflow optimization hardening runbook](../../05.operations/runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

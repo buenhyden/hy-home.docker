@@ -98,7 +98,7 @@ No numbered interface requirement is issued.
 ## Related Documents
 
 - **Architecture Description**: [0010-communication-architecture.md](../02.architecture/descriptions/0010-communication-architecture.md)
-- **ADR**: [0010-communication-services.md](../02.architecture/decisions/0010-communication-services.md)
+- **ADR**: [ADR-0054 Mailpit in HOME and Stalwart as a LAB](../02.architecture/decisions/0054-mailpit-home-stalwart-lab.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)
   and [SPEC-0263 LAB promotion contract](../03.specs/0263-lab-promotion-contract/spec.md)
 - **Retired domain Spec SPEC-0011** (communication): replaced by the

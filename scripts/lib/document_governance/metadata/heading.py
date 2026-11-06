@@ -1073,7 +1073,7 @@ def _runtime_image_parts(entry: Mapping[str, object]) -> tuple[tuple[str, str], 
     return tuple(parts)
 
 
-# ADR-0043: an Operations member is `<role directory>/####-<slug>.md`.
+# ADR-0057: an Operations member is `<role directory>/####-<slug>.md`.
 _OPERATIONS_ROLE_ROOTS = (
     "docs/05.operations/guides/",
     "docs/05.operations/policies/",

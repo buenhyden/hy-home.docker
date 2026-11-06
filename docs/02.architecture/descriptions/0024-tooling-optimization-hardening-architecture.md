@@ -1,155 +1,115 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Architecture Description"
-version: "2.1.0"
+version: "2.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
 - "REQ-0010"
 created: "2026-03-28"
 ---
+
 # Platform Operations and Quality Optimization Hardening Architecture Description
 
 ## Overview
 
-### Context and Stakeholders
-
-This document defines the optimization/hardening reference architecture of
-the `09-platform-ops` and `11-quality` capabilities. It organizes the gateway+SSO boundary of the
-management path, tooling network isolation, test tool runtime stability, and
-catalog-based expansion policy from an architecture perspective.
+This Description records the hardening structure of the `09-platform-ops` and
+`11-quality` tiers: the gateway and SSO boundary of their management routes,
+their network membership, test-tool runtime stability and the hardening gate.
+These are control-plane services for platform operational quality. Requirement
+owners, implementers and operators share these concerns; the tier structure
+itself is in [AD-0009](0009-tooling-architecture.md).
 
 ## Scope
 
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded
-in this section and the following views. Only concerns confirmed in the
-existing document are covered here.
-
-The tooling tier is a set of control-plane-natured services responsible for
-platform operational quality.
-
-- IaC: OpenTofu/Terrakube
-- Quality: sonarqube
-- Performance: k6 (Locust is an optional standalone LAB in `labs/locust/docker-compose.yml`)
-- Artifact storage: registry
-
-Every public management path must be policy-controlled behind the Traefik
-TLS boundary.
-
-### System Boundaries
-
-This section preserves the system boundary, consumption relationships,
-non-goals, and constraints already recorded in the current document.
-
-- **Owns**:
-  - tooling public router gateway/SSO boundary contract
-  - tooling network boundary contract
-  - k6 runtime stability contract
-  - tooling hardening CI policy gate
-  - Tooling/Quality catalog expansion roadmap
-- **Consumes**:
-  - `01-gateway` middleware chain
-  - `02-auth` SSO middleware
-  - `04-data` PostgreSQL/Valkey/SeaweedFS
-- **Does Not Own**:
-  - each tool's business domain logic
-  - full implementation-complete status of catalog items
-- **Non-goals**:
-  - immediate multi-cluster toolchain operation
-  - adopting/replacing a new toolchain
-
-### Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+- **Owns**: the gateway and SSO contract of the tooling routes, tooling network
+  membership, the k6 runtime contract and the `09-platform-ops` and
+  `11-quality` checks of the hardening gate.
+- **Consumes**: the `01-gateway` middleware chain, the `02-auth` SSO
+  middleware, and `04-data` management PostgreSQL, Valkey and SeaweedFS.
+- **Does not own**: each tool's domain logic, and the standalone LABs
+  SonarQube (`labs/sonarqube/`) and Locust (`labs/locust/`), which run outside
+  the root Compose project.
+- **Non-goals**: a multi-cluster toolchain and adopting a replacement
+  toolchain.
 
 ## Structure
 
-### Viewpoints and Views
+### Architecture
 
-The context, component, or deployment representation in this section serves
-as the view for that concern.
-
-- **Ingress path**:
-  - Operator/Developer -> Traefik(websecure) -> SonarQube/Terrakube
-- **Execution plane**:
-  - OpenTofu job container
-  - terrakube api/ui/executor
-  - k6 service (`infra/11-quality/k6`, `testing` profile)
-- **Shared dependencies**:
-  - PostgreSQL, Valkey, SeaweedFS, Keycloak
+- **Platform operations** (`infra/09-platform-ops/`): OpenTofu and Terrakube
+  (`iac` profile), the image registry (`tooling` profile), Renovate
+  (`dependency-update`), restic backup (`backup`), and the project-registration,
+  resource-optimization, security-updates and service-integration packages.
+- **Quality** (`infra/11-quality/`): k6 (`testing`), Pact Broker
+  (`contract-testing`), WireMock (`api-mock`), Conftest (`policy-check`) and
+  Mailpit (`dev`).
+- **Ingress**: Traefik `websecure` routes the Terrakube API, UI and executor
+  and the Mailpit UI through `gateway-standard-chain`, `sso-errors` and
+  `sso-auth` (`infra/09-platform-ops/terrakube/docker-compose.yml:65,101,183`,
+  `infra/11-quality/mailpit/docker-compose.yml:53`). The registry has no
+  Traefik route; it publishes only on loopback
+  (`infra/09-platform-ops/registry/docker-compose.yml:29`).
+- **Shared dependencies**: management PostgreSQL and Valkey on `mng_data_net`,
+  SeaweedFS on `object_net`, and Keycloak through the SSO middleware.
 
 ## Runtime and Deployment
 
-### Data and Control Flows
+### Runtime View
 
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
-
-- **Key Entities / Flows**:
-  - tfstate/workspace metadata, quality gate results, perf metrics, image artifacts
-- **Storage Strategy**:
-  - registry/sonarqube persistence uses a bind volume + data tier backend
-- **Data Boundaries**:
-  - the tooling tier owns operational tool metadata and the execution
-    policy.
+- **Entities**: OpenTofu state and Terrakube workspace metadata, contract and
+  test results, performance metrics and image artifacts.
+- **Storage**: Terrakube keeps metadata in management PostgreSQL and objects in
+  SeaweedFS; the registry keeps images in its own volume.
+- **Boundary**: the tooling tiers own operational tool metadata and execution
+  policy, not application data.
 
 ### Deployment View
 
-- **Runtime / Platform**: Docker Compose (`infra/09-platform-ops/*` and `infra/11-quality/*`)
-- **Deployment Model**:
-  - independent per-service compose + a common template (`common-optimizations.yml`)
-- **Operational Evidence**:
-  - optional root-context compose rendering when runtime evidence is approved
-  - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
-  - CI `infrastructure-hardening` job
-
-### Evolution
-
-- **OpenTofu**: plan/apply approval gate, strengthened state lock/backup,
-  automatic drift detection
-- **terrakube**: workspace separation, execution permission control, audit
-  log integration
-- **registry**: cosign-based signing/verification, vulnerability-scan-failure
-  blocking policy
-- **sonarqube**: redefining quality gate thresholds, separating
-  branch/security rule sets
-- **k6**: automating performance regression baseline storage/comparison,
-  standardizing scenario tags
-- **Locust LAB** (`labs/locust/docker-compose.yml`, standalone): standardizing test data
-  initialization/cleanup routine
+- **Platform**: Docker Compose packages under `infra/09-platform-ops/` and
+  `infra/11-quality/`, included by the root `docker-compose.yml` and selected
+  by profile; job-style tools run only for a named operation.
+- **Evidence**: `scripts/hardening/check-all-hardening.sh 09-platform-ops
+  11-quality` and the CI `infrastructure-hardening` job. Root-context Compose
+  rendering runs only when runtime evidence is approved. These are static
+  checks; they prove no running service.
 
 ## Quality and Risks
 
-### Quality Scenarios
+### Quality Attributes
 
-The quality scenarios point to the existing configuration, failure boundary,
-and verification expectation to which the attributes below apply. Concrete
-execution evidence is owned by the related Spec and Operations documents.
+- **Security**: every routed tooling UI passes the gateway chain and SSO; the
+  registry stays loopback-only.
+- **Reliability**: healthchecks and the Compose contract order startup.
+- **Observability**: the hardening script and CI gate detect contract drift.
+- **Operability**: change and recovery follow the linked guide, policy and
+  runbook.
 
-- **Performance**: secures a minimum runtime stability contract for
-  k6 execution.
-- **Security**: enforces the gateway+SSO chain on public tooling UIs.
-- **Reliability**: strengthens startup stability with the worker
-  healthcheck/compose contract.
-- **Scalability**: prepares catalog-based performance regression baseline/
-  distributed topology standardization.
-- **Observability**: detects regression early with the tooling hardening
-  script + CI gate.
-- **Operability**: standardizes change/recovery through policy/guide/runbook
-  linkage.
+### Risks
+
+- The registry's loopback publication is a host exposure outside the gateway;
+  it is acceptable only while the host itself is trusted.
+- Job-style tools share the project default network when they have no peer, so
+  that network is their trust boundary.
+
+### Evolution
+
+- **OpenTofu**: a plan/apply approval gate, state locking and backup, drift
+  detection.
+- **Terrakube**: workspace separation, execution permissions and audit logs.
+- **Registry**: cosign signing and verification, blocking on scan failure.
+- **k6**: storing and comparing performance baselines, standard scenario tags.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0010-tooling.md](../../01.requirements/0010-tooling.md)
+- **PRD**: [REQ-0010](../../01.requirements/0010-tooling.md)
 - **Tier Architecture Description**: [AD-0009 Platform Operations and Software Verification Architecture Description](0009-tooling-architecture.md)
-- **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/09-platform-ops/optimization-hardening.md](../../05.operations/guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/09-platform-ops/optimization-hardening.md](../../05.operations/policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/09-platform-ops/optimization-hardening.md](../../05.operations/runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)
+- **ADR**: [ADR-0058](../decisions/0058-home-tiers-versus-labs.md)
+- **Guide**: [Tooling optimization hardening guide](../../05.operations/guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)
+- **Policy**: [Tooling optimization hardening policy](../../05.operations/policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)
+- **Runbook**: [Tooling optimization hardening runbook](../../05.operations/runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

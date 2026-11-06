@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.0.6"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0021"
 parent_ids:
@@ -24,21 +24,12 @@ expansion strategy from an architecture perspective.
 
 ## Scope
 
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded
-in this section and the following views. Only concerns confirmed in the
-existing document are covered here.
-
 The observability layer operates the data plane (collection/storage) and the
 management plane (UI/API) separately. The management plane applies the
 standard middleware+SSO chain at the Traefik TLS termination point, and the
 data plane is kept over `obs_net` internal communication.
 
 ### System Boundaries
-
-This section preserves the system boundary, consumption relationships,
-non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
   - Observability service routing/authentication boundary contract
@@ -55,32 +46,24 @@ non-goals, and constraints already recorded in the current document.
   - Immediate multi-cluster/multi-region observability adoption
   - Full redesign of the sampling policy
 
-### Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
-
 ## Structure
 
-### Viewpoints and Views
-
-The context, component, or deployment representation in this section serves
-as the view for that concern.
+### Architecture
 
 - Storage/Query Plane:
   - Prometheus, Loki, Tempo, Pyroscope
 - Control/Presentation Plane:
-  - Grafana, Alertmanager, Pushgateway, Alloy UI, cAdvisor route, Pyroscope route
+  - Grafana, Gatus, Alertmanager, Pushgateway, Alloy UI, cAdvisor route, Pyroscope route
+- Exporters:
+  - node-exporter, cAdvisor, dcgm-exporter
 - Gateway Path:
-  - Client -> Traefik(`websecure`) -> `gateway-standard-chain` + `sso-*` -> target service
+  - Client -> Traefik(`websecure`) -> `gateway-standard-chain` + `sso-errors`/`sso-auth` -> target service; Grafana and Gatus routes use `gateway-standard-chain` only, and the Prometheus API route uses `prometheus-api-auth`
 - Internal Path:
   - OTLP/log/trace traffic over `obs_net`
 
 ## Runtime and Deployment
 
-### Data and Control Flows
-
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
+### Runtime View
 
 - **Key Entities / Flows**:
   - Metrics, logs, traces, profiles
@@ -97,9 +80,8 @@ section and the existing infrastructure/deployment descriptions.
   - Docker Compose + `infra/common-optimizations.yml`
 - **Deployment Model**:
   - single-node observability core + optional horizontal expansion
-- **Operational Evidence**:
-  - `scripts/hardening/check-all-hardening.sh 06-observability`
-  - CI `infrastructure-hardening` job
+- **Verification**:
+  - the registered `infrastructure-hardening` gate in `.github/workflow-contract.yml`
 
 ### Evolution
 
@@ -110,15 +92,11 @@ section and the existing infrastructure/deployment descriptions.
 
 ## Quality and Risks
 
-### Quality Scenarios
-
-The quality scenarios point to the existing configuration, failure boundary,
-and verification expectation to which the attributes below apply. Concrete
-execution evidence is owned by the related Spec and Operations documents.
+### Quality Attributes
 
 - **Performance**: burst control/overload mitigation through the gateway
   standard chain
-- **Security**: TLS termination + SSO + non-root container execution
+- **Security**: TLS termination, SSO or application authentication per route, and non-root container execution
 - **Reliability**: improved boot stability through `service_healthy`
   dependency
 - **Scalability**: readiness for catalog-based expansion (sampling/retention/
@@ -129,11 +107,11 @@ execution evidence is owned by the related Spec and Operations documents.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
+- **Requirement**: [REQ-0007 Observability](../../01.requirements/0007-observability.md)
 - **Tier Architecture Description**: [AD-0006 Observability Architecture Description](0006-observability-architecture.md)
-- **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/guides/07-observability/0044-observability-optimization-hardening.md)
-- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/07-observability/0044-observability-optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/runbooks/07-observability/0044-observability-optimization-hardening.md)
+- **ADR**: [ADR-0021 Observability hardening and HA expansion](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
+- **Guide**: [Observability optimization hardening guide](../../05.operations/guides/07-observability/0044-observability-optimization-hardening.md)
+- **Policy**: [Observability optimization hardening policy](../../05.operations/policies/07-observability/0044-observability-optimization-hardening.md)
+- **Runbook**: [Observability optimization hardening runbook](../../05.operations/runbooks/07-observability/0044-observability-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

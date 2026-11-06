@@ -1,10 +1,10 @@
 ---
 title: "Security Optimization and Hardening Architecture"
-version: "1.1.3"
+version: "1.1.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0018"
 parent_ids:
@@ -36,7 +36,7 @@ recovery procedure.
 
 ## Structure
 
-### Components
+### Architecture
 
 The current HOME implementation consists of `openbao` and `openbao-agent` from
 `infra/03-security/openbao/docker-compose.yml`, the policy, configuration, and
@@ -46,18 +46,19 @@ services.
 
 ## Runtime and Deployment
 
-### Data Flow
+### Runtime View
 
 The source secret is stored in OpenBao KV-v2. OpenBao Agent authenticates with
 AppRole, keeps restricted token state at `/openbao/agent/token`, and then
-renders template output to `/openbao/out/<service>/<key>`. The source secret
+renders template output under `/openbao/out/<service>/`, bind-mounted from
+`${DEFAULT_SECURITY_DIR}/openbao/out`. The source secret
 and the rendered output maintain separate access boundaries.
 
 ### Deployment View
 
 The current HOME deployment is a single Docker Compose-based OpenBao and
-OpenBao Agent structure. `scripts/hardening/check-all-hardening.sh 03-security`, Compose validation, and the template security baseline check
-the tracked configuration. Raft 3-node, auto-unseal, and a remote audit sink
+OpenBao Agent structure. The registered hardening and Compose validators check the tracked
+configuration. Raft 3-node, auto-unseal, and a remote audit sink
 are not the current implementation, and are not treated as the current
 topology without a separately approved Requirement and ADR.
 
@@ -80,7 +81,7 @@ topology without a separately approved Requirement and ADR.
 
 - [REQ-0003](../../01.requirements/0003-security.md)
 - [ADR-0050](../decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0018
-- [SPEC-0003](0003-security-architecture.md)
+- [AD-0003 Security architecture](0003-security-architecture.md)
 - [OpenBao policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
 - [OpenBao runbook](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
 

@@ -1,10 +1,10 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "ADR-0007"
 parent_ids:
@@ -32,12 +32,12 @@ Solving both with a single solution does not work well: Airflow is too heavy for
 
 ## Options
 
-### [Alternative 1: Airflow Only]
+### Alternative 1: Airflow Only
 
 - Good: simple with single-engine operation, strong control.
 - Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
 
-### [Alternative 2: n8n Only]
+### Alternative 2: n8n Only
 
 - Good: very fast development speed, intuitive visualization.
 - Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.

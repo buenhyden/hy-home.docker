@@ -882,7 +882,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
     def test_retained_runtime_rejects_a_retired_catalog_runbook_authority(
         self,
     ) -> None:
-        # ADR-0043 retired the domain catalog; only a role-directory Runbook binds.
+        # ADR-0057 retired the domain catalog; only a role-directory Runbook binds.
         self.assertIn(
             "runtime-authority-invalid",
             self.codes(

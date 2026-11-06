@@ -1,5 +1,5 @@
 #!/bin/sh
-# Offsite Restic entrypoint (ADR-0041): one Cloudflare R2 repository that
+# Offsite Restic entrypoint (ADR-0056): one Cloudflare R2 repository that
 # receives the snapshots of both local repositories (state and host).
 # Usage: offsite.sh {snapshots|init|copy|check|forget-prune|restore <host-id> <state-id>|cmd <restic args...>}
 # The daily run never deletes. forget-prune is the owner-run, separately

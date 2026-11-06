@@ -1,7 +1,7 @@
 x-tier-label: &tier-label
   hy-home.tier: platform-ops
 
-# Egress for restic-offsite only (ADR-0041). No other service joins it.
+# Egress for restic-offsite only (ADR-0056). No other service joins it.
 networks:
   restic_offsite_net:
     name: restic_offsite_net
@@ -77,7 +77,7 @@ services:
         bind:
           create_host_path: false
       # pgBackRest's encrypted repository goes offsite inside the state set
-      # (ADR-0041); its files are written by rename, so a live read is safe.
+      # (ADR-0056); its files are written by rename, so a live read is safe.
       - type: bind
         source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/pgbackrest
         target: /src/state/pgbackrest
@@ -103,7 +103,7 @@ services:
       <<: *tier-label
 
   # Offsite copy of both local repositories into one Cloudflare R2 Restic
-  # repository (ADR-0041). The only backup job with egress; it never sees the
+  # repository (ADR-0056). The only backup job with egress; it never sees the
   # backed-up sources, only the encrypted local repositories, read-only.
   # The orchestrator runs `copy` daily and `check` weekly; `init` is manual.
   restic-offsite:

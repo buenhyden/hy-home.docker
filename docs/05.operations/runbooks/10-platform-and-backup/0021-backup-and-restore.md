@@ -323,7 +323,7 @@ pgBackRest는 자체 backup을 `repo1-retention-full=2`로 만료시킨다.
 ### 8. Offsite copy (R2)
 
 `restic-offsite`는 로컬 Restic repository 두 개의 snapshot을 Cloudflare R2의
-Restic repository 하나로 복사한다(ADR-0041). state set에 `pgbackrest/`가
+Restic repository 하나로 복사한다(ADR-0056). state set에 `pgbackrest/`가
 들어 있으므로 PostgreSQL도 이 경로로 오프사이트에 가며 원격 RPO는 하루다.
 pgBackRest의 S3 repository는 따로 두지 않는다. state set은 이제
 `forget-prune` 전까지 본 모든 pgBackRest 파일을 담고 이 크기는

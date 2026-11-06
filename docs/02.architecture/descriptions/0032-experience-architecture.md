@@ -1,10 +1,10 @@
 ---
 title: "Experience Tier Architecture Description"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0032"
 parent_ids:
@@ -24,8 +24,6 @@ selection.
 
 ## Scope
 
-### System Boundaries
-
 - **storybook:** an unprivileged, read-only static origin on the internal
   `experience_ingress_net`, with no secret, persistent volume or host port.
   Traefik serves `storybook.${DEFAULT_URL}` behind `req-rate-limit`,
@@ -40,16 +38,9 @@ selection.
   `projects/storybook/nextjs`; this tier owns no business application, and
   Compose validation proves no running service, login or HOME activation.
 
-### Traceability
-
-- SPEC-0219
-- [Storybook guide](../../05.operations/guides/14-design-system/0101-storybook.md)
-- [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md)
-- [Storybook runbook](../../05.operations/runbooks/14-design-system/0101-storybook.md)
-
 ## Structure
 
-### Components
+### Architecture
 
 ```mermaid
 flowchart LR
@@ -96,6 +87,10 @@ operations documents; this description changes only when the structure does.
 
 ## Related Documents
 
+- SPEC-0219 (retired; version history)
+- [Storybook guide](../../05.operations/guides/14-design-system/0101-storybook.md)
+- [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md)
+- [Storybook runbook](../../05.operations/runbooks/14-design-system/0101-storybook.md)
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [Experience tier packages](../../../infra/13-experience/README.md)
 - [AD-0031](0031-home-development-host.md)

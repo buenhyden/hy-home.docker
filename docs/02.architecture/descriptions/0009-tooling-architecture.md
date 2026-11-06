@@ -1,110 +1,106 @@
 ---
 title: "Platform Operations and Software Verification Architecture Description"
-version: "2.4.0"
+version: "2.5.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
 - "REQ-0010"
 created: "2026-03-26"
 ---
+
 # Platform Operations and Software Verification Architecture Description
 
 ## Overview
 
-### Context and Stakeholders
-
-This document defines the reference architecture and quality attributes of platform operations in `09-platform-ops` and software verification in `11-quality`. It provides the system boundary, responsibilities, and integration structure with common infrastructure for infrastructure automation, quality analysis, and performance testing tools.
+This description covers platform operations in `09-platform-ops` and software
+verification in `11-quality`: infrastructure automation, backup orchestration,
+image storage, dependency updates, load, contract, API-mock and policy tests,
+and development mail capture. Public admin UIs sit behind the gateway SSO
+boundary, and only services that need it use the data tier.
 
 ## Scope
 
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
-
-These capability tiers retain the logical tooling obligations and form an auxiliary layer responsible for the project's "operational efficiency" and "quality assurance." It consists of an IaC engine, an analysis server, test workers, and similar components; services with a public admin UI use the gateway/SSO boundary, and only the services that need it integrate with data tier backends such as PostgreSQL, SeaweedFS, and Valkey.
-
-### System Boundaries
-
-This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
-
-- **Owns**:
-  - IaC CLI helper (`OpenTofu`) and automation platform (`Terrakube`)
-  - Static code analysis engine (`SonarQube`)
-  - Explicit load-testing jobs (`k6`, the default load tool); Locust is an optional standalone LAB (`labs/locust/docker-compose.yml`), not a Compose service of this tier
-  - Private package/image storage (`Registry`)
-  - Manual dependency update jobs (`Renovate`)
-  - Cross-platform backup orchestration (`Restic` and its SQLite export helper)
-  - Contract/API/policy verification and development mail capture in Quality (`Pact Broker`, `WireMock`, `Conftest`, `Mailpit`)
-- **Consumes**:
-  - Data persistence services (`04-data` / PostgreSQL, SeaweedFS, Valkey)
-  - Common authentication service (`02-auth` / Keycloak)
-  - Network resources (declared Compose network)
-- **Does Not Own**:
-  - Core business application services
-  - The global monitoring and logging stack (06-observability)
-- **Non-goals**:
-  - Traffic routing and external exposure management for live services (owned by the Gateway layer)
-
-### Traceability
-
-The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+- **Owns:** OpenTofu (IaC CLI helper) and Terrakube (API, UI, executor);
+  Registry (private images); Renovate (manual dependency updates); Restic,
+  `restic-offsite` and the SQLite export job (cross-platform backup); k6 (the
+  default load tool); Pact Broker, WireMock, Conftest and Mailpit.
+- **Consumes:** `04-data` `mng-pg` and SeaweedFS; `02-auth` Keycloak through
+  ForwardAuth; `06-observability` for k6 and Registry metrics.
+- **Does not own:** business application services, the monitoring stack, or
+  live-service routing (Gateway).
+- **Not in this tier:** SonarQube (`labs/sonarqube`), Locust (`labs/locust`)
+  and dbt (`labs/dbt`) are standalone LABs; dbt belongs to Analytics.
 
 ## Structure
 
-### Viewpoints and Views
+### Architecture
 
-This section uses the context, component, or deployment representation as the view for the relevant concern.
+- **Management services** keep central state while their profile is selected:
+  the Terrakube API and UI, Pact Broker and Registry.
+- **Execution services** run per job: the Terrakube executor, OpenTofu,
+  Renovate, Restic, k6, Conftest and WireMock.
 
-The system is divided into "Managed Tools" and "Execution Tools."
-
-1. **Management**: SonarQube, the Terrakube API, and similar services manage central state in an environment where the matching profile is selected. They are not automatically included as HOME always-on targets.
-2. **Execution**: Terrakube Worker and similar services occupy resources and perform the actual computation when a job occurs.
+Directories under `infra/09-platform-ops/` without a Compose file
+(`project-registration`, `resource-optimization`, `security-updates`,
+`service-integration`) hold no service.
 
 ## Runtime and Deployment
 
-### Data and Control Flows
+### Runtime View
 
-Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
+```text
+IaC configuration -> OpenTofu or Terrakube plan -> approved apply
+k6 run -> per-run OTLP ingress -> authenticated Alloy receiver -> Prometheus
+contract test -> Pact Broker (mng-pg)
+```
 
-- **Key Entities / Flows**: Source Code → SonarQube Scan → Quality Result / IaC Configuration → OpenTofu or Terrakube Plan → Approved Apply.
-- **Storage Strategy**: Terrakube state/object data uses the SeaweedFS S3 backend, and SonarQube/Terrakube metadata uses the management PostgreSQL. Registry and the OpenTofu workspace currently use bind-mount-based local persistence. The Syncthing runtime has been removed and does not own a file-sync path.
-- **Data Boundaries**: Each tool uses a separate database or schema to prevent data interference.
+Terrakube state and objects use the SeaweedFS S3 backend and its metadata
+`mng-pg`; Pact Broker provisions its own `mng-pg` database. Registry and the
+OpenTofu workspace use local persistence. Each tool uses its own database or
+schema.
 
 ### Deployment View
 
-- **Runtime / Platform**: Docker Compose using the current root Compose include and profile contract.
-- **Deployment Model**: The root `docker-compose.yml` includes every leaf, and
-  a profile selects the service. `tooling` selects only Registry (SonarQube is the
-  standalone LAB `labs/sonarqube/docker-compose.yml` since SPEC-0262); `testing` selects k6 (`infra/11-quality/k6`); no Locust service exists in the root model; `iac`
-  selects OpenTofu and the Terrakube API/UI/executor together;
-  `dependency-update` selects only Renovate. `registry` and `sast` each
-  select that single role. `analytics-engineering` selects dbt and its DB
-  provisioning job; `contract-testing` selects Pact Broker and its DB
-  provisioning job; `api-mock` selects WireMock; `backup` selects Restic and
-  the SQLite export job; `policy-check` selects only the Conftest job. These
-  profile names span capability tiers and are unchanged by relocation. Registry is a HOME service; the other listed optional/job capabilities are not implicitly activated by a directory move. dbt belongs to Analytics.
-- **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`, service healthcheck, approved root-context runtime evidence.
+The root `docker-compose.yml` includes every leaf; a profile selects the
+service. `tooling` and `registry` select Registry, published only on
+`127.0.0.1:${REGISTRY_PORT:-5000}`; `iac` selects OpenTofu and the Terrakube
+API, UI and executor; `dependency-update` selects Renovate; `backup` selects
+Restic, `restic-offsite` and the SQLite export job; `testing` selects k6;
+`contract-testing` selects Pact Broker and its provisioning job; `api-mock`
+selects WireMock; `policy-check` selects Conftest; `dev`, `local` and
+`mail-dev` select Mailpit. Registry is HOME; the other capabilities are not
+activated implicitly.
 
 ## Quality and Risks
 
-### Quality Scenarios
+### Quality Attributes
 
-Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
+- **Security:** the Terrakube API, UI and executor routes and the Mailpit UI
+  use the ForwardAuth chain. Registry has no gateway route.
+- **Reliability:** IaC state stays in the declared backend. SeaweedFS and
+  PostgreSQL on one host are not independent failure domains, so a host failure
+  breaks continuity; backup and isolated recovery need separate evidence.
+- **Scalability:** Terrakube execution capacity changes only through approved
+  configuration; no auto-scaling is implemented.
 
-- **Scalability**: Terrakube execution capacity are adjusted through approved configuration changes. This does not mean the current fixed Compose services implement or have verified auto-scaling.
-- **Security**: Applies a gateway+SSO chain to public admin UIs such as SonarQube/Terrakube.
-- **Reliability**: Keeps IaC state/object persistence in the declared backend. SeaweedFS and PostgreSQL on the same host are not independent failure domains, so continuity is not guaranteed during a host failure. Backup and isolated recovery verification need separate operational evidence.
-- **Operability**: Provides a unified control environment through a centralized dashboard and API.
+### Risks
+
+Restic, the only cross-platform backup path, runs only when `backup` is
+selected; Compose declares no schedule for it.
+
+### Evolution
+
+Promoting SonarQube, Locust or dbt back into a root tier is an owner decision
+under the LAB promotion contract.
 
 ## Related Documents
 
-- **PRD**: [010-tooling.md](../../01.requirements/0010-tooling.md)
+- [REQ-0010 Tooling requirements](../../01.requirements/0010-tooling.md)
+- [ADR-0058 HOME tiers versus LABs](../decisions/0058-home-tiers-versus-labs.md)
 - [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
 - [Pact Broker operations](../../05.operations/guides/12-testing-and-quality/0093-pact-broker.md)
-- **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)
-
-Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+- [Derived Compose image projection](../../../infra/tech-stack.versions.json)
