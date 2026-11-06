@@ -279,15 +279,17 @@ class RequirementPackageTests(unittest.TestCase):
     def test_public_parser_requires_exact_current_issued_declarations(self) -> None:
         requirements = _requirements_module()
         source = ROOT / "docs/01.requirements/0001-gateway.md"
-        incomplete = source.read_text(encoding="utf-8").replace(
+        original = source.read_text(encoding="utf-8")
+        incomplete = original.replace(
             (
-                "- **REQ-0001-FR-0004**: The system must integrate with OAuth2 "
-                "Proxy to provide authentication (SSO) middleware for specific "
-                "paths.\n"
+                "- **REQ-0001-FR-0004**: The gateway must offer a reusable single "
+                "sign-on\n  access-control step, backed by the Auth tier, that a "
+                "route can require.\n"
             ),
             "",
             1,
         )
+        self.assertNotEqual(original, incomplete, "fixture declaration drifted")
         with tempfile.TemporaryDirectory() as directory:
             path = self._write_package(pathlib.Path(directory), text=incomplete)
             with self.assertRaisesRegex(
