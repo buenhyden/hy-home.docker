@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -46,8 +46,10 @@ request를 생성하거나 갱신할 수 있다.
 - [Repository configuration](../../../../renovate.json5)
 - [Dependency-version policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md) (`POL-0086`)
 
-`renovate.json5`의 `docker-compose` manager는 `labs/*/docker-compose.yml`, `infra/07-workflow/n8n`, `infra/08-ai/crawl4ai`,
-`infra/08-ai/ollama`, `infra/08-ai/open-webui`의 Compose 파일을 추적한다. 추적 목록은 [renovate.json5](../../../../renovate.json5)가 소유한다.
+`renovate.json5`는 `docker-compose`, `dockerfile`, `github-actions`, `custom.regex`, `pip_requirements` manager만 켠다.
+`docker-compose` manager는 `infra/` 아래의 모든 `docker-compose*.yml`·`compose*.yml`을, `pip_requirements`는 `infra/` 아래의
+`requirements.txt`만 추적하며 `labs/**`, `docs/98.archive/**`, `**/fixtures/**`는 `ignorePaths`로 제외한다. 추적 목록은
+[renovate.json5](../../../../renovate.json5)가 소유한다.
 
 `POL-0086`은 manager, release age, security update, automerge, updater
 overlap을 관장한다. 이 package는 job 경계를 관장한다. `allowScripts: false`와
@@ -71,7 +73,7 @@ policy, 원격 repository 상태, token owner가 authoritative하다.
 
 ### systemd 예약 실행
 
-repository는 `infra/09-platform-ops/renovate/`에 systemd unit 파일 두 개를
+repository는 `infra/09-platform-ops/renovate/systemd/`에 systemd unit 파일 두 개를
 제공한다.
 
 | File | Purpose |
@@ -89,8 +91,8 @@ repository는 `infra/09-platform-ops/renovate/`에 systemd unit 파일 두 개�
   오프라인이었다면 다음 boot 때 timer가 실행된다. 그 catch-up run은
   `renovate.json5` window를 벗어날 수 있다. 그 경우 Renovate는 Dependency
   Dashboard는 갱신하지만 window가 될 때까지 새 branch를 열지 않는다.
-- **Start dependency**: timer에 `Requires=`가 없고 service에 `[Install]`이 없어도
-  `Persistent=true`는 놓친 실행을 timer 활성화 때 재개할 수 있다. 설정된 random
+- **Start dependency**: timer에 `Requires=`가 없고 service에 `[Install]`이 없으므로 timer 시작 자체가
+  즉시 run을 만들지는 않는다. 다만 `Persistent=true`는 놓친 실행을 timer 활성화 때 재개할 수 있다. 설정된 random
   지연이 적용되므로 enable/start/reboot를 원격 쓰기 없는 조치로 취급하지 않는다.
 - **Timezone**: `OnCalendar`는 `Asia/Seoul`을 지정한다. 설치된 systemd 버전과
   timer 해석은 승인된 호스트 점검에서 확인하며 과거 관측을 현재 상태로 인용하지 않는다.
@@ -100,7 +102,7 @@ repository는 `infra/09-platform-ops/renovate/`에 systemd unit 파일 두 개�
 ```text
 Timer fires
   └─ ExecStartPre (1): assert renovate_token secret non-empty
-  └─ ExecStartPre (2): docker compose pull --quiet renovate
+  └─ ExecStartPre (2): docker compose --profile dependency-update pull --quiet renovate
   └─ ExecStart:        docker compose --profile dependency-update run --rm --no-deps renovate
 ```
 
@@ -115,39 +117,19 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 
 호스트 설치·timer 활성화·수동 실행·중지는 [런북](../../runbooks/10-platform-and-backup/0083-renovate.md)의 승인된 systemd 절차를 따른다.
 
-### 과거 호스트 관측
-
-원본 위치: `docs/05.operations/guides/10-platform-and-backup/0083-renovate.md`, SPEC-0198 이전 Git 기록. 아래는 현재 호스트 상태의 근거가 아니다.
-
-> Historical evidence (not current authority; source: Git history):
->
-> - **Schedule**: 월요일 00:00 KST에 최대 60분의 random jitter
->   (`RandomizedDelaySec=3600`)를 둔다. 이 값은 `renovate.json5`의 schedule window
->   (`Asia/Seoul` timezone의 `"* 0-5 * * 1"`)와 일치해서 host trigger와 in-app
->   schedule guard가 같은 maintenance window를 쓰게 된다.
-> - **Missed fires**: `Persistent=true` 덕분에 월요일 trigger 시각에 host가
->   오프라인이었다면 다음 boot 때 timer가 실행된다. 그 catch-up run은
->   `renovate.json5` window를 벗어날 수 있다. 그 경우 Renovate는 Dependency
->   Dashboard는 갱신하지만 window가 될 때까지 새 branch를 열지 않는다.
-> - **Start dependency**: timer는 service에 `Requires=`를 선언하지 않고
->   service에는 `[Install]` section이 없으므로, timer를 enable하거나
->   start하거나 reboot해도 그 자체로 즉시 run이 시작되지는 않는다.
-> - **Timezone**: `OnCalendar`는 `Asia/Seoul` suffix를 사용한다(systemd ≥ 242,
->   이 host는 255를 실행 중).
-
-> Historical evidence (not current authority; source: Git history):
->
-> host unit을 설치하거나 교체하는 것은 별도 승인이 필요한 host 변경이다.
-> symlink 대신 검토된 파일을 복사해 checkout이나 branch 전환, pull이 systemd가
-> 실행하는 내용을 조용히 바꾸지 못하게 한다. 2026-09-21에 확인한 설치된
-> 복사본은 이 repository보다 오래된 revision이었다.
-
 ### 작업 신호와 상태 경계
 
 작업에는 HTTP health가 없다. exit·정제된 실행 요약·생성된 PR을 함께 확인한다.
 시작 shell은 token 파일 누락·빈 값을 거부하며 cache는 다시 만들 수 있는 지속
 영역이다. 선언된 CPU·메모리 상한과 timeout 안에서 끝나는지 관찰하되 timeout을
 원격 변경의 자동 취소로 해석하지 않는다. 캐시 삭제는 repository나 PR을 복구하지 않는다.
+
+### Common Checks
+
+- repository와 self-host 설정에 대한 strict validation.
+- `bash scripts/operations/sync-tech-stack-versions.sh --check`.
+- 승인된 live job의 경우, sanitized 결과를 생성된 모든 branch/PR과 대조하고
+  이 job 승인으로는 merge가 일어나지 않았는지 확인한다.
 
 ### Traceability
 
@@ -156,12 +138,7 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 
 ## Troubleshooting
 
-### Common Checks
-
-- repository와 self-host 설정에 대한 strict validation.
-- `bash scripts/operations/sync-tech-stack-versions.sh --check`.
-- 승인된 live job의 경우, sanitized 결과를 생성된 모든 branch/PR과 대조하고
-  이 job 승인으로는 merge가 일어나지 않았는지 확인한다.
+위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)의 절차로 진단한다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0082"
 parent_ids:
@@ -71,16 +71,6 @@ OpenTofu(`opentofu` job)의 plan 검토, lock 실패, state 백업·복구, 업�
   재빌드하고, backend 설정을 바꾸지 않고 초기화한 뒤, 적용하지 않은 plan을 비교한다.
   호환성이 실패하면 이미지/빌드를 롤백한다. upgrade가 state를 변경한 경우에만 검증된
   backup에서 state를 롤백한다.
-
-### 상태 보존과 변경 전 검토
-
-upgrade나 state 작업 전에 backend를 확인한다. 로컬 state의 경우 모든 writer를
-멈추고 state와 backup 파일을 mode-0600으로 복사한다. 원격 backend의 경우
-atomic/versioned backup 기능이나 `tofu state pull`을 보호된 파일로 사용하며,
-그 출력을 터미널이나 채팅으로 보내지 않는다. 신뢰하기 전에 분리된/테스트용
-backend로 격리된 restore를 검증한다. 중간의 모든 OpenTofu upgrade 노트를
-검토하고 apply하지 않고 저장된 plan workflow를 테스트한다. 이 문서를 변경하면서
-plan, state backup, restore, provider 호출은 실행하지 않았다.
 
 ### Terraform 이관
 

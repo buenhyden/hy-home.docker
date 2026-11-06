@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -42,7 +42,7 @@ created: "2026-06-04"
 권위를 소유한다. `.claude`와 `.codex`는 native adapter다. Codex는 canonical
 skill을 명시적으로 읽고 Claude는 thin generated pointer를 사용한다.
 정적 discovery와 projection parity는 live picker·invocation·hook delivery나
-runtime 승인을 증명하지 않는다. authoring은 Stage99 template과 parent README를
+runtime 승인을 증명하지 않는다. authoring은 Stage 99 template과 parent README를
 함께 다루며 실행 증거는 현재 Task에 남긴다.
 
 Graphify는 source 대조를 돕는 navigation 자료다. report가 없거나 health가

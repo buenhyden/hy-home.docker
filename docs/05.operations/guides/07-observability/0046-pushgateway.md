@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Usage Guide"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0046"
 parent_ids:
@@ -33,7 +33,7 @@ created: "2026-05-10"
 
 - `pushgateway` service가 `obs` 또는 `batch-metrics` profile에서 실행 중이어야 한다.
 - 작업이 `obs_net` 또는 Pushgateway에 도달할 수 있는 네트워크 경로에 있어야 한다.
-- Prometheus에 의존하는 dashboard or alert를 만들기 전에는 `prometheus.yml`의 Pushgateway scrape job 존재를 확인해야 한다.
+- Prometheus에 의존하는 dashboard나 alert를 만들기 전에 Pushgateway scrape job이 추가되었는지 확인한다. 현재 선택 config(`PROMETHEUS_CONFIG_FILE`, 기본 `prometheus.dev.yml`)와 `prometheus.yml` 모두 해당 job이 없다.
 
 ## Usage
 
@@ -67,7 +67,7 @@ EOF
 
 #### Prometheus scrape 연동 확인
 
-Prometheus dashboard or alert가 Pushgateway metric에 의존하기 전에는 `prometheus.yml`에 Pushgateway scrape job이 있는지 확인한다. 현재 문서 정리 범위는 runtime 설정 변경이 아니므로, scrape job이 없으면 gap으로 기록하고 별도 작업에서 추가한다.
+Prometheus dashboard나 alert가 Pushgateway metric에 의존하기 전에 scrape job 존재를 확인한다. 현재는 없으므로 gap으로 기록하고 추가는 별도 승인 작업으로 둔다.
 
 확인 명령은 [Common Checks](#common-checks)에 있다.
 
@@ -78,9 +78,9 @@ Prometheus dashboard or alert가 Pushgateway metric에 의존하기 전에는 `p
 ### Source-backed operating contract
 
 - **목적·분류·구현 소유권**: `pushgateway`는 `OPTIONAL` batch metric 중계 서비스이며 `obs`/`batch-metrics`로 선택한다. [Compose](../../../../infra/06-observability/docker-compose.yml)가 구현을 소유한다.
-- **흐름·의존성·보안**: 승인된 단기 job이 metric을 push하고 Prometheus가 이를 scrape한다. Traefik이 UI/API route를 보호하지만 producer 인가와 metric-label 관리 규칙은 여전히 필요하다. Prometheus, gateway/auth와 `obs_net`이 의존성이다.
+- **흐름·의존성·보안**: 승인된 단기 job이 metric을 push한다. 현재 두 Prometheus config(`prometheus.yml`, `prometheus.dev.yml`)에는 Pushgateway scrape job이 없어 push된 metric은 Prometheus에 들어오지 않는다. Traefik이 UI/API route를 보호하지만 producer 인가와 metric-label 관리 규칙은 여전히 필요하다. Prometheus, gateway/auth와 `obs_net`이 의존성이다.
 - **상태**: 현재 Compose에는 volume과 `--persistence.file`이 선언되어 있지 않다. metric은 process memory에 있으며 restart하면 사라진다. Docker Secret은 없다. 현재 Pushgateway 내용을 영속적이거나 정확히 복구할 수 있다고 설명하지 않는다.
-- **자원·정상 사용**: source limit은 여유 용량을 뜻하지 않는다. 저장소 root에서 렌더링하고 batch 용도로만 시작한다. label을 붙인 test group을 push하여 Prometheus scrape를 확인하고, producer가 완료되면 오래된 group을 삭제한다.
+- **자원·정상 사용**: source limit은 여유 용량을 뜻하지 않는다. 저장소 root에서 렌더링하고 batch 용도로만 시작한다. label을 붙인 test group을 push하여 Pushgateway `/metrics`에서 확인하고(Prometheus scrape job이 추가된 뒤에는 Prometheus target도 확인한다), producer가 완료되면 오래된 group을 삭제한다.
 - **수명 주기·복구**: backup 대상은 gateway memory가 아니라 producer 정의와 metric 계약이다. restart/rebuild 후 producer는 현재 유효한 metric만 다시 push한다. 오래된 관찰 결과를 재전송하지 않는다. upgrade할 때 API/label 호환성을 확인한다.
 - **공식 문서·license**: 공식 [Prometheus Pushgateway 저장소](https://github.com/prometheus/pushgateway)를 따른다. Pushgateway에는 Apache-2.0 license가 적용된다.
 
@@ -88,7 +88,7 @@ Prometheus dashboard or alert가 Pushgateway metric에 의존하기 전에는 `p
 
 - `docker compose --profile obs ps pushgateway`
 - `curl -I http://pushgateway:9091/-/ready`
-- `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/prometheus.yml`
+- `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/` (현재 출력 없음: scrape job 미구현)
 
 ### Runbook Handoff
 

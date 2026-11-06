@@ -1,10 +1,10 @@
 ---
 title: "워크플로와 자동화 가이드"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-14"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -24,9 +24,9 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [Airflow Usage Guide](0050-airflow.md) | `GDE-0050` | 이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 현재 구현은 Airflow, `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`,  |
+| [Airflow Usage Guide](0050-airflow.md) | `GDE-0050` | 이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 현재 구현은 Airflow, `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`, `airflow-statsd-exporter`를 기준으로 한다. |
 | [Airflow Dag Basics Operations](0051-airflow-dag-lifecycle.md) | `GDE-0051` | 이 문서는 `hy-home.docker` 환경에서 Airflow DAG를 작성하는 기본 방법과 권장 패턴을 설명합니다. |
-| [n8n Usage Guide](0053-n8n.md) | `GDE-0053` | 이 가이드는 `hy-home.docker`의 n8n 로우코드 자동화 환경을 사용하는 방법을 설명한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue mode  |
+| [n8n Usage Guide](0053-n8n.md) | `GDE-0053` | 이 가이드는 `hy-home.docker`의 n8n 로우코드 자동화 환경을 사용하는 방법을 설명한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue mode와 `blog-ingestion` Gateway 구성이다. |
 | [07-Workflow Optimization Hardening Usage Guide](0054-workflow-optimization-hardening.md) | `GDE-0054` | 이 문서는 `07-workflow` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. compose 보안 경계, health 기반 startup 계약, n8n 이미지 하드닝, 검증 절차를 제공한다. |
 
 ## Usage

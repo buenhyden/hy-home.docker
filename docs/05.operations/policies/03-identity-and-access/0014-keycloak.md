@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Operations Policy"
-version: "1.1.2"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0014"
 parent_ids:
@@ -33,7 +33,7 @@ created: "2026-05-17"
   - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
   - readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차를 수행해야 한다.
   - Keycloak은 `template-infra-high`를 사용한다.
-  - DB/Admin 비밀은 `/run/secrets` 파일에서 읽어 환경 변수로 주입한다.
+  - DB 비밀은 `/run/secrets/keycloak_db_password`에서, Admin 비밀은 `KEYCLOAK_ADMIN_PASSWORD_FILE`이 가리키는 파일(기본 `/run/secrets/keycloak_admin_password`, OpenBao 소비 시 `/run/openbao/auth` 아래 Agent 출력)에서 읽어 환경 변수로 주입한다.
   - readiness healthcheck(`/health/ready`)를 유지한다.
   - 시크릿 길이/값 등 민감한 디버그 출력은 금지한다.
 - **허용**:
@@ -55,10 +55,6 @@ mount 적용은 [POL-0006](../01-common/0006-infrastructure-optimization-governa
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
-## Exceptions
-
-- 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
-
 ### Backup and Upgrade Controls
 
 - `mng-pg`의 Keycloak database를 권위 백업으로 취급한다. realm export만으로
@@ -69,6 +65,10 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
   owner가 보관하며 문서나 증거에 값을 복사하지 않는다.
 - upgrade 전에 복구 가능한 database backup을 확인하고 격리 복제본에서 migration과
   대표 OIDC 흐름을 검증한다. rollback에는 이전 image와 이전 database가 함께 필요하다.
+
+## Exceptions
+
+- 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
 
 ### Review Cadence
 

@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.6.2"
+version: "1.6.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -26,7 +26,7 @@ procedure는 해당 runbook에 있다.
 이 정책은 현재 `infra/06-observability/prometheus` compose, config,
 alert-rule surface에 적용된다.
 
-- **Systems**: compose service `prometheus`, container `prometheus`, image [Compose image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
+- **Systems**: compose service `prometheus`, container `prometheus`, image [Compose image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.dev.yml`(Compose 기본 `PROMETHEUS_CONFIG_FILE`)와 같은 내용의 `prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
 ## Rules

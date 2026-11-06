@@ -1,10 +1,10 @@
 ---
 title: "Grafana Provisioning and Access Recovery Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0041"
 parent_ids:
@@ -26,15 +26,13 @@ created: "2026-05-17"
 
 다음 경우에 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - Grafana UI `https://grafana.${DEFAULT_URL}` 또는 `/api/health`가 실패할 때.
 - OAuth login loop, `OAuth Login Failed` 또는 unexpected Viewer/Editor/Admin role이 발생할 때.
 - Dashboard 패널에 `Datasource not found`, `Query error`가 표시되거나 trace/log/profile link가 비어 있을 때.
 - Provisioned dashboard JSON 또는 datasource YAML 변경 후 reload/restart와 검증이 필요할 때.
 - `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`, secret reference, datasource UID, dashboard provider 또는 route 변경 후 rollback 가능성을 확인해야 할 때.
+
+## Prerequisites
 
 `grafana`의 선택 backend가 없으면 해당 datasource만 실패할 수 있다. `grafana-db-provision`은 DB grant를 변경하는 별도 일회성 작업이며 Grafana 기동 의존성이 아니다. 기존 dashboard 조회를 위해 이 작업을 실행하지 않는다. 승인된 최초 provision·schema 변경 때만 DB 소유자가 표·역할 준비와 secret 참조를 확인하며, 종료 코드와 실제 필요한 표의 읽기 권한을 함께 검증한다. Helper는 자체 영속 데이터·HTTP health·독립 복원 대상이 없고 권한 회수는 DB 소유자 절차로 넘긴다.
 
@@ -81,7 +79,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 4. Datasource 또는 dashboard query failure이면 datasource UID와 backend endpoints를 확인한다.
 
    ```bash
-   rg -n 'uid: Prometheus|url: http://prometheus:9090|uid: Loki|url: http://loki:3100|uid: Tempo|url: http://tempo:3200|uid: alertmanager|url: http://alertmanager:9093|type: grafana-pyroscope-datasource|url: http://pyroscope:4040|tracesToLogsV2|datasourceUid: .Loki.' infra/06-observability/grafana/provisioning/datasources/datasource.yml
+   rg -n 'uid: Prometheus|url: http://prometheus:9090|uid: Loki|url: http://loki:3100|uid: Tempo|url: http://tempo:3200|uid: alertmanager|url: http://alertmanager:9093|type: grafana-pyroscope-datasource|url: http://pyroscope:4040|tracesToLogsV2|datasourceUid: Loki' infra/06-observability/grafana/provisioning/datasources/datasource.yml
    ```
 
 5. Dashboard provisioning failure이면 provider locks 및 dashboard inventory를 확인한다.

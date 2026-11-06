@@ -1,10 +1,10 @@
 ---
 title: "Tempo Readiness and Recovery Runbook"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0049"
 parent_ids:
@@ -21,15 +21,12 @@ created: "2026-05-17"
 ## Trigger
 
 - Grafana Tempo datasource에서 최근 trace가 검색되지 않을 때.
-
-## Prerequisites
-
-### Trigger and Preconditions
-
 - Alloy는 trace를 수신하지만 Tempo에 trace가 도착하지 않는다고 의심될 때.
 - Tempo log에 S3, bucket, access denied, compaction, WAL 관련 오류가 보일 때.
 - Service graph or span metrics가 Prometheus/Grafana에서 보이지 않을 때.
 - Config 변경 후 readiness, route, storage, remote write evidence가 필요할 때.
+
+## Prerequisites
 
 - [ ] `tempo` service, `tempo` container, and `tempo-data` volume 상태를 확인한다.
 - [ ] Secret values를 열람하지 않는다. `seaweedfs_s3_tempo_secret_key` ID만 evidence에 기록한다.
@@ -62,13 +59,13 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    rg -n 'service: template-stateful-high|image: hy/tempo:|container_name: tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml
-   rg -n 'endpoint: 0.0.0.0:4317|endpoint: 0.0.0.0:4318|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: seaweedfs-s3:8333|secret_key: \\$\\{S3_SECRET_KEY\\}' infra/06-observability/tempo/config/tempo.yaml
+   rg -n 'endpoint: 0.0.0.0:4317|endpoint: 0.0.0.0:4318|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: seaweedfs-s3:8333|secret_key: \$\{S3_SECRET_KEY\}' infra/06-observability/tempo/config/tempo.yaml
    ```
 
 3. Alloy exporter가 Tempo endpoint를 가리키는지 확인한다.
 
    ```bash
-   rg -n 'otelcol.exporter.otlp "tempo"|endpoint = "tempo:4317"|traces  = \\[otelcol.exporter.otlp.tempo.input\\]' infra/06-observability/alloy/config/config.alloy
+   rg -n 'otelcol.exporter.otlp "tempo"|endpoint = "tempo:4317"|traces +=? \[otelcol.exporter.otlp.tempo.input\]' infra/06-observability/alloy/config/config.alloy infra/06-observability/alloy/config/config.home.alloy
    ```
 
 4. Storage or secret symptom은 로그 문구와 bucket/config boundary만 캡처한다. Secret value를 출력하지 않는다.
@@ -160,14 +157,14 @@ verification이 실패하거나, secret exposure risk가 보이거나, destructi
 
 ## Related Documents
 
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/07-observability/0049-tempo.md)
-- [Operations policy](../../policies/07-observability/0049-tempo.md)
-
 ### Traceability
 
 - Declared parent: [Tempo Usage Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`), [Policy](../../policies/07-observability/0049-tempo.md) (`POL-0049`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/07-observability/0049-tempo.md)
+- [Operations policy](../../policies/07-observability/0049-tempo.md)

@@ -1,10 +1,10 @@
 ---
 title: "Development Database Source Preflight Runbook"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0100"
 parent_ids:
@@ -61,7 +61,7 @@ secret reference, quota와 approval state가 승인된 뒤에만 별도 task에�
 
 ### 관측 경보와 의도적 중지
 
-DEV exporter 경보는 `db_scope="dev"`이고 `expected_state="on"`일 때만 울린다.
+DEV 장애 경보는 `db_scope="dev"`이고 `expected_state="on"`일 때만 울리며, `DevDatastoreUpWhileDeclaredOff`만 `off` 선언 상태에서 울린다.
 `expected_state`는 Prometheus 시작 시 루트 `.env`의
 `PROMETHEUS_DEV_DATA_EXPECTED`(`on`|`off`)에서 온다.
 
@@ -109,7 +109,7 @@ target, source SHA, failure signal, proposed approval boundary를 전달한다.
 ### Traceability
 
 - Artifact: `RUN-0100`; parent guide: `GDE-0100`.
-- Governing source contract: `SPEC-0202`.
+- Governing source contract: `SPEC-0204`(SPEC-0202는 삭제된 역사적 근거).
 - Static implementation authority: `infra/04-data/dev-db/docker-compose.yml`.
 
 - [Development database guide](../../guides/05-databases-and-storage/0100-development-database.md)

@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Readiness and Recovery Runbook"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0045"
 parent_ids:
@@ -24,20 +24,18 @@ created: "2026-05-17"
 
 다음 중 하나일 때 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - Prometheus UI나 `/-/healthy` endpoint가 실패한다.
 - Grafana dashboard에서 metrics가 비어 있거나 오래된 값으로 보인다.
 - 특정 scrape target이 `DOWN`이거나 `PrometheusAllTargetsMissing` 계열 alert가 발생한다.
 - `PrometheusRuleEvaluationFailures`나 rule loading error가 발생한다.
-- `prometheus.yml`이나 `alert_rules/`를 바꾼 뒤 reload가 필요하다.
+- 선택 config(`prometheus.dev.yml` 또는 `prometheus.yml`)나 `alert_rules/`를 바꾼 뒤 reload가 필요하다.
 - TSDB 손상, compaction 실패, WAL 관련 로그가 보인다.
+
+## Prerequisites
 
 시작 전에 다음을 확인한다.
 
-- [ ] 변경 전 `prometheus.yml`, alert rule files, compose service boundary를 확인한다.
+- [ ] 변경 전 선택 config(`PROMETHEUS_CONFIG_FILE`, 기본 `prometheus.dev.yml`), alert rule files, compose service boundary를 확인한다.
 - [ ] Secret values를 열람하지 않는다. Secret ID and file reference만 evidence에 기록한다.
 - [ ] 문제 유형을 readiness, config/rule, scrape target, route, storage/TSDB 중 하나로 분류한다.
 - [ ] 데이터 삭제, WAL 제거, volume mutation이 필요해 보이면 즉시 중단하고 repository owner @buenhyden approval을 받는다.
@@ -111,7 +109,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    docker exec prometheus wget -qO- http://<target-service-name>:<metrics-port>/metrics
    ```
 
-   Target이 `/metrics`가 아닌 custom path를 사용하면 `prometheus.yml`의 `metrics_path`를 기준으로 endpoint를 바꾼다.
+   Target이 `/metrics`가 아닌 custom path를 사용하면 선택 config의 `metrics_path`를 기준으로 endpoint를 바꾼다.
 
 4. Config or rule 변경이 검증을 통과했고 service가 healthy하면 lifecycle reload를 수행한다.
 
@@ -177,7 +175,7 @@ MNG·DEV 고유 경보는 각 DB runbook이 다룬다.
 
 #### Safe rollback
 
-- Git-managed `prometheus.yml` or alert rule 변경이 원인이면 직전 Git diff 단위로 되돌리고 `promtool` 검증 후 lifecycle reload를 다시 수행한다.
+- Git으로 관리하는 선택 config나 alert rule 변경이 원인이면 직전 Git diff 단위로 되돌리고 `promtool` 검증 후 lifecycle reload를 다시 수행한다.
 - Runtime restart는 `obs` profile compose 명령만 사용한다.
 - TSDB/WAL 삭제, volume file mutation, retention flag change는 이 런북의 안전 롤백 범위를 벗어난다. 별도 approval, backup evidence, incident/task 기록 없이 수행하지 않는다.
 
@@ -223,14 +221,14 @@ verification이 실패하거나, secret exposure risk가 보이거나, destructi
 
 ## Related Documents
 
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/07-observability/0045-prometheus.md)
-- [Operations policy](../../policies/07-observability/0045-prometheus.md)
-
 ### Traceability
 
 - Declared parent: [Prometheus Usage Guide](../../guides/07-observability/0045-prometheus.md) (`GDE-0045`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](../../guides/07-observability/0045-prometheus.md) (`GDE-0045`), [Policy](../../policies/07-observability/0045-prometheus.md) (`POL-0045`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/07-observability/0045-prometheus.md)
+- [Operations policy](../../policies/07-observability/0045-prometheus.md)

@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Operations Policy"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0046"
 parent_ids:
@@ -33,7 +33,7 @@ created: "2026-05-17"
   - 모든 push path에는 안정적인 `job` label을 포함해야 한다.
   - `instance` label은 안정적인 worker, node, or bounded execution identity를 구분할 때만 사용한다. 고유 request ID, user ID, unbounded build ID는 cleanup evidence가 없는 한 label로 쓰지 않는다.
   - Push한 metric group은 작업 lifecycle 종료 후 삭제하거나 다음 실행에서 명확히 overwrite해야 한다. 1시간 이상 갱신되지 않은 `push_time_seconds` group은 stale candidate로 검토한다.
-  - Prometheus dashboard, alert, or SLO가 Pushgateway metric에 의존하려면 `prometheus.yml`에 `job_name: "pushgateway"`와 `pushgateway:9091` target 및 `honor_labels: true` 또는 동등한 label 보존 정책이 있어야 한다. 이 문서 정리 시점의 repository scan에서는 해당 scrape block이 확인되지 않았으므로, 런타임 설정 변경 없이 이를 구현된 상태로 단정하지 않는다.
+  - Prometheus dashboard, alert, or SLO가 Pushgateway metric에 의존하려면 선택 config(`prometheus.dev.yml`, `prometheus.yml`)에 `job_name: "pushgateway"`와 `pushgateway:9091` target 및 `honor_labels: true` 또는 동등한 label 보존 정책이 있어야 한다. 2026-11-06 기준 두 config 모두 해당 scrape job이 없으므로 이 통제는 미구현이며, 구현된 상태로 단정하지 않는다.
   - metric payload와 label에는 secret, token, credential, personal data를 포함하지 않는다.
 - **Allowed**:
   - 직접 scrape가 어려운 network boundary 안쪽의 short-lived job metric push.
@@ -67,7 +67,7 @@ created: "2026-05-17"
 ## Verification
 
 - **Compose Check**: `rg -n 'service: template-infra-readonly-low|image: prom/pushgateway:|PUSHGATEWAY_PORT|/-/ready|pushgateway.middlewares' infra/06-observability/docker-compose.yml`
-- **Scrape Contract Check**: `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/prometheus.yml`. Match가 없으면 Prometheus integration을 gap으로 기록하고 runtime 설정 변경 task를 별도로 만든다.
+- **Scrape Contract Check**: `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/`. Match가 없으면 Prometheus integration을 gap으로 기록하고 runtime 설정 변경 task를 별도로 만든다.
 - **Stale Metric Check**: scrape job이 존재하는 환경에서는 `push_time_seconds` 기준으로 1시간 이상 갱신되지 않은 `job` group을 식별한다.
 - **API Audit**: Pushgateway API or UI에서 비정상적으로 큰 metric group, high-cardinality labels, cleanup되지 않은 debug groups를 확인한다.
 - **Documentation Check**: guide and runbook은 사용법과 복구 절차만 설명하고, policy control은 이 문서에 유지한다.

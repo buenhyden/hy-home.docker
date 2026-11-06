@@ -1,10 +1,10 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -102,9 +102,9 @@ Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](
 - Compose service boundary:
   `rg -n 'service: template-stateful-high|image: hy/tempo:|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml`
 - Tempo config:
-  `rg -n 'metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: seaweedfs-s3:8333|secret_key: \\$\\{S3_SECRET_KEY\\}' infra/06-observability/tempo/config/tempo.yaml`
+  `rg -n 'metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: seaweedfs-s3:8333|secret_key: \$\{S3_SECRET_KEY\}' infra/06-observability/tempo/config/tempo.yaml`
 - Custom image secret guard:
-  `rg -n 'FROM grafana/tempo:|USER 10001:10001|missing secret: S3_SECRET_KEY_FILE' infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
+  `rg -n 'FROM grafana/tempo:|USER 10001:10001|S3_SECRET_KEY_FILE is not set|missing secret:' infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 

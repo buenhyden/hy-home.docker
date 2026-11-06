@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Usage Guide"
-version: "1.2.5"
+version: "1.2.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ## Overview
 
-이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../infra/04-data/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, SSO 뒤의 REST route와 `/readyz` healthcheck를 사용한다. gRPC는 network 안의 `qdrant:6334`로만 쓴다.
+이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../infra/04-data/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`·`edge_net`·`obs_net`, SSO 뒤의 REST route와 `/readyz` healthcheck를 사용한다. gRPC는 network 안의 `qdrant:6334`로만 쓴다.
 
 ## Scope
 
@@ -49,13 +49,13 @@ created: "2026-05-10"
 
 ### Identity-specific behavior
 
-Qdrant unprivileged 이미지는 API key/read-only key 파일 참조를 사용한다. `/readyz`는 health-only 이며 collection authorization/search correctness 가 아니다. snapshot 은 `/qdrant/storage`와 같은 data disk 에 있으므로 별도 암호화 사본이 필요하다. 같은/다음 minor 복원과약 2 배 여유라는 upstream 범위도 original collection/version/config/alias 검토를 대신하지 않는다. snapshot/force overwrite·key rotation·collection 삭제는 승인된 target 에만 수행한다.
+Qdrant는 API key를 환경 변수로만 읽으므로, Compose 시작 스크립트가 `/run/secrets/qdrant_api_key`와 `/run/secrets/qdrant_read_only_api_key`를 읽어 export한 뒤 `./entrypoint.sh`를 실행한다. `/readyz`는 health-only이며 collection authorization/search correctness가 아니다. snapshot은 `/qdrant/storage`와 같은 data disk에 있으므로 별도 암호화 사본이 필요하다. 같은/다음 minor 복원과 약 2배 여유라는 upstream 범위도 original collection/version/config/alias 검토를 대신하지 않는다. snapshot/force overwrite·key rotation·collection 삭제는 승인된 target에만 수행한다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
 | `qdrant` | vector collections; local snapshot은 off-disk backup 아님 | readyz; API key/collection query 별도 | [선택·의존·접속·입력·mount](../../../../infra/04-data/qdrant/docker-compose.yml) |
 
-선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### Preflight and normal use
 

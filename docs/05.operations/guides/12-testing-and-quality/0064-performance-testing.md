@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Usage Guide"
-version: "1.2.3"
+version: "1.2.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0064"
 parent_ids:
@@ -12,7 +12,7 @@ parent_ids:
 created: "2026-05-10"
 ---
 
-# 성능 시험 사용 가이드
+# Performance Testing Usage Guide
 
 ## Overview
 
@@ -29,8 +29,7 @@ created: "2026-05-10"
 
 ## Concepts
 
-`k6`는 기본 부하 발생기, WireMock은 외부 HTTP 의존성의 모의 서버,
-Locust는 독립 LAB에서 사용하는 선택 도구다. 실제 경로는
+실제 경로는
 승인된 앱 시험에서 `k6 → 개발 API → 실제 worker → WireMock`이다. WireMock만 호출한
 수치는 애플리케이션 성능으로 분류하지 않는다. k6는 JavaScript 시나리오와
 일회성 CI 실행에 맞고, Locust는 Python 사용자 행동 모델과 분산 worker
@@ -40,7 +39,7 @@ Dockerfile/Compose 및 공식 프로젝트 자료에서 재확인한다.
 
 | 도구 | 언어·부하 모델 | 프로토콜·CI/현재 배치 | 라이선스·결정 |
 | --- | --- | --- | --- |
-| [k6](https://github.com/grafana/k6) | JavaScript, 가상 사용자·도착률 | HTTP 중심 시나리오와 일회성 `testing` job; 종료 코드/threshold를 CI에 연결 | AGPL-3.0, 기본 발생기 |
+| [k6](https://github.com/grafana/k6) | JavaScript, 가상 사용자·도착률 | HTTP 중심 시나리오; root `testing` job은 `version`만 실행하고 실제 부하는 `quality_run.py` 격리 executor가 만든다; 종료 코드/threshold를 판정에 연결 | AGPL-3.0, 기본 발생기 |
 | [Locust](https://github.com/locustio/locust) | Python, 사용자 행동·분산 worker | 주로 HTTP client, 별도 LAB의 headless 집계·CSV | MIT, 선택 실습 도구 |
 | [WireMock](https://github.com/wiremock/wiremock) | Java HTTP stub | HTTP 응답·오류·지연 모의; 부하를 만들지 않음 | Apache-2.0, 의존성 모의 |
 
@@ -100,6 +99,14 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 재시작을 넘는 메트릭 영속성 증거가 아니다. 실제 reader·bucket·부하 대상이
 선정되기 전에는 소스 계약만 소비하며 자동 연결·배포하지 않는다.
 
+### Common Checks
+
+- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))는 변경 경로의
+  소스·문서 회귀를 검사한다. 통과해도 실행 대상의 준비 상태는 증명하지 않는다.
+- root `--profile '*'` 렌더에 Locust가 없고, 독립 `labs/locust/docker-compose.yml`의
+  master/worker closure가 별도 프로젝트·네트워크·볼륨을 사용하는지 본다.
+- 실제 실행은 `RUN-0064`의 대상·자원·정리 사전 점검과 별도 승인을 따른다.
+
 ### Runbook Handoff
 
 [RUN-0064](../../runbooks/12-testing-and-quality/0064-performance-testing.md)는 부하 중단과 대상
@@ -116,17 +123,11 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 
 ## Troubleshooting
 
-### Common Checks
-
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))는 변경 경로의
-  소스·문서 회귀를 검사한다. 통과해도 실행 대상의 준비 상태는 증명하지 않는다.
-- root `--profile '*'` 렌더에 Locust가 없고, 독립 `labs/locust/docker-compose.yml`의
-  master/worker closure가 별도 프로젝트·네트워크·볼륨을 사용하는지 본다.
 - WireMock 기능 모드의 journal·reset과 부하 모드의 journal 비활성화를
   구분한다. 무저널 모드에서 `GET /__admin/requests`의 HTTP 500은 빈 저널의
   증거가 아니며, 호출 횟수 판정에 사용하지 않는다. admin API는 인증이
   없으므로 호스트 공개와 내부 peer 접근을 제한한다.
-- 실제 실행은 `RUN-0064`의 대상·자원·정리 사전 점검과 별도 승인을 따른다.
+- 부하 중단과 대상 회복 판단은 [RUN-0064](../../runbooks/12-testing-and-quality/0064-performance-testing.md)를 따른다.
 
 ## Related Documents
 

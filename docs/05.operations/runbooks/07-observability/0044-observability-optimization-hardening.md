@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Runbook"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0044"
 parent_ids:
@@ -26,16 +26,14 @@ created: "2026-05-17"
 
 다음 경우에 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - `infrastructure-hardening` CI가 실패할 때.
 - 관측성 UI/API가 Traefik 경유로 비정상 응답할 때.
 - 스택 부팅 시 Alloy/Grafana dependency 또는 service health race가 반복될 때.
 - Loki/Tempo custom image runtime hardening이 깨졌을 때.
 - Pyroscope 또는 cAdvisor route/healthcheck availability가 회귀했을 때.
 - hardening script, Compose, Dockerfile 또는 operations docs 변경 후 rollback 가능성을 확인해야 할 때.
+
+## Prerequisites
 
 `cadvisor`는 host mount·device·privileged 접근의 승인을 먼저 확인한다. 기동 후 `/healthz`와 실제 container series를 별도로 확인한다. 중지·image 교체는 관측 공백을 만들지만 자체 애플리케이션 데이터 복원은 없다. node-exporter·DCGM 실행은 RUN-0045와 RUN-0055의 소유 경계를 따른다.
 
@@ -67,7 +65,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 2. Native 및 proxy gateway boundaries를 각각 확인한다.
 
    ```bash
-   rg -n 'traefik.http.routers.(grafana|gatus).middlewares: gateway-standard-chain@file|GF_AUTH_GENERIC_OAUTH_ENABLED|GATUS_OIDC_CLIENT_ID' infra/06-observability/docker-compose.yml
+   rg -n 'traefik.http.routers.(grafana|gatus).middlewares: gateway-standard-chain@file|GF_AUTH_GENERIC_OAUTH_ENABLED|GATUS_OIDC_CLIENT_SECRET_FILE' infra/06-observability/docker-compose.yml
    rg -n 'traefik.http.routers.(prometheus|alloy|alertmanager|pushgateway|loki|tempo|pyroscope|cadvisor).middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 

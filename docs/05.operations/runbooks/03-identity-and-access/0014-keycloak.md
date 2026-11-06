@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.3.3"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -26,16 +26,14 @@ created: "2026-05-17"
 
 다음 경우에 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - `/health/ready` 실패 지속
 - DB 인증 오류 또는 연결 오류
 - 관리자/DB 비밀 회전 직후 로그인 실패
 - OAuth2 Proxy 또는 native OIDC client의 `invalid_redirect_uri`, issuer mismatch, JWKS fetch 실패
 - logout 후 즉시 재로그인되는 세션 경계 문제
 - token, session, client secret 노출 후 폐기가 필요할 때
+
+## Prerequisites
 
 ### Target, approval and safe evidence
 
@@ -58,8 +56,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 ### Diagnosis and recovery steps
 
 1. 설정/로그 확인
-   - Keycloak의 정제된 DB/OIDC 오류 요약
-   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+   - Keycloak의 정제된 DB/OIDC 오류 요약(Compose 검증은 Preflight에서 수행)
    - 로그에 DB 인증 실패, hostname/proxy warning, invalid redirect URI, certificate/JWKS 오류가 있는지 분리한다. 로컬 운영 화면 밖으로 공유하기 전에는 token, authorization code, session id, cookie, email, IP 등 식별자와 credential 후보를 redaction한다.
 2. readiness 실패 대응
    - DB 연결 상태 확인(`mng-pg` 로그/상태)
@@ -78,7 +75,8 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
    - CA trust 오류가 있으면 root CA mount와 certificate chain을 확인한다. `ssl_insecure_skip_verify=true`로 우회하지 않는다.
    - Token, authorization code, client secret, admin password 값은 출력하지 않는다.
 6. 시크릿 회전 장애 대응
-   - `/run/secrets/keycloak_admin_password`, `/run/secrets/keycloak_db_password` 파일 존재와 mount 상태 확인
+   - `KEYCLOAK_ADMIN_PASSWORD_FILE`이 가리키는 admin 파일(기본 `/run/secrets/keycloak_admin_password`, OpenBao 소비 시 `/run/openbao/auth` 아래)과 `/run/secrets/keycloak_db_password` 파일 존재와 mount 상태 확인
+   - OpenBao 소비 경로를 쓰면 `${DEFAULT_SECURITY_DIR}/openbao/out/auth` 디렉터리가 있어야 기동한다(`create_host_path: false`). Admin 입력은 admin이 없을 때만 적용되는 bootstrap이므로 기존 관리자 password 회전 수단이 아니다.
    - secret 값은 출력하지 않고 환경 변수/secret 파일 매핑 오타, rotation timestamp, 관련 서비스 재시작 여부 점검
 7. 로그아웃 경계 확인
    - Keycloak은 OIDC logout endpoint를 제공하지만, OAuth2 Proxy `/oauth2/sign_out`만 호출하면 provider session은 남을 수 있다.

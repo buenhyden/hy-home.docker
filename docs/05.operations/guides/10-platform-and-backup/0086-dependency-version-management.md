@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Guide"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0086"
 parent_ids:
@@ -45,10 +45,18 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 
 ## Usage
 
+### Common Checks
+
+변경 파일이 어떤 updater의 manager에 속하는지, 빌드 이미지와 로컬 이미지
+태그가 일치하는지, registry check 및 공식 Renovate strict validator가 통과하는지
+확인한다. 알려진 게시 시각은 7일 안정화 기간을 거치고, 게시 시각이 없는
+release는 무기한 대기하지 않도록 schedule과 수동 검토를 적용한다. Green
+registry check만으로 Dockerfile pin 검증을 대체하지 않는다.
+
 ### Runbook Handoff
 
 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)이 검증 순서와 rollback을 소유하며 [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md)가
-업데이트 소유권와 예외를 소유한다.
+업데이트 소유권과 예외를 소유한다.
 
 ### Traceability
 
@@ -57,13 +65,7 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 
 ## Troubleshooting
 
-### Common Checks
-
-변경 파일이 어떤 updater의 manager에 속하는지, 빌드 이미지와 로컬 이미지
-태그가 일치하는지, registry check 및 공식 Renovate strict validator가 통과하는지
-확인한다. 알려진 게시 시각은 7일 안정화 기간을 거치고, 게시 시각이 없는
-release는 무기한 대기하지 않도록 schedule과 수동 검토를 적용한다. Green
-registry check만으로 Dockerfile pin 검증을 대체하지 않는다.
+위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)의 절차로 진단한다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Operations"
-version: "2.2.1"
+version: "2.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -95,7 +95,7 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 ### External Release Evidence
 
 이 저장소는 [공통 Agent 거버넌스의 external-release-evidence 정책](../../.agents/governance/documentation-protocol.md#release-evidence-boundary)을
-사용한다. [Release Runbook](runbooks/README.md)(`0009-release-management.md`)은
+사용한다. [Release Runbook](runbooks/10-platform-and-backup/0009-release-management.md)(`RUN-0009`)은
 반복 절차를, 현재 Task는 특정 실행의 검증과 결과를 소유한다. CHANGELOG, tag,
 CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성공을 주장하지 않는다.
 별도 Release 문서 프로필은 도입하지 않는다.
@@ -109,9 +109,8 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 3. 필수·금지 통제, 승인, 예외, 검토 주기는 `policies/`에 둔다.
 4. 순서 있는 절차, 기대 증거, rollback 또는 recovery, escalation은
    `runbooks/`에 둔다.
-5. Guide의 `## Runbook Handoff`는 실제 Runbook이 있고 그 절차로 넘겨야 할
-   때만 작성한다. Runbook의 `## Automation Handoff`도 실제 자동화 artifact와
-   검증 가능한 link가 있을 때만 작성한다.
+5. Guide의 `### Runbook Handoff`는 실제 Runbook이 있고 그 절차로 넘겨야 할
+   때만 작성한다.
 6. Compose 서비스가 연결된 subject는 Guide/Policy/Runbook 세 역할을 모두
    유지한다. 서비스 연결이 없는 시스템·공통·작업 공간 subject는 필요한 역할만
    등록하고 빈 문서를 만들지 않는다. 공통 내용은 소유 문서로 연결하고 각 서비스의

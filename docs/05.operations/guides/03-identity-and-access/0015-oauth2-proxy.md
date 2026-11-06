@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -74,28 +74,29 @@ UID 100/GID 101과 [전용 entrypoint](../../../../infra/02-auth/oauth2-proxy/do
 | 서비스 | 선택·연결·상태·정상 신호 |
 | --- | --- |
 | `oauth2-proxy` | HOME, `core`/`auth`/`dev`/`local`; `edge_net`, `obs_net`, `mng_data_net`; host port 없음. Keycloak과 선택 Valkey가 필요하지만 `depends_on` 없음. `/ping`은 process, `/ready`는 backend 연결, 인증된 callback/거부는 별도 검사. 내부 metrics 44180은 route하지 않는다. |
-| `oauth2-proxy-valkey` | OPTIONAL, `dedicated-valkey`; `mng_data_net`에서 6379, password 인증과 AOF 활성화. bind-backed `/data`는 `${DEFAULT_AUTH_DIR}/valkey`, UID/GID 999. `PONG` health는 연결 검사이며 session 복구 검증이 아니다. |
-| `oauth2-proxy-valkey-exporter` | OPTIONAL, 같은 profile; 전용 Valkey healthy를 기다린다. `mng_data_net`과 `obs_net`에서 metrics listener, host port/route/영속 volume 없음. Compose healthcheck가 없으므로 실행 상태와 scrape 성공을 별도로 본다. |
+| `oauth2-proxy-valkey` | OPTIONAL, `dedicated-valkey`; `mng_data_net`에서 `${VALKEY_PORT:-6379}`, `start-dedicated.sh`가 `/run/valkey/users.acl`에 렌더링한 ACL로 인증하고 AOF 활성화. bind-backed `/data`는 `${DEFAULT_AUTH_DIR}/valkey`, UID/GID 999. `PONG` health는 연결 검사이며 session 복구 검증이 아니다. |
+| `oauth2-proxy-valkey-exporter` | OPTIONAL, 같은 profile; 전용 Valkey healthy를 기다린다. `mng_data_net`과 `obs_net`에서 `${VALKEY_EXPORTER_PORT:-9121}` metrics listener, host port/route/영속 volume 없음. Compose healthcheck는 `http://localhost:9121/metrics` 응답만 보므로 실행 상태와 scrape 성공을 별도로 본다. |
 
 필수 입력은 `OAUTH2_PROXY_CLIENT_ID`, `DEFAULT_URL`, `DEFAULT_CERT_DIR`와
 client/cookie Secret, 선택 저장소 password다. 전용 대안은 `DEFAULT_AUTH_DIR`,
 `OAUTH2_PROXY_VALKEY_HOST`, Dockerfile 선택, exporter의 `VALKEY_EXPORTER_PORT`를
-함께 확인한다. exporter command에는 포트 fallback이 없고 Valkey server는 6379로
-고정된다. `VALKEY_PORT`/`OAUTH2_PROXY_PORT`만 변경하면 expose·probe와 실제
-listener가 불일치한다. 모든 입력 확인은 값 공개 없이 수행한다.
+함께 확인한다. 전용 Valkey와 exporter는 `VALKEY_PORT`(기본 6379)를 검증해 listener와
+접속 주소에 쓴다. exporter listener는 `VALKEY_EXPORTER_PORT`(기본 9121)를 따르지만
+healthcheck는 9121로 고정되어 있어 이 값을 바꾸면 probe가 불일치한다. Proxy의 실제
+listener는 cfg의 `http_address`가 아니라 `OAUTH2_PROXY_HTTP_ADDRESS`(`${OAUTH2_PROXY_PORT:-4180}`)가
+정한다. 모든 입력 확인은 값 공개 없이 수행한다.
 
 Proxy의 cfg와 CA는 읽기 전용, 세션은 외부 Valkey가 소유한다. Proxy는 CPU 1/
 512 MiB, 두 helper는 각각 CPU 0.5/256 MiB를 공통 template에서 상속한다.
 공유·전용 Valkey는 dev-valkey와 같이 `maxmemory 128mb`와 `noeviction`으로
 시작해 256 MiB 한도 전에 쓰기를 OOM 오류로 거부한다. AOF·세션 증가와 디스크 여유는
-함께 본다. exporter는 `redis_up`과 target `UP`을 구분한다. Secret을 password 인자로
-전달하는 기존 helper 구현 때문에 전체 process/inspect/health 출력은 수집하지 않는다.
-전용 helper의 healthcheck 부재는 공통 health 요구의 구현 한계이며 예외 승인으로
-취급하지 않는다. 영속성·삭제·자원 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md)가 소유한다.
+함께 본다. exporter는 `redis_up`과 target `UP`을 구분한다. exporter는 Secret 파일을
+`REDIS_PASSWORD` 환경 변수로, 전용 Valkey healthcheck는 `REDISCLI_AUTH`로 읽으므로 전체
+inspect/environment 출력은 수집하지 않는다. 영속성·삭제·자원 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md)가 소유한다.
 
-공식 [선언 릴리스의 endpoint 문서](https://raw.githubusercontent.com/oauth2-proxy/oauth2-proxy/v7.15.4/docs/docs/features/endpoints.md)와 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
-[provider 문서](https://raw.githubusercontent.com/oauth2-proxy/oauth2-proxy/v7.15.4/docs/docs/configuration/providers/keycloak_oidc.md), <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
-[exporter 설정](https://raw.githubusercontent.com/oliver006/redis_exporter/v1.91.1/README.md)을 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
+공식 [선언 릴리스의 endpoint 문서](https://raw.githubusercontent.com/oauth2-proxy/oauth2-proxy/v7.15.5/docs/docs/features/endpoints.md)와 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
+[provider 문서](https://raw.githubusercontent.com/oauth2-proxy/oauth2-proxy/v7.15.5/docs/docs/configuration/providers/keycloak_oidc.md), <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
+[exporter 설정](https://raw.githubusercontent.com/oliver006/redis_exporter/v1.93.0/README.md)을 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
 대조했다. Valkey의 AOF 선언은 backup·HA 보장이 아니다.
 
 ### Tracked Configuration Snapshot
@@ -112,7 +113,11 @@ Proxy의 cfg와 CA는 읽기 전용, 세션은 외부 Valkey가 소유한다. Pr
 | Session store | Valkey에 `redis` protocol로 연결 | compose 환경 설정과 공식 session-storage 문서 |
 | Session backend | 기본값은 `mng-valkey`; `dedicated-valkey`는 `oauth2-proxy-valkey`와 해당 exporter만 추가함 | compose 환경 설정/profile |
 | Provider CA | `/etc/ssl/certs/rootCA.pem`, `ssl_insecure_skip_verify=false` | compose 환경 설정/config 파일 |
-| Callback route | `Host(auth.${DEFAULT_URL}) && PathPrefix(/oauth2)` | Traefik label |
+| Callback route | `Host(auth.${DEFAULT_URL}) && PathPrefix(/oauth2)`, `gateway-standard-chain@file` | Traefik label |
+| 허용 group | `allowed_groups = ["/admins"]`; Keycloak `groups` claim의 `/admins`만 SSO route 통과 | config 파일 |
+| Trusted proxy | `trusted_proxy_ips = ["10.250.1.2/32"]`(Traefik `edge_net` 주소); `trusted_ips`는 설정하지 않음 | config 파일 |
+| Client secret 파일 | `OAUTH2_PROXY_CLIENT_SECRET_FILE`, 기본 `/run/secrets/oauth2_proxy_client_secret`; OpenBao 소비 시 `/run/openbao/oauth2-proxy` 아래 Agent 출력(미지정 시 원복). `${DEFAULT_SECURITY_DIR}/openbao/out/oauth2-proxy`가 없으면 기동하지 않음 | compose 환경 설정/volume |
+| Metrics | `OAUTH2_PROXY_METRICS_ADDRESS=:44180`, route 없음 | compose 환경 설정 |
 
 ### Cookie, Token, and Session Distinctions
 
@@ -123,40 +128,6 @@ The tracked config requests `openid email profile offline_access groups`, uses P
 ### Logout Boundary
 
 공식 OAuth2 Proxy endpoint 문서에 따르면 `/oauth2/sign_out`은 OAuth2 Proxy cookie만 삭제한다. 사용자는 여전히 Keycloak에 로그인된 상태일 수 있으며 즉시 다시 로그인될 수도 있다. Keycloak SSO logout에는 허용된 `rd` 목적지와 일치하는 whitelist 설정을 사용하여 provider end-session endpoint로 redirect하는 과정이 필요하다. 현재 추적되는 설정은 `OAUTH2_PROXY_WHITELIST_DOMAINS=.${DEFAULT_URL}`을 지정하지만, 모든 서비스의 logout 버튼이 Keycloak end-session redirect를 호출한다는 증거는 아니다. 현재 logout이 Keycloak SSO까지 종료한다고 일괄적으로 주장하지 않는다.
-
-### Pitfalls
-
-- `DEFAULT_URL`, Keycloak realm issuer, OAuth2 Proxy callback 도메인 불일치
-- `ssl_insecure_skip_verify=false` 상태에서 root CA mount가 깨져 discovery/JWKS fetch가 실패하는 경우
-- 세션 비밀 변경 후 기존 쿠키 재사용으로 인한 인증 실패
-- `/ping`은 process health이고 `/ready`는 Redis 등 backend 연결까지 본다는 차이를 놓치는 경우
-- `/oauth2/sign_out`을 Keycloak SSO 종료로 오해하는 경우
-- `trusted_ips` 또는 `trusted_proxy_ips`를 넓게 두고 forwarded header spoofing 위험을 검토하지 않는 경우
-
-프로세스 인자로 전달되는 Valkey credential의 증거 취급 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#rules)가 소유한다.
-
-검증 명령 모음은 다음과 같다.
-
-- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/hardening/check-all-hardening.sh 02-auth`
-
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md)을 따른다.
-
-Valkey 세션과 cookie/client/저장소 자격 증명은 서로 다른 복구 입력이다.
-세션 손실은 업무 DB 복구 대신 명시적 재로그인이 기본이며, 기존 2026-09-20 미실행
-복구 한계는 [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md#rollback-or-recovery)에 남긴다.
-이미지 변경·PKCE·logout·session 만료 검증과 helper 기동/중지는 같은 Runbook이 소유한다.
-
-### Traceability
-
-- Declared parent: [02-Auth OAuth2 Proxy Operations Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md) (`POL-0015`)
-- Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md) (`POL-0015`), [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md) (`RUN-0015`)
-
-## Troubleshooting
 
 ### Common Checks
 
@@ -175,6 +146,36 @@ Valkey 세션과 cookie/client/저장소 자격 증명은 서로 다른 복구 �
 4. 정적 검증
    - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
    - `bash scripts/hardening/check-all-hardening.sh 02-auth`
+   - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
+
+### Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md)을 따른다.
+
+Valkey 세션과 cookie/client/저장소 자격 증명은 서로 다른 복구 입력이다.
+세션 손실은 업무 DB 복구 대신 명시적 재로그인이 기본이며, 기존 2026-09-20 미실행
+복구 한계는 [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md#rollback-or-recovery)에 남긴다.
+이미지 변경·PKCE·logout·session 만료 검증과 helper 기동/중지는 같은 Runbook이 소유한다.
+
+### Traceability
+
+- Declared parent: [02-Auth OAuth2 Proxy Operations Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md) (`POL-0015`)
+- Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md) (`POL-0015`), [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md) (`RUN-0015`)
+
+## Troubleshooting
+
+### Pitfalls
+
+- `DEFAULT_URL`, Keycloak realm issuer, OAuth2 Proxy callback 도메인 불일치
+- `ssl_insecure_skip_verify=false` 상태에서 root CA mount가 깨져 discovery/JWKS fetch가 실패하는 경우
+- 세션 비밀 변경 후 기존 쿠키 재사용으로 인한 인증 실패
+- `/ping`은 process health이고 `/ready`는 Redis 등 backend 연결까지 본다는 차이를 놓치는 경우
+- `/oauth2/sign_out`을 Keycloak SSO 종료로 오해하는 경우
+- `trusted_ips`를 추가하거나 `trusted_proxy_ips`를 Traefik 주소 밖으로 넓혀 SSO 우회나 forwarded header spoofing 위험을 만드는 경우
+- Keycloak `/admins` group에 없는 사용자의 거부를 장애로 오해하는 경우
+
+Valkey credential은 프로세스 인자로 전달하지 않는다(healthcheck는 `REDISCLI_AUTH`, exporter는 `REDIS_PASSWORD`, server는 렌더된 ACL). 노출 경계와 증거 취급 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#credential-exposure-boundary)가 소유한다.
 
 ## Related Documents
 

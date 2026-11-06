@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.3.3"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -32,8 +32,7 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 
 - Agent entry shim.
 - Governance policy, role, skill, provider registry.
-- Claude runtime mirror.
-- Codex hook/context surface.
+- Claude·Codex native adapter와 hook surface.
 - Stage documentation과 validator.
 - `AGENTS.md`, `CLAUDE.md`
 - `.claude/**`
@@ -49,7 +48,7 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 
 ## Rules
 
-| Control | Requirement |
+| 통제 | 요구사항 |
 | --- | --- |
 | Thin root shims | Root 파일은 상세 policy를 `.agents/`와 runtime overlay에 위임한다. |
 | Runtime mirror parity | Native role adapter와 thin Claude skill pointer는 authored `.agents` source와 동기화 상태를 유지한다; canonical 파일은 renderer output이 되지 않는다. |

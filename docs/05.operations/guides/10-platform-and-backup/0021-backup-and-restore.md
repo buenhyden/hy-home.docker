@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -68,7 +68,7 @@ Cloudflare R2 repository 하나로 복사한다(ADR-0041). owner가
 `hyhome-backup.timer`는 매일 KST 03:30에 최대 30분의 random delay를 두고
 실행되며 4시간이 지나면 실행이 중단된다. pgBackRest는 일요일에 full backup을,
 다른 날에는 differential backup을 수행한다. `archive_timeout=300`은 WAL segment 전환을 유도하며 successful archive를 5분 이내로 보장하지 않는다. 4 GiB archive queue 한도 초과로 segment가 폐기되면 새 유효 backup 전 PITR chain이 끊긴다. unit은 idle I/O class와 `Nice=10`으로 실행되고
-Restic은 낮은 block-I/O weight를 받는다. Spark table maintenance(일요일 05:00)와 겹칠 수 있다. `Persistent=true`의 catch-up도 시간대를 바꾸며 `flock`은 backup끼리만 직렬화한다. Renovate/Spark와의 상호 배제는 구현되어 있지 않다.
+Restic은 낮은 block-I/O weight를 받는다. Spark는 LAB(`labs/lakehouse/`)의 수동 `spark` job이며 workspace에 예약된 table maintenance가 없으므로, 운영자가 그 시간대에 직접 실행할 때만 겹친다. `Persistent=true`의 catch-up도 시간대를 바꾸며 `flock`은 backup끼리만 직렬화한다. Renovate/Spark와의 상호 배제는 구현되어 있지 않다.
 
 ### Capacity and growth (measured 2026-09-22)
 
@@ -85,7 +85,7 @@ log(175 MB, 약 64 MB/day)와 cache는 의도적으로 allowlist에서 제외한
 실행은 세 repository 크기를 journal에 기록한다. 예산 검사는 다음 Restic 실행만 막는다. pgBackRest가
 오래된 backup을 만료시킨 후 orchestrator가 `BACKUP_STATE_REPO_DIR`을 측정하고
 `BACKUP_STATE_MAX_GIB` 이상이면 아무것도 삭제하지 않고 Restic 단계를
-건너뛰며 실행을 실패시킨다. 위 3 GB 미만 합계는 당시 추정이며 현재 보장이 아니다. 2026-09-23 429 MiB → 09-30 1679 MiB(약 180 MiB/day) 기록으로 대체한다. 20 GiB free-space floor는 state repository filesystem의 실행 전 검사이며 host repository·scratch·실행 중 여유를 보장하지 않는다.
+건너뛰며 실행을 실패시킨다. 표의 2026-09-22 추정치는 현재 보장이 아니며 2026-09-23 429 MiB → 09-30 1679 MiB(약 180 MiB/day) state repository 기록으로 대체되었다. 20 GiB free-space floor는 state repository filesystem의 실행 전 검사이며 host repository·scratch·실행 중 여유를 보장하지 않는다.
 
 ### Development database handoff
 
@@ -130,7 +130,21 @@ restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune �
 | `restic-offsite` | remote copy/check/prune job; local repository read-only | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../infra/09-platform-ops/restic/docker-compose.yml) |
 | `backup-sqlite-export` | 세 SQLite online export job; source WAL/SHM rw 예외 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/09-platform-ops/restic/docker-compose.yml) |
 
-선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+
+### Common Checks
+
+backup data를 변경하지 않는 점검이다(Restic은 여전히 짧게 유지되는 lock을 기록한다):
+
+```bash
+docker exec -u postgres mng-pg pgbackrest --stanza=mng info
+docker compose --profile backup run --rm --no-deps restic snapshots
+systemctl list-timers hyhome-backup.timer
+journalctl -u hyhome-backup.service -n 50 --no-pager
+```
+
+정상이면 output에 최근 backup과 WAL archive range가 담긴 `status: ok`,
+최근 `hyhome-state`와 `hyhome-host` snapshot, 성공한 마지막 실행이 나온다.
 
 ### Runbook Handoff
 
@@ -146,19 +160,7 @@ restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune �
 
 ## Troubleshooting
 
-### Common Checks
-
-backup data를 변경하지 않는 점검이다(Restic은 여전히 짧게 유지되는 lock을 기록한다):
-
-```bash
-docker exec -u postgres mng-pg pgbackrest --stanza=mng info
-docker compose --profile backup run --rm --no-deps restic snapshots
-systemctl list-timers hyhome-backup.timer
-journalctl -u hyhome-backup.service -n 50 --no-pager
-```
-
-정상이면 output에 최근 backup과 WAL archive range가 담긴 `status: ok`,
-최근 `hyhome-state`와 `hyhome-host` snapshot, 성공한 마지막 실행이 나온다.
+위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0021-backup-and-restore.md)의 절차로 진단한다.
 
 ## Related Documents
 

@@ -43,7 +43,9 @@ host port를 열지 않는다. Traefik은 그 망과 기존 `edge_net`에 함께
 다른 container는 정적 origin에 직접 닿지 않는다. Docker daemon 권한으로 전용망에
 container를 연결할 수 있는 운영자는 별도 신뢰 경계이며, origin 자체에는 peer
 인증이 없다. 비특권 내부 HTTP 서버는 정적 파일만 제공하고 업무 API, 사용자 데이터, 영속
-volume과 secret을 소비하지 않는다. 실제 build context, image, 내부 port,
+volume과 secret을 소비하지 않는다. 두 image는 `scripts/operations/storybook_image.py build`가 Storybook 소스를 마지막으로 바꾼
+커밋의 `git archive` context로 만든 `hy-home/storybook:<commit>`과 `hy-home/storybook-mcp:<commit>`이고,
+Compose는 이를 `pull_policy: never`로 고정한다. image, 내부 port,
 healthcheck, resource 및 security 선언은
 [Compose](../../../../infra/13-experience/storybook/docker-compose.yml)와
 [Dockerfile](../../../../projects/storybook/nextjs/Dockerfile)이 소유한다.
@@ -301,6 +303,20 @@ bundle은 `projects/storybook/nextjs/design-export.allowlist.json`이 이름 붙
 계정 권한의 증거가 아니다. 공무원 학습·언어 앱의 미승인 기획을 이 Storybook의
 업무 화면이나 음성 원본으로 추가하지 않는다.
 
+### Common Checks
+
+저장소 root에서 공개 예제 환경으로 선택형 서비스 선언만 정적 확인한다.
+
+```bash
+docker compose --env-file .env.example --profile experience config --quiet
+python3 scripts/validation/check-operations-catalog.py
+```
+
+이 검사는 브라우저 TLS/SSO, 실제 이미지 health, package 소비, MCP protocol,
+Claude Design 계정 연동을 증명하지 않는다. image와 격리 인증 검사는
+[RUN-0101](../../runbooks/14-design-system/0101-storybook.md)의 `storybook_image.py`와 rehearsal이 맡는다. 해당 증거와 승인 경계는
+[RUN-0101](../../runbooks/14-design-system/0101-storybook.md)과 승인된 운영 Task에서 구분한다.
+
 ### Runbook Handoff
 
 이미지 빌드·격리 HTTP 검사·HOME 실행 사전 점검과 rollback 순서는
@@ -316,19 +332,9 @@ OIDC 승인, 외부 디자인 계정 사용 승인 또는 DNS/TLS 관찰 요청�
 
 ## Troubleshooting
 
-### Common Checks
-
-저장소 root에서 공개 예제 환경으로 선택형 서비스 선언만 정적 확인한다.
-
-```bash
-docker compose --env-file .env.example --profile experience config --quiet
-python3 scripts/validation/check-operations-catalog.py
-```
-
-이 검사는 브라우저 TLS/SSO, 실제 이미지 health, package 소비, MCP protocol,
-Claude Design 계정 연동을 증명하지 않는다. image와 격리 인증 검사는
-[RUN-0101](../../runbooks/14-design-system/0101-storybook.md)의 `storybook_image.py`와 rehearsal이 맡는다. 해당 증거와 승인 경계는
-[RUN-0101](../../runbooks/14-design-system/0101-storybook.md)과 승인된 운영 Task에서 구분한다.
+- 브라우저가 Storybook 내용 대신 Keycloak으로 302를 받으면 정상이다. 로그인 뒤 403이면 계정이 `/admins` 그룹에 없다.
+- 문서 MCP의 401·403·redirect URI·metadata discovery 오류는 위 [소비 워크스페이스 연결 확인](#소비-워크스페이스-연결-확인)의 결과 해석을 따른다.
+- image가 없어 기동이 실패하면 [RUN-0101](../../runbooks/14-design-system/0101-storybook.md)의 `storybook_image.py build`로 같은 커밋의 image를 만든다.
 
 ## Related Documents
 

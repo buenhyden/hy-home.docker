@@ -1,6 +1,6 @@
 ---
 title: "Airflow Runbook"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -27,19 +27,16 @@ created: "2026-05-17"
 ## Trigger
 
 - 태스크가 `Queued` 상태에서 장시간 머물러 있을 때.
-
-## Prerequisites
-
-### Trigger and Preconditions
-
 - Web UI 접근 시 DB 연결 에러 또는 50x 에러가 발생할 때.
 - 워커(Worker) 프로세스가 비정상 종료되거나 리소스 부족으로 경고가 발생할 때.
 - Airflow UI 로그인, Keycloak token exchange, 또는 TLS verification이 실패할 때.
 - Airflow token 또는 session이 노출되어 폐기해야 할 때.
 
+## Prerequisites
+
 ### Service lifecycle prerequisites
 
-처음 기동하거나 이미지를 바꾸기 전에 DB·실제 선택 broker, CA, DAG/plugin/config/log host 경로와 비root 쓰기 권한을 확인한다. `airflow-init`은 migration 가능한 root 일회성 작업이므로 DB backup·schema 계획 승인 뒤에만 실행한다. init은 chown이나 사용자 역할 배정을 하지 않는다. init 완료 뒤 API·scheduler·processor·triggerer, API 준비 뒤 worker·Flower가 요구하는 조건을 각각 검증한다. StatsD exporter도 init 완료에 의존하지만 HTTP healthcheck는 없고 이벤트가 생긴 뒤 metric을 확인한다. 전용 Valkey·exporter를 선택하면 RUN-0028의 broker backup·인증 절차를 적용하되 workflow 이력 복원으로 간주하지 않는다. 중지는 예약·입력을 먼저 차단하고 실행 작업의 외부 효과를 대조한 뒤 한다.
+처음 기동하거나 이미지를 바꾸기 전에 DB·실제 선택 broker, CA, DAG/plugin/config/log host 경로와 비root 쓰기 권한을 확인한다. `airflow-init`은 migration 가능한 root 일회성 작업이므로 DB backup·schema 계획 승인 뒤에만 실행한다. init은 chown이나 사용자 역할 배정을 하지 않는다. init 완료 뒤 API·scheduler·processor·triggerer, API 준비 뒤 worker·Flower가 요구하는 조건을 각각 검증한다. StatsD exporter도 init 완료에 의존하며 healthcheck는 `:9102/metrics` 응답만 확인하므로 이벤트가 생긴 뒤 metric을 확인한다. 전용 Valkey·exporter를 선택하면 RUN-0028의 broker backup·인증 절차를 적용하되 workflow 이력 복원으로 간주하지 않는다. 중지는 예약·입력을 먼저 차단하고 실행 작업의 외부 효과를 대조한 뒤 한다.
 
 ## Procedure
 
@@ -93,7 +90,7 @@ Helper의 성공 출력은 `_CMD` 소비용 연결 주소다. 단독 출력, 전
    확인한다. Secret 값 자체는 출력하지 않는다.
 2. `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `AIRFLOW_KEYCLOAK_CLIENT_ID`가 현재
    환경의 Keycloak client 설정과 일치하는지 값 노출 없이 확인한다.
-3. `/run/secrets/airflow_keycloak_client_secret`와
+3. `/run/secrets/airflow_keycloak_client_secret`(또는 `AIRFLOW_CLIENT_SECRET_FILE`이 가리키는 `/run/openbao/airflow` 아래 파일)와
    `/run/secrets/airflow_api_jwt_secret`가 컨테이너에 연결되어 있는지 경로만
    확인한다.
 4. `${DEFAULT_CERT_DIR}/rootCA.pem` bind mount가 존재하고 API server가 임시

@@ -1,10 +1,10 @@
 ---
 title: "분석과 데이터 품질 가이드"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -24,7 +24,7 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [MLflow Usage Guide](0088-mlflow.md) | `GDE-0088` | MLflow는 `mlops` 또는 `data-science`가 선택하는 OPTIONAL experiment tracking server이다. HOME에도, 현재 8개 profile 운용 명령에도 들어 있지 않다. 추가하려면 별도로 활성화를 결정해야 한 |
+| [MLflow Usage Guide](0088-mlflow.md) | `GDE-0088` | MLflow는 `mlops` 또는 `data-science`가 선택하는 OPTIONAL experiment tracking server이며 HOME 선택에 들어 있지 않다. |
 
 ## Usage
 

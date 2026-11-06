@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Metrics Buffer Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0046"
 parent_ids:
@@ -22,15 +22,13 @@ created: "2026-05-17"
 
 다음 중 하나일 때 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - 특정 batch나 CI job의 metric이 갱신되지 않고 오래된 값을 유지한다.
 - Pushgateway metric group이 오염되었거나 high-cardinality label이 잘못 push되었다.
 - Pushgateway ready endpoint, Traefik route, 내부 service endpoint가 실패한다.
 - Prometheus target에서 Pushgateway scrape 상태를 확인해야 하는데 scrape job 존재 여부가 불명확하다.
 - Pushgateway memory 사용량이 비정상적으로 높고 stale group 정리만으로 회복되지 않는다.
+
+## Prerequisites
 
 시작 전에 다음을 확인한다.
 
@@ -67,7 +65,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 2. Prometheus scrape integration이 필요한 장애인지 확인한다.
 
    ```bash
-   rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/prometheus.yml
+   rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/
    ```
 
    Match가 없으면 Prometheus target failure로 처리하지 말고, Pushgateway scrape job 추가를 별도 runtime configuration task로 기록한다.
@@ -110,7 +108,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] `curl -s http://pushgateway:9091/metrics` 출력에서 삭제 대상 `job` group이 사라졌는지 확인한다.
 - [ ] `curl -I http://pushgateway:9091/-/ready`가 successful HTTP status를 반환한다.
 - [ ] Prometheus scrape job이 존재하는 환경에서는 Prometheus UI `Targets`에서 `pushgateway` target이 `UP`인지 확인한다.
-- [ ] Scrape job이 없는 환경에서는 관련 task or gap evidence에 `prometheus.yml` integration gap을 기록한다.
+- [ ] Scrape job이 없는 환경에서는 관련 task or gap evidence에 Prometheus config(`prometheus.dev.yml`, `prometheus.yml`) integration gap을 기록한다.
 
 ### Evidence sources
 
@@ -151,14 +149,14 @@ verification이 실패하거나, secret exposure risk가 보이거나, metric �
 
 ## Related Documents
 
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/07-observability/0046-pushgateway.md)
-- [Operations policy](../../policies/07-observability/0046-pushgateway.md)
-
 ### Traceability
 
 - Declared parent: [Pushgateway Usage Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`), [Policy](../../policies/07-observability/0046-pushgateway.md) (`POL-0046`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/07-observability/0046-pushgateway.md)
+- [Operations policy](../../policies/07-observability/0046-pushgateway.md)

@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Operations Policy"
-version: "1.3.0"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -24,7 +24,7 @@ created: "2026-05-10"
 - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
 
 - **Systems**: opentofu, terrakube, registry, SonarQube LAB, k6, Locust LAB, renovate
-- **Environments**: local·DEV·stage 및 production-like 환경
+- **Environments**: 단일 HOME/DEV 호스트(별도 stage·production 환경은 없다)
 
 ## Rules
 
@@ -62,8 +62,8 @@ created: "2026-05-10"
   - 회귀 baseline 저장/비교 및 시나리오 태그 표준화
   - 분산 실행 토폴로지와 데이터 초기화/정리 루틴 문서화
 - **renovate 승인 조건**:
-  - `dependency-update` 수동 작업 범위와 최소 token 권한을 유지한다.
-  - post-upgrade command 허용 목록과 변경 PR 검증을 확인한다.
+  - `dependency-update` 작업 범위(수동 실행과 `hyhome-renovate.timer` 주간 실행)와 최소 token 권한을 유지한다.
+  - self-host `allowedCommands` 허용 목록과 변경 PR 검증을 확인한다.
 
 ### 확장 게이트와 현재 제한
 
@@ -87,7 +87,7 @@ created: "2026-05-10"
 - 상위 문서: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`), [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`RUN-0063`)
 
-현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md#terraform-이관)을 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
 
 ## Verification
 

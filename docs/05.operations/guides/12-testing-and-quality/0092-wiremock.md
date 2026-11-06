@@ -1,10 +1,10 @@
 ---
 title: "WireMock Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0092"
 parent_ids:
@@ -61,6 +61,12 @@ WireMock은 기능 검사와 mock 자체 부하 측정에 공통 `api-mock` prof
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/12-testing-and-quality/0092-wiremock.md)의 `매핑 변경·기동·재적용` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
+### Common Checks
+
+- `HYHOME_COMPOSE_PROFILES=api-mock bash scripts/validation/validate-docker-compose.sh`
+- `docker compose --env-file .env.example -f docker-compose.yml -f infra/11-quality/wiremock/wiremock.load.yml --profile api-mock config --quiet`
+- `python3 scripts/validation/check-operations-catalog.py`
+
 ### Runbook Handoff
 
 서비스가 비정상이거나 스텁이 일치하지 않거나 메모리 한도에 도달하면
@@ -84,11 +90,8 @@ WireMock은 외부 대상과의 실제 계약 검증을 대신하지 않는다. 
 
 ## Troubleshooting
 
-### Common Checks
-
-- `HYHOME_COMPOSE_PROFILES=api-mock bash scripts/validation/validate-docker-compose.sh`
-- `docker compose --env-file .env.example -f docker-compose.yml -f infra/11-quality/wiremock/wiremock.load.yml --profile api-mock config --quiet`
-- `python3 scripts/validation/check-operations-catalog.py`
+먼저 활성 모드를 확인한다. 예상치 못한 404, 매핑 로드 실패, `OOMKilled`의 진단과 복구는
+[runbook](../../runbooks/12-testing-and-quality/0092-wiremock.md)이 소유한다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.8.0"
+version: "0.9.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -37,7 +37,8 @@ Compose가 포함 여부를 관장한다.
 
 Raft data, AppRole bootstrap material, 렌더링된 출력은 별도의 bind volume을
 사용한다. agent config는 command path에 마운트되어야 하며, 렌더링된 파일은
-/openbao/out 아래에 있어야 한다. VAULT_ADDR은 HCL server 주소를 override한다.
+/openbao/out 아래에 있어야 한다. `agent.hcl`의 `vault` block에는 주소가 없고 Compose의
+`VAULT_ADDR`/`VAULT_CACERT`가 TLS endpoint와 신뢰를 정한다.
 
 [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과
 [version projection](../../../../infra/tech-stack.versions.json)이 runtime pin을
@@ -48,8 +49,12 @@ Raft data, AppRole bootstrap material, 렌더링된 출력은 별도의 bind vol
 ### Service behavior and persistent inputs
 
 `openbao`와 `openbao-agent`는 모두 HOME이며 `core`/`dev`/`local`/`security`/
-`secrets`에서 선택된다. 두 서비스는 Compose image를 직접 사용하며 build는 없다.
-server command는 `server`, Agent는 `agent -config=/openbao/config/agent.hcl`이다.
+`secrets`에서 선택된다. 두 서비스는 같은 소유 이미지 `hy-home/openbao`(digest 고정)를
+쓰며 Compose에 `build` key는 없다. 이미지는 [build recipe](../../../../infra/03-security/openbao/build/Dockerfile)와
+`infra/03-security/openbao/scripts/build-owned-image.py`가 별도로 만든다. server entrypoint
+`infra/03-security/openbao/scripts/start-server.sh`는 두 포트 값과 TLS 파일 세 개를 확인한 뒤 `server`를 실행하고,
+Agent entrypoint `infra/03-security/openbao/scripts/start-agent.sh`는 `https://` `VAULT_ADDR`, 읽을 수 있는 CA,
+skip-verify 미설정을 요구하고 이전 token sink를 지운 뒤 `bao agent -config=/openbao/config/agent.hcl`을 실행한다.
 server의 `BAO_LOCAL_CONFIG`가 단일 노드 Raft와 내부 native TLS listener를 정의한다.
 `OPENBAO_PORT`/`OPENBAO_CLUSTER_PORT`, `DEFAULT_SECURITY_DIR`, public route의
 `DEFAULT_URL`이 입력이다. host port는 없으며 외부 TLS와 검증된 내부 TLS를 모두 사용한다.
@@ -61,23 +66,23 @@ host port는 열지 않는다. Prometheus `openbao-agent` job이 `bao_agent_auth
 
 | 서비스 | mount·인증·정상 신호와 한계 |
 | --- | --- |
-| `openbao` | `openbao-data`는 host의 `${DEFAULT_SECURITY_DIR}/openbao/data`를 Raft 상태로 사용한다. OIDC·AppRole·Kubernetes auth/policy는 승인된 bootstrap으로 설치하며 Compose가 자동 생성하지 않는다. `/sys/metrics`는 전용 token을 요구한다. |
-| `openbao-agent` | `agent.hcl`과 templates는 읽기 전용, `openbao-agent-data`와 `openbao-agent-out`은 각각 host의 agent/out 경로다. AppRole RoleID/SecretID로 로그인하고 token sink와 version 파일은 0600, 소비자가 읽는 `.txt` 출력은 0640(group 1000)으로 쓴다. secret rotation이나 소비자 mount 전환을 자동 수행하지 않는다. |
+| `openbao` | TLS `ca.pem`/`server.pem`/`server-key.pem`은 `${DEFAULT_SECURITY_DIR}/openbao/tls`에서 읽기 전용 bind(`create_host_path: false`)되며, file audit은 `openbao-audit`(`${DEFAULT_SECURITY_DIR}/openbao/audit`)의 `audit.json`에 쓴다. `openbao-data`는 host의 `${DEFAULT_SECURITY_DIR}/openbao/data`를 Raft 상태로 사용한다. OIDC·AppRole·Kubernetes auth/policy는 승인된 bootstrap으로 설치하며 Compose가 자동 생성하지 않는다. `/sys/metrics`는 전용 token을 요구한다. |
+| `openbao-agent` | healthcheck는 `infra/03-security/openbao/scripts/health-agent.sh`다. `agent.hcl`과 templates는 읽기 전용, `openbao-agent-data`와 `openbao-agent-out`은 각각 host의 agent/out 경로다. AppRole RoleID/SecretID로 로그인하고 token sink와 `.version` 파일은 0600, 소비자가 읽는 `.txt` 출력은 0640(`SECRETS_GID`, 기본 1000)으로 쓴다. secret rotation이나 소비자 mount 전환을 자동 수행하지 않는다. |
 
 실제로 선택된 template은 `agent.hcl`의 19개다. Keycloak·Grafana 관리자 비밀번호와 8개 OIDC client
 secret의 `.txt` 10개, KV 경로마다 하나인 `*_version.ctmpl` 9개(Grafana 두 값은 한 경로)이며 소비자마다
 `out` 아래 디렉터리 하나를 쓴다. 같은 디렉터리의 나머지 template는
 mount되어 있어도 `agent.hcl`에서 선택하지 않으며 renderer ACL을 확장하지 않는다.
 서버 health는 `bao status`의 0(unsealed)만 허용한다. sealed(2) 상태에서는
-새 Compose 기동에서 `openbao-agent`의 `service_healthy` 의존성이 대기한다. Docker daemon의 기존 컨테이너 자동 재시작은 이를 재평가하지 않는다. Agent는 새 프로세스에서 옛 sink를 제거하고 token validity·두 제한 fetch·정확한
-render 일치를 요구한다. KV/render version과 실제 consumer 적용은 따로 검증한다. 근거는 [선언 릴리스 계열 status](https://openbao.org/docs/2.6.x/commands/status/)와
-[Agent AppRole](https://openbao.org/docs/2.6.x/agent-and-proxy/autoauth/methods/approle/)이다.
+새 Compose 기동에서 `openbao-agent`의 `service_healthy` 의존성이 대기한다. Docker daemon의 기존 컨테이너 자동 재시작은 이를 재평가하지 않는다. Agent는 새 프로세스에서 옛 sink를 제거하고 token validity·선택된 template별 제한 fetch·정확한
+render 일치를 요구한다. KV/render version과 실제 consumer 적용은 따로 검증한다. 근거는 [status 명령](https://openbao.org/docs/commands/status/)와
+[Agent AppRole](https://openbao.org/docs/agent-and-proxy/autoauth/methods/approle/)이다.
 
 두 서비스 모두 `template-stateful-med`의 CPU1/512 MiB를 상속한다. Raft 디스크
 여유·sealed 지속·Agent 재인증 실패·OOM·전용 metrics 수집을 관찰하되 원문 로그나
 렌더링 내용을 증거에 넣지 않는다. single-node Raft는 HA가 아니다. 공통 자원·선택·
 기동 흐름은 [System Guide](../01-common/0099-system-operations.md)를 따른다. 버전 변경은
-[공식 해당 계열 release notes](https://openbao.org/community/release-notes/2-6-0/#v262)와
+Compose가 선언한 이미지 버전의 공식 release notes와
 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)를 대조한다.
 
 **Administrator access.** 사람 관리자 접근은 UI 앞단의 gateway SSO session이
@@ -128,7 +133,8 @@ callback인 `http://localhost:8250/oidc/callback`이다. client는 S256 PKCE를
 요구한다.
 
 [operator policy](../../../../infra/03-security/openbao/config/policies/operator.hcl)는
-Keycloak과 Grafana KV 값만 읽기/갱신, renderer SecretID 발급, Raft snapshot
+Agent 소비자 9개 KV(`secret/hy-home/...`의 Keycloak, Grafana, OAuth2 Proxy, Kafbat, Dozzle, Gatus,
+Airflow, Open WebUI, Superset) 값 읽기/갱신, renderer issuer/cleanup token role을 통한 SecretID 발급, Raft snapshot
 읽기, 인증된 quorum root recovery 시작/취소, 그리고
 `auth/kubernetes/config` 갱신, `k8s-bootstrap` role을 통한 token 생성,
 Prometheus API credential의 `secret/platform/prometheus-api`, Kiali Grafana token의
@@ -178,6 +184,12 @@ W5 Agent 업그레이드와 재발급, W6 audit 확인, W7 root 폐기 순서다
 동작한다. 명령과 멈춤 기준은 [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md)가,
 credential 규칙과 받아들인 잔여 위험은 [policy](../../policies/04-security-and-secrets/0085-openbao.md)가
 소유한다.
+
+### Common Checks
+
+사용 전에 선택된 service, 선언된 mount, 공개된 interface, container 상태를
+확인한다. readiness와 data recovery는 runbook evidence를 수집하기 전까지
+검증되지 않은 상태다.
 
 ### Runbook Handoff
 
@@ -264,11 +276,7 @@ P03 소비자 신원, P04 실제 DEV/S3 수용을 기다린다. opsflow ID나 AC
 
 ## Troubleshooting
 
-### Common Checks
-
-사용 전에 선택된 service, 선언된 mount, 공개된 interface, container 상태를
-확인한다. readiness와 data recovery는 runbook evidence를 수집하기 전까지
-검증되지 않은 상태다.
+sealed(2) 지속, Agent 재인증 실패(`bao_agent_auth_failure`), unhealthy Agent, audit 쓰기 실패는 [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 진단 절차로 넘긴다.
 
 ## Related Documents
 

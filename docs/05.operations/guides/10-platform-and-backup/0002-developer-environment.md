@@ -1,10 +1,10 @@
 ---
 title: "Developer Environment Operations"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0002"
 created: "2026-06-04"
@@ -66,6 +66,14 @@ profile 입력을 채우고 기존 파일을 덮어쓰지 않는다. 키 비교�
 전달하고 CA private key는 복사하거나 출력하지 않는다. 기존 인증서를 보존한
 상태에서 [Traefik Runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md)으로 교체·검증을 넘긴다.
 
+### Common Checks
+
+저장소 README와 대상 package README에서 필요한 도구·입력을 확인한다.
+[RUN-0086의 공개 구성 검증](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)은
+임시 `.env`와 dummy secret 파일의 생성·정리 및 기존 입력 읽기 경계를 설명한다.
+이 검사 성공은 실제 credential, host trust, 서비스 health나 복구 성공이 아니다.
+도구 또는 승인된 입력이 없으면 실패 원인과 `BLOCKED`/`NOT_RUN`을 기록한다.
+
 ### Runbook Handoff
 
 이 비서비스 주제에는 별도 서비스 Runbook을 만들지 않는다. 반복 검증은
@@ -81,13 +89,7 @@ profile 입력을 채우고 기존 파일을 덮어쓰지 않는다. 키 비교�
 
 ## Troubleshooting
 
-### Common Checks
-
-저장소 README와 대상 package README에서 필요한 도구·입력을 확인한다.
-[RUN-0086의 공개 구성 검증](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)은
-임시 `.env`와 dummy secret 파일의 생성·정리 및 기존 입력 읽기 경계를 설명한다.
-이 검사 성공은 실제 credential, host trust, 서비스 health나 복구 성공이 아니다.
-도구 또는 승인된 입력이 없으면 실패 원인과 `BLOCKED`/`NOT_RUN`을 기록한다.
+위 Common Checks가 실패하면 실패한 명령과 출력 요약을 값 없이 기록하고, 위 Runbook Handoff가 지정한 소유 Runbook으로 넘긴다.
 
 ## Related Documents
 

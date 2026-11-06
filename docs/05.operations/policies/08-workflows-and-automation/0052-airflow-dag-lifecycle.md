@@ -1,10 +1,10 @@
 ---
 title: "DAG Deployment Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0052"
 parent_ids:
@@ -23,7 +23,7 @@ created: "2026-03-25"
 `hy-home.docker` ecosystem 내 모든 Apache Airflow DAG의 lifecycle을 관장한다.
 
 - **Systems**: Apache Airflow (07-workflow)
-- **Environments**: Staging, Production
+- **Environments**: 단일 HOME Airflow stack. Staging/production은 승격 단계이며 별도 stack이 아니다.
 
 ## Rules
 

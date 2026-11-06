@@ -1,10 +1,10 @@
 ---
 title: "Admin and Experiment Tools Hardening Usage Guide"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0074"
 parent_ids:
@@ -17,7 +17,7 @@ created: "2026-05-17"
 ## Overview
 
 이 가이드는 Data·Observability·AI·Analytics tier에 흩어진 관리·실험 기능(dozzle, redisinsight,
-open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다. jupyterlab은 SPEC-0262 이후 독립 LAB `labs/jupyterlab/docker-compose.yml`이며 root에 포함되지 않는다.
+open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다. jupyterlab은 SPEC-0262 이후 독립 LAB `labs/jupyterlab/docker-compose.yml`이며 root에 포함되지 않는다. `12-analytics` tier에는 현재 root가 include하는 패키지가 없으므로 하드닝 검사 인자에 남아 있어도 대상 service가 없다.
 관리 UI 보안 경계, 네트워크 표준화, 최소권한 적용, 기준선 검증 절차를 다룬다.
 `system-guide | how-to` 유형이다.
 
@@ -27,7 +27,7 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 
 대상 독자는 Platform SRE, DevOps Engineer, Security Reviewer다. 목표는 다음과 같다.
 
-- 관리 UI를 서비스별 gateway·allowlist·인증 경계로 정렬한다.
+- 관리 UI를 서비스별 gateway·allowlist·인증 경계로 정렬한다. Dozzle은 allowlist+native OIDC, RedisInsight는 allowlist+공유 SSO(`sso-errors`, `sso-auth`), Open Notebook은 allowlist+`large-body`+앱 비밀번호다.
 - 제거된 dashboard의 직접 노출을 다시 만들지 않는다. 현재 서비스의 승인된 loopback 경계는 개별 정책을 따른다.
 - Dozzle의 socket read-only 마운트를 유지하되 Docker API 권한 통제로 보지 않는다.
 - open-notebook UI route를 승인된 allowlist+large-body+앱 비밀번호 경계로 보호하고 secret-file 주입을 유지한다.
@@ -41,7 +41,7 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 - 변경 대상 Data·Observability·AI·Analytics 패키지의 수정 권한
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)의 `검토된 하드닝 변경 순서` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)의 `Steps` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
 ## Usage
 
@@ -52,6 +52,13 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 - dozzle socket 권한을 read-write로 둔다.
 - 문서 링크와 README 인덱스 동기화를 빠뜨린다.
 - service-local standalone compose render를 root readiness 증거로 오해한다.
+
+### Common Checks
+
+- `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
+- `HYHOME_COMPOSE_PROFILES=admin,notebook bash scripts/validation/validate-docker-compose.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ### Runbook Handoff
 
@@ -65,12 +72,7 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 
 ## Troubleshooting
 
-### Common Checks
-
-- `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
-- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
+위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)의 절차로 진단한다.
 
 ## Related Documents
 

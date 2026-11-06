@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Operations Policy"
-version: "1.1.2"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0077"
 parent_ids:
@@ -27,16 +27,18 @@ created: "2026-04-01"
 
 ## Rules
 
-- **Required**:
+- **필수**:
   - 서비스는 실제로 사용하는 peer가 있는 network에만 연결한다. peer가 없으면
     프로젝트 기본 network를 쓴다.
   - 고정 주소는 다른 곳이 그 주소를 신뢰할 때만 부여하고, 사유를 Compose 주석에
-    남긴다(현재: Traefik의 `edge_net` 주소, OpenSearch node 간 announce 주소).
+    남긴다(현재: Traefik의 `edge_net` 주소 `10.250.1.2`, RedisInsight의
+    `redisinsight_ingress_net` 주소 `10.250.18.3`, Crawl4AI egress gateway와 crawler의
+    `crawl4ai_egress_net` 주소 `10.250.200.2`/`10.250.200.3`).
   - 고정 주소는 해당 network의 dynamic range 밖에 둔다.
-- **Allowed**:
+- **허용**:
   - 새 flow가 생기면 해당 network membership을 추가한다.
   - 대부분의 서비스는 주소를 지정하지 않고 dynamic 주소를 받는다.
-- **Disallowed**:
+- **금지**:
   - 같은 network 안의 중복된 고정 주소. 적용 전에 선언과 승인된 runtime 주소를 대조해야 한다.
   - 사용하지 않는 peer를 위한 network 연결.
   - 외부망 주소와의 브릿징 설정 수동 수정.

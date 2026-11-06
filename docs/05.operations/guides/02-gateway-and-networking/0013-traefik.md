@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.1.5"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -70,10 +70,15 @@ sign-in 서비스의 응답으로 바꾸며 401은 machine client에게 그대�
 
 ### Configuration, state and signals
 
-필수 입력은 `DEFAULT_URL`, `DEFAULT_CERT_DIR`, `CERT_GROUP_GID`, root network와
+필수 입력은 `DEFAULT_URL`, `DEFAULT_CERT_DIR`, `DEFAULT_SECURITY_DIR`의
+`openbao/tls/ca.pem`, `CERT_GROUP_GID`·`SECRETS_GID`, root network와
 세 Docker Secret 참조(`traefik_basicauth_password`,
 `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`)다.
-`edge_net` 고정 주소와 Keycloak/auth alias는 Proxy의 trust 설정과 연결된다.
+`HOST_LAN_BIND_IP`, `BLOG_EXPORT_RECEIVER_IP`, `OAUTH2_PROXY_PORT`는 dynamic 파일이
+`{{ env }}`로 읽으므로 값 변경은 재생성이 필요하다. 네트워크는 `edge_net`(고정
+`10.250.1.2`, `keycloak.${DEFAULT_URL}`/`auth.${DEFAULT_URL}` alias), `obs_net`,
+`experience_ingress_net`, `blog_export_net`, `redisinsight_ingress_net`이다. 고정 주소와
+alias는 OAuth2 Proxy·Airflow의 proxy trust 설정과 연결된다.
 설정·인증서는 읽기 전용이고 ACME state 선언은 없다. Docker socket의 읽기 전용
 mount는 Docker API를 저권한으로 만들지 않으므로 host 제어 경계로 취급한다.
 
@@ -97,9 +102,7 @@ backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file wat
 
 ### Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md)을 따른다.
-
-구성·private 인증서 복구, upgrade 수용 검증과 prior-image rollback은 [Runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md#rollback-or-recovery)이 소유한다. 공통 변경 흐름은 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md), 여러 서비스 장애는 [RUN-0099](../../runbooks/01-common/0099-system-operations.md)로 연결한다.
+장애 대응, 구성·private 인증서 복구, upgrade 수용 검증, prior-image rollback과 escalation은 [Runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md#rollback-or-recovery)이 소유한다. 공통 변경 흐름은 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md), 여러 서비스 장애는 [RUN-0099](../../runbooks/01-common/0099-system-operations.md)로 연결한다.
 
 ### Traceability
 

@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Usage Guide"
-version: "2.1.3"
+version: "2.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
@@ -50,7 +50,7 @@ created: "2026-05-10"
 
 ### 준비물과 사용
 
-- Docker Secrets: `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_security_cookie`
+- Docker Secrets(ID만): `opensearch`는 `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`; `opensearch-dashboards`는 `opensearch_dashboard_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`. API route는 추가로 Traefik `opensearch-auth@file` basic auth(`traefik_opensearch_basicauth_password`)를 거친다.
 - 정상 인증서 bind 경로와 별도 LAB 인증서 경로
 - `infra/04-data/opensearch/docker-compose.yml`, `labs/opensearch-cluster/docker-compose.yml`
 
@@ -71,6 +71,13 @@ created: "2026-05-10"
 - HTTP로 `9200`을 호출하지 않는다.
 - admin password를 command line literal이나 문서에 남기지 않는다.
 
+### Common Checks
+
+- `test -f infra/04-data/opensearch/docker-compose.yml`
+- `test -f labs/opensearch-cluster/docker-compose.yml`
+- `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet`
+- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+
 ### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/05-databases-and-storage/0019-opensearch.md)을 따른다.
@@ -83,12 +90,9 @@ created: "2026-05-10"
 
 ## Troubleshooting
 
-### Common Checks
-
-- `test -f infra/04-data/opensearch/docker-compose.yml`
-- `test -f labs/opensearch-cluster/docker-compose.yml`
-- `docker compose -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet`
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+- `opensearch`가 healthy가 되지 않음: healthcheck는 `https://localhost:9200/_cluster/health?wait_for_status=yellow`를 admin secret으로 호출한다. 인증서 bind(`${DEFAULT_CERT_DIR}`)와 secret 파일 존재를 먼저 확인하고 [Runbook](../../runbooks/05-databases-and-storage/0019-opensearch.md#procedure)으로 넘긴다.
+- Dashboards가 시작하지 않음: `opensearch-dashboards`는 `opensearch`의 `service_healthy`를 기다린다. API 상태부터 확인한다.
+- API route 401: `opensearch-auth@file` basic auth가 OpenSearch 인증 앞에 있다.
 
 ## Related Documents
 

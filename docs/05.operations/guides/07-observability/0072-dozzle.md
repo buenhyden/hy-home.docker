@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Usage Guide"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0072"
 parent_ids:
@@ -41,13 +41,16 @@ Dozzle은 `admin`과 `admin-logs` 하위의 OPTIONAL admin 로그 뷰어이다. 
 ### 현재 구현과 위험
 
 - [Dozzle Compose](../../../../infra/06-observability/dozzle/docker-compose.yml)가
-  profile, OIDC, 라우트, IP 허용목록, secret, health, 마운트를 정의한다.
+  profile, OIDC, 라우트(`dozzle.${DEFAULT_URL}`), IP 허용목록(`dozzle-admin-ip`, `ADMIN_UI_ALLOWED_CIDRS`), secret, health, 마운트를 정의한다.
 - `DOZZLE_AUTH_*`와 `dozzle_client_secret`을 통해 Keycloak에 대한 네이티브 OIDC를
-  사용한다. Traefik은 OAuth2 Proxy ForwardAuth가 아니라 게이트웨이 표준 체인과
+  사용한다. `DOZZLE_CLIENT_SECRET_FILE`을 `/run/openbao/dozzle` 아래 Agent 출력으로 지정하면
+  OpenBao 경로를 쓰고, 미설정 시 Docker Secret으로 돌아간다. Traefik은 OAuth2 Proxy ForwardAuth가 아니라 게이트웨이 표준 체인과
   admin CIDR 허용목록을 적용한다.
 - Docker socket은 `:ro`로 마운트되지만, 업스트림은 읽기 전용 파일 모드가 Docker
   API 메서드를 제한하지 않는다고 경고한다. 침해되면 root와 동등해질 수 있다.
-  현재 소스는 socket proxy를 선언하지 않는다.
+  현재 소스는 socket proxy를 선언하지 않는다. Compose는 `DOZZLE_ENABLE_ACTIONS`,
+  `DOZZLE_ENABLE_SHELL`, `DOZZLE_ENABLE_MCP`를 `'false'`로, 자동 업데이트·release·image
+  check를 꺼진 상태로 선언한다.
 - `/data`는 설정을 영속화한다. CA 파일은 issuer 신뢰를 지원한다. health 명령은
   OIDC, socket 인가, 로그 커버리지가 아니라 Dozzle 프로세스 health만 증명한다.
 
@@ -58,6 +61,11 @@ Dozzle은 `admin`과 `admin-logs` 하위의 OPTIONAL admin 로그 뷰어이다. 
 호스트 포트는 없고 별도 Compose 의존성 대기는 없다. Keycloak·CA·gateway·Docker
 socket 준비는 따로 확인한다. 자원 상한은 선언된 템플릿을 따르며 로그 지연과 CPU·메모리
 증가를 함께 관찰한다. TLS/OIDC secret 변경은 공통 인증 소유자와 조정한다.
+
+### Common Checks
+
+- `docker compose --profile admin-logs config --quiet`
+- `bash scripts/hardening/check-all-hardening.sh 06-observability`
 
 ### Runbook Handoff
 
@@ -72,10 +80,7 @@ OIDC, socket, 로그 스트림, 설정, 업그레이드 복구에는
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile admin-logs config --quiet`
-- `bash scripts/hardening/check-all-hardening.sh 06-observability`
+위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0072](../../runbooks/07-observability/0072-dozzle.md)으로 넘긴다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -57,11 +57,11 @@ backup과 restore를 확인한다.
 
 ### Alerts
 
-- `SeaweedFSS3Down`: `docker compose ps seaweedfs-s3`와 그 로그를 확인한다.
+- `SeaweedFSS3Down`: `docker compose --profile seaweedfs ps seaweedfs-s3`와 그 로그를 확인한다.
   metrics listener가 S3 프로세스를 공유하므로, target이 다운되었다면
   보통 S3가 다운되었거나 재시작 중이다.
 - `SeaweedFSNodeMetricsDown`: master, volume, filer 중 하나의 metric target이
-  down이다. `docker compose ps seaweedfs-master seaweedfs-volume seaweedfs-filer`와
+  down이다. `docker compose --profile seaweedfs ps seaweedfs-master seaweedfs-volume seaweedfs-filer`와
   해당 로그를 확인하고, 세 서비스와 Prometheus가 모두 `seaweedfs_metrics_net`에
   있는지 `docker network inspect`로 확인한다. metric listener는 각 프로세스를
   공유하므로 서비스가 정상인데 target만 down이면 network 구성원을 먼저 본다.
@@ -75,13 +75,14 @@ backup과 restore를 확인한다.
 1. `bash scripts/operations/gen-secrets.sh`가 STRG-008, STRG-009, STRG-010을
    생성한다. `.env`에 `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`를 설정한다.
 2. `bash infra/04-data/seaweedfs/bin/gen-grpc-certs.sh`가
-   gRPC certificate를 `secrets/certs/seaweedfs`에 발급한다(`--rotate`를
-   쓰지 않는 한 유지된다).
+   gRPC certificate를 기본 `secrets/certs/seaweedfs`에 발급한다(`--rotate`를
+   쓰지 않는 한 기존 세트를 유지하고, 불완전한 세트면 중단한다). Compose는 이를
+   `${DEFAULT_CERT_DIR}/seaweedfs`에서 `/certs`로 read-only mount하므로 두 경로가 같아야 한다.
 3. `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}`를 UID 1000(host
    operator)으로 생성한 뒤
    `docker compose --profile seaweedfs up -d --wait`를 실행한다.
 4. admin identity로 검증한다: disposable bucket을 만들고 삭제하며, anonymous
-   보호 대상 요청이403을 반환하고 CDN anonymous-read 예외만 허용되는지 확인한다.
+   보호 대상 요청이 403을 반환하고 CDN anonymous-read 예외만 허용되는지 확인한다.
 
 ### Retained MinIO data
 

@@ -1,10 +1,10 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "1.0.8"
+version: "1.0.9"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -78,11 +78,8 @@ MLflow tracking server의 프로비저닝 실패, 크리덴셜 회전, 복원, �
    커밋, 이미지, 행 개수, 객체 개수를 기록한다.
 2. 프로덕션 복원 전에 둘 다 격리된 환경으로 복원하고 개수를 비교한다. 일치하는
    버킷 없이 데이터베이스만 복원하면 유효하지 않은 아티팩트 URI가 남는다.
-3. 기존 DB upgrade는 서버 시작과 분리한다. 선택한 버전의 공식 migration 근거,
-   백업·복원 증거, DB writer 정지와 secret 비노출 실행 방식을 확인하고 별도 승인된
-   `mlflow db upgrade` 계획을 검토한다. 현재 Compose에는 migration 작업이 없으므로
-   단순히 새 서버를 시작하는 절차로 대체하지 않는다. 근거가 없으면 진행을 중단한다.
-   실행 절차는 아래 `Tracking DB schema upgrade`를 따른다.
+3. 기존 DB upgrade는 서버 시작과 분리한다. 현재 Compose에는 migration 작업이 없으므로
+   아래 `Tracking DB schema upgrade`를 따르며, 새 서버 시작으로 대체하지 않는다.
 
 ### Tracking DB schema upgrade
 
@@ -190,8 +187,8 @@ experiment와 artifact URI는 `MLFLOW_ARTIFACT_BUCKET`과 database 이름이
 `MLFLOW_DB_NAME`의 `pg_dump`로 tracking database를 backup하고, run이
 artifact path를 참조하므로 bucket도 SeaweedFS backup set으로 함께
 가져간다. 먼저 격리된 `mng-pg`와 SeaweedFS로 restore해 run과 artifact
-수를 비교한다. upgrade 전에는 release note를 읽는다. 현재 선언 버전은 기존 DB의 schema revision이 다르면 시작을 거부한다. 신규 테이블
-초기화와 기존 DB 업그레이드는 다르며 자동 migration을 가정하지 않는다. HOME DB의
+수를 비교한다. upgrade 전에는 release note를 읽는다. 현재 선언 버전은 기존 DB의
+schema revision이 다르면 시작을 거부하며 자동 migration을 가정하지 않는다. HOME DB의
 backup·restore·upgrade는 아직 실행하지 않았다. HOME DB dump를 격리된 임시 PostgreSQL에서
 upgrade하고 새 서버로 조회한 리허설은 SEC01 Task에 기록되어 있다.
 

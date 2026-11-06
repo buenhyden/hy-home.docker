@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Operations Policy"
-version: "1.1.2"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0047"
 parent_ids:
@@ -37,7 +37,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
     `pyroscope-data` volume을 유지한다.
   - Runtime command는 `-config.file=/etc/pyroscope/pyroscope.yaml`와
     `-config.expand-env=true`를 유지한다.
-  - HTTP/query/health surface는 `${PYROSCOPE_PORT:-4040}`와 `/ready`
+  - HTTP/query/health surface는 `${PYROSCOPE_PORT:-4040}`와 `profilecli ready`
     healthcheck를 기준으로 하며, host port는 `127.0.0.1`에만 게시한다.
   - Storage backend는 local filesystem backend
     `storage.filesystem.dir: /var/lib/pyroscope`를 사용한다.

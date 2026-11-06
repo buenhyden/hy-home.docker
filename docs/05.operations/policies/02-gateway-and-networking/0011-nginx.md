@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Operations Policy"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0011"
 parent_ids:
@@ -21,8 +21,8 @@ created: "2026-05-17"
 ## Scope
 
 - `infra/01-gateway/nginx/docker-compose.yml`
-- `infra/01-gateway/nginx/config/nginx.conf`
-- Nginx healthcheck/readonly/tmpfs 운영 표준 and the `nginx` profile runtime boundary
+- `infra/01-gateway/nginx/config/nginx.conf`, `config/upstreams.conf.template`, `scripts/validate-upstream-ports.sh`
+- Nginx healthcheck/readonly/tmpfs 운영 표준과 `nginx` profile runtime 경계
 - **Systems**: Nginx gateway proxy
 - **Environments**: Local, Dev, Stage, Production-like
 
@@ -32,7 +32,8 @@ created: "2026-05-17"
   - `check-all-hardening.sh 01-gateway` 실패 0건을 유지해야 한다.
   - `/ping` 실패, 반복 5xx 증가, 인증 루프 발생 시 즉시 런북 절차를 수행해야 한다.
   - Nginx 서비스는 `template-infra-readonly-low`를 사용해야 한다.
-  - 필수 `tmpfs`: `/var/cache/nginx`, `/var/log/nginx`, `/var/run`
+  - 필수 `tmpfs`: `/var/cache/nginx`, `/etc/nginx/conf.d`(생성된 upstream 설정), `/var/log/nginx`, `/var/run`
+  - `OAUTH2_PROXY_PORT`/`KEYCLOAK_PORT`는 envsubst 전에 entrypoint 검증(1-65535 정수)을 통과해야 한다.
   - healthcheck는 `/ping` 경로를 사용해야 한다.
   - `server_tokens off;`를 유지해야 한다.
   - `proxy_connect_timeout`, `proxy_send_timeout`, `proxy_read_timeout`을 명시해야 한다.

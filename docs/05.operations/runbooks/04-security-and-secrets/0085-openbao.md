@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.16.1"
+version: "0.17.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -204,15 +204,19 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 
 `hy-home-renderer` AppRole은
 [renderer policy](../../../../infra/03-security/openbao/config/policies/renderer.hcl)를
-사용한다. 구성된 두 KV v2 data 경로와 각각의 metadata 경로만 read하며, write/list/admin 권한은 부여하지 않는다.
+사용한다. 구성된 9개 소비자 KV v2 data 경로(`secret/data/hy-home/...`의 Keycloak, Grafana, OAuth2 Proxy,
+Kafbat, Dozzle, Gatus, Airflow, Open WebUI, Superset)와 각각의 metadata 경로만 read하며, write/list/admin 권한은 부여하지 않는다.
 표준 default policy가 token 자체 갱신을 제공한다. 현재 역할의 `token_period=24h`,
 `token_ttl=0`, `token_max_ttl=0`과 발급 token의 `explicit_max_ttl=0`에서 24시간은
 갱신 주기다. 갱신이 계속되면 총수명 상한이 없다([공식 token 수명](https://openbao.org/docs/concepts/tokens/)).
 SecretID TTL은 10분, 사용 횟수는 1회다. sink 복사본도 갱신 가능하고 W5는 이전 Agent token을
-폐기하지 않는다. 두 KV 읽기·sink0600과 2026-12-15까지의 기존 예외를 유지한다.
+폐기하지 않는다. 9개 KV 읽기·sink0600과 2026-12-15까지의 기존 예외를 유지한다.
 유한수명이나 이전 세대 폐기는 POL-0085의 별도 결정이 필요하다. Agent는 SecretID 파일을 읽은 뒤
-삭제하므로, token이 끝나면 새 SecretID를 전달해야 한다([RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery)). 기존 Docker Secret 소비자는 현재 파일을 계속 사용하며, 렌더링된 출력이 자동으로
-애플리케이션 mount를 전환하지는 않는다.
+삭제하므로, token이 끝나면 새 SecretID를 전달해야 한다([RUN-0103](0103-openbao-renderer-delivery.md#renderer-secretid-delivery)). 렌더링된 출력이 자동으로
+애플리케이션 mount를 전환하지는 않는다. 소비자는 자신의 `*_FILE` 변수(예: `KEYCLOAK_ADMIN_PASSWORD_FILE`,
+`OAUTH2_PROXY_CLIENT_SECRET_FILE`)가 `/run/openbao/...` 아래를 가리킬 때만 Agent 출력을 읽고, 미지정이면 Docker Secret으로
+돌아간다. 이 소비자들은 `${DEFAULT_SECURITY_DIR}/openbao/out/<consumer>`를 `create_host_path: false`로 mount하므로
+그 디렉터리가 없으면 기동하지 않는다.
 
 ### OIDC Configuration Contract
 
@@ -345,7 +349,7 @@ token은 마지막 갱신 뒤 24시간(period) 안에 폐기 줄이 생긴다. s
 Kubernetes auth의 ESO 허용 범위는 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#hy-homek8s-kubernetes-auth)의
 기존 승인된 다섯 data/metadata 항목 read로 제한한다. 정적 hardening은 일부 금지
 capability를 검사하지만 정확한 전체 path set이나 실제 설치 role을 증명하지 않는다.
-renderer 두 data와 해당 metadata 경로 read와 사람 operator의 platform credential create/update는 별개다.
+renderer 9개 소비자 KV data와 해당 metadata 경로 read와 사람 operator의 platform credential create/update는 별개다.
 승인된 변경 후에는 exact binding과 경로 밖 read/list/write 거부를 비밀값 없는
 결과로 확인하며 불일치 시 중단한다.
 

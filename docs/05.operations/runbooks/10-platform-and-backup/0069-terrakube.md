@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Recovery Runbook"
-version: "1.1.4"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0069"
 parent_ids:
@@ -66,7 +66,10 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 
 1. scheduling을 차단하고, active run을 대기하거나 안전하게 해결한 뒤, Terrakube
    writer가 남지 않도록 API/UI와 executor를 중지한다.
-2. `tfstate`에 대해서는 PostgreSQL owner의 online logical/physical backup 절차와
+2. 복구 세트는 Terrakube PostgreSQL 데이터베이스, SeaweedFS `tfstate` object/버전, 관련
+   Keycloak client/role 설정, 추적되는 Compose, secret 메타데이터/보관 정보다. Valkey는 조정
+   상태이므로 정지된 제어 플레인과 일관되면 된다. PostgreSQL에는 owner의 online
+   logical/physical backup 절차를, `tfstate`에는
    [일일 백업](../05-databases-and-storage/0024-seaweedfs.md)에 포함되는 SeaweedFS 세트를 사용한다.
    일일 스케줄 자체가 DB와 object의 같은 복구 시점을 보장하지 않으므로 작성자 정지
    구간과 두 캡처의 일관성을 별도로 확인한다. DB backup ID, object
@@ -84,22 +87,9 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 
 coordinated backup을 완료하고 모든 migration/release note를 검토하고 복원된
 store에서 새 API/UI/executor를 테스트한 뒤, 호환되는 set을 upgrade한다. 실패
-시에는 새 set을 중지하고 DB와 object를 이전 image로 함께 복원한다.
-
-### 복구 세트와 버전 변경
-
-복구에는 일관된 세트가 필요하다. Terrakube PostgreSQL 데이터베이스, SeaweedFS
-`tfstate` object/버전, 관련 Keycloak client/role 설정, 추적되는 Compose, secret
-메타데이터/보관 정보. Valkey는 조정 상태이므로 비어 있거나 정지된 제어 플레인과
-일관되어야 한다. 조정된 데이터베이스/object 스냅샷을 찍기 전에 새 실행을 중지하고
-API/executor를 정지한다. provider와 webhook egress를 비활성화한 격리 환경에서만
-복원하고, DB/state-key 참조 일관성과 적용하지 않는 plan을 검증한다. SeaweedFS
-사본 하나나 DB 덤프 하나만으로 복구 가능성을 추정하지 않는다.
-
-업그레이드 전에는 이 조정된 백업을 확보하고, Terrakube release/마이그레이션
-노트를 읽고, 복원된 사본에 대해 테스트하고, 컴포넌트 세트 하나를 함께 롤포워드한다.
-마이그레이션 이후 데이터베이스/state 롤백 없이 이미지만 롤백하는 것은 안전하지
-않다. 이 문서 작업에서는 백업/복원과 업그레이드 리허설을 실행하지 않았다.
+시에는 새 set을 중지하고 DB와 object를 이전 image로 함께 복원한다. migration 이후
+DB/state 롤백 없이 image만 되돌리는 것은 안전하지 않다. SeaweedFS 사본 하나나 DB 덤프
+하나만으로 복구 가능성을 추정하지 않는다.
 
 ### 현재 실행 경로의 제한
 

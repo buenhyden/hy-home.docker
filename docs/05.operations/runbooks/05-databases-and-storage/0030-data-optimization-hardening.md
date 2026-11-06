@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Runbook"
-version: "1.0.6"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0030"
 parent_ids:
@@ -30,7 +30,7 @@ data tier(`infra/04-data`)의 정적 hardening 점검 절차와 회귀 대응을
 
 ### Execution and stop boundary
 
-대상: GDE-0019/0022/0024/0025/0026/0027/0028/0029/0031/0033/0034의 명명된 data identities. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+대상: GDE-0019/0022/0024/0025/0026/0027/0028/0029/0031/0033/0034/0076/0100의 명명된 data identities. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
 기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
@@ -47,6 +47,9 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    docker compose --env-file .env.example --profile dev-data config --quiet
    docker compose --env-file .env.example --profile seaweedfs config --quiet
    docker compose --env-file .env.example --profile storage config --quiet
+   docker compose --env-file .env.example --profile opensearch config --quiet
+   docker compose --env-file .env.example --profile graph config --quiet
+   docker compose --env-file .env.example --profile admin-data config --quiet
    bash scripts/hardening/check-all-hardening.sh 04-data
    ```
 
@@ -65,7 +68,7 @@ plaintext로 대체하지 않는다. state-path 충돌이 있으면 ownership이
 때까지 변경을 중단한다.
 
 실제 데이터 손실이나 손상이 발생하면 쓰기를 중단하고 엔진별 runbook을 사용한다.
-management PostgreSQL/Valkey [RUN-0028](0028-management-database.md),
+management PostgreSQL/Valkey [RUN-0028](0028-management-database.md), 개발 DB [RUN-0100](0100-development-database.md), OpenSearch [RUN-0019](0019-opensearch.md), Neo4j [RUN-0033](0033-neo4j.md), RedisInsight 설정 [RUN-0076](0076-redisinsight.md),
 LAB 전용 Valkey Cluster [RUN-0022](../15-labs/0022-valkey-cluster.md), 또는 SeaweedFS
 [RUN-0024](0024-seaweedfs.md). 이 범용 runbook은 restore shortcut을 제공하지
 않는다.

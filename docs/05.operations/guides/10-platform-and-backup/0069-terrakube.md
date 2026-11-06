@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Usage Guide"
-version: "1.1.4"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0069"
 parent_ids:
@@ -49,7 +49,9 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
   서비스, profile, 이미지, secret, healthcheck, 라우트, executor의 Docker socket
   접근을 정의한다. 파생된 이미지 프로젝션은 런타임 pin을 소유하지 않는다.
 - 브라우저 -> Traefik -> `terrakube-ui`; UI -> `terrakube-api`; API는
-  `terrakube-executor`로 작업을 전달한다. 기존 라우트는 게이트웨이 ForwardAuth를
+  `terrakube-executor`로 작업을 전달한다. 세 service 모두 `terrakube-ui.${DEFAULT_URL}`,
+  `terrakube-api.${DEFAULT_URL}`, `terrakube-executor.${DEFAULT_URL}` Traefik 라우트를 가지며
+  `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 미들웨어를 적용한다. 기존 라우트는 게이트웨이 ForwardAuth를
   적용하며 UI/API 설정도 Keycloak/Dex 방식 OIDC를 사용한다. 두 계층 모두 테스트가
   필요하다. 정적 설정만으로는 네이티브 로그인이나 role 매핑을 증명하지 못한다.
 - PostgreSQL(`mng-pg`)이 Terrakube 메타데이터를 보관한다. SeaweedFS 버킷
@@ -78,7 +80,13 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
 
 ### 상태, 백업, 업그레이드
 
-실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md)의 `복구 세트와 버전 변경` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md)의 `Coordinated backup and isolated restore`와 `Upgrade` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+
+### Common Checks
+
+- `docker compose --profile iac config --quiet`
+- `docker compose --profile iac config --services`
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
 ### Runbook Handoff
 
@@ -110,11 +118,7 @@ UI와 executor는 API의 health를 기다린다. API/executor의 버킷 초기�
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile iac config --quiet`
-- `docker compose --profile iac config --services`
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
+위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)의 절차로 진단한다.
 
 ## Related Documents
 

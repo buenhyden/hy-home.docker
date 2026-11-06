@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0039"
 parent_ids:
@@ -40,19 +40,9 @@ created: "2026-05-10"
 - Prometheus `alertmanagers` target `alertmanager:9093`와 Grafana Alertmanager datasource가 현재 compose network에서 접근 가능해야 한다.
 - Alertmanager UI `https://alertmanager.${DEFAULT_URL}` 접근 권한.
 
-1. Compose service boundary를 확인한다.
+1. Compose service와 config template 경계는 [RUN-0039 절차](../../runbooks/07-observability/0039-alertmanager.md#procedure)의 `rg` 명령으로 확인한다.
 
-   ```bash
-   rg -n 'service: template-stateful-low|image: prom/alertmanager:|container_name: alertmanager|smtp_username|smtp_password|slack_webhook|alertmanager-data|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
-   ```
-
-2. Alertmanager config template boundary를 확인한다.
-
-   ```bash
-   rg -n 'group_by: \\[\"alertname\", \"job\", \"domain\", \"severity\"\\]|repeat_interval: 4h|receiver: \"team-notifications-slack\"|receiver: \"critical-notifications\"|severity=\"critical\"|__SMTP_USERNAME__|__SMTP_PASSWORD__|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml
-   ```
-
-3. 현재 routing model을 이해한다.
+2. 현재 routing model을 이해한다.
 
    - **Default route**: `group_by`는 `alertname`, `job`, `domain`, `severity` 기준이고 `repeat_interval`은 `4h`이다.
    - **Critical route**: `severity="critical"` alerts는 `critical-notifications` receiver로 전달되고 `repeat_interval`은 `1h`이다.
@@ -60,14 +50,9 @@ created: "2026-05-10"
    - **Email receiver**: SMTP placeholders는 유지하지만 `email_configs`가 commented state이면 email delivery를 활성 기능으로 간주하지 않는다.
    - **Inhibition**: critical alert가 같은 warning alert를 억제하고, `InstanceDown`은 같은 instance의 app/datastore/messaging service-level alerts를 억제한다.
 
-4. Prometheus와 Grafana 연결을 확인한다.
+3. Prometheus `alertmanagers` target과 Grafana Alertmanager datasource 연결도 같은 RUN-0039 절차에서 확인한다.
 
-   ```bash
-   rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]|job_name: \"alertmanager\"' infra/06-observability/prometheus/config/prometheus.yml
-   rg -n 'name: Alertmanager|uid: alertmanager|url: http://alertmanager:9093|handleGrafanaManagedAlerts: false' infra/06-observability/grafana/provisioning/datasources/datasource.yml
-   ```
-
-5. Planned maintenance silence는 Alertmanager UI에서 만료 시각과 사유를 포함해 생성한다.
+4. Planned maintenance silence는 Alertmanager UI에서 만료 시각과 사유를 포함해 생성한다.
 
    - UI: `https://alertmanager.${DEFAULT_URL}`
    - Silence는 expiry 없이 생성하지 않는다.
@@ -90,10 +75,16 @@ created: "2026-05-10"
 ### 운영 시 주의점
 
 - **Secret rendering assumption**: Git-managed `config.yml`에는 placeholders가 있고, runtime `/tmp/config.yml`에는 Secret 값이 렌더링된다. `/tmp/config.yml` 원문을 evidence로 남기지 않는다.
-- **Email assumption**: SMTP placeholders가 있어도 `email_configs`가 commented state이면 email notification을 보장한다고 쓰지 않는다.
 - **Silence drift**: 만료 없는 silence나 너무 넓은 matcher는 critical alert를 숨길 수 있다.
 - **Route drift**: `group_by`, `repeat_interval`, receiver name을 바꾸면 policy와 runbook evidence도 함께 갱신해야 한다.
 - **Direct access assumption**: 외부 UI 접근은 Traefik protected route와 SSO middleware를 통한다. 내부 compose network에서는 `alertmanager:9093`를 사용한다.
+
+### Common Checks
+
+- `docker compose --profile obs ps alertmanager`
+- `docker logs --tail=100 alertmanager`
+- `rg -n 'route:|receivers:|inhibit_rules:|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml`
+- `rg -n 'alertmanagers:|targets: \["alertmanager:9093"\]' infra/06-observability/prometheus/config/prometheus.yml`
 
 ### Runbook Handoff
 
@@ -107,12 +98,7 @@ created: "2026-05-10"
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile obs ps alertmanager`
-- `docker logs --tail=100 alertmanager`
-- `rg -n 'route:|receivers:|inhibit_rules:|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml`
-- `rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]' infra/06-observability/prometheus/config/prometheus.yml`
+위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0039](../../runbooks/07-observability/0039-alertmanager.md)으로 넘긴다.
 
 ## Related Documents
 

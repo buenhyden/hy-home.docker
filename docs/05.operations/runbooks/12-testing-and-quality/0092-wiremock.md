@@ -1,10 +1,10 @@
 ---
 title: "WireMock Recovery Runbook"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0092"
 parent_ids:
@@ -28,13 +28,12 @@ WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 �
 ## Prerequisites
 
 먼저 활성 mode를 확인한다. root의 `api-mock`은 기능 모드, root와 load
-   override를 함께 지정한 `api-mock`은 journal 없는 부하 모드다. 두 mode를
-   동시에 복구하지 않는다.
+override를 함께 지정한 `api-mock`은 journal 없는 부하 모드다. 두 mode를
+동시에 복구하지 않는다. 모든 명령은 저장소 루트에서 실행한다.
 
 ## Procedure
 
-1.
-   기능 모드만 다음 loopback 상태 확인을 실행한다.
+1. 기능 모드만 다음 loopback 상태 확인을 실행한다.
 
    ```bash
    docker compose --profile api-mock config --quiet
@@ -82,7 +81,7 @@ WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 �
 
 ### 변경 전제·복구·업그레이드
 
-모든 명령은 저장소 루트에서 실행한다. 기동·재시작·mapping reset 전에 영향받는
+기동·재시작·mapping reset 전에 영향받는
 테스트와 소유자 승인을 확인한다. reset은 기능 모드의 메모리 mapping을 바꾸므로 병행
 테스트를 중단·조정한 뒤 실행하고 추적된 합성 stub으로 확인한다. load 모드는 mapping
 reset 및 journal 조회 없이 새 Compose model로 시작한다. 실패하면 추가 reset을 멈추고

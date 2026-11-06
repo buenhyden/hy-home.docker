@@ -1,10 +1,10 @@
 ---
 title: "Conftest Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0095"
 parent_ids:
@@ -67,6 +67,13 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 | `bash scripts/validation/check-conftest-policy.sh --mode corpus` | 준비된 Compose·Dockerfile corpus 검사만 실행 |
 | `bash scripts/validation/check-conftest-policy.sh --mode verify` | 정책 단위 테스트만 실행 |
 
+### Common Checks
+
+- CI는 `operations` suite의 `local.template-security-baseline` 아래
+  `leaf.conftest-policy`(`check-conftest-policy.sh --mode corpus`)로 corpus 검사를
+  실행한다. `leaf.conftest-policy-tests`(`--mode verify`)는 local 전용 gate다.
+- `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
+
 ### Runbook Handoff
 
 job이 실패하면 [runbook](../../runbooks/12-testing-and-quality/0095-conftest.md)을 사용한다.
@@ -92,11 +99,8 @@ wrapper 필요 오류로 종료하고 raw fallback은 없다. 직접 job `verify
 
 ## Troubleshooting
 
-### Common Checks
-
-- CI는 `repository-integrity` suite에서 `leaf.conftest-policy`
-  (`scripts/validation/check-conftest-policy.sh`)로 이 job을 실행한다.
-- `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
+실패 단계(`verify`, Compose corpus, Dockerfile corpus)와 첫 `FAIL` 줄로 원인을 나누고
+수정 절차는 [runbook](../../runbooks/12-testing-and-quality/0095-conftest.md)을 따른다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "`.env.example` vs `.env` Key Comparison"
-version: "3.2.0"
+version: "3.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0003"
 created: "2026-06-04"
@@ -39,16 +39,6 @@ Compose 모델은 증거에 포함하지 않는다.
 
 ## Usage
 
-### Runbook Handoff
-
-값 생성·회전·런타임 재시작은 이 키 비교의 범위가 아니다. [Secret 관리 안내](../../../../secrets/README.md)와 해당 서비스 Runbook에서 대상, 승인, 백업 및 복구 절차를 확인한다.
-
-### Traceability
-
-- 같은 번호 `0003`의 Policy/Runbook은 없다.
-
-## Troubleshooting
-
 ### Common Checks
 
 저장소 루트에서 기존 메타데이터 도구를 사용한다.
@@ -74,13 +64,11 @@ python3 scripts/operations/secret-structure.py --root "$PWD" check --read-privat
 않으므로 운영자가 보호된 경로에서 원인을 확인한다. 사설 파일이 없거나 읽을 수 없으면 공개 예제를
 대체 입력으로 사용하지 않는다.
 
-`--dry-run`은 공개 schema와 파일 존재 메타데이터를 사용한다. 반면 metadata
-check는 private registry와 `.env` 값을 프로세스 내부에서 읽고 출력하지 않는
-검사이므로 해당 접근 승인이 필요하다. 종료 코드 `0`은 drift 없음, `1`은 drift,
-`2`는 unsafe/ambiguous 입력이다. 쓰기 없음과 개인 값 읽기 없음은 다르다.
-
-두 번째 명령은 유지할 값을 출력하지 않고 공개/개인 키 집합의 정확한 일치를 검사한다.
-`--dry-run`은 생성 계획이며 런타임 인증 성공이나 credential 회전의 증거가 아니다.
+`--dry-run`은 공개 schema와 파일 존재 메타데이터로 만든 생성 계획이며 런타임 인증
+성공이나 credential 회전의 증거가 아니다. `--sync-metadata-prune-check`는 private
+registry와 `.env` 값을 프로세스 내부에서 읽되 출력하지 않고 공개/개인 키 집합의 정확한
+일치를 검사하므로 해당 접근 승인이 필요하다. 종료 코드 `0`은 drift 없음, `1`은 drift,
+`2`는 unsafe/ambiguous 입력이다. 쓰기 없음과 개인 값 읽기 없음은 다르다. 별도의
 `--check`는 생성 도구 의존성도 확인하므로 `htpasswd` 등 도구가 없으면 실패한다.
 
 공개 키 중복, 사용되지 않는 키, secret registry의 env mapping 및 파일 경로를
@@ -94,6 +82,18 @@ check는 private registry와 `.env` 값을 프로세스 내부에서 읽고 출�
 않는다. 실행 후 `--sync-metadata-prune-check`, 키 집합, 값 보존 여부, Git ignore와
 0600 권한을 확인한다. 기존 `--sync-metadata`는 미등록 항목 보존 모드이므로
 이 엄격한 정리의 완료 검사로 사용하지 않는다.
+
+### Runbook Handoff
+
+값 생성·회전·런타임 재시작은 이 키 비교의 범위가 아니다. [Secret 관리 안내](../../../../secrets/README.md)와 해당 서비스 Runbook에서 대상, 승인, 백업 및 복구 절차를 확인한다.
+
+### Traceability
+
+- 같은 번호 `0003`의 Policy/Runbook은 없다.
+
+## Troubleshooting
+
+위 Common Checks가 실패하면 누락·추가된 키 이름만 기록하고(값은 기록하지 않는다), 위 Runbook Handoff가 지정한 서비스 Runbook으로 넘긴다.
 
 ## Related Documents
 

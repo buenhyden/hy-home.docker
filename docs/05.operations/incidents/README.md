@@ -1,10 +1,10 @@
 ---
 title: "05.operations/incidents"
-version: "1.1.4"
+version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -40,9 +40,6 @@ environment variables는 원형을 유지합니다.
 - 후속 액션과 관련 Runbook / Postmortem 링크
 - SEV1/SEV2 사고의 구조적 원인, 기여 요인, 재발 방지 조치
 - Agent 사고의 model, prompt, tool, guardrail, trace, eval metadata
-- 사람이 읽는 사고 서술([문서 언어 규칙](../../../.agents/governance/documentation-protocol.md#document-language)
-  적용)과 원형을 유지해야 하는 timestamp, ID, command, evidence label,
-  service name, environment variable
 
 ### Out of Scope
 
@@ -81,13 +78,10 @@ environment variables는 원형을 유지합니다.
    기록하고 Registry에 없는 frontmatter key를 추가하지 않습니다.
 5. 사고 대응 절차는 이 폴더에 직접 쓰지 말고 관련 runbook으로 연결합니다.
 6. 사실, 가설, 조치, 후속 액션을 분리해서 기록하고 관련 증거 링크를 남깁니다.
-7. 본문 언어는 [문서 언어 규칙](../../../.agents/governance/documentation-protocol.md#document-language)을
-   따르며 timestamp, ID, command, evidence label, service name,
-   environment variable은 원형을 유지합니다.
-8. [공통 Agent 거버넌스 작성 정책](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)에
+7. [공통 Agent 거버넌스 작성 정책](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)에
    따라 UTC offset을 포함한 ISO 8601 timestamp를 사용하고 사실과 가설을
    구분합니다. Postmortem은 blameless 서술을 사용하며 각 corrective action에
-   owner, due date, tracking ID/link, verification 조건을 기록합니다.
+   owner, tracking ID/link, verification 조건을 기록하고 완료 기한은 두지 않습니다.
 
 ## Related Documents
 

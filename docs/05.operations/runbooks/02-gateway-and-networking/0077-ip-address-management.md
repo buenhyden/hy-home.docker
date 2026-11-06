@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0077"
 parent_ids:
@@ -25,8 +25,6 @@ Compose 서비스의 network membership과 고정 주소를 변경하거나 DNS/
 
 ## Prerequisites
 
-### Trigger and Preconditions
-
 저장소 루트에서 정확한 Compose service·fragment·network·peer,
 선택 profile과 변경 이유를 기록한다. 공개 source 검토와 runtime 조회·변경은
 별도다. 승인된 Docker context와 기존 대상이 없으면 runtime 단계는 `NOT_RUN`이다.
@@ -44,7 +42,7 @@ rg -n "ipv4_address:" infra docker-compose.yml
 ```
 
 동일 network 안에서만 주소 중복을 비교하고 subnet·gateway·dynamic pool과
-trusted-proxy/announce 주소 소비자를 함께 확인한다. target·peer·alias가 불명확하면
+trusted-proxy·`RI_APP_HOST`·egress gateway 같은 고정 주소 소비자를 함께 확인한다. target·peer·alias가 불명확하면
 수정하지 않고 @buenhyden에게 전달한다.
 
 ### 범위를 정한 source 변경과 검증

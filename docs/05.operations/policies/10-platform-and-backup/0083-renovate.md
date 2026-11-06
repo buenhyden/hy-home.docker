@@ -1,10 +1,10 @@
 ---
 title: "Renovate Policy"
-version: "0.2.0"
+version: "0.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0083"
 parent_ids:
@@ -22,7 +22,7 @@ HOME이나 일반 도구 기동에는 절대 포함되지 않는다.
 ## Scope
 
 이 정책은 `renovate`와 그 Docker Secret, 설정, 캐시, 원격 변경사항, 업그레이드, 증거를
-다룬다. 업데이트 전략의 권위는 `POL-0086`에 있다. 추적하는 Compose 파일 목록(`infra/08-ai/ollama`, `infra/08-ai/open-webui` 포함)은 `renovate.json5`가 소유한다.
+다룬다. 업데이트 전략의 권위는 `POL-0086`에 있다. 추적하는 manager와 파일 목록(`infra/` 아래 Compose와 `requirements.txt`, `labs/**` 제외)은 `renovate.json5`가 소유한다.
 
 ## Rules
 

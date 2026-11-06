@@ -1,10 +1,10 @@
 ---
 title: "Conftest Recovery Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0095"
 parent_ids:
@@ -31,7 +31,6 @@ created: "2026-09-23"
 ## Procedure
 
 1. 저장소 루트에서 승인된 로컬 컨테이너 작업을 실행하고 첫 실패 단계·줄을 읽는다.
-   원본 읽기 전용 작업이어도 컨테이너 생성은 정적 문서 검사와 구분한다.
 
    ```bash
    bash scripts/validation/check-conftest-policy.sh
@@ -50,8 +49,9 @@ created: "2026-09-23"
    `--checksum`을 추가하는 등 해당 선언 위반을 수정한다.
 4. 선언이 의도한 것이면(예: 새 권한 필요), 정책 파일의 allowlist를
    사유와 함께 검토받은 변경으로 바꾼다.
-5. 종료 코드만으로 파싱 실패를 단정하지 않는다. CI wrapper의 `2`는 Docker
-   불가용일 수도 있고 xargs·shell 상태가 전달될 수 있다. verify/Compose/Dockerfile
+5. 종료 코드만으로 파싱 실패를 단정하지 않는다. wrapper의 `2`는 사용법 오류,
+   입력 준비 실패, Docker 불가용, 준비 manifest 누락·digest 불일치일 수 있고
+   job 안의 xargs·shell 상태가 전달될 수도 있다. verify/Compose/Dockerfile
    중 실행된 단계와 오류를 확인하고 파싱·규칙·실행 환경 문제를 구분한다.
 
 ### 수정·업그레이드·복구

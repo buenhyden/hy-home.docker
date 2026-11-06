@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.4.1"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -21,17 +21,13 @@ created: "2026-06-04"
 
 다음 경우에 실행한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - Root instruction 파일이 변경될 때
 - `.claude` 또는 `.codex` 파일이 변경될 때
 - `.agents/**`가 변경될 때
 - 새 stage doc이 추가될 때
 - harness 또는 Agent-first audit이 요청될 때
 
-## Procedure
+## Prerequisites
 
 시작 전 확인:
 
@@ -42,6 +38,8 @@ created: "2026-06-04"
 - [ ] 새 stage doc이 template을 사용하고 parent README 파일이 갱신되었는지 확인한다.
 - [ ] hook quoting/parsing 변경 후에는 hook payload simulation을 실행한다.
 - [ ] 아래 적용 가능한 verification command의 입력·부작용·필요 도구를 먼저 확인한다. 공개/sanitized checkout이 없거나 private 접근·Docker 실행이 승인되지 않았으면 해당 검사를 BLOCKED/NOT_RUN으로 남긴다.
+
+## Procedure
 
 1. workspace 상태를 확인한다. Graphify report와 health는 해당 탐색을 사용할 때만 읽는 advisory이며 필수 QA가 아니다.
 
@@ -86,8 +84,10 @@ created: "2026-06-04"
    bash scripts/hardening/check-all-hardening.sh
    ```
 
-   Compose validator의 기본 선택은 모든 선언 profile과 HOME이며, 두 baseline
-   script의 기본 선택은 `core`다. `HYHOME_COMPOSE_PROFILES` override와 hardening의
+   Compose validator의 기본 선택은 모든 선언 profile과 HOME이다.
+   `check-template-security-baseline.sh`는 profile과 무관하게 모든 root·LAB 서비스의
+   effective control을, `check-all-hardening.sh`는 인자가 없으면 모든 tier를 검사하고
+   tier 인자(예: `01-gateway`)로 좁힌다. `HYHOME_COMPOSE_PROFILES` override와 hardening의
    실제 대상 범위를 각각 기록한다. selector별 합계는 중복 서비스가 포함될 수 있다.
    [RUN-0086](../10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)의
    입력·부작용 경계를 먼저 적용하며 config PASS를 live readiness로 기록하지 않는다.
@@ -221,15 +221,12 @@ verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴
 
 ## Related Documents
 
+### Traceability
+
+- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`, retired)
+- 같은 주제: [Guide](../../guides/01-common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../../policies/01-common/0004-harness-agent-first-engineering.md) (`POL-0004`)
+
 - [Operations index](../../README.md)
-- Specification: SPEC-0094 (retired)
-- [Usage guide](../../guides/01-common/0004-harness-agent-first-engineering.md)
-- [Operations policy](../../policies/01-common/0004-harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../../../.agents/README.md)
 - [Subagent Protocol](../../../../.agents/governance/agentic.md)
 - 현재 승인된 Spec Package의 Plan과 Task evidence
-
-### Traceability
-
-- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`)
-- 같은 주제: [Guide](../../guides/01-common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../../policies/01-common/0004-harness-agent-first-engineering.md) (`POL-0004`)

@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0098"
 created: "2026-09-25"
@@ -20,14 +20,12 @@ created: "2026-09-25"
 
 호스트를 계획된 이유로 재부팅하기 전과 재부팅 직후, HOME Docker Compose 스택과
 같은 호스트의 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 각 단계
-사이의 health gate를 확인할 때 사용한다.
+사이의 health gate를 확인할 때 사용한다. 정전이나 예정에 없던 재부팅 뒤 같은
+순서로 상태를 점검할 때도 쓴다.
 
 ## Prerequisites
 
-### Trigger and Preconditions
-
-정전이나 예정에 없던 재부팅 뒤 같은
-순서로 상태를 점검할 때도 쓴다. 이 런북은 unseal share, SecretID, root token,
+이 런북은 unseal share, SecretID, root token,
 KV 값을 출력하거나 요청하지 않는다; 실제 재부팅 실행은 owner가 감독 아래
 수행하며 이 문서의 범위가 아니다.
 
@@ -73,8 +71,8 @@ Docker 자체의 부팅 활성화는 이 저장소가 아니라 host systemd 설
 재부팅 전에 같은 명령으로 다시 확인한다.
 
 Daemon이 개별 컨테이너를 되살리는 방식은 각 서비스의 `depends_on: condition:
-service_healthy`(예: `openbao-agent`가 `openbao`를, `mng-pg-exporter`가
-`mng-pg`를 기다리는 것)를 다시 평가하지 않는다; 그 조건은 `docker compose up`이
+service_healthy`(예: `openbao-agent`가 `openbao`를, `mng-valkey-exporter`가
+`mng-valkey`를 기다리는 것)를 다시 평가하지 않는다; 그 조건은 `docker compose up`이
 새로 컨테이너를 만들 때만 적용된다. 재부팅 뒤에는 아래 순서대로 각 service의 health와 readiness를
 확인한다. `docker compose up -d`는 단순 순서 검사가 아니라 생성·시작·재생성 및
 선택에 따라 init job 실행을 일으킬 수 있다. missing/failed service는 해당 owner가
@@ -119,7 +117,7 @@ docker compose exec -T openbao bao status
 ```
 
 예상 결과: OpenBao가 시작한 뒤 `bao status`로 sealed/unsealed를 구분한다.
-sealed의 종료2는 서버가 살아 있어도 `unhealthy`인 상태다. 4단계의 owner unseal 뒤
+sealed의 종료 코드 2는 서버가 살아 있어도 `unhealthy`인 상태다. 4단계의 owner unseal 뒤
 서버 health가 회복되어야 새 Compose 기동의 Agent가 시작된다. 기존 Agent의 daemon 자동 재시작은 먼저 일어날 수 있고, 새 entrypoint는 이전 token sink를 제거하고 새 wrapped SecretID를 요구하므로
 현재 인증·renewal·렌더링을 별도로 검증한다. 재부팅 뒤 새 SecretID 필요 여부는 RUN-0085로 판단한다.
 
@@ -156,7 +154,7 @@ wrap 만료 전에 Agent를 시작하고 replay·만료 시 새 wrap을 재발�
 docker exec openbao-agent sh /openbao/scripts/health-agent.sh
 ```
 
-exit 0, unsealed, 허용/금지 fetch, 두 KV/render version과0600 권한을 확인한다.
+exit 0, unsealed, token lookup, `agent.hcl`의 각 template 출력과 KV 값·version 일치, `.txt` 출력 0640·`.version` 출력 0600 권한을 확인한다.
 raw 로그·token·렌더링 값 대신 시각·version·일치 boolean만 현재 Task에 기록한다.
 SecretID 파일 부재나 옛 sink의 존재로 성공을 판정하지 않는다. 실제 소비자 적용은
 별도 증거이며 P01에서 mount를 바꾸지 않는다.
@@ -172,7 +170,7 @@ k3d 클러스터 노드는 같은 호스트의 Docker 컨테이너(`k3d-hyhome-*
 > host에서 `k3d-hyhome-server-0`, `agent-0`~`agent-2`, `serverlb`의 재시작 정책은
 > 모두 `unless-stopped`였으므로 Docker daemon이 시작하면 함께 돌아온다.
 
- 재부팅 전
+재부팅 전
 `docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' <name>`으로 다시 확인하고,
 재부팅 뒤 아래로 확인한다.
 
@@ -204,7 +202,7 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 
 | 단계 | 근거 | 예상 소요 |
 | --- | --- | --- |
-| 1. Docker/Compose 컨테이너 복귀 | 각 서비스 healthcheck `start_period` | 현재 선택·host 상태에 따라 달라짐. 2026-09-30 리허설의 약16.5분 daemon 복귀/약19분 healthy는 아래 과거 기록에만 적용되며 현재 SLA가 아님 |
+| 1. Docker/Compose 컨테이너 복귀 | 각 서비스 healthcheck `start_period` | 현재 선택·host 상태에 따라 달라짐. 2026-09-30 리허설의 약 16.5분 daemon 복귀/약19분 healthy는 아래 과거 기록에만 적용되며 현재 SLA가 아님 |
 | 3. OpenBao sealed 및 Agent 상태 확인 | `openbao` healthcheck `interval 15s`, `start_period 20s` | health 상태와 실제 unsealed/auth 결과를 각각 관찰; 고정 완료 시간 없음 |
 | 4. Owner unseal | 대화형, 소요 시간은 owner 입력 속도에 좌우 | **owner 확인 필요**; Rehearsal Record에 기록 |
 | 6. Wrapped SecretID 발급과 전달 | wrapping TTL 60초; 내부 SecretID 10분, 1회용 | wrap 만료 전에 시작 |
@@ -271,12 +269,6 @@ Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 
 
 ## Related Documents
 
-- [Operations index](../../README.md)
-- [00 Workspace domain](../../README.md)
-- [Implementation: root Compose](../../../../docker-compose.yml),
-  [OpenBao Compose](../../../../infra/03-security/openbao/docker-compose.yml),
-  [common optimizations](../../../../infra/common-optimizations.yml)
-
 ### Traceability
 
 - 과거 구현·리허설 근거: SPEC-0182
@@ -286,3 +278,8 @@ Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 
 - 관련 runbook: [RUN-0085 OpenBao](../04-security-and-secrets/0085-openbao.md),
   [RUN-0021 Backup and Restore](../10-platform-and-backup/0021-backup-and-restore.md),
   [RUN hy-home.k8s Integration](../10-platform-and-backup/0096-k8s-integration.md)
+
+- [Operations index](../../README.md)
+- [Implementation: root Compose](../../../../docker-compose.yml),
+  [OpenBao Compose](../../../../infra/03-security/openbao/docker-compose.yml),
+  [common optimizations](../../../../infra/common-optimizations.yml)

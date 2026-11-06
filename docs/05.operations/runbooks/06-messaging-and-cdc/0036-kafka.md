@@ -1,10 +1,10 @@
 ---
 title: "Kafka Runbook"
-version: "1.3.3"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -20,7 +20,9 @@ created: "2026-05-17"
 
 ## Trigger
 
-승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리된 복구에 사용한다.
+- Kafka family source나 profile 변경의 정적 진단이 필요할 때
+- `KafkaBrokerDown`, `KafkaConsumersGroupLag`, `KafkaTopicUnderReplicatedPartition` 경보가 발생했을 때
+- CDC connector 등록·재동기화나 승인된 백업·격리 복원을 계획할 때
 
 ## Prerequisites
 
@@ -43,10 +45,11 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet
 docker compose --env-file .env.example --profile messaging config --services
+docker compose --env-file .env.example --profile cdc config --quiet
 LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --quiet
 ```
 
-정상 서비스 8개와 LAB 서비스 5개의 분리, 별도 cluster ID·broker volume·network,
+`messaging`이 선택하는 정상 서비스 7개(`debezium-db-provision`은 `cdc`에서만 선택)와 LAB 서비스 5개의 분리, 별도 cluster ID·broker volume·network,
 정상 `kafka_net`과 LAB `lab_kafka_net`, health check, Kafbat native OIDC
 secret/config, PLAINTEXT 경계를 확인한다. 정상 `kafka-init`은 RF1이며
 LAB `lab-kafka-init`은 세 broker에 RF3이다. 정적 render는 실제 준비 상태를
@@ -126,15 +129,9 @@ rollback window 이후에만 실행한다.
 
 schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
 부작용, 호환되지 않는 storage/protocol format이 나타나거나 raw broker 디렉터리를
-수리하라는 압박이 있으면 중단한다. 이 문서 task에서 백업이나 restore는 실행되지
-않았다.
+수리하라는 압박이 있으면 중단한다. 위 2026-09-22 rehearsal 외의 백업이나 restore는 실행된 증거가 없다.
 
 ## Related Documents
-
-- [Domain catalog](../../README.md)
-- [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
-- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
-- [Policy](../../policies/06-messaging-and-cdc/0036-kafka.md)
 
 ### Traceability
 
@@ -142,3 +139,8 @@ schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
   및 [Connect image Dockerfile](../../../../infra/05-messaging/kafka/Dockerfile.connect).
 - Artifact: `RUN-0036`; parent guide: `GDE-0036`.
 - 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
+
+- [Domain catalog](../../README.md)
+- [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
+- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
+- [Policy](../../policies/06-messaging-and-cdc/0036-kafka.md)

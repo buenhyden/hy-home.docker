@@ -1,10 +1,10 @@
 ---
-title: "04-Data Backup Policy"
-version: "1.5.11"
+title: "Backup and Restore Policy"
+version: "1.6.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -12,7 +12,7 @@ parent_ids:
 created: "2026-06-04"
 ---
 
-# 04-Data Backup Policy
+# Backup and Restore Policy
 
 ## Overview
 
@@ -51,9 +51,9 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | ComfyUI user asset과 workflow | `comfyui-custom-nodes`, `comfyui-input`, `comfyui-output`, `comfyui-user` | custom-node source/revision inventory를 포함한 quiesced file snapshot | source-at-rest encryption 미검증; encrypted destination 필수; input/user는 daily, output/custom node는 weekly, 30/90일 retention | RPO 24시간, RTO 24시간; planning target, 미검증 | No rehearsal. `comfyui-models`, Hugging Face, Torch cache는 model identifier, license, hash가 기록될 때만 rebuild 가능. |
 | Ollama local model store | `ollama-data` → `${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}` | custom Modelfile과 대체 불가능한 input 보존; 검증된 re-pull을 위해 다운로드한 model을 catalog화. `models/manifests`·`manifests-v2`는 restic의 읽기 전용 `/src/state/ollama-models` mount로 state set에 포함하고 blob은 제외 | source-at-rest encryption 미검증; custom input weekly 90일 | Rebuild target 24시간; reproducibly sourced된 다운로드 blob은 data-loss RPO가 없다 | Catalog 격리 복원만 시험(SPEC-0226). Blob re-pull 미시험. Rebuild 예외는 source, version, license, hash evidence가 필요하다. |
 | Qdrant vector collection | `qdrant-data` → `${DEFAULT_DATA_DIR}/qdrant/data` | Qdrant collection/full-storage snapshot을 별도 target으로 복사; live directory 복사를 snapshot으로 취급하지 않는다 | source-at-rest encryption 미검증; encrypted destination 필수; daily 30일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Qdrant operations가 isolated snapshot restore를 소유한다. |
-| Prometheus metrics | `prometheus-data` → `${DEFAULT_OBSERVABILITY_DIR}/prometheus` | 지원되면 engine snapshot, 아니면 stopped filesystem snapshot; tracked scrape/rule configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Prometheus operations가 TSDB validation을 소유한다. |
+| Prometheus metrics | `prometheus-data` → `${PROMETHEUS_DATA_DIR:-${DEFAULT_OBSERVABILITY_DIR}/prometheus}`(HOME은 SSD, [POL-0102](0102-host-storage-placement.md)) | 지원되면 engine snapshot, 아니면 stopped filesystem snapshot; tracked scrape/rule configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Prometheus operations가 TSDB validation을 소유한다. |
 | Loki logs | WAL/cache/rule용 `loki-data` → `${DEFAULT_OBSERVABILITY_DIR}/loki`, 그리고 SeaweedFS `loki-bucket` | SeaweedFS `loki-bucket` collection은 Restic state set에서 제외한다(owner 2026-10-10, SPEC-0228). 보존 7일 telemetry이므로 손실 시 복원하지 않고 새로 수집한다 | 해당 없음(백업하지 않음) | 복원 대상 아님 | No rehearsal. Loki operations와 [RUN-0024](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)가 validation을 공유한다. |
-| Tempo trace(HOME 서비스, 보존되는 bucket state) | WAL/cache용 `tempo-data` → `${DEFAULT_OBSERVABILITY_DIR}/tempo`, 그리고 SeaweedFS `tempo-bucket` | SeaweedFS `tempo-bucket` collection은 Restic state set에서 제외한다(owner 2026-10-10, SPEC-0228). 손실 시 trace는 복원하지 않고 새로 수집한다 | 해당 없음(백업하지 않음) | 복원 대상 아님 | No rehearsal. Tempo operations와 [RUN-0024](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)가 validation을 공유한다. |
+| Tempo trace(HOME 서비스, 보존되는 bucket state) | WAL/cache용 `tempo-data` → `${TEMPO_DATA_DIR:-${DEFAULT_OBSERVABILITY_DIR}/tempo}`(HOME은 SSD, POL-0102), 그리고 SeaweedFS `tempo-bucket` | SeaweedFS `tempo-bucket` collection은 Restic state set에서 제외한다(owner 2026-10-10, SPEC-0228). 손실 시 trace는 복원하지 않고 새로 수집한다 | 해당 없음(백업하지 않음) | 복원 대상 아님 | No rehearsal. Tempo operations와 [RUN-0024](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)가 validation을 공유한다. |
 | Alertmanager silence/state | `alertmanager-data` → `${DEFAULT_OBSERVABILITY_DIR}/alertmanager` | Stopped 또는 application-consistent snapshot; tracked routing configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Alertmanager operations가 silence와 route validation을 소유한다. |
 | Alloy ingestion cursor/WAL | `alloy-data` → `${DEFAULT_OBSERVABILITY_DIR}/alloy` | 중복 또는 누락된 ingestion이 허용되지 않을 때 stopped snapshot; 그렇지 않으면 loss window를 기록하고 tracked config로부터 rebuild | source-at-rest encryption 미검증; 보존 시 encrypted destination 필수; 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Rebuild는 telemetry gap을 수용할 때만 허용된다. |
 

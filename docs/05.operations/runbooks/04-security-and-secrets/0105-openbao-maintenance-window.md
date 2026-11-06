@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "0.3.1"
+version: "0.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
@@ -130,7 +130,7 @@ P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 g
 
 #### Agent Telemetry Deployment State
 
-변조된 HMAC의 audit 검증은 미실행이다. Agent 인증 실패 alert는 SPEC-0239(PR #463, #466)로 source에 들어왔다. `agent.hcl`이 `metrics_only` listener(8100)로 `/agent/v1/metrics`를 열고, Prometheus job `openbao-agent`가 scrape하며, `OpenBaoAgentMetricsScrapeFailing`과 `OpenBaoAgentAuthFailure`가 알린다. 아직 배포되지 않았다. 실행 중인 server와 Agent는 Compose가 고정한 image보다 이전 버전이므로, Agent만 다시 만들면 server보다 먼저 업그레이드된다. 그래서 2026-10-14 owner 결정으로 유지보수 창의 W5(Agent 업그레이드와 wrapped 재발급)에서 함께 배포하고 이어서 Prometheus를 다시 만든다. 인증은 되는데 렌더만 낡는 경우는 metric이 없어서 배포 뒤에도 Docker healthcheck(token lookup·KV 읽기·렌더 bytes 일치)의 `unhealthy`로만 드러나고 알림은 없다.
+변조된 HMAC의 audit 검증은 미실행이다. Agent 인증 실패 alert는 SPEC-0239(PR #463, #466)로 source에 들어왔다. `agent.hcl`이 `metrics_only` listener(8100)로 `/agent/v1/metrics`를 열고, Prometheus job `openbao-agent`가 scrape하며, `OpenBaoAgentMetricsScrapeFailing`과 `OpenBaoAgentAuthFailure`가 알린다. 2026-10-14 owner 결정에 따라 server보다 Agent가 먼저 업그레이드되지 않도록 유지보수 창의 W5(Agent 업그레이드와 wrapped 재발급)에서 함께 배포하기로 했고, 아래 Current Status의 2026-10-22 W5 Agent 적용 보고가 그 실행이다. 실제 scrape `up{job="openbao-agent"}`는 그 Task의 관찰로 확인한다. 인증은 되는데 렌더만 낡는 경우는 metric이 없어서 배포 뒤에도 Docker healthcheck(token lookup·KV 읽기·렌더 bytes 일치)의 `unhealthy`로만 드러나고 알림은 없다.
 
 #### 1인 관리자 custody 절차
 
@@ -417,7 +417,7 @@ W0에서는 audit 디렉터리와 rotation 계약도 server 재생성 전에 준
 [전용 rotation 규칙](../../../../infra/03-security/openbao/config/logrotate/openbao)은
 이 HOME의 UID100=`dhcpcd`, GID1000=`hyunyoun` 매핑을 사용합니다. host의 `dhcpcd` 계정은
 OpenBao와 같은 UID라 `audit.json`, TLS server key, Raft data, Agent token sink, `role_id`와
-렌더된 Keycloak·Grafana admin password, SecretID 파일, 그리고 `docker compose exec` 동안 container
+렌더된 Keycloak·Grafana admin password와 OIDC client secret, SecretID 파일, 그리고 `docker compose exec` 동안 container
 안 `bao` process의 환경에 있는 root·operator token을 읽을 수 있습니다(`${DEFAULT_SECURITY_DIR}/openbao` 아래 UID 100
 소유 경로). dhcpcd의 권한 분리
 process는 chroot되어 위험이 작으며 [POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#maintenance-window-residuals)가 2026-12-15까지 받아들인 잔여 위험입니다. host swap(`/swap.img`)은 암호화되지
@@ -1075,7 +1075,7 @@ rotation을 성공으로 처리하지 않습니다.
 
 #### W7 Post Check
 
-renderer 재인증, consumer 읽기(Keycloak·Grafana 렌더 결과
+renderer 재인증, consumer 읽기(`agent.hcl`이 선택한 19개 template 렌더 결과
 일치), `OpenBaoSealed` 등 기존 경보가 조용한지, `up{job="openbao"}`를 확인합니다. 다음
 backup 단위의 OpenBao snapshot 성공은 window 뒤 관찰입니다. W7 뒤 backup timer와
 hy-home.k8s 로그인 주체를 아래 Finish대로 복구·검증하고, 경보를 기록한 뒤 silence를 지웁니다.

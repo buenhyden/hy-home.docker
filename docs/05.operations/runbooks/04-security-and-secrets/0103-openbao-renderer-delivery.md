@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Renderer SecretID Delivery"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0103"
 parent_ids:
@@ -45,7 +45,7 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
 
 #### Delivery Steps
 
-1. TLS·unseal·두 제한 KV/version·정확한 Agent named volume과 RoleID를 준비한다.
+1. TLS·unseal·renderer ACL의 9개 소비자 KV/version·정확한 Agent named volume과 RoleID를 준비한다.
    기존 Agent 자동 재시작이나 sink 존재를 준비 완료로 판단하지 않는다. 운영자가 지정한
    journal 디렉터리는 Agent data/out volume 밖에 영속 보관하고 owner mode 0700을 요구한다.
    journal과 completion anchor를 따로 삭제·초기화하지 않는다. 값·token·accessor는 기록하지 않는다.

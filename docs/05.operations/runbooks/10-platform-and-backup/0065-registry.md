@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Runbook"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0065"
 parent_ids:
@@ -59,7 +59,8 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
    `registry`를 중지한다.
 2. `${DEFAULT_REGISTRY_DIR}` filesystem 전체를 protected storage로 snapshot하거나
    복사한다. source commit, filesystem snapshot/checksum, repository/tag/digest
-   inventory를 기록한다. snapshot 완료 후에만 source를 다시 시작한다.
+   inventory를 기록한다. snapshot 완료 후에만 source를 다시 시작한다. HOME 야간 Restic
+   백업(RUN-0021)은 registry를 복사하지 않으므로 이 snapshot이 유일한 백업이다.
 3. untrusted network route가 없는 isolated Registry로 복원한다. API, catalog/tag
    count를 확인하고 대표 집합을 digest로 pull한다.
 4. digest 검증과 명시적 data replacement 승인 후에만 복원된 store를 promote한다.
@@ -68,21 +69,10 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 
 - GC는 destructive하다: backup을 확보/검증하고, registry를 중지 상태로 유지하거나
   검토된 read-only mode를 설정하고, 지원되면 dry-run을 실행하고, mark set을 검토한
-  뒤 명시적 승인 하에서만 실행한다. 필요한 digest pull을 확인한다.
-- upgrade 시에는 새 image를 isolated restored copy에 먼저 테스트한다. canary
+  뒤 명시적 승인 하에서만 실행한다. 추적되는 설정은 삭제를 활성화하지 않는다. 필요한 digest pull을 확인한다.
+- upgrade 시에는 일관된 백업을 먼저 확보하고 Distribution release/스토리지 변경 사항을 검토한 뒤 새 image를 isolated restored copy에 먼저 테스트한다. canary
   push/pull과 digest 동등성을 확인하며, format이나 동작이 호환되지 않으면 image와
   storage snapshot을 함께 되돌린다.
-
-### 계획된 저장소 유지보수
-
-추적되는 설정에는 읽기 전용 유지보수 모드가 없다. 일관된 파일시스템 백업을 위해
-클라이언트를 차단하고 Registry를 중지한 다음, 전체 bind 디렉터리를 스냅샷/복사하고
-카탈로그/태그/digest 인벤토리를 기록한다. 격리된 Registry로 복원하고, 승격 전에
-`/v2/`, 카탈로그/태그, 선택된 digest의 pull을 검증한다. garbage collection을
-하려면 Registry가 읽기 전용이거나 중지된 상태여야 하고 파괴적 데이터 작업에 대한 별도
-승인도 받아야 한다. 업그레이드 전에는 일관된 백업을 확보하고 Distribution의 release/스토리지
-변경 사항을 검토하고 복원된 사본으로 새 이미지를 테스트하고 push/pull/digest를
-검증한다. 이 문서 작업에서는 백업, 복원, GC, 업그레이드를 실행하지 않았다.
 
 ### 로컬 이미지 이관과 제거
 

@@ -1,10 +1,10 @@
 ---
 title: "Alloy Readiness and Pipeline Recovery Runbook"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0040"
 parent_ids:
@@ -22,16 +22,14 @@ created: "2026-05-17"
 
 다음 경우에 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - Alloy UI 또는 `/-/healthy` endpoint가 실패할 때.
 - Docker 로그, metric, trace가 backend에 도착하지 않을 때.
 - OTLP trace client가 `alloy:4317` 또는 `alloy:4318`로 보내지 못할 때. 이 두 port는 trace만 전달하며 여기에 보낸 metric은 오류 없이 버려진다.
 - k6 품질 metric(`k6_*`)이 Prometheus에 없을 때. 품질 metric은 `config.home.alloy`의 인증 수신기 `alloy:4319`로만 들어온다(SPEC-0214).
 - 특정 backend exporter에서 connection refused나 timeout이 보일 때.
 - 설정 변경 후 component graph, label, exporter 상태 검증이 필요할 때.
+
+## Prerequisites
 
 사전 조건은 다음과 같다.
 
@@ -72,7 +70,7 @@ log를 보존하기 전에 payload, credential, header/cookie, private path를 �
 3. Pipeline config boundary를 확인한다.
 
    ```bash
-   rg -n 'discovery.docker|hy-home-infra|loki.source.docker|loki.write|pyroscope.scrape|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy
+   rg -n 'discovery.docker|hy-home-infra|loki.source.docker|loki.write|pyroscope.scrape|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy infra/06-observability/alloy/config/config.home.alloy
    ```
 
 4. Downstream exporter failure가 의심되면 현재 선택한 backend만 확인한다. Optional dependency가 없어도 collector는 시작할 수 있으며 health는 delivery 증거가 아니다.
@@ -106,7 +104,7 @@ log를 보존하기 전에 payload, credential, header/cookie, private path를 �
 6. Label drift or discovery gap이 의심되면 relabel rules와 Compose project filter를 확인한다.
 
    ```bash
-   rg -n 'target_label  = "service_name"|target_label  = "container_name"|target_label = "scope"|regex         = "hy-home-infra"|replacement   = "infra"' infra/06-observability/alloy/config/config.alloy
+   rg -n 'target_label  = "service_name"|target_label  = "container_name"|target_label = "scope"|regex         = "hy-home-infra"|replacement   = "infra"' infra/06-observability/alloy/config/config.alloy infra/06-observability/alloy/config/config.home.alloy
    ```
 
 7. Config가 현재 정책과 일치하지만 runtime state가 회복되지 않으면 Alloy를 재시작한다.

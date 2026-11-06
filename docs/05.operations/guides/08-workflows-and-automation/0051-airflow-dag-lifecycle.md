@@ -1,10 +1,10 @@
 ---
 title: "Airflow Dag Basics Operations"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0051"
 parent_ids:
@@ -66,7 +66,7 @@ my_workflow()
 
 ### File Placement
 
-`.py` file을 `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에 배치한다. `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`가 설정된 bind volume으로 이 file을 pick up한다.
+`.py` file을 `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에 배치한다. 이 경로는 `airflow-dags` bind volume으로 모든 Airflow 서비스의 `/opt/airflow/dags`에 연결되며, `airflow-dag-processor`가 파싱한다. Compose가 `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true`를 설정하므로 새 DAG는 paused 상태로 등록된다. 같은 Compose가 `AIRFLOW__CORE__LOAD_EXAMPLES=true`도 설정하므로 example DAG가 함께 보인다.
 
 ### Public DAG interface
 
@@ -75,7 +75,7 @@ my_workflow()
 ### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
-- Runtime이 실행 중이면 `docker compose exec airflow-apiserver airflow dags list`
+- Runtime이 실행 중이면 `docker compose --profile workflow-airflow exec airflow-apiserver airflow dags list`
 
 ### Runbook Handoff
 

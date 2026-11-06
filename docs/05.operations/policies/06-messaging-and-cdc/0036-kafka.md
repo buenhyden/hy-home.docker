@@ -1,10 +1,10 @@
 ---
 title: "Kafka Operations Policy"
-version: "2.0.2"
+version: "2.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0036"
 parent_ids:
@@ -27,7 +27,7 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
 
 ## Rules
 
-- 정상 Kafka는 root의 `messaging` 계열 profile로만 선택한다. 세 broker
+- 정상 Kafka는 root의 `messaging` 계열 profile과 `cdc`로만 선택한다. 세 broker
   topology는 root에 include하지 않는 `labs/kafka-cluster/docker-compose.yml`의 독립 LAB이며,
   별도 project, cluster ID, data directory만 사용한다.
 - broker와 Connect volume을 구분하고, `kafka_net`, health check, shared
@@ -117,7 +117,7 @@ lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다
 
 ## Verification
 
-root 구성과 scoped static policy check를 검증한 다음, promotion이나
+[RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#procedure)의 root `messaging`/`cdc` render와 LAB render로 static 구성을 검증한 다음, promotion이나
 cutover 전에 application-level acceptance를 갖춘 isolated compatible
 restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
 

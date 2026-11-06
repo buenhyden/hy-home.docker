@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -41,7 +41,7 @@ created: "2026-05-17"
 - `infra/09-platform-ops`와 `infra/11-quality`의 수정 권한
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 `검토된 하드닝 변경 순서` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 `Steps` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
 ## Usage
 
@@ -51,6 +51,12 @@ created: "2026-05-17"
 - service-local compose의 단독 config 실패를 root compose context와 구분하지 못한다.
 - 독립 LAB Locust worker의 health 상태를 root profile 검사로 오해한다.
 - k6 leaf에 없는 worker나 Traefik route를 문서에 적는다.
+
+### Common Checks
+
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ### Runbook Handoff
 
@@ -62,15 +68,11 @@ created: "2026-05-17"
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - 동일 주제 문서: [Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`POL-0063`), [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`RUN-0063`)
 
-현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](0082-opentofu.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](0082-opentofu.md#terraform-이관)을 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
 
 ## Troubleshooting
 
-### Common Checks
-
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
+위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 절차로 진단한다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Observability Optimization Hardening Policy"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0044"
 parent_ids:
@@ -40,7 +40,7 @@ created: "2026-05-10"
     `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다.
   - `depends_on`은 핵심 백엔드에 대해 `service_healthy`를 우선 사용한다.
   - host observer(cAdvisor)는 healthcheck를 필수로 가진다.
-  - Pyroscope는 `obs`와 `dev` profile 어느 쪽으로 선택되든 route, service port,
+  - Pyroscope는 `obs`와 `profiling` profile 어느 쪽으로 선택되든 route, service port,
     persistent volume, healthcheck 기준을 동일하게 유지한다.
   - Loki/Tempo 커스텀 이미지는 non-root 실행을 강제한다.
   - entrypoint는 secret 파일 존재를 선검증한다.

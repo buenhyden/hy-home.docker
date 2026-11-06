@@ -1,10 +1,10 @@
 ---
 title: "운영 정책"
-version: "0.2.6"
+version: "0.2.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -108,7 +108,7 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 | [AI와 검색](09-ai-and-search/README.md) | 모델·GPU 자원, 접근 권한과 collection 격리 기준을 찾는다. |
 | [플랫폼과 백업](10-platform-and-backup/README.md) | IaC 상태, 이미지·digest, 독립 보관과 복구 수용 기준을 찾는다. |
 | [메일과 통지](11-mail-and-notifications/README.md) | 메일 자격·발신, alias 퇴역과 통지 재시도 기준을 찾는다. |
-| [시험과 품질](12-testing-and-quality/README.md) | 격리 fixture, 부하 예산과 검증·출력 수용 기준을 찾는다. |
+| [시험과 품질](12-testing-and-quality/README.md) | k6·WireMock·Pact Broker·Conftest와 성능 시험의 트래픽·노출·인증·증거 통제를 찾는다. |
 | [분석과 데이터 품질](13-analytics-and-data-quality/README.md) | MLflow 추적 서버의 계정·artifact 접근 기준을 찾는다. |
 | [디자인 시스템](14-design-system/README.md) | 컴포넌트 정본, 디자인 산출물과 문서 접근 기준을 찾는다. |
 | [독립 LAB 문서](15-labs/README.md) | 기존 LAB 승인·격리·정리 기준을 찾으며 이번 범위는 문서에 한정한다. |

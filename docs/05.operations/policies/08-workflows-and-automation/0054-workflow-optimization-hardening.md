@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Operations Policy"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -53,6 +53,7 @@ created: "2026-05-10"
 - **Airflow 승인 조건**:
   - DAG parse/schedule/delay 기준 품질 게이트 문서화 및 CI 반영
   - worker autoscale 트리거(큐 지연, 실행 대기 수, CPU/memory) 기준 합의
+  - 현재 `airflow-worker`·`n8n-worker`는 고정 `container_name`이므로 autoscale 전에 이 선언을 바꾸는 Compose 변경이 필요하다.
 - **n8n 승인 조건**:
   - workflow Git backup 표준 운영 절차 수립
   - credential store OpenBao 연계 모델 및 롤백 절차 문서화

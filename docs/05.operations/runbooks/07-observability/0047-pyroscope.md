@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0047"
 parent_ids:
@@ -26,15 +26,13 @@ created: "2026-05-17"
 
 다음 경우에 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - Grafana Pyroscope datasource에서 최근 profile이 보이지 않을 때.
 - Alloy `pyroscope.write` endpoint는 선언되어 있지만 profile ingestion gap이 의심될 때.
 - `pyroscope` 로그에 storage, ingestion limit, label cardinality 또는 ready failure 관련 오류가 보일 때.
 - Profile ingestion으로 host 또는 container CPU usage가 비정상적으로 높을 때.
 - `pyroscope.yaml` 변경 후 readiness, storage, ingestion limit evidence가 필요할 때.
+
+## Prerequisites
 
 `pyroscope`의 filesystem volume과 선택 Alloy source를 먼저 확인한다. `profiling`은 승인된 HOME 선택에 포함되며 실제 source 수신은 별도 검증한다. 교체·중지 전 입력을 멈추고 일관된 local data를 보존한다. 기간 미선언을 무기한 보존 계약으로 취급하지 않는다.
 
@@ -73,7 +71,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 3. Alloy writer와 Grafana datasource가 Pyroscope endpoint를 가리키는지 확인한다.
 
    ```bash
-   rg -n 'pyroscope.write "local_pyroscope"|url = "http://pyroscope:4040"|type: grafana-pyroscope-datasource|url: http://pyroscope:4040' infra/06-observability/alloy/config/config.alloy infra/06-observability/grafana/provisioning/datasources/datasource.yml
+   rg -n 'pyroscope.write "local_pyroscope"|url = "http://pyroscope:4040"|type: grafana-pyroscope-datasource|url: http://pyroscope:4040' infra/06-observability/alloy/config/config.alloy infra/06-observability/alloy/config/config.home.alloy infra/06-observability/grafana/provisioning/datasources/datasource.yml
    ```
 
 4. Storage 또는 cardinality symptom은 로그와 capacity evidence를 캡처한다. Profile data를 삭제하지 않는다.

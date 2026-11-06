@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.1.7"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -58,23 +58,24 @@ LAB 전용 브로커 3개·exporter·init 5개를 독립 Compose project로 정�
 | `debezium-db-provision` | `dev-pg/platform_dev` 일반 테이블·outbox source role·publication; hypertable CDC 미검증 | `cdc` |
 | `kafka-rest-proxy` | REST producer/consumer API | `messaging`, `messaging-rest` |
 | `kafbat-ui` | native OIDC/RBAC 관리 UI | `messaging`, `messaging-admin` |
-| `kafka-exporter`, `kafka-init` | 메트릭과 RF1 topic bootstrap | `messaging`, `messaging-broker` |
+| `kafka-exporter` | broker/consumer lag 메트릭 | `kafka-1`과 같은 일곱 profile |
+| `kafka-init` | RF1 topic bootstrap | `messaging`, `messaging-broker` |
 | `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init` | 독립 RF3 실습 closure | `lab-kafka` |
 
 정상 `kafka-1-data`와 `kafka-connect-data`는
-`${DEFAULT_MESSAGE_BROKER_DIR}/kafka`의 별도 volume이다. LAB 상태는
+`${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-data`와 `.../kafka/dev-kafka-connect`의 별도 bind volume이다. LAB 상태는
 `${LAB_DATA_DIR}/kafka/{1,2,3}`에 있고 별도 cluster ID, network, topic·offset을
-사용하며 host port를 게시하지 않는다. broker PLAINTEXT는 내부 network에서만
-사용한다. 정상 broker의 기존 localhost host listener는 별도로 존재한다.
+사용하며 `lab_kafka_net`만 쓰고 host port를 게시하지 않는다. broker PLAINTEXT는 내부 network에서만
+사용한다. 정상 `kafka-1`은 별도로 `127.0.0.1`에 external listener(`KAFKA_EXTERNAL_1_HOST_PORT`, 기본 `9092`), JMX(`19101`), JMX exporter(`19404`)를 게시한다.
 
 Kafbat은 자체 `auth.type: OAUTH2` 구성을 tmpfs에 렌더링하고,
 `kafbat_client_secret`을 읽고, local CA를 신뢰하며, group 기반 RBAC를
 적용한다. 이 서비스의 Traefik route는 `gateway-standard-chain@file`을
 사용한다. gateway는 전송/헤더 보호를 담당하고, 인증 자체는 Kafbat이 수행한다.
 이 native-OIDC route에는 forwarding-auth gateway chain을 붙이면 안 된다.
-Kafka Connect REST route는 이제 `sso-errors`/`sso-auth`를 추가한다. 이 API는
-provider 파일을 참조하는 connector를 생성할 수 있으므로, 익명 gateway
-접근은 credential-exfiltration 경로였다. `kafka_net` peer(Kafbat 포함)는
+Kafka Connect, Schema Registry, REST Proxy route는 `gateway-standard-chain@file`에 `sso-errors@file`/`sso-auth@file`을 더한다. Connect API는
+provider 파일을 참조하는 connector를 생성할 수 있으므로 익명 gateway
+접근을 허용하지 않는다. `kafka_net` peer(Kafbat 포함)는
 여전히 인증 없이 포트 8083에 직접 접근할 수 있다. 이 내부 경로는 기록된
 gap이다.
 
@@ -100,7 +101,7 @@ connector의 schema ID 이력을, Connect는 connector config/offset/status를
 | `schema-registry` | schema-ID/history; Kafka state에 의존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init` | 격리 KRaft RF3 실습 | 실제 quorum·topic 상태 미검증 | [LAB 선택·상태](../../../../labs/kafka-cluster/README.md) |
 
-선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### Images, configuration and resource controls
 
@@ -152,7 +153,7 @@ Connect는 시작할 때 `debezium_postgres_password` secret에서
 
 `dev-pg` 소스는 `wal_level=logical`, slot·sender·WAL 보존 한도를
 선언한다. 실제 신규 DB provision, replication role, publication, slot,
-connector 등록·snapshot·offset 재설정은 아직 실행하지 않았다. 기존 HOME
+connector 등록·snapshot·offset 재설정은 실행된 증거가 없다. 기존 HOME
 `mng-pg/app_db` 기술 객체와 이전 topic은 별도 승인 전까지 보존한다.
 
 ### License and source boundary
@@ -161,6 +162,12 @@ Apache Kafka와 Kafbat은 Apache-2.0 프로젝트다. Schema Registry, Connect,
 REST 이미지는 Confluent가 제공하며 별도의 현재 license/edition 검토가
 필요하다. Cluster Linking이나 다른 edition 전용 기능은 선언하지도 가정하지도
 않는다.
+
+### Common Checks
+
+정확한 root profile, service, health/resource 제어, writable-state 소유권,
+secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
+증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
 ### Runbook Handoff
 
@@ -186,11 +193,9 @@ artifact 및 rollback이 필요하다.
 
 ## Troubleshooting
 
-### Common Checks
-
-정확한 root profile, service, health/resource 제어, writable-state 소유권,
-secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
-증거일 뿐이며, runtime과 restore는 별개로 남는다.
+- `kafka-1` unhealthy: healthcheck는 `kafka-broker-api-versions --bootstrap-server localhost:19092`다. `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-data` 권한과 `KAFKA_CLUSTER_ID` 일치를 먼저 확인한다.
+- Connector가 secret을 읽지 못함: Connect 시작 시 `render-connect-secrets.sh`가 `/tmp/connect-secrets`를 만들었는지와 `debezium_postgres_password` mount를 확인한다.
+- `dev-pg` WAL 증가: 중단된 `hyhome_platform_slot`이 WAL을 고정할 수 있다. slot 삭제는 [POL-0036](../../policies/06-messaging-and-cdc/0036-kafka.md)의 재동기화 승인 대상이다.
 
 ## Related Documents
 

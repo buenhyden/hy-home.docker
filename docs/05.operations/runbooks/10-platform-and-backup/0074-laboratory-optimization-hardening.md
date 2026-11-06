@@ -1,10 +1,10 @@
 ---
 title: "Admin and Experiment Tools Hardening Runbook"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0074"
 parent_ids:
@@ -24,14 +24,16 @@ created: "2026-05-17"
 
 다음 중 하나일 때 사용한다.
 
-## Prerequisites
-
-### Trigger and Preconditions
-
 - `infrastructure-hardening` CI가 실패할 때
 - dozzle/redisinsight/open-notebook 접근 경계가 비정상일 때
 - dashboard direct 접근 경로가 다시 노출되었을 때
 - dozzle socket 권한 드리프트가 발생했을 때
+
+## Prerequisites
+
+### Trigger and Preconditions
+
+저장소 루트에서 작업한다. 파일 되돌림이나 runtime 재시작이 필요하면 승인자와 영향 범위를 먼저 기록한다.
 
 ## Procedure
 
@@ -42,12 +44,12 @@ created: "2026-05-17"
 ### Steps
 
 1. 정적 구성 점검
-   - `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
+   - `HYHOME_COMPOSE_PROFILES=admin,notebook bash scripts/validation/validate-docker-compose.sh`
 2. 하드닝 기준 점검
    - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 3. 증상별 복구
    - middleware/allowlist 회귀:
-     - 각 서비스의 승인된 체인을 복원한다. Dozzle native OIDC 및 Open Notebook의 공유 SSO 제외 예외를 일괄 덮어쓰지 않는다
+     - 각 서비스의 승인된 체인을 복원한다. Dozzle native OIDC 및 Open Notebook의 공유 SSO 제외 예외를 일괄 덮어쓰지 않는다. Open Notebook은 upload 경계를 위해 `large-body@file`을 유지한다
    - 네트워크 드리프트:
      - root 선언된 network context에 합류하는 service network block 복원
    - dashboard direct 노출:
@@ -61,26 +63,8 @@ created: "2026-05-17"
    - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `python3 scripts/validation/check-document-links.py --mode traceability`
-
-### 검토된 하드닝 변경 순서
-
-1. 정적 구성 점검
-   - `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
-   - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
-2. Ingress 경계 정렬
-   - 서비스별 승인된 인증 방식을 보존한다. Dozzle은 native OIDC, Open Notebook은 앱 비밀번호이며 나머지 gateway 경로는 해당 정책을 따른다.
-   - Open Notebook은 upload boundary를 위해 `large-body@file`을 추가한다.
-3. 네트워크 경계 표준화
-   - 모든 compose에 root 선언된 network context에 합류하는 service network block을 유지한다.
-4. 최소권한 적용
-   - dashboard `ports` 제거 후 `expose`만 사용한다.
-   - dozzle docker socket을 `:ro`로 전환한다.
-5. 기준선 검증 실행
-   - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
-   - `bash scripts/validation/check-template-security-baseline.sh`
-   - `python3 scripts/validation/check-document-links.py --mode traceability`
-6. 카탈로그 확장 로드맵 반영
-   - dozzle 로그 제한, redisinsight 감사 정책, open-notebook data retention/direct-port review를 tasks/operations에 반영한다.
+5. 카탈로그 확장 항목(dozzle 로그 제한, redisinsight 감사 정책, open-notebook data retention/direct-port review)은
+   [Policy](../../policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md)의 확장 게이트에 따라 Task로 넘긴다.
 
 ### 적용 범위와 검증 한계
 

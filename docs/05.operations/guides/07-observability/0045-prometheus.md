@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.5.0"
+version: "1.6.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -21,13 +21,11 @@ created: "2026-05-10"
 
 ## Overview
 
-이 가이드는 `06-observability` 계층의 Prometheus 사용 맥락과 설정 확인 방법을 설명한다. Prometheus는 `infra/06-observability/prometheus/config/prometheus.yml`의 scrape job을 기준으로 metrics를 수집하고, `config/alert_rules/`의 rule files를 평가하며, `prometheus-data` TSDB volume에 데이터를 저장한다.
+이 가이드는 `06-observability` 계층의 Prometheus 사용 맥락과 설정 확인 방법을 설명한다. Prometheus는 `PROMETHEUS_CONFIG_FILE`이 고른 config(Compose 기본값 `prometheus.dev.yml`, 같은 내용의 `prometheus.yml`)를 `/etc/prometheus/prometheus.yml`로 마운트해 그 scrape job을 기준으로 metrics를 수집하고, `config/alert_rules/`의 rule files를 평가하며, `prometheus-data` TSDB volume에 데이터를 저장한다.
 
 ## Scope
 
 ### Audience and Goal
-
-대상 독자는 운영자, SRE, 개발자, AI agent다.
 
 대상 독자는 운영자, SRE, 개발자, AI agent다.
 
@@ -37,7 +35,7 @@ created: "2026-05-10"
 
 ## Concepts
 
-Repository checkout과 `infra/06-observability/docker-compose.yml`, `infra/06-observability/prometheus/config/prometheus.yml`을 읽을 권한이 필요하다. 실행 중인 서비스를 볼 때는 `obs` profile과 `prometheus` container에 대한 읽기 전용 점검 권한이면 충분하다. Docker Secret 값은 열람하지 않고, 문서에는 secret ID와 file reference만 적는다.
+Repository checkout과 `infra/06-observability/docker-compose.yml`, `infra/06-observability/prometheus/config/` 아래 config를 읽을 권한이 필요하다. 실행 중인 서비스를 볼 때는 `obs` profile과 `prometheus` container에 대한 읽기 전용 점검 권한이면 충분하다. Docker Secret 값은 열람하지 않고, 문서에는 secret ID와 file reference만 적는다.
 
 ## Usage
 
@@ -92,7 +90,7 @@ graph TD
 
 #### Scrape Configurations
 
-`prometheus.yml`과 `prometheus.dev.yml`은 같은 37개 job을 담는다(SPEC-0193, SPEC-0225). Compose는
+`prometheus.yml`과 `prometheus.dev.yml`은 같은 job 목록을 담는다(SPEC-0193, SPEC-0225; 2026-11-06 기준 38개, 개수는 config가 소유한다). Compose는
 `PROMETHEUS_CONFIG_FILE`로 둘 중 하나를 고르며, 계약 테스트가 두 파일의 `scrape_configs`가
 같은지 확인한다.
 
@@ -153,13 +151,14 @@ SPEC-0193(2026-09-30)의 rule 기준:
   SPEC-0182 W10이 R2 무료 한도 경고 `HyhomeOffsiteRepoNearFreeTier`를 더했다(→ 66).
 - on-demand 서비스는 `up == 0`으로 알리지 않는다. 서비스가 떠 있을 때만 생기는 metric(`redis_up`,
   `pg_up`, `opensearch_cluster_status` 등)으로 판단한다.
+- 이후 rule이 추가되어 2026-11-06 기준 tracked alert rule은 84개다. 현재 개수와 목록은 rule 파일이 소유한다.
 - 모든 rule의 `runbook_url`은 해당 서비스의 runbook 파일을 가리킨다. 계약 테스트가 파일 존재를
   확인한다.
 
 #### Storage (TSDB)
 
 - Prometheus data는 `prometheus-data` volume에 저장된다.
-- 현재 compose는 explicit retention flag를 선언하지 않는다.
+- Compose에는 명시적 `--storage.tsdb.retention.*` flag가 없어 upstream 기본 보존 기간이 적용된다.
 - Recording rule로 비용이 큰 PromQL expression을 미리 계산한다.
 
 ### Integration Patterns
@@ -218,7 +217,7 @@ Keycloak application listener와 다르며, 기본값이 `9000`이라는 선언�
 ### Common Checks
 
 - `rg -n 'service: template-stateful-high|image: prom/prometheus:|container_name: prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml`
-- `rg -n '^  - job_name:' infra/06-observability/prometheus/config/prometheus.yml`
+- `rg -n '^  - job_name:' infra/06-observability/prometheus/config/prometheus.dev.yml infra/06-observability/prometheus/config/prometheus.yml`
 - `rg --files infra/06-observability/prometheus/config/alert_rules`
 - `docker exec prometheus promtool check config /etc/prometheus/prometheus.yml`
 - `docker exec prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'`
@@ -238,7 +237,6 @@ Rule glob은 container 안의 shell이 확장해야 한다. Config 검사는 참
 ## Troubleshooting
 
 - Prometheus restart 명령에서 profile과 compose file을 생략하면 다른 project context에서 실행될 수 있다. 운영 절차는 runbook의 profile 포함 명령을 따른다.
-- 현재 compose command에는 explicit `--storage.tsdb.retention.*` flag가 없다. retention 동작을 문서화할 때는 policy와 compose 근거를 함께 확인한다.
 - High-cardinality label을 추가하면 TSDB memory와 query cost가 커진다. label 추가는 policy의 cardinality review 대상이다.
 - Rule file 변경 후 `promtool`을 실행하지 않으면 reload 시점에 rule evaluation failure로 이어질 수 있다.
 - 복구 절차, WAL/TSDB 조치, rollback 판단을 guide에 직접 넣지 않는다. 해당 내용은 runbook에서 evidence와 escalation 기준으로 처리한다.

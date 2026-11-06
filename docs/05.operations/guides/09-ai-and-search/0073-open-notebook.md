@@ -65,7 +65,8 @@ Laboratory Operator와 `@buenhyden`이 OPTIONAL 노트북 워크스페이스를 
 `open_notebook`은 SurrealDB health를 기다리지만 선택적 Ollama URL에 readiness
 의존성은 없다. 앱은 `edge_net`·`ai_net`, DB는 `ai_net`에 연결된다. source의
 secret 파일 선언과 shell의 환경변수 전달은 실제 이미지의 모든 FILE 옵션 지원·암호화
-동작을 증명하지 않는다. `v1-latest-single`과 DB의 `v2`는 변경 가능한 태그다.
+동작을 증명하지 않는다. 앱 이미지는 Compose에서 tag와 digest로 고정하지만 `pull_policy: always`를 쓴다. DB는 고정된
+SurrealDB v2 binary를 [로컬 Dockerfile](../../../../infra/08-ai/open-notebook/surrealdb/Dockerfile)이 digest 없는 `debian:bookworm-slim` 위에 복사해 빌드한다.
 선택한 이미지 식별자·호환성·자격 증명 복호화 결과를 별도 승인된 검증으로 확인한다.
 자원·마운트 설정은 Compose가 소유하며 프로필 분리가 물리적 격리를 뜻하지 않는다.
 
@@ -82,6 +83,12 @@ Ollama 추론, provider credential, Notebook 저장 등록 또는 사용자 기�
 사전 상태는 거부하고 전체 provider 동기화나 기존 등록 삭제 후 재생성을 하지 않는다.
 embedding 작업은 terminal job 상태와 저장된 model association을 별도로 확인해야 하며,
 취소 응답·`/health`·SurrealDB health는 그 증거가 아니다.
+
+### Common Checks
+
+- `docker compose --profile notebook config --quiet`
+- `docker compose --profile notebook config --services`
+- `bash scripts/hardening/check-all-hardening.sh 08-ai`
 
 ### Runbook Handoff
 
@@ -100,11 +107,8 @@ embedding 작업은 terminal job 상태와 저장된 model association을 별도
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile notebook config --quiet`
-- `docker compose --profile notebook config --services`
-- `bash scripts/hardening/check-all-hardening.sh 08-ai`
+- `open_notebook`이 기동하지 않으면 `surrealdb` health를 먼저 확인한다. 앱은 DB가 healthy가 된 뒤에만 시작한다.
+- 저장된 provider key를 읽을 수 없으면 쓰기를 멈추고 [runbook](../../runbooks/09-ai-and-search/0073-open-notebook.md)의 진단 절차를 따른다. 암호화 키를 새 값으로 덮어쓰지 않는다.
 
 ## Related Documents
 

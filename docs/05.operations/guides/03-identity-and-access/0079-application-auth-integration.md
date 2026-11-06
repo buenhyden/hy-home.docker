@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.9.0"
+version: "0.10.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -112,7 +112,7 @@ sequenceDiagram
     A->>A: Apply local roles or policies
 ```
 
-Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus가 이 경로를 사용한다. Superset도 native OIDC지만
+Airflow, Dozzle, Grafana, Kafbat UI, OpenBao, Open WebUI, Gatus가 이 경로를 사용한다. Superset도 native OIDC지만
 SPEC-0262 이후 독립 LAB이라 gateway router가 없다. 이 router들은
 `gateway-standard-chain@file`을 사용하며 `sso-auth@file`을 적용하지 않는다.
 Keycloak에 이미 로그인했다면 비밀번호 입력이 생략될 수 있지만, 애플리케이션별
@@ -406,11 +406,12 @@ Keycloak resource authorization 문제다.
 ### Route Authentication Matrix
 
 Compose label과 file provider(`infra/01-gateway/traefik/dynamic/`)에 선언된 모든 Traefik HTTP router는
+(CouchDB·MongoDB·PostgreSQL HA 등은 SPEC-0262 이후 gateway router가 없는 LAB이다)
 `sso-errors@file,sso-auth@file`을 사용하거나 아래 표에 이를 대신하는 인증 방식이 명시되어 있다.
 test는 각 선언을 개별적으로 확인하므로 두 서비스가 같은 router 이름(`opensearch`)을
 선언한 경우 어느 한쪽에서라도 chain이 빠지면 실패한다. ForwardAuth는 TCP router를 보호할 수 없으므로
 TCP router는 두지 않는다.
-`RouteAuthContractTests`(`tests/validation/test_compose_baseline_gates.py`)는 router가
+`RouteAuthContractTests`(`tests/validation/test_compose_baseline_gates.py`의 `ROUTES_WITHOUT_SSO`)는 router가
 두 조건 중 어느 것도 충족하지 않거나, 표에 더 이상 존재하지 않는 router 또는 이제 SSO를
 사용하는 router가 있거나, router에 middleware가 전혀 없으면 실패한다(`grafana-static` 제외).
 
@@ -418,8 +419,9 @@ TCP router는 두지 않는다.
 | --- | --- |
 | `airflow`, `dozzle`, `gatus`, `grafana`, `kafka-ui`, `open-webui`, `openbao` | native OIDC(Dozzle은 IP allowlist도 적용) |
 | `keycloak`, `oauth2-proxy` | identity provider와 ForwardAuth 서비스 자체 |
-| `couchdb`, `haproxy-stats`, `neo4j` | application 관리자 credential |
-| `mongo-express` | mongo-express basic auth(`ME_CONFIG_BASICAUTH=true`) |
+| `hermes-dashboard` | native OIDC(host systemd dashboard, `infra/01-gateway/traefik/dynamic/hermes.yml`) |
+| `neo4j` | application 관리자 credential |
+| `storybook-mcp` | 자체 URL용 Keycloak bearer token(MCP resource server, SPEC-0219) |
 | `open-notebook` | application password와 IP allowlist |
 | `opensearch`(두 variant), `opensearch-dashboards` | OpenSearch security plugin |
 | `dashboard`(Traefik), `prometheus-api` | Traefik basic auth |
@@ -427,7 +429,8 @@ TCP router는 두지 않는다.
 | `hermes-blog-ingestion-webhook` | n8n 헤더 인증; `POST /webhook/hermes-blog-ingestion` 정확한 경로만, 출발지 `192.168.0.13/32` |
 | `blog-export-read`, `blog-export-ack`, `blog-attestation` | Blog-data Gateway 단일 범위 Bearer(`export_read`, `export_ack`, `attest`); 정확한 경로·메서드만, 출발지 `192.168.0.22/32`(Export)와 `192.168.0.13/32`(Attestation) |
 | `blog-attestation-read` | Blog-data Gateway Bearer(`attest` 범위 credential이 읽기도 겸함); `GET /v1/attestation-queue`와 `GET /v1/ingestions/{uuid}/request` 정확한 경로만, 출발지 `192.168.0.13/32` |
-| `grafana-static` | SSO 인증 예외: 정확히 `/favicon.ico`와 `/robots.txt`의 GET/HEAD만 해당하며 `gateway-standard-chain@file`은 유지한다. 다른 메서드는 더 높은 우선순위의 `grafana-static-deny` router가 `noop@internal`으로 종료해 일반 Grafana router로 우회하지 못하며 `418`을 반환한다. 기존 Grafana RBAC는 바꾸지 않는다. |
+| `grafana-static` | SSO 인증 예외: 정확히 `/favicon.ico`와 `/robots.txt`의 GET/HEAD만 해당하며 `gateway-standard-chain@file`은 유지한다. 범위와 승인은 아래 Scope and current limitations와 POL-0079가 소유한다. |
+| `grafana-static-deny` | 다른 메서드를 `noop@internal`로 종료하는 terminal router(`418`) |
 
 2026-09-24(SPEC-0180 S18)에 identity 확인 없이 application에 도달하던 route 네 개의
 허점을 막았다. `qdrant`(HOME, API key 없음)와 Kafka의 `kafka-rest`, `schema-registry` API에
@@ -466,16 +469,12 @@ SPEC-0182 Task 0003에 기록되었고 Git history에 남아 있다.
 Guide의 실제 Compose/build와 그 릴리스 공식 근거를 다시 확인해야 한다.
 
 `grafana-static`은 2026-11-02 사용자 승인에 따른 제한된 공개 예외다. 정확한
-`Host(grafana.${DEFAULT_URL})`의 `/favicon.ico` 또는 `/robots.txt` GET/HEAD만
-SSO 인증만 예외이며 `gateway-standard-chain@file`은 유지한다. 다른 메서드는 더 높은 우선순위의
-`grafana-static-deny` router가 `noop@internal`으로 종료해 일반 Grafana
-router로 우회하지 못하게 하고 `418`을 반환한다. 기존 Grafana RBAC는 바꾸지 않는다.
-
-정책 소유자는 `@buenhyden`이며, 리스크는 인증 없는 응답이 두 정적 경로에 남는
-것이다. 기존 rate limit은 사용자별 제한이 아닌 서비스 보호 설정인 초당 100회,
-burst 200을 유지한다. 2026-12-02에 재검토하고, 경로/메서드 범위 확대, 인증 체인
-변경 또는 관련 보안 권고가 있으면 즉시 종료 또는 재승인한다. 이 정적 소스 계약은
-실제 Grafana 접근·로그인·권한·backend 호출의 새 운영 검증을 의미하지 않는다.
+`Host(grafana.${DEFAULT_URL})`의 `/favicon.ico` 또는 `/robots.txt` GET/HEAD만 SSO
+인증 예외이며 `gateway-standard-chain@file`은 유지한다. 다른 메서드는 더 높은 우선순위의
+`grafana-static-deny` router가 `noop@internal`으로 종료해 `418`을 반환한다. 리스크·rate
+limit·재검토일(2026-12-02)과 종료 조건은 [POL-0079](../../policies/03-identity-and-access/0079-application-auth-integration.md#source-nonconformance-and-ownership)가
+소유한다. 이 정적 소스 계약은 실제 Grafana 접근·로그인·권한·backend 호출의 새 운영
+검증을 의미하지 않는다.
 
 ### 서비스별 정적 검증
 
@@ -503,6 +502,10 @@ docker compose exec -T airflow-apiserver airflow db check
 docker compose exec -T airflow-apiserver airflow dags list
 ```
 
+### Common Checks
+
+각 application이 문서화된 ForwardAuth 또는 native OIDC 경로를 사용하는지, client ID가 provision된 Keycloak metadata와 일치하는지, 인가되지 않은 접근이 거부되는지 확인한다. client secret이나 token을 출력하지 않는다. container health만으로 role 인가를 입증할 수 없다.
+
 ### Runbook Handoff
 
 - [Keycloak Runbook](../../runbooks/03-identity-and-access/0014-keycloak.md)
@@ -518,9 +521,7 @@ docker compose exec -T airflow-apiserver airflow dags list
 
 ## Troubleshooting
 
-### Common Checks
-
-각 application이 문서화된 ForwardAuth 또는 native OIDC 경로를 사용하는지, client ID가 provision된 Keycloak metadata와 일치하는지, 인가되지 않은 접근이 거부되는지 확인한다. client secret이나 token을 출력하지 않는다. container health만으로 role 인가를 입증할 수 없다.
+로그인 루프·callback 거부·권한 403 패턴은 위 Airflow 장애 패턴과 서비스별 Runbook을 따른다.
 
 ## Related Documents
 

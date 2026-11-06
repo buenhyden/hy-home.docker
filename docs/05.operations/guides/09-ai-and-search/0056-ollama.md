@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.6"
+version: "2.0.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -46,7 +46,7 @@ created: "2026-05-10"
 - NVIDIA GPU 및 NVIDIA Container Toolkit이 정상 설치되어야 한다.
 - root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai`, `ai-llm` 또는 `ollama` profile을 선택해야 한다.
 - `ollama` 컨테이너가 root compose project 안에서 기동 가능해야 한다.
-- 모델 영속 저장 경로 `${DEFAULT_AI_MODEL_DIR}/ollama`가 준비되어야 한다.
+- 모델 영속 저장 경로 `${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}`가 준비되어야 한다. `OLLAMA_MODEL_DIR`이 비어 있으면 HDD의 `${DEFAULT_AI_MODEL_DIR}/ollama`를 쓴다.
 - 기본 포트/엔드포인트:
   - Host API: `127.0.0.1:${OLLAMA_HOST_PORT:-11434}`; container API: `ollama:${OLLAMA_PORT:-11434}`
   - Exporter: `OLLAMA_EXPORTER_PORT`는 연결한 Compose와 공개 `.env.example`이 소유한다. 내부 지표 listener이며 모델 추론을 중계하지 않는다.
@@ -111,7 +111,7 @@ GTX 1060 6 GiB에서는 [tev1:0.8b](https://ollama.com/library/tev1)를 먼저 �
 #### Exporter Observability Check
 
 ```bash
-# exporter exposes metrics inside `ai_net`; it is not published to host.
+# exporter exposes metrics on `ai_net`/`obs_net`; it is not published to host.
 docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLAMA_EXPORTER_PORT:-8000}/metrics"'
 ```
 

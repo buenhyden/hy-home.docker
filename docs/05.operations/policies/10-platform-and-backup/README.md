@@ -1,10 +1,10 @@
 ---
 title: "플랫폼과 백업 정책"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "operations"
 ---
 
@@ -24,7 +24,7 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [04-Data Backup Policy](0021-backup-and-restore.md) | `POL-0021` | 이 policy는 현재 source configuration을 data protection, security, resource, lifecycle, 독립적으로 검증 가능한 operator control에 묶는다. 이 policy는 보존되는 모든 HOM |
+| [Backup and Restore Policy](0021-backup-and-restore.md) | `POL-0021` | 이 policy는 현재 source configuration을 data protection, security, resource, lifecycle, 독립적으로 검증 가능한 operator control에 묶는다. 이 policy는 보존되는 모든 HOM |
 | [IaC Deployment Policy](0060-iac-deployment.md) | `POL-0060` | 이 정책은 `09-platform-ops`의 OpenTofu CLI helper와 Terrakube API/UI/executor를 이용한 IaC 변경의 승인, state, secret, evidence 기준을 정의한다. |
 | [Platform Operations and Quality Optimization Hardening Operations Policy](0063-tooling-optimization-hardening.md) | `POL-0063` | 이 문서는 `09-platform-ops`·`11-quality`의 최적화/하드닝 운영 정책을 정의한다. 관리 경로 보안, 네트워크 경계, 테스트 도구 안정성, 카탈로그 확장 승인 게이트를 통제한다. |
 | [Docker Registry Operations Policy](0065-registry.md) | `POL-0065` | Registry는 `HOME` 아티팩트 저장소다. 현재 추적 중인 엔드포인트는 네이티브 TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트워크에서만 서비스할 수 있다. |
