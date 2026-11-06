@@ -387,6 +387,10 @@ def render_all(
         for path in paths
     ):
         raise ValueError("unsafe or duplicate native output path")
+    records.extend(
+        RenderRecord("claude", guide.with_name("CLAUDE.md"), _folder_shim(guide))
+        for guide in _folder_guides(source_root)
+    )
     return tuple(sorted(records, key=lambda item: item.path.as_posix()))
 
 
@@ -589,6 +593,7 @@ def _generated_marker_source(candidate: bytes) -> pathlib.PurePosixPath | None:
                 r"[.]agents/skills/[a-z][a-z0-9-]*/SKILL[.]md", source.as_posix()
             )
             or source.as_posix() in {".claude/provider.md", ".codex/provider.md"}
+            or _is_folder_guide(source)
         )
     ):
         return None
@@ -694,8 +699,8 @@ def _read_projection_prefix_at(
         os.close(descriptor)
 
 
-def _tracked_static_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
-    result = run_bounded_git(root, ["ls-files", "-z", "--", ".claude", ".codex"])
+def _git_listed(root: pathlib.Path, args: Sequence[str]) -> tuple[str, ...]:
+    result = run_bounded_git(root, ["ls-files", "-z", *args])
     if result.returncode:
         if result.returncode == 128 and not os.path.lexists(root / ".git"):
             # A supplied non-Git fixture has no tracked stale-pointer candidates.
@@ -706,7 +711,69 @@ def _tracked_static_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ..
         raise ValueError("tracked native input inventory is not NUL-delimited")
     if payload.count(b"\0") > 4096:
         raise ValueError("tracked native input inventory is oversized")
-    names = payload.decode("utf-8").split("\0")
+    return tuple(name for name in payload.decode("utf-8").split("\0") if name)
+
+
+def _is_folder_guide(path: pathlib.PurePosixPath) -> bool:
+    """A folder AGENTS.md below the root and outside the provider namespaces."""
+
+    return (
+        path.name == "AGENTS.md"
+        and len(path.parts) >= 2
+        and path.parts[0] not in {".agents", ".claude", ".codex"}
+        and not path.is_absolute()
+        and all(
+            part not in {"", ".", ".."} and re.fullmatch(r"[A-Za-z0-9._-]+", part)
+            for part in path.parts
+        )
+    )
+
+
+def _folder_guides(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
+    """Git-tracked folder guides still on disk; each gets a Claude import shim."""
+
+    return tuple(
+        sorted(
+            path
+            for path in map(
+                pathlib.PurePosixPath,
+                _git_listed(root, ["--", ":(glob)**/AGENTS.md"]),
+            )
+            if _is_folder_guide(path) and (root / path).is_file()
+        )
+    )
+
+
+def _folder_shim_candidates(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
+    """Tracked or new folder CLAUDE.md files that may be stale shims."""
+
+    names = _git_listed(
+        root,
+        ["--cached", "--others", "--exclude-standard", "--", ":(glob)**/CLAUDE.md"],
+    )
+    return tuple(
+        sorted(
+            {
+                path
+                for path in map(pathlib.PurePosixPath, names)
+                if _is_folder_guide(path.with_name("AGENTS.md"))
+            }
+        )
+    )
+
+
+def _folder_shim(guide: pathlib.PurePosixPath) -> bytes:
+    # Claude Code skips a folder AGENTS.md wherever a CLAUDE.md exists, but
+    # loads a nested CLAUDE.md on demand; its import pulls the guide in. The
+    # marker comment is stripped from context and does not block the import.
+    # The heading satisfies markdownlint MD041; the import works anywhere.
+    return (
+        f"{_marker(guide)}\n\n# {guide.parent} Folder Guide\n\n@AGENTS.md\n"
+    ).encode()
+
+
+def _tracked_static_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
+    names = _git_listed(root, ["--", ".claude", ".codex"])
     return tuple(
         sorted(
             {
@@ -771,6 +838,17 @@ def _current_static_generated_files(
                 result.append(relative)
         finally:
             os.close(descriptor)
+    return tuple(result)
+
+
+def _current_folder_shims(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
+    result: list[pathlib.PurePosixPath] = []
+    for relative in _folder_shim_candidates(root):
+        try:
+            _owned_projection_identity(root, relative)
+        except (OSError, ValueError):
+            continue  # Absent or hand-written; the renderer does not own it.
+        result.append(relative)
     return tuple(result)
 
 
@@ -1094,6 +1172,7 @@ def find_native_projection_drift(root: pathlib.Path) -> list[Finding]:
     expected_paths = {pathlib.PurePosixPath(path.as_posix()) for path in expected}
     current_generated = set(_current_managed_files(root, state))
     current_generated.update(_current_static_generated_files(root, state))
+    current_generated.update(_current_folder_shims(root))
     for path in sorted(current_generated):
         if path not in expected_paths:
             try:
@@ -1165,6 +1244,7 @@ def write_native_projection(root: pathlib.Path) -> None:
     stale: list[tuple[pathlib.PurePosixPath, ProjectionIdentity]] = []
     current_generated = set(_current_managed_files(root, state))
     current_generated.update(_current_static_generated_files(root, state))
+    current_generated.update(_current_folder_shims(root))
     for path in sorted(current_generated):
         if path in expected_paths:
             continue
@@ -1177,6 +1257,18 @@ def write_native_projection(root: pathlib.Path) -> None:
         raise ValueError(
             f"stale generated projections quarantined; manual cleanup required: {rendered}"
         )
+    for path in expected:
+        relative = pathlib.PurePosixPath(path.as_posix())
+        if relative.parts[0] in {".claude", ".codex"}:
+            continue
+        try:
+            _owned_projection_identity(root, relative)
+        except FileNotFoundError:
+            continue
+        except (OSError, ValueError) as error:
+            raise ValueError(
+                f"folder CLAUDE.md is not a generated shim: {relative}"
+            ) from error
     for path, content in expected.items():
         _atomic_write(root, pathlib.PurePosixPath(path.as_posix()), content)
     _cleanup_empty_managed_directories(root, state)

@@ -536,6 +536,7 @@
         "run-unittest",
         "tests.lib.hooks.test_tool_payload",
         "tests.lib.hooks.test_agent_memory",
+        "tests.lib.hooks.test_folder_guides",
         "-v"
       ],
       "cwd": ".",

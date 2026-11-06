@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.9.2"
+version: "3.10.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -248,6 +248,13 @@ when a summary and its owner disagree, the owner wins and the guide is
 corrected. Its rank and when an agent reads it are set by
 [bootstrap](bootstrap.md#authority-and-precedence); it grants no tool, path,
 permission or approval.
+A folder that carries `AGENTS.md` also carries a generated `CLAUDE.md` whose
+only content is the renderer marker, a heading and the import `@AGENTS.md`.
+Claude Code
+reads a folder `CLAUDE.md` but not a folder `AGENTS.md` below root `CLAUDE.md`,
+so the import is how the guide reaches it.
+`scripts/operations/provider_surface_renderer.py` writes, checks and retires
+each shim with its guide. The shim adds no rule and is never edited by hand.
 A README does not carry an
 `AI Agent Guidance` section or other agent-directed instructions; it points to
 its folder `AGENTS.md` instead.

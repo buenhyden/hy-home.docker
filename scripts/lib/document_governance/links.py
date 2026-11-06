@@ -1405,7 +1405,9 @@ def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
 
 
 _TREE_BRANCH = re.compile(r"(?:├──|└──|\|--|`--) ")
-_NAVIGATION_IGNORED_CHILDREN = frozenset({"README.md", "AGENTS.md", ".gitkeep"})
+_NAVIGATION_IGNORED_CHILDREN = frozenset(
+    {"README.md", "AGENTS.md", "CLAUDE.md", ".gitkeep"}
+)
 
 
 def _tracked_files(root: pathlib.Path) -> frozenset[str] | None:

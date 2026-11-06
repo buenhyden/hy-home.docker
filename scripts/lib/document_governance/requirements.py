@@ -774,8 +774,9 @@ def load_requirement_packages(
     for entry in sorted(stage_root.iterdir(), key=lambda item: item.name):
         if entry.name == "README.md":
             continue
-        if entry.name == "AGENTS.md":
-            # The folder guide must be a regular file, like every Stage 01 entry.
+        if entry.name in {"AGENTS.md", "CLAUDE.md"}:
+            # The folder guide and its generated Claude import shim must be
+            # regular files, like every Stage 01 entry.
             _read_regular_utf8(entry)
             continue
         if entry.suffix.lower() in _EXECUTABLE_SUFFIXES:

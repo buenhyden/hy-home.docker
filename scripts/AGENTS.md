@@ -1,10 +1,10 @@
 ---
 title: "Scripts Agent Guide"
-version: "0.2.0"
+version: "0.2.2"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 ---
 
 # Scripts Agent Guide
@@ -18,7 +18,8 @@ changes or runs them. The human guide is [README.md](README.md).
 ## Scope
 
 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`,
-`scripts/operations/`, `scripts/lib/<domain>/` and `scripts/manifest.yaml`.
+`scripts/knowledge/`, `scripts/operations/`, `scripts/security/`,
+`scripts/lib/<domain>/` and `scripts/manifest.yaml`.
 Policy text is out of scope; a script implements a canonical rule and never
 becomes its owner.
 
@@ -37,7 +38,8 @@ becomes its owner.
   An all-files run follows the
   [execution boundary](../.agents/governance/quality-standards.md#4-execution-boundary)
   and its `scripts/validation/run-agent-precommit-all-files.sh` route.
-- Generated provider surfaces under `.claude/` and `.codex/` come from
+- Generated provider surfaces under `.claude/` and `.codex/`, and each folder
+  `CLAUDE.md` import shim beside a folder `AGENTS.md`, come from
   `scripts/operations/provider_surface_renderer.py`; re-render them, never
   hand-edit them.
 - A script never prints, logs or writes a secret value.

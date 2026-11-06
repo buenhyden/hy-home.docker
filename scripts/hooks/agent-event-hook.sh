@@ -26,7 +26,7 @@ PY
 fi
 
 session_start() {
-  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" <<'PY'
+  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" <<'PY'
 import json
 import os
 import pathlib
@@ -39,6 +39,13 @@ try:
 except Exception:
     payload = {}
 source = payload.get("source", "") if isinstance(payload, dict) else ""
+try:
+    sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
+    import scripts.lib.hooks.folder_guides as folder_guides
+
+    folder_guides.reset(payload.get("session_id") if isinstance(payload, dict) else None)
+except Exception:
+    pass
 
 def run(command, fallback="unknown", timeout=3):
     try:
@@ -85,6 +92,12 @@ Context was just compacted:
 - Preserve tracked, staged, and untracked state; do not hide unrelated work.
 """
 
+try:
+    if source in folder_guides.RESTART_SOURCES:
+        message += "\n" + folder_guides.restart_message(project) + "\n"
+except Exception:
+    pass
+
 # Both providers add `additionalContext` to the model's context; `systemMessage`
 # is only shown to the user.
 print(json.dumps({"hookSpecificOutput": {
@@ -97,6 +110,7 @@ PY
 pre_tool_use() {
   if python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" 3<<<"$INPUT" <<'PY'
 import json
+import os
 import pathlib
 import re
 import sys
@@ -269,6 +283,24 @@ if denials:
         "permissionDecisionReason": "\n\n".join(rule.message for rule in denials),
     }}))
     sys.exit(0)
+
+# Deliver the nearest tracked folder AGENTS.md once per session (a subagent
+# keeps its own record). It runs only after the call is allowed, so a denied
+# call never marks a guide delivered; guidance only, so a failure never blocks.
+try:
+    import scripts.lib.hooks.folder_guides as folder_guides
+
+    # Claude loads guide text through each folder's generated CLAUDE.md import;
+    # Codex has no such import, so it receives the text here.
+    additional_context.extend(folder_guides.pending_messages(
+        project,
+        folder_guides.tool_targets(data, tuple(paths)),
+        folder_guides.session_key(data),
+        edits=tuple(paths),
+        full=os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex",
+    ))
+except Exception:
+    pass
 
 if not system_messages and not additional_context:
     sys.exit(0)

@@ -1783,7 +1783,11 @@ def _trusted_blob_snapshot(
         if (
             path != "docs/99.templates/registry.json"
             and path
-            not in {"docs/01.requirements/README.md", "docs/01.requirements/AGENTS.md"}
+            not in {
+                "docs/01.requirements/README.md",
+                "docs/01.requirements/AGENTS.md",
+                "docs/01.requirements/CLAUDE.md",
+            }
             and _trusted_requirement_path_match(path) is None
         ):
             raise RegistryError(
@@ -1805,6 +1809,7 @@ def _trusted_blob_snapshot(
     registry_oid = blobs.pop("docs/99.templates/registry.json", None)
     blobs.pop("docs/01.requirements/README.md", None)
     blobs.pop("docs/01.requirements/AGENTS.md", None)
+    blobs.pop("docs/01.requirements/CLAUDE.md", None)
     if registry_oid is None:
         raise RegistryError("trusted Registry predecessor is missing")
     registry_text = _git_read(["cat-file", "blob", registry_oid], root=root)

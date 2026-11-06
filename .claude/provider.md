@@ -1,10 +1,10 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.5.0"
+version: "1.7.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 runtime: "claude"
 ---
 
@@ -20,12 +20,21 @@ Root `CLAUDE.md` imports the shared
 [bootstrap policy](../.agents/governance/bootstrap.md) and this authored adapter.
 Load the active Spec Package and current Task when repository state changes.
 Read the selected canonical role and procedure before acting.
-Claude Code loads `CLAUDE.md` files, not `AGENTS.md`, so it does not read a
-folder `AGENTS.md` on its own. The bootstrap step that requires reading the
-nearest ancestor folder guide before changing a file is what brings it into
-context; no
-folder `CLAUDE.md` pointer is added, because it would be a second copy of the
-same route.
+Per the [Claude Code memory documentation](https://code.claude.com/docs/en/memory),
+Claude Code reads `AGENTS.md` only where no `CLAUDE.md` sits on the path (its
+default `claude-md-or-agents-md` mode), and the `instructionFiles` setting that
+makes it read both is ignored in project settings. Root `CLAUDE.md` is on every
+path here, so Claude does not read a folder `AGENTS.md` on its own. Each folder
+that carries an `AGENTS.md` therefore also carries a generated `CLAUDE.md`
+whose only content is a heading and the import `@AGENTS.md`. Claude loads a folder
+`CLAUDE.md` on demand the first time it reads or writes a file below that
+folder, and again on demand after compaction, so the guide reaches it
+natively. The shared PreToolUse dispatcher (`scripts/hooks/agent-event-hook.sh`,
+through `scripts/lib/hooks/folder_guides.py`) delivers no guide content to
+Claude: it adds a one-line reminder naming the nearest folder guide on each
+edit, and after a SessionStart `compact` or `resume` an instruction to re-read
+it. The bootstrap step that requires reading that guide applies when neither
+route runs.
 `.agents/knowledge/` and `.agents/prompts/` are canonical categories read
 directly, in the order the bootstrap policy sets. Claude has no generated
 projection of either, and their absence under `.claude/` is not a defect.
@@ -52,7 +61,10 @@ projection of either, and their absence under `.claude/` is not a defect.
   [secret boundary](../.agents/governance/approval-boundaries.md#authorization-source-and-records)
   and the [no-direct-push rule](../.agents/governance/github-governance.md#1-repository-protection-contract).
 - This `provider.md` is an authored input. `.claude/README.md` and
-  `.claude/CLAUDE.md` are generated pointers and never renderer inputs.
+  `.claude/CLAUDE.md` are generated pointers and never renderer inputs. Each
+  folder `CLAUDE.md` beside a folder `AGENTS.md` is a generated import shim
+  that `scripts/operations/provider_surface_renderer.py` writes, checks and
+  retires with its guide.
 - Provider/model selections and permission translations come only from the
   [Provider Registry](../.agents/governance/providers/registry.yaml).
 - Generated files may adapt syntax but do not define shared policy, role intent,

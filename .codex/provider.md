@@ -1,10 +1,10 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.4.0"
+version: "1.6.0"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-06"
 runtime: "codex"
 ---
 
@@ -21,10 +21,17 @@ Codex enters through root `AGENTS.md`, which explicitly instructs reading the
 Load the active Spec Package and current Task when repository state changes.
 Select a canonical role from `.agents/roles/`, read its `skill_ids`, and explicitly
 read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
-Codex documents that it merges `AGENTS.md` files from the repository root down
-to the working directory, so a folder guide joins its context when Codex works
-there. That merge has not been observed in this repository; the bootstrap step
-that requires reading the nearest ancestor folder guide applies either way.
+Codex merges `AGENTS.md` files from the repository root down to its working
+directory only, so a session started at the root does not load a folder guide
+below it. The shared PreToolUse dispatcher (`scripts/hooks/agent-event-hook.sh`,
+through `scripts/lib/hooks/folder_guides.py`) adds the full content of the
+nearest Git-tracked folder guide to the model context once per session, the
+first time `apply_patch` touches a file below it. It also adds a one-line
+reminder naming that guide on each edit, and after a SessionStart `compact`
+or `resume` an instruction to re-read it. A shell read does not trigger it.
+The folder `CLAUDE.md` import shims are Claude's route; Codex does not read
+them. The bootstrap step that requires reading that guide applies when the
+hook does not run.
 
 ## Native Controls
 

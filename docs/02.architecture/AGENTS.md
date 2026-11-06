@@ -1,6 +1,6 @@
 ---
 title: "Architecture Agent Guide"
-version: "0.2.2"
+version: "0.2.3"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
@@ -51,8 +51,7 @@ operating procedures belong to Stage 01, Stage 03 and Stage 05.
   consequences and supersession.
 - Do not record a secret value, an unobserved runtime state or an interface
   that does not exist as an architecture fact.
-- Retired numbers go into the Registry `reserved_history`; do not link a
-  retired identity.
+- Do not link a retired identity.
 - Write prose in English, per the profile `language`.
 
 ## Canonical References

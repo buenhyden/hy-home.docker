@@ -2978,7 +2978,7 @@ def load_spec_packages(
         packages: list[SpecPackage] = []
         seen_numbers: set[str] = set()
         for name in entries:
-            if name in {"README.md", "AGENTS.md"}:
+            if name in {"README.md", "AGENTS.md", "CLAUDE.md"}:
                 _, budget = _read_regular_utf8_at(
                     descriptor,
                     name,
