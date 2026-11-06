@@ -1,10 +1,10 @@
 ---
 title: "Renovate Runbook"
-version: "0.2.0"
+version: "0.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0083"
 parent_ids:
@@ -44,7 +44,7 @@ Renovate job의 정적 점검, 승인된 live run, 잘못된 변경의 복구, s
 3. remote write가 승인된 경우에만 job을 실행한다.
 
    ```bash
-   docker compose --profile dependency-update run --rm renovate
+   docker compose --profile dependency-update run --rm --no-deps renovate
    ```
 
 4. 정제된 exit status를 기록하고 생성된 remote 변경 사항을 열거한다. 각 branch/PR를 검토한다.
@@ -68,6 +68,7 @@ symlink 대신 검토된 파일을 복사해 checkout이나 branch 전환, pull�
 ```bash
 # 1. Compare, then copy the reviewed revision (approved host change only)
 diff /etc/systemd/system/hyhome-renovate.service infra/09-platform-ops/renovate/systemd/hyhome-renovate.service
+diff /etc/systemd/system/hyhome-renovate.timer infra/09-platform-ops/renovate/systemd/hyhome-renovate.timer
 sudo install -m 0644 infra/09-platform-ops/renovate/systemd/hyhome-renovate.service /etc/systemd/system/
 sudo install -m 0644 infra/09-platform-ops/renovate/systemd/hyhome-renovate.timer /etc/systemd/system/
 
@@ -120,8 +121,8 @@ Compose project/service 및 one-off label로 해당 실행을 식별하고
 ### 복구 완료 기준
 
 Renovate job이 실행 중이지 않고, config가 검증되고, remote 변경 사항이 파악되고, token
-처리 상태가 확인되면 복구가 완료된 것이다. 이 복구 단계는 2026-09-20 수정 때 문서로만
-남겼고 실행하지 않았다. remote 저장소 변경이나 token validation은 주장하지 않는다.
+처리 상태가 확인되면 복구가 완료된 것이다. 이 복구 단계는 아직 실행되지 않았으므로
+remote 저장소 변경이나 token validation은 주장하지 않는다.
 
 ## Failure and Recovery
 

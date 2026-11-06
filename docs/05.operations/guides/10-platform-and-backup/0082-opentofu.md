@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0082"
 parent_ids:
@@ -40,7 +40,7 @@ HOME과 일반 `tooling`에서는 제외된다. root project는 inline Dockerfil
 credential 마운트라도 원격 API 권한을 부여한다.
 
 이 작업에는 daemon healthcheck가 없고 `restart: "no"`이다. `template-job-low`가
-resource/security 기준선을 정의한다. 선언된 기본 네트워크의 도달 가능성을 별도로 확인한다. private `object_net`의
+resource/security 기준선을 정의한다. 네트워크를 선언하지 않으므로 Compose 기본 네트워크에 붙으며, 그 도달 가능성을 별도로 확인한다. private `object_net`의
 tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가는 별도 검토가 필요하다. 이 leaf에는 Docker secret이나 공개된 port가 없다.
 
 ## Usage
@@ -60,7 +60,7 @@ tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가�
 ### 일반적인 사용
 
 1. repository root에서 작업하며 `infra/09-platform-ops/opentofu/workspace` 아래의
-   정확한 디렉터리, backend, workspace 이름, account, 예상 리소스를 식별한다.
+   정확한 디렉터리(추적되지 않는 bind 원본이며 저장소에는 없다), backend, workspace 이름, account, 예상 리소스를 식별한다.
 2. `docker compose --profile iac config --quiet`를 실행하고
    `docker compose --profile iac config --services`로 예상한 IaC service만
    있는지 확인한다.
@@ -75,11 +75,17 @@ tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가�
 
 ### 백업과 업그레이드
 
-실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0082-opentofu.md)의 `상태 보존과 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0082-opentofu.md)의 `State 백업과 복구`와 `Lock과 업그레이드 복구` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
 ### Terraform 이관
 
 기존 Terraform workspace를 옮기기 전에 state와 lock 정보를 보호한다. 독립 Terraform Compose 서비스가 없다는 사실은 Terrakube workspace의 엔진까지 OpenTofu로 고정되었다는 뜻이 아니다. Terrakube executor는 외부 도구·엔진 목록을 참조하므로 이관 대상별 실제 엔진, provider 및 state 호환성을 확인하고, Terraform configuration과 state가 자동으로 호환된다고 가정하지 않는다. 민감한 state와 plan payload는 문서나 로그에 넣지 않는다.
+
+### Common Checks
+
+- `docker compose --profile iac config --quiet`
+- `docker compose --profile iac config --services`
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
 ### Runbook Handoff
 
@@ -94,11 +100,7 @@ state 복구, lock 진단, plan/apply 분리, upgrade에는
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile iac config --quiet`
-- `docker compose --profile iac run --rm --no-deps opentofu version`
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
+위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0082-opentofu.md)의 절차로 진단한다.
 
 ## Related Documents
 

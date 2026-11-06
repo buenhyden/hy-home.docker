@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
@@ -74,24 +74,8 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
    python3 scripts/validation/run-ci-gate.py --profile changed --explain
    ```
 
-### 검토된 하드닝 변경 순서
-
-1. 정적 구성 점검
-   - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
-   - `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
-2. Gateway/SSO 경계 정렬
-   - Terrakube 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다. SonarQube LAB에는 route를 추가하지 않는다(SPEC-0262).
-3. 네트워크 경계 표준화
-   - tooling 서비스의 선언된 network 연결과 root Compose의 network 정의를 함께 확인한다. service-local compose 파일은 root network/secret context 없이 단독 config 대상으로 취급하지 않는다.
-4. 테스트 런타임 안정화
-   - `labs/locust/docker-compose.yml`의 Locust LAB worker healthcheck를 별도 entrypoint로 확인한다.
-   - k6 leaf는 `k6` 단일 작업이며, `k6-data:/scripts:ro` volume 계약을 유지한다.
-5. 기준선 검증 실행
-   - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
-   - `bash scripts/validation/check-template-security-baseline.sh`
-   - `python3 scripts/validation/check-document-links.py --mode traceability`
-6. 카탈로그 확장 로드맵 반영
-   - 도구별 확장 항목(opentofu/terrakube/registry/sonarqube/k6/locust/renovate)을 tasks/operations에 반영한다.
+5. 도구별 카탈로그 확장 항목(opentofu/terrakube/registry/k6/renovate, LAB의 sonarqube/locust)은
+   [Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 확장 게이트에 따라 Task로 넘긴다.
 
 ## Verification
 
@@ -137,7 +121,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`), [Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`POL-0063`)
 
-현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md#terraform-이관)을 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)

@@ -1,10 +1,10 @@
 ---
 title: "Admin and Experiment Tools Hardening Operations Policy"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "POL-0074"
 parent_ids:
@@ -24,8 +24,8 @@ created: "2026-05-10"
 - `.env.example` (`ADMIN_UI_ALLOWED_CIDRS`)
 - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 
-- **Systems**: dozzle, redisinsight, open-notebook, surrealdb
-- **Environments**: local·DEV·stage 및 production-like 관리 환경
+- **Systems**: dozzle, redisinsight, open-notebook, surrealdb, mlflow, JupyterLab LAB
+- **Environments**: 단일 HOME/DEV 호스트의 관리 환경(별도 stage·production 환경은 없다)
 
 ## Rules
 
@@ -77,7 +77,7 @@ created: "2026-05-10"
 
 ## Verification
 
-- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=admin,notebook bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`

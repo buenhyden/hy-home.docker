@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Usage Guide"
-version: "1.2.6"
+version: "1.2.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-11-06"
 layer: "operations"
 artifact_id: "GDE-0065"
 parent_ids:
@@ -77,7 +77,13 @@ push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. �
 
 ### 백업과 업그레이드
 
-실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0065-registry.md)의 `계획된 저장소 유지보수` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0065-registry.md)의 `Consistent backup and restore`와 `Garbage collection and upgrade` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+
+### Common Checks
+
+- `docker compose --profile registry config --quiet`
+- `docker compose --profile registry config --services`
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
 ### Runbook Handoff
 
@@ -99,11 +105,7 @@ push/pull 실패, 스토리지 복구, 계획된 업그레이드, 별도로 승�
 
 ## Troubleshooting
 
-### Common Checks
-
-- `docker compose --profile registry config --quiet`
-- `docker compose --profile registry config --services`
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
+위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0065-registry.md)의 절차로 진단한다.
 
 ## Related Documents
 
