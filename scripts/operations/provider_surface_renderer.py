@@ -729,8 +729,16 @@ def _is_folder_guide(path: pathlib.PurePosixPath) -> bool:
     )
 
 
+def _is_regular_guide(path: pathlib.Path) -> bool:
+    # lstat, like the hook: a symlinked AGENTS.md gets no shim.
+    try:
+        return stat.S_ISREG(path.lstat().st_mode)
+    except OSError:
+        return False
+
+
 def _folder_guides(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
-    """Git-tracked folder guides still on disk; each gets a Claude import shim."""
+    """Git-tracked regular folder guides on disk; each gets a Claude import shim."""
 
     return tuple(
         sorted(
@@ -739,7 +747,7 @@ def _folder_guides(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
                 pathlib.PurePosixPath,
                 _git_listed(root, ["--", ":(glob)**/AGENTS.md"]),
             )
-            if _is_folder_guide(path) and (root / path).is_file()
+            if _is_folder_guide(path) and _is_regular_guide(root / path)
         )
     )
 
