@@ -1,8 +1,8 @@
 ---
 title: "Hermes Report Source Contract"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-11-06"
 layer: "architecture"
@@ -148,9 +148,9 @@ rejected; a receipt-set record exists beside every submission.
 - Blog-data: a per-report exclusion or selection capability for
   `backfill-reports`, and its runbook correction (server A state is stale).
 - Owner-approved operations for the schema 5 rollout, outside this change.
-- The owner approved the SPEC-0265 work on 2026-11-06 ("승인"). A new ADR
-  must enter as `proposed`, so the move to `accepted` is a follow-up change
-  after this ADR merges; an accepted ADR is replaced only by a new ADR.
+- The owner approved the SPEC-0265 work on 2026-11-06 ("승인"), and this ADR
+  moved to `accepted` after #774 merged it as `proposed`; an accepted ADR is
+  replaced only by a new ADR.
 
 ## Related Documents
 
