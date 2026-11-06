@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Architecture Description"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0011"
 parent_ids:
@@ -55,7 +55,7 @@ The former Laboratory capabilities now reside in their owning Data, Observabilit
 
 ## Structure
 
-### Components
+### Architecture
 
 ```mermaid
 flowchart LR
@@ -69,7 +69,7 @@ flowchart LR
 
 ## Runtime and Deployment
 
-### Data Flow
+### Runtime View
 
 Dozzle requests Docker log streams, RedisInsight opens operator-defined target
 connections, and Open Notebook sends approved provider requests while persisting
@@ -78,7 +78,7 @@ narrow profile must not grant another tool's target or API access.
 
 ### Deployment View
 
-The root project includes five package leaves across four tiers and seven service identities. `admin` selects Dozzle and RedisInsight; `admin-logs`/`admin-data` select each separately. `notebook` selects Open Notebook and nested SurrealDB, `surrealdb` only that DB. `mlops` and `data-science` select MLflow and its provisioner; JupyterLab left the root for a LAB entrypoint. Dozzle is a separate Observability leaf, not an entry in the aggregate Compose file. Profiles, host paths and service identities remain unchanged.
+The root project includes four package leaves across three tiers and six service identities. `admin` selects Dozzle and RedisInsight; `admin-logs`/`admin-data` select each separately. `notebook` selects Open Notebook and nested SurrealDB, `surrealdb` only that DB. `mlops` and `data-science` select MLflow and its provisioner. JupyterLab is not in the root project: it is the standalone `labs/jupyterlab` LAB, which is not promoted (SPEC-0263 `promotion.yaml` records `kind: undecided`). Dozzle is a separate Observability leaf, not an entry in the aggregate Compose file.
 
 ## Quality and Risks
 

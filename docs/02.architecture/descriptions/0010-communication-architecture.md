@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier Architecture Description"
-version: "1.2.0"
+version: "1.3.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0010"
 parent_ids:
@@ -18,8 +18,8 @@ created: "2026-03-26"
 
 ### Context and Stakeholders
 
-The mail requirements separate development message capture in `11-quality/mailpit` from the optional mail server, which since SPEC-0262 is the standalone LAB `labs/stalwart/docker-compose.yml` and joins no HOME network. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
-`mail-dev`. Stalwart is selected only by `mail-server` and requires mail-domain,
+The mail requirements separate development message capture in `11-quality/mailpit` from the optional mail server, which since SPEC-0262 is the standalone LAB `labs/stalwart/docker-compose.yml` and joins no HOME network; it is not promoted. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
+`mail-dev`. Stalwart is selected only by the LAB profile `mail-server` and requires mail-domain,
 DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 
 ## Scope
@@ -30,7 +30,7 @@ DNS, TLS, authentication, relay, abuse, and backup ownership before use.
   `/data/mailpit.db`, loopback-published SMTP/UI ports, and a Traefik UI route.
   It accepts arbitrary SMTP authentication by design and must not be internet
   exposed or described as a delivery MTA.
-- **Stalwart owns:** internal SMTP25/submission587, implicit-TLS IMAP993 and HTTP8080 listeners, a management UI, and `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`. No host port is published. Its helper reconciles the complete listener set from `config/plan.ndjson`, including relay denial. Both `edge_net` and `mail_net` peers can reach listeners bound to `[::]`; UI ForwardAuth does not secure direct mail/API access.
+- **Stalwart owns:** internal SMTP25/submission587, implicit-TLS IMAP993 and HTTP8080 listeners, a management UI, and `${LAB_DATA_DIR}/stalwart/data`. Only HTTP8080 is published, on `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_STALWART_HOST_PORT:-18093}`; the mail listeners are reachable only on the LAB network `hy-home-lab-stalwart`. It has no gateway route. Its `stalwart-config` helper reconciles the complete listener set from `config/plan.ndjson`, including relay denial.
 - **Declared versus observed:** tracked `config/plan.ndjson` supplies the domain, listeners and relay-denial intent. The actual datastore/backend state, successful plan application, users, DKIM keys and DNS provider state remain unverified. Operators must
   inspect the running configuration without exposing values before choosing a
   backend-specific export or snapshot.
@@ -44,7 +44,7 @@ DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 
 ## Structure
 
-### Components
+### Architecture
 
 Mailpit is the development SMTP/UI component backed by one SQLite database.
 Stalwart is the optional mail-protocol and administration component backed by
@@ -52,7 +52,7 @@ the operator-selected storage configuration under its persistent mount.
 
 ## Runtime and Deployment
 
-### Data Flow
+### Runtime View
 
 ```mermaid
 flowchart LR
@@ -65,8 +65,7 @@ flowchart LR
 
 ### Deployment View
 
-The root project includes both leaves. Profile choice determines activation:
-`mail-dev`/`dev`/`local` select Mailpit and `mail-server` selects Stalwart plus `stalwart-config`. The helper uses its selected `config/Dockerfile` and existing reconciliation wrapper. A
+The root project includes only the Mailpit leaf, selected by `mail-dev`, `dev` or `local`. Stalwart is started from its own LAB entrypoint, where `mail-server` selects Stalwart plus `stalwart-config`. A
 currently running optional service may remain running when another profile is
 rendered; profile rendering is not a stop operation.
 
@@ -76,7 +75,7 @@ rendered; profile rendering is not a stop operation.
 
 - **Isolation:** applications choose Mailpit explicitly for tests; no captured
   development message may be relayed externally.
-- **Security:** current internal operation needs authenticated protocol and relay-denial evidence. Public delivery additionally requires DNS/SPF/DKIM/DMARC and TLS promotion acceptance. No public listener or internet-delivery success is inferred from current source; shared-network reachability remains broader than the browser route.
+- **Security:** current internal operation needs authenticated protocol and relay-denial evidence. Public delivery additionally requires DNS/SPF/DKIM/DMARC and TLS promotion acceptance. No public listener or internet-delivery success is inferred from current source.
 - **Recoverability:** Mailpit recovery preserves SQLite with its WAL or uses the
   official dump/ingest path. Stalwart recovery captures configuration, all active
   storage backends, keys/certificates, and DNS dependencies at one consistency

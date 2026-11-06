@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.2.4"
+version: "1.2.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -25,12 +25,6 @@ regression through CI baseline verification.
 
 ## Scope
 
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded
-in this section and the following views. Only concerns confirmed in the
-existing document are covered here.
-
 The messaging layer operates the Kafka broker data plane and the management
 UI/API plane separately. The management plane applies standard middleware at
 the Traefik TLS termination point, and the data plane keeps a service
@@ -38,9 +32,6 @@ health-based dependency relationship within the `kafka_net` internal
 boundary.
 
 ### System Boundaries
-
-This section preserves the system boundary, consumption relationships,
-non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
   - Messaging management path routing/middleware contract
@@ -58,42 +49,21 @@ non-goals, and constraints already recorded in the current document.
   - Immediate multi-region/multi-cluster migration
   - App-level reprocessing code implementation
 
-### Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
-
 ## Structure
 
-### Viewpoints and Views
-
-The context, component, or deployment representation in this section serves
-as the view for that concern.
+### Architecture
 
 - Kafka:
-  - `messaging` profile: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
-  - Separate `labs/kafka-cluster/docker-compose.yml`: `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init`; no HOME state is shared
+  - `messaging` profile: `kafka-1`, `schema-registry`, `kafka-connect`, `debezium-db-provision`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
+  - Separate LAB `labs/kafka-cluster/docker-compose.yml` (not promoted): `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init`; no HOME state is shared
 - Gateway Path:
   - Client -> Traefik(`websecure`) -> middleware chain -> management endpoints
 - Internal Path:
   - service-to-service traffic over `kafka_net`
 
-### AI Agent Architecture
-
-- **Model/Provider Strategy**: N/A
-- **Tooling Boundary**: messaging changes must pass hardening/document
-  traceability verification
-- **Memory & Context Strategy**: pins Spec/Plan/Runbook/Catalog links as
-  execution context
-- **Guardrail Boundary**: prohibits floating tags, unverified middleware
-  changes, and ungrounded exposure expansion
-- **Latency / Cost Budget**: managed in the operational policy
-
 ## Runtime and Deployment
 
-### Data and Control Flows
-
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
+### Runtime View
 
 - **Key Entities / Flows**:
   - Kafka topics (event/log streams)
@@ -108,19 +78,13 @@ section and the existing infrastructure/deployment descriptions.
   - Docker Compose + `infra/common-optimizations.yml`
 - **Deployment Model**:
   - `messaging` profile: Kafka `kafka-1` single broker with the selected schema/connect/rest/admin configuration
-  - `labs/kafka-cluster/docker-compose.yml`: a separate three-broker LAB project with its own data, network and cluster ID
   - Traefik TLS termination + middleware policy
-- **Operational Evidence**:
-  - `scripts/hardening/check-all-hardening.sh 05-messaging`
-  - The `infrastructure-hardening` job in `.github/workflows/ci-quality.yml`
+- **Verification**: the registered `infrastructure-hardening` gate in
+  `.github/workflow-contract.yml` checks the tracked messaging configuration.
 
 ## Quality and Risks
 
-### Quality Scenarios
-
-The quality scenarios point to the existing configuration, failure boundary,
-and verification expectation to which the attributes below apply. Concrete
-execution evidence is owned by the related Spec and Operations documents.
+### Quality Attributes
 
 - **Performance**: burst traffic control and transient-failure absorption
   through the gateway standard chain
@@ -136,11 +100,11 @@ execution evidence is owned by the related Spec and Operations documents.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
+- **Requirement**: [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
 - **Tier Architecture Description**: [AD-0005 Messaging Architecture Description](0005-messaging-architecture.md)
-- **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
-- **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
+- **ADR**: [ADR-0020 Messaging hardening and HA expansion](../decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
+- **Guide**: [Messaging optimization hardening guide](../../05.operations/guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
+- **Policy**: [Messaging optimization hardening policy](../../05.operations/policies/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
+- **Runbook**: [Messaging optimization hardening runbook](../../05.operations/runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

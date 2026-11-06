@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Architecture Description"
-version: "1.0.4"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-06"
 layer: "architecture"
 artifact_id: "AD-0013"
 parent_ids:
@@ -15,106 +15,76 @@ created: "2026-03-27"
 
 ## Overview
 
-### Context and Stakeholders
-
-This document defines the reference architecture and quality attributes of Open WebUI. It is the baseline document that records the system boundary, responsibilities, data flow (Ollama interface, Qdrant RAG integration), and the operational view.
+Open WebUI is the HOME chat interface and retrieval-augmented generation (RAG)
+orchestrator for the AI tier. It sits between end users and the local Ollama
+inference API. Its obligations are owned by
+[REQ-0013](../../01.requirements/0013-ai-open-webui.md).
 
 ## Scope
 
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
-
-Open WebUI acts as the presentation layer and orchestration hub for AI services. it bridges the gap between raw API backends (Ollama) and end-users, while also providing the logic for document-based RAG.
-
-### System Boundaries
-
-This section preserves the system boundary, consumption relationships, non-goals, and constraints already recorded in the current document.
-
-- **Owns**:
-  - Web UI (Frontend/Backend).
-  - RAG orchestration logic.
-  - User/Chat metadata storage (SQLite).
-- **Consumes**:
-  - Model Inference APIs (`ollama`).
-  - Vector Search APIs (`qdrant`).
-  - Native Keycloak OIDC through the `home-openwebui` client and Traefik's standard gateway chain.
-- **Does Not Own**:
-  - LLM Model Weights.
-  - Persistent Vector Data.
-- **Non-goals**:
-  - Handling raw model training or fine-tuning.
-
-### Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+- **Owns:** the web UI and backend, RAG orchestration, and user, chat, upload
+  and vector-store data under `/app/backend/data`.
+- **Consumes:** the Ollama API at `http://ollama:${OLLAMA_PORT:-11434}` for
+  inference and for embeddings (`RAG_EMBEDDING_ENGINE: ollama`), and native
+  Keycloak OIDC through the `home-openwebui` client behind Traefik's standard
+  gateway chain.
+- **Does not own:** model weights (Ollama) or any Qdrant collection. Compose
+  sets no external vector database, so RAG vectors use the application's
+  built-in store in its data volume.
+- **Non-goals:** model training or fine-tuning.
 
 ## Structure
 
-### Viewpoints and Views
+### Architecture
 
-The context, component, or deployment representation in this section serves as the view for that concern.
-
-Open WebUI is deployed as a Docker container within the `ai` tier. Traefik
-terminates TLS and applies `gateway-standard-chain@file`; Open WebUI owns
-authentication through its native Keycloak OIDC client `home-openwebui`.
-Traefik does not apply the proxy `sso-auth@file` middleware to this router.
-Open WebUI communicates internally via `ai_net` with Ollama; RAG vectors stay in its local store.
-
-### AI Agent Architecture
-
-- **Model/Provider Strategy**: Local Ollama backend using the image declared in [Open WebUI Compose](../../../infra/08-ai/open-webui/docker-compose.yml).
-- **Tooling Boundary**: Access to Ollama API for model listing and RAG indexing.
-- **Memory & Context Strategy**: SQLite-based chat persistence.
-- **Guardrail Boundary**: gateway TLS/standard controls, application-native OIDC,
-  and source GPU/resource limits.
+The `open-webui` service (`infra/08-ai/open-webui/docker-compose.yml`, tier
+label `ai`) joins `edge_net` and `ai_net`. Traefik serves `chat.${DEFAULT_URL}`
+over TLS with `gateway-standard-chain@file`; it does not apply `sso-auth@file`,
+because Open WebUI authenticates users itself through OIDC. The OIDC client
+secret comes from a Docker secret or the OpenBao Agent output mounted read-only
+under `/run/openbao/open-webui`.
 
 ## Runtime and Deployment
 
-### Data and Control Flows
+### Runtime View
 
-The data and control flows include only the interactions specified in this section and the existing infrastructure/deployment descriptions.
-
-- **Key Entities / Flows**:
-  - User Input -> Open WebUI -> Ollama (Inference).
-  - Document Upload -> Open WebUI -> Ollama (Embedding) -> local vector store (Storage).
-  - Query -> Open WebUI -> local vector store (Retrieval) -> Context + Prompt -> Ollama (Generation).
-- **Storage Strategy**:
-  - `/app/backend/data` (default SQLite database, chat/user state, uploads and application data).
-- **Data Boundaries**:
-  - Vector data is strictly owned by Qdrant.
+- User input -> Open WebUI -> Ollama (generation).
+- Document upload -> Open WebUI -> Ollama (embedding) -> built-in vector store.
+- Query -> built-in vector store (retrieval) -> context and prompt -> Ollama.
 
 ### Deployment View
 
-- **Runtime / Platform**: Docker (Linux / CUDA).
-- **Deployment Model**: owner-confirmed `HOME`; Compose profiles `ai` and
-  `ai-llm`. Current source uses native Keycloak OIDC client `home-openwebui`
-  behind `gateway-standard-chain@file` and does not use
-  `sso-auth@file`.
-- **Operational Evidence**: `docker logs open-webui`, `docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health`.
-
-Open WebUI must stop writes before SQLite/data-volume capture. Restore first to
-an isolated project and coordinate the separately owned Qdrant snapshot before
-RAG verification; neither a live filesystem copy nor a WebUI-only backup proves
-complete RAG recovery.
+Open WebUI is a HOME service selected by the `ai` and `ai-llm` profiles. It
+starts after Ollama reports healthy, and its health endpoint is `/health` on
+container port `${OLLAMA_WEBUI_PORT:-8080}`. The image is the CUDA build pinned
+in Compose; Compose reserves no GPU for this service. Data persists in the
+`${DEFAULT_AI_MODEL_DIR}/open-webui` bind volume.
 
 ## Quality and Risks
 
-### Quality Scenarios
+### Quality Attributes
 
-The quality scenarios point to the existing configuration, failure boundary, and verification expectation to which the attributes below apply. Concrete execution evidence is owned by the related Spec and Operations documents.
+- **Security:** native Keycloak OIDC; Compose disables password login, signup,
+  email merge and OAuth role/group management, and the gateway supplies TLS and
+  the standard chain.
+- **Reliability:** depends on a healthy Ollama service.
+- **Recoverability:** chat state and RAG vectors share one data volume, so a
+  write-stopped capture of that volume restores both.
 
-- **Performance**: CUDA-accelerated backend for embedding generation.
-- **Security**: Native Keycloak OIDC; the gateway provides TLS and the standard chain, while password login, signup, email merge and OAuth role/group management are disabled in Compose.
-- **Reliability**: Dependency on Ollama healthchecks (service_healthy).
-- **Scalability**: Stateful interface with metadata in the `${DEFAULT_AI_MODEL_DIR}/open-webui` volume; horizontal scaling requires externalizing the database first.
-- **Observability**: Healthcheck endpoint at container port `${OLLAMA_WEBUI_PORT:-8080}`.
-- **Operability**: Containerized deployment with environment-driven config.
+### Risks
+
+- The service is stateful on local storage; horizontal scaling would first need
+  an external database and vector store.
+
+### Evolution
+
+Moving RAG vectors to Qdrant would need a Compose change and a new decision;
+none is current.
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/0013-ai-open-webui.md](../../01.requirements/0013-ai-open-webui.md)
-- **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](0008-ai-architecture.md)
-- **ADR**: [../decisions/0016-open-webui-implementation.md](../decisions/0016-open-webui-implementation.md)
+- [REQ-0013 Open WebUI requirement](../../01.requirements/0013-ai-open-webui.md)
+- [AD-0008 AI infrastructure](0008-ai-architecture.md)
+- [ADR-0016 Open WebUI implementation](../decisions/0016-open-webui-implementation.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
