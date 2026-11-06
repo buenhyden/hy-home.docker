@@ -1,10 +1,10 @@
 ---
 title: "Scripts Agent Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-06"
 ---
 
 # Scripts Agent Guide
@@ -18,7 +18,8 @@ changes or runs them. The human guide is [README.md](README.md).
 ## Scope
 
 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`,
-`scripts/operations/`, `scripts/lib/<domain>/` and `scripts/manifest.yaml`.
+`scripts/knowledge/`, `scripts/operations/`, `scripts/security/`,
+`scripts/lib/<domain>/` and `scripts/manifest.yaml`.
 Policy text is out of scope; a script implements a canonical rule and never
 becomes its owner.
 
