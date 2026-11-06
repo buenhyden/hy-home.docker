@@ -20,6 +20,13 @@ safe_directory() {
   read -r owner mode < <(stat -c '%u %a' -- "$path")
   [[ "$owner" == "$UID_NOW" ]] && (( (8#$mode & 8#022) == 0 ))
 }
+# Name the refused path with its octal mode, owner and link count.
+refuse() {
+  local reason=$1 path=$2 facts
+  facts=$(stat -c '0%a, uid %u, links %h' -- "$path" 2>/dev/null) || facts=missing
+  echo "$reason: $path (mode $facts)" >&2
+  exit 1
+}
 safe_file() {
   local path=$1 owner mode links
   [[ -f "$path" && ! -L "$path" ]] || return 1
@@ -28,7 +35,7 @@ safe_file() {
 }
 
 for path in "$HOME" "$HOME/.hermes" "$PLUGIN_PARENT"; do
-  safe_directory "$path" || { echo "unsafe plugin ancestor" >&2; exit 1; }
+  safe_directory "$path" || refuse "unsafe plugin ancestor" "$path"
 done
 
 git -C "$REPO" fetch --quiet origin
@@ -59,20 +66,20 @@ for f in "${SHARED[@]}"; do stage_file "${SRC%/hermes-plugin}/publisher/$f" "$f"
 
 [[ ! -L "$PLUGIN" ]] || { echo "plugin directory is a symlink" >&2; exit 1; }
 [[ -d "$PLUGIN" ]] || mkdir -m 0700 "$PLUGIN"
-safe_directory "$PLUGIN" || { echo "unsafe plugin directory" >&2; exit 1; }
+safe_directory "$PLUGIN" || refuse "unsafe plugin directory" "$PLUGIN"
 shopt -s nullglob dotglob
 for path in "$PLUGIN"/*; do
   name=${path##*/}
   [[ ! -L "$path" ]] || { echo "plugin contains a symlink" >&2; exit 1; }
   if [[ "$name" == __pycache__ && -d "$path" ]]; then
-    safe_directory "$path" || { echo "unsafe plugin bytecode directory" >&2; exit 1; }
+    safe_directory "$path" || refuse "unsafe plugin bytecode directory" "$path"
     for cached in "$path"/*; do
-      safe_file "$cached" || { echo "unsafe plugin bytecode file" >&2; exit 1; }
+      safe_file "$cached" || refuse "unsafe plugin bytecode file" "$cached"
     done
     continue
   fi
   case " ${FILES[*]} ${SHARED[*]} " in
-    *" $name "*) safe_file "$path" || { echo "unsafe installed plugin file" >&2; exit 1; } ;;
+    *" $name "*) safe_file "$path" || refuse "unsafe installed plugin file" "$path" ;;
     *) echo "unexpected installed plugin file" >&2; exit 1 ;;
   esac
 done
@@ -83,7 +90,7 @@ mkdir -m 0700 "$BACKUP"
 # enter a rollback release, even if the current cache happened to be safe.
 for f in "${FILES[@]}" "${SHARED[@]}"; do
   if [[ -e "$PLUGIN/$f" ]]; then
-    safe_file "$PLUGIN/$f" || { echo "unsafe backup source" >&2; exit 1; }
+    safe_file "$PLUGIN/$f" || refuse "unsafe backup source" "$PLUGIN/$f"
     install -m 0600 -- "$PLUGIN/$f" "$BACKUP/$f"
   fi
 done
@@ -91,12 +98,12 @@ for f in "${FILES[@]}" "${SHARED[@]}"; do
   temporary=$(mktemp "$PLUGIN/.new-$f.XXXXXXXX")
   cat "$STAGE/$f" > "$temporary"
   chmod 0600 "$temporary"
-  safe_file "$temporary" || { echo "unsafe staged plugin file" >&2; exit 1; }
+  safe_file "$temporary" || refuse "unsafe staged plugin file" "$temporary"
   mv -T "$temporary" "$PLUGIN/$f"
 done
 rm -rf "$PLUGIN/__pycache__"
 for f in "${FILES[@]}" "${SHARED[@]}"; do
-  safe_file "$PLUGIN/$f" || { echo "unsafe installed plugin file" >&2; exit 1; }
+  safe_file "$PLUGIN/$f" || refuse "unsafe installed plugin file" "$PLUGIN/$f"
   if [[ "$(sha256sum < "$STAGE/$f")" != "$(sha256sum < "$PLUGIN/$f")" ]]; then
     echo "$f DIFF" >&2
     exit 1

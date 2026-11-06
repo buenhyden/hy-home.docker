@@ -60,8 +60,13 @@ class CronPromptTests(unittest.TestCase):
 
     def test_prompt_names_the_fields_the_tool_sets_and_accepts(self):
         parameters = self.tools.SUBMIT_RESEARCH_REPORT_SCHEMA["parameters"]
-        self.assertIn("exactly payload and source_receipts", self.prompt)
-        self.assertEqual(set(parameters["properties"]), {"payload", "source_receipts"})
+        self.assertIn(
+            "exactly payload, source_receipts and report_markdown", self.prompt
+        )
+        self.assertEqual(
+            set(parameters["properties"]),
+            {"payload", "source_receipts", "report_markdown"},
+        )
         self.assertIn('payload has schema_version "1.0" and items', self.prompt)
         self.assertIn("exactly item_id and source_url", self.prompt)
         for trusted in (
@@ -76,6 +81,63 @@ class CronPromptTests(unittest.TestCase):
         self.assertEqual(
             self.tools._ITEM_FIELDS, set(re.findall(r"[a-z_]+", item)) - {"and"}
         )
+
+    def sentences(self):
+        return [x.strip() for x in re.split(r"(?<=[.;:])\s+", self.prompt)]
+
+    def test_prompt_finalizes_the_report_before_one_submission_and_sending(self):
+        self.assertTrue(self.prompt.startswith("DIRECT RESEARCH SUBMISSION"))
+        self.assertEqual(self.prompt.count("DIRECT RESEARCH SUBMISSION"), 1)
+        order = [
+            self.prompt.index(step)
+            for step in ("Step 1. Write the complete report", "Step 2.", "Step 3.")
+        ]
+        order.append(self.prompt.index("Step 4."))
+        self.assertEqual(order, sorted(order))
+        self.assertIn("call submit_research_report once", self.prompt)
+        self.assertIn("Do not send the email or Telegram before step 3", self.prompt)
+        for path in ("email_path", "telegram_path", "report_sha256"):
+            self.assertIn(path, self.prompt)
+        self.assertIn("never resend an email", self.prompt)
+        self.assertIn(
+            "record the email, Telegram and Gateway results separately", self.prompt
+        )
+        self.assertIn("mktemp -d", self.prompt)
+        self.assertIn("report BLOCKED instead of shortening it", self.prompt)
+        self.assertNotIn("not preserved", self.prompt)
+        self.assertNotIn("does not keep the full report", self.prompt)
+
+    def test_prompt_never_uses_the_shared_scratch_file_or_disables_the_verifier(self):
+        for sentence in self.sentences():
+            if "email_body.html" in sentence:
+                self.assertTrue(sentence.startswith("Never write"), sentence)
+            if re.search(r"\bdisabl", sentence, re.IGNORECASE):
+                self.assertTrue(sentence.startswith("Never ask to disable"), sentence)
+        self.assertNotIn(
+            "/scratch/",
+            self.prompt.replace("~/.hermes/cache/scratch/email_body.html", ""),
+        )
+
+    def test_prompt_carries_the_owner_item_rules(self):
+        # SPEC-0265 criterion 9: H, D-03, G-02 and G-03 as producer prompt text.
+        for rule in (
+            "never item-1, D6 or G7",  # H: semantic stable ids
+            "One item per article, event or change",
+            "product and version, CVE or GHSA, or final URL",  # H/G-01: dedupe
+            "an earlier day's report",
+            "a real new version, event or official correction is an update",
+            "Never delete or rewrite earlier reports, acknowledgements or item ids",
+            "A name you coined",  # H: titles
+            "never merge several release-note changes into one item",
+            "stitch separate sentences",  # H: quotes
+            "a relative time is never the source time",
+            "Keep the page's publish date apart from the fetch date",  # H, D-04
+            "list, portal, changelog index, release list",  # D-03, G-02
+            "unless the specific version or paragraph is identified",
+            "Do not add scope, field, country, industry or stack fields",  # G-03
+            "claim no automatic classification",
+        ):
+            self.assertIn(rule, self.prompt)
 
     def test_script_reads_the_plugin_job_list(self):
         script = (DEPLOY / "update-cron-prompts.sh").read_text()
@@ -184,6 +246,28 @@ class CronPromptScriptRunTests(unittest.TestCase):
             },
         )
 
+    def test_rerun_with_the_current_block_edits_nothing(self):
+        block = (DEPLOY / "research-submission-prompt.txt").read_text().rstrip("\n")
+        prompts = {i: f"Job {i} work.\n\n{block}" for i in self.JOBS}
+        result, edits = self.run_script(prompts)
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual([], edits)
+        self.assertEqual(3, result.stdout.count(" unchanged"))
+
+    def test_a_repeated_marker_stops_naming_the_job_and_count(self):
+        prompts = {i: "work.\n\nDIRECT RESEARCH SUBMISSION old" for i in self.JOBS}
+        prompts[self.JOBS[1]] = (
+            "work that mentions DIRECT RESEARCH SUBMISSION early.\n\n"
+            "DIRECT RESEARCH SUBMISSION old"
+        )
+        result, edits = self.run_script(prompts)
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual([], edits)
+        self.assertIn(
+            f"{self.JOBS[1]}: 2 DIRECT RESEARCH SUBMISSION markers, expected exactly 1",
+            result.stderr,
+        )
+
     def test_a_job_without_the_paragraph_stops_before_any_edit(self):
         prompts = {i: "work.\n\nDIRECT RESEARCH SUBMISSION old" for i in self.JOBS}
         prompts[self.JOBS[2]] = "work without the paragraph"
@@ -191,6 +275,9 @@ class CronPromptScriptRunTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertEqual([], edits)
         self.assertIn("backup:", result.stdout)
+        self.assertIn(
+            f"{self.JOBS[2]}: 0 DIRECT RESEARCH SUBMISSION markers", result.stderr
+        )
 
 
 if __name__ == "__main__":

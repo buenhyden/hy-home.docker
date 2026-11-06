@@ -2,6 +2,9 @@
 # Replace the direct-submission paragraph of every plugin-allowed Hermes cron
 # job with research-submission-prompt.txt of merged origin/main. Text before
 # the paragraph (the job's own report/email work), schedule and delivery stay.
+# Each prompt must hold the marker exactly once; an earlier mention would cut
+# the job's own text, so any other count stops the run before any edit. A job
+# whose prompt already ends with the current block is left untouched.
 # Run as the Hermes user, without sudo:  bash deploy/update-cron-prompts.sh
 # Rollback: copy the printed jobs.json backup back and restart
 # hermes-gateway.service.
@@ -33,13 +36,23 @@ for id in "${IDS[@]}"; do
 import json, sys
 jobs, job_id, mark, block, out = sys.argv[1:]
 (job,) = [j for j in json.load(open(jobs))["jobs"] if j["id"] == job_id]
-prompt = job["prompt"]
-if mark not in prompt:
-    sys.exit(f"{job_id}: no {mark} paragraph")
-open(out, "w").write(prompt[: prompt.index(mark)] + open(block).read())
+prompt, block = job["prompt"], open(block).read()
+count = prompt.count(mark)
+if count != 1 or block.count(mark) != 1:
+    sys.exit(f"{job_id}: {count} {mark} markers, expected exactly 1")
+head = prompt[: prompt.index(mark)]
+new = (head + block).rstrip("\n")  # what "$(cat)" below passes to hermes
+if not new.startswith(head) or new.count(mark) != 1:
+    sys.exit(f"{job_id}: job text before {mark} would change")
+# An empty stage file marks an unchanged job: rerunning the script is a no-op.
+open(out, "w").write("" if new == prompt else new)
 PY
 done
 for id in "${IDS[@]}"; do
+  if [[ ! -s "$STAGE/$id" ]]; then
+    echo "$id unchanged"
+    continue
+  fi
   hermes cron edit "$id" --prompt "$(cat "$STAGE/$id")" >/dev/null
   echo "$id updated"
 done
