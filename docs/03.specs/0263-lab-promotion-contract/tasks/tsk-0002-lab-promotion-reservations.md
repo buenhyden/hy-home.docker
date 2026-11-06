@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -271,6 +271,8 @@ Status (2026-11-06): the owner asked to move this Task forward, so it is
 readiness refuses on resources (E9, E21, E24, E27), and `lab.py check`
 (E10, E30) sums HOME reservations against the LAB budget of 4 CPUs / 8192
 MiB, which no LAB can meet now; 10 / 27924 would pass valkey-cluster.
+The owner chose (2026-11-06) the host budget, 10 CPUs / 27924 MiB, for
+`LAB_HOST_BUDGET_*` and keeps the postgresql-ha refusal pending.
 
 Owner decisions on the review findings and the resource `FAIL` (2026-11-06):
 

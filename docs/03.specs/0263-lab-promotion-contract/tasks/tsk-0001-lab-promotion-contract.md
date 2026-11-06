@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Contract Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -78,6 +78,16 @@ and 4 are accepted. These stay pending, each on a real result:
   from HOME.
 - 7: example renders (E39) leave required inputs empty by design, and the
   local full CI gate (E47) needs Python 3.14.8 with memfd sealing.
+
+Owner decisions on 2026-11-06, following the recommendations:
+
+- `labs/.env.example` keeps its required inputs empty, so operators fill in
+  approved endpoints themselves; E39 stays unresolved by design.
+- postgresql-ha stays pending: no LAB is promoted, and its readiness refusal
+  is the check working. Criteria 5 and 8 are not closed another way.
+- The LAB budget is the host budget (10 CPUs / 27924 MiB), because
+  `lab.py check` sums running HOME reservations; the owner sets it in
+  `labs/.env`.
 
 ### Decisions
 
@@ -457,9 +467,9 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | 2 | accepted | E50 | owner request 2026-11-05; PASS, no unresolved required row | @buenhyden |
 | 3 | pending | E3, E5, E7, E8, E10, E36, E60, E61, E62 | open: E6, E12, E58, E68 need the supabase seed files | @buenhyden |
 | 4 | accepted | E28, E29, E30, E31, E32, E33, E37, E67 | owner request 2026-11-05; PASS, E27 resolved by E67 | @buenhyden |
-| 5 | pending | E13, E15, E18, E19, E20, E22, E24, E26, E52, E63, E64, E65, E66 | open: E25, E54 (postgresql-ha resources FAIL) | @buenhyden |
+| 5 | pending | E13, E15, E18, E19, E20, E22, E24, E26, E52, E63, E64, E65, E66 | open: E25, E54 (postgresql-ha resources FAIL); owner keeps it pending, 2026-11-06 | @buenhyden |
 | 6 | pending | E29, E30, E31, E32, E33, E34, E37 | open: E35 needs `LAB_KAFKA_CLUSTER_ID` | @buenhyden |
-| 7 | pending | E1, E38, E40, E42, E43, E44, E45, E46, E55, E56, E57, E59 | open: E39 (example renders), E47 (local CI gate, Python 3.14.8) | @buenhyden |
+| 7 | pending | E1, E38, E40, E42, E43, E44, E45, E46, E55, E56, E57, E59 | open: E39 (example inputs empty by owner decision), E47 (local CI gate, Python 3.14.8) | @buenhyden |
 
 ## Review and Completion
 
