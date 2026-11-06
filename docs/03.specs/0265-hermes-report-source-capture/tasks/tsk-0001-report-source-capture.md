@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "specs"
 artifact_id: "SPEC-0265-TSK-0001"
 parent_ids:
@@ -19,8 +19,8 @@ created: "2026-11-06"
 ### Objective
 
 Record the execution and evidence of work units W1 to W9 of the Plan. W1 to
-W4 and W6 are implemented in the repository (plugin 0.4.0); W5 is not built; no
-runtime operation (W7 to W9) has run.
+W6 are implemented in the repository (plugin 0.4.0); no runtime operation (W7
+to W9) has run.
 
 ## Inputs and Authorization
 
@@ -126,9 +126,8 @@ before the controller's commit:
   leaves a job already on the current block unchanged. `update-hermes-plugin.sh` refusals name the path, octal mode, uid
   and link count. The umask-dependent fixtures (seven update-script tests and
   the address policy test) set their modes explicitly.
-- W5 (not done): the workload has no Pushgateway push path. The unused
-  `metric_lines` of the first round was deleted in fix round 1; W5 brings
-  metrics together with their push path, Alertmanager rule and Grafana panel.
+- W5: done in the W5 round below. The unused `metric_lines` of the first round
+  was deleted in fix round 1.
 - W6: the workload README states the new `source_text` meaning, the report
   store, the trust boundaries and the rollback order.
 
@@ -200,7 +199,65 @@ returns the paths of the report this execution stored first, and the prompt tell
 again for that run, so no second, self-rendered email follows. The immutable
 manifest no longer records a Gateway outcome; the result carries it.
 
+### Metrics collection approval (criterion 10)
+
+On 2026-11-06, asked how the metrics are collected, the owner chose "textfile
+collector (recommended)": the plugin atomically replaces
+`~/backups/metrics/hermes_research.prom`, which node-exporter's textfile
+collector reads (`infra/06-observability/docker-compose.yml` binds
+`${BACKUP_STATE_REPO_DIR}/metrics` to `/textfile`, `create_host_path: false`,
+beside the SPEC-0192 `hyhome_backup*.prom` files). Pushgateway is not used: it
+has no host port and only a protected Traefik route. The Spec (0.2.0) changes
+its In Scope bullet and criterion 10 from the Pushgateway to the textfile
+collector with the same label rule, and "report size bucket" to the last
+report size in bytes (a numeric gauge, no label). That answer approves the
+amendment, so the Spec stays `approved`.
+
+### W5 metrics
+
+On the worktree of `800ebf788`, before the controller's commit:
+
+- `handle_submit_report` records metrics after every outcome through
+  `_record_metrics`, which swallows any exception, so the tool result is the
+  same with or without metrics. The job kind comes from the cron context
+  (`_ALLOWED_JOBS`); without a cron run nothing is recorded.
+- State lives in `~/.hermes/data/research-metrics/state.json` through
+  `PrivateRecords` (0700 directory, 0600 file, per-key lock), so values
+  survive across runs and concurrent jobs serialize.
+- If `~/backups/metrics` (module constant `METRICS_DIR`, patched in tests) is
+  not a directory, the textfile is skipped and the directory is not created.
+  Otherwise `tempfile.mkstemp` in that directory, write, `fchmod` 0644, fsync,
+  `os.replace` to `hermes_research.prom`.
+- Gauges per `job_kind`: `hermes_research_last_outcome_timestamp_seconds`
+  by `outcome` (`submitted`, `stored_no_items`, `gateway_error`, `blocked`,
+  `conflict`, `store_failed`), `hermes_research_last_success_timestamp_seconds`
+  (`submitted` or `stored_no_items`; 0 if none, emitted for all three kinds),
+  `hermes_research_last_report_bytes`; counter
+  `hermes_research_blocked_total` by `blocked_reason` (the BLOCKED codes plus
+  `other`). The text is rendered by iterating the enums, so no other label
+  value can appear.
+- Alerts in `alert_rules.local.infra.yml` group `hermes_research_alerts`:
+  `HermesResearchNoSuccess` (`time() - last_success > 26h`, for 30m) and
+  `HermesResearchBlocked` (`blocked` or `store_failed` newer than the last
+  success, for 5m), both `severity: warning`, `domain: apps`, runbook RUN-0053;
+  the existing default Slack route takes them, no new receiver.
+- Dashboard `Applications/hermes-research` (`hyhome-hermes-research`), listed
+  in the Grafana README coverage and source tables.
+- `tests/e2e_collect_harness.py` points both metrics paths into its work
+  directory.
+
 ### Design deviations
+
+- Outcome mapping: `report_store_unavailable` and `record_unavailable` are
+  `store_failed`; `report_conflict`, `idempotency_conflict` and
+  `source_set_conflict` are `conflict`; any other BLOCKED result is `blocked`;
+  any other failure is `gateway_error`. A BLOCKED result also counts under
+  its `blocked_reason`, so `report_store_unavailable` appears in both.
+- A day without items (`stored_no_items`) counts as a success, so
+  `HermesResearchNoSuccess` does not fire on such days.
+- The metrics follow the Hermes account's home: a Hermes run under another
+  account has no `~/backups/metrics` and writes no textfile.
+- Plugin version is 0.4.1: 0.4.0 was installed on server A at 2026-11-06 23:41 KST, so the metrics change ships as its own release.
 
 - Spec Normal Behavior 6 puts the email and Telegram steps before submission;
   they now follow `submit_research_report`, because the plugin renders them
@@ -249,7 +306,8 @@ obtained). Controller recommendations, not owner answers:
 | E2 | 3 | W2 | same suite: `test_source_ref_digest_is_the_private_receipt_set_record`, `test_day_without_items_stores_and_renders_but_sends_nothing` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | 436 tests, OK | required | - |
 | E3 | 5 | W3 | same suite: `test_gateway_email_and_telegram_share_one_stored_digest`, `test_replay_returns_stored_outputs_without_rerendering`, `test_renderers_escape_and_flatten_markdown`, `test_pathological_lines_render_in_linear_time` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | 436 tests, OK | required | - |
 | E4 | 7, 8, 9 | W4 | same suite: `test_deploy_scripts.py` prompt, marker-count, `email_body.html` guard and rerun tests; `test_plugin_bundle.py` message tests; `bash -n` and `shellcheck` on both deploy scripts | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | 436 tests, OK; shellcheck clean; live prompts verified at W9 | required | - |
-| E5 | 10 | W5 | Pushgateway push, low-cardinality label test, Alertmanager rule and Grafana panel lint | not built; `metric_lines` removed in fix round 1 | NOT_RUN | - | required | - |
+| E5 | 10 | W5 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`ResearchMetricsTests`: every outcome, persistence across runs, atomic 0644 replace, missing directory skipped, failure isolation, label enums with no URL/UUID/hex, promtool `test rules` on `tests/fixtures/hermes-research-alerts.test.yml` with the cached `prom/prometheus` image under `--network none`); new tests failed on `800ebf788` (`METRICS_DIR` missing); a mutated `HermesResearchBlocked` comparison fails the promtool cases; `promtool check rules`; `tests.validation.test_compose_baseline_gates`, `test_lab_isolation`, `test_quality_observability`, `test_p03_hermes_gate`, `test_p11_hermes_gate`; `check-p03-hermes.py`, `check-p11-hermes.py`, `e2e-cache-contract.sh`, script manifest, workflow contract, ruff; `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment`, `check-document-corpus-lifecycle.py` | W5 working tree on `800ebf788` | PASS | 445 tests OK under both umasks; promtool 10 rules, cases pass; repo suites 142 (31 skipped) and 53 OK; gates PASS; ruff clean; metadata 0 violations, links 898 documents 0 failures, lifecycle 0 violations | required | - |
+| E11 | 10 | W5 | live node-exporter scrape of `hermes_research.prom`, alert firing and dashboard rendering | runtime observation after the W9 install | NOT_RUN | - | required | - |
 | E6 | 11 | W6 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`; `python3 scripts/validation/check-document-links.py --mode alignment`; `python3 scripts/validation/check-document-corpus-lifecycle.py` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | metadata: 0 violations; links: 898 documents, 0 failures; lifecycle: 0 violations | required | - |
 | E7 | 12 | W7 | schema-4 backup, restore test on a copy, cutover | owner approval pending | NOT_RUN | - | required | - |
 | E8 | 13 | W8 | `backfill-reports` dry run shows the 16 reports excluded; apply | Blog-data capability and owner approval pending | NOT_RUN | - | required | - |
@@ -269,7 +327,7 @@ obtained). Controller recommendations, not owner answers:
 | 7 | pending | E4 | owner acceptance | @buenhyden |
 | 8 | pending | E4 | owner acceptance | @buenhyden |
 | 9 | pending | E4 | owner acceptance | @buenhyden |
-| 10 | pending | E5 | owner acceptance | @buenhyden |
+| 10 | pending | E5, E11 | owner acceptance | @buenhyden |
 | 11 | pending | E6 | owner acceptance | @buenhyden |
 | 12 | pending | E7, E9 | owner acceptance | @buenhyden |
 | 13 | pending | E8 | owner acceptance | @buenhyden |
@@ -277,9 +335,9 @@ obtained). Controller recommendations, not owner answers:
 
 ## Review and Completion
 
-Open. W1 to W4 and W6 have passing repository evidence; W5 is not built
-(E5 NOT_RUN); W7 to W9 are operations and stay NOT_RUN until the owner's
-approved run and direct evidence.
+Open. W1 to W6 have passing repository evidence; the live metrics observation
+(E11) and W7 to W9 are operations and stay NOT_RUN until the owner's approved
+run and direct evidence.
 
 ## Related Documents
 
