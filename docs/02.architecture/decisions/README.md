@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.14"
+version: "1.7.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -35,19 +35,21 @@ docs/02.architecture/decisions/
 ├── 0034-canonical-knowledge-and-prompt-surfaces.md
 ├── 0037-package-disposition-wait-and-task-cancellation.md
 ├── 0038-selective-native-oidc-for-native-auth-apps.md
-├── 0039-analytics-engines-after-lakehouse-convergence.md
-├── 0040-data-hardening-gate-and-staged-expansion.md
-├── 0041-offsite-backup-target.md
 ├── 0042-openbao-unseal-method.md
-├── 0043-operations-role-layout.md
 ├── 0044-readme-navigation-and-document-language.md
-├── 0045-data-storage-and-analytics-tier-boundary.md
-├── 0046-capability-tiers-and-quality-boundary.md
 ├── 0047-dev-timescale-influx-retirement-and-load-tools.md
 ├── 0048-authority-parents-and-criterion-acceptance.md
 ├── 0049-shared-agent-memory-store.md
 ├── 0050-openbao-as-secrets-manager.md
 ├── 0051-summarize-and-delete-retirement.md
+├── 0052-kafka-only-messaging-broker.md
+├── 0053-observability-storage-on-seaweedfs.md
+├── 0054-mailpit-home-stalwart-lab.md
+├── 0055-segmented-per-flow-networks.md
+├── 0056-offsite-backup-target-and-size-cap.md
+├── 0057-operations-role-and-domain-folders.md
+├── 0058-home-tiers-versus-labs.md
+├── 0059-native-oidc-open-webui-and-airflow.md
 └── README.md
 ```
 
@@ -55,11 +57,16 @@ docs/02.architecture/decisions/
 
 - `ADR-0001`부터 `ADR-0028`: 기본 tier와 service selection, hardening, HA, network,
   readiness evidence decisions. 위 Structure의 파일 목록이 현재 남은 번호이다.
-- 삭제된 번호 `ADR-0003`, `ADR-0011`~`ADR-0015`, `ADR-0018`, `ADR-0019`, `ADR-0027`,
-  `ADR-0029`~`ADR-0031`, `ADR-0033`, `ADR-0035`, `ADR-0036`은 Registry
-  `reserved_history`에 있다. 계보: ADR-0039가 ADR-0015를, ADR-0040이 ADR-0019를,
-  ADR-0050이 ADR-0003과 ADR-0018을, ADR-0032가 ADR-0029를, ADR-0037이 ADR-0036을
-  대체했다. 본문은 버전 이력에 있다.
+- 삭제된 번호 `ADR-0003`, `ADR-0005`, `ADR-0006`, `ADR-0009`~`ADR-0016`,
+  `ADR-0018`~`ADR-0020`, `ADR-0022`~`ADR-0027`, `ADR-0029`~`ADR-0031`, `ADR-0033`,
+  `ADR-0035`, `ADR-0036`, `ADR-0039`~`ADR-0041`, `ADR-0043`, `ADR-0045`, `ADR-0046`은
+  Registry `reserved_history`에 있다. 계보: ADR-0050이 ADR-0003과 ADR-0018을,
+  ADR-0032가 ADR-0029를, ADR-0037이 ADR-0036을 대체했다. 2026-11-06 소유자 결정으로
+  ADR-0052가 ADR-0005·ADR-0020을, ADR-0053이 ADR-0006을, ADR-0054가 ADR-0010을,
+  ADR-0055가 ADR-0026을, ADR-0056이 ADR-0041을, ADR-0057이 ADR-0043을,
+  ADR-0058이 ADR-0009·ADR-0024·ADR-0025·ADR-0039·ADR-0040·ADR-0045·ADR-0046(앞서
+  ADR-0039·ADR-0040이 대체한 ADR-0015·ADR-0019 포함)을, ADR-0059가 ADR-0016·ADR-0022·
+  ADR-0023을 대체했다. 본문은 버전 이력에 있다.
 - [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
   local-isolated readiness evidence 전략을 채택한 accepted decision.
 - [`ADR-0032`](./0032-canonical-agent-governance-home.md):
@@ -78,28 +85,12 @@ docs/02.architecture/decisions/
   Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native
   OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는
   accepted decision.
-- [`ADR-0039`](./0039-analytics-engines-after-lakehouse-convergence.md):
-  OpenSearch를 유지하고 스트림 처리는 Flink, OLAP은 Iceberg 위의 Trino가 맡는
-  accepted decision. ADR-0015를 supersede하며, 시계열 항목은 ADR-0047이 대체한다.
-- [`ADR-0040`](./0040-data-hardening-gate-and-staged-expansion.md):
-  04-data 하드닝 gate와 단계적 확장을 현재 서비스 기준으로 다시 적은 accepted
-  decision. ADR-0019를 supersede한다.
-- [`ADR-0041`](./0041-offsite-backup-target.md):
-  같은 host에만 있는 Restic과 pgBackRest 저장소의 offsite 대상으로 Cloudflare R2를
-  고른 accepted decision(SPEC-0182 W10).
 - [`ADR-0042`](./0042-openbao-unseal-method.md):
   auto-unseal을 연기하고 수동 Shamir unseal을 유지하는 accepted decision.
   owner와 재검토 trigger를 담는다(SPEC-0182 W10).
-- [`ADR-0043`](./0043-operations-role-layout.md):
-  Stage 05를 domain catalog에서 역할 우선(`guides/`, `policies/`, `runbooks/`,
-  `incidents/`) 구조로 바꾸는 accepted decision(SPEC-0183).
 - [`ADR-0044`](./0044-readme-navigation-and-document-language.md):
   README navigation과 문서 언어를 워크스페이스 전체에서 하나의 강제 계약으로
   통합하는 accepted decision(SPEC-0184).
-- [`ADR-0045`](./0045-data-storage-and-analytics-tier-boundary.md):
-  Data 저장소와 Analytics 처리 패키지의 경계를 정한 accepted decision(SPEC-0197).
-- [`ADR-0046`](./0046-capability-tiers-and-quality-boundary.md):
-  Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 accepted decision(SPEC-0197).
 - [`ADR-0047`](./0047-dev-timescale-influx-retirement-and-load-tools.md):
   DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 accepted decision(SPEC-0212, SPEC-0213).
 - [`ADR-0048`](./0048-authority-parents-and-criterion-acceptance.md):
@@ -119,6 +110,22 @@ docs/02.architecture/decisions/
   Registry `reserved_history`에 두는 accepted decision. 소유자가 2026-11-03에 채택을 결정했고
   SPEC-0249 병합 직후 accepted가 되었다. ADR-0037 결정 4~10과 결정 1의
   마지막 문장을 대체한다.
+- [`ADR-0052`](./0052-kafka-only-messaging-broker.md):
+  KRaft 모드 Kafka를 유일한 messaging broker로 두고 RabbitMQ를 철회하는 proposed decision.
+- [`ADR-0053`](./0053-observability-storage-on-seaweedfs.md):
+  LGTM stack과 Alloy를 유지하고 Loki·Tempo object store를 SeaweedFS S3로 두는 proposed decision.
+- [`ADR-0054`](./0054-mailpit-home-stalwart-lab.md):
+  HOME SMTP trap은 Mailpit, Stalwart는 미승격 LAB으로 두는 proposed decision.
+- [`ADR-0055`](./0055-segmented-per-flow-networks.md):
+  `10.250.0.0/16` 안의 흐름별 `/24` 분리 network와 필요한 곳에만 고정 IP를 두는 proposed decision.
+- [`ADR-0056`](./0056-offsite-backup-target-and-size-cap.md):
+  Cloudflare R2 offsite 사본과 10 GB 상한 아래 9 GB upload 거부를 정한 proposed decision.
+- [`ADR-0057`](./0057-operations-role-and-domain-folders.md):
+  Stage 05 문서를 `<role>/<NN-domain>/####-<slug>.md`에 두고 domain 폴더마다 README를 두는 proposed decision.
+- [`ADR-0058`](./0058-home-tiers-versus-labs.md):
+  root include를 HOME tier 구성원으로, `labs/`를 LAB으로 나누고 tier별 소유·하드닝 gate를 정한 proposed decision.
+- [`ADR-0059`](./0059-native-oidc-open-webui-and-airflow.md):
+  Open WebUI와 Airflow UI를 ForwardAuth 없이 native OIDC로 두고 workflow·AI 하드닝을 잇는 proposed decision.
 
 ## Usage
 
