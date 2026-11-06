@@ -4874,8 +4874,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 263,
-      "next_number": 264,
+      "high_water": 264,
+      "next_number": 265,
       "reserved_history": [
         1,
         2,
