@@ -108,6 +108,15 @@ class CronPromptTests(unittest.TestCase):
         self.assertIn("If that is still BLOCKED", fallback)
         self.assertIn("items [] and source_receipts []", self.prompt)
         self.assertIn("only the Gateway submission is skipped", self.prompt)
+        self.assertIn(
+            "One exception: if a result is ok false with error source_quality, "
+            "its failed_items name every item the pages do not back; remove exactly "
+            "those items and their receipts, leave every other item and receipt "
+            "unchanged, and call submit_research_report once more with the same "
+            "report_markdown. Send the email and Telegram only after that call, and "
+            "never call submit_research_report again after it.",
+            self.prompt,
+        )
         self.assertIn("exactly the text of telegram_path", self.prompt)
         self.assertIn("call submit_research_report once more", self.prompt)
         self.assertNotIn("do not call submit", self.prompt)
@@ -115,7 +124,7 @@ class CronPromptTests(unittest.TestCase):
 
     def test_prompt_sends_the_stored_report_on_a_conflict(self):
         self.assertIn(
-            "Whenever a result carries report paths, including ok false with "
+            "Otherwise, whenever a result carries report paths, including ok false with "
             "report_conflict, send those stored files unchanged and never submit "
             "again for this run.",
             self.prompt,

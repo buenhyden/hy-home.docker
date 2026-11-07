@@ -131,6 +131,30 @@ class SourceCollectionTests(unittest.TestCase):
         )
         self.assertEqual([row["item_id"] for row in rows], ["item-2", "item-1"])
 
+    def test_quality_failures_name_every_failing_item(self):
+        receipts = [
+            self.collect(item=name, url=f"https://example.org/{name}")[0]["receipt_id"]
+            for name in ("item-1", "item-2", "item-3")
+        ]
+        bad = {**item("item-1"), "title": "Example ships version 9.9"}
+        worse = {**item("item-3"), "source_quotes": ["A sentence the page never says."]}
+        with self.assertRaises(source_collection.SourceQuality) as caught:
+            source_collection.resolve(
+                self.root, JOB, RUN, SCHEDULED, [bad, item("item-2"), worse], receipts
+            )
+        self.assertEqual(str(caught.exception), "source_quality")
+        self.assertEqual(
+            caught.exception.failures,
+            [
+                {"item_id": "item-1", "codes": ["number_not_found"]},
+                {"item_id": "item-3", "codes": ["quote_not_found"]},
+            ],
+        )
+        rows = source_collection.resolve(
+            self.root, JOB, RUN, SCHEDULED, [item("item-2")], receipts[1:2]
+        )
+        self.assertEqual([row["item_id"] for row in rows], ["item-2"])
+
     def test_tampered_source_bytes_are_rejected(self):
         receipt, _ = self.collect()
         path = next(self.root.glob("*.json"))

@@ -898,13 +898,16 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
             webhook_transport.MAX_REQUEST_BYTES, GATEWAY_MAX_REQUEST_BYTES
         ):
             return _blocked("request_too_large")
+    except collection.SourceQuality as error:
+        # Raised before any source set or outbox record exists, so the agent may
+        # drop these items and call once more. Item ids are the model's own input.
+        return {"ok": False, "error": "source_quality", "failed_items": error.failures}
     except Exception as error:
         allowed = {
             "source_receipts_required",
             "source_identity",
             "source_missing",
             "source_mismatch",
-            "source_quality",
             "source_time",
         }
         code = (
@@ -1205,7 +1208,8 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
         "product, company, version, number and date in title or body must appear on the "
         "page. source_url is the article page itself; source_quotes are 1-3 sentences "
         "copied verbatim from it. If you cannot read the page, leave the item out "
-        "rather than guess. An error names the field to fix."
+        "rather than guess. An error names the field to fix. A source_quality error lists "
+        "failed_items: drop exactly those items and call once more with the same report."
     ),
     "parameters": {
         "type": "object",

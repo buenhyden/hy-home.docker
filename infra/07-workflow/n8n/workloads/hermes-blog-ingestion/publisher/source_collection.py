@@ -15,6 +15,14 @@ MAX_RUN_ITEMS = 100
 MAX_ITEM_FETCH_ATTEMPTS = 3
 
 
+class SourceQuality(ValueError):
+    """Every item whose claims its page does not back, as item_id/codes dicts."""
+
+    def __init__(self, failures):
+        super().__init__("source_quality")
+        self.failures = failures
+
+
 def _time(value):
     if not isinstance(value, str):
         raise ValueError("invalid_time")
@@ -252,7 +260,7 @@ def resolve(root, job, run, scheduled, items, receipt_ids):
     ):
         raise ValueError("source_receipts_required")
     store = PrivateRecords(root)
-    rows, seen = [], set()
+    rows, seen, failures = [], set(), []
     try:
         with store.lock(_index_name(job, run)):
             index = _index(store, job, run, scheduled)
@@ -282,8 +290,11 @@ def resolve(root, job, run, scheduled, items, receipt_ids):
                 text = source_check.page_text(result)
                 if len(text.encode("utf-8")) > MAX_TEXT_BYTES:
                     raise ValueError("source_too_large")
-                if source_check.check_item(item, text):
-                    raise ValueError("source_quality")
+                codes = source_check.check_item(item, text)
+                if codes:
+                    # Keep going, so one call names every failing item.
+                    failures.append({"item_id": item_id, "codes": codes})
+                    continue
                 rows.append(
                     {
                         "item_id": item_id,
@@ -294,6 +305,8 @@ def resolve(root, job, run, scheduled, items, receipt_ids):
                         "text": text,
                     }
                 )
+        if failures:
+            raise SourceQuality(failures)
         return rows
     finally:
         store.close()
