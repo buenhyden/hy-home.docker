@@ -64,6 +64,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0265 | [Hermes 보고서 원문 계약](./0265-hermes-report-source-capture/) | Hermes가 Gateway로 보내는 `source_text`를 확정된 전체 일일 보고서 원문으로 바꾸고, 이메일·Telegram·Gateway가 같은 저장 바이트에서 나오게 하며, schema 5 전환과 backfill 제외를 운영 작업으로 분리함 |
 | SPEC-0266 | [SSO 전용 backend ingress](./0266-sso-only-backend-ingress/) | `sso-auth`만으로 보호되는 Traefik backend가 공유 `edge_net`의 다른 컨테이너에서 SSO 없이 직접 닿지 않도록 backend마다 Traefik 전용 내부 ingress 망을 두고, 기존 흐름은 이름 있는 흐름 망으로 옮김 |
 | SPEC-0267 | [보조 listener 강화](./0267-secondary-listener-hardening/) | 자체 인증이 없는 metrics·관리·broker listener 6개를 소비자 전용 주소에만 묶고, Grafana metrics 인증을 더하고, Pyroscope metastore와 ComfyUI 상태를 선언된 volume에 두며, 남는 노출은 수용 위험으로 기록함 |
+| SPEC-0268 | [ComfyUI 필요 시 외부 연결](./0268-comfyui-egress-on-demand/) | ComfyUI의 외부 연결을 기본 render에서 빼고, 모델·custom node 설치 같은 유지보수 때만 opt-in overlay로 붙였다 떼도록 함 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
