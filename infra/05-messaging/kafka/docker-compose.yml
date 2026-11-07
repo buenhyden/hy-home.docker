@@ -111,6 +111,7 @@ services:
       - '${SCHEMA_REGISTRY_PORT:-8081}'
     labels:
       <<: *tier-label
+      traefik.docker.network: schema_registry_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.schema-registry.rule: Host(`schema-registry.${DEFAULT_URL}`)
       traefik.http.routers.schema-registry.entrypoints: websecure
@@ -135,7 +136,7 @@ services:
       retries: 10
       start_period: 60s
     networks:
-      edge_net: {}
+      schema_registry_ingress_net: {}
       obs_net: {}
       kafka_net: {}
 
@@ -213,6 +214,7 @@ services:
       - ./jmx-exporter:/usr/share/jmx_exporter:ro
     labels:
       <<: *tier-label
+      traefik.docker.network: kafka_connect_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.kafka-connect.rule: Host(`kafka-connect.${DEFAULT_URL}`)
       traefik.http.routers.kafka-connect.entrypoints: websecure
@@ -247,7 +249,7 @@ services:
       retries: 10
       start_period: 60s
     networks:
-      edge_net: {}
+      kafka_connect_ingress_net: {}
       obs_net: {}
       kafka_net: {}
       dev_data_net: {}
@@ -319,6 +321,7 @@ services:
       - /var/log/confluent:uid=1000,gid=1000,mode=0775
     labels:
       <<: *tier-label
+      traefik.docker.network: kafka_rest_proxy_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.kafka-rest.rule: Host(`kafka-rest.${DEFAULT_URL}`)
       traefik.http.routers.kafka-rest.entrypoints: websecure
@@ -350,7 +353,7 @@ services:
       retries: 10
       start_period: 60s
     networks:
-      edge_net: {}
+      kafka_rest_proxy_ingress_net: {}
       kafka_net: {}
 
   kafbat-ui:

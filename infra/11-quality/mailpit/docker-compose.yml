@@ -41,11 +41,12 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      edge_net: {}
+      mailpit_ingress_net: {}
       # SMTP capture for containers that should not reach Stalwart.
       mail_net: {}
     labels:
       <<: *tier-label
+      traefik.docker.network: mailpit_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.mailpit-ui.rule: Host(`mailpit.${DEFAULT_URL}`)
       traefik.http.routers.mailpit-ui.entrypoints: websecure

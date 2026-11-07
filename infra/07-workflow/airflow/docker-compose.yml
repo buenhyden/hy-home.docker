@@ -443,7 +443,7 @@ services:
     read_only: false
     command: celery flower
     networks:
-      edge_net: {}
+      flower_ingress_net: {}
       obs_net: {}
       airflow_net: {}
       mng_data_net: {}
@@ -464,6 +464,7 @@ services:
         required: false
     labels:
       <<: *tier-label
+      traefik.docker.network: flower_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.flower.rule: Host(`flower.${DEFAULT_URL}`)
       traefik.http.routers.flower.entrypoints: websecure

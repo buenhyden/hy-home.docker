@@ -77,6 +77,24 @@ services:
       # Blog-data Gateway export/attestation routes (SPEC-0204-TSK-0022).
       blog_export_net: {}
       redisinsight_ingress_net: {}
+      # SSO-only backends, one internal ingress network each (SPEC-0266, ADR-0061).
+      alertmanager_ingress_net: {}
+      alloy_ingress_net: {}
+      cadvisor_ingress_net: {}
+      comfyui_ingress_net: {}
+      flower_ingress_net: {}
+      kafka_connect_ingress_net: {}
+      kafka_rest_proxy_ingress_net: {}
+      loki_ingress_net: {}
+      mailpit_ingress_net: {}
+      mlflow_ingress_net: {}
+      ollama_ingress_net: {}
+      prometheus_ingress_net: {}
+      pushgateway_ingress_net: {}
+      pyroscope_ingress_net: {}
+      schema_registry_ingress_net: {}
+      tempo_ingress_net: {}
+      terrakube_ui_ingress_net: {}
       # openclaw_default:
       #   ipv4_address: 172.20.0.5
     secrets:
