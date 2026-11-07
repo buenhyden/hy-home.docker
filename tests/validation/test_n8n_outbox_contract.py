@@ -242,7 +242,7 @@ class OutboxWorkerPlacementTests(unittest.TestCase):
         mailpit = yaml.safe_load(
             (ROOT / "infra/11-quality/mailpit/docker-compose.yml").read_text()
         )["services"]["mailpit"]
-        self.assertEqual({"edge_net", "mail_net"}, set(mailpit["networks"]))
+        self.assertEqual({"mailpit_ingress_net", "mail_net"}, set(mailpit["networks"]))
         self.assertIn(
             "127.0.0.1:${MAILPIT_SMTP_HOST_PORT:-1025}:${MAILPIT_SMTP_PORT:-1025}",
             mailpit["ports"],
