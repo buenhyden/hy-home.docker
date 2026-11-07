@@ -1,10 +1,10 @@
 ---
 title: "Keycloak IAM"
-version: "1.1.5"
+version: "1.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2025-11-12"
 ---
 
@@ -64,7 +64,7 @@ keycloak/
 | Network | `edge_net`, `mng_data_net`, `obs_net` |
 | Public Host | `keycloak.${DEFAULT_URL}` |
 | Listener | 앱 `${KEYCLOAK_PORT:-8080}`, management `${KEYCLOAK_MANAGEMENT_PORT:-9000}` |
-| Health | management 포트 `${KEYCLOAK_MANAGEMENT_PORT:-9000}/health/ready` |
+| Health | management 포트 `${KEYCLOAK_MANAGEMENT_PORT:-9000}/health/ready`. management listener는 Prometheus·Gatus만 함께 붙는 `keycloak_management_net`의 `10.250.44.2`(alias `keycloak-management`)에만 bind하며, container healthcheck도 그 주소를 씀(SPEC-0267) |
 | Secrets | `keycloak_db_password`, `keycloak_admin_password` 또는 OpenBao Agent 출력(`KEYCLOAK_ADMIN_PASSWORD_FILE`) |
 
 ## Application Client Matrix

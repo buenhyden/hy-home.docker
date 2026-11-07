@@ -26,7 +26,6 @@ x-n8n-common-env: &n8n-common-env
   QUEUE_BULL_REDIS_PASSWORD_FILE: /run/secrets/${N8N_VALKEY_SECRET:-mng_valkey_password}
 
   N8N_RUNNERS_MODE: external
-  N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 0.0.0.0
   # The alias must move the listener, not only the URI, expose and healthcheck.
   N8N_RUNNERS_BROKER_PORT: ${N8N_BROKER_PORT:-5679}
   N8N_NATIVE_PYTHON_RUNNER: true
@@ -100,6 +99,8 @@ services:
       - ./custom:/home/node/.n8n/custom:ro
     environment:
       <<: *n8n-common-env
+      # The broker listens on n8n_main_runner_net only (SPEC-0267).
+      N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 10.250.22.2
       N8N_PROXY_HOPS: 1
       N8N_PROTOCOL: https
       N8N_HOST: n8n.${DEFAULT_URL}
@@ -128,7 +129,8 @@ services:
     networks:
       edge_net: {}
       n8n_net: {}
-      n8n_main_runner_net: {}
+      n8n_main_runner_net:
+        ipv4_address: 10.250.22.2
       mng_data_net: {}
       obs_net: {}
     healthcheck:
@@ -170,6 +172,8 @@ services:
       - ./custom:/home/node/.n8n/custom:ro
     environment:
       <<: *n8n-common-env
+      # The broker listens on n8n_worker_runner_net only (SPEC-0267).
+      N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 10.250.23.2
     secrets:
       - ${N8N_VALKEY_SECRET:-mng_valkey_password}
       - n8n_db_password
@@ -177,13 +181,14 @@ services:
       - n8n_runner_auth_token
     networks:
       n8n_net: {}
-      n8n_worker_runner_net: {}
+      n8n_worker_runner_net:
+        ipv4_address: 10.250.23.2
       mng_data_net: {}
       # Production webhook executions run here; the only Gateway peer.
       n8n_blog_ingest_net: {}
     command: worker
     healthcheck:
-      test: [ 'CMD-SHELL', 'wget -q --spider http://127.0.0.1:${N8N_BROKER_PORT:-5679}/healthz || exit 1' ]
+      test: [ 'CMD-SHELL', 'wget -q --spider http://10.250.23.2:${N8N_BROKER_PORT:-5679}/healthz || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 10

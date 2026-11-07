@@ -143,7 +143,7 @@ pyroscope.scrape "go_services" {
     {"__address__" = "tempo:3200", "service_name" = "tempo"},
     {"__address__" = "alloy:12345", "service_name" = "alloy"},
     {"__address__" = "pyroscope:4040", "service_name" = "pyroscope"},
-    {"__address__" = "grafana:6060", "service_name" = "grafana"},
+    {"__address__" = "grafana-pprof:6060", "service_name" = "grafana"},
     {"__address__" = "node-exporter:9100", "service_name" = "node-exporter"},
     {"__address__" = "mng-pg-exporter:9187", "service_name" = "mng-pg-exporter"},
     {"__address__" = "registry:5001", "service_name" = "registry"},

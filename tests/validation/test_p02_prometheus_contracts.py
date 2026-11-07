@@ -45,7 +45,7 @@ class PrometheusKeycloakTargetContractTests(unittest.TestCase):
                 result = self._run(target_dir, port)
                 self.assertEqual(0, result.returncode, result.stderr)
                 keycloak = (target_dir / "keycloak.yml").read_text(encoding="utf-8")
-                self.assertIn(f"keycloak:{port}", keycloak)
+                self.assertIn(f"keycloak-management:{port}", keycloak)
 
     def test_invalid_port_is_rejected_before_any_target_output(self) -> None:
         for port in ("", "0", "65536", "12x", "9000;touch /tmp/no"):

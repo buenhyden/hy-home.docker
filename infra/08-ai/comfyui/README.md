@@ -1,6 +1,6 @@
 ---
 title: "ComfyUI Implementation"
-version: "0.2.3"
+version: "0.2.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -40,10 +40,11 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 �
 
 선언된 영속 경로:
 
-현재 Compose는 `/opt/comfyui`에 상태를 bind하지만 선택된 mutable image의
-상위 소스는 `/root/ComfyUI`를 사용합니다. 경로 연결 override는 없습니다.
-아래 volume 선언만으로 실제 데이터 영속화를 보장하지 않습니다. image·mount
-관측과 백업 경계를 확인하기 전에는 재생성·복원·cache 및 volume 정리를 중단하고 RUN-0081을 따릅니다.
+선택된 mutable image는 `/root/ComfyUI`에서 실행하므로 Compose는 models,
+custom_nodes, input, output, user volume을 `/root/ComfyUI/<dir>`에 mount합니다
+(SPEC-0267). ComfyUI 코드와 `/root/.cache`는 image가 선언한 익명 `/root` volume에
+남고, 코드가 없으면 entrypoint가 image bundle에서 다시 복사합니다. 기존 익명
+volume의 데이터를 옮기기 전에는 재생성·복원·cache 및 volume 정리를 중단하고 RUN-0081을 따릅니다.
 
 - `comfyui-models`: `${DEFAULT_AI_MODEL_DIR}/comfyui/models`
 - `comfyui-custom-nodes`: `${DEFAULT_AI_MODEL_DIR}/comfyui/custom_nodes`

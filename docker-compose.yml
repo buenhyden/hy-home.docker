@@ -69,6 +69,7 @@ networks:
     ipam:
       config:
         - subnet: 10.250.22.0/24
+          ip_range: 10.250.22.128/25
   n8n_worker_runner_net:
     name: n8n_worker_runner_net
     internal: true
@@ -77,6 +78,7 @@ networks:
     ipam:
       config:
         - subnet: 10.250.23.0/24
+          ip_range: 10.250.23.128/25
   terrakube_net:
     name: terrakube_net
     ipam:
@@ -278,6 +280,46 @@ networks:
           ip_range: 10.250.40.128/25
   # Prometheus and Alloy scrape the seaweedfs-s3 metrics port here; unlike
   # seaweedfs_metrics_net it reaches no master/volume/filer API.
+  # SPEC-0267: OAuth2 Proxy metrics, bound to .2, for Prometheus only.
+  oauth2_proxy_metrics_net:
+    name: oauth2_proxy_metrics_net
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
+    ipam:
+      config:
+        - subnet: 10.250.43.0/24
+          ip_range: 10.250.43.128/25
+  # SPEC-0267: Keycloak management port, bound to .2, for Prometheus and Gatus.
+  keycloak_management_net:
+    name: keycloak_management_net
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
+    ipam:
+      config:
+        - subnet: 10.250.44.0/24
+          ip_range: 10.250.44.128/25
+  # SPEC-0267: Grafana pprof, bound to .2, for the Alloy profile scrape only.
+  grafana_pprof_net:
+    name: grafana_pprof_net
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
+    ipam:
+      config:
+        - subnet: 10.250.45.0/24
+          ip_range: 10.250.45.128/25
+  # SPEC-0267: Traefik metrics and ping, bound to .2, for Prometheus only.
+  traefik_metrics_net:
+    name: traefik_metrics_net
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
+    ipam:
+      config:
+        - subnet: 10.250.46.0/24
+          ip_range: 10.250.46.128/25
   seaweedfs_s3_metrics_net:
     name: seaweedfs_s3_metrics_net
     internal: true
