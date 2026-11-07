@@ -87,11 +87,11 @@ services:
       comfyui_egress_net: {}
       # openclaw_default:
     volumes:
-      - comfyui-models:/opt/comfyui/models:rw
-      - comfyui-custom-nodes:/opt/comfyui/custom_nodes:rw
-      - comfyui-output:/opt/comfyui/output:rw
-      - comfyui-input:/opt/comfyui/input:rw
-      - comfyui-user:/opt/comfyui/user:rw
+      - comfyui-models:/root/ComfyUI/models:rw
+      - comfyui-custom-nodes:/root/ComfyUI/custom_nodes:rw
+      - comfyui-output:/root/ComfyUI/output:rw
+      - comfyui-input:/root/ComfyUI/input:rw
+      - comfyui-user:/root/ComfyUI/user:rw
       - comfyui-hf-cache:/home/comfyui/.cache/huggingface:rw
       - comfyui-torch-cache:/home/comfyui/.cache/torch:rw
     labels:

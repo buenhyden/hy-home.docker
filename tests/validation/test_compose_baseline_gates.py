@@ -5723,14 +5723,20 @@ class NetworkSegmentationContractTests(unittest.TestCase):
                 path.read_text(encoding="utf-8"),
             )
         } - {"localhost"}
+        from scripts.lib.ops.compose_observation import TARGET_ALIASES
+
+        hosts = {TARGET_ALIASES.get(host, host) for host in hosts}
         self.assertIn("traefik", hosts)
         self.assertEqual([], sorted(hosts - services.keys()))
-        # seaweedfs-s3 is scraped over edge_net (shared with Prometheus) so the
-        # S3 API does not also join obs_net; the internal SeaweedFS nodes over
+        # seaweedfs-s3 is scraped over seaweedfs_s3_metrics_net (SPEC-0266) so
+        # the S3 API does not also join obs_net; Traefik and OAuth2 Proxy over
+        # their bound metrics networks (SPEC-0267); the internal SeaweedFS nodes over
         # seaweedfs_metrics_net; node-exporter in the host network namespace,
         # which Prometheus reaches by name through extra_hosts (SPEC-0225).
         scrape_net = {
-            "seaweedfs-s3": "edge_net",
+            "seaweedfs-s3": "seaweedfs_s3_metrics_net",
+            "traefik": "traefik_metrics_net",
+            "oauth2-proxy": "oauth2_proxy_metrics_net",
             "seaweedfs-master": "seaweedfs_metrics_net",
             "seaweedfs-volume": "seaweedfs_metrics_net",
             "seaweedfs-filer": "seaweedfs_metrics_net",

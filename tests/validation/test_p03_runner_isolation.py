@@ -100,7 +100,16 @@ class RunnerComposeContractTests(unittest.TestCase):
                         "com.docker.network.bridge.gateway_mode_ipv4"
                     ],
                 )
-                self.assertEqual([{"subnet": subnet}], definition["ipam"]["config"])
+                # The broker binds below the dynamic range (SPEC-0267).
+                self.assertEqual(
+                    [
+                        {
+                            "subnet": subnet,
+                            "ip_range": subnet.replace(".0/24", ".128/25"),
+                        }
+                    ],
+                    definition["ipam"]["config"],
+                )
 
         all_subnets = [
             item["subnet"]

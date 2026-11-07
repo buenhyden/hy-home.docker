@@ -300,6 +300,181 @@ class SsoOnlyIngressContractTests(unittest.TestCase):
                 self.assertFalse(subnet.overlaps(second), f"{name} and {other}")
 
 
+# Secondary listeners bound to one address on a consumer-only network
+# (SPEC-0267). Each row: service, network, fixed address, alias, consumers.
+SECONDARY_LISTENERS = (
+    (
+        "seaweedfs-s3",
+        "seaweedfs_s3_metrics_net",
+        "10.250.41.2",
+        None,
+        {"prometheus", "alloy"},
+    ),
+    (
+        "oauth2-proxy",
+        "oauth2_proxy_metrics_net",
+        "10.250.43.2",
+        "oauth2-proxy-metrics",
+        {"prometheus"},
+    ),
+    (
+        "keycloak",
+        "keycloak_management_net",
+        "10.250.44.2",
+        "keycloak-management",
+        {"prometheus", "gatus"},
+    ),
+    ("grafana", "grafana_pprof_net", "10.250.45.2", "grafana-pprof", {"alloy"}),
+    (
+        "traefik",
+        "traefik_metrics_net",
+        "10.250.46.2",
+        "traefik-metrics",
+        {"prometheus"},
+    ),
+    ("n8n", "n8n_main_runner_net", "10.250.22.2", None, {"n8n-task-runner"}),
+    (
+        "n8n-worker",
+        "n8n_worker_runner_net",
+        "10.250.23.2",
+        None,
+        {"n8n-task-runner-worker"},
+    ),
+)
+
+# Consumer configuration that must name the network-scoped alias.
+LISTENER_REFERENCES = {
+    "infra/06-observability/prometheus/config/prometheus.yml": (
+        ("traefik-metrics:8082", "traefik:8082"),
+        ("oauth2-proxy-metrics:44180", "oauth2-proxy:44180"),
+    ),
+    "infra/06-observability/prometheus/config/prometheus.dev.yml": (
+        ("traefik-metrics:8082", "traefik:8082"),
+        ("oauth2-proxy-metrics:44180", "oauth2-proxy:44180"),
+    ),
+    "infra/06-observability/prometheus/scripts/start.sh": (
+        ("keycloak-management:$keycloak_port", "keycloak:$keycloak_port"),
+    ),
+    "infra/06-observability/gatus/config/config.oidc.yaml": (
+        (
+            "keycloak-management:${KEYCLOAK_MANAGEMENT_PORT}",
+            "keycloak:${KEYCLOAK_MANAGEMENT_PORT}",
+        ),
+    ),
+    "infra/06-observability/gatus/config/config.yaml": (
+        (
+            "keycloak-management:${KEYCLOAK_MANAGEMENT_PORT}",
+            "keycloak:${KEYCLOAK_MANAGEMENT_PORT}",
+        ),
+    ),
+    "infra/06-observability/alloy/config/config.alloy": (
+        ("grafana-pprof:6060", "grafana:6060"),
+    ),
+    "infra/06-observability/alloy/config/config.home.alloy": (
+        ("grafana-pprof:6060", "grafana:6060"),
+    ),
+}
+
+
+class SecondaryListenerContractTests(unittest.TestCase):
+    """Unauthenticated secondary listeners reach only their consumers (SPEC-0267)."""
+
+    setUpClass = classmethod(SsoOnlyIngressContractTests.setUpClass.__func__)
+
+    def _bind_value(self, name: str) -> str:
+        service = self.services[name]
+        environment = service.get("environment") or {}
+        if name == "seaweedfs-s3":
+            flags = [arg for arg in service["command"] if arg.startswith("-metricsIp=")]
+            return flags[0].split("=", 1)[1] if flags else ""
+        if name == "traefik":
+            import yaml
+
+            static = yaml.safe_load(
+                (ROOT / "infra/01-gateway/traefik/config/traefik.yml").read_text()
+            )
+            return static["entryPoints"]["metrics"]["address"].rsplit(":", 1)[0]
+        key = {
+            "oauth2-proxy": "OAUTH2_PROXY_METRICS_ADDRESS",
+            "keycloak": "KC_HTTP_MANAGEMENT_HOST",
+            "grafana": "GF_DIAGNOSTICS_PROFILING_ADDR",
+            "n8n": "N8N_RUNNERS_BROKER_LISTEN_ADDRESS",
+            "n8n-worker": "N8N_RUNNERS_BROKER_LISTEN_ADDRESS",
+        }[name]
+        value = str(environment.get(key, ""))
+        return value.rsplit(":", 1)[0] if name == "oauth2-proxy" else value
+
+    def test_each_listener_binds_one_address_on_a_consumer_only_network(self) -> None:
+        import ipaddress
+
+        for name, network, address, alias, consumers in SECONDARY_LISTENERS:
+            with self.subTest(service=name):
+                self.assertEqual({name} | consumers, self.members.get(network))
+                declared = self.config["networks"][network]
+                self.assertTrue(declared.get("internal"))
+                self.assertEqual(
+                    "isolated",
+                    (declared.get("driver_opts") or {}).get(
+                        "com.docker.network.bridge.gateway_mode_ipv4"
+                    ),
+                )
+                block = declared["ipam"]["config"][0]
+                dynamic = ipaddress.ip_network(block["ip_range"])
+                self.assertNotIn(ipaddress.ip_address(address), dynamic)
+                self.assertIn(
+                    ipaddress.ip_address(address), ipaddress.ip_network(block["subnet"])
+                )
+                attachment = self.services[name]["networks"][network] or {}
+                self.assertEqual(address, attachment.get("ipv4_address"))
+                if alias:
+                    self.assertIn(alias, attachment.get("aliases") or [])
+                self.assertEqual(address, self._bind_value(name))
+
+    def test_observation_aliases_match_compose(self) -> None:
+        from scripts.lib.ops.compose_observation import TARGET_ALIASES
+
+        self.assertEqual(
+            {alias: name for name, _, _, alias, _ in SECONDARY_LISTENERS if alias},
+            TARGET_ALIASES,
+        )
+
+    def test_health_checks_use_the_bound_address(self) -> None:
+        for name in ("keycloak", "n8n-worker"):
+            with self.subTest(service=name):
+                address = dict((row[0], row[2]) for row in SECONDARY_LISTENERS)[name]
+                test = " ".join(self.services[name]["healthcheck"]["test"])
+                self.assertIn(address, test)
+                self.assertNotIn("127.0.0.1", test)
+
+    def test_consumers_name_the_network_scoped_alias(self) -> None:
+        for relative, pairs in LISTENER_REFERENCES.items():
+            text = (ROOT / relative).read_text()
+            for wanted, retired in pairs:
+                with self.subTest(file=relative, target=wanted):
+                    self.assertIn(wanted, text)
+                    self.assertNotIn(retired, text)
+
+    def test_state_lives_on_declared_volumes(self) -> None:
+        def named_targets(service: str) -> dict[str, str]:
+            return {
+                mount["target"]: mount.get("source", "")
+                for mount in self.services[service].get("volumes") or []
+                if mount.get("type") == "volume"
+            }
+
+        declared = set(self.config.get("volumes") or {})
+        pyroscope = named_targets("pyroscope")
+        self.assertIn("/data", pyroscope)
+        self.assertIn(pyroscope["/data"], declared)
+        comfyui = named_targets("comfyui")
+        for directory in ("models", "custom_nodes", "input", "output", "user"):
+            with self.subTest(comfyui=directory):
+                target = f"/root/ComfyUI/{directory}"
+                self.assertIn(target, comfyui)
+                self.assertIn(comfyui[target], declared)
+        self.assertFalse([t for t in comfyui if t.startswith("/opt/comfyui")])
+
+
 class ListenerPortContractTests(unittest.TestCase):
     def test_oauth2_proxy_listener_health_and_gateway_use_one_port(self) -> None:
         service = _service(
@@ -350,7 +525,7 @@ class ListenerPortContractTests(unittest.TestCase):
             ],
         )
         self.assertIn(
-            '127.0.0.1/"$${KC_HTTP_MANAGEMENT_PORT}"',
+            '10.250.44.2/"$${KC_HTTP_MANAGEMENT_PORT}"',
             " ".join(service["healthcheck"]["test"]),
         )
 

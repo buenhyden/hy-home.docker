@@ -39,6 +39,12 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_OBSERVABILITY_DIR}/pyroscope
+  pyroscope-metastore:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_OBSERVABILITY_DIR}/pyroscope-metastore
   alloy-data:
     driver: local
     driver_opts:
@@ -133,6 +139,10 @@ services:
       prometheus_ingress_net: {}
       obs_net: {}
       seaweedfs_metrics_net: {}
+      # Consumer-only networks of bound secondary listeners (SPEC-0267).
+      oauth2_proxy_metrics_net: {}
+      keycloak_management_net: {}
+      traefik_metrics_net: {}
 
   loki:
     profiles:
@@ -319,6 +329,8 @@ services:
       alloy_ingress_net: {}
       obs_net: {}
       quality_otlp_net: {}
+      # Grafana pprof scrape (SPEC-0267).
+      grafana_pprof_net: {}
 
   grafana:
     profiles:
@@ -413,7 +425,8 @@ services:
       GF_TRACING_OPENTELEMETRY_SAMPLER_TYPE: probabilistic
       GF_TRACING_OPENTELEMETRY_SAMPLER_PARAM: '0.1'
       GF_DIAGNOSTICS_PROFILING_ENABLED: 'true'
-      GF_DIAGNOSTICS_PROFILING_ADDR: 0.0.0.0
+      # pprof listens on grafana_pprof_net only (SPEC-0267).
+      GF_DIAGNOSTICS_PROFILING_ADDR: 10.250.45.2
       GF_DIAGNOSTICS_PROFILING_PORT: '6060'
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
@@ -473,6 +486,10 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
+      grafana_pprof_net:
+        ipv4_address: 10.250.45.2
+        aliases:
+          - grafana-pprof
       # The PostgreSQL datasources reach mng-pg as grafana_reader only.
       mng_data_net: {}
 
@@ -703,6 +720,8 @@ services:
       edge_net: {}
       mng_data_net: {}
       obs_net: {}
+      # Keycloak readiness probe (SPEC-0267).
+      keycloak_management_net: {}
 
   pyroscope:
     profiles:
@@ -724,6 +743,8 @@ services:
     volumes:
       - ./pyroscope/config/pyroscope.yaml:/etc/pyroscope/pyroscope.yaml:ro
       - pyroscope-data:/var/lib/pyroscope:rw
+      # The image keeps its v2 metastore and raft state under /data (SPEC-0267).
+      - pyroscope-metastore:/data:rw
     ports:
       - '127.0.0.1:${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
     healthcheck:

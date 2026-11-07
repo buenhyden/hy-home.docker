@@ -1,10 +1,10 @@
 ---
 title: "OAuth2 Proxy"
-version: "1.1.4"
+version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2025-11-29"
 ---
 
@@ -154,7 +154,7 @@ exporter가 자기 관측 파일만 마운트하고 비밀번호를 명령 인�
 관측 계정은 PING, INFO, COMMAND INFO, SLOWLOG LEN, COMMANDLOG LEN만 허용합니다.
 키·채널·Lua·관리 명령은 허용하지 않으며 INFO의 전체 DB 집계 노출은 남습니다.
 exporter의 선택적 SLOWLOG GET 거부는 상세 지표 부재로 기록하고 권한을 넓혀
-없애지 않습니다. `/scrape`는 비활성화하고 기존 Prometheus `/metrics`를 유지합니다.
+없애지 않습니다. `/scrape`는 비활성화하고 기존 Prometheus `/metrics`를 유지합니다. metrics listener `44180`은 Prometheus만 함께 붙는 `oauth2_proxy_metrics_net`의 `10.250.43.2`(alias `oauth2-proxy-metrics`)에만 bind합니다(SPEC-0267).
 관측 파일은 의도한 UID/보조 GID가 읽을 수 있는 안전한 단일 파일이어야 하고,
 broker는 자신의 기본/관측 비밀번호가 같은 경우 시작을 거부합니다. 서로 다른
 서비스 간 비밀번호 분리·회전은 별도 운영 인수입니다.

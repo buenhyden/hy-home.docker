@@ -269,7 +269,7 @@ class DatastoreScrapeLabelTests(unittest.TestCase):
             openbao = yaml.safe_load((directory / "openbao.yml").read_text())[0]
             self.assertEqual(["openbao:8200"], openbao["targets"])
             keycloak = yaml.safe_load((directory / "keycloak.yml").read_text())[0]
-            self.assertEqual(["keycloak:9000"], keycloak["targets"])
+            self.assertEqual(["keycloak-management:9000"], keycloak["targets"])
             self.assertEqual(
                 {
                     "cluster": "hy-home",

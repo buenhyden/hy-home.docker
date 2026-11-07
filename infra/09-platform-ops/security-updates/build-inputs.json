@@ -2780,10 +2780,10 @@
     "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
     "checked_at": "2026-10-15T16:35:15.922344+00:00",
     "source_binding": {
-      "checked_at": "2026-11-07T00:31:52.902782+00:00",
-      "source_revision": "82b117685e9bcd6dd94bf5d374aa526b19043965",
-      "source_state": "Uncommitted Blog-data Gateway image pin to Blog-data dev bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48 (schema 5, report export with the original daily report rendered verbatim, ADR-0097/ADR-0098) in the n8n Compose file on top of this revision; not a current image/build/module/Native acceptance receipt",
-      "input_sha256": "3e2bbfba44f6713681031fb03e927fc96c47c91d94a6377f0fff46dc3f262d01",
+      "checked_at": "2026-11-07T11:47:30.528179+00:00",
+      "source_revision": "57e2636d77a3958a43aa936b4dc3d6b2711171c7",
+      "source_state": "SOURCE_REVIEW_ONLY: SPEC-0267 broker listener binding is uncommitted on top of this revision; the n8n Compose file binds each task broker to its runner network address and moves the n8n-worker health check to that address. Not a current image/build/module/Native acceptance receipt.",
+      "input_sha256": "9ff6ec875f940dc06bbed4316cb385f64204d4e8e9e18ee5ede8a1d146c3e2dc",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -2800,7 +2800,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "c3971adbee522b01474411e1dac8199500203a6d09825eb0666cdbc837c806da"
+          "sha256": "0928820c728a0bf2eecd459a3988a6c2a316a1b740919492193d724a0278d35c"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -2855,7 +2855,7 @@
           "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
         }
       ],
-      "meaning": "Same existing17 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after moving the Blog-data Gateway pin to dev bcefdc0c0b (schema 5, report export). Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
+      "meaning": "Same existing17 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the SPEC-0267 broker listener binding in the n8n Compose file. Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -4013,6 +4013,92 @@
             }
           ],
           "meaning": "Current public n8n Compose/build/COPY/custom-node/version-test source binding, including the new authenticated STARTTLS unit test. The predecessor is preserved under historical_source_bindings. P05 changes compiled TypeScript inputs, so the older isolated build/module and C19/C22 acceptance remain bound to their original source, actor, version and environment; this source-only record does not accept a rebuilt image, signature, full-image scan, native queue/workflow, credential rotation, HOME, backup or recovery.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
+      },
+      {
+        "archived_at": "2026-11-07T11:47:30.528179+00:00",
+        "source_binding": {
+          "checked_at": "2026-11-07T00:31:52.902782+00:00",
+          "source_revision": "82b117685e9bcd6dd94bf5d374aa526b19043965",
+          "source_state": "Uncommitted Blog-data Gateway image pin to Blog-data dev bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48 (schema 5, report export with the original daily report rendered verbatim, ADR-0097/ADR-0098) in the n8n Compose file on top of this revision; not a current image/build/module/Native acceptance receipt",
+          "input_sha256": "3e2bbfba44f6713681031fb03e927fc96c47c91d94a6377f0fff46dc3f262d01",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "c3971adbee522b01474411e1dac8199500203a6d09825eb0666cdbc837c806da"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "ecf0bee7e151ee77c0b517739d9cff828e646141ce22929fe1b4a2cb3ef9570f"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "146d22dde82f3d5aab2f3018650c2e8eced9c8559049bffce09aa7fe325b2421"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+              "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+            }
+          ],
+          "meaning": "Same existing17 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after moving the Blog-data Gateway pin to dev bcefdc0c0b (schema 5, report export). Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
           "native_test": "NOT_RUN",
           "home": "NOT_RUN",
           "signature": "NOT_RUN",

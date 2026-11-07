@@ -95,6 +95,11 @@ services:
       schema_registry_ingress_net: {}
       tempo_ingress_net: {}
       terrakube_ui_ingress_net: {}
+      # The metrics and ping entrypoint binds here only (SPEC-0267).
+      traefik_metrics_net:
+        ipv4_address: 10.250.46.2
+        aliases:
+          - traefik-metrics
       # openclaw_default:
       #   ipv4_address: 172.20.0.5
     secrets:

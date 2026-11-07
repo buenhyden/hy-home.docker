@@ -21,7 +21,8 @@ entryPoints:
       aliasHeadersStrategy: delete
       tls: true
   metrics:
-    address: ":8082"
+    # Bound to traefik_metrics_net only (SPEC-0267).
+    address: "10.250.46.2:8082"
     http:
       aliasHeadersStrategy: delete
 

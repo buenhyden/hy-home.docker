@@ -1,6 +1,6 @@
 ---
 title: "Traefik Edge Router"
-version: "1.0.6"
+version: "1.0.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -29,7 +29,7 @@ Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker �
 
 ### In Scope
 
-- 전역 entrypoint 정의(`web` 80, `websecure` 443, `metrics` 8082).
+- 전역 entrypoint 정의(`web` 80, `websecure` 443, `metrics` 8082). `metrics`(Prometheus metrics와 ping)는 Prometheus만 함께 붙는 `traefik_metrics_net`의 `10.250.46.2`(alias `traefik-metrics`)에만 bind함(SPEC-0267).
 - Docker Provider를 통한 동적 서비스 탐색과 라우팅 label.
 - 미들웨어 조율(RateLimit, BasicAuth, SSO).
 - TLS store와 인증서 관리.

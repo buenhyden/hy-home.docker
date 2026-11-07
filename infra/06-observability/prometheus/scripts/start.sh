@@ -74,7 +74,7 @@ tmp=
 
 tmp=$(mktemp "$dir/.keycloak.XXXXXX")
 printf '%s\n' \
-  "- targets: [\"keycloak:$keycloak_port\"]" \
+  "- targets: [\"keycloak-management:$keycloak_port\"]" \
   '  labels:' \
   '    cluster: "hy-home"' \
   '    namespace: "hy-home"' \

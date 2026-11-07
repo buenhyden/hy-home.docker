@@ -71,6 +71,16 @@ def _seconds(value):
     return int(seconds) if float(seconds).is_integer() else seconds
 
 
+# Network-scoped aliases of bound secondary listeners (SPEC-0267). The render
+# test SecondaryListenerContractTests checks this table against Compose.
+TARGET_ALIASES = {
+    "grafana-pprof": "grafana",
+    "keycloak-management": "keycloak",
+    "oauth2-proxy-metrics": "oauth2-proxy",
+    "traefik-metrics": "traefik",
+}
+
+
 def _target_service(target, job, service_names):
     if not isinstance(target, str) or target.count(":") != 1:
         raise ObservationError("unsupported_scrape_target")
@@ -78,7 +88,9 @@ def _target_service(target, job, service_names):
     if not hostname or not port.isdecimal() or not 1 <= int(port) <= 65535:
         raise ObservationError("unsupported_scrape_target")
     service = (
-        "prometheus" if hostname == "localhost" and job == "prometheus" else hostname
+        "prometheus"
+        if hostname == "localhost" and job == "prometheus"
+        else TARGET_ALIASES.get(hostname, hostname)
     )
     if service not in service_names:
         raise ObservationError("unresolved_scrape_service")

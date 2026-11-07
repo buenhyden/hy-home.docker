@@ -49,7 +49,7 @@ endpoints:
 
   - name: Keycloak
     group: core
-    url: http://keycloak:${KEYCLOAK_MANAGEMENT_PORT}/health/ready
+    url: http://keycloak-management:${KEYCLOAK_MANAGEMENT_PORT}/health/ready
     interval: 30s
     conditions:
       - '[STATUS] == 200'
