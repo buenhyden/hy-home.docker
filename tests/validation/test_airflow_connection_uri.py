@@ -411,5 +411,25 @@ raise SystemExit(helper.main(['metadata'], environment={}, secrets_dir=pathlib.P
         self.assertEqual(b"Airflow connection: invalid input\n", result.stderr)
 
 
+class DockerfileHelperModeTests(unittest.TestCase):
+    def test_helper_copy_keeps_its_created_directory_traversable(self):
+        # BuildKit applies COPY --chmod to the parent directories it creates,
+        # so a read-only file mode would make /opt/airflow/bin unsearchable.
+        dockerfile = (ROOT / "infra/07-workflow/airflow/Dockerfile").read_text()
+        lines = [
+            line
+            for line in dockerfile.splitlines()
+            if line.startswith("COPY ") and "/opt/airflow/bin/connection_uri.py" in line
+        ]
+        self.assertEqual(1, len(lines))
+        flags = dict(
+            part[2:].split("=", 1) for part in lines[0].split() if part.startswith("--")
+        )
+        self.assertEqual("0:0", flags["chown"])
+        mode = int(flags["chmod"], 8)
+        self.assertEqual(0o555, mode & 0o555, "every class must read and search")
+        self.assertEqual(0, mode & 0o222, "the helper and its directory stay read-only")
+
+
 if __name__ == "__main__":
     unittest.main()
