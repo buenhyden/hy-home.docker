@@ -1,8 +1,8 @@
 ---
 title: "SSO-Only Backend Ingress Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-07"
 layer: "specs"
@@ -120,27 +120,75 @@ which this package does not change.
 the retired `lab_net` and the Supabase network; a stale host network could still
 use them, so W2 allocates from `10.250.24.0/24` upward.
 
+### Approval and start (2026-11-07)
+
+After reviewing the W1 inventory the owner approved the Spec and Plan and the
+W2–W4 implementation in one branch on 2026-11-07, with ADR-0061 accepted in the
+same change; W5 keeps its own approval. The package first landed as `draft`
+(PR #784), as new Stage 03 documents must.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0266 | draft | approved | #approval-and-start-2026-11-07 |
+| SPEC-0266-PLAN-0001 | draft | approved | #approval-and-start-2026-11-07 |
+| SPEC-0266-TSK-0001 | draft | ready | #approval-and-start-2026-11-07 |
+| SPEC-0266-TSK-0001 | ready | in-progress | #approval-and-start-2026-11-07 |
+
+### W2–W4 implementation (2026-11-07)
+
+W3 came first: `SsoOnlyIngressContractTests` in
+`tests/validation/test_p02_service_contracts.py` renders every profile from
+`.env.example` and failed on all 17 backends before any network change. W2 then
+replaced each backend's `edge_net` with `<service>_ingress_net`, set
+`traefik.docker.network`, attached Traefik to the 17 networks, and declared them
+in the root Compose in the RedisInsight pattern (internal, isolated gateway,
+`/24` from `10.250.24.0` to `10.250.40.0`, dynamic range `.128/25`).
+
+The plan to put the two `seaweedfs-s3:9327` scrapes on the existing
+`seaweedfs_metrics_net` was dropped during W2: that network reaches the
+master's write-JWT and collection-delete APIs and trusts only Prometheus with
+them, so adding Alloy would have widened that trust. A new internal
+`seaweedfs_s3_metrics_net` (`10.250.41.0/24`) carries only `seaweedfs-s3`,
+Prometheus and Alloy, and the test asserts Alloy is not on
+`seaweedfs_metrics_net`. Spec 0.3.0 records the change and sharpens criterion 4
+to the ingress conditions the test checks; other networks of those services
+stay, so isolation from their non-ingress peers is out of this package's scope.
+
+The existing `test_routed_services_join_edge_net` required every routed service
+except Storybook and RedisInsight to be on `edge_net`; it now accepts a dedicated
+`*_ingress_net` instead. The m0021 current-service inventory was re-rendered with
+`render_service_inventory`, which changed exactly the 19 Network cells of the
+moved services, Traefik and `seaweedfs-s3`. W4 updated AD-0026, GDE-0077, eleven
+service READMEs and accepted ADR-0061. No container was recreated.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | E1 | 1 | W1 | Draft reachability and flow scan | `56104a49e`, public render | NOT_RUN | Approximate draft input only; the source-read inventory is W1 | optional | - |
 | E2 | 1 | W1 | Source-read authentication and flow inventory of 38 `edge_net` members | `56104a49e` | PASS | Inventory above with a source line per row; in-scope list and flows corrected in Spec 0.2.0 | required | - |
+| E3 | 4 | W3 | `SsoOnlyIngressContractTests` before and after W2 | `15be6a84f` then this branch | PASS | All 17 subtests failed before W2; 3 tests OK after | required | - |
+| E4 | 2, 3 | W2 | All-profile public render, `validate-docker-compose.sh`, `check-all-hardening.sh` | This branch | PASS | 65 selections valid; all hardening tiers pass; `test_p02_service_contracts` 29 OK | required | - |
+| E5 | 2, 3 | W2 | Network regression suites (baseline gates, wiring, runner isolation, runtime compatibility, port, P02 native/Prometheus, compose_start, port inventory, connections, tier layout, Crawl4AI) | This branch | PASS | 311 tests OK, 39 declared skips, after the `edge_net` routing test accepted dedicated ingress | required | - |
+| E6 | 5 | W4 | Metadata, link, lifecycle and operations-catalog checks | This branch | PASS | See the PR validation block | required | - |
+| E7 | 6 | W5 | HOME recreation, SSO route, direct-reach refusal, flows and rollback | - | NOT_RUN | Needs its own approval and maintenance window | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 1 | pending | E2 | W1 inventory recorded; awaiting owner review with the Spec | @buenhyden |
-| 2 | pending | - | Awaiting W2 | @buenhyden |
-| 3 | pending | - | Awaiting W2 | @buenhyden |
-| 4 | pending | - | Awaiting W3 | @buenhyden |
-| 5 | pending | - | Awaiting W4 | @buenhyden |
+| 2 | pending | E4, E5 | Source change done; awaiting owner acceptance and W5 | @buenhyden |
+| 3 | pending | E4, E5 | Source change done; awaiting owner acceptance and W5 | @buenhyden |
+| 4 | pending | E3 | Test in place; awaiting owner acceptance | @buenhyden |
+| 5 | pending | E6 | Documents updated, ADR-0061 accepted; awaiting owner acceptance | @buenhyden |
 | 6 | pending | - | Awaiting W5 and its approval | @buenhyden |
 
 ## Review and Completion
 
-Not started. The Spec and Plan are drafts.
+W1–W4 are done in source; W5 (HOME) waits for its own approval.
 
 ## Related Documents
 

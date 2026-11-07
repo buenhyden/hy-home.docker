@@ -5572,7 +5572,12 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             name
             for name, service in self._services().items()
             if "traefik.enable=true" in _labels(service)
-            and name not in {"storybook", "redisinsight"}
+            # A dedicated Traefik ingress network replaces edge_net (Storybook,
+            # RedisInsight, and the SPEC-0266 SSO-only backends).
+            and not any(
+                network.endswith("_ingress_net")
+                for network in (service.get("networks") or {})
+            )
             and "edge_net" not in (service.get("networks") or {})
         ]
         self.assertEqual([], missing)

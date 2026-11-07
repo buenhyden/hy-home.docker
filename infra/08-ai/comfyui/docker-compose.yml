@@ -83,7 +83,7 @@ services:
       NVIDIA_DRIVER_CAPABILITIES: compute,utility
 
     networks:
-      edge_net: {}
+      comfyui_ingress_net: {}
       # openclaw_default:
     volumes:
       - comfyui-models:/opt/comfyui/models:rw
@@ -95,6 +95,7 @@ services:
       - comfyui-torch-cache:/home/comfyui/.cache/torch:rw
     labels:
       <<: *tier-label
+      traefik.docker.network: comfyui_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.comfyui.rule: Host(`comfyui.${DEFAULT_URL}`)
       traefik.http.routers.comfyui.entrypoints: websecure

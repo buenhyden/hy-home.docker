@@ -134,6 +134,7 @@ services:
       start_period: 20s
     labels:
       <<: *tier-label
+      traefik.docker.network: mlflow_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.mlflow.rule: Host(`mlflow.${DEFAULT_URL}`)
       traefik.http.routers.mlflow.entrypoints: websecure
@@ -141,7 +142,7 @@ services:
       traefik.http.routers.mlflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.mlflow.loadbalancer.server.port: ${MLFLOW_PORT:-5000}
     networks:
-      edge_net: {}
+      mlflow_ingress_net: {}
       ai_net: {}
       mng_data_net: {}
       object_net: {}

@@ -108,6 +108,7 @@ services:
       start_period: 1m
     labels:
       <<: *tier-label
+      traefik.docker.network: prometheus_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.prometheus.rule: Host(`prometheus.${DEFAULT_URL}`)
       traefik.http.routers.prometheus.entrypoints: websecure
@@ -128,7 +129,8 @@ services:
     extra_hosts:
       - 'node-exporter:10.250.5.1'
     networks:
-      edge_net: {}
+      seaweedfs_s3_metrics_net: {}
+      prometheus_ingress_net: {}
       obs_net: {}
       seaweedfs_metrics_net: {}
 
@@ -170,6 +172,7 @@ services:
       start_period: 2m
     labels:
       <<: *tier-label
+      traefik.docker.network: loki_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.loki.rule: Host(`loki.${DEFAULT_URL}`)
       traefik.http.routers.loki.entrypoints: websecure
@@ -177,7 +180,7 @@ services:
       traefik.http.routers.loki.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.loki.loadbalancer.server.port: ${LOKI_PORT:-3100}
     networks:
-      edge_net: {}
+      loki_ingress_net: {}
       obs_net: {}
       object_net: {}
 
@@ -219,6 +222,7 @@ services:
       start_period: 2m
     labels:
       <<: *tier-label
+      traefik.docker.network: tempo_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.tempo.rule: Host(`tempo.${DEFAULT_URL}`)
       traefik.http.routers.tempo.entrypoints: websecure
@@ -226,7 +230,7 @@ services:
       traefik.http.routers.tempo.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.tempo.loadbalancer.server.port: ${TEMPO_PORT:-3200}
     networks:
-      edge_net: {}
+      tempo_ingress_net: {}
       obs_net: {}
       object_net: {}
 
@@ -300,6 +304,7 @@ services:
       start_period: 15s
     labels:
       <<: *tier-label
+      traefik.docker.network: alloy_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.alloy.rule: Host(`alloy.${DEFAULT_URL}`)
       traefik.http.routers.alloy.entrypoints: websecure
@@ -310,7 +315,8 @@ services:
     extra_hosts:
       - 'node-exporter:10.250.5.1'
     networks:
-      edge_net: {}
+      seaweedfs_s3_metrics_net: {}
+      alloy_ingress_net: {}
       obs_net: {}
       quality_otlp_net: {}
 
@@ -615,6 +621,7 @@ services:
       - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro
     labels:
       <<: *tier-label
+      traefik.docker.network: cadvisor_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.cadvisor.rule: Host(`cadvisor.${DEFAULT_URL}`)
       traefik.http.routers.cadvisor.entrypoints: websecure
@@ -622,7 +629,7 @@ services:
       traefik.http.routers.cadvisor.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.cadvisor.loadbalancer.server.port: ${CADVISOR_PORT:-8080}
     networks:
-      edge_net: {}
+      cadvisor_ingress_net: {}
       obs_net: {}
 
   gatus:
@@ -727,6 +734,7 @@ services:
       start_period: 60s
     labels:
       <<: *tier-label
+      traefik.docker.network: pyroscope_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.pyroscope.rule: Host(`pyroscope.${DEFAULT_URL}`)
       traefik.http.routers.pyroscope.entrypoints: websecure
@@ -734,7 +742,7 @@ services:
       traefik.http.routers.pyroscope.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.pyroscope.loadbalancer.server.port: ${PYROSCOPE_PORT:-4040}
     networks:
-      edge_net: {}
+      pyroscope_ingress_net: {}
       obs_net: {}
 
   alertmanager:
@@ -775,6 +783,7 @@ services:
       start_period: 15s
     labels:
       <<: *tier-label
+      traefik.docker.network: alertmanager_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.alertmanager.rule: Host(`alertmanager.${DEFAULT_URL}`)
       traefik.http.routers.alertmanager.entrypoints: websecure
@@ -782,7 +791,7 @@ services:
       traefik.http.routers.alertmanager.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.alertmanager.loadbalancer.server.port: ${ALERTMANAGER_PORT:-9093}
     networks:
-      edge_net: {}
+      alertmanager_ingress_net: {}
       obs_net: {}
 
   pushgateway:
@@ -810,6 +819,7 @@ services:
       start_period: 15s
     labels:
       <<: *tier-label
+      traefik.docker.network: pushgateway_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.pushgateway.rule: Host(`pushgateway.${DEFAULT_URL}`)
       traefik.http.routers.pushgateway.entrypoints: websecure
@@ -817,7 +827,7 @@ services:
       traefik.http.routers.pushgateway.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.pushgateway.loadbalancer.server.port: ${PUSHGATEWAY_PORT:-9091}
     networks:
-      edge_net: {}
+      pushgateway_ingress_net: {}
       obs_net: {}
 
   dcgm-exporter:

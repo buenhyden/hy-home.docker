@@ -1,8 +1,8 @@
 ---
 title: "SSO-Only Backend Ingress Specification"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-07"
 layer: "specs"
@@ -50,8 +50,9 @@ its own package. ADR-0061 records the decision.
 - One internal ingress network per in-scope backend, shared only with Traefik,
   and the `traefik.docker.network` label that makes Traefik use it.
 - The flows that today exist only through `edge_net`. W1 found two, Alloy and
-  Prometheus scraping `seaweedfs-s3:9327`; they move to the existing
-  `seaweedfs_metrics_net`, which `seaweedfs-s3` and Alloy join.
+  Prometheus scraping `seaweedfs-s3:9327`. They move to a new internal
+  `seaweedfs_s3_metrics_net` with only those three members, because the existing
+  `seaweedfs_metrics_net` also reaches the master/volume/filer APIs.
 - The root network declarations, the leaf Compose files, the render tests, and
   GDE-0077, AD-0026 and the affected service READMEs.
 
@@ -115,8 +116,10 @@ its own package. ADR-0061 records the decision.
    shared only with Traefik, and sets `traefik.docker.network` to it.
 3. Each flow from criterion 1 has a named network carrying only its peers, and
    no other network membership of any service changes.
-4. A render test fails when an in-scope backend is on `edge_net` or shares any
-   network with a service outside Traefik and its declared flow peers.
+4. A render test fails when an in-scope backend is on `edge_net`, when its
+   ingress network has any member besides it and Traefik, is not internal with
+   an isolated gateway, or is not its `traefik.docker.network`, or when a flow
+   network has a member outside its declared peers.
 5. GDE-0077, AD-0026 and each affected service README describe the new
    networks, and ADR-0061 is accepted.
 6. In HOME, under its own approval, the affected services are recreated; each

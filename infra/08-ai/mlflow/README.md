@@ -1,10 +1,10 @@
 ---
 title: "MLflow Tracking Server"
-version: "1.0.7"
+version: "1.0.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2026-09-21"
 ---
 
@@ -61,7 +61,7 @@ MLflow는 실행(run), 파라미터, 메트릭, 등록된 모델, 아티팩트�
 | --- | --- |
 | Profiles | `mlops`, `data-science` (둘 다 의존성 클로저를 위해 `mng-pg`, `mng-pg-init`, SeaweedFS도 함께 선택) |
 | Start order | `mng-pg` healthy → `mng-pg-init` → `mlflow-db-provision`; `seaweedfs-buckets` 완료; 그다음 `mlflow` |
-| Network / port | `ai_net`, `edge_net`, `mng_data_net`, `object_net`; `expose`를 통한 내부 `${MLFLOW_PORT:-5000}`; 호스트 포트 없음 |
+| Network / port | `ai_net`, `mlflow_ingress_net`(Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266), `mng_data_net`, `object_net`; `expose`를 통한 내부 `${MLFLOW_PORT:-5000}`; 호스트 포트 없음 |
 | Route | `gateway-standard-chain`, `sso-errors`, `sso-auth`를 사용하는 `https://mlflow.${DEFAULT_URL}` |
 | Allowed hosts | `mlflow:*`, `mlflow.${DEFAULT_URL}`, `localhost:*`, `127.0.0.1:*` (DNS 리바인딩 방지) |
 | Environment keys | `MLFLOW_PORT`, `MLFLOW_DB_USER`, `MLFLOW_DB_NAME`, `MLFLOW_ARTIFACT_BUCKET`, `MLFLOW_S3_ENDPOINT_URL`, `MLFLOW_S3_REGION`; admin 연결에는 `POSTGRES_DEFAULT_USER`, `POSTGRES_DEFAULT_DB` 사용 |

@@ -1,10 +1,10 @@
 ---
 title: "Kafka 메시징"
-version: "1.2.3"
+version: "1.2.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-07"
 created: "2025-11-12"
 ---
 
@@ -38,8 +38,9 @@ Connect는 Debezium PostgreSQL 플러그인을 사용해
 ## Structure
 
 정상 broker와 Connect 상태는 `${DEFAULT_MESSAGE_BROKER_DIR}/kafka` 아래의 별도
-bind 기반 volume을 사용합니다. 서비스들은 `kafka_net`에 참여하고 라우팅되는
-서비스는 `edge_net`에도 참여합니다. Broker, controller, 게시된 broker/JMX
+bind 기반 volume을 사용합니다. 서비스들은 `kafka_net`에 참여합니다. 라우팅되는
+Kafbat UI는 `edge_net`에, 자체 인증이 없는 Schema Registry·Connect·REST Proxy는
+각자의 Traefik만 함께 붙는 전용 내부 ingress망(`schema_registry_ingress_net` 등, SPEC-0266)에 참여합니다. Broker, controller, 게시된 broker/JMX
 listener는 PLAINTEXT이며 broker TLS/클라이언트 인증은 선언되어 있지
 않습니다. Schema Registry, Connect, REST, Kafbat HTTP 포트는 내부용으로
 유지되며 일부 라우트는 Traefik을 사용합니다. Broker, Schema Registry,

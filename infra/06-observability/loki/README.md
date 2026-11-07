@@ -1,10 +1,10 @@
 ---
 title: "Loki Log Aggregation System"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2026-01-12"
 ---
 
@@ -64,7 +64,7 @@ loki/
 | Volumes | `loki-data:/loki:rw` |
 | Secret refs | `seaweedfs_s3_loki_secret_key` |
 | Environment refs | `S3_ACCESS_KEY` |
-| Networks | `edge_net`, `object_net`, `obs_net` |
+| Networks | `loki_ingress_net`(Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266), `object_net`, `obs_net` |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}` |
 | Route | `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 거치는 `https://loki.${DEFAULT_URL}` |
 | Labels | `traefik.http.routers.loki.*`, `traefik.http.services.loki.loadbalancer.server.port` |

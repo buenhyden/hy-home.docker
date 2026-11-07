@@ -1,10 +1,10 @@
 ---
 title: "Traefik Edge Router"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2025-11-12"
 ---
 
@@ -62,7 +62,7 @@ traefik/
 | Config files | `docker-compose.yml`, `config`, `config/README.md`, `config/traefik.yml` |
 | Config values | profiles: `core`, `dev` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml)을 통해 root include가 활성화됨 -> `infra/01-gateway/traefik/docker-compose.yml` |
-| Networks | `edge_net`, `obs_net` |
+| Networks | `edge_net`, `obs_net`, `experience_ingress_net`, `redisinsight_ingress_net`, `blog_export_net`, 자체 인증이 없는 backend 17개의 `<service>_ingress_net`(SPEC-0266) |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `${DEFAULT_CERT_DIR}/{cert.pem,key.pem,rootCA.pem}`을 각각 `/certs/{cert.pem,key.pem,rootCA.pem}`에 읽기 전용 mount, `./dynamic:/dynamic:ro`, `./config/traefik.yml:/etc/traefik/traefik.yml:ro` |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |

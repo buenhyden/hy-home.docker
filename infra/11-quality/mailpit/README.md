@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Implementation"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-07"
 ---
 
 # Mailpit
@@ -35,7 +35,7 @@ Lifecycle: **DEV**. 운영 통제와 복구는 [documentation index](../../../do
 
 ## Configuration
 
-프로필: `mail-dev / local / dev`. 루트 Compose가 이 정의를 include하지만, include 자체만으로는 서비스가 시작되지 않습니다. 네트워크는 `edge_net`과 `mail_net`입니다. 게이트웨이 인증은 해당 라우트에만 적용되며, loopback UI와 peer의 직접 접속에는 native UI 인증이 선언되어 있지 않습니다. 비공개 값을 출력하지 않고 [공개 환경 변수 키](../../../.env.example)와 [시크릿 참조](../../../secrets/README.md)를 검토합니다.
+프로필: `mail-dev / local / dev`. 루트 Compose가 이 정의를 include하지만, include 자체만으로는 서비스가 시작되지 않습니다. 네트워크는 Traefik만 함께 붙는 전용 내부 ingress망인 `mailpit_ingress_net`(SPEC-0266)과 `mail_net`입니다. 게이트웨이 인증은 해당 라우트에만 적용되며, loopback UI와 peer의 직접 접속에는 native UI 인증이 선언되어 있지 않습니다. 비공개 값을 출력하지 않고 [공개 환경 변수 키](../../../.env.example)와 [시크릿 참조](../../../secrets/README.md)를 검토합니다.
 
 ## Validation
 

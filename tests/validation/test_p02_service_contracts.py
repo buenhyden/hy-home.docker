@@ -172,6 +172,123 @@ class HostPublicationContractTests(unittest.TestCase):
         )
 
 
+# SPEC-0266: Traefik backends whose only access control is sso-auth (W1 inventory).
+SSO_ONLY_BACKENDS = (
+    "alertmanager",
+    "alloy",
+    "cadvisor",
+    "comfyui",
+    "flower",
+    "kafka-connect",
+    "kafka-rest-proxy",
+    "loki",
+    "mailpit",
+    "mlflow",
+    "ollama",
+    "prometheus",
+    "pushgateway",
+    "pyroscope",
+    "schema-registry",
+    "tempo",
+    "terrakube-ui",
+)
+RETIRED_SUBNETS = {"10.250.9.0/24", "10.250.12.0/24"}
+
+
+def _ingress_network(service: str) -> str:
+    return service.replace("-", "_") + "_ingress_net"
+
+
+class SsoOnlyIngressContractTests(unittest.TestCase):
+    """Only Traefik reaches an SSO-only backend (SPEC-0266, ADR-0061)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            env = Path(directory) / "public.env"
+            env.write_bytes((ROOT / ".env.example").read_bytes())
+            result = subprocess.run(
+                [
+                    "docker",
+                    "compose",
+                    "--project-directory",
+                    str(ROOT),
+                    "--env-file",
+                    str(env),
+                    "-f",
+                    str(ROOT / "docker-compose.yml"),
+                    "--profile",
+                    "*",
+                    "config",
+                    "--format",
+                    "json",
+                ],
+                cwd=ROOT,
+                env={
+                    "COMPOSE_DISABLE_ENV_FILE": "1",
+                    "DOCKER_CONFIG": str(Path(directory) / "docker-config"),
+                    "DOCKER_HOST": f"unix://{directory}/no-daemon.sock",
+                    "HOME": directory,
+                    "PATH": os.environ["PATH"],
+                },
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=120,
+            )
+        if result.returncode:
+            raise AssertionError("public Compose configuration did not render")
+        cls.config = __import__("json").loads(result.stdout)
+        cls.services = cls.config["services"]
+        cls.members: dict[str, set[str]] = {}
+        for name, service in cls.services.items():
+            for network in service.get("networks") or {}:
+                cls.members.setdefault(network, set()).add(name)
+
+    def test_each_sso_only_backend_is_reachable_only_from_traefik(self) -> None:
+        for name in SSO_ONLY_BACKENDS:
+            with self.subTest(service=name):
+                service = self.services[name]
+                network = _ingress_network(name)
+                self.assertNotIn("edge_net", service["networks"])
+                self.assertIn(network, service["networks"])
+                self.assertEqual({name, "traefik"}, self.members[network])
+                declared = self.config["networks"][network]
+                self.assertTrue(declared.get("internal"))
+                self.assertEqual(
+                    "isolated",
+                    (declared.get("driver_opts") or {}).get(
+                        "com.docker.network.bridge.gateway_mode_ipv4"
+                    ),
+                )
+                self.assertEqual(
+                    network, service["labels"].get("traefik.docker.network")
+                )
+
+    def test_seaweedfs_s3_metrics_keep_a_non_edge_path(self) -> None:
+        # Prometheus and Alloy scrape seaweedfs-s3:9327 (W1 inventory) on a
+        # network that reaches no master/volume/filer API.
+        self.assertEqual(
+            {"seaweedfs-s3", "prometheus", "alloy"},
+            self.members["seaweedfs_s3_metrics_net"],
+        )
+        self.assertTrue(self.config["networks"]["seaweedfs_s3_metrics_net"]["internal"])
+        self.assertNotIn("alloy", self.members["seaweedfs_metrics_net"])
+
+    def test_subnets_are_distinct_and_avoid_retired_ranges(self) -> None:
+        import ipaddress
+
+        subnets = []
+        for name, network in self.config["networks"].items():
+            for block in (network.get("ipam") or {}).get("config") or []:
+                if block.get("subnet"):
+                    subnets.append((name, ipaddress.ip_network(block["subnet"])))
+        for index, (name, subnet) in enumerate(subnets):
+            self.assertNotIn(str(subnet), RETIRED_SUBNETS, name)
+            for other, second in subnets[index + 1 :]:
+                self.assertFalse(subnet.overlaps(second), f"{name} and {other}")
+
+
 class ListenerPortContractTests(unittest.TestCase):
     def test_oauth2_proxy_listener_health_and_gateway_use_one_port(self) -> None:
         service = _service(

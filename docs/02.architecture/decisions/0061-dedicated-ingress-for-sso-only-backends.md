@@ -1,8 +1,8 @@
 ---
 title: "Dedicated Ingress for SSO-Only Backends"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-11-07"
 layer: "architecture"
@@ -23,7 +23,7 @@ almost every routed backend over one shared network, `edge_net`, so every
 backend is wired to every other. A backend whose only access control is the
 gateway `sso-auth` middleware is therefore reachable without SSO by every
 `edge_net` member through its service name. The 2026-11-07 render found
-seventeen such backends among 38 `edge_net` members. The Traefik v3.7 Docker
+seventeen such backends among 38 `edge_net` members (SPEC-0266 W1). The Traefik v3.7 Docker
 provider makes no isolation claim; its `network` option only picks the network
 Traefik uses. Two backends already avoid the problem: Storybook shares an
 internal ingress network only with Traefik, and RedisInsight binds its
@@ -86,8 +86,8 @@ Traefik and its declared flow peers.
 ### Follow-up
 
 SPEC-0266 confirms the backend list and flows, implements the networks, and
-applies the change in HOME under its own approval. This ADR moves to
-`accepted` with that package's W4.
+applies the change in HOME under its own approval. The owner accepted this
+decision on 2026-11-07 together with the SPEC-0266 Spec and Plan.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Ollama Inference Engine"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2025-11-12"
 ---
 
@@ -51,7 +51,7 @@ ollama/
 | Config files | `docker-compose.yml` |
 | Config values | env 키: `OLLAMA_HOST`, `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`; 프로필: `ai`, `ai-llm`, `ollama` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
-| Networks | `ai_net`, `edge_net`, `obs_net` |
+| Networks | `ai_net`, `ollama_ingress_net`(Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266), `obs_net` |
 | Volumes | `ollama-data:/root/.ollama:rw`, `ollama-data` |
 | Ports | Ollama API용 `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}`; exporter는 `ai_net` 내부에서 `${OLLAMA_EXPORTER_PORT:-8000}`을 노출 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.ollama.rule`, `traefik.http.routers.ollama.entrypoints`, `traefik.http.routers.ollama.tls`, `traefik.http.services.ollama.loadbalancer.server.port`, `traefik.http.routers.ollama.middlewares` |

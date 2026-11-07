@@ -94,6 +94,7 @@ services:
       JAVA_TOOL_OPTIONS: -Dcom.sun.security.enableAIAcaIssuers=true
     labels:
       <<: *tier-label
+      traefik.docker.network: terrakube_ui_ingress_net
       traefik.enable: 'true'
       traefik.http.routers.terrakube-ui.rule: Host(`terrakube-ui.${DEFAULT_URL}`)
       traefik.http.routers.terrakube-ui.entrypoints: websecure
@@ -110,7 +111,7 @@ services:
       terrakube-api:
         condition: service_healthy
     networks:
-      edge_net: {}
+      terrakube_ui_ingress_net: {}
       terrakube_net: {}
 
   terrakube-executor:
