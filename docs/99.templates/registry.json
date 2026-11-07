@@ -4834,8 +4834,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 60,
-      "next_number": 61,
+      "high_water": 61,
+      "next_number": 62,
       "reserved_history": [
         3,
         5,
@@ -4874,8 +4874,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 265,
-      "next_number": 266,
+      "high_water": 266,
+      "next_number": 267,
       "reserved_history": [
         1,
         2,
