@@ -1,6 +1,6 @@
 ---
 title: "ComfyUI Egress on Demand Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -107,6 +107,28 @@ which passes on `main`), because the public environment scan reads only the
 root Compose includes. The overlay now publishes `127.0.0.1:8188` and the key
 is removed.
 
+### W5 HOME apply (2026-11-08)
+
+The owner approved W5 on 2026-11-08 after #799 merged. The live tree was
+fast-forwarded to `1861caae2` with no local changes. Before the change
+(`~/storage/backups/spec0268-w5-20261108/pre-state.txt`): `comfyui` on
+`comfyui_egress_net` (`10.250.42.129`) and `comfyui_ingress_net`, port
+`127.0.0.1:8188` published, `https://raw.githubusercontent.com` answering
+200 from inside the container, and 75, 182, 3, 2 and 18 entries in `models`,
+`custom_nodes`, `input`, `output` and `user`. A `--dry-run` recreated only
+`comfyui` and created no network or volume. ComfyUI's data sits on bind
+volumes that the change does not touch, so no backup copy was taken.
+
+| Step (UTC) | Command | Observation |
+| --- | --- | --- |
+| Default, 22:19:22–22:21:21 | `up -d --no-deps --force-recreate comfyui` | `healthy`; networks `comfyui_ingress_net` only; port `8188/tcp` unpublished; `raw.githubusercontent.com` and `pypi.org` fail with `URLError`, `1.1.1.1:443` with `OSError`; RUN-0081 in-container check OK; host `127.0.0.1:8188` refused; SSO route 302 to the Keycloak realm; data counts unchanged |
+| Start-up log | `docker logs comfyui` | ComfyUI-Manager logs `Failed to perform initial fetching` on DNS and continues; frontend 1.51.10 served; `Starting server`. The Manager's `comfyui-frontend-package ... fixed` line appears offline as well, so its pip step needs no network |
+| Attach, 22:21:44–22:22:25 | RUN-0081 attach with `docker-compose.egress.yml` | `healthy`; networks `comfyui_egress_net` and `comfyui_ingress_net`; `127.0.0.1:8188` published; outbound 200; host `/system_stats` 200 |
+| Detach, 22:22:32–22:23:11 | RUN-0081 detach | `healthy`; `comfyui_ingress_net` only; port unpublished; outbound blocked; route 302; data counts unchanged; `comfyui_egress_net` has 0 members |
+
+A workflow run with a local model was not part of criterion 6 and was not
+run.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -116,6 +138,8 @@ is removed.
 | E3 | 4 | W3 | ComfyUI default and overlay render tests before and after W2 | `main` `279d23d39` then this branch | PASS | 2 failures before W2; `test_p02_service_contracts` 37 tests OK after | required | - |
 | E4 | 2, 3 | W2 | `validate-docker-compose.sh`, `check-all-hardening.sh`, Compose gate suites | This branch | PASS | 65 selections valid; all hardening tiers pass; `test_compose_baseline_gates`, `test_p02_service_contracts` and `PublicSecretSchemaTests` 200 tests OK, 31 opt-in skips; the other failures in the eleven related suites also fail on `main` | required | - |
 | E5 | 5 | W4 | Operations catalog, metadata and link checks | This branch | PASS | `check-operations-catalog.py` PASS after the m0021 re-render | required | - |
+| E6 | 6 | W5 | HOME recreate on the default render, refusal, route, data, and attach and detach rehearsal | `1861caae2`, HOME | PASS | "W5 HOME apply" table | required | - |
+| E7 | 6 | W5 | Workflow run with a local model | HOME | NOT_RUN | Not part of criterion 6 | optional | - |
 
 ## Criterion Acceptance
 
@@ -126,11 +150,11 @@ is removed.
 | 3 | pending | E4 | Source change done; awaiting W5 and owner acceptance | @buenhyden |
 | 4 | pending | E3 | Tests in place; awaiting owner acceptance | @buenhyden |
 | 5 | pending | E5 | Documents updated; awaiting owner acceptance | @buenhyden |
-| 6 | pending | - | Awaiting W5 and its approval | @buenhyden |
+| 6 | pending | E6 | Applied in HOME; refusal and attach and detach observed; awaiting owner acceptance | @buenhyden |
 
 ## Review and Completion
 
-W1–W4 are done in source. W5 (HOME) needs its own approval.
+W1–W5 are done. Every criterion awaits owner acceptance.
 
 ## Related Documents
 
