@@ -1,8 +1,8 @@
 ---
 title: "ComfyUI Egress on Demand Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-08"
 layer: "specs"
@@ -48,26 +48,89 @@ ComfyUI-Manager's start-up fetch of its node list is the one outbound call
 still to be checked in W1; the `weak` security level is out of scope and
 recorded for the owner.
 
+### Approval and start (2026-11-08)
+
+The owner approved the SPEC-0268 Spec and Plan on 2026-11-08 after the draft
+merged in #796. W1 then found that the default render would also lose the
+loopback port, and the owner chose to move the port into the overlay. Spec
+and Plan 0.2.0 record that decision and place the attach and detach steps in
+RUN-0081, because the README routes commands to the operations documents. W5
+(HOME) keeps its own approval.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0268 | draft | approved | #approval-and-start-2026-11-08 |
+| SPEC-0268-PLAN-0001 | draft | approved | #approval-and-start-2026-11-08 |
+| SPEC-0268-TSK-0001 | draft | ready | #approval-and-start-2026-11-08 |
+| SPEC-0268-TSK-0001 | ready | in-progress | #approval-and-start-2026-11-08 |
+
+### W1 outbound dependencies (2026-11-08)
+
+Read in the running `comfyui` container (ComfyUI-Manager 3.41, image
+`yanwk/comfyui-boot:cu126-slim` created 2026-09-14):
+
+| Dependency | When | Source | Needed without maintenance? |
+| --- | --- | --- | --- |
+| Image entrypoint | Start | `/runner-scripts/entrypoint.sh`: copies the bundled ComfyUI only when `/root/ComfyUI/main.py` is absent; no download | No |
+| ComfyUI frontend package | Start | `app/frontend_management.py:233-249` exits only when `comfyui_frontend_package` cannot be imported; the image ships 1.51.10, the version `/root/ComfyUI/requirements.txt` pins | No |
+| GitHub frontend release fetch | Start | `app/frontend_management.py:136-192`, used only for `--front-end-version`, which `COMFYUI_ARGS` does not set | No |
+| Manager dependencies | Start | `prestartup_script.py:455-478` installs only when `git`, `toml`, `rich` or `chardet` cannot be imported | No |
+| Manager pip fixer | Start | `glob/manager_util.py:466-490` reinstalls the frontend package when its package scan misses it; the 2026-11-08 start logged a false miss (`PyTorch is not installed` while torch 2.14.0 is present) and a `fixed` result for a version already installed | No; a failed reinstall is logged and start continues |
+| Manager node and model lists | Start, background thread | `glob/manager_server.py:2075-2091`: fetches five lists from `raw.githubusercontent.com` unless `network_mode = offline`; errors are logged | No; the Manager's list view stays on cached files |
+| Model, custom-node and package installs | Maintenance | ComfyUI-Manager | Yes; this is the overlay window |
+| Workflow execution | Run time | Core nodes load local files under `/root/ComfyUI/models` | No |
+
+`PIP_USER=true` (`entrypoint.sh:53-56`) sends packages installed during
+maintenance to `/root/.local`, in the `/root` volume, so they survive a
+recreate. Packages already in the image stay in `/usr/local`.
+
+### W2–W4 implementation (2026-11-08)
+
+W3 came first: `test_comfyui_has_no_outbound_access_or_host_port_by_default`
+and `test_comfyui_egress_overlay_adds_only_egress_and_loopback_port` replace
+`test_comfyui_keeps_outbound_access_without_peers` in
+`SsoOnlyIngressContractTests`, which now renders through
+`_render_all_profiles(*overlays)`. Both failed on `main`; the other 35 tests
+in the module passed. W2 removed `comfyui_egress_net` and the port from
+`infra/08-ai/comfyui/docker-compose.yml` and added the overlay. A root-base
+overlay may add only new internal networks and no ports (POL-0078), and the
+first draft with `base: docker-compose.yml` failed 12 Compose gate tests on
+`overlay networks must be a nonempty mapping`; the overlay uses the leaf base
+`infra/08-ai/comfyui/docker-compose.yml`, like the `monitor-acl` overlays.
+W4 updated RUN-0081 (in-container health check, attach and detach), the
+ComfyUI README, GDE-0077 and the m0021 inventory. The related-suite run then
+found `COMFYUI_HOST_PORT` orphaned in `.env.example`
+(`test_public_environment_has_current_consumers_and_four_way_classification`,
+which passes on `main`), because the public environment scan reads only the
+root Compose includes. The overlay now publishes `127.0.0.1:8188` and the key
+is removed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | E1 | 1 | W1 | Draft source and container review | `main` `802e77f34`, HOME `comfyui` | NOT_RUN | Draft input only; the dependency table is W1 | optional | - |
+| E2 | 1 | W1 | Source read of start-up and run-time outbound calls | HOME `comfyui`, ComfyUI-Manager 3.41 | PASS | "W1 outbound dependencies" table | required | - |
+| E3 | 4 | W3 | ComfyUI default and overlay render tests before and after W2 | `main` `279d23d39` then this branch | PASS | 2 failures before W2; `test_p02_service_contracts` 37 tests OK after | required | - |
+| E4 | 2, 3 | W2 | `validate-docker-compose.sh`, `check-all-hardening.sh`, Compose gate suites | This branch | PASS | 65 selections valid; all hardening tiers pass; `test_compose_baseline_gates`, `test_p02_service_contracts` and `PublicSecretSchemaTests` 200 tests OK, 31 opt-in skips; the other failures in the eleven related suites also fail on `main` | required | - |
+| E5 | 5 | W4 | Operations catalog, metadata and link checks | This branch | PASS | `check-operations-catalog.py` PASS after the m0021 re-render | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | Awaiting W1 | @buenhyden |
-| 2 | pending | - | Awaiting W2 | @buenhyden |
-| 3 | pending | - | Awaiting W2 | @buenhyden |
-| 4 | pending | - | Awaiting W3 | @buenhyden |
-| 5 | pending | - | Awaiting W4 | @buenhyden |
+| 1 | pending | E2 | W1 table recorded; awaiting owner acceptance | @buenhyden |
+| 2 | pending | E4 | Source change done; awaiting W5 and owner acceptance | @buenhyden |
+| 3 | pending | E4 | Source change done; awaiting W5 and owner acceptance | @buenhyden |
+| 4 | pending | E3 | Tests in place; awaiting owner acceptance | @buenhyden |
+| 5 | pending | E5 | Documents updated; awaiting owner acceptance | @buenhyden |
 | 6 | pending | - | Awaiting W5 and its approval | @buenhyden |
 
 ## Review and Completion
 
-Not started. The Spec and Plan are drafts.
+W1–W4 are done in source. W5 (HOME) needs its own approval.
 
 ## Related Documents
 
