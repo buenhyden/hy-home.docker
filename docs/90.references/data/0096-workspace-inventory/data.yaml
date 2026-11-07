@@ -1,12 +1,12 @@
 schema_version: 1
-observed_at: '2026-11-07T05:46:33.670505Z'
+observed_at: '2026-11-07T06:44:40.038122Z'
 workspace:
   path: .
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 6ba37ce1fa202f9434f32002b96568fc9a7e5a40
-  branch: fix/data-0096-lab-move-refresh
+  head: 52556b386d2dee1b5d06923354e69df8c04e1e1d
+  branch: fix/d01-stale-review-findings
   dirty_paths: []
   worktrees:
   - in_boundary: true
@@ -21,8 +21,8 @@ roots:
   git: true
   git_root: /home/hyunyoun/data/hy-home.docker
   git_root_in_boundary: true
-  head: 6ba37ce1fa202f9434f32002b96568fc9a7e5a40
-  branch: fix/data-0096-lab-move-refresh
+  head: 52556b386d2dee1b5d06923354e69df8c04e1e1d
+  branch: fix/d01-stale-review-findings
   dirty_paths: []
   worktrees:
   - in_boundary: true
@@ -1547,18 +1547,19 @@ files:
 - path: .env.example
   tracked: true
   kind: configuration
-  bytes: 16022
+  bytes: 16001
   state: HASHED
-  sha256: 494d21a34d4818f0d1b196a1488b6e36172ebe5949785fa4170f1da9bfc00790
+  sha256: 2c378bc14a112502e10dcda63ca2e458edf40c2737013b3bdc683bb5e026e49e
   review:
     complete: false
-    observed_at: '2026-11-01T22:41:45Z'
+    observed_at: '2026-11-07T06:44:34.705992+00:00'
     path: .env.example
-    reviewer: /root/p02_iac_review (iac-reviewer)
-    scope: P02 changed infrastructure sections and declared cross-file contracts;
-      full-file review not claimed
-    sha256: 50482e3a2fa6a14adfe0eded86d2a839c87bace430062da7c114efca040bbcbb
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed
+      infrastructure sections and declared cross-file contracts; full-file review
+      no; FINDING fixed in 0942176c9; 0942176c9 diff reviewed by its author'
+    sha256: 2c378bc14a112502e10dcda63ca2e458edf40c2737013b3bdc683bb5e026e49e
+    state: PARTIAL
 - path: .gitattributes
   tracked: true
   kind: configuration
@@ -1647,13 +1648,14 @@ files:
   sha256: 7faaab140e8677eb29ab0083111cb83480fe2043afff1e9c4e810237b59ac3ee
   review:
     complete: false
-    observed_at: '2026-11-02T02:22:28Z'
+    observed_at: '2026-11-07T06:44:34.707186+00:00'
     path: .github/workflow-contract.yml
-    reviewer: p02_residual_code_review + p02_residual_supply_review
-    scope: Exact SSO interruption optional selector registration only; full-file review
-      not claimed
-    sha256: 2cdd5af339d614a6b863679c63a20780df707c411993a45091c1b3a459a975f1
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of ac78f975c..4e63b7c5c hunks against prior scope: Exact
+      SSO interruption optional selector registration only; full-file review not claimed;
+      DELTA_OK'
+    sha256: 7faaab140e8677eb29ab0083111cb83480fe2043afff1e9c4e810237b59ac3ee
+    state: PARTIAL
 - path: .github/workflows/ci-quality.yml
   tracked: true
   kind: configuration
@@ -2737,31 +2739,35 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
   tracked: true
   kind: document
-  bytes: 51438
+  bytes: 51913
   state: HASHED
-  sha256: d2b1a4f1759521f68c2c5ad8b50a4842c0058dc975ff5151e846f8d9d69fc75b
+  sha256: 794f82d8a83dfd03d80960ce2b9f24a81bba4901912cfb0147809eac0894533b
   review:
     complete: false
-    observed_at: '2026-11-02T12:49:37.878423+00:00'
+    observed_at: '2026-11-07T06:44:34.704462+00:00'
     path: docs/03.specs/0212-request-baseline-and-reconciliation/plan.md
-    reviewer: /root/p06_documents
-    scope: P06 authored sections and related public contracts only
-    sha256: c9e457e50f834d6015b96800009786915a69b248be3a32935faa11bfd84113d5
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 169c1b62f..4e63b7c5c hunks against prior scope: P06 authored
+      sections and related public contracts only; FINDING fixed in 0942176c9; 0942176c9
+      diff reviewed by its author'
+    sha256: 794f82d8a83dfd03d80960ce2b9f24a81bba4901912cfb0147809eac0894533b
+    state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
   tracked: true
   kind: document
-  bytes: 55131
+  bytes: 55200
   state: HASHED
-  sha256: 12850e214a9f2a116fee4fbe53eadb2be79296a85a1b2193255c6cd34626d885
+  sha256: cf935925427f828c210be822e32ed9c66aa11c8093a199abf44d2279e2e22a04
   review:
     complete: false
-    observed_at: '2026-11-02T12:37:50Z'
+    observed_at: '2026-11-07T06:44:34.704554+00:00'
     path: docs/03.specs/0212-request-baseline-and-reconciliation/spec.md
-    reviewer: /root/p06_documents
-    scope: P06 authored sections and related public contracts only
-    sha256: 9241bdfbe34a2a91588a2fe2e991e9da73d09b6917a9c75244569f460c653c12
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 169c1b62f..4e63b7c5c hunks against prior scope: P06 authored
+      sections and related public contracts only; FINDING fixed in 0942176c9; 0942176c9
+      diff reviewed by its author'
+    sha256: cf935925427f828c210be822e32ed9c66aa11c8093a199abf44d2279e2e22a04
+    state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0001-request-baseline-and-inventory.md
   tracked: true
   kind: document
@@ -3069,29 +3075,27 @@ files:
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0040-workspace-inventory.md
   tracked: true
   kind: document
-  bytes: 34542
+  bytes: 44566
   state: HASHED
-  sha256: 7cfdac2b174cebcd529e00b363ac8929a3d37c53e3daed39329660782ab6d6a1
+  sha256: d0f3cba757086f41c2ac46c4143bd6c3951eea25441b4e3de598417355043784
   review:
     state: UNREVIEWED
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
   tracked: true
   kind: document
-  bytes: 51280
+  bytes: 51523
   state: HASHED
-  sha256: bca64e3c9235f3b14edd27bde854d9cb9ce0c3d620033416f032aae5d768bd52
+  sha256: aedc5a61fcbd471846fe14ab434d34ab159b932c684dcabdf8dc74d0185c2895
   review:
     complete: false
-    observed_at: '2026-11-02T11:40:35+09:00'
+    observed_at: '2026-11-07T06:44:34.704625+00:00'
     path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0041-service-connection-contracts.md
-    reviewer: root workflow-supervisor
-    scope: Independent review of this follow-up Task diff only; PASS. The approved
-      registered-broad-leaf Result-cell correction from FAIL (handoff) to FAIL and
-      the root-approved hook-compatibility-only SSO evidence rebind are included;
-      the Location handoff remains intact. Historical full Task body and unrelated
-      documents were not re-reviewed.
-    sha256: 08a1f1511a0ee0465fb1ef1531bf694ca918edd8c2360b844641b2d1c2cb8ba7
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of ac78f975c..4e63b7c5c hunks against prior scope: Independent
+      review of this follow-up Task diff only; PASS. The approved registered-broad-l;
+      FINDING fixed in 0942176c9; 0942176c9 diff reviewed by its author'
+    sha256: aedc5a61fcbd471846fe14ab434d34ab159b932c684dcabdf8dc74d0185c2895
+    state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0042-models-runners-wiki.md
   tracked: true
   kind: document
@@ -3116,13 +3120,14 @@ files:
   sha256: 59536ae1a4b49b7e5f0b75f0624bb34050590ab719ffa4103197446bac8b59f3
   review:
     complete: false
-    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    observed_at: '2026-11-07T06:44:34.704733+00:00'
     path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0044-opsflow-notifier-recovery.md
-    reviewer: /root/p04_docs
-    scope: P05 changed sections and related source contracts; full unchanged-file
-      body review not claimed
-    sha256: 1dfb41bf81c621bc52c40b4cd4d0f1031b8c2f7a8dc6cc4eb263648eff21d638
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of current-file prior-scope sections (no committed base)
+      against prior scope: P05 changed sections and related source contracts; full
+      unchanged-file body review not cla; DELTA_OK'
+    sha256: 59536ae1a4b49b7e5f0b75f0624bb34050590ab719ffa4103197446bac8b59f3
+    state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
   tracked: true
   kind: document
@@ -3131,12 +3136,13 @@ files:
   sha256: e8882eedee20fe3fc3109c3c683d6ff04816bcb26f490d4546582ff14394c03a
   review:
     complete: false
-    observed_at: '2026-11-02T13:04:59.591930+00:00'
+    observed_at: '2026-11-07T06:44:34.704781+00:00'
     path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md
-    reviewer: /root/p06_documents
-    scope: P06 authored sections and related public contracts only
-    sha256: 6a5b8218a2745877808a59d012ffea37204a8222e85f2b39ce84526bfa221acf
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 169c1b62f..4e63b7c5c hunks against prior scope: P06 authored
+      sections and related public contracts only; DELTA_OK'
+    sha256: e8882eedee20fe3fc3109c3c683d6ff04816bcb26f490d4546582ff14394c03a
+    state: PARTIAL
 - path: docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0046-exporter-observability.md
   tracked: true
   kind: document
@@ -3841,12 +3847,13 @@ files:
   sha256: 91e10bdb2f3537c7f6cdaaadc821b3e892d25dc4e2c8800028868fbe8e26a0b4
   review:
     complete: false
-    observed_at: '2026-11-02T12:37:50Z'
+    observed_at: '2026-11-07T06:44:34.704813+00:00'
     path: docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md
-    reviewer: /root/p06_documents
-    scope: P06 authored sections and related public contracts only
-    sha256: 8cfb11947350e95b6c66c7873c19173305fbe05b61883b10e2d51b0f5804384a
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 169c1b62f..4e63b7c5c hunks against prior scope: P06 authored
+      sections and related public contracts only; DELTA_OK'
+    sha256: 91e10bdb2f3537c7f6cdaaadc821b3e892d25dc4e2c8800028868fbe8e26a0b4
+    state: PARTIAL
 - path: docs/05.operations/guides/04-security-and-secrets/0085-openbao.md
   tracked: true
   kind: document
@@ -4087,13 +4094,14 @@ files:
   sha256: 9299667ae824c5ad5a7db04e07178965a4e9780c58d293e9b6966f141c51a329
   review:
     complete: false
-    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    observed_at: '2026-11-07T06:44:34.704855+00:00'
     path: docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md
-    reviewer: /root/p04_docs
-    scope: P05 changed sections and related source contracts; full unchanged-file
-      body review not claimed
-    sha256: 6c77a1b4d413781516c447372c1912dc1e128692d985097033afdb5dbc12d50c
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 0a2f7aad4..4e63b7c5c hunks against prior scope: P05 changed
+      sections and related source contracts; full unchanged-file body review not cla;
+      DELTA_OK'
+    sha256: 9299667ae824c5ad5a7db04e07178965a4e9780c58d293e9b6966f141c51a329
+    state: PARTIAL
 - path: docs/05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md
   tracked: true
   kind: document
@@ -4198,12 +4206,13 @@ files:
   sha256: 74d7f775b43913a16537eeabe643168c3b33c8bb014e4c6fae4f62c524c77b11
   review:
     complete: false
-    observed_at: '2026-11-02T12:37:50Z'
+    observed_at: '2026-11-07T06:44:34.704885+00:00'
     path: docs/05.operations/guides/10-platform-and-backup/0003-env-key-comparison.md
-    reviewer: /root/p06_documents
-    scope: P06 authored sections and related public contracts only
-    sha256: 3f6b58174bb1ca301ea6ccf1e6b34068fd182799dc9f3cc84665dc405f1db230
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 169c1b62f..4e63b7c5c hunks against prior scope: P06 authored
+      sections and related public contracts only; DELTA_OK'
+    sha256: 74d7f775b43913a16537eeabe643168c3b33c8bb014e4c6fae4f62c524c77b11
+    state: PARTIAL
 - path: docs/05.operations/guides/10-platform-and-backup/0008-new-service-onboarding.md
   tracked: true
   kind: document
@@ -4475,7 +4484,15 @@ files:
   state: HASHED
   sha256: ab2b2b9f71d2a91bac3bfe9f2b76ba8b9600bcb4c0f26d04e88cf9a07c588912
   review:
-    state: UNREVIEWED
+    complete: true
+    observed_at: '2026-11-07T06:44:34.708116+00:00'
+    path: docs/05.operations/guides/15-labs/0094-lakehouse.md
+    reviewer: D01 orchestrator full read
+    scope: Entire current file read after the move from docs/05.operations/guides/13-analytics-and-data-quality/0094-lakehouse.md;
+      paths, ports and secret references checked against labs/lakehouse/docker-compose.yml;
+      DELTA_OK
+    sha256: ab2b2b9f71d2a91bac3bfe9f2b76ba8b9600bcb4c0f26d04e88cf9a07c588912
+    state: REVIEWED
 - path: docs/05.operations/guides/15-labs/0097-superset.md
   tracked: true
   kind: document
@@ -5428,12 +5445,13 @@ files:
   sha256: 14403a0fc2d960b4bea6b08f3a53c9fe3764bfb7301035b0bc6259136d0d95a8
   review:
     complete: false
-    observed_at: '2026-11-02T12:46:22.397771+00:00'
+    observed_at: '2026-11-07T06:44:34.704923+00:00'
     path: docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md
-    reviewer: /root/p06_documents
-    scope: P06 authored sections and related public contracts only
-    sha256: 99b8c55aa474527c48678c165b065b2d31f46be4bd0d2878f89891ea2a613909
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 169c1b62f..4e63b7c5c hunks against prior scope: P06 authored
+      sections and related public contracts only; DELTA_OK'
+    sha256: 14403a0fc2d960b4bea6b08f3a53c9fe3764bfb7301035b0bc6259136d0d95a8
+    state: PARTIAL
 - path: docs/05.operations/runbooks/04-security-and-secrets/README.md
   tracked: true
   kind: document
@@ -5653,18 +5671,20 @@ files:
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
   tracked: true
   kind: document
-  bytes: 28076
+  bytes: 28356
   state: HASHED
-  sha256: b638a98e2d0cb3e434743fe41dedcf4e1016da182aae88e3dd98d4509b53fd4d
+  sha256: 0d3c83f4f27c45e2b8bb8a954512286e6c4f9f408323451b1312bf62393ac52a
   review:
     complete: true
-    observed_at: '2026-11-02T08:12:18.635473+00:00'
+    observed_at: '2026-11-07T06:44:34.704968+00:00'
     path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
-    reviewer: /root/p04_docs
-    scope: Entire living-document body read by the documentation writer. Independent
-      changed-diff and source crosscheck is recorded separately in Task.
-    sha256: 047f82c59d55413943e8ea6cf419c113cfe52ae9eb687b1bebba6d561447e87e
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Entire current file read plus e14ebe0fd..4e63b7c5c hunks against prior
+      scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and; FINDING fixed in 0942176c9; 0942176c9 diff reviewed by its
+      author'
+    sha256: 0d3c83f4f27c45e2b8bb8a954512286e6c4f9f408323451b1312bf62393ac52a
+    state: REVIEWED
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
   tracked: true
   kind: document
@@ -5673,13 +5693,14 @@ files:
   sha256: 05ea9b9442caf628e2c827ef11e866d98e4f159b94ad20ece086e2bcf4623191
   review:
     complete: false
-    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    observed_at: '2026-11-07T06:44:34.705044+00:00'
     path: docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md
-    reviewer: /root/p04_docs
-    scope: P05 changed sections and related source contracts; full unchanged-file
-      body review not claimed
-    sha256: 2e60027d17661a8fc644cac44e1076783c1581dace2ce95e33b69768e2016744
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 0a2f7aad4..4e63b7c5c hunks against prior scope: P05 changed
+      sections and related source contracts; full unchanged-file body review not cla;
+      DELTA_OK'
+    sha256: 05ea9b9442caf628e2c827ef11e866d98e4f159b94ad20ece086e2bcf4623191
+    state: PARTIAL
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md
   tracked: true
   kind: document
@@ -6123,21 +6144,23 @@ files:
 - path: docs/90.references/data/0096-workspace-inventory/README.md
   tracked: true
   kind: document
-  bytes: 34991
+  bytes: 37475
   state: HASHED
-  sha256: 40f8c6535a436153b5fc2c1467f7ed3b0fe4e54422caff1be4d5f976ae14fd44
+  sha256: 5abbafea4ef83274b0424a86b81f324b7abecffe88ba7be87b7c5920843d0ab9
   review:
     complete: false
-    observed_at: '2026-11-02T12:46:22.397624+00:00'
+    observed_at: '2026-11-07T06:44:34.705099+00:00'
     path: docs/90.references/data/0096-workspace-inventory/README.md
-    reviewer: /root/p06_documents
-    scope: P06 authored sections and related public contracts only
-    sha256: afc4861050f9e387283ea99c72303c26c050745fb353272c4ffe1babddf20131
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 169c1b62f..4e63b7c5c hunks against prior scope: P06 authored
+      sections and related public contracts only; FINDING kept: heading corrected
+      in 0942176c9; the 2026-11-03 S05 row kept as a dated summary'
+    sha256: 5abbafea4ef83274b0424a86b81f324b7abecffe88ba7be87b7c5920843d0ab9
+    state: PARTIAL
 - path: docs/90.references/data/0096-workspace-inventory/data.yaml
   tracked: true
   kind: configuration
-  bytes: 1328445
+  bytes: 1308098
   state: GENERATED_OUTPUT
 - path: docs/90.references/data/README.md
   tracked: true
@@ -6147,12 +6170,13 @@ files:
   sha256: 22da5dcb0078e96c53353d4df37c0bbf9e2ea461949d1c606b845062fafc7f60
   review:
     complete: false
-    observed_at: '2026-11-01T14:18:17.518585+00:00'
+    observed_at: '2026-11-07T06:44:34.705125+00:00'
     path: docs/90.references/data/README.md
-    reviewer: /root/p01_docs (doc-writer)
-    scope: Authored inventory consumer navigation, schema limits and refresh boundary
-    sha256: 9565e5a6a3b4e3470d0aababfb5c21b77873eab8dd7bb2593f708e0cb82b86ea
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 2fc98e1e2..4e63b7c5c hunks against prior scope: Authored
+      inventory consumer navigation, schema limits and refresh boundary; DELTA_OK'
+    sha256: 22da5dcb0078e96c53353d4df37c0bbf9e2ea461949d1c606b845062fafc7f60
+    state: PARTIAL
 - path: docs/90.references/research/0002-agentic-engineering-research-pack/README.md
   tracked: true
   kind: document
@@ -6329,14 +6353,15 @@ files:
   sha256: 7664ec328ca9bb172a916dc004a766ea260d44582a4a7325bed8390772dc744b
   review:
     complete: false
-    observed_at: '2026-11-02T09:00:08.300260+00:00'
+    observed_at: '2026-11-07T06:44:34.705782+00:00'
     path: docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md
-    reviewer: /root/p04_docs
-    scope: Seven generated Airflow Env cells read and compared with current public
-      selectors; CI renderer and independent diff review separately recorded. Remaining
-      research body not reviewed.
-    sha256: 9952a7485243ac9e41b4efd3e9d456d7dcf7e0081e83aaa3c03c3c387d3a1f70
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of e14ebe0fd..4e63b7c5c hunks against prior scope: Seven
+      generated Airflow Env cells read and compared with current public selectors;
+      CI rend; FINDING kept: stale labs/<name>.yml cells kept: Stage 90 dated snapshot
+      keeps original values'
+    sha256: 7664ec328ca9bb172a916dc004a766ea260d44582a4a7325bed8390772dc744b
+    state: PARTIAL
 - path: docs/90.references/research/0084-github-actions-platform/README.md
   tracked: true
   kind: document
@@ -6441,12 +6466,13 @@ files:
   sha256: 2c918a6ed74f3729a4aca0e593573e63fd00dca969f2ac4e2c1047005123e9e7
   review:
     complete: false
-    observed_at: '2026-11-01T14:18:17.518585+00:00'
+    observed_at: '2026-11-07T06:44:34.705953+00:00'
     path: docs/99.templates/registry.json
-    reviewer: /root/p01_docs (doc-writer)
-    scope: DATA-0096 allocation segment only; no other Registry field changed
-    sha256: 7b532443623fcd74a051142b24322264ac3c7ad432364af389a321cdac8094e7
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (A-docs)
+    scope: 'Delta review of 2fc98e1e2..4e63b7c5c hunks against prior scope: DATA-0096
+      allocation segment only; no other Registry field changed; DELTA_OK'
+    sha256: 2c918a6ed74f3729a4aca0e593573e63fd00dca969f2ac4e2c1047005123e9e7
+    state: PARTIAL
 - path: docs/99.templates/templates/README.md
   tracked: true
   kind: document
@@ -7143,13 +7169,14 @@ files:
   sha256: d300046abd57e67d63491896e124eee98ea2a8610d3860d7c408e6fa123dd8b3
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706022+00:00'
     path: infra/01-gateway/nginx/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: a7f5d9aa01511780188ee21bf7f80dc10471d7497b29e667570f2aaf7b21e2a3
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: d300046abd57e67d63491896e124eee98ea2a8610d3860d7c408e6fa123dd8b3
+    state: PARTIAL
 - path: infra/01-gateway/nginx/config/nginx.conf
   tracked: true
   kind: configuration
@@ -7218,13 +7245,14 @@ files:
   sha256: 7d143ff162bafe00106a100d6dc29fdd6954299c3e8fdfde9053994ab7d51f6d
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706052+00:00'
     path: infra/01-gateway/traefik/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: c241d3c89d0ba3278e30f3516f199303034a9dfb3ce1aa05416061d4b250091e
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: 7d143ff162bafe00106a100d6dc29fdd6954299c3e8fdfde9053994ab7d51f6d
+    state: PARTIAL
 - path: infra/01-gateway/traefik/compose.window-ca.override.yml
   tracked: true
   kind: configuration
@@ -7343,13 +7371,14 @@ files:
   sha256: 2510cf374a443acf89d9bd0675d44522b4c5b3df11abbdf83706d302ddf9d36b
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706079+00:00'
     path: infra/02-auth/keycloak/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: 1b69df95ca0fa6f4c053af681cec148883c45cc11aa58ecc77ca5a736cb1debb
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: 2510cf374a443acf89d9bd0675d44522b4c5b3df11abbdf83706d302ddf9d36b
+    state: PARTIAL
 - path: infra/02-auth/keycloak/docker-compose.yml
   tracked: true
   kind: configuration
@@ -7381,13 +7410,14 @@ files:
   sha256: 76e48c51ea75be3cb3906cecee3cb0dd6dcd04b17bc5ca18c7cee2023c473874
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706107+00:00'
     path: infra/02-auth/oauth2-proxy/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: 7439974f3c49aa6a8462a2e0d7fbb8a298d9798a3abb5348c79cf87e692d1065
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: 76e48c51ea75be3cb3906cecee3cb0dd6dcd04b17bc5ca18c7cee2023c473874
+    state: PARTIAL
 - path: infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg
   tracked: true
   kind: configuration
@@ -7811,12 +7841,13 @@ files:
   sha256: e0e50e759093ce311974240a4e37a215a7180c89676dfd39e922df5cb5318034
   review:
     complete: false
-    observed_at: '2026-11-02T12:37:50Z'
+    observed_at: '2026-11-07T06:44:34.706158+00:00'
     path: infra/03-security/openbao/consumer-migration/README.md
-    reviewer: /root/p06_documents
-    scope: P06 authored sections and related public contracts only
-    sha256: a749486e238af81ccde42dfc71403f0c86c4ab1f225da1b7de518b068a7fa240
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 169c1b62f..4e63b7c5c hunks against prior scope: P06 authored
+      sections and related public contracts only; DELTA_OK'
+    sha256: e0e50e759093ce311974240a4e37a215a7180c89676dfd39e922df5cb5318034
+    state: PARTIAL
 - path: infra/03-security/openbao/consumer-migration/oidc-client-secrets.sh
   tracked: true
   kind: code
@@ -8265,13 +8296,14 @@ files:
   sha256: d56e70f4467f5f50e56ac8883f62c9824d4b5faa63c81dcdf288b5081bf3aa76
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706192+00:00'
     path: infra/04-data/mng-db/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: 4612a746466040a422c065041c1fd73ea3794343b576dfee5f404ce1c2d70cbc
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: d56e70f4467f5f50e56ac8883f62c9824d4b5faa63c81dcdf288b5081bf3aa76
+    state: PARTIAL
 - path: infra/04-data/mng-db/docker-compose.n8n-acl.yml
   tracked: true
   kind: configuration
@@ -8288,13 +8320,14 @@ files:
   sha256: 45659d2e79b24098ca39aa05a1212b70bba0580b0687ae3be83777c52dcb6b11
   review:
     complete: false
-    observed_at: '2026-11-01T22:41:45Z'
+    observed_at: '2026-11-07T06:44:34.706227+00:00'
     path: infra/04-data/mng-db/docker-compose.yml
-    reviewer: /root/p02_iac_review (iac-reviewer)
-    scope: P02 changed infrastructure sections and declared cross-file contracts;
-      full-file review not claimed
-    sha256: b02261123e7fc867598b02a1bf9254f6d364e5df75359cf6776edb653ac8b471
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed
+      infrastructure sections and declared cross-file contracts; full-file review
+      no; DELTA_OK'
+    sha256: 45659d2e79b24098ca39aa05a1212b70bba0580b0687ae3be83777c52dcb6b11
+    state: PARTIAL
 - path: infra/04-data/mng-db/pg/backup/Dockerfile
   tracked: true
   kind: configuration
@@ -8381,14 +8414,15 @@ files:
   state: HASHED
   sha256: 307084628d13be23af36061fb32679ad1634d035356743e926330767503aa5d3
   review:
-    complete: false
-    observed_at: '2026-11-02T01:33:53Z'
+    complete: true
+    observed_at: '2026-11-07T06:44:34.706252+00:00'
     path: infra/04-data/mng-db/valkey/scripts/start-dedicated.sh
-    reviewer: root_changed_line_review
-    scope: P02 shellcheck SC1007 correction and complete 39-line wrapper reviewed;
-      full-file acceptance not claimed
-    sha256: fb985ae4cd0b9d99baab168bb993714682faf01a1b455385b63a3833b09144a3
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Entire current file read plus 0592303d1..4e63b7c5c hunks against prior
+      scope: P02 shellcheck SC1007 correction and complete 39-line wrapper reviewed;
+      full-file acceptan; DELTA_OK'
+    sha256: 307084628d13be23af36061fb32679ad1634d035356743e926330767503aa5d3
+    state: REVIEWED
 - path: infra/04-data/mng-db/valkey/scripts/start.sh
   tracked: true
   kind: code
@@ -8396,14 +8430,15 @@ files:
   state: HASHED
   sha256: 140362e5756f3d07da49e247ffa21da1b774304ef0badc14fa658de49136a4cf
   review:
-    complete: false
-    observed_at: '2026-11-01T22:41:45Z'
+    complete: true
+    observed_at: '2026-11-07T06:44:34.706275+00:00'
     path: infra/04-data/mng-db/valkey/scripts/start.sh
-    reviewer: /root/p02_iac_review (iac-reviewer)
-    scope: P02 changed infrastructure sections and declared cross-file contracts;
-      full-file review not claimed
-    sha256: 379d4a592d85e694e1a8ff22fa3ad5b9f34625435eec7b29774476608b2e13ed
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Entire current file read plus 0592303d1..4e63b7c5c hunks against prior
+      scope: P02 changed infrastructure sections and declared cross-file contracts;
+      full-file review no; DELTA_OK'
+    sha256: 140362e5756f3d07da49e247ffa21da1b774304ef0badc14fa658de49136a4cf
+    state: REVIEWED
 - path: infra/04-data/neo4j/README.md
   tracked: true
   kind: document
@@ -8787,13 +8822,14 @@ files:
   sha256: 407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961
   review:
     complete: false
-    observed_at: '2026-11-01T22:41:45Z'
+    observed_at: '2026-11-07T06:44:34.706342+00:00'
     path: infra/06-observability/docker-compose.yml
-    reviewer: /root/p02_iac_review (iac-reviewer)
-    scope: P02 changed infrastructure sections and declared cross-file contracts;
-      full-file review not claimed
-    sha256: 555bbb09e3e05f1b9de005c2d7210a9931eceb6552f5855a7d524ac14d6d4aa4
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed
+      infrastructure sections and declared cross-file contracts; full-file review
+      no; DELTA_OK'
+    sha256: 407a2125b74dd005bdd3344881075b99b77269fe8655c0f79efdab6359847961
+    state: PARTIAL
 - path: infra/06-observability/dozzle/README.md
   tracked: true
   kind: document
@@ -8826,13 +8862,14 @@ files:
   sha256: f06ae08c869f0201273fa8630cbcea846f526eeaf5af3629c3fef0f421135485
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706374+00:00'
     path: infra/06-observability/gatus/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: 450cd8472ffb09f592408082be875811d660e8dce11a85b17fb11c151fa16bf7
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: f06ae08c869f0201273fa8630cbcea846f526eeaf5af3629c3fef0f421135485
+    state: PARTIAL
 - path: infra/06-observability/gatus/config/config.oidc.yaml
   tracked: true
   kind: configuration
@@ -8887,13 +8924,14 @@ files:
   sha256: d6a3cf1565d78b8f24a58a6430de6eeb8fe8ba18c1694130d2d243718ca5311b
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706424+00:00'
     path: infra/06-observability/grafana/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: afef7bc555191575453d8e1c2a4c8f467f74fa5faf41b52a4204168bd4e4ae37
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: d6a3cf1565d78b8f24a58a6430de6eeb8fe8ba18c1694130d2d243718ca5311b
+    state: PARTIAL
 - path: infra/06-observability/grafana/dashboards/Applications/airflow-db.json
   tracked: true
   kind: configuration
@@ -9357,13 +9395,14 @@ files:
   sha256: 95e13505a34aae96fe49eca0ea8472632696712ae13a96f884ee43354b79f023
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706453+00:00'
     path: infra/06-observability/prometheus/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: 973eab93e575e331371877f2ac910568c52189982829cee473a18e4c885e411f
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: 95e13505a34aae96fe49eca0ea8472632696712ae13a96f884ee43354b79f023
+    state: PARTIAL
 - path: infra/06-observability/prometheus/config/alert_rules/alert_rules.keycloak.yml
   tracked: true
   kind: configuration
@@ -9513,14 +9552,15 @@ files:
   state: HASHED
   sha256: f09e2a28b10bbab110eb7e17232c7be67a706fb90ca0e3c684e420be4f184dd3
   review:
-    complete: false
-    observed_at: '2026-11-01T22:41:45Z'
+    complete: true
+    observed_at: '2026-11-07T06:44:34.706479+00:00'
     path: infra/06-observability/prometheus/scripts/start.sh
-    reviewer: /root/p02_iac_review (iac-reviewer)
-    scope: P02 changed infrastructure sections and declared cross-file contracts;
-      full-file review not claimed
-    sha256: 8d9aace1b919285f21df4033c2b83b7068014f5bc3b9b9c36733d53354998997
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Entire current file read plus 0592303d1..4e63b7c5c hunks against prior
+      scope: P02 changed infrastructure sections and declared cross-file contracts;
+      full-file review no; DELTA_OK'
+    sha256: f09e2a28b10bbab110eb7e17232c7be67a706fb90ca0e3c684e420be4f184dd3
+    state: REVIEWED
 - path: infra/06-observability/pushgateway/README.md
   tracked: true
   kind: document
@@ -9601,13 +9641,14 @@ files:
   sha256: 871404c441009870747e6bea622d1fbcf3491dd83766d5a3323f539021a6a244
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706514+00:00'
     path: infra/07-workflow/airflow/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: 35680bf165c2804b52a9244082062eac465fa4e4e5ffc9b2ee7de5fb152b1469
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: 871404c441009870747e6bea622d1fbcf3491dd83766d5a3323f539021a6a244
+    state: PARTIAL
 - path: infra/07-workflow/airflow/config/statsd_mapping.yml
   tracked: true
   kind: configuration
@@ -9655,13 +9696,14 @@ files:
   sha256: bf46e3c7263a8226e6e8df4e76559aa847d9745dd6819d285d64101d688be0bb
   review:
     complete: false
-    observed_at: '2026-11-02T01:08:32Z'
+    observed_at: '2026-11-07T06:44:34.706552+00:00'
     path: infra/07-workflow/airflow/docker-compose.yml
-    reviewer: /root/p02_final_iac_review (iac-reviewer)
-    scope: P02 dedicated Valkey mount changed section and cross-file contract; full-file
-      review not claimed
-    sha256: b3ddab42b06ae41a332b6b683ffb2846f9a40110903feb6d44727a162e05ecb9
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 dedicated
+      Valkey mount changed section and cross-file contract; full-file review not c;
+      DELTA_OK'
+    sha256: bf46e3c7263a8226e6e8df4e76559aa847d9745dd6819d285d64101d688be0bb
+    state: PARTIAL
 - path: infra/07-workflow/airflow/workloads/README.md
   tracked: true
   kind: document
@@ -9678,13 +9720,14 @@ files:
   sha256: a67a8d2eec45cb1be8d91b251ef8a02b5710e6020995d36eeab8febed4dcbcac
   review:
     complete: true
-    observed_at: '2026-11-02T09:07:52.952274+00:00'
+    observed_at: '2026-11-07T06:44:34.706582+00:00'
     path: infra/07-workflow/airflow/workloads/manifest-pipeline/README.md
-    reviewer: /root/p04_docs
-    scope: Entire living-document body read by the documentation writer. Independent
-      changed-diff and source crosscheck is recorded separately in Task.
-    sha256: 3bd4a89772e5222879d6d1f77c4610aec612fff1cad5f7eff09c76d8a02f854d
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Entire current file read plus e14ebe0fd..4e63b7c5c hunks against prior
+      scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and; DELTA_OK'
+    sha256: a67a8d2eec45cb1be8d91b251ef8a02b5710e6020995d36eeab8febed4dcbcac
+    state: REVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml
   tracked: true
   kind: configuration
@@ -9834,13 +9877,14 @@ files:
   sha256: 051a488103a0a516dcfab705736fdd9c675f9fc09d8561cf713b5fed48257c4c
   review:
     complete: false
-    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    observed_at: '2026-11-07T06:44:34.706619+00:00'
     path: infra/07-workflow/airflow/workloads/manifest-pipeline/sql/README.md
-    reviewer: /root/p04_docs
-    scope: P05 changed sections and related source contracts; full unchanged-file
-      body review not claimed
-    sha256: 9c2913b7ab00ed2a4592a8e74fe58881ca690fdd9ce6edd594a0c0d5aa46039c
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0a2f7aad4..4e63b7c5c hunks against prior scope: P05 changed
+      sections and related source contracts; full unchanged-file body review not cla;
+      DELTA_OK'
+    sha256: 051a488103a0a516dcfab705736fdd9c675f9fc09d8561cf713b5fed48257c4c
+    state: PARTIAL
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
   tracked: true
   kind: document
@@ -9849,13 +9893,14 @@ files:
   sha256: 7f9ad8fb757ad11250cd406b61111b90fa81f4732ce669434899996319d3b9d3
   review:
     complete: true
-    observed_at: '2026-11-02T08:12:18.635468+00:00'
+    observed_at: '2026-11-07T06:44:34.706645+00:00'
     path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/README.md
-    reviewer: /root/p04_docs
-    scope: Entire living-document body read by the documentation writer. Independent
-      changed-diff and source crosscheck is recorded separately in Task.
-    sha256: 1d704d7fb97a1aaff11960c6c0a1d0a3ba0228465dbe0783f0aa028ffa8c157d
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Entire current file read plus e14ebe0fd..4e63b7c5c hunks against prior
+      scope: Entire living-document body read by the documentation writer. Independent
+      changed-diff and; DELTA_OK'
+    sha256: 7f9ad8fb757ad11250cd406b61111b90fa81f4732ce669434899996319d3b9d3
+    state: REVIEWED
 - path: infra/07-workflow/airflow/workloads/manifest-pipeline/workflow_lib/__init__.py
   tracked: true
   kind: code
@@ -9899,18 +9944,19 @@ files:
 - path: infra/07-workflow/n8n/README.md
   tracked: true
   kind: document
-  bytes: 18331
+  bytes: 18647
   state: HASHED
-  sha256: 3c9a1dd429da695e2bf18fce0f20dfc4c129f4a3ecad273780b92ef4cb6946be
+  sha256: 886713d961ffd403a10341ebadcfb583d6f39d10fc06a805eea51a68a9a30352
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706682+00:00'
     path: infra/07-workflow/n8n/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: 3e5f9565c8c5c681619cb2a72d128510e5b5306c4d3e548ca4479a2bb4e48c89
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      FINDING fixed in 0942176c9; 0942176c9 diff reviewed by its author'
+    sha256: 886713d961ffd403a10341ebadcfb583d6f39d10fc06a805eea51a68a9a30352
+    state: PARTIAL
 - path: infra/07-workflow/n8n/custom/.gitkeep
   tracked: true
   kind: configuration
@@ -9958,13 +10004,14 @@ files:
   sha256: c3971adbee522b01474411e1dac8199500203a6d09825eb0666cdbc837c806da
   review:
     complete: false
-    observed_at: '2026-11-02T01:08:32Z'
+    observed_at: '2026-11-07T06:44:34.706717+00:00'
     path: infra/07-workflow/n8n/docker-compose.yml
-    reviewer: /root/p02_final_iac_review (iac-reviewer)
-    scope: P02 dedicated Valkey mount changed section and cross-file contract; full-file
-      review not claimed
-    sha256: afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 dedicated
+      Valkey mount changed section and cross-file contract; full-file review not c;
+      DELTA_OK'
+    sha256: c3971adbee522b01474411e1dac8199500203a6d09825eb0666cdbc837c806da
+    state: PARTIAL
 - path: infra/07-workflow/n8n/docker-entrypoint.dev.sh
   tracked: true
   kind: code
@@ -10637,13 +10684,14 @@ files:
   sha256: 5abf0e65bd908635110109e489b7dd0f8d82777fbc7d03cfdcd78bc1e664e8a0
   review:
     complete: false
-    observed_at: '2026-11-02T11:00:03.955287+00:00'
+    observed_at: '2026-11-07T06:44:34.706747+00:00'
     path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/README.md
-    reviewer: /root/p04_docs
-    scope: P05 changed sections and related source contracts; full unchanged-file
-      body review not claimed
-    sha256: 6fa171347d879e193ed36e71ae85d3905c887ae5bc76c4d87dcd3d95dc579133
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0a2f7aad4..4e63b7c5c hunks against prior scope: P05 changed
+      sections and related source contracts; full unchanged-file body review not cla;
+      DELTA_OK'
+    sha256: 5abf0e65bd908635110109e489b7dd0f8d82777fbc7d03cfdcd78bc1e664e8a0
+    state: PARTIAL
 - path: infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml
   tracked: true
   kind: configuration
@@ -11012,13 +11060,14 @@ files:
   sha256: 296b30a963ba0be6d3a42451a8750acd6160f0c22812dd7a96df2a1d957554f9
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706780+00:00'
     path: infra/08-ai/open-notebook/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: b39f6acbc17fb214697073f2b932b6062f8d0abea1ac5a19026b6d11050eb200
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: 296b30a963ba0be6d3a42451a8750acd6160f0c22812dd7a96df2a1d957554f9
+    state: PARTIAL
 - path: infra/08-ai/open-notebook/config/notebook-model-policy.json
   tracked: true
   kind: configuration
@@ -11035,13 +11084,14 @@ files:
   sha256: 9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d
   review:
     complete: false
-    observed_at: '2026-11-01T22:41:45Z'
+    observed_at: '2026-11-07T06:44:34.706807+00:00'
     path: infra/08-ai/open-notebook/docker-compose.yml
-    reviewer: /root/p02_iac_review (iac-reviewer)
-    scope: P02 changed infrastructure sections and declared cross-file contracts;
-      full-file review not claimed
-    sha256: a1d0b2c90982489a48c69198c1c785816246b42cf587fed8b6ac3b71e888b336
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed
+      infrastructure sections and declared cross-file contracts; full-file review
+      no; DELTA_OK'
+    sha256: 9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d
+    state: PARTIAL
 - path: infra/08-ai/open-notebook/surrealdb/Dockerfile
   tracked: true
   kind: configuration
@@ -11074,13 +11124,14 @@ files:
   sha256: 5e70cd47f823096c97c8e42ca899eee527fb9bbe18f331422bb2a2f2c863cf61
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706836+00:00'
     path: infra/08-ai/open-webui/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: 1efd1b2fc4ec0d507e72cfef6bcfd667dcfb24f565dc584a2a039fd232b09c35
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: 5e70cd47f823096c97c8e42ca899eee527fb9bbe18f331422bb2a2f2c863cf61
+    state: PARTIAL
 - path: infra/08-ai/open-webui/docker-compose.yml
   tracked: true
   kind: configuration
@@ -11089,13 +11140,14 @@ files:
   sha256: b6eced77281344568bb2090a68dcfdd2dc5a7c45f92fca3c70e2fa79862b3432
   review:
     complete: false
-    observed_at: '2026-11-01T22:41:45Z'
+    observed_at: '2026-11-07T06:44:34.706862+00:00'
     path: infra/08-ai/open-webui/docker-compose.yml
-    reviewer: /root/p02_iac_review (iac-reviewer)
-    scope: P02 changed infrastructure sections and declared cross-file contracts;
-      full-file review not claimed
-    sha256: 718a214e0515b8befb42ed97c96e1f874725409470a17b6d272af4a23555b93b
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed
+      infrastructure sections and declared cross-file contracts; full-file review
+      no; DELTA_OK'
+    sha256: b6eced77281344568bb2090a68dcfdd2dc5a7c45f92fca3c70e2fa79862b3432
+    state: PARTIAL
 - path: infra/08-ai/open-webui/docker-entrypoint.sh
   tracked: true
   kind: code
@@ -11656,13 +11708,14 @@ files:
   sha256: 04c2dad069febd120d1cab75763b66da414d7ac1cdca4147b43532bbd675790e
   review:
     complete: false
-    observed_at: '2026-11-01T22:51:37Z'
+    observed_at: '2026-11-07T06:44:34.706892+00:00'
     path: infra/09-platform-ops/terrakube/README.md
-    reviewer: root_document_review
-    scope: P02 README changed sections checked against listener/auth/secret contracts;
-      full-file review not claimed
-    sha256: 461278e99c9309165c66457e99c110b9d14e33c781ffaf1f653fcd11afbea0cf
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (B-infra)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 README
+      changed sections checked against listener/auth/secret contracts; full-file revi;
+      DELTA_OK'
+    sha256: 04c2dad069febd120d1cab75763b66da414d7ac1cdca4147b43532bbd675790e
+    state: PARTIAL
 - path: infra/09-platform-ops/terrakube/docker-compose.yml
   tracked: true
   kind: configuration
@@ -12325,7 +12378,15 @@ files:
   state: HASHED
   sha256: baa77218b80b1eebe856e7df8d82c45e444b3f61425d5b0a90eb41df2dd8d7f5
   review:
-    state: UNREVIEWED
+    complete: true
+    observed_at: '2026-11-07T06:44:34.708147+00:00'
+    path: labs/lakehouse/flink/README.md
+    reviewer: D01 orchestrator full read
+    scope: Entire current file read after the move from infra/12-analytics/flink/README.md;
+      paths, ports and secret references checked against labs/lakehouse/docker-compose.yml;
+      DELTA_OK
+    sha256: baa77218b80b1eebe856e7df8d82c45e444b3f61425d5b0a90eb41df2dd8d7f5
+    state: REVIEWED
 - path: labs/lakehouse/flink/hyhome-flink.sh
   tracked: true
   kind: code
@@ -13278,18 +13339,19 @@ files:
 - path: scripts/hardening/check-all-hardening.sh
   tracked: true
   kind: code
-  bytes: 40355
+  bytes: 40701
   state: HASHED
-  sha256: 711eb8794a586d069f0c791de5751b36e01c0c2462aabebb41acd9d90c73f89f
+  sha256: b4d6cce50bc675636c368a4940b364850ba4b0cdbcfe25eb53b60f05375ea18d
   review:
     complete: false
-    observed_at: '2026-11-01T22:59:14Z'
+    observed_at: '2026-11-07T06:44:34.707245+00:00'
     path: scripts/hardening/check-all-hardening.sh
-    reviewer: root_ci_review
-    scope: P02 changed CI registration and source assertions; full-file review not
-      claimed
-    sha256: d4bd053f93ae0a04a80d55bdf6569e500457258b946332f2ea3a58116353e579
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed
+      CI registration and source assertions; full-file review not claimed; FINDING
+      fixed in 0942176c9; 0942176c9 diff reviewed by its author'
+    sha256: b4d6cce50bc675636c368a4940b364850ba4b0cdbcfe25eb53b60f05375ea18d
+    state: PARTIAL
 - path: scripts/hooks/agent-event-hook.sh
   tracked: true
   kind: code
@@ -13588,9 +13650,9 @@ files:
 - path: scripts/lib/hardening-lib.sh
   tracked: true
   kind: code
-  bytes: 2641
+  bytes: 3548
   state: HASHED
-  sha256: 6c6a467f9f1d5152fb30dfdca9198c1d2b1db45af046eea7ce764b0300b25ab0
+  sha256: ff66961042feb47840adbc690133f148926a861ca04ff1b2abdeb6c0238d359a
   review:
     state: UNREVIEWED
 - path: scripts/lib/hooks/folder_guides.py
@@ -13657,12 +13719,13 @@ files:
   sha256: 52fb1dd6ed0c8e8d4f834bb71e156eb1ea565ab0d263c1e5d45e21f2a435045f
   review:
     complete: false
-    observed_at: '2026-11-02T07:41:51+09:00'
+    observed_at: '2026-11-07T06:44:34.707298+00:00'
     path: scripts/lib/ops/_workspace_connection_sources.py
-    reviewer: /root/p02_code_review (code-reviewer)
-    scope: P02 changed/source-contract; full-file review not claimed
-    sha256: dfefebaa9a03278669e9db590997d42a4473f428c35e1fa052bd792e2aa8e2bf
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed/source-contract;
+      full-file review not claimed; DELTA_OK'
+    sha256: 52fb1dd6ed0c8e8d4f834bb71e156eb1ea565ab0d263c1e5d45e21f2a435045f
+    state: PARTIAL
 - path: scripts/lib/ops/_workspace_connections.py
   tracked: true
   kind: code
@@ -13832,17 +13895,19 @@ files:
 - path: scripts/lib/ops/workspace_inventory.py
   tracked: true
   kind: code
-  bytes: 24618
+  bytes: 24828
   state: HASHED
-  sha256: c1dcf4624f7eaa18885d090ce75b799b2b1eccf0a48a026d7e66b58dda11314e
+  sha256: 346d9402e629911dfae1cb32b41b05f2f3ff0be3557712d50c7a1c3185393427
   review:
     complete: false
-    observed_at: '2026-11-02T07:41:51+09:00'
+    observed_at: '2026-11-07T06:44:34.707349+00:00'
     path: scripts/lib/ops/workspace_inventory.py
-    reviewer: /root/p02_code_review (code-reviewer)
-    scope: P02 changed/source-contract; full-file review not claimed
-    sha256: 3edc866dc0bc58d83dd452a991e4c1c1f209fc211e9e2a64d8bd9f362ea17110
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed/source-contract;
+      full-file review not claimed; FINDING fixed in 0942176c9; 0942176c9 diff reviewed
+      by its author'
+    sha256: 346d9402e629911dfae1cb32b41b05f2f3ff0be3557712d50c7a1c3185393427
+    state: PARTIAL
 - path: scripts/lib/supply_chain/grype_db_seed.py
   tracked: true
   kind: code
@@ -13875,13 +13940,13 @@ files:
   sha256: 746b1330ea5467b26ade6fa7c710177493ce4b33a1271315eaba2d88a9100002
   review:
     complete: false
-    observed_at: '2026-11-01T22:59:14Z'
+    observed_at: '2026-11-07T06:44:34.707408+00:00'
     path: scripts/manifest.yaml
-    reviewer: root_ci_review
-    scope: P02 changed CI registration and source assertions; full-file review not
-      claimed
-    sha256: aa85f837eb340bfa789910a4e3d53601dc43948fae274831b82357db5ea5cd9a
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed
+      CI registration and source assertions; full-file review not claimed; DELTA_OK'
+    sha256: 746b1330ea5467b26ade6fa7c710177493ce4b33a1271315eaba2d88a9100002
+    state: PARTIAL
 - path: scripts/operations/agent_memory.py
   tracked: true
   kind: code
@@ -15127,13 +15192,14 @@ files:
   sha256: 8fa662857f18a6caa0a750c20b8d7d1c3d90e10180530eb71acba443e2f42c3f
   review:
     complete: false
-    observed_at: '2026-11-02T02:22:28Z'
+    observed_at: '2026-11-07T06:44:34.707506+00:00'
     path: tests/lib/gate/test_github_workflow_contract.py
-    reviewer: p02_residual_code_review + p02_residual_supply_review
-    scope: Exact SSO optional selector and no-environment-expansion assertions; full-file
-      review not claimed
-    sha256: b0ce71bc946221dd5e86efc223eed8d9c4011e1c6851f9c5119e66757b864a7a
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of ac78f975c..4e63b7c5c hunks against prior scope: Exact
+      SSO optional selector and no-environment-expansion assertions; full-file review
+      not ; DELTA_OK'
+    sha256: 8fa662857f18a6caa0a750c20b8d7d1c3d90e10180530eb71acba443e2f42c3f
+    state: PARTIAL
 - path: tests/lib/gate/test_p03_workflow_contract.py
   tracked: true
   kind: test
@@ -15393,9 +15459,9 @@ files:
 - path: tests/lib/ops/test_workspace_inventory.py
   tracked: true
   kind: test
-  bytes: 24577
+  bytes: 25287
   state: HASHED
-  sha256: 4d9a5677f1575dde77f22009e5e41716ba1ac2a975f303b37178438a26a307db
+  sha256: 5070d7e8e5cfb961d3af5d13ec19f080f9a44811ca06a2cf414f435eff352479
   review:
     state: UNREVIEWED
 - path: tests/lib/ops/test_workspace_model_connections.py
@@ -15681,19 +15747,19 @@ files:
 - path: tests/validation/_p05_opsflow_native.py
   tracked: true
   kind: test
-  bytes: 49198
+  bytes: 49456
   state: HASHED
-  sha256: f2ffeee611cf0dbe3694a3a90e21c03f35f9eba00937d8e41bbad2f212bfe950
+  sha256: 3d321c94b69eaa08ed576803ae822077a1f7525231fbb6e7b1b5f473fbe7a1dc
   review:
     complete: false
-    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    observed_at: '2026-11-07T06:44:34.706953+00:00'
     path: tests/validation/_p05_opsflow_native.py
-    reviewer: /root/p04_uri (independent)
-    scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
-      and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
-      not inferred
-    sha256: a0c99bb5882d2f45ce785d0021116c2c181aabf741eca34c8deeb7a09022911b
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C1-p05-tests)
+    scope: 'Delta review of 0a2f7aad4..4e63b7c5c hunks against prior scope: Final
+      exact QA source/control-flow review; independent23test+wholePythoncoverage and
+      actua; FINDING fixed in 0942176c9; 0942176c9 diff reviewed by its author'
+    sha256: 3d321c94b69eaa08ed576803ae822077a1f7525231fbb6e7b1b5f473fbe7a1dc
+    state: PARTIAL
 - path: tests/validation/_p05_opsflow_recovery.py
   tracked: true
   kind: test
@@ -15702,14 +15768,14 @@ files:
   sha256: 01278a3b4db71d29dc5f213c320cd42d54244e1dfb07b1f42b3d8e4f43429f68
   review:
     complete: false
-    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    observed_at: '2026-11-07T06:44:34.706988+00:00'
     path: tests/validation/_p05_opsflow_recovery.py
-    reviewer: /root/p04_uri (independent)
-    scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
-      and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
-      not inferred
-    sha256: bc70d322399f8687d32d3b2191451c3afe0e4de8e448c52bf3bbf38767ef1f84
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C1-p05-tests)
+    scope: 'Delta review of 0a2f7aad4..4e63b7c5c hunks against prior scope: Final
+      exact QA source/control-flow review; independent23test+wholePythoncoverage and
+      actua; DELTA_OK'
+    sha256: 01278a3b4db71d29dc5f213c320cd42d54244e1dfb07b1f42b3d8e4f43429f68
+    state: PARTIAL
 - path: tests/validation/_p05_opsflow_registration.py
   tracked: true
   kind: test
@@ -15884,12 +15950,13 @@ files:
   sha256: 7af77bd92eb3a86d70257bd40b343ac20ee389fa2b39ee149fbe4e7395b431fa
   review:
     complete: false
-    observed_at: '2026-11-02T01:12:52Z'
+    observed_at: '2026-11-07T06:44:34.707613+00:00'
     path: tests/validation/test_ci_gate_plan.py
-    reviewer: p02_code_review
-    scope: P02 changed CI selector assertions reviewed; full-file review not claimed
-    sha256: 4798f34350767ab35bffae92f5357c4db5f952dd55199b01f6ae7c30f24296d4
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 changed
+      CI selector assertions reviewed; full-file review not claimed; DELTA_OK'
+    sha256: 7af77bd92eb3a86d70257bd40b343ac20ee389fa2b39ee149fbe4e7395b431fa
+    state: PARTIAL
 - path: tests/validation/test_compose_baseline_gates.py
   tracked: true
   kind: test
@@ -15898,17 +15965,13 @@ files:
   sha256: e7802f8dadf3ccac35c3e0efb5f5de4bf552c07a2469682ab250e352b498b449
   review:
     complete: false
-    observed_at: '2026-11-02T11:54:56+09:00'
+    observed_at: '2026-11-07T06:44:34.707934+00:00'
     path: tests/validation/test_compose_baseline_gates.py
-    reviewer: /root/p02_residual_ci/gitleaks_delta_review (code-reviewer); /root/p02_residual_ci/gitleaks_delta_security
-      (security-auditor)
-    scope: 'Hook-compatibility-only local run-ID binding delta: focused 2/2 PASS in
-      0.002 seconds, Ruff, gitleaks and diff check PASS; code review at 2026-11-02T11:54:53+09:00
-      and security review at 2026-11-02T11:54:56+09:00 found no findings. b565 cleanup
-      proof and e537 runtime evidence remain historical, separately source-bound.
-      Full-file, HOME, remote-CI and operational acceptance are not claimed.'
-    sha256: 2470477aafad41d441472c5e08c72eab628e0d6e93d321eaf720b55522944b3f
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of ac78f975c..4e63b7c5c hunks against prior scope: Hook-compatibility-only
+      local run-ID binding delta: focused 2/2 PASS in 0.002 seconds, Ruf; DELTA_OK'
+    sha256: e7802f8dadf3ccac35c3e0efb5f5de4bf552c07a2469682ab250e352b498b449
+    state: PARTIAL
 - path: tests/validation/test_compose_core_readiness.py
   tracked: true
   kind: test
@@ -16000,9 +16063,9 @@ files:
 - path: tests/validation/test_hardening_lib.sh
   tracked: true
   kind: test
-  bytes: 5659
+  bytes: 7396
   state: HASHED
-  sha256: e446eb6e982860a11e91071452de1cbe349253a55fbe400567dd286ea6c7b60a
+  sha256: 864e913ca8cbf61c11507e399e2293cb2d43b2aaafed1ddbb037981533426103
   review:
     state: UNREVIEWED
 - path: tests/validation/test_hermes_candidate_validator.py
@@ -16421,13 +16484,14 @@ files:
   sha256: 1e7df504bd511980668c914e1730d53f88ec0059ab25b1dd35c3752ecca1c1a1
   review:
     complete: false
-    observed_at: '2026-11-02T09:12:44.140127+00:00'
+    observed_at: '2026-11-07T06:44:34.707998+00:00'
     path: tests/validation/test_p02_service_contracts.py
-    reviewer: /root/p04_uri; independent /root/p04_pipeline
-    scope: Two approved synthetic-fixture inline comment deltas and executable-AST
-      identity only. Whole test body and new test execution are not claimed.
-    sha256: 76783c0e6a1bf3079d63237182a8be2fc3f9c8d6d08637f0d27b3a269b349e5d
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of e14ebe0fd..4e63b7c5c hunks against prior scope: Two approved
+      synthetic-fixture inline comment deltas and executable-AST identity only. Who;
+      DELTA_OK'
+    sha256: 1e7df504bd511980668c914e1730d53f88ec0059ab25b1dd35c3752ecca1c1a1
+    state: PARTIAL
 - path: tests/validation/test_p02_valkey_mount_scope.py
   tracked: true
   kind: test
@@ -16526,19 +16590,19 @@ files:
 - path: tests/validation/test_p05_opsflow_native.py
   tracked: true
   kind: test
-  bytes: 24394
+  bytes: 25400
   state: HASHED
-  sha256: b9771f58ac867e4941d26923bd1204c9bfcc9b41c571eb67a5305758a77673a5
+  sha256: 9eb9f28c032c854e6e4e3528c8476ef367eaf353a37264579cab51a5312938d7
   review:
     complete: false
-    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    observed_at: '2026-11-07T06:44:34.707030+00:00'
     path: tests/validation/test_p05_opsflow_native.py
-    reviewer: /root/p04_uri (independent)
-    scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
-      and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
-      not inferred
-    sha256: e30c0783cc94eb9d80eb8e5e05c52abb3e52eec5f2b01e7abafc7e8cac626fd9
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C1-p05-tests)
+    scope: 'Delta review of 0a2f7aad4..4e63b7c5c hunks against prior scope: Final
+      exact QA source/control-flow review; independent23test+wholePythoncoverage and
+      actua; DELTA_OK'
+    sha256: 9eb9f28c032c854e6e4e3528c8476ef367eaf353a37264579cab51a5312938d7
+    state: PARTIAL
 - path: tests/validation/test_p05_opsflow_scenario.py
   tracked: true
   kind: test
@@ -16547,14 +16611,14 @@ files:
   sha256: dd388a634aa66c4ab90fb3f7e7e9cc1708f4a8d4eaaa1613a38dbc1a8afa032c
   review:
     complete: false
-    observed_at: '2026-11-02T11:52:35.037311+00:00'
+    observed_at: '2026-11-07T06:44:34.707092+00:00'
     path: tests/validation/test_p05_opsflow_scenario.py
-    reviewer: /root/p04_uri (independent)
-    scope: Final exact QA source/control-flow review; independent23test+wholePythoncoverage
-      and actualreceipt scoped review; embeddedJS/nativebody/fullcorpus completeness
-      not inferred
-    sha256: e9d5c6fa93554ed28185ddd99b940a0644dc4d00bb1f85794acc4336c1464d90
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C1-p05-tests)
+    scope: 'Delta review of 0a2f7aad4..4e63b7c5c hunks against prior scope: Final
+      exact QA source/control-flow review; independent23test+wholePythoncoverage and
+      actua; DELTA_OK'
+    sha256: dd388a634aa66c4ab90fb3f7e7e9cc1708f4a8d4eaaa1613a38dbc1a8afa032c
+    state: PARTIAL
 - path: tests/validation/test_p07_ci_routing.py
   tracked: true
   kind: test
@@ -16787,14 +16851,14 @@ files:
   sha256: a73f3ea4c0735313d0a08ba3d07f96f5124d2f7a72d6be55685799539d170bec
   review:
     complete: false
-    observed_at: '2026-11-02T11:23:50+09:00'
+    observed_at: '2026-11-07T06:44:34.708034+00:00'
     path: tests/validation/test_sec01_next_stable_candidates.py
-    reviewer: code-reviewer (/root/p02_residual_code_review)
-    scope: 'P02 exporter regression packet only: default/nondefault rendered argv,
-      DEV fixed-port, secret-not-in-argv and retained image/ACL/OAuth/Tempo assertions;
-      no findings. Full-file and wider residual review not claimed.'
-    sha256: f3231f6c5a45dc9b402ad7574e4edb0dec93c07e770e5b4c8ee7ef6dd4f6fb23
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of ac78f975c..4e63b7c5c hunks against prior scope: P02 exporter
+      regression packet only: default/nondefault rendered argv, DEV fixed-port, sec;
+      DELTA_OK'
+    sha256: a73f3ea4c0735313d0a08ba3d07f96f5124d2f7a72d6be55685799539d170bec
+    state: PARTIAL
 - path: tests/validation/test_sec01_next_tool_candidates.py
   tracked: true
   kind: test
@@ -16843,13 +16907,13 @@ files:
   sha256: 911f732ab296360b512ed901357c81996c4fd337d3f62b0b981f89d3f6a1ca93
   review:
     complete: false
-    observed_at: '2026-11-02T01:12:52Z'
+    observed_at: '2026-11-07T06:44:34.708081+00:00'
     path: tests/validation/test_service_wiring_contracts.py
-    reviewer: p02_code_review
-    scope: P02 dedicated Valkey compatibility assertion reviewed; full-file review
-      not claimed
-    sha256: f1ab9f225e73ba6b4e816a0922591d410875daf7bb10efb095aff4e5d3fc583d
-    state: STALE
+    reviewer: D01 delta review, code-reviewer subagent (C2-ci-and-libs)
+    scope: 'Delta review of 0592303d1..4e63b7c5c hunks against prior scope: P02 dedicated
+      Valkey compatibility assertion reviewed; full-file review not claimed; DELTA_OK'
+    sha256: 911f732ab296360b512ed901357c81996c4fd337d3f62b0b981f89d3f6a1ca93
+    state: PARTIAL
 - path: tests/validation/test_shell_regressions.py
   tracked: true
   kind: test
@@ -16965,9 +17029,9 @@ files:
 excluded:
   binary: 31
   code: 128
-  configuration: 491
+  configuration: 495
   document: 142
-  generated: 38835
+  generated: 39286
   private: 251
 opaque:
   git_directories: 1
@@ -31791,13 +31855,13 @@ compose:
   gaps: []
 coverage:
   files:
-    numerator: 41913
-    denominator: 41913
+    numerator: 42368
+    denominator: 42368
   body_review:
-    numerator: 1
+    numerator: 9
     denominator: 2028
   body_review_partial:
-    numerator: 37
+    numerator: 89
     denominator: 2028
   render:
     numerator: 0
@@ -33186,6 +33250,7 @@ requirements:
   resume_condition: Owner supplies missing original texts; compare only new meaning
     deltas
   impact: Does not block current independent P01 source implementation
+  subject: Full equivalence with the 18 unavailable historical original texts
 - id: P02.01
   criterion: 56
   work_unit: W61
@@ -33206,6 +33271,9 @@ requirements:
   final_acceptance: NOT_RUN
   limit: Isolated source/configuration proof is recorded; current operation, restore
     and remote CI remain separate.
+  subject: records and reconciles the caller network, DNS, listener, service DNS,
+    host-published and gateway backend ports for selected public source contracts
+    without widening networks or publishing a new host port
 - id: P02.02
   criterion: 57
   work_unit: W62
@@ -33234,6 +33302,10 @@ requirements:
     Storybook/TLS issuer native variants remain NOT_RUN unless separately evidenced.
     Neither establishes a stored Keycloak client, actual API-token flow, HOME operation,
     rotation, restore, remote CI or final acceptance.
+  subject: preserves the distinct browser, application and machine identity boundaries,
+    records issuer, audience, redirect and expiry rejection scope, and constrains
+    direct backend access without presenting static routes as a fresh login or authorization
+    result
 - id: P02.03
   criterion: 58
   work_unit: W63
@@ -33254,6 +33326,9 @@ requirements:
   final_acceptance: NOT_RUN
   limit: Liveness, dependency initialization and product readiness remain separate
     evidence.
+  subject: records DEV/MNG environment and readiness contracts independently from
+    process liveness, initialization, dependencies and product function; unsupported
+    variables, empty paths and unobserved product registration remain explicit residuals
 - id: P02.04
   criterion: 59
   work_unit: W64
@@ -33277,6 +33352,9 @@ requirements:
   limit: Shared MNG Valkey source/isolated evidence is recorded; the prior four literal
     exporter-argv failures are historical and the corrected test proves no running
     exporter. No P02 credential issue, rotation, queue drain or restore is claimed.
+  subject: retains shared MNG Valkey as the default topology, reuses named n8n ACL
+    and dedicated-broker opt-in contracts, and records safe secret delivery and persistence/recovery
+    boundaries without issuing or rotating credentials
 - id: P02.05
   criterion: 60
   work_unit: W65
@@ -33299,6 +33377,8 @@ requirements:
     10 extracted sources and one unhandled source; generated DATA-0096 validates these
     public rows. Final package acceptance remains pending. Superset produces four
     rows, including source-declared Trino whose product registration is UNKNOWN.
+  subject: publishes selected connection evidence and hands P03–P08 exact residuals
+    by fingerprint, writer, test and recovery boundary
 - id: P03.01
   criterion: 61
   work_unit: W66
@@ -33325,6 +33405,10 @@ requirements:
     tests 89241a8d24a490a805549419cbab18491a279e68e589164fda40e33a3960881c. Selected
     names do not prove model download, real invocation, cost/privacy approval or operator
     acceptance.
+  subject: keeps local-only model use as the default, distinguishes local, Ollama-mediated
+    cloud and direct-cloud paths, and records every selected model, actor, credential
+    boundary, network and budget without downloading a model, issuing a credential
+    or treating a route as a successful inference
 - id: P03.02
   criterion: 62
   work_unit: W67
@@ -33350,6 +33434,8 @@ requirements:
     Preserve WebUI identity/RAG/persistence and distinguish this from actual stored
     Notebook registration, real-model inference, terminal jobs and recovery. The exact
     Notebook fixture remains NOT_RUN because its pinned SurrealDB digest is absent.'
+  subject: records the supported Open Notebook registration and recovery contract
+    for `gemma4:e2b` chat and `embeddinggemma-2:740m` 768-dimensional embedding use
 - id: P03.03
   criterion: 63
   work_unit: W68
@@ -33377,6 +33463,9 @@ requirements:
     was serialized before strict-gate stop; no JS/Python subresult is promoted to
     PASS. Later denial/timeout/ancestor/peer/cancel/restart and candidate Compose/HOME
     execution remain TEST_RESIDUAL.
+  subject: retains the existing external n8n runners while binding their image/version,
+    token boundary, temporary writable paths, network reach and resource limits to
+    a minimum-privilege source contract
 - id: P03.04
   criterion: 64
   work_unit: W69
@@ -33403,6 +33492,10 @@ requirements:
     or excluded without forced consumers. P11 owns Hermes installation/delivery; actual
     credential/policy, rotation, restore and final acceptance remain NOT_RUN. Loopback
     denial is deliberate support limitation; same-host policy needs P11 review.
+  subject: constrains approved automation tools by destination, method, credential,
+    request/response size and retry budget before credential use; it rejects model
+    or retrieved content as an authority to widen those controls and records the unresolved
+    real-installation policy separately
 - id: P03.05
   criterion: 65
   work_unit: W70
@@ -33424,6 +33517,9 @@ requirements:
   final_acceptance: NOT_RUN
   limit: No Wiki product, database, external workspace, client, collector or LAB runtime
     is created or accepted.
+  subject: reuses the completed offline Wiki preparation package, adds only current
+    source-to-contract and synthetic-evaluation evidence, and leaves Wiki runtime,
+    database, client, collector, external workspace and LAB runtime uncreated
 - id: P04.01
   criterion: 66
   work_unit: W71
@@ -34160,6 +34256,168 @@ requirements:
   limit: Apply remains blocked. Writer stop, separate target approval and post-output-failure
     operator verification are required; hostile unlink race remains; owner/evidence
     text is not authorization.
+- id: P10.01
+  criterion: 94
+  subject: normalizes only current generation-7 evidence and acceptance records, preserving
+    completed bodies and recording metadata/corpus validator failures as residuals
+    rather than rewriting archives or declaring completion
+  task_id: SPEC-0212-TSK-0049
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0049
+  state: TEST_RESIDUAL
+  evidence: Draft records normalized; metadata keeps an initial Plan/Spec failure
+    plus preserved archive debt; final rerun decides the residual.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: P10.02
+  criterion: 95
+  subject: registers existing P03 public validation and P04/P05 required selectors
+    in every declared local context without admission weakening or converting local
+    plan evidence into remote CI acceptance
+  task_id: SPEC-0212-TSK-0049
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0049
+  state: IMPLEMENT_GAP
+  evidence: CI implementation and complete local plan/parity evidence are pending.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: P10.03
+  criterion: 96
+  subject: aligns hook and governance wording to active repository-changing work while
+    retaining fail-closed approval, Secret protection and required checks
+  task_id: SPEC-0212-TSK-0049
+  acceptance: accepted
+  acceptance_owner: SPEC-0212-TSK-0049
+  state: SOURCE_READY
+  evidence: Local hook/governance regressions reported; native provider delivery separate
+    and unrun. Owner accepted 2026-11-06.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: P10.04
+  criterion: 97
+  subject: preserves the registered result lifecycle for pass, fail, cancellation
+    and not-run states, keeping local, operational and remote acceptance separate
+  task_id: SPEC-0212-TSK-0049
+  acceptance: accepted
+  acceptance_owner: SPEC-0212-TSK-0049
+  state: SOURCE_READY
+  evidence: Existing result lifecycle reused; remote CI and operational acceptance
+    unrun. Owner accepted 2026-11-06.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: P11.01
+  criterion: 98
+  subject: requires every new direct Hermes report to reference a collector-issued,
+    execution-bound source receipt
+  task_id: SPEC-0212-TSK-0050
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0050
+  state: SOURCE_READY
+  evidence: Local workload proof passes; Hermes SDK Call-ID linkage, actual collection
+    and bounded DNS lookup are separate handoffs.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: P11.02
+  criterion: 99
+  subject: verifies direct Gateway receipts with the exact response contract and persists
+    uncertain/corrupt local submission state fail-closed
+  task_id: SPEC-0212-TSK-0050
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0050
+  state: SOURCE_READY
+  evidence: Local negative-path proof passes; Gateway-side binding and live durable
+    receipt separate; pre-fix ingress ERROR retained.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: P11.03
+  criterion: 100
+  subject: preserves the selected Export 2.0 schema and separates its synthetic ACK
+    fixture from the two historical Export 1.0 Windows ACKs
+  task_id: SPEC-0212-TSK-0050
+  acceptance: accepted
+  acceptance_owner: SPEC-0212-TSK-0050
+  state: SOURCE_READY
+  evidence: Export 1.0 history reused; cache-only Export 2.0 passes; new Export 2.0
+    Windows delivery unaccepted. Owner accepted 2026-11-06.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: P11.04
+  criterion: 101
+  subject: permits only bounded source and owned isolated replay/backup tests for
+    the Attester and direct outbox
+  task_id: SPEC-0212-TSK-0050
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0050
+  state: SOURCE_READY
+  evidence: Local source and independent-volume proof pass; operational Attester replay/restore
+    and fairness separate.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: P11.05
+  criterion: 102
+  subject: records the five independent Hermes trust boundaries and the exact external
+    Windows handoff
+  task_id: SPEC-0212-TSK-0050
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0050
+  state: SOURCE_READY
+  evidence: Post-format host gate and cache-only contract pass; live route, actual
+    Queue execution, external ownership and operations separate.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: D12.01
+  criterion: 103
+  subject: installs the Opsflow manifest workload in HOME in six ordered steps (backup,
+    migrations with the 008 check, bucket and canaries, code install, paused synthetic
+    run, unpause), each with its own recorded check, in an owner-approved window
+  task_id: SPEC-0212-TSK-0051
+  acceptance: pending
+  acceptance_owner: SPEC-0212-TSK-0051
+  state: BLOCKED
+  evidence: No step has run; each step waits for its own owner approval in TSK-0051.
+  current_direct_operation: NOT_RUN
+  remote_ci: NOT_RUN
+  final_acceptance: NOT_RUN
+  limit: D01 2026-11-07 trace of the Task Criterion Acceptance row; the Task stays
+    the authority.
+- id: D01.ENV01
+  subject: Classify SERVICE_POSTGRES as business, LAB, recovery/compat or retired
+    without bulk replacement
+  state: NO_CHANGE
+  current_direct_operation: NOT_RUN
+  evidence: HOME declares none (tests/validation/test_dev_data_boundary.py enforces
+    mng-pg-init has no SERVICE_POSTGRES_* key, secret or DB); the only use is the
+    labs/postgresql-ha fixture (LAB, excluded); legacy secret PG-020 is RETAINED_FOR_RECOVERY
+    under SPEC-0204 TSK-0007.
+  limit: Retirement of the legacy secret stays with SPEC-0204 CLN01; no replacement
+    made here.
 acceptance_reuse:
 - id: reuse-n8n-c19-c22
   state: REUSE_ACCEPTED
@@ -34771,6 +35029,10 @@ ownership:
   handoff: Changed source invalidates this exact lease; operating action needs its
     own target/recovery authorization
   current_followup_sha256: ef7035ed2e94371aa3d4aea39b09f41f8c513ed9dbb8da12973cbac273eda739
+  path_state: MOVED
+  moved_to: docs/05.operations/guides/15-labs/0094-lakehouse.md
+  moved_by: c8d784119
+  lease_state: CLOSED_BY_MOVE; a new edit needs a new lease on the moved path
 - path: docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md
   writer: /root/p04_docs
   before_sha256: 8fbc612aa2fefa790d99b90fe052e9be90ccf2b9f2b5db4dd5c66e40be070db5
