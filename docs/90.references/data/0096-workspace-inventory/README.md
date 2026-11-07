@@ -1,10 +1,10 @@
 ---
 title: "Workspace Inventory"
-version: "0.8.4"
+version: "0.8.5"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "references"
 artifact_id: "DATA-0096"
 parent_ids:
@@ -21,7 +21,7 @@ parent_ids:
 - "SPEC-0212-TSK-0049"
 - "SPEC-0212-TSK-0050"
 created: "2026-11-01"
-observed_at: "2026-11-04"
+observed_at: "2026-11-07"
 ---
 
 # Workspace Inventory
@@ -298,6 +298,21 @@ review metadata와 7개 curated 섹션으로 `scan --connections`을 다시 생�
 38, 렌더 0/17, 실행 0/112, 복원 0/112다. 연결 행의 변경·추가·삭제는 0이다. 커밋된
 원장 자체를 검증하는 회귀 시험을 추가했다. 이 기록은 metadata 관측일 뿐 본문·구성·
 운영·복원 수용이 아니다.
+
+D01 재관측(2026-11-07, 입력 HEAD `e75276ef1f7801997d3d6fba6223fcf1a3bbbd41`, 원격 main 동일)에서
+커밋된 원장은 `validate`를 통과했지만 새 수집과는 달랐다. SPEC-0262의 `c065535e9`가
+분석 엔진·SonarQube·Stalwart·`seaweedfs-table-bucket`을 `labs/<name>/`로 옮겼고
+`61aca993f`가 Supabase LAB을 삭제해 루트 서비스는 112→97, 구성 소스는 69→65가 됐다.
+`coverage_tiers`는 사라진 18개 소스를 여전히 현재 지문으로 적고 있었고 검사기는 이를
+거부하지 않았다. `6ba37ce1f`부터 `validate`는 계층 행의 서비스·루트 이름·행 수·소스
+지문이 같은 원장에서 해석되지 않으면 거부한다. 계층 소속은 2026-11-04 원장의 13개 계층을
+그대로 재현하는 규칙으로 다시 도출했고, 옮겨진 항목은 이전 지문·제거 커밋·현재 LAB
+소스와 함께 `moved_sources`/`moved_services`에 이력으로 남겼다. TIER10·TIER12는 루트
+서비스가 없어 `NO_ROOT_SOURCE`/`OUT_OF_SCOPE`이다. 깨끗한 HEAD `6ba37ce1f`에서 다시
+수집한 관측값은 파일 41,913/41,913, 전체 본문 1/2,028, 부분 본문 37/2,028, STALE 58,
+렌더 0/22, 실행 0/97, 복원 0/97이며 `docker compose --profile '*'`의 97개 서비스와 같다.
+handoff 행의 `INITIAL_SCAN` 지문은 역사 기록으로 보존한다. 상세 근거는 TSK-0040이며
+이 기록은 metadata 관측일 뿐 본문·구성·운영·복원 수용이 아니다.
 
 **S01–S11 현재 이행 요약 — 범위와 읽는 방법.**
 
