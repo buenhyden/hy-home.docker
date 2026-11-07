@@ -190,6 +190,32 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
         self.assertIn("errorClass,errorCategory", P03_API_JS)
         self.assertNotIn("errorMessage", P03_API_JS)
 
+    def test_runner_import_denials_are_attributed_to_module_access(self):
+        # Exact denial texts of the pinned runner image (n8n 2.43.6):
+        # js-task-runner/errors/disallowed-module.error.js and the Python
+        # runner's constants.py import messages.
+        denied = (
+            "Module 'node:fs' is disallowed",
+            "Import of standard library module 'os' is disallowed. "
+            "Allowed stdlib modules: none",
+            "Import of external package 'requests' is disallowed. "
+            "Allowed external packages: none",
+            "Relative imports are disallowed.",
+        )
+        for message in denied:
+            with self.subTest(message=message):
+                facts = safe_error_facts({"name": "UserError", "message": message})
+                self.assertEqual("module_access_denied", facts["error_category"])
+        not_module = (
+            "Access to name '__builtins__' is disallowed, because it can be used "
+            "to bypass security restrictions.",
+            "name 'open' is not defined",
+        )
+        for message in not_module:
+            with self.subTest(message=message):
+                facts = safe_error_facts({"name": "NameError", "message": message})
+                self.assertNotEqual("module_access_denied", facts["error_category"])
+
     def test_candidate_diagnostic_timing_is_bounded(self):
         self.assertEqual(
             (
