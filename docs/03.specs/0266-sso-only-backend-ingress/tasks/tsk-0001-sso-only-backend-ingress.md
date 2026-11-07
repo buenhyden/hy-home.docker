@@ -1,6 +1,6 @@
 ---
 title: "SSO-Only Backend Ingress Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -226,6 +226,34 @@ The rollback was rehearsed on Pushgateway with the previous revision
 returned to `pushgateway_ingress_net` and `obs_net`, healthy with route 302,
 and direct access was refused.
 
+### W5 completion (2026-11-07)
+
+PR #787 (`6c8452ab3`) set the Airflow helper mode to 0555. The image was
+rebuilt from `main` `5064cf6f7` and only Flower was recreated: healthy with no
+restarts, connected to its broker, route 302, refused from `storybook-mcp` and
+reached by Traefik. The other Airflow containers keep the previous image until
+their own recreate.
+
+The owner approved recreating Gatus. The previous image was tagged
+`hy/gatus:local-pre-20261107`, and Gatus was recreated from `main` without a
+rebuild: it went from 7,287 restarts to healthy, now receives `POSTGRES_PORT`,
+and all 15 probes in its first minute succeeded. `status.hy.home.arpa/`
+returned 200, and `/metrics` 404 because the route excludes it. Prometheus then
+had 30 of 38 targets up; the eight down are stopped or absent services.
+
+PR #789 (`78461aef1`) added the sole-member, non-internal
+`comfyui_egress_net`. ComfyUI was recreated from `main` `ec9124c5a` on the same
+anonymous `/root` volume (`8c60682fd5a7`; Manager, 62M of models and 20M of
+user data present). It is healthy, its resolver lists the host upstream again,
+`github.com` resolves, `huggingface.co` and the Manager catalog return 200,
+`127.0.0.1:8188` publishes and returns 200, the route returns 302, it is
+refused from `storybook-mcp` and reached by Traefik, and `comfyui_egress_net`
+has no other member.
+
+The four stopped backends (Kafka Connect, Kafka REST Proxy, Schema Registry,
+Terrakube UI) were not started; their next start uses the new networks, and the
+render test covers their configuration.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -241,6 +269,9 @@ and direct access was refused.
 | E9 | 6 | W5 | ComfyUI recreate | - | NOT_RUN | Held by the owner until a sole-member egress network lands | required | - |
 | E10 | 6 | W5 | Rollback rehearsal on Pushgateway | `fa6135043` then `c28fce98a` | PASS | Previous networks and direct reach restored, then refused again | required | - |
 | E11 | 6 | W5 | Pyroscope metastore raft restore | `c28fce98a` | PASS | Snapshot `applied_index=4373076` restored; healthy; 11 services queryable for 14–6 days ago | optional | - |
+| E12 | 6 | W5 | Flower recreate | `5064cf6f7` | PASS | Rebuilt image; healthy; route 302; refused directly; reached by Traefik | required | E8 |
+| E13 | 6 | W5 | ComfyUI recreate | `ec9124c5a` | PASS | With `comfyui_egress_net`; data volume kept; DNS and HTTPS egress; host port 200; route 302; refused directly; sole egress member | required | E9 |
+| E14 | 6 | W5 | Gatus recreate (owner-approved, outside the package) | `5064cf6f7` | PASS | Crash loop ended; 15 of 15 probes succeeded | optional | - |
 
 ## Criterion Acceptance
 
@@ -251,11 +282,11 @@ and direct access was refused.
 | 3 | pending | E4, E5 | Source change done; awaiting owner acceptance and W5 | @buenhyden |
 | 4 | pending | E3 | Test in place; awaiting owner acceptance | @buenhyden |
 | 5 | pending | E6 | Documents updated, ADR-0061 accepted; awaiting owner acceptance | @buenhyden |
-| 6 | pending | E7, E8, E9, E10, E11 | Applied except Flower (FAIL, PR #787) and ComfyUI (held for an egress network) | @buenhyden |
+| 6 | pending | E7, E10, E11, E12, E13 | Every running affected service applied in HOME with SSO routes, direct-reach refusal, flows and a rehearsed rollback; awaiting owner acceptance | @buenhyden |
 
 ## Review and Completion
 
-W1–W4 are done in source. W5 ran in HOME on 2026-11-07 for every running backend except Flower, which waits for PR #787, and ComfyUI, which waits for a sole-member egress network.
+W1–W5 are done. Every criterion has PASS evidence and awaits owner acceptance; the four stopped backends take the new networks on their next start.
 
 ## Related Documents
 
