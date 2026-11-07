@@ -422,6 +422,9 @@ secrets:
   # ── Observability ───────────────────────────────────────
   grafana_admin_password:
     file: ./secrets/observability/grafana/grafana_admin_password.txt
+  # Prometheus scrapes Grafana /metrics with this password (SPEC-0267).
+  grafana_metrics_password:
+    file: ./secrets/observability/grafana/grafana_metrics_password.txt
   quality_otlp_token:
     file: ./secrets/observability/alloy/quality_otlp_token.txt
 

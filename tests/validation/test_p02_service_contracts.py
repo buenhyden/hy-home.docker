@@ -430,6 +430,57 @@ class SecondaryListenerContractTests(unittest.TestCase):
                     self.assertIn(alias, attachment.get("aliases") or [])
                 self.assertEqual(address, self._bind_value(name))
 
+    def test_grafana_metrics_require_basic_auth(self) -> None:
+        # Grafana serves /metrics on the routed port 3000, so it cannot be
+        # bound apart; built-in basic auth guards it instead (SPEC-0267).
+        import json
+
+        import yaml
+
+        secret = "grafana_metrics_password"
+        environment = self.services["grafana"]["environment"]
+        self.assertEqual(
+            "prometheus", environment.get("GF_METRICS_BASIC_AUTH_USERNAME")
+        )
+        self.assertEqual(
+            f"/run/secrets/{secret}",
+            environment.get("GF_METRICS_BASIC_AUTH_PASSWORD__FILE"),
+        )
+        self.assertNotIn("GF_METRICS_BASIC_AUTH_PASSWORD", environment)
+        for name in ("grafana", "prometheus"):
+            with self.subTest(service=name):
+                sources = {
+                    item.get("source")
+                    for item in self.services[name].get("secrets") or []
+                }
+                self.assertIn(secret, sources)
+        for relative in (
+            "infra/06-observability/prometheus/config/prometheus.yml",
+            "infra/06-observability/prometheus/config/prometheus.dev.yml",
+        ):
+            with self.subTest(file=relative):
+                jobs = yaml.safe_load((ROOT / relative).read_text())["scrape_configs"]
+                job = next(item for item in jobs if item["job_name"] == "grafana")
+                self.assertEqual(
+                    {
+                        "username": "prometheus",
+                        "password_file": f"/run/secrets/{secret}",
+                    },
+                    job.get("basic_auth"),
+                )
+        catalog = json.loads(
+            (ROOT / "infra/03-security/openbao/secret-catalog.json").read_text()
+        )
+        entries = [
+            entry
+            for entry in catalog["entries"]
+            if entry.get("source_path") == f"secrets/observability/grafana/{secret}.txt"
+        ]
+        self.assertEqual(1, len(entries))
+        self.assertIn(
+            "infra/06-observability/docker-compose.yml", entries[0]["consumers"]
+        )
+
     def test_observation_aliases_match_compose(self) -> None:
         from scripts.lib.ops.compose_observation import TARGET_ALIASES
 
