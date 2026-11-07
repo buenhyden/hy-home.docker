@@ -168,6 +168,35 @@ class InventoryTests(unittest.TestCase):
             with self.assertRaises(InventoryError):
                 validate(candidate)
 
+    def test_validator_rejects_tier_rows_that_do_not_resolve_to_current_payload(self):
+        self.put("a.py")
+        doc, _ = self.scan("a.py")
+        digest = doc["files"][0]["sha256"]
+        doc["services"] = [{"id": "a.py::svc", "service": "svc"}]
+        doc["compose"] = {"root_services": ["svc"]}
+        doc["coverage_tiers"] = [
+            {
+                "id": "TIER01",
+                "service_ids": ["a.py::svc"],
+                "root_service_names": ["svc"],
+                "declared_service_rows": 1,
+                "source_files": [{"path": "a.py", "sha256": digest}],
+            }
+        ]
+        self.assertTrue(validate(doc))
+        tier = lambda d: d["coverage_tiers"][0]  # noqa: E731
+        for mutate in (
+            lambda d: tier(d).update(service_ids=["moved.yml::svc"]),
+            lambda d: tier(d).update(root_service_names=["gone"]),
+            lambda d: tier(d).update(declared_service_rows=2),
+            lambda d: tier(d)["source_files"][0].update(path="moved.yml"),
+            lambda d: tier(d)["source_files"][0].update(sha256="0" * 64),
+        ):
+            candidate = json.loads(json.dumps(doc))
+            mutate(candidate)
+            with self.assertRaises(InventoryError):
+                validate(candidate)
+
     def test_atomic_failure_preserves_original_and_cleans_own_temporary_file(self):
         target = self.put("out.yaml", "original")
         with patch(
