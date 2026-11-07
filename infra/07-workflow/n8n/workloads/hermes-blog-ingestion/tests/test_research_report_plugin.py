@@ -565,6 +565,64 @@ class DeliveryBudgetTests(unittest.TestCase):
         secret.assert_not_called()
         post.assert_not_called()
 
+    def test_source_quality_lists_failed_items_and_allows_one_resubmission(self):
+        import json
+        import tempfile
+        from unittest import mock
+
+        failures = [
+            {"item_id": "kubernetes-1-33-release", "codes": ["number_not_found"]}
+        ]
+        refused = source_collection.SourceQuality(failures)
+        with (
+            tempfile.TemporaryDirectory() as outbox,
+            mock.patch.object(tools, "_CTX", CronRun(execution_id="quality-retry-1")),
+            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+            mock.patch.object(tools.webhook_transport, "post") as post,
+            mock.patch.object(source_collection, "resolve", side_effect=refused),
+        ):
+            first = json.loads(tools.handle_submit_report(submission_args()))
+            self.assertEqual(list(Path(outbox).iterdir()), [])
+            post.assert_not_called()
+            # Every failing item was dropped: the same report goes again, empty.
+            again = submission_args()
+            again["payload"]["items"], again["source_receipts"] = [], []
+            second = json.loads(tools.handle_submit_report(again))
+        self.assertEqual(first["error"], "source_quality")
+        self.assertEqual(first["failed_items"], failures)
+        self.assertTrue(second["ok"])
+        self.assertEqual(second["gateway"], "skipped_no_items")
+        self.assertEqual(second["report"], first["report"])
+
+    def test_resubmission_with_surviving_items_sends_them_once(self):
+        payload = make_payload()
+        kept = payload["items"][0]
+        dropped = dict(kept, item_id="dropped-item-1")
+        failures = [{"item_id": "dropped-item-1", "codes": ["quote_not_found"]}]
+        ctx = CronRun(execution_id="quality-retry-2")
+        with (
+            tempfile.TemporaryDirectory() as outbox,
+            mock.patch.object(tools, "_CTX", ctx),
+            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+            mock.patch.object(
+                source_collection,
+                "resolve",
+                side_effect=source_collection.SourceQuality(failures),
+            ),
+        ):
+            args = submission_args({**payload, "items": [dropped, kept]})
+            first = json.loads(tools.handle_submit_report(args))
+        self.assertEqual(first["failed_items"], failures)
+        self.assertFalse(
+            Path(first["report"]["report_path"]).with_name("source-set.json").exists()
+        )
+        second, sent = submit(payload, ctx)
+        self.assertTrue(second["ok"], second)
+        self.assertEqual(
+            [body["items"][0]["item_id"] for body in sent], [kept["item_id"]]
+        )
+        self.assertEqual(second["report"], first["report"])
+
 
 class CronRun:
     """Stands in for Hermes' plugin context during one cron execution."""
