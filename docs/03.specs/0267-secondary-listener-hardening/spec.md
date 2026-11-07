@@ -1,8 +1,8 @@
 ---
 title: "Secondary Listener Hardening Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-07"
 layer: "specs"
@@ -21,8 +21,8 @@ created: "2026-11-07"
 
 A metrics, profiling, management or broker listener that has no
 authentication of its own is reachable only from the containers that consume
-it, not from every container on `edge_net`. Pyroscope keeps its metastore on a
-declared volume.
+it, not from every container on `edge_net`. Pyroscope and ComfyUI keep their
+state on declared volumes.
 
 ### Background
 
@@ -39,7 +39,10 @@ offers built-in metrics authentication. The same day Pyroscope was found in a
 crash loop on a corrupted metastore database that lives in an anonymous volume
 the Compose file does not declare. The owner chose on 2026-11-07 to bind the
 six listeners, add Grafana metrics authentication, record the remaining
-exposures as accepted risks, and declare the Pyroscope metastore volume.
+exposures as accepted risks, and declare the Pyroscope metastore volume. During
+the SPEC-0266 apply ComfyUI was found to keep all its state in the image's
+undeclared `/root` volume while its seven declared volumes stay empty, and the
+owner added moving those mounts onto the paths the image uses.
 
 ## Scope
 
@@ -51,6 +54,8 @@ exposures as accepted risks, and declare the Pyroscope metastore volume.
   password from a file.
 - A declared named volume for the Pyroscope metastore and raft state, with the
   existing data carried over.
+- ComfyUI volume mounts on the paths the image uses (`/root/ComfyUI/...`), with
+  the data in its anonymous `/root` volume carried over.
 - Accepted-risk records for n8n `/metrics`, Gatus `/metrics` and the POL-0096
   LAN publications of Loki, Tempo and Alloy.
 - Render tests, the affected service READMEs and GDE-0077.
@@ -73,6 +78,8 @@ exposures as accepted risks, and declare the Pyroscope metastore volume.
 - Prometheus scrapes Grafana with basic authentication.
 - Pyroscope starts with its metastore on the named volume and keeps the
   existing index.
+- ComfyUI starts with its models, custom nodes, inputs, outputs and user data on
+  declared volumes and keeps the existing data.
 
 ### Error Behavior
 
@@ -106,11 +113,12 @@ exposures as accepted risks, and declare the Pyroscope metastore volume.
    check uses that address.
 3. Grafana `/metrics` requires basic authentication and the Prometheus job
    authenticates with a password file.
-4. Pyroscope's metastore and raft directories are on a declared named volume
-   and the previous data is carried over.
+4. Pyroscope's metastore and raft directories and ComfyUI's state directories
+   are on declared named volumes, and the previous data is carried over.
 5. A render test fails when a bound listener's network has a member outside
    its consumers, when the bind setting does not match the fixed address, or
-   when the Pyroscope metastore path is not on a declared volume.
+   when the Pyroscope metastore path or a ComfyUI state path is not on a
+   declared volume.
 6. The accepted risks for n8n `/metrics`, Gatus `/metrics` and the POL-0096 LAN
    listeners are recorded with their reason and review trigger.
 7. In HOME, under its own approval, the services are recreated; each consumer
@@ -125,12 +133,13 @@ exposures as accepted risks, and declare the Pyroscope metastore volume.
   fails after the change.
 - A container health check fails because it still uses `127.0.0.1` or the
   service name.
-- Pyroscope starts with an empty metastore.
+- Pyroscope starts with an empty metastore, or ComfyUI without its models or
+  user data.
 
 ### Stop Boundaries
 
 - Stop before any HOME recreation without its own approval.
-- Stop before moving the Pyroscope metastore without a verified backup.
+- Stop before moving Pyroscope or ComfyUI data without a verified backup.
 - Do not weaken any existing authentication to keep a consumer working.
 
 ## Related Documents
