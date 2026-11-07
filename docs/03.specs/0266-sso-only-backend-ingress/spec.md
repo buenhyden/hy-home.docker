@@ -1,6 +1,6 @@
 ---
 title: "SSO-Only Backend Ingress Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -43,16 +43,15 @@ its own package. ADR-0061 records the decision.
 
 ### In Scope
 
-- The routed backends whose only access control is `sso-auth`. The 2026-11-07
-  render lists Alertmanager, Alloy, cAdvisor, ComfyUI, Flower, Kafka Connect,
-  Kafka REST Proxy, Loki, Mailpit, MLflow, Ollama, Prometheus, Pushgateway,
-  Pyroscope, Qdrant, Schema Registry and Tempo; W1 confirms or corrects this
-  list from source.
+- The routed backends whose only access control is `sso-auth`. W1 confirmed
+  seventeen from source: Alertmanager, Alloy, cAdvisor, ComfyUI, Flower, Kafka
+  Connect, Kafka REST Proxy, Loki, Mailpit, MLflow, Ollama, Prometheus,
+  Pushgateway, Pyroscope, Schema Registry, Tempo and Terrakube UI.
 - One internal ingress network per in-scope backend, shared only with Traefik,
   and the `traefik.docker.network` label that makes Traefik use it.
-- Named flow networks for flows that today exist only through `edge_net`. The
-  2026-11-07 render found three: Alloy and Prometheus to `seaweedfs-s3`, and
-  Grafana to Ollama.
+- The flows that today exist only through `edge_net`. W1 found two, Alloy and
+  Prometheus scraping `seaweedfs-s3:9327`; they move to the existing
+  `seaweedfs_metrics_net`, which `seaweedfs-s3` and Alloy join.
 - The root network declarations, the leaf Compose files, the render tests, and
   GDE-0077, AD-0026 and the affected service READMEs.
 
@@ -63,7 +62,12 @@ its own package. ADR-0061 records the decision.
   Airflow). They stay on `edge_net` behind their own authentication.
 - Changing any authentication, route rule, middleware or credential.
 - LAB sources and runtime.
-- Host publications, which SPEC-0212 TSK-0041 already pins.
+- Host publications, which SPEC-0212 TSK-0041 already pins; the POL-0096 LAN
+  publications of Loki, Tempo and Alloy stay an owner-approved exception.
+- Open secondary listeners of services that keep `edge_net` (for example Grafana
+  pprof `6060`, the n8n task broker `5679` and `/metrics`, Traefik `8082`,
+  OAuth2 Proxy `44180`, the Keycloak management port `9000` and the
+  Alertmanager gossip port). The Task records them for a separate decision.
 
 ## Contracts
 
