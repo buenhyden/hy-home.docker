@@ -1,6 +1,6 @@
 ---
 title: "SSO-Only Backend Ingress Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -163,6 +163,69 @@ except Storybook and RedisInsight to be on `edge_net`; it now accepts a dedicate
 moved services, Traefik and `seaweedfs-s3`. W4 updated AD-0026, GDE-0077, eleven
 service READMEs and accepted ADR-0061. No container was recreated.
 
+### W5 HOME apply (2026-11-07)
+
+The owner approved W5 on 2026-11-07 together with the remaining work. Before
+the apply, the owner asked to check ComfyUI's outbound access: on `main`
+`c28fce98a` ComfyUI's only network is the internal `comfyui_ingress_net`, the
+only one of the 17 with no outbound-capable network, so model downloads,
+Manager updates and package installs would stop, and a throwaway probe on an
+internal-only network showed Docker 29.9.2 does not publish its host port, so
+`127.0.0.1:8188` would stop too. ComfyUI already fails external DNS today (its
+resolver file has no external servers) although outbound IP works. Its seven
+declared volumes are empty; the data lives in the image's undeclared anonymous
+`/root` volume. The owner chose to hold ComfyUI until a sole-member egress
+network is added, and to move its volume paths in SPEC-0267.
+
+The apply ran from `main` `c28fce98a` in project `hy-home-infra` with
+`up -d --no-deps`, after confirming all 15 container ids matched the recorded
+pre-change snapshot. Backups were taken first under
+`~/storage/backups/spec0266-w5-20261107/` with SHA256 sums: the ComfyUI `/root`
+volume (live copy, 8,117 entries) and the Pyroscope anonymous `/data` volume
+(with Pyroscope stopped, 24 entries). Traefik was recreated first and all 15
+route codes stayed as before. Alertmanager, Alloy, cAdvisor, Flower, Loki,
+Mailpit, MLflow, Prometheus, Pushgateway and Tempo were recreated next, then
+Ollama with its two-file set, then `seaweedfs-s3`. The four stopped backends
+were not started.
+
+Pyroscope's crash loop (7,493 restarts since 2026-11-02 03:53) was a corrupt
+`/data/v2/metastore/data/metastore.boltdb`; the pages named in the panic exist
+only in that file. The owner approved a raft restore: the file was renamed to
+`metastore.boltdb.corrupt-20261107`, not deleted, and Pyroscope was recreated
+on the same anonymous volume. It restored the 2026-11-02 02:35 snapshot
+(`applied_index=4373076`), wrote a new `metastore.boltdb`, became healthy with
+no panic, and a query for 14 to 6 days ago returned 11 service names. Its route
+changed from 404 to 302 because the backend is back.
+
+Ollama took about six minutes to listen because its start command first reads
+the CUDA libraries from a cold cache; it then turned healthy.
+
+Flower failed to start. The recreate also applied an undeployed `main` change
+(`e14ebe0fd`, 2026-11-02) whose `_CMD` readers call
+`/opt/airflow/bin/connection_uri.py`, which the 2026-10-20 image lacks. The
+owner chose to rebuild the image, and the rebuild exposed a second defect:
+`COPY --chmod=0444` also gave the created `/opt/airflow/bin` mode 0444, so the
+`airflow` user cannot reach the helper and every Airflow service would fail on
+its next recreate. PR #787 changes the mode to 0555 with a test. The deploy tag
+was restored to the previous image (`b7c57ce073b4`, also tagged
+`3.3.2-keycloak-pre-20261107`); the other Airflow containers were not touched.
+Flower stays down until #787 merges and its image is rebuilt.
+
+After the apply, an unrelated `edge_net` container (`storybook-mcp`) could no
+longer resolve any of the 12 moved backends, compared with 12 of 13 reached
+before; ComfyUI, held, still answered. Traefik reached 11 of the 12 over their
+ingress networks (Flower down). Prometheus scraped `seaweedfs-s3:9327` as up.
+Its other down targets were stopped or absent services and Flower, plus Gatus,
+which has crash-looped since before W5 (7,263 restarts): the bind-mounted
+`config.oidc.yaml` from `0592303d1` expands `${POSTGRES_PORT}`, which the
+2026-10-28 container does not have, and the render from `main` does.
+
+The rollback was rehearsed on Pushgateway with the previous revision
+`fa6135043`: it returned to `edge_net` and `obs_net`, stayed healthy with route
+302 and was reachable directly again; recreated forward from `main`, it
+returned to `pushgateway_ingress_net` and `obs_net`, healthy with route 302,
+and direct access was refused.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -173,7 +236,11 @@ service READMEs and accepted ADR-0061. No container was recreated.
 | E4 | 2, 3 | W2 | All-profile public render, `validate-docker-compose.sh`, `check-all-hardening.sh` | This branch | PASS | 65 selections valid; all hardening tiers pass; `test_p02_service_contracts` 29 OK | required | - |
 | E5 | 2, 3 | W2 | Network regression suites (baseline gates, wiring, runner isolation, runtime compatibility, port, P02 native/Prometheus, compose_start, port inventory, connections, tier layout, Crawl4AI) | This branch | PASS | 311 tests OK, 39 declared skips, after the `edge_net` routing test accepted dedicated ingress | required | - |
 | E6 | 5 | W4 | Metadata, link, lifecycle and operations-catalog checks | This branch | PASS | See the PR validation block | required | - |
-| E7 | 6 | W5 | HOME recreation, SSO route, direct-reach refusal, flows and rollback | - | NOT_RUN | Needs its own approval and maintenance window | required | - |
+| E7 | 6 | W5 | HOME recreation of Traefik, `seaweedfs-s3`, Pyroscope, Ollama and ten backends; route codes; direct reach from `storybook-mcp`; Traefik reach; `seaweedfs-s3:9327` scrape | `c28fce98a` | PASS | Work log "W5 HOME apply"; routes unchanged except Pyroscope 404→302 and Flower; all 12 recreated backends refused directly; Traefik reached 11 (Flower down) | required | - |
+| E8 | 6 | W5 | Flower recreate | `c28fce98a` | FAIL | Image lacks `connection_uri.py`; the rebuild is unreadable by `airflow` (PR #787) | required | - |
+| E9 | 6 | W5 | ComfyUI recreate | - | NOT_RUN | Held by the owner until a sole-member egress network lands | required | - |
+| E10 | 6 | W5 | Rollback rehearsal on Pushgateway | `fa6135043` then `c28fce98a` | PASS | Previous networks and direct reach restored, then refused again | required | - |
+| E11 | 6 | W5 | Pyroscope metastore raft restore | `c28fce98a` | PASS | Snapshot `applied_index=4373076` restored; healthy; 11 services queryable for 14–6 days ago | optional | - |
 
 ## Criterion Acceptance
 
@@ -184,11 +251,11 @@ service READMEs and accepted ADR-0061. No container was recreated.
 | 3 | pending | E4, E5 | Source change done; awaiting owner acceptance and W5 | @buenhyden |
 | 4 | pending | E3 | Test in place; awaiting owner acceptance | @buenhyden |
 | 5 | pending | E6 | Documents updated, ADR-0061 accepted; awaiting owner acceptance | @buenhyden |
-| 6 | pending | - | Awaiting W5 and its approval | @buenhyden |
+| 6 | pending | E7, E8, E9, E10, E11 | Applied except Flower (FAIL, PR #787) and ComfyUI (held for an egress network) | @buenhyden |
 
 ## Review and Completion
 
-W1–W4 are done in source; W5 (HOME) waits for its own approval.
+W1–W4 are done in source. W5 ran in HOME on 2026-11-07 for every running backend except Flower, which waits for PR #787, and ComfyUI, which waits for a sole-member egress network.
 
 ## Related Documents
 
