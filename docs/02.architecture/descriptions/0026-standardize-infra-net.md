@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.6.1"
+version: "1.6.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -47,7 +47,7 @@ networks beside it, then it left the services and the root.
 
 | Network | Subnet | Members | Flow |
 | --- | --- | --- | --- |
-| `edge_net` | 10.250.1.0/24, dynamic from .128/25 | Traefik (fixed .2, aliases `keycloak.`/`auth.${DEFAULT_URL}`), Nginx, OAuth2 Proxy, every routed backend | gateway → backend; backend → Traefik alias for OIDC discovery |
+| `edge_net` | 10.250.1.0/24, dynamic from .128/25 | Traefik (fixed .2, aliases `keycloak.`/`auth.${DEFAULT_URL}`), Nginx, OAuth2 Proxy, every routed backend that has its own authentication | gateway → backend; backend → Traefik alias for OIDC discovery |
 | `mng_data_net` | 10.250.2.0/24 | `mng-pg`, `mng-valkey`, OAuth2 Proxy Valkey, their exporters and clients (including Pact Broker) | client → PostgreSQL/Valkey |
 | `object_net` | 10.250.3.0/24 | `seaweedfs-s3`, Loki, Tempo, MLflow, Terrakube, Nginx, bucket jobs | S3 client → object store; Iceberg client → REST catalog 8181 |
 | `seaweed_internal` | 10.250.4.0/24, internal | SeaweedFS master, volume, filer, S3 | storage-internal only |
@@ -61,6 +61,8 @@ networks beside it, then it left the services and the root.
 | `dev_data_net` | 10.250.15.0/24 | `dev-pg`, `dev-valkey`, their exporters and provision jobs, Kafka Connect, RedisInsight | development client → dev PostgreSQL/Valkey |
 | `experience_ingress_net` | 10.250.16.0/24, internal | Traefik and Storybook | gateway → Storybook only |
 | `redisinsight_ingress_net` | 10.250.18.0/24, internal, isolated, dynamic from .128/25 | Traefik and RedisInsight (fixed .3) | gateway → RedisInsight only; no host address |
+| `<service>_ingress_net` (17) | 10.250.24.0/24–10.250.40.0/24, internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
+| `seaweedfs_s3_metrics_net` | 10.250.41.0/24, internal, isolated | `seaweedfs-s3`, Prometheus, Alloy | metrics/pprof scrape of `seaweedfs-s3:9327`; reaches no master/volume/filer API |
 | `seaweedfs_metrics_net` | 10.250.19.0/24, internal, isolated | Prometheus and the SeaweedFS master, volume and filer | metrics scrape only |
 | `n8n_blog_ingest_net` | 10.250.20.0/24, internal, isolated | `n8n-worker` and `blog-ingestion` | worker → Blog-data ingestion Gateway |
 | `blog_export_net` | 10.250.21.0/24, internal, isolated | Traefik and `blog-ingestion` | exact-path Traefik routes → Gateway; no published port |
@@ -73,7 +75,7 @@ networks beside it, then it left the services and the root.
 Services with no container peer (Renovate, OpenTofu) use the project default
 network. WireMock also uses it until a named consumer exists;
 that network is then its trust boundary, and the consumer gets a scoped network. `restic`, `backup-sqlite-export` and Conftest keep
-`network_mode: none`, and `node-exporter` uses `network_mode: host`; only `restic-offsite` has egress. Registry joins `obs_net` for its metrics scrape; its loopback host publication remains separately declared. Mailpit keeps `edge_net` for its routed UI and `mail_net` for SMTP. LABs, including Stalwart, declare their own networks in their standalone projects.
+`network_mode: none`, and `node-exporter` uses `network_mode: host`; only `restic-offsite` has egress. Registry joins `obs_net` for its metrics scrape; its loopback host publication remains separately declared. Mailpit uses `mailpit_ingress_net` for its routed UI and `mail_net` for SMTP. LABs, including Stalwart, declare their own networks in their standalone projects.
 
 ## Runtime and Deployment
 

@@ -1,10 +1,10 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.0.10"
+version: "1.0.11"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2026-01-12"
 ---
 
@@ -114,7 +114,7 @@ tempo/
 | Config files | `config`, `config/tempo.yaml` |
 | Config values | compose에 선언된 비밀이 아닌 설정 키 없음 |
 | Compose linkage | `../docker-compose.yml`에 선언되고 루트 파일이 이를 무조건 include합니다. `tempo`는 `obs`, `tracing` 프로필에서 해석됩니다 |
-| Networks | `edge_net`, `object_net`, `obs_net` |
+| Networks | `tempo_ingress_net`(Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266), `object_net`, `obs_net` |
 | Volumes | `./tempo/config/tempo.yaml:/etc/tempo.yaml:ro`, `tempo-data:/var/tempo:rw` |
 | Ports | `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}` |
 | Labels | `traefik.http.routers.tempo.*`, `traefik.http.services.tempo.loadbalancer.server.port` |

@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2025-12-06"
 ---
 
@@ -42,7 +42,9 @@ filer에는 route가 없습니다.
 
 상태는 `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` 아래에 있으며 UID
 1000이 소유합니다. Master, volume, filer는 `seaweed_internal`과 Prometheus만 함께 쓰는 metric 전용 `seaweedfs_metrics_net`(9324-9326)에 있습니다.
-S3는 client용 `object_net`과 route용 `edge_net`에도 참여합니다.
+S3는 client용 `object_net`과 route용 `edge_net`에도 참여합니다. S3 메트릭 포트 `9327`은
+Prometheus·Alloy만 함께 붙는 `seaweedfs_s3_metrics_net`에서 scrape하며, 이 망은 master·volume·filer API에
+닿지 않습니다(SPEC-0266).
 
 ## Usage
 

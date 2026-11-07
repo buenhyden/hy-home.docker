@@ -1,10 +1,10 @@
 ---
 title: "Terrakube IaC Automation Platform"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2025-11-12"
 ---
 
@@ -59,7 +59,7 @@ terrakube/
 | Config files | `docker-compose.yml` |
 | Config values | env 키: `ApiDataSourceType`, `DatasourceHostname`, `DatasourcePort`, `DatasourceDatabase`, `DatasourceUser`, `DatasourcePassword_FILE`, `GroupValidationType`, `UserValidationType`, `AuthenticationValidationType` 외 다수; 프로필: `iac`. Terrakube 2.33.2의 지원되는 `DatasourcePort`가 `${POSTGRES_PORT:-5432}`를 받음 |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-platform-ops/terrakube/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
-| Networks | `edge_net`, `mng_data_net`, `object_net`, `terrakube_net` |
+| Networks | `edge_net`(API·executor), `terrakube_ui_ingress_net`(UI 전용 Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266), `mng_data_net`, `object_net`, `terrakube_net` |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock` |
 | Ports | 선언되지 않음 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.terrakube-api.rule`, `traefik.http.routers.terrakube-api.entrypoints`, `traefik.http.routers.terrakube-api.tls`, `traefik.http.routers.terrakube-api.middlewares`, `traefik.http.services.terrakube-api.loadbalancer.server.port`, `traefik.http.routers.terrakube-ui.rule` 외 다수 |

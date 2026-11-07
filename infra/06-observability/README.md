@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.12"
+version: "1.0.13"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 created: "2025-11-12"
 ---
 
@@ -66,7 +66,7 @@ created: "2025-11-12"
 | Config files | `docker-compose.yml` |
 | Config values | 비밀이 아닌 S3 액세스 키 ID(`loki`, `tempo`), Grafana 서버/OAuth 설정, 서비스 포트를 사용함. 프로필: 아래 서비스별 선택 표 참조; `obs-gpu`는 별도 선택 |
 | Compose linkage | 루트 include는 [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` 경로로 활성화됨. `PROMETHEUS_CONFIG_FILE`, `CADVISOR_CPUS`, `CADVISOR_MEM_LIMIT`가 과거에는 별도 파일이었던 토폴로지를 선택함. |
-| Networks | `edge_net`, `mng_data_net`, `object_net`, `obs_net` |
+| Networks | `edge_net`(Grafana 등 자체 인증 서비스), `mng_data_net`, `object_net`, `obs_net`, `seaweedfs_s3_metrics_net`(Prometheus·Alloy); 자체 인증이 없는 Prometheus·Loki·Tempo·Alloy·Alertmanager·cAdvisor·Pyroscope·Pushgateway는 `edge_net` 대신 각자의 `<service>_ingress_net`(SPEC-0266) |
 | Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope 설정 마운트와 `${DEFAULT_OBSERVABILITY_DIR}` 하위 바인드 기반 명명 데이터 볼륨. `PROMETHEUS_DATA_DIR`, `TEMPO_DATA_DIR`로 SSD 경로를 재지정합니다 (SPEC-0246 W7) |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
 | Labels | `hy-home.tier`와 Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, Pushgateway용 Traefik 라우터/서비스 레이블 |
