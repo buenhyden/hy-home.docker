@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.19"
+version: "0.1.20"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -160,6 +160,76 @@ traffic uses the container port, host ports only from outside), OIDC Core
 §3.1.3.7 ID Token validation and RFC 8725. They match the existing P02 contract;
 no new authentication change was adopted from them.
 
+### D02 re-verification after the LAB moves (2026-11-07)
+
+A direct user request on 2026-11-07 re-ran D02 on clean `main`
+`636c9191cc92e5bb04ea9c35a967aabde2a1f5e7`, equal to read-only `git ls-remote`
+main, Docker context `default`, branch `fix/d02-host-publication-invariant`.
+Since the 2026-11-04 run at `d3f1cfaac` (321 commits), `infra/01-gateway` and
+`infra/02-auth` are unchanged; the root Compose lost only the moved LAB
+includes and secrets, and the n8n and Ollama diffs are an image pin and
+resource reservations. No network, port or authentication declaration changed.
+
+**Reuse.** The P02 gateway-port, native, OAuth, Prometheus, secret
+presentation, service, Valkey-mount, port-contract, P11 Hermes gate, Gatus OIDC
+and Open WebUI OIDC suites ran 90 tests OK with 4 declared skips; runner
+isolation, service wiring, `compose_start` and port inventory ran 75 OK with 1
+declared skip. The rendered host publications equal the 2026-11-04 record: on
+`HOST_LAN_BIND_IP` only Traefik and opt-in Nginx 80/443 and the POL-0096
+Loki/Tempo/Alloy/`mng-valkey` exception; eleven loopback publications.
+
+**T01 gap.** Hardening pinned loopback for only Open Notebook, WireMock,
+Pact Broker and Mailpit; nothing stopped another service (Ollama, ComfyUI,
+the PostgreSQL ports, Kafka, Pyroscope, Registry) from moving to a wildcard or
+LAN address, and the POL-0096 LAN list was not enforced as an exact set.
+`HostPublicationContractTests` now renders every profile from `.env.example`
+with `HOST_LAN_BIND_IP` set to the RFC 5737 address `198.51.100.7` and requires
+each publication to be loopback or an approved (service, container port) on
+that address; Ollama, Open Notebook, Pact Broker and WireMock must stay on
+`127.0.0.1` for their host callers. Synthetic wildcard, omitted, IPv6-wildcard,
+unapproved-LAN and wrong-port cases are rejected; dropping `mng-valkey` from
+the allowlist makes the real render fail with `mng-valkey:6379`.
+
+**T03 access matrix (value-free render, all profiles).** The Ollama overlay
+adds only `n8n-worker` and `ollama` to internal `n8n_ollama_net`; `n8n` main and
+both runners cannot reach Ollama, and each runner is alone with its parent on
+an internal network (pinned by `test_p03_runner_isolation` and
+`test_service_wiring_contracts`). Crawl4AI joins only internal `crawl4ai_net`,
+which has no consumer until a POL-0091 change adds one, and internal
+`crawl4ai_egress_net` with its egress proxy. Storybook shares its internal
+ingress network only with Traefik. RedisInsight is on both data networks for
+its Valkey connections, but `RI_APP_HOST` binds its listener to the
+Traefik-only `redisinsight_ingress_net` address, so data-network peers cannot
+reach it (pinned by `test_compose_baseline_gates`). SeaweedFS master, volume and
+filer are internal only; the S3 API on `edge_net` requires SigV4 credentials.
+
+**Handed-off gap: shared `edge_net` bypasses SSO.** Every Traefik backend except
+RedisInsight and Storybook shares `edge_net` (37 peers). A container on it can
+call any other backend by service DNS without passing Traefik, so services that
+rely only on the `sso-auth` middleware are reachable without SSO by every other
+`edge_net` member. Among the routed services with `sso-auth` these are
+Alertmanager, Alloy, cAdvisor, ComfyUI, Flower, Kafka Connect, Kafka REST Proxy,
+Loki, Mailpit, MLflow, Ollama, Prometheus, Pushgateway, Pyroscope, Qdrant,
+Schema Registry and Tempo; whether each also enforces an application-level
+credential was not verified per service. ADR-0055 states that a compromised
+container reaches only its wired peers but does not address this shared
+ingress path, and the Traefik v3.7 Docker provider reference makes no
+isolation claim. The owner chose record-and-handoff on 2026-11-07: the fix
+needs a new ADR (an accepted ADR body is not edited) and its own Spec that
+classifies each backend's own authentication, designs per-backend ingress
+networks or listener binds like RedisInsight's, orders the recreation and
+defines rollback. No network was changed here.
+
+**T02/T04.** Gateway, Keycloak and OAuth2 Proxy sources are unchanged since the
+2026-11-04 run, whose isolated SSO 3/3 and interruption cleanup 1/1 records
+stay the evidence; the P11 Hermes gate (exact webhook route, size limit, rate
+limit and source range) passes in this run, and no new authentication change
+was needed. Official pages read on 2026-11-07: the Traefik Docker provider
+reference (v3.7; `exposedByDefault`, and `network` only chooses Traefik's path,
+with no isolation claim) and `docker compose up` (`--wait` means running or
+healthy only, not function proof). Runtime, restore and Hosted CI for this run
+are NOT_RUN.
+
 ### D03 data-tier re-verification at current main
 
 A direct user request on 2026-11-04 re-ran the data, Valkey and storage
@@ -229,6 +299,9 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D02 focused regression | 56 | W61 | P02 port/service/native/Valkey/Prometheus/port-inventory/Hermes suites | HEAD d3f1cfaac | PASS | 131 tests OK, 1 declared skip | required | - |
 | D02 gateway exclusivity | 56 | W61 | compose-start host binding conflict regression and real-source plans | HEAD d3f1cfaac plus this delta | PASS | New test RED before fix, 20/20 after; HOME and all single profiles plan; Traefik+Nginx refused (exit 2) | required | - |
 | D03 data-tier regression | 59 | W64 | Data-tier suites and nondefault-port renders | HEAD 73ccd9930 | PASS | 155 tests OK, 4 declared skips; all MNG consumers follow 16379/15432 | required | - |
+| D02 2026-11-07 reuse regression | 56 | W61 | P02/P11/OIDC, isolation, wiring, compose_start and port-inventory suites | HEAD 636c9191c | PASS | 90 OK (4 declared skips) and 75 OK (1 declared skip) | required | - |
+| D02 host publication invariant | 56 | W61 | All-profile public render against loopback/approved-LAN allowlist | HEAD 636c9191c plus this delta | PASS | Synthetic violations rejected; removing an allowlist entry fails the real render | required | - |
+| D02 shared edge_net SSO bypass | 57 | W62 | Value-free all-profile reachability matrix | HEAD 636c9191c | FAIL | SSO-only backends reachable from 37 edge_net peers; owner chose record-and-handoff to a new ADR and Spec | optional | - |
 | D02/D03 runtime and Hosted CI | 56 | W61 | Live service and remote CI for the D02/D03 delta | HEAD 73ccd9930 | NOT_RUN | No container recreated and no remote run recorded for this delta | optional | - |
 | D03 Valkey memory cap | 59 | W64 | Static regression and pinned-image native probe | 9.1.2-alpine, labelled network-less container | PASS | RED before change; 128 MiB noeviction; write refused with OOM, PONG, keys kept, residue 0; live servers not recreated | required | - |
 
