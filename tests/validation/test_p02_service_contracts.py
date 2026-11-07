@@ -56,7 +56,7 @@ def _command(service: dict) -> str:
     return value if isinstance(value, str) else " ".join(str(item) for item in value)
 
 
-def _render_root(overrides: dict[str, str]) -> dict:
+def _render_root(overrides: dict[str, str], profiles: tuple[str, ...] = ()) -> dict:
     """Render selected public profiles without contacting a Docker daemon."""
     with tempfile.TemporaryDirectory() as directory:
         temporary = Path(directory)
@@ -78,7 +78,7 @@ def _render_root(overrides: dict[str, str]) -> dict:
             "-f",
             str(ROOT / "docker-compose.yml"),
         ]
-        for profile in (
+        for profile in profiles or (
             "core",
             "mng",
             "data",
@@ -112,6 +112,64 @@ def _render_root(overrides: dict[str, str]) -> dict:
         if result.returncode:
             raise AssertionError("public Compose configuration did not render")
         return __import__("json").loads(result.stdout)["services"]
+
+
+# A documentation-only address (RFC 5737) marks LAN publications in the render.
+LAN_SENTINEL = "198.51.100.7"
+LOOPBACK = {"127.0.0.1", "::1"}
+# The only host-LAN publications: the Traefik/Nginx web gateway and the
+# POL-0096 cluster exceptions (Loki, Tempo, Alloy OTLP, mng-valkey).
+LAN_ALLOWED = {
+    "traefik": {80, 443},
+    "nginx": {80, 443},
+    "loki": {3100},
+    "tempo": {3200},
+    "alloy": {4317, 4318},
+    "mng-valkey": {6379},
+}
+
+
+def _publication_violations(services: dict) -> list[str]:
+    """Each host publication is loopback or an approved (service, port) on the LAN."""
+    found = []
+    for name, service in sorted(services.items()):
+        for port in service.get("ports") or []:
+            host, target = port.get("host_ip") or "0.0.0.0", int(port["target"])
+            if host in LOOPBACK:
+                continue
+            if host == LAN_SENTINEL and target in LAN_ALLOWED.get(name, set()):
+                continue
+            found.append(f"{name}:{target} on {host}")
+    return found
+
+
+class HostPublicationContractTests(unittest.TestCase):
+    def test_every_profile_publishes_only_loopback_or_approved_lan_ports(self) -> None:
+        services = _render_root({"HOST_LAN_BIND_IP": LAN_SENTINEL}, ("*",))
+        self.assertEqual([], _publication_violations(services))
+        # The loopback consumers named by D02 stay published for host callers.
+        for name in ("ollama", "open_notebook", "pact-broker", "wiremock"):
+            hosts = {p.get("host_ip") for p in services[name].get("ports") or []}
+            self.assertEqual({"127.0.0.1"}, hosts, name)
+
+    def test_wildcard_omitted_and_unapproved_lan_publications_are_rejected(
+        self,
+    ) -> None:
+        def one(name, **port):
+            return {name: {"ports": [{"target": 8080, **port}]}}
+
+        for services in (
+            one("ollama", host_ip="0.0.0.0"),
+            one("ollama"),
+            one("ollama", host_ip="::"),
+            one("ollama", host_ip=LAN_SENTINEL),
+            {"loki": {"ports": [{"target": 9999, "host_ip": LAN_SENTINEL}]}},
+        ):
+            with self.subTest(services=services):
+                self.assertTrue(_publication_violations(services))
+        self.assertEqual(
+            [], _publication_violations(one("wiremock", host_ip="127.0.0.1"))
+        )
 
 
 class ListenerPortContractTests(unittest.TestCase):
