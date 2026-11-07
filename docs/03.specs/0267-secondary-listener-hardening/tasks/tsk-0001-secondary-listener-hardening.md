@@ -1,8 +1,8 @@
 ---
 title: "Secondary Listener Hardening Task"
-version: "0.5.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-08"
 layer: "specs"
@@ -76,6 +76,7 @@ scope until the owner decides between an egress allowlist and an accepted risk.
 | SPEC-0267-PLAN-0001 | draft | approved | #approval-and-start-2026-11-07 |
 | SPEC-0267-TSK-0001 | draft | ready | #approval-and-start-2026-11-07 |
 | SPEC-0267-TSK-0001 | ready | in-progress | #approval-and-start-2026-11-07 |
+| SPEC-0267-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-08 |
 
 ### W1 source inventory (2026-11-07)
 
@@ -262,19 +263,26 @@ mounts its previous `/root` volume.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E2 | W1 inventory recorded; awaiting owner acceptance | @buenhyden |
-| 2 | pending | E4, E5, E9 | Listeners bound and refused from `edge_net` in HOME; awaiting owner acceptance | @buenhyden |
-| 3 | pending | E8, E9 | Grafana `/metrics` returns 401 without credentials and Prometheus scrapes it; awaiting owner acceptance | @buenhyden |
-| 4 | pending | E4, E5, E9 | Pyroscope and ComfyUI data copied and kept; awaiting owner acceptance | @buenhyden |
-| 5 | pending | E3 | Tests in place; awaiting owner acceptance | @buenhyden |
-| 6 | pending | E6, E7 | Records and documents written; awaiting owner acceptance | @buenhyden |
-| 7 | pending | E9, E10 | Applied in HOME; rollback rehearsed by dry run, live rollback not run (E11); awaiting owner acceptance | @buenhyden |
+| 1 | accepted | E2 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 2 | accepted | E4, E5, E9 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 3 | accepted | E8, E9 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 4 | accepted | E4, E5, E9 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 5 | accepted | E3 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 6 | accepted | E6, E7 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 7 | accepted | E9, E10 | Accepted by the owner on 2026-11-08 | @buenhyden |
 
 ## Review and Completion
 
-W1–W5 are done. Every criterion awaits owner acceptance. Still open: the
-separate n8n HOME reconciliation that applies the broker binding, and the
-owner's choice between an egress allowlist and an accepted risk for ComfyUI.
+W1–W5 are done and every criterion has PASS evidence.
+
+### Owner acceptance (2026-11-08)
+
+The owner accepted criteria 1–7 on 2026-11-08 after the W5 evidence merged
+(#794), including the dry-run rollback rehearsal in place of a live rollback
+(E11 stays NOT_RUN), and the Task closed as `completed`. Two follow-ups stay
+outside this Task: the n8n HOME reconciliation that applies the broker binding
+proceeds as separate work, and ComfyUI's unrestricted outbound access through
+`comfyui_egress_net` remains an open owner decision.
 
 ## Related Documents
 
