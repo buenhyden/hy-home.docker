@@ -1,8 +1,8 @@
 ---
 title: "ComfyUI Egress on Demand Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-08"
 layer: "specs"
@@ -30,9 +30,9 @@ approved step.
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
 | W1 | 1 | Read ComfyUI's entrypoint, ComfyUI-Manager start-up behavior and the installed custom nodes for outbound calls at start and at workflow run time | None | TSK-0001 | Dependency table in the Task with a source per row |
-| W2 | 2, 3 | Remove `comfyui_egress_net` from the default ComfyUI service and add the opt-in overlay | W1 | TSK-0001 | Default and overlay renders; `validate-docker-compose.sh`; `check-all-hardening.sh` |
+| W2 | 2, 3 | Remove `comfyui_egress_net` and the loopback port from the default ComfyUI service and add the opt-in overlay | W1 | TSK-0001 | Default and overlay renders; `validate-docker-compose.sh`; `check-all-hardening.sh` |
 | W3 | 4 | Add the render tests, with RED evidence before W2 | W1 | TSK-0001 | `test_p02_service_contracts` and the affected wiring suites |
-| W4 | 5 | Update the ComfyUI README, GDE-0077 and the operations inventory | W2, W3 | TSK-0001 | Metadata, link and operations-catalog checks |
+| W4 | 5 | Update RUN-0081, the ComfyUI README, GDE-0077 and the operations inventory | W2, W3 | TSK-0001 | Metadata, link and operations-catalog checks |
 | W5 | 6 | Recreate ComfyUI in HOME under its own approval; check health, route, data and refusal; rehearse attach and detach | W2, W3, W4 | TSK-0001 | Live observations recorded in the Task |
 
 ## Verification Plan

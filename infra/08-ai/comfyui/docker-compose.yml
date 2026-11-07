@@ -84,7 +84,6 @@ services:
 
     networks:
       comfyui_ingress_net: {}
-      comfyui_egress_net: {}
       # openclaw_default:
     volumes:
       - comfyui-models:/root/ComfyUI/models:rw
@@ -103,8 +102,6 @@ services:
       traefik.http.routers.comfyui.tls: 'true'
       traefik.http.services.comfyui.loadbalancer.server.port: ${COMFYUI_PORT:-8188}
       traefik.http.routers.comfyui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
-    ports:
-      - "127.0.0.1:${COMFYUI_HOST_PORT:-8188}:${COMFYUI_PORT:-8188}"
     shm_size: "2gb"
     healthcheck:
       test:

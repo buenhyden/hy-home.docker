@@ -1,8 +1,8 @@
 ---
 title: "ComfyUI Egress on Demand Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-08"
 layer: "specs"
@@ -19,9 +19,10 @@ created: "2026-11-08"
 
 ### Intent
 
-ComfyUI has no outbound network access in its default configuration. An
-operator attaches outbound access through an opt-in overlay only for a
-maintenance window that installs models or custom nodes, then removes it.
+ComfyUI has no outbound network access and no host port in its default
+configuration. An operator attaches outbound access and the loopback port
+through an opt-in overlay only for a maintenance window that installs models
+or custom nodes, then removes it.
 
 ### Background
 
@@ -39,12 +40,17 @@ opt-in overlay, over a domain-allowlist proxy and over an accepted risk.
 
 ### In Scope
 
-- Removing `comfyui_egress_net` from the default ComfyUI render.
-- An opt-in overlay under `infra/08-ai/comfyui/` that attaches ComfyUI to
-  `comfyui_egress_net`, in the form of the existing overlays such as
-  `infra/07-workflow/n8n/docker-compose.ollama-local.yml`.
-- The operating steps to attach and detach outbound access, in the ComfyUI
-  README.
+- Removing `comfyui_egress_net` and the loopback host port
+  `127.0.0.1:8188` from the default ComfyUI render. Docker publishes no port
+  for a container on internal networks only, so the port moves with the
+  network (owner decision, 2026-11-08). The overlay fixes the host port at
+  `8188`, and `COMFYUI_HOST_PORT` leaves `.env.example`, because the public
+  environment scan reads only the root Compose includes.
+- An opt-in leaf-base overlay `infra/08-ai/comfyui/docker-compose.egress.yml`
+  (POL-0078 typed overlay) that attaches ComfyUI to `comfyui_egress_net` and
+  publishes the loopback port.
+- The attach and detach steps and the in-container health check in RUN-0081,
+  with the ComfyUI README pointing to it.
 - Render tests for the default and overlay renders, GDE-0077 and the affected
   documents.
 
@@ -91,11 +97,14 @@ opt-in overlay, over a domain-allowlist proxy and over an accepted risk.
    time, with its source, and confirms none is needed outside a maintenance
    window.
 2. The default render attaches ComfyUI only to `comfyui_ingress_net`.
-3. The overlay attaches ComfyUI to `comfyui_egress_net` and nothing else.
+3. The overlay adds to ComfyUI only `comfyui_egress_net` and the loopback
+   port, and changes no other service.
 4. A render test fails when the default render gives ComfyUI a non-internal
-   network, or when the overlay adds anything other than that network.
-5. The ComfyUI README states the attach and detach steps, and GDE-0077 records
-   the network as overlay-only.
+   network or a host port, or when the overlay adds anything other than that
+   network and port.
+5. RUN-0081 states the attach and detach steps and an in-container health
+   check, the ComfyUI README points to it, and GDE-0077 records the network as
+   overlay-only.
 6. In HOME, under its own approval, ComfyUI is recreated with the default
    render; its health check, SSO route and data hold, an external connection
    fails, and an attach and detach with the overlay is rehearsed.
