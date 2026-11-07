@@ -146,6 +146,21 @@ source binding in `update-ledger.json` and `build-inputs.json` was rehashed and
 its predecessor archived, as earlier n8n Compose changes did. W4 updated
 GDE-0077, seven READMEs and the m0021 inventory. No container was recreated.
 
+### Working-tree side effect (2026-11-07)
+
+W2 was edited in the HOME working tree, which is also the bind-mount source of
+the running services. Gatus reloaded the edited `config.oidc.yaml` and its
+Keycloak probe failed against the not-yet-existing `keycloak-management` alias,
+and `traefik healthcheck --ping` read the edited `traefik.yml` and marked
+Traefik unhealthy for about 40 minutes; routes and the real ping kept working.
+The single-file mounts are read-only and held the edited inode, so after the
+commit the files were restored to `main` and, with the owner's approval,
+Traefik and Gatus were restarted: both turned healthy, the route codes matched
+the baseline and the Keycloak probe succeeded again. Prometheus and Alloy still
+hold the edited inode but read it only at start or on an explicit reload; W5
+recreates them. Further branch work uses a separate Git worktree, and the HOME
+working tree stays on `main`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
