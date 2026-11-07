@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Implementation"
-version: "0.2.4"
+version: "0.2.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-08"
 ---
 
 # ComfyUI
@@ -27,6 +27,7 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 �
 
 - [Dockerfile](Dockerfile)
 - [docker-compose.yml](docker-compose.yml)
+- [docker-compose.egress.yml](docker-compose.egress.yml): 유지보수 때만 붙이는 외부 접속 overlay(SPEC-0268)
 
 ## Tech Stack
 
@@ -36,7 +37,7 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 �
 
 | Service | Profiles | Networks | Host publication | Secret references |
 | --- | --- | --- | --- | --- |
-| `comfyui` | `ai, ai-image` | `comfyui_ingress_net`(Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266), `comfyui_egress_net`(ComfyUI만 붙는 외부 접속·host port 게시용 망) | `127.0.0.1:${COMFYUI_HOST_PORT:-8188}:${COMFYUI_PORT:-8188}` | Compose Secret 부여 없음; 설정된 부트스트랩 파일 메타데이터를 확인합니다 |
+| `comfyui` | `ai, ai-image` | `comfyui_ingress_net`(Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266). 유지보수 overlay를 붙일 때만 `comfyui_egress_net`(ComfyUI만 붙는 외부 접속망)이 더해집니다 | 기본 없음. 유지보수 overlay에서만 `127.0.0.1:8188:${COMFYUI_PORT:-8188}` | Compose Secret 부여 없음; 설정된 부트스트랩 파일 메타데이터를 확인합니다 |
 
 선언된 영속 경로:
 
@@ -53,6 +54,8 @@ volume의 데이터를 옮기기 전에는 재생성·복원·cache 및 volume �
 - `comfyui-user`: `${DEFAULT_AI_MODEL_DIR}/comfyui/user`
 - `comfyui-hf-cache`: `${DEFAULT_AI_MODEL_DIR}/comfyui/cache/huggingface`
 - `comfyui-torch-cache`: `${DEFAULT_AI_MODEL_DIR}/comfyui/cache/torch`
+
+기본 구성에는 외부 접속이 없습니다(SPEC-0268). 모델·custom node 설치처럼 외부 접속이 필요한 작업은 [docker-compose.egress.yml](docker-compose.egress.yml)을 붙여 재생성한 동안에만 하고, 끝나면 overlay 없이 다시 재생성합니다. 절차는 RUN-0081이 소유합니다.
 
 환경 변수 키 이름과 기본값은 Compose와 [공개 환경 변수 예시](../../../.env.example)에 선언되어 있습니다. Compose의 마운트 권한과 헬스체크 명령은 구현을 설명할 뿐이며 설정 검사를 통과해도 런타임 준비 상태는 증명되지 않습니다. 비공개 환경 변수 값, 자격 증명 파일, 원본 렌더링된 설정은 출력하지 않습니다.
 
