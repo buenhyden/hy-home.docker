@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.7.1"
+version: "1.7.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "architecture"
 ---
 
@@ -52,6 +52,7 @@ docs/02.architecture/decisions/
 ├── 0058-home-tiers-versus-labs.md
 ├── 0059-native-oidc-open-webui-and-airflow.md
 ├── 0060-hermes-report-source-contract.md
+├── 0061-dedicated-ingress-for-sso-only-backends.md
 └── README.md
 ```
 
@@ -133,6 +134,8 @@ docs/02.architecture/decisions/
   Open WebUI와 Airflow UI를 ForwardAuth 없이 native OIDC로 두고 workflow·AI 하드닝을 잇는 accepted decision. 소유자가 2026-11-06에 채택했다.
 - [`ADR-0060`](./0060-hermes-report-source-contract.md):
   Hermes `source_text`를 확정된 전체 일일 보고서 원문으로 두고 receipt 집합은 비공개 감사 기록으로 보존하는 accepted decision. 소유자가 2026-11-06에 채택했다.
+- [`ADR-0061`](./0061-dedicated-ingress-for-sso-only-backends.md):
+  `sso-auth`만으로 보호되는 Traefik backend를 공유 `edge_net`에서 빼고 Traefik만 함께 붙는 전용 내부 ingress 망에 두는 proposed decision. SPEC-0266이 구현한다.
 
 ## Usage
 

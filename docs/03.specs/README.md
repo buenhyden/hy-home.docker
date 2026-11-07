@@ -1,10 +1,10 @@
 ---
 title: "명세 패키지"
-version: "1.3.8"
+version: "1.3.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "specs"
 ---
 
@@ -62,6 +62,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0263 | [LAB 이전 계약](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
 | SPEC-0264 | [폴더 guide 전달](./0264-folder-guide-delivery/) | Codex와 Claude가 읽지 못하는 폴더 AGENTS.md를 Claude는 생성된 폴더 `CLAUDE.md` import shim으로, Codex는 공유 hook으로 받게 함 |
 | SPEC-0265 | [Hermes 보고서 원문 계약](./0265-hermes-report-source-capture/) | Hermes가 Gateway로 보내는 `source_text`를 확정된 전체 일일 보고서 원문으로 바꾸고, 이메일·Telegram·Gateway가 같은 저장 바이트에서 나오게 하며, schema 5 전환과 backfill 제외를 운영 작업으로 분리함 |
+| SPEC-0266 | [SSO 전용 backend ingress](./0266-sso-only-backend-ingress/) | `sso-auth`만으로 보호되는 Traefik backend가 공유 `edge_net`의 다른 컨테이너에서 SSO 없이 직접 닿지 않도록 backend마다 Traefik 전용 내부 ingress 망을 두고, 기존 흐름은 이름 있는 흐름 망으로 옮김 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
