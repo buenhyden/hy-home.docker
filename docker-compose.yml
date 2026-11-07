@@ -151,6 +151,14 @@ networks:
       config:
         - subnet: 10.250.27.0/24
           ip_range: 10.250.27.128/25
+  # ComfyUI's only outbound path (model downloads, Manager updates) and the
+  # network its host port publishes on; no other container joins it.
+  comfyui_egress_net:
+    name: comfyui_egress_net
+    ipam:
+      config:
+        - subnet: 10.250.42.0/24
+          ip_range: 10.250.42.128/25
   flower_ingress_net:
     name: flower_ingress_net
     internal: true

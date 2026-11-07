@@ -1,6 +1,6 @@
 ---
 title: "Compose Network Membership Usage Guide"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -38,7 +38,7 @@ created: "2026-05-17"
 Traefik이 route하는 backend 중 자체 인증이 있는 것은 `edge_net`, `sso-auth`만으로 보호되는 것은
 Traefik만 함께 붙는 `<service>_ingress_net`(`10.250.24.0/24`–`10.250.40.0/24`, SPEC-0266)을 쓰고
 `traefik.docker.network`로 그 망을 지정한다. `seaweedfs-s3` 메트릭은 `seaweedfs_s3_metrics_net`
-(`10.250.41.0/24`)에서 scrape한다. 퇴역한 망이 쓰던 `10.250.9.0/24`·`10.250.12.0/24`는 재사용하지 않는다.
+(`10.250.41.0/24`)에서 scrape한다. ComfyUI는 모델 다운로드·Manager 갱신과 host port 게시를 위해 자기만 붙는 비내부 `comfyui_egress_net`(`10.250.42.0/24`)을 함께 쓴다. 퇴역한 망이 쓰던 `10.250.9.0/24`·`10.250.12.0/24`는 재사용하지 않는다.
 Prometheus scrape 대상은 `obs_net`,
 관리 PostgreSQL/Valkey 소비자는 `mng_data_net`, S3 소비자는 `object_net`처럼
 실제 peer가 있는 network만 사용한다. peer가 없으면 project default network를

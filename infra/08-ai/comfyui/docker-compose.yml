@@ -84,6 +84,7 @@ services:
 
     networks:
       comfyui_ingress_net: {}
+      comfyui_egress_net: {}
       # openclaw_default:
     volumes:
       - comfyui-models:/opt/comfyui/models:rw

@@ -1,6 +1,6 @@
 ---
 title: "ComfyUI Implementation"
-version: "0.2.2"
+version: "0.2.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -36,7 +36,7 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 �
 
 | Service | Profiles | Networks | Host publication | Secret references |
 | --- | --- | --- | --- | --- |
-| `comfyui` | `ai, ai-image` | `comfyui_ingress_net`(Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266) | `127.0.0.1:${COMFYUI_HOST_PORT:-8188}:${COMFYUI_PORT:-8188}` | Compose Secret 부여 없음; 설정된 부트스트랩 파일 메타데이터를 확인합니다 |
+| `comfyui` | `ai, ai-image` | `comfyui_ingress_net`(Traefik만 함께 붙는 전용 내부 ingress망, SPEC-0266), `comfyui_egress_net`(ComfyUI만 붙는 외부 접속·host port 게시용 망) | `127.0.0.1:${COMFYUI_HOST_PORT:-8188}:${COMFYUI_PORT:-8188}` | Compose Secret 부여 없음; 설정된 부트스트랩 파일 메타데이터를 확인합니다 |
 
 선언된 영속 경로:
 

@@ -275,6 +275,17 @@ class SsoOnlyIngressContractTests(unittest.TestCase):
         self.assertTrue(self.config["networks"]["seaweedfs_s3_metrics_net"]["internal"])
         self.assertNotIn("alloy", self.members["seaweedfs_metrics_net"])
 
+    def test_comfyui_keeps_outbound_access_without_peers(self) -> None:
+        # ComfyUI downloads models and Manager updates, and an internal-only
+        # container gets no host port, so it needs one non-internal network
+        # that no other container joins.
+        self.assertEqual({"comfyui"}, self.members["comfyui_egress_net"])
+        self.assertFalse(self.config["networks"]["comfyui_egress_net"].get("internal"))
+        self.assertEqual(
+            {"comfyui_ingress_net", "comfyui_egress_net"},
+            set(self.services["comfyui"]["networks"]),
+        )
+
     def test_subnets_are_distinct_and_avoid_retired_ranges(self) -> None:
         import ipaddress
 
