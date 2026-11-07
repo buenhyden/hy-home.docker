@@ -23,7 +23,17 @@ ERROR_CATEGORY_NEEDLES = (
     ),
     (
         "module_access_denied",
-        ("cannot find module", "module is not allowed", "require is not defined"),
+        # ponytail: "module '" covers the pinned runner's JS "Module 'x' is
+        # disallowed" and Python stdlib denial; it would also match a Python
+        # "module 'x' has no attribute" error, which import denial precedes.
+        (
+            "cannot find module",
+            "module is not allowed",
+            "require is not defined",
+            "module '",
+            "import of external package",
+            "relative imports are disallowed",
+        ),
     ),
     (
         "environment_access_denied",
