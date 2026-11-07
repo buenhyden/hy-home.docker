@@ -1,10 +1,10 @@
 ---
 title: "Secondary Listener Hardening Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-08"
 layer: "specs"
 artifact_id: "SPEC-0267-TSK-0001"
 parent_ids:
@@ -175,6 +175,73 @@ rules keep out of reach, so the owner adds it; until then three catalog and
 metadata tests fail on the missing row. W5 generates the private value with
 `scripts/operations/gen-secrets.sh` before Grafana and Prometheus are recreated.
 
+### W5 HOME apply (2026-11-08)
+
+The owner approved W5 on 2026-11-07 ("PR-2, Grafana metrics auth (criterion
+3), W5, the HOME apply approval") and merged #793. The live tree was
+fast-forwarded to `c669517df` with no local changes.
+
+Secret: `gen-secrets.sh` under the system `python3` stopped with
+`GENERATION rejected: invalid public catalog`. The cause was the distro
+`jsonschema`, which lacks the `referencing` module, not the catalog. The owner
+ran `--sync-metadata` and then the no-argument mode through
+`uv run --no-project --with 'jsonschema>=4.18' --with pyyaml`. The dry run
+planned five new files: `OBS-015` and the missing `CACHE-027` to `CACHE-030`,
+which no recreated service uses. The new file is 16 bytes, mode `640`, owner
+`1000:1000`, read through `group_add: 1000` like the existing Grafana secret.
+No value was read or printed.
+
+Data: `pyroscope` and `comfyui` were stopped, and their anonymous volumes were
+archived to `~/storage/backups/spec0267-w5-20261108/` (`pyroscope-anon-data.tar`
+from `788915f1746d`, `comfyui-root.tar` from `8c60682fd5a7`, `SHA256SUMS`,
+`volumes.txt`, `pre-networks.txt` with each service's previous networks). The
+Pyroscope `/data` content (260.3M, `v2/metastore` and `pyroscope-sync`, UID
+10001) was copied with ownership to `${DEFAULT_OBSERVABILITY_DIR}/pyroscope-metastore`.
+The ComfyUI `models`, `custom_nodes`, `input`, `output` and `user` directories
+were copied into their empty bind directories. File counts matched for every
+directory.
+
+Recreate: a `--dry-run` showed only the four new networks and the
+`pyroscope-metastore` volume being created. Then
+`docker compose -p hy-home-infra up -d --no-deps --force-recreate` ran for
+seaweedfs-s3, oauth2-proxy, keycloak, grafana, traefik, prometheus, alloy,
+gatus, pyroscope and comfyui from 18:53:29 to 18:57:19 UTC. n8n was not
+recreated.
+
+Outage: the changed `KC_HTTP_MANAGEMENT_HOST` made Keycloak rebuild its server
+image at start (`Changes detected in configuration. Updating the server
+image.`). The host had 33–40% iowait, and the rebuild took until 19:05:25 UTC.
+A thread dump showed the build writing the fast-jar, not deadlocked. Until
+then oauth2-proxy and Gatus failed OIDC discovery and restarted, so SSO routes
+were down for about 12 minutes. Both recovered on their own once Keycloak was
+healthy. A later change to a Keycloak build-affecting option should expect the
+same rebuild time, or start oauth2-proxy and Gatus after Keycloak is healthy.
+
+Observations after the apply:
+
+| Check | Result |
+| --- | --- |
+| Health of the ten services | All `healthy` |
+| Prometheus targets `traefik-metrics:8082`, `oauth2-proxy-metrics:44180`, `keycloak-management:9000`, `seaweedfs-s3:9327`, `grafana:3000` (basic auth) | All `up` |
+| Other down targets | kafka-1, kafka-connect, kafka-exporter, schema-registry exited 3 days earlier; opensearch and three Valkey exporters not deployed; none in scope |
+| Grafana `/metrics` without credentials, from Prometheus | `401 Unauthorized` |
+| From `storybook-mcp` on `edge_net`: `keycloak:9000`, `oauth2-proxy:44180`, `traefik:8082`, `grafana:6060`, `seaweedfs-s3:9327` | All `connection refused`; control `keycloak:8080` answers `200` |
+| `traefik healthcheck --ping` | `OK: http://10.250.46.2:8082/ping` |
+| Gatus `gatus_results_endpoint_success` | 8 endpoints, none failing, Keycloak `1` |
+| Pyroscope `service_name` values in the last 10 minutes | `grafana` present, so Alloy reaches `grafana-pprof` |
+| Pyroscope history 24 h to 1 h before the apply | Same 11 services as before; the 2–3 day window is empty, which predates the 2026-11-07 raft snapshot restore |
+| Pyroscope `/data` mount | `hy-home-infra_pyroscope-metastore` |
+| ComfyUI mounts and file counts | The five volumes at `/root/ComfyUI/<dir>`; 75, 182, 3, 2 and 18 entries, as in the source |
+| SSO routes through `192.168.0.13:443` | `comfyui` 302 to the Keycloak realm; `grafana` 302 to its OIDC login |
+
+Rollback rehearsal: both archives pass `sha256sum -c`. A detached worktree at
+the pre-SPEC-0267 revision `57e2636d7` rendered a recreate of all ten
+services with `--dry-run` and no error, and was removed. The live rollback was
+not run, because it would repeat the Keycloak rebuild outage. A rollback of
+Pyroscope also needs the archive restored into a new `/data` volume, because
+the previous revision's anonymous volume is no longer attached; ComfyUI still
+mounts its previous `/root` volume.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -187,22 +254,27 @@ metadata tests fail on the missing row. W5 generates the private value with
 | E6 | 6 | W4 | Metadata, link and operations-catalog checks | This branch | PASS | 0 violations; all link modes PASS | required | - |
 | E7 | 6 | W1 | Accepted-risk records | This branch | PASS | "Accepted risks" table with reason and review trigger | required | - |
 | E8 | 3 | W2 | Grafana metrics authentication render test and catalog | This branch | PASS | `test_grafana_metrics_require_basic_auth` failed before, OK after; the registry row is the owner's step | required | - |
+| E9 | 7 | W5 | HOME recreate of the ten services and live observations | `c669517df`, HOME | PASS | "W5 HOME apply" table; about 12 minutes of SSO outage during the Keycloak rebuild | required | - |
+| E10 | 7 | W5 | Backup checksums and dry-run render of `57e2636d7` | Backups, `57e2636d7` | PASS | "W5 HOME apply", rollback rehearsal | required | - |
+| E11 | 7 | W5 | Live rollback to `57e2636d7` | HOME | NOT_RUN | Not run, to avoid a second Keycloak rebuild outage; owner decision | optional | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 1 | pending | E2 | W1 inventory recorded; awaiting owner acceptance | @buenhyden |
-| 2 | pending | E4, E5 | Source change done; awaiting W5 and owner acceptance | @buenhyden |
-| 3 | pending | E8 | Source change done; awaiting the registry row, W5 and owner acceptance | @buenhyden |
-| 4 | pending | E4, E5 | Source change done; data copy is W5 | @buenhyden |
+| 2 | pending | E4, E5, E9 | Listeners bound and refused from `edge_net` in HOME; awaiting owner acceptance | @buenhyden |
+| 3 | pending | E8, E9 | Grafana `/metrics` returns 401 without credentials and Prometheus scrapes it; awaiting owner acceptance | @buenhyden |
+| 4 | pending | E4, E5, E9 | Pyroscope and ComfyUI data copied and kept; awaiting owner acceptance | @buenhyden |
 | 5 | pending | E3 | Tests in place; awaiting owner acceptance | @buenhyden |
 | 6 | pending | E6, E7 | Records and documents written; awaiting owner acceptance | @buenhyden |
-| 7 | pending | - | Awaiting W5 and its approval | @buenhyden |
+| 7 | pending | E9, E10 | Applied in HOME; rollback rehearsed by dry run, live rollback not run (E11); awaiting owner acceptance | @buenhyden |
 
 ## Review and Completion
 
-W1–W4 are done in source for the six listeners and both volumes. Grafana metrics authentication (criterion 3) follows in a second change, and W5 needs its own approval.
+W1–W5 are done. Every criterion awaits owner acceptance. Still open: the
+separate n8n HOME reconciliation that applies the broker binding, and the
+owner's choice between an egress allowlist and an accepted risk for ComfyUI.
 
 ## Related Documents
 
