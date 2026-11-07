@@ -1,6 +1,6 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.5.1"
+version: "0.5.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -15,8 +15,8 @@ updated: "2026-11-07"
 Worker가 같은 서버 A의 격리된 Blog-data 수집 Gateway에 전달하는 경로의 소스입니다.
 파일 기반 로컬 발행기와 영속 대기함은 직접 경로가 운영 검증될 때까지 복구 경로로
 보존합니다. Blog-data `dev` 커밋 `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`의
-수집 API 계약과 합성 Fixture를 고정했고, Gateway 이미지는 Resource Export 2.0이 들어간
-Blog-data `dev` `c05e5b88bae36ae8f5421fd27beada9b1d596a19`(attestation/2, schema 4, 수신기 렌더링)에서 로컬 빌드합니다.
+수집 API 계약과 합성 Fixture를 고정했고, Gateway 이미지는 원본 일일 보고서를 그대로 렌더링하는 Export(ADR-0097/ADR-0098)가 들어간
+Blog-data `dev` `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48`(attestation/2, schema 5, 보고서 Export)에서 로컬 빌드합니다.
 Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 수신 뒤에는 별도 호스트
 서명자가 Attestation을 제출하고, Windows B가 HTTPS로 Export를 가져가 ACK합니다.
 
@@ -31,7 +31,7 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 | Attestation·Export·ACK 일회용 E2E | PASS | 합성 서명·`ready` Export·Manifest/파일 해시·합성 ACK의 격리 범위다. |
 | 독립 Attester 운영 기록 | REUSE_ACCEPTED | `SPEC-0204-TSK-0022`의 날짜·대상·계정 범위에서 host Attester timer 기록을 재사용한다. 현재 재기동이나 키 변경을 뜻하지 않는다. |
 | Export 1.0 Windows ACK | REUSE_ACCEPTED | `SPEC-0204-TSK-0022`의 두 실제 ACK는 Export 1.0의 역사적 수용이다. |
-| Export 2.0 및 실제 Windows 수신 | TEST_RESIDUAL | 현재 선택은 `c05e5b88bae36ae8f5421fd27beada9b1d596a19`, schema 4다. 새 항목의 Windows B 수신·ACK·예약·복원은 이번에 실행하지 않는다. |
+| Export 2.0 및 실제 Windows 수신 | TEST_RESIDUAL | 현재 선택은 `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48`, schema 5다. 새 항목의 Windows B 수신·ACK·예약·복원은 이번에 실행하지 않는다. |
 | 서버 A 운영 배치와 실제 수집 | NOT_RUN | 이번 로컬 작업은 서비스·route·자격·Cron을 변경하지 않는다. 기존 운영 기록은 `SPEC-0204-TSK-0022`에 보존한다. |
 
 역사적 운영 기록은 `SPEC-0204-TSK-0022`가 보존하고, 현재 P11 소스·격리 증거와
@@ -134,9 +134,9 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
   Pushgateway는 쓰지 않습니다. Hermes가 다른 계정으로 돌면 그 계정의 `~/backups/metrics`가
   없으므로 지표가 생기지 않습니다.
 - Rollback: 플러그인과 프롬프트를 0.3.0과 이전 블록으로 되돌립니다(아래 플러그인
-  rollback 절차). 이미 Gateway schema 5로 전환했다면 0.3.0으로 되돌리기 전에 schema 4
-  백업을 복원하고 `c05e5b88` 이미지를 다시 붙여야 하며, 옛 이미지를 schema 5 DB에
-  붙이지 않습니다. 저장된 보고서 디렉터리는 지우지 않습니다.
+  rollback 절차). Gateway는 `bcefdc0c0b`(schema 5)로 전환되어 있으므로 0.3.0으로 되돌리기 전에 전환 전
+  schema 4 백업을 복원하고 `c05e5b88` 이미지를 다시 붙여야 하며, `c05e5b88` 이미지를
+  schema 5 DB에 붙이지 않습니다. 저장된 보고서 디렉터리는 지우지 않습니다.
 
 `deploy/update-cron-prompts.sh`는 각 작업 프롬프트에 `DIRECT RESEARCH SUBMISSION`
 표지가 정확히 한 번 있어야 진행하고, 아니면 작업 ID와 개수를 출력하고 아무 작업도
@@ -441,7 +441,7 @@ Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만
 | CA 공개 인증서 | 서버 A의 mkcert 루트 `rootCA.pem` 공개 인증서. 수신기 설정의 CA 파일로 고정하며 지문은 적용 단계에서 운영자가 기록 |
 | 출발지 | Export 조회·ACK는 `<BLOG_EXPORT_RECEIVER_IP>/32`, Attestation은 `<HOST_LAN_BIND_IP>/32`(값은 `.env`, Traefik 환경으로 전달). 이 사이트는 `192.168.0.22`, `192.168.0.13` |
 | 인증 | `export_read`, `export_ack` 각각 별도 Bearer 토큰(Gateway에는 SHA-256만 저장) |
-| API·수신기 | Blog-data Resource Export 2.0(파일은 `application/json` record)과 Node.js 수신기 `scripts/ops/receive-hermes-exports.mjs`, 둘 다 `dev` `c05e5b88bae36ae8f5421fd27beada9b1d596a19`. 수신기는 1.0 Manifest를 `UNSAFE_MANIFEST`로 거부 |
+| API·수신기 | Blog-data Resource Export 2.0(파일은 `application/json` record)과 Node.js 수신기 `scripts/ops/receive-hermes-exports.mjs`, 둘 다 `dev` `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48`. 수신기는 1.0 Manifest를 `UNSAFE_MANIFEST`로 거부 |
 | 렌더링 | Markdown 렌더링·템플릿·Vault 규칙은 서버 B 수신기가 자기 checkout으로 처리합니다. `template_version`은 A와 B 사이에서 맞추지 않으며, 템플릿·양식 변경은 서버 A 이미지 교체 사유가 아닙니다 |
 
 ### Blog-data Gateway 계약 비교
