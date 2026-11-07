@@ -1,8 +1,8 @@
 ---
 title: "Secondary Listener Hardening Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-07"
 layer: "specs"
@@ -20,7 +20,7 @@ created: "2026-11-07"
 
 Execute W1–W5 of the Plan: inventory the six secondary listeners, bind them to
 consumer-only addresses, add Grafana metrics authentication, declare the
-Pyroscope metastore volume, test, document and, under separate approval, apply
+Pyroscope and ComfyUI data volumes, test, document and, under separate approval, apply
 the change in HOME.
 
 ## Inputs and Authorization
@@ -60,6 +60,23 @@ the image's anonymous `/data` volume (142.6M), not in the declared
 `pyroscope-data` volume. A `down` or `rm` followed by `up` would give it an
 empty volume and orphan the profile blocks.
 
+### Approval and start (2026-11-07)
+
+The owner approved the SPEC-0267 Spec and Plan on 2026-11-07, after the draft
+package merged in #786. Spec 0.2.0 adds the ComfyUI state mounts the owner chose
+during the SPEC-0266 apply. W1 starts now; W5 (HOME) keeps its own approval.
+ComfyUI's unrestricted outbound access through `comfyui_egress_net` is not in
+scope until the owner decides between an egress allowlist and an accepted risk.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0267 | draft | approved | #approval-and-start-2026-11-07 |
+| SPEC-0267-PLAN-0001 | draft | approved | #approval-and-start-2026-11-07 |
+| SPEC-0267-TSK-0001 | draft | ready | #approval-and-start-2026-11-07 |
+| SPEC-0267-TSK-0001 | ready | in-progress | #approval-and-start-2026-11-07 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -80,7 +97,7 @@ empty volume and orphan the profile blocks.
 
 ## Review and Completion
 
-Not started. The Spec and Plan are drafts.
+The Spec and Plan are approved; W1 is in progress.
 
 ## Related Documents
 
