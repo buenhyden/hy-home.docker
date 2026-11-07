@@ -1,10 +1,10 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.1.8"
+version: "1.1.9"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
@@ -30,6 +30,7 @@ created: "2026-05-10"
 
 - Grafana 서비스, provisioning mount, datasource UID, dashboard provider, Keycloak role mapping, 보호된 route 경계를 빠르게 파악한다.
 - Explore와 dashboard에서 Prometheus, Loki, Tempo, Alertmanager, Pyroscope 연결을 확인한다.
+- Grafana `/metrics`는 route된 포트 `3000`을 함께 쓰므로 basic auth(`GF_METRICS_BASIC_AUTH_USERNAME=prometheus`, 비밀번호는 `grafana_metrics_password` secret)를 요구하고, Prometheus `grafana` job은 `password_file`로 인증한다(SPEC-0267). pprof `6060`은 Alloy만 붙는 `grafana_pprof_net`의 `10.250.45.2`에만 bind한다.
 - 장애 대응, restart, provisioning rollback, SSO/datasource 분류는 [RUN-0041](../../runbooks/07-observability/0041-grafana.md)로 넘긴다.
 
 ## Concepts

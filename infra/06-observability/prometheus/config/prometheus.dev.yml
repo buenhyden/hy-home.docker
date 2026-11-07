@@ -117,6 +117,9 @@ scrape_configs:
           domain: "observability"
 
   - job_name: "grafana"
+    basic_auth:
+      username: "prometheus"
+      password_file: "/run/secrets/grafana_metrics_password"
     static_configs:
       - targets: ["grafana:3000"]
         labels:
