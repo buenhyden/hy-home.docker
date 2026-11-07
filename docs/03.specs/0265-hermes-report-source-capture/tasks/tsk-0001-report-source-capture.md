@@ -1,6 +1,6 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -301,6 +301,48 @@ record exists. The prompt lets the agent remove exactly those items, unedited,
 and submit once more with the same report, never a third time. The stored
 report is reused unchanged on that second call.
 
+### Switch window (2026-11-07)
+
+The owner approved the window on 2026-11-07 ("Now"), after #778 merged. All
+steps ran from outside `hermes-gateway.service`, in this order:
+
+1. W9 install, 09:29 KST: a `UMask=0077` drop-in for `hermes-gateway.service`
+   and `daemon-reload`, then plugin 0.4.2 from `82b117685` via
+   `update-hermes-plugin.sh` (9/9 files match, doctor OK, backup
+   `~/.hermes/plugins/.research-report-backup-20261107T002914Z`), a restart,
+   and `update-cron-prompts.sh` (3 jobs updated, backup
+   `~/.hermes/cron/jobs.json.pre-prompt-20261107T002931Z`, marker and rule
+   checks pass). After the restart: `UMask=0077`, `__pycache__` 0700.
+2. W7 backup, 09:31 KST, with the running `c05e5b88` image:
+   `/data/backup-pre-schema5-20261107T003121Z.sqlite3`, integrity ok, 16
+   reports, 121 candidates.
+3. W7 restore test on that backup: copied to a private volume (no network,
+   uid 10001) and opened with the new image. `user_version` 4→5; reports,
+   candidates, attestations, exports, export files and request keys 16, 121,
+   16, 121, 63 and 16 before and after; item exports acknowledged 53, held
+   `SOURCE_UNVERIFIED` 60 and `KIND_MISMATCH` 8; export hash `221634a8…`
+   unchanged; 0 foreign-key violations; integrity ok. Same result as the
+   2026-11-06 copy.
+4. The Compose pin moved to `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48` first
+   (#779, merged `624a4db8a`), so the running image never differs from main.
+   W7 switch, 09:52 KST: `docker compose --profile blog-ingestion up -d
+   --no-deps blog-ingestion` from main. Image ID `sha256:8ff847c9…`, healthy,
+   log `listening` and `export_enabled: true`. The live DB shows
+   `user_version` 5 and the same counts, states and hash as the backup.
+   `SOURCE_NOT_REPORT` 0. `n8n-worker` reaches the Gateway (401 without a
+   token).
+5. Producer allowlist `~/.hermes/config/research-webhook-allowed-cidrs` (dir
+   0700, file 0600, the webhook host's /32). The plugin's loader reads and
+   parses it.
+6. W8 dry run with the 16 exclusions: 0 targets, and 0 on rerun. No `--apply`,
+   because no 0.4.x report reached the Gateway under schema 4. The 16 reports'
+   `source_ref` is 0.2.5 model free text, so the exclusion list stays their
+   only guard.
+
+Blog-data, which runs on another server, gets the return information as a self-contained file the owner delivers.
+The restore-test volumes are removed by the owner. The first delivered run
+(2026-11-08 08:00 KST) completes E9.
+
 ### Design deviations
 
 - Outcome mapping: `report_store_unavailable` and `record_unavailable` are
@@ -368,9 +410,10 @@ obtained). Controller recommendations, not owner answers:
 | E12 | 10 | W5 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`test_first_seen_starts_the_success_clock_of_every_kind`, `test_corrupt_state_resets_only_what_is_bad_and_continues`, `test_a_busy_metrics_lock_skips_metrics_promptly`, promtool `test rules` with the first-seen, never-succeeds and `store_failed` cases plus `check metrics`); `e2e-cache-contract.sh`; ruff; `ObservabilityDashboardContractTests`, `test_lab_isolation`, `test_p03_hermes_gate`, `test_p11_hermes_gate`; `check-p03-hermes.py`, `check-p11-hermes.py`; `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | W5 fix round working tree above `94530091a` | PASS | 449 tests OK (448 plus the non-finite state test added after the re-review) under both umasks; e2e exit 0; ruff clean; repo tests OK; gates PASS; metadata 0 violations; links 0 failures | required | - |
 | E13 | 9 | W4 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`test_quality_failures_name_every_failing_item`, `test_source_quality_lists_failed_items_and_allows_one_resubmission`, `test_resubmission_with_surviving_items_sends_them_once`, prompt exception sentence); `e2e-cache-contract.sh`; ruff; independent review APPROVED, its Minor items fixed | plugin 0.4.2 working tree on `688f94f7f` | PASS | 452 tests OK under both umasks; e2e exit 0; ruff clean | required | - |
 | E6 | 11 | W6 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`; `python3 scripts/validation/check-document-links.py --mode alignment`; `python3 scripts/validation/check-document-corpus-lifecycle.py` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | metadata: 0 violations; links: 898 documents, 0 failures; lifecycle: 0 violations | required | - |
-| E7 | 12 | W7 | schema-4 backup, restore test on a copy, cutover | owner approval pending | NOT_RUN | - | required | - |
-| E8 | 13 | W8 | `backfill-reports` dry run shows the 16 reports excluded; apply | Blog-data capability and owner approval pending | NOT_RUN | - | required | - |
-| E9 | 12, 14 | W9 | plugin install, restart, cron update, one observed run per job; rollback reading | owner approval pending | NOT_RUN | - | required | - |
+| E7 | 12 | W7 | online backup with `c05e5b88`, restore test of that backup on a private copy with the new image (`user_version`, row counts, export states and hash, FK, integrity), Compose pin #779 then `docker compose --profile blog-ingestion up -d --no-deps blog-ingestion`, startup log and live DB check | switch window 2026-11-07 09:31-09:52 KST, image `bcefdc0c0b` `sha256:8ff847c9…` | PASS | backup integrity ok 16/121; copy and live DB `user_version` 5, counts, states and hash `221634a8…` unchanged, FK 0; `listening`, `export_enabled: true` | required | - |
+| E8 | 13 | W8 | `backfill-reports --config /run/config.json` with the 16 `--exclude-report-id`, dry run and rerun; apply only for 0.4.x reports received under schema 4 | live DB after the switch, 2026-11-07 | PASS | 0 targets, rerun 0; apply not needed (no 0.4.x report reached schema 4); `SOURCE_NOT_REPORT` 0 | required | - |
+| E9 | 12, 14 | W9 | one observed delivered run per job on 0.4.2 (store, Gateway hash match, email, Telegram, order, verifier); rollback reading | first scheduled run 2026-11-08 08:00 KST | NOT_RUN | - | required | - |
+| E14 | 12, 14 | W9 | `update-hermes-plugin.sh` (digest match, doctor), restart, `update-cron-prompts.sh` and prompt checks, `UMask` and `__pycache__` mode, address allowlist parsed by the plugin loader | plugin 0.4.2 from `82b117685`, 2026-11-07 09:29 KST | PASS | 9/9 MATCH, doctor OK, 3 prompts OK, `UMask=0077`, `__pycache__` 0700, allowlist parses | required | - |
 | E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports`, the conflict test and `test_prompt_sends_the_stored_report_on_a_conflict` | fix round 2 commits above `b9c016f10` | PASS | 438 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
 
 ## Criterion Acceptance
