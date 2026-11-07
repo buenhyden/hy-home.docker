@@ -1,6 +1,6 @@
 ---
 title: "Secondary Listener Hardening Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -161,6 +161,20 @@ hold the edited inode but read it only at start or on an explicit reload; W5
 recreates them. Further branch work uses a separate Git worktree, and the HOME
 working tree stays on `main`.
 
+### Grafana metrics authentication (2026-11-07)
+
+The owner approved the second change on 2026-11-07. W3 first:
+`test_grafana_metrics_require_basic_auth` failed on the current render. W2 set
+`GF_METRICS_BASIC_AUTH_USERNAME=prometheus` and
+`GF_METRICS_BASIC_AUTH_PASSWORD__FILE` in Grafana, declared the
+`grafana_metrics_password` Compose secret for Grafana and Prometheus, added
+`basic_auth` with `password_file` to the `grafana` job in both Prometheus files,
+and catalogued the secret as `OBS-015`. The public registry row for `OBS-015`
+lives in `secrets/SENSITIVE_ENV_VARS.md.example`, which the agent's permission
+rules keep out of reach, so the owner adds it; until then three catalog and
+metadata tests fail on the missing row. W5 generates the private value with
+`scripts/operations/gen-secrets.sh` before Grafana and Prometheus are recreated.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -172,6 +186,7 @@ working tree stays on `main`.
 | E5 | 2, 4 | W2 | 76 suites naming the changed services | This branch | PASS | 1,468 tests; only `test_root_resource_assessment` fails to import (`referencing` absent locally, also on `main`) | required | - |
 | E6 | 6 | W4 | Metadata, link and operations-catalog checks | This branch | PASS | 0 violations; all link modes PASS | required | - |
 | E7 | 6 | W1 | Accepted-risk records | This branch | PASS | "Accepted risks" table with reason and review trigger | required | - |
+| E8 | 3 | W2 | Grafana metrics authentication render test and catalog | This branch | PASS | `test_grafana_metrics_require_basic_auth` failed before, OK after; the registry row is the owner's step | required | - |
 
 ## Criterion Acceptance
 
@@ -179,7 +194,7 @@ working tree stays on `main`.
 | --- | --- | --- | --- | --- |
 | 1 | pending | E2 | W1 inventory recorded; awaiting owner acceptance | @buenhyden |
 | 2 | pending | E4, E5 | Source change done; awaiting W5 and owner acceptance | @buenhyden |
-| 3 | pending | - | Grafana metrics authentication follows in a second change | @buenhyden |
+| 3 | pending | E8 | Source change done; awaiting the registry row, W5 and owner acceptance | @buenhyden |
 | 4 | pending | E4, E5 | Source change done; data copy is W5 | @buenhyden |
 | 5 | pending | E3 | Tests in place; awaiting owner acceptance | @buenhyden |
 | 6 | pending | E6, E7 | Records and documents written; awaiting owner acceptance | @buenhyden |

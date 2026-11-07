@@ -106,6 +106,7 @@ services:
       - opensearch_exporter_password
       - openbao_token
       - qdrant_read_only_api_key
+      - grafana_metrics_password
     healthcheck:
       test: [ 'CMD', 'wget', '-q', '--tries=1', '--spider', 'http://localhost:${PROMETHEUS_PORT:-9090}/-/healthy' ]
       interval: 30s
@@ -368,6 +369,9 @@ services:
       # P06 W49: set GRAFANA_ADMIN_PASSWORD_FILE to the Agent-rendered file under
       # /run/openbao/observability to consume OpenBao; unset rolls back.
       GF_SECURITY_ADMIN_PASSWORD__FILE: ${GRAFANA_ADMIN_PASSWORD_FILE:-/run/secrets/grafana_admin_password}
+      # /metrics shares the routed port, so it requires basic auth (SPEC-0267).
+      GF_METRICS_BASIC_AUTH_USERNAME: prometheus
+      GF_METRICS_BASIC_AUTH_PASSWORD__FILE: /run/secrets/grafana_metrics_password
       GF_USERS_ALLOW_SIGN_UP: 'false'
       GF_USERS_AUTO_ASSIGN_ORG_ROLE: 'Viewer'
       GF_AUTH_GENERIC_OAUTH_ENABLED: 'true'
@@ -442,6 +446,7 @@ services:
         bind: {create_host_path: false}
     secrets:
       - grafana_admin_password
+      - grafana_metrics_password
       - grafana_client_secret
       - grafana_reader_password
     depends_on:
