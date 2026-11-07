@@ -1,6 +1,6 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -274,6 +274,33 @@ The three new plugin tests were not run against the reviewed commits (that
 scratch-copy run was refused); the first-seen case fails there by
 construction, because those commits emit 0.
 
+### First run and plugin 0.4.2 (2026-11-07)
+
+The first scheduled 0.4.0 runs (08:00 KST, all three jobs; Hermes read-only
+check, controller digest check) stored, rendered and sent every report: Store,
+Email, Order and Verifier PASS for all three, recipient header PASS, Telegram
+FAIL for `6eabd835f969` only. No report reached the Gateway:
+
+- `25674fbc0bf3`: its outbox record has `source_text` byte-identical to
+  `report.md`, `source_sha256` and `source_ref` correct, and `source_text` is
+  not JSON, but it stayed `pending` with 0 attempts on `missing_address_policy`:
+  `~/.hermes/config/research-webhook-allowed-cidrs` was never created on
+  server A (required since `6853286db`, 2026-11-02). The owner chose to create
+  it in the W7 window after the schema 5 switch, and not to retry this record.
+- `6eabd835f969` (3 of 19 items, `number_not_found`) and `8d0925bc571d` (1 of 6,
+  `quote_not_found` and `number_not_found`): `resolve()` stopped at the first
+  failing item and the agent got only `source_quality`.
+- The `6eabd835f969` run patched its own skill to write Telegram text itself,
+  and Hermes reverted it at the owner's request. Its report was already cut off
+  mid-sentence in the model's tool-call argument, not by a limit.
+
+Owner decision (2026-11-07), plugin 0.4.2: `resolve()` checks every item and
+raises `SourceQuality` with each failing `item_id` and its codes. The result is
+`source_quality` with `failed_items`, returned before any source set or outbox
+record exists. The prompt lets the agent remove exactly those items, unedited,
+and submit once more with the same report, never a third time. The stored
+report is reused unchanged on that second call.
+
 ### Design deviations
 
 - Outcome mapping: `report_store_unavailable` and `record_unavailable` are
@@ -285,7 +312,9 @@ construction, because those commits emit 0.
   `HermesResearchNoSuccess` does not fire on such days.
 - The metrics follow the Hermes account's home: a Hermes run under another
   account has no `~/backups/metrics` and writes no textfile.
-- Plugin version is 0.4.1: 0.4.0 was installed on server A at 2026-11-06
+- `source_quality` allows one resubmission with the failed items removed
+  (0.4.2); every other result with report paths still ends submission.
+- The metrics change shipped as 0.4.1 (0.4.2 adds `failed_items`): 0.4.0 was installed on server A at 2026-11-06
   23:41 KST, so the metrics change ships as its own release.
 - Spec Normal Behavior 6 puts the email and Telegram steps before submission;
   they now follow `submit_research_report`, because the plugin renders them
@@ -337,6 +366,7 @@ obtained). Controller recommendations, not owner answers:
 | E5 | 10 | W5 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`ResearchMetricsTests`: every outcome, persistence across runs, atomic 0644 replace, missing directory skipped, failure isolation, label enums with no URL/UUID/hex, promtool `test rules` on `tests/fixtures/hermes-research-alerts.test.yml` with the cached `prom/prometheus` image under `--network none`); new tests failed on `800ebf788` (`METRICS_DIR` missing); a mutated `HermesResearchBlocked` comparison fails the promtool cases; `promtool check rules`; `tests.validation.test_compose_baseline_gates`, `test_lab_isolation`, `test_quality_observability`, `test_p03_hermes_gate`, `test_p11_hermes_gate`; `check-p03-hermes.py`, `check-p11-hermes.py`, `e2e-cache-contract.sh`, script manifest, workflow contract, ruff; `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment`, `check-document-corpus-lifecycle.py` | W5 working tree on `800ebf788` | PASS | 445 tests OK under both umasks; promtool 10 rules, cases pass; repo suites 142 (31 skipped) and 53 OK; gates PASS; ruff clean; metadata 0 violations, links 898 documents 0 failures, lifecycle 0 violations | required | - |
 | E11 | 10 | W5 | live node-exporter scrape of `hermes_research.prom`, alert firing and dashboard rendering | runtime observation after the W9 install | NOT_RUN | - | required | - |
 | E12 | 10 | W5 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`test_first_seen_starts_the_success_clock_of_every_kind`, `test_corrupt_state_resets_only_what_is_bad_and_continues`, `test_a_busy_metrics_lock_skips_metrics_promptly`, promtool `test rules` with the first-seen, never-succeeds and `store_failed` cases plus `check metrics`); `e2e-cache-contract.sh`; ruff; `ObservabilityDashboardContractTests`, `test_lab_isolation`, `test_p03_hermes_gate`, `test_p11_hermes_gate`; `check-p03-hermes.py`, `check-p11-hermes.py`; `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | W5 fix round working tree above `94530091a` | PASS | 449 tests OK (448 plus the non-finite state test added after the re-review) under both umasks; e2e exit 0; ruff clean; repo tests OK; gates PASS; metadata 0 violations; links 0 failures | required | - |
+| E13 | 9 | W4 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`test_quality_failures_name_every_failing_item`, `test_source_quality_lists_failed_items_and_allows_one_resubmission`, `test_resubmission_with_surviving_items_sends_them_once`, prompt exception sentence); `e2e-cache-contract.sh`; ruff; independent review APPROVED, its Minor items fixed | plugin 0.4.2 working tree on `688f94f7f` | PASS | 452 tests OK under both umasks; e2e exit 0; ruff clean | required | - |
 | E6 | 11 | W6 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`; `python3 scripts/validation/check-document-links.py --mode alignment`; `python3 scripts/validation/check-document-corpus-lifecycle.py` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | metadata: 0 violations; links: 898 documents, 0 failures; lifecycle: 0 violations | required | - |
 | E7 | 12 | W7 | schema-4 backup, restore test on a copy, cutover | owner approval pending | NOT_RUN | - | required | - |
 | E8 | 13 | W8 | `backfill-reports` dry run shows the 16 reports excluded; apply | Blog-data capability and owner approval pending | NOT_RUN | - | required | - |
