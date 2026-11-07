@@ -1,8 +1,8 @@
 ---
 title: "ComfyUI Egress on Demand Task"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-08"
 layer: "specs"
@@ -65,6 +65,7 @@ RUN-0081, because the README routes commands to the operations documents. W5
 | SPEC-0268-PLAN-0001 | draft | approved | #approval-and-start-2026-11-08 |
 | SPEC-0268-TSK-0001 | draft | ready | #approval-and-start-2026-11-08 |
 | SPEC-0268-TSK-0001 | ready | in-progress | #approval-and-start-2026-11-08 |
+| SPEC-0268-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-08 |
 
 ### W1 outbound dependencies (2026-11-08)
 
@@ -145,16 +146,23 @@ run.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E2 | W1 table recorded; awaiting owner acceptance | @buenhyden |
-| 2 | pending | E4 | Source change done; awaiting W5 and owner acceptance | @buenhyden |
-| 3 | pending | E4 | Source change done; awaiting W5 and owner acceptance | @buenhyden |
-| 4 | pending | E3 | Tests in place; awaiting owner acceptance | @buenhyden |
-| 5 | pending | E5 | Documents updated; awaiting owner acceptance | @buenhyden |
-| 6 | pending | E6 | Applied in HOME; refusal and attach and detach observed; awaiting owner acceptance | @buenhyden |
+| 1 | accepted | E2 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 2 | accepted | E4 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 3 | accepted | E4 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 4 | accepted | E3 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 5 | accepted | E5 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 6 | accepted | E6 | Accepted by the owner on 2026-11-08 | @buenhyden |
 
 ## Review and Completion
 
-W1–W5 are done. Every criterion awaits owner acceptance.
+W1–W5 are done and every criterion has PASS evidence.
+
+### Owner acceptance (2026-11-08)
+
+The owner accepted criteria 1–6 on 2026-11-08 after the W5 evidence merged
+(#800), and the Task closed as `completed`. ComfyUI runs without outbound
+access or a host port; RUN-0081 owns the maintenance attach and detach.
+ComfyUI-Manager's `security_level = weak` stays outside this Task.
 
 ## Related Documents
 
