@@ -1,6 +1,6 @@
 ---
 title: "Workspace Inventory Task"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -362,6 +362,71 @@ new Spec. The `/verify` harness was NOT_RUN because it marks repository commands
 untrusted without explicit consent; the same test selection ran directly.
 Runtime, restore and Hosted CI for this observation remain NOT_RUN.
 
+### D01 T03, T04 and stale receipts (2026-11-07, after PR #781)
+
+The user then asked to finish the T03 semantic audit, re-check T04, and renew
+the 58 STALE review receipts and the 2 that named moved paths before D02. Work
+started from clean `main` at merge `4e63b7c5cab40b1c96e58e2f647cadd1fe22b9d2`.
+
+**Stale receipts.** For each receipt, the commit whose blob matched its sha256
+was found in Git history (57 of 58; the `tsk-0044` receipt had hashed an
+uncommitted state). Four read-only `code-reviewer` subagents each reviewed one
+group's `base..4e63b7c5c` diff against the receipt's prior scope; a reviewer
+read the whole current file only where the old receipt was complete or the file
+was small. The two moved files (`docs/05.operations/guides/15-labs/0094-lakehouse.md`,
+`labs/lakehouse/flink/README.md`) were read in full here. Every reported
+finding was checked against the source before acting. Confirmed and fixed in
+`0942176c9`:
+
+| Finding | Fix |
+| --- | --- |
+| The new tier check passed a source entry with no path and no sha (`None == None`) | Require a string sha that equals the payload digest; two new rejection cases |
+| `P05Scenario.execution_status` turned every `RehearsalFailure`, including REST and headroom failures, into `not_terminal` | Re-raise anything but its own settle timeout, as its siblings do; new test RED before the fix |
+| After the LAB move the great-expectations hardening checks grepped the shared lakehouse file, and the `ports:` check was dropped | `check_service_contains`/`check_service_not_contains` read one service block; the port check is restored; library test 6 failures before, PASS after |
+| n8n README Networks/Volumes rows predated the isolated runner networks and read-only runner mounts | Rows match `infra/07-workflow/n8n/docker-compose.yml` |
+| `.env.example` heading still named SonarQube and Stalwart | Heading names OpenBao only |
+| Airflow runbook: `008` check without `PGPASSFILE`, no run location for `psql -h dev-pg`, rollback without `docker exec` | All three corrected |
+| SPEC-0212 Plan lacked TSK-0047–0051 links; Spec had an empty "Request precedence owner" bullet; TSK-0041 claimed a separate runtime/Hosted CI record that did not exist | Links added; bullet points at the bootstrap precedence section; NOT_RUN row added |
+
+Two findings are kept by the Stage 90 dated-snapshot rule: the m0021 research
+member's `labs/<name>.yml` cells, and the DATA-0096 S05 row, whose heading now
+says it is the 2026-11-03 summary. All 60 receipts were renewed with their
+current sha, reviewer, exact scope, verdict and resolution; `complete: true`
+was given only to the 8 files read in full. 38 unaffected receipts were kept.
+
+**T03.** The 70 requirement rows were compared with the D01 requirement table,
+the SPEC-0212 criteria and each Task's Criterion Acceptance. Ten P02/P03 rows had
+no `subject`, and the historical-originals row had none, so they could not be
+matched to a requirement; each now carries its Spec criterion's first sentence.
+Criteria 94–103 (P10.01–P10.04, P11.01–P11.05, D12) had no row; ten rows were
+added with state and acceptance taken from TSK-0049, TSK-0050 and TSK-0051
+(95 is IMPLEMENT_GAP, 94 TEST_RESIDUAL, 103 BLOCKED until its owner approvals).
+The D01 environment bundle's `SERVICE_POSTGRES` classification had no row:
+HOME declares none (`tests/validation/test_dev_data_boundary.py`), the only use
+is the excluded `labs/postgresql-ha` fixture, and the legacy secret stays
+RETAINED_FOR_RECOVERY under SPEC-0204 TSK-0007, so `D01.ENV01` records
+NO_CHANGE. `validate` now rejects a requirement row without a subject. The
+remaining D01 bundles map to existing rows: services and roles to P01/P09,
+Airflow/n8n to P04/P05, models to P03, ports and auth to P02, secrets to P06,
+CDC to P04.03, observability to P07, versions and resources to P08/P09,
+storage to P09.03, documents and quality to P08.04/P10, learning detail to
+`coverage_learning`, and scope to R26/CON09/CON15. The fifteen-row role
+comparison stays with P09.01. Each row's state is a trace; the Task stays its
+authority.
+
+**T04.** All 22 Specs are approved and 48 Tasks are open. The ledger's 109
+ownership leases are disjoint by `validate`; the leases on the two moved files
+are closed by their moves. `tsk-0007` and `tsk-0049` carry no frontmatter
+status because they are multi-item Tasks, which the metadata check requires;
+adding one was tried, rejected by the checker, and reverted. SPEC-0226 TSK-0001
+is in-progress with all criteria accepted because the restic snapshot listing
+and the owner's scan decision remain open, which its own record states.
+
+The ledger was then regenerated from a clean tree with the renewed receipts and
+curation: files fully reviewed 9/2,029, partially 89/2,029, STALE 0, missing 0;
+81 requirement rows, none without a subject. Runtime, restore and Hosted CI
+remain NOT_RUN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -406,6 +471,9 @@ Runtime, restore and Hosted CI for this observation remain NOT_RUN.
 | D01 ledger refresh | 52 | W57 | Clean-tree `scan --connections`, `validate`, tier re-derivation | HEAD 6ba37ce1f, clean tree | PASS | 97 root services, 65 sources, 22 render cases; 13 tiers re-derive with 0 mismatches; local d01-20261107 receipts | required | - |
 | D01 Compose static check after LAB moves | 52 | W57 | `docker compose` 5.6.1 `config -q`, `--profile '*' config --services` | HEAD 6ba37ce1f | PASS | exit 0; 0 default services, 97 with all profiles; no runtime claim | required | - |
 | D01 runtime, restore and Hosted CI | 51 | W56 | Live service, restore and remote CI | HEAD 6ba37ce1f | NOT_RUN | Inventory refresh changes no running service; Hosted CI runs on the PR | optional | - |
+| D01 stale receipt delta review | 52 | W57 | Four read-only delta reviews plus two full reads; findings verified at source | 4e63b7c5c; fixes 0942176c9 | PASS | 60 receipts renewed, STALE 0, missing 0; confirmed defects fixed with RED/GREEN where code; local d01-20261107 receipts | required | - |
+| D01 T03 requirement trace | 53 | W58 | Requirement rows against D01 table, SPEC-0212 criteria and Task Criterion Acceptance | 0942176c9 | PASS | 11 subjects filled, 11 rows added, subject-less rows rejected by validate | required | - |
+| D01 T04 ownership re-check | 54 | W59 | Open Spec/Task status, lease overlap and moved-path leases | 0942176c9 | PASS | No overlap; 2 moved leases closed; statusless multi-item Tasks confirmed valid | required | - |
 
 ## Criterion Acceptance
 
