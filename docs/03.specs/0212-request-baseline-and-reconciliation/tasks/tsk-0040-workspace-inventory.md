@@ -1,10 +1,10 @@
 ---
 title: "Workspace Inventory Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0040"
 parent_ids:
@@ -310,6 +310,58 @@ no interpolated values and that unprofiled services are always enabled. The
 GitHub page gives no YAML size limit, so it does not apply to this ledger.
 Runtime, restore and Hosted CI for this observation remain NOT_RUN.
 
+### D01 re-observation after the LAB moves
+
+A direct user request on 2026-11-07 re-ran D01. The input workspace was clean
+`main` at `e75276ef1f7801997d3d6fba6223fcf1a3bbbd41`, equal to read-only
+`git ls-remote` main and 315 commits after the 2026-11-04 observation; the
+Docker context was `default`. Work ran on branch `fix/data-0096-lab-move-refresh`;
+no reset, clean, stash or pull was used.
+
+The committed ledger still passed `validate`, which checks internal consistency
+only. A fresh scan with the same 98 review records and seven curated sections
+showed real drift: root services 112→97, Compose sources 69→65, render cases
+17→22, relations 217→195. SPEC-0262 commit `c065535e9` had moved dbt, Flink,
+Great Expectations, JupyterLab, Spark, Superset, Trino, SonarQube, Stalwart and
+`seaweedfs-table-bucket` into `labs/<name>/docker-compose.yml`, and commit
+`61aca993f` deleted the Supabase LAB. The curated `coverage_tiers` still named
+the 18 removed sources as `CURRENT_PUBLIC_METADATA_ONLY`, and the scan accepted
+them because nothing resolved tier rows against the payload.
+
+Commit `6ba37ce1fa202f9434f32002b96568fc9a7e5a40` makes `validate` reject a tier
+whose service ids, root names, row count or source path/sha256 do not resolve
+in the same payload. Before the fix, the new unit test failed (no error raised)
+and the CLI accepted the stale curation; after it, the same CLI scan exits 2 and
+writes no output. Tier membership was then re-derived with the rule that exactly
+reproduces all 13 tiers of the 2026-11-04 ledger: every service whose source is
+under the tier directory, in payload order, root names from root members only.
+Removed sources and services stay in each tier as `moved_sources` or
+`moved_services` with their previous fingerprint, removing commit and current
+LAB source. TIER10 and TIER12 now hold no root service and are `NO_ROOT_SOURCE`
+/ `OUT_OF_SCOPE`, because LAB runtime and HOME reintroduction are excluded. The
+one ownership lease on `infra/12-analytics/flink/README.md` is closed by the
+move to `labs/lakehouse/flink/README.md`; a new edit needs a new lease.
+Handoff rows keep their dated `INITIAL_SCAN` fingerprints as history.
+
+The ledger was regenerated from clean HEAD `6ba37ce1f` (`dirty_paths: []`).
+Observed: files 41,913/41,913, full body review 1/2,028, partial 37/2,028,
+STALE 58, render 0/22, runtime 0/97, restore 0/97. Two review records name
+paths that no longer exist. `docker compose` 5.6.1 `config -q` exited 0,
+`--profile '*' config --services` listed 97 services, equal to the ledger, and
+the bare selection listed 0. The 136 tests in the inventory, connection,
+reference-metadata and CI-plan suites pass. The Compose profiles page and the
+GitHub protected-branches page were re-read on 2026-11-07T05:45Z: unprofiled
+services are always enabled, `--profile '*'` enables all profiles, and admins
+bypass branch protection unless that bypass is disabled. `main` is protected
+and requires `candidate-quality`.
+
+With the Supabase LAB deleted, the D01-T06 comparison of Supabase with a direct
+app platform has no current subject: no tracked source owns auth, DB or object
+data through Supabase, so no duplicate owner exists. Reintroducing it needs a
+new Spec. The `/verify` harness was NOT_RUN because it marks repository commands
+untrusted without explicit consent; the same test selection ran directly.
+Runtime, restore and Hosted CI for this observation remain NOT_RUN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -350,6 +402,10 @@ Runtime, restore and Hosted CI for this observation remain NOT_RUN.
 | Hosted CI | 51 | W56 | Remote CI execution | Local branch | NOT_RUN | No remote publication; applies to all P01 units | optional | - |
 | D01 ledger revalidation | 52 | W57 | Committed-ledger validate, regenerated scan and 75 focused tests | HEAD d53a0cd6e, clean tree | PASS | Old ledger validate exit 2 (stale moved source); regenerated ledger PASS; local d01-20261104 receipts | required | - |
 | D01 Compose static check | 52 | W57 | `docker compose config -q`, `--services`, `--profiles` | HEAD d53a0cd6e | PASS | exit 0; 0 default services, 112 with all profiles; no runtime claim | required | - |
+| D01 stale tier rejection | 53 | W58 | New tier-resolution unit test and CLI rescan with 2026-11-04 curation | Before/after commit 6ba37ce1f | PASS | Test failed before the fix; after it the CLI exits 2 with no output; 136 focused tests OK | required | - |
+| D01 ledger refresh | 52 | W57 | Clean-tree `scan --connections`, `validate`, tier re-derivation | HEAD 6ba37ce1f, clean tree | PASS | 97 root services, 65 sources, 22 render cases; 13 tiers re-derive with 0 mismatches; local d01-20261107 receipts | required | - |
+| D01 Compose static check after LAB moves | 52 | W57 | `docker compose` 5.6.1 `config -q`, `--profile '*' config --services` | HEAD 6ba37ce1f | PASS | exit 0; 0 default services, 97 with all profiles; no runtime claim | required | - |
+| D01 runtime, restore and Hosted CI | 51 | W56 | Live service, restore and remote CI | HEAD 6ba37ce1f | NOT_RUN | Inventory refresh changes no running service; Hosted CI runs on the PR | optional | - |
 
 ## Criterion Acceptance
 
