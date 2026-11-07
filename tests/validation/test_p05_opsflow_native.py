@@ -130,6 +130,28 @@ class P05NativeGuards(unittest.TestCase):
             with self.assertRaises(native.RehearsalFailure):
                 native.validate_deployment(changed, expected)
 
+    def test_execution_status_maps_only_its_own_timeout_to_not_terminal(self):
+        scenario = native.P05Scenario(
+            "test_actual_queue_runner_capture_unknown_reconcile_and_restore"
+        )
+        scenario.api = lambda action, **payload: {"terminal": False}
+
+        def timeout(probe, message, seconds):
+            probe()
+            raise native.RehearsalFailure(message)
+
+        scenario.fixture = SimpleNamespace(wait_until=timeout)
+        self.assertEqual("not_terminal", scenario.execution_status("42"))
+        # A probe, REST or headroom failure must not become a clean interruption.
+        for message in ("n8n REST request failed", "runtime headroom exhausted"):
+
+            def fails(probe, _message, seconds, message=message):
+                raise native.RehearsalFailure(message)
+
+            scenario.fixture = SimpleNamespace(wait_until=fails)
+            with self.assertRaisesRegex(native.RehearsalFailure, message):
+                scenario.execution_status("42")
+
     def test_already_inactive_workflow_fence_uses_verified_state(self):
         scenario = native.P05Scenario(
             "test_actual_queue_runner_capture_unknown_reconcile_and_restore"

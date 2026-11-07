@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.4.1"
+version: "1.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -177,6 +177,7 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
      owner와 각 client로 SET ROLE하는 격리 감사 superuser를 요구하므로 폐기 가능한 격리 DB 전용이다.
      `006_checks.sql`도 격리 DB 전용이며 version 4 검사라 version 5의 최종 검사가 아니다.
      두 검사는 격리 rehearsal에 속하며 이 단계에서 실행하지 않는다.
+   - 실행 위치: 아래 `psql -h dev-pg` 명령은 `dev-pg` 이름이 해석되는 Docker network 안(그 network에 붙인 일회성 psql 컨테이너 등)에서 실행한다. 호스트 셸에서는 해석되지 않는다.
    - Migration 명령: 각 파일 header가 요구하는 session_user=`opsflow_migrator`,
      current_user=`opsflow_owner`, DB=`opsflow_dev`로 실행한다. 예:
      `PGPASSFILE=<O1 경로> PGOPTIONS='-c role=opsflow_owner' psql -h dev-pg -d opsflow_dev -U opsflow_migrator -v ON_ERROR_STOP=1 -v migration_sha256=<값> -f <파일>`.
@@ -193,7 +194,7 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
      | (격리 전용) `002_checks.sql` | 격리 감사 superuser | 마지막 적용 migration: `001` 뒤 `001`, `003` 뒤 `003` |
      | (격리 전용) `006_checks.sql` | 격리 감사 관리자 | `005`의 SHA-256 |
 
-   - 검사 명령: `psql -h dev-pg -d opsflow_dev -U <O8 감사 관리자> -v ON_ERROR_STOP=1 -v migration_sha256=<007 SHA-256> -f 008_checks.sql`.
+   - 검사 명령: `PGPASSFILE=<O8 경로> psql -h dev-pg -d opsflow_dev -U <O8 감사 관리자> -v ON_ERROR_STOP=1 -v migration_sha256=<007 SHA-256> -f 008_checks.sql`.
      `008` header는 "approved isolated DB"를 요구하므로 HOME 실행은 O8에서 owner가 따로 승인해야 한다.
      `005`·`007` header의 "no HOME apply is authorized"도 O8 승인으로만 넘어선다.
    - 기대 결과: 다섯 migration이 각각 commit되고 `008`이 읽기 전용 transaction을 오류 없이 ROLLBACK으로 끝낸다.
@@ -245,7 +246,7 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
    - 명령: `docker exec airflow-scheduler airflow dags unpause source_manifest_ingest`.
    - 기대 결과: paused=False이며 계획 밖 run이 생기지 않는다(`schedule=None`).
    - 중단 조건: 예상 밖 run.
-   - Rollback: `airflow dags pause source_manifest_ingest`.
+   - Rollback: `docker exec airflow-scheduler airflow dags pause source_manifest_ingest`.
 
 전체 rollback은 설치한 파일을 제거하고 백업을 보존하며 1단계 이전부터 있던 것은 drop하지 않는다.
 

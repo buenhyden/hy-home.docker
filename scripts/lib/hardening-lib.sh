@@ -53,20 +53,48 @@ check_not_contains() {
   return 0
 }
 
+# Print one top-level service block: the lines after "  <service>:" up to the
+# next two-space key. Prints nothing when the service is absent; callers fail
+# in their own shell so the FAILURES counter is not lost in a subshell.
+_service_block() {
+  awk -v svc="$2" '
+    BEGIN { in_svc = 0; pat = "^  " svc ":" }
+    $0 ~ pat { in_svc = 1; next }
+    /^  [A-Za-z0-9_.-]+:/ && in_svc { in_svc = 0 }
+    in_svc { print }
+  ' "$1"
+}
+
+# Check that one service block contains (mode=contains) or does not contain
+# (mode=not_contains) a fixed string
+_check_service_text() {
+  local mode="$1" compose_file="$2" service_name="$3" pattern="$4" label="$5"
+  local block
+  block="$(_service_block "$compose_file" "$service_name")"
+  if [[ -z "$block" ]]; then
+    fail "Service block not found: $service_name (file: $compose_file)"
+    return 1
+  fi
+  if grep -Fq -- "$pattern" <<<"$block"; then
+    [[ "$mode" == contains ]] && return 0
+    fail "$label (Forbidden in $service_name: $pattern)"
+    return 1
+  fi
+  [[ "$mode" == not_contains ]] && return 0
+  fail "$label (Expected in $service_name: $pattern)"
+  return 1
+}
+
+check_service_contains() { _check_service_text contains "$@"; }
+check_service_not_contains() { _check_service_text not_contains "$@"; }
+
 # Check if a service block in compose has a healthcheck
 check_service_healthcheck() {
   local compose_file="$1"
   local service_name="$2"
 
   local block
-  block="$(
-    awk -v svc="$service_name" '
-      BEGIN { in_svc = 0; pat = "^  " svc ":" }
-      $0 ~ pat { in_svc = 1; next }
-      /^  [A-Za-z0-9_.-]+:/ && in_svc { in_svc = 0 }
-      in_svc { print }
-    ' "$compose_file"
-  )"
+  block="$(_service_block "$compose_file" "$service_name")"
 
   if [[ -z "$block" ]]; then
     fail "Service block not found: $service_name (file: $compose_file)"
@@ -87,14 +115,7 @@ check_service_network() {
   local network_name="$3"
 
   local block
-  block="$(
-    awk -v svc="$service_name" '
-      BEGIN { in_svc = 0; pat = "^  " svc ":" }
-      $0 ~ pat { in_svc = 1; next }
-      /^  [A-Za-z0-9_.-]+:/ && in_svc { in_svc = 0 }
-      in_svc { print }
-    ' "$compose_file"
-  )"
+  block="$(_service_block "$compose_file" "$service_name")"
 
   if [[ -z "$block" ]]; then
     fail "Service block not found: $service_name (file: $compose_file)"

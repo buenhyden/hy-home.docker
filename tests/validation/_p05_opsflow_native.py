@@ -671,7 +671,11 @@ class P05Scenario(historical.OpsflowN8nNativeRehearsal):
             self.fixture.wait_until(
                 terminal, "interrupted execution did not settle", 60
             )
-        except RehearsalFailure:
+        except RehearsalFailure as error:
+            # Only the settle timeout is a non-terminal result; a probe, REST or
+            # headroom failure propagates, as in the sibling recovery waits.
+            if str(error) != "interrupted execution did not settle":
+                raise
             return "not_terminal"
         return seen["status"]
 

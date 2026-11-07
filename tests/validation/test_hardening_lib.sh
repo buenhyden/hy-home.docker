@@ -136,6 +136,46 @@ expect "check_service_healthcheck does not read past the service block" \
   "  [FAIL] Healthcheck missing in service block: unhealthy (file: ${WORK}/compose.yml)" \
   "$(run_snippet "check_service_healthcheck '${WORK}/compose.yml' unhealthy || true")"
 
+# --- check_service_contains / check_service_not_contains -------------------
+
+cat >"${WORK}/scoped.yml" <<'YAML'
+services:
+  job:
+    extends:
+      service: template-job-med
+  engine:
+    extends:
+      service: template-job-med
+    ports:
+      - '127.0.0.1:18090:8080'
+YAML
+
+expect "check_service_not_contains accepts a block without the text" \
+  "rc=0" \
+  "$(run_snippet "check_service_not_contains '${WORK}/scoped.yml' job 'ports:' 'job must not publish'; echo \"rc=\$?\"")"
+
+# A later service's ports are never charged to an earlier one, and an earlier
+# service's template is never credited to a later one.
+expect "check_service_not_contains reads only its own block" \
+  "  [FAIL] engine must not publish (Forbidden in engine: ports:)" \
+  "$(run_snippet "check_service_not_contains '${WORK}/scoped.yml' engine 'ports:' 'engine must not publish' || true")"
+
+expect "check_service_contains accepts text inside the block" \
+  "rc=0" \
+  "$(run_snippet "check_service_contains '${WORK}/scoped.yml' job 'service: template-job-med' 'job uses template'; echo \"rc=\$?\"")"
+
+expect "check_service_contains rejects text only in another block" \
+  "  [FAIL] job publishes (Expected in job: 127.0.0.1:18090)" \
+  "$(run_snippet "check_service_contains '${WORK}/scoped.yml' job '127.0.0.1:18090' 'job publishes' || true")"
+
+expect "check_service_contains rejects an unknown service" \
+  "  [FAIL] Service block not found: absent (file: ${WORK}/scoped.yml)" \
+  "$(run_snippet "check_service_contains '${WORK}/scoped.yml' absent 'x' 'y' || true")"
+
+expect "a scoped failure is counted in the caller's shell" \
+  "1" \
+  "$(run_snippet "check_service_not_contains '${WORK}/scoped.yml' engine 'ports:' x >/dev/null; echo \"\$FAILURES\"")"
+
 # --- start_tier / report_status -------------------------------------------
 
 expect "start_tier announces the tier" \

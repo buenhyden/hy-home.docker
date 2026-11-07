@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.43.0"
+version: "1.43.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -599,6 +599,11 @@ only that dependent operation.
 - [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
 - [Secret structure and OpenBao contract Task](tasks/tsk-0045-secret-structure-openbao.md)
 - [Exporter and observability contracts Task](tasks/tsk-0046-exporter-observability.md)
+- [Image, supply-chain and Storybook compatibility Task](tasks/tsk-0047-image-supply-chain-storybook.md)
+- [Role, resource and retirement input Task](tasks/tsk-0048-role-resource-retirement.md)
+- [Documentation, governance, QA and CI contract Task](tasks/tsk-0049-document-governance-qa-ci.md)
+- [Hermes provenance, trust and export Task](tasks/tsk-0050-hermes-provenance-trust-export.md)
+- [Opsflow first HOME installation Task](tasks/tsk-0051-opsflow-home-installation.md)
 - [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Spec](spec.md)

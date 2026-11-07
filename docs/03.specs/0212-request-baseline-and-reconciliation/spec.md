@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.43.0"
+version: "1.43.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-07"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -792,6 +792,6 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
 - [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
 - [Integration owner](../0204-service-integration-security-and-operations/spec.md)
-- Request precedence owner
+- [Request precedence owner](../../../.agents/governance/bootstrap.md#authority-and-precedence)
 - [Home host requirement](../../01.requirements/0027-home-development-host.md)
 - [Home host architecture](../../02.architecture/descriptions/0031-home-development-host.md)
