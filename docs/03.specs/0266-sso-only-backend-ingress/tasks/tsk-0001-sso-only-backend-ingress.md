@@ -1,8 +1,8 @@
 ---
 title: "SSO-Only Backend Ingress Task"
-version: "0.5.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-07"
 layer: "specs"
@@ -135,6 +135,7 @@ same change; W5 keeps its own approval. The package first landed as `draft`
 | SPEC-0266-PLAN-0001 | draft | approved | #approval-and-start-2026-11-07 |
 | SPEC-0266-TSK-0001 | draft | ready | #approval-and-start-2026-11-07 |
 | SPEC-0266-TSK-0001 | ready | in-progress | #approval-and-start-2026-11-07 |
+| SPEC-0266-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-07 |
 
 ### W2–W4 implementation (2026-11-07)
 
@@ -277,16 +278,25 @@ render test covers their configuration.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E2 | W1 inventory recorded; awaiting owner review with the Spec | @buenhyden |
-| 2 | pending | E4, E5 | Source change done; awaiting owner acceptance and W5 | @buenhyden |
-| 3 | pending | E4, E5 | Source change done; awaiting owner acceptance and W5 | @buenhyden |
-| 4 | pending | E3 | Test in place; awaiting owner acceptance | @buenhyden |
-| 5 | pending | E6 | Documents updated, ADR-0061 accepted; awaiting owner acceptance | @buenhyden |
-| 6 | pending | E7, E10, E11, E12, E13 | Every running affected service applied in HOME with SSO routes, direct-reach refusal, flows and a rehearsed rollback; awaiting owner acceptance | @buenhyden |
+| 1 | accepted | E2 | Accepted by the owner on 2026-11-07 | @buenhyden |
+| 2 | accepted | E4, E5 | Accepted by the owner on 2026-11-07 | @buenhyden |
+| 3 | accepted | E4, E5 | Accepted by the owner on 2026-11-07 | @buenhyden |
+| 4 | accepted | E3 | Accepted by the owner on 2026-11-07 | @buenhyden |
+| 5 | accepted | E6 | Accepted by the owner on 2026-11-07 | @buenhyden |
+| 6 | accepted | E7, E10, E11, E12, E13 | Accepted by the owner on 2026-11-07 | @buenhyden |
 
 ## Review and Completion
 
-W1–W5 are done. Every criterion has PASS evidence and awaits owner acceptance; the four stopped backends take the new networks on their next start.
+W1–W5 are done and every criterion has PASS evidence.
+
+### Owner acceptance (2026-11-07)
+
+The owner accepted SPEC-0266 on 2026-11-07 after the W5 completion evidence
+merged (#790), and the Task closed as `completed`. The four stopped backends
+take the new networks on their next start. Two follow-ups moved to SPEC-0267:
+the undeclared ComfyUI and Pyroscope data volumes and the secondary listeners.
+ComfyUI's unrestricted outbound access through `comfyui_egress_net` remains an
+open owner decision (egress allowlist or accepted risk).
 
 ## Related Documents
 
