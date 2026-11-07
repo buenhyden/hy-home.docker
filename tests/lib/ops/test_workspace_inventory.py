@@ -191,9 +191,23 @@ class InventoryTests(unittest.TestCase):
             lambda d: tier(d).update(declared_service_rows=2),
             lambda d: tier(d)["source_files"][0].update(path="moved.yml"),
             lambda d: tier(d)["source_files"][0].update(sha256="0" * 64),
+            lambda d: tier(d).update(source_files=[{}]),
+            lambda d: tier(d).update(source_files=[{"path": "absent.yml"}]),
         ):
             candidate = json.loads(json.dumps(doc))
             mutate(candidate)
+            with self.assertRaises(InventoryError):
+                validate(candidate)
+
+    def test_validator_requires_a_subject_on_every_requirement_row(self):
+        self.put("a.py")
+        doc, _ = self.scan("a.py")
+        doc["requirements"] = [{"id": "R1", "state": "SOURCE_READY", "subject": "x"}]
+        self.assertTrue(validate(doc))
+        # A row without a subject cannot be matched to what it requires.
+        for subject in (None, "", "  "):
+            candidate = json.loads(json.dumps(doc))
+            candidate["requirements"][0]["subject"] = subject
             with self.assertRaises(InventoryError):
                 validate(candidate)
 

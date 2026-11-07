@@ -570,6 +570,8 @@ def validate(doc):
         leases.add(scope)
     for row in doc.get("requirements", []):
         _require(row.get("state") in STATES)
+        subject = row.get("subject")
+        _require(isinstance(subject, str) and subject.strip(), "Requirement subject.")
     # Tier rows claim current membership, so they must resolve against this payload.
     service_ids = {s.get("id") for s in doc.get("services", [])}
     root_names = set(doc.get("compose", {}).get("root_services", []))
@@ -580,7 +582,10 @@ def validate(doc):
         _require(set(tier.get("root_service_names", [])) <= root_names)
         _require(tier.get("declared_service_rows", len(ids)) == len(ids))
         for source in tier.get("source_files", []):
-            _require(digests.get(source.get("path")) == source.get("sha256"))
+            digest = source.get("sha256")
+            _require(
+                isinstance(digest, str) and digests.get(source.get("path")) == digest
+            )
     connection_keys = {
         "connections",
         "connection_sources",

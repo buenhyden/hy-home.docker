@@ -751,10 +751,13 @@ check_12_analytics() {
   check_contains "$flink_wrapper" "'rest.auth.type' = 'sigv4'" "flink catalog must sign with SigV4"
   check_contains "$flink_wrapper" "'rest.signing-name' = 's3'" "flink catalog signing name must be s3"
   check_contains "$flink_wrapper" "'io-impl' = 'org.apache.iceberg.aws.s3.S3FileIO'" "flink must use S3FileIO"
+  # The lakehouse file is shared with Trino/Flink (which publish ports) and
+  # Spark (which also uses template-job-med), so read only the GX block.
   local gx_compose="$lakehouse_compose"
-  check_contains "$gx_compose" "GX_ANALYTICS_ENABLED: 'false'" "great-expectations must not send usage events"
-  check_contains "$gx_compose" "./great-expectations/suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
-  check_contains "$gx_compose" "service: template-job-med" "great-expectations must use the read-only job template"
+  check_service_contains "$gx_compose" great-expectations "GX_ANALYTICS_ENABLED: 'false'" "great-expectations must not send usage events"
+  check_service_contains "$gx_compose" great-expectations "./great-expectations/suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
+  check_service_not_contains "$gx_compose" great-expectations "ports:" "great-expectations must not publish a port"
+  check_service_contains "$gx_compose" great-expectations "service: template-job-med" "great-expectations must use the read-only job template"
   # Superset (SPEC-0180 S16): native Keycloak OIDC, secrets from files only.
   local superset_compose="labs/superset/docker-compose.yml"
   local superset_config="labs/superset/superset_config.py"

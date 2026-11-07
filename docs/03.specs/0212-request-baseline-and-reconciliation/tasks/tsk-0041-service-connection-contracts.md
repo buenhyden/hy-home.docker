@@ -1,10 +1,10 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.18"
+version: "0.1.19"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-07"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0041"
 parent_ids:
@@ -152,7 +152,7 @@ and every one of the single profiles still plan, and the gateway pair is
 refused with CLI exit 2. Different variables resolving to one value are a stated
 limit of this source-expression check. No container, route, credential or
 authentication setting was changed; runtime and Hosted CI for this delta are
-recorded separately.
+NOT_RUN, as the D02/D03 runtime and Hosted CI row records.
 
 Official pages re-read on 2026-11-04: Traefik routing rules (redirected to the
 v3.7 reference; declared image `v3.7.16`), Compose networking (service-to-service
@@ -229,6 +229,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D02 focused regression | 56 | W61 | P02 port/service/native/Valkey/Prometheus/port-inventory/Hermes suites | HEAD d3f1cfaac | PASS | 131 tests OK, 1 declared skip | required | - |
 | D02 gateway exclusivity | 56 | W61 | compose-start host binding conflict regression and real-source plans | HEAD d3f1cfaac plus this delta | PASS | New test RED before fix, 20/20 after; HOME and all single profiles plan; Traefik+Nginx refused (exit 2) | required | - |
 | D03 data-tier regression | 59 | W64 | Data-tier suites and nondefault-port renders | HEAD 73ccd9930 | PASS | 155 tests OK, 4 declared skips; all MNG consumers follow 16379/15432 | required | - |
+| D02/D03 runtime and Hosted CI | 56 | W61 | Live service and remote CI for the D02/D03 delta | HEAD 73ccd9930 | NOT_RUN | No container recreated and no remote run recorded for this delta | optional | - |
 | D03 Valkey memory cap | 59 | W64 | Static regression and pinned-image native probe | 9.1.2-alpine, labelled network-less container | PASS | RED before change; 128 MiB noeviction; write refused with OOM, PONG, keys kept, residue 0; live servers not recreated | required | - |
 
 ## Criterion Acceptance
