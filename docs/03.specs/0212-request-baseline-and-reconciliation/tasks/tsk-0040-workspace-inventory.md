@@ -423,7 +423,7 @@ is in-progress with all criteria accepted because the restic snapshot listing
 and the owner's scan decision remain open, which its own record states.
 
 The ledger was then regenerated from a clean tree with the renewed receipts and
-curation: files fully reviewed 9/2,029, partially 89/2,029, STALE 0, missing 0;
+curation: files fully reviewed 9/2,028, partially 89/2,028, STALE 0, missing 0;
 81 requirement rows, none without a subject. Runtime, restore and Hosted CI
 remain NOT_RUN.
 
