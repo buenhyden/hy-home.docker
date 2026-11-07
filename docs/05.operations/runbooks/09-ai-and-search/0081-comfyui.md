@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Runbook"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-08"
 layer: "operations"
 artifact_id: "RUN-0081"
 parent_ids:
@@ -54,9 +54,10 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    docker compose --profile ai --profile ai-image ps comfyui
-   curl --fail --silent --output /dev/null http://127.0.0.1:${COMFYUI_HOST_PORT:-8188}/system_stats
+   docker exec comfyui wget -qO /dev/null http://127.0.0.1:${COMFYUI_PORT:-8188}/system_stats
    ```
 
+   기본 구성은 host port를 게시하지 않으므로(SPEC-0268) container 안에서 확인한다.
    응답이 오면 서비스 endpoint가 응답한 것이다. GPU 가시성과 승인된 대표 workflow는 별도로
    확인한다. 둘 다 이 문서에서 실행한 증거로 주장하지 않는다.
 
@@ -68,6 +69,29 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    `input`, `output`을 하나의 일관된 집합으로 보호한다. 먼저 격리된 mount로 복원해 예상
    노드와 대표 workflow가 로드되는지 검증한 다음, 실제 데이터를 교체하기 전에 승인을 받는다.
    model과 캐시 다운로드는 source, digest, license, 호환성이 기록된 경우에만 다시 구축할 수 있다.
+
+### 유지보수용 외부 접속
+
+기본 구성의 ComfyUI는 외부로 나가지 못하고 host port도 없다(SPEC-0268). 모델이나
+custom node를 설치할 때만 @buenhyden의 승인을 받아 overlay를 붙이고, 작업이 끝나면
+바로 떼어낸다.
+
+1. 붙이기: overlay를 더해 ComfyUI만 재생성한다. `comfyui_egress_net`과
+   `127.0.0.1:8188`이 생긴다.
+
+   ```bash
+   docker compose -p hy-home-infra -f docker-compose.yml -f infra/08-ai/comfyui/docker-compose.egress.yml --profile ai --profile ai-image up -d --no-deps --force-recreate comfyui
+   ```
+
+2. 설치를 마치고 설치한 model과 custom node의 source·revision을 기록한다.
+3. 떼어내기: overlay 없이 다시 재생성하고 외부 접속이 막혔는지 확인한다.
+
+   ```bash
+   docker compose -p hy-home-infra -f docker-compose.yml --profile ai --profile ai-image up -d --no-deps --force-recreate comfyui
+   docker inspect comfyui --format '{{range $k, $v := .NetworkSettings.Networks}}{{$k}} {{end}}'
+   ```
+
+   network 목록이 `comfyui_ingress_net` 하나여야 한다. 아니면 중단하고 @buenhyden에게 넘긴다.
 
 ### Active-image persistence stop condition
 

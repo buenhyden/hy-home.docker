@@ -199,46 +199,55 @@ def _ingress_network(service: str) -> str:
     return service.replace("-", "_") + "_ingress_net"
 
 
+COMFYUI_EGRESS_OVERLAY = "infra/08-ai/comfyui/docker-compose.egress.yml"
+
+
+def _render_all_profiles(*overlays: str) -> dict:
+    """Render every profile from `.env.example`, without a Docker daemon."""
+    with tempfile.TemporaryDirectory() as directory:
+        env = Path(directory) / "public.env"
+        env.write_bytes((ROOT / ".env.example").read_bytes())
+        result = subprocess.run(
+            [
+                "docker",
+                "compose",
+                "--project-directory",
+                str(ROOT),
+                "--env-file",
+                str(env),
+                "-f",
+                str(ROOT / "docker-compose.yml"),
+                *[arg for overlay in overlays for arg in ("-f", str(ROOT / overlay))],
+                "--profile",
+                "*",
+                "config",
+                "--format",
+                "json",
+            ],
+            cwd=ROOT,
+            env={
+                "COMPOSE_DISABLE_ENV_FILE": "1",
+                "DOCKER_CONFIG": str(Path(directory) / "docker-config"),
+                "DOCKER_HOST": f"unix://{directory}/no-daemon.sock",
+                "HOME": directory,
+                "PATH": os.environ["PATH"],
+            },
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=120,
+        )
+    if result.returncode:
+        raise AssertionError("public Compose configuration did not render")
+    return __import__("json").loads(result.stdout)
+
+
 class SsoOnlyIngressContractTests(unittest.TestCase):
     """Only Traefik reaches an SSO-only backend (SPEC-0266, ADR-0061)."""
 
     @classmethod
     def setUpClass(cls) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            env = Path(directory) / "public.env"
-            env.write_bytes((ROOT / ".env.example").read_bytes())
-            result = subprocess.run(
-                [
-                    "docker",
-                    "compose",
-                    "--project-directory",
-                    str(ROOT),
-                    "--env-file",
-                    str(env),
-                    "-f",
-                    str(ROOT / "docker-compose.yml"),
-                    "--profile",
-                    "*",
-                    "config",
-                    "--format",
-                    "json",
-                ],
-                cwd=ROOT,
-                env={
-                    "COMPOSE_DISABLE_ENV_FILE": "1",
-                    "DOCKER_CONFIG": str(Path(directory) / "docker-config"),
-                    "DOCKER_HOST": f"unix://{directory}/no-daemon.sock",
-                    "HOME": directory,
-                    "PATH": os.environ["PATH"],
-                },
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=120,
-            )
-        if result.returncode:
-            raise AssertionError("public Compose configuration did not render")
-        cls.config = __import__("json").loads(result.stdout)
+        cls.config = _render_all_profiles()
         cls.services = cls.config["services"]
         cls.members: dict[str, set[str]] = {}
         for name, service in cls.services.items():
@@ -275,16 +284,39 @@ class SsoOnlyIngressContractTests(unittest.TestCase):
         self.assertTrue(self.config["networks"]["seaweedfs_s3_metrics_net"]["internal"])
         self.assertNotIn("alloy", self.members["seaweedfs_metrics_net"])
 
-    def test_comfyui_keeps_outbound_access_without_peers(self) -> None:
-        # ComfyUI downloads models and Manager updates, and an internal-only
-        # container gets no host port, so it needs one non-internal network
-        # that no other container joins.
-        self.assertEqual({"comfyui"}, self.members["comfyui_egress_net"])
-        self.assertFalse(self.config["networks"]["comfyui_egress_net"].get("internal"))
+    def test_comfyui_has_no_outbound_access_or_host_port_by_default(self) -> None:
+        # SPEC-0268: outbound access and the loopback port come only from the
+        # maintenance overlay; the default render reaches ComfyUI through
+        # Traefik alone.
         self.assertEqual(
-            {"comfyui_ingress_net", "comfyui_egress_net"},
-            set(self.services["comfyui"]["networks"]),
+            {"comfyui_ingress_net"}, set(self.services["comfyui"]["networks"])
         )
+        self.assertNotIn("ports", self.services["comfyui"])
+        self.assertNotIn("comfyui_egress_net", self.members)
+
+    def test_comfyui_egress_overlay_adds_only_egress_and_loopback_port(self) -> None:
+        optional = _render_all_profiles(COMFYUI_EGRESS_OVERLAY)
+        comfyui = optional["services"]["comfyui"]
+        self.assertEqual(
+            {"comfyui_ingress_net", "comfyui_egress_net"}, set(comfyui["networks"])
+        )
+        self.assertFalse(optional["networks"]["comfyui_egress_net"].get("internal"))
+        self.assertEqual(
+            [("127.0.0.1", "8188", 8188)],
+            [
+                (port.get("host_ip"), str(port.get("published")), port.get("target"))
+                for port in comfyui.get("ports") or []
+            ],
+        )
+        for name, service in optional["services"].items():
+            if name == "comfyui":
+                continue
+            with self.subTest(service=name):
+                base = self.services[name]
+                self.assertEqual(
+                    set(base.get("networks") or {}), set(service.get("networks") or {})
+                )
+                self.assertEqual(base.get("ports"), service.get("ports"))
 
     def test_subnets_are_distinct_and_avoid_retired_ranges(self) -> None:
         import ipaddress

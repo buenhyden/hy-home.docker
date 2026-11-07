@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Usage Guide"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-08"
 layer: "operations"
 artifact_id: "GDE-0077"
 parent_ids:
@@ -38,7 +38,7 @@ created: "2026-05-17"
 Traefik이 route하는 backend 중 자체 인증이 있는 것은 `edge_net`, `sso-auth`만으로 보호되는 것은
 Traefik만 함께 붙는 `<service>_ingress_net`(`10.250.24.0/24`–`10.250.40.0/24`, SPEC-0266)을 쓰고
 `traefik.docker.network`로 그 망을 지정한다. `seaweedfs-s3` 메트릭은 `seaweedfs_s3_metrics_net`
-(`10.250.41.0/24`)에서 scrape한다. ComfyUI는 모델 다운로드·Manager 갱신과 host port 게시를 위해 자기만 붙는 비내부 `comfyui_egress_net`(`10.250.42.0/24`)을 함께 쓴다. 자체 인증이 없는 보조 listener는 소비자만 붙는 내부 망의 고정 주소 `.2`에만 bind한다(SPEC-0267): `oauth2_proxy_metrics_net`(`10.250.43.0/24`), `keycloak_management_net`(`10.250.44.0/24`), `grafana_pprof_net`(`10.250.45.0/24`), `traefik_metrics_net`(`10.250.46.0/24`), 그리고 기존 `seaweedfs_s3_metrics_net`의 `10.250.41.2`와 `n8n_main_runner_net`·`n8n_worker_runner_net`의 `10.250.22.2`·`10.250.23.2`. 이 망들은 동적 범위를 `.128/25`로 둔다. 퇴역한 망이 쓰던 `10.250.9.0/24`·`10.250.12.0/24`는 재사용하지 않는다.
+(`10.250.41.0/24`)에서 scrape한다. ComfyUI만 붙는 비내부 `comfyui_egress_net`(`10.250.42.0/24`)은 모델·custom node 설치용 유지보수 overlay `infra/08-ai/comfyui/docker-compose.egress.yml`을 붙일 때만 쓰며, 기본 구성의 ComfyUI는 이 망과 host port 없이 `comfyui_ingress_net`에만 붙는다(SPEC-0268). 자체 인증이 없는 보조 listener는 소비자만 붙는 내부 망의 고정 주소 `.2`에만 bind한다(SPEC-0267): `oauth2_proxy_metrics_net`(`10.250.43.0/24`), `keycloak_management_net`(`10.250.44.0/24`), `grafana_pprof_net`(`10.250.45.0/24`), `traefik_metrics_net`(`10.250.46.0/24`), 그리고 기존 `seaweedfs_s3_metrics_net`의 `10.250.41.2`와 `n8n_main_runner_net`·`n8n_worker_runner_net`의 `10.250.22.2`·`10.250.23.2`. 이 망들은 동적 범위를 `.128/25`로 둔다. 퇴역한 망이 쓰던 `10.250.9.0/24`·`10.250.12.0/24`는 재사용하지 않는다.
 Prometheus scrape 대상은 `obs_net`,
 관리 PostgreSQL/Valkey 소비자는 `mng_data_net`, S3 소비자는 `object_net`처럼
 실제 peer가 있는 network만 사용한다. peer가 없으면 project default network를
