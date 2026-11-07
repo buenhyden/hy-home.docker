@@ -35,6 +35,8 @@ ERROR_CATEGORY_NEEDLES = (
             "relative imports are disallowed",
         ),
     ),
+    # The pinned Python runner removes `open` from builtins by default.
+    ("builtin_denied", ("name 'open' is not defined",)),
     (
         "environment_access_denied",
         ("access to environment", "environment variable access", "env access denied"),

@@ -216,6 +216,43 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
                 facts = safe_error_facts({"name": "NameError", "message": message})
                 self.assertNotEqual("module_access_denied", facts["error_category"])
 
+    def test_earlier_runner_layer_denials_count_for_file_scenarios(self):
+        # Owner decision 2026-11-08: the pinned Python runner removes `open`
+        # from builtins and the JS runner denies `node:fs`, so a file probe is
+        # refused before its read; that earlier denial is accepted.
+        from tests.validation import _p03_runner_native_fixture as fixture
+
+        facts = safe_error_facts(
+            {"name": "NameError", "message": "name 'open' is not defined"}
+        )
+        self.assertEqual("builtin_denied", facts["error_category"])
+        file_scenarios = {
+            "python_fixture_secret_file_denied": "builtin_denied",
+            "python_candidate_secret_file_denied": "builtin_denied",
+            "python_host_path_denied": "builtin_denied",
+            "python_docker_socket_denied": "builtin_denied",
+            "javascript_candidate_secret_file_denied": "module_access_denied",
+        }
+        filesystem = {"filesystem_access_denied", "filesystem_not_mounted"}
+        for name, earlier in file_scenarios.items():
+            with self.subTest(scenario=name):
+                self.assertEqual(
+                    filesystem | {earlier},
+                    set(fixture.SCENARIO_ALLOWED_CATEGORIES[name]),
+                )
+        self.assertEqual(
+            filesystem | {"builtin_denied"}, set(fixture.ANCESTOR_ALLOWED_CATEGORIES)
+        )
+        for name in ("javascript_module_denied", "python_module_denied"):
+            self.assertEqual(
+                {"module_access_denied"},
+                set(fixture.SCENARIO_ALLOWED_CATEGORIES[name]),
+            )
+        self.assertEqual(
+            {"environment_access_denied"},
+            set(fixture.SCENARIO_ALLOWED_CATEGORIES["javascript_environment_denied"]),
+        )
+
     def test_candidate_diagnostic_timing_is_bounded(self):
         self.assertEqual(
             (

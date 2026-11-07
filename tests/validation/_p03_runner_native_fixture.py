@@ -134,25 +134,23 @@ RUNNER_SCENARIOS = (
         CONTROLLED_EXECUTION_TIMEOUT,
     ),
 )
+FILE_DENIAL_CATEGORIES = frozenset(
+    {"filesystem_access_denied", "filesystem_not_mounted"}
+)
+# Owner decision 2026-11-08: the pinned runners refuse a file probe one layer
+# early (Python removes `open`, JS denies `node:fs`); that denial counts.
+PYTHON_FILE_DENIAL_CATEGORIES = FILE_DENIAL_CATEGORIES | {"builtin_denied"}
+ANCESTOR_ALLOWED_CATEGORIES = PYTHON_FILE_DENIAL_CATEGORIES
 SCENARIO_ALLOWED_CATEGORIES = {
     "javascript_module_denied": frozenset({"module_access_denied"}),
     "javascript_environment_denied": frozenset({"environment_access_denied"}),
     "python_module_denied": frozenset({"module_access_denied"}),
-    "python_fixture_secret_file_denied": frozenset(
-        {"filesystem_access_denied", "filesystem_not_mounted"}
-    ),
-    "python_candidate_secret_file_denied": frozenset(
-        {"filesystem_access_denied", "filesystem_not_mounted"}
-    ),
-    "javascript_candidate_secret_file_denied": frozenset(
-        {"filesystem_access_denied", "filesystem_not_mounted"}
-    ),
-    "python_host_path_denied": frozenset(
-        {"filesystem_access_denied", "filesystem_not_mounted"}
-    ),
-    "python_docker_socket_denied": frozenset(
-        {"filesystem_access_denied", "filesystem_not_mounted"}
-    ),
+    "python_fixture_secret_file_denied": PYTHON_FILE_DENIAL_CATEGORIES,
+    "python_candidate_secret_file_denied": PYTHON_FILE_DENIAL_CATEGORIES,
+    "javascript_candidate_secret_file_denied": FILE_DENIAL_CATEGORIES
+    | {"module_access_denied"},
+    "python_host_path_denied": PYTHON_FILE_DENIAL_CATEGORIES,
+    "python_docker_socket_denied": PYTHON_FILE_DENIAL_CATEGORIES,
     "timeout": frozenset({"task_timeout"}),
 }
 REHEARSAL_RECEIPT_STAGES = (
@@ -604,13 +602,9 @@ def run_full_rehearsal(case) -> None:
         if readable is True or visible is True:
             raise RehearsalFailure("runner ancestor environment access succeeded")
     else:
-        if ancestor_terminal.get("errorCategory") in {
-            "filesystem_access_denied",
-            "filesystem_not_mounted",
-        }:
+        if ancestor_terminal.get("errorCategory") in ANCESTOR_ALLOWED_CATEGORIES:
             ancestor_facts = safe_terminal_error_facts(
-                ancestor_terminal,
-                frozenset({"filesystem_access_denied", "filesystem_not_mounted"}),
+                ancestor_terminal, ANCESTOR_ALLOWED_CATEGORIES
             )
         else:
             ancestor_facts = indeterminate_error_facts(ancestor_terminal)
