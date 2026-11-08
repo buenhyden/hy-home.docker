@@ -1,8 +1,8 @@
 ---
 title: "n8n Idle Main Runner Removal Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-11-08"
 layer: "specs"
