@@ -1205,6 +1205,36 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual(text, self.target.read_text())
         self.assertEqual("synthetic-share-1\nsynthetic-share-2\n", shares.read_text())
 
+    def test_missing_python_module_is_named_without_values(self):
+        # A shadow package fails its import the way an absent dependency does.
+        shadow = self.root.parent / (self.root.name + "-shadow") / "referencing"
+        shadow.mkdir(parents=True)
+        self.addCleanup(lambda: __import__("shutil").rmtree(shadow.parent))
+        (shadow / "__init__.py").write_text(
+            'raise ModuleNotFoundError("synthetic", name="referencing")\n'
+        )
+        self.prepare_catalog()
+        for mode, prefix in (("--sync-metadata-check", "METADATA"), ("", "GENERATION")):
+            with self.subTest(mode=mode or "generate"):
+                result = subprocess.run(
+                    [
+                        "bash",
+                        str(self.root / "scripts/operations/gen-secrets.sh"),
+                        *([mode] if mode else []),
+                    ],
+                    cwd=self.root,
+                    env={**os.environ, "PYTHONPATH": str(shadow.parent)},
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(2, result.returncode)
+                self.assertIn(
+                    f"{prefix} rejected: missing Python module referencing",
+                    result.stderr,
+                )
+                self.assertNotIn("synthetic-private", result.stdout + result.stderr)
+
     def test_check_reports_drift_without_writes(self):
         before = self.target.read_bytes()
         result = self.run_mode("--sync-metadata-check")
