@@ -57,6 +57,8 @@ volume의 데이터를 옮기기 전에는 재생성·복원·cache 및 volume �
 
 기본 구성에는 외부 접속이 없습니다(SPEC-0268). 모델·custom node 설치처럼 외부 접속이 필요한 작업은 [docker-compose.egress.yml](docker-compose.egress.yml)을 붙여 재생성한 동안에만 하고, 끝나면 overlay 없이 다시 재생성합니다. 절차는 RUN-0081이 소유합니다.
 
+ComfyUI-Manager는 `comfyui-user` volume의 `__manager/config.ini`에서 `security_level = normal`을 유지합니다. image bundle이 처음 만드는 값은 `weak`이며, 바로잡는 절차는 RUN-0081이 소유합니다.
+
 환경 변수 키 이름과 기본값은 Compose와 [공개 환경 변수 예시](../../../.env.example)에 선언되어 있습니다. Compose의 마운트 권한과 헬스체크 명령은 구현을 설명할 뿐이며 설정 검사를 통과해도 런타임 준비 상태는 증명되지 않습니다. 비공개 환경 변수 값, 자격 증명 파일, 원본 렌더링된 설정은 출력하지 않습니다.
 
 ## Validation
