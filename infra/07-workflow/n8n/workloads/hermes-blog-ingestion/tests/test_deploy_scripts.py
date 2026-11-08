@@ -60,13 +60,12 @@ class CronPromptTests(unittest.TestCase):
 
     def test_prompt_names_the_fields_the_tool_sets_and_accepts(self):
         parameters = self.tools.SUBMIT_RESEARCH_REPORT_SCHEMA["parameters"]
-        self.assertIn(
-            "exactly payload, source_receipts and report_markdown", self.prompt
-        )
+        self.assertIn("exactly payload, source_receipts and report_path", self.prompt)
         self.assertEqual(
             set(parameters["properties"]),
-            {"payload", "source_receipts", "report_markdown"},
+            {"payload", "source_receipts", "report_path"},
         )
+        self.assertNotIn("report_markdown", self.prompt)
         self.assertIn('payload has schema_version "1.0" and items', self.prompt)
         self.assertIn("exactly item_id and source_url", self.prompt)
         for trusted in (
@@ -109,11 +108,17 @@ class CronPromptTests(unittest.TestCase):
         self.assertIn("items [] and source_receipts []", self.prompt)
         self.assertIn("only the Gateway submission is skipped", self.prompt)
         self.assertIn(
+            "Then update the report file so it names each kept item's final "
+            "source_url exactly as returned",
+            self.prompt,
+        )
+        self.assertIn(
             "One exception: if a result is ok false with error source_quality, "
             "its failed_items name every item the pages do not back; remove exactly "
             "those items and their receipts, leave every other item and receipt "
             "unchanged, and call submit_research_report once more with the same "
-            "report_markdown. Send the email and Telegram only after that call, and "
+            "report_path, leaving the file unchanged. Send the email and Telegram "
+            "only after that call, and "
             "never call submit_research_report again after it.",
             self.prompt,
         )
@@ -121,6 +126,31 @@ class CronPromptTests(unittest.TestCase):
         self.assertIn("call submit_research_report once more", self.prompt)
         self.assertNotIn("do not call submit", self.prompt)
         self.assertNotIn("does not keep the full report", self.prompt)
+
+    def test_prompt_writes_the_report_to_a_private_file(self):
+        self.assertTrue(
+            self.prompt.startswith(
+                "DIRECT RESEARCH SUBMISSION (additional, contract v3):"
+            )
+        )
+        self.assertIn(
+            "into a new file such as report.md inside a directory you create with "
+            "mktemp -d for this run",
+            self.prompt,
+        )
+        self.assertIn("never a draft, outline, summary, pointer", self.prompt)
+        self.assertIn("names each item's source URL", self.prompt)
+        self.assertIn("at least 800 characters", self.prompt)
+        self.assertIn(
+            "report_path is the absolute path of the report file from step 1",
+            self.prompt,
+        )
+        (blocked,) = [x for x in self.sentences() if x.startswith("A BLOCKED result")]
+        for reason in ("too short", "missing an item's source URL", "mktemp -d"):
+            self.assertIn(reason, blocked)
+        self.assertIn(
+            "fix the report file and call submit_research_report once more", self.prompt
+        )
 
     def test_prompt_sends_the_stored_report_on_a_conflict(self):
         self.assertIn(

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import errno
 import hashlib
 import html
 import json
@@ -45,6 +46,8 @@ _ALLOWED_JOBS = {
     "25674fbc0bf3": "devops",
     "8d0925bc571d": "business_ideas",
 }
+# The job fixes each item's kind, like its identity; report kind -> item kind.
+_ITEM_KIND = {"news": "news", "devops": "devops", "business_ideas": "business_idea"}
 _IDENTITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 _HTTP_TIMEOUT = 15
@@ -53,9 +56,14 @@ SOURCE_QUOTE_MAX = 500
 GATEWAY_MAX_SOURCE_CHARACTERS = 524288
 GATEWAY_MAX_REQUEST_BYTES = 1024 * 1024
 SCHEMA_VERSION = "1.0"
-# submit_research_report argument contract; 2 adds report_markdown.
-SUBMIT_CONTRACT_VERSION = 2
-_SUBMIT_ARGS = frozenset({"payload", "source_receipts", "report_markdown"})
+# submit_research_report argument contract; 3 reads the report from report_path.
+SUBMIT_CONTRACT_VERSION = 3
+_SUBMIT_ARGS = frozenset({"payload", "source_receipts", "report_path"})
+# A real daily report is kilobytes; stubs and pointers are a few hundred characters.
+MIN_REPORT_CHARACTERS = 800
+# report_path must be <tempdir>/<mktemp -d directory>/<name>.md and nothing else.
+_REPORT_DIR_NAME = re.compile(r"tmp\.[A-Za-z0-9]{6,}")
+_REPORT_FILE_NAME = re.compile(r"[A-Za-z0-9._-]{1,64}\.md")
 # Controls other than tab, newline and carriage return, including C1 and DEL.
 _REPORT_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
 # Bidirectional embedding, override and isolate controls can disguise text.
@@ -264,13 +272,14 @@ def _allowed_url(url: str) -> bool:
 
 def handle_submit_report(args: dict[str, Any], **kwargs) -> str:
     """Hermes tool entry point: the registry accepts only a str result."""
+    seen: dict[str, int] = {}
     try:
-        result = _submit(args)
+        result = _submit(args, seen)
         text = json.dumps(result, ensure_ascii=False)
     except Exception:
         result = {"ok": False, "error": "submission_unavailable"}
         text = json.dumps(result)
-    _record_metrics(args, result)
+    _record_metrics(result, seen.get("bytes"))
     return text
 
 
@@ -293,6 +302,12 @@ METRIC_BLOCKED_REASONS = (
     "source_set_too_large",
     "report_conflict",
     "report_store_unavailable",
+    "report_path_not_allowed",
+    "report_unreadable",
+    "report_too_large",
+    "report_not_utf8",
+    "report_too_short",
+    "report_missing_item",
     "other",
 )
 _METRIC_HELP = (
@@ -309,7 +324,7 @@ _METRIC_HELP = (
     (
         "hermes_research_last_report_bytes",
         "gauge",
-        "UTF-8 size of the last report_markdown passed to the tool.",
+        "Byte size of the last report file the tool read from report_path.",
     ),
     (
         "hermes_research_blocked_total",
@@ -330,15 +345,13 @@ def _metric_outcome(result: dict[str, Any]) -> str:
     return "blocked" if result.get("state") == "BLOCKED" else "gateway_error"
 
 
-def _record_metrics(args: Any, result: dict[str, Any]) -> None:
+def _record_metrics(result: dict[str, Any], size: int | None) -> None:
     """Best effort: a metrics failure never changes the tool result or raises."""
     try:
         run = _CTX.current_cron_execution() if _CTX is not None else None
         kind = _ALLOWED_JOBS.get(getattr(run, "job_id", None))
         if kind is None:
             return
-        report = args.get("report_markdown") if isinstance(args, dict) else None
-        size = len(report.encode("utf-8")) if isinstance(report, str) else None
         _update_metrics(kind, _metric_outcome(result), result, size)
     except Exception:
         pass
@@ -587,6 +600,103 @@ def _report_error(report: Any) -> str | None:
     return None
 
 
+class _ReportRefused(Exception):
+    """A report-level refusal; str(error) is the stable code."""
+
+
+def _report_roots() -> set[str]:
+    """Where the agent's ``mktemp -d`` may land.
+
+    Hermes points TMPDIR of every agent shell at ``HERMES_HOME/cache/scratch``,
+    while this process's ``tempfile`` default may already be fixed at /tmp.
+    """
+    roots = {tempfile.gettempdir(), str(HERMES_HOME / "cache" / "scratch")}
+    roots.add(os.environ.get("TMPDIR", ""))
+    return {os.path.normpath(root) for root in roots if os.path.isabs(root)}
+
+
+def _read_report(report_path: Any) -> bytes:
+    """Read the agent's report file without following links or trusting its path.
+
+    Only a single-link regular file directly inside a private ``mktemp -d``
+    directory of the temporary directory is read, so the tool never becomes a
+    way to send secrets or host files to the Gateway. The file is left as is.
+    """
+    if (
+        not isinstance(report_path, str)
+        or "\x00" in report_path
+        or not os.path.isabs(report_path)
+        or os.path.normpath(report_path) != report_path
+    ):
+        raise _ReportRefused("report_path_not_allowed")
+    directory, name = os.path.split(report_path)
+    temp, directory_name = os.path.split(directory)
+    if (
+        temp not in _report_roots()
+        or not _REPORT_DIR_NAME.fullmatch(directory_name)
+        or not _REPORT_FILE_NAME.fullmatch(name)
+    ):
+        raise _ReportRefused("report_path_not_allowed")
+    flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW
+    descriptors = []
+    try:
+        try:
+            # The temporary directory is operator configuration; links stop below it.
+            descriptors.append(
+                os.open(temp, os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY)
+            )
+            descriptors.append(
+                os.open(directory_name, flags | os.O_DIRECTORY, dir_fd=descriptors[0])
+            )
+            info = os.fstat(descriptors[1])
+            if info.st_uid != os.geteuid() or stat.S_IMODE(info.st_mode) != 0o700:
+                raise _ReportRefused("report_path_not_allowed")
+            # O_NONBLOCK: opening a FIFO must not wait for a writer.
+            descriptors.append(
+                os.open(name, flags | os.O_NONBLOCK, dir_fd=descriptors[1])
+            )
+            info = os.fstat(descriptors[2])
+            if (
+                not stat.S_ISREG(info.st_mode)
+                or info.st_uid != os.geteuid()
+                or info.st_nlink != 1
+            ):
+                # No file-mode check: inside an owner-only 0700 directory with a
+                # single link nobody else can reach the file, and umask 0002 would
+                # otherwise refuse every report the agent writes.
+                raise _ReportRefused("report_path_not_allowed")
+            limit = GATEWAY_MAX_SOURCE_CHARACTERS * 4
+            if info.st_size > limit:
+                raise _ReportRefused("report_too_large")
+            # One bounded read: a file that grew past its fstat size is refused.
+            raw = os.read(descriptors[2], info.st_size + 1)
+            if len(raw) > info.st_size:
+                raise _ReportRefused("report_too_large")
+            if len(raw) < info.st_size:  # shrank or short read: never a truncation
+                raise _ReportRefused("report_unreadable")
+            return raw
+        except OSError as error:
+            if error.errno in (errno.ELOOP, errno.ENOTDIR, errno.EISDIR):
+                raise _ReportRefused("report_path_not_allowed") from None
+            raise _ReportRefused("report_unreadable") from None
+    finally:
+        for descriptor in descriptors:
+            os.close(descriptor)
+
+
+def _completeness_error(report: str, payload: Any) -> str | None:
+    """Catch stubs, pointers and truncations: long enough and naming every item."""
+    if len(report.strip()) < MIN_REPORT_CHARACTERS:
+        return "report_too_short"
+    items = payload.get("items") if isinstance(payload, dict) else None
+    for item in items if isinstance(items, list) else ():
+        # Invalid item structure is left to the Gateway field validation.
+        url = item.get("source_url") if isinstance(item, dict) else None
+        if isinstance(url, str) and url and url not in report:
+            return "report_missing_item"
+    return None
+
+
 # Neither class contains its own delimiters, so a failed match never backtracks.
 _LINK = re.compile(r"\[([^\[\]\n]*)\]\(([^()\s]+)\)")
 
@@ -753,20 +863,28 @@ def _store_source_set(records, run, source_set_raw: bytes) -> None:
         store.close()
 
 
-def _submit(args: dict[str, Any]) -> dict[str, Any]:
+def _submit(args: dict[str, Any], seen: dict[str, int] | None = None) -> dict[str, Any]:
     """Store the report and its outputs first, then try the Gateway submission."""
     if not isinstance(args, dict) or not set(args) <= _SUBMIT_ARGS:
         return {"ok": False, "error": "invalid_submission_fields"}
-    report = args.get("report_markdown")
-    error = _report_error(report)
+    try:
+        report_raw = _read_report(args.get("report_path"))
+    except _ReportRefused as error:
+        return _blocked(str(error))
+    if seen is not None:
+        seen["bytes"] = len(report_raw)
+    try:
+        report = report_raw.decode("utf-8")
+    except UnicodeDecodeError:
+        return _blocked("report_not_utf8")
+    payload = args.get("payload")
+    error = _report_error(report) or _completeness_error(report, payload)
     if error:
         return _blocked(error)
-    report_raw = report.encode("utf-8")
     try:
         run, scheduled = _cron()
     except ValueError as error:
         return {"ok": False, "error": str(error)}
-    payload = args.get("payload")
     items = payload.get("items") if isinstance(payload, dict) else None
     receipt_ids = args.get("source_receipts", [] if items == [] else None)
     no_items = items == [] and receipt_ids == []
@@ -815,6 +933,12 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
         return {"ok": False, "error": "source_receipts_required"}
     if any(not isinstance(value, str) for value in receipt_ids):
         return {"ok": False, "error": "source_receipts_required"}
+    # The model's kind is overwritten, never refused (a devops run sent "news").
+    kind = _ITEM_KIND[_ALLOWED_JOBS[run.job_id]]
+    items = [
+        {**item, "kind": kind} if isinstance(item, dict) else item for item in items
+    ]
+    payload = {**payload, "items": items}
     if any(re.fullmatch(r"[a-f0-9]{32}", value) is None for value in receipt_ids):
         return {"ok": False, "error": "invalid_source_receipts"}
     preflight = {
@@ -1194,22 +1318,28 @@ COLLECT_RESEARCH_SOURCE_SCHEMA = {
 SUBMIT_RESEARCH_REPORT_SCHEMA = {
     "name": "submit_research_report",
     "description": (
-        "Contract v2. Call once, after the full daily report is final: report_markdown "
-        "is that exact report (Markdown, at most 524288 characters, never a draft, "
-        "summary or truncation). The tool stores it once per run and returns "
+        "Contract v3. First write the full final daily report as Markdown into a new "
+        "file (for example report.md) inside a directory created with mktemp -d for "
+        "this run, then call once with report_path set to that file's absolute path. "
+        "The report is that exact file: at least 800 and at most 524288 characters, "
+        "naming every item's source_url, never a draft, summary, pointer or "
+        "truncation; a refused report is BLOCKED, so fix the file and call once more. "
+        "The tool stores it once per run and returns "
         "report.report_path, report.email_path and report.telegram_path derived from "
         "the stored bytes; send the email and Telegram from those files only. With no "
         "source-backed item, pass empty items and source_receipts: the report is "
         "stored and rendered and only the Gateway submission is skipped. "
         "Submit this scheduled run's research items using one collector receipt per item. "
-        "The tool sets the run identity, timestamps, source and idempotency key. "
+        "The tool sets the run identity, timestamps, source, idempotency key and each "
+        "item's kind from the job. "
         "One item per article: title is that article's own headline, never the report "
         "title; body (40+ characters) summarises only what that page says, and every "
         "product, company, version, number and date in title or body must appear on the "
         "page. source_url is the article page itself; source_quotes are 1-3 sentences "
         "copied verbatim from it. If you cannot read the page, leave the item out "
         "rather than guess. An error names the field to fix. A source_quality error lists "
-        "failed_items: drop exactly those items and call once more with the same report."
+        "failed_items: drop exactly those items and call once more with the same "
+        "report_path, the file unchanged."
     ),
     "parameters": {
         "type": "object",
@@ -1229,7 +1359,6 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
                             "additionalProperties": False,
                             "required": [
                                 "item_id",
-                                "kind",
                                 "title",
                                 "body",
                                 "source_url",
@@ -1283,12 +1412,8 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
                 "maxItems": 100,
                 "items": _STRING,
             },
-            "report_markdown": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": GATEWAY_MAX_SOURCE_CHARACTERS,
-            },
+            "report_path": {"type": "string", "minLength": 1, "maxLength": 4096},
         },
-        "required": ["payload", "source_receipts", "report_markdown"],
+        "required": ["payload", "source_receipts", "report_path"],
     },
 }

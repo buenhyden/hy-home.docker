@@ -55,7 +55,10 @@ BASE_PAYLOAD = {
 REPORT = (
     "# DevOps Daily Brief\n\n"
     "Example released version 2.1 of its build tool on 31 October.\n\n"
-    "- [Release notes](https://example.com/news/2-1)\n"
+    "- [Release notes](https://example.com/news/2-1)\n\n"
+    "## Notes\n\n"
+    + "The release changes the default cache layout and documents the migration "
+    "steps for existing projects in its upgrade guide.\n" * 7
 )
 _REPORT_ROOT = None
 
@@ -66,6 +69,12 @@ def setUpModule():
     _REPORT_ROOT = tempfile.TemporaryDirectory()
     root = Path(_REPORT_ROOT.name)
     # Nor the node-exporter textfile directory or the metrics state (SPEC-0265 W5).
+    # Report files live in mktemp -d shaped directories under a private temp root.
+    temp_root = root / "temp"
+    temp_root.mkdir(mode=0o700)
+    patcher = mock.patch.object(tempfile, "gettempdir", return_value=str(temp_root))
+    patcher.start()
+    unittest.addModuleCleanup(patcher.stop)
     for name, value in (
         ("REPORT_DIR", root / "r"),
         ("METRICS_DIR", root / "no-metrics-dir"),
@@ -84,6 +93,17 @@ def make_payload(**item_overrides):
     return payload
 
 
+def report_file(text=REPORT, *, raw=None, name="report.md"):
+    """Write the report as the agent does: a new mktemp -d directory, mode 0700."""
+    directory = Path(tempfile.gettempdir()) / f"tmp.{os.urandom(6).hex()}"
+    directory.mkdir()
+    directory.chmod(0o700)  # umask-independent
+    path = directory / name
+    path.write_bytes(text.encode("utf-8") if raw is None else raw)
+    path.chmod(0o600)
+    return str(path)
+
+
 def submission_args(payload=None):
     """The model supplies content plus one opaque collector receipt per item."""
     payload = payload or make_payload()
@@ -95,7 +115,7 @@ def submission_args(payload=None):
         "source_receipts": [
             f"{index + 1:032x}" for index, _ in enumerate(payload.get("items", []))
         ],
-        "report_markdown": REPORT,
+        "report_path": report_file(),
     }
 
 
@@ -294,13 +314,15 @@ class ToolSchemaTests(unittest.TestCase):
     def test_payload_schema_lists_exactly_the_accepted_fields(self):
         parameters = tools.SUBMIT_RESEARCH_REPORT_SCHEMA["parameters"]
         self.assertFalse(parameters["additionalProperties"])
-        arguments = {"payload", "source_receipts", "report_markdown"}
+        arguments = {"payload", "source_receipts", "report_path"}
         self.assertEqual(set(parameters["properties"]), arguments)
         self.assertEqual(set(parameters["required"]), arguments)
-        self.assertEqual(tools.SUBMIT_CONTRACT_VERSION, 2)
-        self.assertIn("Contract v2", tools.SUBMIT_RESEARCH_REPORT_SCHEMA["description"])
-        report = parameters["properties"]["report_markdown"]
-        self.assertEqual(report["maxLength"], tools.GATEWAY_MAX_SOURCE_CHARACTERS)
+        self.assertEqual(tools.SUBMIT_CONTRACT_VERSION, 3)
+        description = tools.SUBMIT_RESEARCH_REPORT_SCHEMA["description"]
+        self.assertIn("Contract v3", description)
+        self.assertIn("mktemp -d", description)
+        self.assertNotIn("report_markdown", description)
+        self.assertEqual(parameters["properties"]["report_path"]["type"], "string")
         payload = parameters["properties"]["payload"]
         self.assertFalse(payload["additionalProperties"])
         self.assertEqual(set(payload["properties"]), {"schema_version", "items"})
@@ -322,7 +344,7 @@ class HandlerResultContractTests(unittest.TestCase):
 
         with mock.patch.object(tools, "_CTX", CronRun(execution_id="schema-09")):
             result = tools.handle_submit_report(
-                {"payload": {"schema_version": "0.9"}, "report_markdown": REPORT}
+                {"payload": {"schema_version": "0.9"}, "report_path": report_file()}
             )
         self.assertIsInstance(result, str)
         result = json.loads(result)
@@ -391,7 +413,7 @@ class DestinationAuthorityTests(unittest.TestCase):
             "\u20ac" * tools.GATEWAY_MAX_SOURCE_CHARACTERS,
         ):
             args = submission_args()
-            args["report_markdown"] = report
+            args["report_path"] = report_file(report)
             with (
                 self.subTest(characters=len(report)),
                 mock.patch.object(tools, "_CTX", CronRun(execution_id="oversize")),
@@ -581,11 +603,12 @@ class DeliveryBudgetTests(unittest.TestCase):
             mock.patch.object(tools.webhook_transport, "post") as post,
             mock.patch.object(source_collection, "resolve", side_effect=refused),
         ):
-            first = json.loads(tools.handle_submit_report(submission_args()))
+            args = submission_args()
+            first = json.loads(tools.handle_submit_report(args))
             self.assertEqual(list(Path(outbox).iterdir()), [])
             post.assert_not_called()
-            # Every failing item was dropped: the same report goes again, empty.
-            again = submission_args()
+            # Every failing item was dropped: the same report file goes again, empty.
+            again = copy.deepcopy(args)
             again["payload"]["items"], again["source_receipts"] = [], []
             second = json.loads(tools.handle_submit_report(again))
         self.assertEqual(first["error"], "source_quality")
@@ -616,7 +639,7 @@ class DeliveryBudgetTests(unittest.TestCase):
         self.assertFalse(
             Path(first["report"]["report_path"]).with_name("source-set.json").exists()
         )
-        second, sent = submit(payload, ctx)
+        second, sent = submit(payload, ctx, report_path=args["report_path"])
         self.assertTrue(second["ok"], second)
         self.assertEqual(
             [body["items"][0]["item_id"] for body in sent], [kept["item_id"]]
@@ -645,9 +668,12 @@ class CronRun:
         return self.run
 
 
-def submit(payload, ctx):
+def submit(payload, ctx, report_path=None):
     """Run the handler under ctx with a fake transport; return result and bodies."""
     sent = []
+    args = submission_args(payload)
+    if report_path is not None:
+        args["report_path"] = report_path
 
     def post(url, body, token, policy, *, timeout):
         sent.append(json.loads(body))
@@ -683,7 +709,7 @@ def submit(payload, ctx):
         mock.patch.object(tools.webhook_transport, "post", side_effect=post),
         mock.patch.object(source_collection, "resolve", side_effect=resolve_submitted),
     ):
-        result = json.loads(tools.handle_submit_report(submission_args(payload)))
+        result = json.loads(tools.handle_submit_report(args))
     return result, sent
 
 
@@ -893,7 +919,7 @@ class P11DirectDeliveryRegressionTests(unittest.TestCase):
                             "schema_version": "1.0",
                             "items": make_payload()["items"],
                         },
-                        "report_markdown": REPORT,
+                        "report_path": report_file(),
                     }
                 )
             )
@@ -1142,7 +1168,9 @@ class P11CollectionToolTests(unittest.TestCase):
                     {
                         "payload": {"schema_version": "1.0", "items": [item]},
                         "source_receipts": [collected["receipt_id"]],
-                        "report_markdown": REPORT,
+                        "report_path": report_file(
+                            REPORT + "\nhttps://example.org/article\n"
+                        ),
                     }
                 )
             )
@@ -1212,7 +1240,7 @@ class ReportSourceContractTests(unittest.TestCase):
 
     def with_report(self, report):
         args = submission_args()
-        args["report_markdown"] = report
+        args["report_path"] = report_file(report)
         return args
 
     def test_request_validates_against_the_unchanged_ingestion_schema(self):
@@ -1230,16 +1258,19 @@ class ReportSourceContractTests(unittest.TestCase):
         jsonschema.validate(request, schema, format_checker=jsonschema.FormatChecker())
 
     def test_source_text_is_the_stored_report_bytes(self):
-        report = "# Brief\r\n\r\nCafé résumé — kept byte for byte.\n\n\n"
-        result = self.run_submit(self.with_report(report + "x" * 40))
+        report = "# Brief\r\n\r\nCafé résumé — kept byte for byte.\n\n\n" + REPORT
+        args = self.with_report(report)
+        result = self.run_submit(args)
         self.assertTrue(result["ok"], result)
         stored = (self.directory / "report.md").read_bytes()
         request = json.loads(self.sent[0])
-        self.assertEqual(stored, (report + "x" * 40).encode("utf-8"))
+        self.assertEqual(stored, report.encode("utf-8"))
+        # The agent's file is read, never moved, changed or removed.
+        self.assertEqual(Path(args["report_path"]).read_bytes(), stored)
         self.assertEqual(request["source_text"], stored.decode("utf-8"))
         self.assertEqual(request["source_sha256"], hashlib.sha256(stored).hexdigest())
         self.assertEqual(result["report"]["report_sha256"], request["source_sha256"])
-        self.assertEqual(result["report"]["contract_version"], 2)
+        self.assertEqual(result["report"]["contract_version"], 3)
 
     def test_source_ref_digest_is_the_private_receipt_set_record(self):
         result = self.run_submit(submission_args())
@@ -1315,14 +1346,11 @@ class ReportSourceContractTests(unittest.TestCase):
 
     def test_invalid_or_unfinished_reports_are_blocked_without_network(self):
         cases = (
-            (None, "report_required"),
             ("", "report_required"),
             ("  \n\t", "report_required"),
-            (12, "report_required"),
             ("TBD", "report_not_final"),
             ("placeholder", "report_not_final"),
             ("# Brief\n\nsoon", "report_not_final"),
-            ("broken \ud800 surrogate " + "x" * 40, "report_malformed"),
             ("nul \x00 byte " + "x" * 40, "report_malformed"),
             ("escape \x1b[31m red " + "x" * 40, "report_malformed"),
             ("override \u202e txt.exe " + "x" * 40, "report_bidi_control"),
@@ -1332,10 +1360,7 @@ class ReportSourceContractTests(unittest.TestCase):
         )
         for report, code in cases:
             args = submission_args()
-            if report is None:
-                del args["report_markdown"]
-            else:
-                args["report_markdown"] = report
+            args["report_path"] = report_file(report)
             with self.subTest(code=code, report=repr(report)[:30]):
                 result = self.run_submit(args)
                 self.assertEqual(
@@ -1345,7 +1370,7 @@ class ReportSourceContractTests(unittest.TestCase):
         self.assertFalse((self.root / "reports").exists())
 
     def test_extra_argument_is_rejected_without_network(self):
-        for extra in ("source_text", "source_sha256", "email_html"):
+        for extra in ("source_text", "source_sha256", "email_html", "report_markdown"):
             args = submission_args()
             args[extra] = "model supplied"
             with self.subTest(extra=extra):
@@ -1373,7 +1398,7 @@ class ReportSourceContractTests(unittest.TestCase):
         )
 
     def test_zero_width_joiner_is_allowed(self):
-        report = "Family \U0001f468\u200d\U0001f469 emoji keeps its joiner. " + "x" * 40
+        report = "Family \U0001f468\u200d\U0001f469 emoji keeps its joiner. " + REPORT
         result = self.run_submit(self.with_report(report))
         self.assertTrue(result["ok"], result)
 
@@ -1466,6 +1491,292 @@ class ReportSourceContractTests(unittest.TestCase):
                 tools.render_email(line, "a" * 64)
                 tools.render_telegram(line)
                 self.assertLess(time.monotonic() - started, 2.0)
+
+
+class ReportPathTests(unittest.TestCase):
+    """Contract v3: the report comes from one private mktemp -d file, then checks."""
+
+    setUp = ReportSourceContractTests.setUp
+    post = ReportSourceContractTests.post
+    run_submit = ReportSourceContractTests.run_submit
+
+    def refused(self, report_path, code, **extra):
+        args = submission_args()
+        args["report_path"] = report_path
+        with self.subTest(code=code, path=str(report_path)[-40:], **extra):
+            self.assertEqual(self.run_submit(args), tools._blocked(code))
+        self.assertEqual(self.sent, [])
+        self.assertFalse((self.root / "reports").exists())
+
+    def test_report_file_is_stored_byte_identical_and_submitted(self):
+        raw = ("# Brief\r\n\r\nUnicode – kept.\n" + REPORT).encode("utf-8")
+        args = submission_args()
+        args["report_path"] = report_file(raw=raw)
+        before = os.stat(args["report_path"])
+        result = self.run_submit(args)
+        self.assertEqual(result["status"], "persisted", result)
+        self.assertEqual((self.directory / "report.md").read_bytes(), raw)
+        self.assertEqual(json.loads(self.sent[0])["source_text"].encode(), raw)
+        after = os.stat(args["report_path"])
+        self.assertEqual(Path(args["report_path"]).read_bytes(), raw)
+        self.assertEqual(
+            (before.st_ino, before.st_mtime_ns), (after.st_ino, after.st_mtime_ns)
+        )
+
+    def test_paths_outside_a_private_mktemp_directory_are_refused(self):
+        temp = Path(tempfile.gettempdir())
+        nested = Path(report_file()).parent / "tmp.abcdef"
+        nested.mkdir(mode=0o700)
+        nested.chmod(0o700)
+        (nested / "report.md").write_text(REPORT)
+        named = temp / "reports.abcdef"
+        named.mkdir(mode=0o700)
+        named.chmod(0o700)
+        (named / "report.md").write_text(REPORT)
+        short = temp / "tmp.abc"
+        short.mkdir(mode=0o700)
+        short.chmod(0o700)
+        (short / "report.md").write_text(REPORT)
+        good = report_file()
+        for path in (
+            None,
+            12,
+            "",
+            "report.md",
+            "tmp.abcdef/report.md",
+            "/etc/hostname",
+            str(nested / "report.md"),
+            str(named / "report.md"),
+            str(short / "report.md"),
+            good.replace("report.md", "report.txt"),
+            good.replace("report.md", "a" * 65 + ".md"),
+            good.replace("report.md", "../report.md"),
+            str(Path(good).parent) + "/./report.md",
+            good + "\x00",
+        ):
+            self.refused(path, "report_path_not_allowed")
+
+    def test_hermes_scratch_and_tmpdir_roots_are_accepted(self):
+        # Hermes sets TMPDIR of agent shells to HERMES_HOME/cache/scratch, so the
+        # agent's mktemp -d lands there although this process may still use /tmp.
+        base = Path(tempfile.gettempdir()) / "roots-home"
+        scratch = base / "cache" / "scratch" / "tmp.scratch1"
+        other = base / "elsewhere" / "tmp.tmpdir01"
+        for directory in (scratch, other):
+            directory.mkdir(parents=True, mode=0o700)
+            directory.chmod(0o700)
+            (directory / "report.md").write_text(REPORT)
+            (directory / "report.md").chmod(0o600)
+        with (
+            mock.patch.object(tools, "HERMES_HOME", base),
+            mock.patch.dict(os.environ, {"TMPDIR": str(other.parent)}),
+        ):
+            for directory in (scratch, other):
+                self.assertEqual(
+                    tools._read_report(str(directory / "report.md")),
+                    REPORT.encode("utf-8"),
+                )
+        self.refused(str(scratch / "report.md"), "report_path_not_allowed")
+
+    def test_secret_like_paths_are_refused(self):
+        home = Path(tempfile.gettempdir()) / "tmp.hermeshome"
+        (home / "secrets").mkdir(parents=True, mode=0o700)
+        home.chmod(0o700)
+        secret = home / "secrets" / "research-webhook.secret"
+        secret.write_text("synthetic-not-a-secret\n")
+        env = home / ".env"
+        env.write_text("RESEARCH_WEBHOOK_SECRET=synthetic\n")
+        for path in (secret, env, home / "secrets" / "research-webhook.md"):
+            self.refused(str(path), "report_path_not_allowed")
+
+    def test_unsafe_directory_or_file_is_refused(self):
+        def directory_mode():
+            path = report_file()
+            os.chmod(Path(path).parent, 0o755)
+            return path
+
+        def file_symlink():
+            path = Path(report_file())
+            target = path.with_name("real.md")
+            path.rename(target)
+            path.symlink_to(target)
+            return str(path)
+
+        def directory_symlink():
+            real = Path(report_file()).parent
+            link = real.with_name("tmp.linkeddir")
+            link.symlink_to(real)
+            return str(link / "report.md")
+
+        def hard_link():
+            path = Path(report_file())
+            os.link(path, path.with_name("second.md"))
+            return str(path)
+
+        def fifo():
+            directory = Path(report_file()).parent
+            os.mkfifo(directory / "pipe.md", 0o600)
+            return str(directory / "pipe.md")
+
+        def subdirectory():
+            directory = Path(report_file()).parent
+            (directory / "dir.md").mkdir(mode=0o700)
+            return str(directory / "dir.md")
+
+        for build in (
+            directory_mode,
+            file_symlink,
+            directory_symlink,
+            hard_link,
+            fifo,
+            subdirectory,
+        ):
+            self.refused(build(), "report_path_not_allowed", case=build.__name__)
+
+    def test_foreign_owner_is_refused(self):
+        path = report_file()
+        with mock.patch.object(tools.os, "geteuid", return_value=os.geteuid() + 1):
+            self.refused(path, "report_path_not_allowed")
+
+    def test_missing_undecodable_and_oversize_files_are_refused(self):
+        missing = str(Path(report_file()).with_name("missing.md"))
+        self.refused(missing, "report_unreadable")
+        absent_dir = str(Path(tempfile.gettempdir()) / "tmp.notthere" / "report.md")
+        self.refused(absent_dir, "report_unreadable")
+        self.refused(report_file(raw=b"\xff\xfe" + REPORT.encode()), "report_not_utf8")
+        self.refused(
+            report_file(raw=REPORT.encode() + b"\xed\xa0\x80"), "report_not_utf8"
+        )
+        oversize = report_file()
+        os.truncate(oversize, tools.GATEWAY_MAX_SOURCE_CHARACTERS * 4 + 1)
+        self.refused(oversize, "report_too_large")
+
+    def test_growing_file_is_refused_by_the_bounded_read(self):
+        path = report_file()
+        real_fstat = os.fstat
+
+        def shrunk(descriptor):
+            info = real_fstat(descriptor)
+            if stat.S_ISREG(info.st_mode):
+                values = list(info)
+                values[stat.ST_SIZE] = 10
+                return os.stat_result(values)
+            return info
+
+        with mock.patch.object(tools.os, "fstat", side_effect=shrunk):
+            self.refused(path, "report_too_large")
+
+    def test_short_read_is_never_accepted_as_a_truncated_report(self):
+        path = report_file()
+        real_read = os.read
+
+        def short(descriptor, size):
+            return real_read(descriptor, size)[:-1]
+
+        with mock.patch.object(tools.os, "read", side_effect=short):
+            self.refused(path, "report_unreadable")
+
+    def test_file_mode_inside_the_private_directory_does_not_matter(self):
+        # umask 0002 makes 0664 files; the 0700 directory already keeps others out.
+        path = report_file()
+        os.chmod(path, 0o666)
+        self.assertEqual(tools._read_report(path), REPORT.encode("utf-8"))
+
+    def test_stub_and_pointer_reports_are_too_short(self):
+        stub = (
+            "# Daily brief\n\nSee https://example.com/news/2-1 for the release; "
+            "the full report is in the attached file report.md for review.\n"
+        )
+        self.assertLess(len(stub.strip()), tools.MIN_REPORT_CHARACTERS)
+        self.assertEqual(tools.MIN_REPORT_CHARACTERS, 800)
+        self.refused(report_file(stub), "report_too_short")
+        padded = "x" * 799 + "\n" * 50
+        self.refused(report_file(padded), "report_too_short")
+
+    def test_report_must_name_every_item_source_url(self):
+        payload = make_payload()
+        second = dict(
+            payload["items"][0],
+            item_id="item-2",
+            source_url="https://example.com/news/other-release",
+        )
+        payload["items"].append(second)
+        args = submission_args(payload)
+        result = self.run_submit(args)
+        self.assertEqual(result, tools._blocked("report_missing_item"))
+        self.assertEqual(self.sent, [])
+        self.assertFalse((self.root / "reports").exists())
+        # Fixing the file and calling once more stores and submits it.
+        Path(args["report_path"]).write_text(
+            REPORT + "\n- https://example.com/news/other-release\n"
+        )
+        fixed = self.run_submit(args)
+        # Sent once; the fake receipt counts one candidate, so delivery is uncertain.
+        self.assertEqual(len(self.sent), 1, fixed)
+        self.assertTrue((self.directory / "report.md").is_file())
+
+    def test_invalid_item_structure_is_left_to_validation(self):
+        for items, code in (
+            (["not an item"], "invalid_item"),
+            ([{"item_id": "x", "source_url": 7}], "missing_title"),
+        ):
+            args = submission_args()
+            args["payload"]["items"] = items
+            args["source_receipts"] = ["1" * 32]
+            with self.subTest(code=code):
+                result = self.run_submit(args)
+                self.assertEqual(result["error"], code)
+        for payload in ("not a payload", {"schema_version": "1.0", "items": "x"}):
+            args = submission_args()
+            args["payload"] = payload
+            result = self.run_submit(args)
+            self.assertFalse(result["ok"])
+            self.assertNotEqual(result.get("state"), "BLOCKED")
+
+    def test_no_item_day_needs_a_full_report_too(self):
+        args = submission_args()
+        args["payload"]["items"], args["source_receipts"] = [], []
+        args["report_path"] = report_file("# No items today\n\nNothing new. " * 3)
+        self.assertEqual(self.run_submit(args), tools._blocked("report_too_short"))
+        args["report_path"] = report_file("# Quiet day\n\n" + "No release. " * 80)
+        result = self.run_submit(args)
+        self.assertEqual(result["gateway"], "skipped_no_items", result)
+        self.assertEqual(result["status"], "stored")
+
+    def test_item_kind_is_set_from_the_job(self):
+        payload = make_payload()
+        payload["items"].append(
+            dict(payload["items"][0], item_id="item-2", kind="infrastructure")
+        )
+        for item in payload["items"][:1]:
+            item["kind"] = "news"  # the devops job sent news, held as KIND_MISMATCH
+        args = submission_args(payload)
+        del args["payload"]["items"][1]["kind"]  # an omitted kind is set too
+        result = self.run_submit(args)
+        self.assertEqual(len(self.sent), 1, result)
+        kinds = [item["kind"] for item in json.loads(self.sent[0])["items"]]
+        self.assertEqual(kinds, ["devops", "devops"])
+        self.assertEqual(
+            {job: tools._ITEM_KIND[kind] for job, kind in tools._ALLOWED_JOBS.items()},
+            {
+                "6eabd835f969": "news",
+                "25674fbc0bf3": "devops",
+                "8d0925bc571d": "business_idea",
+            },
+        )
+
+    def test_metrics_bytes_are_the_file_size(self):
+        raw = ("é" * 10 + "\n" + REPORT).encode("utf-8")
+        args = submission_args()
+        args["report_path"] = report_file(raw=raw)
+        with mock.patch.object(tools, "_update_metrics") as update:
+            self.run_submit(args)
+        self.assertEqual(update.call_args.args[3], len(raw))
+        args["report_path"] = "/etc/hostname"
+        with mock.patch.object(tools, "_update_metrics") as update:
+            result = self.run_submit(args)
+        self.assertEqual(result, tools._blocked("report_path_not_allowed"))
+        self.assertIsNone(update.call_args.args[3])
 
 
 class PrivateRecordCreateTests(unittest.TestCase):

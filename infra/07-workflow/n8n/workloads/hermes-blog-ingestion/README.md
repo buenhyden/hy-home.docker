@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.5.2"
+version: "0.5.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-08"
 ---
 
 # Hermes 수집 전송 소스
@@ -60,9 +60,18 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 다른 URL로 바꾸려면 충돌로 거부합니다. `normalized_text`와 원본 내용은 비신뢰 데이터로
 도구·파일·자격·목적지 권한을 추가하지 않습니다.
 
-`submit_research_report`(플러그인 0.4.0 이상, 도구 계약 v2)는 정확히 `payload`, 항목별
-`source_receipts`, 확정된 전체 보고서 `report_markdown` 세 인자만 받고 다른 인자는
-`invalid_submission_fields`로 거부합니다. payload는 `schema_version: "1.0"`과 `items`를
+`submit_research_report`(플러그인 0.4.3 이상, 도구 계약 v3)는 정확히 `payload`, 항목별
+`source_receipts`, 확정된 전체 보고서 파일의 절대 경로 `report_path` 세 인자만 받고 다른
+인자(v2의 `report_markdown` 포함)는 `invalid_submission_fields`로 거부합니다. 에이전트는
+보고서를 이번 실행에서 `mktemp -d`로 만든 디렉터리 안의 `.md` 파일로 씁니다. 플러그인은
+임시 디렉터리(플러그인 프로세스의 임시 디렉터리, Hermes가 모든 에이전트 셸의 `TMPDIR`로 쓰는
+`HERMES_HOME/cache/scratch`, 프로세스 `TMPDIR`) 바로 아래 `tmp.XXXXXX` 디렉터리(소유자 본인, 0700, 링크 아님) 안의 링크 하나뿐인
+일반 파일(소유자 본인, 2 MiB 이하. 0700 디렉터리 안이므로 파일 권한은 보지 않음)만 링크를 따라가지 않고 한 번 읽고
+파일은 바꾸지 않습니다. 그 밖의 경로는 `report_path_not_allowed`, 읽을 수 없으면
+`report_unreadable`, 크면 `report_too_large`, UTF-8이 아니면 `report_not_utf8`입니다.
+기존 보고서 검사 뒤에 800자 미만(`report_too_short`, 항목이 없는 날도 적용)과 항목의
+`source_url`이 보고서에 없음(`report_missing_item`)을 저장 전에 BLOCKED로 거부하므로
+에이전트는 파일을 고쳐 한 번 더 호출합니다. 항목 `kind`는 job이 정하며 도구가 덮어씁니다. payload는 `schema_version: "1.0"`과 `items`를
 가지며 receipt 식별자는 32 hex입니다. 도구가 producer/execution·scheduled/created/collected
 시각, 보고서 원본·해시, 원본 집합 참조와 멱등 키를 구성합니다. receipt의 item·순서·URL·실행·본문 해시와 기존 제목/인용/숫자/고유명
 검사를 모두 통과해야 제출합니다. 준비한 요청 바이트는 재시도에도 바꾸지 않습니다.

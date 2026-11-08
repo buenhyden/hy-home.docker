@@ -52,8 +52,11 @@ ARTICLES = {
 
 REPORT = (
     "# Synthetic DevOps report\n\n"
-    + "\n".join(f"- {item['title']}: {item['body']}" for item in ITEMS)
-    + "\n"
+    + "\n".join(
+        f"- {item['title']}: {item['body']} ({item['source_url']})" for item in ITEMS
+    )
+    + "\n\n"
+    + "Synthetic padding keeps the report above the plugin minimum length.\n" * 12
 )
 
 
@@ -127,6 +130,18 @@ def main(config_file: str) -> int:
         stack.enter_context(
             patch.object(tools, "METRICS_STATE_DIR", work / "plugin-metrics")
         )
+        # Contract v3 reads the report from a mktemp -d shaped private directory.
+        report_dir = work / "plugin-temp" / "tmp.synthetic1"
+        report_dir.mkdir(parents=True)
+        report_dir.chmod(0o700)
+        report_path = report_dir / "report.md"
+        report_path.write_text(REPORT, encoding="utf-8")
+        report_path.chmod(0o600)
+        stack.enter_context(
+            patch.object(
+                tools.tempfile, "gettempdir", return_value=str(work / "plugin-temp")
+            )
+        )
         stack.enter_context(
             patch.object(source_collection.source_fetch, "fetch", fetch)
         )
@@ -151,7 +166,7 @@ def main(config_file: str) -> int:
         submission = {
             "payload": {"schema_version": "1.0", "items": ITEMS},
             "source_receipts": receipts,
-            "report_markdown": REPORT,
+            "report_path": str(report_path),
         }
         result = json.loads(tools.handle_submit_report(submission))
         if not result.get("ok") or result.get("status") != "persisted":
