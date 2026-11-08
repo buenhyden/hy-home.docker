@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
-version: "1.0.7"
+version: "1.0.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-08"
 created: "2025-11-12"
 ---
 
@@ -65,7 +65,7 @@ created: "2025-11-12"
 
 5. RAG에서 참조하기 전에는 항상 `ollama pull <model>`로 모델을 명시적으로 내려받습니다.
 6. 동시 추론 중 OOM을 방지하기 위해 `ollama-exporter`로 VRAM 사용량을 모니터링합니다.
-7. RAG 작업에는 `qwen3-embedding:0.6b`(또는 현재 표준 모델)가 벡터화용으로 준비되어 있는지 확인합니다.
+7. RAG 작업에는 Open WebUI가 쓰는 `embeddinggemma-2:740m`가 벡터화용으로 준비되어 있는지 확인합니다.
 
 ## Tech Stack
 

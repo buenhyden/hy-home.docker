@@ -965,6 +965,26 @@ class MailpitHealthContractTests(unittest.TestCase):
                 self.assertIn("mailpit", result.stdout.lower())
 
 
+class OpenWebuiLocalModelContractTests(unittest.TestCase):
+    """Open WebUI uses only local Ollama models; direct OpenAI stays off."""
+
+    def test_rag_embeds_with_a_local_model_and_openai_is_disabled(self):
+        import yaml
+
+        service = yaml.safe_load(
+            (ROOT / "infra/08-ai/open-webui/docker-compose.yml").read_text(
+                encoding="utf-8"
+            )
+        )["services"]["open-webui"]
+        environment = service["environment"]
+        self.assertEqual("ollama", environment["RAG_EMBEDDING_ENGINE"])
+        # The model must be one Ollama holds; qwen3-embedding:4b was removed.
+        self.assertEqual("embeddinggemma-2:740m", environment["RAG_EMBEDDING_MODEL"])
+        self.assertEqual("false", environment["ENABLE_OPENAI_API"])
+        self.assertNotIn("OPENAI_API_BASE_URL", environment)
+        self.assertNotIn("OPENAI_API_KEY", environment)
+
+
 class OllamaPortContractTests(unittest.TestCase):
     def test_public_render_keeps_direct_api_local_with_distinct_ports(self):
         with tempfile.TemporaryDirectory() as home:

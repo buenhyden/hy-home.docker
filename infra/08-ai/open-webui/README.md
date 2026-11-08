@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI"
-version: "1.1.4"
+version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-08"
 created: "2025-11-12"
 ---
 
@@ -54,7 +54,7 @@ open-webui/
 | --- | --- |
 | Purpose | `08-ai`의 Open WebUI 서비스 leaf; 서비스: `open-webui`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Config files | `docker-compose.yml`, `docker-entrypoint.sh` |
-| Config values | env 키: `PORT`, `OLLAMA_BASE_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`; 프로필: `ai` |
+| Config values | env 키: `PORT`, `OLLAMA_BASE_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`, `ENABLE_OPENAI_API`; 프로필: `ai` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Networks | `ai_net`, `edge_net` |
 | Volumes | `open-webui:/app/backend/data:rw`, `open-webui` |
@@ -123,10 +123,12 @@ Open WebUI는 전용 Keycloak 클라이언트 `home-openwebui`, S256 PKCE,
 | :--- | :---: | :--- |
 | `OLLAMA_BASE_URL` | Yes | Ollama API 엔드포인트. |
 | `RAG_EMBEDDING_MODEL` | Yes | 문서 색인에 사용하는 모델. 현재 값은 Compose가 소유합니다. |
+| `ENABLE_OPENAI_API` | Yes | `false`. 로컬 Ollama만 쓰고 OpenAI 직접 Cloud 경로를 끕니다. |
 
 ## Change Impact
 
 - `docker-compose.yml` 변경은 SSO 인증 흐름에 영향을 줄 수 있습니다.
 - `RAG_EMBEDDING_MODEL`을 업데이트하면 기존 문서를 다시 색인해야 합니다.
+- 두 값은 `webui.db`의 `config` 행(`rag.embedding_model`, `openai.enable`)이 Compose보다 우선합니다. Compose를 바꿀 때 저장된 행도 함께 바꿉니다.
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.

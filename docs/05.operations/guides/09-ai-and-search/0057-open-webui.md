@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.1.5"
+version: "1.1.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-08"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -113,7 +113,7 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 
 CUDA 이미지를 쓰지만 GPU 예약이 없어 `torch.cuda.is_available()`은 `False`다. embedding은 원격 Ollama가 처리하고 로컬 GPU 기능은 쓰지 않는다. GPU는 Ollama와 ComfyUI가 이미 나누어 쓰므로 장치를 추가하지 않는다. `AIOHTTP_CLIENT_TIMEOUT`은 설정하지 않는다. 비워 두면 전체 요청 시간 제한이 없어서 느린 첫 load나 긴 streaming 답변이 WebUI 쪽에서 끊기지 않는다.
 
-`ENABLE_PERSISTENT_CONFIG`가 기본값(켜짐)이면 DB `config` 행이 Compose 환경 변수보다 우선한다. migration이 남긴 빈 `webui.url` 행이 `WEBUI_URL`을 가리고 있어서 그 행만 지웠다. 재시작할 때 WebUI가 Compose 값으로 행을 다시 저장했다. 관리자가 직접 바꾼 설정은 건드리지 않는다. 세션 key는 `WEBUI_SECRET_KEY_FILE`로 data volume의 `.webui_secret_key`에 두고 restic state set으로 백업한다. 재생성 전에 실행 중인 key를 volume에 복사해야 사용자 세션이 유지된다.
+`ENABLE_PERSISTENT_CONFIG`가 기본값(켜짐)이면 DB `config` 행이 Compose 환경 변수보다 우선한다. migration이 남긴 빈 `webui.url` 행이 `WEBUI_URL`을 가리고 있어서 그 행만 지웠다. 재시작할 때 WebUI가 Compose 값으로 행을 다시 저장했다. 관리자가 직접 바꾼 설정은 건드리지 않는다. 같은 이유로 `rag.embedding_model`과 `openai.enable` 행은 Compose 값과 함께 바꾼다. Compose만 바꾸면 저장된 행이 계속 이긴다. 2026-11-08 기준 embedding 모델은 Ollama에 설치된 `embeddinggemma-2:740m`(768차원)이고, OpenAI 직접 연결은 `ENABLE_OPENAI_API=false`로 끈다. Cloud 경로를 다시 켜려면 키·호출 예산·데이터 계약을 먼저 승인받는다. 행을 바꾸기 전에는 `webui.db`를 백업한다. 세션 key는 `WEBUI_SECRET_KEY_FILE`로 data volume의 `.webui_secret_key`에 두고 restic state set으로 백업한다. 재생성 전에 실행 중인 key를 volume에 복사해야 사용자 세션이 유지된다.
 
 ### Common Checks
 
