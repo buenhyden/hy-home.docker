@@ -393,6 +393,10 @@ try:
     for entry in catalog["entries"]:
         if generation_binding_allowed(catalog, entry["id"], entry["source_path"], entry["env_key"], entry["automation"]):
             print(entry["id"] + "\t" + "|".join((entry["automation"], entry["env_key"] or "-", entry["source_path"] or "-")))
+except ModuleNotFoundError as error:
+    # Module names are fixed import names, never values.
+    print(f"GENERATION rejected: missing Python module {error.name}; install scripts/requirements.txt; no values logged", file=sys.stderr)
+    raise SystemExit(2)
 except Exception:
     print("GENERATION rejected: invalid public catalog; no values logged", file=sys.stderr)
     raise SystemExit(2)
@@ -903,6 +907,10 @@ def main():
 
 try:
     raise SystemExit(main())
+except ModuleNotFoundError as error:
+    # Module names are fixed import names, never values.
+    print(f"METADATA rejected: missing Python module {error.name}; install scripts/requirements.txt; no values logged", file=sys.stderr)
+    raise SystemExit(2)
 except Exception:
     print("METADATA rejected: unsafe, ambiguous, changed or unreadable input; no values logged", file=sys.stderr)
     raise SystemExit(2)
