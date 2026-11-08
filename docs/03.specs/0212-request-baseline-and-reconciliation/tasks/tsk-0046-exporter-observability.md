@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -303,6 +303,67 @@ any label. Two items are still open:
   for the D05 E9 run on 2026-11-09 08:00 KST.
 - **Locust:** the LAB scope check was not run, and no LAB runtime was started.
 
+### D08 HOME selector start after #828 (2026-11-08)
+
+**Plan and drift.** On `main` `56dca2a34`, the plan with `--selection HOME
+--dev-data-expected off` read all three HOME `COMPOSE_FILE` entries and listed 45
+targets. A dry run of the exact command `up` uses showed 25 recreates, among
+them `openbao`, `openbao-agent`, `mng-pg`, `qdrant`, the four `seaweedfs`
+containers, `registry`, Airflow and Prometheus. For every one of them, the
+stored `com.docker.compose.config-hash` differed from the current render, so
+merged changes from 11-06 and 11-07, such as shared reservations and network
+binds, had never been applied. The owner chose the full HOME start (option A)
+over a Prometheus-only `obs-core` start or a deferral.
+
+**Run, 13:04Z to 13:09Z: START_FAILED.**
+
+- **Wrong plan path.** The first `up` returned `BLOCKED`, because `up` only
+  reads a plan under `_workspace/repo-support/analysis/p07/plans/`.
+- **Second `up`.** It recreated 25 containers and returned `START_FAILED`
+  with `recovery_required`. OpenBao came back sealed, and its unhealthy
+  health check kept the dependents at `Created`.
+- **Prometheus restart loop, exit 64.** The plan declared
+  `P07_DECLARED_DEV_EXPECTED=off`, while HOME `.env` sets
+  `PROMETHEUS_DEV_DATA_EXPECTED=on`, and `dev-pg` and `dev-valkey` are
+  running. Planning with `off` was the operator's error in this session.
+
+**Recovery.**
+
+- `docker compose up -d --no-deps` started Prometheus without the overlay, as
+  before the run, plus the mng-pg helpers, `grafana-db-provision`, the seaweedfs
+  volume, filer and buckets, and six Airflow services. `airflow-init` exited 0.
+- `seaweedfs-buckets` first exited 254 with `InternalError`, because the
+  filer was not ready yet. It was rerun, found all four buckets present and
+  exited 0.
+- Every container is healthy except `openbao`, which stays sealed and waits
+  for the owner, and `openbao-agent`, which stays `Created` for RUN-0103
+  `agent-restart`.
+
+**OpenBao.** The owner unsealed the server, which was unsealed at 13:24:15Z.
+The owner then ran RUN-0103 `agent-restart`, with the same inputs as the
+morning recovery recorded in SPEC-0204 TSK-0006. It printed `issue rc=0` and
+`agent: healthy`, and the rendered files had the expected modes, exit 0.
+
+- **Agent.** It started at 13:31:56Z and logged `authentication successful`
+  and `renewed auth token`, with no error.
+- **Scrape targets.** `openbao` and `openbao-agent` are both `up`.
+- **Containers.** Every one is healthy. The compose config hash of every
+  running container equals the current render: no drift is left.
+- **Pending-token alert.** `OpenBaoTooManyPendingTokens` is pending again
+  from the two five-minute tokens. The windowed rule from #830 releases it
+  once they leave the 15-minute window.
+
+**Selector gap.** POL-0078 keeps `dev-data` out of HOME, so a HOME plan accepts
+only `--dev-data-expected off`, and the existing test treats `on` as invalid.
+On HOME, though, DEV data is running and `.env` declares `on`, so no current
+selector input can start Prometheus with the selection overlay. The owner must
+choose one of two fixes:
+
+- extend POL-0078 so that HOME can name `dev-data` when it is declared `on`;
+- stop DEV data and declare `off`.
+
+`ObservationSelectionMissing` keeps firing until then.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -332,6 +393,8 @@ any label. Two items are still open:
 | HOME OTLP canary | 84 | W89 | `executor_stage.py --home` through relay, HOME Alloy 4319, Prometheus and Grafana | Pinned cached images; project `hyhome-quality-canary` | FAIL | First run 11:58Z: relay not ready, exit 2; cleanup passed; cause UNKNOWN. See D08 Alloy 4319 and quality metrics on HOME. | required | - |
 | HOME OTLP canary rerun | 84 | W89 | `executor_stage.py --home` through relay, HOME Alloy 4319, Prometheus and Grafana | Pinned cached images; project `hyhome-quality-canary` | PASS | Second run 12:06Z: summary counts equal in Prometheus (337 requests), forged identity replaced, 30/30 dashboard queries return data, cleanup passed. | required | HOME OTLP canary |
 | HOME 4319 denial | 84 | W89 | POST without token and with a wrong token inside `alloy` | Live HOME receiver | PASS | Both `401 Unauthorized`. | required | - |
+| HOME selector start | 85 | W90 | `compose-start.py up --plan` of `--selection HOME` after a matching dry run | Plan `c7a311e7…`, `main` `56dca2a34` | FAIL | START_FAILED: sealed OpenBao held dependents; Prometheus exit 64 on DEV `off` against `.env` `on`. See D08 HOME selector start after #828. | required | - |
+| HOME selector recovery | 85 | W90 | Plain `up -d --no-deps` of stopped and looping containers, owner unseal and RUN-0103 `agent-restart`; health and config-hash census | Same `main`; containers listed in the section | PASS | All containers healthy, Agent authenticated, no config-hash drift; `ObservationSelectionMissing` stays until the owner decides the DEV gap. | required | - |
 
 ## Criterion Acceptance
 
