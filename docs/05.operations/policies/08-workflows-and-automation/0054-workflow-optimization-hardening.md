@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Operations Policy"
-version: "1.1.5"
+version: "1.1.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-08"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -24,7 +24,7 @@ created: "2026-05-10"
 - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,dev.Dockerfile,docker-entrypoint.sh,docker-entrypoint.dev.sh}`
 - `scripts/hardening/check-all-hardening.sh 07-workflow`
 
-- **Systems**: Airflow, Flower, n8n, n8n-worker, n8n-task-runner, workflow Valkey
+- **Systems**: Airflow, Flower, n8n, n8n-worker, n8n-task-runner-worker, workflow Valkey
 - **Environments**: 로컬·개발·검증 및 운영 환경에 준하는 환경
 
 ## Rules

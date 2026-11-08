@@ -38,12 +38,13 @@ ROOT_COMPOSE = ROOT / "docker-compose.yml"
 RUNNER_CONFIG = N8N / "n8n-task-runners.json"
 COMMON = ROOT / "infra/common-optimizations.yml"
 
+# Main runs queue mode with manual executions offloaded, so n8n 2.43.6 never
+# starts a task runner there (commands/start.js); only the worker has one
+# (SPEC-0269).
 RUNNER_PAIRS = {
-    "n8n-task-runner": ("n8n", "n8n_main_runner_net"),
     "n8n-task-runner-worker": ("n8n-worker", "n8n_worker_runner_net"),
 }
 NETWORKS = {
-    "n8n_main_runner_net": "10.250.22.0/24",
     "n8n_worker_runner_net": "10.250.23.0/24",
 }
 RUNNER_IMAGE = (
@@ -125,7 +126,6 @@ class RunnerComposeContractTests(unittest.TestCase):
                 self.assertNotIn("n8n_net", self.services[runner]["networks"])
 
         self.assertNotIn("n8n_worker_runner_net", self.services["n8n"]["networks"])
-        self.assertNotIn("n8n_main_runner_net", self.services["n8n-worker"]["networks"])
         for peer in ("n8n-valkey", "valkey-exporter", "blog-ingestion-gateway"):
             if peer in self.services:
                 self.assertTrue(
@@ -186,6 +186,17 @@ class RunnerComposeContractTests(unittest.TestCase):
         for runner, (broker, _) in RUNNER_PAIRS.items():
             uri = self.services[runner]["environment"]["N8N_RUNNERS_TASK_BROKER_URI"]
             self.assertEqual(f"http://{broker}:${{N8N_BROKER_PORT:-5679}}", uri)
+
+    def test_main_has_no_runner_while_manual_executions_are_offloaded(self):
+        root = load_yaml(ROOT_COMPOSE)
+        self.assertNotIn("n8n-task-runner", self.services)
+        self.assertNotIn("n8n_main_runner_net", root["networks"])
+        main = self.services["n8n"]
+        self.assertNotIn("n8n_main_runner_net", main["networks"])
+        self.assertNotIn("N8N_RUNNERS_BROKER_LISTEN_ADDRESS", main["environment"])
+        # Without offload, main would need a runner of its own again.
+        self.assertIs(main["environment"]["OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS"], True)
+        self.assertEqual("queue", main["environment"]["EXECUTIONS_MODE"])
 
     def test_token_wrapper_stays_value_free_and_fails_closed(self):
         for name in RUNNER_PAIRS:

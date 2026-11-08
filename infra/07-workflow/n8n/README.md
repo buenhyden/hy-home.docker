@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.19"
+version: "1.2.20"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-08"
 created: "2025-11-12"
 ---
 
@@ -60,12 +60,12 @@ n8n/
 | Config files | `docker-compose.yml`, `docker-compose.ollama-local.yml` |
 | Config values | env 키: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE` 외 다수; 프로필: `workflow`, `workflow-n8n`, Blog-data 수집 Gateway 전용 `blog-ingestion` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 무조건 루트 include되며 프로필(`workflow`, `workflow-n8n`)로 선택됨 |
-| Networks | `edge_net`, `mng_data_net`, `n8n_net`, `obs_net`; `n8n-worker`와 `blog-ingestion`만 내부·격리 `n8n_blog_ingest_net`을, Traefik과 `blog-ingestion`만 내부·격리 `blog_export_net`을 공유함. runner는 `n8n_net`에 없고 `n8n`과 `n8n-task-runner`만 내부·격리 `n8n_main_runner_net`을, `n8n-worker`와 `n8n-task-runner-worker`만 내부·격리 `n8n_worker_runner_net`을 공유함. 각 task broker는 자기 runner 망 주소(`n8n` `10.250.22.2`, `n8n-worker` `10.250.23.2`)에만 bind하고 worker healthcheck도 그 주소를 씀(SPEC-0267) |
+| Networks | `edge_net`, `mng_data_net`, `n8n_net`, `obs_net`; `n8n-worker`와 `blog-ingestion`만 내부·격리 `n8n_blog_ingest_net`을, Traefik과 `blog-ingestion`만 내부·격리 `blog_export_net`을 공유함. runner는 `n8n_net`에 없고 `n8n-worker`와 `n8n-task-runner-worker`만 내부·격리 `n8n_worker_runner_net`을 공유함. worker의 task broker는 그 망 주소 `10.250.23.2`에만 bind하고 worker healthcheck도 그 주소를 씀(SPEC-0267). main은 queue mode에서 수동 실행을 worker로 넘기므로(`OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true`) task runner를 시작하지 않고 runner도 두지 않음(SPEC-0269) |
 | Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:ro`, `n8n-valkey-data:/data:rw`; 두 runner는 `./n8n-task-runners.json:/etc/n8n-task-runners.json:ro`와 `/tmp` tmpfs만 마운트함. `n8n-task-runner-data`, `n8n-task-runner-worker-data`는 rollback·기존 호스트 데이터 보존용으로 선언만 남고 마운트되지 않음 |
 | Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`, `${VALKEY_EXPORTER_PORT:-9121}`. `N8N_BROKER_PORT`는 main·worker의 `N8N_RUNNERS_BROKER_PORT`로, `N8N_TASK_RUNNER_PORT`는 두 runner의 `N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT`로 전달됩니다. 선택형 전용 Valkey는 단일 `${VALKEY_PORT:-6379}`를 listener·health·exporter에 사용합니다 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
 | Secret refs | main/worker는 선택된 `mng_valkey_password`, `mng_valkey_n8n_password` 또는 `n8n_valkey_password` 하나와 `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`을 마운트함. runner 둘은 `n8n_runner_auth_token`만 마운트함 |
-| Healthcheck | `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, `dedicated-valkey` 프로필의 `n8n-valkey`, `blog-ingestion`(인증 없는 `/v1/summary`의 401)에 Compose 헬스체크가 선언되어 있음. exporter는 의존성 기반으로 게이트됨. main은 `/healthz/readiness`, worker·runner는 각 선언된 `/healthz`를 사용하며 같은 신호가 아님; probe 통과가 작업 실행 성공이나 runner 호환성을 입증하지 않음 |
+| Healthcheck | `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `dedicated-valkey` 프로필의 `n8n-valkey`, `blog-ingestion`(인증 없는 `/v1/summary`의 401)에 Compose 헬스체크가 선언되어 있음. exporter는 의존성 기반으로 게이트됨. main은 `/healthz/readiness`, worker·runner는 각 선언된 `/healthz`를 사용하며 같은 신호가 아님; probe 통과가 작업 실행 성공이나 runner 호환성을 입증하지 않음 |
 | Operations | 아래 Related Documents의 Guide·Policy·Runbook 탐색점에서 `GDE-0053`·`POL-0053`·`RUN-0053`을 선택합니다. |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `HYHOME_COMPOSE_PROFILES='workflow-n8n' bash scripts/validation/validate-docker-compose.sh`로 시작한 뒤 서비스 로그와 연결된 런북 근거를 확인합니다. |
@@ -201,7 +201,7 @@ Airflow 게시 데이터의 실제 n8n 인계·combined E2E·HOME 복구는 미�
 ### Convergence contract
 
 - n8n core/worker/task runner는 `workflow`/`workflow-n8n`에서 **HOME**이며, n8n Valkey와 exporter는 `dedicated-valkey`에서 **OPTIONAL**입니다.
-- Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d n8n n8n-worker n8n-task-runner n8n-task-runner-worker`.
+- Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d n8n n8n-worker n8n-task-runner-worker`.
 - `dedicated-valkey`는 해당 쌍만 시작합니다. 실제 선택은 `N8N_VALKEY_HOST`와 `N8N_VALKEY_SECRET`을 함께 일치시켜야 합니다. 두 entrypoint는 선택된 파일의 존재를 확인하고, 두 runner는 마운트된 `n8n_runner_auth_token`을 launcher에 전달합니다. 선언 버전은 모두 일치하지만 Code 노드와 DB upgrade의 격리 실행은 별도로 검증해야 합니다.
 - 운영 문서는 아래 탐색점의 `GDE-0053`, `POL-0053`, `RUN-0053`을 사용합니다. HOME 격리 복구는 미실행입니다.
 

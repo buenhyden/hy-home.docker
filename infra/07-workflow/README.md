@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.2.2"
+version: "1.2.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-08"
 created: "2025-11-12"
 ---
 
@@ -74,7 +74,6 @@ created: "2025-11-12"
 | `flower` | HTTP | `workflow` | OAuth2 Proxy ForwardAuth |
 | `n8n` | HTTP | `workflow` | OAuth2 Proxy ForwardAuth |
 | `n8n-worker` | internal | `workflow` | internal |
-| `n8n-task-runner` | internal | `workflow` | internal |
 
 ## Configuration
 

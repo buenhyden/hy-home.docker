@@ -233,7 +233,7 @@ class OutboxWorkerPlacementTests(unittest.TestCase):
             },
         )
         base = yaml.safe_load((WORKLOAD.parents[1] / "docker-compose.yml").read_text())
-        for name in ("n8n", "n8n-worker", "n8n-task-runner", "n8n-task-runner-worker"):
+        for name in ("n8n", "n8n-worker", "n8n-task-runner-worker"):
             networks = set(base["services"][name]["networks"])
             self.assertFalse(
                 networks & {"dev_data_net", "mail_net", capture_network}, name

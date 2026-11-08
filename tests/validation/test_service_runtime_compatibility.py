@@ -339,7 +339,6 @@ class RuntimeCompatibilityTests(unittest.TestCase):
             for name in (
                 "n8n",
                 "n8n-worker",
-                "n8n-task-runner",
                 "n8n-task-runner-worker",
             )
         )
@@ -351,7 +350,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
             versions.add(match.group(1))
 
         self.assertEqual(1, len(versions), f"n8n/runner version mismatch: {versions}")
-        for name in ("n8n", "n8n-worker", "n8n-task-runner", "n8n-task-runner-worker"):
+        for name in ("n8n", "n8n-worker", "n8n-task-runner-worker"):
             environment = services[name]["environment"]
             self.assertEqual(300, environment["N8N_RUNNERS_TASK_TIMEOUT"])
             self.assertNotIn("N8N_RUNNER_TASK_TIMEOUT", environment)
@@ -364,7 +363,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
                 "${N8N_RUNNERS_GRANT_TOKEN_TTL:-120}",
                 services[name]["environment"]["N8N_RUNNERS_GRANT_TOKEN_TTL"],
             )
-        for name in ("n8n-task-runner", "n8n-task-runner-worker"):
+        for name in ("n8n-task-runner-worker",):
             self.assertEqual(
                 0, services[name]["environment"]["N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT"]
             )
@@ -397,10 +396,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
                     f":{broker}/healthz",
                     " ".join(services["n8n-worker"]["healthcheck"]["test"]),
                 )
-                for name, broker_host in (
-                    ("n8n-task-runner", "n8n"),
-                    ("n8n-task-runner-worker", "n8n-worker"),
-                ):
+                for name, broker_host in (("n8n-task-runner-worker", "n8n-worker"),):
                     service = services[name]
                     environment = service["environment"]
                     self.assertEqual(
@@ -435,7 +431,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
             self.assertIn("N8N_VALKEY_SECRET", script, entrypoint)
             result = subprocess.run(["sh", "-n", str(N8N / entrypoint)], check=False)
             self.assertEqual(0, result.returncode, entrypoint)
-        for name in ("n8n-task-runner", "n8n-task-runner-worker"):
+        for name in ("n8n-task-runner-worker",):
             runner = services[name]
             self.assertIn("n8n_runner_auth_token", runner["secrets"])
             self.assertNotIn("N8N_RUNNERS_AUTH_TOKEN_FILE", runner["environment"])
