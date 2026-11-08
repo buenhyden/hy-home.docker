@@ -43,6 +43,11 @@ STATUS_PROBE_URLS = {
     "http://127.0.0.1:5679/healthz",
     "http://mailpit:8025/readyz",
 }
+# The P03 worker broker binds only its fixed .2 address on a runner /24 drawn
+# from 10.251.0.0/16, so its readiness URL is one of these and nothing else.
+RUNNER_BROKER_PROBE_URL = re.compile(
+    r"http://10\.251\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.2:5679/healthz"
+)
 NODE_STATUS_PROBE_SCRIPT = r"""
 const http = require('node:http');
 const names = new Set(['Error', 'TypeError', 'ReferenceError', 'EvalError', 'AbortError']);
@@ -673,7 +678,10 @@ def node_status_probe(execute, *urls: str) -> tuple[bool, dict[str, object]]:
         not urls
         or len(urls) > 2
         or len(set(urls)) != len(urls)
-        or any(url not in STATUS_PROBE_URLS for url in urls)
+        or any(
+            url not in STATUS_PROBE_URLS and not RUNNER_BROKER_PROBE_URL.fullmatch(url)
+            for url in urls
+        )
     ):
         return False, _failed_status_facts("target_rejected")
     try:

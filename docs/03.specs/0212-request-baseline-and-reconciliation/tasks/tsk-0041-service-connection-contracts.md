@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.21"
+version: "0.1.22"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -305,6 +305,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D02/D03 runtime and Hosted CI | 56 | W61 | Live service and remote CI for the D02/D03 delta | HEAD 73ccd9930 | NOT_RUN | No container recreated and no remote run recorded for this delta | optional | - |
 | D03 Valkey memory cap | 59 | W64 | Static regression and pinned-image native probe | 9.1.2-alpine, labelled network-less container | PASS | RED before change; 128 MiB noeviction; write refused with OOM, PONG, keys kept, residue 0; live servers not recreated | required | - |
 | SEC01 root source re-binding | 60 | W65 | `test_update_gates` and the three other ledger consumers | Clean `main` `6361e93b5` | PASS | 57 hash-only failures before; 63 tests OK (2 declared skips) after; image, build and membership unchanged | required | - |
+| ComfyUI-Manager security level HOME apply | 57 | W62 | Approved HOME edit and restart, then file, health, network and device readback | RUN-0081 0.5.0, container `78dbdf9f0021` | PASS | `weak` to `normal`; healthy in about 120 s; `comfyui_ingress_net` only; backup under `~/storage/backups/comfyui-manager-20261108/` | required | - |
 
 ## Criterion Acceptance
 
@@ -657,6 +658,20 @@ vendor lookup, signature, SBOM, scan, native, deployment or recovery result is
 promoted. Afterwards `test_update_gates`, `test_sec01_next_tool_candidates`,
 `test_p08_ci_routing` and `test_workflow_version_bundle` ran 63 tests: OK, two
 declared skips.
+
+### 2026-11-08 ComfyUI-Manager security level HOME apply
+
+The `yanwk/comfyui-boot` bundle seeds `user/__manager/config.ini` with
+`security_level = weak`; ComfyUI-Manager 3.41 defaults to `normal`. RUN-0081
+0.5.0 (#816) sets `normal` as the target. With approval, the HOME file was
+backed up to `~/storage/backups/comfyui-manager-20261108/`, set to `normal`
+with the RUN-0081 command, and `comfyui` was restarted (same container
+`78dbdf9f0021`). It returned healthy in about 120 seconds on
+`comfyui_ingress_net` only; the file reads `security_level = normal`, and the
+Manager log loads that path. `[ComfyUI-Manager] PyTorch is not installed` also
+appeared on the previous start; torch 2.14.0+cu126 imports in the container and
+`/system_stats` lists a `cuda` device. Rollback restores the saved file and
+restarts the container.
 
 ## Handoff
 
