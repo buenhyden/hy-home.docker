@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.14.4"
+version: "1.15.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -178,6 +178,12 @@ DEV/HOME 실행·복구가 검증된 것은 아니다.
 
 `dev-data`는 `dev`·`local`에 포함되지 않는다. 현재 선택은 위 HOME 행과 소유자가 승인한
 exact profile을 따르며, 과거에 관측된 profile 조합은 현재 activation 권한이 아니다.
+
+HOME selector 계획은 `--dev-data-expected on`일 때만 위 profile에 `dev-data`를
+더한다. 이 값은 root `.env`의 `PROMETHEUS_DEV_DATA_EXPECTED`와 같아야 하며, 다르면
+Prometheus 시작 스크립트가 거부한다. `off`이면 HOME 행 그대로이고 DEV 저장소는
+선택하지 않는다. 2026-11-09 소유자가 DEV 데이터를 상시 운영하는 HOME에서
+selector 기동이 가능하도록 이 선택을 승인했다.
 
 HOME은 위 profile의 이름 있는 선택이며 새 Compose profile이 아니다. 이 선택은 HOME
 후보 선택이다. 사용자가 AI와 workflow 상시 필요를 확인했으므로 관리 DB·공유

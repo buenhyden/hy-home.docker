@@ -387,6 +387,8 @@ def create_plan(root, *, mode, values, dev_data_expected=None):
     profiles = sorted(
         home if mode == "home" else selection if mode == "profile" else ()
     )
+    if mode == "home" and dev_data_expected == "on":
+        profiles = sorted({*profiles, "dev-data"})  # POL-0078 HOME activation
     if set(profiles) - available:
         raise ValueError("unknown_profile")
     if mode == "target":

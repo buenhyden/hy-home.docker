@@ -50,7 +50,8 @@ class ComposeStartTests(unittest.TestCase):
             "  broker-exporter:\n    profiles: [other]\n    depends_on: [broker]\n"
             "  importer:\n    profiles: [other]\n    depends_on: [db]\n"
             "  unrelated:\n    profiles: [other]\n"
-            "  prometheus:\n    profiles: [obs-core]\n",
+            "  prometheus:\n    profiles: [obs-core]\n"
+            "  dev-pg:\n    profiles: [dev-data]\n",
             encoding="utf-8",
         )
         self.inspect = mock.patch.object(
@@ -113,12 +114,19 @@ class ComposeStartTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "host_port_conflict"):
                     self.plan(mode, values, expected)
 
+    def test_home_adds_dev_data_only_when_declared_on(self):
+        on = self.plan("home", [], "on")
+        self.assertIn("dev-data", on["profiles"])
+        self.assertIn("dev-pg", on["targets"])
+        off = self.plan("home", [], "off")
+        self.assertNotIn("dev-data", off["profiles"])
+        self.assertNotIn("dev-pg", off["targets"])
+
     def test_unknown_selection_and_invalid_expected_fail(self):
         for mode, values, expected in [
             ("target", ["--help"], None),
             ("target", ["unknown"], None),
             ("profile", ["missing"], "off"),
-            ("home", [], "on"),
             ("home", [], None),
         ]:
             with (
