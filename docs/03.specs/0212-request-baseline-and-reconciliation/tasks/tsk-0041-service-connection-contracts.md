@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.24"
+version: "0.1.25"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -309,6 +309,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D03 Valkey memory cap HOME apply | 59 | W64 | Approved `mng-valkey` recreate, then config, AOF, keyspace, client and consumer readback | `main` `4bb6c0295`, container `a9e9b49ba896` | PASS | `maxmemory` 134217728 `noeviction`; 82 keys; consumers healthy, restart counts unchanged; Valkey errors only during the 7-second restart window; backup under `~/storage/backups/mng-valkey-maxmemory-20261108/` | required | - |
 | D03 DEV/MNG render isolation | 59 | W64 | All-profile renders with synthetic DEV and MNG values | `main` `f5ab642ef` plus this test | PASS | Each side leaves the other unchanged; an injected cross reference fails it; new class 2/2; data-tier suites 146 OK (4 declared skips) before it | required | - |
 | D03 n8n named-user switch | 59 | W64 | HOME client and ACL readback | Live `n8n`, `n8n-worker`, `mng-valkey` | NOT_RUN | BLOCKED: default user in use; `mng_valkey_n8n_password` not issued or mounted; needs the secret owner and a drain/backup approval | optional | - |
+| D03 named Valkey user durable native rehearsal | 59 | W64 | Opt-in native class with AOF restart on port 16379 | Pinned 9.1.2-alpine, synthetic secrets, network-less labelled container | PASS | 3/3 OK in 77.5 s; key and wait list survive restart; denials and WRONGPASS hold after it; tmpfs variant fails; residue 0 | required | - |
 
 ## Criterion Acceptance
 
@@ -749,6 +750,22 @@ since 9.1.0, so the declared 9.1.2 supports `db=0`; no memory or process
 isolation claim) and Airflow Connections (documents 3.4.0, installed 3.3.2;
 environment connections resolve on the worker and do not appear in the UI).
 Runtime change, restore and Hosted CI for this run are NOT_RUN.
+
+### 2026-11-08 named Valkey user durable native rehearsal
+
+With the owner's approval on 2026-11-08, the opt-in native class gained
+`test_named_queue_user_survives_restart_and_aof_reload_on_nondefault_port`.
+It starts the pinned `valkey/valkey:9.1.2-alpine` image with the rendered n8n
+ACL, AOF with `appendfsync always` on a temporary host directory, and port
+16379 on a network-less, labelled container. As user `n8n` it writes a job key
+and a wait list, sees no listener on 6379, restarts the container and reads
+both back. After the restart the ACL still refuses `CONFIG`, a foreign key,
+`SELECT 1`, `FLUSHDB` and a wrong password. With `HYHOME_N8N_ACL_REHEARSAL=1`
+at 2026-11-08T06:12:57Z the class ran 3 tests OK in 77.5 seconds, including
+the pinned Bull retry/delay/lock rehearsal; container and network residue was
+zero. With the data directory switched back to tmpfs the new test failed on
+the lost key and list, so it detects a non-durable broker. This is isolated
+evidence; the HOME switch is separate.
 
 ## Handoff
 
