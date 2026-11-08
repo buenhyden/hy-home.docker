@@ -605,6 +605,30 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
         with self.assertRaises(RehearsalFailure):
             free_runner_subnet(client)
 
+    def test_worker_broker_probe_accepts_only_the_fixed_runner_address(self):
+        from tests.validation._opsflow_native_ownership import node_status_probe
+
+        for url in (
+            "http://10.251.0.2:5679/healthz",
+            "http://10.251.255.2:5679/healthz",
+        ):
+            execute = Mock(side_effect=RuntimeError("stop after admission"))
+            with self.subTest(url=url), self.assertRaises(RuntimeError):
+                node_status_probe(execute, url)
+        for url in (
+            "http://10.250.23.2:5679/healthz",
+            "http://10.251.0.3:5679/healthz",
+            "http://10.251.256.2:5679/healthz",
+            "http://10.251.0.2:5678/healthz",
+            "http://10.251.0.2:5679/healthz/readiness",
+        ):
+            execute = Mock()
+            with self.subTest(url=url):
+                ready, facts = node_status_probe(execute, url)
+                self.assertFalse(ready)
+                self.assertEqual("target_rejected", facts["probe_error"])
+                execute.assert_not_called()
+
     def test_wrong_token_bound_outlasts_the_launcher_grant_token_retries(self):
         # retry.LimitedRetry: 60 s maximum, 5 s between attempts.
         self.assertGreater(WRONG_TOKEN_WAIT_SECONDS, 60 + 5)
