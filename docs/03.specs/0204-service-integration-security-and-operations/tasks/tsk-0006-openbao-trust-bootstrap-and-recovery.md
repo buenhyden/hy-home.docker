@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.37"
+version: "0.2.38"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-08"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -4085,6 +4085,42 @@ fixture (stale denied, new accepted, paired metadata and key restore). NOT_RUN:
 future management of these credentials through OpenBao and native credential
 refresh. Next input: when P01 and P06 deliver, P06 decides whether the
 notifier's PostgreSQL and SMTP credentials move to OpenBao.
+
+### Agent auth outage and recovery 2026-11-08
+
+**Outage.** `openbao-agent` was unhealthy from about 2026-11-02 07:20Z with
+`no known secret ID`, the RUN-0103 restart case. `OpenBaoAgentAuthFailure`
+had been firing since 2026-11-07T18:57:23Z. The server stayed up, unsealed
+and healthy throughout.
+
+**Owner recovery, 11:41Z.** The owner ran RUN-0103 `agent-restart` in a clean
+bash, loading `p01_run` from the RUN-0085 block at `ce1debe28` instead of a
+hand paste (the earlier hand paste was garbled; the function hash was checked
+before use). Inputs:
+
+- script commit `977baee0bb24ae693381412da74059a7db0c43de` (the same
+  `agent-restart` block as `main`);
+- issuer `422b4adfd108429e2acc5c4df313761227d36f4d` (v2), the operator tools
+  root and the existing journal; `hy-home-infra_openbao-agent-data`.
+
+The pre-check `status` showed `sealed=false` and `journal: complete schema=2`.
+The run printed `issue rc=0` and `agent: healthy`, every rendered `.txt` is
+`-rw-r-----` and every `.version` `-rw-------`, exit 0. OpenBao returned two
+"Explicit max TTL ... using the lesser value of 300 seconds" warnings, which
+are expected. Since 11:41:48Z the Agent log shows `authentication successful`
+and `renewed auth token` and no error. `OpenBaoAgentAuthFailure` resolved by
+12:03Z. v3 `4f2e7f9b…` is still unused on HOME.
+
+**Pending-token rule.** After the restart `OpenBaoTooManyPendingTokens` fired
+and would not resolve. Its expression subtracted two lifetime counters,
+`vault_token_create_count - vault_token_store_count`; the difference had read
+`-1` for days and moved to `+1` with the restart, so it stays until the server
+restarts. The rule now compares `increase(...[15m])` of the two counters with
+a `>= 0.5` threshold and a rounded description. New promtool cases cover a flat
+lifetime offset (no alert), a two-token burst (fires after 5 minutes) and its
+resolution. On the last 26 hours of HOME data the new expression crosses the
+threshold only from 11:41Z to 11:51Z, and reads `0` now. Prometheus picks the
+rule up only after the change is merged and Prometheus reloads its rules.
 
 ## Evidence
 

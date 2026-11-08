@@ -15,14 +15,16 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'
 
       - alert: OpenBaoTooManyPendingTokens
-        expr: avg(vault_token_create_count{job="openbao"} - vault_token_store_count{job="openbao"}) > 0
+        # Both are lifetime counters, so their raw difference keeps any old offset
+        # until the server restarts. Compare only what changed in the last 15 minutes.
+        expr: (sum(increase(vault_token_create_count{job="openbao"}[15m])) - sum(increase(vault_token_store_count{job="openbao"}[15m]))) >= 0.5
         for: 5m
         labels:
           severity: warning
           domain: security
         annotations:
           summary: 'OpenBao 저장 대기 토큰 존재'
-          description: '생성됐지만 저장되지 않은 토큰이 {{ $value }}개 있습니다.'
+          description: '최근 15분 동안 생성됐지만 저장되지 않은 토큰이 약 {{ $value | printf "%.0f" }}개 있습니다.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md'
 
       - alert: OpenBaoTooManyInfinityTokens

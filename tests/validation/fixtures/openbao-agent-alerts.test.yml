@@ -119,3 +119,29 @@ tests:
         description: openbao-agent의 AppRole 인증 실패가 최근 15분 사이에 이어지고 있습니다. 렌더된 credential이
           갱신되지 않습니다. SecretID 재발급 절차를 확인하세요.
         runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md
+- interval: 1m
+  input_series:
+  # A lifetime offset of one (create counted, store not) stays flat: no alert.
+  - series: vault_token_create_count{job="openbao",instance="openbao:8200"}
+    values: 101+1x9 112+1x29
+  - series: vault_token_store_count{job="openbao",instance="openbao:8200"}
+    values: 100+1x9 109+1x29
+  alert_rule_test:
+  - eval_time: 5m
+    alertname: OpenBaoTooManyPendingTokens
+    exp_alerts: []
+  # Minute 10 creates two tokens that are never stored: the alert fires after
+  # its 5 minute hold and resolves once the burst leaves the 15 minute window.
+  - eval_time: 16m
+    alertname: OpenBaoTooManyPendingTokens
+    exp_alerts:
+    - exp_labels:
+        severity: warning
+        domain: security
+      exp_annotations:
+        summary: OpenBao 저장 대기 토큰 존재
+        description: 최근 15분 동안 생성됐지만 저장되지 않은 토큰이 약 2개 있습니다.
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md
+  - eval_time: 30m
+    alertname: OpenBaoTooManyPendingTokens
+    exp_alerts: []
