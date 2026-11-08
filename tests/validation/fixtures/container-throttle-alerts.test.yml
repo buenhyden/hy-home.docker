@@ -1,0 +1,32 @@
+rule_files:
+- /rules/alert_rules.local.infra.yml
+evaluation_interval: 1m
+tests:
+- interval: 1m
+  input_series:
+  # Both containers are throttled in two thirds of their CFS periods.
+  # "bursty" loses 0.01 CPU-second per second; "starved" loses 0.2.
+  - series: container_cpu_cfs_periods_total{name="bursty"}
+    values: 0+60x30
+  - series: container_cpu_cfs_throttled_periods_total{name="bursty"}
+    values: 0+40x30
+  - series: container_cpu_cfs_throttled_seconds_total{name="bursty"}
+    values: 0+0.6x30
+  - series: container_cpu_cfs_periods_total{name="starved"}
+    values: 0+60x30
+  - series: container_cpu_cfs_throttled_periods_total{name="starved"}
+    values: 0+40x30
+  - series: container_cpu_cfs_throttled_seconds_total{name="starved"}
+    values: 0+12x30
+  alert_rule_test:
+  - eval_time: 20m
+    alertname: ContainerHighThrottleRate
+    exp_alerts:
+    - exp_labels:
+        name: starved
+        severity: warning
+        domain: infrastructure
+      exp_annotations:
+        summary: '컨테이너 CPU 쓰로틀링: starved'
+        description: "컨테이너가 25% 이상 CPU 쓰로틀링되고 있습니다.\n  VALUE = 0.6666666666666666"
+        runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0044-observability-optimization-hardening.md

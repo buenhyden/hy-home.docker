@@ -52,6 +52,10 @@ groups:
         expr: |
           sum by (name) (increase(container_cpu_cfs_throttled_periods_total{name!=""}[5m]))
             / sum by (name) (increase(container_cpu_cfs_periods_total{name!=""}[5m])) > 0.25
+          # A short burst against a fractional limit (a healthcheck process,
+          # a scrape) throttles most of its few periods but loses little time.
+          # Alert only when throttling withholds at least 0.1 CPU-second per second.
+          and sum by (name) (rate(container_cpu_cfs_throttled_seconds_total{name!=""}[5m])) > 0.1
         for: 10m
         labels:
           severity: warning

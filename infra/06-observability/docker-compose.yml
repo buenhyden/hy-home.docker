@@ -585,7 +585,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - 'wget -qO- http://10.250.5.1:9100/metrics >/dev/null 2>&1 || exit 1'
+        - 'wget -qO- http://10.250.5.1:9100/ >/dev/null 2>&1 || exit 1'
       interval: 30s
       timeout: 10s
       retries: 5

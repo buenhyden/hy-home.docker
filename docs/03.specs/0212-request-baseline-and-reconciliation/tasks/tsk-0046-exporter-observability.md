@@ -1,10 +1,10 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0046"
 parent_ids:
@@ -364,6 +364,34 @@ choose one of two fixes:
 
 `ObservationSelectionMissing` keeps firing until then.
 
+### D08 container throttle alerts (2026-11-09)
+
+After the selector start, `ContainerHighThrottleRate` fired for
+`airflow-triggerer`, `crawl4ai-egress`, `node-exporter` and `openbao-agent`.
+The throttle ratio of the first three was 0.5 to 0.68 for the four days
+Prometheus holds, so the alert is not new: the Prometheus restart only reset
+its state. `openbao-agent` read 0 while it could not authenticate and 0.32
+since. Each container's own healthcheck runs inside its CPU limit, and one
+burst against a fractional limit throttles most of the few periods it runs in.
+Measured on HOME:
+
+- `airflow-triggerer` (0.5 CPU): `airflow jobs check` used 5.8 CPU-seconds and
+  ran 10 seconds of every 15. Throttling withheld 0.23 CPU-second per second,
+  a real cost. `airflow-dag-processor` runs the same check every 15 seconds
+  under 2 CPUs and lost 0.06.
+- `node-exporter` (0.5 CPU): the healthcheck fetched `/metrics`, a full
+  collection, next to the scrape; scrapes took up to 2.4 seconds and
+  throttling withheld 0.06.
+- `crawl4ai-egress` and `openbao-agent`: 0.007 and 0.003 withheld, which is
+  alert noise.
+
+The fix keeps every limit. Both Airflow checks run every 60 seconds, which cuts
+their cost by three quarters, and the node-exporter healthcheck fetches the
+landing page `/`, which proves the listener without running a collector. The
+rule also requires 0.1 CPU-second per second withheld, so a short burst no
+longer fires it while a container starved under load still does. The HOME
+apply of these changes is a separate approved step.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -395,6 +423,8 @@ choose one of two fixes:
 | HOME 4319 denial | 84 | W89 | POST without token and with a wrong token inside `alloy` | Live HOME receiver | PASS | Both `401 Unauthorized`. | required | - |
 | HOME selector start | 85 | W90 | `compose-start.py up --plan` of `--selection HOME` after a matching dry run | Plan `c7a311e7…`, `main` `56dca2a34` | FAIL | START_FAILED: sealed OpenBao held dependents; Prometheus exit 64 on DEV `off` against `.env` `on`. See D08 HOME selector start after #828. | required | - |
 | HOME selector recovery | 85 | W90 | Plain `up -d --no-deps` of stopped and looping containers, owner unseal and RUN-0103 `agent-restart`; health and config-hash census | Same `main`; containers listed in the section | PASS | All containers healthy, Agent authenticated, no config-hash drift; `ObservationSelectionMissing` stays until the owner decides the DEV gap. | required | - |
+| Throttle alert census | 83 | W88 | Read-only Prometheus queries: throttle ratio over 4 days, throttled seconds, CPU, scrape duration; healthcheck timing | HOME Prometheus and containers, 2026-11-09 | PASS | Cause found: in-container healthchecks; see D08 container throttle alerts. | required | - |
+| Throttle rule and healthcheck cost | 83 | W88 | promtool `container-throttle-alerts.test.yml` and `test_compose_baseline_gates` RED then GREEN | `alert_rules.local.infra.yml`; Airflow and observability Compose files | PASS | Old rule fired for the bursty case and the interval test failed before; both pass after; 145 tests OK, 31 skipped. | required | - |
 
 ## Criterion Acceptance
 
