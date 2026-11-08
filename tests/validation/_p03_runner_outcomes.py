@@ -39,7 +39,13 @@ ERROR_CATEGORY_NEEDLES = (
     ("builtin_denied", ("name 'open' is not defined",)),
     (
         "environment_access_denied",
-        ("access to environment", "environment variable access", "env access denied"),
+        (
+            "access to environment",
+            "environment variable access",
+            "env access denied",
+            # The pinned JS runner exposes no `process` global.
+            "process is not defined",
+        ),
     ),
     (
         "filesystem_access_denied",

@@ -253,6 +253,19 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
             set(fixture.SCENARIO_ALLOWED_CATEGORIES["javascript_environment_denied"]),
         )
 
+    def test_runner_without_process_global_is_attributed_to_environment(self):
+        # The pinned JS runner's sandbox (js-task-runner.js buildContext) has
+        # no `process` global, so an env read fails before any value exists.
+        facts = safe_error_facts(
+            {"name": "ReferenceError", "message": "process is not defined"}
+        )
+        self.assertEqual("ReferenceError", facts["error_class"])
+        self.assertEqual("environment_access_denied", facts["error_category"])
+        facts = safe_error_facts(
+            {"name": "Error", "message": "Task execution timed out after 2 seconds"}
+        )
+        self.assertEqual("task_timeout", facts["error_category"])
+
     def test_candidate_diagnostic_timing_is_bounded(self):
         self.assertEqual(
             (
