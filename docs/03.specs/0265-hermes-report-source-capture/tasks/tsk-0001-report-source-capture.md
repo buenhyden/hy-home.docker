@@ -1,6 +1,6 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.8.0"
+version: "0.8.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -459,6 +459,33 @@ defect; CHANGES_REQUESTED):
   one link it protected nothing, and a umask 0002 write would have refused
   every report. A test now covers a short read.
 
+### Plugin 0.4.3 install and E11 observation (2026-11-08)
+
+A read-only check at 17:30 KST found plugin 0.4.3 installed on server A (this
+host) but not recorded here. The installed `plugin.yaml`, `tools.py`,
+`webhook_transport.py` and `__init__.py` equal `main` `c0bcfb511` by SHA-256
+(contract v3, `SUBMIT_CONTRACT_VERSION = 3`). File times give the order:
+`tools.py` written 09:53:56 KST, `hermes-gateway.service` started 09:54:07
+(`UMask=0077`), and the address allowlist renamed back at 09:54:40 (its ctime),
+so Gateway sends are open again on 0.4.3. `__pycache__` is 0700 with 0600
+files; the plugin loader reads the allowlist as one valid CIDR. The news,
+devops and business-ideas cron prompts reference `report_path` and no longer
+`report_markdown`. No research run has happened since: the metrics textfile was
+last written 08:12 KST by the 0.4.2 runs above, and the next scheduled run is
+2026-11-09 08:00 KST. E9 stays NOT_RUN until that run is observed; the owner
+chose to wait for it instead of a manual run.
+
+E11 in part: Prometheus scrapes `hermes_research_*` from `node-exporter:9100`
+for all three job kinds; `HermesResearchNoSuccess` and
+`HermesResearchBlocked` are loaded and inactive, which is right because the
+devops `blocked` outcome precedes a later `submitted` one; Grafana serves
+"Hermes Research Reports" (`hyhome-hermes-research`). The alert unit test
+`tests/fixtures/hermes-research-alerts.test.yml` passed (`SUCCESS`) with the
+running Prometheus image's promtool 3.15.1 against
+`alert_rules.local.infra.yml`, whose SHA-256 equals the deployed file
+(`869383fa…`), in a network-less one-off container. A live alert firing and a
+rendered dashboard view were not observed, so E11 stays NOT_RUN.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -478,6 +505,8 @@ defect; CHANGES_REQUESTED):
 | E9 | 12, 14 | W9 | one observed delivered run per job on 0.4.2 (store, Gateway hash match, email, Telegram, order, verifier); rollback reading | first scheduled run 2026-11-08 08:00 KST | NOT_RUN | - | required | - |
 | E14 | 12, 14 | W9 | `update-hermes-plugin.sh` (digest match, doctor), restart, `update-cron-prompts.sh` and prompt checks, `UMask` and `__pycache__` mode, address allowlist parsed by the plugin loader | plugin 0.4.2 from `82b117685`, 2026-11-07 09:29 KST | PASS | 9/9 MATCH, doctor OK, 3 prompts OK, `UMask=0077`, `__pycache__` 0700, allowlist parses | required | - |
 | E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports`, the conflict test and `test_prompt_sends_the_stored_report_on_a_conflict` | fix round 2 commits above `b9c016f10` | PASS | 438 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
+| E16 | 12, 14 | W9 | installed files against source by SHA-256, gateway start and `UMask`, `__pycache__` modes, allowlist parsed by the plugin loader, cron prompts reference `report_path` | plugin 0.4.3 from `main` `c0bcfb511`, read-only, 2026-11-08 17:30 KST | PASS | 4/4 files match; started 09:54:07 KST, `UMask=0077`; 0700/0600; 1 valid CIDR; 3 prompts on `report_path`, none on `report_markdown` | required | - |
+| E17 | 10 | W5 | live scrape of `hermes_research_*`, loaded alert rules, provisioned dashboard, promtool alert unit test on the deployed rule hash | Prometheus and Grafana on server A, 2026-11-08 | PASS | 3 series from `node-exporter:9100`; 2 rules inactive; dashboard `hyhome-hermes-research`; promtool 3.15.1 `SUCCESS`, rule SHA-256 `869383fa…` equal; no live firing observed (E11 stays NOT_RUN) | required | - |
 
 ## Criterion Acceptance
 

@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.5.1"
+version: "0.5.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-08"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0044"
 parent_ids:
@@ -921,6 +921,17 @@ its result is NOT_RUN here. The final exact staged payload must pass that wrappe
 before the local logical commit. Remote CI remains NOT_RUN, and the unchanged
 P03 global explain/admission failure remains unresolved by these local checks.
 
+### HOME producer check (2026-11-08)
+
+A read-only check on 2026-11-08 found HOME `dev-pg` holding only `postgres`,
+`template0` and `template1`: the `platform_dev` producer database that the
+notifier reads does not exist, so there is no outbox to consume. The notifier
+stays uninstalled, and a HOME install is BLOCKED until the P04 owner
+provisions the producer and an operator names the target, credential and
+capture. HOME n8n itself is current: `n8n`, `n8n-worker` and the runner run
+2.43.6 with `N8N_RUNNERS_TASK_TIMEOUT=300`, and execution 127 ran through
+the queue to `success` on 2026-11-08.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -992,6 +1003,7 @@ P03 global explain/admission failure remains unresolved by these local checks.
 | Independent main-restart and retry code review | 73 | W78 | Independent code review of the main-restart and retry increment | Range f0ce46fda..174155ab5 | FAIL | CHANGES_REQUESTED: 2 Important (500 mapping could hide a late claim; retry executions outside barrier), 4 Minor | required | - |
 | Independent main-restart and retry code re-review | 73 | W78 | Independent code review of the main-restart and retry increment | Fix range 174155ab5..48eb91256, then 444e1a2ae for its Minor points | PASS | APPROVED: I1/I2/M1-M4 resolved; DB retryOf terminal check closes the late claim; 3 Minor fixed in 444e1a2ae with late-retry mutation RED | required | Independent main-restart and retry code review |
 | HOME n8n recovery target inspection | 73 | W78 | Read-only HOME queue and execution target check | mng-valkey mnginspector and read-only n8n metadata session, 2026-11-05 | PASS | jobs active/wait/delayed/paused/failed absent; 0 new/running executions; Opsflow notifier not installed; no restart run | required | - |
+| HOME producer database check | 73 | W78 | Read-only database list on HOME `dev-pg` | HOME `dev-pg`, 2026-11-08 | FAIL | `platform_dev` absent, so no outbox exists for the notifier; HOME install blocked on the P04 producer | optional | - |
 
 ## Criterion Acceptance
 
