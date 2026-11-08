@@ -367,7 +367,11 @@ class MngValkeyAclNativeTests(unittest.TestCase):
         )
         self.assertEqual({"Id": image, "Volumes": None}, json.loads(inspected.stdout))
 
-    def start_broker(self, network="none", port="0"):
+    def start_broker(self, network="none", port="0", durable=False):
+        # durable: AOF (fsync always) on a host directory that outlives restarts.
+        data = self.root / "data"
+        if durable:
+            data.mkdir(mode=0o700)
         self.cached_image(self.IMAGE)
         self.addCleanup(self.remove_owned_container)
         created = self.docker(
@@ -385,8 +389,14 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             f"{os.getuid()}:{os.getgid()}",
             "--tmpfs",
             f"/tmp:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid={os.getuid()},gid={os.getgid()}",
-            "--tmpfs",
-            f"/data:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid={os.getuid()},gid={os.getgid()}",
+            *(
+                ("--mount", f"type=bind,src={data},dst=/data")
+                if durable
+                else (
+                    "--tmpfs",
+                    f"/data:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid={os.getuid()},gid={os.getgid()}",
+                )
+            ),
             "--mount",
             f"type=bind,src={self.root / 'users.acl'},dst=/fixture/users.acl,readonly",
             self.IMAGE,
@@ -396,7 +406,12 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             *"--unixsocket /tmp/valkey.sock --unixsocketperm 700 --aclfile /fixture/users.acl".split(),
             "--save",
             "",
-            *"--appendonly no --dir /tmp --loglevel warning".split(),
+            *(
+                "--appendonly yes --appendfsync always --dir /data"
+                if durable
+                else "--appendonly no --dir /tmp"
+            ).split(),
+            *"--loglevel warning".split(),
         )
         self.assertEqual(0, created.returncode, "isolated container creation failed")
         self.cids = self.cids | {self.name: created.stdout.strip()}
@@ -408,16 +423,22 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             32,
             network,
             {"/fixture/users.acl": str(self.root / "users.acl")},
+            {"/data": str(data)} if durable else {},
         )
         self.assertEqual(0, self.docker("start", self.cids[self.name]).returncode)
+        self.wait_ready(port if durable else None)
+
+    def wait_ready(self, port=None):
         deadline = time.monotonic() + 15
         while time.monotonic() < deadline:
-            if self.query("PING").stdout.strip() == "PONG":
+            if self.query("PING", port=port).stdout.strip() == "PONG":
                 return
             time.sleep(0.2)
         self.fail("isolated Valkey ACL did not become ready")
 
-    def query(self, *command, user="n8n", password="synthetic-n8n"):
+    def query(self, *command, user="n8n", password="synthetic-n8n", port=None):
+        # port selects loopback TCP inside the container instead of the socket.
+        target = ("-h", "127.0.0.1", "-p", port) if port else ("-s", "/tmp/valkey.sock")
         return self.docker(
             "exec",
             "--env",
@@ -427,13 +448,14 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             "--user",
             user,
             "--raw",
-            "-s",
-            "/tmp/valkey.sock",
+            *target,
             *command,
             password=password,
         )
 
-    def verify_container(self, name, image, memory, cpus, pids, network, bindings):
+    def verify_container(
+        self, name, image, memory, cpus, pids, network, bindings, writable=None
+    ):
         inspected = self.docker(
             "inspect",
             "--format",
@@ -466,14 +488,19 @@ class MngValkeyAclNativeTests(unittest.TestCase):
             )
         )
         self.assertFalse(host["PortBindings"])
-        self.verify_fixture_mounts(image, host, state["Mounts"], bindings)
+        self.verify_fixture_mounts(
+            image, host, state["Mounts"], bindings, writable or {}
+        )
 
-    def verify_fixture_mounts(self, image, host, mounts, bindings):
+    def verify_fixture_mounts(self, image, host, mounts, bindings, writable=None):
+        writable = writable or {}
         expected_tmpfs = (
             {"/tmp": 16, "/data": 16}
             if image == self.IMAGE
             else {"/tmp": 32, "/run": 16}
         )
+        for destination in writable:
+            expected_tmpfs.pop(destination)
         self.assertEqual(set(expected_tmpfs), set(host["Tmpfs"]))
         for destination, size in expected_tmpfs.items():
             self.assertEqual(
@@ -497,7 +524,12 @@ class MngValkeyAclNativeTests(unittest.TestCase):
         }
         self.assertEqual(bindings, actual)
         self.assertEqual(
-            len(bindings), sum(mount["Type"] == "bind" for mount in mounts)
+            writable,
+            {
+                mount["Destination"]: mount["Source"]
+                for mount in mounts
+                if mount["Type"] == "bind" and mount["RW"]
+            },
         )
 
     def network_state(self, absent_ok=False):
@@ -798,6 +830,54 @@ class MngValkeyAclNativeTests(unittest.TestCase):
                     "expected command/key/database/channel denial",
                 )
         wrong = self.query("PING", password="synthetic-wrong")
+        self.assertIn("WRONGPASS", wrong.stdout + wrong.stderr)
+
+    def test_named_queue_user_survives_restart_and_aof_reload_on_nondefault_port(
+        self,
+    ):
+        port = "16379"
+        self.start_broker(port=port, durable=True)
+        for command, expected in (
+            (("SET", "n8n:bull:jobs:1", "synthetic-job"), "OK"),
+            (("RPUSH", "n8n:bull:jobs:wait", "1"), "1"),
+        ):
+            with self.subTest(before=command[0]):
+                self.assertEqual(
+                    expected, self.query(*command, port=port).stdout.strip()
+                )
+        default_port = self.query("PING", port="6379")
+        self.assertNotEqual("PONG", default_port.stdout.strip())
+        restarted = self.docker("restart", "--time", "5", self.cids[self.name])
+        self.assertEqual(0, restarted.returncode, restarted.stderr)
+        self.wait_ready(port)
+        for command, expected in (
+            (("GET", "n8n:bull:jobs:1"), "synthetic-job"),
+            (("LLEN", "n8n:bull:jobs:wait"), "1"),
+            (("CONFIG", "GET", "appendonly"), None),
+        ):
+            with self.subTest(after=command[0]):
+                result = self.query(*command, port=port)
+                if expected is None:
+                    self.assertTrue(
+                        any(m in result.stdout for m in ("NOPERM", "ACL")),
+                        "named user must not read server config",
+                    )
+                else:
+                    self.assertEqual(expected, result.stdout.strip())
+        appendonly = self.query(
+            "CONFIG",
+            "GET",
+            "appendonly",
+            user="default",
+            password="synthetic-default",
+            port=port,
+        )
+        self.assertEqual(["appendonly", "yes"], appendonly.stdout.split())
+        for command in (("GET", "other:key"), ("SELECT", "1"), ("FLUSHDB",)):
+            with self.subTest(denied=command[0]):
+                result = self.query(*command, port=port)
+                self.assertTrue(any(m in result.stdout for m in ("NOPERM", "ACL")))
+        wrong = self.query("PING", password="synthetic-wrong", port=port)
         self.assertIn("WRONGPASS", wrong.stdout + wrong.stderr)
 
 
