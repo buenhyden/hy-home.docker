@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-08"
 layer: "specs"
 artifact_id: "SPEC-0265-TSK-0001"
 parent_ids:
@@ -343,6 +343,54 @@ Blog-data, which runs on another server, gets the return information as a self-c
 The restore-test volumes are removed by the owner. The first delivered run
 (2026-11-08 08:00 KST) completes E9.
 
+### First post-switch runs and plugin 0.4.3 (2026-11-08)
+
+The first scheduled runs after the switch, on plugin 0.4.2, passed
+`report_markdown` that was not the finalized report, and `_report_error`,
+which refuses only empty, placeholder, malformed, bidirectional-control and
+oversize text, accepted each:
+
+- a 160-byte, two-line stub, which the Gateway accepted as the daily report;
+- a one-line pointer to a file path instead of the report;
+- a long report cut off mid-way inside the tool-call argument.
+
+On the devops run all six items also carried kind `news`, so the Gateway held
+every item as `KIND_MISMATCH`.
+
+Owner decisions (2026-11-08): Gateway sends were stopped by renaming the
+producer address allowlist; plugin 0.4.3 reads the report from a file and
+checks it ("Report from a file + checks"). Controller ruling (2026-11-08): the
+item kind is set from the job like the identity fields.
+
+Plugin 0.4.3, contract v3 (`SUBMIT_CONTRACT_VERSION = 3`):
+
+- `submit_research_report` takes exactly `payload`, `source_receipts` and
+  `report_path`; `report_markdown` is now `invalid_submission_fields`.
+- `report_path` rules (Spec Normal Behavior 1): a normalized absolute path
+  whose parent is a direct `tmp.XXXXXX` child of `tempfile.gettempdir()`,
+  `HERMES_HOME/cache/scratch` (Hermes exports it as `TMPDIR` to every agent
+  shell through `apply_scratch_tmp_env`) or the process `TMPDIR`, read at call
+  time, owned by the plugin user with mode 0700, opened with
+  `O_NOFOLLOW`; a `.md` file name; the file opened through the directory
+  descriptor with `O_NOFOLLOW` and `O_NONBLOCK`, a single-link regular file
+  owned by that user (no file-mode check inside the 0700 parent, so a umask
+  0002 file is accepted), at most 2 MiB, read
+  once with a bound. Codes: `report_path_not_allowed`, `report_unreadable`,
+  `report_too_large`, `report_not_utf8`. The file is never changed.
+- After the unchanged `_report_error` checks: `report_too_short` (fewer than
+  800 characters after trimming, also with no items) and
+  `report_missing_item` (an item's `source_url` is not in the report text).
+  Both are report-level `BLOCKED` before the store, so the agent fixes the
+  file and calls once more.
+- `_gateway` sets each item's `kind` from the job (`news`, `devops`,
+  `business_idea`); `kind` is optional in the tool schema and still accepted.
+- The metrics `bytes` value is the size of the file read; store-first order,
+  replay, the `source_quality` resubmission (same `report_path`, file
+  unchanged) and every other behavior are unchanged.
+- The prompt asks for the report as a file in a new `mktemp -d` directory and
+  passes `report_path`; the e2e harness writes its synthetic report the same
+  way.
+
 ### Design deviations
 
 - Outcome mapping: `report_store_unavailable` and `record_unavailable` are
@@ -397,6 +445,20 @@ obtained). Controller recommendations, not owner answers:
 - Blog-data runbook 0008 is handed to Blog-data for correction to `c05e5b88`,
   schema 4.
 
+Review fixes for 0.4.3 (independent security review 2026-11-08: no path-read
+defect; CHANGES_REQUESTED):
+
+- The prompt now has the agent update the report file after collection so it
+  names each kept item's final `source_url`. Without that, a redirected URL
+  made `report_missing_item` refuse the report.
+- The Spec, this Task and the README name all three allowed roots
+  (`tempfile.gettempdir()`, `HERMES_HOME/cache/scratch` and the process
+  `TMPDIR`) and why: Hermes exports `TMPDIR` to the scratch directory for
+  agent shells.
+- The file-mode check is removed. Inside an owner-only 0700 directory with
+  one link it protected nothing, and a umask 0002 write would have refused
+  every report. A test now covers a short read.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -409,6 +471,7 @@ obtained). Controller recommendations, not owner answers:
 | E11 | 10 | W5 | live node-exporter scrape of `hermes_research.prom`, alert firing and dashboard rendering | runtime observation after the W9 install | NOT_RUN | - | required | - |
 | E12 | 10 | W5 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`test_first_seen_starts_the_success_clock_of_every_kind`, `test_corrupt_state_resets_only_what_is_bad_and_continues`, `test_a_busy_metrics_lock_skips_metrics_promptly`, promtool `test rules` with the first-seen, never-succeeds and `store_failed` cases plus `check metrics`); `e2e-cache-contract.sh`; ruff; `ObservabilityDashboardContractTests`, `test_lab_isolation`, `test_p03_hermes_gate`, `test_p11_hermes_gate`; `check-p03-hermes.py`, `check-p11-hermes.py`; `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | W5 fix round working tree above `94530091a` | PASS | 449 tests OK (448 plus the non-finite state test added after the re-review) under both umasks; e2e exit 0; ruff clean; repo tests OK; gates PASS; metadata 0 violations; links 0 failures | required | - |
 | E13 | 9 | W4 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`test_quality_failures_name_every_failing_item`, `test_source_quality_lists_failed_items_and_allows_one_resubmission`, `test_resubmission_with_surviving_items_sends_them_once`, prompt exception sentence); `e2e-cache-contract.sh`; ruff; independent review APPROVED, its Minor items fixed | plugin 0.4.2 working tree on `688f94f7f` | PASS | 452 tests OK under both umasks; e2e exit 0; ruff clean | required | - |
+| E15 | 1, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`ReportPathTests`: stored byte-identical file, refused paths, secret-like paths, unsafe directory or file, foreign owner, missing, non-UTF-8 and oversize files, bounded read, `report_too_short`, `report_missing_item`, invalid item structure, no-item day, item kind from the job, metrics bytes; adapted `source_quality` resubmission tests; prompt v3 tests); new tests fail on the 0.4.2 sources; `e2e-cache-contract.sh`; ruff check and format; `check-document-metadata.py --mode check-changed --base-ref origin/main`; `check-document-links.py --mode alignment` | plugin 0.4.3 working tree on `6d942a7eb` | PASS | 469 tests OK under both umasks (105 failures and errors on 0.4.2); e2e exit 0; ruff clean; independent security review: no path-read defect, CHANGES_REQUESTED on the redirect-URL prompt gap and the doc boundary, both fixed with the short-read and file-mode tests | required | - |
 | E6 | 11 | W6 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`; `python3 scripts/validation/check-document-links.py --mode alignment`; `python3 scripts/validation/check-document-corpus-lifecycle.py` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | metadata: 0 violations; links: 898 documents, 0 failures; lifecycle: 0 violations | required | - |
 | E7 | 12 | W7 | online backup with `c05e5b88`, restore test of that backup on a private copy with the new image (`user_version`, row counts, export states and hash, FK, integrity), Compose pin #779 then `docker compose --profile blog-ingestion up -d --no-deps blog-ingestion`, startup log and live DB check | switch window 2026-11-07 09:31-09:52 KST, image `bcefdc0c0b` `sha256:8ff847c9…` | PASS | backup integrity ok 16/121; copy and live DB `user_version` 5, counts, states and hash `221634a8…` unchanged, FK 0; `listening`, `export_enabled: true` | required | - |
 | E8 | 13 | W8 | `backfill-reports --config /run/config.json` with the 16 `--exclude-report-id`, dry run and rerun; apply only for 0.4.x reports received under schema 4 | live DB after the switch, 2026-11-07 | PASS | 0 targets, rerun 0; apply not needed (no 0.4.x report reached schema 4); `SOURCE_NOT_REPORT` 0 | required | - |

@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Capture Specification"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-08"
 layer: "specs"
 artifact_id: "SPEC-0265"
 parent_ids:
@@ -87,7 +87,24 @@ The report bytes added here prove sameness of output, not truth of content.
 1. **Tool contract.** `submit_research_report` takes a versioned argument that
    carries the finalized report Markdown once, beside the existing payload and
    `source_receipts`. The version is bumped in the tool schema. The model no
-   longer supplies `source_text` or `source_sha256`.
+   longer supplies `source_text` or `source_sha256`. Contract v3 (plugin 0.4.3,
+   2026-11-08) carries the report as `report_path`, the absolute path of a
+   Markdown file the agent wrote, replacing the inline `report_markdown` of v2:
+   the arguments are exactly `payload`, `source_receipts` and `report_path`.
+   `report_path` is read only when it is normalized and absolute, its parent is
+   a direct child of one of three roots (the plugin process's temporary
+   directory, `HERMES_HOME/cache/scratch`, where Hermes points every agent
+   shell's `TMPDIR`, and the process `TMPDIR`) named like `mktemp -d` output
+   (`tmp.` plus six or more ASCII letters or digits), the parent is owned by
+   the plugin user with mode 0700 and is not a link, and the file name matches
+   `[A-Za-z0-9._-]{1,64}.md`; the file is opened without following links, must
+   be a single-link regular file owned by that user (its mode is not checked:
+   the 0700 parent already keeps others out), at most four times the Gateway code point limit in bytes, read
+   once with a bound and decoded as strict UTF-8. The plugin never changes or
+   removes that file. The stored `report.md` keeps the read bytes unchanged, so
+   ADR-0060's meaning (`source_text` is the finalized report bytes) holds.
+   The Gateway request also takes each item's `kind` from the job
+   (`news`, `devops`, `business_idea`), overwriting the model's value.
 2. **Report store.** The plugin writes the report to a per-execution file with
    mode 0600, created exclusively (no overwrite), bound to `job_id`,
    `execution_id` and the scheduled instant (name or sibling manifest). A
@@ -122,6 +139,14 @@ The report bytes added here prove sameness of output, not truth of content.
   second submission is a conflict that needs review.
 - A report that exceeds the Gateway limits (524288 code points, 1 MiB whole
   request) is rejected as `request_too_large`.
+- Contract v3 refuses, as report-level `BLOCKED` before anything is stored:
+  `report_path_not_allowed` (path shape, ownership, mode, file type, link or
+  link count), `report_unreadable` (missing or unreadable file),
+  `report_too_large` (file over the byte bound), `report_not_utf8`,
+  `report_too_short` (fewer than 800 characters after trimming, also on a day
+  without items) and `report_missing_item` (an item's `source_url` does not
+  appear verbatim in the report). Item entries with an invalid structure are
+  left to the existing field validation.
 - Gateway persistence is not final delivery; the email, Telegram and Gateway
   results are recorded separately.
 
