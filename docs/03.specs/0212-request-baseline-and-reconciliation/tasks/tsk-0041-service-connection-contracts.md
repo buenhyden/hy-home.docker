@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.27"
+version: "0.1.28"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -314,6 +314,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D03 n8n cache and registry ACL commands | 59 | W64 | Static RED/GREEN and opt-in native class | n8n 2.43.6 code reading; pinned 9.1.2-alpine | PASS | Seven commands added; `keys` and `flushdb` still denied; native 3/3 in 74.1 s, residue 0 | required | - |
 | D03 n8n named-user HOME switch after the ACL fix | 59 | W64 | Approved recreate, then health, ACL LOG, log and client readback | `main` `9939431c3`, image `f1493a20a2ff`, containers `435672289f3b` and the recreated `n8n`/`n8n-worker` | PASS | Healthy, no restarts; 19 `user=n8n` connections incl. worker `brpoplpush`; no `NOPERM`/`WRONGPASS` over three minutes; other consumers unchanged | required | - |
 | D03 live job through the named user | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch | NOT_RUN | No execution in the watch window; confirm on the next run | optional | - |
+| D03 live job through the named user, observed | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch, execution 127 | PASS | Enqueued by main, run by the worker, `success` in the n8n database; no `NOPERM` or `WRONGPASS` | optional | D03 live job through the named user |
 
 ## Criterion Acceptance
 
@@ -830,6 +831,26 @@ NOT_RUN until the next execution. RUN-0053 now records the entrypoint check,
 the fixed overlay set and the override rollback. Rollback: recreate `n8n` and
 `n8n-worker` with the default-user override; the saved `/data` restores the
 broker if needed.
+
+### 2026-11-08 live job and local metadata-suite failure
+
+Execution 127, a manual run, was enqueued by `n8n`, started and finished by
+`n8n-worker`, and reported finished to main at 07:51 UTC. The n8n database
+records `status = success` (07:51:10 to 07:51:15). All of it ran over
+`user=n8n` connections with no `NOPERM` or `WRONGPASS`, so the live job row is
+now PASS. The switch backup and the rollback image tag were deleted on the
+owner's instruction.
+
+`test_secret_metadata_sync` failed 15 tests locally but passed in hosted CI.
+The system `python3` 3.12.3 carries Ubuntu's `jsonschema` 4.10.3, below the
+`scripts/requirements.txt` floor of 4.23, so `secret_catalog.validate_catalog`
+could not import `referencing`. `gen-secrets.sh` turned that import error
+into its generic "unsafe input" rejection. The documented ignored `.venv`
+now holds the declared requirements (`jsonschema` 4.26.0, `referencing`
+0.37.0), and the suite passes with it on `PATH`. The catalog and metadata
+blocks of `gen-secrets.sh` now name a missing module and point to the
+requirements file, without printing any value; the new test failed before
+that change.
 
 ## Handoff
 
