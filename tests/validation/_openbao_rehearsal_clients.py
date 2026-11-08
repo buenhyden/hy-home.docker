@@ -10,6 +10,8 @@ import time
 
 import yaml
 
+from tests.validation._openbao_tls_delay_native import expired_validity_args
+
 if __package__:
     from ._openbao_rehearsal_fixture import (
         PORT,
@@ -302,8 +304,7 @@ class OpenBaoClientCases:
                 "-CAcreateserial",
                 "-out",
                 str(directory / "server.pem"),
-                "-days",
-                "-1",
+                *expired_validity_args(),
                 "-extfile",
                 str(fixture.directory / "issuer/server.ext"),
             ]

@@ -20,6 +20,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from tests.validation._openbao_tls_delay_native import expired_validity_args
+
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "infra/03-security/openbao/scripts/protected-maintenance.py"
 SPEC = importlib.util.spec_from_file_location("protected_maintenance", SOURCE)
@@ -503,8 +505,7 @@ class TLSFixtureTests(unittest.TestCase):
                 str(cls.root / "valid.pem"),
                 "-signkey",
                 str(cls.root / "valid.key"),
-                "-days",
-                "-1",
+                *expired_validity_args(),
                 "-out",
                 str(cls.root / "expired.pem"),
             ],

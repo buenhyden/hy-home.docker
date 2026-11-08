@@ -276,12 +276,13 @@ class Criterion22ContractTests(unittest.TestCase):
 
     @unittest.skipUnless(SHELL, "POSIX sh required")
     def test_race_script_fans_out_and_prints_parseable_jobs(self):
-        # A stub psql: the first job to create the lock directory wins.
+        # A stub psql: the first job to create the lock file wins. noclobber is
+        # O_EXCL in the shell; uutils mkdir 0.10 (Ubuntu 26.04) is not exclusive.
         stub = r"""#!/bin/sh
 case "$*" in *"-c"*) echo '2026-10-16 00:00:00+00'; exit 0;; esac
 cat >/dev/null
 echo
-if mkdir "$LOCK" 2>/dev/null; then
+if (set -C; : >"$LOCK") 2>/dev/null; then
  printf 'claim|5\nstale|false\nack|true\nagain|false\n'
 else
  printf 'claim|0\nstale|false\nack|false\nagain|false\n'
