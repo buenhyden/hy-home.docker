@@ -1,6 +1,6 @@
 ---
 title: "Models, Runners and Wiki Preparation Task"
-version: "0.1.11"
+version: "0.1.12"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -228,6 +228,33 @@ path. Compose now sets both, `OpenWebuiLocalModelContractTests` failed before
 the change, and GDE-0057 and the Open WebUI README say the saved rows change
 together with Compose. The HOME row update follows the merge.
 
+**HOME apply after #826 (`70e7788fb`), 12:33Z.** With the owner's approval:
+
+1. A SQLite backup API copy of `webui.db` was written to
+   `webui.db.pre-d06-20261108` in the same volume, mode 0600. Its integrity
+   check returned `ok`, with 368 config rows.
+2. In one transaction, `rag.embedding_model` was set to
+   `"embeddinggemma-2:740m"` and `openai.enable` to `false`; each update
+   changed one row.
+3. A dry run showed that only `open-webui` would be recreated. Then
+   `docker compose up -d --no-deps open-webui` recreated container
+   `30f9657dffca` from image `sha256:3a4f953b…` (`v0.12.0-cuda`), healthy.
+
+Results:
+
+- **Settings.** The environment now carries `RAG_EMBEDDING_MODEL=embeddinggemma-2:740m`
+  and `ENABLE_OPENAI_API=false`, and the saved rows hold the same values, so
+  `Config.get` resolves to them whichever source it reads.
+- **Embedding.** From the container, Ollama returns a 768-dimension embedding
+  for `embeddinggemma-2:740m`.
+- **Logs.** Since the restart the log has no `api.openai.com` or OpenAI error
+  line.
+- **NOT_RUN.** No in-app RAG upload ran, because it needs a user session. An
+  attempt to import `open_webui.config` in the container printed nothing.
+  No documents needed re-embedding: there were 0 files and 0 knowledge bases.
+- **Rollback.** Stop `open-webui`, copy `webui.db.pre-d06-20261108` back over
+  `webui.db` (removing `-wal`/`-shm`), revert #826 and recreate.
+
 **Other items.** T03: the runner sandbox native rerun passed earlier on
 2026-11-08 (criterion 63 rows above). T04: no n8n agent workflow is active
 (the only active workflow is Hermes Blog Ingestion), so there is no n8n agent
@@ -248,6 +275,8 @@ until those are named.
 | D06 HOME model actors and cloud refusal | 61 | W66 | In-container calls from each n8n actor and a cloud-model request | HOME Ollama, `n8n`, `n8n-worker`, worker runner, 2026-11-08 | PASS | Worker: 8 models, 768-dim embedding, `gemma4:e2b` generation 200; main and runner cannot reach Ollama; cloud model 403 with `OLLAMA_NO_CLOUD=1` | required | - |
 | D06 Open WebUI saved model settings | 61 | W66 | Read-only `webui.db` `config` rows against the installed models | Open WebUI v0.12.0, 2026-11-08 | FAIL | `rag.embedding_model` names absent `qwen3-embedding:4b`; `openai.enable` true with `api.openai.com` and an empty key; 0 files, 0 knowledge | required | - |
 | D06 Open WebUI local-model source | 61 | W66 | `OpenWebuiLocalModelContractTests` RED then GREEN | Compose `embeddinggemma-2:740m`, `ENABLE_OPENAI_API=false` | PASS | Failed on the old model, passes after; HOME row update follows the merge | required | - |
+| D06 Open WebUI saved model settings recheck | 61 | W66 | Read-only `webui.db` `config` rows against the installed models | Open WebUI v0.12.0 after the HOME apply, 2026-11-08 12:33Z | PASS | `rag.embedding_model` is installed `embeddinggemma-2:740m`; `openai.enable` false; backup kept as `webui.db.pre-d06-20261108` | required | D06 Open WebUI saved model settings |
+| D06 Open WebUI HOME apply | 61 | W66 | Row update, `--no-deps` recreate, health, embedding call and log check | Merge `70e7788fb`; container `30f9657dffca`; image `sha256:3a4f953b` | PASS | Healthy; env and rows agree; 768-dim embedding; 0 OpenAI log lines; in-app RAG upload NOT_RUN | required | - |
 | Current final Notebook registration source review | 62 | W67 | Independent code review of final exact-integer-dimension source and tests | Frozen current owner packet | PASS | `p03_code_review`, 2026-11-02: same approved final packet and 26/26 production core suite; exact-integer dimension input is now enforced. Native product fixture, real registration, model invocation and restore remain separate NOT_RUN axes. | required | - |
 | Notebook native census | 62 | W67 | Owned native Notebook application fixture | Exact pinned SurrealDB 2.7.0 digest unavailable; pull forbidden | NOT_RUN | The exact Notebook digest is cached; Docker context is default and engine is 29.9.2, but the required SurrealDB digest is absent. No pull or Notebook fixture resource acquisition occurred. This does not affect the separate Worker native rehearsal. | required | - |
 | Worker-model native queue rehearsal | 62 | W67 | `env -u DOCKER_HOST -u DOCKER_CONTEXT -u DOCKER_TLS_VERIFY -u DOCKER_CERT_PATH -u DOCKER_CONFIG P03_WORKER_MODEL_NATIVE_REHEARSAL=1 OPSFLOW_N8N_NATIVE_IMAGE=sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153 OPSFLOW_N8N_NATIVE_CONTEXT=default python3 -m unittest tests.validation.test_p03_models_native.WorkerModelQueueNativeTests` | Cached pinned images and controlled synthetic Ollama; no live credential/model service | PASS | Exit 0; 1/1 PASS in 378.496 seconds. It verified Main→Valkey→Worker dispatch, Worker-loopback controlled-Ollama chat request, exact execution/event association and persisted readback after Worker stop. Source/test fingerprints: worker `4ca3f96caf470a2fa68197b14456057784717af0b71e66e0e3fac475802bf9d0`, native test `4531d811c7a9009bfbcab27a5dea315f47463927da17bee7ac465529efa5849d`, API adapter `90c4a86b240ddc6248027f5a188c1f0096bb39bedcd2b66769c79598a9fc43f6`. No real-model inference is claimed; post-run owned containers, networks and temporary directories were all zero. | required | - |
