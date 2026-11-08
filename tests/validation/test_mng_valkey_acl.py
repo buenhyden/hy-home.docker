@@ -144,6 +144,14 @@ require(process.argv[1]).selfCheckWrongPassword().catch(error=>{console.error(er
             "+psetex",
             "+rename",
             "+quit",
+            # n8n 2.43 cache store and instance-registry Lua (observed NOPERM).
+            "+mget",
+            "+mset",
+            "+getdel",
+            "+hexists",
+            "+hkeys",
+            "+hvals",
+            "+pexpire",
         ):
             self.assertIn(rule, line.split())
         for rule in (
@@ -804,6 +812,22 @@ class MngValkeyAclNativeTests(unittest.TestCase):
                 "synthetic-job",
             ),
             (("PUBLISH", "n8n:n8n.commands", "synthetic"), "0"),
+            (("MSET", "n8n:cache:a", "1", "n8n:cache:b", "2"), "OK"),
+            (("MGET", "n8n:cache:a", "n8n:cache:b"), "1\n2"),
+            (("GETDEL", "n8n:cache:a"), "1"),
+            (("HEXISTS", "n8n:jobs:hash", "field"), "1"),
+            (("HKEYS", "n8n:jobs:hash"), "field"),
+            (("HVALS", "n8n:jobs:hash"), "synthetic"),
+            (("PEXPIRE", "n8n:cache:b", "60000"), "1"),
+            (
+                (
+                    "EVAL",
+                    "return redis.call('MGET', KEYS[1])[1]",
+                    "1",
+                    "n8n:cache:b",
+                ),
+                "2",
+            ),
         ):
             with self.subTest(command=command[0]):
                 result = self.query(*command)
@@ -811,6 +835,8 @@ class MngValkeyAclNativeTests(unittest.TestCase):
                 self.assertEqual(expected, result.stdout.strip())
         for command in (
             ("GET", "other:secret"),
+            ("MGET", "n8n:cache:b", "other:secret"),
+            ("GETDEL", "other:secret"),
             ("SET", "other:key", "synthetic"),
             ("SELECT", "1"),
             ("PUBLISH", "other:channel", "synthetic"),

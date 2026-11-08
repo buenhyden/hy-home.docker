@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.25"
+version: "0.1.26"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -310,6 +310,8 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D03 DEV/MNG render isolation | 59 | W64 | All-profile renders with synthetic DEV and MNG values | `main` `f5ab642ef` plus this test | PASS | Each side leaves the other unchanged; an injected cross reference fails it; new class 2/2; data-tier suites 146 OK (4 declared skips) before it | required | - |
 | D03 n8n named-user switch | 59 | W64 | HOME client and ACL readback | Live `n8n`, `n8n-worker`, `mng-valkey` | NOT_RUN | BLOCKED: default user in use; `mng_valkey_n8n_password` not issued or mounted; needs the secret owner and a drain/backup approval | optional | - |
 | D03 named Valkey user durable native rehearsal | 59 | W64 | Opt-in native class with AOF restart on port 16379 | Pinned 9.1.2-alpine, synthetic secrets, network-less labelled container | PASS | 3/3 OK in 77.5 s; key and wait list survive restart; denials and WRONGPASS hold after it; tmpfs variant fails; residue 0 | required | - |
+| D03 n8n named-user HOME switch, first attempts | 59 | W64 | Approved recreate of `mng-valkey`, `n8n` and `n8n-worker`, then readback | `main` `6ac20f161`, `.env` named-user selection and `COMPOSE_FILE` | FAIL | Stale image entrypoint refused the pair (rolled back), then the rebuilt image hit NOPERM on `getdel` and `mget` (rolled back); `mng-valkey` keeps the added user; backup under `~/storage/backups/mng-valkey-n8n-user-20261108/` | required | - |
+| D03 n8n cache and registry ACL commands | 59 | W64 | Static RED/GREEN and opt-in native class | n8n 2.43.6 code reading; pinned 9.1.2-alpine | PASS | Seven commands added; `keys` and `flushdb` still denied; native 3/3 in 74.1 s, residue 0 | required | - |
 
 ## Criterion Acceptance
 
@@ -766,6 +768,45 @@ the pinned Bull retry/delay/lock rehearsal; container and network residue was
 zero. With the data directory switched back to tmpfs the new test failed on
 the lost key and list, so it detects a non-durable broker. This is isolated
 evidence; the HOME switch is separate.
+
+### 2026-11-08 n8n named-user HOME switch, first attempts
+
+With the owner's approval, the secret owner issued
+`secrets/db/mng-valkey/n8n_password.txt` (group-readable by Valkey, one
+link), set `N8N_VALKEY_USERNAME=n8n` and `N8N_VALKEY_SECRET` in `.env`, and
+fixed the overlay set with `COMPOSE_FILE` (base, `docker-compose.n8n-acl.yml`,
+`docker-compose.ollama-local.yml`). Before the switch the n8n queue was empty
+(no wait, active, delayed, paused or prioritized key), every n8n key used the
+`n8n:` prefix, and `mng-valkey` `/data` plus the three containers' state were
+saved to `~/storage/backups/mng-valkey-n8n-user-20261108/`.
+
+At 06:34 UTC `mng-valkey` was recreated with the overlay (`351ac5de090c`,
+healthy; users `default`, `mnginspector`, `mngmonitor`, `n8n`; 84 keys,
+`noeviction`, AOF ok). The n8n recreate at 06:35 FAILED: `n8n` restarted 12
+times with `unsupported n8n broker/secret selection`, because the running
+`hyhome/n8n:2.43.6-local` image (built 2026-10-20) still carried an
+entrypoint that knew only the default and dedicated pairs. n8n was rolled back
+to the default user by shell override at 06:40 (about five minutes down, queue
+empty). The image was then rebuilt from `main` `6ac20f161` (new
+`f1493a20a2ff`, entrypoint equal to the source, previous image kept as
+`hyhome/n8n:2.43.6-local-pre-20261108`). The second switch at 07:02 came up
+healthy with eight `user=n8n` connections, but the n8n cache store hit
+`NOPERM` on `getdel` and `mget`, so n8n was rolled back to the default user
+again at 07:04 on the rebuilt image (healthy, no restarts, 41 `default`
+connections).
+
+Reading the installed n8n 2.43.6 code, its Valkey users are Bull, pub/sub,
+leader election, the lock, the instance registry, chat-hub and the
+`@n8n/backend-services` cache store. The cache store also calls `mget`, `mset`,
+`getdel`, `hexists`, `hkeys` and `hvals`, and the instance-registry Lua
+script calls `PEXPIRE`. Its `keys` and `flushdb` paths have no caller and stay
+denied on the shared DB0. The ACL now grants those seven commands. The static
+test failed before the change; the opt-in native class (approved, run
+2026-11-08T07:07Z) passed 3/3 in 74.1 seconds, with residue zero. It now
+exercises the new commands, including `MGET` from Lua, and refuses `MGET` and
+`GETDEL` on a foreign key. `test_secret_metadata_sync` fails 15 tests locally on
+both this branch and clean `main` and is unrelated to this change; the hosted
+CI result is the record for it.
 
 ## Handoff
 

@@ -61,9 +61,10 @@ role_line mngmonitor "$monitor_secret" \
 role_line mnginspector "$inspector_secret" \
   '~* resetchannels -@all +@read +@connection -@dangerous +info'
 if [ "$n8n_enabled" = 1 ]; then
-  # Candidate Bull queue grants; actual worker/retry/restore acceptance is separate.
+  # Bull queue grants plus the n8n 2.43 cache store (mget mset getdel hexists
+  # hkeys hvals) and instance-registry Lua (pexpire); keys and flushdb stay denied.
   role_line n8n "$n8n_secret" \
-    '~n8n:* &n8n:* db=0 -@all +ping +info +auth +select +quit +client|setname +client|setinfo +script|load +eval +evalsha +del +exists +get +hdel +hget +hgetall +hincrby +hmget +hmset +hset +incr +lindex +linsert +llen +lpush +lrange +lrem +lset +ltrim +psetex +pttl +publish +rename +rpoplpush +brpoplpush +rpush +sadd +scard +set +sismember +smembers +srem +type +zadd +zcard +zcount +zrange +zrangebyscore +zrem +zremrangebyrank +zremrangebyscore +zrevrange +zrevrangebyscore +zscore +expire +subscribe +unsubscribe +psubscribe +punsubscribe +multi +exec'
+    '~n8n:* &n8n:* db=0 -@all +ping +info +auth +select +quit +client|setname +client|setinfo +script|load +eval +evalsha +del +exists +get +hdel +hget +hgetall +hincrby +hmget +hmset +hset +incr +lindex +linsert +llen +lpush +lrange +lrem +lset +ltrim +psetex +pttl +publish +rename +rpoplpush +brpoplpush +rpush +sadd +scard +set +sismember +smembers +srem +type +zadd +zcard +zcount +zrange +zrangebyscore +zrem +zremrangebyrank +zremrangebyscore +zrevrange +zrevrangebyscore +zscore +expire +subscribe +unsubscribe +psubscribe +punsubscribe +multi +exec +mget +mset +getdel +hexists +hkeys +hvals +pexpire'
 fi
 chmod 600 "$tmp_file"
 mv -f "$tmp_file" "$acl_file"
