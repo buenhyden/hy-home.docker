@@ -1,10 +1,10 @@
 ---
 title: "Secret Structure and OpenBao Contract Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-08"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0045"
 parent_ids:
@@ -346,6 +346,51 @@ current lease for each changed public path. This inventory records public
 source and aggregate exclusions only; no private file body or metadata output
 was retained by this scan.
 
+### D07 re-verification (2026-11-08)
+
+A direct user request on 2026-11-08 re-ran this scope as D07 on `main`
+`2f86dd9e3`. The owner ran the private read-only checks; only fixed outputs
+and key or ID names (never values) were reported back.
+
+**Checker regression.** `secret-structure.py check --read-private` returned
+`BLOCKED`. The private files were sound (mode 0600, one link, owner; no
+duplicate or malformed `.env` line). The cause is public: the SPEC-0262/0263
+LAB moves added five alias rows (`COMM-006`, `AI-007`, `AUTO-020`, `PG-023`,
+`PG-028`) to `secrets/SENSITIVE_ENV_VARS.md.example`, and
+`registry_structure` accepted only the `COMM-003 -> COMM-002` pair, so the
+check refused every real repository since then. An alias row is now accepted
+when both cells are identifiers, still unique; `COMM-003 | INVALID` stays
+refused. Two tests failed before the change: the repository public examples
+parse, and identifier-only unique alias rows.
+
+**Key sets.** `--sync-metadata-prune-check` reported `files_changed=3`. A
+name-only comparison found registry IDs equal, and 16 keys only in the private
+`.env`: `COMPOSE_FILE` (the HOME overlay set fixed on 2026-11-08); seven LAB
+leftovers (`DBT_DB_USER`, `DBT_SCHEMA`, `DBT_THREADS`, `JUPYTER_PORT`,
+`SUPERSET_DB_NAME`, `SUPERSET_DB_USER`, `SUPERSET_OIDC_CLIENT_ID`); seven
+retired-service leftovers with no tracked consumer (`COMFYUI_HOST_PORT`,
+`FLINK_HOST_PORT`, `SONARQUBE_DBNAME`, `SONARQUBE_DB_USER`, `SONARQUBE_PORT`,
+`TRINO_HOST_PORT`, `VALKEY_BUS_PORT`); and `OPEN_NOTEBOOK_WEB_URL`, which the
+hardening check forbids as unsupported. `labs/.env` holds seven retired
+`LAB_SUPABASE_*` keys. Owner decisions: back up and remove the fifteen unused
+root keys; add `COMPOSE_FILE="docker-compose.yml"` to `.env.example`, which
+keeps every public render unchanged (86 render-based tests pass); leave
+`labs/.env` to the D11 retirement handoff. Order and comment equality is
+re-checked with the corrected checker after the merge.
+
+**SMTP (T03).** `smtp-equality --read-private` returned `OLD_ABSENT`: the
+historical Supabase copy no longer exists, COMM-003 is a `source_retired`
+alias of COMM-002, and no root Compose file references it, so
+`secrets/communication/smtp/smtp_password.txt` is the single physical source.
+Nothing was reissued or moved.
+
+**OpenBao consumers (T02).** Seven HOME services read rendered files under
+`openbao/out`: Keycloak, oauth2-proxy, Grafana, Gatus, Dozzle, Open WebUI and
+the Airflow API server; they match eight of the ten `DEPLOYED` catalog
+entries. `IAM-009` (Kafbat) is not running in HOME, and `IAM-013` (Superset)
+names a consumer that moved to the LAB, so both go to the D11 handoff rather
+than a restart.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -357,6 +402,10 @@ was retained by this scan.
 | Consumer and n8n handoff | 79 | W84 | Producer and native credential boundary readback | Current catalog and P05 Task | PASS | Existing acceptance and applicability; RUN-0106 handoff | required | - |
 | SMTP source safety and alias | 80 | W85 | Bounded read, race and alias regression | Frozen SMTP source and synthetic inputs | PASS | SMTP reader correction; independent QA/security and 93 synthetic tests | required | - |
 | SMTP private equality | 80 | W85 | Authorized read-only comparison | Fixed canonical/historical paths | NOT_RUN | OLD_ABSENT, comparison_performed=false; exit 2, comparison blocked | required | - |
+| D07 private structure check | 77 | W82 | Owner-run read-only `check --read-private` | Actual protected paths; fixed output only | FAIL | `BLOCKED`: the public registry alias rows from the LAB moves were refused by the checker | required | - |
+| D07 structure checker alias fix | 77 | W82 | `test_secret_structure` RED then GREEN | Identifier-only unique alias rows; repository public examples | PASS | 2 new tests failed before, 24 pass after | required | - |
+| D07 private key-set comparison | 77 | W82 | Owner-run `--sync-metadata-prune-check` and name-only key/ID comparison | Actual protected paths; names only | FAIL | `files_changed=3`; registry IDs equal; 16 private-only `.env` keys classified; owner chose removal of 15 and a public `COMPOSE_FILE` | required | - |
+| D07 SMTP single source | 80 | W85 | Owner-run `smtp-equality --read-private` with catalog and Compose reading | Actual protected paths; catalog aliases | PASS | `OLD_ABSENT`; COMM-003 `source_retired`; no root reference; one canonical file | required | - |
 | Retirement and recovery assessment | 81 | W86 | Reader, custody, backup and ownership review | Public source and prior receipts | PASS | Existing acceptance and applicability; no new deletion target | required | - |
 | Workspace public inventory | 76 | W81 | Scan, compare and metadata validation | Frozen public paths, current curation and explicit new paths | PASS | Current workspace inventory; no private output or runtime/render execution | required | - |
 | Changed document and lifecycle gates | 76 | W81 | Metadata, links, operations catalog, Registry and corpus lifecycle | Exact P06 document set after schema corrections | PASS | CI registration and known residual; two earlier metadata FAILs retained, one historical link warning remains | required | - |
