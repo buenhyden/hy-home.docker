@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow) Architecture Description"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-08"
 layer: "architecture"
 artifact_id: "AD-0007"
 parent_ids:
@@ -26,7 +26,7 @@ ForwardAuth.
 - **Owns:** the Airflow services (`airflow-apiserver`, `airflow-scheduler`,
   `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`,
   `airflow-init`, `flower`, `airflow-statsd-exporter`); the n8n services (`n8n`,
-  `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`); the optional
+  `n8n-worker`, `n8n-task-runner-worker`); the optional
   `blog-ingestion` job; broker wiring; and the Airflow authentication boundary.
 - **Consumes:** `04-data` `mng-pg` and `mng-valkey`; `02-auth` Keycloak and
   OAuth2 Proxy; `06-observability` Prometheus and Loki.
