@@ -1,10 +1,10 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.20"
+version: "0.1.21"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-08"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0041"
 parent_ids:
@@ -304,6 +304,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D02 shared edge_net SSO bypass | 57 | W62 | Value-free all-profile reachability matrix | HEAD 636c9191c | FAIL | SSO-only backends reachable from 37 edge_net peers; owner chose record-and-handoff to a new ADR and Spec | optional | - |
 | D02/D03 runtime and Hosted CI | 56 | W61 | Live service and remote CI for the D02/D03 delta | HEAD 73ccd9930 | NOT_RUN | No container recreated and no remote run recorded for this delta | optional | - |
 | D03 Valkey memory cap | 59 | W64 | Static regression and pinned-image native probe | 9.1.2-alpine, labelled network-less container | PASS | RED before change; 128 MiB noeviction; write refused with OOM, PONG, keys kept, residue 0; live servers not recreated | required | - |
+| SEC01 root source re-binding | 60 | W65 | `test_update_gates` and the three other ledger consumers | Clean `main` `6361e93b5` | PASS | 57 hash-only failures before; 63 tests OK (2 declared skips) after; image, build and membership unchanged | required | - |
 
 ## Criterion Acceptance
 
@@ -634,6 +635,28 @@ sanitized log SHA-256 is
 The four test/ledger/build-input source fingerprints are byte-identical before
 and after the run. This durable receipt supplements, and does not erase, the
 earlier timestamp-unrecorded 1.966299674-second observation.
+
+### 2026-11-08 root source re-binding
+
+On clean `main` `6361e93b5`, `test_update_gates` failed 57 times: 56 rows of
+`test_current_rows_match_root_compose_source` and
+`test_current_root_census_excludes_relocated_lab_history`. Every failure was a
+stale file hash. The same test's image and build assertions passed for every
+row, and service membership matched the root census. Fourteen root Compose
+inputs had changed after their rows were last bound, through these commits
+since `ed67f3e7b`: resource reservations (`386074326`, `385aa1590`,
+`4eadac40a`), SSO-only ingress networks (`a15876218`), ComfyUI egress
+(`78461aef1`, `51008aa3c`), consumer-only listener networks (`7f3030a54`) and
+the n8n main runner removal (`6792f6d30`). None changed an image, a build input
+or the service set.
+
+A new `source_refreshes` entry keeps the previous include inputs and the
+previous binding of each of the 56 rows, then re-binds the include hashes and
+those rows' `source_input_sha256`. `source_refreshed_at` is unchanged, and no
+vendor lookup, signature, SBOM, scan, native, deployment or recovery result is
+promoted. Afterwards `test_update_gates`, `test_sec01_next_tool_candidates`,
+`test_p08_ci_routing` and `test_workflow_version_bundle` ran 63 tests: OK, two
+declared skips.
 
 ## Handoff
 
