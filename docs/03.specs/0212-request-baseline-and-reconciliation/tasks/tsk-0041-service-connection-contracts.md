@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.26"
+version: "0.1.27"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -312,6 +312,8 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D03 named Valkey user durable native rehearsal | 59 | W64 | Opt-in native class with AOF restart on port 16379 | Pinned 9.1.2-alpine, synthetic secrets, network-less labelled container | PASS | 3/3 OK in 77.5 s; key and wait list survive restart; denials and WRONGPASS hold after it; tmpfs variant fails; residue 0 | required | - |
 | D03 n8n named-user HOME switch, first attempts | 59 | W64 | Approved recreate of `mng-valkey`, `n8n` and `n8n-worker`, then readback | `main` `6ac20f161`, `.env` named-user selection and `COMPOSE_FILE` | FAIL | Stale image entrypoint refused the pair (rolled back), then the rebuilt image hit NOPERM on `getdel` and `mget` (rolled back); `mng-valkey` keeps the added user; backup under `~/storage/backups/mng-valkey-n8n-user-20261108/` | required | - |
 | D03 n8n cache and registry ACL commands | 59 | W64 | Static RED/GREEN and opt-in native class | n8n 2.43.6 code reading; pinned 9.1.2-alpine | PASS | Seven commands added; `keys` and `flushdb` still denied; native 3/3 in 74.1 s, residue 0 | required | - |
+| D03 n8n named-user HOME switch after the ACL fix | 59 | W64 | Approved recreate, then health, ACL LOG, log and client readback | `main` `9939431c3`, image `f1493a20a2ff`, containers `435672289f3b` and the recreated `n8n`/`n8n-worker` | PASS | Healthy, no restarts; 19 `user=n8n` connections incl. worker `brpoplpush`; no `NOPERM`/`WRONGPASS` over three minutes; other consumers unchanged | required | - |
+| D03 live job through the named user | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch | NOT_RUN | No execution in the watch window; confirm on the next run | optional | - |
 
 ## Criterion Acceptance
 
@@ -807,6 +809,27 @@ exercises the new commands, including `MGET` from Lua, and refuses `MGET` and
 `GETDEL` on a foreign key. `test_secret_metadata_sync` fails 15 tests locally on
 both this branch and clean `main` and is unrelated to this change; the hosted
 CI result is the record for it.
+
+### 2026-11-08 n8n named-user HOME switch after the ACL fix
+
+After #821 merged (`main` `9939431c3`), the queue was empty again and
+`mng-valkey` `/data` was saved again (`data-0715`, 2.1 MB). At 07:33 UTC
+`mng-valkey` was recreated with the overlay (`435672289f3b`, healthy in about
+30 seconds; the `n8n` user now carries the cache and registry commands; 85
+keys, 128 MiB `noeviction`). At 07:34 `n8n` and `n8n-worker` were recreated
+from `.env` without any override, on the rebuilt image `f1493a20a2ff`. Both
+were healthy in about 75 seconds with no restarts. During a three-minute watch
+neither log showed `NOPERM` or `WRONGPASS`, and `ACL LOG` held no `n8n` entry
+(its only row is the existing `mngmonitor` `slowlog|get` denial). 19
+connections authenticate as `n8n`, among them the worker's `brpoplpush` on the
+jobs queue and a successful `getdel`; the other 20 consumers stay on
+`default`, and oauth2-proxy, the Airflow worker and scheduler, the exporter and
+the task runner stayed healthy. No workflow ran in the window (job id counter
+126, no completed or failed entry), so a live job through the named user is
+NOT_RUN until the next execution. RUN-0053 now records the entrypoint check,
+the fixed overlay set and the override rollback. Rollback: recreate `n8n` and
+`n8n-worker` with the default-user override; the saved `/data` restores the
+broker if needed.
 
 ## Handoff
 
