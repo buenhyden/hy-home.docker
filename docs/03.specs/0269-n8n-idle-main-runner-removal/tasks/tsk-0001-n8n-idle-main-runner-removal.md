@@ -1,6 +1,6 @@
 ---
 title: "n8n Idle Main Runner Removal Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -134,6 +134,48 @@ PASS needs an empty last sweep. Remaining fixture differences:
 and `fixture_specific_resource_caps`. No denial category, needle, allowed
 category map or attribution gate changed.
 
+### W5 native rehearsal (2026-11-08)
+
+Owner-approved with W6 in Plan order. Attempt
+`opsflow-native-d468e5e1b555c2c50ae98c8a` on `main` `a09082c52`, cached
+reviewed images, ended 2026-11-08T03:09:45Z after 777.692 seconds, unittest
+exit 0, receipt `native=PARTIAL`, host load 6.04. PASS: `javascript_ok`,
+`python_ok`, `javascript_module_denied` and `python_module_denied`
+(`module_access_denied`), `javascript_environment_denied`
+(`environment_access_denied`), the four Python file scenarios and
+`ancestor_environment_probe` (`builtin_denied`),
+`javascript_candidate_secret_file_denied` (`module_access_denied`), `timeout`
+(`controlled_workflow_timeout`), `cancellation`, `restart_next_good_task`, and
+`peer_nonbroker_port` (`main_ui_api` name unresolved, `worker_nonbroker`
+refused). TEST_RESIDUAL: `wrong_token_registration`, with no registration and
+no refusal class in either log within 30 seconds
+(`NO_REFUSAL_OR_REGISTRATION_WITHIN_BOUND`). NOT_RUN: candidate Compose,
+paired candidate network, manual Worker actor and private workflow
+compatibility. `fixture_equivalence=NON_EQUIVALENT` with the five listed
+differences. Cleanup PASS with no re-sweep removal; zero labelled containers
+and networks afterwards.
+
+### W6 HOME removal (2026-11-08)
+
+Before (`~/storage/backups/spec0269-w6-20261108/pre-state.txt`): `n8n` on
+`n8n_main_runner_net` at `10.250.22.2` with that broker address,
+`n8n-task-runner` alone with it on the network, no execution in the previous
+10 minutes, and `n8n-task-runner` the only Compose orphan in the project.
+`docker compose -p hy-home-infra -f docker-compose.yml -f
+infra/07-workflow/n8n/docker-compose.ollama-local.yml --profile workflow-n8n
+up -d --no-deps --force-recreate --remove-orphans n8n` ran 03:10:29–03:11:07
+UTC: `n8n` recreated and `healthy`, `n8n-task-runner` removed. The emptied
+`n8n_main_runner_net` was removed with `docker network rm`.
+
+After: `n8n` on `edge_net`, `mng_data_net`, `n8n_net` and `obs_net` with no
+broker setting and no `5679` listener; `n8n-worker` and
+`n8n-task-runner-worker` unchanged and `healthy`, the worker broker on
+`10.250.23.2` and its runner waiting for task offers; n8n route 302;
+`n8n-monitor` scrape up; Gatus 8 endpoints, none failing. Rollback rehearsal:
+a detached worktree at `39fa78925`, the revision before #810, rendered a
+`--dry-run` that recreates `n8n` and creates `n8n-task-runner` and
+`n8n_main_runner_net`, and was removed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -144,6 +186,8 @@ category map or attribution gate changed.
 | E4 | 2 | W2 | Source binding rehash and `test_update_gates` against `main` | This branch | PASS | Version bundle tests OK; update gates 57 failures, all present on `main` (58), none new | required | - |
 | E5 | 3 | W3 | Operations catalog, metadata and lifecycle checks | This branch | PASS | `check-operations-catalog.py` PASS after the m0021 re-render and POL-0078 rows | required | - |
 | E6 | 4 | W4 | Static fixture tests before and after | `eb2c5886b` then this branch | PASS | RED: `test_p03_runner_boundaries` 10 failures and 1 error, `test_opsflow_native_boundaries` 3 failures and 2 errors (late-listed container reported PASS); GREEN: 12 related suites 162 tests OK, 2 native skips; `ruff` clean | required | - |
+| E7 | 5 | W5 | Native rehearsal on the worker broker topology | `a09082c52`, cached images | PASS | "W5 native rehearsal"; `wrong_token_registration` TEST_RESIDUAL | required | - |
+| E8 | 6 | W6 | HOME removal, checks and dry-run rollback | `a09082c52`, HOME | PASS | "W6 HOME removal" | required | - |
 
 ## Criterion Acceptance
 
@@ -153,12 +197,12 @@ category map or attribution gate changed.
 | 2 | pending | E4 | Records updated; pre-existing ledger drift is outside this Task | @buenhyden |
 | 3 | pending | E5 | Documents updated; awaiting owner acceptance | @buenhyden |
 | 4 | pending | E6 | Fixture changed and statically tested; native proof is W5 | @buenhyden |
-| 5 | pending | - | Awaiting W5 and its approval | @buenhyden |
-| 6 | pending | - | Awaiting W6 and its approval | @buenhyden |
+| 5 | pending | E7 | Passed; `wrong_token_registration` TEST_RESIDUAL needs owner acceptance | @buenhyden |
+| 6 | pending | E8 | Applied in HOME; awaiting owner acceptance | @buenhyden |
 
 ## Review and Completion
 
-W1–W4 are done in source. The owner approved W5 and W6 in Plan order on 2026-11-08.
+W1–W6 are done. Every criterion awaits owner acceptance; criterion 5 includes the `wrong_token_registration` TEST_RESIDUAL.
 
 ## Related Documents
 
