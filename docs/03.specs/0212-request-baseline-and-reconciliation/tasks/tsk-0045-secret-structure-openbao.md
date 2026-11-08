@@ -1,10 +1,10 @@
 ---
 title: "Secret Structure and OpenBao Contract Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0045"
 parent_ids:
@@ -391,6 +391,21 @@ entries. `IAM-009` (Kafbat) is not running in HOME, and `IAM-013` (Superset)
 names a consumer that moved to the LAB, so both go to the D11 handoff rather
 than a restart.
 
+**Structure realignment (2026-11-09).** After #827 merged, the owner's
+`check --read-private` returned `DRIFT` for both files. A value-free diff,
+built on the module's own normalizers and printing only public lines, key
+names and line kinds, located the causes: all 208 `.env` keys were present,
+but about twenty added since the template moved were appended at the end and
+several comments differed; the private registry still held the twelve retired
+Supabase rows (SUPA-002 to 011, AI-001, LAB-037) that `97bbc535c` removed
+from the public view, as a trailing table. The owner backed up both files to
+`~/storage/backups/*-structure-20261109`, rebuilt `.env` in the template
+layout with every value unchanged (the rebuild verified layout and values
+itself; no key dropped or defaulted), and deleted the trailing registry table.
+The rendered Compose configuration was unchanged: 96 service hashes and the
+whole-render digest matched before and after. The check then returned
+`MATCH` for both files.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -406,6 +421,8 @@ than a restart.
 | D07 structure checker alias fix | 77 | W82 | `test_secret_structure` RED then GREEN | Identifier-only unique alias rows; repository public examples | PASS | 2 new tests failed before, 24 pass after | required | - |
 | D07 private key-set comparison | 77 | W82 | Owner-run `--sync-metadata-prune-check` and name-only key/ID comparison | Actual protected paths; names only | FAIL | `files_changed=3`; registry IDs equal; 16 private-only `.env` keys classified; owner chose removal of 15 and a public `COMPOSE_FILE` | required | - |
 | D07 SMTP single source | 80 | W85 | Owner-run `smtp-equality --read-private` with catalog and Compose reading | Actual protected paths; catalog aliases | PASS | `OLD_ABSENT`; COMM-003 `source_retired`; no root reference; one canonical file | required | - |
+| D07 private structure recheck | 77 | W82 | Owner-run read-only `check --read-private` | Actual protected paths after #827; fixed output only | FAIL | `DRIFT`: env first difference at public line 8 (comment), registry `PRIVATE_EXTRA` | required | - |
+| D07 private structure realignment | 77 | W82 | Owner-run read-only `check --read-private` | Owner-realigned `.env` and registry; Compose render digest unchanged | PASS | `MATCH` for env and registry; 96 service hashes equal before and after | required | D07 private structure recheck |
 | Retirement and recovery assessment | 81 | W86 | Reader, custody, backup and ownership review | Public source and prior receipts | PASS | Existing acceptance and applicability; no new deletion target | required | - |
 | Workspace public inventory | 76 | W81 | Scan, compare and metadata validation | Frozen public paths, current curation and explicit new paths | PASS | Current workspace inventory; no private output or runtime/render execution | required | - |
 | Changed document and lifecycle gates | 76 | W81 | Metadata, links, operations catalog, Registry and corpus lifecycle | Exact P06 document set after schema corrections | PASS | CI registration and known residual; two earlier metadata FAILs retained, one historical link warning remains | required | - |
