@@ -1010,7 +1010,8 @@ the queue to `success` on 2026-11-08.
 | Independent main-restart and retry code review | 73 | W78 | Independent code review of the main-restart and retry increment | Range f0ce46fda..174155ab5 | FAIL | CHANGES_REQUESTED: 2 Important (500 mapping could hide a late claim; retry executions outside barrier), 4 Minor | required | - |
 | Independent main-restart and retry code re-review | 73 | W78 | Independent code review of the main-restart and retry increment | Fix range 174155ab5..48eb91256, then 444e1a2ae for its Minor points | PASS | APPROVED: I1/I2/M1-M4 resolved; DB retryOf terminal check closes the late claim; 3 Minor fixed in 444e1a2ae with late-retry mutation RED | required | Independent main-restart and retry code review |
 | HOME n8n recovery target inspection | 73 | W78 | Read-only HOME queue and execution target check | mng-valkey mnginspector and read-only n8n metadata session, 2026-11-05 | PASS | jobs active/wait/delayed/paused/failed absent; 0 new/running executions; Opsflow notifier not installed; no restart run | required | - |
-| HOME producer database check | 73 | W78 | Read-only database list on HOME `dev-pg` | HOME `dev-pg`, 2026-11-08 | FAIL | `opsflow_dev` absent, so no outbox exists for the notifier; HOME install blocked on the P04 producer | optional | - |
+| HOME producer database check | 73 | W78 | Read-only database list on HOME `dev-pg` | HOME `dev-pg`, 2026-11-08 | FAIL | `platform_dev` absent, so no outbox exists for the notifier; HOME install blocked on the P04 producer | optional | - |
+| HOME producer database check, corrected name | 73 | W78 | Read-only database list on HOME `dev-pg` | HOME `dev-pg`, 2026-11-08; producer input `pg/provision/opsflow.json` | FAIL | The notifier reads `opsflow_dev`, not `platform_dev`; `opsflow_dev` is absent too, and its role credentials are not issued (`password_secrets: null`); HOME install still blocked on the P04 producer | optional | - |
 
 ## Criterion Acceptance
 
