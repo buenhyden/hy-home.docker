@@ -773,6 +773,7 @@
         "tests.validation.test_compose_baseline_gates.SsoRehearsalTests",
         "tests.validation.test_compose_baseline_gates.SsoInterruptionCleanupNativeTests",
         "tests.validation.test_compose_baseline_gates.StorybookIngressRehearsalTests",
+        "tests.validation.test_compose_baseline_gates.ContainerThrottleAlertNativeTests",
         "tests.validation.test_crawl4ai_egress.Crawl4AIEgressRehearsalTests",
         "tests.validation.test_mng_valkey_acl.MngValkeyAclNativeTests",
         "tests.validation.test_compose_baseline_gates.CdcStreamRehearsalTests",

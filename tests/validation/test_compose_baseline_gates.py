@@ -6724,52 +6724,6 @@ class BackupAndHostAlertingContractTests(unittest.TestCase):
         self.assertIn("< 25 * 1024 * 1024 * 1024", disk["expr"])
         self.assertEqual("15m", disk["for"])
 
-    def test_throttle_alert_ignores_short_bursts(self) -> None:
-        image = (
-            "sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0"
-        )
-        if (
-            shutil.which("docker") is None
-            or subprocess.run(
-                ["docker", "image", "inspect", image], capture_output=True, check=False
-            ).returncode
-        ):
-            self.skipTest("cached promtool image is not available")
-        rules = (
-            ROOT
-            / "infra/06-observability/prometheus/config/alert_rules"
-            / "alert_rules.local.infra.yml"
-        )
-        cases = ROOT / "tests/validation/fixtures/container-throttle-alerts.test.yml"
-        result = subprocess.run(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "--network",
-                "none",
-                "--read-only",
-                "--tmpfs",
-                "/tmp:size=32m",
-                "--entrypoint",
-                "/bin/promtool",
-                "--mount",
-                f"type=bind,src={rules},dst=/rules/{rules.name},readonly",
-                "--mount",
-                f"type=bind,src={cases},dst=/p/cases.yml,readonly",
-                "--workdir",
-                "/p",
-                image,
-                "test",
-                "rules",
-                "/p/cases.yml",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-
     def test_health_checks_stay_cheap_under_fractional_cpu_limits(self) -> None:
         import yaml
 
@@ -6983,6 +6937,56 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
                     self.assertTrue(
                         (ROOT / url[len(prefix) :]).is_file(), rule["alert"]
                     )
+
+
+class ContainerThrottleAlertNativeTests(unittest.TestCase):
+    """Cached promtool execution of the throttle rule cases."""
+
+    def test_throttle_alert_ignores_short_bursts(self) -> None:
+        image = (
+            "sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0"
+        )
+        if (
+            shutil.which("docker") is None
+            or subprocess.run(
+                ["docker", "image", "inspect", image], capture_output=True, check=False
+            ).returncode
+        ):
+            self.skipTest("cached promtool image is not available")
+        rules = (
+            ROOT
+            / "infra/06-observability/prometheus/config/alert_rules"
+            / "alert_rules.local.infra.yml"
+        )
+        cases = ROOT / "tests/validation/fixtures/container-throttle-alerts.test.yml"
+        result = subprocess.run(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "--network",
+                "none",
+                "--read-only",
+                "--tmpfs",
+                "/tmp:size=32m",
+                "--entrypoint",
+                "/bin/promtool",
+                "--mount",
+                f"type=bind,src={rules},dst=/rules/{rules.name},readonly",
+                "--mount",
+                f"type=bind,src={cases},dst=/p/cases.yml,readonly",
+                "--workdir",
+                "/p",
+                image,
+                "test",
+                "rules",
+                "/p/cases.yml",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
 
 if __name__ == "__main__":
