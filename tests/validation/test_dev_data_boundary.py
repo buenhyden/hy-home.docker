@@ -206,6 +206,113 @@ DATASTORE_JOBS = (
 )
 
 
+# Public DEV and MNG selectors from `.env.example`; values are synthetic.
+DEV_OVERRIDES = {
+    "DEV_PG_ADMIN_USER": "synthetic_dev_admin",
+    "DEV_PG_HOST_PORT": "25999",
+    "DEV_VALKEY_PROJECTS_FILE": "/synthetic/projects.json",
+    "DEV_VALKEY_PROJECT_SECRETS_DIR": "/synthetic/secrets",
+}
+MNG_OVERRIDES = {
+    "POSTGRES_PORT": "15432",
+    "POSTGRES_HOST_PORT": "25432",
+    "POSTGRES_DEFAULT_USER": "synthetic_mng_admin",
+    "POSTGRES_DEFAULT_DB": "synthetic_mng_db",
+    "POSTGRES_MNG_HOSTNAME": "synthetic-mng-pg",
+    "POSTGRES_EXPORTER_PORT": "19187",
+    "VALKEY_PORT": "16379",
+    "VALKEY_MNG_HOSTNAME": "synthetic-mng-valkey",
+    "VALKEY_MNG_HOST_PORT": "26999",
+    "VALKEY_EXPORTER_PORT": "19121",
+}
+
+
+class DevMngRenderIsolationTests(unittest.TestCase):
+    """Changing one side's variables must leave the other side's render intact."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.directory = tempfile.TemporaryDirectory()
+        cls.base = cls.render({})
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.directory.cleanup()
+
+    @classmethod
+    def render(cls, overrides):
+        home = Path(cls.directory.name)
+        env_file = home / "public.env"
+        env_file.write_bytes(
+            (ROOT / ".env.example").read_bytes()
+            + b"\n"
+            + "".join(f"{k}={v}\n" for k, v in sorted(overrides.items())).encode()
+        )
+        result = subprocess.run(
+            [
+                "docker",
+                "compose",
+                "--project-directory",
+                str(ROOT),
+                "--env-file",
+                str(env_file),
+                "-f",
+                str(ROOT / "docker-compose.yml"),
+                "--profile",
+                "*",
+                "config",
+                "--format",
+                "json",
+            ],
+            cwd=ROOT,
+            # One fixed HOME keeps $HOME-relative binds identical across renders.
+            env={
+                "COMPOSE_DISABLE_ENV_FILE": "1",
+                "DOCKER_CONFIG": str(home / "docker-config"),
+                "DOCKER_HOST": f"unix://{home}/no-daemon.sock",
+                "HOME": str(home),
+                "PATH": os.environ["PATH"],
+            },
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=120,
+        )
+        if result.returncode:
+            raise AssertionError(result.stderr[-2000:])
+        return json.loads(result.stdout)["services"]
+
+    def changed(self, overrides):
+        rendered = self.render(overrides)
+        self.assertEqual(set(self.base), set(rendered))
+        return {name for name in self.base if self.base[name] != rendered[name]}
+
+    def dev_side(self):
+        return {
+            name
+            for name, service in self.base.items()
+            if name.startswith("dev-")
+            or (service.get("environment") or {}).get("PGHOST") == "dev-pg"
+        }
+
+    def test_dev_variables_change_only_dev_services(self):
+        changed = self.changed(DEV_OVERRIDES)
+        self.assertTrue({"dev-pg", "dev-valkey"} <= changed, changed)
+        self.assertEqual(set(), changed - self.dev_side())
+
+    def test_mng_variables_leave_every_dev_service_unchanged(self):
+        changed = self.changed(MNG_OVERRIDES)
+        self.assertTrue({"mng-pg", "mng-valkey"} <= changed, changed)
+        self.assertEqual(set(), changed & self.dev_side())
+        rendered = self.render(MNG_OVERRIDES)["redisinsight"]["environment"]
+        base = self.base["redisinsight"]["environment"]
+        # RedisInsight reaches both tiers: only its MNG connection may follow.
+        for key in ("RI_REDIS_HOST1", "RI_REDIS_PORT1", "RI_REDIS_ALIAS1"):
+            with self.subTest(key=key):
+                self.assertEqual(base[key], rendered[key])
+        self.assertEqual("16379", rendered["RI_REDIS_PORT2"])
+
+
 class DatastoreScrapeLabelTests(unittest.TestCase):
     CONFIG = ROOT / "infra/06-observability/prometheus/config"
     START = ROOT / "infra/06-observability/prometheus/scripts/start.sh"

@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.23"
+version: "0.1.24"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -307,6 +307,8 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | SEC01 root source re-binding | 60 | W65 | `test_update_gates` and the three other ledger consumers | Clean `main` `6361e93b5` | PASS | 57 hash-only failures before; 63 tests OK (2 declared skips) after; image, build and membership unchanged | required | - |
 | ComfyUI-Manager security level HOME apply | 57 | W62 | Approved HOME edit and restart, then file, health, network and device readback | RUN-0081 0.5.0, container `78dbdf9f0021` | PASS | `weak` to `normal`; healthy in about 120 s; `comfyui_ingress_net` only; backup under `~/storage/backups/comfyui-manager-20261108/` | required | - |
 | D03 Valkey memory cap HOME apply | 59 | W64 | Approved `mng-valkey` recreate, then config, AOF, keyspace, client and consumer readback | `main` `4bb6c0295`, container `a9e9b49ba896` | PASS | `maxmemory` 134217728 `noeviction`; 82 keys; consumers healthy, restart counts unchanged; Valkey errors only during the 7-second restart window; backup under `~/storage/backups/mng-valkey-maxmemory-20261108/` | required | - |
+| D03 DEV/MNG render isolation | 59 | W64 | All-profile renders with synthetic DEV and MNG values | `main` `f5ab642ef` plus this test | PASS | Each side leaves the other unchanged; an injected cross reference fails it; new class 2/2; data-tier suites 146 OK (4 declared skips) before it | required | - |
+| D03 n8n named-user switch | 59 | W64 | HOME client and ACL readback | Live `n8n`, `n8n-worker`, `mng-valkey` | NOT_RUN | BLOCKED: default user in use; `mng_valkey_n8n_password` not issued or mounted; needs the secret owner and a drain/backup approval | optional | - |
 
 ## Criterion Acceptance
 
@@ -696,6 +698,57 @@ between 05:39:33 and 05:39:40 UTC, during the restart; none appeared
 afterwards. One oauth2-proxy session lookup in that window failed to load.
 Rollback is to stop the container, restore the saved `/data` and recreate from
 the previous source.
+
+### 2026-11-08 D03 re-verification
+
+A direct user request on 2026-11-08 re-ran D03 on clean `main`
+`f5ab642ef`, Docker context `default`, branch
+`test/d03-dev-mng-render-isolation`. Since the 2026-11-04 run at `73ccd9930`
+the data-tier Compose diff is resource reservations (D09), the SeaweedFS S3
+metrics bind and the removed lakehouse table-bucket job; no database, Valkey
+mode, credential or data path changed. The data-tier suites (DEV boundary,
+DEV/MNG Valkey ACL, MNG init SQL, Valkey mount scope, restore, upgrade and
+rehearsal boundary) ran 146 tests: OK, four declared skips.
+
+**T01 gap.** Only one direction was pinned: DEV consumers do not read the MNG
+PostgreSQL variables. `DevMngRenderIsolationTests` now renders every profile
+from `.env.example` with synthetic DEV and then MNG values. DEV values change
+only `dev-*` services and the `dev-pg` provision consumers; MNG values change
+no DEV-side service, and RedisInsight keeps its `dev-valkey:6379` connection
+while only its `mng-valkey` port follows. Adding a `${POSTGRES_PORT}` reference
+to `dev-pg` made the test fail; the source was restored. One fixed `HOME`
+keeps `$HOME` binds (OpenTofu) from showing as a difference.
+
+**T02/T03.** The per-application default mode is unchanged: n8n and Airflow
+use shared `mng-valkey`, `dedicated-valkey` is opt-in (ADR-0007). HOME `n8n`
+and `n8n-worker` run with host `mng-valkey`, empty username, Secret
+`mng_valkey_password` and DB 0; `mng-valkey` has no `MNG_VALKEY_N8N_ENABLED`
+and no `mng_valkey_n8n_password` mount. The named-user switch in RUN-0053 is
+therefore BLOCKED on secret issuance by the secret owner and a separate
+drain/backup approval. The opt-in native rehearsal runs with AOF off and an
+ephemeral port, so restart, AOF reload and a nondefault port for the named
+user remain NOT_RUN. Airflow's `connection_uri.py` admits only
+(host, secret) broker pairs and builds no username, so no Airflow named user is
+introduced. The exporter checks from the 2026-11-04 run still pass.
+
+**T04.** Docker data-root `~/storage/docker-root` is on the HDD (`sdb`,
+rotational, 2.7T, 10% used); `/` is on the SSD (`sda`, 52% used). The four
+database volumes are named volumes there. `mng-pg` keeps PGDATA
+`/var/lib/postgresql/data/pgdata` inside `mng-pg-data`; the extra anonymous
+volume at `/var/lib/postgresql` comes from the image `VOLUME` and holds no
+data. `dev-pg` keeps PGDATA under its `/var/lib/postgresql` volume. No
+bottleneck was measured, so the accepted placement stays and nothing moved.
+
+**T05.** The store set equals the 2026-11-04 record: one MNG and one DEV
+PostgreSQL 18, shared `mng-valkey`, Prometheus as the single time-series
+store, no InfluxDB or clusters; OpenSearch, Neo4j and RedisInsight stay
+OPTIONAL in the `infra/04-data` README table.
+
+Official pages read 2026-11-08T05:56Z: Valkey ACL SETUSER (database rules
+since 9.1.0, so the declared 9.1.2 supports `db=0`; no memory or process
+isolation claim) and Airflow Connections (documents 3.4.0, installed 3.3.2;
+environment connections resolve on the worker and do not appear in the UI).
+Runtime change, restore and Hosted CI for this run are NOT_RUN.
 
 ## Handoff
 
