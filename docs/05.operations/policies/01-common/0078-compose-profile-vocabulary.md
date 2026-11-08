@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.14.3"
+version: "1.14.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -210,6 +210,9 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 | `kafka-1` | `kafka-1 kafka-exporter` |
 | `ollama` | `ollama ollama-exporter` |
 | `airflow-apiserver` | `airflow-apiserver airflow-scheduler airflow-dag-processor airflow-triggerer airflow-worker airflow-statsd-exporter` |
+| `airflow-scheduler` | `airflow-scheduler airflow-statsd-exporter` |
+| `airflow-triggerer` | `airflow-triggerer airflow-statsd-exporter` |
+| `airflow-dag-processor` | `airflow-dag-processor airflow-statsd-exporter` |
 | `n8n-valkey` | `n8n-valkey n8n-valkey-exporter` |
 | `airflow-valkey` | `airflow-valkey airflow-valkey-exporter` |
 | `oauth2-proxy-valkey` | `oauth2-proxy-valkey oauth2-proxy-valkey-exporter` |

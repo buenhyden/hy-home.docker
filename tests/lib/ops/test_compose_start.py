@@ -362,6 +362,28 @@ class ComposeStartTests(unittest.TestCase):
                 compose_start.execute_plan(self.root, plan, runner=run)
         run.assert_not_called()
 
+    def test_every_airflow_metrics_producer_brings_the_statsd_exporter(self):
+        workspace = Path(__file__).resolve().parents[3]
+        self.inspect.stop()
+        for producer in (
+            "airflow-apiserver",
+            "airflow-scheduler",
+            "airflow-triggerer",
+            "airflow-dag-processor",
+            "airflow-worker",
+        ):
+            with self.subTest(producer=producer):
+                plan = compose_start.create_plan(
+                    workspace, mode="target", values=[producer]
+                )
+                self.assertIn("airflow-statsd-exporter", plan["targets"])
+        # A direct scheduler start adds its exporter, not the whole Airflow stack.
+        plan = compose_start.create_plan(
+            workspace, mode="target", values=["airflow-scheduler"]
+        )
+        self.assertNotIn("airflow-apiserver", plan["targets"])
+        self.assertNotIn("airflow-worker", plan["targets"])
+
     def test_public_workspace_full_plan_and_synthetic_runner(self):
         import os
 

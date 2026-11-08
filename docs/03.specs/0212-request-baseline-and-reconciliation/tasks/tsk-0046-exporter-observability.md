@@ -1,10 +1,10 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-08"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0046"
 parent_ids:
@@ -178,11 +178,31 @@ pending queue with no sent-counter progress over two minutes and separately
 detects a missing counter. A highest-sent sample timestamp is not treated as
 wall-clock transmission time. Final rule behavior still requires verification.
 
+### D08 Airflow direct-start companions (2026-11-08)
+
+A direct user request on 2026-11-08 re-ran the exporter scope as D08 on
+`main` `2f86dd9e3`. The Airflow hypothesis was reproduced with the start
+selector itself: `compose-start.py plan --target` for `airflow-scheduler`,
+`airflow-triggerer` and `airflow-dag-processor` returned only the producer and
+`airflow-init`, without `airflow-statsd-exporter`, although all three send
+StatsD (`AIRFLOW__METRICS__STATSD_HOST`). Only `airflow-apiserver` carried a
+companion row in POL-0078; `airflow-worker` reached the exporter through its
+apiserver dependency. An earlier name search had matched the exporter in the
+plan's `observations` list, not in `targets`; the membership check above is
+the record. POL-0078 now gives each of the three producers its own row with
+just the exporter, so a direct start adds one service and not the Airflow
+stack; the apiserver and worker plans keep their seven targets.
+`test_every_airflow_metrics_producer_brings_the_statsd_exporter` failed for
+the three producers before the change and passes after; a bare `docker
+compose up` outside the selector still does not add companions, as POL-0078
+states.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Baseline and ownership | 82 | W87 | Git status and public documentation fingerprints | Clean 169c1b62f9a29738dde587b584418f9e93b78029 | PASS | Inputs and Authorization; Single-writer leases | required | - |
+| D08 Airflow direct-start companions | 82 | W87 | `compose-start.py plan --target` membership and `test_compose_start` RED then GREEN | POL-0078 companion table; `main` `2f86dd9e3` | PASS | Scheduler, triggerer and dag-processor plans lacked `airflow-statsd-exporter` before; each now adds only the exporter; apiserver and worker plans unchanged at 7 targets | required | - |
 | Isolated image availability | 84 | W89 | Exact digest pull/readback and cached image inspection | Prometheus 3.15.1 and Alloy 1.20.1, linux/amd64 | PASS | Availability only; see Safety and evidence boundaries. | required | - |
 | First isolated OTLP fixture | 84 | W89 | Pinned Alloy and Prometheus fixture exit and cleanup | Synthetic credentials and test-owned resources | PASS | Cleanup passed; source correction remained pending. See First isolated OTLP fixture below. | required | - |
 | Corrected isolated OTLP fixture | 84 | W89 | Pinned Alloy and Prometheus fixture rerun and cleanup | Corrected frozen QA source; synthetic credentials and test-owned resources | PASS | Exit 0 and cleanup passed; trace/log transport, live Grafana and prior-state restore remain NOT_RUN. | required | - |
