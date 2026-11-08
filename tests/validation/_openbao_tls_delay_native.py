@@ -26,6 +26,20 @@ FIXTURE_GID = 1000
 CLEANUP_FAIL = b"TLS_MATERIAL FAIL check=native-user-cleanup\n"
 
 
+def expired_validity_args():
+    """Return openssl x509 arguments that date a certificate in the past.
+
+    OpenSSL 3.5 rejects ``-days -1`` ("end date before start date");
+    releases before 3.4 have no ``-not_after``.
+    """
+    probe = subprocess.run(
+        ["openssl", "x509", "-help"], capture_output=True, text=True, check=False
+    )
+    if "-not_after" in probe.stdout + probe.stderr:
+        return ["-not_before", "20000101000000Z", "-not_after", "20000102000000Z"]
+    return ["-days", "-1"]
+
+
 def _native_regular(path, mode, uid):
     info = path.lstat()
     if (
