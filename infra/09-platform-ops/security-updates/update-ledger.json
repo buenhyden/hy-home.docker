@@ -55,7 +55,6 @@
     "mng-valkey",
     "mng-valkey-exporter",
     "n8n",
-    "n8n-task-runner",
     "n8n-task-runner-worker",
     "n8n-valkey",
     "n8n-valkey-exporter",
@@ -8137,221 +8136,6 @@
         "registry_reproduction_command": "docker buildx imagetools inspect n8nio/n8n:2.45.7",
         "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
         "local_artifact_inspection": "NOT_RUN: download interrupted; custom image not built",
-        "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
-      }
-    },
-    {
-      "service": "n8n-task-runner",
-      "scope": "root",
-      "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
-      "profiles_declared": [
-        "workflow",
-        "workflow-n8n"
-      ],
-      "build_source": null,
-      "current_running": [
-        {
-          "project": "hy-home-infra",
-          "service": "n8n-task-runner",
-          "image_reference": "n8nio/runners:2.41.6",
-          "image_id": "sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299",
-          "state": "running",
-          "platform": "linux",
-          "repo_digests": [
-            "n8nio/runners@sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299"
-          ],
-          "os": "linux",
-          "architecture": "amd64"
-        }
-      ],
-      "runtime_presence": "OBSERVED",
-      "latest_version": "2.45.7",
-      "target_version": "2.45.7",
-      "channel": "stable",
-      "checked_at": "2026-11-02T22:00:46.071399+00:00",
-      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
-      "target_index_digest": "sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
-      "target_manifest_digest": "sha256:1df8be32ad89cf72abd3e7c6ebaa2414b62600bc710622afdd33cae541863a63",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-30",
-      "advisory_urls": [
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
-      ],
-      "applicability": "UNKNOWN: authenticated non-exempt node, cross-origin redirect and attacker-influenced target required; private workflows not inspected",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-11-02T22:00:46.071399+00:00",
-        "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
-        "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
-        "service_owner_role": "n8n/P03/P05 owners"
-      },
-      "source_owner_repository": "n8n-io/n8n",
-      "current_repo_digests": [
-        "n8nio/runners@sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299"
-      ],
-      "current_image_ids": [
-        "sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299"
-      ],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "2.45.7",
-      "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
-      "target_source_image": "n8nio/runners:2.45.7",
-      "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
-      "official_supplier_lookup_refs": [
-        "n8n-io/n8n"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-11-02T22:00:46.071399+00:00",
-        "release_status": "SOURCE_RELEASE_OBSERVED",
-        "release_fact_refs": [
-          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
-          "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
-        ],
-        "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
-        "next_owner": "SEC01 and service owner",
-        "source_target_security_native_deployment": "NOT_PROMOTED"
-      },
-      "current_public_assessment": {
-        "owner": "SEC01 and service owner",
-        "review_at": "2026-11-09",
-        "candidate": "2.45.7",
-        "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
-        "evidence_refs": [
-          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
-          "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
-        ],
-        "decision": "BLOCKED",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
-        "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
-      },
-      "p08_previous_release_assessment": {
-        "latest_version": "2.44.7",
-        "target_version": "2.43.6",
-        "target_source_image": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
-        "target_index_digest": "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
-        "target_manifest_digest": "sha256:f9e0b2826586dcb2c56ebf4ab437b0636aef829c5d161091e86618a0ff61dc45",
-        "target_config_digest": "sha256:28c5a510d7624e5ce079d2204e4d8421bc96ced83ebc2e1717d6ee33a0ccc1bb",
-        "target_declared_digest": "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
-        "target_digest_evidence": "Official public OCI index and platform manifest response hashes match descriptors; signature not verified.",
-        "target_build_materials": [
-          {
-            "role": "runner",
-            "image": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
-            "index_digest": "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
-            "platform_manifest_digest": "sha256:f9e0b2826586dcb2c56ebf4ab437b0636aef829c5d161091e86618a0ff61dc45",
-            "config_digest": "sha256:28c5a510d7624e5ce079d2204e4d8421bc96ced83ebc2e1717d6ee33a0ccc1bb",
-            "platform": "linux/amd64",
-            "checked_at": "2026-10-15T15:42:45.268224+00:00",
-            "signature": "NOT_RUN",
-            "sbom_scan": "NOT_RUN"
-          }
-        ],
-        "upstream_reported_tag": "n8n@2.43.6",
-        "channel": "stable",
-        "checked_at": "2026-10-26T09:43:12.429938+00:00",
-        "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.44.7",
-        "source_release_date": "2026-10-26T06:22:00Z",
-        "advisory_urls": [],
-        "applicability": "UNKNOWN",
-        "support_end": "UNKNOWN",
-        "compatibility": "NOT_RUN",
-        "backup": "NOT_RUN",
-        "rollback": "NOT_RUN",
-        "native_test": "NOT_RUN",
-        "deployment": "NOT_RUN",
-        "signature": "NOT_RUN",
-        "sbom_scan": "NOT_RUN",
-        "disposition": "DEFER_SEVEN_DAY_SOAK",
-        "blocker": {
-          "owner": "SEC01",
-          "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-          "next_validation_due": "2026-10-27T00:00:00+00:00",
-          "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-          "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-          "service_owner_role": "Existing service owner named by current_public_assessment"
-        },
-        "official_release_assessment": {
-          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-          "release_fact_refs": [
-            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/n8n-io~1n8n"
-          ],
-          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-          "next_owner": "SEC01 release/artifact evidence owner and n8n-task-runner service build/migration/recovery owner",
-          "source_target_security_native_deployment": "UNCHANGED"
-        },
-        "current_public_assessment": {
-          "supplier_group": "n8n-io/n8n",
-          "owner": "SEC01 and existing service owner",
-          "review_at": "2026-10-27",
-          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-          "candidate": "n8n@2.44.7",
-          "fact_checked_at": "2026-10-26T09:43:12.429938+00:00",
-          "published_at": "2026-10-26T06:22:00Z",
-          "eligible_after_7_days": "2026-11-02T06:22:00+00:00",
-          "evidence_refs": [
-            "https://github.com/n8n-io/n8n/releases/tag/n8n%402.44.7",
-            "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
-          ],
-          "decision": "DEFER_SEVEN_DAY_SOAK",
-          "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-          "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-          "service": "n8n-task-runner",
-          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-          "current_declared": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
-          "resolved_source": {
-            "image": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
-            "build": null,
-            "chain": [
-              "infra/07-workflow/n8n/docker-compose.yml#n8n-task-runner",
-              "infra/common-optimizations.yml#template-stateful-low"
-            ]
-          },
-          "existing_target_version": "2.43.6",
-          "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-        }
-      },
-      "p08_candidate_assessment": {
-        "source_release": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
-        "advisory": "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh",
-        "checked_at": "2026-11-02T22:00:46.071399+00:00",
-        "registry_metadata_scope": "Docker Hub tag/index and linux/amd64 descriptor observation; no signature, provenance, SBOM or successful local n8n/runner pull implied",
-        "candidate_image": "n8nio/runners:2.45.7",
-        "upstream_base_registry_index": null,
-        "upstream_base_registry_amd64": null,
-        "private_applicability": "NOT_INSPECTED",
-        "candidate_activation": "NOT_APPLIED",
-        "native_acceptance": "NOT_RUN",
-        "registry_observed_date": "2026-11-03 Asia/Seoul",
-        "registry_reproduction_command": "docker buildx imagetools inspect n8nio/runners:2.45.7",
-        "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
-        "local_artifact_inspection": "NOT_RUN: candidate runner download interrupted",
         "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
       }
     },
@@ -24522,6 +24306,232 @@
         "kafka-connect"
       ],
       "meaning": "Debezium base image of the kafka-connect build moved to 3.7.0.Final; the other kafka Compose services only had their file hash re-bound; their source_refreshed_at is unchanged. Build, plugin loading, scan, offset/slot recovery and HOME recreation are NOT_RUN."
+    },
+    {
+      "source_revision": "1c662597357297c3c8e5cb299694c9c127618a3f",
+      "refreshed_at": "2026-11-08T01:48:04.395677+00:00",
+      "revision_scope": "SPEC-0269 idle n8n main task runner removal; source files have reviewed uncommitted edits",
+      "removed_services": [
+        "n8n-task-runner"
+      ],
+      "removed_entries": [
+        {
+          "service": "n8n-task-runner",
+          "scope": "root",
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "current_declared": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+          "profiles_declared": [
+            "workflow",
+            "workflow-n8n"
+          ],
+          "build_source": null,
+          "current_running": [
+            {
+              "project": "hy-home-infra",
+              "service": "n8n-task-runner",
+              "image_reference": "n8nio/runners:2.41.6",
+              "image_id": "sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299",
+              "state": "running",
+              "platform": "linux",
+              "repo_digests": [
+                "n8nio/runners@sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299"
+              ],
+              "os": "linux",
+              "architecture": "amd64"
+            }
+          ],
+          "runtime_presence": "OBSERVED",
+          "latest_version": "2.45.7",
+          "target_version": "2.45.7",
+          "channel": "stable",
+          "checked_at": "2026-11-02T22:00:46.071399+00:00",
+          "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+          "target_index_digest": "sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
+          "target_manifest_digest": "sha256:1df8be32ad89cf72abd3e7c6ebaa2414b62600bc710622afdd33cae541863a63",
+          "target_config_digest": "UNKNOWN",
+          "platform": "linux/amd64",
+          "source_release_date": "2026-10-30",
+          "advisory_urls": [
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+          ],
+          "applicability": "UNKNOWN: authenticated non-exempt node, cross-origin redirect and attacker-influenced target required; private workflows not inspected",
+          "support_end": "UNKNOWN",
+          "compatibility": "NOT_RUN",
+          "backup": "NOT_RUN",
+          "rollback": "NOT_RUN",
+          "native_test": "NOT_RUN",
+          "deployment": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "sbom_scan": "NOT_RUN",
+          "disposition": "BLOCKED",
+          "blocker": {
+            "owner": "SEC01",
+            "discovered_at": "2026-11-02T22:00:46.071399+00:00",
+            "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
+            "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+            "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+            "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+            "service_owner_role": "n8n/P03/P05 owners"
+          },
+          "source_owner_repository": "n8n-io/n8n",
+          "current_repo_digests": [
+            "n8nio/runners@sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299"
+          ],
+          "current_image_ids": [
+            "sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299"
+          ],
+          "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+          "upstream_reported_tag": "2.45.7",
+          "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+          "source_input_sha256": "b3e8096fe34924e329e712ccb6b9282609ce757a7d1fd2b2b697a0bb91ddca22",
+          "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+          "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
+          "target_source_image": "n8nio/runners:2.45.7",
+          "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
+          "target_declared_digest": "UNKNOWN",
+          "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
+          "official_supplier_lookup_refs": [
+            "n8n-io/n8n"
+          ],
+          "supplier_lookup_blocker": null,
+          "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+          "official_release_assessment": {
+            "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+            "release_status": "SOURCE_RELEASE_OBSERVED",
+            "release_fact_refs": [
+              "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+              "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+            ],
+            "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+            "next_owner": "SEC01 and service owner",
+            "source_target_security_native_deployment": "NOT_PROMOTED"
+          },
+          "current_public_assessment": {
+            "owner": "SEC01 and service owner",
+            "review_at": "2026-11-09",
+            "candidate": "2.45.7",
+            "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+            "evidence_refs": [
+              "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+              "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+            ],
+            "decision": "BLOCKED",
+            "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+            "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+            "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
+          },
+          "p08_previous_release_assessment": {
+            "latest_version": "2.44.7",
+            "target_version": "2.43.6",
+            "target_source_image": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+            "target_index_digest": "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+            "target_manifest_digest": "sha256:f9e0b2826586dcb2c56ebf4ab437b0636aef829c5d161091e86618a0ff61dc45",
+            "target_config_digest": "sha256:28c5a510d7624e5ce079d2204e4d8421bc96ced83ebc2e1717d6ee33a0ccc1bb",
+            "target_declared_digest": "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+            "target_digest_evidence": "Official public OCI index and platform manifest response hashes match descriptors; signature not verified.",
+            "target_build_materials": [
+              {
+                "role": "runner",
+                "image": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+                "index_digest": "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+                "platform_manifest_digest": "sha256:f9e0b2826586dcb2c56ebf4ab437b0636aef829c5d161091e86618a0ff61dc45",
+                "config_digest": "sha256:28c5a510d7624e5ce079d2204e4d8421bc96ced83ebc2e1717d6ee33a0ccc1bb",
+                "platform": "linux/amd64",
+                "checked_at": "2026-10-15T15:42:45.268224+00:00",
+                "signature": "NOT_RUN",
+                "sbom_scan": "NOT_RUN"
+              }
+            ],
+            "upstream_reported_tag": "n8n@2.43.6",
+            "channel": "stable",
+            "checked_at": "2026-10-26T09:43:12.429938+00:00",
+            "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.44.7",
+            "source_release_date": "2026-10-26T06:22:00Z",
+            "advisory_urls": [],
+            "applicability": "UNKNOWN",
+            "support_end": "UNKNOWN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "disposition": "DEFER_SEVEN_DAY_SOAK",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+              "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "official_release_assessment": {
+              "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+              "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+              "release_fact_refs": [
+                "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/n8n-io~1n8n"
+              ],
+              "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+              "next_owner": "SEC01 release/artifact evidence owner and n8n-task-runner service build/migration/recovery owner",
+              "source_target_security_native_deployment": "UNCHANGED"
+            },
+            "current_public_assessment": {
+              "supplier_group": "n8n-io/n8n",
+              "owner": "SEC01 and existing service owner",
+              "review_at": "2026-10-27",
+              "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+              "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+              "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "candidate": "n8n@2.44.7",
+              "fact_checked_at": "2026-10-26T09:43:12.429938+00:00",
+              "published_at": "2026-10-26T06:22:00Z",
+              "eligible_after_7_days": "2026-11-02T06:22:00+00:00",
+              "evidence_refs": [
+                "https://github.com/n8n-io/n8n/releases/tag/n8n%402.44.7",
+                "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
+              ],
+              "decision": "DEFER_SEVEN_DAY_SOAK",
+              "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+              "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+              "service": "n8n-task-runner",
+              "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+              "current_declared": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+              "resolved_source": {
+                "image": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+                "build": null,
+                "chain": [
+                  "infra/07-workflow/n8n/docker-compose.yml#n8n-task-runner",
+                  "infra/common-optimizations.yml#template-stateful-low"
+                ]
+              },
+              "existing_target_version": "2.43.6",
+              "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+            }
+          },
+          "p08_candidate_assessment": {
+            "source_release": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+            "advisory": "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh",
+            "checked_at": "2026-11-02T22:00:46.071399+00:00",
+            "registry_metadata_scope": "Docker Hub tag/index and linux/amd64 descriptor observation; no signature, provenance, SBOM or successful local n8n/runner pull implied",
+            "candidate_image": "n8nio/runners:2.45.7",
+            "upstream_base_registry_index": null,
+            "upstream_base_registry_amd64": null,
+            "private_applicability": "NOT_INSPECTED",
+            "candidate_activation": "NOT_APPLIED",
+            "native_acceptance": "NOT_RUN",
+            "registry_observed_date": "2026-11-03 Asia/Seoul",
+            "registry_reproduction_command": "docker buildx imagetools inspect n8nio/runners:2.45.7",
+            "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
+            "local_artifact_inspection": "NOT_RUN: candidate runner download interrupted",
+            "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
+          }
+        }
+      ],
+      "meaning": "n8n main runs queue mode with manual executions offloaded and never starts a task runner (n8n 2.43.6 commands/start.js), so its idle n8n-task-runner service is removed from infra/07-workflow/n8n/docker-compose.yml. The removed current row is kept here unchanged. Other current rows are not refreshed by this entry; their source hash drift predates SPEC-0269."
     }
   ],
   "delivery_preconditions": {
@@ -29141,10 +29151,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-07T11:47:30.528179+00:00",
-      "source_revision": "57e2636d77a3958a43aa936b4dc3d6b2711171c7",
-      "source_state": "SOURCE_REVIEW_ONLY: SPEC-0267 broker listener binding is uncommitted on top of this revision; the n8n Compose file binds each task broker to its runner network address and moves the n8n-worker health check to that address. Not a current image/build/module/Native acceptance receipt.",
-      "input_sha256": "9ff6ec875f940dc06bbed4316cb385f64204d4e8e9e18ee5ede8a1d146c3e2dc",
+      "checked_at": "2026-11-08T01:46:10.070803+00:00",
+      "source_revision": "1c662597357297c3c8e5cb299694c9c127618a3f",
+      "source_state": "SOURCE_REVIEW_ONLY: SPEC-0269 removal of the idle main task runner (queue offload mode never starts one) is uncommitted on top of this revision; the n8n Compose file drops n8n-task-runner and main's broker listen address and runner network.",
+      "input_sha256": "dd938f4f2cc55c38af73a6a7db10f800df5305d63ab04c7b9f4b664e7d649b0c",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -29161,7 +29171,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "0928820c728a0bf2eecd459a3988a6c2a316a1b740919492193d724a0278d35c"
+          "sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -29213,10 +29223,10 @@
         },
         {
           "path": "tests/validation/test_workflow_version_bundle.py",
-          "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+          "sha256": "b120bf5a109e195993cdb92d90c6b3c0d24c56cb3e3372f7c0567927d59693ac"
         }
       ],
-      "meaning": "Same existing17 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the SPEC-0267 broker listener binding in the n8n Compose file. Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
+      "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the SPEC-0269 removal of the idle main task runner; no image, version or native acceptance changes.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -30465,6 +30475,92 @@
           "full_image_sbom_scan": "NOT_RUN",
           "recovery": "NOT_RUN"
         }
+      },
+      {
+        "archived_at": "2026-11-08T01:46:10.070803+00:00",
+        "source_binding": {
+          "checked_at": "2026-11-07T11:47:30.528179+00:00",
+          "source_revision": "57e2636d77a3958a43aa936b4dc3d6b2711171c7",
+          "source_state": "SOURCE_REVIEW_ONLY: SPEC-0267 broker listener binding is uncommitted on top of this revision; the n8n Compose file binds each task broker to its runner network address and moves the n8n-worker health check to that address. Not a current image/build/module/Native acceptance receipt.",
+          "input_sha256": "9ff6ec875f940dc06bbed4316cb385f64204d4e8e9e18ee5ede8a1d146c3e2dc",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "0928820c728a0bf2eecd459a3988a6c2a316a1b740919492193d724a0278d35c"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "ecf0bee7e151ee77c0b517739d9cff828e646141ce22929fe1b4a2cb3ef9570f"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "146d22dde82f3d5aab2f3018650c2e8eced9c8559049bffce09aa7fe325b2421"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+              "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "c649be9f22b6dd3e3a4bc94d4ab1f6c6da9e26e8ccea87294d1da57f3e1b91c2"
+            }
+          ],
+          "meaning": "Same existing17 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the SPEC-0267 broker listener binding in the n8n Compose file. Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
       }
     ],
     "current_source_acceptance_limit": {
@@ -30995,7 +31091,7 @@
     "current_public_assessment_ref": "release-lookups.json#/root_official_refresh/public_metadata_continuations/1"
   },
   "p08_public_release_observations": {
-    "root_service_denominator": 97,
+    "root_service_denominator": 96,
     "source_query_denominator": 61,
     "observed_source_count": 60,
     "failed_source_count": 1,
@@ -31006,7 +31102,6 @@
       "dev-valkey",
       "mng-valkey",
       "n8n",
-      "n8n-task-runner",
       "n8n-task-runner-worker",
       "n8n-valkey",
       "n8n-worker",
@@ -32093,6 +32188,14 @@
         }
       ],
       "meaning": "SPEC-0262 moved these services to LAB entrypoints after the observation; the original related-service mapping is kept here and the observation rows, tags and timestamps are unchanged."
+    },
+    "removed_root_service_mapping": {
+      "removed_at": "2026-11-08T01:48:04.395677+00:00",
+      "root_service_denominator_before_removal": 97,
+      "removed_services_without_related_source": [
+        "n8n-task-runner"
+      ],
+      "meaning": "SPEC-0269 removed the idle n8n main task runner after the observation; it had no related source in this batch, so the observation rows, counts of related services, tags and timestamps are unchanged."
     }
   },
   "p08_upstream_supply_chain_observations": {
