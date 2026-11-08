@@ -13,7 +13,6 @@ services:
     hostname: storybook
     pull_policy: never
     user: '101:101'
-    group_add: !override [] # Static origin consumes no Docker secrets.
     expose:
       - '8080'
     networks:
@@ -49,7 +48,6 @@ services:
     hostname: storybook-mcp
     pull_policy: never
     user: '1000:1000'
-    group_add: !override [] # Reads no Docker secrets.
     expose:
       - '7613'
     environment:
