@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -392,6 +392,18 @@ rule also requires 0.1 CPU-second per second withheld, so a short burst no
 longer fires it while a container starved under load still does. The HOME
 apply of these changes is a separate approved step.
 
+### D08 HOME selection with DEV data (2026-11-09)
+
+The owner chose the first fix for the selector gap on 2026-11-09: POL-0078
+1.15.0 lets a HOME plan add `dev-data` when it declares
+`--dev-data-expected on`, the value root `.env` already holds. `create_plan`
+adds the profile only in HOME mode with `on`; `off`, profile and target plans
+are unchanged. A read-only HOME plan on the current checkout lists 50 targets
+with `on`, the 45 HOME targets plus `dev-pg`, `dev-pg-exporter`,
+`dev-pg-monitor-provision`, `dev-valkey` and `dev-valkey-exporter`, and 45
+with `off`. Starting Prometheus through the selector, which clears
+`ObservationSelectionMissing`, is a separate approved HOME step after merge.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -425,6 +437,7 @@ apply of these changes is a separate approved step.
 | HOME selector recovery | 85 | W90 | Plain `up -d --no-deps` of stopped and looping containers, owner unseal and RUN-0103 `agent-restart`; health and config-hash census | Same `main`; containers listed in the section | PASS | All containers healthy, Agent authenticated, no config-hash drift; `ObservationSelectionMissing` stays until the owner decides the DEV gap. | required | - |
 | Throttle alert census | 83 | W88 | Read-only Prometheus queries: throttle ratio over 4 days, throttled seconds, CPU, scrape duration; healthcheck timing | HOME Prometheus and containers, 2026-11-09 | PASS | Cause found: in-container healthchecks; see D08 container throttle alerts. | required | - |
 | Throttle rule and healthcheck cost | 83 | W88 | promtool `container-throttle-alerts.test.yml` and `test_compose_baseline_gates` RED then GREEN | `alert_rules.local.infra.yml`; Airflow and observability Compose files | PASS | Old rule fired for the bursty case and the interval test failed before; both pass after; 145 tests OK, 31 skipped. | required | - |
+| HOME DEV-data selection | 85 | W90 | `test_compose_start` RED then GREEN and read-only HOME plans | POL-0078 1.15.0; `compose_start.py` | PASS | HOME with `on` failed `dev_state_conflict` before; 25 tests OK after; live plans 50 targets (`on`) and 45 (`off`). | required | - |
 
 ## Criterion Acceptance
 
