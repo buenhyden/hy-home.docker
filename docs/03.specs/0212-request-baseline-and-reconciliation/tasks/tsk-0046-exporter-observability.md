@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -243,6 +243,66 @@ planning refuses execution. A live plan reads the three HOME files. A target
 plan selects only the targeted jobs, so the HOME apply uses `--selection HOME`
 after a `docker compose --dry-run` of its recreations.
 
+### D08 Alloy 4319 and quality metrics on HOME (2026-11-08)
+
+**T04 source state.** The running `alloy` (`grafana/alloy:v1.20.1`) mounts
+`config.home.alloy`, listens on 4317, 4318 and 4319, sits on
+`quality_otlp_net`, and its remote write reports 0 failed samples. No source
+gap was found, so the HOME path is reused as is. Without a token and with a
+wrong token, a POST to `127.0.0.1:4319/v1/metrics` inside the container
+returned `401 Unauthorized`. Before the canary, Prometheus held no `k6_*`
+series.
+
+**HOME canary.** With owner approval, `examples/operations/quality-metrics/executor_stage.py --home` ran with the
+cached pinned images: k6 `9c2dee7f…`, Traefik `f86a2cab…`, WireMock
+`f8c42a38…`, Alloy `2aa2099a…`, Python `79e7a9b9…`.
+
+- **First run, 11:58Z: FAIL.** The executor stopped with `relay did not become
+  ready`, exit 2. The guard fixture and run containers were removed. The relay
+  was then started separately four times: by hand, under the run's CPU and
+  memory limits, through `metrics_relay.start()` on throwaway networks, and
+  with `quality_otlp_net` as egress. It was ready each time, in 9 seconds at
+  0.25 CPU and 40 MiB. The real token file is owned by the relay's
+  UID/GID 1000:1000 with mode 640. The cause of the first failure is UNKNOWN.
+  A full test suite ran on the same host at the same time, but the load was 7
+  on 12 cores.
+- **Second run, 12:06Z: PASS.** A watcher recorded the relay's state and
+  logs. The relay was healthy within about 5 seconds.
+  - Prometheus received the counts from the k6 summary for instance
+    `2cd96f3c-…-a1` and project `hyhome-quality-canary`:
+
+    | Series | Value |
+    | --- | --- |
+    | `k6_http_reqs_total` | 337 |
+    | `k6_checks_total{condition="nonzero"}` | 252 |
+    | `k6_dropped_iterations_total` | 99916 |
+
+  - The relay replaced the forged project and instance labels and dropped a
+    name that does not start with `k6_`. One attempt produced 410 series.
+  - All 30 of 30 queries on the live Grafana dashboard `infrastructure-k6`
+    returned data.
+  - The relay, runner, guard fixture, probe and scratch files were removed,
+    and no `hyhome-k6relay-*` or `quality-relay-*` container remains.
+
+**T05.** The metric sources were counted in Prometheus:
+
+| Source | Series |
+| --- | --- |
+| Hermes | 14 |
+| n8n | 212 |
+| Airflow | 526 |
+| GPU | 15 |
+| Disk (`node_filesystem_avail_bytes`) | 7 |
+
+`node_textfile_scrape_error` is 0. The Hermes labels are only `job_kind`,
+`outcome` and `blocked_reason`, and the outcomes `blocked`, `conflict`,
+`gateway_error` and `submitted` stay distinct, with no URL or personal ID in
+any label. Two items are still open:
+
+- **Hermes E11 alert:** firing and resolution are not yet observed. This waits
+  for the D05 E9 run on 2026-11-09 08:00 KST.
+- **Locust:** the LAB scope check was not run, and no LAB runtime was started.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -269,6 +329,9 @@ after a `docker compose --dry-run` of its recreations.
 | Public inventory refresh | 85 | W90 | `workspace-inventory.py scan --connections` and `validate` | Public inputs and retained prior review records | PASS | At the recorded scan: 41,939/41,939 file entries; whole-body 6/2,319 and partial 78/2,319; render 0/17; operation and restore 0/112. Subsequent changed inputs require refresh. | required | - |
 | Authenticated OTLP delivery | 84 | W89 | Pinned isolated Alloy/Prometheus test | Owned synthetic fixture only | NOT_RUN | Await actual receipts | required | - |
 | Selection and recovery handoff | 85 | W90 | Expected on/off, absent and recovery evidence | Current source and owner assessment | NOT_RUN | Await actual receipts | required | - |
+| HOME OTLP canary | 84 | W89 | `executor_stage.py --home` through relay, HOME Alloy 4319, Prometheus and Grafana | Pinned cached images; project `hyhome-quality-canary` | FAIL | First run 11:58Z: relay not ready, exit 2; cleanup passed; cause UNKNOWN. See D08 Alloy 4319 and quality metrics on HOME. | required | - |
+| HOME OTLP canary rerun | 84 | W89 | `executor_stage.py --home` through relay, HOME Alloy 4319, Prometheus and Grafana | Pinned cached images; project `hyhome-quality-canary` | PASS | Second run 12:06Z: summary counts equal in Prometheus (337 requests), forged identity replaced, 30/30 dashboard queries return data, cleanup passed. | required | HOME OTLP canary |
+| HOME 4319 denial | 84 | W89 | POST without token and with a wrong token inside `alloy` | Live HOME receiver | PASS | Both `401 Unauthorized`. | required | - |
 
 ## Criterion Acceptance
 
