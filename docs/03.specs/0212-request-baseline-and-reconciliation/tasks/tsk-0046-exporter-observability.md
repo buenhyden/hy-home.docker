@@ -1,10 +1,10 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.0"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-08"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0046"
 parent_ids:
@@ -178,11 +178,140 @@ pending queue with no sent-counter progress over two minutes and separately
 detects a missing counter. A highest-sent sample timestamp is not treated as
 wall-clock transmission time. Final rule behavior still requires verification.
 
+### D08 Airflow direct-start companions (2026-11-08)
+
+A direct user request on 2026-11-08 re-ran the exporter scope as D08 on
+`main` `2f86dd9e3`. The Airflow hypothesis was reproduced with the start
+selector itself: `compose-start.py plan --target` for `airflow-scheduler`,
+`airflow-triggerer` and `airflow-dag-processor` returned only the producer and
+`airflow-init`, without `airflow-statsd-exporter`, although all three send
+StatsD (`AIRFLOW__METRICS__STATSD_HOST`). Only `airflow-apiserver` carried a
+companion row in POL-0078; `airflow-worker` reached the exporter through its
+apiserver dependency. An earlier name search had matched the exporter in the
+plan's `observations` list, not in `targets`; the membership check above is
+the record. POL-0078 now gives each of the three producers its own row with
+just the exporter, so a direct start adds one service and not the Airflow
+stack; the apiserver and worker plans keep their seven targets.
+`test_every_airflow_metrics_producer_brings_the_statsd_exporter` failed for
+the three producers before the change and passes after; a bare `docker
+compose up` outside the selector still does not add companions, as POL-0078
+states.
+
+### D08 HOME alert census and selection rule (2026-11-08)
+
+A read-only census of HOME Prometheus on 2026-11-08 found 38 active targets,
+30 up and 8 down. All eight are DNS failures of services HOME does not run:
+the Kafka broker, Connect, Schema Registry and exporter, OpenSearch, and the
+three dedicated Valkey exporters. Six alerts fired since Prometheus restarted
+on 2026-11-07 18:55 UTC: `ObservationSelectionMissing`,
+`ObservationSelectionInvalid`, `OpenBaoAgentAuthFailure` and three
+`ContainerHighThrottleRate`. Alertmanager delivered them to Slack (50
+notifications, 0 failed).
+
+`ObservationSelectionMissing` is correct: Prometheus runs from
+`docker-compose.yml` alone, without the selector overlay that carries the
+`hyhome_expected_*` rules, so the down targets cannot be told apart from
+intended absences. Clearing it needs a selector start of Prometheus, a separate
+HOME change. `ObservationSelectionInvalid` was a rule defect: with no
+selection, `scalar(hyhome_expected_jobs_total)` is NaN and `0 != NaN` is
+true, so one missing selection raised two alerts. The count and coverage terms
+now require `hyhome_expected_selection_info`; the promtool case
+`no-selection-marker` expects no `ObservationSelectionInvalid` and failed
+before the change, and the existing invalid-selection case still fires.
+
+The extra alerts mattered: `OpenBaoAgentAuthFailure` reflects an Agent that
+has not authenticated since it started on 2026-11-02 07:20 UTC (`no known
+secret ID`, 2,035 failures, the RUN-0103 restart case). Its recovery is the
+owner's RUN-0103 `agent-restart` and is recorded with the secret owner, not
+here.
+
+### D08 selector and COMPOSE_FILE (2026-11-08)
+
+Planning a HOME selector start to clear `ObservationSelectionMissing` showed
+that `compose_start.execute_plan` always passed `-f docker-compose.yml` (plus
+the observation overlay). An explicit `-f` makes `docker compose` ignore the
+root `.env` `COMPOSE_FILE`, which since 2026-11-08 pins the n8n Valkey ACL and
+Ollama overlays. A selector `up` would have recreated `mng-valkey` without the
+named `n8n` user and `n8n-worker` without its Ollama network. With the owner's
+choice, the selector now reads `COMPOSE_FILE` from the root `.env` only (a
+process `COMPOSE_FILE` stays untrusted, as before), requires
+`docker-compose.yml` first, refuses absolute, `..`, duplicate or missing
+entries, records the list as `compose_files`, hashes each overlay into the
+plan inputs and passes them as `-f` in order before the observation overlay.
+Three tests failed before the change and pass after; a changed overlay after
+planning refuses execution. A live plan reads the three HOME files. A target
+plan selects only the targeted jobs, so the HOME apply uses `--selection HOME`
+after a `docker compose --dry-run` of its recreations.
+
+### D08 Alloy 4319 and quality metrics on HOME (2026-11-08)
+
+**T04 source state.** The running `alloy` (`grafana/alloy:v1.20.1`) mounts
+`config.home.alloy`, listens on 4317, 4318 and 4319, sits on
+`quality_otlp_net`, and its remote write reports 0 failed samples. No source
+gap was found, so the HOME path is reused as is. Without a token and with a
+wrong token, a POST to `127.0.0.1:4319/v1/metrics` inside the container
+returned `401 Unauthorized`. Before the canary, Prometheus held no `k6_*`
+series.
+
+**HOME canary.** With owner approval, `examples/operations/quality-metrics/executor_stage.py --home` ran with the
+cached pinned images: k6 `9c2dee7f…`, Traefik `f86a2cab…`, WireMock
+`f8c42a38…`, Alloy `2aa2099a…`, Python `79e7a9b9…`.
+
+- **First run, 11:58Z: FAIL.** The executor stopped with `relay did not become
+  ready`, exit 2. The guard fixture and run containers were removed. The relay
+  was then started separately four times: by hand, under the run's CPU and
+  memory limits, through `metrics_relay.start()` on throwaway networks, and
+  with `quality_otlp_net` as egress. It was ready each time, in 9 seconds at
+  0.25 CPU and 40 MiB. The real token file is owned by the relay's
+  UID/GID 1000:1000 with mode 640. The cause of the first failure is UNKNOWN.
+  A full test suite ran on the same host at the same time, but the load was 7
+  on 12 cores.
+- **Second run, 12:06Z: PASS.** A watcher recorded the relay's state and
+  logs. The relay was healthy within about 5 seconds.
+  - Prometheus received the counts from the k6 summary for instance
+    `2cd96f3c-…-a1` and project `hyhome-quality-canary`:
+
+    | Series | Value |
+    | --- | --- |
+    | `k6_http_reqs_total` | 337 |
+    | `k6_checks_total{condition="nonzero"}` | 252 |
+    | `k6_dropped_iterations_total` | 99916 |
+
+  - The relay replaced the forged project and instance labels and dropped a
+    name that does not start with `k6_`. One attempt produced 410 series.
+  - All 30 of 30 queries on the live Grafana dashboard `infrastructure-k6`
+    returned data.
+  - The relay, runner, guard fixture, probe and scratch files were removed,
+    and no `hyhome-k6relay-*` or `quality-relay-*` container remains.
+
+**T05.** The metric sources were counted in Prometheus:
+
+| Source | Series |
+| --- | --- |
+| Hermes | 14 |
+| n8n | 212 |
+| Airflow | 526 |
+| GPU | 15 |
+| Disk (`node_filesystem_avail_bytes`) | 7 |
+
+`node_textfile_scrape_error` is 0. The Hermes labels are only `job_kind`,
+`outcome` and `blocked_reason`, and the outcomes `blocked`, `conflict`,
+`gateway_error` and `submitted` stay distinct, with no URL or personal ID in
+any label. Two items are still open:
+
+- **Hermes E11 alert:** firing and resolution are not yet observed. This waits
+  for the D05 E9 run on 2026-11-09 08:00 KST.
+- **Locust:** the LAB scope check was not run, and no LAB runtime was started.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Baseline and ownership | 82 | W87 | Git status and public documentation fingerprints | Clean 169c1b62f9a29738dde587b584418f9e93b78029 | PASS | Inputs and Authorization; Single-writer leases | required | - |
+| D08 Airflow direct-start companions | 82 | W87 | `compose-start.py plan --target` membership and `test_compose_start` RED then GREEN | POL-0078 companion table; `main` `2f86dd9e3` | PASS | Scheduler, triggerer and dag-processor plans lacked `airflow-statsd-exporter` before; each now adds only the exporter; apiserver and worker plans unchanged at 7 targets | required | - |
+| D08 HOME alert census | 83 | W88 | Read-only Prometheus targets, alerts and Alertmanager counters | HOME Prometheus and Alertmanager, 2026-11-08 | FAIL | 8 of 38 targets down (unselected services); 6 alerts firing incl. a doubled selection alert and a 6-day OpenBao Agent auth failure; Slack delivery 50/0 | required | - |
+| D08 selection rule guard | 83 | W88 | promtool `rules.test.yml` RED then GREEN with the running Prometheus image | `alert_rules.local.selection.yml` | PASS | `ObservationSelectionInvalid` no longer fires without a selection; the invalid-selection case still fires | required | - |
+| D08 selector COMPOSE_FILE binding | 82 | W87 | `test_compose_start` RED then GREEN and a live read-only plan | Root `.env` `COMPOSE_FILE`; `compose_start.py` | PASS | 3 new tests fail before and pass after (24 OK); live plan lists `docker-compose.yml` and both HOME overlays with hashes | required | - |
 | Isolated image availability | 84 | W89 | Exact digest pull/readback and cached image inspection | Prometheus 3.15.1 and Alloy 1.20.1, linux/amd64 | PASS | Availability only; see Safety and evidence boundaries. | required | - |
 | First isolated OTLP fixture | 84 | W89 | Pinned Alloy and Prometheus fixture exit and cleanup | Synthetic credentials and test-owned resources | PASS | Cleanup passed; source correction remained pending. See First isolated OTLP fixture below. | required | - |
 | Corrected isolated OTLP fixture | 84 | W89 | Pinned Alloy and Prometheus fixture rerun and cleanup | Corrected frozen QA source; synthetic credentials and test-owned resources | PASS | Exit 0 and cleanup passed; trace/log transport, live Grafana and prior-state restore remain NOT_RUN. | required | - |
@@ -200,6 +329,9 @@ wall-clock transmission time. Final rule behavior still requires verification.
 | Public inventory refresh | 85 | W90 | `workspace-inventory.py scan --connections` and `validate` | Public inputs and retained prior review records | PASS | At the recorded scan: 41,939/41,939 file entries; whole-body 6/2,319 and partial 78/2,319; render 0/17; operation and restore 0/112. Subsequent changed inputs require refresh. | required | - |
 | Authenticated OTLP delivery | 84 | W89 | Pinned isolated Alloy/Prometheus test | Owned synthetic fixture only | NOT_RUN | Await actual receipts | required | - |
 | Selection and recovery handoff | 85 | W90 | Expected on/off, absent and recovery evidence | Current source and owner assessment | NOT_RUN | Await actual receipts | required | - |
+| HOME OTLP canary | 84 | W89 | `executor_stage.py --home` through relay, HOME Alloy 4319, Prometheus and Grafana | Pinned cached images; project `hyhome-quality-canary` | FAIL | First run 11:58Z: relay not ready, exit 2; cleanup passed; cause UNKNOWN. See D08 Alloy 4319 and quality metrics on HOME. | required | - |
+| HOME OTLP canary rerun | 84 | W89 | `executor_stage.py --home` through relay, HOME Alloy 4319, Prometheus and Grafana | Pinned cached images; project `hyhome-quality-canary` | PASS | Second run 12:06Z: summary counts equal in Prometheus (337 requests), forged identity replaced, 30/30 dashboard queries return data, cleanup passed. | required | HOME OTLP canary |
+| HOME 4319 denial | 84 | W89 | POST without token and with a wrong token inside `alloy` | Live HOME receiver | PASS | Both `401 Unauthorized`. | required | - |
 
 ## Criterion Acceptance
 

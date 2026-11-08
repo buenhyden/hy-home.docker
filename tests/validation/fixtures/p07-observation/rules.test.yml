@@ -13,6 +13,10 @@ tests:
               runbook_url: https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md
               summary: Observation selection is unavailable
               description: Generate and apply a complete source-bound observation selection.
+      # A missing selection is one alert, not also an invalid one.
+      - eval_time: 3m
+        alertname: ObservationSelectionInvalid
+        exp_alerts: []
   - name: expected-target-absent
     interval: 1m
     input_series:

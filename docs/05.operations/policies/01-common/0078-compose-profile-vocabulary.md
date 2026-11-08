@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.14.3"
+version: "1.14.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -200,6 +200,11 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 `kafka-connect`만 Target한 의존성 closure에는 Exporter가 빠지므로 해당 Producer의
 아래 companion 목록을 target 합집합에 포함한다. 이 계약은 임의 Docker CLI 명령을
 가로채는 장치가 아니며 bare Producer 기동 자체를 Compose 오류라고 주장하지 않는다.
+선택기는 저장소 루트 `.env`의 `COMPOSE_FILE`이 가리키는 파일을 같은 순서로 계획 입력(해시
+포함)과 `-f` 목록에 넣고, 관측 overlay를 마지막에 붙인다. 첫 파일은 `docker-compose.yml`이어야
+하며 저장소 밖 경로·`..`·중복·없는 파일은 거부한다. 실행 프로세스의 `COMPOSE_FILE` 환경 변수는
+신뢰하지 않는다. 관측 선택을 HOME 전체와 맞추려면 `--target`이 아니라 `--selection HOME`으로
+계획한다.
 
 | Producer | Explicit targets |
 | --- | --- |
@@ -210,6 +215,9 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 | `kafka-1` | `kafka-1 kafka-exporter` |
 | `ollama` | `ollama ollama-exporter` |
 | `airflow-apiserver` | `airflow-apiserver airflow-scheduler airflow-dag-processor airflow-triggerer airflow-worker airflow-statsd-exporter` |
+| `airflow-scheduler` | `airflow-scheduler airflow-statsd-exporter` |
+| `airflow-triggerer` | `airflow-triggerer airflow-statsd-exporter` |
+| `airflow-dag-processor` | `airflow-dag-processor airflow-statsd-exporter` |
 | `n8n-valkey` | `n8n-valkey n8n-valkey-exporter` |
 | `airflow-valkey` | `airflow-valkey airflow-valkey-exporter` |
 | `oauth2-proxy-valkey` | `oauth2-proxy-valkey oauth2-proxy-valkey-exporter` |

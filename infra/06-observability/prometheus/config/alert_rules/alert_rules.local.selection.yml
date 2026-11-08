@@ -13,11 +13,15 @@ groups:
       - alert: ObservationSelectionInvalid
         expr: |
           absent(hyhome_expected_jobs_total) and hyhome_expected_selection_info
-          or (count(hyhome_expected_job_info) or vector(0)) != scalar(hyhome_expected_jobs_total)
-          or (hyhome_expected_job_info unless on(job) hyhome_expected_scrape_targets)
-          or (hyhome_expected_job_info unless on(job) hyhome_expected_scrape_interval_seconds)
-          or (count(hyhome_expected_scrape_targets) or vector(0)) != scalar(hyhome_expected_jobs_total)
-          or (count(hyhome_expected_scrape_interval_seconds) or vector(0)) != scalar(hyhome_expected_jobs_total)
+          or (
+            (count(hyhome_expected_job_info) or vector(0)) != scalar(hyhome_expected_jobs_total)
+            or (hyhome_expected_job_info unless on(job) hyhome_expected_scrape_targets)
+            or (hyhome_expected_job_info unless on(job) hyhome_expected_scrape_interval_seconds)
+            or (count(hyhome_expected_scrape_targets) or vector(0)) != scalar(hyhome_expected_jobs_total)
+            or (count(hyhome_expected_scrape_interval_seconds) or vector(0)) != scalar(hyhome_expected_jobs_total)
+          )
+          # Without a selection, ObservationSelectionMissing alone reports it.
+          and on() hyhome_expected_selection_info
         for: 2m
         labels:
           severity: warning

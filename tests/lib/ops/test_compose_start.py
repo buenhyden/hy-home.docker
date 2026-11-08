@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -275,6 +276,60 @@ class ComposeStartTests(unittest.TestCase):
         self.assertNotIn("DOCKER_HOST", env)
         self.assertNotIn("SECRET_VALUE", env)
 
+    def write_env(self, value):
+        (self.root / "infra/overlay.yml").write_text(
+            "services:\n  db:\n    environment:\n      MODE: overlay\n",
+            encoding="utf-8",
+        )
+        (self.root / ".env").write_text(
+            "OTHER_SECRET=private-canary\n" + f"COMPOSE_FILE={value}\n",
+            encoding="utf-8",
+        )
+
+    def test_dotenv_compose_files_are_bound_into_plan_and_command(self):
+        self.write_env('"docker-compose.yml:infra/overlay.yml"')
+        plan = self.plan("target", ["db"])
+        self.assertEqual(
+            ["docker-compose.yml", "infra/overlay.yml"], plan["compose_files"]
+        )
+        self.assertIn("infra/overlay.yml", {item["path"] for item in plan["inputs"]})
+        self.assertNotIn("private-canary", json.dumps(plan))
+        run = mock.Mock(return_value=mock.Mock(returncode=0))
+        compose_start.execute_plan(self.root, plan, runner=run)
+        argv = run.call_args.args[0]
+        files = [argv[i + 1] for i, item in enumerate(argv) if item == "-f"]
+        self.assertEqual(
+            [
+                str(self.root / "docker-compose.yml"),
+                str(self.root / "infra/overlay.yml"),
+            ],
+            files,
+        )
+        # A changed overlay invalidates the plan before anything runs.
+        (self.root / "infra/overlay.yml").write_text("services: {}\n", encoding="utf-8")
+        run.reset_mock()
+        with self.assertRaises(ValueError):
+            compose_start.execute_plan(self.root, plan, runner=run)
+        run.assert_not_called()
+
+    def test_missing_dotenv_keeps_the_root_file_only(self):
+        self.assertEqual(
+            ["docker-compose.yml"], self.plan("target", ["db"])["compose_files"]
+        )
+
+    def test_unsafe_dotenv_compose_files_are_rejected(self):
+        for value in (
+            "infra/overlay.yml:docker-compose.yml",
+            "docker-compose.yml:/etc/evil.yml",
+            "docker-compose.yml:../evil.yml",
+            "docker-compose.yml:infra/absent.yml",
+            "docker-compose.yml:infra/overlay.yml:infra/overlay.yml",
+        ):
+            with self.subTest(value=value):
+                self.write_env(value)
+                with self.assertRaises(ValueError):
+                    self.plan("target", ["db"])
+
     def test_partial_prometheus_and_stale_plan_never_execute(self):
         run = mock.Mock()
         plan = self.plan("target", ["prometheus"])
@@ -361,6 +416,28 @@ class ComposeStartTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 compose_start.execute_plan(self.root, plan, runner=run)
         run.assert_not_called()
+
+    def test_every_airflow_metrics_producer_brings_the_statsd_exporter(self):
+        workspace = Path(__file__).resolve().parents[3]
+        self.inspect.stop()
+        for producer in (
+            "airflow-apiserver",
+            "airflow-scheduler",
+            "airflow-triggerer",
+            "airflow-dag-processor",
+            "airflow-worker",
+        ):
+            with self.subTest(producer=producer):
+                plan = compose_start.create_plan(
+                    workspace, mode="target", values=[producer]
+                )
+                self.assertIn("airflow-statsd-exporter", plan["targets"])
+        # A direct scheduler start adds its exporter, not the whole Airflow stack.
+        plan = compose_start.create_plan(
+            workspace, mode="target", values=["airflow-scheduler"]
+        )
+        self.assertNotIn("airflow-apiserver", plan["targets"])
+        self.assertNotIn("airflow-worker", plan["targets"])
 
     def test_public_workspace_full_plan_and_synthetic_runner(self):
         import os
