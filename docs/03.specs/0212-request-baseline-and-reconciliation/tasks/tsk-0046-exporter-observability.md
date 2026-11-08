@@ -225,6 +225,24 @@ secret ID`, 2,035 failures, the RUN-0103 restart case). Its recovery is the
 owner's RUN-0103 `agent-restart` and is recorded with the secret owner, not
 here.
 
+### D08 selector and COMPOSE_FILE (2026-11-08)
+
+Planning a HOME selector start to clear `ObservationSelectionMissing` showed
+that `compose_start.execute_plan` always passed `-f docker-compose.yml` (plus
+the observation overlay). An explicit `-f` makes `docker compose` ignore the
+root `.env` `COMPOSE_FILE`, which since 2026-11-08 pins the n8n Valkey ACL and
+Ollama overlays. A selector `up` would have recreated `mng-valkey` without the
+named `n8n` user and `n8n-worker` without its Ollama network. With the owner's
+choice, the selector now reads `COMPOSE_FILE` from the root `.env` only (a
+process `COMPOSE_FILE` stays untrusted, as before), requires
+`docker-compose.yml` first, refuses absolute, `..`, duplicate or missing
+entries, records the list as `compose_files`, hashes each overlay into the
+plan inputs and passes them as `-f` in order before the observation overlay.
+Three tests failed before the change and pass after; a changed overlay after
+planning refuses execution. A live plan reads the three HOME files. A target
+plan selects only the targeted jobs, so the HOME apply uses `--selection HOME`
+after a `docker compose --dry-run` of its recreations.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -233,6 +251,7 @@ here.
 | D08 Airflow direct-start companions | 82 | W87 | `compose-start.py plan --target` membership and `test_compose_start` RED then GREEN | POL-0078 companion table; `main` `2f86dd9e3` | PASS | Scheduler, triggerer and dag-processor plans lacked `airflow-statsd-exporter` before; each now adds only the exporter; apiserver and worker plans unchanged at 7 targets | required | - |
 | D08 HOME alert census | 83 | W88 | Read-only Prometheus targets, alerts and Alertmanager counters | HOME Prometheus and Alertmanager, 2026-11-08 | FAIL | 8 of 38 targets down (unselected services); 6 alerts firing incl. a doubled selection alert and a 6-day OpenBao Agent auth failure; Slack delivery 50/0 | required | - |
 | D08 selection rule guard | 83 | W88 | promtool `rules.test.yml` RED then GREEN with the running Prometheus image | `alert_rules.local.selection.yml` | PASS | `ObservationSelectionInvalid` no longer fires without a selection; the invalid-selection case still fires | required | - |
+| D08 selector COMPOSE_FILE binding | 82 | W87 | `test_compose_start` RED then GREEN and a live read-only plan | Root `.env` `COMPOSE_FILE`; `compose_start.py` | PASS | 3 new tests fail before and pass after (24 OK); live plan lists `docker-compose.yml` and both HOME overlays with hashes | required | - |
 | Isolated image availability | 84 | W89 | Exact digest pull/readback and cached image inspection | Prometheus 3.15.1 and Alloy 1.20.1, linux/amd64 | PASS | Availability only; see Safety and evidence boundaries. | required | - |
 | First isolated OTLP fixture | 84 | W89 | Pinned Alloy and Prometheus fixture exit and cleanup | Synthetic credentials and test-owned resources | PASS | Cleanup passed; source correction remained pending. See First isolated OTLP fixture below. | required | - |
 | Corrected isolated OTLP fixture | 84 | W89 | Pinned Alloy and Prometheus fixture rerun and cleanup | Corrected frozen QA source; synthetic credentials and test-owned resources | PASS | Exit 0 and cleanup passed; trace/log transport, live Grafana and prior-state restore remain NOT_RUN. | required | - |

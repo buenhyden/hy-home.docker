@@ -152,6 +152,52 @@ def _dependencies(service):
     return _required_compose_dependencies(service)
 
 
+COMPOSE_FILE_LINE = re.compile(r"[ \t]*(?:export[ \t]+)?COMPOSE_FILE[ \t]*=(.*)")
+
+
+def _compose_files(root):
+    """Compose files named by the root .env COMPOSE_FILE, as `docker compose` reads them.
+
+    Only the root .env counts; a process COMPOSE_FILE stays untrusted. Other .env
+    lines are never kept or reported.
+    """
+    try:
+        data = read_bounded_regular(root, PurePosixPath(".env"))
+    except Exception:
+        if (root / ".env").exists() or (root / ".env").is_symlink():
+            raise ValueError("invalid_compose_file") from None
+        return ("docker-compose.yml",)
+    values = [
+        match.group(1).strip()
+        for line in data.decode("utf-8", "replace").splitlines()
+        if (match := COMPOSE_FILE_LINE.fullmatch(line))
+    ]
+    if not values:
+        return ("docker-compose.yml",)
+    if len(values) != 1:
+        raise ValueError("invalid_compose_file")
+    value = values[0]
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        value = value[1:-1]
+    files = tuple(value.split(":"))
+    if (
+        files[0] != "docker-compose.yml"
+        or len(files) != len(set(files))
+        or any(
+            not re.fullmatch(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*\.ya?ml", name)
+            or ".." in name.split("/")
+            for name in files
+        )
+    ):
+        raise ValueError("invalid_compose_file")
+    for name in files[1:]:
+        try:
+            _text(root, name)
+        except Exception:
+            raise ValueError("invalid_compose_file") from None
+    return files
+
+
 def _sources(root):
     names, binding = expected_from_root(root)
     inputs = {item["path"]: item["sha256"] for item in binding["input_files"]}
@@ -196,7 +242,7 @@ def _sources(root):
             ):
                 raise ValueError("unsupported_extends")
         inputs[COMMON] = _digest(_text(root, COMMON))
-    for path in (POLICY, *OBSERVABILITY_INPUTS):
+    for path in (POLICY, *OBSERVABILITY_INPUTS, *_compose_files(root)[1:]):
         inputs[path] = _digest(_text(root, path))
     home, companions = _policy(_text(root, POLICY))
     if any(
@@ -374,6 +420,7 @@ def create_plan(root, *, mode, values, dev_data_expected=None):
     document = {
         "version": 1,
         "project": project,
+        "compose_files": list(_compose_files(root)),
         "effect": "explicit up may recreate containers and may partially succeed",
         "mode": mode,
         "selection": selection,
@@ -440,9 +487,9 @@ def execute_plan(root, document, *, runner=None):
         plan["project"],
         "--project-directory",
         str(root),
-        "-f",
-        str(root / "docker-compose.yml"),
     ]
+    for name in plan["compose_files"]:
+        argv += ["-f", str(root / name)]
     if overlay is not None:
         argv += ["-f", str(overlay)]
     argv += ["up", "-d", "--no-build", "--pull", "never", *plan["targets"]]
