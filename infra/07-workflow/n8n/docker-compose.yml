@@ -99,8 +99,6 @@ services:
       - ./custom:/home/node/.n8n/custom:ro
     environment:
       <<: *n8n-common-env
-      # The broker listens on n8n_main_runner_net only (SPEC-0267).
-      N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 10.250.22.2
       N8N_PROXY_HOPS: 1
       N8N_PROTOCOL: https
       N8N_HOST: n8n.${DEFAULT_URL}
@@ -129,8 +127,6 @@ services:
     networks:
       edge_net: {}
       n8n_net: {}
-      n8n_main_runner_net:
-        ipv4_address: 10.250.22.2
       mng_data_net: {}
       obs_net: {}
     healthcheck:
@@ -193,57 +189,6 @@ services:
       timeout: 10s
       retries: 10
       start_period: 300s
-    labels:
-      <<: *tier-label
-
-  n8n-task-runner:
-    profiles:
-      - workflow
-      - workflow-n8n
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-stateful-low
-    image: n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf
-    container_name: n8n-task-runner
-    hostname: n8n-task-runner
-    user: '1000:1000'
-    group_add:
-      - '${SECRETS_GID:-1000}'
-    read_only: true
-    depends_on:
-      n8n: { condition: service_healthy }
-      n8n-valkey: { condition: service_healthy, required: false }
-    environment:
-      N8N_RUNNERS_TASK_BROKER_URI: http://n8n:${N8N_BROKER_PORT:-5679}
-      N8N_RUNNERS_TASK_TIMEOUT: 300
-      N8N_RUNNERS_MAX_CONCURRENCY: 1
-      # Keep the runner up after its first task; a daily run would otherwise start cold.
-      N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: 0
-      N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT: ${N8N_TASK_RUNNER_PORT:-5680}
-    entrypoint: [tini, --, /bin/sh, -ec]
-    command:
-      - |
-        [ -s /run/secrets/n8n_runner_auth_token ] || { echo 'n8n runner token missing' >&2; exit 1; }
-        N8N_RUNNERS_AUTH_TOKEN="$$(cat /run/secrets/n8n_runner_auth_token)"
-        [ -n "$$N8N_RUNNERS_AUTH_TOKEN" ] || { echo 'n8n runner token empty' >&2; exit 1; }
-        export N8N_RUNNERS_AUTH_TOKEN
-        exec /usr/local/bin/task-runner-launcher javascript python
-    expose:
-      - ${N8N_TASK_RUNNER_PORT:-5680}
-    volumes:
-      - ./n8n-task-runners.json:/etc/n8n-task-runners.json:ro
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777,uid=1000,gid=1000
-    networks:
-      n8n_main_runner_net: {}
-    secrets:
-      - n8n_runner_auth_token
-    healthcheck:
-      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${N8N_TASK_RUNNER_PORT:-5680}/healthz || exit 1' ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
     labels:
       <<: *tier-label
 

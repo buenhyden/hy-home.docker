@@ -364,7 +364,6 @@ SECONDARY_LISTENERS = (
         "traefik-metrics",
         {"prometheus"},
     ),
-    ("n8n", "n8n_main_runner_net", "10.250.22.2", None, {"n8n-task-runner"}),
     (
         "n8n-worker",
         "n8n_worker_runner_net",

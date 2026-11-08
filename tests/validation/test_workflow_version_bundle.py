@@ -92,10 +92,7 @@ class WorkflowVersionBundleTests(unittest.TestCase):
             service = compose["services"][name]
             self.assertEqual("2.43.6", str(service["build"]["args"]["N8N_VERSION"]))
             self.assertEqual("hyhome/n8n:2.43.6-local", service["image"])
-        runners = {
-            compose["services"][n]["image"]
-            for n in ("n8n-task-runner", "n8n-task-runner-worker")
-        }
+        runners = {compose["services"][n]["image"] for n in ("n8n-task-runner-worker",)}
         self.assertEqual(1, len(runners))
         self.assertEqual(
             "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
