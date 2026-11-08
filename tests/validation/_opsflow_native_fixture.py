@@ -298,8 +298,11 @@ class NativeFixture:
                 raise RehearsalFailure("native image declared-volume contract changed")
 
     def create_networks(
-        self, roles: tuple[str, ...] = ("ctl", "runner", "dev", "capture")
+        self,
+        roles: tuple[str, ...] = ("ctl", "runner", "dev", "capture"),
+        options: dict[str, tuple[str, ...]] | None = None,
     ) -> None:
+        options = options or {}
         for role in roles:
             name = f"{self.attempt}-{role}"
             pending = PendingNetwork(name, role)
@@ -317,6 +320,7 @@ class NativeFixture:
                     f"{ATTEMPT_LABEL}={self.attempt}",
                     "--label",
                     f"{ROLE_LABEL}={role}",
+                    *options.get(role, ()),
                     name,
                 )
             except BaseException:
@@ -380,6 +384,7 @@ class NativeFixture:
         command: tuple[str, ...] = (),
         entrypoint: str | None = None,
         cap_add: tuple[str, ...] = (),
+        ips: dict[str, str] | None = None,
     ) -> Container:
         self._remaining()
         self.runtime_headroom()
@@ -501,7 +506,8 @@ class NativeFixture:
             extra_record = self.networks.get(extra)
             if extra_record is None:
                 raise RehearsalFailure("unowned network requested")
-            self.client.run("network", "connect", "--alias", ALIASES[role], extra_record.network_id, record.cid)  # fmt: skip
+            fixed = ("--ip", ips[extra]) if ips and extra in ips else ()
+            self.client.run("network", "connect", "--alias", ALIASES[role], *fixed, extra_record.network_id, record.cid)  # fmt: skip
         self._verify_container(record)
         return record
 

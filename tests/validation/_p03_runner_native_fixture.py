@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import os
 import re
@@ -186,9 +187,10 @@ PEER_OUTCOME_NEEDLES = (
     ("unreachable", ("no route to host", "network is unreachable")),
 )
 HTTP_STATUS_LINE = re.compile(r"\bHTTP/\d(?:\.\d)?\s+\d{3}\b")
-# The launcher's exact refusal text is unknown until a native run (W5); these
-# value-free classes cover the broker's 401/403 answer and common wording.
-WRONG_TOKEN_WAIT_SECONDS = 30
+# task-runner-launcher retries the grant-token exchange at DEBUG level for up
+# to 60 seconds (retry.LimitedRetry), then logs at ERROR "request to fetch
+# grant token received status code 403". The bound outlasts that window.
+WRONG_TOKEN_WAIT_SECONDS = 90
 REFUSAL_SIGNAL_PATTERNS = {
     "forbidden": r"forbidden",
     "http_401": r"(?<![\w.:])401(?![\w.])",
@@ -205,18 +207,24 @@ FIXTURE_TOPOLOGY = {
         "offload_manual_executions_to_workers": True,
         "task_broker": False,
     },
-    "worker": {"command": "worker", "networks": ["ctl", "runner"], "task_broker": True},
+    "worker": {
+        "broker_listen": "runner_network_fixed_address",
+        "command": "worker",
+        "networks": ["ctl", "runner"],
+        "task_broker": True,
+    },
     "runner": {"networks": ["runner"], "task_broker_uri": "http://n8n-worker:5679"},
+    "runner_network": {
+        "gateway_mode_ipv4": "isolated",
+        "internal": True,
+        "ipam": "free_slash24_with_upper_half_dynamic_range",
+    },
     "valkey": {"networks": ["ctl"]},
     "metadata_pg": {"networks": ["ctl"]},
 }
 FIXTURE_DIFFERENCES = (
     # HOME splits main, worker, Valkey and Postgres across its own networks.
     "shared_internal_ctl_network",
-    # HOME binds the worker broker to its runner-network address only.
-    "worker_broker_listens_on_all_interfaces",
-    # HOME's runner network has a fixed subnet and isolated gateway mode.
-    "runner_network_without_home_ipam_or_gateway_mode",
     "fixture_specific_tmpfs",
     "fixture_specific_resource_caps",
 )
@@ -505,10 +513,46 @@ def run_normal_javascript_diagnostic(case) -> None:
     case.fixture.receipt["native"] = "PARTIAL"
 
 
+RUNNER_SUBNET_POOL = ipaddress.ip_network("10.251.0.0/16")
+
+
+def free_runner_subnet(client) -> ipaddress.IPv4Network:
+    """Pick the first /24 of the pool that overlaps no existing Docker network."""
+    ids = client.run("network", "ls", "-q", "--no-trunc").split()
+    used = []
+    for item in json.loads(client.run("network", "inspect", *ids)) if ids else ():
+        for config in (item.get("IPAM") or {}).get("Config") or ():
+            subnet = (config or {}).get("Subnet")
+            if subnet:
+                used.append(ipaddress.ip_network(subnet, strict=False))
+    for candidate in RUNNER_SUBNET_POOL.subnets(new_prefix=24):
+        if not any(candidate.overlaps(net) for net in used):
+            return candidate
+    raise RehearsalFailure("no free runner subnet")
+
+
+def runner_network_options(subnet: ipaddress.IPv4Network) -> tuple[str, ...]:
+    """HOME's runner network shape: dynamic upper half, isolated gateway."""
+    upper = list(subnet.subnets(new_prefix=subnet.prefixlen + 1))[1]
+    return (
+        "--subnet",
+        str(subnet),
+        "--ip-range",
+        str(upper),
+        "--opt",
+        "com.docker.network.bridge.gateway_mode_ipv4=isolated",
+    )
+
+
 def start_worker_broker_topology(case) -> None:
     """Start HOME's runner path: main without a broker, worker broker, no Mailpit."""
     case.fixture.verify_prerequisites()
-    case.fixture.create_networks(("ctl", "runner"))
+    subnet = free_runner_subnet(case.fixture.client)
+    # HOME pins the worker broker at .2, below the dynamic range.
+    case.broker_ip = str(subnet[2])
+    case.fixture.create_networks(
+        ("ctl", "runner"), {"runner": runner_network_options(subnet)}
+    )
     case.secrets = case.fixture.create_secrets()
     case.fixture.start_postgres("metadata-pg", case.secrets["metadata_pg"][1])
     case.fixture.start_valkey(case.secrets["valkey_server"][1])
