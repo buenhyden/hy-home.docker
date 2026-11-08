@@ -308,7 +308,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | ComfyUI-Manager security level HOME apply | 57 | W62 | Approved HOME edit and restart, then file, health, network and device readback | RUN-0081 0.5.0, container `78dbdf9f0021` | PASS | `weak` to `normal`; healthy in about 120 s; `comfyui_ingress_net` only; backup under `~/storage/backups/comfyui-manager-20261108/` | required | - |
 | D03 Valkey memory cap HOME apply | 59 | W64 | Approved `mng-valkey` recreate, then config, AOF, keyspace, client and consumer readback | `main` `4bb6c0295`, container `a9e9b49ba896` | PASS | `maxmemory` 134217728 `noeviction`; 82 keys; consumers healthy, restart counts unchanged; Valkey errors only during the 7-second restart window; backup under `~/storage/backups/mng-valkey-maxmemory-20261108/` | required | - |
 | D03 DEV/MNG render isolation | 59 | W64 | All-profile renders with synthetic DEV and MNG values | `main` `f5ab642ef` plus this test | PASS | Each side leaves the other unchanged; an injected cross reference fails it; new class 2/2; data-tier suites 146 OK (4 declared skips) before it | required | - |
-| D03 n8n named-user switch | 59 | W64 | HOME client and ACL readback | Live `n8n`, `n8n-worker`, `mng-valkey` | BLOCKED | Default user in use; `mng_valkey_n8n_password` not issued or mounted; needs the secret owner and a drain/backup approval | optional | - |
+| D03 n8n named-user switch | 59 | W64 | HOME client and ACL readback | Live `n8n`, `n8n-worker`, `mng-valkey` | NOT_RUN | BLOCKED: default user in use; `mng_valkey_n8n_password` not issued or mounted; needs the secret owner and a drain/backup approval | optional | - |
 
 ## Criterion Acceptance
 
