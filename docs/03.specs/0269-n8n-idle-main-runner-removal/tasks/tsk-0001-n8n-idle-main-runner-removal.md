@@ -1,8 +1,8 @@
 ---
 title: "n8n Idle Main Runner Removal Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-08"
 layer: "specs"
@@ -52,11 +52,40 @@ guide, policy and runbook, and the service READMEs. The fixture's
 does not remove residue, and the JS sandbox globals
 (`js-task-runner.js` `getNativeVariables`) include no `fetch`.
 
+### Approval and start (2026-11-08)
+
+The owner approved the SPEC-0269 Spec and Plan on 2026-11-08 after the draft
+merged in #808. W1 starts now; W5 and W6 keep their own approvals.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0269 | draft | approved | #approval-and-start-2026-11-08 |
+| SPEC-0269-PLAN-0001 | draft | approved | #approval-and-start-2026-11-08 |
+| SPEC-0269-TSK-0001 | draft | ready | #approval-and-start-2026-11-08 |
+| SPEC-0269-TSK-0001 | ready | in-progress | #approval-and-start-2026-11-08 |
+
+### W1 main-side runner need (2026-11-08)
+
+Read offline (`--network none`) from the HOME n8n image
+`sha256:222a7fd94f47…` (`/usr/local/lib/node_modules/n8n/dist`, 2.43.6):
+`commands/start.js:152-158` sets `needsTaskRunner = false` when
+`executions.mode` is `queue` and `OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS` is
+`true`; `commands/base-command.js:163-169` starts the task-runner module only
+when `needsTaskRunner` is set; and `workflow-runner.js:307-309` enqueues every
+execution, manual included, under the same setting. Main therefore never runs
+a Code node or opens a broker, which matches the HOME observation, and the
+main runner has no consumer. The owner's HOME Code node test on 2026-11-08
+ran executions 122–125 on `n8n-worker` with the worker's JS and Python task
+runners registering and no runner error (SPEC-0212 TSK-0042).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | E1 | 1 | W1 | Draft HOME probes and source reference count | `main` `53880ad86`, HOME | NOT_RUN | Draft input only | optional | - |
+| E2 | 1 | W1 | Source read of main's task-runner start in queue offload mode | n8n 2.43.6 image `sha256:222a7fd94f47…` | PASS | "W1 main-side runner need" | required | - |
 
 ## Criterion Acceptance
 
@@ -71,7 +100,7 @@ does not remove residue, and the JS sandbox globals
 
 ## Review and Completion
 
-Not started. The Spec and Plan are drafts.
+W1 source read done; the source removal follows.
 
 ## Related Documents
 
