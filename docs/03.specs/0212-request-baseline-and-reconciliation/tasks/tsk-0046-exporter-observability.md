@@ -197,12 +197,42 @@ the three producers before the change and passes after; a bare `docker
 compose up` outside the selector still does not add companions, as POL-0078
 states.
 
+### D08 HOME alert census and selection rule (2026-11-08)
+
+A read-only census of HOME Prometheus on 2026-11-08 found 38 active targets,
+30 up and 8 down. All eight are DNS failures of services HOME does not run:
+the Kafka broker, Connect, Schema Registry and exporter, OpenSearch, and the
+three dedicated Valkey exporters. Six alerts fired since Prometheus restarted
+on 2026-11-07 18:55 UTC: `ObservationSelectionMissing`,
+`ObservationSelectionInvalid`, `OpenBaoAgentAuthFailure` and three
+`ContainerHighThrottleRate`. Alertmanager delivered them to Slack (50
+notifications, 0 failed).
+
+`ObservationSelectionMissing` is correct: Prometheus runs from
+`docker-compose.yml` alone, without the selector overlay that carries the
+`hyhome_expected_*` rules, so the down targets cannot be told apart from
+intended absences. Clearing it needs a selector start of Prometheus, a separate
+HOME change. `ObservationSelectionInvalid` was a rule defect: with no
+selection, `scalar(hyhome_expected_jobs_total)` is NaN and `0 != NaN` is
+true, so one missing selection raised two alerts. The count and coverage terms
+now require `hyhome_expected_selection_info`; the promtool case
+`no-selection-marker` expects no `ObservationSelectionInvalid` and failed
+before the change, and the existing invalid-selection case still fires.
+
+The extra alerts mattered: `OpenBaoAgentAuthFailure` reflects an Agent that
+has not authenticated since it started on 2026-11-02 07:20 UTC (`no known
+secret ID`, 2,035 failures, the RUN-0103 restart case). Its recovery is the
+owner's RUN-0103 `agent-restart` and is recorded with the secret owner, not
+here.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Baseline and ownership | 82 | W87 | Git status and public documentation fingerprints | Clean 169c1b62f9a29738dde587b584418f9e93b78029 | PASS | Inputs and Authorization; Single-writer leases | required | - |
 | D08 Airflow direct-start companions | 82 | W87 | `compose-start.py plan --target` membership and `test_compose_start` RED then GREEN | POL-0078 companion table; `main` `2f86dd9e3` | PASS | Scheduler, triggerer and dag-processor plans lacked `airflow-statsd-exporter` before; each now adds only the exporter; apiserver and worker plans unchanged at 7 targets | required | - |
+| D08 HOME alert census | 83 | W88 | Read-only Prometheus targets, alerts and Alertmanager counters | HOME Prometheus and Alertmanager, 2026-11-08 | FAIL | 8 of 38 targets down (unselected services); 6 alerts firing incl. a doubled selection alert and a 6-day OpenBao Agent auth failure; Slack delivery 50/0 | required | - |
+| D08 selection rule guard | 83 | W88 | promtool `rules.test.yml` RED then GREEN with the running Prometheus image | `alert_rules.local.selection.yml` | PASS | `ObservationSelectionInvalid` no longer fires without a selection; the invalid-selection case still fires | required | - |
 | Isolated image availability | 84 | W89 | Exact digest pull/readback and cached image inspection | Prometheus 3.15.1 and Alloy 1.20.1, linux/amd64 | PASS | Availability only; see Safety and evidence boundaries. | required | - |
 | First isolated OTLP fixture | 84 | W89 | Pinned Alloy and Prometheus fixture exit and cleanup | Synthetic credentials and test-owned resources | PASS | Cleanup passed; source correction remained pending. See First isolated OTLP fixture below. | required | - |
 | Corrected isolated OTLP fixture | 84 | W89 | Pinned Alloy and Prometheus fixture rerun and cleanup | Corrected frozen QA source; synthetic credentials and test-owned resources | PASS | Exit 0 and cleanup passed; trace/log transport, live Grafana and prior-state restore remain NOT_RUN. | required | - |
