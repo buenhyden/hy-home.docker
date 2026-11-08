@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.22"
+version: "0.1.23"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -306,6 +306,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D03 Valkey memory cap | 59 | W64 | Static regression and pinned-image native probe | 9.1.2-alpine, labelled network-less container | PASS | RED before change; 128 MiB noeviction; write refused with OOM, PONG, keys kept, residue 0; live servers not recreated | required | - |
 | SEC01 root source re-binding | 60 | W65 | `test_update_gates` and the three other ledger consumers | Clean `main` `6361e93b5` | PASS | 57 hash-only failures before; 63 tests OK (2 declared skips) after; image, build and membership unchanged | required | - |
 | ComfyUI-Manager security level HOME apply | 57 | W62 | Approved HOME edit and restart, then file, health, network and device readback | RUN-0081 0.5.0, container `78dbdf9f0021` | PASS | `weak` to `normal`; healthy in about 120 s; `comfyui_ingress_net` only; backup under `~/storage/backups/comfyui-manager-20261108/` | required | - |
+| D03 Valkey memory cap HOME apply | 59 | W64 | Approved `mng-valkey` recreate, then config, AOF, keyspace, client and consumer readback | `main` `4bb6c0295`, container `a9e9b49ba896` | PASS | `maxmemory` 134217728 `noeviction`; 82 keys; consumers healthy, restart counts unchanged; Valkey errors only during the 7-second restart window; backup under `~/storage/backups/mng-valkey-maxmemory-20261108/` | required | - |
 
 ## Criterion Acceptance
 
@@ -672,6 +673,29 @@ Manager log loads that path. `[ComfyUI-Manager] PyTorch is not installed` also
 appeared on the previous start; torch 2.14.0+cu126 imports in the container and
 `/system_stats` lists a `cuda` device. Rollback restores the saved file and
 restarts the container.
+
+### 2026-11-08 shared Valkey memory cap HOME apply
+
+The D03 cap above stayed source-only: on 2026-11-08 Prometheus still reported
+`redis_memory_max_bytes` 0 for `mng-valkey` (started 2026-11-02, before the
+change) and 134217728 for `dev-valkey`. With approval, the pre-state and a
+`docker cp` of `/data` (AOF and RDB, 18 MB) were saved to
+`~/storage/backups/mng-valkey-maxmemory-20261108/`. The rendered service at
+`main` `4bb6c0295` differed from the live container only by the 32 MiB memory
+reservation; image, entrypoint, secrets, `mng_data_net` and the
+`192.168.0.13:26379` binding matched. Only `mng-valkey` was recreated
+(`up -d --no-deps --force-recreate`, profile `mng`): container `53cf5cdf0b4c`
+became `a9e9b49ba896` and was healthy in about 10 seconds.
+
+Afterwards `maxmemory` is 134217728 with `noeviction`, AOF is enabled with
+`aof_last_write_status:ok`, the dataset loaded with 82 keys in db0, and 39
+clients reconnected. n8n, n8n-worker, the worker runner, the five Airflow
+services, oauth2-proxy and the exporter stayed healthy with unchanged restart
+counts. Their only Valkey errors were `connection refused` and `LOADING`
+between 05:39:33 and 05:39:40 UTC, during the restart; none appeared
+afterwards. One oauth2-proxy session lookup in that window failed to load.
+Rollback is to stop the container, restore the saved `/data` and recreate from
+the previous source.
 
 ## Handoff
 
