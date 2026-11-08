@@ -47,6 +47,53 @@ from tests.validation._opsflow_native_ownership import (
 )
 
 
+class LateListingClient:
+    """A Docker-free client whose label sweeps follow a scripted listing."""
+
+    def __init__(self, attempt, listings, labels=None):
+        self.listings = list(listings)
+        self.labels = labels or {ATTEMPT_LABEL: attempt, OWNER_LABEL: OWNER}
+        self.sweeps = 0
+        self.removed: set[str] = set()
+        self.cleanup_deadline = None
+        self.deadline = time.monotonic() + 60
+
+    def begin_cleanup(self):
+        self.cleanup_deadline = time.monotonic() + 60
+
+    def _listing(self, index):
+        values = self.listings[min(self.sweeps, len(self.listings) - 1)][index]
+        return "\n".join(item for item in values if item not in self.removed)
+
+    def run(self, *args):
+        if args[0] == "ps":
+            return self._listing(0)
+        if args[:2] == ("network", "ls"):
+            listed = self._listing(1)
+            self.sweeps += 1
+            return listed
+        raise AssertionError(f"unexpected Docker call {args[:2]}")
+
+    def run_result(self, *args, **_kwargs):
+        target = args[-1]
+        if args[0] == "inspect" and "--format" in args:
+            if target in self.removed:
+                return subprocess.CompletedProcess(
+                    args, 1, "", f"Error: No such object: {target}\n"
+                )
+            return subprocess.CompletedProcess(args, 0, target + "\n", "")
+        if args[0] == "inspect":
+            item = {"Id": target, "Config": {"Labels": self.labels}}
+            return subprocess.CompletedProcess(args, 0, json.dumps([item]), "")
+        if args[:2] == ("network", "inspect"):
+            item = {"Id": target, "Labels": self.labels}
+            return subprocess.CompletedProcess(args, 0, json.dumps([item]), "")
+        if args[0] == "rm" or args[:2] == ("network", "rm"):
+            self.removed.add(target)
+            return subprocess.CompletedProcess(args, 0, target + "\n", "")
+        raise AssertionError(f"unexpected Docker call {args[:2]}")
+
+
 class NativeGuardTests(unittest.TestCase):
     def test_n8n_entrypoint_contract_matches_fixture_mounts_and_broker(self):
         entrypoint = Path("infra/07-workflow/n8n/docker-entrypoint.sh").read_text()
@@ -836,6 +883,7 @@ class NativeGuardTests(unittest.TestCase):
         try:
             with self.assertRaises(RehearsalFailure):
                 fixture.create("secret-prep", N8N_REF, "0:0", ())
+            self.assertIs(True, fixture.ambiguous_create)
             self.assertIn("secret-prep", fixture.pending_containers)
             self.assertEqual({}, fixture.containers)
 
@@ -884,7 +932,9 @@ class NativeGuardTests(unittest.TestCase):
             fixture.client.run.side_effect = run
             fixture.client.run_result.side_effect = run_result
             fixture.client.cleanup_deadline = fixture.final_deadline
-            fixture.cleanup()
+            with mock.patch.object(fixture_module.time, "sleep") as sleep:
+                fixture.cleanup()
+            sleep.assert_any_call(fixture_module.RESWEEP_DELAYS_SECONDS[0])
             self.assertEqual("PASS", fixture.receipt["cleanup"])
             self.assertEqual({}, fixture.pending_containers)
             fixture._cleanup_host.assert_called_once_with()
@@ -894,7 +944,11 @@ class NativeGuardTests(unittest.TestCase):
     def test_cleanup_denies_host_release_when_final_label_sweep_finds_residue(self):
         fixture = object.__new__(NativeFixture)
         fixture.client = mock.Mock()
-        fixture.client.run.side_effect = ["a" * 64 + "\n", ""]
+        # The residue stays listed and its metadata cannot be verified, so
+        # every bounded re-sweep still finds it.
+        fixture.client.run.side_effect = lambda *args: (
+            "a" * 64 + "\n" if args[0] == "ps" else ""
+        )
         fixture.containers, fixture.networks = {}, {}
         fixture.pending_containers, fixture.pending_networks = {}, {}
         fixture.swept_cids, fixture.swept_nids = set(), set()
@@ -904,10 +958,95 @@ class NativeGuardTests(unittest.TestCase):
         fixture.dir_identity = (1, 2)
         fixture.lock_fd = -1
         fixture._cleanup_host = mock.Mock()
-        with self.assertRaises(RehearsalFailure):
+        with (
+            mock.patch.object(fixture_module.time, "sleep"),
+            self.assertRaises(RehearsalFailure),
+        ):
             fixture.cleanup()
         self.assertEqual("FAIL", fixture.receipt["cleanup"])
+        self.assertIn("residual_owned_resource", fixture.receipt["cleanup_failures"])
         self.assertEqual(["a" * 64], fixture.receipt["retained"]["container_ids"])
+        fixture._cleanup_host.assert_not_called()
+
+    def late_listing_fixture(self, listings, *, labels=None):
+        fixture = object.__new__(NativeFixture)
+        fixture.attempt = "opsflow-native-" + "b" * 24
+        fixture.client = LateListingClient(fixture.attempt, listings, labels)
+        fixture.containers, fixture.networks = {}, {}
+        fixture.pending_containers, fixture.pending_networks = {}, {}
+        fixture.swept_cids, fixture.swept_nids = set(), set()
+        fixture.receipt = {"cleanup": "PENDING"}
+        fixture.final_deadline = time.monotonic() + 60
+        fixture.directory = Path("/tmp/owned-attempt-safe-name")
+        fixture.dir_identity = None
+        fixture.lock_fd = -1
+        fixture._cleanup_host = mock.Mock()
+        return fixture
+
+    def test_cleanup_adopts_a_container_listed_only_on_a_later_sweep(self):
+        # 2026-11-08: a `secret-prep` create landed after the identity checks
+        # and was listed only after the first label sweep.
+        cid = "c" * 64
+        fixture = self.late_listing_fixture([((), ()), ((cid,), ()), ((), ())])
+        fixture.ambiguous_create = True
+        with mock.patch.object(fixture_module.time, "sleep") as sleep:
+            fixture.cleanup()
+        self.assertEqual("PASS", fixture.receipt["cleanup"])
+        self.assertEqual([cid], fixture.receipt["swept_container_ids"])
+        self.assertEqual([cid], fixture.receipt["swept_removed_container_ids"])
+        self.assertEqual({cid}, fixture.client.removed)
+        self.assertEqual(3, fixture.client.sweeps)
+        self.assertGreaterEqual(sleep.call_count, 1)
+        fixture._cleanup_host.assert_called_once_with()
+
+    def test_cleanup_without_ambiguous_create_keeps_one_empty_sweep(self):
+        fixture = self.late_listing_fixture([((), ())])
+        with mock.patch.object(fixture_module.time, "sleep") as sleep:
+            fixture.cleanup()
+        self.assertEqual("PASS", fixture.receipt["cleanup"])
+        self.assertEqual(1, fixture.client.sweeps)
+        sleep.assert_not_called()
+
+    def test_cleanup_always_resweeps_after_an_ambiguous_create(self):
+        fixture = self.late_listing_fixture([((), ())])
+        fixture.ambiguous_create = True
+        with mock.patch.object(fixture_module.time, "sleep") as sleep:
+            fixture.cleanup()
+        self.assertEqual("PASS", fixture.receipt["cleanup"])
+        self.assertEqual(2, fixture.client.sweeps)
+        self.assertEqual(1, sleep.call_count)
+
+    def test_cleanup_removes_swept_owned_container_and_network_then_resweeps(self):
+        cid, nid = "c" * 64, "e" * 64
+        fixture = self.late_listing_fixture([((cid,), (nid,)), ((), ())])
+        with mock.patch.object(fixture_module.time, "sleep"):
+            fixture.cleanup()
+        self.assertEqual("PASS", fixture.receipt["cleanup"])
+        self.assertEqual({cid, nid}, fixture.client.removed)
+        self.assertEqual([cid], fixture.receipt["swept_removed_container_ids"])
+        self.assertEqual([nid], fixture.receipt["swept_removed_network_ids"])
+        self.assertEqual([cid], fixture.receipt["retained"]["container_ids"])
+        self.assertEqual(2, fixture.client.sweeps)
+
+    def test_cleanup_never_removes_a_swept_container_whose_label_changed(self):
+        cid = "c" * 64
+        fixture = self.late_listing_fixture(
+            [((cid,), ())],
+            labels={ATTEMPT_LABEL: "opsflow-native-" + "f" * 24, OWNER_LABEL: OWNER},
+        )
+        with (
+            mock.patch.object(fixture_module.time, "sleep"),
+            self.assertRaises(RehearsalFailure),
+        ):
+            fixture.cleanup()
+        self.assertEqual("FAIL", fixture.receipt["cleanup"])
+        self.assertIn("residual_owned_resource", fixture.receipt["cleanup_failures"])
+        self.assertEqual(set(), fixture.client.removed)
+        self.assertEqual([], fixture.receipt["swept_removed_container_ids"])
+        # One sweep plus the bounded re-sweeps, then FAIL.
+        self.assertEqual(
+            1 + len(fixture_module.RESWEEP_DELAYS_SECONDS), fixture.client.sweeps
+        )
         fixture._cleanup_host.assert_not_called()
 
     def test_cleanup_boundary_failure_still_emits_retained_receipt(self):

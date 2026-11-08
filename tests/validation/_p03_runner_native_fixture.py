@@ -37,7 +37,7 @@ NATIVE_CONTEXT_ENV = "OPSFLOW_N8N_NATIVE_CONTEXT"
 FULL_TASK_TIMEOUT = 300
 FULL_REQUEST_TIMEOUT = 330
 CONTROLLED_EXECUTION_TIMEOUT = 2
-FULL_REHEARSAL_SCOPE = "synthetic_main_broker_application_controls"
+FULL_REHEARSAL_SCOPE = "synthetic_worker_broker_application_controls"
 NATIVE_EXPLICIT = any(
     os.environ.get(key) is not None
     for key in (NATIVE_FLAG, NATIVE_IMAGE_ENV, NATIVE_CONTEXT_ENV)
@@ -168,6 +168,83 @@ REHEARSAL_RECEIPT_STAGES = (
 )
 
 
+# Non-broker ports a runner must not reach: main's UI/REST API (HOME puts no
+# runner beside main) and the worker's 5678, which HOME does not open. The
+# worker broker 5679 is the runner's one expected peer and is not probed here.
+PEER_PROBE_TARGETS = (
+    ("main_ui_api", "n8n", 5678),
+    ("worker_nonbroker", "n8n-worker", 5678),
+)
+PEER_NOT_REACHABLE = frozenset(
+    {"name_unresolved", "refused", "timed_out", "unreachable"}
+)
+# busybox wget messages, matched lowercase; any HTTP status line means reachable.
+PEER_OUTCOME_NEEDLES = (
+    ("name_unresolved", ("bad address",)),
+    ("refused", ("connection refused",)),
+    ("timed_out", ("timed out",)),
+    ("unreachable", ("no route to host", "network is unreachable")),
+)
+HTTP_STATUS_LINE = re.compile(r"\bHTTP/\d(?:\.\d)?\s+\d{3}\b")
+# The launcher's exact refusal text is unknown until a native run (W5); these
+# value-free classes cover the broker's 401/403 answer and common wording.
+WRONG_TOKEN_WAIT_SECONDS = 30
+REFUSAL_SIGNAL_PATTERNS = {
+    "forbidden": r"forbidden",
+    "http_401": r"(?<![\w.:])401(?![\w.])",
+    "http_403": r"(?<![\w.:])403(?![\w.])",
+    "invalid_token": r"invalid\s+(?:auth\s+|grant\s+)?token",
+    "unauthenticated": r"unauthenticated",
+    "unauthorized": r"unauthori[sz]ed",
+}
+REGISTRATION_NEEDLE = 'Registered runner "'
+FIXTURE_TOPOLOGY = {
+    "main": {
+        "executions_mode": "queue",
+        "networks": ["ctl"],
+        "offload_manual_executions_to_workers": True,
+        "task_broker": False,
+    },
+    "worker": {"command": "worker", "networks": ["ctl", "runner"], "task_broker": True},
+    "runner": {"networks": ["runner"], "task_broker_uri": "http://n8n-worker:5679"},
+    "valkey": {"networks": ["ctl"]},
+    "metadata_pg": {"networks": ["ctl"]},
+}
+FIXTURE_DIFFERENCES = (
+    # HOME splits main, worker, Valkey and Postgres across its own networks.
+    "shared_internal_ctl_network",
+    # HOME binds the worker broker to its runner-network address only.
+    "worker_broker_listens_on_all_interfaces",
+    # HOME's runner network has a fixed subnet and isolated gateway mode.
+    "runner_network_without_home_ipam_or_gateway_mode",
+    "fixture_specific_tmpfs",
+    "fixture_specific_resource_caps",
+)
+
+
+def peer_probe_observation(result) -> str:
+    """Classify one wget probe without returning any of its output."""
+    text = f"{result.stdout or ''}\n{result.stderr or ''}"
+    if HTTP_STATUS_LINE.search(text):
+        return "reachable"
+    if result.returncode == 0:
+        return "unclassified"
+    lowered = text.lower()
+    for outcome, needles in PEER_OUTCOME_NEEDLES:
+        if any(needle in lowered for needle in needles):
+            return outcome
+    return "unclassified"
+
+
+def refusal_signal_classes(text: str) -> list[str]:
+    """Return the names of the refusal classes present in `text`, never the text."""
+    return sorted(
+        name
+        for name, pattern in REFUSAL_SIGNAL_PATTERNS.items()
+        if re.search(pattern, text, re.IGNORECASE)
+    )
+
+
 def safe_execution_id(value: object) -> str:
     """Normalize n8n's numeric or string execution ID without widening it."""
     if isinstance(value, bool) or not isinstance(value, (int, str)):
@@ -224,6 +301,7 @@ def full_rehearsal_contract() -> dict[str, object]:
             "auto_shutdown_timeout_seconds": 0,
         },
         "controlled_workflow_timeout_seconds": CONTROLLED_EXECUTION_TIMEOUT,
+        "topology": json.loads(json.dumps(FIXTURE_TOPOLOGY)),
     }
 
 
@@ -398,17 +476,11 @@ def run_normal_javascript_diagnostic(case) -> None:
         "grant_token_ttl_seconds": 120,
         "auto_shutdown_timeout_seconds": 0,
     }
-    case.fixture.verify_prerequisites()
-    case.fixture.create_networks()
-    case.secrets = case.fixture.create_secrets()
-    case.fixture.start_postgres("metadata-pg", case.secrets["metadata_pg"][1])
-    case.start_main(
-        task_timeout=FULL_TASK_TIMEOUT, request_timeout=FULL_REQUEST_TIMEOUT
-    )
+    start_worker_broker_topology(case)
     case.start_runner(case.secrets["runner"][1], task_timeout=FULL_TASK_TIMEOUT)
     case.fixture.wait_until(
-        lambda: case.fixture.logs_contain("main", 'Registered runner "'),
-        "external runner did not register with main broker",
+        lambda: case.fixture.logs_contain("worker", REGISTRATION_NEEDLE),
+        "external runner did not register with worker broker",
         120,
     )
     setup = case.api("setup")
@@ -433,36 +505,136 @@ def run_normal_javascript_diagnostic(case) -> None:
     case.fixture.receipt["native"] = "PARTIAL"
 
 
-def run_full_rehearsal(case) -> None:
-    """Run the bounded Main-broker application controls in one owned fixture."""
-    case.fixture.receipt.update(full_rehearsal_contract())
+def start_worker_broker_topology(case) -> None:
+    """Start HOME's runner path: main without a broker, worker broker, no Mailpit."""
     case.fixture.verify_prerequisites()
-    case.fixture.create_networks()
+    case.fixture.create_networks(("ctl", "runner"))
     case.secrets = case.fixture.create_secrets()
     case.fixture.start_postgres("metadata-pg", case.secrets["metadata_pg"][1])
+    case.fixture.start_valkey(case.secrets["valkey_server"][1])
     case.start_main()
-    receipt = initial_rehearsal_scenarios()
-    case.fixture.receipt["p03_runner_scenarios"] = dict(receipt)
-    wrong = case.fixture.private("wrong-runner.secret", "synthetic-wrong-token\n")
+    case.start_worker()
+
+
+def observe_wrong_token(case, receipt: dict) -> dict:
+    """Wait a bounded time for a refusal or a registration of a wrong-token runner."""
+    fixture = case.fixture
+    # Signals already in the worker log before the wrong runner starts are not
+    # evidence of its refusal; the runner container is new, so it has none.
+    baseline = set(fixture.log_classes("worker", refusal_signal_classes))
+    wrong = fixture.private("wrong-runner.secret", "synthetic-wrong-token\n")
     case.start_runner(wrong)
-    time.sleep(3)
-    if case.fixture.logs_contain("main", 'Registered runner "'):
-        raise RehearsalFailure("wrong broker token registered a runner")
-    receipt = persist_scenarios(
+    deadline = time.monotonic() + WRONG_TOKEN_WAIT_SECONDS
+    signals: dict[str, list[str]] = {"runner": [], "worker": []}
+    while True:
+        if fixture.logs_contain("worker", REGISTRATION_NEEDLE):
+            persist_scenarios(
+                case,
+                receipt,
+                {
+                    "wrong_token_registration": {
+                        "observation": "REGISTERED",
+                        "refusal_signals": signals,
+                        "registered": True,
+                        "status": "FAIL",
+                        "wait_bound_seconds": WRONG_TOKEN_WAIT_SECONDS,
+                    }
+                },
+            )
+            raise RehearsalFailure("wrong broker token registered a runner")
+        signals = {
+            "runner": sorted(fixture.log_classes("runner", refusal_signal_classes)),
+            "worker": sorted(
+                set(fixture.log_classes("worker", refusal_signal_classes)) - baseline
+            ),
+        }
+        refused = bool(signals["runner"] or signals["worker"])
+        if refused or time.monotonic() >= deadline:
+            break
+        time.sleep(1)
+    return persist_scenarios(
         case,
         receipt,
         {
             "wrong_token_registration": {
-                "observation": "NOT_OBSERVED_WITHIN_3S",
-                "status": "TEST_RESIDUAL",
+                "observation": "REFUSAL_OBSERVED"
+                if refused
+                else "NO_REFUSAL_OR_REGISTRATION_WITHIN_BOUND",
+                "refusal_signals": signals,
+                "registered": False,
+                "status": "PASS" if refused else "TEST_RESIDUAL",
+                "wait_bound_seconds": WRONG_TOKEN_WAIT_SECONDS,
             }
         },
     )
+
+
+def probe_peer_ports(case, receipt: dict) -> dict:
+    """Probe non-broker peer ports from the runner container, value-free."""
+    targets = {}
+    for name, host, port in PEER_PROBE_TARGETS:
+        result = case.fixture.exec_result(
+            "runner",
+            "wget",
+            "-q",
+            "-T",
+            "4",
+            "-O",
+            "/dev/null",
+            "-S",
+            f"http://{host}:{port}/healthz",
+        )
+        targets[name] = peer_probe_observation(result)
+    outcomes = set(targets.values())
+    if "reachable" in outcomes:
+        observation, status = "REACHABLE", "FAIL"
+    elif outcomes <= PEER_NOT_REACHABLE:
+        observation, status = "NOT_REACHABLE", "PASS"
+    else:
+        observation, status = "UNCLASSIFIED", "TEST_RESIDUAL"
+    receipt = persist_scenarios(
+        case,
+        receipt,
+        {
+            "peer_nonbroker_port": {
+                "observation": observation,
+                "status": status,
+                "targets": targets,
+            }
+        },
+    )
+    if status == "FAIL":
+        raise RehearsalFailure("the runner reached a non-broker peer port")
+    return receipt
+
+
+def run_full_rehearsal(case) -> None:
+    """Run the bounded worker-broker application controls in one owned fixture."""
+    case.fixture.receipt.update(full_rehearsal_contract())
+    start_worker_broker_topology(case)
+    receipt = initial_rehearsal_scenarios()
+    case.fixture.receipt["p03_runner_scenarios"] = dict(receipt)
+    receipt = observe_wrong_token(case, receipt)
     case.fixture.remove("runner")
+    # A registration that landed after the last poll still fails the step.
+    if case.fixture.logs_contain("worker", REGISTRATION_NEEDLE):
+        persist_scenarios(
+            case,
+            receipt,
+            {
+                "wrong_token_registration": {
+                    **receipt["wrong_token_registration"],
+                    "observation": "REGISTERED",
+                    "registered": True,
+                    "status": "FAIL",
+                }
+            },
+        )
+        raise RehearsalFailure("wrong broker token registered a runner")
     case.start_runner(case.secrets["runner"][1])
     case.fixture.wait_until(
-        lambda: case.fixture.logs_contain("main", 'Registered runner "'),
-        "external runner did not register with main broker",
+        lambda: case.fixture.logs_contain("worker", REGISTRATION_NEEDLE),
+        "external runner did not register with worker broker",
         60,
     )
     case.fixture.receipt["runner_kernel_confinement"] = kernel_confinement_facts(
@@ -622,45 +794,10 @@ def run_full_rehearsal(case) -> None:
                 }
             },
         )
-    peer_probe = case.import_workflow(
-        code_workflow(
-            f"P03 runner peer port probe {case.fixture.attempt}",
-            "javaScript",
-            "const r=await fetch('http://n8n:5678/healthz'); return [{json:{status:r.status}}];",
-        )
-    )
-    peer_id, peer_terminal = case.run_workflow(
-        peer_probe,
-        frozenset({"success", "error"}),
-        wait_seconds=FULL_REQUEST_TIMEOUT,
-    )
-    peer_id = safe_execution_id(peer_id)
-    if peer_terminal["status"] == "success":
-        persist_scenarios(
-            case,
-            receipt,
-            {
-                "peer_nonbroker_port": {
-                    "execution_id": peer_id,
-                    "observation": "REACHABLE",
-                    "status": "FAIL",
-                    "terminal_status": "success",
-                }
-            },
-        )
-        raise RehearsalFailure("Code reached the non-broker peer port")
-    receipt = persist_scenarios(
-        case,
-        receipt,
-        {
-            "peer_nonbroker_port": {
-                **indeterminate_error_facts(peer_terminal),
-                "execution_id": peer_id,
-                "status": "TEST_RESIDUAL",
-                "terminal_status": "error",
-            }
-        },
-    )
+    # The pinned JS sandbox has no `fetch` (js-task-runner.js
+    # getNativeVariables), so a Code node cannot test the network; the probe
+    # runs from the runner container instead.
+    receipt = probe_peer_ports(case, receipt)
     cancellable = case.import_workflow(
         code_workflow(
             f"P03 runner cancellation {case.fixture.attempt}",
@@ -714,11 +851,7 @@ def run_full_rehearsal(case) -> None:
             "fixture_equivalence": {
                 "status": "NON_EQUIVALENT",
             },
-            "fixture_differences": [
-                "shared_internal_ctl_network",
-                "fixture_specific_tmpfs",
-                "fixture_specific_resource_caps",
-            ],
+            "fixture_differences": list(FIXTURE_DIFFERENCES),
         },
     )
     case.fixture.receipt["native_scope"] = full_rehearsal_contract()["scope"]
