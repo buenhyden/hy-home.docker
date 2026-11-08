@@ -241,6 +241,23 @@ class StructureCliTests(unittest.TestCase):
 
 
 class ProjectionTests(unittest.TestCase):
+    def test_repository_public_examples_parse(self):
+        # The public registry lists every retired alias (LAB moves added five).
+        subject.env_structure((ROOT / ".env.example").read_bytes())
+        registry = (ROOT / "secrets/SENSITIVE_ENV_VARS.md.example").read_bytes()
+        self.assertIn(b"| COMM-006 | LAB-036 |", registry)
+        subject.registry_structure(registry)
+
+    def test_alias_rows_need_two_identifiers_and_stay_unique(self):
+        table = PUBLIC_REGISTRY.replace(
+            "| COMM-003 | COMM-002 |\n",
+            "| COMM-003 | COMM-002 |\n| AI-007 | LAB-034 |\n",
+        )
+        subject.registry_structure(table.encode())
+        for bad in ("| AI-007 | lab |\n", "| AI-007 | LAB-034 |\n"):
+            with self.subTest(row=bad), self.assertRaises(subject.UnsafeInput):
+                subject.registry_structure((table + bad).encode())
+
     def test_unicode_special_characters_and_comments(self):
         one = 'A="한글 %40 # text" # note\nB=alpha#literal\nC=  # kept\n'
         two = 'A="다른 \\" quoted" # note\nB=beta#literal\nC=  # kept\n'

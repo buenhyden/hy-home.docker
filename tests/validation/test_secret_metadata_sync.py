@@ -27,6 +27,11 @@ ROOT = SCRIPT.parents[2]
 INDIRECT_DERIVED_INPUTS = {
     "DEFAULT_DOCKER_PROJECT_PATH",
 }
+# Compose reads these CLI control variables from .env itself; no file
+# interpolates them, so they count as consumed without a ${...} reference.
+COMPOSE_CONTROL_INPUTS = {
+    "COMPOSE_FILE",
+}
 HTPASSWD_ID_INPUTS = {
     "OPENSEARCH_ADMIN_USERNAME",
     "PROMETHEUS_API_USERNAME",
@@ -162,7 +167,12 @@ def environment_contract(compose_texts, env_text, supplemental_ids=HTPASSWD_ID_I
         for name, _ in interpolation_references(value)
     }
     derived_only = env_derived - compose_keys
-    consumed = (compose_keys & public) | derived_only | supplemental_ids
+    consumed = (
+        (compose_keys & public)
+        | derived_only
+        | supplemental_ids
+        | (COMPOSE_CONTROL_INPUTS & public)
+    )
     orphan = public - consumed
     required = {
         name
