@@ -262,11 +262,11 @@ def registry_structure(data):
         cells = line.split("|")
         if len(cells) == 4:
             alias = (_cell(cells[1]), _cell(cells[2]))
+            # Header, separator, or a retired ID mapped to its canonical ID.
             if alias not in {
                 ("Retired ID", "Canonical ID"),
                 ("---", "---"),
-                ("COMM-003", "COMM-002"),
-            }:
+            } and not all(IDENTIFIER.fullmatch(part) for part in alias):
                 raise UnsafeInput()
             if alias in aliases:
                 raise UnsafeInput()
