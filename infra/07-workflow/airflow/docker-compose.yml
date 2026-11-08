@@ -230,7 +230,8 @@ services:
       mng_data_net: {}
     healthcheck:
       test: [ 'CMD-SHELL', 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"' ]
-      interval: 15s
+      # `airflow jobs check` costs about 6 CPU-seconds per run.
+      interval: 60s
       timeout: 30s
       retries: 5
       start_period: 15s
@@ -296,7 +297,8 @@ services:
       mng_data_net: {}
     healthcheck:
       test: [ 'CMD-SHELL', 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"' ]
-      interval: 15s
+      # `airflow jobs check` costs about 6 CPU-seconds per run.
+      interval: 60s
       timeout: 30s
       retries: 5
       start_period: 15s
