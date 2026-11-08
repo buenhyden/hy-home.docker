@@ -1,6 +1,6 @@
 ---
 title: "ComfyUI Runbook"
-version: "0.4.0"
+version: "0.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -92,6 +92,27 @@ custom node를 설치할 때만 @buenhyden의 승인을 받아 overlay를 붙이
    ```
 
    network 목록이 `comfyui_ingress_net` 하나여야 한다. 아니면 중단하고 @buenhyden에게 넘긴다.
+
+### ComfyUI-Manager 보안 수준
+
+`comfyui-user` volume의 `__manager/config.ini`는 `security_level = normal`을 유지한다.
+image bundle은 첫 실행 때 `weak`로 이 파일을 만들지만, ComfyUI-Manager의 기본값은
+`normal`이다. `weak`는 ComfyUI가 `--listen 0.0.0.0`으로 떠 있는 동안 high 위험 기능
+(`.safetensors`가 아닌 model 내려받기 등)까지 허용한다. `normal`은 high 위험 기능을 막고,
+기본 channel에서 node를 설치·갱신·삭제하는 middle 위험 기능은 그대로 둔다. Git URL과
+pip 설치는 수준과 상관없이 별도 flag와 loopback `--listen`이 있어야 하므로 계속 막힌다.
+
+bundle 복사는 `--no-clobber`라서 기존 파일을 덮어쓰지 않는다. volume을 새로 만들었거나
+값이 `weak`로 돌아갔으면 @buenhyden의 승인을 받아 아래처럼 고친다. Manager는 이 값을
+시작할 때 한 번만 읽으므로 고친 뒤 재시작한다.
+
+```bash
+docker exec comfyui sed -i 's/^security_level = .*/security_level = normal/' /root/ComfyUI/user/__manager/config.ini
+docker restart comfyui
+docker exec comfyui grep '^security_level' /root/ComfyUI/user/__manager/config.ini
+```
+
+마지막 줄이 `security_level = normal`이고 container가 healthy로 돌아와야 한다.
 
 ### Active-image persistence stop condition
 
