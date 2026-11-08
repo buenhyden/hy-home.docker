@@ -65,6 +65,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0266 | [SSO 전용 backend ingress](./0266-sso-only-backend-ingress/) | `sso-auth`만으로 보호되는 Traefik backend가 공유 `edge_net`의 다른 컨테이너에서 SSO 없이 직접 닿지 않도록 backend마다 Traefik 전용 내부 ingress 망을 두고, 기존 흐름은 이름 있는 흐름 망으로 옮김 |
 | SPEC-0267 | [보조 listener 강화](./0267-secondary-listener-hardening/) | 자체 인증이 없는 metrics·관리·broker listener 6개를 소비자 전용 주소에만 묶고, Grafana metrics 인증을 더하고, Pyroscope metastore와 ComfyUI 상태를 선언된 volume에 두며, 남는 노출은 수용 위험으로 기록함 |
 | SPEC-0268 | [ComfyUI 필요 시 외부 연결](./0268-comfyui-egress-on-demand/) | ComfyUI의 외부 연결을 기본 render에서 빼고, 모델·custom node 설치 같은 유지보수 때만 opt-in overlay로 붙였다 떼도록 함 |
+| SPEC-0269 | [n8n 유휴 main runner 제거](./0269-n8n-idle-main-runner-removal/) | offload 모드에서 broker가 없는 main 쪽 task runner를 없애 n8n API로 가는 불필요한 경로를 닫고, runner rehearsal fixture를 worker broker 구성에 맞추며 남은 TEST_RESIDUAL과 정리 경쟁 조건을 해소함 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
