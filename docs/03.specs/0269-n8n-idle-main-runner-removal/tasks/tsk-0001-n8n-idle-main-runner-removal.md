@@ -1,8 +1,8 @@
 ---
 title: "n8n Idle Main Runner Removal Task"
-version: "0.5.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-08"
 layer: "specs"
@@ -65,6 +65,7 @@ merged in #808. W1 starts now; W5 and W6 keep their own approvals.
 | SPEC-0269-PLAN-0001 | draft | approved | #approval-and-start-2026-11-08 |
 | SPEC-0269-TSK-0001 | draft | ready | #approval-and-start-2026-11-08 |
 | SPEC-0269-TSK-0001 | ready | in-progress | #approval-and-start-2026-11-08 |
+| SPEC-0269-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-08 |
 
 ### W1 main-side runner need (2026-11-08)
 
@@ -193,16 +194,26 @@ a detached worktree at `39fa78925`, the revision before #810, rendered a
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E2, E3 | Source change done; awaiting owner acceptance | @buenhyden |
-| 2 | pending | E4 | Records updated; pre-existing ledger drift is outside this Task | @buenhyden |
-| 3 | pending | E5 | Documents updated; awaiting owner acceptance | @buenhyden |
-| 4 | pending | E6 | Fixture changed and statically tested; native proof is W5 | @buenhyden |
-| 5 | pending | E7 | Passed; `wrong_token_registration` TEST_RESIDUAL needs owner acceptance | @buenhyden |
-| 6 | pending | E8 | Applied in HOME; awaiting owner acceptance | @buenhyden |
+| 1 | accepted | E2, E3 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 2 | accepted | E4 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 3 | accepted | E5 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 4 | accepted | E6 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 5 | accepted | E7 | Accepted by the owner on 2026-11-08 | @buenhyden |
+| 6 | accepted | E8 | Accepted by the owner on 2026-11-08 | @buenhyden |
 
 ## Review and Completion
 
-W1–W6 are done. Every criterion awaits owner acceptance; criterion 5 includes the `wrong_token_registration` TEST_RESIDUAL.
+W1–W6 are done and every criterion has evidence.
+
+### Owner acceptance (2026-11-08)
+
+The owner accepted criteria 1–6 on 2026-11-08 after the W5 and W6 evidence
+merged (#812), and the Task closed as `completed`. Criterion 5 is accepted with
+`wrong_token_registration` still TEST_RESIDUAL: a runner with a wrong token
+did not register, but no refusal text was observed within 30 seconds. Left
+outside this Task: the `tests.lib.supply_chain.test_update_gates` source hash
+drift that predates it (57 failures after W2), and the fixture differences
+listed under W4.
 
 ## Related Documents
 
