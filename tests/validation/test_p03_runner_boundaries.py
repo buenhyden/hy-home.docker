@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import unittest
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 from tests.validation import _p03_runner_outcomes as runner_outcomes
@@ -16,6 +18,8 @@ from tests.validation._p03_runner_native_fixture import (
     NATIVE_CONTEXT_ENV,
     NATIVE_FLAG,
     NATIVE_IMAGE_ENV,
+    PEER_PROBE_TARGETS,
+    WRONG_TOKEN_WAIT_SECONDS,
     code_workflow,
     execution_entity_id,
     full_rehearsal_contract,
@@ -23,6 +27,8 @@ from tests.validation._p03_runner_native_fixture import (
     kernel_confinement_facts,
     native_selection,
     p03_api_script,
+    peer_probe_observation,
+    refusal_signal_classes,
     run_full_rehearsal,
     runner_timing_environment,
     safe_error_facts,
@@ -32,6 +38,113 @@ from tests.validation._p03_runner_native_fixture import (
 from tests.validation.test_opsflow_native_rehearsal import API_JS as OPSFLOW_API_JS
 
 P03_API_JS = p03_api_script(OPSFLOW_API_JS)
+WGET_UNRESOLVED = "wget: bad address 'n8n'\n"
+WGET_REFUSED = "wget: can't connect to remote host (10.0.0.3): Connection refused\n"
+BODY_SENTINEL = "synthetic-response-body-must-never-escape"
+
+
+def wget_result(stderr: str, returncode: int = 1):
+    return subprocess.CompletedProcess(["wget"], returncode, "", stderr)
+
+
+def peer_exec(main: str = WGET_UNRESOLVED, worker: str = WGET_REFUSED):
+    def exec_result(role, *args, **_kwargs):
+        if role != "runner" or args[0] != "wget":
+            raise AssertionError("peer probe must run wget in the runner")
+        url = args[-1]
+        if url.startswith("http://n8n:5678/"):
+            return wget_result(main)
+        if url.startswith("http://n8n-worker:5678/"):
+            return wget_result(worker)
+        raise AssertionError("unexpected peer target")
+
+    return exec_result
+
+
+def unit_workflow_result(workflow_id, _expected, *, wait_seconds):
+    if wait_seconds != 330:
+        raise AssertionError("candidate wait budget changed")
+    if "timeout" in workflow_id:
+        return "1", {"status": "canceled", "terminal": True}
+    if "ancestor environment" in workflow_id:
+        return "1", {
+            "status": "error",
+            "terminal": True,
+            "errorClass": "PermissionError",
+            "errorCategory": "filesystem_access_denied",
+        }
+    if "peer port" in workflow_id:
+        raise AssertionError("the peer probe no longer runs as a Code node")
+    if "recovered" in workflow_id:
+        return "1", {"status": "success", "terminal": True, "recoveredResult": True}
+    if "javascript_ok" in workflow_id or "python_ok" in workflow_id:
+        return "1", {
+            "status": "success",
+            "terminal": True,
+            "runnerResult": "javascript"
+            if "javascript_ok" in workflow_id
+            else "python",
+        }
+    category = (
+        "environment_access_denied"
+        if "environment_denied" in workflow_id
+        else "filesystem_not_mounted"
+        if any(
+            marker in workflow_id
+            for marker in ("secret_file", "host_path", "docker_socket")
+        )
+        else "module_access_denied"
+    )
+    return "1", {
+        "status": "error",
+        "terminal": True,
+        "errorClass": "NodeOperationError",
+        "errorCategory": category,
+    }
+
+
+def mock_rehearsal_case(test, *, registered_early=False, refusal=("http_403",)):
+    """A Docker-free case whose wrong-token phase sees `refusal` on its first poll."""
+    fixture = Mock()
+    fixture.receipt = {}
+    fixture.attempt = "unit-only"
+    fixture.create_secrets.return_value = {
+        "metadata_pg": ("", "metadata"),
+        "valkey_server": ("", "valkey"),
+        "runner": ("", "runner"),
+    }
+    fixture.private.return_value = "wrong"
+    state = {"good_runner": False}
+
+    def logs_contain(role, pattern):
+        test.assertEqual(("worker", 'Registered runner "'), (role, pattern))
+        return registered_early or state["good_runner"]
+
+    fixture.logs_contain.side_effect = logs_contain
+    fixture.log_classes.side_effect = lambda role, _patterns: (
+        list(refusal) if role == "runner" else []
+    )
+    fixture.exec.side_effect = lambda _role, *_args: (
+        "docker-default (enforce)\n"
+        if "attr/current" in _args[-1]
+        else "NoNewPrivs:\t1\nSeccomp:\t2\n"
+    )
+    fixture.exec_result.side_effect = peer_exec()
+    fixture.wait_until.side_effect = lambda predicate, *_args: test.assertTrue(
+        predicate()
+    )
+    case = Mock()
+    case.fixture = fixture
+    case.api.return_value = {"id": "owner"}
+    case.import_workflow.side_effect = lambda workflow: workflow["name"]
+    case.run_workflow.side_effect = unit_workflow_result
+    case.start_workflow.return_value = "2"
+
+    def start_runner(token, *_args, **_kwargs):
+        state["good_runner"] = token == "runner"
+
+    case.start_runner.side_effect = start_runner
+    return case
 
 
 class RunnerNativeBoundaryTests(unittest.TestCase):
@@ -300,8 +413,17 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
                     "auto_shutdown_timeout_seconds": 0,
                 },
                 "controlled_workflow_timeout_seconds": CONTROLLED_EXECUTION_TIMEOUT,
+                "topology": full_rehearsal_contract()["topology"],
             },
             full_rehearsal_contract(),
+        )
+        self.assertEqual(
+            "synthetic_worker_broker_application_controls", FULL_REHEARSAL_SCOPE
+        )
+        contract = full_rehearsal_contract()
+        contract["topology"]["main"]["networks"].append("runner")
+        self.assertEqual(
+            ["ctl"], full_rehearsal_contract()["topology"]["main"]["networks"]
         )
         self.assertIn("/rest/executions/' + encodeURIComponent(id) + '/stop", CANCEL_JS)
         self.assertIn("method: 'POST'", CANCEL_JS)
@@ -343,95 +465,33 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
         self.assertIn("runnerResult,recoveredResult", P03_API_JS)
 
     def test_full_rehearsal_orchestration_unit_does_not_claim_fixture_equivalence(self):
-        fixture = Mock()
-        fixture.receipt = {}
-        fixture.attempt = "unit-only"
-        fixture.create_secrets.return_value = {
-            "metadata_pg": ("", "metadata"),
-            "runner": ("", "runner"),
-        }
-        fixture.private.return_value = "wrong"
-        fixture.logs_contain.side_effect = (False, True)
-        fixture.exec.side_effect = lambda _role, *_args: (
-            "docker-default (enforce)\n"
-            if "attr/current" in _args[-1]
-            else "NoNewPrivs:\t1\nSeccomp:\t2\n"
-        )
-        fixture.wait_until.side_effect = lambda predicate, *_args: self.assertTrue(
-            predicate()
-        )
-        case = Mock()
-        case.fixture = fixture
-        case.api.return_value = {"id": "owner"}
-        case.import_workflow.side_effect = lambda workflow: workflow["name"]
-
-        def run_workflow(workflow_id, _expected, *, wait_seconds):
-            self.assertEqual(330, wait_seconds)
-            if "timeout" in workflow_id:
-                return "1", {"status": "canceled", "terminal": True}
-            if "ancestor environment" in workflow_id:
-                return "1", {
-                    "status": "error",
-                    "terminal": True,
-                    "errorClass": "PermissionError",
-                    "errorCategory": "filesystem_access_denied",
-                }
-            if "peer port" in workflow_id:
-                return "1", {
-                    "status": "error",
-                    "terminal": True,
-                    "errorClass": "TypeError",
-                    "errorCategory": "request_error",
-                }
-            if "recovered" in workflow_id:
-                return "1", {
-                    "status": "success",
-                    "terminal": True,
-                    "recoveredResult": True,
-                }
-            if "javascript_ok" in workflow_id or "python_ok" in workflow_id:
-                return "1", {
-                    "status": "success",
-                    "terminal": True,
-                    "runnerResult": "javascript"
-                    if "javascript_ok" in workflow_id
-                    else "python",
-                }
-            category = (
-                "environment_access_denied"
-                if "environment_denied" in workflow_id
-                else "filesystem_not_mounted"
-                if any(
-                    marker in workflow_id
-                    for marker in ("secret_file", "host_path", "docker_socket")
-                )
-                else "module_access_denied"
-            )
-            return "1", {
-                "status": "error",
-                "terminal": True,
-                "errorClass": "NodeOperationError",
-                "errorCategory": category,
-            }
-
-        case.run_workflow.side_effect = run_workflow
-        case.start_workflow.return_value = "2"
+        case = mock_rehearsal_case(self)
+        fixture = case.fixture
         with patch("tests.validation._p03_runner_native_fixture.time.sleep"):
             run_full_rehearsal(case)
         self.assertEqual("PARTIAL", fixture.receipt["native"])
+        scenarios = fixture.receipt["p03_runner_scenarios"]
+        self.assertEqual({"status": "NON_EQUIVALENT"}, scenarios["fixture_equivalence"])
         self.assertEqual(
-            {"status": "NON_EQUIVALENT"},
-            fixture.receipt["p03_runner_scenarios"]["fixture_equivalence"],
-        )
-        self.assertFalse(
-            fixture.receipt["p03_runner_scenarios"]["peer_nonbroker_port"]["attributed"]
+            {
+                "observation": "NOT_REACHABLE",
+                "status": "PASS",
+                "targets": {
+                    "main_ui_api": "name_unresolved",
+                    "worker_nonbroker": "refused",
+                },
+            },
+            scenarios["peer_nonbroker_port"],
         )
         self.assertEqual(
             {
-                "observation": "NOT_OBSERVED_WITHIN_3S",
-                "status": "TEST_RESIDUAL",
+                "observation": "REFUSAL_OBSERVED",
+                "refusal_signals": {"runner": ["http_403"], "worker": []},
+                "registered": False,
+                "status": "PASS",
+                "wait_bound_seconds": WRONG_TOKEN_WAIT_SECONDS,
             },
-            fixture.receipt["p03_runner_scenarios"]["wrong_token_registration"],
+            scenarios["wrong_token_registration"],
         )
         self.assertEqual(
             {
@@ -441,11 +501,228 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
                 "status": "PASS",
                 "terminal_status": "canceled",
             },
-            fixture.receipt["p03_runner_scenarios"]["cancellation"],
+            scenarios["cancellation"],
         )
         for call in case.run_workflow.call_args_list:
             self.assertEqual(330, call.kwargs["wait_seconds"])
         self.assertEqual(330, case.await_execution.call_args.kwargs["wait_seconds"])
+
+    def test_full_rehearsal_runs_the_worker_broker_topology_without_mailpit(self):
+        case = mock_rehearsal_case(self)
+        fixture = case.fixture
+        with patch("tests.validation._p03_runner_native_fixture.time.sleep"):
+            run_full_rehearsal(case)
+        fixture.create_networks.assert_called_once_with(("ctl", "runner"))
+        fixture.start_valkey.assert_called_once_with("valkey")
+        fixture.start_mailpit.assert_not_called()
+        fixture.start_n8n.assert_not_called()
+        case.start_main.assert_called_once_with()
+        case.start_worker.assert_called_once_with()
+        roles = {call.args[0] for call in fixture.logs_contain.call_args_list}
+        self.assertEqual({"worker"}, roles)
+        self.assertEqual(
+            {
+                "main": {
+                    "executions_mode": "queue",
+                    "networks": ["ctl"],
+                    "offload_manual_executions_to_workers": True,
+                    "task_broker": False,
+                },
+                "worker": {
+                    "command": "worker",
+                    "networks": ["ctl", "runner"],
+                    "task_broker": True,
+                },
+                "runner": {
+                    "networks": ["runner"],
+                    "task_broker_uri": "http://n8n-worker:5679",
+                },
+                "valkey": {"networks": ["ctl"]},
+                "metadata_pg": {"networks": ["ctl"]},
+            },
+            fixture.receipt["topology"],
+        )
+        self.assertEqual(
+            "synthetic_worker_broker_application_controls", fixture.receipt["scope"]
+        )
+        differences = fixture.receipt["p03_runner_scenarios"]["fixture_differences"]
+        self.assertIn("worker_broker_listens_on_all_interfaces", differences)
+        self.assertIn("runner_network_without_home_ipam_or_gateway_mode", differences)
+        self.assertIn("shared_internal_ctl_network", differences)
+
+    def test_peer_probe_classifies_network_outcomes_value_free(self):
+        self.assertEqual(
+            (("main_ui_api", "n8n", 5678), ("worker_nonbroker", "n8n-worker", 5678)),
+            PEER_PROBE_TARGETS,
+        )
+        cases = (
+            (wget_result(WGET_UNRESOLVED), "name_unresolved"),
+            (wget_result(WGET_REFUSED), "refused"),
+            (wget_result("wget: download timed out\n"), "timed_out"),
+            (
+                wget_result("wget: can't connect to remote host: No route to host\n"),
+                "unreachable",
+            ),
+            (
+                wget_result(f"  HTTP/1.1 200 OK\n  X-Body: {BODY_SENTINEL}\n", 0),
+                "reachable",
+            ),
+            (
+                wget_result(
+                    "wget: server returned error: HTTP/1.1 404 Not Found "
+                    + BODY_SENTINEL
+                ),
+                "reachable",
+            ),
+            (wget_result("sh: wget: not found\n", 127), "unclassified"),
+            (wget_result(BODY_SENTINEL, 0), "unclassified"),
+        )
+        for result, expected in cases:
+            with self.subTest(expected=expected):
+                observation = peer_probe_observation(result)
+                self.assertEqual(expected, observation)
+                self.assertNotIn(BODY_SENTINEL, observation)
+
+    def test_reachable_peer_port_fails_and_keeps_the_receipt_value_free(self):
+        for main, worker in (
+            (f"  HTTP/1.1 200 OK\n{BODY_SENTINEL}\n", WGET_REFUSED),
+            (WGET_UNRESOLVED, "wget: server returned error: HTTP/1.1 404 Not Found\n"),
+        ):
+            with self.subTest(main=main[:12], worker=worker[:12]):
+                case = mock_rehearsal_case(self)
+                case.fixture.exec_result.side_effect = peer_exec(main, worker)
+                with (
+                    patch("tests.validation._p03_runner_native_fixture.time.sleep"),
+                    self.assertRaises(RehearsalFailure),
+                ):
+                    run_full_rehearsal(case)
+                scenarios = case.fixture.receipt["p03_runner_scenarios"]
+                peer = scenarios["peer_nonbroker_port"]
+                self.assertEqual("FAIL", peer["status"])
+                self.assertEqual("REACHABLE", peer["observation"])
+                self.assertIn("reachable", peer["targets"].values())
+                self.assertNotIn(BODY_SENTINEL, json.dumps(case.fixture.receipt))
+                self.assertEqual({"status": "NOT_RUN"}, scenarios["cancellation"])
+
+    def test_unclassified_peer_probe_is_a_residual_not_a_pass(self):
+        case = mock_rehearsal_case(self)
+        case.fixture.exec_result.side_effect = peer_exec(
+            "sh: wget: not found\n", WGET_REFUSED
+        )
+        with patch("tests.validation._p03_runner_native_fixture.time.sleep"):
+            run_full_rehearsal(case)
+        peer = case.fixture.receipt["p03_runner_scenarios"]["peer_nonbroker_port"]
+        self.assertEqual("TEST_RESIDUAL", peer["status"])
+        self.assertEqual("UNCLASSIFIED", peer["observation"])
+
+    def test_refusal_signal_classes_are_case_insensitive_and_value_free(self):
+        secret = "synthetic-wrong-token"
+        self.assertEqual(
+            ["forbidden", "http_403", "invalid_token"],
+            refusal_signal_classes(
+                f"level=error msg=FORBIDDEN status 403: Invalid Token {secret}"
+            ),
+        )
+        self.assertEqual(
+            ["http_401", "unauthenticated", "unauthorized"],
+            refusal_signal_classes("Unauthorized (401); request unauthenticated"),
+        )
+        # A timestamp or port that only embeds the status code does not count.
+        self.assertEqual(
+            [],
+            refusal_signal_classes("2026-11-08T12:40:13.401Z listening on 14031"),
+        )
+
+    def test_wrong_token_registration_fails_the_rehearsal(self):
+        case = mock_rehearsal_case(self, registered_early=True)
+        with (
+            patch("tests.validation._p03_runner_native_fixture.time.sleep"),
+            self.assertRaises(RehearsalFailure),
+        ):
+            run_full_rehearsal(case)
+        wrong = case.fixture.receipt["p03_runner_scenarios"]["wrong_token_registration"]
+        self.assertEqual("FAIL", wrong["status"])
+        self.assertIs(True, wrong["registered"])
+
+    def test_wrong_token_without_refusal_or_registration_stays_residual(self):
+        case = mock_rehearsal_case(self, refusal=())
+        clock = iter(range(0, 1000, 5))
+        with (
+            patch("tests.validation._p03_runner_native_fixture.time.sleep"),
+            patch(
+                "tests.validation._p03_runner_native_fixture.time.monotonic",
+                side_effect=lambda: next(clock),
+            ),
+        ):
+            run_full_rehearsal(case)
+        self.assertEqual(
+            {
+                "observation": "NO_REFUSAL_OR_REGISTRATION_WITHIN_BOUND",
+                "refusal_signals": {"runner": [], "worker": []},
+                "registered": False,
+                "status": "TEST_RESIDUAL",
+                "wait_bound_seconds": WRONG_TOKEN_WAIT_SECONDS,
+            },
+            case.fixture.receipt["p03_runner_scenarios"]["wrong_token_registration"],
+        )
+
+    def test_worker_refusal_ignores_signals_already_in_the_worker_log(self):
+        case = mock_rehearsal_case(self, refusal=())
+        worker_reads = iter((["http_401"], ["http_401"], ["forbidden", "http_401"]))
+        case.fixture.log_classes.side_effect = lambda role, _patterns: (
+            next(worker_reads) if role == "worker" else []
+        )
+        with patch("tests.validation._p03_runner_native_fixture.time.sleep"):
+            run_full_rehearsal(case)
+        wrong = case.fixture.receipt["p03_runner_scenarios"]["wrong_token_registration"]
+        self.assertEqual("PASS", wrong["status"])
+        self.assertEqual(
+            {"runner": [], "worker": ["forbidden"]}, wrong["refusal_signals"]
+        )
+
+    def test_case_starts_main_worker_and_runner_in_the_home_topology(self):
+        from tests.validation.test_p03_runner_isolation import (
+            P03RunnerNativeRehearsal,
+        )
+
+        case = P03RunnerNativeRehearsal(
+            "test_broker_focused_javascript_python_denials_timeout_and_recovery"
+        )
+        case.fixture = Mock()
+        case.fixture.receipt = {}
+        case.secrets = {
+            key: ("", Path("/owned") / key)
+            for key in ("metadata_n8n", "valkey_n8n", "encryption", "runner")
+        }
+        case.start_main()
+        case.start_worker()
+        case.start_runner(Path("/owned/runner"))
+        calls = {call.args[0]: call for call in case.fixture.create.call_args_list}
+        self.assertEqual({"main", "worker", "runner"}, set(calls))
+        main, worker, runner = calls["main"], calls["worker"], calls["runner"]
+        self.assertEqual(("ctl",), main.args[3])
+        self.assertEqual(("ctl", "runner"), worker.args[3])
+        self.assertEqual(("runner",), runner.args[3])
+        self.assertEqual((), main.kwargs.get("command", ()))
+        self.assertEqual(("worker",), worker.kwargs["command"])
+        for call in (main, worker):
+            env = call.kwargs["env"]
+            self.assertIn("EXECUTIONS_MODE=queue", env)
+            self.assertIn("OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true", env)
+            self.assertIn("N8N_RUNNERS_MODE=external", env)
+            self.assertIn("N8N_RUNNERS_TASK_TIMEOUT=300", env)
+            self.assertIn("N8N_RUNNERS_TASK_REQUEST_TIMEOUT=330", env)
+            self.assertNotIn("EXECUTIONS_MODE=regular", env)
+            self.assertEqual(main.kwargs["mounts"], call.kwargs["mounts"])
+        self.assertFalse(
+            any("N8N_RUNNERS_BROKER_LISTEN_ADDRESS" in i for i in main.kwargs["env"])
+        )
+        self.assertIn("N8N_RUNNERS_BROKER_LISTEN_ADDRESS=0.0.0.0", worker.kwargs["env"])
+        self.assertIn(
+            "N8N_RUNNERS_TASK_BROKER_URI=http://n8n-worker:5679", runner.kwargs["env"]
+        )
+        started = [call.args[0] for call in case.fixture.start.call_args_list]
+        self.assertEqual(["main", "worker", "runner"], started)
 
     def test_execution_can_remain_running_past_thirty_polls_within_candidate_budget(
         self,
@@ -483,10 +760,15 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
         fixture.attempt = "injected-error"
         fixture.create_secrets.return_value = {
             "metadata_pg": ("", "metadata"),
+            "valkey_server": ("", "valkey"),
             "runner": ("", "runner"),
         }
         fixture.private.return_value = "wrong"
-        fixture.logs_contain.side_effect = (False, True)
+        # Wrong-token poll, the post-removal re-check, then the good runner.
+        fixture.logs_contain.side_effect = (False, False, True)
+        fixture.log_classes.side_effect = lambda role, _patterns: (
+            ["forbidden"] if role == "runner" else []
+        )
         fixture.wait_until.side_effect = lambda predicate, *_args: self.assertTrue(
             predicate()
         )

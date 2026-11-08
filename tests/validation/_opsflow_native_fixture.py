@@ -71,6 +71,9 @@ WORK_SECONDS = 40 * 60
 # pending container as never created. A create that lands after this grace
 # and after the final sweep still escapes; the owner's residue check covers it.
 PENDING_CREATE_GRACE_SECONDS = 60
+# Cleanup re-sweeps the attempt label after these pauses (10 s of its two
+# minutes) when a sweep finds owned residue or a create was ambiguous.
+RESWEEP_DELAYS_SECONDS = (2, 3, 5)
 
 
 class RehearsalFailure(AssertionError):
@@ -89,6 +92,10 @@ class NativeDockerBoundary(DockerClientBoundary):
 
 
 class NativeFixture:
+    # Set by create() when the daemon may still finish a create it reported
+    # ambiguously; cleanup then always re-sweeps after a delay.
+    ambiguous_create = False
+
     def __init__(self) -> None:
         self.host_uid, self.host_gid = native.host_identity()
         self.started = time.monotonic()
@@ -290,8 +297,10 @@ class NativeFixture:
             if volumes != expected_volumes:
                 raise RehearsalFailure("native image declared-volume contract changed")
 
-    def create_networks(self) -> None:
-        for role in ("ctl", "runner", "dev", "capture"):
+    def create_networks(
+        self, roles: tuple[str, ...] = ("ctl", "runner", "dev", "capture")
+    ) -> None:
+        for role in roles:
             name = f"{self.attempt}-{role}"
             pending = PendingNetwork(name, role)
             self.pending_networks[role] = pending
@@ -484,6 +493,8 @@ class NativeFixture:
         if identity:
             self.containers[role] = adopt_container(pending, identity)
         if failed or result is None or result.returncode or role not in self.containers:
+            # The daemon may still finish this create and list it late.
+            self.ambiguous_create = True
             raise RehearsalFailure("owned container identity is ambiguous")
         record = self.containers[role]
         for extra in networks[1:]:
@@ -607,6 +618,16 @@ class NativeFixture:
         result = self.client.run_result("logs", record.cid)
         return result.returncode == 0 and pattern in result.stdout + result.stderr
 
+    def log_classes(self, role: str, classify) -> list[str]:
+        """Return `classify(log text)`, a value-free list; the text never leaves."""
+        self.runtime_headroom()
+        record = self.containers[role]
+        self._verify_container(record)
+        result = self.client.run_result("logs", record.cid)
+        if result.returncode:
+            return []
+        return classify(result.stdout + "\n" + result.stderr)
+
     def remove(self, role: str) -> None:
         record = self.containers[role]
         self._verify_owned(record)
@@ -718,6 +739,8 @@ class NativeFixture:
         failures: list[str] = []
         resources_clear = False
         cancellation: BaseException | None = None
+        removed_cids: list[str] = []
+        removed_nids: list[str] = []
         try:
             self.client.begin_cleanup()
 
@@ -773,9 +796,20 @@ class NativeFixture:
                 if removed:
                     self.networks.pop(role, None)
                     self.pending_networks.pop(role, None)
-            container_ids, network_ids = sweep_attempt(self.client, self.attempt)
-            self.swept_cids.update(container_ids)
-            self.swept_nids.update(network_ids)
+            container_ids, network_ids = self._sweep()
+            # A create can land, or be listed, after the sweep above (seen
+            # 2026-11-08 under load). Swept ids carry this attempt's label, so
+            # they are removed and the sweep repeats; an ambiguous create always
+            # earns one delayed re-sweep. PASS needs an empty last sweep.
+            delayed = self.ambiguous_create
+            for delay in RESWEEP_DELAYS_SECONDS:
+                if not (container_ids or network_ids or delayed):
+                    break
+                delayed = False
+                removed_cids += self._remove_swept_containers(container_ids)
+                removed_nids += self._remove_swept_networks(network_ids)
+                time.sleep(delay)
+                container_ids, network_ids = self._sweep()
             resources_clear = not container_ids and not network_ids
             if not resources_clear:
                 failures.append("residual_owned_resource")
@@ -802,7 +836,7 @@ class NativeFixture:
             failures.extend(boundary_failures)
             if cancellation is None:
                 cancellation = boundary_cancellation
-        self.receipt.update(cleanup="PASS" if not failures else "FAIL", cleanup_failures=sorted(set(failures)), swept_container_ids=sorted(self.swept_cids), swept_network_ids=sorted(self.swept_nids))  # fmt: skip
+        self.receipt.update(cleanup="PASS" if not failures else "FAIL", cleanup_failures=sorted(set(failures)), swept_container_ids=sorted(self.swept_cids), swept_network_ids=sorted(self.swept_nids), swept_removed_container_ids=sorted(set(removed_cids)), swept_removed_network_ids=sorted(set(removed_nids)))  # fmt: skip
         self.receipt["retained"] = {
             "container_ids": sorted(
                 {item.cid for item in self.containers.values()} | self.swept_cids
@@ -818,6 +852,55 @@ class NativeFixture:
             raise cancellation
         if failures:
             raise RehearsalFailure("owned native cleanup incomplete")
+
+    def _sweep(self) -> tuple[set[str], set[str]]:
+        container_ids, network_ids = sweep_attempt(self.client, self.attempt)
+        self.swept_cids.update(container_ids)
+        self.swept_nids.update(network_ids)
+        return container_ids, network_ids
+
+    def _swept_label_owned(self, item: dict, identity: str, labels: dict) -> bool:
+        return (
+            item.get("Id") == identity
+            and labels.get(OWNER_LABEL) == OWNER
+            and labels.get(ATTEMPT_LABEL) == self.attempt
+        )
+
+    def _remove_swept_containers(self, container_ids: set[str]) -> list[str]:
+        removed = []
+        for cid in sorted(container_ids):
+            try:
+                result = self.client.run_result("inspect", cid)
+                if result.returncode:
+                    continue
+                item = self._object(result.stdout)
+                labels = (item.get("Config") or {}).get("Labels") or {}
+                if not self._swept_label_owned(item, cid, labels):
+                    continue
+                request_container_removal(self.client, cid)
+                if wait_container_absent(self.client, cid, self.final_deadline).absent:
+                    removed.append(cid)
+            except Exception:
+                continue  # the next sweep still lists it
+        return removed
+
+    def _remove_swept_networks(self, network_ids: set[str]) -> list[str]:
+        removed = []
+        for network_id in sorted(network_ids):
+            try:
+                result = self.client.run_result("network", "inspect", network_id)
+                if result.returncode:
+                    continue
+                item = self._object(result.stdout)
+                if not self._swept_label_owned(
+                    item, network_id, item.get("Labels") or {}
+                ):
+                    continue
+                if not self.client.run_result("network", "rm", network_id).returncode:
+                    removed.append(network_id)
+            except Exception:
+                continue  # the next sweep still lists it
+        return removed
 
     def _cleanup_host(self) -> None:
         if self.dir_identity is None:

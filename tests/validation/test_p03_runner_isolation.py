@@ -17,7 +17,10 @@ from tests.validation._opsflow_native_inputs import (
     RUNNER_REF,
     bind_mount,
 )
-from tests.validation._opsflow_native_ownership import n8n_health_probe
+from tests.validation._opsflow_native_ownership import (
+    n8n_health_probe,
+    node_status_probe,
+)
 from tests.validation._p03_runner_native_fixture import (
     CANCEL_JS,
     FULL_REQUEST_TIMEOUT,
@@ -477,12 +480,8 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
             self.session = value.pop("_session")
         return value
 
-    def start_main(
-        self,
-        task_timeout: int = FULL_TASK_TIMEOUT,
-        request_timeout: int = FULL_REQUEST_TIMEOUT,
-    ) -> None:
-        mounts = tuple(
+    def n8n_mounts(self) -> tuple[str, ...]:
+        return tuple(
             bind_mount(self.secrets[key][1], target)
             for key, target in (
                 ("metadata_n8n", "/run/secrets/n8n_db_password"),
@@ -491,14 +490,20 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
                 ("runner", "/run/secrets/n8n_runner_auth_token"),
             )
         )
-        environment = (
+
+    @staticmethod
+    def n8n_environment(task_timeout: int, request_timeout: int) -> tuple[str, ...]:
+        # HOME (SPEC-0269): queue mode with manual executions offloaded, so
+        # main starts no broker and the worker's broker serves the runner.
+        return (
             "DB_TYPE=postgresdb",
             "DB_POSTGRESDB_HOST=metadata-pg",
             "DB_POSTGRESDB_PORT=5432",
             "DB_POSTGRESDB_DATABASE=n8n",
             "DB_POSTGRESDB_USER=n8n",
             "DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/n8n_db_password",
-            "EXECUTIONS_MODE=regular",
+            "EXECUTIONS_MODE=queue",
+            "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
             "N8N_VALKEY_HOST=n8n-valkey",
             "N8N_VALKEY_SECRET=n8n_valkey_password",
             "QUEUE_BULL_REDIS_HOST=n8n-valkey",
@@ -506,7 +511,6 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
             "QUEUE_BULL_PREFIX=n8n",
             "QUEUE_BULL_REDIS_PASSWORD_FILE=/run/secrets/n8n_valkey_password",
             "N8N_RUNNERS_MODE=external",
-            "N8N_RUNNERS_BROKER_LISTEN_ADDRESS=0.0.0.0",
             "N8N_RUNNERS_AUTH_TOKEN_FILE=/run/secrets/n8n_runner_auth_token",
             *runner_timing_environment(task_timeout, request_timeout),
             "N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key",
@@ -524,8 +528,19 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
             "GENERIC_TIMEZONE=Asia/Seoul",
             "TZ=Asia/Seoul",
         )
+
+    def start_main(
+        self,
+        task_timeout: int = FULL_TASK_TIMEOUT,
+        request_timeout: int = FULL_REQUEST_TIMEOUT,
+    ) -> None:
         self.fixture.create(
-            "main", N8N_REF, "1000:1000", ("ctl",), env=environment, mounts=mounts
+            "main",
+            N8N_REF,
+            "1000:1000",
+            ("ctl",),
+            env=self.n8n_environment(task_timeout, request_timeout),
+            mounts=self.n8n_mounts(),
         )
         self.fixture.start("main")
 
@@ -538,6 +553,40 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
 
         self.fixture.wait_until(ready, "n8n main readiness expired", 300)
 
+    def start_worker(
+        self,
+        task_timeout: int = FULL_TASK_TIMEOUT,
+        request_timeout: int = FULL_REQUEST_TIMEOUT,
+    ) -> None:
+        environment = (
+            *self.n8n_environment(task_timeout, request_timeout),
+            # HOME binds the broker to the worker's runner-network address;
+            # the fixture has no fixed address and listens on all interfaces.
+            "N8N_RUNNERS_BROKER_LISTEN_ADDRESS=0.0.0.0",
+        )
+        self.fixture.create(
+            "worker",
+            N8N_REF,
+            "1000:1000",
+            ("ctl", "runner"),
+            env=environment,
+            mounts=self.n8n_mounts(),
+            command=("worker",),
+        )
+        self.fixture.start("worker")
+
+        def broker_ready() -> bool:
+            ready, facts = node_status_probe(
+                lambda *args: self.fixture.exec_result("worker", *args),
+                "http://127.0.0.1:5679/healthz",
+            )
+            self.fixture.receipt["worker_broker_health_probe"] = facts
+            return ready
+
+        self.fixture.wait_until(
+            broker_ready, "n8n worker broker readiness expired", 300
+        )
+
     def start_runner(self, token: Path, task_timeout: int = FULL_TASK_TIMEOUT) -> None:
         script = (
             "set -eu; "
@@ -549,9 +598,9 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
             "runner",
             RUNNER_REF,
             "1000:1000",
-            ("ctl",),
+            ("runner",),
             env=(
-                "N8N_RUNNERS_TASK_BROKER_URI=http://n8n:5679",
+                "N8N_RUNNERS_TASK_BROKER_URI=http://n8n-worker:5679",
                 f"N8N_RUNNERS_TASK_TIMEOUT={task_timeout}",
                 "N8N_RUNNERS_MAX_CONCURRENCY=1",
                 "N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT=0",
