@@ -560,9 +560,8 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
     ) -> None:
         environment = (
             *self.n8n_environment(task_timeout, request_timeout),
-            # HOME binds the broker to the worker's runner-network address;
-            # the fixture has no fixed address and listens on all interfaces.
-            "N8N_RUNNERS_BROKER_LISTEN_ADDRESS=0.0.0.0",
+            # Like HOME, the broker binds only the worker's runner-network address.
+            f"N8N_RUNNERS_BROKER_LISTEN_ADDRESS={self.broker_ip}",
         )
         self.fixture.create(
             "worker",
@@ -572,13 +571,14 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
             env=environment,
             mounts=self.n8n_mounts(),
             command=("worker",),
+            ips={"runner": self.broker_ip},
         )
         self.fixture.start("worker")
 
         def broker_ready() -> bool:
             ready, facts = node_status_probe(
                 lambda *args: self.fixture.exec_result("worker", *args),
-                "http://127.0.0.1:5679/healthz",
+                f"http://{self.broker_ip}:5679/healthz",
             )
             self.fixture.receipt["worker_broker_health_probe"] = facts
             return ready

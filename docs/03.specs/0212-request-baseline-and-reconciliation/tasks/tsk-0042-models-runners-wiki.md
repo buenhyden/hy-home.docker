@@ -1,6 +1,6 @@
 ---
 title: "Models, Runners and Wiki Preparation Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -150,6 +150,32 @@ LAB runtime. The old architecture's cloud fallback, obsolete embedding tag and
 bind-mount claims must be corrected only where current tracked source proves a
 different contract.
 
+### Fixture parity and wrong-token refusal (2026-11-08)
+
+The `wrong_token_registration` residual is a wait bound, not a missing refusal.
+In the pinned `n8nio/runners` image, `task-runner-launcher` exchanges its auth
+token for a grant token through `retry.LimitedRetry` (60 seconds, 5 seconds
+apart). Each failed attempt is logged only at DEBUG. When the retries run out,
+the launcher logs at ERROR `request to fetch grant token received status code
+403`. The binary contains those strings, and the upstream
+`n8n-io/task-runner-launcher` source (`internal/http/fetch_grant_token.go`,
+`internal/retry/retry.go`) produces them. The fixture waited 30 seconds, so the
+ERROR line could never appear. The bound is now 90 seconds, and a regression
+checks that the real error line maps to `http_403`.
+
+Two of the five fixture differences are removed. The fixture runner network now
+matches HOME's shape: it is internal, uses the isolated IPv4 gateway mode, and
+takes the first free `/24` in `10.251.0.0/16` with its upper half as the dynamic
+range. The worker joins it at `.2`, and its broker binds only that address
+(`N8N_RUNNERS_BROKER_LISTEN_ADDRESS`), with the readiness probe on the same
+address. `NativeFixture` gains per-role network options and fixed attachment
+addresses; other callers are unchanged.
+
+Three differences stay, by design: the shared `ctl` network, the fixture-only
+tmpfs mounts and the resource caps. None of them crosses the runner boundary
+under test. A native rerun is needed to turn the wrong-token row into PASS
+evidence; it is NOT_RUN until approved.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -179,6 +205,7 @@ different contract.
 | P03 Runner native rehearsal after the attribution fixes | 63 | W68 | Synthetic Main/broker/application-control rehearsal | `main` `a7a6e282c`; same reviewed images, both cached; owner approval 2026-11-08 | PASS | Attempt `opsflow-native-b675571b1b5b82639cdddc46`, 870.315 seconds, ended 2026-11-08T00:32:01Z, unittest exit 0, receipt `native=PARTIAL`. PASS: `javascript_ok`, `python_ok`, `javascript_module_denied` and `python_module_denied` (`module_access_denied`), `javascript_environment_denied` (`environment_access_denied`), the four Python file scenarios and `ancestor_environment_probe` (`builtin_denied`), `javascript_candidate_secret_file_denied` (`module_access_denied`), `timeout` (`controlled_workflow_timeout`), `cancellation` and `restart_next_good_task`. TEST_RESIDUAL: `peer_nonbroker_port` (error, unclassified; not reachable) and `wrong_token_registration` (`NOT_OBSERVED_WITHIN_3S`). NOT_RUN: candidate Compose, paired candidate network, manual Worker actor and private workflow compatibility. `fixture_equivalence=NON_EQUIVALENT` (shared internal control network, fixture tmpfs, fixture resource caps). Cleanup PASS; zero labeled containers and networks afterwards. | required | - |
 | P03 Runner HOME apply | 63 | W68 | Recreate `n8n`, `n8n-worker`, `n8n-task-runner` and `n8n-task-runner-worker` with the root Compose and `docker-compose.ollama-local.yml` | `main` `53880ad86`, HOME; owner approval 2026-11-08 | PASS | Before (`~/storage/backups/spec0212-w68-home-20261108/pre-state.txt`): broker `0.0.0.0` on main and worker, both runners on the shared `n8n_net`; no execution activity in the previous 10 minutes. A `--dry-run` recreated only the four containers and created only `n8n_main_runner_net` and `n8n_worker_runner_net`; the existing `hy-home-infra_n8n_ollama_net` (`internal=true`) was kept. Applied 00:54:53–00:56:48 UTC; all four `healthy`. After: `n8n-task-runner` only on `n8n_main_runner_net` (`10.250.22.128`), `n8n-task-runner-worker` only on `n8n_worker_runner_net` (`10.250.23.128`); main at `10.250.22.2`, worker at `10.250.23.2` with broker `N8N_RUNNERS_BROKER_LISTEN_ADDRESS` set to those addresses (SPEC-0267 W1 decision). The worker listens on `10.250.23.2:5679` only; its runner connected and offers tasks. Main opens no `5679` listener and its runner waits for the broker, as it did before the change (Loki, 2026-11-02 start), because main runs `EXECUTIONS_MODE=queue` with `OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true`. From `storybook-mcp` on `edge_net`: `n8n-worker:5679` does not resolve, `10.250.23.2:5679` times out, `n8n:5679` is refused. The worker runner resolves only `n8n-worker` (not `n8n`, `mng-pg` or `ollama`). The worker reaches Ollama (`/api/version` 200); the n8n route answers 302; `n8n-monitor` scrape up; Gatus 8 endpoints, none failing. A Code node execution through the HOME worker runner was not run. | required | - |
 | P03 Runner HOME Code node execution | 63 | W68 | Owner-run UI workflow: Manual Trigger, JS Code node, Python Code node | HOME after the runner isolation apply | PASS | The owner ran the test on 2026-11-08 and reported it done. Logs: `n8n-worker` started and finished executions 122–125 (first at 01:34:18Z); the worker broker logged `Registered runner "JS Task Runner"` and `Registered runner "Python Task Runner"`; the worker runner logged no error other than Node's `ExperimentalWarning` for `localStorage`. This covers the manual Worker actor path in HOME: manual executions are offloaded to the worker. | required | - |
+| P03 Runner fixture parity and wrong-token bound | 63 | W68 | `test_p03_runner_boundaries`, `test_p03_runner_isolation` and every `NativeFixture` consumer | Clean `main` `6361e93b5` plus this change | PASS | Four new or changed assertions fail on the base; all suites pass after. Native rerun NOT_RUN | required | - |
 | Initial Hermes exact-destination attempt | 64 | W69 | Scoped workload tests, native local TLS transport and Ruff/diff check | Synthetic policy/credential inputs; no live Hermes target | PASS | 2026-11-02T12:49:13+09:00: plugin 42/42, synthetic local TLS 19/19 and scoped workload 356/356 PASS in 17.552 seconds; helper branch coverage 84%. Source SHA-256: `tools.py` `e4fe7697d717c0a986c6ba4831dfbc5162863bf5f7918df1da5efb4c1e9ea9c2`, transport `e5c78be6a8e698e8ee6fe6b776d58cb75684cccfbe11c088065558b6d2c29358`, plugin test `c72f2ff2e5dc4f04dc618eeeaf7ee2221ac4077de91fd73dd1b8a0d76ba19b9c`, transport test `5e01dca94333e10e67882a0391a6ed0edc97b0eccf76d1121474f95c1dd4401e`. Historical attempt evidence only. | optional | - |
 | Hermes cancellation safety review | 64 | W69 | Independent security review | Initial Hermes source packet | FAIL | Independent review found that parent `SystemExit`/`SIGTERM` can orphan the child and allow a request after cancellation. The initial PASS does not close W69. | required | - |
 | Current Hermes corrective packet | 64 | W69 | Corrected scoped tests, native local TLS transport and Ruff/diff check | Frozen synthetic policy/credential inputs; no live Hermes target | PASS | 2026-11-02T05:08:00Z: source SHA-256 `tools.py` `e4fe7697d717c0a986c6ba4831dfbc5162863bf5f7918df1da5efb4c1e9ea9c2`, transport `adb3ab26f7cc37645d345c84c52eb34051c66362626226f8623fe01422a83fad`, plugin test `c72f2ff2e5dc4f04dc618eeeaf7ee2221ac4077de91fd73dd1b8a0d76ba19b9c`, transport test `971dac2a153d868081b1c670451d921644b4c2dad94292404fb629d486f3bd51`; corrected gate 65/65 including three TLS cases and actual SIGTERM, scoped workload 360/360 in 20.108 seconds, branch coverage 84%, Ruff/format/diff PASS. Writer evidence, independently reviewed below. | optional | - |

@@ -114,6 +114,8 @@ def mock_rehearsal_case(test, *, registered_early=False, refusal=("http_403",)):
         "runner": ("", "runner"),
     }
     fixture.private.return_value = "wrong"
+    # No existing Docker networks, so the runner network takes 10.251.0.0/24.
+    fixture.client.run.return_value = ""
     state = {"good_runner": False}
 
     def logs_contain(role, pattern):
@@ -512,7 +514,20 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
         fixture = case.fixture
         with patch("tests.validation._p03_runner_native_fixture.time.sleep"):
             run_full_rehearsal(case)
-        fixture.create_networks.assert_called_once_with(("ctl", "runner"))
+        fixture.create_networks.assert_called_once_with(
+            ("ctl", "runner"),
+            {
+                "runner": (
+                    "--subnet",
+                    "10.251.0.0/24",
+                    "--ip-range",
+                    "10.251.0.128/25",
+                    "--opt",
+                    "com.docker.network.bridge.gateway_mode_ipv4=isolated",
+                )
+            },
+        )
+        self.assertEqual("10.251.0.2", case.broker_ip)
         fixture.start_valkey.assert_called_once_with("valkey")
         fixture.start_mailpit.assert_not_called()
         fixture.start_n8n.assert_not_called()
@@ -529,6 +544,7 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
                     "task_broker": False,
                 },
                 "worker": {
+                    "broker_listen": "runner_network_fixed_address",
                     "command": "worker",
                     "networks": ["ctl", "runner"],
                     "task_broker": True,
@@ -536,6 +552,11 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
                 "runner": {
                     "networks": ["runner"],
                     "task_broker_uri": "http://n8n-worker:5679",
+                },
+                "runner_network": {
+                    "gateway_mode_ipv4": "isolated",
+                    "internal": True,
+                    "ipam": "free_slash24_with_upper_half_dynamic_range",
                 },
                 "valkey": {"networks": ["ctl"]},
                 "metadata_pg": {"networks": ["ctl"]},
@@ -546,9 +567,55 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
             "synthetic_worker_broker_application_controls", fixture.receipt["scope"]
         )
         differences = fixture.receipt["p03_runner_scenarios"]["fixture_differences"]
-        self.assertIn("worker_broker_listens_on_all_interfaces", differences)
-        self.assertIn("runner_network_without_home_ipam_or_gateway_mode", differences)
+        self.assertNotIn("worker_broker_listens_on_all_interfaces", differences)
+        self.assertNotIn(
+            "runner_network_without_home_ipam_or_gateway_mode", differences
+        )
         self.assertIn("shared_internal_ctl_network", differences)
+
+    def test_runner_network_takes_a_free_subnet_in_home_shape(self):
+        from tests.validation._p03_runner_native_fixture import (
+            free_runner_subnet,
+            runner_network_options,
+        )
+
+        networks = [
+            {"IPAM": {"Config": [{"Subnet": "10.251.0.0/24"}]}},
+            {"IPAM": {"Config": [{"Subnet": "10.251.1.0/25"}, {}]}},
+            {"IPAM": {"Config": None}},
+        ]
+        client = Mock()
+        client.run.side_effect = lambda *args: (
+            "a\nb\nc\n" if args[1] == "ls" else json.dumps(networks)
+        )
+        subnet = free_runner_subnet(client)
+        self.assertEqual("10.251.2.0/24", str(subnet))
+        self.assertEqual(
+            (
+                "--subnet",
+                "10.251.2.0/24",
+                "--ip-range",
+                "10.251.2.128/25",
+                "--opt",
+                "com.docker.network.bridge.gateway_mode_ipv4=isolated",
+            ),
+            runner_network_options(subnet),
+        )
+        networks[0] = {"IPAM": {"Config": [{"Subnet": "10.251.0.0/16"}]}}
+        with self.assertRaises(RehearsalFailure):
+            free_runner_subnet(client)
+
+    def test_wrong_token_bound_outlasts_the_launcher_grant_token_retries(self):
+        # retry.LimitedRetry: 60 s maximum, 5 s between attempts.
+        self.assertGreater(WRONG_TOKEN_WAIT_SECONDS, 60 + 5)
+        line = (
+            "Failed to execute `launch` command: failed to fetch grant token for "
+            "launcher: exhausted retries to fetch grant token: gave up retrying "
+            "operation `grant-token-fetch` on reaching max retry time 1m0s, last "
+            "error: failed to fetch grant token: request to fetch grant token "
+            "received status code 403"
+        )
+        self.assertEqual(["http_403"], refusal_signal_classes(line))
 
     def test_peer_probe_classifies_network_outcomes_value_free(self):
         self.assertEqual(
@@ -694,6 +761,7 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
             key: ("", Path("/owned") / key)
             for key in ("metadata_n8n", "valkey_n8n", "encryption", "runner")
         }
+        case.broker_ip = "10.251.7.2"
         case.start_main()
         case.start_worker()
         case.start_runner(Path("/owned/runner"))
@@ -717,7 +785,10 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
         self.assertFalse(
             any("N8N_RUNNERS_BROKER_LISTEN_ADDRESS" in i for i in main.kwargs["env"])
         )
-        self.assertIn("N8N_RUNNERS_BROKER_LISTEN_ADDRESS=0.0.0.0", worker.kwargs["env"])
+        self.assertIn(
+            "N8N_RUNNERS_BROKER_LISTEN_ADDRESS=10.251.7.2", worker.kwargs["env"]
+        )
+        self.assertEqual({"runner": "10.251.7.2"}, worker.kwargs["ips"])
         self.assertIn(
             "N8N_RUNNERS_TASK_BROKER_URI=http://n8n-worker:5679", runner.kwargs["env"]
         )
@@ -758,6 +829,7 @@ class RunnerNativeBoundaryTests(unittest.TestCase):
         fixture = Mock()
         fixture.receipt = {}
         fixture.attempt = "injected-error"
+        fixture.client.run.return_value = ""
         fixture.create_secrets.return_value = {
             "metadata_pg": ("", "metadata"),
             "valkey_server": ("", "valkey"),
