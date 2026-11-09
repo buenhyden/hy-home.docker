@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.10.1"
+version: "0.10.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -449,7 +449,7 @@ TLS 검사를 끄지 않는다). owner 행에는 로그인된 browser나 Keycloa
 
 | Behaviour | Routers covered | Method | Expected | Performer |
 | --- | --- | --- | --- | --- |
-| Cookie 없음, SSO route | 이 matrix에 기록된 `sso-auth` router 17개: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `kafka-connect`, `kafka-rest`, `loki`, `mlflow`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/`(`/favicon.ico`는 `redisinsight-static`용) | upstream content가 노출되지 않고 응답이 Keycloak authorization endpoint를 가리킴 | agent |
+| Cookie 없음, SSO route | 이 matrix에 기록된 `sso-auth` router 16개: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `kafka-connect`, `loki`, `mlflow`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/`(`/favicon.ico`는 `redisinsight-static`용) | upstream content가 노출되지 않고 응답이 Keycloak authorization endpoint를 가리킴 | agent |
 | Cookie 없음, API client | `alloy`(`Accept: application/json`), `prometheus`(`/api/v1/status/buildinfo`) | credential 없이 GET | 401을 유지하고 upstream content를 노출하지 않음 | agent |
 | Session 없음, native OIDC | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | `/`, app login 경로, API 경로 하나에 GET | Keycloak이나 app login 페이지에서 로그인이 시작되고 API는 거부함 | agent |
 | `/admins` 밖의 사용자 | 모든 SSO route | `/admins` 밖의 realm 사용자로 로그인하고 SSO route에 접속 | 거부됨: OAuth2 Proxy callback group 거부가 log와 Proxy 오류 화면으로 끝남. 이는 gateway `sso-errors`가 ForwardAuth 403을 가로채는 경우와 별도임 | owner |

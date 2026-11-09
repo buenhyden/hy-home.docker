@@ -1,6 +1,6 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.3.2"
+version: "1.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -153,7 +153,6 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 05-messaging | `kafka-connect` | `kafka-connect` | `Infrastructure/kafka-connect`, `Infrastructure/containers` |  |
 | 05-messaging | `kafka-exporter` | `kafka-exporter` | `Infrastructure/kafka-consumer-lag`, `Infrastructure/containers` |  |
 | 05-messaging | `kafka-init` | none | `Infrastructure/containers` | container metrics and logs only |
-| 05-messaging | `kafka-rest-proxy` | none | `Infrastructure/containers` | container metrics and logs only |
 | 05-messaging | `schema-registry` | `schema-registry` | `Infrastructure/schema-registry`, `Infrastructure/containers` |  |
 | 06-observability | `alertmanager` | `alertmanager` | `Observability/alertmanager-overview`, `Infrastructure/containers` |  |
 | 06-observability | `alloy` | `alloy` | `Observability/alloy-controller`, `Observability/alloy-resources`, `Observability/alloy-opentelemetry`, `Observability/alloy-loki`, `Infrastructure/containers` |  |

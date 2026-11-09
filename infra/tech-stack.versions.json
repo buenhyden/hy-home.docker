@@ -911,28 +911,6 @@
       ]
     },
     {
-      "component": "Compose image: confluentinc/cp-kafka-rest",
-      "tier": "05-messaging",
-      "classification": "external",
-      "repository_classifications": {
-        "confluentinc/cp-kafka-rest": "external"
-      },
-      "images": [
-        "confluentinc/cp-kafka-rest:8.3.2"
-      ],
-      "compose_files": [
-        "infra/05-messaging/kafka/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-          "images": [
-            "confluentinc/cp-kafka-rest:8.3.2"
-          ]
-        }
-      ]
-    },
-    {
       "component": "Compose image: confluentinc/cp-schema-registry",
       "tier": "05-messaging",
       "classification": "external",
