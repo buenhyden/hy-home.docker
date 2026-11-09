@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -504,6 +504,26 @@ HOME does not scrape its exporters). It moved to
 `labs/postgresql-ha/config/prometheus-alert-rules.yml`, which HOME Prometheus
 does not load; promtool passes for both files.
 
+### HOME coverage gaps (2026-11-09)
+
+The owner asked to review HOME services that Prometheus or Grafana miss and
+fix them. Most HOME targets are scraped and have dashboards. Five were not:
+
+- **pushgateway:** running but unscraped, with zero pushed groups and no
+  producer in the repository; TSK-0009 had deferred its job to the first
+  producer. It is stopped (it is not in the HOME selection) rather than given
+  an always-empty job.
+- **openbao-agent:** scraped (`bao_agent_auth_success`/`_failure`) with alerts
+  but no panels. The `Security/openbao` dashboard gains an Agent row.
+- **n8n-worker:** the `n8n` job already exports
+  `n8n_scaling_mode_queue_jobs_*` (`N8N_METRICS_INCLUDE_QUEUE_METRICS=true`),
+  which shows the worker load; process metrics come from cAdvisor. No change.
+- **open-webui:** no Prometheus endpoint. Gatus shares `edge_net` with it, so
+  both Gatus configs probe `/health` (live `{"status":true}` from Gatus).
+- **n8n-task-runner-worker:** only on its isolated runner network; giving Gatus
+  that network would weaken the isolation, so it stays cAdvisor and Docker
+  health only.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -550,6 +570,7 @@ does not load; promtool passes for both files.
 | OpenBao HUP path | 85 | W90 | `test_openbao_audit_rotation` and a live `docker exec … kill -HUP 1` | Rule in `infra/03-security/openbao/config/logrotate/openbao` | PASS | Audit backend reloaded; no restart-manager stop; still unsealed. Host copy in `/etc/logrotate.d` still needs the owner install. | required | - |
 | Clean-stop contract | 85 | W90 | `test_databases_stop_cleanly_on_host_shutdown` RED then GREEN; Compose render with `.env.example` | `mng-pg`, `dev-pg`, DB templates | PASS | Render: both have `KILL` and `1m0s`; OpenBao and valkey unchanged. | required | - |
 | Never-run scrape jobs | 83 | W88 | Target and `expected_state` readback; 3-day `max_over_time(up)` | 8 down targets after the reboot | PASS | All 8 `off` and never up; 4 jobs commented out, 34 jobs remain in both configs. | required | - |
+| HOME coverage gaps | 83 | W88 | Live label and target readback, Gatus probe, `test_gatus_oidc`, Compose suites, operations catalog | Five services named above | PASS | Agent panels added, Open WebUI probed, pushgateway stopped with 0 groups; 171 tests OK. | required | - |
 | Reboot: OpenBao Agent restart | 85 | W90 | RUN-0103 `agent-restart` and audit readback | Issuer `4f2e7f9b`, journal `rolled_back` | FAIL | Helper sink container exceeded 20 s under I/O pressure (52 s measured); no server write. | required | - |
 
 ## Criterion Acceptance
