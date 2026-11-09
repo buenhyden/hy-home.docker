@@ -57,6 +57,17 @@ trap cleanup EXIT HUP INT TERM
 chmod 0600 "$ca_bundle_temp"
 mv -f -- "$ca_bundle_temp" "$ca_bundle"
 
+if [[ -n "${QDRANT_API_KEY_FILE:-}" ]]; then
+  require_readable_file "Qdrant API key" "$QDRANT_API_KEY_FILE"
+  declare -a qdrant_key_lines=()
+  mapfile -t qdrant_key_lines <"$QDRANT_API_KEY_FILE"
+  [[ "${#qdrant_key_lines[@]}" -eq 1 ]] || fail "Qdrant API key must contain exactly one line"
+  [[ -n "${qdrant_key_lines[0]}" && "${qdrant_key_lines[0]}" != *$'\r'* ]] ||
+    fail "Qdrant API key is empty or contains carriage returns"
+  export QDRANT_API_KEY="${qdrant_key_lines[0]}"
+  unset qdrant_key_lines
+fi
+
 export OAUTH_CLIENT_SECRET="$oauth_client_secret"
 export SSL_CERT_FILE="$ca_bundle"
 export REQUESTS_CA_BUNDLE="$ca_bundle"

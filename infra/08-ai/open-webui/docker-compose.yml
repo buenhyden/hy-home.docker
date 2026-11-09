@@ -35,6 +35,10 @@ services:
     environment:
       PORT: ${OLLAMA_WEBUI_PORT:-8080}
       OLLAMA_BASE_URL: http://ollama:${OLLAMA_PORT:-11434}
+      VECTOR_DB: qdrant
+      QDRANT_URI: http://qdrant:${QDRANT_PORT:-6333}
+      # Read by the entrypoint; Open WebUI itself accepts the key only from the environment.
+      QDRANT_API_KEY_FILE: /run/secrets/qdrant_api_key
       RAG_EMBEDDING_ENGINE: ollama
       # The image leaves WEBUI_SECRET_KEY empty, so start.sh keeps a generated key
       # in this file; in the volume it survives recreation and is backed up.
@@ -77,6 +81,7 @@ services:
         bind: {create_host_path: false}
     secrets:
       - openwebui_oidc_client_secret
+      - qdrant_api_key
     networks:
       edge_net: {}
       ai_net: {}
@@ -90,6 +95,8 @@ services:
       traefik.http.routers.open-webui.middlewares: gateway-standard-chain@file
     depends_on:
       ollama:
+        condition: service_healthy
+      qdrant:
         condition: service_healthy
     healthcheck:
       test: [ 'CMD-SHELL', 'curl -f "http://localhost:$${PORT}/health" || exit 1' ]

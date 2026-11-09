@@ -1,6 +1,6 @@
 ---
 title: "Models, Runners and Wiki Preparation Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -286,6 +286,20 @@ decide, (2) a versioned data set with its rights and personal-data review, (3) a
 data owner, and (4) a baseline with a time-ordered split, and when an MLflow
 experiment is designated for the results. No comparison was run.
 
+### D06 T06 owner direction and Open WebUI Qdrant (2026-11-09)
+
+The owner set the T06 direction on 2026-11-09: use Qdrant as the Open WebUI
+vector store, run an MLflow evaluation of the Ollama models, add Crawl4AI as a
+fallback for the Hermes source collection, keep Neo4j on hold, and stop ComfyUI
+(stopped on HOME the same day; a HOME selector start would start it again, because
+the `ai` profile includes it).
+
+Open WebUI now sets `VECTOR_DB=qdrant` over `ai_net`. The entrypoint loads the key
+from `QDRANT_API_KEY_FILE`, because v0.12.0 reads `QDRANT_API_KEY` only from the
+environment. Open WebUI held 0 knowledge bases and 0 files, so nothing migrates.
+It receives the Qdrant read-write key (AI-008); Qdrant offers only that key and
+the read-only one. The HOME apply is a separate approved step.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -297,6 +311,7 @@ experiment is designated for the results. No comparison was run.
 | Current final model source review | 61 | W66 | Independent code review of final exact-integer-dimension source and tests | Frozen current owner packet | PASS | `p03_code_review`, 2026-11-02: APPROVED with no remaining finding. Production core suite 26/26 PASS; formatter/linter and diff check PASS. Reviewed CLI `13eaef9e4a0613ca9c034b334358249efbb7ab0bdc6aa44799d68f571fc61c10`, core `0f608559560a84973bf344554d8421df95484c90fd46566e042a2eaa075cf922`, HTTP `87a16f423e3bdc6e5650f858095f72deb161f6eb90ae98a153134467e622bbaf`, policy `dfe205b314113fe3604e25bc0d6101a0338b33bf0a65bf7b45cd605a8c55842f`, core tests `89241a8d24a490a805549419cbab18491a279e68e589164fda40e33a3960881c`. Synthetic source/isolated scope only. | required | - |
 | D06 HOME model actors and cloud refusal | 61 | W66 | In-container calls from each n8n actor and a cloud-model request | HOME Ollama, `n8n`, `n8n-worker`, worker runner, 2026-11-08 | PASS | Worker: 8 models, 768-dim embedding, `gemma4:e2b` generation 200; main and runner cannot reach Ollama; cloud model 403 with `OLLAMA_NO_CLOUD=1` | required | - |
 | D06 T06 data census | 65 | W70 | Read-only Qdrant metric, Open WebUI database, MLflow API, Crawl4AI log and Hermes report census | HOME, 2026-11-09 | NOT_RUN | Evaluation BLOCKED: no evaluable data set, owner or baseline; resume conditions in D06 T06 evaluation resume conditions. | required | - |
+| Open WebUI Qdrant source | 65 | W70 | `test_openwebui_oidc_entrypoint` RED then GREEN and root render | Compose, entrypoint and AI-008 catalog consumer | PASS | 4 new assertions failed before and pass after; live indexing NOT_RUN. | required | - |
 | D06 Open WebUI saved model settings | 61 | W66 | Read-only `webui.db` `config` rows against the installed models | Open WebUI v0.12.0, 2026-11-08 | FAIL | `rag.embedding_model` names absent `qwen3-embedding:4b`; `openai.enable` true with `api.openai.com` and an empty key; 0 files, 0 knowledge | required | - |
 | D06 Open WebUI local-model source | 61 | W66 | `OpenWebuiLocalModelContractTests` RED then GREEN | Compose `embeddinggemma-2:740m`, `ENABLE_OPENAI_API=false` | PASS | Failed on the old model, passes after; HOME row update follows the merge | required | - |
 | D06 Open WebUI saved model settings recheck | 61 | W66 | Read-only `webui.db` `config` rows against the installed models | Open WebUI v0.12.0 after the HOME apply, 2026-11-08 12:33Z | PASS | `rag.embedding_model` is installed `embeddinggemma-2:740m`; `openai.enable` false; backup kept as `webui.db.pre-d06-20261108` | required | D06 Open WebUI saved model settings |

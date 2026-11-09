@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI"
-version: "1.1.5"
+version: "1.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 created: "2025-11-12"
 ---
 
@@ -37,7 +37,6 @@ Generation) 오케스트레이터 역할도 합니다.
 ### Out of Scope
 
 - 모델 가중치: [ollama](../ollama/README.md)에서 관리.
-- 벡터 영속화: Open WebUI의 데이터 볼륨 내 로컬 스토어를 사용하며 Qdrant는 사용하지 않습니다.
 
 ## Structure
 
@@ -89,7 +88,7 @@ open-webui/
 ## Related Documents
 
 - [Ollama Implementation](../ollama/README.md)
-- [Qdrant Implementation](../../04-data/qdrant/README.md) (참고용; 08-ai에서는 연결되어 사용되지 않음)
+- [Qdrant Implementation](../../04-data/qdrant/README.md) (Open WebUI 벡터 저장소; `VECTOR_DB=qdrant`, `ai_net`)
 - Open WebUI usage guide (`docs/05.operations/guides/09-ai-and-search/0057-open-webui.md`)
 - Open WebUI operations policy (`docs/05.operations/policies/09-ai-and-search/0057-open-webui.md`)
 - Open WebUI recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0057-open-webui.md`)

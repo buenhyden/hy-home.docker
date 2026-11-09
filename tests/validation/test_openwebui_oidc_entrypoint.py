@@ -120,6 +120,25 @@ class OpenWebUiOidcComposeTests(unittest.TestCase):
                 )
 
 
+class OpenWebUiQdrantComposeTests(unittest.TestCase):
+    def test_vector_store_is_qdrant_over_the_ai_network(self):
+        service = yaml.safe_load(COMPOSE.read_text())["services"]["open-webui"]
+        environment = service["environment"]
+        self.assertEqual("qdrant", environment["VECTOR_DB"])
+        self.assertEqual(
+            "http://qdrant:${QDRANT_PORT:-6333}", environment["QDRANT_URI"]
+        )
+        self.assertEqual(
+            "/run/secrets/qdrant_api_key", environment["QDRANT_API_KEY_FILE"]
+        )
+        self.assertNotIn("QDRANT_API_KEY", environment)
+        self.assertIn("qdrant_api_key", service["secrets"])
+        self.assertEqual(
+            "service_healthy", service["depends_on"]["qdrant"]["condition"]
+        )
+        self.assertIn("ai_net", service["networks"])
+
+
 class OpenWebUiOidcEntrypointTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -143,6 +162,7 @@ from pathlib import Path
 bundle = Path(os.environ["SSL_CERT_FILE"])
 Path(sys.argv[1]).write_text(json.dumps({
     "secret": os.environ["OAUTH_CLIENT_SECRET"],
+    "qdrant": os.environ.get("QDRANT_API_KEY"),
     "ssl": os.environ["SSL_CERT_FILE"],
     "requests": os.environ["REQUESTS_CA_BUNDLE"],
     "bundle": bundle.read_text(),
@@ -191,6 +211,29 @@ Path(sys.argv[1]).write_text(json.dumps({
             payload["bundle"],
         )
         self.assertEqual(0o600, payload["mode"])
+
+    def test_qdrant_key_is_loaded_only_when_its_file_is_declared(self):
+        key = self.root / "qdrant-key"
+        key.write_text("synthetic-qdrant-key\n")
+        result = self.run_entrypoint(QDRANT_API_KEY_FILE=str(key))
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertNotIn("synthetic-qdrant-key", result.stdout + result.stderr)
+        self.assertEqual(
+            "synthetic-qdrant-key", json.loads(self.result.read_text())["qdrant"]
+        )
+        self.result.unlink()
+        result = self.run_entrypoint()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIsNone(json.loads(self.result.read_text())["qdrant"])
+
+    def test_rejects_missing_or_multiline_qdrant_key_before_exec(self):
+        multiline = self.root / "multiline-key"
+        multiline.write_text("one\ntwo\n")
+        for path in (self.root / "missing-key", multiline):
+            with self.subTest(path=path.name):
+                result = self.run_entrypoint(QDRANT_API_KEY_FILE=str(path))
+                self.assertNotEqual(0, result.returncode)
+                self.assertFalse(self.result.exists())
 
     def test_rejects_missing_empty_or_multiline_secret_before_exec(self):
         missing = self.root / "missing-secret"
