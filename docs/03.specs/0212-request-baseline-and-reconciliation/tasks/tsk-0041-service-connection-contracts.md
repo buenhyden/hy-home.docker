@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.33"
+version: "0.1.34"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -315,6 +315,9 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D03 n8n named-user HOME switch after the ACL fix | 59 | W64 | Approved recreate, then health, ACL LOG, log and client readback | `main` `9939431c3`, image `f1493a20a2ff`, containers `435672289f3b` and the recreated `n8n`/`n8n-worker` | PASS | Healthy, no restarts; 19 `user=n8n` connections incl. worker `brpoplpush`; no `NOPERM`/`WRONGPASS` over three minutes; other consumers unchanged | required | - |
 | D03 live job through the named user | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch | NOT_RUN | No execution in the watch window; confirm on the next run | optional | - |
 | D03 live job through the named user, observed | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch, execution 127 | PASS | Enqueued by main, run by the worker, `success` in the n8n database; no `NOPERM` or `WRONGPASS` | optional | D03 live job through the named user |
+| n8n Assistant model and SearXNG configuration | 60 | W65 | Compose render, `N8nAssistantSearchContractTests`, hardening pin, operations catalog | Branch base `ab34255ae` plus this change | PASS | Model and search URL on main only; `searxng` has no ports, route or privilege; the search network holds only `n8n` and `searxng`; no Anthropic key variable | required | - |
+| n8n Assistant search live | 60 | W65 | Create `searxng`, ask the Assistant a web question, check `/healthz` and the JSON API from `n8n` | HOME | NOT_RUN | No container was created; the stack needs its own approval and the apply order in the report | required | - |
+| n8n Assistant code sandbox | 60 | W65 | Firecracker runner without `privileged` | `n8nio/n8n-sandbox-service-runner-firecracker:1.8.1` | NOT_RUN | BLOCKED: the runner needs netns, veth, TAP, iptables, mount and jailer rights close to `privileged`, and a possible enterprise license; not added | required | - |
 | SEC01 root source re-binding and crawl4ai-loopback row | 60 | W65 | `test_update_gates` | Clean `main` `b4d09cbd7` | PASS | 51 failures before (50 stale file hashes, 1 missing `crawl4ai-loopback` row); 39 tests OK after; image, build and the other membership unchanged | required | - |
 | n8n 2.46.6 source pin and digests | 60 | W65 | Read-only Docker Hub registry, GitHub release and npm lookups | Branch base `0220de58a`; `n8nio/n8n:2.46.6`, `n8nio/runners:2.46.6` | PASS | Index digests `sha256:8602f5df…92b3ae` (n8n) and `sha256:b1fe87a5…322612` (runners); `stable`, `latest` and the tag agree; release `n8n@2.46.6` published 2026-11-04, not a prerelease; recorded in the SEC01 lookups and ledger | required | - |
 | n8n 2.46.6 signature, full-image scan, build, native and HOME | 60 | W65 | Publisher signature, SBOM or scan, `hyhome/n8n` build, native queue and HOME recreate | Same inputs | NOT_RUN | Out of this source unit; the local image build and every recreate wait for their own approval | required | - |
@@ -1032,6 +1035,58 @@ scripts.lib.supply_chain.ledger_rebind` (hash-only, six rows), and the n8n sourc
 binding was rehashed in the ledger and build inputs. The `m0021` n8n and n8n-worker
 inventory cells were refreshed from `render_service_inventory`. Nothing was recreated, so
 neither the spans nor the router change are live.
+
+### 2026-11-09 n8n Assistant: model and web search, code sandbox held
+
+The owner asked to configure the n8n Assistant (Instance AI) with Web search through
+SearXNG and Code sandbox through n8n-sandbox, model `anthropic/claude-sonnet-5`, with a
+Firecracker runner and never privileged Docker-in-Docker. The Anthropic key is already a
+provider connection in the UI, so Compose sets only the model and carries no key.
+
+Done. `N8N_INSTANCE_AI_MODEL` and `N8N_INSTANCE_AI_SEARXNG_URL=http://searxng:8080` are set
+on `n8n` main. `searxng` is a HOME service in `infra/07-workflow/n8n/docker-compose.yml`
+(profiles `workflow`, `workflow-n8n`), digest-pinned to
+`searxng/searxng:2026.11.9-57ff753ad`, on `template-infra-readonly-med` (1 CPU, 512 MiB,
+512 pids, reservation 0.05 CPU and 192 MiB), read-only with `cap_drop: ALL`,
+`no-new-privileges`, user 977, tmpfs for `/tmp`, `/run` and `/var/cache/searxng`, a
+healthcheck on `/healthz`, no host port and no Traefik route. Its settings file
+`infra/07-workflow/n8n/searxng/settings.yml` turns JSON output on. It needs no secret
+file: the image refuses the default `server.secret_key`, so the entrypoint wrapper
+generates a random key at each start; nothing here keeps sessions or signed links.
+Networks: `n8n_search_net` is internal and holds only `n8n` and `searxng`, so n8n
+reaches SearXNG and SearXNG reaches no other service; `n8n_search_outbound_net` is a plain
+bridge that only `searxng` joins and is its way to the public internet. Its egress is
+therefore unrestricted by port or destination, like any bridge container, and it can
+reach the host LAN through NAT; unlike `crawl4ai` it has no address filter, because
+SearXNG queries a fixed set of search engines and does not fetch arbitrary URLs for its callers. Nothing
+reaches it from outside.
+
+Held. The code sandbox is not configured. The Firecracker runner image
+`n8nio/n8n-sandbox-service-runner-firecracker:1.8.1` (index
+`sha256:d73156fe…971bcf`, linux/amd64 only) was inspected without running it. Its binary builds
+network namespaces, veth pairs, TAP devices, `iptables` FORWARD and NAT rules, bind
+mounts and a Firecracker jailer, and needs `/dev/kvm` and `/dev/net/tun` (both exist on
+the host). That set needs `SYS_ADMIN` and `NET_ADMIN` plus mount, chroot, mknod and
+uid/gid changes, and Docker's default AppArmor profile blocks the mount calls. The smallest capability list that works is therefore close to
+`privileged`, cannot be shown to work without starting the container, and was not added. The
+Go package path of the runtime is `firecracker.ee`, an enterprise-edition tree in the
+sandbox service source, so whether the runner needs an n8n license is a question for the
+owner; the binary shows no license variable. The n8n reference stack
+(`docker/get-n8n.sh`, sandbox service 1.8.1) uses the privileged Docker-in-Docker runner
+instead, which the owner ruled out. The API (`n8n-sandbox-service-api:1.8.1`,
+`sha256:3ac19681…d00e7e`) and sandbox (`n8n-sandbox-service-sandbox:1.8.1`,
+`sha256:b397f4b5…f664ba1233`) images exist; sandbox service 1.14.0 is the newest release, and 1.8.1
+is the version tested with n8n 2.46.6. No sandbox secret is created; if the owner lifts the
+hold, the API key, the runner registration token and the runner API key are needed and n8n's
+config reads `N8N_SANDBOX_SERVICE_API_KEY` and accepts a `_FILE` form.
+
+The SEC01 ledger has a BLOCKED `searxng` row (registry descriptors only, everything else
+UNKNOWN or NOT_RUN), added through a source refresh; the other six n8n rows were
+re-bound with `ledger_rebind`, and the n8n source binding was rehashed. The
+tech-stack projection, POL-0078 (`workflow`, `workflow-n8n`), the `m0021` inventory
+(`render_service_inventory`), GDE-0053 `implementation_services` and its Assistant
+paragraph, the n8n README, AD-0026 network table and the Grafana coverage README were
+updated. Nothing was started, so neither SearXNG nor the Assistant settings are live.
 
 ## Handoff
 
