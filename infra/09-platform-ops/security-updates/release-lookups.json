@@ -9385,6 +9385,23 @@
         "release_url": "https://github.com/prometheus/prometheus/releases/tag/v3.15.1",
         "channel": "github_latest_published_final_only; vendor stable support not independently established",
         "scope": "Anonymous read-only GitHub API for the SPEC-0204-TSK-0021 pin adoption; no security, runtime or HOME acceptance."
+      },
+      {
+        "supplier": "traefik/traefik",
+        "request_url": "https://api.github.com/repos/traefik/traefik/releases/latest",
+        "checked_at": "2026-11-09T10:22:16.962783+00:00",
+        "status": 200,
+        "response_sha256": "5e67f63604a97656b86bb10d28af91ac2840dac28cf71d17086b42c37f666351",
+        "tag": "v3.7.17",
+        "published_at": "2026-10-30T08:32:41Z",
+        "prerelease": false,
+        "draft": false,
+        "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.17",
+        "channel": "github_latest_published_final_only; vendor stable support not independently established",
+        "notices": [
+          "- Advisory [GHSA-xv5x-242w-7hf7](https://github.com/traefik/traefik/security/advisories/GHSA-xv5x-242w-7hf7)"
+        ],
+        "scope": "Anonymous read-only GitHub API for the v3.7.17 pin update; the release notes and the v3.7 migration guide were read. No security, runtime or HOME acceptance."
       }
     ],
     "vendor_channel_interpretations": [

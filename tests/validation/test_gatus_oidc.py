@@ -51,7 +51,7 @@ class GatusOidcComposeTests(unittest.TestCase):
             service["labels"]["traefik.http.routers.gatus.middlewares"],
         )
         self.assertEqual(
-            "Host(`status.${DEFAULT_URL}`) && !PathPrefix(`/metrics`)",
+            "Host(`status.${DEFAULT_URL}`) && !PathRegexp(`(?i)^/metrics`)",
             service["labels"]["traefik.http.routers.gatus.rule"],
         )
 
