@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -66,7 +66,7 @@ LAB 전용 브로커 3개·exporter·init 5개를 독립 Compose project로 정�
 `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-data`와 `.../kafka/dev-kafka-connect`의 별도 bind volume이다. LAB 상태는
 `${LAB_DATA_DIR}/kafka/{1,2,3}`에 있고 별도 cluster ID, network, topic·offset을
 사용하며 `lab_kafka_net`만 쓰고 host port를 게시하지 않는다. broker PLAINTEXT는 내부 network에서만
-사용한다. 정상 `kafka-1`은 별도로 `127.0.0.1`에 external listener(`KAFKA_EXTERNAL_1_HOST_PORT`, 기본 `9092`), JMX(`19101`), JMX exporter(`19404`)를 게시한다.
+사용한다. 정상 `kafka-1`은 별도로 `127.0.0.1`에 external listener(`KAFKA_EXTERNAL_1_HOST_PORT`, 기본 `9092`)와 JMX exporter(`19404`)를 게시한다. 인증 없는 JMX 원격 포트(`19101`)는 소비자가 없어 2026-11-09에 제거했다.
 
 Kafbat은 자체 `auth.type: OAUTH2` 구성을 tmpfs에 렌더링하고,
 `kafbat_client_secret`을 읽고, local CA를 신뢰하며, group 기반 RBAC를
@@ -193,7 +193,7 @@ artifact 및 rollback이 필요하다.
 
 ## Troubleshooting
 
-- `kafka-1` unhealthy: healthcheck는 `kafka-broker-api-versions --bootstrap-server localhost:19092`다. `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-data` 권한과 `KAFKA_CLUSTER_ID` 일치를 먼저 확인한다.
+- `kafka-1` unhealthy: healthcheck는 `kafka-broker-api-versions --bootstrap-server localhost:19092`다. 실행마다 JVM을 띄워(CPU 약 2.5초) 간격은 60초이고, 시작 중에만 5초다. `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-data` 권한과 `KAFKA_CLUSTER_ID` 일치를 먼저 확인한다.
 - Connector가 secret을 읽지 못함: Connect 시작 시 `render-connect-secrets.sh`가 `/tmp/connect-secrets`를 만들었는지와 `debezium_postgres_password` mount를 확인한다.
 - `dev-pg` WAL 증가: 중단된 `hyhome_platform_slot`이 WAL을 고정할 수 있다. slot 삭제는 [POL-0036](../../policies/06-messaging-and-cdc/0036-kafka.md)의 재동기화 승인 대상이다.
 

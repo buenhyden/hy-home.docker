@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -484,6 +484,26 @@ finished, then unsealed OpenBao. Four defects showed up during recovery:
   52 s, above the helper's 20-second command limit. The Agent stays stopped
   until container starts settle.
 
+### HOME scrape jobs that never ran (2026-11-09)
+
+After the reboot, 8 of 38 active targets were down. All 8 carried
+`expected_state="off"` and none had been up in the three days before; alert
+rules filter `off`. Kafka stays as is (being restarted). The owner asked to
+comment out the other four: `opensearch` (owner-stopped) and the
+`airflow-`, `n8n-` and `oauth2-proxy-valkey-exporter` jobs, whose services
+are not in the HOME selection and never had a container. Both
+`prometheus.yml` and `prometheus.dev.yml` keep the blocks as comments to
+restore when a service starts. The plan fingerprint changes, so Prometheus
+is recreated through the selector after merge.
+
+The owner also asked to keep LAB monitoring under `labs/`. A review of all
+scrape jobs, rules, dashboards and provisioning found that the SPEC-0263 split
+had already moved LAB dashboards; the one LAB-only item left in HOME was the
+`PostgresqlReplicationLag` rule (only `labs/postgresql-ha` has replicas, and
+HOME does not scrape its exporters). It moved to
+`labs/postgresql-ha/config/prometheus-alert-rules.yml`, which HOME Prometheus
+does not load; promtool passes for both files.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -529,6 +549,7 @@ finished, then unsealed OpenBao. Four defects showed up during recovery:
 | Postgres stop signal | 85 | W90 | Throwaway `hy-home/mng-pg` containers stopped with and without `KILL`; live capability scan | Image `18.6-pgbackrest` | PASS | Without `KILL`: init EPERM, exit 1. With `KILL`: fast shutdown, exit 0. Only `mng-pg` and `dev-pg` match the pattern. | required | - |
 | OpenBao HUP path | 85 | W90 | `test_openbao_audit_rotation` and a live `docker exec … kill -HUP 1` | Rule in `infra/03-security/openbao/config/logrotate/openbao` | PASS | Audit backend reloaded; no restart-manager stop; still unsealed. Host copy in `/etc/logrotate.d` still needs the owner install. | required | - |
 | Clean-stop contract | 85 | W90 | `test_databases_stop_cleanly_on_host_shutdown` RED then GREEN; Compose render with `.env.example` | `mng-pg`, `dev-pg`, DB templates | PASS | Render: both have `KILL` and `1m0s`; OpenBao and valkey unchanged. | required | - |
+| Never-run scrape jobs | 83 | W88 | Target and `expected_state` readback; 3-day `max_over_time(up)` | 8 down targets after the reboot | PASS | All 8 `off` and never up; 4 jobs commented out, 34 jobs remain in both configs. | required | - |
 | Reboot: OpenBao Agent restart | 85 | W90 | RUN-0103 `agent-restart` and audit readback | Issuer `4f2e7f9b`, journal `rolled_back` | FAIL | Helper sink container exceeded 20 s under I/O pressure (52 s measured); no server write. | required | - |
 
 ## Criterion Acceptance

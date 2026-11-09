@@ -119,8 +119,8 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 01-gateway | `traefik` | `traefik` | `Gateway/traefik`, `Infrastructure/containers` |  |
 | 02-auth | `keycloak` | `keycloak` | `Security/keycloak-troubleshooting`, `Security/keycloak-capacity-planning`, `Infrastructure/containers` |  |
 | 02-auth | `oauth2-proxy` | `oauth2-proxy` | `Gateway/oauth2-proxy`, `Infrastructure/containers` |  |
-| 02-auth | `oauth2-proxy-valkey` | `oauth2-proxy-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
-| 02-auth | `oauth2-proxy-valkey-exporter` | `oauth2-proxy-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 02-auth | `oauth2-proxy-valkey` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
+| 02-auth | `oauth2-proxy-valkey-exporter` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 03-security | `openbao` | `openbao` | `Security/openbao`, `Infrastructure/containers` |  |
 | 03-security | `openbao-agent` | `openbao-agent` | `Infrastructure/containers` | auth counters and scrape health; alerts only, no dashboard |
 | 04-data | `mng-pg` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
@@ -130,7 +130,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 04-data | `mng-valkey` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 04-data | `mng-valkey-exporter` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 04-data | `neo4j` | none | `Infrastructure/containers` | Community edition has no metrics endpoint |
-| 04-data | `opensearch` | `opensearch` | `Infrastructure/opensearch-cluster`, `Infrastructure/opensearch-node`, `Infrastructure/opensearch-search-and-index`, `Infrastructure/containers` |  |
+| 04-data | `opensearch` | none | `Infrastructure/opensearch-cluster`, `Infrastructure/opensearch-node`, `Infrastructure/opensearch-search-and-index`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 04-data | `opensearch-dashboards` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `qdrant` | `qdrant` | `Infrastructure/qdrant-overview`, `Infrastructure/containers` |  |
 | 04-data | `seaweedfs-buckets` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -174,15 +174,15 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 07-workflow | `airflow-scheduler` | `airflow-monitor` | `Applications/airflow`, `Applications/airflow-db`, `Infrastructure/containers` |  |
 | 07-workflow | `airflow-statsd-exporter` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
 | 07-workflow | `airflow-triggerer` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
-| 07-workflow | `airflow-valkey` | `airflow-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
-| 07-workflow | `airflow-valkey-exporter` | `airflow-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 07-workflow | `airflow-valkey` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
+| 07-workflow | `airflow-valkey-exporter` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 07-workflow | `airflow-worker` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
 | 07-workflow | `blog-ingestion` | none | `Infrastructure/containers` | own `blog-ingestion` profile; container metrics and logs only, receipt counts via Gateway `/v1/summary` |
 | 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` |  |
 | 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Applications/hermes-research`, `Infrastructure/containers` | `Applications/hermes-research`는 Hermes 플러그인이 node-exporter textfile로 쓰는 지표(SPEC-0265) |
 | 07-workflow | `n8n-task-runner-worker` | none | `Infrastructure/containers` | container metrics and logs only |
-| 07-workflow | `n8n-valkey` | `n8n-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
-| 07-workflow | `n8n-valkey-exporter` | `n8n-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 07-workflow | `n8n-valkey` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
+| 07-workflow | `n8n-valkey-exporter` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `comfyui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `crawl4ai` | none | `Infrastructure/containers` | container metrics and logs only |

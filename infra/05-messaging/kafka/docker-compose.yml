@@ -38,7 +38,6 @@ services:
       - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
       - '127.0.0.1:${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}'
-      - '127.0.0.1:${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}'
       - '127.0.0.1:${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
     environment:
       CLUSTER_ID: ${KAFKA_CLUSTER_ID}
@@ -57,17 +56,18 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_LOG_DIRS: '/var/lib/kafka/data'
       KAFKA_HEAP_OPTS: '${KAFKA_HEAP_OPTS:--Xms512M -Xmx512M}'
-      KAFKA_JMX_OPTS: >-
-        -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
+      # No JMX remote: the unauthenticated RMI port had no consumer; the
+      # jmx_exporter agent below serves the metrics.
       KAFKA_OPTS: >-
         -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka_broker.yml
       KAFKA_NODE_ID: 1
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-1:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://${KAFKA_EXTERNAL_HOSTNAME:-localhost}:${KAFKA_EXTERNAL_1_HOST_PORT:-9092}'
-      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
-      KAFKA_JMX_HOSTNAME: kafka-1
     healthcheck:
-      test: [ 'CMD-SHELL', 'unset KAFKA_JMX_OPTS KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1' ]
-      interval: 15s
+      # Each run starts a JVM (about 2.5 CPU-seconds), so check once a minute
+      # and every 5 s only while starting.
+      test: [ 'CMD-SHELL', 'unset KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1' ]
+      interval: 60s
+      start_interval: 5s
       timeout: 30s
       retries: 10
       start_period: 45s
@@ -202,6 +202,8 @@ services:
       CONNECT_CONFIG_PROVIDERS_FILE_PARAM_ALLOWED_PATHS: /tmp/connect-secrets
       # JMX metrics for Prometheus job kafka-connect (Confluent rule file, SPEC-0193).
       KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/kafka_connect.yml
+      # The image default is -Xmx2G, the whole 2g limit; leave room off-heap.
+      KAFKA_HEAP_OPTS: '-Xms256M -Xmx1G'
 
     command:
       - /bin/bash
