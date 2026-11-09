@@ -1,10 +1,10 @@
 ---
 title: "QA and CI Legacy Cleanup Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0253-TSK-0001"
 parent_ids:
@@ -74,6 +74,19 @@ progress under the approved parents. Hosted CI has not run.
 - Deletion criteria for one-off items: no current caller in workflows, hooks,
   scripts or current documents; purpose tied to a finished operation; not a
   reusable operator tool. Nothing met all three.
+- On 2026-11-10 the user chose to retire the PostgreSQL 17 to 18 logical
+  upgrade rehearsal. Every HOME PostgreSQL service runs 18.6, the harness
+  pinned a 17 source and 18 target so Renovate PR #876 could not update it,
+  and no PostgreSQL 19 image exists to repurpose it. Summary map:
+  REQ-0025-FR-0003 and its acceptance line are retired into the REQ-0025
+  Traceability and the Registry `reserved_history`; the ADR-0028 lane is
+  amended in place with a Follow-up; AD-0028 drops the lane and notes it under
+  Evolution; RUN-0032 is deleted and OPS-0032 reserved. Consumer cutover: the
+  LAB 0031 Guide, Policy and Runbook, the 05 runbook index, the mng-db README,
+  `_workspace` READMEs and `scripts/README.md` drop the reference. Completed
+  Tasks (SPEC-0212 TSK-0016, TSK-0036) and blocked SPEC-0204 TSK-0001 keep
+  their past mentions as evidence. DATA-0096 is a dated snapshot
+  (`observed_at` 2026-11-07) and keeps its rows until its next scan.
 
 ### Changed
 
@@ -84,6 +97,13 @@ progress under the approved parents. Hosted CI has not run.
 - `docs/90.references/data/0096-workspace-inventory/README.md`,
   `scripts/README.md`, `docs/99.templates/README.md`: command placeholder and
   stale wording (W3).
+- Deleted `scripts/operations/rehearse-postgres-logical-upgrade.sh`,
+  `examples/operations/postgres-logical-upgrade/`,
+  `tests/validation/test_postgres_logical_upgrade_rehearsal.py` and RUN-0032;
+  removed the `leaf.postgres-logical-upgrade-config` gate, its suite entries
+  and path routes from `.github/workflow-contract.yml` and
+  `scripts/lib/gate/ci_gate_contract.py`, and its `scripts/manifest.yaml`
+  row (W3).
 
 ### Test changes
 
@@ -96,6 +116,9 @@ progress under the approved parents. Hosted CI has not run.
 | `test_ci_gate_evidence`, `test_github_workflow_contract` | updated | expect the new owner label |
 | `test_the_retired_frozen_legacy_status_exception_is_rejected` | added | an exception of the removed kind now fails Registry schema validation |
 | `test_evidence_owner_names_an_existing_governance_heading`, `test_a_changed_evidence_owner_is_rejected` | added | the owner anchor must resolve to a real heading, and a changed owner value fails the contract load |
+| `test_postgres_logical_upgrade_rehearsal` module, `test_postgres_rehearsal_keeps_operations_manifest_kind` | deleted | the rehearsal harness they checked is removed |
+| `test_ci_gate_model`, `test_validator_entrypoints`, `_script_manifest_support` | updated | drop the removed module and entrypoint from expected sets |
+| `test_script_manifest` runbook-shape case, `test_ci_gate_adapters` module-name case | updated | use an existing runbook and module name; the shape assertions are unchanged |
 
 ### Inventory
 
@@ -106,7 +129,8 @@ progress under the approved parents. Hosted CI has not run.
 | DATA-0096 command paths | QA legacy | two `commands` findings | fixed |
 | `scripts/README.md` metadata legacy exception text | docs legacy | no allowance for existing defects remains, but `check-changed` still subtracts merge-base defect identities (`metadata/reference.py`, `metadata/heading.py` `introduced = current - base`) | reworded to that behavior |
 | `infra/03-security/openbao/scripts/p01-bootstrap.sh` | one-off candidate | used by RUN-0104, RUN-0105 and SPEC-0204 | kept |
-| `scripts/operations/rehearse-postgres-logical-upgrade.sh`, `rehearse-sample-service-delivery.sh` | one-off candidate | used by the workflow contract, REQ-0025, ADR-0028, AD-0028 | kept |
+| `scripts/operations/rehearse-postgres-logical-upgrade.sh` with its fixture, test and RUN-0032 | one-off candidate | pinned PostgreSQL 17 to 18; every HOME PostgreSQL service runs 18.6 and no 19 image exists; Renovate #876 cannot update it | deleted on user direction (W3) |
+| `scripts/operations/rehearse-sample-service-delivery.sh` | one-off candidate | used by the workflow contract, REQ-0025, ADR-0028, AD-0028 | kept |
 | `scripts/operations/mng-pg-immediate-restore-rehearsal.py` | one-off candidate | used by RUN-0021, the Script Manifest and its test | kept |
 | `tests/validation/test_p0x_*`, `_p0x_*`, `tests/lib/gate/test_p03_*`, `test_p11_*` | phase-named tests | registered workflow-contract suites for current runtime contracts | kept |
 | Script Manifest, 125 entries | registration | all active and retain; authorities and consumers exist; no Spec-only consumer; every tracked script registered | kept |
@@ -154,6 +178,9 @@ progress under the approved parents. Hosted CI has not run.
 | E15 | 3 | W4 | hosted-ci | CI Quality Gates run 41743239293 on 09171c663 (PR #729), observed by the coordinator | PASS | candidate-quality success; main-security skipped by trigger; merge state CLEAN. The follow-up commits get a fresh run after push | required | E10 |
 | E16 | 1 | W1 | followup-unit-suites | gate evidence, workflow contract, CI routing (hook tests included), Script Manifest, CI gate plan, Registry and identity history suites with `/usr/bin/python3`, head 1914065b1 on main 46a7811dd | PASS | 410 tests OK | required | - |
 | E17 | 3 | W4 | followup-document-checks | `check-script-manifest.py`, metadata `check-changed --base-ref origin/main`, corpus lifecycle `--base-ref origin/main`, links `alignment` and `commands`, head 1914065b1 | PASS | manifest valid; 4 selected, zero violations; lifecycle and occupancy zero; alignment and commands PASS | required | - |
+| E18 | 2 | W3 | rehearsal-retirement-unit-suites | surface ownership, operations taxonomy, Registry, CI gate adapters/contract/model/plan, workflow contract, Script Manifest, validator entrypoints, workspace inventory and the remaining operations-suite modules, worktree on main 4528c1ea7 | PASS | 580 tests OK | required | - |
+| E19 | 3 | W4 | rehearsal-retirement-document-checks | agent governance contract, metadata `check-active` and `check-changed --base-ref origin/main`, links `all`, corpus lifecycle, operations catalog, Script Manifest, supply-chain policy, renderer `--check`, worktree on main 4528c1ea7 | PASS | zero failures; links 911 documents, 0 failures; manifest valid; drift 0 | required | - |
+| E20 | 3 | W4 | hosted-ci | GitHub Actions for the retirement branch | NOT_RUN | branch not yet pushed | required | - |
 
 ## Criterion Acceptance
 
