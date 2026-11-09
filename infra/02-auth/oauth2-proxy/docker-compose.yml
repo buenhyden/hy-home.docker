@@ -1,14 +1,6 @@
 x-tier-label: &tier-label
   hy-home.tier: auth
 
-volumes:
-  oauth2-proxy-valkey-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_AUTH_DIR}/valkey
-
 services:
   oauth2-proxy:
     profiles:
@@ -54,7 +46,6 @@ services:
         bind: {create_host_path: false}
     secrets:
       - mng_valkey_password
-      - oauth2_valkey_password
       - oauth2_proxy_client_secret
       - oauth2_proxy_cookie_secret
     labels:
@@ -82,95 +73,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
-
-  oauth2-proxy-valkey:
-    profiles:
-      - dedicated-valkey
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-stateful-low
-    image: valkey/valkey:9.1.2-alpine
-    container_name: oauth2-proxy-valkey
-    hostname: oauth2-proxy-valkey
-    group_add:
-      - '${SECRETS_GID:-1000}'
-    user: '999:999'
-    secrets:
-      - oauth2_valkey_password
-    environment:
-      VALKEY_PORT: '${VALKEY_PORT:-6379}'
-    networks:
-      mng_data_net: {}
-    restart: unless-stopped
-    volumes:
-      - oauth2-proxy-valkey-data:/data
-      - ../../04-data/mng-db/valkey/scripts/start-dedicated.sh:/usr/local/lib/hy-home/valkey/start-dedicated.sh:ro
-      - ../../04-data/mng-db/valkey/scripts/render-monitor-acl.sh:/usr/local/lib/hy-home/valkey/render-monitor-acl.sh:ro
-    tmpfs:
-      - /run/valkey:rw,noexec,nosuid,nodev,mode=0700,uid=999,gid=999
-    command:
-      - /bin/sh
-      - /usr/local/lib/hy-home/valkey/start-dedicated.sh
-      - /run/secrets/oauth2_valkey_password
-      - /run/valkey/users.acl
-    expose:
-      - '${VALKEY_PORT:-6379}'
-    healthcheck:
-      test: [ 'CMD-SHELL', 'REDISCLI_AUTH=$$(cat /run/secrets/oauth2_valkey_password); export REDISCLI_AUTH; valkey-cli --no-auth-warning -h 127.0.0.1 -p "$${VALKEY_PORT}" ping | grep -qx PONG' ]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 15s
-    labels:
-      <<: *tier-label
-      traefik.enable: 'false'
-
-  oauth2-proxy-valkey-exporter:
-    profiles:
-      - dedicated-valkey
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-infra-readonly-low
-    image: oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70
-    container_name: oauth2-proxy-valkey-exporter
-    hostname: oauth2-proxy-valkey-exporter
-    group_add:
-      - '${SECRETS_GID:-1000}'
-    healthcheck:
-      test: [ 'CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:9121/metrics' ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    expose:
-      - '${VALKEY_EXPORTER_PORT:-9121}'
-    networks:
-      mng_data_net: {}
-      obs_net: {}
-    restart: unless-stopped
-    secrets:
-      - oauth2_valkey_password
-    environment:
-      VALKEY_PORT: '${VALKEY_PORT:-6379}'
-    entrypoint:
-      - /bin/sh
-      - -c
-    command:
-      - |
-        set -eu
-        port=$${VALKEY_PORT}
-        case "$$port" in ''|*[!0-9]*) exit 1 ;; esac
-        [ "$${#port}" -le 5 ] && [ "$$port" -ge 1 ] && [ "$$port" -le 65535 ] || exit 1
-        REDIS_PASSWORD=$$(cat /run/secrets/oauth2_valkey_password)
-        [ -n "$$REDIS_PASSWORD" ] || exit 1
-        export REDIS_PASSWORD
-        exec /redis_exporter \
-          -redis.addr="redis://oauth2-proxy-valkey:$$port" \
-          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
-    depends_on:
-      # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
-      oauth2-proxy-valkey:
-        condition: service_healthy
-    labels:
-      <<: *tier-label
-      traefik.enable: 'false'

@@ -352,8 +352,6 @@ check_02_auth() {
   start_tier "$tier"
 
   local keycloak_compose="infra/02-auth/keycloak/docker-compose.yml"
-  local valkey_image
-  local oauth_valkey_compose_image
   local oauth_full_compose="infra/02-auth/oauth2-proxy/docker-compose.yml"
   local oauth_dockerfile="infra/02-auth/oauth2-proxy/Dockerfile"
   local oauth_dev_dockerfile="infra/02-auth/oauth2-proxy/dev.Dockerfile"
@@ -393,31 +391,6 @@ check_02_auth() {
   check_service_network "$oauth_full_compose" "oauth2-proxy" "edge_net"
   check_not_contains "$oauth_full_compose" "v7.14.2" "root-active oauth2-proxy stale image reference"
 
-  check_contains "$oauth_full_compose" "- oauth2_valkey_password" "dedicated-valkey oauth2-proxy secret missing"
-  valkey_image="$(registry_component_image "Valkey")"
-  oauth_valkey_compose_image="$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey")"
-  if [[ "$oauth_valkey_compose_image" != "$valkey_image" ]]; then
-    fail "oauth2-proxy valkey image tag mismatch"
-  fi
-
-  local oauth_valkey_exporter_compose_image=""
-  local oauth_valkey_exporter_registry_image=""
-  local oauth_valkey_exporter_lookup_failed=0
-  if ! oauth_valkey_exporter_compose_image="$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey-exporter")"; then
-    fail "oauth2-proxy valkey exporter compose image contract invalid"
-    oauth_valkey_exporter_lookup_failed=1
-  fi
-  if ! oauth_valkey_exporter_registry_image="$(registry_component_image "Valkey Exporter" "infra/02-auth/oauth2-proxy/docker-compose.yml")"; then
-    fail "oauth2-proxy valkey exporter registry source contract invalid"
-    oauth_valkey_exporter_lookup_failed=1
-  fi
-  if (( oauth_valkey_exporter_lookup_failed == 0 )) &&
-    [[ "$oauth_valkey_exporter_compose_image" != "$oauth_valkey_exporter_registry_image" ]]; then
-    fail "oauth2-proxy valkey exporter registry drift"
-  fi
-  check_service_network "$oauth_full_compose" "oauth2-proxy-valkey" "mng_data_net"
-  check_service_network "$oauth_full_compose" "oauth2-proxy-valkey-exporter" "mng_data_net"
-
   local oauth_source_image oauth_dev_source_image
   oauth_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dockerfile")"
   oauth_dev_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dev_dockerfile")"
@@ -429,7 +402,7 @@ check_02_auth() {
   check_contains "$oauth_dockerfile" "adduser -S -D -H -u 100 -s /sbin/nologin -G oauth2proxy oauth2proxy" "oauth2-proxy production user identity mismatch"
   check_contains "$oauth_dockerfile" "USER 100:101" "oauth2-proxy production non-root identity mismatch"
   check_contains "$oauth_dev_dockerfile" "USER oauth2proxy:oauth2proxy" "oauth2-proxy dev non-root user missing"
-  check_contains "$oauth_entrypoint" "/run/secrets/oauth2_valkey_password" "oauth2-proxy local/full valkey secret injection mismatch"
+  check_contains "$oauth_entrypoint" "/run/secrets/mng_valkey_password" "oauth2-proxy alternative image valkey secret injection mismatch"
   check_contains "$oauth_dev_entrypoint" "/run/secrets/mng_valkey_password" "oauth2-proxy root-active valkey secret injection mismatch"
   check_contains "$oauth_entrypoint" "set -- --config /etc/oauth2-proxy.cfg" "oauth2-proxy default config argument missing"
   check_contains "$oauth_dev_entrypoint" "set -- --config /etc/oauth2-proxy.cfg" "oauth2-proxy dev default config argument missing"
@@ -444,7 +417,6 @@ check_02_auth() {
   check_service_healthcheck "$keycloak_compose" "keycloak"
   check_service_healthcheck "$oauth_full_compose" "oauth2-proxy"
   check_service_healthcheck "$oauth_full_compose" "oauth2-proxy"
-  check_service_healthcheck "$oauth_full_compose" "oauth2-proxy-valkey"
 }
 
 # --- Tier 03: Security ---
@@ -595,7 +567,14 @@ check_07_workflow() {
   check_contains "$airflow_compose" "airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager" "airflow keycloak auth manager missing"
   check_contains "$airflow_compose" "traefik.http.routers.airflow.middlewares: gateway-standard-chain@file" "airflow native oidc gateway chain mismatch"
   check_not_contains "$airflow_compose" "traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "airflow double-auth middleware must not be enabled"
-  check_contains "$n8n_compose" "sso-auth@file" "n8n sso missing"
+  check_contains "$n8n_compose" "traefik.http.routers.n8n.middlewares: gateway-standard-chain@file" "n8n gateway chain mismatch"
+  check_not_contains "$n8n_compose" "sso-auth@file" "n8n keeps its own login; gateway SSO must not return"
+  check_contains "$n8n_compose" "!PathRegexp(\`(?i)^/metrics\`)" "n8n router must not publish /metrics in any letter case"
+  check_contains "$n8n_compose" "!PathRegexp(\`(?i)^/webhook(-test)?/hermes-blog-ingestion\`)" "n8n router must exclude the Hermes webhook path in any letter case"
+  check_contains "$n8n_compose" "N8N_OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:" "n8n tracing must target Alloy OTLP"
+  check_contains "$n8n_compose" "N8N_INSTANCE_AI_SEARXNG_URL: http://searxng:8080" "n8n Assistant web search must use the internal searxng"
+  check_contains "$n8n_compose" "N8N_SANDBOX_SERVICE_API_KEY_FILE: /run/secrets/n8n_sandbox_api_key" "n8n sandbox API key must come from a secret file"
+  if [ "$(grep -c "^    privileged: true" "$n8n_compose")" != "1" ]; then fail "n8n compose must have exactly one privileged service (the sandbox runner)"; fi
 }
 
 # --- Tier 08: AI ---

@@ -9,6 +9,8 @@ import sys
 import unittest
 from pathlib import Path
 
+from scripts.lib.gate import ci_gate_contract as gate_contract
+
 ROOT = Path(__file__).resolve().parents[2]
 OFFLINE = (
     "tests.lib.ops.test_openbao_issuance",
@@ -18,6 +20,7 @@ OFFLINE = (
     "tests.validation.test_sec01_version_contract",
     "tests.validation.test_sec01_next_stable_candidates",
     "tests.validation.test_sec01_next_tool_candidates",
+    "tests.lib.supply_chain.test_update_gates",
     "tests.validation.test_workflow_version_bundle",
 )
 OFFLINE_CLASSES = (
@@ -91,9 +94,40 @@ class Sec01RoutingTests(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stderr)
 
-    def test_supply_chain_gate_negatives_are_required(self):
-        argv = self.nodes["leaf.supply-chain-fixture-policy"]["argv"]
-        self.assertIn("tests.lib.supply_chain.test_update_gates", argv)
+    def test_ledger_drift_gate_runs_once_in_the_hosted_compose_leaf(self):
+        module = "tests.lib.supply_chain.test_update_gates"
+        compose = self.nodes["leaf.compose-baseline-regressions"]["argv"]
+        local_only = self.nodes["leaf.supply-chain-fixture-policy"]["argv"]
+        self.assertEqual(1, compose.count(module))
+        self.assertNotIn(module, local_only)
+
+    def test_compose_only_change_selects_the_suite_running_the_ledger_gate(self):
+        public = gate_contract.parse_public_gate_contract(
+            gate_contract.load_contract_document(ROOT)
+        )
+        reached: dict[str, set[str]] = {}
+        for route in public.suites:
+            pending = list(route.root_gate_ids)
+            seen: set[str] = set()
+            while pending:
+                gate_id = pending.pop()
+                if gate_id not in seen:
+                    seen.add(gate_id)
+                    pending.extend(self.nodes[gate_id].get("children", ()))
+            reached[route.name] = seen
+        for path in (
+            "docker-compose.yml",
+            "infra/05-messaging/kafka/docker-compose.yml",
+            "infra/08-ai/crawl4ai/docker-compose.yml",
+        ):
+            with self.subTest(path=path):
+                suites = gate_contract.select_public_suites(public, "changed", (path,))
+                self.assertTrue(
+                    any(
+                        "leaf.compose-baseline-regressions" in reached[name]
+                        for name in suites
+                    )
+                )
 
     def test_routing_regression_is_itself_required(self):
         argv = self.nodes["leaf.repository-integrity-regressions"]["argv"]

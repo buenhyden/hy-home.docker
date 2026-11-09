@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow) Architecture Description"
-version: "1.3.1"
+version: "1.3.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 layer: "architecture"
 artifact_id: "AD-0007"
 parent_ids:
@@ -18,8 +18,8 @@ created: "2026-03-26"
 
 `07-workflow` is the owner-confirmed always-on HOME orchestration layer. It
 runs Apache Airflow for code-first DAGs, authenticated natively through the
-Keycloak Auth Manager, and n8n for low-code automation behind OAuth2 Proxy
-ForwardAuth.
+Keycloak Auth Manager, and n8n for low-code automation with its own login and no
+gateway SSO.
 
 ## Scope
 
@@ -45,13 +45,11 @@ ForwardAuth.
   `--proxy-headers`. Its router applies only `gateway-standard-chain@file`.
 - **Flower** routes through ForwardAuth.
 - **n8n** (`infra/07-workflow/n8n/`) runs in queue mode
-  (`EXECUTIONS_MODE: queue`) with separate task runners for the main and worker
-  processes; its router uses ForwardAuth.
-- **Broker:** both default to `mng-valkey`. The `dedicated-valkey` profile adds
-  `airflow-valkey` and `n8n-valkey` with exporters, but selecting it does not
-  switch the connection: Airflow must set `AIRFLOW_VALKEY_HOST` and
-  `AIRFLOW_VALKEY_SECRET`, and n8n `N8N_VALKEY_HOST` and `N8N_VALKEY_SECRET`,
-  as matching pairs.
+  (`EXECUTIONS_MODE: queue`) with an external task runner for the worker
+  process (main starts none); its router applies only
+  `gateway-standard-chain@file`, and n8n's own login authenticates users.
+- **Broker:** both use the shared `mng-valkey`; no per-app broker exists
+  (ADR-0062 decision 10).
 
 ## Runtime and Deployment
 
@@ -59,7 +57,8 @@ ForwardAuth.
 
 ```text
 Browser -> Traefik TLS -> airflow-apiserver -> Keycloak OIDC + Authorization Services
-Browser -> Traefik ForwardAuth chain -> flower / n8n
+Browser -> Traefik ForwardAuth chain -> flower
+Browser -> Traefik TLS -> n8n (own login)
 DAG files -> scheduler / dag-processor -> Celery broker -> worker -> task metadata in mng-pg
 ```
 
@@ -71,8 +70,7 @@ record.
 ### Deployment View
 
 `workflow` selects Airflow and n8n; `workflow-airflow` and `workflow-n8n`
-select one each. `dedicated-valkey` adds the dedicated broker and exporter
-pairs, which are OPTIONAL; core services are HOME. The `blog-ingestion`
+select one each; core services are HOME. The `blog-ingestion`
 capability profile selects the blog ingestion gateway, which shares isolated
 internal networks only with `n8n-worker` and Traefik.
 
@@ -82,7 +80,7 @@ internal networks only with `n8n-worker` and Traefik.
 
 - **Reliability:** scheduler, worker and triggerer health and broker
   availability.
-- **Security:** Airflow uses native OIDC; Flower and n8n use ForwardAuth.
+- **Security:** Airflow uses native OIDC; Flower uses ForwardAuth; n8n uses its own login.
 - **Scalability:** Celery workers scale horizontally.
 - **Observability:** Flower, the StatsD exporter, logs and metrics.
 - **Operability:** provider, database migration and auth bootstrap procedures
@@ -90,13 +88,8 @@ internal networks only with `n8n-worker` and Traefik.
 
 ### Risks
 
-Without `dedicated-valkey`, Airflow, n8n and OAuth2 Proxy share `mng-valkey`;
+Airflow, n8n and OAuth2 Proxy share `mng-valkey`;
 its outage stops queued work in both engines.
-
-### Evolution
-
-Switching to the dedicated brokers is an environment change of the host and
-secret pairs, not a profile change.
 
 ## Related Documents
 

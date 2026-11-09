@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.9.0"
+version: "0.9.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -42,8 +42,9 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
   등록은 소유자 승인 전까지 미결정이다. JupyterLab·SonarQube·Stalwart LAB에는 ForwardAuth가 적용되지 않는다.
 - Airflow/Grafana/Kafbat/OpenBao/Open WebUI/Gatus Traefik router는 `gateway-standard-chain@file`만 사용한다.
   Dozzle router는 여기에 `dozzle-admin-ip@docker` IP allowlist를 더하며 SSO chain은 쓰지 않는다.
-- Flower/n8n 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
-  chain을 유지한다.
+- Flower 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
+  chain을 유지한다. n8n은 자체 로그인만 사용하며 `gateway-standard-chain@file`만
+  쓴다(owner 결정 2026-11-09, 이중 로그인 불가).
 - OAuth2 Proxy는 `allowed_groups = ["/admins"]`로 Keycloak `/admins` 그룹만
   통과시킨다. 그룹을 넓히는 것은 owner 승인이 필요한 변경이다.
 - 모든 Traefik HTTP router는 SSO chain을 쓰거나, guide의 Route Authentication

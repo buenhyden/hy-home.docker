@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Usage Guide"
-version: "1.1.5"
+version: "1.1.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -51,10 +51,9 @@ created: "2026-05-17"
    - 아래 `Common Checks`의 Compose 검증을 실행한다.
    - service-local compose 파일은 root network/secrets context 없이 단독 `config` 대상으로 쓰지 않는다.
 2. Gateway/SSO 경계 정렬
-   - Airflow는 `gateway-standard-chain@file`과 native Keycloak SSO를 사용한다. Flower/n8n은 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다. 변경·복구는 RUN-0054로 넘긴다.
+   - Airflow는 `gateway-standard-chain@file`과 native Keycloak SSO를 사용한다. Flower는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용하고 n8n은 자체 로그인만 쓰므로 `gateway-standard-chain@file`만 사용한다(owner 결정 2026-11-09). 변경·복구는 RUN-0054로 넘긴다.
 3. Health 기반 의존성 강화
-   - `dedicated-valkey` profile은 `airflow-valkey`를 기동한다. 실제 사용은 `AIRFLOW_VALKEY_HOST=airflow-valkey`와 matching secret selector를 함께 설정했는지 확인한다.
-   - 선택하지 않은 경우 shared `mng-valkey` broker dependency를 사용한다는 경계를 문서화한다.
+   - shared `mng-valkey` broker dependency를 사용한다는 경계를 문서화한다.
    - n8n worker/task-runner healthcheck와 task-runner dependency gating을 확인한다.
 4. n8n 이미지 하드닝 확인
    - compose가 custom image([hyhome/n8n image declaration](../../../../infra/07-workflow/n8n/docker-compose.yml))를 사용하도록 확인한다.

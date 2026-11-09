@@ -73,7 +73,15 @@ class NextToolCandidates(unittest.TestCase):
             row["path"]: row["sha256"] for row in updates["include_inputs"]
         }
         self.assertEqual(len(current_inputs), len(updates["include_inputs"]))
-        selected = set(refresh["updated_services"])
+        # Services retired after the refresh have no row to compare.
+        retired = {
+            service
+            for row in updates["source_refreshes"][
+                updates["source_refreshes"].index(refresh) + 1 :
+            ]
+            for service in row.get("removed_services", [])
+        } - {row["service"] for row in updates["historical_lab_entries"]}
+        selected = set(refresh["updated_services"]) - retired
         # Rows later relocated to a LAB entrypoint keep their original ROOT row.
         relocated = {
             row["service"]: row["original_root_row"]
@@ -126,22 +134,22 @@ class NextToolCandidates(unittest.TestCase):
         for service in selected - custom_services:
             with self.subTest(service=service, field="exporter_digests"):
                 row = rows[service]
-                self.assertEqual(row["target_index_digest"], exporter["index_digest"])
-                self.assertEqual(
+                digests = (
+                    row["target_index_digest"],
                     row["target_manifest_digest"],
-                    exporter["platform_manifest_digest"],
+                    row["target_config_digest"],
                 )
-                self.assertEqual(row["target_config_digest"], exporter["config_digest"])
-                self.assertEqual(
-                    len(
-                        {
-                            row["target_index_digest"],
-                            row["target_manifest_digest"],
-                            row["target_config_digest"],
-                        }
-                    ),
-                    3,
-                )
+                binding = row.get("current_target_artifact_binding", {})
+                if binding.get("status") == "UNBOUND_CURRENT_TARGET":
+                    # A later Renovate-proposed pin: the lookup receipt above
+                    # belongs to the earlier pin, so the row must claim none of it.
+                    self.assertEqual(("UNKNOWN",) * 3, digests)
+                    self.assertIn("Renovate-proposed", binding["reason"])
+                    continue
+                self.assertEqual(digests[0], exporter["index_digest"])
+                self.assertEqual(digests[1], exporter["platform_manifest_digest"])
+                self.assertEqual(digests[2], exporter["config_digest"])
+                self.assertEqual(len(set(digests)), 3)
 
         for service in ("great-expectations", "opentofu"):
             with self.subTest(service=service, field="followup_image"):

@@ -491,7 +491,7 @@ class RuntimeCompatibilityTests(unittest.TestCase):
                     (mount / name).write_text("synthetic", encoding="utf-8")
                 for host, selected, value, success in (
                     ("mng-valkey", "mng_valkey_password", "synthetic", True),
-                    ("n8n-valkey", "n8n_valkey_password", "synthetic", True),
+                    ("n8n-valkey", "n8n_valkey_password", "synthetic", False),
                     ("mng-valkey", "n8n_valkey_password", "synthetic", False),
                     ("mng-valkey", "mng_valkey_password", "", False),
                     ("mng-valkey", "mng_valkey_password", None, False),

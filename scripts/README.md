@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.4"
+version: "1.5.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-09"
 created: "2026-02-21"
 ---
 
@@ -423,6 +423,9 @@ bash scripts/operations/sync-tech-stack-versions.sh --dry-run
 
 # tech-stack 레지스트리를 선언된 compose 태그로 다시 맞춥니다
 bash scripts/operations/sync-tech-stack-versions.sh --write
+
+# Renovate post-upgrade 단계: 바뀐 Compose 이미지·n8n 입력에 SEC01 update ledger를 다시 묶습니다
+bash scripts/operations/sync-update-ledger.sh --write
 
 
 

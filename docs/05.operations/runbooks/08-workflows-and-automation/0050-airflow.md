@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.4.2"
+version: "1.4.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 한다. `dedicated-valkey` profile은 전용 broker를 기동할 뿐이며, `AIRFLOW_VALKEY_HOST`와 `AIRFLOW_VALKEY_SECRET`을 전용 pair로 바꾼 환경만 `airflow-valkey`를 사용한다.
+이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 한다. broker는 공유 `mng-valkey`다(앱별 전용 Valkey는 ADR-0062 결정 10으로 제거됨).
 
 > Scope: Apache Airflow (07-workflow)
 
@@ -36,7 +36,7 @@ created: "2026-05-17"
 
 ### Service lifecycle prerequisites
 
-처음 기동하거나 이미지를 바꾸기 전에 DB·실제 선택 broker, CA, DAG/plugin/config/log host 경로와 비root 쓰기 권한을 확인한다. `airflow-init`은 migration 가능한 root 일회성 작업이므로 DB backup·schema 계획 승인 뒤에만 실행한다. init은 chown이나 사용자 역할 배정을 하지 않는다. init 완료 뒤 API·scheduler·processor·triggerer, API 준비 뒤 worker·Flower가 요구하는 조건을 각각 검증한다. StatsD exporter도 init 완료에 의존하며 healthcheck는 `:9102/metrics` 응답만 확인하므로 이벤트가 생긴 뒤 metric을 확인한다. 전용 Valkey·exporter를 선택하면 RUN-0028의 broker backup·인증 절차를 적용하되 workflow 이력 복원으로 간주하지 않는다. 중지는 예약·입력을 먼저 차단하고 실행 작업의 외부 효과를 대조한 뒤 한다.
+처음 기동하거나 이미지를 바꾸기 전에 DB·broker, CA, DAG/plugin/config/log host 경로와 비root 쓰기 권한을 확인한다. `airflow-init`은 migration 가능한 root 일회성 작업이므로 DB backup·schema 계획 승인 뒤에만 실행한다. init은 chown이나 사용자 역할 배정을 하지 않는다. init 완료 뒤 API·scheduler·processor·triggerer, API 준비 뒤 worker·Flower가 요구하는 조건을 각각 검증한다. StatsD exporter도 init 완료에 의존하며 healthcheck는 `:9102/metrics` 응답만 확인하므로 이벤트가 생긴 뒤 metric을 확인한다. 전용 Valkey·exporter를 선택하면 RUN-0028의 broker backup·인증 절차를 적용하되 workflow 이력 복원으로 간주하지 않는다. 중지는 예약·입력을 먼저 차단하고 실행 작업의 외부 효과를 대조한 뒤 한다.
 
 ## Procedure
 
@@ -68,9 +68,8 @@ file에서 최대 4096바이트로 읽으며 경로 symlink·불안정한 파일
 대상이 아니며 임의 trim이나 비밀 재발급으로 맞추지 않는다.
 
 MNG PG는 `POSTGRES_PORT`, broker는 `VALKEY_PORT`를 사용한다. 지원되는
-broker 쌍은 `mng-valkey`/`mng_valkey_password` 또는
-`airflow-valkey`/`airflow_valkey_password`다. Profile만 바꾸거나 다른 host와
-secret을 조합하면 전환으로 인정하지 않는다. DEV의 내부 listener `5432`와
+broker 쌍은 `mng-valkey`/`mng_valkey_password`뿐이며 다른 host와 secret을
+조합하면 helper가 거부한다. DEV의 내부 listener `5432`와
 호스트 공개 포트는 이 관리 연결과 별개다.
 
 Helper의 성공 출력은 `_CMD` 소비용 연결 주소다. 단독 출력, 전체 config 목록,
@@ -103,7 +102,7 @@ Helper의 성공 출력은 `_CMD` 소비용 연결 주소다. 단독 출력, 전
 1. 증거 캡처:
    - `docker compose logs --tail=100 airflow-worker airflow-scheduler airflow-apiserver`
    - `docker compose exec airflow-worker df -h /opt/airflow/logs`
-2. 선택된 host/secret pair가 shared인지 dedicated인지 확인하고 [Valkey Runbook](../05-databases-and-storage/0028-management-database.md)의 값 비노출 인증 점검을 따른다. DB/broker가 준비되지 않으면 중단한다. Profile은 선택 증거가 아니다.
+2. host/secret pair가 `mng-valkey`/`mng_valkey_password`인지 확인하고 [Valkey Runbook](../05-databases-and-storage/0028-management-database.md)의 값 비노출 인증 점검을 따른다. DB/broker가 준비되지 않으면 중단한다.
 3. Celery worker 응답 확인: `docker compose exec airflow-apiserver celery --app airflow.providers.celery.executors.celery_executor.app inspect ping`. Remote control이 허용된 worker의 응답이 없으면 실패로 기록하고 원인을 먼저 진단한다.
 4. 스케줄을 pause하고 실행/예약 태스크와 외부 부작용을 조정한 뒤 승인된 worker 재시작만 수행한다: `docker compose restart airflow-worker`. 자동 재실행이나 task clear를 복구 전제로 삼지 않는다.
 
@@ -291,7 +290,7 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 상태: **계획됨·미실행**. 이 문서는 Airflow 복원 성공 증거를 주장하지 않는다.
 
 1. 이미지 digest, profile·환경변수 이름(값 제외), Airflow 버전, 마이그레이션 수준, DAG 목록, 실행·대기 작업 목록, 백업 산출물 checksum을 기록한다. 예약과 입력 생산자를 일시 중지한 뒤 작업 완료를 기다리거나 상태를 명시적으로 대조한다.
-2. PostgreSQL 소유자에게 `airflow` DB의 일관된 논리 백업을 요청한다. `airflow-dags`, `airflow-plugins`, `airflow-config`, 필요한 `airflow-logs`와 정확히 일치하는 `airflow_fernet_key`, JWT secret, Keycloak client secret, DB secret, 선택한 broker secret의 참조를 승인된 secret 절차로 보존한다. 실행 중인 Valkey 복사본에 정확한 복구를 의존하지 않는다.
+2. PostgreSQL 소유자에게 `airflow` DB의 일관된 논리 백업을 요청한다. `airflow-dags`, `airflow-plugins`, `airflow-config`, 필요한 `airflow-logs`와 정확히 일치하는 `airflow_fernet_key`, JWT secret, Keycloak client secret, DB secret, `mng_valkey_password` 참조를 승인된 secret 절차로 보존한다. 실행 중인 Valkey 복사본에 정확한 복구를 의존하지 않는다.
 3. 운영 경로·예약·webhook·외부 실행기가 없는 별도 Compose 프로젝트와 격리 네트워크에 복원 복사본을 준비한다. PostgreSQL을 먼저 복원하고 같은 Fernet 키와 마운트 산출물을 복원한 뒤 broker 호스트·secret 쌍을 일치시킨다.
 4. 의존 서비스를 기동하고 지원되는 Airflow DB 점검·마이그레이션을 수행한 뒤 processor·scheduler·API·worker를 기동한다. DAG 파싱, DB 상태, 값을 출력하지 않는 Connections 복호화, worker ping, Keycloak 네이티브 로그인, 작업 로그 접근, 외부 효과가 없는 canary DAG를 확인한다.
 5. 불일치하면 격리 프로젝트를 중지하고 로그·checksum을 보존한 뒤 변경하지 않은 원본 백업으로 돌아간다. 운영 교체나 DNS·경로 변경에는 별도 변경 승인이 필요하다.

@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.2.3"
+version: "1.2.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 created: "2025-11-12"
 ---
 
@@ -14,9 +14,8 @@ created: "2025-11-12"
 
 ## Overview
 
-`07-workflow`는 Airflow와 n8n을 운영합니다. 브로커는 공유 `mng-valkey`를 쓰거나
-`dedicated-valkey` 프로필로 전용 인스턴스를 기동할 수 있습니다. 실제 브로커
-전환 시에는 각 서비스의 host/secret 환경 변수 쌍을 함께 바꿔야 합니다.
+`07-workflow`는 Airflow와 n8n을 운영합니다. 브로커는 공유 `mng-valkey`입니다.
+앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
 
 인증은 서비스별로 다릅니다.
 
@@ -79,7 +78,6 @@ created: "2025-11-12"
 
 - Airflow/n8n DB: `mng-pg`
 - 기본 브로커: `mng-valkey`
-- `dedicated-valkey`: Airflow/n8n 전용 Valkey
 - Airflow UI 인증: Keycloak 직접 연동
 - Flower/n8n UI 인증: ForwardAuth
 
@@ -104,10 +102,8 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 | --- | --- | --- |
 | Airflow core, Flower, StatsD exporter | HOME | `workflow`, `workflow-airflow` |
 | n8n core, workers, task runners | HOME | `workflow`, `workflow-n8n` |
-| Airflow Valkey + exporter | OPTIONAL | `dedicated-valkey` |
-| n8n Valkey + exporter | OPTIONAL | `dedicated-valkey` |
 
-이 프로필은 선택적 브로커를 시작만 할 뿐 선택하지는 않습니다. 각 애플리케이션에 맞는 host와 secret 선택자를 함께 설정해야 합니다. 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/guides/08-workflows-and-automation/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.
+안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/guides/08-workflows-and-automation/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.
 
 ## Related Documents
 

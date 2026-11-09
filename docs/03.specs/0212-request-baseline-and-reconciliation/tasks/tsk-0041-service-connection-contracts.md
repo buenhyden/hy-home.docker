@@ -1,10 +1,10 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.28"
+version: "0.1.41"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0041"
 parent_ids:
@@ -315,6 +315,32 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D03 n8n named-user HOME switch after the ACL fix | 59 | W64 | Approved recreate, then health, ACL LOG, log and client readback | `main` `9939431c3`, image `f1493a20a2ff`, containers `435672289f3b` and the recreated `n8n`/`n8n-worker` | PASS | Healthy, no restarts; 19 `user=n8n` connections incl. worker `brpoplpush`; no `NOPERM`/`WRONGPASS` over three minutes; other consumers unchanged | required | - |
 | D03 live job through the named user | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch | NOT_RUN | No execution in the watch window; confirm on the next run | optional | - |
 | D03 live job through the named user, observed | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch, execution 127 | PASS | Enqueued by main, run by the worker, `success` in the n8n database; no `NOPERM` or `WRONGPASS` | optional | D03 live job through the named user |
+| n8n Assistant model and SearXNG configuration | 60 | W65 | Compose render, `N8nAssistantSearchContractTests`, hardening pin, operations catalog | Branch base `ab34255ae` plus this change | PASS | Model and search URL on main only; `searxng` has no ports, route or privilege; the search network holds only `n8n` and `searxng`; no Anthropic key variable | required | - |
+| n8n Assistant search live | 60 | W65 | Create `searxng`, ask the Assistant a web question, check `/healthz` and the JSON API from `n8n` | HOME | NOT_RUN | No container was created; the stack needs its own approval and the apply order in the report | required | - |
+| n8n Assistant code sandbox | 60 | W65 | Firecracker runner without `privileged` | `n8nio/n8n-sandbox-service-runner-firecracker:1.8.1` | NOT_RUN | BLOCKED: the runner needs netns, veth, TAP, iptables, mount and jailer rights close to `privileged`, and a possible enterprise license; not added | required | - |
+| n8n code sandbox (privileged DinD) configuration | 60 | W65 | Compose render, `N8nCodeSandboxContractTests`, `compose_controls.py`, Conftest verify, hardening pins | Branch base `4f91fa0da` plus this change | PASS | One privileged service; no ports, routes or Docker socket; runner on two distinct internal and outbound networks; digest-pinned 1.8.1 images; keys from secret files; exceptions recorded | required | - |
+| n8n code sandbox secret metadata | 60 | W65 | `test_secret_metadata_sync` against the public secret metadata | `secrets/SENSITIVE_ENV_VARS.md.example` | FAIL | Two tests fail until three rows for the sandbox secret files are added to the metadata source and the OpenBao catalog; that file is denied to this session | required | - |
+| n8n code sandbox live | 60 | W65 | Create the three secret files, start profile `n8n-sandbox`, check API health, runner registration, one sandbox and an Assistant code step | HOME | NOT_RUN | No container was started; DinD under `no-new-privileges` and `cap_drop: ALL`, mTLS registration and the image pull are unverified | required | - |
+| SEC01 root source re-binding and crawl4ai-loopback row | 60 | W65 | `test_update_gates` | Clean `main` `b4d09cbd7` | PASS | 51 failures before (50 stale file hashes, 1 missing `crawl4ai-loopback` row); 39 tests OK after; image, build and the other membership unchanged | required | - |
+| n8n 2.46.6 source pin and digests | 60 | W65 | Read-only Docker Hub registry, GitHub release and npm lookups | Branch base `0220de58a`; `n8nio/n8n:2.46.6`, `n8nio/runners:2.46.6` | PASS | Index digests `sha256:8602f5df…92b3ae` (n8n) and `sha256:b1fe87a5…322612` (runners); `stable`, `latest` and the tag agree; release `n8n@2.46.6` published 2026-11-04, not a prerelease; recorded in the SEC01 lookups and ledger | required | - |
+| n8n 2.46.6 signature, full-image scan, build, native and HOME | 60 | W65 | Publisher signature, SBOM or scan, `hyhome/n8n` build, native queue and HOME recreate | Same inputs | NOT_RUN | Out of this source unit; the local image build and every recreate wait for their own approval | required | - |
+| n8n router without gateway SSO | 57 | W62 | Static Compose label, Compose render, `RouteAuthContractTests`, `SsoOnlyIngressContractTests`, hardening gate | Branch base `0220de58a` plus this change | PASS | `traefik.http.routers.n8n.middlewares` is `gateway-standard-chain@file`; `docker compose --env-file .env.example config -q` exits 0; `check-all-hardening.sh` ALL PASS; `hermes-webhook.yml` unchanged | required | - |
+| n8n live login without gateway SSO | 57 | W62 | Browser or HTTP check after the Traefik reload | HOME `n8n` host | NOT_RUN | No Traefik reload or recreate performed; confirm the n8n login page answers without a Keycloak redirect after the approved apply | required | - |
+| n8n router exclusions for `/metrics` and the Hermes path | 57 | W62 | Static Compose rule, Compose render, hardening gate pins, `RouteAuthContractTests`, catalog check | Branch HEAD `1899263f4` plus this change | PASS | Rule excludes both prefixes; `docker compose --env-file .env.example config -q` exits 0; `check-all-hardening.sh` ALL PASS; Prometheus targets `n8n:5678` directly | required | - |
+| n8n router exclusions live behaviour | 57 | W62 | Request to `/metrics`, a GET and a trailing-slash request to the Hermes path through Traefik | HOME gateway | NOT_RUN | No Traefik reload or recreate performed | required | - |
+| OpsflowSmtp `n8n-workflow` pin and node tests | 60 | W65 | `npm ci`, `npm test` and `npm run test:coverage` in a scratch copy of the node | Branch HEAD `1899263f4` lock (zod 3.25.76, no zod override) | PASS | 38 of 38 pass; coverage 97.51 percent lines, 95.56 branches, 88.57 functions | required | - |
+| OpsflowSmtp `npm audit` | 60 | W65 | `npm audit --package-lock-only` full and `--omit=dev` | Same lock | FAIL | Full audit: 3 high through GHSA-mrhx-c7xc-m3w5 on the `n8n-workflow` dev path; production audit: 0. No exception recorded; the failure is stored in `package-lookups.json` | required | - |
+| OpsflowSmtp `npm audit` gate decision | 60 | W65 | `npm audit --package-lock-only` full and `--omit=dev` | Same lock; owner chose the production-only CI gate on 2026-11-09 | PASS | `leaf.opsflow-smtp-npm-audit` removed; `leaf.opsflow-smtp-npm-production-audit` stays and reports 0. The dev-tree finding remains and is no longer gated. | required | OpsflowSmtp `npm audit` |
+| Dockerfile `n8n --version` and node load check | 60 | W65 | Build-time `RUN` check | `hyhome/n8n` image | NOT_RUN | Image not built; the node's `npm test` loads `n8n-workflow` 2.46.5 from the lock, which is not the image check | required | - |
+| n8n OpenTelemetry configuration | 60 | W65 | Module source at `n8n@2.46.6`, Compose render, hardening pin, operations catalog | Branch base `e8631262b` plus this change | PASS | Default module, no license flag for tracing; `n8n` and `n8n-worker` render the three `N8N_OTEL_*` settings; worker also on `obs_net`; no credential or payload attribute in the constants | required | - |
+| n8n spans reach Tempo | 60 | W65 | Recreate `n8n` and `n8n-worker`, run a production workflow, search Tempo for service `n8n` and `n8n-worker` | HOME | NOT_RUN | No recreate; also confirm the worker reaches `alloy:4318` over `obs_net` | required | - |
+| n8n router case-insensitive exclusions | 57 | W62 | Compose render, `RouteAuthContractTests.test_n8n_router_exclusions_ignore_letter_case`, hardening pins | Branch base `e8631262b` plus this change | PASS | Rule uses `PathRegexp` with `(?i)` for `/metrics` and the Hermes prefix; plain `PathPrefix` fails the test | required | - |
+| n8n router letter-case behaviour live | 57 | W62 | `GET /METRICS`, `/Metrics` and a mixed-case Hermes POST through Traefik | HOME gateway | NOT_RUN | Live finding before the fix: `/METRICS` and `/Metrics` returned metrics inside the container; the fix needs the `n8n` recreate | required | - |
+| n8n documentation and catalog checks | 57 | W62 | `check-operations-catalog.py`, `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | Branch base `0220de58a` plus this change | PASS | Catalog PASS after patching the stale n8n router cell in `m0021`; metadata 12 selected, 0 violations; links 0 failures | required | - |
+| n8n consumer test suites | 60 | W65 | 41 modules naming n8n, `2.43.6` or `sso-auth`, plus `test_p02_service_contracts` and `test_compose_baseline_gates` | Branch base `0220de58a` plus this change, venv on `PATH` | FAIL | 1069 tests, 51 failures, 83 declared skips; the same 51 fail on a clean checkout of `0220de58a` (`test_update_gates` stale `source_input_sha256` for 50 rows and the root census); none is new and the n8n rows, `test_workflow_version_bundle`, `test_sec01_next_tool_candidates` and `test_p08_ci_routing` pass | required | - |
+| Traefik v3.7.17 pin and digests | 60 | W65 | Anonymous Docker Hub registry API and GitHub latest-release API, release notes and v3.7 migration guide read | Branch base `be3cab6a6`; `traefik:v3.7.17` | PASS | Index `sha256:f4bb143d…86f5a` (raw SHA256 equals `Docker-Content-Digest`), linux/amd64 manifest `sha256:e15b8921…81511a`, config `sha256:d848e658…bcb2e21`; release `v3.7.17` published 2026-10-30, not a prerelease; recorded in the SEC01 files | required | - |
+| Traefik v3.7.17 signature, scan, config boot and HOME | 60 | W65 | Publisher signature, SBOM or scan, config boot, recreate | Same inputs | NOT_RUN | The image was not pulled or inspected; the running Traefik is unchanged and every recreate waits for its own approval | required | - |
+| Traefik v3.7.17 consumer checks | 60 | W65 | `test_update_gates`, `test_compose_baseline_gates`, `test_p02_service_contracts`, `test_tech_stack_version_contract`; `docker compose --env-file .env.example config -q`; `check-all-hardening.sh 01-gateway` | Branch base `be3cab6a6` plus this change | PASS | 286 tests OK, 31 declared skips; Compose render exits 0; `check-all-hardening.sh 01-gateway` ALL PASS | required | - |
 
 ## Criterion Acceptance
 
@@ -852,6 +878,392 @@ blocks of `gen-secrets.sh` now name a missing module and point to the
 requirements file, without printing any value; the new test failed before
 that change.
 
+### 2026-11-09 root source re-binding and crawl4ai-loopback
+
+On clean `main` `b4d09cbd7`, `test_update_gates` failed 51 times: 50 rows of
+`test_current_rows_match_root_compose_source` and
+`test_current_root_census_excludes_relocated_lab_history`. Every hash failure
+was a stale file hash: the image and build assertions passed for all 96 rows.
+Nine root Compose inputs had changed after their rows were last bound (dev-db,
+mng-db, kafka, observability, airflow, ComfyUI, crawl4ai, open-webui and
+storybook). The census failure was the `crawl4ai-loopback` service added to
+`infra/08-ai/crawl4ai/docker-compose.yml` (`f816150a6`), which had no row.
+
+A new `source_refreshes` entry keeps the previous include inputs and the
+previous binding of each of the 50 rows, re-binds the include hashes and those
+rows' `source_input_sha256`, and lists `crawl4ai-loopback` under
+`added_services`. `source_refreshed_at` of the re-bound rows is unchanged. The
+new row is BLOCKED: its image is the same digest pin as `crawl4ai-egress`, and
+every release, signature, scan, compatibility, runtime and recovery field says
+`UNKNOWN`, `NOT_RUN` or `NOT_OBSERVED`. The `p08_public_release_observations`
+denominator moves to 97 and the row joins `services_without_related_source`,
+with an `added_root_service_mapping` record; the observation rows are
+unchanged. The n8n rows were not touched. No test code was stale, so none
+changed. Afterwards `test_update_gates` ran 39 tests: OK.
+
+### 2026-11-09 n8n 2.46.6 and native login only
+
+The owner asked: "n8n 최신 안정판(2.46.6)으로 업데이트하고, n8n 로그인만 유지." and
+"이중 로그인은 불가하다." The `n8n` Traefik router therefore drops `sso-errors@file`
+and `sso-auth@file` and keeps `gateway-standard-chain@file`; n8n's own login is the
+only login. The `hermes-webhook.yml` exact-path router is unchanged. The n8n UI and
+API are now reachable through the gateway without SSO, so n8n's own authentication
+and `N8N_PAYLOAD_SIZE_MAX` are the only controls in front of them. The router test
+list `ROUTES_WITHOUT_SSO` gained `n8n: native-login`, because it encoded the old
+decision; no other test asserted `sso-auth` on n8n.
+
+The same day the owner withdrew the time-boxed acceptance of the runtime Zod
+advisory: "정책에 걸려 있어(POL-0053, 11월 26일까지) -> 폐기한다." POL-0053 no longer
+carries the "런타임 Zod advisory 기한부 수용" section, and no replacement policy was
+written. The facts stay recorded here. n8n 2.46.6 still depends on zod 3.25.76
+(npm metadata), inside the range of GHSA-mrhx-c7xc-m3w5 (zod below 4.6.6; memory
+exhaustion from large arrays, availability only). `N8N_PAYLOAD_SIZE_MAX` (default
+4 MiB) remains in the Compose file. The 2026-10-27 acceptance and the 2026-11-26
+deadline in the TSK-0009 and TSK-0008 records are history and are not edited.
+
+The pin moves `n8n`, `n8n-worker` and `n8n-task-runner-worker` from 2.43.6 to 2.46.6
+in both Dockerfiles, the Compose file, `infra/tech-stack.versions.json` and the
+version-bundle and runner-isolation tests. The base digests are the OCI index
+digests of `n8nio/n8n:2.46.6` and `n8nio/runners:2.46.6`, read from the Docker Hub
+registry on 2026-11-09 and also pulled by digest to the local image store. The
+GitHub release notes for 2.44 through 2.46.6 list no breaking change for this
+deployment. Changes worth a canary: queue jobs go to one idle worker in turn
+(2.46.2); JavaScript task runners disable Node web storage (2.46.0); workflows with
+deprecated nodes can no longer be created or updated through the API (2.44.0) and
+the editor blocks them (2.46.0); Webhook and MCP Trigger nodes can authenticate
+through trusted sources (2.46.0); `N8N_SCHEDULER_MIN_INTERVAL` was removed
+(2.45.0) and is not set here. None of the queue-mode, external-runner,
+`N8N_METRICS` or webhook-path settings changed. The patched versions of
+GHSA-prmc-fg87-r4gh and several High advisories from 2026-10-28 are 2.45.5 on the
+2.45 line and 2.46.1 on the 2.46 line, so 2.43.6 was inside their ranges and 2.46.6
+is not.
+
+The SEC01 evidence package follows the pin. The n8n rows, the ledger and
+build-input source bindings, the release, image and package lookups and the
+`include_inputs` Compose hash were rewritten; the previous candidate (2.45.7), the
+previous source bindings and the previous lookups are archived inside the same files.
+`test_update_gates` still fails for 50 rows and the root census on a clean
+`0220de58a` because other root Compose files changed after their last re-binding
+(see the 2026-11-08 root source re-binding); this change neither fixes nor worsens
+that set. Signatures, a full-image
+scan, the `hyhome/n8n` build, native and HOME acceptance are `NOT_RUN`.
+
+Follow-up on the same day, on PR #849. The owner asked that the n8n versions be
+unified ("n8n-workflow도 업데이트. n8n 관련 버전은 통일한다."), so the OpsflowSmtp
+package and lock pin `n8n-workflow` 2.46.5, which 2.46.6 bundles. The `zod: 4.6.6`
+override was removed because `n8n-workflow` 2.46.5 does not load under Zod 4
+(`zod.string().ip is not a function`); the axios override stays (the lock resolves
+axios 1.20.0). The lock now resolves zod 3.25.76 in the dev tree. In a scratch copy
+`npm test` passes 38 of 38 and the coverage script passes (97.51 percent lines, 95.56
+branches). `npm audit` on the full lock now reports three high findings, all through
+GHSA-mrhx-c7xc-m3w5 (`zod`, `@n8n/expression-runtime`, `n8n-workflow`); the production
+audit reports zero. The owner withdrew the Zod acceptance, so no exception or new
+acceptance is recorded: the package-lookups record shows the failing full audit as
+observed, and the previous zero-finding audits are archived beside it. This is the
+open item to decide: either an `n8n-workflow` release on Zod 4 or a separate owner
+decision. The runtime image is unaffected, because the deployable package carries no
+`node_modules`.
+
+Two router fixes follow from removing SSO. The `n8n` router rule is now
+``Host(`n8n.${DEFAULT_URL}`) && !PathPrefix(`/metrics`) && !PathPrefix(`/webhook/hermes-blog-ingestion`)``.
+`N8N_METRICS` serves unauthenticated `/metrics` on the app port, which the Host-only
+router would now publish; Prometheus scrapes `n8n:5678` on the internal network and is
+unaffected. A trailing-slash, non-POST or wrong-source request to the Hermes path
+used to miss the exact-path Hermes router and fall through to the general router,
+skipping its source allowlist, body limit and rate limit; the exclusion closes that.
+The Hermes router keeps priority 1000 and is unchanged apart from its header comment,
+which no longer claims an `sso-auth` chain. The hardening gate pins both exclusions.
+The stale n8n statements in AD-0007 and AD-0022 now say n8n uses its own login. ADR-0059
+(accepted) still says Flower and n8n keep the SSO chain in its decision text. The
+architecture guide forbids rewriting an accepted decision body and requires a separately
+approved new ADR to replace it, so it is left unchanged and reported.
+
+### 2026-11-09 n8n OpenTelemetry tracing and a case-bypass fix
+
+The owner asked to configure and apply n8n OpenTelemetry. In `n8n@2.46.6` the `otel`
+module is a default module for `main`, `worker` and `webhook` instances, has no license
+flag, and is switched on by `N8N_OTEL_ENABLED`. Only custom span attributes are
+license-gated (`isOtelCustomSpanAttributesLicensed`), and those are not used here.
+In queue mode main and the worker each export their own `workflow.execute` span per
+segment and the worker exports the node spans, so both get the settings. The Compose
+file sets `N8N_OTEL_ENABLED=true` and `N8N_OTEL_EXPORTER_OTLP_ENDPOINT` to
+`http://alloy:${ALLOY_OTLP_HTTP_PORT:-4318}` in the shared env block and
+`N8N_OTEL_EXPORTER_SERVICE_NAME` per service (`n8n`, `n8n-worker`). Every other option
+keeps its n8n default: production executions only, sample rate 1.0, node spans on, no
+start-marker spans, protocol `http/protobuf`, path `/v1/traces`, no exporter headers.
+`n8n-worker` was not on `obs_net`, where Alloy listens, so it gained `obs_net`, the
+least network change; it adds no new listener, because the worker's task broker is bound
+to its runner network address and its health listener is not enabled. Alloy forwards OTLP
+traces to Tempo, and Alloy is not a hard dependency: if it is down n8n logs a startup
+connection error and tracing is skipped.
+
+The running n8n already had tracing switched on through the UI: its `features.otel`
+settings row holds enabled with the default endpoint `http://localhost:4318`, and the
+startup log reports the failed OTLP connection. `OtelSettingsService.loadSettings` in
+`n8n@2.46.6` decides per field. A field whose `N8N_OTEL_*` variable (or its `_FILE`
+form) is set is env-managed and takes the environment value, whatever the row says;
+every other field takes the row value, then the default. The Compose env therefore
+overrides the stored endpoint, enabled flag and service name once `n8n` and `n8n-worker`
+are recreated, and no Settings change is needed for them. The worker runs the same
+module and reads the same row from the shared metadata database, so it behaves the same.
+The fields Compose does not set (protocol, path, headers, sample rate, node spans,
+start markers, outbound injection, production-only) still follow the stored row, which
+the UI save writes in full. Check Settings, OpenTelemetry after the recreate that those
+values are the defaults listed above; the settings API marks env-managed fields. The
+database was not read or written.
+
+Exported data, from `otel.constants.ts`, `execution-level-tracer.ts` and
+`gen-ai-attributes.ts`: instance id and role, workflow id, name, version and node count,
+execution id, mode, status, retry fields and error type, node id, name, type and version,
+input and output item counts, and project id and, for team projects only, name. AI
+agent nodes add agent name and id, model names and token counts. No credential, header
+or execution payload is an attribute. Two things still leave n8n: a failed workflow or
+node span records the error message and stack as an exception event, and n8n error
+messages can quote data, and with `N8N_OTEL_TRACES_INJECT_OUTBOUND` at its default each
+outbound HTTP request n8n makes carries a W3C `traceparent` header. Neither was
+changed because the owner asked for defaults.
+
+The same day a live check inside the n8n container showed `GET /METRICS` and
+`/Metrics` returning metrics, because Express routes paths case-insensitively and
+Traefik `PathPrefix` is case-sensitive, so the exclusions merged in PR #849 were
+bypassable by letter case. The router rule is now
+``Host(`n8n.${DEFAULT_URL}`) && !PathRegexp(`(?i)^/metrics`) && !PathRegexp(`(?i)^/webhook(-test)?/hermes-blog-ingestion`)``.
+`PathRegexp` is a Traefik v3 matcher and the pinned v3.7.16 supports it; the Compose
+render keeps the backticks and `(?i)` unchanged. The Hermes router keeps priority 1000
+and its exact case-sensitive path, so a mixed-case Hermes POST now matches no router and
+gets 404. The same `!PathPrefix(`/metrics`)` pattern exists on the Gatus router
+(`infra/06-observability/docker-compose.yml`); it was not changed here and is noted for
+the Gatus owner. A route contract test now fails on `PathPrefix` in the n8n rule, and
+the hardening gate pins both `PathRegexp` exclusions.
+
+The SEC01 rows and include hash were re-bound with `python3 -m
+scripts.lib.supply_chain.ledger_rebind` (hash-only, six rows), and the n8n source
+binding was rehashed in the ledger and build inputs. The `m0021` n8n and n8n-worker
+inventory cells were refreshed from `render_service_inventory`. Nothing was recreated, so
+neither the spans nor the router change are live.
+
+### 2026-11-09 n8n Assistant: model and web search, code sandbox held
+
+The owner asked to configure the n8n Assistant (Instance AI) with Web search through
+SearXNG and Code sandbox through n8n-sandbox, model `anthropic/claude-sonnet-5`, with a
+Firecracker runner and never privileged Docker-in-Docker. The Anthropic key is already a
+provider connection in the UI, so Compose sets only the model and carries no key.
+
+Done. `N8N_INSTANCE_AI_MODEL` and `N8N_INSTANCE_AI_SEARXNG_URL=http://searxng:8080` are set
+on `n8n` main. `searxng` is a HOME service in `infra/07-workflow/n8n/docker-compose.yml`
+(profiles `workflow`, `workflow-n8n`), digest-pinned to
+`searxng/searxng:2026.11.9-57ff753ad`, on `template-infra-readonly-med` (1 CPU, 512 MiB,
+512 pids, reservation 0.05 CPU and 192 MiB), read-only with `cap_drop: ALL`,
+`no-new-privileges`, user 977, tmpfs for `/tmp`, `/run` and `/var/cache/searxng`, a
+healthcheck on `/healthz`, no host port and no Traefik route. Its settings file
+`infra/07-workflow/n8n/searxng/settings.yml` turns JSON output on. It needs no secret
+file: the image refuses the default `server.secret_key`, so the entrypoint wrapper
+generates a random key at each start; nothing here keeps sessions or signed links.
+Networks: `n8n_search_net` is internal and holds only `n8n` and `searxng`, so n8n
+reaches SearXNG and SearXNG reaches no other service; `n8n_search_outbound_net` is a plain
+bridge that only `searxng` joins and is its way to the public internet. Its egress is
+therefore unrestricted by port or destination, like any bridge container, and it can
+reach the host LAN through NAT; unlike `crawl4ai` it has no address filter, because
+SearXNG queries a fixed set of search engines and does not fetch arbitrary URLs for its callers. Nothing
+reaches it from outside.
+
+Held. The code sandbox is not configured. The Firecracker runner image
+`n8nio/n8n-sandbox-service-runner-firecracker:1.8.1` (index
+`sha256:d73156fe…971bcf`, linux/amd64 only) was inspected without running it. Its binary builds
+network namespaces, veth pairs, TAP devices, `iptables` FORWARD and NAT rules, bind
+mounts and a Firecracker jailer, and needs `/dev/kvm` and `/dev/net/tun` (both exist on
+the host). That set needs `SYS_ADMIN` and `NET_ADMIN` plus mount, chroot, mknod and
+uid/gid changes, and Docker's default AppArmor profile blocks the mount calls. The smallest capability list that works is therefore close to
+`privileged`, cannot be shown to work without starting the container, and was not added. The
+Go package path of the runtime is `firecracker.ee`, an enterprise-edition tree in the
+sandbox service source, so whether the runner needs an n8n license is a question for the
+owner; the binary shows no license variable. The n8n reference stack
+(`docker/get-n8n.sh`, sandbox service 1.8.1) uses the privileged Docker-in-Docker runner
+instead, which the owner ruled out. The API (`n8n-sandbox-service-api:1.8.1`,
+`sha256:3ac19681…d00e7e`) and sandbox (`n8n-sandbox-service-sandbox:1.8.1`,
+`sha256:b397f4b5…f664ba1233`) images exist; sandbox service 1.14.0 is the newest release, and 1.8.1
+is the version tested with n8n 2.46.6. No sandbox secret is created; if the owner lifts the
+hold, the API key, the runner registration token and the runner API key are needed and n8n's
+config reads `N8N_SANDBOX_SERVICE_API_KEY` and accepts a `_FILE` form.
+
+The SEC01 ledger has a BLOCKED `searxng` row (registry descriptors only, everything else
+UNKNOWN or NOT_RUN), added through a source refresh; the other six n8n rows were
+re-bound with `ledger_rebind`, and the n8n source binding was rehashed. The
+tech-stack projection, POL-0078 (`workflow`, `workflow-n8n`), the `m0021` inventory
+(`render_service_inventory`), GDE-0053 `implementation_services` and its Assistant
+paragraph, the n8n README, AD-0026 network table and the Grafana coverage README were
+updated. Nothing was started, so neither SearXNG nor the Assistant settings are live.
+
+### 2026-11-09 dedicated Valkey removal (ADR-0062 decision 10)
+
+The owner accepted ADR-0062, whose decision 10 removes the per-app Valkey and exporter
+sets of airflow, n8n and oauth2-proxy (`dedicated-valkey` profile, never created in
+HOME). Airflow, n8n and OAuth2 Proxy keep the shared `mng-valkey`; `mng-valkey`,
+`dev-valkey` and their exporters stay.
+
+Done in source only; no container, volume or image was touched. Six services left their
+Compose files (`airflow-valkey`, `airflow-valkey-exporter`, `n8n-valkey`,
+`n8n-valkey-exporter`, `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`) with the
+three `docker-compose.monitor-acl.yml` overlays, the `airflow-valkey-data`,
+`n8n-valkey-data` and `oauth2-proxy-valkey-data` volume declarations, the optional
+`depends_on` entries, the `dedicated-valkey` profile (POL-0078, operations catalog), the
+three exporter scrape comments, the exporter names in the `ObservationValkeyBackendMetricMissing`
+selection, and the root Secret declarations `airflow_valkey_password`, `n8n_valkey_password` and
+the three `*_valkey_monitor_password`. The n8n entrypoints no longer accept the
+`n8n-valkey::n8n_valkey_password:0` selection and `connection_uri.py` no longer accepts
+the `airflow-valkey` pair; the shared pair and the shared named-account pair stay. The
+OpenBao secret catalog lost CACHE-008, CACHE-009, CACHE-028, CACHE-029 and CACHE-030;
+their IDs are not reused. The SEC01 ledger archived the six rows in a `source_refreshes`
+record (`removed_services`, `removed_entries`), adjusted the P08 observation counts
+(denominator 97 to 91, services with a related source 83 to 80), re-bound 15 rows and 5
+include hashes with `ledger_rebind`, and rehashed the n8n source binding identically in
+`update-ledger.json` and `build-inputs.json` with the old binding archived. The tech-stack
+projection and the `m0021` inventory were regenerated, and Stage 05 guides, policies and
+runbooks, AD-0002, AD-0007, AD-0022 and the service READMEs were updated.
+`oauth2_valkey_password` stays: the alternative `Dockerfile` entrypoint of oauth2-proxy
+reads it, and the secret file lives under `secrets/db/mng-valkey/`.
+
+Held. The public registry `secrets/SENSITIVE_ENV_VARS.md.example` still lists CACHE-008,
+CACHE-009, CACHE-028, CACHE-029 and CACHE-030, and `secrets/README.md` still names
+`db/n8n-valkey/`; the project permissions deny agent edits under `secrets/`, so the owner
+removes those five rows and that clause. Until then the secret catalog contract and the
+secret metadata sync tests report `catalog_public_source_drift`.
+
+Owner decisions that remain: the volumes `hy-home-infra_airflow-valkey-data` and
+`hy-home-infra_n8n-valkey-data` (and any stopped container or image of the six services)
+are untouched and need separate approval to remove; the private files under
+`secrets/db/airflow-valkey/`, `secrets/db/n8n-valkey/`, `secrets/db/oauth2-valkey/` and
+`secrets/db/mng-valkey/airflow_password.txt` are not deleted; and the now unmounted
+`infra/04-data/mng-db/valkey/scripts/start-dedicated.sh` and `render-monitor-acl.sh`
+(with their script-level tests and `test_p02_secret_presentation_native`) are kept for a
+separate retirement.
+
+### 2026-11-09 n8n Assistant code sandbox: privileged Docker-in-Docker runner
+
+The owner overrode the earlier exclusion for this one service and chose n8n's privileged
+Docker-in-Docker runner for the Assistant code sandbox ("privileged DinD"). The
+Firecracker runner stays unused (see the preceding section).
+
+Services, in `infra/07-workflow/n8n/docker-compose.yml`, all in the opt-in profile
+`n8n-sandbox` and none selected by `workflow` or `workflow-n8n`. Sandbox service 1.8.1 is
+the release the n8n 2.46.6 installer pins; the newest tag seen on Docker Hub is 1.14.0.
+
+- `n8n-sandbox-certs`: one-shot job from `n8nio/n8n-sandbox-service-api:1.8.1`
+  (`sha256:3ac19681…d00e7e`) that runs the image's `bootstrap-mtls.sh` into the volume
+  `n8n-sandbox-tls`, hands the API key files to the API user (`cap_add: CHOWN`, the
+  only added capability, with an exception) and deletes the CA key. No network.
+- `n8n-sandbox-api`: the same image, read-only, `cap_drop: ALL`, tmpfs state (sandbox
+  metadata is lost on restart; sandboxes are disposable), healthcheck on `/healthz`.
+- `n8n-sandbox-runner-1`: `n8nio/n8n-sandbox-service-runner-dind:1.8.1`
+  (`sha256:b7444719…29a117`), `privileged: true`, the only privileged service in the
+  file. The sandbox image is `n8nio/n8n-sandbox-service-sandbox:1.8.1`
+  (`sha256:b397f4b5…f664ba1233`), named by digest in `SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE`; the
+  inner Docker daemon pulls it from Docker Hub on first use into the dedicated volume
+  `n8n-sandbox-docker`. The host Docker socket is never mounted. Renovate does not see the
+  sandbox image because it is an environment value, so a test checks that it stays on
+  the API's release.
+
+`n8n` main gets `N8N_INSTANCE_AI_SANDBOX_ENABLED=true`, provider `n8n-sandbox`,
+`N8N_SANDBOX_SERVICE_URL=http://n8n-sandbox-api:8080` and
+`N8N_SANDBOX_SERVICE_API_KEY_FILE=/run/secrets/n8n_sandbox_api_key`. Because that
+secret is mounted into `n8n` itself, **`n8n` will not start until the file exists**, even
+if the profile is not selected.
+
+Networks (each a distinct bridge, no host port and no Traefik route on any of the three
+services). The reference stack uses one default network for everything. Here
+`n8n_sandbox_net` (10.250.210.0/24, internal) holds only `n8n` and the API;
+`n8n_sandbox_runner_net` (10.250.211.0/24, internal) holds only the API and the runner;
+`n8n_sandbox_outbound_net` (10.250.212.0/24) holds only the runner. This departs from a
+single network holding n8n, the API and the runner on purpose: sandboxed code leaves the
+inner Docker network through the runner, so a shared network would let it reach n8n
+main's UI and API directly. The runner joins no data, `n8n_net`, `obs_net`, edge or
+`n8n_search_net` network.
+
+Egress, stated exactly. The runner's only external path is `n8n_sandbox_outbound_net`, a
+plain bridge with no destination or port filter. Sandbox code runs in an inner container
+that the runner NATs onto that path, so it, like the runner, can reach the public
+internet and, through the host's NAT, the host LAN and any host service listening on the
+bridge gateway address. It can also reach the API on `n8n_sandbox_runner_net`, which
+needs the API key. It cannot reach n8n or any data network. The inner dockerd needs the
+internet to pull the sandbox image, and the Assistant's workflow builder may need it to
+install packages (not verified). A host `DOCKER-USER` rule is the way to
+narrow it if the owner wants; it was not added.
+
+Budget: runner 3 CPU, 4 GiB, 4096 pids (reservation 0.05 CPU, 512 MiB); API 0.5 CPU,
+256 MiB, 256 pids; certs job 0.5 CPU, 256 MiB for seconds. The sandbox image is 1.35 GB
+unpacked, so the `n8n-sandbox-docker` volume grows by at least that.
+
+Exception record: `infra/common-optimizations.exceptions.json` has `privileged` for
+`n8n-sandbox-runner-1` and `cap_add CHOWN` for `n8n-sandbox-certs`, each citing the
+owner decision of 2026-11-09, reviewed 2026-11-09 and due 2027-05-09. The Conftest
+allow-list (`compose.rego`) now names `cadvisor` and `n8n-sandbox-runner-1`, with
+tests. `N8nCodeSandboxContractTests` fails if any other service in the n8n file is
+privileged, if a sandbox service gets a port, route or Docker socket, if the networks
+change shape, or if an image leaves digest pinning or the 1.8.1 release.
+
+Secrets, three Docker Secret files, none created or read here. The images read the API
+key list, the runner registration token and the runner API key only from the
+environment, so the API and runner entrypoints load them from the files and `exec` the
+image command; n8n reads its copy through its `_FILE` form. The owner creates these files
+before recreating `n8n`:
+
+- `secrets/automation/n8n/n8n_sandbox_api_key.txt`: n8n main and the API.
+- `secrets/automation/n8n/n8n_sandbox_runner_registration_token.txt`: the API and the runner.
+- `secrets/automation/n8n/n8n_sandbox_runner_api_key.txt`: the API and the runner.
+
+Suggested command (writes files only, prints nothing): `umask 027; for f in
+n8n_sandbox_api_key n8n_sandbox_runner_registration_token n8n_sandbox_runner_api_key; do
+openssl rand -hex 32 > "secrets/automation/n8n/$f.txt"; done`, then give the files the
+group of `SECRETS_GID` like the other secret files. The OpenBao catalog and
+`secrets/SENSITIVE_ENV_VARS.md.example` still need three rows for these files. That
+metadata file is outside what this session may read or edit, so two tests in
+`test_secret_metadata_sync` fail until someone adds them; this is the only open gate.
+
+Records: SEC01 BLOCKED rows for the three services (registry descriptors only), the
+refresh entry with `added_services`, the rebound hashes and the n8n source binding,
+`tech-stack.versions.json`, POL-0078 (profile row and rule), the `m0021` inventory rows,
+the Grafana coverage README, AD-0026, GDE-0053 (a security note) and
+`secret-file-support.json`, which now lists the new `_FILE` key and the twelve certificate-path
+keys. Nothing was started: the DinD start, the mTLS registration between API and runner,
+the first sandbox creation, the `no-new-privileges` and `cap_drop` defaults under an
+inner dockerd, and the sandbox image pull are all unproven.
+
+### 2026-11-09 Traefik v3.7.17 for GHSA-xv5x-242w-7hf7
+
+The owner approved prioritizing security-relevant updates. GHSA-xv5x-242w-7hf7 (High,
+published 2026-11-02) affects Traefik v3.7.14 through v3.7.16: an `Authorization` header with the
+`NTLM` or `Negotiate` scheme makes Traefik allocate a dedicated backend transport to the client
+connection without any valid credential, and the transport, its idle backend connection and its
+goroutines are not released when the client closes. An unauthenticated client can exhaust memory,
+file descriptors and backend connections whether or not NTLM or Kerberos backends exist. The
+patched version is v3.7.17. HOME declared v3.7.16 in Compose, so the source pin moves to
+`traefik:v3.7.17@sha256:f4bb143d…86f5a`, the OCI index digest read from the Docker Hub registry on
+2026-11-09. The running container still uses the image it ran before (recorded in the SEC01 ledger)
+and was not touched.
+
+The v3.7.17 release notes and the v3.7 migration guide list three changes. Traefik is built with
+Go 1.27, which removes the `tlsrsakex`, `tls10server` and `tls3des` `GODEBUG` settings; the tracked
+configuration sets no `GODEBUG`, `minVersion` or `cipherSuites`. Go 1.27 rejects requests with more
+than 500 header values with 431 unless `maxHeaderValueCount` is raised; no entry point sets it, and a client that sends more is
+rejected before routing and absent from the access logs. The Ingress-NGINX provider generates new names; that provider is not enabled.
+The release also fixes an NTLM/Kerberos backend connection leak and bumps `quic-go`, `x/net`,
+`lego` and `go-jose`. No breaking change touches this configuration.
+
+Changed: `infra/01-gateway/traefik/docker-compose.yml`, `infra/tech-stack.versions.json` (through
+`sync-tech-stack-versions.sh --write`), the pinned Traefik image in
+`tests/validation/test_p02_native_contracts.py`, the Traefik README and Guide, and the SEC01
+files. The traefik ledger row carries the new image, digests, advisory, applicability and a
+`superseded_pin_2026_11_09` archive of the v3.7.16 binding; `previous_adopted_pin_assessment` (the
+v3.7.14 scan) is unchanged. `ledger_rebind` re-bound the include hash. The release, image and
+vendor-channel lookups gained the v3.7.17 responses. Signatures, a scan, the config boot and the HOME
+recreate are `NOT_RUN`.
+
+Unchanged on purpose: the v3.7.13 rollback overlay `infra/01-gateway/traefik/compose.window-ca.override.yml`
+(SPEC-0243 rollback image), the digest-only `traefik@sha256:24841fe2…20e344a0` guard image in
+`examples/operations/compose-core-readiness/`, `scripts/lib/ops/compose-core-readiness.sh` and the
+quality-path guard (Renovate PR #853 touches it), and historical records that name v3.7.16 (TSK-0021,
+POL-0013, the workspace inventory data).
+
 ## Handoff
 
 | Target | Disposition | Current owner | Resume condition and recovery |
@@ -870,3 +1282,70 @@ that change.
 - [Historical P03 service integration contracts](../../0204-service-integration-security-and-operations/tasks/tsk-0011-p03-service-integration-contracts.md)
 - [Application authentication guide](../../../05.operations/guides/03-identity-and-access/0079-application-auth-integration.md)
 - [Workspace inventory data](../../../90.references/data/0096-workspace-inventory/README.md)
+
+### 2026-11-09 n8n code sandbox: vfs storage for the inner Docker
+
+The Assistant workspace setup failed with `install-dependencies: canceled`. On the host
+kernel `overlay.redirect_dir` is off, so `npm install` over the image-layer `node_modules`
+hits `EXDEV` on directory renames and exceeds n8n's 120 s budget. The same install took
+6 s on a copy of that tree. IPv6, dependency versions and sandbox 1.14.0 were tested and
+ruled out. The runner now sets `SANDBOX_RUNNER_DOCKER_STORAGE_DRIVER=vfs`. The guide and
+AD-0026 now state the measured egress limits of sandbox containers.
+
+### 2026-11-09 dedicated Valkey leftovers retired
+
+Owner-directed follow-up to the dedicated Valkey removal. `start-dedicated.sh` and
+`render-monitor-acl.sh` were unmounted and used by no live service, so both are deleted
+with their script-level tests (`DedicatedValkeyWrapperTests`, `ValkeyMonitorRendererTests`)
+and `test_p02_secret_presentation_native`, whose only subject was the renderer. The
+workflow contract, its test and the CI gate plan test drop that opt-in module (optional
+selectors 33 to 32). The `start.sh` write-refusal check stays. The renderer entry in the
+`local_source_rebindings` record of `build-inputs.json` is history and stays.
+
+The alternative `Dockerfile` entrypoint of oauth2-proxy now reads `mng_valkey_password`
+like `docker-entrypoint.dev.sh`. `oauth2_valkey_password` is removed from the oauth2-proxy
+Compose file and the root `docker-compose.yml`, and catalog entry CACHE-012 is removed from
+`secret-catalog.json` (its ID is not reused). The hardening script, the `sec01` entrypoint
+test, the guide, the service README and the `m0021` inventory follow.
+
+Held. The public registry `secrets/SENSITIVE_ENV_VARS.md.example` still lists CACHE-012;
+the owner removes that row. The secret catalog contract and metadata sync tests report
+the drift until then. The private file `secrets/db/mng-valkey/oauth2_password.txt` is not
+deleted.
+
+### 2026-11-09 Renovate image bumps keep the SEC01 ledger in sync
+
+Renovate image PRs failed `candidate-quality` because the SEC01 update ledger and several
+tests pinned the old image. `scripts/operations/sync-update-ledger.sh --write` is now a
+Renovate post-upgrade task beside `sync-tech-stack-versions.sh --write` (allowlisted in
+`config.js`; `update-ledger.json` and `build-inputs.json` added to `fileFilters`). It runs
+`ledger_rebind --accept-image-updates`, which accepts only a full `name:tag@sha256:<64 hex>`
+reference of the same repository on an existing row. A new or removed service, a repository
+change, a reference without a digest and a build change exit 2 and write nothing. An accepted
+row keeps `UNKNOWN` target digests, `NOT_RUN` review, scan and acceptance fields,
+`BLOCKED`, and `UNBOUND_CURRENT_TARGET`; the replaced values stay in
+`source_refreshes[].previous_service_images`. Nothing contacts a registry, so the digest,
+signature and provenance are not verified. An n8n input change now rehashes
+`n8n_source_preparation.source_binding` identically in both documents.
+
+Tests that pinned a Renovate-owned version now check the repository, the full digest form
+and the ledger row instead: `test_sec01_version_contract`, `test_sec01_next_stable_candidates`,
+`test_sec01_next_tool_candidates`, `test_service_wiring_contracts`, `test_crawl4ai_egress`,
+`test_workflow_version_bundle` and the updater contract in
+`test_tech_stack_version_contract`. Replaying the open PRs 854, 857, 859, 860, 861, 864, 865,
+872, 876 and 877 in throwaway copies passed the gating suites and the second run changed
+nothing. PRs 856, 858 and 866 change tag-only images and are refused, as designed. The step
+has not run inside the Renovate container; its Python version and the noexec `/tmp` behavior
+are unobserved.
+
+### 2026-11-09 n8n code sandbox: per-principal mTLS mounts
+
+A security review found that `n8n-sandbox-api` and `n8n-sandbox-runner-1` both mounted the
+whole `n8n-sandbox-tls` volume, so each could read the other's private keys. Each service
+now mounts only its own subpath (`api`, `runner`) read-only.
+
+### 2026-11-09 n8n code sandbox: CA key removal on every exit path
+
+A security review noted that a failure between certificate generation and the final `rm`
+would leave `ca.key` in `n8n-sandbox-tls`. The job now removes it through a shell `trap` on
+exit. Reproduced on the pinned image: the key stayed before the change and is gone after it.

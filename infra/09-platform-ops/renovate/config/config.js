@@ -10,6 +10,7 @@ module.exports = {
 
     allowedCommands: [
         '^bash scripts/operations/sync-tech-stack-versions\\.sh --write$',
+        '^bash scripts/operations/sync-update-ledger\\.sh --write$',
     ],
 
     allowScripts: false,

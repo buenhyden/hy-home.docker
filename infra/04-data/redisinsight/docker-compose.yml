@@ -79,8 +79,7 @@ services:
       redisinsight_ingress_net:
         # Fixed; RI_APP_HOST and the healthcheck use it.
         ipv4_address: 10.250.18.3
-      # Data networks of the Valkey stores it inspects: MNG and DEV. The
-      # optional n8n and Airflow stores (dedicated-valkey) get a network only
-      # when an operator inspects them. LABs run in their own projects.
+      # Data networks of the Valkey stores it inspects: MNG and DEV. LABs run
+      # in their own projects.
       mng_data_net: {}
       dev_data_net: {}

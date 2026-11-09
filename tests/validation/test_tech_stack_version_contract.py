@@ -198,12 +198,20 @@ def updater_contract_findings(
     if global_config.get("allowScripts") is not False:
         findings.append("Renovate scripts must remain disabled")
     if global_config.get("allowedCommands") != [
-        r"^bash scripts/operations/sync-tech-stack-versions\.sh --write$"
+        r"^bash scripts/operations/sync-tech-stack-versions\.sh --write$",
+        r"^bash scripts/operations/sync-update-ledger\.sh --write$",
     ]:
         findings.append("Renovate command allowlist is unsafe")
     if renovate.get("postUpgradeTasks") != {
-        "commands": ["bash scripts/operations/sync-tech-stack-versions.sh --write"],
-        "fileFilters": ["infra/tech-stack.versions.json"],
+        "commands": [
+            "bash scripts/operations/sync-tech-stack-versions.sh --write",
+            "bash scripts/operations/sync-update-ledger.sh --write",
+        ],
+        "fileFilters": [
+            "infra/tech-stack.versions.json",
+            "infra/09-platform-ops/security-updates/update-ledger.json",
+            "infra/09-platform-ops/security-updates/build-inputs.json",
+        ],
         "executionMode": "branch",
     }:
         findings.append("Renovate version projection task drift")
@@ -212,6 +220,17 @@ def updater_contract_findings(
 
 
 class UpdaterOwnershipContractTests(unittest.TestCase):
+    def test_renovate_post_upgrade_dependencies_stay_hash_locked(self) -> None:
+        lock = (ROOT / "scripts/requirements-renovate.lock").read_text(encoding="utf-8")
+        for name in ("sync-tech-stack-versions.sh", "sync-update-ledger.sh"):
+            script = (ROOT / "scripts/operations" / name).read_text(encoding="utf-8")
+            with self.subTest(script=name):
+                self.assertIn("--require-hashes", script)
+                self.assertIn("scripts/requirements-renovate.lock", script)
+                self.assertIn('-p "$(dirname -- "$REPO_ROOT")"', script)
+        for name in ("pyyaml", "markdown-it-py", "jsonschema"):
+            self.assertRegex(lock, rf"(?m)^{name}==\S+ \\\n\s+--hash=sha256:")
+
     def test_renovate_reads_the_tested_repository_config(self) -> None:
         # Renovate takes the first of its config file names that exists and
         # tries renovate.json before renovate.json5, so a second copy would

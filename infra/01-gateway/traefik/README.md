@@ -1,10 +1,10 @@
 ---
 title: "Traefik Edge Router"
-version: "1.0.7"
+version: "1.0.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-09"
 created: "2025-11-12"
 ---
 
@@ -62,7 +62,7 @@ traefik/
 | Config files | `docker-compose.yml`, `config`, `config/README.md`, `config/traefik.yml` |
 | Config values | profiles: `core`, `dev` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml)을 통해 root include가 활성화됨 -> `infra/01-gateway/traefik/docker-compose.yml` |
-| Networks | `edge_net`, `obs_net`, `experience_ingress_net`, `redisinsight_ingress_net`, `blog_export_net`, 자체 인증이 없는 backend 17개의 `<service>_ingress_net`(SPEC-0266) |
+| Networks | `edge_net`, `obs_net`, `experience_ingress_net`, `redisinsight_ingress_net`, `blog_export_net`, 자체 인증이 없는 backend 16개의 `<service>_ingress_net`(SPEC-0266) |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `${DEFAULT_CERT_DIR}/{cert.pem,key.pem,rootCA.pem}`을 각각 `/certs/{cert.pem,key.pem,rootCA.pem}`에 읽기 전용 mount, `./dynamic:/dynamic:ro`, `./config/traefik.yml:/etc/traefik/traefik.yml:ro` |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |
@@ -150,3 +150,5 @@ Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OA
 - [문서 인덱스](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../tech-stack.versions.json)으로 drift를 검증합니다.
+
+2026-11-09에 Compose 고정을 GHSA-xv5x-242w-7hf7(인증 없는 NTLM/Negotiate 헤더가 연결마다 backend transport를 남기는 High 결함)이 고쳐진 Traefik 패치 릴리스로 올렸습니다. 해당 릴리스 migration guide의 Go 1.27 항목(GODEBUG TLS 설정 제거, 요청 header 값 500개 제한, Ingress-NGINX 생성 이름)은 이 설정에 해당하지 않습니다. 서명, 스캔, config 부팅과 HOME 재생성은 `NOT_RUN`이며 실행 중인 컨테이너는 바뀌지 않았습니다. 기록은 `infra/09-platform-ops/security-updates/`와 SPEC-0212-TSK-0041이 소유합니다.

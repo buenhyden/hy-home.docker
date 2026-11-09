@@ -65,10 +65,13 @@
 
   "postUpgradeTasks": {
     "commands": [
-      "bash scripts/operations/sync-tech-stack-versions.sh --write"
+      "bash scripts/operations/sync-tech-stack-versions.sh --write",
+      "bash scripts/operations/sync-update-ledger.sh --write"
     ],
     "fileFilters": [
-      "infra/tech-stack.versions.json"
+      "infra/tech-stack.versions.json",
+      "infra/09-platform-ops/security-updates/update-ledger.json",
+      "infra/09-platform-ops/security-updates/build-inputs.json"
     ],
     "executionMode": "branch"
   },
@@ -93,6 +96,11 @@
   ],
 
   "packageRules": [
+    {
+      "description": "The HOME GPU is a GTX 1060 (Pascal, compute 6.1), which CUDA 13 no longer supports; hold the base image on 12.x.",
+      "matchPackageNames": ["nvidia/cuda"],
+      "allowedVersions": "/^12\\./"
+    },
     {
       "description": "인프라 주요 버전 변경은 Dashboard 승인 후 제안",
       "matchManagers": [

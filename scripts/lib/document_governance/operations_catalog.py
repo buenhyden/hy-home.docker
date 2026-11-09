@@ -719,7 +719,6 @@ _FIXED_PROFILE_CATEGORIES = {
     "legacy-vault": "lifecycle",
     "cassandra": "topology",
     "couchdb": "topology",
-    "dedicated-valkey": "topology",
     "lab-kafka": "topology",
     "mongodb": "topology",
     "nginx": "topology",

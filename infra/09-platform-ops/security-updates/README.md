@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.1.10"
+version: "1.1.13"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 ---
 
 # 보안 업데이트 조사 증거
@@ -112,6 +112,13 @@ custom 이미지가 새로 빌드되지 않은 경우 upstream base 증거를 cu
 pull·scan·독립 검토·config 검사·HOME 재생성·rollback은 `NOT_RUN`이고
 `SPEC-0204-TSK-0021`이 owner 단계로 기록한다.
 
+2026-11-09에 owner가 보안 업데이트 우선 방침에 따라 Traefik 고정을 GHSA-xv5x-242w-7hf7(High, 2026-11-02 공개)이 고쳐진 패치 릴리스로 올렸다.
+이 결함은 영향 범위의 Traefik에서 인증 없는 NTLM/Negotiate 헤더가 연결마다 backend
+transport를 남기는 결함이다. index digest와 linux/amd64 manifest는 공개 registry API로 대조해 `image-source-lookups.json`에,
+GitHub 최신 릴리스 응답은 `release-lookups.json`에 기록했고, 이전 binding은 서비스 행의
+`superseded_pin_2026_11_09`에 보존했다. pull·서명·scan·독립 검토·config 검사·HOME 재생성은 `NOT_RUN`이며
+`SPEC-0212-TSK-0041`이 기록한다.
+
 2026-11-04 `SPEC-0262`로 분석 lakehouse·dbt·Superset·JupyterLab과 SonarQube·Stalwart
 15개 서비스가 ROOT include에서 빠져 `labs/lakehouse/docker-compose.yml`, `labs/dbt/docker-compose.yml`,
 `labs/superset/docker-compose.yml`, `labs/jupyterlab/docker-compose.yml`, `labs/sonarqube/docker-compose.yml`, `labs/stalwart/docker-compose.yml`의
@@ -196,6 +203,34 @@ parser/include helper로 실제 root Compose source를 다시 읽습니다. `--r
 Compose 입력별 SHA와 입력 집합 SHA를 남깁니다. 장부의 항목과 expected 배열에서
 동시에 서비스를 제거해도 실제 source 집합 대비 누락으로 실패합니다.
 이 source 집합은 활성 profile·runtime 관찰을 대신하지 않습니다.
+
+Compose 파일 내용만 바뀌어 장부의 `source_input_sha256`이 어긋난 경우에는
+`python3 -m scripts.lib.supply_chain.ledger_rebind`가 계획을 출력합니다(기본은
+dry run). `--write --source-revision <40자리 commit>`을 주면 `source_refreshes`에
+이전 include 입력과 행별 이전 결합을 남기고 include 해시와 해당 행의
+`source_input_sha256`만 다시 묶으며, 같은 상태에서 다시 실행하면 아무것도 바꾸지
+않습니다. 이미지·build가 바뀐 행, 행·서비스·include 입력의 추가나 제거는 실제 갱신
+증거가 필요하므로 목록만 출력하고 아무것도 쓰지 않은 채 종료 코드 2로 끝납니다.
+검토·scan·서명·수용 필드는 쓰지 않습니다. PR이 root Compose 입력을 바꾸면
+`tests.lib.supply_chain.test_update_gates`가 호스티드 `compose-baseline-regressions`
+leaf에서 같은 불일치를 잡습니다.
+
+Renovate PR은 `bash scripts/operations/sync-update-ledger.sh --write` post-upgrade
+단계로 같은 도구의 `--accept-image-updates` 모드를 실행합니다. 이 모드는 Compose가
+같은 저장소의 전체 `name:tag@sha256:<64 hex>` 참조로 바뀐 기존 행만 받아들이며, 새
+서비스·제거·저장소 변경·digest 없는 참조·build 변경은 종료 코드 2로 거부하고 아무것도
+쓰지 않습니다. 받아들인 행은 검증하지 않은 상태로 남습니다. `target_index_digest`·
+`target_manifest_digest`·`target_config_digest`·`target_declared_digest`는
+`UNKNOWN`, signature·SBOM·scan·compatibility·backup·rollback·native·deployment는
+`NOT_RUN`, disposition은 `BLOCKED`이고 `current_target_artifact_binding`은
+`UNBOUND_CURRENT_TARGET`입니다. 이전 값은 `source_refreshes`의
+`previous_service_images`에 남고 `meaning`은 Renovate가 제안한 digest의 서명과
+provenance를 확인하지 않았음을 적습니다. 레지스트리·네트워크에는 접속하지 않으며 같은
+상태에서 다시 실행하면 아무것도 바꾸지 않습니다. n8n 입력 파일이 바뀌면 같은 도구가
+`update-ledger.json`과 `build-inputs.json`의 `n8n_source_preparation.source_binding`을
+같은 값으로 다시 묶고 이전 binding을 `historical_source_bindings`에 추가합니다(이
+재결합은 `--accept-image-updates` 없이도 일어납니다). 이 단계가 만드는 행은 검토 증거가
+아니며 사람이 digest·서명·provenance·scan을 확인하기 전에는 수용으로 읽지 않습니다.
 
 다음 수치·hash는 LAB 이동 전의 역사적 DEFER 영수증입니다. latest gate는 `ready=false`,
 `deployed=false`, `externalfacts=false`, exit 2와 missing/unexpected 서비스 없음을

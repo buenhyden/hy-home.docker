@@ -170,15 +170,6 @@ networks:
       config:
         - subnet: 10.250.29.0/24
           ip_range: 10.250.29.128/25
-  kafka_rest_proxy_ingress_net:
-    name: kafka_rest_proxy_ingress_net
-    internal: true
-    driver_opts:
-      com.docker.network.bridge.gateway_mode_ipv4: isolated
-    ipam:
-      config:
-        - subnet: 10.250.30.0/24
-          ip_range: 10.250.30.128/25
   loki_ingress_net:
     name: loki_ingress_net
     internal: true
@@ -452,15 +443,6 @@ secrets:
   neo4j_password:
     file: ./secrets/db/neo4j/neo4j_password.txt
   # ── Valkey / Redis ─────────────────────────────────────
-  # Optional dedicated monitor overlay only; unused in default startup.
-  airflow_valkey_monitor_password:
-    file: ./secrets/db/airflow-valkey/monitor_password.txt
-  n8n_valkey_monitor_password:
-    file: ./secrets/db/n8n-valkey/monitor_password.txt
-  oauth2_valkey_monitor_password:
-    file: ./secrets/db/oauth2-valkey/monitor_password.txt
-  n8n_valkey_password:
-    file: ./secrets/db/n8n-valkey/n8n_password.txt
   mng_valkey_password:
     file: ./secrets/db/mng-valkey/mng_password.txt
   mng_valkey_n8n_password:
@@ -477,12 +459,8 @@ secrets:
     file: ./secrets/db/dev-valkey/inspector_password.txt
   redisinsight_encryption_key:
     file: ./secrets/data/redisinsight/encryption_key.txt
-  oauth2_valkey_password:
-    file: ./secrets/db/mng-valkey/oauth2_password.txt
   terrakube_valkey_password:
     file: ./secrets/db/mng-valkey/terrakube_password.txt
-  airflow_valkey_password:
-    file: ./secrets/db/mng-valkey/airflow_password.txt
   # ── SeaweedFS ───────────────────────────────────────────
   seaweedfs_jwt_volume_key:
     file: ./secrets/storage/seaweedfs/seaweedfs_jwt_volume_key.txt
@@ -522,6 +500,12 @@ secrets:
     file: ./secrets/automation/n8n/n8n_encryption_key.txt
   n8n_runner_auth_token:
     file: ./secrets/automation/n8n/n8n_runner_auth_token.txt
+  n8n_sandbox_api_key:
+    file: ./secrets/automation/n8n/n8n_sandbox_api_key.txt
+  n8n_sandbox_runner_registration_token:
+    file: ./secrets/automation/n8n/n8n_sandbox_runner_registration_token.txt
+  n8n_sandbox_runner_api_key:
+    file: ./secrets/automation/n8n/n8n_sandbox_runner_api_key.txt
 
   # ── Tooling: SonarQube ──────────────────────────────────
 

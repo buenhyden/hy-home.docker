@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.6.0"
+version: "1.6.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -68,7 +68,7 @@ graph TD
 - **ForwardAuth** (`gateway-standard-chain@file,sso-errors@file,sso-auth@file`):
   Flower, n8n, Prometheus, Loki, Tempo, Alloy, Alertmanager, Pushgateway,
   Pyroscope, cAdvisor, Qdrant, RedisInsight, ComfyUI, Ollama, MLflow, Schema
-  Registry, Kafka Connect, Kafka REST, Terrakube and the Mailpit UI.
+  Registry, Kafka Connect, Terrakube and the Mailpit UI.
 - **Native OIDC** (`gateway-standard-chain@file` only, application performs
   OIDC with Keycloak): Airflow (`KeycloakAuthManager` with Authorization
   Services), Kafbat UI, Open WebUI, Grafana, Gatus and OpenBao. Dozzle also uses
@@ -97,8 +97,7 @@ the OpenBao auth backend and is not in Compose files or documents.
 
 `keycloak` (`infra/02-auth/keycloak/`) and `oauth2-proxy`
 (`infra/02-auth/oauth2-proxy/`) are selected by `core`, `auth`, `dev` and
-`local`. The `dedicated-valkey` profile adds `oauth2-proxy-valkey` and its
-exporter.
+`local`. Its session store is the shared `mng-valkey`.
 
 ## Quality and Risks
 

@@ -1,10 +1,10 @@
 ---
 title: "Kafka 메시징"
-version: "1.2.4"
+version: "1.2.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-09"
 created: "2025-11-12"
 ---
 
@@ -21,10 +21,10 @@ Kafka와 그 companion 서비스들의 operator 및 maintainer를 대상으로 �
 ## Scope
 
 [`docker-compose.yml`](docker-compose.yml)은 정상 단일 `kafka-1`,
-`schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`,
+`schema-registry`, `kafka-connect`, `kafbat-ui`,
 `kafka-exporter`, `kafka-init`, `debezium-db-provision`을 정의합니다. 정상
 selector는 `messaging`, `messaging-broker`, `messaging-schema`,
-`messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc`입니다.
+`messaging-connect`, `messaging-admin`, `cdc`입니다.
 
 Connect는 Debezium PostgreSQL 플러그인을 사용해
 [`Dockerfile.connect`](Dockerfile.connect)로부터 빌드됩니다.
@@ -39,12 +39,12 @@ Connect는 Debezium PostgreSQL 플러그인을 사용해
 
 정상 broker와 Connect 상태는 `${DEFAULT_MESSAGE_BROKER_DIR}/kafka` 아래의 별도
 bind 기반 volume을 사용합니다. 서비스들은 `kafka_net`에 참여합니다. 라우팅되는
-Kafbat UI는 `edge_net`에, 자체 인증이 없는 Schema Registry·Connect·REST Proxy는
+Kafbat UI는 `edge_net`에, 자체 인증이 없는 Schema Registry·Connect는
 각자의 Traefik만 함께 붙는 전용 내부 ingress망(`schema_registry_ingress_net` 등, SPEC-0266)에 참여합니다. Broker, controller, 게시된 broker/JMX
 listener는 PLAINTEXT이며 broker TLS/클라이언트 인증은 선언되어 있지
-않습니다. Schema Registry, Connect, REST, Kafbat HTTP 포트는 내부용으로
+않습니다. Schema Registry, Connect, Kafbat HTTP 포트는 내부용으로
 유지되며 일부 라우트는 Traefik을 사용합니다. Broker, Schema Registry,
-Connect, REST, Kafbat, exporter는 각 역할에 맞는 healthcheck를 선언하고
+Connect, Kafbat, exporter는 각 역할에 맞는 healthcheck를 선언하고
 init은 one-shot job입니다.
 [`jmx-exporter/kafka_broker.yml`](jmx-exporter/kafka_broker.yml)(Confluent 규칙, SPEC-0193)과 OIDC
 템플릿이 마운트되는 설정 소스입니다.

@@ -547,6 +547,40 @@
       "reviewed": "2026-10-09",
       "review_by": "2027-04-07",
       "release_condition": "Remove if the service no longer needs the GPU"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reviewed": "2026-11-09",
+      "review_by": "2027-05-09",
+      "service": "n8n-sandbox-runner-1",
+      "control": "privileged",
+      "allowed_value": true,
+      "reason": "Owner decision of 2026-11-09: the n8n Assistant code sandbox uses the privileged Docker-in-Docker runner of the n8n sandbox service (the Firecracker runner needs near-privileged rights and a possible enterprise license). The inner Docker daemon needs the full device, mount and cgroup set",
+      "impact": "Code in a sandbox runs behind an inner container boundary only; a break-out reaches this container with host-level rights. The runner can reach the public internet and, through NAT, the host LAN",
+      "mitigation": "Opt-in profile n8n-sandbox; only this service is privileged (Conftest and the p02 contract test enforce that); no host port, no Traefik route, no host Docker socket; own Docker data volume; joins only n8n_sandbox_runner_net (with the API) and n8n_sandbox_outbound_net, never an n8n, data, observability or edge network; 4 GiB, 3 CPU and 4096 pids caps",
+      "verification": "NOT_RUN: not started; render, contract test and compose controls only",
+      "release_condition": "Remove when the Assistant code sandbox moves to the unprivileged Firecracker runner or is retired"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reviewed": "2026-11-09",
+      "review_by": "2027-05-09",
+      "service": "n8n-sandbox-certs",
+      "control": "cap_add",
+      "allowed_value": [
+        "CHOWN"
+      ],
+      "reason": "The one-shot certificate job hands the API key files to the API user (chown to sandbox-api) after generating them",
+      "impact": "Root in this job can change file ownership inside its own volume until the job exits; it has no network",
+      "mitigation": "cap_drop ALL first; no-new-privileges; read-only root; network_mode none; the CA key is deleted before the job ends",
+      "verification": "NOT_RUN: not started",
+      "release_condition": "Remove when the API image generates its key files with the API user as owner"
     }
   ],
   "naming_exceptions": []

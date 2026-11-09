@@ -6446,6 +6446,7 @@ ROUTES_WITHOUT_SSO = {
     # Host systemd dashboard, Keycloak OIDC in the app (traefik/dynamic/hermes.yml)
     "hermes-dashboard": "native-oidc",
     "kafka-ui": "native-oidc",
+    "n8n": "native-login",
     "open-webui": "native-oidc",
     "openbao": "native-oidc",
     # The identity provider and the ForwardAuth service themselves
@@ -6533,6 +6534,20 @@ class RouteAuthContractTests(unittest.TestCase):
             if not chain and ROUTES_WITHOUT_SSO.get(name) != "static-only"
         )
         self.assertEqual([], bare)
+
+    def test_n8n_router_exclusions_ignore_letter_case(self) -> None:
+        """n8n's Express serves /METRICS too, so a case-sensitive PathPrefix
+        exclusion lets it fall through to the general router."""
+        import yaml
+
+        path = ROOT / "infra/07-workflow/n8n/docker-compose.yml"
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        rule = data["services"]["n8n"]["labels"]["traefik.http.routers.n8n.rule"]
+        self.assertNotIn("PathPrefix", rule)
+        self.assertIn("!PathRegexp(`(?i)^/metrics`)", rule)
+        self.assertIn(
+            "!PathRegexp(`(?i)^/webhook(-test)?/hermes-blog-ingestion`)", rule
+        )
 
     def test_every_router_chain_rate_limits_by_peer_address(self) -> None:
         """POL-0013: the standard chain carries the limiter, keyed on the TCP

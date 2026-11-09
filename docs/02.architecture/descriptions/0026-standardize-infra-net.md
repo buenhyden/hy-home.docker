@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.6.3"
+version: "1.6.6"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -61,12 +61,17 @@ networks beside it, then it left the services and the root.
 | `dev_data_net` | 10.250.15.0/24 | `dev-pg`, `dev-valkey`, their exporters and provision jobs, Kafka Connect, RedisInsight | development client → dev PostgreSQL/Valkey |
 | `experience_ingress_net` | 10.250.16.0/24, internal | Traefik and Storybook | gateway → Storybook only |
 | `redisinsight_ingress_net` | 10.250.18.0/24, internal, isolated, dynamic from .128/25 | Traefik and RedisInsight (fixed .3) | gateway → RedisInsight only; no host address |
-| `<service>_ingress_net` (17) | 10.250.24.0/24–10.250.40.0/24, internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
+| `<service>_ingress_net` (16) | 10.250.24.0/24–10.250.40.0/24, internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
 | `seaweedfs_s3_metrics_net` | 10.250.41.0/24, internal, isolated | `seaweedfs-s3`, Prometheus, Alloy | metrics/pprof scrape of `seaweedfs-s3:9327`; reaches no master/volume/filer API |
 | `seaweedfs_metrics_net` | 10.250.19.0/24, internal, isolated | Prometheus and the SeaweedFS master, volume and filer | metrics scrape only |
 | `n8n_blog_ingest_net` | 10.250.20.0/24, internal, isolated | `n8n-worker` and `blog-ingestion` | worker → Blog-data ingestion Gateway |
 | `blog_export_net` | 10.250.21.0/24, internal, isolated | Traefik and `blog-ingestion` | exact-path Traefik routes → Gateway; no published port |
 | `n8n_worker_runner_net` | 10.250.23.0/24, internal, isolated | `n8n-worker` with `n8n-task-runner-worker` | broker ↔ its external Code runner only; `10.250.22.0/24` (the removed main runner network, SPEC-0269) is not reused |
+| `n8n_search_net` | leaf-owned, internal | `n8n` and `searxng` | n8n Assistant web search → SearXNG only; no egress |
+| `n8n_search_outbound_net` | leaf-owned | `searxng` | SearXNG → public search engines; no inbound path, no destination or port limit |
+| `n8n_sandbox_net` | 10.250.210.0/24, leaf-owned, internal | `n8n` and `n8n-sandbox-api` | n8n → sandbox API only |
+| `n8n_sandbox_runner_net` | 10.250.211.0/24, leaf-owned, internal | `n8n-sandbox-api` and `n8n-sandbox-runner-1` | API ↔ runner registration and control; the runner never shares a network with n8n |
+| `n8n_sandbox_outbound_net` | 10.250.212.0/24, leaf-owned | `n8n-sandbox-runner-1` | runner and its sandboxes → internet; the runner's built-in egress rules block sandbox traffic to private, link-local and loopback ranges (measured 2026-11-09); owner decision 2026-11-09 |
 | `crawl4ai_net` | leaf-owned, internal | Crawl4AI and admitted consumers (POL-0091) | consumer → Crawl4AI API; no egress |
 | `crawl4ai_egress_net` | 10.250.200.0/29, leaf-owned, internal (named egress-isolation exception in REQ-0023-FR-0002) | Crawl4AI (fixed .3) and `crawl4ai-egress` (fixed .2) | crawler → egress gateway |
 | `crawl4ai_outbound_net` | leaf-owned | `crawl4ai-egress` | gateway → public addresses on ports 80/443 only; non-global and IPv6 addresses refused |

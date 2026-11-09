@@ -1,10 +1,10 @@
 ---
 title: "System Operations Guide"
-version: "0.3.0"
+version: "0.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -80,7 +80,7 @@ workflow의 실제 관리 DB·broker 연결도 각 선언에서 확인한다. �
 loopback, 관리 Valkey는 설정된 LAN 주소에 게시된다. 직접 접속도 서비스 Policy의
 접근 경계를 확인한다. Nginx는 별도 선택 대안이며 ingress 중복은 POL-0078에서 다룬다.
 
-- **Proxy 인증 경로**: n8n·ComfyUI처럼 SSO middleware를 붙인 요청은
+- **Proxy 인증 경로**: ComfyUI·Flower처럼 SSO middleware를 붙인 요청은
   Traefik → OAuth2 Proxy의 인증 확인 → 앱으로 흐른다. 로그인은 Keycloak으로
   이동하고 OAuth2 Proxy callback으로 돌아온다. [OAuth2 Proxy 선언](../../../../infra/02-auth/oauth2-proxy/docker-compose.yml)은
   기본 session 저장소를 관리 Valkey로 지정한다. 공통 middleware는 사용자 식별
@@ -111,8 +111,8 @@ workflow가 공유하는 상태·queue 기반이다. [Airflow](../../../../infra
 PostgreSQL metadata, Valkey broker, DAG·plugin·log mount를 사용하고,
 [n8n](../../../../infra/07-workflow/n8n/docker-compose.yml)은 PostgreSQL과 queue broker,
 worker·외부 runner를 함께 사용한다. UI가 열리는 것과 작업 완료는 다르다.
-전용 Valkey 대안은 profile 추가만으로 연결이 바뀌지 않으며 HOST와 secret 매핑을
-함께 검토한다. 이 공유 상태를 중단하면 여러 소비자에게 영향이 간다.
+Airflow, n8n, OAuth2 Proxy는 공유 `mng-valkey`를 쓰며 앱별 전용 Valkey는 없다.
+이 공유 상태를 중단하면 여러 소비자에게 영향이 간다.
 
 Open WebUI는 Ollama를 `ai_net`으로 호출하고 자체 데이터를 mount에 보존한다.
 Qdrant는 별도 vector 저장소이며 `ai` 선택에 포함된다는 사실만으로 모든 앱의

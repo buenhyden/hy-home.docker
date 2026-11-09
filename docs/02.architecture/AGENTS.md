@@ -1,10 +1,10 @@
 ---
 title: "Architecture Agent Guide"
-version: "0.2.4"
+version: "0.2.5"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 ---
 
 # Architecture Agent Guide
@@ -33,8 +33,10 @@ operating procedures belong to Stage 01, Stage 03 and Stage 05.
 - A new ADR enters as `proposed`, the initial status of the
   `architecture-decision` lifecycle in the [Registry](../99.templates/registry.json);
   the [SDLC](../../.agents/governance/sdlc.md) owns the ADR states.
-- Replace an accepted ADR only through a separately approved new ADR; do not
-  rewrite an accepted decision body. Per
+- Replace an accepted ADR only through a separately approved new ADR. Do not
+  rewrite an accepted decision body, except when the owner directs an in-place
+  amendment; that amendment bumps `version` and records the date and direction
+  in the ADR's Follow-up. Per
   [ADR-0051](decisions/0051-summarize-and-delete-retirement.md) and the
   [documentation protocol](../../.agents/governance/documentation-protocol.md),
   the new ADR summarizes the replaced decision in its Traceability, the old

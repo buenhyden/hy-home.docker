@@ -63,6 +63,18 @@ _verified_repository_root() {
 REPO_ROOT="$(_verified_repository_root)"
 cd "$REPO_ROOT"
 
+# The Renovate image lacks the Python packages this script imports, so its
+# post-upgrade --write installs a hash-locked set into a throwaway directory.
+if [[ "$MODE" == "write" ]] && ! python3 -c 'import yaml, markdown_it, jsonschema' 2>/dev/null; then
+  # Beside the checkout: the Renovate container mounts /tmp noexec, which cannot
+  # load the compiled rpds extension.
+  deps_dir="$(mktemp -d -p "$(dirname -- "$REPO_ROOT")")"
+  trap 'rm -rf -- "$deps_dir"' EXIT
+  python3 -m pip install --quiet --no-deps --no-cache-dir --only-binary=:all: \
+    --require-hashes --target "$deps_dir" -r scripts/requirements-renovate.lock
+  export PYTHONPATH="$deps_dir${PYTHONPATH:+:$PYTHONPATH}"
+fi
+
 SYNC_MODE="$MODE" SYNC_REPOSITORY_ROOT="$REPO_ROOT" python3 - <<'PY'
 from __future__ import annotations
 

@@ -875,6 +875,18 @@ files:
   successor: null
   tests:
   - tests/lib/supply_chain/test_update_gates.py
+- path: scripts/lib/supply_chain/ledger_rebind.py
+  kind: library
+  authority: infra/09-platform-ops/security-updates/README.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/operations/sync-update-ledger.sh
+  - tests/lib/supply_chain/test_ledger_rebind.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/supply_chain/test_ledger_rebind.py
 - path: scripts/lib/supply_chain/security_update_gate.py
   kind: library
   authority: infra/09-platform-ops/security-updates/README.md
@@ -1162,6 +1174,17 @@ files:
   tests:
   - tests/validation/test_tech_stack_version_contract.py
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/operations/sync-update-ledger.sh
+  kind: operations
+  authority: infra/09-platform-ops/security-updates/README.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/supply_chain/test_ledger_rebind.py
 - path: scripts/operations/use-qa-ci-tools.sh
   kind: operations
   authority: scripts/README.md
@@ -1202,6 +1225,17 @@ files:
   mutation: none
   consumers:
   - scripts/README.md
+  disposition: retain
+  successor: null
+  tests: []
+- path: scripts/requirements-renovate.lock
+  kind: dependency-manifest
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/sync-tech-stack-versions.sh
+  - scripts/operations/sync-update-ledger.sh
   disposition: retain
   successor: null
   tests: []

@@ -14,6 +14,14 @@ test_privileged_is_denied if {
 	deny["service s: privileged is not allowed"] with input as svc({"privileged": true})
 }
 
+test_n8n_sandbox_runner_may_be_privileged if {
+	count(deny) == 0 with input as {"services": {"n8n-sandbox-runner-1": object.union(base, {"privileged": true})}}
+}
+
+test_other_n8n_sandbox_services_are_not_privileged if {
+	deny["service n8n-sandbox-api: privileged is not allowed"] with input as {"services": {"n8n-sandbox-api": object.union(base, {"privileged": true})}}
+}
+
 test_cadvisor_may_be_privileged if {
 	count(deny) == 0 with input as {"services": {"cadvisor": object.union(base, {"privileged": true})}}
 }

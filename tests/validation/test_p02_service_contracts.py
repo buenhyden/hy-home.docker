@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import os
 import re
 import shutil
@@ -15,8 +14,6 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 HARDENING = ROOT / "scripts/hardening/check-all-hardening.sh"
-VALKEY_RENDERER = ROOT / "infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh"
-DEDICATED_VALKEY_START = ROOT / "infra/04-data/mng-db/valkey/scripts/start-dedicated.sh"
 
 
 class _ComposeLoader(yaml.SafeLoader):
@@ -88,7 +85,6 @@ def _render_root(overrides: dict[str, str], profiles: tuple[str, ...] = ()) -> d
             "workflow-airflow",
             "ai",
             "notebook",
-            "dedicated-valkey",
             "nginx",
         ):
             args.extend(("--profile", profile))
@@ -180,7 +176,6 @@ SSO_ONLY_BACKENDS = (
     "comfyui",
     "flower",
     "kafka-connect",
-    "kafka-rest-proxy",
     "loki",
     "mailpit",
     "mlflow",
@@ -944,286 +939,6 @@ class OpenNotebookPortAndReadinessTests(unittest.TestCase):
             self.assertNotEqual(0, rejected.returncode)
 
 
-class DedicatedValkeyContractTests(unittest.TestCase):
-    BROKERS = (
-        ("infra/07-workflow/airflow/docker-compose.yml", "airflow-valkey"),
-        ("infra/07-workflow/n8n/docker-compose.yml", "n8n-valkey"),
-        ("infra/02-auth/oauth2-proxy/docker-compose.yml", "oauth2-proxy-valkey"),
-    )
-    OVERLAYS = (
-        "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
-        "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
-        "infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml",
-    )
-
-    def test_all_brokers_use_the_safe_wrapper_and_one_listener_port(self) -> None:
-        self.assertTrue(DEDICATED_VALKEY_START.is_file())
-        for relative, name in self.BROKERS:
-            with self.subTest(service=name):
-                service = _service(relative, name)
-                command = _command(service)
-                environment = _environment(service)
-                self.assertEqual("${VALKEY_PORT:-6379}", environment.get("VALKEY_PORT"))
-                self.assertIn("start-dedicated.sh", command)
-                self.assertNotIn("requirepass", command)
-                self.assertNotIn("$(cat", command)
-                self.assertEqual(["${VALKEY_PORT:-6379}"], service["expose"])
-                health = " ".join(service["healthcheck"]["test"])
-                self.assertIn('-p "$${VALKEY_PORT}"', health)
-                self.assertIn("REDISCLI_AUTH", health)
-                self.assertNotIn(" -a ", health)
-        for relative in self.OVERLAYS:
-            with self.subTest(overlay=relative):
-                services = _compose(relative)["services"]
-                broker = next(
-                    name for name in services if not name.endswith("-exporter")
-                )
-                self.assertIn("start-dedicated.sh", _command(services[broker]))
-                overlay_port = _environment(services[broker]).get("VALKEY_PORT")
-                self.assertIn(overlay_port, (None, "${VALKEY_PORT:-6379}"))
-
-    def test_exporters_keep_password_out_of_argv_and_track_listener_port(self) -> None:
-        for relative, broker in self.BROKERS:
-            exporter = _service(relative, broker + "-exporter")
-            command = _command(exporter)
-            self.assertEqual(
-                "${VALKEY_PORT:-6379}",
-                _environment(exporter).get("VALKEY_PORT"),
-            )
-            self.assertIn("port=$${VALKEY_PORT}", command)
-            self.assertIn("*[!0-9]*", command)
-            self.assertIn('"$$port" -le 65535', command)
-            self.assertIn(f"redis://{broker}:$$port", command)
-            self.assertIn("REDIS_PASSWORD", command)
-            self.assertNotIn("-redis.password=", command)
-            self.assertNotIn("-redis.password ", command)
-
-    @unittest.skipUnless(shutil.which("docker"), "docker compose CLI not available")
-    def test_root_and_each_monitor_overlay_render_at_nondefault_port(self) -> None:
-        for overlay, (_, broker) in zip(self.OVERLAYS, self.BROKERS, strict=True):
-            with (
-                self.subTest(overlay=overlay),
-                tempfile.TemporaryDirectory() as directory,
-            ):
-                temporary = Path(directory)
-                env_file = temporary / "public.env"
-                env_file.write_bytes(
-                    (ROOT / ".env.example").read_bytes() + b"\nVALKEY_PORT=16379\n"
-                )
-                result = subprocess.run(
-                    [
-                        "docker",
-                        "compose",
-                        "--project-directory",
-                        str(ROOT),
-                        "--env-file",
-                        str(env_file),
-                        "-f",
-                        str(ROOT / "docker-compose.yml"),
-                        "-f",
-                        str(ROOT / overlay),
-                        "--profile",
-                        "dedicated-valkey",
-                        "config",
-                        "--format",
-                        "json",
-                    ],
-                    cwd=ROOT,
-                    env={
-                        "COMPOSE_DISABLE_ENV_FILE": "1",
-                        "DOCKER_CONFIG": str(temporary / "docker-config"),
-                        "DOCKER_HOST": f"unix://{temporary / 'no-daemon.sock'}",
-                        "HOME": str(temporary),
-                        "PATH": os.environ["PATH"],
-                    },
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                    timeout=120,
-                )
-                self.assertEqual(0, result.returncode, "overlay config failed")
-                services = __import__("json").loads(result.stdout)["services"]
-                rendered = services[broker]
-                self.assertEqual("16379", str(rendered["environment"]["VALKEY_PORT"]))
-                self.assertEqual(["16379"], rendered["expose"])
-                self.assertIn("start-dedicated.sh", _command(rendered))
-                self.assertIn(
-                    '-p "$${VALKEY_PORT}"',
-                    " ".join(rendered["healthcheck"]["test"]),
-                )
-                exporter = services[broker + "-exporter"]
-                self.assertEqual("16379", str(exporter["environment"]["VALKEY_PORT"]))
-                exporter_command = _command(exporter)
-                self.assertIn("port=$${VALKEY_PORT}", exporter_command)
-                self.assertIn(f"redis://{broker}:$$port", exporter_command)
-
-    def _run_wrapper(
-        self,
-        root: Path,
-        secret: Path,
-        port: str = "6388",
-        monitor: Path | None = None,
-    ) -> tuple[subprocess.CompletedProcess[str], Path, Path]:
-        output = root / "acl/users.acl"
-        output.parent.mkdir(mode=0o700, exist_ok=True)
-        args_file = root / "args"
-        binary = root / "bin/valkey-server"
-        binary.parent.mkdir()
-        binary.write_text(
-            '#!/bin/sh\nprintf \'%s\\n\' "$@" >"$P02_ARGS_FILE"\n',
-            encoding="utf-8",
-        )
-        binary.chmod(0o755)
-        environment = os.environ.copy()
-        environment.update(
-            {
-                "PATH": f"{binary.parent}:/usr/bin:/bin",
-                "P02_ARGS_FILE": str(args_file),
-                "VALKEY_PORT": port,
-            }
-        )
-        result = subprocess.run(
-            [
-                "sh",
-                str(DEDICATED_VALKEY_START),
-                str(secret),
-                str(output),
-                *((str(monitor),) if monitor is not None else ()),
-            ],
-            cwd=ROOT,
-            env=environment,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=10,
-        )
-        return result, output, args_file
-
-    def test_wrapper_hashes_special_characters_and_never_exposes_them(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            secret = root / "secret"
-            value = "synthetic !#$%&()*+,-./:;<=>?@[]^_{|}~"
-            secret.write_text(value + "\n", encoding="ascii")
-            secret.chmod(0o600)
-            result, output, args_file = self._run_wrapper(root, secret)
-            self.assertEqual(0, result.returncode, result.stderr)
-            combined = result.stdout + result.stderr + args_file.read_text()
-            self.assertNotIn(value, combined)
-            digest = hashlib.sha256(value.encode("ascii")).hexdigest()
-            self.assertIn(f"user default reset on #{digest}", output.read_text())
-            self.assertEqual(
-                [
-                    *("--aclfile", str(output), "--appendonly", "yes"),
-                    *("--port", "6388", "--maxmemory", "128mb"),
-                    *("--maxmemory-policy", "noeviction"),
-                ],
-                args_file.read_text().splitlines(),
-            )
-
-    def test_wrapper_rejects_invalid_ports_before_acl_replacement(self) -> None:
-        for port in ("0", "65536", "12x", " 6379", "6379 "):
-            with self.subTest(port=port), tempfile.TemporaryDirectory() as directory:
-                root = Path(directory)
-                secret = root / "secret"
-                secret.write_text("synthetic-safe\n")
-                secret.chmod(0o600)
-                output = root / "acl/users.acl"
-                output.parent.mkdir(mode=0o700)
-                output.write_text("previous-safe-acl\n")
-                output.chmod(0o600)
-                result, _, args_file = self._run_wrapper(root, secret, port)
-                self.assertNotEqual(0, result.returncode)
-                self.assertEqual("previous-safe-acl\n", output.read_text())
-                self.assertFalse(args_file.exists())
-
-    def test_wrapper_rejects_unsafe_secret_without_replacing_acl(self) -> None:
-        for case in (
-            "missing",
-            "empty",
-            "multiline",
-            "symlink",
-            "mode",
-            "hardlink-secret",
-            "hardlink-output",
-        ):
-            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
-                root = Path(directory)
-                secret = root / "secret"
-                secret.write_text("synthetic-safe\n")
-                secret.chmod(0o600)
-                if case == "missing":
-                    secret.unlink()
-                elif case == "empty":
-                    secret.write_bytes(b"")
-                elif case == "multiline":
-                    secret.write_text("first\nsecond\n")
-                elif case == "symlink":
-                    target = root / "target"
-                    target.write_text("synthetic-safe\n")
-                    target.chmod(0o600)
-                    secret.unlink()
-                    secret.symlink_to(target)
-                elif case == "mode":
-                    secret.chmod(0o644)
-                elif case == "hardlink-secret":
-                    os.link(secret, root / "secret-alias")
-                output = root / "acl/users.acl"
-                output.parent.mkdir(mode=0o700)
-                output.write_text("previous-safe-acl\n")
-                output.chmod(0o600)
-                if case == "hardlink-output":
-                    os.link(output, root / "output-alias")
-                result, _, args_file = self._run_wrapper(root, secret)
-                self.assertNotEqual(0, result.returncode)
-                self.assertEqual("previous-safe-acl\n", output.read_text())
-                self.assertFalse(args_file.exists())
-
-    def test_wrapper_rejects_duplicate_default_and_monitor_secrets(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            secret = root / "secret"
-            secret.write_text("synthetic-safe\n")
-            secret.chmod(0o600)
-            output = root / "acl/users.acl"
-            output.parent.mkdir(mode=0o700)
-            output.write_text("previous-safe-acl\n")
-            output.chmod(0o600)
-            result, _, args_file = self._run_wrapper(root, secret, monitor=secret)
-            self.assertNotEqual(0, result.returncode)
-            self.assertEqual("previous-safe-acl\n", output.read_text())
-            self.assertFalse(args_file.exists())
-
-    def test_signal_during_atomic_move_preserves_previous_acl(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            secret = root / "default"
-            secret.write_text("synthetic-safe\n")
-            secret.chmod(0o600)
-            output = root / "acl/users.acl"
-            output.parent.mkdir(mode=0o700)
-            output.write_text("previous-safe-acl\n")
-            output.chmod(0o600)
-            fake = root / "bin/mv"
-            fake.parent.mkdir()
-            fake.write_text('#!/bin/sh\nkill -TERM "$PPID"\nsleep 1\nexit 1\n')
-            fake.chmod(0o755)
-            environment = os.environ.copy()
-            environment["PATH"] = f"{fake.parent}:/usr/bin:/bin"
-            result = subprocess.run(
-                ["sh", str(VALKEY_RENDERER), str(secret), str(output)],
-                cwd=ROOT,
-                env=environment,
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=10,
-            )
-            self.assertNotEqual(0, result.returncode)
-            self.assertEqual("previous-safe-acl\n", output.read_text())
-            self.assertEqual([], list(output.parent.glob("users.acl.*")))
-
-
 class GrafanaStaticRouteContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -1280,6 +995,154 @@ class GrafanaStaticRouteContractTests(unittest.TestCase):
             "gateway-standard-chain@file",
             labels.get("traefik.http.routers.grafana-static-deny.middlewares"),
         )
+
+
+class N8nAssistantSearchContractTests(unittest.TestCase):
+    """The n8n Assistant reaches SearXNG only over a private internal network."""
+
+    N8N = "infra/07-workflow/n8n/docker-compose.yml"
+
+    def test_searxng_is_internal_unpublished_and_unprivileged(self) -> None:
+        data = _compose(self.N8N)
+        service = data["services"]["searxng"]
+        self.assertNotIn("ports", service)
+        self.assertFalse(service.get("privileged", False))
+        self.assertEqual("false", service["labels"]["traefik.enable"])
+        self.assertEqual(
+            {"n8n_search_net", "n8n_search_outbound_net"}, set(service["networks"])
+        )
+        self.assertIs(True, data["networks"]["n8n_search_net"]["internal"])
+        self.assertNotIn("internal", data["networks"]["n8n_search_outbound_net"])
+
+    def test_only_n8n_main_and_searxng_share_the_search_network(self) -> None:
+        services = _compose(self.N8N)["services"]
+        members = {
+            name
+            for name, service in services.items()
+            if "n8n_search_net" in (service.get("networks") or {})
+        }
+        self.assertEqual({"n8n", "searxng"}, members)
+        outbound = {
+            name
+            for name, service in services.items()
+            if "n8n_search_outbound_net" in (service.get("networks") or {})
+        }
+        self.assertEqual({"searxng"}, outbound)
+
+    def test_assistant_uses_the_internal_search_and_a_model_without_a_key(self) -> None:
+        environment = _compose(self.N8N)["services"]["n8n"]["environment"]
+        self.assertEqual(
+            "http://searxng:8080", environment["N8N_INSTANCE_AI_SEARXNG_URL"]
+        )
+        # An env-set model makes n8n reject the model chosen in the Assistant UI.
+        self.assertNotIn("N8N_INSTANCE_AI_MODEL", environment)
+        self.assertNotIn("N8N_INSTANCE_AI_MODEL_API_KEY", environment)
+        # The code sandbox was held back until the owner chose the privileged
+        # Docker-in-Docker runner on 2026-11-09 (see N8nCodeSandboxContractTests).
+        self.assertEqual(
+            "true", str(environment["N8N_INSTANCE_AI_SANDBOX_ENABLED"]).lower()
+        )
+
+
+class N8nCodeSandboxContractTests(unittest.TestCase):
+    """The Assistant code sandbox is the one privileged service, contained (owner, 2026-11-09)."""
+
+    N8N = "infra/07-workflow/n8n/docker-compose.yml"
+    SANDBOX = ("n8n-sandbox-certs", "n8n-sandbox-api", "n8n-sandbox-runner-1")
+
+    def setUp(self) -> None:
+        self.data = _compose(self.N8N)
+        self.services = self.data["services"]
+
+    def test_only_the_runner_is_privileged(self) -> None:
+        privileged = sorted(
+            name for name, service in self.services.items() if service.get("privileged")
+        )
+        self.assertEqual(["n8n-sandbox-runner-1"], privileged)
+
+    def test_sandbox_services_have_no_ports_route_or_host_socket(self) -> None:
+        for name in self.SANDBOX:
+            with self.subTest(service=name):
+                service = self.services[name]
+                self.assertNotIn("ports", service)
+                self.assertEqual("false", service["labels"]["traefik.enable"])
+                self.assertEqual(["n8n-sandbox"], service["profiles"])
+                mounts = " ".join(str(item) for item in service.get("volumes") or [])
+                self.assertNotIn("docker.sock", mounts)
+
+    def test_networks_keep_the_runner_away_from_n8n(self) -> None:
+        members = {}
+        for name, service in self.services.items():
+            for network in service.get("networks") or {}:
+                members.setdefault(network, set()).add(name)
+        self.assertEqual({"n8n", "n8n-sandbox-api"}, members["n8n_sandbox_net"])
+        self.assertEqual(
+            {"n8n-sandbox-api", "n8n-sandbox-runner-1"},
+            members["n8n_sandbox_runner_net"],
+        )
+        self.assertEqual({"n8n-sandbox-runner-1"}, members["n8n_sandbox_outbound_net"])
+        self.assertEqual(
+            {"n8n_sandbox_runner_net", "n8n_sandbox_outbound_net"},
+            set(self.services["n8n-sandbox-runner-1"]["networks"]),
+        )
+        self.assertIs(True, self.data["networks"]["n8n_sandbox_net"]["internal"])
+        self.assertIs(True, self.data["networks"]["n8n_sandbox_runner_net"]["internal"])
+        self.assertNotIn("internal", self.data["networks"]["n8n_sandbox_outbound_net"])
+        self.assertEqual("none", self.services["n8n-sandbox-certs"].get("network_mode"))
+
+    def test_images_are_digest_pinned_and_share_one_release(self) -> None:
+        refs = [
+            self.services["n8n-sandbox-api"]["image"],
+            self.services["n8n-sandbox-certs"]["image"],
+            self.services["n8n-sandbox-runner-1"]["image"],
+            self.services["n8n-sandbox-runner-1"]["environment"][
+                "SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE"
+            ],
+        ]
+        for ref in refs:
+            self.assertRegex(
+                ref, r"^n8nio/n8n-sandbox-service-[a-z-]+:1\.8\.1@sha256:[0-9a-f]{64}$"
+            )
+
+    def test_keys_come_from_secret_files_not_environment_values(self) -> None:
+        n8n = self.services["n8n"]
+        self.assertEqual(
+            "/run/secrets/n8n_sandbox_api_key",
+            n8n["environment"]["N8N_SANDBOX_SERVICE_API_KEY_FILE"],
+        )
+        self.assertNotIn("N8N_SANDBOX_SERVICE_API_KEY", n8n["environment"])
+        for name in ("n8n-sandbox-api", "n8n-sandbox-runner-1"):
+            literal = {
+                "SANDBOX_API_KEYS",
+                "SANDBOX_API_RUNNER_API_KEY",
+                "SANDBOX_API_RUNNER_REGISTRATION_TOKEN",
+                "SANDBOX_RUNNER_API_KEYS",
+                "SANDBOX_RUNNER_REGISTRATION_TOKEN",
+            }
+            self.assertFalse(literal & set(self.services[name]["environment"]))
+        self.assertEqual(
+            ["n8n_sandbox_runner_registration_token", "n8n_sandbox_runner_api_key"],
+            self.services["n8n-sandbox-runner-1"]["secrets"],
+        )
+
+    def test_the_privilege_exception_names_only_the_runner(self) -> None:
+        import json
+
+        exceptions = json.loads(
+            (ROOT / "infra/common-optimizations.exceptions.json").read_text(
+                encoding="utf-8"
+            )
+        )["exceptions"]
+        privileged = sorted(
+            item["service"] for item in exceptions if item["control"] == "privileged"
+        )
+        self.assertEqual(["cadvisor", "n8n-sandbox-runner-1"], privileged)
+
+
+class SandboxCertificateJobTests(unittest.TestCase):
+    def test_ca_key_is_removed_on_every_exit_path(self):
+        compose = (ROOT / "infra/07-workflow/n8n/docker-compose.yml").read_text()
+        self.assertIn("trap 'rm -f /tls/ca.key' EXIT;", compose)
 
 
 if __name__ == "__main__":

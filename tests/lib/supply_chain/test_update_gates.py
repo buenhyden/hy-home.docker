@@ -580,19 +580,13 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         by_name = {row["service"]: row for row in ledger["entries"]}
         groups = (
             (
-                [
-                    "airflow-valkey",
-                    "dev-valkey",
-                    "mng-valkey",
-                    "n8n-valkey",
-                    "oauth2-proxy-valkey",
-                ],
+                ["dev-valkey", "mng-valkey"],
                 "9.1.3",
                 "GHSA-f4q9-j22m-xqq9",
             ),
             (
                 ["n8n", "n8n-worker", "n8n-task-runner-worker"],
-                "2.45.7",
+                "2.46.6",
                 "GHSA-prmc-fg87-r4gh",
             ),
         )
@@ -620,13 +614,7 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 root / "infra/09-platform-ops/security-updates/update-ledger.json"
             ).read_text()
         )
-        names = {
-            "airflow-valkey",
-            "dev-valkey",
-            "mng-valkey",
-            "n8n-valkey",
-            "oauth2-proxy-valkey",
-        }
+        names = {"dev-valkey", "mng-valkey"}
         rows = [row for row in ledger["entries"] if row["service"] in names]
         self.assertEqual(names, {row["service"] for row in rows})
         for row in rows:
