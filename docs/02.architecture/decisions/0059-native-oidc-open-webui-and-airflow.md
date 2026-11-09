@@ -1,10 +1,10 @@
 ---
 title: "Native OIDC for Open WebUI and the Airflow UI"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "architecture"
 artifact_id: "ADR-0059"
 parent_ids:
@@ -25,8 +25,9 @@ UI: `infra/08-ai/open-webui/docker-compose.yml` configures Keycloak OIDC
 (`OAUTH_CLIENT_ID: home-openwebui`, PKCE `S256`, signup and account merge off)
 and its router uses only `gateway-standard-chain@file`; the Airflow router in
 `infra/07-workflow/airflow/docker-compose.yml` also uses only
-`gateway-standard-chain@file`. Flower, n8n and Ollama keep
-`gateway-standard-chain@file,sso-errors@file,sso-auth@file`. Open WebUI keeps
+`gateway-standard-chain@file`. Flower and Ollama keep
+`gateway-standard-chain@file,sso-errors@file,sso-auth@file`. The n8n router uses
+only `gateway-standard-chain@file` and n8n's own login. Open WebUI keeps
 its state in the `open-webui` volume at `/app/backend/data`, and no
 `DATABASE_URL` is set.
 
@@ -93,7 +94,9 @@ configuration; no runtime state is claimed.
    decision.
 3. The Airflow web UI authenticates through the Keycloak Auth Manager (ADR-0038)
    and its router uses `gateway-standard-chain@file` without `sso-auth`.
-   Flower and n8n keep `gateway-standard-chain`, `sso-errors` and `sso-auth`.
+   Flower keeps `gateway-standard-chain`, `sso-errors` and `sso-auth`. n8n
+   uses `gateway-standard-chain` and its own login only: its OIDC is a paid
+   feature, and ForwardAuth in front of its login authenticates twice.
 4. Ollama keeps `gateway-standard-chain`, `sso-errors` and `sso-auth`, the
    `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS` and `OLLAMA_MAX_QUEUE`
    ceilings, a health-gated dependency and a healthy `ollama-exporter`.
@@ -123,6 +126,9 @@ for 07-workflow and 08-ai. OIDC client secrets are injected as Docker Secrets
 (ADR-0038 guardrails).
 
 ### Follow-up
+
+On 2026-11-09 the owner directed an in-place amendment: n8n leaves ForwardAuth
+and keeps only its own login. The Context and Decision item 3 state this.
 
 Confirm in AD-0013 that the Open WebUI store is the application default in its
 volume.

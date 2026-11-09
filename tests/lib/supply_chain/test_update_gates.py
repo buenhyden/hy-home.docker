@@ -592,7 +592,7 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             ),
             (
                 ["n8n", "n8n-worker", "n8n-task-runner-worker"],
-                "2.45.7",
+                "2.46.6",
                 "GHSA-prmc-fg87-r4gh",
             ),
         )

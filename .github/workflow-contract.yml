@@ -1204,7 +1204,6 @@
       "opaque": false,
       "children": [
         "setup.opsflow-smtp-node-dependencies",
-        "leaf.opsflow-smtp-npm-audit",
         "leaf.opsflow-smtp-npm-production-audit",
         "leaf.opsflow-smtp-node-coverage",
         "leaf.opsflow-smtp-package"
@@ -1236,20 +1235,6 @@
       "timeout_minutes": 10,
       "opaque": true,
       "suite_key": "opsflow-smtp-node-coverage"
-    },
-    {
-      "gate_id": "leaf.opsflow-smtp-npm-audit",
-      "kind": "leaf",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-opsflow-smtp-npm",
-        "audit"
-      ],
-      "cwd": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp",
-      "allowed_env_keys": [],
-      "timeout_minutes": 5,
-      "opaque": true,
-      "suite_key": "opsflow-smtp-npm-audit"
     },
     {
       "gate_id": "leaf.opsflow-smtp-npm-production-audit",

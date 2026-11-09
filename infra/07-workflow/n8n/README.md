@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.20"
+version: "1.2.21"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 created: "2025-11-12"
 ---
 
@@ -142,6 +142,8 @@ OCI index digest를 고정합니다. platform manifest·custom build image ID·�
 fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정 채널의 명시 버전으로 설치합니다.
 폐기된 `ttf` alias 대신 유지되는 font package를 사용하고, 최종 이미지의
 `/usr/share/hy-home-font-builder-packages.txt`에 실제 설치 목록을 보존합니다.
+
+2026-11-09 owner 결정으로 main·worker와 task runner를 최신 vendor stable로 올렸고(pin은 Compose·Dockerfile이 소유), `n8n` router는 `gateway-standard-chain@file`만 사용합니다. gateway SSO(`sso-errors`, `sso-auth`)는 두지 않으며 UI·API 로그인은 n8n 자체 인증이 맡습니다. 번들 Zod는 3 계열이라 [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)의 영향 범위에 남으며, 요청 본문 상한 `N8N_PAYLOAD_SIZE_MAX`만 Compose의 보완 통제입니다. 새 custom image build, 서명, 전체 이미지 scan, native, HOME 적용은 `NOT_RUN`입니다.
 
 UNIT의 네 role 정합 검사는 native workflow import·실행이나 HOME 배포를 입증하지 않습니다.
 deprecated node import 거부·JSON typeVersion·webhook·Code runner·queue·PostgreSQL·SMTP·실패 경로는 NOT_RUN입니다.

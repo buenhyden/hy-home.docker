@@ -41,7 +41,7 @@ ROOT_COMPOSE = ROOT / "docker-compose.yml"
 RUNNER_CONFIG = N8N / "n8n-task-runners.json"
 COMMON = ROOT / "infra/common-optimizations.yml"
 
-# Main runs queue mode with manual executions offloaded, so n8n 2.43.6 never
+# Main runs queue mode with manual executions offloaded, so n8n 2.46.6 never
 # starts a task runner there (commands/start.js); only the worker has one
 # (SPEC-0269).
 RUNNER_PAIRS = {
@@ -51,8 +51,8 @@ NETWORKS = {
     "n8n_worker_runner_net": "10.250.23.0/24",
 }
 RUNNER_IMAGE = (
-    "n8nio/runners:2.43.6@"
-    "sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf"
+    "n8nio/runners:2.46.6@"
+    "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612"
 )
 TMPFS = "/tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777,uid=1000,gid=1000"
 P03_API_JS = p03_api_script(OPSFLOW_API_JS)

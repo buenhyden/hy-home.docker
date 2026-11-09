@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "architecture"
 artifact_id: "AD-0022"
 parent_ids:
@@ -29,8 +29,8 @@ The workflow tier operates with two execution planes.
 - Airflow (code-first orchestration)
 - n8n (low-code automation)
 
-The management plane of both systems shares standard middleware+SSO behind
-the Traefik TLS boundary.
+The management plane of both systems sits behind the Traefik TLS boundary and
+the standard middleware; Airflow and n8n authenticate users natively.
 
 ### System Boundaries
 
@@ -100,8 +100,9 @@ active workflow architecture scope.
 
 - **Performance**: reduces initial failure/restart bursts through
   health-based boot order.
-- **Security**: enforces the gateway-standard-chain + SSO chain, and n8n
-  non-root + secret guard.
+- **Security**: enforces the gateway-standard-chain (plus the SSO chain on
+  Flower only; Airflow and n8n use their own login), and n8n non-root + secret
+  guard.
 - **Reliability**: strengthens stability with worker/task-runner healthcheck
   and dependency gating.
 - **Scalability**: prepares Airflow worker autoscale criteria and a queue

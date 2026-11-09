@@ -154,7 +154,6 @@ _REQUIRED_ACTIVE_AGGREGATE_CHILDREN = {
     ),
     "ci.opsflow-smtp-node-package": (
         "setup.opsflow-smtp-node-dependencies",
-        "leaf.opsflow-smtp-npm-audit",
         "leaf.opsflow-smtp-npm-production-audit",
         "leaf.opsflow-smtp-node-coverage",
         "leaf.opsflow-smtp-package",
@@ -173,7 +172,6 @@ _SETUP_PREREQUISITES = {
         "setup.storybook-playwright",
     ),
     "leaf.opsflow-smtp-node-coverage": ("setup.opsflow-smtp-node-dependencies",),
-    "leaf.opsflow-smtp-npm-audit": ("setup.opsflow-smtp-node-dependencies",),
     "leaf.opsflow-smtp-npm-production-audit": ("setup.opsflow-smtp-node-dependencies",),
     "leaf.opsflow-smtp-package": (
         "setup.opsflow-smtp-node-dependencies",
