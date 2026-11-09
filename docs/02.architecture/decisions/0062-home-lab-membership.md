@@ -1,8 +1,8 @@
 ---
 title: "HOME Membership and Planned LABs"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-11-09"
 layer: "architecture"
@@ -255,9 +255,8 @@ One change per move (comfyui, neo4j, open-notebook with surrealdb,
 pact-broker, wiremock, terrakube), plus the opensearch retirement and the
 kafka-rest-proxy and `dedicated-valkey` removals; each updates POL-0078
 profiles, Traefik routes, the OpenBao secret catalog, security-update ledgers,
-docs, dashboards and scrapes, and pinning tests. Owner acceptance is pending;
-this record stays `proposed` until then. Requirement and description text that
-still places a LAB in a HOME tier is reconciled by its owners.
+docs, dashboards and scrapes, and pinning tests. The owner accepted this
+decision on 2026-11-09. Requirement and description text that still places a LAB in a HOME tier is reconciled by its owners.
 
 ## Related Documents
 

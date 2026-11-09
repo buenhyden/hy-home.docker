@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.7.2"
+version: "1.7.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-09"
 layer: "architecture"
 ---
 
@@ -135,7 +135,7 @@ docs/02.architecture/decisions/
 - [`ADR-0061`](./0061-dedicated-ingress-for-sso-only-backends.md):
   `sso-auth`만으로 보호되는 Traefik backend를 공유 `edge_net`에서 빼고 Traefik만 함께 붙는 전용 내부 ingress 망에 두는 proposed decision. SPEC-0266이 구현한다.
 - [`ADR-0062`](./0062-home-lab-membership.md):
-  HOME 구성원을 root include로, LAB을 `labs/`로 나누는 ADR-0058 규칙을 유지하면서 comfyui·neo4j·open-notebook·pact-broker·wiremock·terrakube를 LAB으로 옮기고 단일 노드 opensearch 등을 퇴역시키는 proposed decision. 소유자 수용 대기 중이다.
+  HOME 구성원을 root include로, LAB을 `labs/`로 나누는 ADR-0058 규칙을 유지하면서 comfyui·neo4j·open-notebook·pact-broker·wiremock·terrakube를 LAB으로 옮기고 단일 노드 opensearch 등을 퇴역시키는 accepted decision.
 
 ## Usage
 
