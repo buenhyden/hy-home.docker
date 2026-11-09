@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ## Overview
 
-이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. Traefik의 lifecycle class는 **HOME**이다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다.
+이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. Traefik의 lifecycle class는 **HOME**이다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다. Compose 고정은 2026-11-09에 Traefik v3.7.17로 올렸으며(GHSA-xv5x-242w-7hf7), 실행 중인 컨테이너는 아직 바뀌지 않았다. 이 문서의 라우터·체인 절차는 v3.7 계열에서 달라지지 않는다.
 
 ## Scope
 

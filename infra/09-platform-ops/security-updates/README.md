@@ -1,6 +1,6 @@
 ---
 title: "Security update evidence"
-version: "1.1.11"
+version: "1.1.12"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -111,6 +111,13 @@ custom 이미지가 새로 빌드되지 않은 경우 upstream base 증거를 cu
 기록했다. 이전 pin의 scan·검토 영수증은 `previous_adopted_pin_assessment`에 보존하며 새 image의
 pull·scan·독립 검토·config 검사·HOME 재생성·rollback은 `NOT_RUN`이고
 `SPEC-0204-TSK-0021`이 owner 단계로 기록한다.
+
+2026-11-09에 owner가 보안 업데이트 우선 방침에 따라 Traefik 고정을 GHSA-xv5x-242w-7hf7(High, 2026-11-02 공개)이 고쳐진 패치 릴리스로 올렸다.
+이 결함은 영향 범위의 Traefik에서 인증 없는 NTLM/Negotiate 헤더가 연결마다 backend
+transport를 남기는 결함이다. index digest와 linux/amd64 manifest는 공개 registry API로 대조해 `image-source-lookups.json`에,
+GitHub 최신 릴리스 응답은 `release-lookups.json`에 기록했고, 이전 binding은 서비스 행의
+`superseded_pin_2026_11_09`에 보존했다. pull·서명·scan·독립 검토·config 검사·HOME 재생성은 `NOT_RUN`이며
+`SPEC-0212-TSK-0041`이 기록한다.
 
 2026-11-04 `SPEC-0262`로 분석 lakehouse·dbt·Superset·JupyterLab과 SonarQube·Stalwart
 15개 서비스가 ROOT include에서 빠져 `labs/lakehouse/docker-compose.yml`, `labs/dbt/docker-compose.yml`,

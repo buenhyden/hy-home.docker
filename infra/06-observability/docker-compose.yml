@@ -717,7 +717,7 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.gatus.rule: Host(`status.${DEFAULT_URL}`) && !PathPrefix(`/metrics`)
+      traefik.http.routers.gatus.rule: Host(`status.${DEFAULT_URL}`) && !PathRegexp(`(?i)^/metrics`)
       traefik.http.routers.gatus.entrypoints: websecure
       traefik.http.routers.gatus.tls: 'true'
       traefik.http.routers.gatus.middlewares: gateway-standard-chain@file

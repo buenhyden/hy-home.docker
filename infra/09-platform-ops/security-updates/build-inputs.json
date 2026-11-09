@@ -2780,8 +2780,8 @@
     "source_revision": "c27cb4109dab04e56de9b8e4d185e21213f09d44",
     "checked_at": "2026-11-09T09:32:43.959559+00:00",
     "source_binding": {
-      "checked_at": "2026-11-09T11:13:51Z",
-      "source_revision": "94afb9ce8b0c057359d33d4160601f301ab507ef",
+      "checked_at": "2026-11-09T11:31:57Z",
+      "source_revision": "125a884d120dadde6d88763c0dd506143a084f6c",
       "source_state": "SOURCE_REVIEW_ONLY: the removal of the dedicated n8n-valkey and n8n-valkey-exporter services (ADR-0062 decision 10) is uncommitted on top of this revision.",
       "input_sha256": "8b49871c9e3544e0428a08ecf6e3fbc3247340a5e974022f59655eca559fb7dd",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
@@ -4623,7 +4623,7 @@
         }
       },
       {
-        "archived_at": "2026-11-09T11:13:51Z",
+        "archived_at": "2026-11-09T11:31:57Z",
         "source_binding": {
           "checked_at": "2026-11-09T10:26:51Z",
           "source_revision": "be3cab6a6a8a456c9b114f373a7ba15194d6c038",

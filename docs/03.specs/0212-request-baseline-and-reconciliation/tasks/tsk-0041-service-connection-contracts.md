@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.35"
+version: "0.1.36"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -335,6 +335,9 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | n8n router letter-case behaviour live | 57 | W62 | `GET /METRICS`, `/Metrics` and a mixed-case Hermes POST through Traefik | HOME gateway | NOT_RUN | Live finding before the fix: `/METRICS` and `/Metrics` returned metrics inside the container; the fix needs the `n8n` recreate | required | - |
 | n8n documentation and catalog checks | 57 | W62 | `check-operations-catalog.py`, `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | Branch base `0220de58a` plus this change | PASS | Catalog PASS after patching the stale n8n router cell in `m0021`; metadata 12 selected, 0 violations; links 0 failures | required | - |
 | n8n consumer test suites | 60 | W65 | 41 modules naming n8n, `2.43.6` or `sso-auth`, plus `test_p02_service_contracts` and `test_compose_baseline_gates` | Branch base `0220de58a` plus this change, venv on `PATH` | FAIL | 1069 tests, 51 failures, 83 declared skips; the same 51 fail on a clean checkout of `0220de58a` (`test_update_gates` stale `source_input_sha256` for 50 rows and the root census); none is new and the n8n rows, `test_workflow_version_bundle`, `test_sec01_next_tool_candidates` and `test_p08_ci_routing` pass | required | - |
+| Traefik v3.7.17 pin and digests | 60 | W65 | Anonymous Docker Hub registry API and GitHub latest-release API, release notes and v3.7 migration guide read | Branch base `be3cab6a6`; `traefik:v3.7.17` | PASS | Index `sha256:f4bb143d…86f5a` (raw SHA256 equals `Docker-Content-Digest`), linux/amd64 manifest `sha256:e15b8921…81511a`, config `sha256:d848e658…bcb2e21`; release `v3.7.17` published 2026-10-30, not a prerelease; recorded in the SEC01 files | required | - |
+| Traefik v3.7.17 signature, scan, config boot and HOME | 60 | W65 | Publisher signature, SBOM or scan, config boot, recreate | Same inputs | NOT_RUN | The image was not pulled or inspected; the running Traefik is unchanged and every recreate waits for its own approval | required | - |
+| Traefik v3.7.17 consumer checks | 60 | W65 | `test_update_gates`, `test_compose_baseline_gates`, `test_p02_service_contracts`, `test_tech_stack_version_contract`; `docker compose --env-file .env.example config -q`; `check-all-hardening.sh 01-gateway` | Branch base `be3cab6a6` plus this change | PASS | 286 tests OK, 31 declared skips; Compose render exits 0; `check-all-hardening.sh 01-gateway` ALL PASS | required | - |
 
 ## Criterion Acceptance
 
@@ -1131,6 +1134,42 @@ are untouched and need separate approval to remove; the private files under
 `infra/04-data/mng-db/valkey/scripts/start-dedicated.sh` and `render-monitor-acl.sh`
 (with their script-level tests and `test_p02_secret_presentation_native`) are kept for a
 separate retirement.
+
+### 2026-11-09 Traefik v3.7.17 for GHSA-xv5x-242w-7hf7
+
+The owner approved prioritizing security-relevant updates. GHSA-xv5x-242w-7hf7 (High,
+published 2026-11-02) affects Traefik v3.7.14 through v3.7.16: an `Authorization` header with the
+`NTLM` or `Negotiate` scheme makes Traefik allocate a dedicated backend transport to the client
+connection without any valid credential, and the transport, its idle backend connection and its
+goroutines are not released when the client closes. An unauthenticated client can exhaust memory,
+file descriptors and backend connections whether or not NTLM or Kerberos backends exist. The
+patched version is v3.7.17. HOME declared v3.7.16 in Compose, so the source pin moves to
+`traefik:v3.7.17@sha256:f4bb143d…86f5a`, the OCI index digest read from the Docker Hub registry on
+2026-11-09. The running container still uses the image it ran before (recorded in the SEC01 ledger)
+and was not touched.
+
+The v3.7.17 release notes and the v3.7 migration guide list three changes. Traefik is built with
+Go 1.27, which removes the `tlsrsakex`, `tls10server` and `tls3des` `GODEBUG` settings; the tracked
+configuration sets no `GODEBUG`, `minVersion` or `cipherSuites`. Go 1.27 rejects requests with more
+than 500 header values with 431 unless `maxHeaderValueCount` is raised; no entry point sets it, and a client that sends more is
+rejected before routing and absent from the access logs. The Ingress-NGINX provider generates new names; that provider is not enabled.
+The release also fixes an NTLM/Kerberos backend connection leak and bumps `quic-go`, `x/net`,
+`lego` and `go-jose`. No breaking change touches this configuration.
+
+Changed: `infra/01-gateway/traefik/docker-compose.yml`, `infra/tech-stack.versions.json` (through
+`sync-tech-stack-versions.sh --write`), the pinned Traefik image in
+`tests/validation/test_p02_native_contracts.py`, the Traefik README and Guide, and the SEC01
+files. The traefik ledger row carries the new image, digests, advisory, applicability and a
+`superseded_pin_2026_11_09` archive of the v3.7.16 binding; `previous_adopted_pin_assessment` (the
+v3.7.14 scan) is unchanged. `ledger_rebind` re-bound the include hash. The release, image and
+vendor-channel lookups gained the v3.7.17 responses. Signatures, a scan, the config boot and the HOME
+recreate are `NOT_RUN`.
+
+Unchanged on purpose: the v3.7.13 rollback overlay `infra/01-gateway/traefik/compose.window-ca.override.yml`
+(SPEC-0243 rollback image), the digest-only `traefik@sha256:24841fe2…20e344a0` guard image in
+`examples/operations/compose-core-readiness/`, `scripts/lib/ops/compose-core-readiness.sh` and the
+quality-path guard (Renovate PR #853 touches it), and historical records that name v3.7.16 (TSK-0021,
+POL-0013, the workspace inventory data).
 
 ## Handoff
 
