@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.1.10"
+version: "1.1.11"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 ---
 
 # 보안 업데이트 조사 증거
@@ -196,6 +196,17 @@ parser/include helper로 실제 root Compose source를 다시 읽습니다. `--r
 Compose 입력별 SHA와 입력 집합 SHA를 남깁니다. 장부의 항목과 expected 배열에서
 동시에 서비스를 제거해도 실제 source 집합 대비 누락으로 실패합니다.
 이 source 집합은 활성 profile·runtime 관찰을 대신하지 않습니다.
+
+Compose 파일 내용만 바뀌어 장부의 `source_input_sha256`이 어긋난 경우에는
+`python3 -m scripts.lib.supply_chain.ledger_rebind`가 계획을 출력합니다(기본은
+dry run). `--write --source-revision <40자리 commit>`을 주면 `source_refreshes`에
+이전 include 입력과 행별 이전 결합을 남기고 include 해시와 해당 행의
+`source_input_sha256`만 다시 묶으며, 같은 상태에서 다시 실행하면 아무것도 바꾸지
+않습니다. 이미지·build가 바뀐 행, 행·서비스·include 입력의 추가나 제거는 실제 갱신
+증거가 필요하므로 목록만 출력하고 아무것도 쓰지 않은 채 종료 코드 2로 끝납니다.
+검토·scan·서명·수용 필드는 쓰지 않습니다. PR이 root Compose 입력을 바꾸면
+`tests.lib.supply_chain.test_update_gates`가 호스티드 `compose-baseline-regressions`
+leaf에서 같은 불일치를 잡습니다.
 
 다음 수치·hash는 LAB 이동 전의 역사적 DEFER 영수증입니다. latest gate는 `ready=false`,
 `deployed=false`, `externalfacts=false`, exit 2와 missing/unexpected 서비스 없음을
