@@ -1770,6 +1770,8 @@ step.
 | Hermes plugin source handoff | 23 | W83 | Plugin source merged and matched to the installed copy | PR #700 `3727ff0e7`; four files SHA-256 equal to the installed copy; real submission not run | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | Protected-install follow-up slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
 | Task runner warm-up source | 8, 23 | W83 | `N8nTaskRunnerWarmupContractTests` RED then GREEN and disposable n8n import | `task-runner-warmup/workflow.json`; `hyhome/n8n:2.43.6-local`, no network | PASS | Test failed before the file existed and passes after; the workflow imports. Live schedule NOT_RUN. | required | - |
+| Warm-up Code node inventory | 8, 23 | W83 | `test_p03_runner_consumers` public Code-node inventory | #837 run 42539192703 | FAIL | The new workflow was missing from the reviewed inventory. | required | - |
+| Warm-up Code node inventory rerun | 8, 23 | W83 | `test_p03_runner_consumers` public Code-node inventory | Inventory lists `task-runner-warmup/workflow.json` | PASS | The no-env and no-import checks also pass for the new node. | required | Warm-up Code node inventory |
 
 ## Criterion Acceptance
 
