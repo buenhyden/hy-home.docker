@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.14"
+version: "0.5.15"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1736,6 +1736,14 @@ container restarts. A submission between a restart and the next 07:50 can still
 hit the cold start. Importing and publishing it on HOME is a separate approved
 step.
 
+With owner approval on 2026-11-09, the merged workflow was imported and
+published on HOME and the `n8n` main container was restarted so the schedule
+registers. n8n reports both `n8n Task Runner Warm-up` and `Hermes Blog Ingestion`
+as activated and is healthy. `n8n-worker` and the JS runner process (same PID)
+were not restarted. `n8n execute --id` cannot run this workflow because its only
+start node is the schedule trigger (`Missing node to start execution`), so the
+first real run is the next 07:50 KST.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -1772,6 +1780,8 @@ step.
 | Task runner warm-up source | 8, 23 | W83 | `N8nTaskRunnerWarmupContractTests` RED then GREEN and disposable n8n import | `task-runner-warmup/workflow.json`; `hyhome/n8n:2.43.6-local`, no network | PASS | Test failed before the file existed and passes after; the workflow imports. Live schedule NOT_RUN. | required | - |
 | Warm-up Code node inventory | 8, 23 | W83 | `test_p03_runner_consumers` public Code-node inventory | #837 run 42539192703 | FAIL | The new workflow was missing from the reviewed inventory. | required | - |
 | Warm-up Code node inventory rerun | 8, 23 | W83 | `test_p03_runner_consumers` public Code-node inventory | Inventory lists `task-runner-warmup/workflow.json` | PASS | The no-env and no-import checks also pass for the new node. | required | Warm-up Code node inventory |
+| Warm-up HOME activation | 8, 23 | W83 | `import:workflow`, `publish:workflow`, n8n main restart and activation log readback | `main` `216049026`; HOME n8n | PASS | Both workflows activated; n8n healthy; JS runner PID unchanged. | required | - |
+| Warm-up scheduled run | 8, 23 | W83 | First 07:50 KST execution readback | HOME n8n schedule | NOT_RUN | Awaits the next 07:50 KST; `n8n execute` cannot start a schedule-only workflow. | required | - |
 
 ## Criterion Acceptance
 
