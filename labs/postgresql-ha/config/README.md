@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL HA LAB 설정"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-09"
 created: "2026-10-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2026-10-12"
 
 ## Overview
 
-HAProxy의 비밀값 없는 template를 보관합니다. service 정의는 상위 [docker-compose.yml](../docker-compose.yml)에 있으며 실제 실행·비밀값·데이터를
+HAProxy의 비밀값 없는 template와 LAB 전용 Prometheus 경보 규칙을 보관합니다. service 정의는 상위 [docker-compose.yml](../docker-compose.yml)에 있으며 실제 실행·비밀값·데이터를
 이 문서나 source 이동으로 변경하지 않습니다.
 
 ## Audience
@@ -27,6 +27,7 @@ LAB source 관리자와 정적 검토자입니다.
 ## Structure
 
 - [haproxy.cfg.tpl](haproxy.cfg.tpl): LAB router가 runtime secret reference로 렌더하는 template입니다.
+- [prometheus-alert-rules.yml](prometheus-alert-rules.yml): 복제 지연 경보 등 LAB 전용 Prometheus 규칙입니다. HOME Prometheus는 읽지 않으며, LAB 관측 계약이 승인되면 그 LAB의 Prometheus가 읽습니다.
 
 ## Configuration
 

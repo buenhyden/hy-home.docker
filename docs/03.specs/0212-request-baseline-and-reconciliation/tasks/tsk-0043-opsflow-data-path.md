@@ -1,6 +1,6 @@
 ---
 title: "Opsflow Data Path Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -421,6 +421,25 @@ loading, snapshot/offset/restart/recovery on the existing slot, scan and HOME
 recreation are NOT_RUN: the messaging stack is stopped and this Task starts
 nothing.
 
+### T03 messaging restart review (2026-11-09)
+
+The owner asked on 2026-11-09 to review and optimize `kafka-broker`,
+`kafka-exporter`, `kafka-connect` and `schema-registry`, then run them.
+cAdvisor kept no named series for the stack from before the 2026-11-04 stop,
+so the changes rest on static review and direct measurement:
+
+- **Broker healthcheck.** `kafka-broker-api-versions` starts a JVM each run;
+  two throwaway runs of the pinned image took 2.4 and 2.7 CPU-seconds, about
+  0.16 CPU at the 15 s interval. The interval is now 60 s with a 5 s
+  `start_interval`, so dependants do not wait longer at start.
+- **JMX remote.** The unauthenticated RMI port 9101 (host `127.0.0.1:19101`)
+  had no consumer in the repository; the jmx_exporter agent on 9404 serves
+  the metrics. The JMX options, variables and port are removed.
+- **Connect heap.** The image defaults to `-Xms256M -Xmx2G`, equal to the 2g
+  limit, which leaves no room off-heap. It is now `-Xms256M -Xmx1G`.
+- **Connect image.** Only `...-debezium-3.6.3` exists locally; the declared
+  3.7.0 image must be built before Connect can start.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -468,6 +487,7 @@ nothing.
 | Normal local staged wrapper retry | 67 | W72 | Registered local staged validation | Exact35 staged public paths after one README blank-line correction and two AST-identical synthetic fixture comments | PASS | Actual normal local-staged hooks all PASS, including markdownlint, gitleaks, Ruff and Dockerfile checks; no hook skip or broad scan bypass. Cached diff check PASS. This closes only the earlier staged-wrapper failure, not native execution or hosted CI. | required | Initial local staged wrapper |
 | Registry-backed document integration | 66 | W71 | Registered metadata, links, catalog and corpus lifecycle | Current registry/build profiles and corrected local document/projection packet | PASS | Actual changed metadata, alignment links and operations catalog exit0; corpus lifecycle loaded Stage99 Registry/build profiles and passed. Independent narrow13-path document/curation re-review APPROVED after formatting/comment metadata refresh. Historical unexecuted operating/remote axes remain separate. | required | - |
 | D09 Debezium 3.7.0.Final source pin | 68 | W73 | Read-only quay.io tag lookup, 3.7 release-summary breaking-change readback and edit of Dockerfile.connect, kafka Compose tag, tech-stack projection and security-updates ledger/build-input records | Owner decision 2026-11-06 (static change only); `quay.io/debezium/connect:3.6.3.Final` to `3.7.0.Final`; `hy-home/kafka-connect:8.3.2-debezium-3.6.3` to `8.3.2-debezium-3.7.0` | PASS | Index digest sha256:9716a72bce5313186d7528cf5ea00f3e2d1a0a71ba84156d38417d0262cf3599; no PostgreSQL breaking change listed, connector JSON unchanged. Compose config, supply-chain policy, operations catalog, hardening, Compose baseline/DEV-boundary/wiring/tech-stack suites and the update-ledger gates pass. Build, plugin loading, snapshot/offset/recovery, scan and HOME recreation NOT_RUN; the CDC stream rehearsal was not re-run (it starts containers) and the earlier PASS covers 3.6.3 only. | required | - |
+| Messaging restart review | 68 | W73 | Throwaway healthcheck JVM timing; repo search for JMX consumers; image heap default read | `cp-kafka:8.3.2`, Connect 3.6.3 image | PASS | 2.4-2.7 CPU-s per check; no JMX 9101 consumer; default `-Xmx2G` equals the limit. | required | - |
 | Graphify AST freshness | 66 | W71 | graphify update . | Final executable source; AST-only, no API cost | PASS | Actual command exited0; no graph files changed. Parser limits remain:18 SQL and9 HCL inputs lack tree-sitter dependencies, and5 files yielded no symbols. This is bounded AST refresh, not whole-source semantic coverage or SQL/runtime validation. No parser dependency was installed to manufacture success. | required | - |
 
 ## Criterion Acceptance

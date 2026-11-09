@@ -144,17 +144,6 @@ groups:
           description: '롤백 비율이 2%를 초과했습니다 (DB: {{ $labels.datname }}).'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md'
 
-      - alert: PostgresqlReplicationLag
-        expr: |
-          pg_replication_lag_seconds > 30 and on (instance) pg_replication_is_replica == 1
-        for: 1m
-        labels:
-          severity: critical
-        annotations:
-          summary: 'PostgreSQL 복제 지연: {{ $labels.instance }}'
-          description: 'PostgreSQL 복제 지연이 30초를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/15-labs/0031-postgresql-cluster.md'
-
   # ============================================================================
   # [5] Datastore observation (SPEC-0224)
   # ============================================================================
