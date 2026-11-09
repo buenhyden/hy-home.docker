@@ -1389,7 +1389,7 @@
         "nvcr.io/nvidia/k8s/dcgm-exporter": "external"
       },
       "images": [
-        "nvcr.io/nvidia/k8s/dcgm-exporter:4.8.4"
+        "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -1398,7 +1398,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "nvcr.io/nvidia/k8s/dcgm-exporter:4.8.4"
+            "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9"
           ]
         }
       ]

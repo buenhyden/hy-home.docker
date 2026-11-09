@@ -865,7 +865,7 @@ services:
       file: ../common-optimizations.yml
       service: template-host-observer-med
 
-    image: nvcr.io/nvidia/k8s/dcgm-exporter:4.8.4
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9
     container_name: dcgm-exporter
     hostname: dcgm-exporter
 

@@ -11,7 +11,7 @@ groups:
     rules:
       # [What] GPU temperature sustained high / GPU 온도 지속 상승
       - alert: GpuTemperatureHigh
-        expr: DCGM_FI_DEV_GPU_TEMP > 85
+        expr: DCGM_FI_DEV_GPU_TEMP_CELSIUS > 85
         for: 10m
         labels:
           severity: warning
@@ -23,7 +23,7 @@ groups:
 
       # [What] GPU framebuffer nearly full / GPU 메모리 부족
       - alert: GpuMemoryNearlyFull
-        expr: DCGM_FI_DEV_FB_USED / (DCGM_FI_DEV_FB_USED + DCGM_FI_DEV_FB_FREE) > 0.95
+        expr: DCGM_FI_DEV_FB_USED_BYTES / (DCGM_FI_DEV_FB_USED_BYTES + DCGM_FI_DEV_FB_FREE_BYTES) > 0.95
         for: 15m
         labels:
           severity: warning
