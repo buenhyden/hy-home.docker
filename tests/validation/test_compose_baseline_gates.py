@@ -6446,6 +6446,7 @@ ROUTES_WITHOUT_SSO = {
     # Host systemd dashboard, Keycloak OIDC in the app (traefik/dynamic/hermes.yml)
     "hermes-dashboard": "native-oidc",
     "kafka-ui": "native-oidc",
+    "n8n": "native-login",
     "open-webui": "native-oidc",
     "openbao": "native-oidc",
     # The identity provider and the ForwardAuth service themselves

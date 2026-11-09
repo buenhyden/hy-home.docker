@@ -595,7 +595,8 @@ check_07_workflow() {
   check_contains "$airflow_compose" "airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager" "airflow keycloak auth manager missing"
   check_contains "$airflow_compose" "traefik.http.routers.airflow.middlewares: gateway-standard-chain@file" "airflow native oidc gateway chain mismatch"
   check_not_contains "$airflow_compose" "traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "airflow double-auth middleware must not be enabled"
-  check_contains "$n8n_compose" "sso-auth@file" "n8n sso missing"
+  check_contains "$n8n_compose" "traefik.http.routers.n8n.middlewares: gateway-standard-chain@file" "n8n gateway chain mismatch"
+  check_not_contains "$n8n_compose" "sso-auth@file" "n8n keeps its own login; gateway SSO must not return"
 }
 
 # --- Tier 08: AI ---

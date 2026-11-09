@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Operations Policy"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -30,7 +30,7 @@ created: "2026-05-10"
 ## Rules
 
 - **Required**:
-  - Airflow 공개 라우터는 `gateway-standard-chain@file`과 native Keycloak SSO를 유지한다. Flower/n8n은 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 유지한다. Airflow double-auth 추가는 표준 복구가 아니다.
+  - Airflow 공개 라우터는 `gateway-standard-chain@file`과 native Keycloak SSO를 유지한다. Flower는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 유지하고 n8n은 자체 로그인만 쓰므로 `gateway-standard-chain@file`만 유지한다(owner 결정 2026-11-09). Airflow double-auth 추가는 표준 복구가 아니다.
   - `dedicated-valkey` profile은 `airflow-valkey`를 기동할 뿐이다. 실제 전환에는 `AIRFLOW_VALKEY_HOST`와 `AIRFLOW_VALKEY_SECRET`의 matching pair가 필요하다.
   - `dedicated-valkey`를 선택하지 않은 경우의 shared `mng-valkey` broker 경계를 문서와 검증 evidence에 명시한다.
   - n8n worker/task-runner healthcheck를 필수로 유지한다.

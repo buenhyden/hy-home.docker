@@ -1078,14 +1078,14 @@
     {
       "service": "n8n",
       "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
-      "input_sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b",
+      "input_sha256": "a3f4c2f52ef070da7c34238f8915b951428ad7cf126b71b06d478f548b2f90f2",
       "compose_build_args": {
-        "N8N_VERSION": "2.43.6"
+        "N8N_VERSION": "2.46.6"
       },
       "declarations": [
         {
           "line": 1,
-          "declaration": "ARG N8N_VERSION=2.43.6"
+          "declaration": "ARG N8N_VERSION=2.46.6"
         },
         {
           "line": 3,
@@ -1105,11 +1105,11 @@
         },
         {
           "line": 31,
-          "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833"
+          "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae"
         },
         {
           "line": 32,
-          "declaration": "ARG N8N_VERSION=2.43.6"
+          "declaration": "ARG N8N_VERSION=2.46.6"
         },
         {
           "line": 36,
@@ -1163,11 +1163,11 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-26T14:53:34.818326+00:00",
+      "source_refreshed_at": "2026-11-09T06:43:53.233408+00:00",
       "alternate_build_inputs": [
         {
           "build_input": "infra/07-workflow/n8n/Dockerfile",
-          "input_sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad",
+          "input_sha256": "c1ebe842ab2a0ba02aecc6d6ae3e57101f338544cb54cc455779dfc6a1d3bc01",
           "meaning": "Production selector alternative; native build NOT_RUN"
         }
       ]
@@ -1175,14 +1175,14 @@
     {
       "service": "n8n-worker",
       "build_input": "infra/07-workflow/n8n/dev.Dockerfile",
-      "input_sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b",
+      "input_sha256": "a3f4c2f52ef070da7c34238f8915b951428ad7cf126b71b06d478f548b2f90f2",
       "compose_build_args": {
-        "N8N_VERSION": "2.43.6"
+        "N8N_VERSION": "2.46.6"
       },
       "declarations": [
         {
           "line": 1,
-          "declaration": "ARG N8N_VERSION=2.43.6"
+          "declaration": "ARG N8N_VERSION=2.46.6"
         },
         {
           "line": 3,
@@ -1202,11 +1202,11 @@
         },
         {
           "line": 31,
-          "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833"
+          "declaration": "FROM n8nio/n8n:${N8N_VERSION}@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae"
         },
         {
           "line": 32,
-          "declaration": "ARG N8N_VERSION=2.43.6"
+          "declaration": "ARG N8N_VERSION=2.46.6"
         },
         {
           "line": 36,
@@ -1260,11 +1260,11 @@
         }
       ],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-26T14:53:34.818326+00:00",
+      "source_refreshed_at": "2026-11-09T06:43:53.233408+00:00",
       "alternate_build_inputs": [
         {
           "build_input": "infra/07-workflow/n8n/Dockerfile",
-          "input_sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad",
+          "input_sha256": "c1ebe842ab2a0ba02aecc6d6ae3e57101f338544cb54cc455779dfc6a1d3bc01",
           "meaning": "Production selector alternative; native build NOT_RUN"
         }
       ]
@@ -2777,18 +2777,18 @@
     }
   ],
   "n8n_source_preparation": {
-    "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
-    "checked_at": "2026-10-15T16:35:15.922344+00:00",
+    "source_revision": "0220de58af38b5f8b78368b9640085922760854a",
+    "checked_at": "2026-11-09T06:43:53.233408+00:00",
     "source_binding": {
-      "checked_at": "2026-11-08T01:46:10.070803+00:00",
-      "source_revision": "1c662597357297c3c8e5cb299694c9c127618a3f",
-      "source_state": "SOURCE_REVIEW_ONLY: SPEC-0269 removal of the idle main task runner (queue offload mode never starts one) is uncommitted on top of this revision; the n8n Compose file drops n8n-task-runner and main's broker listen address and runner network.",
-      "input_sha256": "dd938f4f2cc55c38af73a6a7db10f800df5305d63ab04c7b9f4b664e7d649b0c",
+      "checked_at": "2026-11-09T06:43:53.233408+00:00",
+      "source_revision": "0220de58af38b5f8b78368b9640085922760854a",
+      "source_state": "SOURCE_REVIEW_ONLY: owner-requested n8n 2.46.6 pin (n8n, n8n-worker, n8n-task-runner-worker) and removal of the gateway SSO middlewares from the n8n router are uncommitted on top of this revision.",
+      "input_sha256": "fae90edea6927db9a08e44d91ba94e0a832e08e153a1dea7de94363d0f82c10a",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
           "path": "infra/07-workflow/n8n/Dockerfile",
-          "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+          "sha256": "c1ebe842ab2a0ba02aecc6d6ae3e57101f338544cb54cc455779dfc6a1d3bc01"
         },
         {
           "path": "infra/07-workflow/n8n/custom/.gitkeep",
@@ -2796,11 +2796,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/dev.Dockerfile",
-          "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+          "sha256": "a3f4c2f52ef070da7c34238f8915b951428ad7cf126b71b06d478f548b2f90f2"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2"
+          "sha256": "d13e774f75a38515a2c8f654052f7d520e9ec8408343812e942d2334c7299766"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -2852,10 +2852,10 @@
         },
         {
           "path": "tests/validation/test_workflow_version_bundle.py",
-          "sha256": "b120bf5a109e195993cdb92d90c6b3c0d24c56cb3e3372f7c0567927d59693ac"
+          "sha256": "faef21117fb1c10cfc9fc8e327e0d10d467e54e86748f70b0424463a41e12aa2"
         }
       ],
-      "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the SPEC-0269 removal of the idle main task runner; no image, version or native acceptance changes.",
+      "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed after the 2.43.6 to 2.46.6 pin and the n8n router middleware change; no custom image build, signature, scan, native or HOME acceptance.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -4191,6 +4191,92 @@
           "full_image_sbom_scan": "NOT_RUN",
           "recovery": "NOT_RUN"
         }
+      },
+      {
+        "archived_at": "2026-11-09T06:43:53.233408+00:00",
+        "source_binding": {
+          "checked_at": "2026-11-08T01:46:10.070803+00:00",
+          "source_revision": "1c662597357297c3c8e5cb299694c9c127618a3f",
+          "source_state": "SOURCE_REVIEW_ONLY: SPEC-0269 removal of the idle main task runner (queue offload mode never starts one) is uncommitted on top of this revision; the n8n Compose file drops n8n-task-runner and main's broker listen address and runner network.",
+          "input_sha256": "dd938f4f2cc55c38af73a6a7db10f800df5305d63ab04c7b9f4b664e7d649b0c",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "ecf0bee7e151ee77c0b517739d9cff828e646141ce22929fe1b4a2cb3ef9570f"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "146d22dde82f3d5aab2f3018650c2e8eced9c8559049bffce09aa7fe325b2421"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+              "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "b120bf5a109e195993cdb92d90c6b3c0d24c56cb3e3372f7c0567927d59693ac"
+            }
+          ],
+          "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the SPEC-0269 removal of the idle main task runner; no image, version or native acceptance changes.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
       }
     ],
     "isolated_candidate_build_and_module_smoke": {
@@ -4255,13 +4341,12 @@
       "prior_harness_attempt": "Owning workflow writer reports a temporary harness newline syntax failure before corrected same-image PASS; not a source acceptance failure and not silently erased."
     },
     "current_source_acceptance_limit": {
-      "recorded_at": "2026-10-26T14:53:34.818326+00:00",
+      "recorded_at": "2026-11-09T06:43:53.233408+00:00",
       "continuation_owner": "SPEC0204 Task0009 source provenance with Task0013 SMTP dependency owner",
       "new_image_build": "NOT_RUN",
       "new_module_smoke": "NOT_RUN",
-      "old_isolated_smoke_current_binding": "NO; original digest/date retained",
-      "smtp_production_audit": "PASS zero on writer-frozen lock",
-      "smtp_full_audit": "FAIL three High fanout entries; n8n-workflow also host peer, actual host exposure UNKNOWN; no downgrade or blanket dev-only waiver"
+      "old_isolated_smoke_current_binding": "NO; the 2.43.6 candidate digest/date is retained and does not cover 2.46.6",
+      "custom_node_workflow_pin": "The OpsflowSmtp lock stays on n8n-workflow 2.43.4. n8n 2.46.6 depends on n8n-workflow 2.46.5, which needs zod 3 while the lock overrides zod 4.6.6; its node unit tests then fail to load n8n-workflow (zod.string().ip is not a function). The image resolves n8n-workflow from the pinned base through NODE_PATH."
     }
   },
   "historical_source_refreshes": [

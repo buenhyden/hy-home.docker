@@ -770,27 +770,28 @@
   ],
   "meaning": "Public source requirements/package.json and package-index latest metadata; not installed SBOM/advisory or candidate native proof.",
   "n8n_source_preparation": {
-    "source_revision": "e6807a7d16d8b9e180ff58456ab64e4ee721ca69",
-    "checked_at": "2026-10-15T15:42:45.268224+00:00",
+    "source_revision": "0220de58af38b5f8b78368b9640085922760854a",
+    "checked_at": "2026-11-09T06:43:53.233408+00:00",
     "npm": {
-      "url": "https://registry.npmjs.org/n8n/latest",
-      "checked_at": "2026-10-15T15:42:45.268224+00:00",
+      "url": "https://registry.npmjs.org/n8n/2.46.6",
+      "checked_at": "2026-11-09T06:43:53.233408+00:00",
       "http_status": 200,
-      "response_sha256": "7f561629c453d15b7d1608f04ea43487b5bf18f3d5fe7fcc89022e35444f0236",
-      "version": "2.43.6",
+      "response_sha256": "b326a4d6fd483bc09883a596fc5cb7479286710fd3816f1a2d3a06884ce44924",
+      "version": "2.46.6",
       "engines": {
         "node": ">=24.0.0"
       },
-      "n8n_workflow": "2.43.4",
-      "integrity": "sha512-1vk6Esi3MAD6NMqTfT1+x0SkHFqofYApAe1oFC+lIjId8eB7lEYSPLZu/boR9E3e6REXSFJscSPaSYJWXnFUfQ=="
+      "n8n_workflow": "2.46.5",
+      "zod": "3.25.76",
+      "integrity": "sha512-fzO5VUcyyq1J282QLUNMIUQBUvsjl8XedNOHrHT9X2IQTc6gAFdfc0fFzaeNecWyHP7VYZQIAQa2RfGg5GnzhQ=="
     },
     "workflow_package": {
-      "url": "https://registry.npmjs.org/n8n-workflow/2.43.4",
-      "checked_at": "2026-10-15T15:42:45.268224+00:00",
+      "url": "https://registry.npmjs.org/n8n-workflow/2.46.5",
+      "checked_at": "2026-11-09T06:43:53.233408+00:00",
       "http_status": 200,
-      "response_sha256": "cfee9d5da41d76770f0cf873e312595f8625999255d55340fadd96af25c48230",
-      "version": "2.43.4",
-      "integrity": "sha512-PwA5kqdoVmjIjn7+KNZw8hw4nkFgvYAU4bZ3so8IyKdOabHh/idPz8PHclVSn/FbhizTuGv4rU/w3FUgVbbCuw=="
+      "response_sha256": "08ba037cd1af245e2cc8e9c1bd0ce960c012023c2fb39f45534cab3d87443e2a",
+      "version": "2.46.5",
+      "integrity": "sha512-H0VGVTIEARpc/9GlHn5sII69iBNV0cpdiPH+2Cz5u2dd9ZhWD3IuK4NR8Cvr2dckOKolmT+x3FUr0ytrcd6WHg=="
     },
     "audit_all": {
       "command": "npm audit --package-lock-only --ignore-scripts --json --registry=https://registry.npmjs.org/",
@@ -842,6 +843,33 @@
       "error": null,
       "findings": {}
     },
-    "meaning": "Official npm metadata/audit for custom-node lock only; not a full-image or upstream n8n transitive scan."
+    "meaning": "Official npm metadata/audit for custom-node lock only; not a full-image or upstream n8n transitive scan. The audit_all and audit_production observations cover the unchanged custom-node lock (n8n-workflow 2.43.4) and were not re-run; the npm and workflow_package lookups describe the bundled n8n 2.46.6 base.",
+    "historical_n8n_source_preparations": [
+      {
+        "archived_at": "2026-11-09T06:43:53.233408+00:00",
+        "source_revision": "e6807a7d16d8b9e180ff58456ab64e4ee721ca69",
+        "checked_at": "2026-10-15T15:42:45.268224+00:00",
+        "npm": {
+          "url": "https://registry.npmjs.org/n8n/latest",
+          "checked_at": "2026-10-15T15:42:45.268224+00:00",
+          "http_status": 200,
+          "response_sha256": "7f561629c453d15b7d1608f04ea43487b5bf18f3d5fe7fcc89022e35444f0236",
+          "version": "2.43.6",
+          "engines": {
+            "node": ">=24.0.0"
+          },
+          "n8n_workflow": "2.43.4",
+          "integrity": "sha512-1vk6Esi3MAD6NMqTfT1+x0SkHFqofYApAe1oFC+lIjId8eB7lEYSPLZu/boR9E3e6REXSFJscSPaSYJWXnFUfQ=="
+        },
+        "workflow_package": {
+          "url": "https://registry.npmjs.org/n8n-workflow/2.43.4",
+          "checked_at": "2026-10-15T15:42:45.268224+00:00",
+          "http_status": 200,
+          "response_sha256": "cfee9d5da41d76770f0cf873e312595f8625999255d55340fadd96af25c48230",
+          "version": "2.43.4",
+          "integrity": "sha512-PwA5kqdoVmjIjn7+KNZw8hw4nkFgvYAU4bZ3so8IyKdOabHh/idPz8PHclVSn/FbhizTuGv4rU/w3FUgVbbCuw=="
+        }
+      }
+    ]
   }
 }

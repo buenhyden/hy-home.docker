@@ -172,7 +172,7 @@
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2"
+      "sha256": "d13e774f75a38515a2c8f654052f7d520e9ec8408343812e942d2334c7299766"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -7916,7 +7916,7 @@
       "service": "n8n",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "hyhome/n8n:2.43.6-local",
+      "current_declared": "hyhome/n8n:2.46.6-local",
       "profiles_declared": [
         "workflow",
         "workflow-n8n"
@@ -7925,7 +7925,7 @@
         "context": ".",
         "dockerfile": "${N8N_DOCKERFILE:-dev.Dockerfile}",
         "args": {
-          "N8N_VERSION": "2.43.6"
+          "N8N_VERSION": "2.46.6"
         }
       },
       "current_running": [
@@ -7944,20 +7944,20 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "2.45.7",
-      "target_version": "2.45.7",
+      "latest_version": "2.46.6",
+      "target_version": "2.46.6",
       "channel": "stable",
-      "checked_at": "2026-11-02T22:00:46.071399+00:00",
-      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+      "checked_at": "2026-11-09T06:43:53.233408+00:00",
+      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": "2026-10-30",
+      "source_release_date": "2026-11-04",
       "advisory_urls": [
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
       ],
-      "applicability": "UNKNOWN: authenticated non-exempt node, cross-origin redirect and attacker-influenced target required; private workflows not inspected",
+      "applicability": "UNKNOWN: 2.46.6 is at or above the patched 2.46.1 for GHSA-prmc-fg87-r4gh; private workflows and runtime state not inspected",
       "support_end": "UNKNOWN",
       "compatibility": "NOT_RUN",
       "backup": "NOT_RUN",
@@ -7969,10 +7969,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-02T22:00:46.071399+00:00",
-        "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+        "discovered_at": "2026-11-09T06:43:53.233408+00:00",
+        "next_validation_due": "2026-11-16T00:00:00+00:00",
+        "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
+        "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
         "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "service_owner_role": "n8n/P03/P05 owners"
       },
@@ -7984,44 +7984,44 @@
         "sha256:1de3d197f8b6bad00af0b6945a2ede5ec321c93ab5344bf09b9919311650d492"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "2.45.7",
+      "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2",
+      "source_input_sha256": "d13e774f75a38515a2c8f654052f7d520e9ec8408343812e942d2334c7299766",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
-      "target_source_image": "hyhome/n8n:2.45.7-local",
+      "target_source_image": "hyhome/n8n:2.46.6-local",
       "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "UNKNOWN: local custom image not built; upstream base registry metadata is a separate observation",
+      "target_digest_evidence": "UNKNOWN: local custom image not built; upstream base n8nio/n8n:2.46.6@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae registry metadata is a separate observation",
       "official_supplier_lookup_refs": [
         "n8n-io/n8n"
       ],
       "supplier_lookup_blocker": null,
       "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
       "official_release_assessment": {
-        "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+        "assessed_at": "2026-11-09T06:43:53.233408+00:00",
         "release_status": "SOURCE_RELEASE_OBSERVED",
         "release_fact_refs": [
-          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
         ],
-        "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+        "remaining_barrier": "Source release and registry descriptors do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
         "next_owner": "SEC01 and service owner",
         "source_target_security_native_deployment": "NOT_PROMOTED"
       },
       "current_public_assessment": {
         "owner": "SEC01 and service owner",
-        "review_at": "2026-11-09",
-        "candidate": "2.45.7",
-        "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+        "review_at": "2026-11-16",
+        "candidate": "2.46.6",
+        "fact_checked_at": "2026-11-09T06:43:53.233408+00:00",
         "evidence_refs": [
-          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
         ],
         "decision": "BLOCKED",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+        "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
+        "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
         "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
       },
@@ -8137,13 +8137,70 @@
         "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
         "local_artifact_inspection": "NOT_RUN: download interrupted; custom image not built",
         "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
+      },
+      "superseded_candidate_2026_11_09": {
+        "latest_version": "2.45.7",
+        "target_version": "2.45.7",
+        "checked_at": "2026-11-02T22:00:46.071399+00:00",
+        "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+        "source_release_date": "2026-10-30",
+        "advisory_urls": [
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+        ],
+        "applicability": "UNKNOWN: authenticated non-exempt node, cross-origin redirect and attacker-influenced target required; private workflows not inspected",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "target_source_image": "hyhome/n8n:2.45.7-local",
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "UNKNOWN: local custom image not built; upstream base registry metadata is a separate observation",
+        "upstream_reported_tag": "2.45.7",
+        "disposition": "BLOCKED",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-11-02T22:00:46.071399+00:00",
+          "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
+          "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+          "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+          "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+          "service_owner_role": "n8n/P03/P05 owners"
+        },
+        "official_release_assessment": {
+          "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+          "release_status": "SOURCE_RELEASE_OBSERVED",
+          "release_fact_refs": [
+            "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+          ],
+          "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+          "next_owner": "SEC01 and service owner",
+          "source_target_security_native_deployment": "NOT_PROMOTED"
+        },
+        "current_public_assessment": {
+          "owner": "SEC01 and service owner",
+          "review_at": "2026-11-09",
+          "candidate": "2.45.7",
+          "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+          "evidence_refs": [
+            "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+          ],
+          "decision": "BLOCKED",
+          "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+          "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+          "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
+        },
+        "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
+        "archived_at": "2026-11-09T06:43:53.233408+00:00",
+        "reason": "Candidate 2.45.7 superseded by the owner-requested 2.46.6 source pin."
       }
     },
     {
       "service": "n8n-task-runner-worker",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+      "current_declared": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
       "profiles_declared": [
         "workflow",
         "workflow-n8n"
@@ -8165,20 +8222,20 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "2.45.7",
-      "target_version": "2.45.7",
+      "latest_version": "2.46.6",
+      "target_version": "2.46.6",
       "channel": "stable",
-      "checked_at": "2026-11-02T22:00:46.071399+00:00",
-      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
-      "target_index_digest": "sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
-      "target_manifest_digest": "sha256:1df8be32ad89cf72abd3e7c6ebaa2414b62600bc710622afdd33cae541863a63",
-      "target_config_digest": "UNKNOWN",
+      "checked_at": "2026-11-09T06:43:53.233408+00:00",
+      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
+      "target_index_digest": "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+      "target_manifest_digest": "sha256:c4b43bc62c6dcce8053817f492f0bf434547651ad3def4b680bd2ccb44f11257",
+      "target_config_digest": "sha256:97fb470643639c38c09eb896b492cf7471f69dcebdb9cbd1457d8ef75776ccf8",
       "platform": "linux/amd64",
-      "source_release_date": "2026-10-30",
+      "source_release_date": "2026-11-04",
       "advisory_urls": [
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
       ],
-      "applicability": "UNKNOWN: authenticated non-exempt node, cross-origin redirect and attacker-influenced target required; private workflows not inspected",
+      "applicability": "UNKNOWN: 2.46.6 is at or above the patched 2.46.1 for GHSA-prmc-fg87-r4gh; private workflows and runtime state not inspected",
       "support_end": "UNKNOWN",
       "compatibility": "NOT_RUN",
       "backup": "NOT_RUN",
@@ -8190,10 +8247,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-02T22:00:46.071399+00:00",
-        "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+        "discovered_at": "2026-11-09T06:43:53.233408+00:00",
+        "next_validation_due": "2026-11-16T00:00:00+00:00",
+        "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
+        "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
         "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "service_owner_role": "n8n/P03/P05 owners"
       },
@@ -8205,44 +8262,44 @@
         "sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "2.45.7",
+      "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2",
+      "source_input_sha256": "d13e774f75a38515a2c8f654052f7d520e9ec8408343812e942d2334c7299766",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
-      "target_source_image": "n8nio/runners:2.45.7",
+      "target_source_image": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
       "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
+      "target_declared_digest": "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest responses (2026-11-09); signatures/provenance NOT_RUN.",
       "official_supplier_lookup_refs": [
         "n8n-io/n8n"
       ],
       "supplier_lookup_blocker": null,
       "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
       "official_release_assessment": {
-        "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+        "assessed_at": "2026-11-09T06:43:53.233408+00:00",
         "release_status": "SOURCE_RELEASE_OBSERVED",
         "release_fact_refs": [
-          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
         ],
-        "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+        "remaining_barrier": "Source release and registry descriptors do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
         "next_owner": "SEC01 and service owner",
         "source_target_security_native_deployment": "NOT_PROMOTED"
       },
       "current_public_assessment": {
         "owner": "SEC01 and service owner",
-        "review_at": "2026-11-09",
-        "candidate": "2.45.7",
-        "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+        "review_at": "2026-11-16",
+        "candidate": "2.46.6",
+        "fact_checked_at": "2026-11-09T06:43:53.233408+00:00",
         "evidence_refs": [
-          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
         ],
         "decision": "BLOCKED",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+        "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
+        "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
         "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
       },
@@ -8352,6 +8409,63 @@
         "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
         "local_artifact_inspection": "NOT_RUN: candidate runner download interrupted",
         "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
+      },
+      "superseded_candidate_2026_11_09": {
+        "latest_version": "2.45.7",
+        "target_version": "2.45.7",
+        "checked_at": "2026-11-02T22:00:46.071399+00:00",
+        "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+        "source_release_date": "2026-10-30",
+        "advisory_urls": [
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+        ],
+        "applicability": "UNKNOWN: authenticated non-exempt node, cross-origin redirect and attacker-influenced target required; private workflows not inspected",
+        "target_index_digest": "sha256:2f07088829b6a1df2b6a84746bb8b32c1eaef270315fb5466aa01b1045e9b300",
+        "target_manifest_digest": "sha256:1df8be32ad89cf72abd3e7c6ebaa2414b62600bc710622afdd33cae541863a63",
+        "target_config_digest": "UNKNOWN",
+        "target_source_image": "n8nio/runners:2.45.7",
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
+        "upstream_reported_tag": "2.45.7",
+        "disposition": "BLOCKED",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-11-02T22:00:46.071399+00:00",
+          "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
+          "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+          "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+          "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+          "service_owner_role": "n8n/P03/P05 owners"
+        },
+        "official_release_assessment": {
+          "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+          "release_status": "SOURCE_RELEASE_OBSERVED",
+          "release_fact_refs": [
+            "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+          ],
+          "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+          "next_owner": "SEC01 and service owner",
+          "source_target_security_native_deployment": "NOT_PROMOTED"
+        },
+        "current_public_assessment": {
+          "owner": "SEC01 and service owner",
+          "review_at": "2026-11-09",
+          "candidate": "2.45.7",
+          "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+          "evidence_refs": [
+            "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+          ],
+          "decision": "BLOCKED",
+          "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+          "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+          "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
+        },
+        "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
+        "archived_at": "2026-11-09T06:43:53.233408+00:00",
+        "reason": "Candidate 2.45.7 superseded by the owner-requested 2.46.6 source pin."
       }
     },
     {
@@ -8404,7 +8518,7 @@
       "upstream_reported_tag": "9.1.3",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2",
+      "source_input_sha256": "d13e774f75a38515a2c8f654052f7d520e9ec8408343812e942d2334c7299766",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8638,7 +8752,7 @@
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2",
+      "source_input_sha256": "d13e774f75a38515a2c8f654052f7d520e9ec8408343812e942d2334c7299766",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
@@ -8698,7 +8812,7 @@
       "service": "n8n-worker",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "hyhome/n8n:2.43.6-local",
+      "current_declared": "hyhome/n8n:2.46.6-local",
       "profiles_declared": [
         "workflow",
         "workflow-n8n"
@@ -8707,7 +8821,7 @@
         "context": ".",
         "dockerfile": "${N8N_DOCKERFILE:-dev.Dockerfile}",
         "args": {
-          "N8N_VERSION": "2.43.6"
+          "N8N_VERSION": "2.46.6"
         }
       },
       "current_running": [
@@ -8726,20 +8840,20 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "2.45.7",
-      "target_version": "2.45.7",
+      "latest_version": "2.46.6",
+      "target_version": "2.46.6",
       "channel": "stable",
-      "checked_at": "2026-11-02T22:00:46.071399+00:00",
-      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+      "checked_at": "2026-11-09T06:43:53.233408+00:00",
+      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": "2026-10-30",
+      "source_release_date": "2026-11-04",
       "advisory_urls": [
         "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
       ],
-      "applicability": "UNKNOWN: authenticated non-exempt node, cross-origin redirect and attacker-influenced target required; private workflows not inspected",
+      "applicability": "UNKNOWN: 2.46.6 is at or above the patched 2.46.1 for GHSA-prmc-fg87-r4gh; private workflows and runtime state not inspected",
       "support_end": "UNKNOWN",
       "compatibility": "NOT_RUN",
       "backup": "NOT_RUN",
@@ -8751,10 +8865,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-02T22:00:46.071399+00:00",
-        "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+        "discovered_at": "2026-11-09T06:43:53.233408+00:00",
+        "next_validation_due": "2026-11-16T00:00:00+00:00",
+        "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
+        "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
         "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "service_owner_role": "n8n/P03/P05 owners"
       },
@@ -8766,44 +8880,44 @@
         "sha256:1de3d197f8b6bad00af0b6945a2ede5ec321c93ab5344bf09b9919311650d492"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "2.45.7",
+      "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2",
+      "source_input_sha256": "d13e774f75a38515a2c8f654052f7d520e9ec8408343812e942d2334c7299766",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
-      "target_source_image": "hyhome/n8n:2.45.7-local",
+      "target_source_image": "hyhome/n8n:2.46.6-local",
       "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "UNKNOWN: local custom image not built; upstream base registry metadata is a separate observation",
+      "target_digest_evidence": "UNKNOWN: local custom image not built; upstream base n8nio/n8n:2.46.6@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae registry metadata is a separate observation",
       "official_supplier_lookup_refs": [
         "n8n-io/n8n"
       ],
       "supplier_lookup_blocker": null,
       "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
       "official_release_assessment": {
-        "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+        "assessed_at": "2026-11-09T06:43:53.233408+00:00",
         "release_status": "SOURCE_RELEASE_OBSERVED",
         "release_fact_refs": [
-          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
         ],
-        "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+        "remaining_barrier": "Source release and registry descriptors do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
         "next_owner": "SEC01 and service owner",
         "source_target_security_native_deployment": "NOT_PROMOTED"
       },
       "current_public_assessment": {
         "owner": "SEC01 and service owner",
-        "review_at": "2026-11-09",
-        "candidate": "2.45.7",
-        "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+        "review_at": "2026-11-16",
+        "candidate": "2.46.6",
+        "fact_checked_at": "2026-11-09T06:43:53.233408+00:00",
         "evidence_refs": [
-          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+          "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
           "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
         ],
         "decision": "BLOCKED",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+        "reason": "Owner-requested source pin to n8n 2.46.6 on 2026-11-09; artifact signature, full-image scan, compatibility, authorization, migration, native, deployment and recovery evidence are NOT_RUN and the running service is unchanged.",
+        "exit_condition": "Build and verify the exact image, run scoped compatibility, queue and independent restore tests, then deploy only with its own approval and preserved prior state.",
         "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
       },
@@ -8919,6 +9033,63 @@
         "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
         "local_artifact_inspection": "NOT_RUN: download interrupted; custom image not built",
         "upstream_ghcr_report_reference": "update-ledger.json#/p08_upstream_supply_chain_observations"
+      },
+      "superseded_candidate_2026_11_09": {
+        "latest_version": "2.45.7",
+        "target_version": "2.45.7",
+        "checked_at": "2026-11-02T22:00:46.071399+00:00",
+        "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+        "source_release_date": "2026-10-30",
+        "advisory_urls": [
+          "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+        ],
+        "applicability": "UNKNOWN: authenticated non-exempt node, cross-origin redirect and attacker-influenced target required; private workflows not inspected",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "target_source_image": "hyhome/n8n:2.45.7-local",
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "UNKNOWN: local custom image not built; upstream base registry metadata is a separate observation",
+        "upstream_reported_tag": "2.45.7",
+        "disposition": "BLOCKED",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-11-02T22:00:46.071399+00:00",
+          "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
+          "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+          "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+          "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+          "service_owner_role": "n8n/P03/P05 owners"
+        },
+        "official_release_assessment": {
+          "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+          "release_status": "SOURCE_RELEASE_OBSERVED",
+          "release_fact_refs": [
+            "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+          ],
+          "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+          "next_owner": "SEC01 and service owner",
+          "source_target_security_native_deployment": "NOT_PROMOTED"
+        },
+        "current_public_assessment": {
+          "owner": "SEC01 and service owner",
+          "review_at": "2026-11-09",
+          "candidate": "2.45.7",
+          "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+          "evidence_refs": [
+            "https://github.com/n8n-io/n8n/releases/tag/n8n%402.45.7",
+            "https://github.com/n8n-io/n8n/security/advisories/GHSA-prmc-fg87-r4gh"
+          ],
+          "decision": "BLOCKED",
+          "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+          "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+          "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
+        },
+        "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
+        "archived_at": "2026-11-09T06:43:53.233408+00:00",
+        "reason": "Candidate 2.45.7 superseded by the owner-requested 2.46.6 source pin."
       }
     },
     {
@@ -15347,7 +15518,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: external producer/source contract not inspected",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2",
+      "source_input_sha256": "d13e774f75a38515a2c8f654052f7d520e9ec8408343812e942d2334c7299766",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -29591,22 +29762,22 @@
   ],
   "n8n_source_preparation": {
     "task": "SPEC-0204-TSK-0017",
-    "source_revision": "64434387a86b4edb65d4583ee449785eb6ec1276",
-    "checked_at": "2026-10-15T16:35:15.922344+00:00",
+    "source_revision": "0220de58af38b5f8b78368b9640085922760854a",
+    "checked_at": "2026-11-09T06:43:53.233408+00:00",
     "release_lookup": "release-lookups.json#/n8n_source_preparation",
     "image_lookup": "image-source-lookups.json#/n8n_source_preparation",
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-08T01:46:10.070803+00:00",
-      "source_revision": "1c662597357297c3c8e5cb299694c9c127618a3f",
-      "source_state": "SOURCE_REVIEW_ONLY: SPEC-0269 removal of the idle main task runner (queue offload mode never starts one) is uncommitted on top of this revision; the n8n Compose file drops n8n-task-runner and main's broker listen address and runner network.",
-      "input_sha256": "dd938f4f2cc55c38af73a6a7db10f800df5305d63ab04c7b9f4b664e7d649b0c",
+      "checked_at": "2026-11-09T06:43:53.233408+00:00",
+      "source_revision": "0220de58af38b5f8b78368b9640085922760854a",
+      "source_state": "SOURCE_REVIEW_ONLY: owner-requested n8n 2.46.6 pin (n8n, n8n-worker, n8n-task-runner-worker) and removal of the gateway SSO middlewares from the n8n router are uncommitted on top of this revision.",
+      "input_sha256": "fae90edea6927db9a08e44d91ba94e0a832e08e153a1dea7de94363d0f82c10a",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
           "path": "infra/07-workflow/n8n/Dockerfile",
-          "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+          "sha256": "c1ebe842ab2a0ba02aecc6d6ae3e57101f338544cb54cc455779dfc6a1d3bc01"
         },
         {
           "path": "infra/07-workflow/n8n/custom/.gitkeep",
@@ -29614,11 +29785,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/dev.Dockerfile",
-          "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+          "sha256": "a3f4c2f52ef070da7c34238f8915b951428ad7cf126b71b06d478f548b2f90f2"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2"
+          "sha256": "d13e774f75a38515a2c8f654052f7d520e9ec8408343812e942d2334c7299766"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -29670,10 +29841,10 @@
         },
         {
           "path": "tests/validation/test_workflow_version_bundle.py",
-          "sha256": "b120bf5a109e195993cdb92d90c6b3c0d24c56cb3e3372f7c0567927d59693ac"
+          "sha256": "faef21117fb1c10cfc9fc8e327e0d10d467e54e86748f70b0424463a41e12aa2"
         }
       ],
-      "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the SPEC-0269 removal of the idle main task runner; no image, version or native acceptance changes.",
+      "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed after the 2.43.6 to 2.46.6 pin and the n8n router middleware change; no custom image build, signature, scan, native or HOME acceptance.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -31002,6 +31173,92 @@
             }
           ],
           "meaning": "Same existing17 n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the SPEC-0267 broker listener binding in the n8n Compose file. Image build inputs are unchanged. Older image/module receipt remains bound to its archived source binding.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
+      },
+      {
+        "archived_at": "2026-11-09T06:43:53.233408+00:00",
+        "source_binding": {
+          "checked_at": "2026-11-08T01:46:10.070803+00:00",
+          "source_revision": "1c662597357297c3c8e5cb299694c9c127618a3f",
+          "source_state": "SOURCE_REVIEW_ONLY: SPEC-0269 removal of the idle main task runner (queue offload mode never starts one) is uncommitted on top of this revision; the n8n Compose file drops n8n-task-runner and main's broker listen address and runner network.",
+          "input_sha256": "dd938f4f2cc55c38af73a6a7db10f800df5305d63ab04c7b9f4b664e7d649b0c",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "55182f4be0884f3d37e3f341debfb037297a18a6a80102d9eeb049002d7687ad"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "9f13d236c498d41e1461439e4170cf2fb3ddaf133a3926658e26f71d1b44035b"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "3f083730329091c3ec07c23b852c8d9b8619fdd3f1c0053bd0a5d0463fbe7be2"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "ecf0bee7e151ee77c0b517739d9cff828e646141ce22929fe1b4a2cb3ef9570f"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "146d22dde82f3d5aab2f3018650c2e8eced9c8559049bffce09aa7fe325b2421"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+              "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "b120bf5a109e195993cdb92d90c6b3c0d24c56cb3e3372f7c0567927d59693ac"
+            }
+          ],
+          "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed only after the SPEC-0269 removal of the idle main task runner; no image, version or native acceptance changes.",
           "native_test": "NOT_RUN",
           "home": "NOT_RUN",
           "signature": "NOT_RUN",

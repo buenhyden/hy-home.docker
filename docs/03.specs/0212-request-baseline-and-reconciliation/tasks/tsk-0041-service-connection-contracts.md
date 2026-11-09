@@ -1,10 +1,10 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.28"
+version: "0.1.29"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0041"
 parent_ids:
@@ -315,6 +315,12 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D03 n8n named-user HOME switch after the ACL fix | 59 | W64 | Approved recreate, then health, ACL LOG, log and client readback | `main` `9939431c3`, image `f1493a20a2ff`, containers `435672289f3b` and the recreated `n8n`/`n8n-worker` | PASS | Healthy, no restarts; 19 `user=n8n` connections incl. worker `brpoplpush`; no `NOPERM`/`WRONGPASS` over three minutes; other consumers unchanged | required | - |
 | D03 live job through the named user | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch | NOT_RUN | No execution in the watch window; confirm on the next run | optional | - |
 | D03 live job through the named user, observed | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch, execution 127 | PASS | Enqueued by main, run by the worker, `success` in the n8n database; no `NOPERM` or `WRONGPASS` | optional | D03 live job through the named user |
+| n8n 2.46.6 source pin and digests | 60 | W65 | Read-only Docker Hub registry, GitHub release and npm lookups | Branch base `0220de58a`; `n8nio/n8n:2.46.6`, `n8nio/runners:2.46.6` | PASS | Index digests `sha256:8602f5df…92b3ae` (n8n) and `sha256:b1fe87a5…322612` (runners); `stable`, `latest` and the tag agree; release `n8n@2.46.6` published 2026-11-04, not a prerelease; recorded in the SEC01 lookups and ledger | required | - |
+| n8n 2.46.6 signature, full-image scan, build, native and HOME | 60 | W65 | Publisher signature, SBOM or scan, `hyhome/n8n` build, native queue and HOME recreate | Same inputs | NOT_RUN | Out of this source unit; the local image build and every recreate wait for their own approval | required | - |
+| n8n router without gateway SSO | 57 | W62 | Static Compose label, Compose render, `RouteAuthContractTests`, `SsoOnlyIngressContractTests`, hardening gate | Branch base `0220de58a` plus this change | PASS | `traefik.http.routers.n8n.middlewares` is `gateway-standard-chain@file`; `docker compose --env-file .env.example config -q` exits 0; `check-all-hardening.sh` ALL PASS; `hermes-webhook.yml` unchanged | required | - |
+| n8n live login without gateway SSO | 57 | W62 | Browser or HTTP check after the Traefik reload | HOME `n8n` host | NOT_RUN | No Traefik reload or recreate performed; confirm the n8n login page answers without a Keycloak redirect after the approved apply | required | - |
+| n8n documentation and catalog checks | 57 | W62 | `check-operations-catalog.py`, `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | Branch base `0220de58a` plus this change | PASS | Catalog PASS after patching the stale n8n router cell in `m0021`; metadata 12 selected, 0 violations; links 0 failures | required | - |
+| n8n consumer test suites | 60 | W65 | 41 modules naming n8n, `2.43.6` or `sso-auth`, plus `test_p02_service_contracts` and `test_compose_baseline_gates` | Branch base `0220de58a` plus this change, venv on `PATH` | FAIL | 1069 tests, 51 failures, 83 declared skips; the same 51 fail on a clean checkout of `0220de58a` (`test_update_gates` stale `source_input_sha256` for 50 rows and the root census); none is new and the n8n rows, `test_workflow_version_bundle`, `test_sec01_next_tool_candidates` and `test_p08_ci_routing` pass | required | - |
 
 ## Criterion Acceptance
 
@@ -851,6 +857,56 @@ now holds the declared requirements (`jsonschema` 4.26.0, `referencing`
 blocks of `gen-secrets.sh` now name a missing module and point to the
 requirements file, without printing any value; the new test failed before
 that change.
+
+### 2026-11-09 n8n 2.46.6 and native login only
+
+The owner asked: "n8n 최신 안정판(2.46.6)으로 업데이트하고, n8n 로그인만 유지." and
+"이중 로그인은 불가하다." The `n8n` Traefik router therefore drops `sso-errors@file`
+and `sso-auth@file` and keeps `gateway-standard-chain@file`; n8n's own login is the
+only login. The `hermes-webhook.yml` exact-path router is unchanged. The n8n UI and
+API are now reachable through the gateway without SSO, so n8n's own authentication
+and `N8N_PAYLOAD_SIZE_MAX` are the only controls in front of them. The router test
+list `ROUTES_WITHOUT_SSO` gained `n8n: native-login`, because it encoded the old
+decision; no other test asserted `sso-auth` on n8n.
+
+The same day the owner withdrew the time-boxed acceptance of the runtime Zod
+advisory: "정책에 걸려 있어(POL-0053, 11월 26일까지) -> 폐기한다." POL-0053 no longer
+carries the "런타임 Zod advisory 기한부 수용" section, and no replacement policy was
+written. The facts stay recorded here. n8n 2.46.6 still depends on zod 3.25.76
+(npm metadata), inside the range of GHSA-mrhx-c7xc-m3w5 (zod below 4.6.6; memory
+exhaustion from large arrays, availability only). `N8N_PAYLOAD_SIZE_MAX` (default
+4 MiB) remains in the Compose file. The 2026-10-27 acceptance and the 2026-11-26
+deadline in the TSK-0009 and TSK-0008 records are history and are not edited.
+
+The pin moves `n8n`, `n8n-worker` and `n8n-task-runner-worker` from 2.43.6 to 2.46.6
+in both Dockerfiles, the Compose file, `infra/tech-stack.versions.json` and the
+version-bundle and runner-isolation tests. The base digests are the OCI index
+digests of `n8nio/n8n:2.46.6` and `n8nio/runners:2.46.6`, read from the Docker Hub
+registry on 2026-11-09 and also pulled by digest to the local image store. The
+GitHub release notes for 2.44 through 2.46.6 list no breaking change for this
+deployment. Changes worth a canary: queue jobs go to one idle worker in turn
+(2.46.2); JavaScript task runners disable Node web storage (2.46.0); workflows with
+deprecated nodes can no longer be created or updated through the API (2.44.0) and
+the editor blocks them (2.46.0); Webhook and MCP Trigger nodes can authenticate
+through trusted sources (2.46.0); `N8N_SCHEDULER_MIN_INTERVAL` was removed
+(2.45.0) and is not set here. None of the queue-mode, external-runner,
+`N8N_METRICS` or webhook-path settings changed. The patched versions of
+GHSA-prmc-fg87-r4gh and several High advisories from 2026-10-28 are 2.45.5 on the
+2.45 line and 2.46.1 on the 2.46 line, so 2.43.6 was inside their ranges and 2.46.6
+is not.
+
+The SEC01 evidence package follows the pin. The n8n rows, the ledger and
+build-input source bindings, the release, image and package lookups and the
+`include_inputs` Compose hash were rewritten; the previous candidate (2.45.7), the
+previous source bindings and the previous lookups are archived inside the same files.
+`test_update_gates` still fails for 50 rows and the root census on a clean
+`0220de58a` because other root Compose files changed after their last re-binding
+(see the 2026-11-08 root source re-binding); this change neither fixes nor worsens
+that set. The OpsflowSmtp lock stays on `n8n-workflow` 2.43.4: 2.46.5, which 2.46.6
+bundles, needs zod 3 while the lock overrides zod 4.6.6, and the node's unit tests then
+fail to load it (`zod.string().ip is not a function`). The image resolves
+`n8n-workflow` from the pinned base through `NODE_PATH`. Signatures, a full-image
+scan, the `hyhome/n8n` build, native and HOME acceptance are `NOT_RUN`.
 
 ## Handoff
 
