@@ -98,6 +98,13 @@ class WorkflowVersionBundleTests(unittest.TestCase):
             "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
             runners.pop(),
         )
+        font_builders = {
+            re.search(r"^FROM (alpine:\S+) AS font-builder$", text, re.M).group(1)
+            for text in (
+                (N8N / n).read_text() for n in ("Dockerfile", "dev.Dockerfile")
+            )
+        }
+        self.assertEqual(1, len(font_builders), "both builds use one font-builder pin")
         for name in ("Dockerfile", "dev.Dockerfile"):
             source = (N8N / name).read_text()
             self.assertEqual(
@@ -108,8 +115,9 @@ class WorkflowVersionBundleTests(unittest.TestCase):
                 "FROM n8nio/n8n:${N8N_VERSION}@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae",
                 source,
             )
+            # Renovate owns the alpine pin; the digest and the font-builder stage stay.
             self.assertRegex(
-                source, r"FROM alpine:3\.24\.2@sha256:[0-9a-f]{64} AS font-builder"
+                source, r"FROM alpine:\d+\.\d+\.\d+@sha256:[0-9a-f]{64} AS font-builder"
             )
             for package in (
                 "fontconfig",

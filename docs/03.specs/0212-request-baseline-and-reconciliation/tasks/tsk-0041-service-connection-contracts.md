@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.38"
+version: "0.1.39"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1312,3 +1312,28 @@ Held. The public registry `secrets/SENSITIVE_ENV_VARS.md.example` still lists CA
 the owner removes that row. The secret catalog contract and metadata sync tests report
 the drift until then. The private file `secrets/db/mng-valkey/oauth2_password.txt` is not
 deleted.
+
+### 2026-11-09 Renovate image bumps keep the SEC01 ledger in sync
+
+Renovate image PRs failed `candidate-quality` because the SEC01 update ledger and several
+tests pinned the old image. `scripts/operations/sync-update-ledger.sh --write` is now a
+Renovate post-upgrade task beside `sync-tech-stack-versions.sh --write` (allowlisted in
+`config.js`; `update-ledger.json` and `build-inputs.json` added to `fileFilters`). It runs
+`ledger_rebind --accept-image-updates`, which accepts only a full `name:tag@sha256:<64 hex>`
+reference of the same repository on an existing row. A new or removed service, a repository
+change, a reference without a digest and a build change exit 2 and write nothing. An accepted
+row keeps `UNKNOWN` target digests, `NOT_RUN` review, scan and acceptance fields,
+`BLOCKED`, and `UNBOUND_CURRENT_TARGET`; the replaced values stay in
+`source_refreshes[].previous_service_images`. Nothing contacts a registry, so the digest,
+signature and provenance are not verified. An n8n input change now rehashes
+`n8n_source_preparation.source_binding` identically in both documents.
+
+Tests that pinned a Renovate-owned version now check the repository, the full digest form
+and the ledger row instead: `test_sec01_version_contract`, `test_sec01_next_stable_candidates`,
+`test_sec01_next_tool_candidates`, `test_service_wiring_contracts`, `test_crawl4ai_egress`,
+`test_workflow_version_bundle` and the updater contract in
+`test_tech_stack_version_contract`. Replaying the open PRs 854, 857, 859, 860, 861, 864, 865,
+872, 876 and 877 in throwaway copies passed the gating suites and the second run changed
+nothing. PRs 856, 858 and 866 change tag-only images and are refused, as designed. The step
+has not run inside the Renovate container; its Python version and the noexec `/tmp` behavior
+are unobserved.

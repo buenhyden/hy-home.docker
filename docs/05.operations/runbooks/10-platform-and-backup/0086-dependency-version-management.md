@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Runbook"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "RUN-0086"
 parent_ids:
@@ -57,6 +57,12 @@ created: "2026-09-19"
    ```
 
    기대 결과는 의도한 항목만 추가·변경·삭제되고 check가 성공하는 것이다.
+
+   Renovate는 같은 post-upgrade 단계에서 SEC01 update ledger도 맞춘다
+   (`bash scripts/operations/sync-update-ledger.sh --write`, [절차와 한계](../../../../infra/09-platform-ops/security-updates/README.md)).
+   전체 `name:tag@sha256` 참조로 같은 저장소의 이미지가 바뀐 기존 행만 검증되지
+   않은(`UNKNOWN`/`NOT_RUN`) 상태로 받아들이고, 그 외 변경은 종료 코드 2로 거부하며
+   CI가 불일치를 잡는다. 사람이 고친 Compose 변경에는 자동으로 실행되지 않는다.
 3. 지원되는 Node 또는 승인된 도구 container에서 공식 strict validator를 실행한다.
    도구를 실행하려고 임의로 설치하거나 네트워크 updater를 시작하지 않는다.
 
