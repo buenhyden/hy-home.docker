@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -404,6 +404,40 @@ with `on`, the 45 HOME targets plus `dev-pg`, `dev-pg-exporter`,
 with `off`. Starting Prometheus through the selector, which clears
 `ObservationSelectionMissing`, is a separate approved HOME step after merge.
 
+### D08 HOME apply and Hermes run (2026-11-09)
+
+With owner approval, plan `977274558bea` (HOME, DEV data `on`, 50 targets)
+ran on `main` `b329bbe9d`. The first `up` returned `START_FAILED`:
+`dev-pg-monitor-provision` exited 3 on
+`monitor_cross_database_connect_requires_cluster_review`, because `template1`
+still granted `CONNECT` to `PUBLIC`, and `dev-pg-exporter` stayed `Created`
+until it was started directly. The owner approved
+`REVOKE CONNECT ON DATABASE template1 FROM PUBLIC` on `dev-pg`; the second
+`up` of the same plan returned `STARTED` and the job exited 0.
+
+The owner also approved recreating six containers outside the HOME selection.
+`dozzle`, `redisinsight`, `storybook` and `storybook-mcp` were recreated from
+local images. `crawl4ai` moved from 0.9.4 to the repository-pinned 0.9.5 after
+a pull of the pinned digest, together with `crawl4ai-egress`. A later dry run
+of the plan and of the six containers recreates nothing, and every container
+is healthy. OpenBao was not recreated. `hyhome_expected_selection_info` is 1,
+`ObservationSelectionMissing` no longer fires, and no
+`ContainerHighThrottleRate` fired in the first half hour; a longer window
+remains unobserved.
+
+The 08:00 KST Hermes run delivered `business_ideas` and `news`; `devops` was
+not delivered. Each job's first submission was refused as `source_quality`,
+which the metric counts as `gateway_error`, and the other two succeeded on
+retry. The `devops` retry used a path the tool refused
+(`report_path_not_allowed`, the `blocked` outcome), and its next submission
+timed out after 15 seconds (`delivery_uncertain`, Traefik 499). n8n execution
+128 for that request was cancelled by the workflow's 30-second
+`executionTimeout`. The worker registered a new JS Task Runner during that
+execution and the launcher then reported it unresponsive, so a task runner cold
+start is the likely cause, not a proven one; the next execution finished in 3.8
+seconds. `HermesResearchBlocked` fires for `devops`, which observes E11 firing;
+its resolution waits for the next successful `devops` run.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -440,6 +474,10 @@ with `off`. Starting Prometheus through the selector, which clears
 | Throttle CI candidate quality | 83 | W88 | GitHub `candidate-quality` on #833 | Run 42530532757 | FAIL | `ci-gate-adapter-tests-skipped`: the promtool test skipped without its image inside an undeclared class. | required | - |
 | Throttle CI skip declaration | 83 | W88 | GitHub `candidate-quality` on #833 | `ContainerThrottleAlertNativeTests` declared in `.github/workflow-contract.yml`; count 33 | PASS | Local replay with `docker` hidden: the test skips and the adapter skip validator passes; 193 tests OK. | required | Throttle CI candidate quality |
 | HOME DEV-data selection | 85 | W90 | `test_compose_start` RED then GREEN and read-only HOME plans | POL-0078 1.15.0; `compose_start.py` | PASS | HOME with `on` failed `dev_state_conflict` before; 25 tests OK after; live plans 50 targets (`on`) and 45 (`off`). | required | - |
+| HOME DEV-data start | 85 | W90 | `compose-start.py up --plan` of HOME with DEV data `on` | Plan `977274558bea`, `main` `b329bbe9d` | FAIL | START_FAILED: monitor provisioning refused while `template1` granted PUBLIC connect. | required | - |
+| HOME DEV-data start rerun | 85 | W90 | `compose-start.py up --plan` of HOME with DEV data `on` | Same plan after the owner-approved `template1` revoke | PASS | STARTED; provisioning exit 0; later dry run recreates nothing; selection marker 1. | required | HOME DEV-data start |
+| Non-HOME container recreate | 85 | W90 | Compose recreate and dry run of six named containers | Current source; pinned crawl4ai 0.9.5 | PASS | All six healthy; dry run recreates none. | required | - |
+| Hermes scheduled run alert | 83 | W88 | Hermes log, n8n log, Traefik log and Prometheus alert readback | 2026-11-09 08:00 KST run | FAIL | `devops` undelivered: n8n execution 128 hit its 30-second timeout; `HermesResearchBlocked` firing; resolution unobserved. | required | - |
 
 ## Criterion Acceptance
 
