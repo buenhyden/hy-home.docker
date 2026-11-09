@@ -3,7 +3,7 @@ ARG N8N_VERSION=2.46.6
 FROM alpine:3.24.3@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a AS font-builder
 RUN apk add --no-cache \
   fontconfig=2.17.1-r1 \
-  font-noto=2026.06.01-r0 \
+  font-noto=2026.11.01-r0 \
   font-noto-cjk=0_git20220127-r1 \
   font-dejavu=2.37-r6 \
   font-liberation=2.1.5-r2 \
