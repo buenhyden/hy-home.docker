@@ -508,7 +508,7 @@ finished, then unsealed OpenBao. Four defects showed up during recovery:
 | Non-HOME container recreate | 85 | W90 | Compose recreate and dry run of six named containers | Current source; pinned crawl4ai 0.9.5 | PASS | All six healthy; dry run recreates none. | required | - |
 | Hermes scheduled run alert | 83 | W88 | Hermes log, n8n log, Traefik log and Prometheus alert readback | 2026-11-09 08:00 KST run | FAIL | `devops` undelivered: n8n execution 128 hit its 30-second timeout; `HermesResearchBlocked` firing; resolution unobserved. | required | - |
 | Reboot: Prometheus overlay | 85 | W90 | Container log and mounts after the 2026-11-09 reboot | Plan `977274558bea` overlay under `/tmp` | FAIL | `/tmp` cleared; Docker bound empty root-owned directories; 26 restarts on `is a directory`. | required | - |
-| Persistent overlay path | 85 | W90 | `tests.lib.ops.test_compose_observation` and `test_compose_start` | Overlay root `~/.local/share/hy-home/p07` | PASS | 35 tests OK; a group-writable step under home is refused; the real home is untouched. | required | Reboot: Prometheus overlay |
+| Persistent overlay path | 85 | W90 | `tests.lib.ops.test_compose_observation` and `test_compose_start` | Overlay root `~/.local/share/hy-home/p07` | PASS | 35 tests OK; a group-writable step under home is refused; the real home is untouched. | required | - |
 | Reboot: OpenBao Agent restart | 85 | W90 | RUN-0103 `agent-restart` and audit readback | Issuer `4f2e7f9b`, journal `rolled_back` | FAIL | Helper sink container exceeded 20 s under I/O pressure (52 s measured); no server write. | required | - |
 
 ## Criterion Acceptance
