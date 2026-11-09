@@ -46,7 +46,6 @@ services:
         bind: {create_host_path: false}
     secrets:
       - mng_valkey_password
-      - oauth2_valkey_password
       - oauth2_proxy_client_secret
       - oauth2_proxy_cookie_secret
     labels:

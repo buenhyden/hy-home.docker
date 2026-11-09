@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.37"
+version: "0.1.38"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1291,3 +1291,24 @@ hits `EXDEV` on directory renames and exceeds n8n's 120 s budget. The same insta
 6 s on a copy of that tree. IPv6, dependency versions and sandbox 1.14.0 were tested and
 ruled out. The runner now sets `SANDBOX_RUNNER_DOCKER_STORAGE_DRIVER=vfs`. The guide and
 AD-0026 now state the measured egress limits of sandbox containers.
+
+### 2026-11-09 dedicated Valkey leftovers retired
+
+Owner-directed follow-up to the dedicated Valkey removal. `start-dedicated.sh` and
+`render-monitor-acl.sh` were unmounted and used by no live service, so both are deleted
+with their script-level tests (`DedicatedValkeyWrapperTests`, `ValkeyMonitorRendererTests`)
+and `test_p02_secret_presentation_native`, whose only subject was the renderer. The
+workflow contract, its test and the CI gate plan test drop that opt-in module (optional
+selectors 33 to 32). The `start.sh` write-refusal check stays. The renderer entry in the
+`local_source_rebindings` record of `build-inputs.json` is history and stays.
+
+The alternative `Dockerfile` entrypoint of oauth2-proxy now reads `mng_valkey_password`
+like `docker-entrypoint.dev.sh`. `oauth2_valkey_password` is removed from the oauth2-proxy
+Compose file and the root `docker-compose.yml`, and catalog entry CACHE-012 is removed from
+`secret-catalog.json` (its ID is not reused). The hardening script, the `sec01` entrypoint
+test, the guide, the service README and the `m0021` inventory follow.
+
+Held. The public registry `secrets/SENSITIVE_ENV_VARS.md.example` still lists CACHE-012;
+the owner removes that row. The secret catalog contract and metadata sync tests report
+the drift until then. The private file `secrets/db/mng-valkey/oauth2_password.txt` is not
+deleted.

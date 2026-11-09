@@ -391,8 +391,6 @@ check_02_auth() {
   check_service_network "$oauth_full_compose" "oauth2-proxy" "edge_net"
   check_not_contains "$oauth_full_compose" "v7.14.2" "root-active oauth2-proxy stale image reference"
 
-  check_contains "$oauth_full_compose" "- oauth2_valkey_password" "oauth2-proxy production entrypoint secret missing"
-
   local oauth_source_image oauth_dev_source_image
   oauth_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dockerfile")"
   oauth_dev_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dev_dockerfile")"
@@ -404,7 +402,7 @@ check_02_auth() {
   check_contains "$oauth_dockerfile" "adduser -S -D -H -u 100 -s /sbin/nologin -G oauth2proxy oauth2proxy" "oauth2-proxy production user identity mismatch"
   check_contains "$oauth_dockerfile" "USER 100:101" "oauth2-proxy production non-root identity mismatch"
   check_contains "$oauth_dev_dockerfile" "USER oauth2proxy:oauth2proxy" "oauth2-proxy dev non-root user missing"
-  check_contains "$oauth_entrypoint" "/run/secrets/oauth2_valkey_password" "oauth2-proxy local/full valkey secret injection mismatch"
+  check_contains "$oauth_entrypoint" "/run/secrets/mng_valkey_password" "oauth2-proxy alternative image valkey secret injection mismatch"
   check_contains "$oauth_dev_entrypoint" "/run/secrets/mng_valkey_password" "oauth2-proxy root-active valkey secret injection mismatch"
   check_contains "$oauth_entrypoint" "set -- --config /etc/oauth2-proxy.cfg" "oauth2-proxy default config argument missing"
   check_contains "$oauth_dev_entrypoint" "set -- --config /etc/oauth2-proxy.cfg" "oauth2-proxy dev default config argument missing"

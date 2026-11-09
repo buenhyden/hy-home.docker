@@ -1052,7 +1052,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
         opt_in_modules = {
             "tests.validation.test_p02_native_contracts",
             "tests.validation.test_p02_oauth_native",
-            "tests.validation.test_p02_secret_presentation_native",
         }
         for path in inputs:
             for context in (
@@ -1086,7 +1085,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
         optional_selectors = {
             "tests.validation.test_p02_native_contracts.GrafanaStaticRouteNativeTests",
             "tests.validation.test_p02_oauth_native.OAuth2ProxyOidcNativeTests",
-            "tests.validation.test_p02_secret_presentation_native.ComposeSecretPresentationNativeTests",
         }
         self.assertTrue(optional_selectors.isdisjoint(invocation.argv[:marker]))
         self.assertLessEqual(optional_selectors, set(invocation.argv[marker + 1 :]))

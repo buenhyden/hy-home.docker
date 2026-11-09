@@ -459,8 +459,6 @@ secrets:
     file: ./secrets/db/dev-valkey/inspector_password.txt
   redisinsight_encryption_key:
     file: ./secrets/data/redisinsight/encryption_key.txt
-  oauth2_valkey_password:
-    file: ./secrets/db/mng-valkey/oauth2_password.txt
   terrakube_valkey_password:
     file: ./secrets/db/mng-valkey/terrakube_password.txt
   # ── SeaweedFS ───────────────────────────────────────────

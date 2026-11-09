@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import os
 import re
 import shutil
@@ -15,8 +14,6 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 HARDENING = ROOT / "scripts/hardening/check-all-hardening.sh"
-VALKEY_RENDERER = ROOT / "infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh"
-DEDICATED_VALKEY_START = ROOT / "infra/04-data/mng-db/valkey/scripts/start-dedicated.sh"
 
 
 class _ComposeLoader(yaml.SafeLoader):
@@ -940,176 +937,6 @@ class OpenNotebookPortAndReadinessTests(unittest.TestCase):
             )
             rejected = hardening()
             self.assertNotEqual(0, rejected.returncode)
-
-
-class DedicatedValkeyWrapperTests(unittest.TestCase):
-    """Script-level proof of the standalone Valkey wrapper and ACL renderer."""
-
-    def _run_wrapper(
-        self,
-        root: Path,
-        secret: Path,
-        port: str = "6388",
-        monitor: Path | None = None,
-    ) -> tuple[subprocess.CompletedProcess[str], Path, Path]:
-        output = root / "acl/users.acl"
-        output.parent.mkdir(mode=0o700, exist_ok=True)
-        args_file = root / "args"
-        binary = root / "bin/valkey-server"
-        binary.parent.mkdir()
-        binary.write_text(
-            '#!/bin/sh\nprintf \'%s\\n\' "$@" >"$P02_ARGS_FILE"\n',
-            encoding="utf-8",
-        )
-        binary.chmod(0o755)
-        environment = os.environ.copy()
-        environment.update(
-            {
-                "PATH": f"{binary.parent}:/usr/bin:/bin",
-                "P02_ARGS_FILE": str(args_file),
-                "VALKEY_PORT": port,
-            }
-        )
-        result = subprocess.run(
-            [
-                "sh",
-                str(DEDICATED_VALKEY_START),
-                str(secret),
-                str(output),
-                *((str(monitor),) if monitor is not None else ()),
-            ],
-            cwd=ROOT,
-            env=environment,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=10,
-        )
-        return result, output, args_file
-
-    def test_wrapper_hashes_special_characters_and_never_exposes_them(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            secret = root / "secret"
-            value = "synthetic !#$%&()*+,-./:;<=>?@[]^_{|}~"
-            secret.write_text(value + "\n", encoding="ascii")
-            secret.chmod(0o600)
-            result, output, args_file = self._run_wrapper(root, secret)
-            self.assertEqual(0, result.returncode, result.stderr)
-            combined = result.stdout + result.stderr + args_file.read_text()
-            self.assertNotIn(value, combined)
-            digest = hashlib.sha256(value.encode("ascii")).hexdigest()
-            self.assertIn(f"user default reset on #{digest}", output.read_text())
-            self.assertEqual(
-                [
-                    *("--aclfile", str(output), "--appendonly", "yes"),
-                    *("--port", "6388", "--maxmemory", "128mb"),
-                    *("--maxmemory-policy", "noeviction"),
-                ],
-                args_file.read_text().splitlines(),
-            )
-
-    def test_wrapper_rejects_invalid_ports_before_acl_replacement(self) -> None:
-        for port in ("0", "65536", "12x", " 6379", "6379 "):
-            with self.subTest(port=port), tempfile.TemporaryDirectory() as directory:
-                root = Path(directory)
-                secret = root / "secret"
-                secret.write_text("synthetic-safe\n")
-                secret.chmod(0o600)
-                output = root / "acl/users.acl"
-                output.parent.mkdir(mode=0o700)
-                output.write_text("previous-safe-acl\n")
-                output.chmod(0o600)
-                result, _, args_file = self._run_wrapper(root, secret, port)
-                self.assertNotEqual(0, result.returncode)
-                self.assertEqual("previous-safe-acl\n", output.read_text())
-                self.assertFalse(args_file.exists())
-
-    def test_wrapper_rejects_unsafe_secret_without_replacing_acl(self) -> None:
-        for case in (
-            "missing",
-            "empty",
-            "multiline",
-            "symlink",
-            "mode",
-            "hardlink-secret",
-            "hardlink-output",
-        ):
-            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
-                root = Path(directory)
-                secret = root / "secret"
-                secret.write_text("synthetic-safe\n")
-                secret.chmod(0o600)
-                if case == "missing":
-                    secret.unlink()
-                elif case == "empty":
-                    secret.write_bytes(b"")
-                elif case == "multiline":
-                    secret.write_text("first\nsecond\n")
-                elif case == "symlink":
-                    target = root / "target"
-                    target.write_text("synthetic-safe\n")
-                    target.chmod(0o600)
-                    secret.unlink()
-                    secret.symlink_to(target)
-                elif case == "mode":
-                    secret.chmod(0o644)
-                elif case == "hardlink-secret":
-                    os.link(secret, root / "secret-alias")
-                output = root / "acl/users.acl"
-                output.parent.mkdir(mode=0o700)
-                output.write_text("previous-safe-acl\n")
-                output.chmod(0o600)
-                if case == "hardlink-output":
-                    os.link(output, root / "output-alias")
-                result, _, args_file = self._run_wrapper(root, secret)
-                self.assertNotEqual(0, result.returncode)
-                self.assertEqual("previous-safe-acl\n", output.read_text())
-                self.assertFalse(args_file.exists())
-
-    def test_wrapper_rejects_duplicate_default_and_monitor_secrets(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            secret = root / "secret"
-            secret.write_text("synthetic-safe\n")
-            secret.chmod(0o600)
-            output = root / "acl/users.acl"
-            output.parent.mkdir(mode=0o700)
-            output.write_text("previous-safe-acl\n")
-            output.chmod(0o600)
-            result, _, args_file = self._run_wrapper(root, secret, monitor=secret)
-            self.assertNotEqual(0, result.returncode)
-            self.assertEqual("previous-safe-acl\n", output.read_text())
-            self.assertFalse(args_file.exists())
-
-    def test_signal_during_atomic_move_preserves_previous_acl(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            secret = root / "default"
-            secret.write_text("synthetic-safe\n")
-            secret.chmod(0o600)
-            output = root / "acl/users.acl"
-            output.parent.mkdir(mode=0o700)
-            output.write_text("previous-safe-acl\n")
-            output.chmod(0o600)
-            fake = root / "bin/mv"
-            fake.parent.mkdir()
-            fake.write_text('#!/bin/sh\nkill -TERM "$PPID"\nsleep 1\nexit 1\n')
-            fake.chmod(0o755)
-            environment = os.environ.copy()
-            environment["PATH"] = f"{fake.parent}:/usr/bin:/bin"
-            result = subprocess.run(
-                ["sh", str(VALKEY_RENDERER), str(secret), str(output)],
-                cwd=ROOT,
-                env=environment,
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=10,
-            )
-            self.assertNotEqual(0, result.returncode)
-            self.assertEqual("previous-safe-acl\n", output.read_text())
-            self.assertEqual([], list(output.parent.glob("users.acl.*")))
 
 
 class GrafanaStaticRouteContractTests(unittest.TestCase):
