@@ -52,6 +52,7 @@ class P03RunnerConsumerTests(unittest.TestCase):
                 "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/workflow.json",
                 "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/"
                 "workflows/manifest-outbox-mailpit.json",
+                "infra/07-workflow/n8n/workloads/task-runner-warmup/workflow.json",
             },
             reviewed_paths,
         )

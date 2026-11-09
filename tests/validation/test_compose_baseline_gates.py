@@ -6939,6 +6939,30 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
                     )
 
 
+class N8nTaskRunnerWarmupContractTests(unittest.TestCase):
+    """A scheduled no-op Code task starts the lazy JS runner before Hermes submits."""
+
+    def test_warmup_runs_one_code_node_before_the_hermes_schedule(self) -> None:
+        workflow = json.loads(
+            (
+                ROOT
+                / "infra/07-workflow/n8n/workloads/task-runner-warmup/workflow.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertFalse(workflow["active"])
+        self.assertEqual("Asia/Seoul", workflow["settings"]["timezone"])
+        # The observed cold start took 55 seconds; 30 would cancel it again.
+        self.assertGreaterEqual(workflow["settings"]["executionTimeout"], 120)
+        by_type = {node["type"]: node for node in workflow["nodes"]}
+        self.assertEqual(
+            {"n8n-nodes-base.scheduleTrigger", "n8n-nodes-base.code"}, set(by_type)
+        )
+        self.assertEqual(
+            [{"field": "cronExpression", "expression": "50 7 * * *"}],
+            by_type["n8n-nodes-base.scheduleTrigger"]["parameters"]["rule"]["interval"],
+        )
+
+
 class ContainerThrottleAlertNativeTests(unittest.TestCase):
     """Cached promtool execution of the throttle rule cases."""
 

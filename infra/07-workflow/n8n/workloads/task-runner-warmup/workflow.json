@@ -1,0 +1,64 @@
+{
+  "id": "TaskRunnerWarmUp",
+  "name": "n8n Task Runner Warm-up",
+  "active": false,
+  "nodes": [
+    {
+      "id": "before-hermes",
+      "name": "Before Hermes Schedule",
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "50 7 * * *"
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2
+    },
+    {
+      "id": "noop-code",
+      "name": "Start JS Runner",
+      "parameters": {
+        "jsCode": "return [{ json: { warm: true } }];"
+      },
+      "position": [
+        240,
+        0
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    }
+  ],
+  "connections": {
+    "Before Hermes Schedule": {
+      "main": [
+        [
+          {
+            "node": "Start JS Runner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "saveExecutionProgress": false,
+    "saveManualExecutions": false,
+    "timezone": "Asia/Seoul"
+  },
+  "tags": []
+}
