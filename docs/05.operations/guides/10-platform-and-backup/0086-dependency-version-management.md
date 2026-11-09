@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Guide"
-version: "0.3.1"
+version: "0.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0086"
 parent_ids:
@@ -49,7 +49,7 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 
 변경 파일이 어떤 updater의 manager에 속하는지, 빌드 이미지와 로컬 이미지
 태그가 일치하는지, registry check 및 공식 Renovate strict validator가 통과하는지
-확인한다. 알려진 게시 시각은 7일 안정화 기간을 거치고, 게시 시각이 없는
+확인한다. Renovate가 유일한 updater이며 npm은 Storybook 프로젝트와 OpsflowSmtp 노드만 맡는다. `.github/dependabot.yml`은 없으며 `n8n-workflow`는 n8n 이미지와 함께 수동으로 바꾼다. 알려진 게시 시각은 7일 안정화 기간을 거치고, 게시 시각이 없는
 release는 무기한 대기하지 않도록 schedule과 수동 검토를 적용한다. Green
 registry check만으로 Dockerfile pin 검증을 대체하지 않는다.
 
@@ -72,4 +72,3 @@ registry check만으로 Dockerfile pin 검증을 대체하지 않는다.
 - [Operations index](../../README.md)
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
 - [Repository Renovate policy](../../../../renovate.json5)
-- [Dependabot scope](../../../../.github/dependabot.yml)

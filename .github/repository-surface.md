@@ -1,10 +1,10 @@
 ---
 title: "GitHub Control Surface"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-09"
 created: "2026-02-14"
 ---
 
@@ -49,7 +49,6 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
 | `ISSUE_TEMPLATE/` | 이슈 양식 |
 | `PULL_REQUEST_TEMPLATE.md` | 풀 리퀘스트 본문 템플릿 |
 | `CODEOWNERS` | 경로별 리뷰 라우팅 |
-| `dependabot.yml` | 의존성 업데이트 일정 |
 | `labeler.yml` | 풀 리퀘스트 라벨 라우팅 |
 | `SECURITY.md` | 취약점 보고 경로 |
 

@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
@@ -21,7 +21,7 @@ created: "2026-09-19"
 
 ## Scope
 
-Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, Dependabot, 현재
+Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, 현재
 구현/운영 문서의 런타임 버전 참조.
 
 ## Rules
@@ -31,7 +31,8 @@ Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, Dep
 | Compose 이미지와 일반 Dockerfile | Renovate | 활성화된 Docker manager; 소스 pin 변경 검토됨 |
 | OpenTofu 인라인 Dockerfile | Renovate custom manager | 좁게 선언된 소스 패턴, 임의의 regex 범위 없음 |
 | GitHub Actions 및 활성화된 인프라 manager | Renovate | 인프라 automerge 비활성화 |
-| Storybook npm | Dependabot | 설정된 프로젝트 디렉터리에서만; Renovate npm과 중복 없음 |
+| Storybook npm | Renovate `npm` | `projects/storybook/nextjs`(workspace 포함)만; minor/patch 그룹, TypeScript 7 미만(typescript-eslint가 TypeScript 7을 거부), major Dashboard 승인, automerge 금지 |
+| OpsflowSmtp npm | Renovate `npm` | n8n 노드 `package.json` 하나만; `n8n-workflow`는 n8n 이미지가 번들한 버전과 같아야 하므로 갱신 제외하고 n8n과 함께 수동 변경 |
 | OpenTofu provider/module 의존성 | operator가 검토하는 workspace owner | tooling 패키지에 현재 추적되는 provider/module manifest가 없음; 그런 manifest가 처음 생길 때 범위가 제한된 manager를 활성화 |
 | 이미지 내부 `infra/**/requirements.txt` | Renovate `pip_requirements` | 설정된 좁은 경로만; major Dashboard 승인, automerge 금지 |
 | Python 검증 도구와 pre-commit hook | maintainer 검토 | pin된 requirements/hook revision; 현재 활성화된 자동 manager 범위 밖 |
@@ -47,6 +48,15 @@ datasource가 릴리스 timestamp를 제공할 때, 정기적인 patch/minor 업
 적용되며, 컨테이너 이미지 CVE 스캐닝이나 설치된 이미지의 취약점 범위를 확립하지 않는다.
 infra automerge를 활성화하거나 self-host allowedCommands를 넓히지 않는다. 설정 구문은
 저장소/전역 모드를 분리한 공식 strict validator를 통과해야 한다.
+
+Renovate가 유일한 의존성 버전 updater다. Dependabot version updates는 폐지했고
+`.github/dependabot.yml`은 존재하지 않는다. Renovate `npm` manager는 위 두 대상의
+`managerFilePatterns`로만 제한하며 `labs/**`는 계속 `ignorePaths`로 제외한다. 새
+updater나 manager 범위가 같은 파일을 겹쳐 소유하게 만들지 않는다. GitHub Actions는
+검증만 하며 updater 역할이 없다. GitHub 취약점 경고(Dependabot alerts)는 Renovate의
+`vulnerabilityAlerts` 입력이므로 켜 둔다. 반면 저장소의 Dependabot 보안 업데이트
+(automatic security fixes)는 Renovate의 첫 정상 실행을 확인한 뒤 owner가 별도 단계로 끈다.
+이 문서는 그 원격 설정을 바꾸지 않으며 승인도 주지 않는다.
 
 이미지 태그는 소스 pin이지만 변경 가능한 상태로 남을 수 있다. 존재하는 digest는
 유지한다. 플랫폼 manifest, 업데이트 동작, 롤백 identity를 검증한 뒤 컴포넌트별로 digest
@@ -91,4 +101,3 @@ cadence·exit condition이 빠진 항목은 실패한다. local build 서비스�
 - [Operations index](../../README.md)
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
 - [Repository Renovate policy](../../../../renovate.json5)
-- [Dependabot scope](../../../../.github/dependabot.yml)
