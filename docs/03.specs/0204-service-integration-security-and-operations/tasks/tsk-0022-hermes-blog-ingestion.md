@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.16"
+version: "0.5.17"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1770,6 +1770,21 @@ publish ports of a container on internal networks only (tested), so
 The independent Attester re-fetches with the native fetcher, so a fallback source
 cannot be attested by it. Deployment is a separate approved step.
 
+### Devops replay and Crawl4AI deployment (2026-11-09)
+
+The owner directed a replay of the `uncertain` devops record. Following the RUN-0053
+rule, the same bytes and idempotency key were posted once; the Gateway answered 201
+and the validated receipt moved the record to `persisted`. The 201 shows that the
+timed-out attempt had not stored it. The Blog-data handoff of 2026-11-09 reports
+server B installed and acknowledged that report. `HermesResearchBlocked` waits for a
+Hermes run that records success, because the replay does not update its metric.
+
+With owner approval, `crawl4ai-loopback` started on `main` `2dec3a3cc` and the plugin
+was installed with `deploy/update-hermes-plugin.sh`. The listener is on loopback only;
+`/crawl` without a token returned 401 and the LAN address refused. The installed code
+fetched a URL the native fetcher refused with `status`, 30,513 characters, hash valid.
+A scheduled run through the fallback is NOT_RUN until the next 08:00 KST.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -1808,6 +1823,8 @@ cannot be attested by it. Deployment is a separate approved step.
 | Warm-up Code node inventory rerun | 8, 23 | W83 | `test_p03_runner_consumers` public Code-node inventory | Inventory lists `task-runner-warmup/workflow.json` | PASS | The no-env and no-import checks also pass for the new node. | required | Warm-up Code node inventory |
 | Warm-up HOME activation | 8, 23 | W83 | `import:workflow`, `publish:workflow`, n8n main restart and activation log readback | `main` `216049026`; HOME n8n | PASS | Both workflows activated; n8n healthy; JS runner PID unchanged. | required | - |
 | Crawl4AI fallback source | 8, 23 | W83 | `test_source_collection` and `test_crawl4ai_egress` RED then GREEN | Fallback, forwarder Compose and POL-0091 1.2.0 | PASS | New tests failed before and pass after; 22 and 22 tests OK. Live HOME path NOT_RUN. | required | - |
+| Devops uncertain replay | 8, 23 | W83 | One explicit replay of identical bytes and idempotency key | Outbox record for 2026-11-09 devops | PASS | HTTP 201, receipt validated, record persisted. | required | - |
+| Crawl4AI HOME deployment | 8, 23 | W83 | Forwarder start, exposure checks, plugin install and one installed-code fetch | HOME, `main` `2dec3a3cc` | PASS | Loopback only; 401 without token; LAN refused; fallback fetch valid. Scheduled run NOT_RUN. | required | - |
 | Warm-up scheduled run | 8, 23 | W83 | First 07:50 KST execution readback | HOME n8n schedule | NOT_RUN | Awaits the next 07:50 KST; `n8n execute` cannot start a schedule-only workflow. | required | - |
 
 ## Criterion Acceptance
