@@ -14,7 +14,7 @@ created: "2026-10-01"
 
 이 tier에는 현재 root Compose가 include하는 패키지가 없습니다. 데이터 처리·SQL
 조회·품질 검증·BI·변환·notebook 패키지는 SPEC-0262에서 독립 LAB entrypoint로
-옮겼습니다. ADR-0058 capability tier 이름은 유지합니다.
+옮겼습니다. ADR-0062 capability tier 이름은 유지합니다.
 
 ## Audience
 

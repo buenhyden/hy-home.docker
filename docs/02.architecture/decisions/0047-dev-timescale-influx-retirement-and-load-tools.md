@@ -95,5 +95,5 @@ need a confirmed target and recovery path; until then they stay `NOT_RUN`.
 
 - [AD-0004](../descriptions/0004-data-architecture.md)
 - [AD-0031](../descriptions/0031-home-development-host.md)
-- [ADR-0058](0058-home-tiers-versus-labs.md)
+- [ADR-0062](0062-home-lab-membership.md)
 - [SPEC-0212](../../03.specs/0212-request-baseline-and-reconciliation/spec.md)

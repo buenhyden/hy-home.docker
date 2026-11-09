@@ -1,12 +1,12 @@
 ---
-title: "HOME Tiers versus LABs"
-version: "0.2.1"
+title: "HOME Membership and Planned LABs"
+version: "0.1.0"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "proposed"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "architecture"
-artifact_id: "ADR-0058"
+artifact_id: "ADR-0062"
 parent_ids:
 - "AD-0004"
 - "AD-0009"
@@ -15,10 +15,10 @@ parent_ids:
 - "AD-0019"
 - "AD-0024"
 - "AD-0025"
-created: "2026-11-06"
+created: "2026-11-09"
 ---
 
-# ADR-0058: HOME Tiers versus LABs
+# ADR-0062: HOME Membership and Planned LABs
 
 ## Context
 
@@ -29,29 +29,55 @@ root-included, uses `lab-*` profiles and the isolated `${LAB_DATA_DIR}` root,
 and becomes HOME only through the LAB promotion policy (POL-0107). SPEC-0262
 moved the analytics engines into LABs.
 
-HOME members by tier, from the root includes:
+On 2026-11-09 the owner decided which services leave HOME. Services that are
+stopped or never created in the root include still widen the HOME attack
+surface, hardening checks, secret catalog and update ledgers without being
+used. This record replaces ADR-0058 (HOME Tiers versus LABs), keeps every rule
+of it that is not changed below, and states the target HOME membership after
+the follow-up moves. Until each move lands, the root includes remain the
+source of truth for what HOME contains.
+
+Target HOME members by tier, after the follow-up moves:
 
 | Tier | HOME members |
 | --- | --- |
-| `04-data` | dev-db, mng-db, neo4j, opensearch, qdrant, redisinsight, seaweedfs |
-| `05-messaging` | kafka |
-| `06-observability` | LGTM stack, Alloy and the other observability services; dozzle |
+| `04-data` | dev-db, mng-db, qdrant, redisinsight, seaweedfs |
+| `05-messaging` | kafka-1, schema-registry, kafka-connect, kafka-exporter, kafbat-ui (on demand through the messaging profiles) |
+| `06-observability` | LGTM stack, Alloy and the other observability services, including pushgateway; dozzle |
 | `07-workflow` | airflow, n8n |
-| `08-ai` | comfyui, crawl4ai, mlflow, ollama, open-notebook, open-webui |
-| `09-platform-ops` | opentofu, registry, renovate, restic, terrakube |
+| `08-ai` | crawl4ai, mlflow, ollama, open-webui |
+| `09-platform-ops` | opentofu, registry, renovate, restic |
 | `10-communication` | none |
-| `11-quality` | conftest, k6, mailpit, pact-broker, wiremock |
+| `11-quality` | conftest, k6, mailpit |
 | `12-analytics` | none |
 | `13-experience` | storybook |
 
-LABs: cassandra, couchdb, dbt, jupyterlab, kafka-cluster, lakehouse (Flink,
+Planned LABs, pending until each move lands under `labs/<name>/`: comfyui,
+neo4j, open-notebook (with its surrealdb), pact-broker, wiremock and terrakube.
+Until its move merges, each still runs from its root include.
+
+Existing LABs: cassandra, couchdb, dbt, jupyterlab, kafka-cluster, lakehouse (Flink,
 Spark, Trino, Great Expectations), locust, mongodb, opensearch-cluster,
 postgresql-ha, sonarqube, stalwart, superset and valkey-cluster.
 
 ### Traceability
 
-This record replaces six accepted ADRs, deleted in the same change
-(ADR-0051). Each one's still-valid decisions carry forward below.
+This record replaces ADR-0058 and, through it, six earlier ADRs; ADR-0058 is
+deleted in the same change (ADR-0051). Each one's still-valid decisions carry
+forward below.
+
+- ADR-0058 (HOME Tiers versus LABs, accepted 2026-11-06) defined HOME as the
+  root Compose includes and a LAB as a `labs/<name>/` package promoted only by
+  POL-0107, with capability ownership per tier, the analytics engine choice,
+  admin-UI boundaries and hardening checks that move with a service. It
+  rejected profiles inside HOME tiers (they share the root project, data root
+  and networks), and one ADR per tier (the rule would repeat nine times). It
+  selected one boundary rule, root include for HOME and `labs/` for LAB. Its
+  consequences: a small readable HOME, experiments isolated from HOME data, a
+  LAB start or promotion before use, and tier hardening functions that follow
+  each move. Its HOME member table listed neo4j, opensearch, comfyui,
+  open-notebook, terrakube, pact-broker and wiremock, which this record
+  changes. It did not name kafka-rest-proxy or the per-app Valkey trios.
 
 - ADR-0009 selected the tooling stack: OpenTofu with Terrakube for IaC,
   SonarQube for code quality, k6 as the default load tool with Locust as an
@@ -107,7 +133,7 @@ This record replaces six accepted ADRs, deleted in the same change
   Locust and SonarQube in Quality, Stalwart in Communication and JupyterLab in
   Analytics, this record governs: those four are LABs now.
 
-Evidence is the root Compose includes, `labs/`, and
+Evidence is the owner decision of 2026-11-09, the root Compose includes, `labs/`, and
 `scripts/hardening/check-all-hardening.sh`. No runtime state is claimed.
 
 ## Decision Drivers
@@ -118,6 +144,10 @@ Evidence is the root Compose includes, `labs/`, and
   HOME by accident.
 - Tier placement follows capability, not activation style.
 - Hardening gates must protect what exists, at the path where it exists.
+- Stopped or never-created services in the root include widen the HOME attack
+  surface, hardening checks, secret catalog and update ledgers without use.
+- LABs give optional stacks an explicit, isolated home; promotion back to HOME
+  stays possible through POL-0107.
 
 ## Options
 
@@ -128,8 +158,16 @@ Evidence is the root Compose includes, `labs/`, and
   experiment can change HOME.
 - One ADR per tier restating HOME and LAB membership: rejected; the rule is the
   same for every tier and would be repeated nine times.
+- Keep ADR-0058 as is: rejected; idle members keep their cost in hardening,
+  secrets and update ledgers.
+- Delete the idle services outright: rejected for the standalone ones; the
+  owner wants them available as LABs.
+- Move every stopped service, including job-style tools: rejected; opentofu,
+  renovate, conftest, k6 and restic are jobs, not idle services, and the
+  provisioners are sidecars of HOME services.
 - One boundary rule, HOME by root include and LAB by `labs/`, with tier
-  capability ownership and promotion by policy: selected.
+  capability ownership, promotion by policy and the membership changes
+  below: selected.
 
 ## Decision
 
@@ -139,19 +177,23 @@ Evidence is the root Compose includes, `labs/`, and
 2. A LAB lives in `labs/<name>/`, is never root-included, uses `lab-*`
    profiles and `${LAB_DATA_DIR}`, and joins HOME only through POL-0107.
 3. Data owns storage: dev-db (with DEV TimescaleDB for time series, ADR-0047),
-   mng-db, neo4j, opensearch, qdrant, redisinsight and the shared seaweedfs.
-   Clustered and alternative stores (postgresql-ha, valkey-cluster,
-   opensearch-cluster, cassandra, couchdb, mongodb) are LABs.
+   mng-db, qdrant, redisinsight and the shared seaweedfs. neo4j becomes a LAB.
+   The single-node HOME opensearch is retired, not moved, because
+   `labs/opensearch-cluster` covers search experiments. Clustered and
+   alternative stores (postgresql-ha, valkey-cluster, opensearch-cluster,
+   cassandra, couchdb, mongodb) are LABs.
 4. Analytics owns processing and has no HOME member. The engine choice stands:
    Flink for streaming, Trino for SQL over Iceberg on SeaweedFS, Spark for table
    maintenance and batch, Great Expectations for data quality, Superset, dbt on
    PostgreSQL and JupyterLab, all as LABs. ksqlDB and StarRocks are not adopted;
    adding an engine for the same role needs a new ADR. Unauthenticated engine
    APIs bind only to loopback (POL-0094).
-5. Platform Operations owns OpenTofu with Terrakube (IaC), the OCI registry,
-   Renovate and Restic. Syncthing stays withdrawn.
-6. Quality owns software verification: conftest, k6 (the default load tool),
-   Mailpit, Pact Broker and WireMock. Locust and SonarQube are LABs.
+5. Platform Operations owns OpenTofu (IaC), the OCI registry, Renovate and
+   Restic. Terrakube becomes a LAB; it is the largest move and may come last.
+   Syncthing stays withdrawn.
+6. Quality owns software verification: conftest, k6 (the default load tool)
+   and Mailpit. Pact Broker and WireMock become LABs, as do Locust and
+   SonarQube.
    Communication owns no HOME member; Stalwart is a LAB
    ([ADR-0054](0054-mailpit-home-stalwart-lab.md)).
 7. Admin UIs are reached only through Traefik, never by direct host ports, and
@@ -165,7 +207,22 @@ Evidence is the root Compose includes, `labs/`, and
    `infrastructure-hardening` job guard HOME members. A new service adds its
    checks to its tier. A LAB's checks run against its `labs/` source; moving a
    service between HOME and LAB moves its checks in the same change.
-9. HOME services keep the `template-stateful-*` and `template-infra-*`
+9. These leave HOME and become LABs under `labs/<name>/`: comfyui (08-ai),
+   neo4j (04-data), open-notebook with its surrealdb (08-ai), pact-broker and
+   wiremock (11-quality), and terrakube (09-platform-ops). Each move is its
+   own later change under the SPEC-0263 LAB contract and carries its hardening
+   checks. Until a move lands, the service stays as the root include has it.
+10. HOME opensearch (04-data) is retired. kafka-rest-proxy (05-messaging) is
+    removed: it has no consumer and no native authentication. The dedicated
+    per-app Valkey and exporter sets for airflow, n8n and oauth2-proxy
+    (`dedicated-valkey` profile, never created in HOME) are removed.
+11. These stay in HOME: the Kafka stack (kafka-1, schema-registry,
+    kafka-connect, kafka-exporter, kafbat-ui; on demand through the messaging
+    profiles), qdrant, redisinsight, dev-db, mng-db, seaweedfs, crawl4ai,
+    mlflow, ollama, open-webui, opentofu, registry, renovate, restic,
+    conftest, k6, mailpit, storybook, and the observability services including
+    pushgateway.
+12. HOME services keep the `template-stateful-*` and `template-infra-*`
    inheritance. HA, lifecycle and recovery drills, OpenTofu drift detection,
    Terrakube audit, registry signing, load-test standardization, Dozzle scope,
    admin session and RedisInsight audit policies proceed in phases through
@@ -177,6 +234,12 @@ Evidence is the root Compose includes, `labs/`, and
 - Positive: experiments cannot reach HOME data or profiles by accident.
 - Negative: an analytics or clustered workload needs a LAB start or a promotion
   before use.
+- Positive: fewer idle members in HOME hardening, the secret catalog and the
+  update ledgers.
+- Negative: each move touches POL-0078 profiles, Traefik routes, the OpenBao
+  secret catalog, security-update ledgers, docs, dashboards and scrapes, and
+  pinning tests, so it is one change per move.
+- Reversibility: a LAB returns to HOME through POL-0107.
 - Negative: hardening checks for LAB sources still run in tier functions,
   which must follow each move.
 
@@ -188,8 +251,13 @@ fails on a renamed or retired tier.
 
 ### Follow-up
 
-Requirement and description text that still places a LAB in a HOME tier is
-reconciled by its owners.
+One change per move (comfyui, neo4j, open-notebook with surrealdb,
+pact-broker, wiremock, terrakube), plus the opensearch retirement and the
+kafka-rest-proxy and `dedicated-valkey` removals; each updates POL-0078
+profiles, Traefik routes, the OpenBao secret catalog, security-update ledgers,
+docs, dashboards and scrapes, and pinning tests. Owner acceptance is pending;
+this record stays `proposed` until then. Requirement and description text that
+still places a LAB in a HOME tier is reconciled by its owners.
 
 ## Related Documents
 

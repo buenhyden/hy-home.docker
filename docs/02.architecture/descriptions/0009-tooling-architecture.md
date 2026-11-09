@@ -100,7 +100,7 @@ under the LAB promotion contract.
 ## Related Documents
 
 - [REQ-0010 Tooling requirements](../../01.requirements/0010-tooling.md)
-- [ADR-0058 HOME tiers versus LABs](../decisions/0058-home-tiers-versus-labs.md)
+- [ADR-0062 HOME Membership and Planned LABs](../decisions/0062-home-lab-membership.md)
 - [OpenTofu operations](../../05.operations/guides/10-platform-and-backup/0082-opentofu.md)
 - [Pact Broker operations](../../05.operations/guides/12-testing-and-quality/0093-pact-broker.md)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)

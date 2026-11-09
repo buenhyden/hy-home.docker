@@ -107,7 +107,7 @@ itself is in [AD-0009](0009-tooling-architecture.md).
 
 - **PRD**: [REQ-0010](../../01.requirements/0010-tooling.md)
 - **Tier Architecture Description**: [AD-0009 Platform Operations and Software Verification Architecture Description](0009-tooling-architecture.md)
-- **ADR**: [ADR-0058](../decisions/0058-home-tiers-versus-labs.md)
+- **ADR**: [ADR-0062](../decisions/0062-home-lab-membership.md)
 - **Guide**: [Tooling optimization hardening guide](../../05.operations/guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)
 - **Policy**: [Tooling optimization hardening policy](../../05.operations/policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)
 - **Runbook**: [Tooling optimization hardening runbook](../../05.operations/runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)

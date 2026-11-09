@@ -10,7 +10,7 @@ artifact_id: "SPEC-0218"
 parent_ids:
 - "REQ-0027"
 - "AD-0031"
-- "ADR-0058"
+- "ADR-0062"
 created: "2026-10-09"
 ---
 
