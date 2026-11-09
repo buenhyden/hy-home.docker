@@ -1,6 +1,6 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.3.3"
+version: "1.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -183,6 +183,9 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 07-workflow | `n8n-valkey` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 07-workflow | `n8n-valkey-exporter` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | queue load comes from `n8n_scaling_mode_queue_jobs_*` on the `n8n` job |
+| 07-workflow | `n8n-sandbox-api` | none | `Infrastructure/containers` | container metrics and logs only; the service's own metrics are off |
+| 07-workflow | `n8n-sandbox-certs` | none | `Infrastructure/containers` | one-shot job; logs only |
+| 07-workflow | `n8n-sandbox-runner-1` | none | `Infrastructure/containers` | container metrics and logs only; inner sandbox containers are not scraped |
 | 07-workflow | `searxng` | none | `Infrastructure/containers` | container metrics and logs only; SearXNG's own metrics are off |
 | 08-ai | `comfyui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `crawl4ai` | none | `Infrastructure/containers` | container metrics and logs only |

@@ -1,6 +1,6 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.6.4"
+version: "1.6.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -69,6 +69,9 @@ networks beside it, then it left the services and the root.
 | `n8n_worker_runner_net` | 10.250.23.0/24, internal, isolated | `n8n-worker` with `n8n-task-runner-worker` | broker ↔ its external Code runner only; `10.250.22.0/24` (the removed main runner network, SPEC-0269) is not reused |
 | `n8n_search_net` | leaf-owned, internal | `n8n` and `searxng` | n8n Assistant web search → SearXNG only; no egress |
 | `n8n_search_outbound_net` | leaf-owned | `searxng` | SearXNG → public search engines; no inbound path, no destination or port limit |
+| `n8n_sandbox_net` | 10.250.210.0/24, leaf-owned, internal | `n8n` and `n8n-sandbox-api` | n8n → sandbox API only |
+| `n8n_sandbox_runner_net` | 10.250.211.0/24, leaf-owned, internal | `n8n-sandbox-api` and `n8n-sandbox-runner-1` | API ↔ runner registration and control; the runner never shares a network with n8n |
+| `n8n_sandbox_outbound_net` | 10.250.212.0/24, leaf-owned | `n8n-sandbox-runner-1` | runner and its sandboxes → internet and, through NAT, the host LAN; no destination or port limit; owner decision 2026-11-09 |
 | `crawl4ai_net` | leaf-owned, internal | Crawl4AI and admitted consumers (POL-0091) | consumer → Crawl4AI API; no egress |
 | `crawl4ai_egress_net` | 10.250.200.0/29, leaf-owned, internal (named egress-isolation exception in REQ-0023-FR-0002) | Crawl4AI (fixed .3) and `crawl4ai-egress` (fixed .2) | crawler → egress gateway |
 | `crawl4ai_outbound_net` | leaf-owned | `crawl4ai-egress` | gateway → public addresses on ports 80/443 only; non-global and IPv6 addresses refused |

@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.15.3"
+version: "1.15.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -82,6 +82,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets; monitoring initialization: mng-pg-monitor-provision | current |
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init, mng-pg-monitor-provision | current |
 | `mongodb` | topology | 독립 LAB MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` | No | initialization: mongo-key-generator, mongo-init | current |
+| `n8n-sandbox` | capability | n8n Assistant 코드 sandbox: 인증서 생성 job, sandbox API, privileged Docker-in-Docker runner(owner 결정 2026-11-09); 기본 선택에서 제외 | `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1` | No | initialization: n8n-sandbox-certs (mTLS 자료 생성) | current |
 | `nginx` | topology | Traefik 대체 gateway; 기본 ingress port 중복 금지 | `nginx`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `notebook` | capability | Open Notebook과 SurrealDB 저장소 | `surrealdb`, `open_notebook` | No | normal service startup | current |
 | `obs` | domain | 전체 관측 기능; HOME에 필요한 하위 선택만 권장 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway` | No | initialization: seaweedfs-buckets, grafana-db-provision | current |
@@ -248,6 +249,7 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 | cdc with dev-pg | 새 원천의 publication·slot·offset·snapshot은 이전 mng-pg LSN에서 이어지지 않는다. connector 등록과 writer/reader 전환은 별도 승인 후 시행한다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
 | crawl4ai | internal network만 사용하고 외부로는 `crawl4ai-egress`만 통과; 소비자는 승인된 변경으로 `crawl4ai_net`에 합류 |
+| n8n-sandbox | runner만 `privileged`(예외: `infra/common-optimizations.exceptions.json`, Conftest, p02 시험); host port·Traefik route·host Docker socket 없음; runner는 n8n 망에 합류하지 않고 API와 `n8n_sandbox_runner_net`, 인터넷과 `n8n_sandbox_outbound_net`만 사용; secret 파일 3개가 있어야 기동 |
 | contract-testing | UI·API는 plain HTTP basic auth이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; heartbeat만 공개 |
 | lakehouse | 엔진은 `labs/lakehouse/docker-compose.yml` LAB에만 있고 HOME S3·catalog는 `LAB_LAKEHOUSE_*` 입력으로만 찾는다. `spark`는 one-shot 작업이며 `up`은 namespace 조회만 수행; 테이블 쓰기·`rewrite_data_files`·`expire_snapshots`는 `run --rm spark`로 대상 table을 명시. `trino`는 인증 없는 HTTP API이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음. `flink-*`도 같으며 REST JAR 업로드는 끔(`web.submit.enable=false`); Flink는 HOME `kafka_net`에 합류하지 않으며 Kafka에는 승인된 도달 가능 endpoint가 필요. `great-expectations`는 one-shot이며 기본 명령은 suite 목록만 출력 |
 | bi | Superset LAB은 gateway route 없이 `LAB_HOST_BIND_IP`의 `LAB_SUPERSET_HOST_PORT`에만 게시; native OIDC redirect의 LAB origin 등록은 미결정; 가입 사용자는 `Gamma`(데이터 접근 없음) |

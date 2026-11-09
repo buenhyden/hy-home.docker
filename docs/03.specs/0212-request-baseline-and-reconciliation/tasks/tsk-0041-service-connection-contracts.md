@@ -318,6 +318,9 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | n8n Assistant model and SearXNG configuration | 60 | W65 | Compose render, `N8nAssistantSearchContractTests`, hardening pin, operations catalog | Branch base `ab34255ae` plus this change | PASS | Model and search URL on main only; `searxng` has no ports, route or privilege; the search network holds only `n8n` and `searxng`; no Anthropic key variable | required | - |
 | n8n Assistant search live | 60 | W65 | Create `searxng`, ask the Assistant a web question, check `/healthz` and the JSON API from `n8n` | HOME | NOT_RUN | No container was created; the stack needs its own approval and the apply order in the report | required | - |
 | n8n Assistant code sandbox | 60 | W65 | Firecracker runner without `privileged` | `n8nio/n8n-sandbox-service-runner-firecracker:1.8.1` | NOT_RUN | BLOCKED: the runner needs netns, veth, TAP, iptables, mount and jailer rights close to `privileged`, and a possible enterprise license; not added | required | - |
+| n8n code sandbox (privileged DinD) configuration | 60 | W65 | Compose render, `N8nCodeSandboxContractTests`, `compose_controls.py`, Conftest verify, hardening pins | Branch base `4f91fa0da` plus this change | PASS | One privileged service; no ports, routes or Docker socket; runner on two distinct internal and outbound networks; digest-pinned 1.8.1 images; keys from secret files; exceptions recorded | required | - |
+| n8n code sandbox secret metadata | 60 | W65 | `test_secret_metadata_sync` against the public secret metadata | `secrets/SENSITIVE_ENV_VARS.md.example` | FAIL | Two tests fail until three rows for the sandbox secret files are added to the metadata source and the OpenBao catalog; that file is denied to this session | required | - |
+| n8n code sandbox live | 60 | W65 | Create the three secret files, start profile `n8n-sandbox`, check API health, runner registration, one sandbox and an Assistant code step | HOME | NOT_RUN | No container was started; DinD under `no-new-privileges` and `cap_drop: ALL`, mTLS registration and the image pull are unverified | required | - |
 | SEC01 root source re-binding and crawl4ai-loopback row | 60 | W65 | `test_update_gates` | Clean `main` `b4d09cbd7` | PASS | 51 failures before (50 stale file hashes, 1 missing `crawl4ai-loopback` row); 39 tests OK after; image, build and the other membership unchanged | required | - |
 | n8n 2.46.6 source pin and digests | 60 | W65 | Read-only Docker Hub registry, GitHub release and npm lookups | Branch base `0220de58a`; `n8nio/n8n:2.46.6`, `n8nio/runners:2.46.6` | PASS | Index digests `sha256:8602f5df…92b3ae` (n8n) and `sha256:b1fe87a5…322612` (runners); `stable`, `latest` and the tag agree; release `n8n@2.46.6` published 2026-11-04, not a prerelease; recorded in the SEC01 lookups and ledger | required | - |
 | n8n 2.46.6 signature, full-image scan, build, native and HOME | 60 | W65 | Publisher signature, SBOM or scan, `hyhome/n8n` build, native queue and HOME recreate | Same inputs | NOT_RUN | Out of this source unit; the local image build and every recreate wait for their own approval | required | - |
@@ -1090,6 +1093,96 @@ tech-stack projection, POL-0078 (`workflow`, `workflow-n8n`), the `m0021` invent
 (`render_service_inventory`), GDE-0053 `implementation_services` and its Assistant
 paragraph, the n8n README, AD-0026 network table and the Grafana coverage README were
 updated. Nothing was started, so neither SearXNG nor the Assistant settings are live.
+
+### 2026-11-09 n8n Assistant code sandbox: privileged Docker-in-Docker runner
+
+The owner overrode the earlier exclusion for this one service and chose n8n's privileged
+Docker-in-Docker runner for the Assistant code sandbox ("privileged DinD"). The
+Firecracker runner stays unused (see the preceding section).
+
+Services, in `infra/07-workflow/n8n/docker-compose.yml`, all in the opt-in profile
+`n8n-sandbox` and none selected by `workflow` or `workflow-n8n`. Sandbox service 1.8.1 is
+the release the n8n 2.46.6 installer pins; the newest tag seen on Docker Hub is 1.14.0.
+
+- `n8n-sandbox-certs`: one-shot job from `n8nio/n8n-sandbox-service-api:1.8.1`
+  (`sha256:3ac19681…d00e7e`) that runs the image's `bootstrap-mtls.sh` into the volume
+  `n8n-sandbox-tls`, hands the API key files to the API user (`cap_add: CHOWN`, the
+  only added capability, with an exception) and deletes the CA key. No network.
+- `n8n-sandbox-api`: the same image, read-only, `cap_drop: ALL`, tmpfs state (sandbox
+  metadata is lost on restart; sandboxes are disposable), healthcheck on `/healthz`.
+- `n8n-sandbox-runner-1`: `n8nio/n8n-sandbox-service-runner-dind:1.8.1`
+  (`sha256:b7444719…29a117`), `privileged: true`, the only privileged service in the
+  file. The sandbox image is `n8nio/n8n-sandbox-service-sandbox:1.8.1`
+  (`sha256:b397f4b5…f664ba1233`), named by digest in `SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE`; the
+  inner Docker daemon pulls it from Docker Hub on first use into the dedicated volume
+  `n8n-sandbox-docker`. The host Docker socket is never mounted. Renovate does not see the
+  sandbox image because it is an environment value, so a test checks that it stays on
+  the API's release.
+
+`n8n` main gets `N8N_INSTANCE_AI_SANDBOX_ENABLED=true`, provider `n8n-sandbox`,
+`N8N_SANDBOX_SERVICE_URL=http://n8n-sandbox-api:8080` and
+`N8N_SANDBOX_SERVICE_API_KEY_FILE=/run/secrets/n8n_sandbox_api_key`. Because that
+secret is mounted into `n8n` itself, **`n8n` will not start until the file exists**, even
+if the profile is not selected.
+
+Networks (each a distinct bridge, no host port and no Traefik route on any of the three
+services). The reference stack uses one default network for everything. Here
+`n8n_sandbox_net` (10.250.210.0/24, internal) holds only `n8n` and the API;
+`n8n_sandbox_runner_net` (10.250.211.0/24, internal) holds only the API and the runner;
+`n8n_sandbox_outbound_net` (10.250.212.0/24) holds only the runner. This departs from a
+single network holding n8n, the API and the runner on purpose: sandboxed code leaves the
+inner Docker network through the runner, so a shared network would let it reach n8n
+main's UI and API directly. The runner joins no data, `n8n_net`, `obs_net`, edge or
+`n8n_search_net` network.
+
+Egress, stated exactly. The runner's only external path is `n8n_sandbox_outbound_net`, a
+plain bridge with no destination or port filter. Sandbox code runs in an inner container
+that the runner NATs onto that path, so it, like the runner, can reach the public
+internet and, through the host's NAT, the host LAN and any host service listening on the
+bridge gateway address. It can also reach the API on `n8n_sandbox_runner_net`, which
+needs the API key. It cannot reach n8n or any data network. The inner dockerd needs the
+internet to pull the sandbox image, and the Assistant's workflow builder may need it to
+install packages (not verified). A host `DOCKER-USER` rule is the way to
+narrow it if the owner wants; it was not added.
+
+Budget: runner 3 CPU, 4 GiB, 4096 pids (reservation 0.05 CPU, 512 MiB); API 0.5 CPU,
+256 MiB, 256 pids; certs job 0.5 CPU, 256 MiB for seconds. The sandbox image is 1.35 GB
+unpacked, so the `n8n-sandbox-docker` volume grows by at least that.
+
+Exception record: `infra/common-optimizations.exceptions.json` has `privileged` for
+`n8n-sandbox-runner-1` and `cap_add CHOWN` for `n8n-sandbox-certs`, each citing the
+owner decision of 2026-11-09, reviewed 2026-11-09 and due 2027-05-09. The Conftest
+allow-list (`compose.rego`) now names `cadvisor` and `n8n-sandbox-runner-1`, with
+tests. `N8nCodeSandboxContractTests` fails if any other service in the n8n file is
+privileged, if a sandbox service gets a port, route or Docker socket, if the networks
+change shape, or if an image leaves digest pinning or the 1.8.1 release.
+
+Secrets, three Docker Secret files, none created or read here. The images read the API
+key list, the runner registration token and the runner API key only from the
+environment, so the API and runner entrypoints load them from the files and `exec` the
+image command; n8n reads its copy through its `_FILE` form. The owner creates these files
+before recreating `n8n`:
+
+- `secrets/automation/n8n/n8n_sandbox_api_key.txt`: n8n main and the API.
+- `secrets/automation/n8n/n8n_sandbox_runner_registration_token.txt`: the API and the runner.
+- `secrets/automation/n8n/n8n_sandbox_runner_api_key.txt`: the API and the runner.
+
+Suggested command (writes files only, prints nothing): `umask 027; for f in
+n8n_sandbox_api_key n8n_sandbox_runner_registration_token n8n_sandbox_runner_api_key; do
+openssl rand -hex 32 > "secrets/automation/n8n/$f.txt"; done`, then give the files the
+group of `SECRETS_GID` like the other secret files. The OpenBao catalog and
+`secrets/SENSITIVE_ENV_VARS.md.example` still need three rows for these files. That
+metadata file is outside what this session may read or edit, so two tests in
+`test_secret_metadata_sync` fail until someone adds them; this is the only open gate.
+
+Records: SEC01 BLOCKED rows for the three services (registry descriptors only), the
+refresh entry with `added_services`, the rebound hashes and the n8n source binding,
+`tech-stack.versions.json`, POL-0078 (profile row and rule), the `m0021` inventory rows,
+the Grafana coverage README, AD-0026, GDE-0053 (a security note) and
+`secret-file-support.json`, which now lists the new `_FILE` key and the twelve certificate-path
+keys. Nothing was started: the DinD start, the mTLS registration between API and runner,
+the first sandbox creation, the `no-new-privileges` and `cap_drop` defaults under an
+inner dockerd, and the sandbox image pull are all unproven.
 
 ### 2026-11-09 Traefik v3.7.17 for GHSA-xv5x-242w-7hf7
 

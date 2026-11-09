@@ -4,8 +4,9 @@ package compose
 
 import rego.v1
 
-# cAdvisor reads host cgroups and devices; no other service may be privileged.
-privileged_allowed := {"cadvisor"}
+# cAdvisor reads host cgroups and devices; the n8n sandbox runner is the privileged
+# Docker-in-Docker runner the owner chose on 2026-11-09. No other service may be privileged.
+privileged_allowed := {"cadvisor", "n8n-sandbox-runner-1"}
 
 secret_key(key) if regex.match(`(?i)(PASSWORD|PASSWD|SECRET|TOKEN|API_KEY|PRIVATE_KEY)`, key)
 
