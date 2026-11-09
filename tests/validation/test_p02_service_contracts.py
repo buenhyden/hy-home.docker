@@ -1318,9 +1318,8 @@ class N8nAssistantSearchContractTests(unittest.TestCase):
         self.assertEqual(
             "http://searxng:8080", environment["N8N_INSTANCE_AI_SEARXNG_URL"]
         )
-        self.assertEqual(
-            "anthropic/claude-sonnet-5", environment["N8N_INSTANCE_AI_MODEL"]
-        )
+        # An env-set model makes n8n reject the model chosen in the Assistant UI.
+        self.assertNotIn("N8N_INSTANCE_AI_MODEL", environment)
         self.assertNotIn("N8N_INSTANCE_AI_MODEL_API_KEY", environment)
         # The code sandbox was held back until the owner chose the privileged
         # Docker-in-Docker runner on 2026-11-09 (see N8nCodeSandboxContractTests).

@@ -153,7 +153,6 @@ services:
       N8N_OTEL_EXPORTER_SERVICE_NAME: n8n
       N8N_PROXY_HOPS: 1
       # n8n Assistant: model only; the Anthropic key is a provider connection set in the UI.
-      N8N_INSTANCE_AI_MODEL: anthropic/claude-sonnet-5
       N8N_INSTANCE_AI_SEARXNG_URL: http://searxng:8080
       # Code sandbox through the n8n sandbox service (profile n8n-sandbox); the key is read from the secret file.
       N8N_INSTANCE_AI_SANDBOX_ENABLED: true
