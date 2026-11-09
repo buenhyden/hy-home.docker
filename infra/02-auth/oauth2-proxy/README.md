@@ -1,6 +1,6 @@
 ---
 title: "OAuth2 Proxy"
-version: "1.1.6"
+version: "1.1.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -110,7 +110,7 @@ Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 �
 
 - `oauth2_proxy_cookie_secret`
 - `oauth2_proxy_client_secret`
-- 공유 Valkey secret (`mng_valkey_password`, 대안 이미지는 `oauth2_valkey_password`)
+- 공유 Valkey secret (`mng_valkey_password`, 기본·대안 이미지 공통)
 
 ## Tech Stack
 

@@ -280,7 +280,6 @@ class NextStableCandidates(unittest.TestCase):
                 .read_text()
                 .replace(binary, str(executable))
             )
-            source = source.replace("/run/secrets/oauth2_valkey_password", str(secret))
             source = source.replace("/run/secrets/mng_valkey_password", str(secret))
             script = base / "entrypoint.sh"
             script.write_text(source)

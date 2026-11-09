@@ -1,6 +1,6 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -37,8 +37,8 @@ created: "2026-05-10"
 - `infra/02-auth/oauth2-proxy` 구성 파일 접근
 - 공유 `mng-valkey` 세션 저장소 준비
 - `OAUTH2_PROXY_VALKEY_HOST`(기본 `mng-valkey`) 및 이미지/entrypoint의 세션 시크릿
-  경로 확인. 기본 경로는 `dev.Dockerfile`/`docker-entrypoint.dev.sh`의 `mng_valkey_password`,
-  `Dockerfile`/`docker-entrypoint.sh` 대안은 `oauth2_valkey_password`를 사용한다.
+  경로 확인. 기본 경로(`dev.Dockerfile`/`docker-entrypoint.dev.sh`)와
+  `Dockerfile`/`docker-entrypoint.sh` 대안 모두 `mng_valkey_password`를 사용한다.
   이미지 선택은 기존 `OAUTH2_PROXY_DOCKERFILE` 구성에 따른다.
 
 ## Concepts
@@ -60,7 +60,7 @@ Alpine 최종 stage로 복사한다. 추가 package 설치는 없다. non-root �
 
 `OAUTH2_PROXY_DOCKERFILE=Dockerfile`인 대안은 같은 upstream/Alpine FROM,
 UID 100/GID 101과 [대안 entrypoint](../../../../infra/02-auth/oauth2-proxy/docker-entrypoint.sh)를
-사용해 `oauth2_valkey_password`를 읽는다. private override의 실제 선택은 미확인이다.
+사용해 같은 `mng_valkey_password`를 읽는다. private override의 실제 선택은 미확인이다.
 이미지 생성 결과와 설치 버전은 build를 실행하기 전까지 미검증이다.
 
 ### Services, inputs and persistence
@@ -124,7 +124,7 @@ The tracked config requests `openid email profile offline_access groups`, uses P
    - `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS` 확인
 2. 엔트리포인트 시크릿 주입 확인
    - root-active `docker-entrypoint.dev.sh`에서 `mng_valkey_password`를 읽어 환경 변수에 export하는지 확인
-   - local/full `docker-entrypoint.sh`에서 `oauth2_valkey_password`를 읽어 환경 변수에 export하는지 확인
+   - 대안 `docker-entrypoint.sh`에서도 `mng_valkey_password`를 읽어 환경 변수에 export하는지 확인
 3. 이미지 권한 모델 확인
    - local/full `Dockerfile`에서 UID 100/GID 101을 명시적으로 생성하고 `USER 100:101`을 적용하는지 확인
    - root-active `dev.Dockerfile`에서 `USER oauth2proxy:oauth2proxy`를 적용하는지 확인
