@@ -489,6 +489,9 @@ services:
       SANDBOX_RUNNER_CONTROL_GRPC_ADVERTISE_ADDR: n8n-sandbox-runner-1:9091
       SANDBOX_RUNNER_ID: runner-1
       # Pulled by the inner dockerd from Docker Hub on first use.
+      # The host kernel has overlay.redirect_dir off, so npm cannot rename image-layer
+      # directories (EXDEV) and the workspace install times out; vfs has no such layer.
+      SANDBOX_RUNNER_DOCKER_STORAGE_DRIVER: vfs
       SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE: n8nio/n8n-sandbox-service-sandbox:1.8.1@sha256:b397f4b51c75faf83cdd9f7aaf8a415a96e6462478cd7694a2b795f664ba1233
       SANDBOX_RUNNER_REGISTRATION_GRPC_CA_FILE: /tls/runner/ca.crt
       SANDBOX_RUNNER_REGISTRATION_GRPC_CERT_FILE: /tls/runner/grpc-client.crt

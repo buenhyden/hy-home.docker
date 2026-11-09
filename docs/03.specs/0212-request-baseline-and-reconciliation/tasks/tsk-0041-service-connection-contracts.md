@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.36"
+version: "0.1.37"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1282,3 +1282,12 @@ POL-0013, the workspace inventory data).
 - [Historical P03 service integration contracts](../../0204-service-integration-security-and-operations/tasks/tsk-0011-p03-service-integration-contracts.md)
 - [Application authentication guide](../../../05.operations/guides/03-identity-and-access/0079-application-auth-integration.md)
 - [Workspace inventory data](../../../90.references/data/0096-workspace-inventory/README.md)
+
+### 2026-11-09 n8n code sandbox: vfs storage for the inner Docker
+
+The Assistant workspace setup failed with `install-dependencies: canceled`. On the host
+kernel `overlay.redirect_dir` is off, so `npm install` over the image-layer `node_modules`
+hits `EXDEV` on directory renames and exceeds n8n's 120 s budget. The same install took
+6 s on a copy of that tree. IPv6, dependency versions and sandbox 1.14.0 were tested and
+ruled out. The runner now sets `SANDBOX_RUNNER_DOCKER_STORAGE_DRIVER=vfs`. The guide and
+AD-0026 now state the measured egress limits of sandbox containers.
