@@ -1,8 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.39"
-
-version: "0.1.40"
+version: "0.1.41"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
