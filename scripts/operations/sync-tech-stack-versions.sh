@@ -66,7 +66,9 @@ cd "$REPO_ROOT"
 # The Renovate image lacks the Python packages this script imports, so its
 # post-upgrade --write installs a hash-locked set into a throwaway directory.
 if [[ "$MODE" == "write" ]] && ! python3 -c 'import yaml, markdown_it, jsonschema' 2>/dev/null; then
-  deps_dir="$(mktemp -d)"
+  # Beside the checkout: the Renovate container mounts /tmp noexec, which cannot
+  # load the compiled rpds extension.
+  deps_dir="$(mktemp -d -p "$(dirname -- "$REPO_ROOT")")"
   trap 'rm -rf -- "$deps_dir"' EXIT
   python3 -m pip install --quiet --no-deps --no-cache-dir --only-binary=:all: \
     --require-hashes --target "$deps_dir" -r scripts/requirements-renovate.lock
