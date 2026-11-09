@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Usage Guide"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0091"
 parent_ids:
@@ -13,6 +13,7 @@ implementation_services:
   infra/08-ai/crawl4ai/docker-compose.yml:
   - crawl4ai
   - crawl4ai-egress
+  - crawl4ai-loopback
 created: "2026-09-21"
 ---
 
@@ -50,6 +51,8 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
 ## Usage
 
 ### SSRF boundary
+
+호스트 작업은 `crawl4ai-loopback`(`127.0.0.1:11235`)으로, 컨테이너 작업은 검토된 `crawl4ai_net` 합류로 호출한다. 새 크롤링 작업은 POL-0091의 `dedicated-crawl` 행을 먼저 추가한다. internal 네트워크 컨테이너는 host 포트를 게시할 수 없어 전달기가 그 역할만 맡는다.
 
 크롤러는 호출자 URL을 가져오므로 SSRF 방어가 두 겹이다. 이미지 안의 broker는 전역이 아닌 주소를 거절하고, Chromium을 고정 proxy로 보내며, 호출자의 proxy·`extra_args`·script를 막고, redirect와 robots·link preview 요청을 다시 확인한다. 그다음 컨테이너 밖의 `crawl4ai-egress`가 같은 규칙을 다시 적용한다. 크롤러에는 기본 라우트가 없으므로 broker를 우회한 연결은 갈 곳이 없다. gateway는 DNS 중계에서 AAAA에 빈 응답을 주고, proxy에서 이름을 직접 해석해 확인한 주소로만 연결하므로 DNS 응답이 바뀌어도 목적지가 바뀌지 않는다.
 

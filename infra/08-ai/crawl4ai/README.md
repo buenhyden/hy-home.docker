@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI 웹 크롤러"
-version: "1.1.2"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-09"
 created: "2026-09-21"
 ---
 
@@ -21,7 +21,7 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 검사와 untrusted 요청 본문 제한을 수정한 공식 보안 릴리스를 소스로 선택합니다.
 기존 격리 성공은 이전 이미지 입력의 역사이며 새 후보의 성공이 아닙니다. 새
 후보의 실제 TLS·SSRF·cache·응답 schema 검증과 HOME 실행은 NOT_RUN입니다.
-현재 consumer는 없고, 참조 adapter는 URL·cache mode·page timeout만 전달합니다.
+현재 consumer는 Hermes 리서치 수집의 대체 경로이며, `crawl4ai-loopback`이 `127.0.0.1:11235`를 `crawl4ai:11235`로만 전달합니다(POL-0091). 참조 adapter는 URL·cache mode·page timeout만 전달합니다.
 토큰·internal 망·gateway·읽기 전용 root·tmpfs·사용자·자원 제한은 유지합니다.
 
 ## Audience

@@ -363,6 +363,26 @@ class ComposeContractTests(unittest.TestCase):
             "service_healthy", crawler["depends_on"]["crawl4ai-egress"]["condition"]
         )
 
+    def test_loopback_forwarder_is_the_only_host_path(self):
+        forwarder = self.services["crawl4ai-loopback"]
+        self.assertEqual(["crawl4ai"], forwarder["profiles"])
+        self.assertEqual(["127.0.0.1:11235:11235"], forwarder["ports"])
+        self.assertEqual(
+            {"crawl4ai_net", "crawl4ai_host_net"}, set(forwarder["networks"])
+        )
+        self.assertNotIn("internal", self.data["networks"]["crawl4ai_host_net"])
+        self.assertNotIn("secrets", forwarder)
+        published = [
+            name for name, service in self.services.items() if service.get("ports")
+        ]
+        self.assertEqual(["crawl4ai-loopback"], published)
+        members = [
+            name
+            for name, service in self.services.items()
+            if "crawl4ai_host_net" in (service.get("networks") or {})
+        ]
+        self.assertEqual(["crawl4ai-loopback"], members)
+
     def test_gateway_is_unprivileged_and_the_only_bridge_to_outside(self):
         egress = self.services["crawl4ai-egress"]
         self.assertEqual(["crawl4ai"], egress["profiles"])
