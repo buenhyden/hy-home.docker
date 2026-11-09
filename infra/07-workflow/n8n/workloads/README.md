@@ -1,10 +1,10 @@
 ---
 title: "n8n 독립 워크로드"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-31"
+updated: "2026-11-09"
 ---
 
 # n8n 독립 워크로드
@@ -24,6 +24,8 @@ Airflow의 P04가 소유하며, 실제 import·예약·자격 증명 작업은 T
   제한된 SMTP node와 합성 시험입니다.
 - [Hermes 수집 전송](hermes-blog-ingestion/README.md): Hermes 호스트의 직접 제출을
   서버 A의 Blog-data Gateway로 전달하는 비활성 흐름과 복구용 로컬 영속 대기함입니다.
+- [Task Runner 예열](task-runner-warmup/README.md): Hermes 정기 실행 전에 JS runner를
+  미리 띄우는 비활성 흐름입니다.
 
 ## Usage
 

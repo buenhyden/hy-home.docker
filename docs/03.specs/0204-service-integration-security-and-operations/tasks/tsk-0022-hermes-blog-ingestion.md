@@ -1,10 +1,10 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.13"
+version: "0.5.14"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-01"
+updated: "2026-11-09"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0022"
 parent_ids:
@@ -1715,6 +1715,27 @@ SHA-256 and length, UTF-8 JSON) and passed 53/53 against c05e5b88 with disposabl
 containers: persist 201, replay 200 duplicate, other content 409, attestation to
 one `ready` 2.0 Export, held items without a file, ACK 201 and replay 200.
 
+### Task runner cold start (2026-11-09)
+
+The 2026-11-09 08:00 KST `devops` submission reached Traefik at 23:05:26 UTC and
+ended as `delivery_uncertain` after the 15-second client limit (Traefik 499).
+n8n execution 128 was cancelled by the 30-second `executionTimeout`. The
+launcher starts the JS runner on the first task after a restart, and that runner
+registered at 23:06:21 UTC, about 55 seconds later; the previous restart was on
+2026-11-08 07:35 UTC. The next execution finished in 3.8 seconds.
+
+The delay is not CPU-bound: the runner container used about 4 CPU-seconds and
+lost 1.9 to throttling in the surrounding two minutes, so raising its limit would
+not fix it. Why the start took 55 seconds remains UNKNOWN. Automatic resend after
+an uncertain delivery stays out of scope, because the tested contract refuses it.
+
+An inactive `task-runner-warmup` workflow now runs one no-op Code node daily at
+07:50 KST, ten minutes before the Hermes schedule. Since
+`N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT` is 0, the runner then stays up until the
+container restarts. A submission between a restart and the next 07:50 can still
+hit the cold start. Importing and publishing it on HOME is a separate approved
+step.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -1748,6 +1769,7 @@ one `ready` 2.0 Export, held items without a file, ACK 201 and replay 200.
 | Production attester | 23 | W83 | Real `hermes-attester` account, key, `attest`+`read` token, `export` block, timer and a real item verification | Account, key, token, `export` block, release `c2825bbe8` and timer live; manual run succeeded on an empty queue; no real item verified yet | NOT_RUN | Item-level attester implementation — 2026-11-01 | required | - |
 | Hermes plugin source handoff | 23 | W83 | Plugin source merged and matched to the installed copy | PR #700 `3727ff0e7`; four files SHA-256 equal to the installed copy; real submission not run | PASS | Attestation, Resource Export and Windows pull — 2026-11-01 | required | - |
 | Source/static/review | 8, 23 | W83 | Focused tests, docs gates and independent review | Protected-install follow-up slice: 169 tests, Ruff, links/metadata/lifecycle/markdownlint, install check 17/17, independent review with Important findings fixed | PASS | Review and Completion | required | - |
+| Task runner warm-up source | 8, 23 | W83 | `N8nTaskRunnerWarmupContractTests` RED then GREEN and disposable n8n import | `task-runner-warmup/workflow.json`; `hyhome/n8n:2.43.6-local`, no network | PASS | Test failed before the file existed and passes after; the workflow imports. Live schedule NOT_RUN. | required | - |
 
 ## Criterion Acceptance
 
