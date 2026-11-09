@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -438,6 +438,35 @@ start is the likely cause, not a proven one; the next execution finished in 3.8
 seconds. `HermesResearchBlocked` fires for `devops`, which observes E11 firing;
 its resolution waits for the next successful `devops` run.
 
+### D08 reboot test (2026-11-09)
+
+The owner rebooted the host at 12:49 KST after the backup and the MLflow pilot
+finished, then unsealed OpenBao. Four defects showed up during recovery:
+
+- **Prometheus overlay lost.** The selector wrote the plan-bound
+  `prometheus.yml` and `selection.yml` under `/tmp/hyhome-p07-<uid>/`. The
+  reboot cleared `/tmp`, and Docker bound an empty root-owned directory in each
+  file's place, so Prometheus looped on `is a directory` (26 restarts). The plan
+  could not be rebuilt at the old path: #842 had removed ComfyUI from HOME,
+  which changed the fingerprint from `977274558bea` to `393c7c24bf4b`. The owner
+  asked for a folder inside the user's home instead of `/tmp`, and not the
+  `_workspace` selections path, which is due for deletion. The selector now
+  writes to `~/.local/share/hy-home/p07/<fingerprint>`. Every step from `/` to
+  that folder is owned by root or the user and is not group-writable;
+  `~/.local/state` (mode 775) would have failed the existing check.
+- **`mng-pg` not shut down cleanly.** Its last clean checkpoint was 03:43:52Z.
+  Crash recovery spent about 24 minutes syncing the data directory under
+  saturated I/O, and dependent services restarted until 13:15 KST. Cause of the
+  unclean stop: not yet investigated.
+- **OpenBao did not come back.** It sealed at shutdown and exited 255. Its
+  `unless-stopped` policy did not restart it at boot, unlike the assumption in
+  RUN-0098. It was started by hand. Cause: not yet investigated.
+- **`agent-restart` blocked by I/O.** The issuer helper failed in `prepare`,
+  before any server write. The audit log shows only the two token lookups, and
+  the journal ended `rolled_back`. A throwaway container of the same kind took
+  52 s, above the helper's 20-second command limit. The Agent stays stopped
+  until container starts settle.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -478,6 +507,9 @@ its resolution waits for the next successful `devops` run.
 | HOME DEV-data start rerun | 85 | W90 | `compose-start.py up --plan` of HOME with DEV data `on` | Same plan after the owner-approved `template1` revoke | PASS | STARTED; provisioning exit 0; later dry run recreates nothing; selection marker 1. | required | HOME DEV-data start |
 | Non-HOME container recreate | 85 | W90 | Compose recreate and dry run of six named containers | Current source; pinned crawl4ai 0.9.5 | PASS | All six healthy; dry run recreates none. | required | - |
 | Hermes scheduled run alert | 83 | W88 | Hermes log, n8n log, Traefik log and Prometheus alert readback | 2026-11-09 08:00 KST run | FAIL | `devops` undelivered: n8n execution 128 hit its 30-second timeout; `HermesResearchBlocked` firing; resolution unobserved. | required | - |
+| Reboot: Prometheus overlay | 85 | W90 | Container log and mounts after the 2026-11-09 reboot | Plan `977274558bea` overlay under `/tmp` | FAIL | `/tmp` cleared; Docker bound empty root-owned directories; 26 restarts on `is a directory`. | required | - |
+| Persistent overlay path | 85 | W90 | `tests.lib.ops.test_compose_observation` and `test_compose_start` | Overlay root `~/.local/share/hy-home/p07` | PASS | 35 tests OK; a group-writable step under home is refused; the real home is untouched. | required | Reboot: Prometheus overlay |
+| Reboot: OpenBao Agent restart | 85 | W90 | RUN-0103 `agent-restart` and audit readback | Issuer `4f2e7f9b`, journal `rolled_back` | FAIL | Helper sink container exceeded 20 s under I/O pressure (52 s measured); no server write. | required | - |
 
 ## Criterion Acceptance
 

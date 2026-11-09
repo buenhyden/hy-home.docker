@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Readiness and Recovery Runbook"
-version: "1.4.1"
+version: "1.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "RUN-0045"
 parent_ids:
@@ -62,10 +62,14 @@ created: "2026-05-17"
 
 설정 변경의 복구는 이전 계획과 이전 설정을 함께 보존하고 이 런북의 기존 검증·
 rollback 절차를 따른다. 정적 파일의 성공은 live reload나 알림 수신을 보장하지 않는다.
-계획에 결속된 공개 기대 설정은 `/tmp/hyhome-p07-<uid>/<plan fingerprint>`에
-생성될 수 있다. `/tmp` 정리나 재부팅으로 이 경로가 사라지면 원래 계획과 공개
-입력의 일치를 다시 검증하여 재생성하고, 컨테이너 재시작 전에 참조 경로가 존재하는지
-확인한다. 소유자·권한 오류나 변경된 계획을 무시하지 않는다. Compose 원본 경로의
+계획에 결속된 공개 기대 설정은 실행 사용자의 `~/.local/share/hy-home/p07/<plan fingerprint>`에
+생성되어 재부팅 뒤에도 남는다. 이전 위치 `/tmp/hyhome-p07-<uid>`는 재부팅 때 비워졌고,
+Docker가 사라진 파일 자리에 root 소유의 빈 디렉터리를 만들어 Prometheus가
+`is a directory`로 재시작을 반복했다. 그 상태라면 Prometheus를 먼저 멈춘 뒤 남은
+디렉터리를 정리한다. 경로가 사라지면 원래 계획과 공개 입력의 일치를 다시 검증하여
+재생성하고, 컨테이너 재시작 전에 참조 경로가 존재하는지 확인한다. 계획이 바뀌어
+fingerprint가 달라졌다면 같은 경로에 재생성할 수 없으므로 새 계획의 dry run을 거쳐
+selector로 Prometheus를 다시 만든다. 소유자·권한 오류나 변경된 계획을 무시하지 않는다. Compose 원본 경로의
 그룹 쓰기 권한과 Docker가 경로를 여는 시점의 신뢰 경계는 별도 검토가 필요하다.
 
 ### Execution Boundary

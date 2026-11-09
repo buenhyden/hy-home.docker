@@ -391,7 +391,7 @@ class ComposeStartTests(unittest.TestCase):
         run.assert_called_once()
 
     def test_full_plan_binds_validated_overlay_before_execution(self):
-        import os
+        from scripts.lib.ops import compose_observation
 
         plan = self.plan("home", [], "off")
         overlay = self.root / "synthetic-overlay.yml"
@@ -409,7 +409,7 @@ class ComposeStartTests(unittest.TestCase):
         self.assertEqual(materialize.call_args.args[2].name, plan["fingerprint"])
         self.assertEqual(
             materialize.call_args.args[2].parent,
-            Path("/tmp") / f"hyhome-p07-{os.geteuid()}",
+            compose_observation.overlay_root(),
         )
         validate.assert_called_once_with(self.root, plan, overlay)
         self.assertIn(str(overlay), run.call_args.args[0])
@@ -448,14 +448,14 @@ class ComposeStartTests(unittest.TestCase):
         self.assertNotIn("airflow-worker", plan["targets"])
 
     def test_public_workspace_full_plan_and_synthetic_runner(self):
-        import os
+        from scripts.lib.ops import compose_observation
 
         workspace = Path(__file__).resolve().parents[3]
         self.inspect.stop()
         plan = compose_start.create_plan(
             workspace, mode="home", values=[], dev_data_expected="off"
         )
-        expected_dir = Path("/tmp") / f"hyhome-p07-{os.geteuid()}" / plan["fingerprint"]
+        expected_dir = compose_observation.overlay_root() / plan["fingerprint"]
         overlay = expected_dir / "overlay.yml"
         runner = mock.Mock(return_value=mock.Mock(returncode=0))
         with (
