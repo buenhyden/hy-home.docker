@@ -39,6 +39,13 @@ x-n8n-common-env: &n8n-common-env
   N8N_BLOCK_ENV_ACCESS_IN_NODE: true
   OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: true
 
+  # Workflow tracing to Alloy's OTLP/HTTP receiver, then Tempo. Main and worker
+  # each export their own spans, so both get the same endpoint; the service
+  # name is set per service. Other N8N_OTEL_* options keep their n8n defaults
+  # (production executions only, sample rate 1.0, no start-marker spans).
+  N8N_OTEL_ENABLED: true
+  N8N_OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:${ALLOY_OTLP_HTTP_PORT:-4318}
+
 volumes:
   n8n-data:
     driver: local
@@ -112,6 +119,7 @@ services:
       - ./custom:/home/node/.n8n/custom:ro
     environment:
       <<: *n8n-common-env
+      N8N_OTEL_EXPORTER_SERVICE_NAME: n8n
       N8N_PROXY_HOPS: 1
       # n8n Assistant: model only; the Anthropic key is a provider connection set in the UI.
       N8N_INSTANCE_AI_MODEL: anthropic/claude-sonnet-5
@@ -134,7 +142,7 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.n8n.rule: Host(`n8n.${DEFAULT_URL}`) && !PathPrefix(`/metrics`) && !PathPrefix(`/webhook/hermes-blog-ingestion`)
+      traefik.http.routers.n8n.rule: Host(`n8n.${DEFAULT_URL}`) && !PathRegexp(`(?i)^/metrics`) && !PathRegexp(`(?i)^/webhook(-test)?/hermes-blog-ingestion`)
       traefik.http.routers.n8n.entrypoints: websecure
       traefik.http.routers.n8n.middlewares: gateway-standard-chain@file
       traefik.http.routers.n8n.tls: 'true'
@@ -187,6 +195,7 @@ services:
       <<: *n8n-common-env
       # The broker listens on n8n_worker_runner_net only (SPEC-0267).
       N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 10.250.23.2
+      N8N_OTEL_EXPORTER_SERVICE_NAME: n8n-worker
     secrets:
       - ${N8N_VALKEY_SECRET:-mng_valkey_password}
       - n8n_db_password
@@ -199,6 +208,8 @@ services:
       mng_data_net: {}
       # Production webhook executions run here; the only Gateway peer.
       n8n_blog_ingest_net: {}
+      # Reaches Alloy's OTLP receiver for the worker's workflow and node spans.
+      obs_net: {}
     command: worker
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -q --spider http://10.250.23.2:${N8N_BROKER_PORT:-5679}/healthz || exit 1' ]

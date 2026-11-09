@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.33"
+version: "0.1.34"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -329,6 +329,10 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | OpsflowSmtp `npm audit` | 60 | W65 | `npm audit --package-lock-only` full and `--omit=dev` | Same lock | FAIL | Full audit: 3 high through GHSA-mrhx-c7xc-m3w5 on the `n8n-workflow` dev path; production audit: 0. No exception recorded; the failure is stored in `package-lookups.json` | required | - |
 | OpsflowSmtp `npm audit` gate decision | 60 | W65 | `npm audit --package-lock-only` full and `--omit=dev` | Same lock; owner chose the production-only CI gate on 2026-11-09 | PASS | `leaf.opsflow-smtp-npm-audit` removed; `leaf.opsflow-smtp-npm-production-audit` stays and reports 0. The dev-tree finding remains and is no longer gated. | required | OpsflowSmtp `npm audit` |
 | Dockerfile `n8n --version` and node load check | 60 | W65 | Build-time `RUN` check | `hyhome/n8n` image | NOT_RUN | Image not built; the node's `npm test` loads `n8n-workflow` 2.46.5 from the lock, which is not the image check | required | - |
+| n8n OpenTelemetry configuration | 60 | W65 | Module source at `n8n@2.46.6`, Compose render, hardening pin, operations catalog | Branch base `e8631262b` plus this change | PASS | Default module, no license flag for tracing; `n8n` and `n8n-worker` render the three `N8N_OTEL_*` settings; worker also on `obs_net`; no credential or payload attribute in the constants | required | - |
+| n8n spans reach Tempo | 60 | W65 | Recreate `n8n` and `n8n-worker`, run a production workflow, search Tempo for service `n8n` and `n8n-worker` | HOME | NOT_RUN | No recreate; also confirm the worker reaches `alloy:4318` over `obs_net` | required | - |
+| n8n router case-insensitive exclusions | 57 | W62 | Compose render, `RouteAuthContractTests.test_n8n_router_exclusions_ignore_letter_case`, hardening pins | Branch base `e8631262b` plus this change | PASS | Rule uses `PathRegexp` with `(?i)` for `/metrics` and the Hermes prefix; plain `PathPrefix` fails the test | required | - |
+| n8n router letter-case behaviour live | 57 | W62 | `GET /METRICS`, `/Metrics` and a mixed-case Hermes POST through Traefik | HOME gateway | NOT_RUN | Live finding before the fix: `/METRICS` and `/Metrics` returned metrics inside the container; the fix needs the `n8n` recreate | required | - |
 | n8n documentation and catalog checks | 57 | W62 | `check-operations-catalog.py`, `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | Branch base `0220de58a` plus this change | PASS | Catalog PASS after patching the stale n8n router cell in `m0021`; metadata 12 selected, 0 violations; links 0 failures | required | - |
 | n8n consumer test suites | 60 | W65 | 41 modules naming n8n, `2.43.6` or `sso-auth`, plus `test_p02_service_contracts` and `test_compose_baseline_gates` | Branch base `0220de58a` plus this change, venv on `PATH` | FAIL | 1069 tests, 51 failures, 83 declared skips; the same 51 fail on a clean checkout of `0220de58a` (`test_update_gates` stale `source_input_sha256` for 50 rows and the root census); none is new and the n8n rows, `test_workflow_version_bundle`, `test_sec01_next_tool_candidates` and `test_p08_ci_routing` pass | required | - |
 
@@ -967,6 +971,70 @@ The stale n8n statements in AD-0007 and AD-0022 now say n8n uses its own login. 
 (accepted) still says Flower and n8n keep the SSO chain in its decision text. The
 architecture guide forbids rewriting an accepted decision body and requires a separately
 approved new ADR to replace it, so it is left unchanged and reported.
+
+### 2026-11-09 n8n OpenTelemetry tracing and a case-bypass fix
+
+The owner asked to configure and apply n8n OpenTelemetry. In `n8n@2.46.6` the `otel`
+module is a default module for `main`, `worker` and `webhook` instances, has no license
+flag, and is switched on by `N8N_OTEL_ENABLED`. Only custom span attributes are
+license-gated (`isOtelCustomSpanAttributesLicensed`), and those are not used here.
+In queue mode main and the worker each export their own `workflow.execute` span per
+segment and the worker exports the node spans, so both get the settings. The Compose
+file sets `N8N_OTEL_ENABLED=true` and `N8N_OTEL_EXPORTER_OTLP_ENDPOINT` to
+`http://alloy:${ALLOY_OTLP_HTTP_PORT:-4318}` in the shared env block and
+`N8N_OTEL_EXPORTER_SERVICE_NAME` per service (`n8n`, `n8n-worker`). Every other option
+keeps its n8n default: production executions only, sample rate 1.0, node spans on, no
+start-marker spans, protocol `http/protobuf`, path `/v1/traces`, no exporter headers.
+`n8n-worker` was not on `obs_net`, where Alloy listens, so it gained `obs_net`, the
+least network change; it adds no new listener, because the worker's task broker is bound
+to its runner network address and its health listener is not enabled. Alloy forwards OTLP
+traces to Tempo, and Alloy is not a hard dependency: if it is down n8n logs a startup
+connection error and tracing is skipped.
+
+The running n8n already had tracing switched on through the UI: its `features.otel`
+settings row holds enabled with the default endpoint `http://localhost:4318`, and the
+startup log reports the failed OTLP connection. `OtelSettingsService.loadSettings` in
+`n8n@2.46.6` decides per field. A field whose `N8N_OTEL_*` variable (or its `_FILE`
+form) is set is env-managed and takes the environment value, whatever the row says;
+every other field takes the row value, then the default. The Compose env therefore
+overrides the stored endpoint, enabled flag and service name once `n8n` and `n8n-worker`
+are recreated, and no Settings change is needed for them. The worker runs the same
+module and reads the same row from the shared metadata database, so it behaves the same.
+The fields Compose does not set (protocol, path, headers, sample rate, node spans,
+start markers, outbound injection, production-only) still follow the stored row, which
+the UI save writes in full. Check Settings, OpenTelemetry after the recreate that those
+values are the defaults listed above; the settings API marks env-managed fields. The
+database was not read or written.
+
+Exported data, from `otel.constants.ts`, `execution-level-tracer.ts` and
+`gen-ai-attributes.ts`: instance id and role, workflow id, name, version and node count,
+execution id, mode, status, retry fields and error type, node id, name, type and version,
+input and output item counts, and project id and, for team projects only, name. AI
+agent nodes add agent name and id, model names and token counts. No credential, header
+or execution payload is an attribute. Two things still leave n8n: a failed workflow or
+node span records the error message and stack as an exception event, and n8n error
+messages can quote data, and with `N8N_OTEL_TRACES_INJECT_OUTBOUND` at its default each
+outbound HTTP request n8n makes carries a W3C `traceparent` header. Neither was
+changed because the owner asked for defaults.
+
+The same day a live check inside the n8n container showed `GET /METRICS` and
+`/Metrics` returning metrics, because Express routes paths case-insensitively and
+Traefik `PathPrefix` is case-sensitive, so the exclusions merged in PR #849 were
+bypassable by letter case. The router rule is now
+``Host(`n8n.${DEFAULT_URL}`) && !PathRegexp(`(?i)^/metrics`) && !PathRegexp(`(?i)^/webhook(-test)?/hermes-blog-ingestion`)``.
+`PathRegexp` is a Traefik v3 matcher and the pinned v3.7.16 supports it; the Compose
+render keeps the backticks and `(?i)` unchanged. The Hermes router keeps priority 1000
+and its exact case-sensitive path, so a mixed-case Hermes POST now matches no router and
+gets 404. The same `!PathPrefix(`/metrics`)` pattern exists on the Gatus router
+(`infra/06-observability/docker-compose.yml`); it was not changed here and is noted for
+the Gatus owner. A route contract test now fails on `PathPrefix` in the n8n rule, and
+the hardening gate pins both `PathRegexp` exclusions.
+
+The SEC01 rows and include hash were re-bound with `python3 -m
+scripts.lib.supply_chain.ledger_rebind` (hash-only, six rows), and the n8n source
+binding was rehashed in the ledger and build inputs. The `m0021` n8n and n8n-worker
+inventory cells were refreshed from `render_service_inventory`. Nothing was recreated, so
+neither the spans nor the router change are live.
 
 ### 2026-11-09 n8n Assistant: model and web search, code sandbox held
 

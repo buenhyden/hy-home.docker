@@ -1,6 +1,6 @@
 ---
 title: "Traefik Dynamic Configuration"
-version: "1.0.8"
+version: "1.0.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -17,7 +17,7 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
   노출합니다. container가 아니므로 Docker label 대신 edge_net gateway IP로 연결하며, dashboard가
   자체 OIDC 인증을 하므로 Traefik 인증 middleware를 겹치지 않습니다.
 - **hermes-webhook.yml**: Hermes 호스트의 `POST /webhook/hermes-blog-ingestion` 하나를 별도 router로 n8n에
-  보냅니다. n8n의 나머지 경로는 2026-11-09부터 SSO 없이 `gateway-standard-chain@file`과 n8n 자체 로그인을 쓰며, n8n router는 `/metrics`와 Hermes 경로 접두를 제외해 이 router만 그 경로를 받게 합니다. 출발지 `<HOST_LAN_BIND_IP>/32`, 본문 1 MiB, 분당 6회. 인증은 n8n 헤더 인증입니다.
+  보냅니다. n8n의 나머지 경로는 2026-11-09부터 SSO 없이 `gateway-standard-chain@file`과 n8n 자체 로그인을 쓰며, n8n router는 `/metrics`와 Hermes 경로 접두를 대소문자 구분 없이 제외하며(`PathRegexp` `(?i)`), 이 router는 정확한 경로만 받으므로 대소문자가 다른 Hermes 요청은 어느 router에도 맞지 않아 404입니다. 출발지 `<HOST_LAN_BIND_IP>/32`, 본문 1 MiB, 분당 6회. 인증은 n8n 헤더 인증입니다.
 - **blog-export.yml**: `blog-export.<DEFAULT_URL>`에서 Windows B(`<BLOG_EXPORT_RECEIVER_IP>/32`)의 Export 조회·ACK와
   서버 A 호스트(`<HOST_LAN_BIND_IP>/32`)의 Attestation만 Blog-data Gateway로 보냅니다. 다른 경로는 404입니다.
   세 파일의 호스트와 출발지는 `{{ env "이름" }}`으로 Traefik 환경에서 읽습니다. 값은 `.env`의 `DEFAULT_URL`,
