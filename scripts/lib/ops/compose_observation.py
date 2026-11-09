@@ -275,6 +275,15 @@ def _outputs(root, plan, directory):
     }
 
 
+def overlay_root():
+    """Selector overlays outlive a reboot: /tmp is cleared and Docker then binds
+    an empty root-owned directory in place of each missing file."""
+    import os
+    import pwd
+
+    return Path(pwd.getpwuid(os.geteuid()).pw_dir) / ".local/share/hy-home/p07"
+
+
 def _selection_path(root, plan, output_dir):
     root = Path(root)
     if not root.is_absolute() or root.resolve(strict=True) != root:
@@ -285,10 +294,7 @@ def _selection_path(root, plan, output_dir):
     ):
         raise ObservationError("invalid_fingerprint")
     expected = root / "_workspace/repo-support/analysis/p07/selections" / fingerprint
-    import os
-
-    temporary = Path("/tmp") / f"hyhome-p07-{os.geteuid()}" / fingerprint
-    if Path(output_dir) not in (expected, temporary):
+    if Path(output_dir) not in (expected, overlay_root() / fingerprint):
         raise ObservationError("unsafe_output_path")
     return Path(output_dir)
 
@@ -322,16 +328,8 @@ def validate_materialized(root, plan, overlay_path):
     if Path(overlay_path).name != "overlay.yml":
         raise ObservationError("invalid_overlay_path")
     expected = _outputs(root, plan, directory)
-    if directory.parent.parent == Path("/tmp"):
-        parent_fd = _temporary_parent(directory.parent, create=False)
-        os.close(parent_fd)
     fd = _open_directory(directory)
     try:
-        if (
-            directory.parent.parent == Path("/tmp")
-            and stat.S_IMODE(os.fstat(fd).st_mode) != 0o700
-        ):
-            raise ObservationError("unsafe_output_directory")
         for name, data in expected.items():
             file_fd = os.open(
                 name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd
@@ -381,12 +379,13 @@ def _ensure_parent(root, parent):
     import os
     import stat
 
-    if parent.parent == Path("/tmp"):
-        fd = _temporary_parent(parent)
-        return fd
-    fd = _open_directory(root)
+    # Each created part is checked; the base is the checkout or the user's home.
+    base = root
+    if parent == overlay_root():
+        base = parent.parents[3]
+    fd = _open_directory(base)
     try:
-        for part in parent.relative_to(root).parts:
+        for part in parent.relative_to(base).parts:
             try:
                 os.mkdir(part, 0o755, dir_fd=fd)
             except FileExistsError:
@@ -406,37 +405,6 @@ def _ensure_parent(root, parent):
         raise
 
 
-def _temporary_parent(parent, *, create=True):
-    import os
-    import stat
-
-    tmp_fd = os.open("/tmp", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-    try:
-        info = os.fstat(tmp_fd)
-        if info.st_uid != 0 or stat.S_IMODE(info.st_mode) != 0o1777:
-            raise ObservationError("unsafe_temporary_root")
-        if create:
-            try:
-                os.mkdir(parent.name, 0o700, dir_fd=tmp_fd)
-            except FileExistsError:
-                pass
-        fd = os.open(
-            parent.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=tmp_fd
-        )
-        info = os.fstat(fd)
-        current = os.stat(parent.name, dir_fd=tmp_fd, follow_symlinks=False)
-        if (
-            info.st_uid != os.geteuid()
-            or stat.S_IMODE(info.st_mode) != 0o700
-            or (info.st_dev, info.st_ino) != (current.st_dev, current.st_ino)
-        ):
-            os.close(fd)
-            raise ObservationError("unsafe_temporary_directory")
-        return fd
-    finally:
-        os.close(tmp_fd)
-
-
 def materialize(root, plan, output_dir):
     """Publish new full-plan files atomically; never replace prior output."""
     import ctypes
@@ -450,11 +418,7 @@ def materialize(root, plan, output_dir):
     temporary = ".p07-" + secrets.token_hex(16)
     created = False
     try:
-        os.mkdir(
-            temporary,
-            0o700 if directory.parent.parent == Path("/tmp") else 0o755,
-            dir_fd=parent_fd,
-        )
+        os.mkdir(temporary, 0o755, dir_fd=parent_fd)
         created = True
         temp_fd = os.open(
             temporary, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent_fd

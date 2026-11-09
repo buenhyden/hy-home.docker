@@ -1,6 +1,5 @@
 """Synthetic and public-source tests for expected observation generation."""
 
-import os
 import secrets
 import tempfile
 import unittest
@@ -169,56 +168,44 @@ class ObservationTests(unittest.TestCase):
             ):
                 compose_observation.materialize(root, plan, dest)
 
-    def test_temporary_output_accepts_group_writable_workspace(self):
-        fingerprint = secrets.token_hex(32)
-        parent = Path("/tmp") / f"hyhome-p07-{os.geteuid()}"
-        parent_existed = parent.exists()
-        dest = parent / fingerprint
-        plan = {"fingerprint": fingerprint, "dev_data_expected": "off"}
-        try:
-            with tempfile.TemporaryDirectory() as tmp:
-                root = Path(tmp)
-                root.chmod(0o775)
-                with patch.object(
+    def test_home_output_accepts_group_writable_workspace(self):
+        # The overlay lives under the user's home so a reboot keeps it (#P07 reboot).
+        self.assertEqual(
+            compose_observation.overlay_root().parts[-4:],
+            (".local", "share", "hy-home", "p07"),
+        )
+        plan = {"fingerprint": secrets.token_hex(32), "dev_data_expected": "off"}
+        with (
+            tempfile.TemporaryDirectory() as home,
+            tempfile.TemporaryDirectory() as tmp,
+        ):
+            store = Path(home) / ".local/share/hy-home/p07"
+            root = Path(tmp)
+            root.chmod(0o775)
+            dest = store / plan["fingerprint"]
+            with (
+                patch.object(compose_observation, "overlay_root", return_value=store),
+                patch.object(
                     compose_observation,
                     "render",
                     return_value=(b"config", b"rules", {}),
+                ),
+            ):
+                overlay = compose_observation.materialize(root, plan, dest)
+                self.assertEqual(
+                    compose_observation.validate_materialized(root, plan, overlay),
+                    overlay,
+                )
+                self.assertEqual(dest.stat().st_mode & 0o777, 0o755)
+                # A group-writable step under home could swap the bound files.
+                (Path(home) / ".local").chmod(0o775)
+                other = {**plan, "fingerprint": secrets.token_hex(32)}
+                with self.assertRaisesRegex(
+                    compose_observation.ObservationError, "unsafe_output_directory"
                 ):
-                    if Path("/tmp").stat().st_uid != 0:
-                        with self.assertRaisesRegex(
-                            compose_observation.ObservationError,
-                            "unsafe_temporary_root",
-                        ):
-                            compose_observation.materialize(root, plan, dest)
-                        return
-                    overlay = compose_observation.materialize(root, plan, dest)
-                    self.assertEqual(
-                        compose_observation.validate_materialized(root, plan, overlay),
-                        overlay,
+                    compose_observation.materialize(
+                        root, other, store / other["fingerprint"]
                     )
-                    self.assertEqual(parent.stat().st_mode & 0o777, 0o700)
-                    self.assertEqual(dest.stat().st_mode & 0o777, 0o700)
-                    dest.chmod(0o755)
-                    try:
-                        with self.assertRaisesRegex(
-                            compose_observation.ObservationError,
-                            "unsafe_output_directory",
-                        ):
-                            compose_observation.validate_materialized(
-                                root, plan, overlay
-                            )
-                    finally:
-                        dest.chmod(0o700)
-        finally:
-            if dest.is_dir():
-                for name in ("prometheus.yml", "selection.yml", "overlay.yml"):
-                    (dest / name).unlink(missing_ok=True)
-                dest.rmdir()
-            if not parent_existed and parent.exists():
-                try:
-                    parent.rmdir()
-                except OSError:
-                    pass
 
     def test_group_writable_root_is_rejected_without_changing_mode(self):
         fingerprint = "d" * 64

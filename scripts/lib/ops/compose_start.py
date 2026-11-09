@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import re
 import subprocess
 from pathlib import Path, PurePosixPath
@@ -473,10 +472,11 @@ def execute_plan(root, document, *, runner=None):
     if plan["mode"] != "target" and "prometheus" in plan["targets"]:
         from scripts.lib.ops.compose_observation import (
             materialize,
+            overlay_root,
             validate_materialized,
         )
 
-        directory = Path("/tmp") / f"hyhome-p07-{os.geteuid()}" / plan["fingerprint"]
+        directory = overlay_root() / plan["fingerprint"]
         overlay = materialize(root, plan, directory)
         validate_plan(root, plan)
         validate_materialized(root, plan, overlay)
