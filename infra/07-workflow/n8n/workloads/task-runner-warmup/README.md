@@ -1,6 +1,6 @@
 ---
 title: "n8n Task Runner 예열"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -29,7 +29,9 @@ Code node를 한 번 실행해 runner를 미리 띄웁니다.
 
 `N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: 0`이므로 한 번 뜬 runner는 컨테이너가 재시작될 때까지
 유지됩니다. 재시작 뒤 첫 07:50 실행까지는 콜드 스타트가 남을 수 있습니다. 재시작 직후에
-보고서를 제출해야 하면 이 흐름을 먼저 수동으로 실행합니다.
+보고서를 제출해야 하면 n8n 편집기에서 이 흐름을 먼저 수동으로 실행합니다(미시험). 시작 노드가
+스케줄 트리거뿐이라 `n8n execute --id`는 `Missing node to start execution`으로 실패합니다.
+CLI로 게시한 변경은 n8n main을 재시작해야 반영됩니다.
 
 ## Related Documents
 
