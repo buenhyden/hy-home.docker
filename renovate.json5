@@ -103,6 +103,23 @@
       "allowedVersions": "/^12\\./"
     },
     {
+      "description": "open-notebook supports SurrealDB 2.x only (upstream pins surrealdb/surrealdb:v2; v3 support is open in lfnovo/open-notebook#378), and 3.x cannot read 2.x data without an export migration; hold the image on v2.x.",
+      "matchPackageNames": ["surrealdb/surrealdb"],
+      "allowedVersions": "/^v2\\./"
+    },
+    {
+      "description": "The logical-upgrade rehearsal needs a PostgreSQL 17 source next to its 18 target; keep the source on 17.x.",
+      "matchFileNames": ["examples/operations/postgres-logical-upgrade/**"],
+      "matchPackageNames": ["postgres"],
+      "matchCurrentVersion": "/^17\\./",
+      "allowedVersions": "/^17\\./"
+    },
+    {
+      "description": "dcgm-exporter 4.9.0 renames the default metrics and changes units (for example DCGM_FI_DEV_GPU_TEMP to DCGM_FI_DEV_GPU_TEMP_CELSIUS, MiB to bytes, percent to ratio); the Grafana dashboard and GPU alert rules use the 4.8 names, so hold 4.8.x until they move.",
+      "matchPackageNames": ["nvcr.io/nvidia/k8s/dcgm-exporter"],
+      "allowedVersions": "/^4\\.8\\./"
+    },
+    {
       "description": "인프라 주요 버전 변경은 Dashboard 승인 후 제안",
       "matchManagers": [
         "docker-compose",
@@ -135,6 +152,12 @@
       ],
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
+    },
+    {
+      "description": "managerFilePatterns extends Renovate's default requirements pattern instead of replacing it, so scripts/ and tests/ requirements were still picked up (#874); keep them manual",
+      "matchManagers": ["pip_requirements"],
+      "matchFileNames": ["scripts/**", "tests/**"],
+      "enabled": false
     },
     {
       "description": "Never automerge image-local Python pins",
