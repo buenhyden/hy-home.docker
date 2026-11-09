@@ -42,7 +42,6 @@
     "kafka-connect",
     "kafka-exporter",
     "kafka-init",
-    "kafka-rest-proxy",
     "keycloak",
     "loki",
     "mailpit",
@@ -6117,136 +6116,6 @@
           "chain": [
             "infra/05-messaging/kafka/docker-compose.yml#kafka-init",
             "infra/common-optimizations.yml#template-job-low"
-          ]
-        },
-        "existing_target_version": "8.3.2",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00",
-        "selected_component": {
-          "latest": "8.3.2",
-          "current_source_target": "8.3.2",
-          "channel": "stable",
-          "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
-        }
-      }
-    },
-    {
-      "service": "kafka-rest-proxy",
-      "scope": "root",
-      "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-      "current_declared": "confluentinc/cp-kafka-rest:8.3.2",
-      "profiles_declared": [
-        "messaging",
-        "messaging-rest"
-      ],
-      "build_source": null,
-      "current_running": [
-        {
-          "project": "hy-home-infra",
-          "service": "kafka-rest-proxy",
-          "image_reference": "confluentinc/cp-kafka-rest:8.3.2",
-          "image_id": "sha256:c309e97199ba84b7d816d545e40f1f924d00eeca84d8e15d216df570993060b1",
-          "state": "running",
-          "platform": "linux",
-          "repo_digests": [
-            "confluentinc/cp-kafka-rest@sha256:c309e97199ba84b7d816d545e40f1f924d00eeca84d8e15d216df570993060b1"
-          ],
-          "os": "linux",
-          "architecture": "amd64"
-        }
-      ],
-      "runtime_presence": "OBSERVED",
-      "latest_version": "8.3.2",
-      "target_version": "8.3.2",
-      "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
-      "release_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "UNKNOWN",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "NO_CHANGE_VERSION",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Official current release notes list8.3.2; KafkaStreams native-memory leakfixed8.3.2. No newer current8.3patch verified.",
-        "exit_condition": "Keep coordinated images/plugin boundary; newartifact scan/compatibility separate.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [
-        "confluentinc/cp-kafka-rest@sha256:c309e97199ba84b7d816d545e40f1f924d00eeca84d8e15d216df570993060b1"
-      ],
-      "current_image_ids": [
-        "sha256:c309e97199ba84b7d816d545e40f1f924d00eeca84d8e15d216df570993060b1"
-      ],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "confluentinc/cp-kafka-rest:8.3.2",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "e6a905e09b6afb4a92ad075ec84539ce615e7f1b08e292cb6a8e5fd7c0e128b4",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "confluent-platform"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/confluent-platform"
-        ],
-        "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-        "next_owner": "SEC01 release/artifact evidence owner and kafka-rest-proxy service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "confluent-platform",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "ConfluentPlatform8.3.2 current patch",
-        "decision": "NO_CHANGE_VERSION",
-        "reason": "Official current release notes list8.3.2; KafkaStreams native-memory leakfixed8.3.2. No newer current8.3patch verified.",
-        "exit_condition": "Keep coordinated images/plugin boundary; newartifact scan/compatibility separate.",
-        "eligible_after_7_days": "NOT_CLAIMED",
-        "evidence_refs": [
-          "confluent-release",
-          "https://docs.confluent.io/platform/current/release-notes/index.html"
-        ],
-        "fact_checked_at": "2026-10-26T09:45:12.544894+00:00",
-        "service": "kafka-rest-proxy",
-        "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-        "current_declared": "confluentinc/cp-kafka-rest:8.3.2",
-        "resolved_source": {
-          "image": "confluentinc/cp-kafka-rest:8.3.2",
-          "build": null,
-          "chain": [
-            "infra/05-messaging/kafka/docker-compose.yml#kafka-rest-proxy",
-            "infra/common-optimizations.yml#template-infra-med"
           ]
         },
         "existing_target_version": "8.3.2",
@@ -15094,7 +14963,7 @@
         "--raw"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "9d2308349c9fe63154e5d08fbe59e35bb557c894d6f7294a747a50e15c1347b3",
+      "source_input_sha256": "324fe5abe10d6bfd3a1ff45f7166e4a69dd73c0fc177e4fcd98d525e4a242120",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "vendor_channel_evidence": {
@@ -24979,6 +24848,147 @@
         }
       ],
       "meaning": "14 root Compose inputs changed after their rows were last bound (resource reservation, network, port, ingress and runner edits from SPEC-0263 to SPEC-0269). Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 56 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "b4d09cbd725bec03722811a5de1ae0ab503f06fe",
+      "refreshed_at": "2026-11-09T00:00:00.000000+00:00",
+      "revision_scope": "ADR-0062 decision 10 kafka-rest-proxy removal; source files have reviewed uncommitted edits",
+      "removed_services": [
+        "kafka-rest-proxy"
+      ],
+      "removed_entries": [
+        {
+          "service": "kafka-rest-proxy",
+          "scope": "root",
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "current_declared": "confluentinc/cp-kafka-rest:8.3.2",
+          "profiles_declared": [
+            "messaging",
+            "messaging-rest"
+          ],
+          "build_source": null,
+          "current_running": [
+            {
+              "project": "hy-home-infra",
+              "service": "kafka-rest-proxy",
+              "image_reference": "confluentinc/cp-kafka-rest:8.3.2",
+              "image_id": "sha256:c309e97199ba84b7d816d545e40f1f924d00eeca84d8e15d216df570993060b1",
+              "state": "running",
+              "platform": "linux",
+              "repo_digests": [
+                "confluentinc/cp-kafka-rest@sha256:c309e97199ba84b7d816d545e40f1f924d00eeca84d8e15d216df570993060b1"
+              ],
+              "os": "linux",
+              "architecture": "amd64"
+            }
+          ],
+          "runtime_presence": "OBSERVED",
+          "latest_version": "8.3.2",
+          "target_version": "8.3.2",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
+          "target_index_digest": "UNKNOWN",
+          "target_manifest_digest": "UNKNOWN",
+          "target_config_digest": "UNKNOWN",
+          "platform": "linux/amd64",
+          "source_release_date": "UNKNOWN",
+          "advisory_urls": [],
+          "applicability": "UNKNOWN",
+          "support_end": "UNKNOWN",
+          "compatibility": "NOT_RUN",
+          "backup": "NOT_RUN",
+          "rollback": "NOT_RUN",
+          "native_test": "NOT_RUN",
+          "deployment": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "sbom_scan": "NOT_RUN",
+          "disposition": "NO_CHANGE_VERSION",
+          "blocker": {
+            "owner": "SEC01",
+            "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+            "next_validation_due": "2026-10-27T00:00:00+00:00",
+            "reason": "Official current release notes list8.3.2; KafkaStreams native-memory leakfixed8.3.2. No newer current8.3patch verified.",
+            "exit_condition": "Keep coordinated images/plugin boundary; newartifact scan/compatibility separate.",
+            "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "service_owner_role": "Existing service owner named by current_public_assessment"
+          },
+          "source_owner_repository": "UNKNOWN",
+          "current_repo_digests": [
+            "confluentinc/cp-kafka-rest@sha256:c309e97199ba84b7d816d545e40f1f924d00eeca84d8e15d216df570993060b1"
+          ],
+          "current_image_ids": [
+            "sha256:c309e97199ba84b7d816d545e40f1f924d00eeca84d8e15d216df570993060b1"
+          ],
+          "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+          "next_fact_command": [
+            "docker",
+            "buildx",
+            "imagetools",
+            "inspect",
+            "confluentinc/cp-kafka-rest:8.3.2",
+            "--format",
+            "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+          ],
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+          "source_input_sha256": "e6a905e09b6afb4a92ad075ec84539ce615e7f1b08e292cb6a8e5fd7c0e128b4",
+          "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+          "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+          "official_supplier_lookup_refs": [
+            "confluent-platform"
+          ],
+          "supplier_lookup_blocker": null,
+          "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+          "official_release_assessment": {
+            "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+            "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+            "release_fact_refs": [
+              "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/confluent-platform"
+            ],
+            "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+            "next_owner": "SEC01 release/artifact evidence owner and kafka-rest-proxy service build/migration/recovery owner",
+            "source_target_security_native_deployment": "UNCHANGED"
+          },
+          "current_public_assessment": {
+            "supplier_group": "confluent-platform",
+            "owner": "SEC01 and existing service owner",
+            "review_at": "2026-10-27",
+            "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+            "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "candidate": "ConfluentPlatform8.3.2 current patch",
+            "decision": "NO_CHANGE_VERSION",
+            "reason": "Official current release notes list8.3.2; KafkaStreams native-memory leakfixed8.3.2. No newer current8.3patch verified.",
+            "exit_condition": "Keep coordinated images/plugin boundary; newartifact scan/compatibility separate.",
+            "eligible_after_7_days": "NOT_CLAIMED",
+            "evidence_refs": [
+              "confluent-release",
+              "https://docs.confluent.io/platform/current/release-notes/index.html"
+            ],
+            "fact_checked_at": "2026-10-26T09:45:12.544894+00:00",
+            "service": "kafka-rest-proxy",
+            "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+            "current_declared": "confluentinc/cp-kafka-rest:8.3.2",
+            "resolved_source": {
+              "image": "confluentinc/cp-kafka-rest:8.3.2",
+              "build": null,
+              "chain": [
+                "infra/05-messaging/kafka/docker-compose.yml#kafka-rest-proxy",
+                "infra/common-optimizations.yml#template-infra-med"
+              ]
+            },
+            "existing_target_version": "8.3.2",
+            "assessed_at": "2026-10-26T10:32:14.784990+00:00",
+            "selected_component": {
+              "latest": "8.3.2",
+              "current_source_target": "8.3.2",
+              "channel": "stable",
+              "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
+            }
+          }
+        }
+      ],
+      "meaning": "kafka-rest-proxy (confluentinc/cp-kafka-rest) had no consumer and no native authentication, so ADR-0062 decision 10 removes the service, its Traefik route, its kafka_rest_proxy_ingress_net network and the messaging-rest profile from the Compose files. The ledger row is archived here with its SOURCE-only evidence unchanged; the stopped container and its image are untouched and removal from the host needs owner approval. Only the traefik row source_input_sha256 is re-bound to the edited infra/01-gateway/traefik/docker-compose.yml (one network attachment removed); the include_inputs and kafka/root Compose hash bindings were already behind origin/main before this change and are left to the SEC01 re-binding refresh."
     }
   ],
   "delivery_preconditions": {
@@ -31538,11 +31548,11 @@
     "current_public_assessment_ref": "release-lookups.json#/root_official_refresh/public_metadata_continuations/1"
   },
   "p08_public_release_observations": {
-    "root_service_denominator": 96,
+    "root_service_denominator": 95,
     "source_query_denominator": 61,
     "observed_source_count": 60,
     "failed_source_count": 1,
-    "services_with_related_source": 84,
+    "services_with_related_source": 83,
     "services_without_related_source": [
       "airflow-valkey",
       "blog-ingestion",
@@ -32408,7 +32418,6 @@
           "kafka-1",
           "kafka-connect",
           "kafka-init",
-          "kafka-rest-proxy",
           "schema-registry"
         ],
         "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
@@ -32642,7 +32651,17 @@
       "removed_services_without_related_source": [
         "n8n-task-runner"
       ],
-      "meaning": "SPEC-0269 removed the idle n8n main task runner after the observation; it had no related source in this batch, so the observation rows, counts of related services, tags and timestamps are unchanged."
+      "meaning": "SPEC-0269 removed the idle n8n main task runner after the observation; it had no related source in this batch, so the observation rows, counts of related services, tags and timestamps are unchanged. ADR-0062 decision 10 then removed kafka-rest-proxy; it is dropped from the related-service list of its one query row and counted out of services_with_related_source, and the query row, tags and timestamps are unchanged.",
+      "removed_services_with_related_source": [
+        {
+          "service": "kafka-rest-proxy",
+          "removed_at": "2026-11-09T00:00:00.000000+00:00",
+          "root_service_denominator_before_removal": 96,
+          "query_urls": [
+            "https://docs.confluent.io/platform/current/release-notes/index.html"
+          ]
+        }
+      ]
     }
   },
   "p08_upstream_supply_chain_observations": {

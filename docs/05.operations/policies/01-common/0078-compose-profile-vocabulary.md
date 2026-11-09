@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.15.2"
+version: "1.15.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -74,11 +74,10 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `mail-dev` | capability | 개발 SMTP 캡처 | `mailpit` | No | normal service startup | current |
 | `mail-server` | topology | 독립 LAB `labs/stalwart/docker-compose.yml`의 자체 완결 메일 서버; relay 없음, SMTP는 LAB network에만, 관리 UI는 `LAB_HOST_BIND_IP` loopback 게시(SPEC-0262) | `stalwart`, `stalwart-config` | No | initialization: stalwart-config (도메인·listener·relay 금지 plan 적용; listener 변경은 재시작 후) | current |
-| `messaging` | domain | Kafka broker·schema·connect·REST·관리 UI | `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
+| `messaging` | domain | Kafka broker·schema·connect·관리 UI | `kafka-1`, `schema-registry`, `kafka-connect`, `kafbat-ui`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
 | `messaging-admin` | role | Kafka 관리 UI와 직접 종속 서비스 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafbat-ui`, `kafka-exporter` | No | normal service startup | current |
 | `messaging-broker` | role | Kafka 단일 broker·초기화·exporter | `kafka-1`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
 | `messaging-connect` | role | Kafka Connect와 broker·schema 종속성 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-exporter` | No | normal service startup | current |
-| `messaging-rest` | role | Kafka REST 접근 | `kafka-1`, `schema-registry`, `kafka-rest-proxy`, `kafka-exporter` | No | normal service startup | current |
 | `messaging-schema` | role | Kafka schema registry | `kafka-1`, `schema-registry`, `kafka-exporter` | No | normal service startup | current |
 | `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets; monitoring initialization: mng-pg-monitor-provision | current |
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init, mng-pg-monitor-provision | current |
@@ -309,7 +308,7 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | n8n | 외부 이벤트·webhook·알림 | workflow | 6 / 5120 | `n8n-data`, task runner·Valkey volume | HOME 유지 | 이벤트 workflow가 없어질 때 | 실행 |
 | Mailpit | 개발 SMTP 캡처 | 앱 메일 시험 | 1 / 512 | `mailpit-data` | DEV on-demand | 메일 시험이 없을 때 | 미실행 |
 | Stalwart | 실제 메일 서버 | 이름 있는 소비자 없음 | 1.5 / 768 | `stalwart-data`(SPEC-0262 이후 `${LAB_DATA_DIR}/stalwart/data`) | 2026-11-04 LAB `labs/stalwart/docker-compose.yml`로 이전 | 메일 수신 계획이 없으면 퇴역 검토 | 미실행 |
-| Kafka `kafka-1`, Schema Registry, Connect, REST Proxy, kafbat UI | 단일 broker 메시징·CDC | Debezium Avro connector, kafbat | 8 / 6144 | `kafka-1-data`, `kafka-connect-data` | OPTIONAL `messaging`·`cdc`; Avro 소비자가 있으므로 Schema Registry 유지 | CDC·메시징 소비자가 없어질 때 | 실행 |
+| Kafka `kafka-1`, Schema Registry, Connect, kafbat UI | 단일 broker 메시징·CDC | Debezium Avro connector, kafbat | 7 / 5632 | `kafka-1-data`, `kafka-connect-data` | OPTIONAL `messaging`·`cdc`; Avro 소비자가 있으므로 Schema Registry 유지 | CDC·메시징 소비자가 없어질 때 | 실행 |
 | Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | 8 / 7936 | `flink-checkpoints`(SPEC-0262 이후 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`); 데이터는 object store | 2026-11-04 LAB `labs/lakehouse/docker-compose.yml`로 이전; one-shot·예산 검사 | 기능·학습 시나리오가 없을 때 선택하지 않음 | 미실행 |
 | Superset | BI | 운영자 | 2.5 / 1792 | MNG PostgreSQL DB | 2026-11-04 LAB `labs/superset/docker-compose.yml`로 이전 | 대시보드 소비자가 없을 때 | 미실행 |
 | Neo4j | graph | 이름 있는 소비자 없음 | 1 / 512 | `neo4j-data` | OPTIONAL | graph 시나리오가 없으면 퇴역 검토 | 미실행 |

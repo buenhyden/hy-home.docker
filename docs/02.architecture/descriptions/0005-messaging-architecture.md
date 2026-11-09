@@ -1,10 +1,10 @@
 ---
 title: "Messaging Architecture Description"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "architecture"
 artifact_id: "AD-0005"
 parent_ids:
@@ -18,14 +18,14 @@ created: "2026-03-26"
 
 `05-messaging` is the optional Kafka event-streaming boundary. The HOME
 implementation has one Kafka KRaft broker, Schema Registry, Kafka Connect,
-Kafka REST Proxy, Kafbat UI, Kafka Exporter, a topic-init job and a Debezium
+Kafbat UI, Kafka Exporter, a topic-init job and a Debezium
 database provisioning job. No second broker family is part of the
 architecture.
 
 ## Scope
 
 - **Owns:** Kafka topics, configuration and KRaft state, schema history,
-  Connect runtime state, REST access, metrics export and Kafbat administration.
+  Connect runtime state, metrics export and Kafbat administration.
 - **Consumes:** `01-gateway` TLS and routing, `02-auth` Keycloak identity,
   `04-data` `dev-pg` for CDC, and `06-observability` metrics and logs.
 - **Does not own:** the Keycloak lifecycle, OAuth2 Proxy sessions, workflow
@@ -39,8 +39,8 @@ All services are in `infra/05-messaging/kafka/docker-compose.yml` on
 `kafka_net`:
 
 - `kafka-1`, the single broker, and `kafka-exporter` (with `obs_net`).
-- `schema-registry`, `kafka-connect` (also on `dev_data_net`) and
-  `kafka-rest-proxy`, each routed through ForwardAuth.
+- `schema-registry` and `kafka-connect` (also on `dev_data_net`), each
+  routed through ForwardAuth.
 - `kafbat-ui`, routed with `gateway-standard-chain@file` only.
 - `kafka-init`, which declares replication factor 1, and
   `debezium-db-provision` for the CDC source.
@@ -68,7 +68,7 @@ Kafbat.
 ### Deployment View
 
 `messaging` selects the full stack; `messaging-broker`, `messaging-schema`,
-`messaging-connect`, `messaging-rest` and `messaging-admin` select narrower
+`messaging-connect` and `messaging-admin` select narrower
 sets, and `cdc` selects the broker, Schema Registry, Connect, exporter and the
 Debezium provisioning job. Broker and Connect volumes are separate bind-backed
 named volumes. Recovery must coordinate topic records and configs, consumer
