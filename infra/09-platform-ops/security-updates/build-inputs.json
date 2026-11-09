@@ -2780,15 +2780,15 @@
     "source_revision": "598e89e7bca27555df241922f714d217d3650d8d",
     "checked_at": "2026-11-09T10:51:25.176224+00:00",
     "source_binding": {
-      "checked_at": "2026-11-10T06:58:42+09:00",
-      "source_revision": "3bce085dd8e2ac0931b40b9eff9de3c7c7c9a239",
+      "checked_at": "2026-11-09T23:33:34.864841+00:00",
+      "source_revision": "0f99b6c20ee02d9522c6058b96a4a7dcee1bea09",
       "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
-      "input_sha256": "db560f450b16f763a588f4e98261a795b38ee6f7bb6b9b04588bbe1430b5bd8d",
+      "input_sha256": "8f0597fe6957d017ffbdb97183cdd5986145351970b4709f70c347ef2e2ae96b",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
           "path": "infra/07-workflow/n8n/Dockerfile",
-          "sha256": "21a9ec03dc8b8f2e760d69d48fccdb1cedd90a3ad1c8c78e5ebc76baa849ccab"
+          "sha256": "ddc98498eeddd449d9c0f308b97c20165db94ee47e739f9d94ea3ece28efa663"
         },
         {
           "path": "infra/07-workflow/n8n/custom/.gitkeep",
@@ -2796,7 +2796,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/dev.Dockerfile",
-          "sha256": "e20f6ae7f67b45b596c38ec0e872a513126ccbe708d76ebb02b3a5a2e49f4369"
+          "sha256": "10a645adc0514004873a7baa1b615726d52ab0fdcaa0b4114770335b149c0d03"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -5211,6 +5211,90 @@
         "full_image_sbom_scan": "NOT_RUN",
         "recovery": "NOT_RUN",
         "archived_at": "2026-11-10T06:58:42+09:00"
+      },
+      {
+        "checked_at": "2026-11-10T06:58:42+09:00",
+        "source_revision": "3bce085dd8e2ac0931b40b9eff9de3c7c7c9a239",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "db560f450b16f763a588f4e98261a795b38ee6f7bb6b9b04588bbe1430b5bd8d",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "21a9ec03dc8b8f2e760d69d48fccdb1cedd90a3ad1c8c78e5ebc76baa849ccab"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "e20f6ae7f67b45b596c38ec0e872a513126ccbe708d76ebb02b3a5a2e49f4369"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-09T23:33:34.864841+00:00"
       }
     ],
     "isolated_candidate_build_and_module_smoke": {
