@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.27
+# syntax=docker/dockerfile:1.28
 
 FROM nvidia/cuda:12.9.2-cudnn-runtime-ubuntu24.04
 
