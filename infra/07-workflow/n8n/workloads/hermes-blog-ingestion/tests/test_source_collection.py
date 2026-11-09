@@ -50,15 +50,20 @@ def item(item_id="item-1", *, source_url=FINAL_URL):
     }
 
 
+BOUND = {"url": URL, "redirected_url": FINAL_URL}
+GOOD = {**BOUND, "success": True, "status_code": 200, "markdown": SENTENCE}
+
+
 class Crawl4aiFallbackTests(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         self.home = Path(directory.name)
-        self.token = self.home / "crawl4ai_api_token"
-        self.token.write_text("synthetic-token\n")
+        self.env_file = self.home / ".env"
+        self.env_file.write_text('OTHER=1\nCRAWL4AI_API_TOKEN="synthetic-token"\n')
         patcher = mock.patch.dict(os.environ, {"HERMES_HOME": str(self.home)})
         patcher.start()
+        os.environ.pop("CRAWL4AI_API_TOKEN", None)
         self.addCleanup(patcher.stop)
 
     @staticmethod
@@ -80,12 +85,14 @@ class Crawl4aiFallbackTests(unittest.TestCase):
     def test_rendered_text_becomes_a_plain_text_receipt(self):
         fetched_result, calls = self.crawl(
             {
+                "url": URL,
+                "redirected_url": FINAL_URL,
                 "success": True,
                 "status_code": 200,
                 "markdown": {"raw_markdown": SENTENCE},
             }
         )
-        self.assertEqual(URL, fetched_result.final_url)
+        self.assertEqual(FINAL_URL, fetched_result.final_url)
         self.assertEqual(SENTENCE.encode(), fetched_result.body)
         self.assertEqual(
             hashlib.sha256(SENTENCE.encode()).hexdigest(), fetched_result.sha256
@@ -99,17 +106,23 @@ class Crawl4aiFallbackTests(unittest.TestCase):
 
     def test_refused_or_empty_crawl_is_a_failure(self):
         for result in (
-            {"success": False, "status_code": 401, "markdown": ""},
-            {"success": True, "status_code": 403, "markdown": SENTENCE},
-            {"success": True, "status_code": 200, "markdown": "  "},
+            {**BOUND, "success": False, "status_code": 401, "markdown": ""},
+            {**BOUND, "success": True, "status_code": 403, "markdown": SENTENCE},
+            {**BOUND, "success": True, "status_code": 200, "markdown": "  "},
+            {"url": URL, "success": True, "status_code": 200, "markdown": SENTENCE},
+            {**GOOD, "url": "https://example.org/other"},
+            {**GOOD, "redirected_url": "http://example.org/plain"},
         ):
-            with self.subTest(result=result), self.assertRaises(ValueError):
+            with (
+                self.subTest(result=result),
+                self.assertRaises((ValueError, FetchFailure)),
+            ):
                 self.crawl(result)
 
     def test_missing_token_disables_the_fallback(self):
-        self.token.unlink()
+        self.env_file.write_text("OTHER=1\n")
         with self.assertRaises(OSError):
-            self.crawl({"success": True, "status_code": 200, "markdown": SENTENCE})
+            self.crawl(GOOD)
 
     def test_fallback_runs_only_for_listed_primary_failures(self):
         rendered = fetched()
@@ -117,7 +130,7 @@ class Crawl4aiFallbackTests(unittest.TestCase):
             ("status", True),
             ("redirects", True),
             ("connect", True),
-            ("scheme", True),
+            ("scheme", False),
             ("too_large", False),
             ("private_address", False),
         ):

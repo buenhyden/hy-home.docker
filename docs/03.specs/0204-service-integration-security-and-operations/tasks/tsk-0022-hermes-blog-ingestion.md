@@ -1758,8 +1758,11 @@ The owner approved the fallback on 2026-11-09 for an unbounded set of hosts,
 including Blog-data publication of quotes. POL-0091 1.2.0 registers host-unbounded work by class
 (`open-web-fallback` for Hermes, `dedicated-crawl` for later crawl jobs, which add a
 row before running) and allows one host publication for reviewed host consumers.
-`source_collection.collect` now falls back only on those four failure reasons; a
-refused crawl surfaces the original failure and is not retried. The rendered
+`source_collection.collect` falls back only on `status`, `redirects` and `connect`; a
+refused crawl surfaces the original failure and is not retried. The receipt's
+`final_url` is the crawler's `redirected_url`, canonicalized, so a page that ends off
+https is refused; `scheme` is excluded, which gives up one of the seven recovered
+URLs (`areyou.co.kr`). The rendered
 Markdown is bound to the existing receipt as `text/plain` with
 `x-collector=crawl4ai`, so hashing and quote checks are unchanged. Docker does not
 publish ports of a container on internal networks only (tested), so

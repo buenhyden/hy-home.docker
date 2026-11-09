@@ -21,7 +21,7 @@ MAX_ITEM_FETCH_ATTEMPTS = 3
 CRAWL4AI_URL = "http://127.0.0.1:11235/crawl"
 CRAWL4AI_TIMEOUT = 60
 CRAWL4AI_MAX_RESPONSE = 32 * 1024 * 1024
-FALLBACK_REASONS = frozenset({"status", "redirects", "connect", "scheme"})
+FALLBACK_REASONS = frozenset({"status", "redirects", "connect"})
 _LOOPBACK_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 
@@ -171,10 +171,23 @@ def _check(record, job, run, item, scheduled):
     return result
 
 
+def _crawl4ai_token():
+    """Same order as the plugin's other settings: environment, then Hermes .env."""
+    token = os.environ.get("CRAWL4AI_API_TOKEN")
+    if token:
+        return token.strip()
+    home = Path(os.environ.get("HERMES_HOME", "~/.hermes")).expanduser()
+    for line in (home / ".env").read_text(encoding="utf-8").splitlines():
+        if line.startswith("CRAWL4AI_API_TOKEN="):
+            value = line.split("=", 1)[1].strip().strip('"')
+            if value:
+                return value
+    raise FileNotFoundError("crawl4ai_token_missing")
+
+
 def _crawl4ai_fetch(url, *, opener=None):
     """Render one page through the loopback Crawl4AI; raises when it cannot."""
-    home = Path(os.environ.get("HERMES_HOME", "~/.hermes")).expanduser()
-    token = (home / "crawl4ai_api_token").read_text(encoding="ascii").strip()
+    token = _crawl4ai_token()
     payload = {
         "urls": [url],
         "crawler_config": {
@@ -196,6 +209,11 @@ def _crawl4ai_fetch(url, *, opener=None):
     if isinstance(markdown, dict):
         markdown = markdown.get("raw_markdown")
     status = page.get("status_code")
+    # The receipt names what was actually loaded; _canonical refuses non-https.
+    loaded = page.get("redirected_url")
+    if page.get("url") != url or not isinstance(loaded, str):
+        raise ValueError("crawl4ai_unbound")
+    final_url = source_fetch._canonical(loaded)
     if (
         page.get("success") is not True
         or type(status) is not int
@@ -208,7 +226,7 @@ def _crawl4ai_fetch(url, *, opener=None):
     if len(body) > source_fetch.MAX_BYTES:
         raise ValueError("crawl4ai_too_large")
     return source_fetch.FetchResult(
-        final_url=url,
+        final_url=final_url,
         status=status,
         sha256=hashlib.sha256(body).hexdigest(),
         fetched_at=source_fetch._utc_millis(datetime.now(UTC)),

@@ -35,7 +35,7 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 
 | 등급 | consumer와 경로 | 대상 | 호출 조건·속도 | 하류 사용 | 상태 |
 | --- | --- | --- | --- | --- | --- |
-| `open-web-fallback` | Hermes 정기 리서치, host loopback | 불특정 공개 웹 | 1차 수집이 `status`·`redirects`·`connect`·`scheme`로 실패한 URL만, 실행 내 URL당 시도 한도 안 | 개인 브리핑, Blog-data 게시(인용문 포함) | 승인 2026-11-09 |
+| `open-web-fallback` | Hermes 정기 리서치, host loopback | 불특정 공개 웹 | 1차 수집이 `status`·`redirects`·`connect`로 실패한 URL만, 실행 내 URL당 시도 한도 안 | 개인 브리핑, Blog-data 게시(인용문 포함) | 승인 2026-11-09 |
 | `dedicated-crawl` | 작업별로 지정 | 작업별 host 목록 또는 불특정 | 작업별 동시성·속도 지정, 서버 전역 한도 안 | 작업별 지정 | 등록된 작업 없음 |
 
 - `dedicated-crawl` 작업은 실행 전에 목적, consumer와 호출 경로, 대상 범위, 동시성·속도, 사용 endpoint, 보존 기간과 저장 위치, 하류 사용, 삭제 책임자를 기록한 승인 변경으로 위 표에 행을 추가한다.
@@ -43,7 +43,7 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 
 ## Exceptions
 
-선언 버전의 `/health`, `/token`, root/monitor 및 UI/static shell 예외를 인정하되 protected data/admin API 인증은 유지한다. `/token`은 별도 key/email 검증을 하며 임의 token 발급 예외가 아니다. 새로운 예외는 승인된 변경 없이는 추가하지 않는다. `crawl4ai-loopback`은 소유자가 승인한 유일한 host 게시로, `127.0.0.1:11235`에서 받은 연결을 `crawl4ai:11235`로만 전달한다. 호스트 consumer는 등록된 작업만 이 경로를 쓰며 Bearer token을 각자의 비공개 파일로 보관한다(Hermes: `~/.hermes/crawl4ai_api_token`). 컨테이너 consumer는 기존처럼 `crawl4ai_net` 합류 검토를 따른다. 크롤러는 internal 네트워크에 그대로 둔다.
+선언 버전의 `/health`, `/token`, root/monitor 및 UI/static shell 예외를 인정하되 protected data/admin API 인증은 유지한다. `/token`은 별도 key/email 검증을 하며 임의 token 발급 예외가 아니다. 새로운 예외는 승인된 변경 없이는 추가하지 않는다. `crawl4ai-loopback`은 소유자가 승인한 유일한 host 게시로, `127.0.0.1:11235`에서 받은 연결을 `crawl4ai:11235`로만 전달한다. 호스트 consumer는 등록된 작업만 이 경로를 쓰며 Bearer token을 추적되지 않는 자기 설정으로 보관한다(Hermes: `~/.hermes/.env`의 `CRAWL4AI_API_TOKEN`). 컨테이너 consumer는 기존처럼 `crawl4ai_net` 합류 검토를 따른다. 크롤러는 internal 네트워크에 그대로 둔다.
 
 ### Review Cadence
 
