@@ -21,7 +21,7 @@
   },
 
   "pip_requirements": {
-    "description": "Only image-local Python pins under infra/ belong to Renovate; the scripts/ CI requirements and tests/requirements-integration.txt keep their existing manual ownership",
+    "description": "Adds image-local requirements.txt files under infra/; managerFilePatterns extends Renovate's default requirements pattern, so the scripts/ and tests/ requirements stay with Renovate as well",
     "managerFilePatterns": [
       "/^infra\\/.+\\/requirements\\.txt$/"
     ]
@@ -101,6 +101,11 @@
       "description": "The HOME GPU is a GTX 1060 (Pascal, compute 6.1), which CUDA 13 no longer supports; hold the base image on 12.x.",
       "matchPackageNames": ["nvidia/cuda"],
       "allowedVersions": "/^12\\./"
+    },
+    {
+      "description": "open-notebook supports SurrealDB 2.x only (upstream pins surrealdb/surrealdb:v2; v3 support is open in lfnovo/open-notebook#378), and 3.x cannot read 2.x data without an export migration; hold the image on v2.x.",
+      "matchPackageNames": ["surrealdb/surrealdb"],
+      "allowedVersions": "/^v2\\./"
     },
     {
       "description": "인프라 주요 버전 변경은 Dashboard 승인 후 제안",
@@ -192,6 +197,12 @@
       "groupName": "observability container images"
     },
 
+    {
+      "description": "CI toolchain versions in setup-step inputs (python-version, uv version and checksum, node-version) are pinned together with the workflow contract tests, gate evidence and the uv-generated lock, so they change in one manual PR",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["uses-with"],
+      "enabled": false
+    },
     {
       "description": "Group GitHub Actions patch and minor updates",
       "matchUpdateTypes": ["patch", "minor"],
