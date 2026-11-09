@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.30"
+version: "0.1.31"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -323,6 +323,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | n8n router exclusions live behaviour | 57 | W62 | Request to `/metrics`, a GET and a trailing-slash request to the Hermes path through Traefik | HOME gateway | NOT_RUN | No Traefik reload or recreate performed | required | - |
 | OpsflowSmtp `n8n-workflow` pin and node tests | 60 | W65 | `npm ci`, `npm test` and `npm run test:coverage` in a scratch copy of the node | Branch HEAD `1899263f4` lock (zod 3.25.76, no zod override) | PASS | 38 of 38 pass; coverage 97.51 percent lines, 95.56 branches, 88.57 functions | required | - |
 | OpsflowSmtp `npm audit` | 60 | W65 | `npm audit --package-lock-only` full and `--omit=dev` | Same lock | FAIL | Full audit: 3 high through GHSA-mrhx-c7xc-m3w5 on the `n8n-workflow` dev path; production audit: 0. No exception recorded; the failure is stored in `package-lookups.json` | required | - |
+| OpsflowSmtp `npm audit` gate decision | 60 | W65 | `npm audit --package-lock-only` full and `--omit=dev` | Same lock; owner chose the production-only CI gate on 2026-11-09 | PASS | `leaf.opsflow-smtp-npm-audit` removed; `leaf.opsflow-smtp-npm-production-audit` stays and reports 0. The dev-tree finding remains and is no longer gated. | required | OpsflowSmtp `npm audit` |
 | Dockerfile `n8n --version` and node load check | 60 | W65 | Build-time `RUN` check | `hyhome/n8n` image | NOT_RUN | Image not built; the node's `npm test` loads `n8n-workflow` 2.46.5 from the lock, which is not the image check | required | - |
 | n8n documentation and catalog checks | 57 | W62 | `check-operations-catalog.py`, `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | Branch base `0220de58a` plus this change | PASS | Catalog PASS after patching the stale n8n router cell in `m0021`; metadata 12 selected, 0 violations; links 0 failures | required | - |
 | n8n consumer test suites | 60 | W65 | 41 modules naming n8n, `2.43.6` or `sso-auth`, plus `test_p02_service_contracts` and `test_compose_baseline_gates` | Branch base `0220de58a` plus this change, venv on `PATH` | FAIL | 1069 tests, 51 failures, 83 declared skips; the same 51 fail on a clean checkout of `0220de58a` (`test_update_gates` stale `source_input_sha256` for 50 rows and the root census); none is new and the n8n rows, `test_workflow_version_bundle`, `test_sec01_next_tool_candidates` and `test_p08_ci_routing` pass | required | - |

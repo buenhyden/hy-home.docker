@@ -745,7 +745,6 @@ class CiGateAdapterTests(unittest.TestCase):
         operations = {
             "install": ("npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund"),
             "coverage": ("npm", "run", "test:coverage"),
-            "audit": ("npm", "audit"),
             "audit-production": ("npm", "audit", "--omit=dev"),
             "pack": ("npm", "pack", "--dry-run", "--ignore-scripts", "--json"),
         }
@@ -798,7 +797,6 @@ class CiGateAdapterTests(unittest.TestCase):
         for operation in (
             "install",
             "coverage",
-            "audit",
             "audit-production",
             "pack",
         ):

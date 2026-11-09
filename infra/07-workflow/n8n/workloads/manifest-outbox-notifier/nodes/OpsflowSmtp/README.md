@@ -1,6 +1,6 @@
 ---
 title: "Opsflow SMTP 개발 캡처 노드"
-version: "0.2.1"
+version: "0.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -56,7 +56,7 @@ Nodemailer의 주소 parser 보안 수정은 검토된
 없고, `n8n-workflow`는 Zod 4에서 로드되지 않습니다. 따라서 이 dev 트리는 Zod override를
 두지 않고 `n8n-workflow`가 요구하는 Zod 3 계열을 설치합니다. build·coverage 시험은 통과하지만
 `npm audit` 전체 감사는 이 경로의 high 3건을 보고하고 production 감사는 0건입니다.
-예외나 수용은 기록하지 않습니다(소유자가 기한부 수용을 철회했습니다). API package는
+예외나 수용은 기록하지 않습니다(소유자가 기한부 수용을 철회했습니다). 배포물이 아닌 dev 트리이므로 CI 게이트는 소유자 결정(2026-11-09)에 따라 production 감사만 실행합니다. API package는
 downgrade하지 않습니다. 배포 패키지는 `node_modules`를 포함하지 않고, `n8n-workflow`는 n8n
 호스트가 제공하는 정확한 peer 의존성입니다. 설치된 n8n 이미지의 Zod와 실제 실행 환경의
 영향은 이 dev 트리와 무관하며 SEC01 담당으로 미확인입니다. 이 결과는 설치 이미지·실제 송신·
