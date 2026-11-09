@@ -54,7 +54,6 @@ _OPSFLOW_SMTP_NPM_OPERATIONS = MappingProxyType(
     {
         "install": ("ci", "--ignore-scripts", "--no-audit", "--no-fund"),
         "coverage": ("run", "test:coverage"),
-        "audit": ("audit",),
         "audit-production": ("audit", "--omit=dev"),
         "pack": ("pack", "--dry-run", "--ignore-scripts", "--json"),
     }

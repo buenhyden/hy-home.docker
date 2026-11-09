@@ -2,10 +2,12 @@
 # as the approved RUN-0053 webhook ingress unit on 2026-11-01; deleting the file
 # is the rollback. Source: infra/07-workflow/n8n/workloads/hermes-blog-ingestion.
 #
-# Admits exactly one request shape without SSO: a host-local POST to the
-# Hermes webhook path. Every other n8n path, method or source still matches the
-# Host-only n8n router and its sso-auth chain. n8n header authentication stays
-# the credential check; this router only narrows who may present it.
+# Admits exactly one request shape: a host-local POST to the Hermes webhook
+# path. The n8n router (Compose labels) has no gateway SSO since 2026-11-09 and
+# excludes /metrics and this path prefix, so any other method, source or
+# trailing-slash variant of the Hermes path is not served by it. n8n header
+# authentication stays the credential check; this router only narrows who may
+# present it.
 http:
   routers:
     hermes-blog-ingestion-webhook:

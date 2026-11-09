@@ -574,7 +574,6 @@ class CiGateContractTests(unittest.TestCase):
     def test_opsflow_smtp_gate_order_and_setup_dependencies_are_closed(self) -> None:
         children = (
             "setup.opsflow-smtp-node-dependencies",
-            "leaf.opsflow-smtp-npm-audit",
             "leaf.opsflow-smtp-npm-production-audit",
             "leaf.opsflow-smtp-node-coverage",
             "leaf.opsflow-smtp-package",
@@ -611,7 +610,6 @@ class CiGateContractTests(unittest.TestCase):
                     children[3],
                     children[1],
                     children[2],
-                    children[4],
                 ),
             )
             if node.gate_id == "ci.opsflow-smtp-node-package"

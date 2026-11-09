@@ -391,8 +391,8 @@
         "n8nio/runners": "external"
       },
       "images": [
-        "hyhome/n8n:2.43.6-local",
-        "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf"
+        "hyhome/n8n:2.46.6-local",
+        "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
@@ -401,13 +401,13 @@
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "hyhome/n8n:2.43.6-local"
+            "hyhome/n8n:2.46.6-local"
           ]
         },
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf"
+            "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612"
           ]
         }
       ]
