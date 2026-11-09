@@ -143,6 +143,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_sec01_version_contract",
                 "tests.validation.test_sec01_next_stable_candidates",
                 "tests.validation.test_sec01_next_tool_candidates",
+                "tests.lib.supply_chain.test_update_gates",
                 "tests.validation.test_workflow_version_bundle",
                 "tests.lib.ops.test_opsflow_manifest",
                 "tests.lib.ops.test_opsflow_adapters",

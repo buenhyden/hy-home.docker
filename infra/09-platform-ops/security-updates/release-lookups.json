@@ -1897,32 +1897,60 @@
   },
   "n8n_source_preparation": {
     "task": "SPEC-0204-TSK-0017",
-    "source_revision": "e6807a7d16d8b9e180ff58456ab64e4ee721ca69",
-    "checked_at": "2026-10-15T15:42:45.268224+00:00",
+    "source_revision": "0220de58af38b5f8b78368b9640085922760854a",
+    "checked_at": "2026-11-09T06:43:53.233408+00:00",
     "release": {
       "url": "https://api.github.com/repos/n8n-io/n8n/releases/latest",
-      "checked_at": "2026-10-15T15:42:45.268224+00:00",
       "http_status": 200,
-      "response_sha256": "ba144095f60953201d0f058042764d1d12fb8c981f7e1aab51af1202a1d40bf9",
-      "tag": "n8n@2.43.6",
-      "published_at": "2026-10-15T07:26:03Z",
+      "response_sha256": "e5b3ee3ea0c465b7c5d9f9cfde1c4e87b927ba3d23a201e71cf5e341b6240ed6",
+      "tag": "n8n@2.46.6",
+      "published_at": "2026-11-04T13:10:07Z",
       "prerelease": false,
-      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.43.6"
+      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.46.6",
+      "checked_at": "2026-11-09T06:43:53.233408+00:00"
     },
     "source_tag": {
-      "url": "https://api.github.com/repos/n8n-io/n8n/git/ref/tags/n8n%402.43.6",
-      "checked_at": "2026-10-15T15:42:45.268224+00:00",
+      "url": "https://api.github.com/repos/n8n-io/n8n/git/ref/tags/n8n%402.46.6",
+      "checked_at": "2026-11-09T06:43:53.233408+00:00",
       "http_status": 200,
-      "response_sha256": "5031d2137dc71e77281e8b110c2b17461c5bf7c02e3b2f8d0d2497bf75703b51",
+      "response_sha256": "ab1b54aabeb6b5d3b315914d96b6446e6b6c79b63a4c943f124c672b5a216516",
       "object": {
-        "sha": "ffbb9ec54fc02e7f8b54a0b6f41d0a84d0a817f5",
+        "sha": "bb72d756104542adb549b6966a57e21459bd52a2",
         "type": "commit",
-        "url": "https://api.github.com/repos/n8n-io/n8n/git/commits/ffbb9ec54fc02e7f8b54a0b6f41d0a84d0a817f5"
+        "url": "https://api.github.com/repos/n8n-io/n8n/git/commits/bb72d756104542adb549b6966a57e21459bd52a2"
       }
     },
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "image_lookup": "image-source-lookups.json#/n8n_source_preparation",
-    "package_lookup": "package-lookups.json#/n8n_source_preparation"
+    "package_lookup": "package-lookups.json#/n8n_source_preparation",
+    "historical_n8n_source_preparations": [
+      {
+        "archived_at": "2026-11-09T06:43:53.233408+00:00",
+        "source_revision": "e6807a7d16d8b9e180ff58456ab64e4ee721ca69",
+        "checked_at": "2026-10-15T15:42:45.268224+00:00",
+        "release": {
+          "url": "https://api.github.com/repos/n8n-io/n8n/releases/latest",
+          "checked_at": "2026-10-15T15:42:45.268224+00:00",
+          "http_status": 200,
+          "response_sha256": "ba144095f60953201d0f058042764d1d12fb8c981f7e1aab51af1202a1d40bf9",
+          "tag": "n8n@2.43.6",
+          "published_at": "2026-10-15T07:26:03Z",
+          "prerelease": false,
+          "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.43.6"
+        },
+        "source_tag": {
+          "url": "https://api.github.com/repos/n8n-io/n8n/git/ref/tags/n8n%402.43.6",
+          "checked_at": "2026-10-15T15:42:45.268224+00:00",
+          "http_status": 200,
+          "response_sha256": "5031d2137dc71e77281e8b110c2b17461c5bf7c02e3b2f8d0d2497bf75703b51",
+          "object": {
+            "sha": "ffbb9ec54fc02e7f8b54a0b6f41d0a84d0a817f5",
+            "type": "commit",
+            "url": "https://api.github.com/repos/n8n-io/n8n/git/commits/ffbb9ec54fc02e7f8b54a0b6f41d0a84d0a817f5"
+          }
+        }
+      }
+    ]
   },
   "root_official_refresh": {
     "input_head": "e6807a7d16d8b9e180ff58456ab64e4ee721ca69",

@@ -62,7 +62,6 @@ class LocalExecutionBoundaryTests(unittest.TestCase):
     OPSFLOW_SMTP_HOSTED_GATE_IDS = frozenset(
         {
             "leaf.opsflow-smtp-node-coverage",
-            "leaf.opsflow-smtp-npm-audit",
             "leaf.opsflow-smtp-npm-production-audit",
             "leaf.opsflow-smtp-package",
         }

@@ -75,10 +75,16 @@ class P08RoutingTests(unittest.TestCase):
             },
             set(self.nodes["local.supply-chain"]["children"]),
         )
+        # The ledger drift gate runs once, in the hosted Compose leaf, so a
+        # Compose-only pull request reaches it; the local fixture leaf must
+        # not repeat it (the full profile reaches each module exactly once).
+        module = "tests.lib.supply_chain.test_update_gates"
         fixture_argv = self.nodes["leaf.supply-chain-fixture-policy"]["argv"]
-        self.assertEqual(
-            1, fixture_argv.count("tests.lib.supply_chain.test_update_gates")
-        )
+        compose_argv = self.nodes["leaf.compose-baseline-regressions"]["argv"]
+        self.assertEqual(0, fixture_argv.count(module))
+        self.assertEqual(1, compose_argv.count(module))
+        boundary = compose_argv.index("--optional-runtime-skips")
+        self.assertIn(module, compose_argv[:boundary])
 
     def test_compatibility_regressions_remain_required(self):
         argv = self.nodes["leaf.compose-baseline-regressions"]["argv"]

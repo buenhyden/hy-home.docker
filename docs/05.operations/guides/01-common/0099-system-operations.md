@@ -1,10 +1,10 @@
 ---
 title: "System Operations Guide"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -80,7 +80,7 @@ workflow의 실제 관리 DB·broker 연결도 각 선언에서 확인한다. �
 loopback, 관리 Valkey는 설정된 LAN 주소에 게시된다. 직접 접속도 서비스 Policy의
 접근 경계를 확인한다. Nginx는 별도 선택 대안이며 ingress 중복은 POL-0078에서 다룬다.
 
-- **Proxy 인증 경로**: n8n·ComfyUI처럼 SSO middleware를 붙인 요청은
+- **Proxy 인증 경로**: ComfyUI·Flower처럼 SSO middleware를 붙인 요청은
   Traefik → OAuth2 Proxy의 인증 확인 → 앱으로 흐른다. 로그인은 Keycloak으로
   이동하고 OAuth2 Proxy callback으로 돌아온다. [OAuth2 Proxy 선언](../../../../infra/02-auth/oauth2-proxy/docker-compose.yml)은
   기본 session 저장소를 관리 Valkey로 지정한다. 공통 middleware는 사용자 식별

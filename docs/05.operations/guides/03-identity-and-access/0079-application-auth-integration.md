@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.10.1"
+version: "0.10.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -241,7 +241,7 @@ OAuth2 Proxy 뒤에 있다는 사실만으로 애플리케이션 권한 모델�
 | Open WebUI | Native OIDC; 전용 `home-openwebui` confidential client 생성, 정확한 `https://chat.hy.home.arpa/oauth/oidc/callback`, S256, 서비스 healthy | 실제 관리자 로그인·동일 계정 검증 완료, 임시 병합·로컬 로그인 비활성화, 표준 gateway chain만 유지 |
 | Gatus | Native OIDC; session cookie·PKCE·정확한 subject·데이터 경로 보완, 전용 client와 실제 로그인 확인 | 전환 완료; 표준 gateway chain만 유지, 외부 metrics 차단·내부 수집 유지 |
 | Terrakube | Direct issuer 선언은 있으나 미기동; API 외부 JWT 경로에서 명시적 audience 검사 미확인 | `iac` profile을 켤 때 처리(owner 결정 2026-09-24): 전용 public client `home-terrakube`, API route의 ForwardAuth 제거, audience/RBAC 실행 검증. 그 전까지 gateway 유지. API route의 ForwardAuth는 cookie가 없는 Terraform CLI·API token 호출과, `terrakube-api.` 공개 주소로 API를 부르는 `terrakube-executor`를 막는다. executor를 내부 주소로 돌릴지와 executor route의 SSO도 같은 시점에 정한다 |
-| n8n Community | [공식 SSO 안내](https://docs.n8n.io/deploy/host-n8n/configure-n8n/security/configure-sso)는 self-hosted Business/Enterprise만 지원 | 유료 기능 도입 없이 ForwardAuth 유지 |
+| n8n Community | [공식 SSO 안내](https://docs.n8n.io/deploy/host-n8n/configure-n8n/security/configure-sso)는 self-hosted Business/Enterprise만 지원 | 유료 기능 도입 없이 n8n 자체 로그인만 사용; gateway ForwardAuth는 제거(owner 결정 2026-11-09, 이중 로그인 불가) |
 | Flower | [공식 인증 안내](https://flower.readthedocs.io/en/latest/auth.html)는 provider별 OAuth와 custom handler 제공; generic Keycloak OIDC 계약 없음 | custom 인증 코드 추가 없이 ForwardAuth 유지 |
 | Stalwart WebUI | [OIDC backend](https://stalw.art/docs/auth/backend/oidc/)는 클라이언트가 제시한 bearer token 검증; 서버가 browser OIDC를 시작하지 않음 | mail/JMAP OIDC 지원을 WebUI SSO로 오인하지 않음. SPEC-0262 이후 독립 LAB `labs/stalwart/docker-compose.yml`이며 gateway·SSO route 없이 loopback에만 게시 |
 | RedisInsight | [공식 설정](https://redis.io/docs/latest/operate/redisinsight/configuration/)에서 UI OIDC 연동 설정 미확인; DB 연결 인증과 구분 | native 지원 미검증으로 유지; 불가능하다고 단정하지 않음 |
@@ -418,6 +418,7 @@ TCP router는 두지 않는다.
 | Router | Authentication without the SSO chain |
 | --- | --- |
 | `airflow`, `dozzle`, `gatus`, `grafana`, `kafka-ui`, `open-webui`, `openbao` | native OIDC(Dozzle은 IP allowlist도 적용) |
+| `n8n` | n8n 자체 로그인과 API 인증(owner 결정 2026-11-09, `gateway-standard-chain@file`만 사용); 요청 본문은 `N8N_PAYLOAD_SIZE_MAX`로 제한 |
 | `keycloak`, `oauth2-proxy` | identity provider와 ForwardAuth 서비스 자체 |
 | `hermes-dashboard` | native OIDC(host systemd dashboard, `infra/01-gateway/traefik/dynamic/hermes.yml`) |
 | `neo4j` | application 관리자 credential |
@@ -448,7 +449,7 @@ TLS 검사를 끄지 않는다). owner 행에는 로그인된 browser나 Keycloa
 
 | Behaviour | Routers covered | Method | Expected | Performer |
 | --- | --- | --- | --- | --- |
-| Cookie 없음, SSO route | 이 matrix에 기록된 `sso-auth` router 17개: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `kafka-connect`, `loki`, `mlflow`, `n8n`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/`(`/favicon.ico`는 `redisinsight-static`용) | upstream content가 노출되지 않고 응답이 Keycloak authorization endpoint를 가리킴 | agent |
+| Cookie 없음, SSO route | 이 matrix에 기록된 `sso-auth` router 16개: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `kafka-connect`, `loki`, `mlflow`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/`(`/favicon.ico`는 `redisinsight-static`용) | upstream content가 노출되지 않고 응답이 Keycloak authorization endpoint를 가리킴 | agent |
 | Cookie 없음, API client | `alloy`(`Accept: application/json`), `prometheus`(`/api/v1/status/buildinfo`) | credential 없이 GET | 401을 유지하고 upstream content를 노출하지 않음 | agent |
 | Session 없음, native OIDC | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | `/`, app login 경로, API 경로 하나에 GET | Keycloak이나 app login 페이지에서 로그인이 시작되고 API는 거부함 | agent |
 | `/admins` 밖의 사용자 | 모든 SSO route | `/admins` 밖의 realm 사용자로 로그인하고 SSO route에 접속 | 거부됨: OAuth2 Proxy callback group 거부가 log와 Proxy 오류 화면으로 끝남. 이는 gateway `sso-errors`가 ForwardAuth 403을 가로채는 경우와 별도임 | owner |
