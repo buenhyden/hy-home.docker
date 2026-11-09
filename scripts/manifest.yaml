@@ -1205,6 +1205,16 @@ files:
   disposition: retain
   successor: null
   tests: []
+- path: scripts/requirements-renovate.lock
+  kind: dependency-manifest
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/operations/sync-tech-stack-versions.sh
+  disposition: retain
+  successor: null
+  tests: []
 - path: scripts/requirements.txt
   kind: dependency-manifest
   authority: .github/workflow-contract.yml

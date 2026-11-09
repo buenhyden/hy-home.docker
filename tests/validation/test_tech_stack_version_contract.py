@@ -183,6 +183,16 @@ def updater_contract_findings(
 
 
 class UpdaterOwnershipContractTests(unittest.TestCase):
+    def test_renovate_post_upgrade_dependencies_stay_hash_locked(self) -> None:
+        lock = (ROOT / "scripts/requirements-renovate.lock").read_text(encoding="utf-8")
+        script = (ROOT / "scripts/operations/sync-tech-stack-versions.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("--require-hashes", script)
+        self.assertIn("scripts/requirements-renovate.lock", script)
+        for name in ("pyyaml", "markdown-it-py", "jsonschema"):
+            self.assertRegex(lock, rf"(?m)^{name}==\S+ \\\n\s+--hash=sha256:")
+
     def test_renovate_reads_the_tested_repository_config(self) -> None:
         # Renovate takes the first of its config file names that exists and
         # tries renovate.json before renovate.json5, so a second copy would
