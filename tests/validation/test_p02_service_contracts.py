@@ -1281,5 +1281,49 @@ class GrafanaStaticRouteContractTests(unittest.TestCase):
         )
 
 
+class N8nAssistantSearchContractTests(unittest.TestCase):
+    """The n8n Assistant reaches SearXNG only over a private internal network."""
+
+    N8N = "infra/07-workflow/n8n/docker-compose.yml"
+
+    def test_searxng_is_internal_unpublished_and_unprivileged(self) -> None:
+        data = _compose(self.N8N)
+        service = data["services"]["searxng"]
+        self.assertNotIn("ports", service)
+        self.assertFalse(service.get("privileged", False))
+        self.assertEqual("false", service["labels"]["traefik.enable"])
+        self.assertEqual(
+            {"n8n_search_net", "n8n_search_outbound_net"}, set(service["networks"])
+        )
+        self.assertIs(True, data["networks"]["n8n_search_net"]["internal"])
+        self.assertNotIn("internal", data["networks"]["n8n_search_outbound_net"])
+
+    def test_only_n8n_main_and_searxng_share_the_search_network(self) -> None:
+        services = _compose(self.N8N)["services"]
+        members = {
+            name
+            for name, service in services.items()
+            if "n8n_search_net" in (service.get("networks") or {})
+        }
+        self.assertEqual({"n8n", "searxng"}, members)
+        outbound = {
+            name
+            for name, service in services.items()
+            if "n8n_search_outbound_net" in (service.get("networks") or {})
+        }
+        self.assertEqual({"searxng"}, outbound)
+
+    def test_assistant_uses_the_internal_search_and_a_model_without_a_key(self) -> None:
+        environment = _compose(self.N8N)["services"]["n8n"]["environment"]
+        self.assertEqual(
+            "http://searxng:8080", environment["N8N_INSTANCE_AI_SEARXNG_URL"]
+        )
+        self.assertEqual(
+            "anthropic/claude-sonnet-5", environment["N8N_INSTANCE_AI_MODEL"]
+        )
+        self.assertNotIn("N8N_INSTANCE_AI_MODEL_API_KEY", environment)
+        self.assertNotIn("N8N_INSTANCE_AI_SANDBOX_ENABLED", environment)
+
+
 if __name__ == "__main__":
     unittest.main()
