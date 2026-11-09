@@ -73,6 +73,12 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_WORKFLOW_DIR}/n8n-task-runner-worker
+  # mTLS material between the sandbox API and its runner, written once by
+  # n8n-sandbox-certs. The CA key is deleted after signing.
+  n8n-sandbox-tls:
+  # The runner's own Docker data root (sandbox image and sandboxes). Never the
+  # host Docker socket or /var/lib/docker.
+  n8n-sandbox-docker:
 
 # The n8n Assistant's web search runs on SearXNG. n8n main reaches it on
 # n8n_search_net, an internal network with no other member. SearXNG's only way
@@ -86,6 +92,30 @@ networks:
   n8n_search_outbound_net:
     name: n8n_search_outbound_net
     driver: bridge
+  # n8n Assistant code sandbox (owner decision 2026-11-09: privileged DinD runner).
+  # n8n reaches only the API, on n8n_sandbox_net. The runner never joins a
+  # network with n8n: the API reaches it on n8n_sandbox_runner_net, and its only
+  # way out is n8n_sandbox_outbound_net, which only the runner joins.
+  n8n_sandbox_net:
+    name: n8n_sandbox_net
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.250.210.0/24
+  n8n_sandbox_runner_net:
+    name: n8n_sandbox_runner_net
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.250.211.0/24
+  n8n_sandbox_outbound_net:
+    name: n8n_sandbox_outbound_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.250.212.0/24
 
 services:
   n8n:
@@ -114,6 +144,7 @@ services:
       - n8n_db_password
       - n8n_encryption_key
       - n8n_runner_auth_token
+      - n8n_sandbox_api_key
     volumes:
       - n8n-data:/home/node/.n8n:rw
       - ./custom:/home/node/.n8n/custom:ro
@@ -124,6 +155,11 @@ services:
       # n8n Assistant: model only; the Anthropic key is a provider connection set in the UI.
       N8N_INSTANCE_AI_MODEL: anthropic/claude-sonnet-5
       N8N_INSTANCE_AI_SEARXNG_URL: http://searxng:8080
+      # Code sandbox through the n8n sandbox service (profile n8n-sandbox); the key is read from the secret file.
+      N8N_INSTANCE_AI_SANDBOX_ENABLED: true
+      N8N_INSTANCE_AI_SANDBOX_PROVIDER: n8n-sandbox
+      N8N_SANDBOX_SERVICE_URL: http://n8n-sandbox-api:8080
+      N8N_SANDBOX_SERVICE_API_KEY_FILE: /run/secrets/n8n_sandbox_api_key
       N8N_PROTOCOL: https
       N8N_HOST: n8n.${DEFAULT_URL}
       N8N_PORT: ${N8N_PORT:-5678}
@@ -154,6 +190,7 @@ services:
       mng_data_net: {}
       obs_net: {}
       n8n_search_net: {}
+      n8n_sandbox_net: {}
     healthcheck:
       # Readiness fails while the database connection is lost; /healthz stayed
       # green through six hours of 503s on 2026-09-29 (SPEC-0192).
@@ -407,6 +444,173 @@ services:
     networks:
       n8n_search_net: {}
       n8n_search_outbound_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
+  # --- n8n Assistant code sandbox (profile n8n-sandbox, opt-in) -------------
+  # Owner decision 2026-11-09: the runner is the privileged Docker-in-Docker
+  # image of the n8n reference stack (sandbox service 1.8.1). It is the only
+  # privileged service in this file (infra/common-optimizations.exceptions.json,
+  # Conftest and the p02 contract test). No host port, no Traefik route, no host
+  # Docker socket. Nothing but the runner joins n8n_sandbox_outbound_net.
+  n8n-sandbox-certs:
+    profiles:
+      - n8n-sandbox
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e
+    container_name: n8n-sandbox-certs
+    hostname: n8n-sandbox-certs
+    user: '0:0'
+    # chown of the API's key files to the API user; nothing else.
+    cap_add:
+      - CHOWN
+    network_mode: none
+    entrypoint: ['sh', '-c']
+    command:
+      - >
+        bootstrap-mtls.sh --out-dir /tls --api-san n8n-sandbox-api
+        --control-san-prefix n8n-sandbox-runner &&
+        chown -R sandbox-api:sandbox-api /tls/api && rm -f /tls/ca.key
+    environment:
+      NUM_RUNNERS: '1'
+    volumes:
+      - n8n-sandbox-tls:/tls
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
+  n8n-sandbox-api:
+    profiles:
+      - n8n-sandbox
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e
+    container_name: n8n-sandbox-api
+    hostname: n8n-sandbox-api
+    group_add:
+      - '${SECRETS_GID:-1000}'
+    depends_on:
+      n8n-sandbox-certs:
+        condition: service_completed_successfully
+    secrets:
+      - n8n_sandbox_api_key
+      - n8n_sandbox_runner_registration_token
+      - n8n_sandbox_runner_api_key
+    # The image reads these three only from the environment, so the wrapper
+    # loads them from the secret files and execs the image's own command.
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        SANDBOX_API_KEYS="$$(cat /run/secrets/n8n_sandbox_api_key)"
+        SANDBOX_API_RUNNER_REGISTRATION_TOKEN="$$(cat /run/secrets/n8n_sandbox_runner_registration_token)"
+        SANDBOX_API_RUNNER_API_KEY="$$(cat /run/secrets/n8n_sandbox_runner_api_key)"
+        [ -n "$$SANDBOX_API_KEYS" ] && [ -n "$$SANDBOX_API_RUNNER_REGISTRATION_TOKEN" ] && [ -n "$$SANDBOX_API_RUNNER_API_KEY" ] || { echo 'n8n-sandbox-api: a secret file is empty' >&2; exit 64; }
+        export SANDBOX_API_KEYS SANDBOX_API_RUNNER_REGISTRATION_TOKEN SANDBOX_API_RUNNER_API_KEY
+        exec /sbin/tini -- /usr/local/bin/sandbox-api
+    environment:
+      SANDBOX_API_GRPC_TLS_CERT_FILE: /tls/api/grpc-server.crt
+      SANDBOX_API_GRPC_TLS_KEY_FILE: /tls/api/grpc-server.key
+      SANDBOX_API_GRPC_TLS_CLIENT_CA_FILE: /tls/api/ca.crt
+      SANDBOX_API_RUNNER_CONTROL_GRPC_TLS_CA_FILE: /tls/api/ca.crt
+      SANDBOX_API_RUNNER_CONTROL_GRPC_TLS_CERT_FILE: /tls/api/control-grpc-api-client.crt
+      SANDBOX_API_RUNNER_CONTROL_GRPC_TLS_KEY_FILE: /tls/api/control-grpc-api-client.key
+      SANDBOX_API_RUNNER_CONTROL_GRPC_TLS_SERVER_NAME: n8n-sandbox-runner-1
+    volumes:
+      - n8n-sandbox-tls:/tls:ro
+    tmpfs:
+      - /tmp
+      - /run
+      - /home/sandbox-api:uid=100,gid=101,mode=0700
+      - /var/lib/n8n-sandbox-api:uid=100,gid=101,mode=0700
+    expose:
+      - '8080'
+      - '9090'
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:8080/healthz']
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    networks:
+      n8n_sandbox_net: {}
+      n8n_sandbox_runner_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
+  n8n-sandbox-runner-1:
+    profiles:
+      - n8n-sandbox
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
+    image: n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117
+    container_name: n8n-sandbox-runner-1
+    hostname: n8n-sandbox-runner-1
+    # Exception: infra/common-optimizations.exceptions.json (owner, 2026-11-09).
+    privileged: true
+    group_add:
+      - '${SECRETS_GID:-1000}'
+    # Whole-runner budget; every sandbox shares it through the outer cgroup.
+    cpus: '3.00'
+    mem_limit: 4g
+    pids_limit: 4096
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.05'
+          memory: 512M
+    stop_grace_period: 30s
+    depends_on:
+      n8n-sandbox-api:
+        condition: service_healthy
+    secrets:
+      - n8n_sandbox_runner_registration_token
+      - n8n_sandbox_runner_api_key
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        SANDBOX_RUNNER_REGISTRATION_TOKEN="$$(cat /run/secrets/n8n_sandbox_runner_registration_token)"
+        SANDBOX_RUNNER_API_KEYS="$$(cat /run/secrets/n8n_sandbox_runner_api_key)"
+        [ -n "$$SANDBOX_RUNNER_REGISTRATION_TOKEN" ] && [ -n "$$SANDBOX_RUNNER_API_KEYS" ] || { echo 'n8n-sandbox-runner: a secret file is empty' >&2; exit 64; }
+        export SANDBOX_RUNNER_REGISTRATION_TOKEN SANDBOX_RUNNER_API_KEYS
+        exec /sbin/tini -- /usr/local/bin/start-runner.sh
+    environment:
+      SANDBOX_RUNNER_API_GRPC_ADDR: n8n-sandbox-api:9090
+      SANDBOX_RUNNER_HTTP_BASE_URL: https://n8n-sandbox-runner-1:8080
+      SANDBOX_RUNNER_CONTROL_GRPC_LISTEN_ADDR: ':9091'
+      SANDBOX_RUNNER_CONTROL_GRPC_ADVERTISE_ADDR: n8n-sandbox-runner-1:9091
+      SANDBOX_RUNNER_ID: runner-1
+      # Pulled by the inner dockerd from Docker Hub on first use.
+      SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE: n8nio/n8n-sandbox-service-sandbox:1.8.1@sha256:b397f4b51c75faf83cdd9f7aaf8a415a96e6462478cd7694a2b795f664ba1233
+      SANDBOX_RUNNER_REGISTRATION_GRPC_CA_FILE: /tls/runner/ca.crt
+      SANDBOX_RUNNER_REGISTRATION_GRPC_CERT_FILE: /tls/runner/grpc-client.crt
+      SANDBOX_RUNNER_REGISTRATION_GRPC_KEY_FILE: /tls/runner/grpc-client.key
+      SANDBOX_RUNNER_REGISTRATION_GRPC_SERVER_NAME: n8n-sandbox-api
+      SANDBOX_RUNNER_CONTROL_GRPC_TLS_CERT_FILE: /tls/runner/control-grpc-server.crt
+      SANDBOX_RUNNER_CONTROL_GRPC_TLS_KEY_FILE: /tls/runner/control-grpc-server.key
+      SANDBOX_RUNNER_CONTROL_GRPC_TLS_CLIENT_CA_FILE: /tls/runner/ca.crt
+    volumes:
+      - n8n-sandbox-tls:/tls:ro
+      - n8n-sandbox-docker:/var/lib/docker
+    expose:
+      - '8080'
+      - '9091'
+    healthcheck:
+      test: ['CMD-SHELL', 'docker info >/dev/null 2>&1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    networks:
+      n8n_sandbox_runner_net: {}
+      n8n_sandbox_outbound_net: {}
     labels:
       <<: *tier-label
       traefik.enable: 'false'

@@ -1322,7 +1322,106 @@ class N8nAssistantSearchContractTests(unittest.TestCase):
             "anthropic/claude-sonnet-5", environment["N8N_INSTANCE_AI_MODEL"]
         )
         self.assertNotIn("N8N_INSTANCE_AI_MODEL_API_KEY", environment)
-        self.assertNotIn("N8N_INSTANCE_AI_SANDBOX_ENABLED", environment)
+        # The code sandbox was held back until the owner chose the privileged
+        # Docker-in-Docker runner on 2026-11-09 (see N8nCodeSandboxContractTests).
+        self.assertEqual(
+            "true", str(environment["N8N_INSTANCE_AI_SANDBOX_ENABLED"]).lower()
+        )
+
+
+class N8nCodeSandboxContractTests(unittest.TestCase):
+    """The Assistant code sandbox is the one privileged service, contained (owner, 2026-11-09)."""
+
+    N8N = "infra/07-workflow/n8n/docker-compose.yml"
+    SANDBOX = ("n8n-sandbox-certs", "n8n-sandbox-api", "n8n-sandbox-runner-1")
+
+    def setUp(self) -> None:
+        self.data = _compose(self.N8N)
+        self.services = self.data["services"]
+
+    def test_only_the_runner_is_privileged(self) -> None:
+        privileged = sorted(
+            name for name, service in self.services.items() if service.get("privileged")
+        )
+        self.assertEqual(["n8n-sandbox-runner-1"], privileged)
+
+    def test_sandbox_services_have_no_ports_route_or_host_socket(self) -> None:
+        for name in self.SANDBOX:
+            with self.subTest(service=name):
+                service = self.services[name]
+                self.assertNotIn("ports", service)
+                self.assertEqual("false", service["labels"]["traefik.enable"])
+                self.assertEqual(["n8n-sandbox"], service["profiles"])
+                mounts = " ".join(str(item) for item in service.get("volumes") or [])
+                self.assertNotIn("docker.sock", mounts)
+
+    def test_networks_keep_the_runner_away_from_n8n(self) -> None:
+        members = {}
+        for name, service in self.services.items():
+            for network in service.get("networks") or {}:
+                members.setdefault(network, set()).add(name)
+        self.assertEqual({"n8n", "n8n-sandbox-api"}, members["n8n_sandbox_net"])
+        self.assertEqual(
+            {"n8n-sandbox-api", "n8n-sandbox-runner-1"},
+            members["n8n_sandbox_runner_net"],
+        )
+        self.assertEqual({"n8n-sandbox-runner-1"}, members["n8n_sandbox_outbound_net"])
+        self.assertEqual(
+            {"n8n_sandbox_runner_net", "n8n_sandbox_outbound_net"},
+            set(self.services["n8n-sandbox-runner-1"]["networks"]),
+        )
+        self.assertIs(True, self.data["networks"]["n8n_sandbox_net"]["internal"])
+        self.assertIs(True, self.data["networks"]["n8n_sandbox_runner_net"]["internal"])
+        self.assertNotIn("internal", self.data["networks"]["n8n_sandbox_outbound_net"])
+        self.assertEqual("none", self.services["n8n-sandbox-certs"].get("network_mode"))
+
+    def test_images_are_digest_pinned_and_share_one_release(self) -> None:
+        refs = [
+            self.services["n8n-sandbox-api"]["image"],
+            self.services["n8n-sandbox-certs"]["image"],
+            self.services["n8n-sandbox-runner-1"]["image"],
+            self.services["n8n-sandbox-runner-1"]["environment"][
+                "SANDBOX_RUNNER_DOCKER_SANDBOX_IMAGE"
+            ],
+        ]
+        for ref in refs:
+            self.assertRegex(
+                ref, r"^n8nio/n8n-sandbox-service-[a-z-]+:1\.8\.1@sha256:[0-9a-f]{64}$"
+            )
+
+    def test_keys_come_from_secret_files_not_environment_values(self) -> None:
+        n8n = self.services["n8n"]
+        self.assertEqual(
+            "/run/secrets/n8n_sandbox_api_key",
+            n8n["environment"]["N8N_SANDBOX_SERVICE_API_KEY_FILE"],
+        )
+        self.assertNotIn("N8N_SANDBOX_SERVICE_API_KEY", n8n["environment"])
+        for name in ("n8n-sandbox-api", "n8n-sandbox-runner-1"):
+            literal = {
+                "SANDBOX_API_KEYS",
+                "SANDBOX_API_RUNNER_API_KEY",
+                "SANDBOX_API_RUNNER_REGISTRATION_TOKEN",
+                "SANDBOX_RUNNER_API_KEYS",
+                "SANDBOX_RUNNER_REGISTRATION_TOKEN",
+            }
+            self.assertFalse(literal & set(self.services[name]["environment"]))
+        self.assertEqual(
+            ["n8n_sandbox_runner_registration_token", "n8n_sandbox_runner_api_key"],
+            self.services["n8n-sandbox-runner-1"]["secrets"],
+        )
+
+    def test_the_privilege_exception_names_only_the_runner(self) -> None:
+        import json
+
+        exceptions = json.loads(
+            (ROOT / "infra/common-optimizations.exceptions.json").read_text(
+                encoding="utf-8"
+            )
+        )["exceptions"]
+        privileged = sorted(
+            item["service"] for item in exceptions if item["control"] == "privileged"
+        )
+        self.assertEqual(["cadvisor", "n8n-sandbox-runner-1"], privileged)
 
 
 if __name__ == "__main__":

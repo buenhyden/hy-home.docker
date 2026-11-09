@@ -513,6 +513,12 @@ secrets:
     file: ./secrets/automation/n8n/n8n_encryption_key.txt
   n8n_runner_auth_token:
     file: ./secrets/automation/n8n/n8n_runner_auth_token.txt
+  n8n_sandbox_api_key:
+    file: ./secrets/automation/n8n/n8n_sandbox_api_key.txt
+  n8n_sandbox_runner_registration_token:
+    file: ./secrets/automation/n8n/n8n_sandbox_runner_registration_token.txt
+  n8n_sandbox_runner_api_key:
+    file: ./secrets/automation/n8n/n8n_sandbox_runner_api_key.txt
 
   # ── Tooling: SonarQube ──────────────────────────────────
 

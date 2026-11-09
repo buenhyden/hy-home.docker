@@ -1899,6 +1899,50 @@
           ]
         }
       ]
+    },
+    {
+      "component": "Compose image: n8nio/n8n-sandbox-service-api",
+      "tier": "07-workflow",
+      "classification": "external",
+      "repository_classifications": {
+        "n8nio/n8n-sandbox-service-api": "external"
+      },
+      "images": [
+        "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e"
+      ],
+      "compose_files": [
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "images": [
+            "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: n8nio/n8n-sandbox-service-runner-dind",
+      "tier": "07-workflow",
+      "classification": "external",
+      "repository_classifications": {
+        "n8nio/n8n-sandbox-service-runner-dind": "external"
+      },
+      "images": [
+        "n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117"
+      ],
+      "compose_files": [
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "images": [
+            "n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117"
+          ]
+        }
+      ]
     }
   ],
   "required_image_inputs": [

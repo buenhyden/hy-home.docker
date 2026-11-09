@@ -1,6 +1,6 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.22"
+version: "1.2.23"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -147,7 +147,7 @@ fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정
 
 n8n의 OpenTelemetry 모듈은 license 없이 켜지며 `N8N_OTEL_ENABLED=true`와 `N8N_OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4318`, service별 `N8N_OTEL_EXPORTER_SERVICE_NAME`(`n8n`, `n8n-worker`)만 설정합니다. 나머지 `N8N_OTEL_*` 옵션은 기본값이라 production 실행만, 100% sampling, node span 포함, start marker span 없음입니다. 속성은 workflow·node ID와 이름, 실행 mode·상태·오류 형식, node item 수이고 credential과 실행 payload는 없지만, 실패 span에는 오류 메시지와 stack이 exception 이벤트로 실리고 외부 HTTP 요청에는 `traceparent` 헤더가 붙습니다. Alloy가 없으면 시작 연결 확인이 오류를 로그에 남기고 추적만 건너뜁니다.
 
-n8n Assistant는 모델 `anthropic/claude-sonnet-5`(`N8N_INSTANCE_AI_MODEL`)와 내부 웹 검색 `searxng`(`N8N_INSTANCE_AI_SEARXNG_URL`)를 씁니다. Anthropic key는 UI provider connection에 있고 Compose에는 없습니다. `searxng`는 `infra/07-workflow/n8n/searxng/settings.yml`(JSON 형식 사용)을 읽기 전용으로 mount하고, 세션 key는 시작할 때 무작위로 만들어 저장하지 않으며, host port와 route가 없고, n8n main과만 내부 `n8n_search_net`을 공유하고 인터넷에는 자신만 쓰는 `n8n_search_outbound_net`으로 나갑니다. 코드 sandbox는 아직 설정하지 않았습니다.
+n8n Assistant는 모델 `anthropic/claude-sonnet-5`(`N8N_INSTANCE_AI_MODEL`)와 내부 웹 검색 `searxng`(`N8N_INSTANCE_AI_SEARXNG_URL`)를 씁니다. Anthropic key는 UI provider connection에 있고 Compose에는 없습니다. `searxng`는 `infra/07-workflow/n8n/searxng/settings.yml`(JSON 형식 사용)을 읽기 전용으로 mount하고, 세션 key는 시작할 때 무작위로 만들어 저장하지 않으며, host port와 route가 없고, n8n main과만 내부 `n8n_search_net`을 공유하고 인터넷에는 자신만 쓰는 `n8n_search_outbound_net`으로 나갑니다. 코드 sandbox는 opt-in profile `n8n-sandbox`로 `n8n-sandbox-certs`·`n8n-sandbox-api`·privileged `n8n-sandbox-runner-1`(owner 결정 2026-11-09)을 쓰며, 세 service 모두 host port와 route가 없고 runner는 `n8n_sandbox_runner_net`과 `n8n_sandbox_outbound_net`만 사용합니다. secret 파일 3개(`n8n_sandbox_api_key`, `n8n_sandbox_runner_registration_token`, `n8n_sandbox_runner_api_key`)가 `secrets/automation/n8n/`에 있어야 `n8n`이 시작하며 자세한 보안 주의는 GDE-0053을 따릅니다.
 
 UNIT의 네 role 정합 검사는 native workflow import·실행이나 HOME 배포를 입증하지 않습니다.
 deprecated node import 거부·JSON typeVersion·webhook·Code runner·queue·PostgreSQL·SMTP·실패 경로는 NOT_RUN입니다.
