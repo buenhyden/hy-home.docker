@@ -172,7 +172,7 @@
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655"
+      "sha256": "c7ffe252d346ab5000f2d70f794b1a720047047c3ca54ddb0c3ca8808348d07d"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -7912,7 +7912,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+      "source_input_sha256": "c7ffe252d346ab5000f2d70f794b1a720047047c3ca54ddb0c3ca8808348d07d",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -8190,7 +8190,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+      "source_input_sha256": "c7ffe252d346ab5000f2d70f794b1a720047047c3ca54ddb0c3ca8808348d07d",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
@@ -8443,7 +8443,7 @@
       "upstream_reported_tag": "9.1.3",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+      "source_input_sha256": "c7ffe252d346ab5000f2d70f794b1a720047047c3ca54ddb0c3ca8808348d07d",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8677,7 +8677,7 @@
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+      "source_input_sha256": "c7ffe252d346ab5000f2d70f794b1a720047047c3ca54ddb0c3ca8808348d07d",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
@@ -8808,7 +8808,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+      "source_input_sha256": "c7ffe252d346ab5000f2d70f794b1a720047047c3ca54ddb0c3ca8808348d07d",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -15443,7 +15443,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: external producer/source contract not inspected",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+      "source_input_sha256": "c7ffe252d346ab5000f2d70f794b1a720047047c3ca54ddb0c3ca8808348d07d",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -25633,6 +25633,190 @@
       "meaning": "kafka-rest-proxy (confluentinc/cp-kafka-rest) had no consumer and no native authentication, so ADR-0062 decision 10 removes the service, its Traefik route, its kafka_rest_proxy_ingress_net network and the messaging-rest profile from the Compose files. The ledger row is archived here with its SOURCE-only evidence unchanged; the stopped container and its image are untouched and removal from the host needs owner approval. Compose file hashes of the touched files (docker-compose.yml, infra/01-gateway/traefik/docker-compose.yml, infra/05-messaging/kafka/docker-compose.yml) are not re-bound by this record; the SEC01 re-binding refresh owns them."
     },
     {
+      "source_revision": "e8631262b33334368f3f1341e3c931b34cb8ca38",
+      "refreshed_at": "2026-11-09T08:44:23.506661+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "1de6aae628b837d534b5bc7ea1b15d9e976513d2a1e959f52b2e0feec071ef87",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "211f89301a05de51be6e40f3bc5e483f74a0d5994774675d26a4577918e1a3d5"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "9d2308349c9fe63154e5d08fbe59e35bb557c894d6f7294a747a50e15c1347b3"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "886a82e79c5327ef7f9a46ae624b99ec17a2c0e91f5f0ffeb6bb8fdf62d2826e"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "36a4adb3d656350be6527d0b9a2a72420cf8a976968340b0cbc1472c4b58abc9"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "f747f06188376d522dba6dc8ae8e8e23775d24c75fb5026e97a0f4f4d8c32609"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "c4c15d13071b930485237c071ce037062e6f1ac0ea420d6b4099cafcf03782ad"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e64d8890f01155dde31370d70caa347050fc04f2f223cbd144db50b02ae015a"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/08-ai/open-webui/docker-compose.yml",
+          "sha256": "84fb9ffe43c5988732c42e02dffc4dd0c894f35cb0eea7c504a127fc8ac9961c"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0297f9a834155942aab9a0ff7c22f93607f17ad4a0051dd573e207cff5c34c41"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "blog-ingestion",
+          "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n",
+          "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-task-runner-worker",
+          "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-valkey",
+          "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-valkey-exporter",
+          "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-worker",
+          "source_input_sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 6 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
       "source_revision": "96db699019eb0d6b2d1c9b98ff550c65948fed8b",
       "refreshed_at": "2026-11-09T08:54:31.109091+00:00",
       "revision_scope": "Compose file hash re-binding only",
@@ -30439,17 +30623,17 @@
   ],
   "n8n_source_preparation": {
     "task": "SPEC-0204-TSK-0017",
-    "source_revision": "1899263f4e50f1ed410b44d37691621b01dfd2c5",
-    "checked_at": "2026-11-09T07:27:10.954179+00:00",
+    "source_revision": "e8631262b33334368f3f1341e3c931b34cb8ca38",
+    "checked_at": "2026-11-09T08:44:23.644635+00:00",
     "release_lookup": "release-lookups.json#/n8n_source_preparation",
     "image_lookup": "image-source-lookups.json#/n8n_source_preparation",
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-09T07:27:10.954179+00:00",
-      "source_revision": "1899263f4e50f1ed410b44d37691621b01dfd2c5",
-      "source_state": "SOURCE_REVIEW_ONLY: the n8n router excludes /metrics and the Hermes webhook path prefix, and the OpsflowSmtp lock pin matches n8n-workflow 2.46.5 without a zod override; both are uncommitted on top of this revision.",
-      "input_sha256": "ad86ab8954979f3826e3ab6f5de47ed49d0323c22ebae3df99c41a4bd252de25",
+      "checked_at": "2026-11-09T08:44:23.644635+00:00",
+      "source_revision": "e8631262b33334368f3f1341e3c931b34cb8ca38",
+      "source_state": "SOURCE_REVIEW_ONLY: n8n and n8n-worker OpenTelemetry settings, the worker obs_net attachment and the case-insensitive router exclusions are uncommitted on top of this revision.",
+      "input_sha256": "e3c879737f4f4462a4265641df0a573ec103ec7a3bdd29d7c330e985388bc87d",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -30466,7 +30650,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655"
+          "sha256": "c7ffe252d346ab5000f2d70f794b1a720047047c3ca54ddb0c3ca8808348d07d"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -30521,7 +30705,7 @@
           "sha256": "ff8f202f552f2e3104ebfd48126f62ea8e17f7424165d891cb7ce277ae01f3bf"
         }
       ],
-      "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed after the n8n router exclusions and the OpsflowSmtp pin alignment; no custom image build, signature, scan, native or HOME acceptance.",
+      "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed after enabling n8n OpenTelemetry tracing toward Alloy and making the router exclusions case-insensitive; no custom image build, signature, scan, native or HOME acceptance.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -32022,6 +32206,92 @@
             }
           ],
           "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed after the 2.43.6 to 2.46.6 pin and the n8n router middleware change; no custom image build, signature, scan, native or HOME acceptance.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
+      },
+      {
+        "archived_at": "2026-11-09T08:44:23.644635+00:00",
+        "source_binding": {
+          "checked_at": "2026-11-09T07:27:10.954179+00:00",
+          "source_revision": "1899263f4e50f1ed410b44d37691621b01dfd2c5",
+          "source_state": "SOURCE_REVIEW_ONLY: the n8n router excludes /metrics and the Hermes webhook path prefix, and the OpsflowSmtp lock pin matches n8n-workflow 2.46.5 without a zod override; both are uncommitted on top of this revision.",
+          "input_sha256": "ad86ab8954979f3826e3ab6f5de47ed49d0323c22ebae3df99c41a4bd252de25",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "c1ebe842ab2a0ba02aecc6d6ae3e57101f338544cb54cc455779dfc6a1d3bc01"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "a3f4c2f52ef070da7c34238f8915b951428ad7cf126b71b06d478f548b2f90f2"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "49db07579110da58ea5211b0b6baf0d6d68d6962c58f2a2a3c9b13dccc036655"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+              "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "ff8f202f552f2e3104ebfd48126f62ea8e17f7424165d891cb7ce277ae01f3bf"
+            }
+          ],
+          "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed after the n8n router exclusions and the OpsflowSmtp pin alignment; no custom image build, signature, scan, native or HOME acceptance.",
           "native_test": "NOT_RUN",
           "home": "NOT_RUN",
           "signature": "NOT_RUN",
