@@ -399,7 +399,7 @@
         "ollama/ollama": "external"
       },
       "images": [
-        "ollama/ollama:0.40.12@sha256:20d1bbfbabe1c97ba4b16301f08a20d8484bcf77047742a3cb71c613d8e12d0b"
+        "ollama/ollama:0.40.15@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761"
       ],
       "compose_files": [
         "infra/08-ai/ollama/docker-compose.yml"
@@ -408,7 +408,7 @@
         {
           "compose_file": "infra/08-ai/ollama/docker-compose.yml",
           "images": [
-            "ollama/ollama:0.40.12@sha256:20d1bbfbabe1c97ba4b16301f08a20d8484bcf77047742a3cb71c613d8e12d0b"
+            "ollama/ollama:0.40.15@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761"
           ]
         }
       ]
