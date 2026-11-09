@@ -129,7 +129,7 @@ class RunnerComposeContractTests(unittest.TestCase):
                 self.assertNotIn("n8n_net", self.services[runner]["networks"])
 
         self.assertNotIn("n8n_worker_runner_net", self.services["n8n"]["networks"])
-        for peer in ("n8n-valkey", "valkey-exporter", "blog-ingestion-gateway"):
+        for peer in ("valkey-exporter", "blog-ingestion-gateway"):
             if peer in self.services:
                 self.assertTrue(
                     NETWORKS.keys().isdisjoint(self.services[peer].get("networks", {})),
@@ -485,7 +485,7 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
             bind_mount(self.secrets[key][1], target)
             for key, target in (
                 ("metadata_n8n", "/run/secrets/n8n_db_password"),
-                ("valkey_n8n", "/run/secrets/n8n_valkey_password"),
+                ("valkey_n8n", "/run/secrets/mng_valkey_password"),
                 ("encryption", "/run/secrets/n8n_encryption_key"),
                 ("runner", "/run/secrets/n8n_runner_auth_token"),
             )
@@ -504,12 +504,12 @@ class P03RunnerNativeRehearsal(unittest.TestCase):
             "DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/n8n_db_password",
             "EXECUTIONS_MODE=queue",
             "OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true",
-            "N8N_VALKEY_HOST=n8n-valkey",
-            "N8N_VALKEY_SECRET=n8n_valkey_password",
-            "QUEUE_BULL_REDIS_HOST=n8n-valkey",
+            "N8N_VALKEY_HOST=mng-valkey",
+            "N8N_VALKEY_SECRET=mng_valkey_password",
+            "QUEUE_BULL_REDIS_HOST=mng-valkey",
             "QUEUE_BULL_REDIS_PORT=6379",
             "QUEUE_BULL_PREFIX=n8n",
-            "QUEUE_BULL_REDIS_PASSWORD_FILE=/run/secrets/n8n_valkey_password",
+            "QUEUE_BULL_REDIS_PASSWORD_FILE=/run/secrets/mng_valkey_password",
             "N8N_RUNNERS_MODE=external",
             "N8N_RUNNERS_AUTH_TOKEN_FILE=/run/secrets/n8n_runner_auth_token",
             *runner_timing_environment(task_timeout, request_timeout),

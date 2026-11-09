@@ -1,10 +1,10 @@
 ---
 title: "비밀 파일 관리"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-09"
 created: "2026-02-23"
 ---
 
@@ -44,7 +44,7 @@ created: "2026-02-23"
 
 값 파일은 `영역/서비스/파일`로 배치한다. `auth/`는 Traefik·Keycloak·OAuth2 Proxy와 각 OIDC 소비자, `automation/`은 Airflow·n8n, `data/`는 OpenSearch·Qdrant, `storage/`는 SeaweedFS, `tools/`는 도구별 디렉터리로 나눈다. `communication/`은 공용 SMTP·Slack 전달 자격 증명을 구분한다. 기존 `common/`과 `communication/`, `db/surreal_db/`와 `db/surrealdb/`의 동일 파일은 각각 새 서비스별 경로와 `db/surrealdb/`의 단일 원본으로 통합한다.
 
-`db/mng-pg/`는 관리 metadata와 Grafana 관리 reader, `db/dev-pg/`는 개발 관리자·fixture 역할·Debezium을 소유한다. `db/legacy-app/`는 사용하지 않는 기존 app_db의 전환·롤백 보관이며 신규 프로젝트에 재사용하지 않는다. Valkey는 `db/mng-valkey/`, `db/dev-valkey/`, 선택형 n8n 전용 `db/n8n-valkey/`로 분리한다. `backup/mng-pg/`와 `backup/dev-pg/`는 각 pgBackRest 키, `backup/restic/`는 로컬·원격 저장소 자격 증명, `backup/openbao/`는 스냅샷을 소유한다.
+`db/mng-pg/`는 관리 metadata와 Grafana 관리 reader, `db/dev-pg/`는 개발 관리자·fixture 역할·Debezium을 소유한다. `db/legacy-app/`는 사용하지 않는 기존 app_db의 전환·롤백 보관이며 신규 프로젝트에 재사용하지 않는다. Valkey는 `db/mng-valkey/`, `db/dev-valkey/`로 분리한다. `backup/mng-pg/`와 `backup/dev-pg/`는 각 pgBackRest 키, `backup/restic/`는 로컬·원격 저장소 자격 증명, `backup/openbao/`는 스냅샷을 소유한다.
 
 `certs/`의 기존 서비스별 배치는 유지한다. `labs/<LAB 이름>/`은 그 LAB만 읽는 파일을 둔다. LAB은 HOME 경로를 읽지 않으며, HOME과 같은 값이 필요하면 HOME 값을 복사해 둔다(예: supabase SMTP는 `labs/supabase/smtp_password.txt`). LAB을 `infra/`로 이전할 때 LAB 값은 옮기지 않고 infra secret을 새로 만들거나 회전하며, LAB 복사본과 카탈로그 행은 폐기한다(SPEC-0263). `security/openbao/`의 token·unseal·custody 정보, 인증서와 OpenBao 스냅샷은 각각 Docker Secret 등록 행 또는 별도 운영 소유권으로 관리한다. 비밀값 ID는 경로 이동에도 유지하고 등록표 갱신일은 메타데이터 검토일로 기록한다.
 

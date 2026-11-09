@@ -1,6 +1,6 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.6.1"
+version: "1.6.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -97,8 +97,7 @@ the OpenBao auth backend and is not in Compose files or documents.
 
 `keycloak` (`infra/02-auth/keycloak/`) and `oauth2-proxy`
 (`infra/02-auth/oauth2-proxy/`) are selected by `core`, `auth`, `dev` and
-`local`. The `dedicated-valkey` profile adds `oauth2-proxy-valkey` and its
-exporter.
+`local`. Its session store is the shared `mng-valkey`.
 
 ## Quality and Risks
 

@@ -20,38 +20,6 @@ def _service(path: str, name: str) -> dict:
     return yaml.safe_load((ROOT / path).read_text(encoding="utf-8"))["services"][name]
 
 
-class N8nValkeyExporterTests(unittest.TestCase):
-    @unittest.skipUnless(shutil.which("docker"), "docker CLI not available")
-    def test_rendered_exporter_targets_the_declared_valkey(self) -> None:
-        rendered = subprocess.run(
-            [
-                "docker",
-                "compose",
-                "--env-file",
-                ".env.example",
-                "-f",
-                "docker-compose.yml",
-                "--profile",
-                "dedicated-valkey",
-                "config",
-                "--format",
-                "json",
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=True,
-            timeout=120,
-        )
-        services = json.loads(rendered.stdout)["services"]
-        exporter = services["n8n-valkey-exporter"]
-        command = " ".join(exporter["command"])
-        self.assertEqual("6379", str(exporter["environment"]["VALKEY_PORT"]))
-        self.assertIn("port=$${VALKEY_PORT}", command)
-        self.assertIn("redis://n8n-valkey:$$port", command)
-        self.assertIn("n8n-valkey", services)
-
-
 class OptionalIntegrationContractTests(unittest.TestCase):
     def test_explicit_targets_close_companions_for_direct_and_dependency_starts(self):
         from scripts.lib.document_governance.operations_catalog import _compose_mapping
@@ -262,41 +230,8 @@ class OptionalIntegrationContractTests(unittest.TestCase):
         self.assertTrue(optional["networks"]["n8n_ollama_net"]["internal"])
 
 
-class DedicatedValkeyMonitorTests(unittest.TestCase):
-    overlays = (
-        "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
-        "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
-        "infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml",
-    )
+class ValkeyMonitorRendererTests(unittest.TestCase):
     renderer = ROOT / "infra/04-data/mng-db/valkey/scripts/render-monitor-acl.sh"
-    pairs = (
-        (
-            "airflow-valkey",
-            "airflow_valkey_password",
-            "airflow_valkey_monitor_password",
-        ),
-        ("n8n-valkey", "n8n_valkey_password", "n8n_valkey_monitor_password"),
-        (
-            "oauth2-proxy-valkey",
-            "oauth2_valkey_password",
-            "oauth2_valkey_monitor_password",
-        ),
-    )
-
-    def test_leaf_annotations_use_existing_membership_and_replacement_contract(self):
-        from scripts.lib.document_governance.operations_catalog import _compose_sources
-
-        root = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
-        included = [PurePosixPath(p) for p in root["include"]]
-        overlays = [PurePosixPath(p) for p in self.overlays]
-        classified = _compose_sources(ROOT, [*included, *overlays])
-        self.assertEqual(set(overlays), set(classified.overlays))
-        for path in overlays:
-            base = path.parent / "docker-compose.yml"
-            self.assertIn(base, classified.regular)
-        self.assertFalse(
-            (ROOT / "infra/docker-compose.dedicated-valkey-monitor.yml").exists()
-        )
 
     def test_renderer_generates_only_fixed_monitor_grants_and_preserves_default(self):
         import hashlib
@@ -432,120 +367,6 @@ class DedicatedValkeyMonitorTests(unittest.TestCase):
                 self.assertEqual(b"", result.stdout)
                 self.assertNotIn(b"synthetic-", result.stderr)
                 self.assertFalse(list(parent.glob("users.acl.*")))
-
-    @unittest.skipUnless(shutil.which("docker"), "docker CLI not available")
-    def test_merged_overlay_replaces_only_exporter_credentials_and_preserves_controls(
-        self,
-    ):
-        def render(optional=False):
-            args = [
-                "docker",
-                "compose",
-                "--env-file",
-                ".env.example",
-                "-f",
-                "docker-compose.yml",
-            ]
-            if optional:
-                for overlay in self.overlays:
-                    args += ["-f", overlay]
-            args += [
-                "--profile",
-                "dedicated-valkey",
-                "config",
-                "--format",
-                "json",
-                "--no-env-resolution",
-            ]
-            result = subprocess.run(
-                args,
-                cwd=ROOT,
-                env={"PATH": os.environ["PATH"], "COMPOSE_DISABLE_ENV_FILE": "1"},
-                capture_output=True,
-                text=True,
-                check=True,
-                timeout=60,
-            )
-            return json.loads(result.stdout)
-
-        base, selected = render(), render(True)
-        self.assertEqual(set(base["services"]), set(selected["services"]))
-        for broker, app, monitor in self.pairs:
-            old, new = base["services"][broker], selected["services"][broker]
-            self.assertNotIn(monitor, {s["source"] for s in old["secrets"]})
-            self.assertEqual({app, monitor}, {s["source"] for s in new["secrets"]})
-            for key in (
-                "image",
-                "user",
-                "group_add",
-                "networks",
-                "profiles",
-                "healthcheck",
-                "expose",
-                "restart",
-                "cap_drop",
-                "security_opt",
-                "deploy",
-            ):
-                self.assertEqual(old.get(key), new.get(key), (broker, key))
-            self.assertTrue(all(v in new["volumes"] for v in old["volumes"]))
-            script_mounts = {
-                v["target"]: v
-                for v in new["volumes"]
-                if Path(v["target"]).parent == Path("/usr/local/lib/hy-home/valkey")
-            }
-            expected_targets = {
-                f"/usr/local/lib/hy-home/valkey/{name}"
-                for name in ("start-dedicated.sh", "render-monitor-acl.sh")
-            }
-            self.assertEqual(expected_targets, set(script_mounts))
-            for target, mount in script_mounts.items():
-                self.assertEqual(
-                    str(self.renderer.parent / Path(target).name), mount["source"]
-                )
-                self.assertTrue(mount["read_only"])
-            self.assertIn(
-                "/usr/local/lib/hy-home/valkey/start-dedicated.sh",
-                " ".join(new["command"]),
-            )
-            self.assertEqual("6379", str(new["environment"]["VALKEY_PORT"]))
-            health = " ".join(new["healthcheck"]["test"])
-            self.assertIn('-p "$${VALKEY_PORT}"', health)
-            self.assertIn("REDISCLI_AUTH", health)
-            self.assertNotIn(" -a ", health)
-            exporter = broker + "-exporter"
-            old, new = base["services"][exporter], selected["services"][exporter]
-            self.assertEqual([monitor], [s["source"] for s in new["secrets"]])
-            command = " ".join(new["command"])
-            self.assertNotIn("-redis.password", command)
-            self.assertNotIn("/run/secrets/" + app, command)
-            for flag in (
-                "REDIS_PASSWORD",
-                "-redis.user=monitor",
-                "-config-command=-",
-                "-set-client-name=false",
-                "-exclude-latency-histogram-metrics",
-                "-disable-scrape-endpoint",
-            ):
-                self.assertIn(flag, command)
-            self.assertIn("set -eu", command)
-            self.assertIn('[ -n "$$REDIS_PASSWORD" ] || exit 1', command)
-            for key in (
-                "image",
-                "user",
-                "group_add",
-                "networks",
-                "profiles",
-                "healthcheck",
-                "expose",
-                "restart",
-                "cap_drop",
-                "security_opt",
-                "deploy",
-                "read_only",
-                "tmpfs",
-            ):
-                self.assertEqual(old.get(key), new.get(key), (exporter, key))
 
 
 class OpenWebUiVectorStoreTests(unittest.TestCase):

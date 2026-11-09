@@ -56,7 +56,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `couchdb` | topology | 독립 LAB CouchDB 복제 구성과 초기화 | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` | No | initialization: couchdb-cluster-init | current |
 | `crawl4ai` | capability | 격리 network의 token 보호 웹 crawler, `crawl4ai-egress` 출구 gateway와 `crawl4ai-loopback` host 전달기; 소비자 POL-0091 | `crawl4ai`, `crawl4ai-egress`, `crawl4ai-loopback` | No | normal service startup | current |
 | `data-science` | capability | MLflow 추적과 그 provisioner; JupyterLab은 LAB `jupyterlab` profile(SPEC-0262) | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets; monitoring initialization: mng-pg-monitor-provision | current |
-| `dedicated-valkey` | topology | 앱별 broker 대안; HOST와 SECRET 매핑도 전환해야 함 | `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`, `airflow-valkey`, `airflow-valkey-exporter`, `n8n-valkey`, `n8n-valkey-exporter` | No | normal service startup | current |
 | `dependency-update` | automation | Renovate 갱신 제안 작업; 명시적 실행만 허용 | `renovate` | No | remote dependency proposals when configured | current |
 | `dev` | baseline | 개발 접근·관측·메일 캡처; HOME 최소 선택과 다름 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `prometheus`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `mailpit` | No | initialization: mng-pg-init, mng-pg-monitor-provision, grafana-db-provision | current |
 | `dev-data` | capability | 단일 개발 PG·Valkey와 그 지표 exporter를 명시적으로 선택 | `dev-pg`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `dev-valkey`, `dev-valkey-exporter` | No | 새 개발 저장소 기동; 관리 DB·Valkey와 상태 분리; initialization: dev-pg-monitor-provision | current |
@@ -224,20 +223,15 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 | `airflow-scheduler` | `airflow-scheduler airflow-statsd-exporter` |
 | `airflow-triggerer` | `airflow-triggerer airflow-statsd-exporter` |
 | `airflow-dag-processor` | `airflow-dag-processor airflow-statsd-exporter` |
-| `n8n-valkey` | `n8n-valkey n8n-valkey-exporter` |
-| `airflow-valkey` | `airflow-valkey airflow-valkey-exporter` |
-| `oauth2-proxy-valkey` | `oauth2-proxy-valkey oauth2-proxy-valkey-exporter` |
 
-`dedicated-valkey`는 세 Broker·Exporter 쌍을 모두 선택한다. 앱 HOST/Secret 선택은
-별개이며 n8n 내장 metrics와 Kafka JMX Agent는 별도 Exporter를 중복 생성할 이유가
-아니다. `up=1`은 scrape 성공만 뜻하고 `redis_up`/`pg_up`·업무 실행·Grafana query와
-선택 profile의 예상 상태는 별도로 확인한다. OAuth2 전용 Exporter는 이미
-`mng_data_net`과 `obs_net` 양쪽을 사용한다.
+Airflow, n8n, OAuth2 Proxy는 공유 `mng-valkey`를 쓰며 앱별 전용 Valkey와 Exporter는
+없다(ADR-0062 결정 10). n8n 내장 metrics와 Kafka JMX Agent는 별도 Exporter를 중복
+생성할 이유가 아니다. `up=1`은 scrape 성공만 뜻하고 `redis_up`/`pg_up`·업무 실행·
+Grafana query와 선택 profile의 예상 상태는 별도로 확인한다.
 
 | Selection | Constraint |
 | --- | --- |
 | nginx with core/local/dev | 기본 ingress 80/443 중복을 해소하거나 gateway 하나만 선택 |
-| dedicated-valkey with application profiles | HOST·secret 매핑도 전환; profile만 추가하면 broker가 자동 선택되지 않음 |
 | lab-kafka | `labs/kafka-cluster/docker-compose.yml`의 별도 project·cluster ID·data directory가 필요하다. 3 broker, replication factor 3, `min.insync.replicas=2`로 같은 host의 broker 하나 손실을 견디지만 host HA가 아니다. HOME `kafka-1`은 replication factor 1의 단일 broker이며 장애 내성이 없다 |
 | lab-locust | `labs/locust/docker-compose.yml`의 별도 project·network·scenario/result volume을 사용하며 root `testing` profile에 포함되지 않음 |
 | opensearch with opensearch-cluster | 서로 다른 Compose project의 대체 토폴로지; LAB은 별도 network·state·credential을 사용 |
@@ -306,8 +300,8 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | Loki | HOME 로그 저장·Grafana 조회 | Alloy, Grafana | 2 / 2048 | `loki-data` | HOME 유지 | 로그 수집을 다른 backend로 옮길 때 | 실행 |
 | Dozzle | 실시간 container 로그 UI | 운영자 | 1 / 512 | `dozzle-data` | OPTIONAL `admin`; 상주는 소유자 선택 | Grafana Loki 조회로 충분해질 때 | 실행 |
 | OpenSearch (single) | 전문 검색·분석 실험 | 이름 있는 소비자 없음 | 3 / 2560 | `opensearch-data`, `opensearch-dashboards-data` | OPTIONAL on-demand; 상주하지 않음 | 검색 소비자가 없으면 퇴역 검토 | 미실행 |
-| Airflow | 예약 batch·backfill DAG | DAG, Flower | 11 / 9984 | `airflow-dags`·`-config`·`-plugins`·`-logs`, `airflow-valkey-data` | HOME 유지 | 예약 DAG가 없어질 때 | 실행 |
-| n8n | 외부 이벤트·webhook·알림 | workflow | 6 / 5120 | `n8n-data`, task runner·Valkey volume | HOME 유지 | 이벤트 workflow가 없어질 때 | 실행 |
+| Airflow | 예약 batch·backfill DAG | DAG, Flower | 10 / 9472 | `airflow-dags`·`-config`·`-plugins`·`-logs` | HOME 유지 | 예약 DAG가 없어질 때 | 실행 |
+| n8n | 외부 이벤트·webhook·알림 | workflow | 5 / 4608 | `n8n-data`, task runner volume | HOME 유지 | 이벤트 workflow가 없어질 때 | 실행 |
 | Mailpit | 개발 SMTP 캡처 | 앱 메일 시험 | 1 / 512 | `mailpit-data` | DEV on-demand | 메일 시험이 없을 때 | 미실행 |
 | Stalwart | 실제 메일 서버 | 이름 있는 소비자 없음 | 1.5 / 768 | `stalwart-data`(SPEC-0262 이후 `${LAB_DATA_DIR}/stalwart/data`) | 2026-11-04 LAB `labs/stalwart/docker-compose.yml`로 이전 | 메일 수신 계획이 없으면 퇴역 검토 | 미실행 |
 | Kafka `kafka-1`, Schema Registry, Connect, kafbat UI | 단일 broker 메시징·CDC | Debezium Avro connector, kafbat | 7 / 5632 | `kafka-1-data`, `kafka-connect-data` | OPTIONAL `messaging`·`cdc`; Avro 소비자가 있으므로 Schema Registry 유지 | CDC·메시징 소비자가 없어질 때 | 실행 |
@@ -382,42 +376,6 @@ category와 필수 dependency 폐포를 검사한다.
 선택 closure 성공은 optional dependency의 앱 endpoint나 provisioning 완료를
 보장하지 않는다. 예를 들어 Grafana DB provisioning 선택과 실제 앱 사용 준비는
 [Grafana Guide](../../guides/07-observability/0041-grafana.md)에서 확인한다.
-
-### Optional dedicated Valkey observer identity
-
-Airflow, n8n, OAuth2 Proxy의 `docker-compose.monitor-acl.yml`은 각 기존 leaf를
-base로 지정하며 기본 include나 profile을 추가하지 않는다. 기존 ROOT-base의
-network-only 제한은 바꾸지 않는다. 선택하지 않은 기본 dedicated exporter의
-기본 앱 비밀번호·관리 권한 공유 위험은 남는다. 다음 공개 렌더링은 준비된 source만
-검사하며 실제 시작·private 파일 확인을 수행하지 않는다.
-
-```sh
-docker compose --env-file .env.example -f docker-compose.yml -f infra/07-workflow/airflow/docker-compose.monitor-acl.yml -f infra/07-workflow/n8n/docker-compose.monitor-acl.yml -f infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml --profile dedicated-valkey config --no-env-resolution --no-path-resolution --quiet
-```
-
-실제 선택 시 root Secret 선언의 세 관측 파일을 각 소비자 UID/보조 GID 계약에 맞춰
-별도 준비한다. broker마다 자신의 앱/관측 비밀번호 불일치만 검사하며, 다른 broker
-파일을 교차 마운트하지 않는다. 세 서비스 간 별도 발급·회전은 운영자 인수 대상이다.
-기본 앱 계정/권한·AOF·데이터·네트워크는 유지하고 exporter의 admin secret 목록은
-`!override`로 관측 파일 하나로 교체한다. monitor는 고정된 PING/INFO/COMMAND INFO/
-SLOWLOG LEN/COMMANDLOG LEN만 허용한다. INFO 전체 DB 집계와 선택적 SLOWLOG GET
-거부에 따른 상세 지표 부재를 기록하고, key/channel/Lua/admin 권한을 추가하지 않는다.
-`/scrape`는 끄고 기존 `/metrics` 소비자를 보존한다.
-
-직접 실행 대상은 broker와 companion exporter를 함께 명시한다. profile 전체 선택은
-기존 세 쌍을 선택한다. overlay는 앱 endpoint 선택을 바꾸지 않으며 shared Valkey에
-간접 연결된 앱을 dedicated로 이전하지 않는다.
-
-| Broker | Explicit broker + companion targets |
-| --- | --- |
-| `airflow-valkey` | `airflow-valkey airflow-valkey-exporter` |
-| `n8n-valkey` | `n8n-valkey n8n-valkey-exporter` |
-| `oauth2-proxy-valkey` | `oauth2-proxy-valkey oauth2-proxy-valkey-exporter` |
-
-SOURCE/UNIT/STATIC/ISOLATED/HOME/ROTATION/RECOVERY는 별개 상태다. 실제 수집과
-앱 queue/session, AOF, credential 회전 및 복구는 해당 고정 이미지와 정확한
-소유 대상/정리 경계의 실행 영수증이 있어야 수용한다. source rollback은 선택형
-변경의 논리적 revert이며 운영 데이터 복구를 증명하지 않는다.
 
 ## Related Documents
 

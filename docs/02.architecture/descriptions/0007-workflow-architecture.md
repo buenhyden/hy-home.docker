@@ -1,6 +1,6 @@
 ---
 title: "Workflow Tier (07-workflow) Architecture Description"
-version: "1.3.2"
+version: "1.3.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -48,11 +48,8 @@ gateway SSO.
   (`EXECUTIONS_MODE: queue`) with an external task runner for the worker
   process (main starts none); its router applies only
   `gateway-standard-chain@file`, and n8n's own login authenticates users.
-- **Broker:** both default to `mng-valkey`. The `dedicated-valkey` profile adds
-  `airflow-valkey` and `n8n-valkey` with exporters, but selecting it does not
-  switch the connection: Airflow must set `AIRFLOW_VALKEY_HOST` and
-  `AIRFLOW_VALKEY_SECRET`, and n8n `N8N_VALKEY_HOST` and `N8N_VALKEY_SECRET`,
-  as matching pairs.
+- **Broker:** both use the shared `mng-valkey`; no per-app broker exists
+  (ADR-0062 decision 10).
 
 ## Runtime and Deployment
 
@@ -73,8 +70,7 @@ record.
 ### Deployment View
 
 `workflow` selects Airflow and n8n; `workflow-airflow` and `workflow-n8n`
-select one each. `dedicated-valkey` adds the dedicated broker and exporter
-pairs, which are OPTIONAL; core services are HOME. The `blog-ingestion`
+select one each; core services are HOME. The `blog-ingestion`
 capability profile selects the blog ingestion gateway, which shares isolated
 internal networks only with `n8n-worker` and Traefik.
 
@@ -92,13 +88,8 @@ internal networks only with `n8n-worker` and Traefik.
 
 ### Risks
 
-Without `dedicated-valkey`, Airflow, n8n and OAuth2 Proxy share `mng-valkey`;
+Airflow, n8n and OAuth2 Proxy share `mng-valkey`;
 its outage stops queued work in both engines.
-
-### Evolution
-
-Switching to the dedicated brokers is an environment change of the host and
-secret pairs, not a profile change.
 
 ## Related Documents
 

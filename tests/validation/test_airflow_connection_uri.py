@@ -33,7 +33,6 @@ class ConnectionUriTests(unittest.TestCase):
         for name in (
             "airflow_db_password",
             "mng_valkey_password",
-            "airflow_valkey_password",
         ):
             self.write_secret(name, self.password.encode())
 
@@ -69,25 +68,6 @@ class ConnectionUriTests(unittest.TestCase):
         parsed = urlsplit(module.render("metadata", {}, secrets_dir=self.secrets))
         self.assertEqual(self.password, unquote(parsed.password))
         self.assertEqual(5432, parsed.port)
-
-    def test_dedicated_broker_selects_matching_secret_and_port(self):
-        module = load_helper()
-        dedicated = "p04-dedicated-synthetic"
-        self.write_secret("airflow_valkey_password", dedicated.encode())
-        result = module.render(
-            "broker",
-            {
-                "AIRFLOW_VALKEY_HOST": "airflow-valkey",
-                "AIRFLOW_VALKEY_SECRET": "airflow_valkey_password",
-                "VALKEY_PORT": "16380",
-            },
-            secrets_dir=self.secrets,
-        )
-        parsed = urlsplit(result)
-        self.assertEqual(
-            ("airflow-valkey", 16380, "/0"), (parsed.hostname, parsed.port, parsed.path)
-        )
-        self.assertEqual(dedicated, unquote(parsed.password))
 
     def test_database_preserves_literal_carriage_return_and_tab(self):
         module = load_helper()

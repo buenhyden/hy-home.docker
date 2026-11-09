@@ -34,39 +34,26 @@ class SecretCatalogContractTests(unittest.TestCase):
             "infra/04-data/mng-db/docker-compose.n8n-acl.yml", named["consumers"]
         )
         self.assertIn("infra/07-workflow/n8n/docker-compose.yml", named["consumers"])
-        self.assertEqual(
-            "secrets/db/n8n-valkey/n8n_password.txt",
-            entries["CACHE-009"]["source_path"],
-        )
         self.assertNotEqual(entries["CACHE-007"]["source_path"], named["source_path"])
         self.assertIn(
             "infra/07-workflow/n8n/docker-compose.yml",
             entries["CACHE-007"]["consumers"],
         )
 
-    def test_dedicated_monitors_have_three_distinct_optional_declared_identities(self):
+    def test_removed_dedicated_valkey_identities_leave_the_catalog(self):
         entries = {row["id"]: row for row in self.catalog["entries"]}
-        for identifier, directory, leaf in (
-            ("CACHE-028", "airflow-valkey", "07-workflow/airflow"),
-            ("CACHE-029", "n8n-valkey", "07-workflow/n8n"),
-            ("CACHE-030", "oauth2-valkey", "02-auth/oauth2-proxy"),
+        for identifier in (
+            "CACHE-008",
+            "CACHE-009",
+            "CACHE-028",
+            "CACHE-029",
+            "CACHE-030",
         ):
-            with self.subTest(identifier=identifier):
-                row = entries[identifier]
-                self.assertEqual(
-                    f"secrets/db/{directory}/monitor_password.txt", row["source_path"]
-                )
-                self.assertEqual(
-                    [f"infra/{leaf}/docker-compose.monitor-acl.yml"],
-                    row["consumers"],
-                )
-                self.assertEqual("DECLARED", row["consumer_status"])
-                self.assertEqual("CONFIRMED", row["lifecycle"]["declared"])
-                self.assertEqual("UNKNOWN", row["lifecycle"]["consumed"])
-                self.assertEqual("BLOCKED_P01", row["destination_plan"]["delivery"])
-        self.assertEqual(
-            3, len({entries[f"CACHE-{n:03}"]["source_path"] for n in range(28, 31)})
-        )
+            self.assertNotIn(identifier, entries)
+        for row in entries.values():
+            self.assertNotRegex(
+                row["source_path"] or "", r"(airflow|n8n|oauth2)-valkey/"
+            )
 
     def test_catalog_covers_issued_ids_without_renumbering_or_an_alias_value(self):
         issued = registry_rows(

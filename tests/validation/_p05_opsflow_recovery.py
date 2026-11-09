@@ -330,9 +330,9 @@ def validate_barrier(value):
 QUEUE_PROBE = r"""const fs=require('fs');
 const data=JSON.parse(fs.readFileSync(0,'utf8'));
 const Bull=require('/usr/local/lib/node_modules/n8n/node_modules/bull');
-const password=fs.readFileSync('/run/secrets/n8n_valkey_password','utf8').replace(/\n$/,'');
+const password=fs.readFileSync('/run/secrets/mng_valkey_password','utf8').replace(/\n$/,'');
 (async()=>{
-const q=new Bull('jobs',{prefix:'opsflow_native',redis:{host:'n8n-valkey',port:6379,password}});
+const q=new Bull('jobs',{prefix:'opsflow_native',redis:{host:'mng-valkey',port:6379,password}});
 try {
  const jobs=await q.getJobs(['waiting','active','delayed','paused','completed','failed']);
  const found=jobs.filter(j=>j!==null&&data.ids.includes(String(j.data?.executionId)));

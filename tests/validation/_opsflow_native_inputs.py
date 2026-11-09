@@ -100,7 +100,7 @@ def precreate_headroom_failure(
 ALIASES = {
     "metadata-pg": "metadata-pg",
     "dev-pg": "dev-pg",
-    "valkey": "n8n-valkey",
+    "valkey": "mng-valkey",
     "main": "n8n",
     "worker": "n8n-worker",
     "runner": "runner",

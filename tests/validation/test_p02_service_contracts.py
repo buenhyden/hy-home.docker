@@ -88,7 +88,6 @@ def _render_root(overrides: dict[str, str], profiles: tuple[str, ...] = ()) -> d
             "workflow-airflow",
             "ai",
             "notebook",
-            "dedicated-valkey",
             "nginx",
         ):
             args.extend(("--profile", profile))
@@ -943,118 +942,8 @@ class OpenNotebookPortAndReadinessTests(unittest.TestCase):
             self.assertNotEqual(0, rejected.returncode)
 
 
-class DedicatedValkeyContractTests(unittest.TestCase):
-    BROKERS = (
-        ("infra/07-workflow/airflow/docker-compose.yml", "airflow-valkey"),
-        ("infra/07-workflow/n8n/docker-compose.yml", "n8n-valkey"),
-        ("infra/02-auth/oauth2-proxy/docker-compose.yml", "oauth2-proxy-valkey"),
-    )
-    OVERLAYS = (
-        "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
-        "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
-        "infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml",
-    )
-
-    def test_all_brokers_use_the_safe_wrapper_and_one_listener_port(self) -> None:
-        self.assertTrue(DEDICATED_VALKEY_START.is_file())
-        for relative, name in self.BROKERS:
-            with self.subTest(service=name):
-                service = _service(relative, name)
-                command = _command(service)
-                environment = _environment(service)
-                self.assertEqual("${VALKEY_PORT:-6379}", environment.get("VALKEY_PORT"))
-                self.assertIn("start-dedicated.sh", command)
-                self.assertNotIn("requirepass", command)
-                self.assertNotIn("$(cat", command)
-                self.assertEqual(["${VALKEY_PORT:-6379}"], service["expose"])
-                health = " ".join(service["healthcheck"]["test"])
-                self.assertIn('-p "$${VALKEY_PORT}"', health)
-                self.assertIn("REDISCLI_AUTH", health)
-                self.assertNotIn(" -a ", health)
-        for relative in self.OVERLAYS:
-            with self.subTest(overlay=relative):
-                services = _compose(relative)["services"]
-                broker = next(
-                    name for name in services if not name.endswith("-exporter")
-                )
-                self.assertIn("start-dedicated.sh", _command(services[broker]))
-                overlay_port = _environment(services[broker]).get("VALKEY_PORT")
-                self.assertIn(overlay_port, (None, "${VALKEY_PORT:-6379}"))
-
-    def test_exporters_keep_password_out_of_argv_and_track_listener_port(self) -> None:
-        for relative, broker in self.BROKERS:
-            exporter = _service(relative, broker + "-exporter")
-            command = _command(exporter)
-            self.assertEqual(
-                "${VALKEY_PORT:-6379}",
-                _environment(exporter).get("VALKEY_PORT"),
-            )
-            self.assertIn("port=$${VALKEY_PORT}", command)
-            self.assertIn("*[!0-9]*", command)
-            self.assertIn('"$$port" -le 65535', command)
-            self.assertIn(f"redis://{broker}:$$port", command)
-            self.assertIn("REDIS_PASSWORD", command)
-            self.assertNotIn("-redis.password=", command)
-            self.assertNotIn("-redis.password ", command)
-
-    @unittest.skipUnless(shutil.which("docker"), "docker compose CLI not available")
-    def test_root_and_each_monitor_overlay_render_at_nondefault_port(self) -> None:
-        for overlay, (_, broker) in zip(self.OVERLAYS, self.BROKERS, strict=True):
-            with (
-                self.subTest(overlay=overlay),
-                tempfile.TemporaryDirectory() as directory,
-            ):
-                temporary = Path(directory)
-                env_file = temporary / "public.env"
-                env_file.write_bytes(
-                    (ROOT / ".env.example").read_bytes() + b"\nVALKEY_PORT=16379\n"
-                )
-                result = subprocess.run(
-                    [
-                        "docker",
-                        "compose",
-                        "--project-directory",
-                        str(ROOT),
-                        "--env-file",
-                        str(env_file),
-                        "-f",
-                        str(ROOT / "docker-compose.yml"),
-                        "-f",
-                        str(ROOT / overlay),
-                        "--profile",
-                        "dedicated-valkey",
-                        "config",
-                        "--format",
-                        "json",
-                    ],
-                    cwd=ROOT,
-                    env={
-                        "COMPOSE_DISABLE_ENV_FILE": "1",
-                        "DOCKER_CONFIG": str(temporary / "docker-config"),
-                        "DOCKER_HOST": f"unix://{temporary / 'no-daemon.sock'}",
-                        "HOME": str(temporary),
-                        "PATH": os.environ["PATH"],
-                    },
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                    timeout=120,
-                )
-                self.assertEqual(0, result.returncode, "overlay config failed")
-                services = __import__("json").loads(result.stdout)["services"]
-                rendered = services[broker]
-                self.assertEqual("16379", str(rendered["environment"]["VALKEY_PORT"]))
-                self.assertEqual(["16379"], rendered["expose"])
-                self.assertIn("start-dedicated.sh", _command(rendered))
-                self.assertIn(
-                    '-p "$${VALKEY_PORT}"',
-                    " ".join(rendered["healthcheck"]["test"]),
-                )
-                exporter = services[broker + "-exporter"]
-                self.assertEqual("16379", str(exporter["environment"]["VALKEY_PORT"]))
-                exporter_command = _command(exporter)
-                self.assertIn("port=$${VALKEY_PORT}", exporter_command)
-                self.assertIn(f"redis://{broker}:$$port", exporter_command)
+class DedicatedValkeyWrapperTests(unittest.TestCase):
+    """Script-level proof of the standalone Valkey wrapper and ACL renderer."""
 
     def _run_wrapper(
         self,

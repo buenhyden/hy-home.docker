@@ -1,10 +1,10 @@
 ---
 title: "Airflow Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "POL-0050"
 parent_ids:
@@ -20,19 +20,19 @@ created: "2026-05-17"
 
 ## Scope
 
-- Airflow 코어 컴포넌트(`airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter`)와 OPTIONAL `airflow-valkey`·`airflow-valkey-exporter` 관리
+- Airflow 코어 컴포넌트(`airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter`) 관리
 - 메타데이터 DB 및 브로커(Valkey) 연결 정책
 - DAG 배포 및 운영 환경 보안 통제
 
 - **Systems**: Apache Airflow, CeleryExecutor
-- **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`workflow-airflow`/`dedicated-valkey` profile, homelab operations
+- **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`workflow-airflow` profile, homelab operations
 
 ## Rules
 
 - **Required**:
   - 모든 DAG은 `Idempotent`(멱등성)를 유지해야 함.
   - 민감 정보는 반드시 Secret Backend(Docker Secrets/OpenBao) 및 Airflow Connections를 통해 관리함.
-  - `dedicated-valkey` profile 선택 여부가 만드는 broker 차이(`mng-valkey` vs `airflow-valkey`)를 변경 문서에 명시함.
+  - broker는 공유 `mng-valkey`뿐이며 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었다.
   - 인증 manager는 Keycloak auth manager를 사용하고, client secret은
     `airflow_keycloak_client_secret` Docker Secret 또는 `/run/openbao/airflow` 아래의
     OpenBao Agent 출력 파일(`AIRFLOW_CLIENT_SECRET_FILE`)로만 주입함. 환경 변수 값으로 넣지 않음.
@@ -50,7 +50,7 @@ created: "2026-05-17"
 
 ### Lifecycle and data controls
 
-- Airflow 코어는 HOME, 전용 broker pair는 OPTIONAL을 유지한다. `dedicated-valkey`만으로 broker 전환이 승인·수행되지 않으며 matching host/secret과 drain 계획이 필요하다.
+- Airflow 코어는 HOME이고 broker는 공유 `mng-valkey`다. broker 이전에는 drain 계획이 필요하다.
 - PostgreSQL metadata, 현재 `airflow_fernet_key`, DAG/plugin/config와 필요한 log는 한 복구 단위다. 같은 Fernet key 없는 DB copy로 암호화 Connections를 복구하지 못한다.
 - Backup/restore/broker migration/schema upgrade 전에 schedule·producer를 멈추고 실행/대기 task를 조정한다. Valkey queue를 task 이력 원본으로 간주하지 않는다.
 - 격리 project/network와 복원 copy로 rehearsal하며 production volume을 덮어쓰지 않는다. Migration level, DAG parse, 값 비노출 복호화, worker/broker health, login과 canary를 검증한다.

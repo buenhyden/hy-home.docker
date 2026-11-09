@@ -16,12 +16,6 @@ ROOT = Path(__file__).resolve().parents[2]
 EXPORTER = "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
 EXPORTERS = (
     (
-        "infra/02-auth/oauth2-proxy/docker-compose.yml",
-        "oauth2-proxy-valkey-exporter",
-        "oauth2-proxy-valkey",
-        True,
-    ),
-    (
         "infra/04-data/mng-db/docker-compose.yml",
         "mng-valkey-exporter",
         "mng-valkey",
@@ -32,18 +26,6 @@ EXPORTERS = (
         "dev-valkey-exporter",
         "dev-valkey",
         False,
-    ),
-    (
-        "infra/07-workflow/airflow/docker-compose.yml",
-        "airflow-valkey-exporter",
-        "airflow-valkey",
-        True,
-    ),
-    (
-        "infra/07-workflow/n8n/docker-compose.yml",
-        "n8n-valkey-exporter",
-        "n8n-valkey",
-        True,
     ),
 )
 
@@ -100,8 +82,6 @@ class NextStableCandidates(unittest.TestCase):
                         str(env_file),
                         "-f",
                         str(ROOT / "docker-compose.yml"),
-                        "--profile",
-                        "dedicated-valkey",
                         "--profile",
                         "mng",
                         "--profile",

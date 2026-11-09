@@ -1689,30 +1689,6 @@ class PublicSecretSchemaTests(unittest.TestCase):
         disabled = self._activation_contract(overlays, {"MNG_VALKEY_N8N_ENABLED": "0"})
         self.assertEqual(set(), disabled["missing_grants"])
 
-    def test_overlay_grants_cover_only_declared_sources_of_base_services(self):
-        contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
-        self.assertIn(
-            (
-                "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
-                "n8n-valkey-exporter",
-                "n8n_valkey_monitor_password",
-            ),
-            contract["overlay_grants"],
-        )
-        path = Path("infra/07-workflow/n8n/docker-compose.monitor-acl.yml")
-        model = self.source_context["overlay_inputs"][path]
-        service = model["services"]["n8n-valkey-exporter"]
-        undeclared = model | {
-            "services": {"n8n-valkey-exporter": service | {"secrets": ["undeclared"]}}
-        }
-        contract = self._activation_contract({path: undeclared})
-        self.assertIn(("n8n-valkey-exporter", "undeclared"), contract["dangling"])
-        foreign = model | {"services": {"not-in-base": service}}
-        contract = self._activation_contract({path: foreign})
-        self.assertFalse(
-            any(row[1] == "not-in-base" for row in contract["overlay_grants"])
-        )
-
     def test_conditional_coverage_rejects_conflicting_target_sources(self):
         path = Path("infra/04-data/mng-db/docker-compose.n8n-acl.yml")
         model = self.source_context["overlay_inputs"][path]
