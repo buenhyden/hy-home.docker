@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.31"
+version: "0.1.32"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -315,6 +315,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | D03 n8n named-user HOME switch after the ACL fix | 59 | W64 | Approved recreate, then health, ACL LOG, log and client readback | `main` `9939431c3`, image `f1493a20a2ff`, containers `435672289f3b` and the recreated `n8n`/`n8n-worker` | PASS | Healthy, no restarts; 19 `user=n8n` connections incl. worker `brpoplpush`; no `NOPERM`/`WRONGPASS` over three minutes; other consumers unchanged | required | - |
 | D03 live job through the named user | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch | NOT_RUN | No execution in the watch window; confirm on the next run | optional | - |
 | D03 live job through the named user, observed | 59 | W64 | Next workflow execution observed on `user=n8n` | HOME n8n after the switch, execution 127 | PASS | Enqueued by main, run by the worker, `success` in the n8n database; no `NOPERM` or `WRONGPASS` | optional | D03 live job through the named user |
+| SEC01 root source re-binding and crawl4ai-loopback row | 60 | W65 | `test_update_gates` | Clean `main` `b4d09cbd7` | PASS | 51 failures before (50 stale file hashes, 1 missing `crawl4ai-loopback` row); 39 tests OK after; image, build and the other membership unchanged | required | - |
 | n8n 2.46.6 source pin and digests | 60 | W65 | Read-only Docker Hub registry, GitHub release and npm lookups | Branch base `0220de58a`; `n8nio/n8n:2.46.6`, `n8nio/runners:2.46.6` | PASS | Index digests `sha256:8602f5df…92b3ae` (n8n) and `sha256:b1fe87a5…322612` (runners); `stable`, `latest` and the tag agree; release `n8n@2.46.6` published 2026-11-04, not a prerelease; recorded in the SEC01 lookups and ledger | required | - |
 | n8n 2.46.6 signature, full-image scan, build, native and HOME | 60 | W65 | Publisher signature, SBOM or scan, `hyhome/n8n` build, native queue and HOME recreate | Same inputs | NOT_RUN | Out of this source unit; the local image build and every recreate wait for their own approval | required | - |
 | n8n router without gateway SSO | 57 | W62 | Static Compose label, Compose render, `RouteAuthContractTests`, `SsoOnlyIngressContractTests`, hardening gate | Branch base `0220de58a` plus this change | PASS | `traefik.http.routers.n8n.middlewares` is `gateway-standard-chain@file`; `docker compose --env-file .env.example config -q` exits 0; `check-all-hardening.sh` ALL PASS; `hermes-webhook.yml` unchanged | required | - |
@@ -863,6 +864,29 @@ now holds the declared requirements (`jsonschema` 4.26.0, `referencing`
 blocks of `gen-secrets.sh` now name a missing module and point to the
 requirements file, without printing any value; the new test failed before
 that change.
+
+### 2026-11-09 root source re-binding and crawl4ai-loopback
+
+On clean `main` `b4d09cbd7`, `test_update_gates` failed 51 times: 50 rows of
+`test_current_rows_match_root_compose_source` and
+`test_current_root_census_excludes_relocated_lab_history`. Every hash failure
+was a stale file hash: the image and build assertions passed for all 96 rows.
+Nine root Compose inputs had changed after their rows were last bound (dev-db,
+mng-db, kafka, observability, airflow, ComfyUI, crawl4ai, open-webui and
+storybook). The census failure was the `crawl4ai-loopback` service added to
+`infra/08-ai/crawl4ai/docker-compose.yml` (`f816150a6`), which had no row.
+
+A new `source_refreshes` entry keeps the previous include inputs and the
+previous binding of each of the 50 rows, re-binds the include hashes and those
+rows' `source_input_sha256`, and lists `crawl4ai-loopback` under
+`added_services`. `source_refreshed_at` of the re-bound rows is unchanged. The
+new row is BLOCKED: its image is the same digest pin as `crawl4ai-egress`, and
+every release, signature, scan, compatibility, runtime and recovery field says
+`UNKNOWN`, `NOT_RUN` or `NOT_OBSERVED`. The `p08_public_release_observations`
+denominator moves to 97 and the row joins `services_without_related_source`,
+with an `added_root_service_mapping` record; the observation rows are
+unchanged. The n8n rows were not touched. No test code was stale, so none
+changed. Afterwards `test_update_gates` ran 39 tests: OK.
 
 ### 2026-11-09 n8n 2.46.6 and native login only
 
