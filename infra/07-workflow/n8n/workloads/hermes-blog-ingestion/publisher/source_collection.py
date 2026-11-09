@@ -3,9 +3,12 @@
 import base64
 import hashlib
 import json
+import os
 import re
 import secrets
+import urllib.request
 from datetime import UTC, datetime
+from pathlib import Path
 
 from . import source_check, source_fetch
 from .private_records import PrivateRecords
@@ -13,6 +16,13 @@ from .private_records import PrivateRecords
 MAX_TEXT_BYTES = 256 * 1024
 MAX_RUN_ITEMS = 100
 MAX_ITEM_FETCH_ATTEMPTS = 3
+# POL-0091: open-web fallback. Only primary failures Crawl4AI can change; a
+# refusal (private address, oversized body) is never retried through it.
+CRAWL4AI_URL = "http://127.0.0.1:11235/crawl"
+CRAWL4AI_TIMEOUT = 60
+CRAWL4AI_MAX_RESPONSE = 32 * 1024 * 1024
+FALLBACK_REASONS = frozenset({"status", "redirects", "connect"})
+_LOOPBACK_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 
 class SourceQuality(ValueError):
@@ -161,6 +171,82 @@ def _check(record, job, run, item, scheduled):
     return result
 
 
+def _crawl4ai_token():
+    """Same order as the plugin's other settings: environment, then Hermes .env."""
+    token = os.environ.get("CRAWL4AI_API_TOKEN")
+    if token:
+        return token.strip()
+    home = Path(os.environ.get("HERMES_HOME", "~/.hermes")).expanduser()
+    for line in (home / ".env").read_text(encoding="utf-8").splitlines():
+        if line.startswith("CRAWL4AI_API_TOKEN="):
+            value = line.split("=", 1)[1].strip().strip('"')
+            if value:
+                return value
+    raise FileNotFoundError("crawl4ai_token_missing")
+
+
+def _crawl4ai_fetch(url, *, opener=None):
+    """Render one page through the loopback Crawl4AI; raises when it cannot."""
+    token = _crawl4ai_token()
+    payload = {
+        "urls": [url],
+        "crawler_config": {
+            "type": "CrawlerRunConfig",
+            "params": {"cache_mode": "bypass", "page_timeout": 25000},
+        },
+    }
+    request = urllib.request.Request(
+        CRAWL4AI_URL,
+        json.dumps(payload).encode(),
+        {"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+    )
+    response = (opener or _LOOPBACK_OPENER.open)(request, timeout=CRAWL4AI_TIMEOUT)
+    raw = response.read(CRAWL4AI_MAX_RESPONSE + 1)
+    if len(raw) > CRAWL4AI_MAX_RESPONSE:
+        raise ValueError("crawl4ai_too_large")
+    page = json.loads(raw)["results"][0]
+    markdown = page.get("markdown")
+    if isinstance(markdown, dict):
+        markdown = markdown.get("raw_markdown")
+    status = page.get("status_code")
+    # The receipt names what was actually loaded; _canonical refuses non-https.
+    loaded = page.get("redirected_url")
+    if page.get("url") != url or not isinstance(loaded, str):
+        raise ValueError("crawl4ai_unbound")
+    final_url = source_fetch._canonical(loaded)
+    if (
+        page.get("success") is not True
+        or type(status) is not int
+        or not 200 <= status < 300
+        or not isinstance(markdown, str)
+        or not markdown.strip()
+    ):
+        raise ValueError("crawl4ai_refused")
+    body = markdown.encode("utf-8")
+    if len(body) > source_fetch.MAX_BYTES:
+        raise ValueError("crawl4ai_too_large")
+    return source_fetch.FetchResult(
+        final_url=final_url,
+        status=status,
+        sha256=hashlib.sha256(body).hexdigest(),
+        fetched_at=source_fetch._utc_millis(datetime.now(UTC)),
+        content_type="text/plain; charset=utf-8; x-collector=crawl4ai",
+        body=body,
+    )
+
+
+def _fetch_with_fallback(url, *, crawler=None):
+    try:
+        return source_fetch.fetch(url)
+    except source_fetch.FetchFailure as error:
+        if error.reason not in FALLBACK_REASONS:
+            raise
+        try:
+            return (crawler or _crawl4ai_fetch)(url)
+        except Exception:
+            raise error from None
+
+
 def collect(root, job, run, scheduled, item, url, *, fetcher=None):
     """Fetch exactly once per run/item; publish bytes before returning text."""
     if (
@@ -171,7 +257,7 @@ def collect(root, job, run, scheduled, item, url, *, fetcher=None):
     ):
         raise ValueError("invalid_source_request")
     source_fetch._canonical(url)
-    fetcher = fetcher or source_fetch.fetch
+    fetcher = fetcher or _fetch_with_fallback
     name = _key(job, run, item) + ".json"
     store = PrivateRecords(root)
     try:

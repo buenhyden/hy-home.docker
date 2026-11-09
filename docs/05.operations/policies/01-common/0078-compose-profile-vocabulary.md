@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.15.0"
+version: "1.15.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -54,7 +54,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `contract-testing` | capability | Pact Broker 계약 저장·검증 결과와 feature 소유 DB 준비 | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `pact-broker-db-provision`, `pact-broker` | No | initialization: pact-broker-db-provision (role·database); pact 게시·검증 결과 쓰기; monitoring initialization: mng-pg-monitor-provision | current |
 | `core` | baseline | 접근·인증·secret 기반과 관리 DB; HOME 앱 전체는 아님 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init; monitoring initialization: mng-pg-monitor-provision | current |
 | `couchdb` | topology | 독립 LAB CouchDB 복제 구성과 초기화 | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` | No | initialization: couchdb-cluster-init | current |
-| `crawl4ai` | capability | 격리 network의 token 보호 웹 crawler와 `crawl4ai-egress` 출구 gateway; 현재 소비자 없음 | `crawl4ai`, `crawl4ai-egress` | No | normal service startup | current |
+| `crawl4ai` | capability | 격리 network의 token 보호 웹 crawler, `crawl4ai-egress` 출구 gateway와 `crawl4ai-loopback` host 전달기; 소비자 POL-0091 | `crawl4ai`, `crawl4ai-egress`, `crawl4ai-loopback` | No | normal service startup | current |
 | `data-science` | capability | MLflow 추적과 그 provisioner; JupyterLab은 LAB `jupyterlab` profile(SPEC-0262) | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets; monitoring initialization: mng-pg-monitor-provision | current |
 | `dedicated-valkey` | topology | 앱별 broker 대안; HOST와 SECRET 매핑도 전환해야 함 | `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`, `airflow-valkey`, `airflow-valkey-exporter`, `n8n-valkey`, `n8n-valkey-exporter` | No | normal service startup | current |
 | `dependency-update` | automation | Renovate 갱신 제안 작업; 명시적 실행만 허용 | `renovate` | No | remote dependency proposals when configured | current |

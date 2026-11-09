@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.15"
+version: "0.5.16"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1744,6 +1744,32 @@ were not restarted. `n8n execute --id` cannot run this workflow because its only
 start node is the schedule trigger (`Missing node to start execution`), so the
 first real run is the next 07:50 KST.
 
+### Crawl4AI open-web fallback (2026-11-09)
+
+Of 120 source collections in Hermes sessions, 22 failed. The twelve distinct
+failed URLs were retried once through Crawl4AI: seven of the ten
+`source_unavailable` URLs returned 14,000 to 32,000 characters, three Reuters URLs
+were refused by DataDome, and two `source_too_large` URLs stayed too large. The
+native fetcher still failed the same URLs at that time (`redirects`, `status`,
+`connect`, `scheme`), which rules out a passing outage. Whether each returned page
+held the article body was not inspected.
+
+The owner approved the fallback on 2026-11-09 for an unbounded set of hosts,
+including Blog-data publication of quotes. POL-0091 1.2.0 registers host-unbounded work by class
+(`open-web-fallback` for Hermes, `dedicated-crawl` for later crawl jobs, which add a
+row before running) and allows one host publication for reviewed host consumers.
+`source_collection.collect` falls back only on `status`, `redirects` and `connect`; a
+refused crawl surfaces the original failure and is not retried. The receipt's
+`final_url` is the crawler's `redirected_url`, canonicalized, so a page that ends off
+https is refused; `scheme` is excluded, which gives up one of the seven recovered
+URLs (`areyou.co.kr`). The rendered
+Markdown is bound to the existing receipt as `text/plain` with
+`x-collector=crawl4ai`, so hashing and quote checks are unchanged. Docker does not
+publish ports of a container on internal networks only (tested), so
+`crawl4ai-loopback` holds `127.0.0.1:11235` and forwards only to the crawler.
+The independent Attester re-fetches with the native fetcher, so a fallback source
+cannot be attested by it. Deployment is a separate approved step.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -1781,6 +1807,7 @@ first real run is the next 07:50 KST.
 | Warm-up Code node inventory | 8, 23 | W83 | `test_p03_runner_consumers` public Code-node inventory | #837 run 42539192703 | FAIL | The new workflow was missing from the reviewed inventory. | required | - |
 | Warm-up Code node inventory rerun | 8, 23 | W83 | `test_p03_runner_consumers` public Code-node inventory | Inventory lists `task-runner-warmup/workflow.json` | PASS | The no-env and no-import checks also pass for the new node. | required | Warm-up Code node inventory |
 | Warm-up HOME activation | 8, 23 | W83 | `import:workflow`, `publish:workflow`, n8n main restart and activation log readback | `main` `216049026`; HOME n8n | PASS | Both workflows activated; n8n healthy; JS runner PID unchanged. | required | - |
+| Crawl4AI fallback source | 8, 23 | W83 | `test_source_collection` and `test_crawl4ai_egress` RED then GREEN | Fallback, forwarder Compose and POL-0091 1.2.0 | PASS | New tests failed before and pass after; 22 and 22 tests OK. Live HOME path NOT_RUN. | required | - |
 | Warm-up scheduled run | 8, 23 | W83 | First 07:50 KST execution readback | HOME n8n schedule | NOT_RUN | Awaits the next 07:50 KST; `n8n execute` cannot start a schedule-only workflow. | required | - |
 
 ## Criterion Acceptance

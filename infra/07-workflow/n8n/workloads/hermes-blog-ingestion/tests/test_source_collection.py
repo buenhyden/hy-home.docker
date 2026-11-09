@@ -17,7 +17,7 @@ WORKLOAD = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WORKLOAD))
 
 from publisher import private_records, source_collection  # noqa: E402
-from publisher.source_fetch import FetchResult  # noqa: E402
+from publisher.source_fetch import FetchFailure, FetchResult  # noqa: E402
 
 JOB = "25674fbc0bf3"
 RUN = "0123456789abcdef"
@@ -48,6 +48,123 @@ def item(item_id="item-1", *, source_url=FINAL_URL):
         "source_url": source_url,
         "source_quotes": [SENTENCE],
     }
+
+
+BOUND = {"url": URL, "redirected_url": FINAL_URL}
+GOOD = {**BOUND, "success": True, "status_code": 200, "markdown": SENTENCE}
+
+
+class Crawl4aiFallbackTests(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.home = Path(directory.name)
+        self.env_file = self.home / ".env"
+        self.env_file.write_text('OTHER=1\nCRAWL4AI_API_TOKEN="synthetic-token"\n')
+        patcher = mock.patch.dict(os.environ, {"HERMES_HOME": str(self.home)})
+        patcher.start()
+        os.environ.pop("CRAWL4AI_API_TOKEN", None)
+        self.addCleanup(patcher.stop)
+
+    @staticmethod
+    def response(payload):
+        return mock.Mock(**{"read.return_value": json.dumps(payload).encode()})
+
+    def crawl(self, result):
+        calls = []
+
+        def opener(request, timeout):
+            calls.append((request, timeout))
+            return self.response({"results": [result]})
+
+        return (
+            source_collection._crawl4ai_fetch(URL, opener=opener),
+            calls,
+        )
+
+    def test_rendered_text_becomes_a_plain_text_receipt(self):
+        fetched_result, calls = self.crawl(
+            {
+                "url": URL,
+                "redirected_url": FINAL_URL,
+                "success": True,
+                "status_code": 200,
+                "markdown": {"raw_markdown": SENTENCE},
+            }
+        )
+        self.assertEqual(FINAL_URL, fetched_result.final_url)
+        self.assertEqual(SENTENCE.encode(), fetched_result.body)
+        self.assertEqual(
+            hashlib.sha256(SENTENCE.encode()).hexdigest(), fetched_result.sha256
+        )
+        self.assertEqual("text/plain", fetched_result.content_type.split(";")[0])
+        self.assertIn("x-collector=crawl4ai", fetched_result.content_type)
+        self.assertEqual("http://127.0.0.1:11235/crawl", calls[0][0].full_url)
+        self.assertEqual(
+            "Bearer synthetic-token", calls[0][0].get_header("Authorization")
+        )
+
+    def test_refused_or_empty_crawl_is_a_failure(self):
+        for result in (
+            {**BOUND, "success": False, "status_code": 401, "markdown": ""},
+            {**BOUND, "success": True, "status_code": 403, "markdown": SENTENCE},
+            {**BOUND, "success": True, "status_code": 200, "markdown": "  "},
+            {"url": URL, "success": True, "status_code": 200, "markdown": SENTENCE},
+            {**GOOD, "url": "https://example.org/other"},
+            {**GOOD, "redirected_url": "http://example.org/plain"},
+        ):
+            with (
+                self.subTest(result=result),
+                self.assertRaises((ValueError, FetchFailure)),
+            ):
+                self.crawl(result)
+
+    def test_missing_token_disables_the_fallback(self):
+        self.env_file.write_text("OTHER=1\n")
+        with self.assertRaises(OSError):
+            self.crawl(GOOD)
+
+    def test_fallback_runs_only_for_listed_primary_failures(self):
+        rendered = fetched()
+        for reason, used in (
+            ("status", True),
+            ("redirects", True),
+            ("connect", True),
+            ("scheme", False),
+            ("too_large", False),
+            ("private_address", False),
+        ):
+            with self.subTest(reason=reason):
+                crawler = mock.Mock(return_value=rendered)
+                with mock.patch.object(
+                    source_collection.source_fetch,
+                    "fetch",
+                    side_effect=FetchFailure(reason),
+                ):
+                    if used:
+                        self.assertIs(
+                            rendered,
+                            source_collection._fetch_with_fallback(
+                                URL, crawler=crawler
+                            ),
+                        )
+                    else:
+                        with self.assertRaises(FetchFailure):
+                            source_collection._fetch_with_fallback(URL, crawler=crawler)
+                        crawler.assert_not_called()
+
+    def test_failed_crawl_reports_the_primary_failure(self):
+        crawler = mock.Mock(side_effect=ValueError("crawl4ai_refused"))
+        with (
+            mock.patch.object(
+                source_collection.source_fetch,
+                "fetch",
+                side_effect=FetchFailure("status"),
+            ),
+            self.assertRaises(FetchFailure) as caught,
+        ):
+            source_collection._fetch_with_fallback(URL, crawler=crawler)
+        self.assertEqual("status", caught.exception.reason)
 
 
 class SourceCollectionTests(unittest.TestCase):

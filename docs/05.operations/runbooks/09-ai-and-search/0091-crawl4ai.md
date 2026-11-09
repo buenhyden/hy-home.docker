@@ -16,7 +16,7 @@ created: "2026-09-21"
 
 ## Overview
 
-이 런북은 OPTIONAL `crawl4ai`(`crawl4ai`, `crawl4ai-egress`, profile `crawl4ai`)의 시작 실패, 토큰 노출, 메모리 압박 대응과 consumer 연결·해제, 제거 절차를 다룬다.
+이 런북은 OPTIONAL `crawl4ai`(`crawl4ai`, `crawl4ai-egress`, `crawl4ai-loopback`, profile `crawl4ai`)의 시작 실패, 토큰 노출, 메모리 압박 대응과 consumer 연결·해제, 제거 절차를 다룬다.
 
 ## Trigger
 
@@ -42,8 +42,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    docker compose --profile crawl4ai config --quiet
-   docker compose --profile crawl4ai ps -a crawl4ai crawl4ai-egress
-   docker compose --profile crawl4ai logs --tail=100 crawl4ai crawl4ai-egress
+   docker compose --profile crawl4ai ps -a crawl4ai crawl4ai-egress crawl4ai-loopback
+   docker compose --profile crawl4ai logs --tail=100 crawl4ai crawl4ai-egress crawl4ai-loopback
    ```
 
 2. `64` 종료는 토큰 시크릿이 없거나 16자 미만임을 의미한다. 크롤러가 시작되지 않고 기다리면 `crawl4ai-egress`의 healthcheck를 먼저 본다. 크롤링이 모두 실패하면 gateway log의 `egress refused` 줄에서 거절 사유(port, address, resolve)를 확인하고, 거절된 목적지를 허용하려고 gateway나 internal 네트워크를 완화하지 않는다.
