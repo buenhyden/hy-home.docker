@@ -177,6 +177,9 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Applications/hermes-research`, `Infrastructure/containers` | `Applications/hermes-research`는 Hermes 플러그인이 node-exporter textfile로 쓰는 지표(SPEC-0265) |
 | 07-workflow | `n8n-task-runner-worker` | none | `Infrastructure/containers` | container metrics and logs only; its isolated runner network keeps Gatus out |
 | 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | queue load comes from `n8n_scaling_mode_queue_jobs_*` on the `n8n` job |
+| 07-workflow | `n8n-sandbox-api` | none | `Infrastructure/containers` | container metrics and logs only; the service's own metrics are off |
+| 07-workflow | `n8n-sandbox-certs` | none | `Infrastructure/containers` | one-shot job; logs only |
+| 07-workflow | `n8n-sandbox-runner-1` | none | `Infrastructure/containers` | container metrics and logs only; inner sandbox containers are not scraped |
 | 07-workflow | `searxng` | none | `Infrastructure/containers` | container metrics and logs only; SearXNG's own metrics are off |
 | 08-ai | `comfyui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `crawl4ai` | none | `Infrastructure/containers` | container metrics and logs only |

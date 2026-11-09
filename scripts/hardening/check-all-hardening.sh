@@ -575,6 +575,8 @@ check_07_workflow() {
   check_contains "$n8n_compose" "!PathRegexp(\`(?i)^/webhook(-test)?/hermes-blog-ingestion\`)" "n8n router must exclude the Hermes webhook path in any letter case"
   check_contains "$n8n_compose" "N8N_OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:" "n8n tracing must target Alloy OTLP"
   check_contains "$n8n_compose" "N8N_INSTANCE_AI_SEARXNG_URL: http://searxng:8080" "n8n Assistant web search must use the internal searxng"
+  check_contains "$n8n_compose" "N8N_SANDBOX_SERVICE_API_KEY_FILE: /run/secrets/n8n_sandbox_api_key" "n8n sandbox API key must come from a secret file"
+  if [ "$(grep -c "^    privileged: true" "$n8n_compose")" != "1" ]; then fail "n8n compose must have exactly one privileged service (the sandbox runner)"; fi
 }
 
 # --- Tier 08: AI ---
