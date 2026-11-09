@@ -1,6 +1,6 @@
 ---
 title: "Security update evidence"
-version: "1.1.12"
+version: "1.1.13"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -214,6 +214,23 @@ dry run). `--write --source-revision <40자리 commit>`을 주면 `source_refres
 검토·scan·서명·수용 필드는 쓰지 않습니다. PR이 root Compose 입력을 바꾸면
 `tests.lib.supply_chain.test_update_gates`가 호스티드 `compose-baseline-regressions`
 leaf에서 같은 불일치를 잡습니다.
+
+Renovate PR은 `bash scripts/operations/sync-update-ledger.sh --write` post-upgrade
+단계로 같은 도구의 `--accept-image-updates` 모드를 실행합니다. 이 모드는 Compose가
+같은 저장소의 전체 `name:tag@sha256:<64 hex>` 참조로 바뀐 기존 행만 받아들이며, 새
+서비스·제거·저장소 변경·digest 없는 참조·build 변경은 종료 코드 2로 거부하고 아무것도
+쓰지 않습니다. 받아들인 행은 검증하지 않은 상태로 남습니다. `target_index_digest`·
+`target_manifest_digest`·`target_config_digest`·`target_declared_digest`는
+`UNKNOWN`, signature·SBOM·scan·compatibility·backup·rollback·native·deployment는
+`NOT_RUN`, disposition은 `BLOCKED`이고 `current_target_artifact_binding`은
+`UNBOUND_CURRENT_TARGET`입니다. 이전 값은 `source_refreshes`의
+`previous_service_images`에 남고 `meaning`은 Renovate가 제안한 digest의 서명과
+provenance를 확인하지 않았음을 적습니다. 레지스트리·네트워크에는 접속하지 않으며 같은
+상태에서 다시 실행하면 아무것도 바꾸지 않습니다. n8n 입력 파일이 바뀌면 같은 도구가
+`update-ledger.json`과 `build-inputs.json`의 `n8n_source_preparation.source_binding`을
+같은 값으로 다시 묶고 이전 binding을 `historical_source_bindings`에 추가합니다(이
+재결합은 `--accept-image-updates` 없이도 일어납니다). 이 단계가 만드는 행은 검토 증거가
+아니며 사람이 digest·서명·provenance·scan을 확인하기 전에는 수용으로 읽지 않습니다.
 
 다음 수치·hash는 LAB 이동 전의 역사적 DEFER 영수증입니다. latest gate는 `ready=false`,
 `deployed=false`, `externalfacts=false`, exit 2와 missing/unexpected 서비스 없음을

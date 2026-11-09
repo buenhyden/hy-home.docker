@@ -56,10 +56,13 @@
 
   "postUpgradeTasks": {
     "commands": [
-      "bash scripts/operations/sync-tech-stack-versions.sh --write"
+      "bash scripts/operations/sync-tech-stack-versions.sh --write",
+      "bash scripts/operations/sync-update-ledger.sh --write"
     ],
     "fileFilters": [
-      "infra/tech-stack.versions.json"
+      "infra/tech-stack.versions.json",
+      "infra/09-platform-ops/security-updates/update-ledger.json",
+      "infra/09-platform-ops/security-updates/build-inputs.json"
     ],
     "executionMode": "branch"
   },

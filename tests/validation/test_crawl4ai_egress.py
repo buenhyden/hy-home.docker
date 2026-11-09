@@ -389,7 +389,7 @@ class ComposeContractTests(unittest.TestCase):
         self.assertEqual("template-infra-readonly-low", egress["extends"]["service"])
         self.assertEqual("65534:65534", egress["user"])
         self.assertRegex(
-            egress["image"], r"^python:3\.13\.15-alpine@sha256:[0-9a-f]{64}$"
+            egress["image"], r"^python:\d+\.\d+\.\d+-alpine@sha256:[0-9a-f]{64}$"
         )
         # Listens on the crawler's network only, never the outbound bridge.
         self.assertEqual(

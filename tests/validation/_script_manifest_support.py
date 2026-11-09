@@ -65,6 +65,7 @@ MUTATION_OVERRIDES = {
     "scripts/operations/storybook_image.py": "runtime",
     "scripts/lib/document_governance/metadata_validator.py": "check-write",
     "scripts/operations/sync-tech-stack-versions.sh": "check-write",
+    "scripts/operations/sync-update-ledger.sh": "check-write",
     "scripts/security/seed-grype-db-cache.sh": "runtime",
     "scripts/security/verify-sample-service-supply-chain.sh": "runtime",
     "scripts/validation/check-document-metadata.py": "check-write",

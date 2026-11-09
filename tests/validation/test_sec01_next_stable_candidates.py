@@ -13,7 +13,11 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-EXPORTER = "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
+LEDGER = ROOT / "infra/09-platform-ops/security-updates/update-ledger.json"
+# The pin itself is owned by Compose and the SEC01 ledger row; Renovate bumps it.
+EXPORTER_PIN = re.compile(
+    r"oliver006/redis_exporter:v\d+\.\d+\.\d+-alpine@sha256:[0-9a-f]{64}"
+)
 EXPORTERS = (
     (
         "infra/04-data/mng-db/docker-compose.yml",
@@ -36,6 +40,11 @@ def load(path):
 
 class NextStableCandidates(unittest.TestCase):
     def test_all_owned_exporters_use_same_immutable_alpine_candidate(self):
+        rows = {
+            row["service"]: row for row in json.loads(LEDGER.read_text())["entries"]
+        }
+        pins = {load(path)["services"][name]["image"] for path, name, *_ in EXPORTERS}
+        self.assertEqual(1, len(pins), "both exporters share one pin")
         for path, exporter_name, host, variable_port in EXPORTERS:
             with self.subTest(path=path):
                 exporters = [
@@ -46,7 +55,10 @@ class NextStableCandidates(unittest.TestCase):
                 self.assertEqual(len(exporters), 1)
                 service = exporters[0]
                 self.assertEqual(service, load(path)["services"][exporter_name])
-                self.assertEqual(service["image"], EXPORTER)
+                self.assertRegex(service["image"], EXPORTER_PIN)
+                self.assertEqual(
+                    service["image"], rows[exporter_name]["current_declared"]
+                )
                 self.assertEqual(service["entrypoint"], ["/bin/sh", "-c"])
                 command = service["command"][0]
                 self.assertIn("exec /redis_exporter", command)
@@ -217,9 +229,10 @@ class NextStableCandidates(unittest.TestCase):
 
     def test_tempo_candidate_keeps_seaweed_nonroot_wrapper(self):
         dockerfile = (ROOT / "infra/06-observability/tempo/Dockerfile").read_text()
-        self.assertIn(
-            "grafana/tempo:3.1.0@sha256:3076b8dcdfb32fd6bc5ccef85e7b7313e6199b9cb84366257fc17ecb696db5fd AS upstream",
+        # Renovate bumps the Dockerfile pin; the repository and digest stay required.
+        self.assertRegex(
             dockerfile,
+            r"(?m)^FROM grafana/tempo:\d+\.\d+\.\d+@sha256:[0-9a-f]{64} AS upstream$",
         )
         self.assertIn("COPY --from=upstream /tempo /usr/bin/tempo", dockerfile)
         self.assertIn("USER 10001:10001", dockerfile)
