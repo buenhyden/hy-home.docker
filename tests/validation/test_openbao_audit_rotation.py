@@ -34,7 +34,7 @@ if [ "$1" = inspect ]; then
             fi
             ;;
     esac
-elif [ "$1" = kill ]; then
+elif [ "$1" = exec ]; then
     exit 0
 else
     exit 64
@@ -69,7 +69,7 @@ fi
     def test_good_identity_signals_the_captured_full_id(self):
         result, calls = self.run_postrotate()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(calls[-1], f"kill --signal=HUP {CONTAINER_ID}")
+        self.assertEqual(calls[-1], f"exec {CONTAINER_ID} kill -HUP 1")
 
     def test_name_lookup_only_matches_containers(self):
         # A network or volume named openbao also has a 64-hex ID.
@@ -79,25 +79,25 @@ fi
     def test_bad_labels_do_not_signal(self):
         result, calls = self.run_postrotate("bad-labels")
         self.assertNotEqual(result.returncode, 0)
-        self.assertFalse(any(call.startswith("kill ") for call in calls))
+        self.assertFalse(any(call.startswith("exec ") for call in calls))
 
     def test_inspect_failure_does_not_signal(self):
         result, calls = self.run_postrotate("inspect-failure")
         self.assertNotEqual(result.returncode, 0)
-        self.assertFalse(any(call.startswith("kill ") for call in calls))
+        self.assertFalse(any(call.startswith("exec ") for call in calls))
 
     def test_invalid_full_id_does_not_signal(self):
         for container_id in ("a" * 63, "g" * 64):
             with self.subTest(container_id=container_id):
                 result, calls = self.run_postrotate(container_id=container_id)
                 self.assertNotEqual(result.returncode, 0)
-                self.assertFalse(any(call.startswith("kill ") for call in calls))
+                self.assertFalse(any(call.startswith("exec ") for call in calls))
                 self.calls.unlink()
 
     def test_name_replacement_still_signals_the_original_id(self):
         result, calls = self.run_postrotate("replacement")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(calls[-1], f"kill --signal=HUP {CONTAINER_ID}")
+        self.assertEqual(calls[-1], f"exec {CONTAINER_ID} kill -HUP 1")
         self.assertEqual(calls[-2].split()[-1], CONTAINER_ID)
 
     def test_rotation_is_bounded_and_lossless(self):

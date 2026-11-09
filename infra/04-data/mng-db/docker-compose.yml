@@ -137,12 +137,15 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     # Official entrypoint creates/chowns PGDATA and drops to postgres.
+    # KILL lets the root init forward the stop signal to that other user;
+    # without it the init died with EPERM and postgres was killed unclean.
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
       - DAC_OVERRIDE
       - FOWNER
+      - KILL
       - SETGID
       - SETUID
     shm_size: 256mb

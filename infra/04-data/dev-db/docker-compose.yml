@@ -32,7 +32,8 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     cap_drop: [ALL]
-    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    # KILL: the root init must signal postgres (see mng-pg).
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, KILL, SETGID, SETUID]
     cpus: '2.00'
     mem_limit: 2g
     # Reservation (measured; SPEC-0263-TSK-0002 Measurements).

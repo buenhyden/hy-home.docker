@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -456,11 +456,28 @@ finished, then unsealed OpenBao. Four defects showed up during recovery:
   `~/.local/state` (mode 775) would have failed the existing check.
 - **`mng-pg` not shut down cleanly.** Its last clean checkpoint was 03:43:52Z.
   Crash recovery spent about 24 minutes syncing the data directory under
-  saturated I/O, and dependent services restarted until 13:15 KST. Cause of the
-  unclean stop: not yet investigated.
+  saturated I/O, and dependent services restarted until 13:15 KST. Cause: its
+  init (`docker-init`, PID 1) runs as root while the server runs as `postgres`,
+  and `cap_drop: ALL` left no `KILL`. On Docker's SIGINT the init logged
+  `Unexpected error when forwarding signal: 'Operation not permitted'` and
+  died, so the kernel killed postgres without a checkpoint. A throwaway
+  container of the same image reproduced it (exit 1, no shutdown record);
+  adding `KILL` gave `received fast shutdown request` and exit 0. A live scan
+  found the same pattern only in `dev-pg`.
 - **OpenBao did not come back.** It sealed at shutdown and exited 255. Its
   `unless-stopped` policy did not restart it at boot, unlike the assumption in
-  RUN-0098. It was started by hand. Cause: not yet investigated.
+  RUN-0098. It was started by hand. Cause: the audit logrotate rule sent
+  `docker kill --signal=HUP` at midnight. Docker marks a killed container
+  manually stopped even for a signal that keeps it running, and the daemon
+  log shows `stopping restart-manager` for OpenBao at 00:00:03. Every other
+  container came back at 12:49. The rule now runs `docker exec <id> kill -HUP
+  1`; a live run reloaded the audit backend with no restart-manager stop.
+- **All containers ran past the 10-second stop.** None of the 59 containers
+  ended within Docker's default 10 s. Many apps logged a clean stop at once
+  (valkey saved its RDB by 03:47:19Z), but their processes lingered until
+  the SIGKILL at about 03:47:27Z. The Docker data root is on the HDD `sdb`,
+  which is the likely bottleneck during the mass stop; this was not
+  measured. Databases get `stop_grace_period: 60s` through the DB templates.
 - **`agent-restart` blocked by I/O.** The issuer helper failed in `prepare`,
   before any server write. The audit log shows only the two token lookups, and
   the journal ended `rolled_back`. A throwaway container of the same kind took
@@ -509,6 +526,9 @@ finished, then unsealed OpenBao. Four defects showed up during recovery:
 | Hermes scheduled run alert | 83 | W88 | Hermes log, n8n log, Traefik log and Prometheus alert readback | 2026-11-09 08:00 KST run | FAIL | `devops` undelivered: n8n execution 128 hit its 30-second timeout; `HermesResearchBlocked` firing; resolution unobserved. | required | - |
 | Reboot: Prometheus overlay | 85 | W90 | Container log and mounts after the 2026-11-09 reboot | Plan `977274558bea` overlay under `/tmp` | FAIL | `/tmp` cleared; Docker bound empty root-owned directories; 26 restarts on `is a directory`. | required | - |
 | Persistent overlay path | 85 | W90 | `tests.lib.ops.test_compose_observation` and `test_compose_start` | Overlay root `~/.local/share/hy-home/p07` | PASS | 35 tests OK; a group-writable step under home is refused; the real home is untouched. | required | - |
+| Postgres stop signal | 85 | W90 | Throwaway `hy-home/mng-pg` containers stopped with and without `KILL`; live capability scan | Image `18.6-pgbackrest` | PASS | Without `KILL`: init EPERM, exit 1. With `KILL`: fast shutdown, exit 0. Only `mng-pg` and `dev-pg` match the pattern. | required | - |
+| OpenBao HUP path | 85 | W90 | `test_openbao_audit_rotation` and a live `docker exec … kill -HUP 1` | Rule in `infra/03-security/openbao/config/logrotate/openbao` | PASS | Audit backend reloaded; no restart-manager stop; still unsealed. Host copy in `/etc/logrotate.d` still needs the owner install. | required | - |
+| Clean-stop contract | 85 | W90 | `test_databases_stop_cleanly_on_host_shutdown` RED then GREEN; Compose render with `.env.example` | `mng-pg`, `dev-pg`, DB templates | PASS | Render: both have `KILL` and `1m0s`; OpenBao and valkey unchanged. | required | - |
 | Reboot: OpenBao Agent restart | 85 | W90 | RUN-0103 `agent-restart` and audit readback | Issuer `4f2e7f9b`, journal `rolled_back` | FAIL | Helper sink container exceeded 20 s under I/O pressure (52 s measured); no server write. | required | - |
 
 ## Criterion Acceptance
