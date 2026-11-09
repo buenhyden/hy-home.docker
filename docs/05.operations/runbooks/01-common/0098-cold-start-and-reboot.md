@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.4.1"
+version: "0.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "RUN-0098"
 created: "2026-09-25"
@@ -104,6 +104,19 @@ docker inspect --format '{{.State.Health.Status}}' mng-valkey traefik keycloak
 `/health/ready`를 확인한다. 이 단계가 안정되지 않으면 이후의 OIDC 로그인
 단계(4)가 실패한다.
 
+종료가 깨끗했는지도 확인한다. `mng-pg`·`dev-pg`의 init은 root로, 서버는
+`postgres`로 돌므로 init이 신호를 전달하려면 `KILL` capability가 있어야 한다.
+2026-11-09 재부팅에서는 이 capability가 없어 init이 `Operation not permitted`로
+죽었고 PostgreSQL이 체크포인트 없이 끝나 부팅 뒤 crash recovery(fsync)에 약
+24분이 걸렸다. DB 템플릿의 `stop_grace_period`는 60초다.
+
+```bash
+docker logs --since 30m mng-pg 2>&1 | grep -E 'was shut down at|not properly shut down|tini'
+```
+
+예상 결과: `database system was shut down at …`만 나온다. `not properly shut down`이나
+`tini` 오류가 있으면 이전 종료가 깨끗하지 않았던 것이다.
+
 ### 3. OpenBao: sealed 상태와 Agent 재시작 상태 확인
 
 `infra/03-security/openbao/docker-compose.yml`의 `openbao` healthcheck는
@@ -120,6 +133,13 @@ docker compose exec -T openbao bao status
 sealed의 종료 코드 2는 서버가 살아 있어도 `unhealthy`인 상태다. 4단계의 owner unseal 뒤
 서버 health가 회복되어야 새 Compose 기동의 Agent가 시작된다. 기존 Agent의 daemon 자동 재시작은 먼저 일어날 수 있고, 새 entrypoint는 이전 token sink를 제거하고 새 wrapped SecretID를 요구하므로
 현재 인증·renewal·렌더링을 별도로 검증한다. 재부팅 뒤 새 SecretID 필요 여부는 RUN-0085로 판단한다.
+
+`openbao`가 `Exited (255)`로 남아 있으면 Docker가 그 컨테이너를 수동 중지로 기록한
+것이다. `docker kill`은 HUP처럼 멈추지 않는 신호에도 이 표시를 남겨
+`unless-stopped`가 재부팅 뒤 컨테이너를 되살리지 않는다. 2026-11-09까지 audit
+logrotate가 매일 `docker kill --signal=HUP`을 보내 이 상태였고, 지금은
+`docker exec … kill -HUP 1`을 쓴다. 남아 있으면 `docker start openbao`로 시작한 뒤
+4단계로 간다.
 
 ### 4. Owner unseal (대화형, hidden input)
 

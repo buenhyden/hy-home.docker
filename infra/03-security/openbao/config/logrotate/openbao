@@ -15,6 +15,8 @@
         [ "${#openbao_id}" -eq 64 ] || exit 1
         case "$openbao_id" in *[!0-9a-f]*) exit 1 ;; esac
         [ "$(/usr/bin/docker inspect --format '{{.State.Running}} {{index .Config.Labels "com.docker.compose.project"}} {{index .Config.Labels "com.docker.compose.service"}}' "$openbao_id")" = "true hy-home-infra openbao" ] || exit 1
-        /usr/bin/docker kill --signal=HUP "$openbao_id" >/dev/null
+        # Not `docker kill`: it marks the container manually stopped, so
+        # unless-stopped no longer brings it back after a reboot.
+        /usr/bin/docker exec "$openbao_id" kill -HUP 1 >/dev/null
     endscript
 }

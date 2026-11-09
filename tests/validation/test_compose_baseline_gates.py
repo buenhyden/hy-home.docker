@@ -6744,6 +6744,28 @@ class BackupAndHostAlertingContractTests(unittest.TestCase):
         self.assertIn("http://10.250.5.1:9100/ ", " ".join(node))
         self.assertNotIn("/metrics", " ".join(node))
 
+    def test_databases_stop_cleanly_on_host_shutdown(self) -> None:
+        import yaml
+
+        # 2026-11-09 reboot: the root init lacked KILL, died on EPERM forwarding
+        # SIGINT, and postgres went down without a checkpoint.
+        for path, name in (
+            ("infra/04-data/mng-db/docker-compose.yml", "mng-pg"),
+            ("infra/04-data/dev-db/docker-compose.yml", "dev-pg"),
+        ):
+            service = yaml.safe_load((ROOT / path).read_text(encoding="utf-8"))[
+                "services"
+            ][name]
+            self.assertTrue(
+                service["extends"]["service"].startswith("template-stateful-db")
+            )
+            self.assertIn("KILL", service["cap_add"], name)
+        templates = yaml.safe_load(
+            (ROOT / "infra/common-optimizations.yml").read_text(encoding="utf-8")
+        )["services"]
+        for name in ("template-stateful-db-med", "template-stateful-db-high"):
+            self.assertEqual("60s", templates[name]["stop_grace_period"], name)
+
     def test_n8n_health_check_needs_the_database(self) -> None:
         import yaml
 
