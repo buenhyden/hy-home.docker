@@ -1970,6 +1970,34 @@
         }
       ],
       "meaning": "Raw index SHA and linux/amd64 manifest digest equality with the registry Docker-Content-Digest verified for the adopted Traefik and Prometheus pins. Config descriptors only; layers, signatures, SBOM/scans, native and HOME NOT_RUN."
+    },
+    {
+      "assessed_at": "2026-11-09T10:22:16.962783+00:00",
+      "input_head": "be3cab6a6a8a456c9b114f373a7ba15194d6c038",
+      "records": [
+        {
+          "repository": "library/traefik",
+          "tag": "v3.7.17",
+          "checked_at": "2026-11-09T10:22:16.962783+00:00",
+          "expected_index_digest": "sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
+          "scope": "Public OCI index/platform manifest JSON only; anonymous bearer held in memory; no layer pull, Docker call or signature",
+          "result": "PASS",
+          "index_url": "https://registry-1.docker.io/v2/library/traefik/manifests/v3.7.17",
+          "index_digest": "sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
+          "platform": "linux/amd64",
+          "platform_manifest_url": "https://registry-1.docker.io/v2/library/traefik/manifests/sha256:e15b8921020b4fd81de5746b170dfceec221d2450711449f6427e4692881511a",
+          "platform_manifest_digest": "sha256:e15b8921020b4fd81de5746b170dfceec221d2450711449f6427e4692881511a",
+          "config_digest": "sha256:d848e658dbc9653fc3fbe2fc5ffce860a508a62cf6351027a9336e9a3bcb2e21",
+          "config_content": "NOT_FETCHED",
+          "metadata": {
+            "response_url": "https://registry-1.docker.io/v2/library/traefik/manifests/v3.7.17",
+            "status": 200,
+            "content_type": "application/vnd.oci.image.index.v1+json",
+            "docker_content_digest": "sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a"
+          }
+        }
+      ],
+      "meaning": "Raw index SHA256 equals the registry Docker-Content-Digest and the linux/amd64 manifest SHA256 equals its requested digest for the traefik v3.7.17 pin. Config descriptor only; layers, signatures, SBOM/scans, native and HOME NOT_RUN."
     }
   ],
   "local_source_rebindings": [

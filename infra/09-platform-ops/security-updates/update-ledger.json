@@ -113,7 +113,7 @@
     },
     {
       "path": "infra/01-gateway/traefik/docker-compose.yml",
-      "sha256": "324fe5abe10d6bfd3a1ff45f7166e4a69dd73c0fc177e4fcd98d525e4a242120"
+      "sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999"
     },
     {
       "path": "infra/02-auth/keycloak/docker-compose.yml",
@@ -15113,7 +15113,7 @@
       "service": "traefik",
       "scope": "root",
       "compose_file": "infra/01-gateway/traefik/docker-compose.yml",
-      "current_declared": "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+      "current_declared": "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
       "profiles_declared": [
         "core",
         "dev",
@@ -15136,17 +15136,18 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "3.7.16",
-      "target_version": "3.7.16",
+      "latest_version": "3.7.17",
+      "target_version": "3.7.17",
       "channel": "stable",
-      "checked_at": "2026-10-30T03:01:50Z",
-      "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.16",
-      "target_index_digest": "sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
-      "target_manifest_digest": "sha256:abb2b9c1b132b5b0be40d09c85bf8d3dab2a59fa0eb3aa955ab8be5efbb73de6",
-      "target_config_digest": "sha256:3733df53e74cd0df7d1b839168e30d2bd7f5e77dd6214ef3d8056ee1f21392b7",
+      "checked_at": "2026-11-09T10:22:16.962783+00:00",
+      "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.17",
+      "target_index_digest": "sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
+      "target_manifest_digest": "sha256:e15b8921020b4fd81de5746b170dfceec221d2450711449f6427e4692881511a",
+      "target_config_digest": "sha256:d848e658dbc9653fc3fbe2fc5ffce860a508a62cf6351027a9336e9a3bcb2e21",
       "platform": "linux/amd64",
-      "source_release_date": "2026-10-20T15:19:30Z",
+      "source_release_date": "2026-10-30T08:32:41Z",
       "advisory_urls": [
+        "https://github.com/traefik/traefik/security/advisories/GHSA-xv5x-242w-7hf7",
         "https://github.com/traefik/traefik/releases/tag/v3.7.14",
         "https://pkg.go.dev/vuln/GO-2026-6612",
         "https://pkg.go.dev/vuln/GO-2026-6603",
@@ -15155,22 +15156,22 @@
         "https://pkg.go.dev/vuln/GO-2026-6608",
         "https://pkg.go.dev/vuln/GO-2026-6609"
       ],
-      "applicability": "Owner decision 2026-10-30: the SEC01 risk acceptance recorded for the previous pin lapsed 7 days after the fixed upstream build appeared and is superseded by the adopted fixed image traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65 (SPEC-0204-TSK-0021). Prior text preserved after 'PRIOR:'. Adopted build reports go1.26.10 and golang.org/x/net v0.60.0 (owner-supplied release facts; the image was not pulled or inspected). Independent applicability review of the new image: NOT_RUN. PRIOR: REVIEWED_INDEPENDENTLY_OWNER_ACCEPTED_WITH_EXPIRY: APPLICABLE DoS only - Go HTTP/2 server GO-2026-6612/6603/6611/6617 pre-auth from the LAN, GO-2026-6609 after auth; GO-2026-6605/6610/6613 UNPROVEN; GO-2026-6604 Windows-only, OpenSSL/zlib/busybox not on the request path NOT_APPLICABLE. v3.7.14 adds no ID over running v3.7.13 and removes 2 Critical and 9 High. Expires at the earlier of: an upstream release built with Go >= 1.26.9/1.27.2 and x/net >= 0.60.0 (adopt within 7 days), or 2026-11-15 (re-decide an owned Traefik build); revoke early on WAN exposure or a public exploit.",
+      "applicability": "UNKNOWN: v3.7.17 is the patched version for GHSA-xv5x-242w-7hf7 (High; v3.7.14 through v3.7.16 affected: Authorization NTLM/Negotiate header makes Traefik allocate a per-connection backend transport that is not released when the client connection closes, so unauthenticated clients can exhaust memory, file descriptors and backend connections, whether or not NTLM or Kerberos backends are configured). The v3.7.17 release notes were read; the image was not pulled or inspected and runtime exposure was not assessed. The Go 1.27 migration items (GODEBUG TLS settings removed, 500 request header value limit, Ingress-NGINX generated names) do not match any setting in the tracked Traefik configuration. Independent applicability review of the new image: NOT_RUN. PRIOR: Owner decision 2026-10-30: the SEC01 risk acceptance recorded for the previous pin lapsed 7 days after the fixed upstream build appeared and is superseded by the adopted fixed image traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65 (SPEC-0204-TSK-0021). Prior text preserved after 'PRIOR:'. Adopted build reports go1.26.10 and golang.org/x/net v0.60.0 (owner-supplied release facts; the image was not pulled or inspected). Independent applicability review of the new image: NOT_RUN. PRIOR: REVIEWED_INDEPENDENTLY_OWNER_ACCEPTED_WITH_EXPIRY: APPLICABLE DoS only - Go HTTP/2 server GO-2026-6612/6603/6611/6617 pre-auth from the LAN, GO-2026-6609 after auth; GO-2026-6605/6610/6613 UNPROVEN; GO-2026-6604 Windows-only, OpenSSL/zlib/busybox not on the request path NOT_APPLICABLE. v3.7.14 adds no ID over running v3.7.13 and removes 2 Critical and 9 High. Expires at the earlier of: an upstream release built with Go >= 1.26.9/1.27.2 and x/net >= 0.60.0 (adopt within 7 days), or 2026-11-15 (re-decide an owned Traefik build); revoke early on WAN exposure or a public exploit.",
       "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN for the adopted pin: config boot / promtool checks, backup, rollback and HOME recreation are owner steps in SPEC-0204-TSK-0021. PRIOR: PASS_SYNTHETIC_ONLY: repo static and dynamic config boot on --network none with the same errors as v3.7.13 (no socket, no cert mount); v3.7.13/v3.7.14 migration changes cover providers and metrics not configured here; HOME adoption NOT_RUN",
+      "compatibility": "NOT_RUN for the v3.7.17 pin: config boot, backup, rollback and HOME recreation are owner steps. Static review of the v3.7.17 migration guide found no breaking change for the tracked config. PRIOR: NOT_RUN for the adopted pin: config boot / promtool checks, backup, rollback and HOME recreation are owner steps in SPEC-0204-TSK-0021. PRIOR: PASS_SYNTHETIC_ONLY: repo static and dynamic config boot on --network none with the same errors as v3.7.13 (no socket, no cert mount); v3.7.13/v3.7.14 migration changes cover providers and metrics not configured here; HOME adoption NOT_RUN",
       "backup": "NOT_RUN",
       "rollback": "NOT_RUN",
       "native_test": "NOT_RUN",
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN: publisher signature not checked",
-      "sbom_scan": "NOT_RUN: no owner-approved pull and no offline Syft/Grype scan of the adopted pin yet (SPEC-0204-TSK-0021). Prior-pin PASS receipt retained in previous_adopted_pin_assessment.",
+      "sbom_scan": "NOT_RUN: no owner-approved pull and no offline Syft/Grype scan of the v3.7.17 pin yet. Prior-pin PASS receipt retained in previous_adopted_pin_assessment.",
       "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-30T03:01:50.900933+00:00",
-        "next_validation_due": "2026-11-02T03:01:50+00:00",
-        "reason": "Fixed upstream pin adopted in Compose source by owner decision 2026-10-30; pull, offline scan, independent applicability review, config/rules checks, backup, HOME recreation and rollback are NOT_RUN.",
-        "exit_condition": "Run the owner steps recorded in SPEC-0204-TSK-0021, then re-run the latest/security gates at the delivery head.",
+        "discovered_at": "2026-11-09T10:22:16.962783+00:00",
+        "next_validation_due": "2026-11-16T00:00:00+00:00",
+        "reason": "Fixed upstream pin v3.7.17 adopted in Compose source on owner priority for GHSA-xv5x-242w-7hf7 (2026-11-09); pull, offline scan, independent applicability review, config check, backup, HOME recreation and rollback are NOT_RUN and the running service is unchanged.",
+        "exit_condition": "Pull the pin with owner approval, run the offline scan, independent applicability review, config boot check, HOME recreation and rollback per SPEC-0212-TSK-0041, then re-run the latest/security gates at the delivery head.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -15187,11 +15188,11 @@
         "buildx",
         "imagetools",
         "inspect",
-        "traefik:v3.7.16",
+        "traefik:v3.7.17",
         "--raw"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "324fe5abe10d6bfd3a1ff45f7166e4a69dd73c0fc177e4fcd98d525e4a242120",
+      "source_input_sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "vendor_channel_evidence": {
@@ -15203,8 +15204,8 @@
         "observed_at": "2026-10-10T11:09:21.111703+00:00",
         "reason": "Vendor release policy lists 3.7 with active and security support; GitHub latest patch v3.7.14 belongs to that supported GA minor. Main branch is upcoming releases, not stable. Support dates may change."
       },
-      "target_candidate_reference": "traefik:v3.7.16",
-      "target_candidate_reference_status": "Adopted pin; registry index/platform/config digests verified 2026-10-30T03:01:50Z; signature, scan and runtime NOT_RUN",
+      "target_candidate_reference": "traefik:v3.7.17",
+      "target_candidate_reference_status": "Adopted pin; registry index/platform/config digests verified 2026-11-09T10:22:16Z; signature, scan and runtime NOT_RUN",
       "support_status": {
         "branch": "3.7",
         "active_support": "Yes per vendor current table",
@@ -15218,10 +15219,10 @@
       "supplier_lookup_blocker": null,
       "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
       "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+        "assessed_at": "2026-11-09T10:22:16.962783+00:00",
         "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
         "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/traefik~1traefik public-latest"
+          "release-lookups.json#/root_official_refresh/observations (traefik/traefik v3.7.17, 2026-11-09)"
         ],
         "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
         "next_owner": "SEC01 release/artifact evidence owner and traefik service build/migration/recovery owner",
@@ -15230,34 +15231,34 @@
       "current_public_assessment": {
         "supplier_group": "traefik/traefik public-latest",
         "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
+        "review_at": "2026-11-16",
         "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
         "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
         "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "v3.7.16",
-        "fact_checked_at": "2026-10-30T03:01:50Z",
-        "published_at": "2026-10-20T15:19:30Z",
-        "eligible_after_7_days": "2026-10-27T15:19:30+00:00",
+        "candidate": "v3.7.17",
+        "fact_checked_at": "2026-11-09T10:22:16.962783+00:00",
+        "published_at": "2026-10-30T08:32:41Z",
+        "eligible_after_7_days": "2026-11-06T08:32:41+00:00",
         "evidence_refs": [
-          "https://github.com/traefik/traefik/releases/tag/v3.7.16",
-          "/tmp/hyhome-v30-r27-observability-release-research-20261026.json"
+          "https://github.com/traefik/traefik/releases/tag/v3.7.17",
+          "https://github.com/traefik/traefik/security/advisories/GHSA-xv5x-242w-7hf7"
         ],
         "decision": "ADOPTED_FIXED_UPSTREAM_SOURCE_RUNTIME_NOT_RUN",
-        "reason": "Fixed upstream pin adopted in Compose source by owner decision 2026-10-30; pull, offline scan, independent applicability review, config/rules checks, backup, HOME recreation and rollback are NOT_RUN.",
-        "exit_condition": "Run the owner steps recorded in SPEC-0204-TSK-0021, then re-run the latest/security gates at the delivery head.",
+        "reason": "Fixed upstream pin v3.7.17 adopted in Compose source on owner priority for GHSA-xv5x-242w-7hf7 (2026-11-09); pull, offline scan, independent applicability review, config check, backup, HOME recreation and rollback are NOT_RUN and the running service is unchanged.",
+        "exit_condition": "Pull the pin with owner approval, run the offline scan, independent applicability review, config boot check, HOME recreation and rollback per SPEC-0212-TSK-0041, then re-run the latest/security gates at the delivery head.",
         "service": "traefik",
         "compose_file": "infra/01-gateway/traefik/docker-compose.yml",
-        "current_declared": "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+        "current_declared": "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
         "resolved_source": {
-          "image": "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+          "image": "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
           "build": null,
           "chain": [
             "infra/01-gateway/traefik/docker-compose.yml#traefik",
             "infra/common-optimizations.yml#template-infra-readonly-med"
           ]
         },
-        "existing_target_version": "3.7.16",
-        "assessed_at": "2026-10-30T03:01:50.900933+00:00"
+        "existing_target_version": "3.7.17",
+        "assessed_at": "2026-11-09T10:22:16.962783+00:00"
       },
       "previous_adopted_pin_assessment": {
         "pin": "traefik:v3.7.14@sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c",
@@ -15271,9 +15272,100 @@
         "target_manifest_digest": "sha256:5902d68e00708015736416b62faa49d23a2e1d4415649e5831d20b79ba301508",
         "target_config_digest": "sha256:5a93040e5abdf181145d7c242964eca7999ffd700e0447b242ef212f3ee44d55"
       },
-      "source_release_note": "Digests verified through the anonymous registry API on 2026-10-30T03:01:50Z: index and linux/amd64 manifest raw SHA256 equal the registry Docker-Content-Digest; config digest is a descriptor only.",
-      "target_declared_digest": "sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
-      "target_source_image": "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65"
+      "source_release_note": "Digests verified through the anonymous registry API on 2026-11-09T10:22:16Z: index and linux/amd64 manifest raw SHA256 equal the registry Docker-Content-Digest / requested digest; config digest is a descriptor only.",
+      "target_declared_digest": "sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
+      "target_source_image": "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
+      "superseded_pin_2026_11_09": {
+        "current_declared": "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+        "latest_version": "3.7.16",
+        "target_version": "3.7.16",
+        "checked_at": "2026-10-30T03:01:50Z",
+        "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.16",
+        "target_index_digest": "sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+        "target_manifest_digest": "sha256:abb2b9c1b132b5b0be40d09c85bf8d3dab2a59fa0eb3aa955ab8be5efbb73de6",
+        "target_config_digest": "sha256:3733df53e74cd0df7d1b839168e30d2bd7f5e77dd6214ef3d8056ee1f21392b7",
+        "source_release_date": "2026-10-20T15:19:30Z",
+        "advisory_urls": [
+          "https://github.com/traefik/traefik/releases/tag/v3.7.14",
+          "https://pkg.go.dev/vuln/GO-2026-6612",
+          "https://pkg.go.dev/vuln/GO-2026-6603",
+          "https://pkg.go.dev/vuln/GO-2026-6611",
+          "https://pkg.go.dev/vuln/GO-2026-6617",
+          "https://pkg.go.dev/vuln/GO-2026-6608",
+          "https://pkg.go.dev/vuln/GO-2026-6609"
+        ],
+        "applicability": "Owner decision 2026-10-30: the SEC01 risk acceptance recorded for the previous pin lapsed 7 days after the fixed upstream build appeared and is superseded by the adopted fixed image traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65 (SPEC-0204-TSK-0021). Prior text preserved after 'PRIOR:'. Adopted build reports go1.26.10 and golang.org/x/net v0.60.0 (owner-supplied release facts; the image was not pulled or inspected). Independent applicability review of the new image: NOT_RUN. PRIOR: REVIEWED_INDEPENDENTLY_OWNER_ACCEPTED_WITH_EXPIRY: APPLICABLE DoS only - Go HTTP/2 server GO-2026-6612/6603/6611/6617 pre-auth from the LAN, GO-2026-6609 after auth; GO-2026-6605/6610/6613 UNPROVEN; GO-2026-6604 Windows-only, OpenSSL/zlib/busybox not on the request path NOT_APPLICABLE. v3.7.14 adds no ID over running v3.7.13 and removes 2 Critical and 9 High. Expires at the earlier of: an upstream release built with Go >= 1.26.9/1.27.2 and x/net >= 0.60.0 (adopt within 7 days), or 2026-11-15 (re-decide an owned Traefik build); revoke early on WAN exposure or a public exploit.",
+        "compatibility": "NOT_RUN for the adopted pin: config boot / promtool checks, backup, rollback and HOME recreation are owner steps in SPEC-0204-TSK-0021. PRIOR: PASS_SYNTHETIC_ONLY: repo static and dynamic config boot on --network none with the same errors as v3.7.13 (no socket, no cert mount); v3.7.13/v3.7.14 migration changes cover providers and metrics not configured here; HOME adoption NOT_RUN",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-30T03:01:50.900933+00:00",
+          "next_validation_due": "2026-11-02T03:01:50+00:00",
+          "reason": "Fixed upstream pin adopted in Compose source by owner decision 2026-10-30; pull, offline scan, independent applicability review, config/rules checks, backup, HOME recreation and rollback are NOT_RUN.",
+          "exit_condition": "Run the owner steps recorded in SPEC-0204-TSK-0021, then re-run the latest/security gates at the delivery head.",
+          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "service_owner_role": "Existing service owner named by current_public_assessment"
+        },
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "traefik:v3.7.16",
+          "--raw"
+        ],
+        "target_candidate_reference": "traefik:v3.7.16",
+        "target_candidate_reference_status": "Adopted pin; registry index/platform/config digests verified 2026-10-30T03:01:50Z; signature, scan and runtime NOT_RUN",
+        "official_release_assessment": {
+          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+          "release_fact_refs": [
+            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/traefik~1traefik public-latest"
+          ],
+          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+          "next_owner": "SEC01 release/artifact evidence owner and traefik service build/migration/recovery owner",
+          "source_target_security_native_deployment": "UNCHANGED"
+        },
+        "current_public_assessment": {
+          "supplier_group": "traefik/traefik public-latest",
+          "owner": "SEC01 and existing service owner",
+          "review_at": "2026-10-27",
+          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "candidate": "v3.7.16",
+          "fact_checked_at": "2026-10-30T03:01:50Z",
+          "published_at": "2026-10-20T15:19:30Z",
+          "eligible_after_7_days": "2026-10-27T15:19:30+00:00",
+          "evidence_refs": [
+            "https://github.com/traefik/traefik/releases/tag/v3.7.16",
+            "/tmp/hyhome-v30-r27-observability-release-research-20261026.json"
+          ],
+          "decision": "ADOPTED_FIXED_UPSTREAM_SOURCE_RUNTIME_NOT_RUN",
+          "reason": "Fixed upstream pin adopted in Compose source by owner decision 2026-10-30; pull, offline scan, independent applicability review, config/rules checks, backup, HOME recreation and rollback are NOT_RUN.",
+          "exit_condition": "Run the owner steps recorded in SPEC-0204-TSK-0021, then re-run the latest/security gates at the delivery head.",
+          "service": "traefik",
+          "compose_file": "infra/01-gateway/traefik/docker-compose.yml",
+          "current_declared": "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+          "resolved_source": {
+            "image": "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+            "build": null,
+            "chain": [
+              "infra/01-gateway/traefik/docker-compose.yml#traefik",
+              "infra/common-optimizations.yml#template-infra-readonly-med"
+            ]
+          },
+          "existing_target_version": "3.7.16",
+          "assessed_at": "2026-10-30T03:01:50.900933+00:00"
+        },
+        "source_release_note": "Digests verified through the anonymous registry API on 2026-10-30T03:01:50Z: index and linux/amd64 manifest raw SHA256 equal the registry Docker-Content-Digest; config digest is a descriptor only.",
+        "target_declared_digest": "sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+        "target_source_image": "traefik:v3.7.16@sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65",
+        "sbom_scan": "NOT_RUN: no owner-approved pull and no offline Syft/Grype scan of the adopted pin yet (SPEC-0204-TSK-0021). Prior-pin PASS receipt retained in previous_adopted_pin_assessment.",
+        "signature": "NOT_RUN: publisher signature not checked",
+        "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+        "archived_at": "2026-11-09T10:22:16.962783+00:00",
+        "reason": "Pin traefik:v3.7.16 superseded by v3.7.17 (GHSA-xv5x-242w-7hf7, High, published 2026-11-02: per-connection backend transport leak from unauthenticated NTLM/Negotiate Authorization headers in v3.7.14 through v3.7.16)."
+      }
     },
     {
       "service": "wiremock",
@@ -26258,6 +26350,165 @@
       "added_services": [
         "searxng"
       ]
+    },
+    {
+      "source_revision": "be3cab6a6a8a456c9b114f373a7ba15194d6c038",
+      "refreshed_at": "2026-11-09T10:22:16.962783+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "e32e29f1999b97edda94c190693e6f3234acbffd3455d4d3eec4b78101ff045f",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "6d87e9c77d46b7065317c12deff6adb4e8c9214412e2bcf0fa4ee09d870e72b1"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "324fe5abe10d6bfd3a1ff45f7166e4a69dd73c0fc177e4fcd98d525e4a242120"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "886a82e79c5327ef7f9a46ae624b99ec17a2c0e91f5f0ffeb6bb8fdf62d2826e"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "36a4adb3d656350be6527d0b9a2a72420cf8a976968340b0cbc1472c4b58abc9"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "c4c15d13071b930485237c071ce037062e6f1ac0ea420d6b4099cafcf03782ad"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "7c30cefcb3b68bcee11dbfe4e4733ca46f6a428f8de3ac9ad18d5b654ce9ab7e"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e64d8890f01155dde31370d70caa347050fc04f2f223cbd144db50b02ae015a"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/08-ai/open-webui/docker-compose.yml",
+          "sha256": "84fb9ffe43c5988732c42e02dffc4dd0c894f35cb0eea7c504a127fc8ac9961c"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0297f9a834155942aab9a0ff7c22f93607f17ad4a0051dd573e207cff5c34c41"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/01-gateway/traefik/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "traefik",
+          "source_input_sha256": "324fe5abe10d6bfd3a1ff45f7166e4a69dd73c0fc177e4fcd98d525e4a242120",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 1 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     },
     {
       "source_revision": "be3cab6a6a8a456c9b114f373a7ba15194d6c038",

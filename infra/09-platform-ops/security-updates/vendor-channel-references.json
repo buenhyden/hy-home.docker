@@ -151,11 +151,20 @@
       "native_test": "NOT_RUN",
       "signature_scan": "NOT_RUN",
       "later_observation": {
-        "checked_at": "2026-10-30T03:01:50.900933+00:00",
-        "vendor_latest": "3.7.16",
-        "source_release_date": "2026-10-20T15:19:30Z",
-        "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.16",
-        "meaning": "GitHub latest published final release only; the 3.7 support-policy page was not re-read. The 2026-10-10 fields above are preserved as history."
+        "checked_at": "2026-11-09T10:22:16.962783+00:00",
+        "vendor_latest": "3.7.17",
+        "source_release_date": "2026-10-30T08:32:41Z",
+        "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.17",
+        "meaning": "GitHub latest published final release only; the 3.7 support-policy page was not re-read. Earlier observations are preserved as history.",
+        "previous_observations": [
+          {
+            "checked_at": "2026-10-30T03:01:50.900933+00:00",
+            "vendor_latest": "3.7.16",
+            "source_release_date": "2026-10-20T15:19:30Z",
+            "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.16",
+            "meaning": "GitHub latest published final release only; the 3.7 support-policy page was not re-read. The 2026-10-10 fields above are preserved as history."
+          }
+        ]
       }
     },
     {

@@ -23,8 +23,8 @@ class GrafanaStaticRouteNativeTests(unittest.TestCase):
     """Exercise the tracked rules through the exact cached Traefik binary."""
 
     TRAEFIK_IMAGE = (
-        "traefik:v3.7.16@sha256:"
-        "1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65"
+        "traefik:v3.7.17@sha256:"
+        "f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a"
     )
     PYTHON_IMAGE = "python:3.13.15-alpine"
 
