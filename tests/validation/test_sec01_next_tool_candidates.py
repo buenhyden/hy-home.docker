@@ -73,7 +73,15 @@ class NextToolCandidates(unittest.TestCase):
             row["path"]: row["sha256"] for row in updates["include_inputs"]
         }
         self.assertEqual(len(current_inputs), len(updates["include_inputs"]))
-        selected = set(refresh["updated_services"])
+        # Services retired after the refresh have no row to compare.
+        retired = {
+            service
+            for row in updates["source_refreshes"][
+                updates["source_refreshes"].index(refresh) + 1 :
+            ]
+            for service in row.get("removed_services", [])
+        } - {row["service"] for row in updates["historical_lab_entries"]}
+        selected = set(refresh["updated_services"]) - retired
         # Rows later relocated to a LAB entrypoint keep their original ROOT row.
         relocated = {
             row["service"]: row["original_root_row"]
