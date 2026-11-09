@@ -193,6 +193,12 @@
     },
 
     {
+      "description": "CI toolchain versions in setup-step inputs (python-version, uv version and checksum, node-version) are pinned together with the workflow contract tests, gate evidence and the uv-generated lock, so they change in one manual PR",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["uses-with"],
+      "enabled": false
+    },
+    {
       "description": "Group GitHub Actions patch and minor updates",
       "matchUpdateTypes": ["patch", "minor"],
       "matchManagers": [
