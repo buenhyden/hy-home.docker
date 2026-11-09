@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Guide"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -79,7 +79,7 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 - Traefik의 standard/error/SSO 체인이 라우트를 보호한다. loopback 포트는 로컬
   운영용이다. 의존성은 NVIDIA 런타임/드라이버, 모델 스토리지, 게이트웨이/인증,
   root CA, `edge_net`이다.
-- root에서 `docker compose --profile ai --profile ai-image config --quiet`를
+- root에서 `docker compose --profile ai-image config --quiet`를
   사용한다. 업그레이드 전에는 큐 유입과 활성 작업을 중지하고, 일관된 정지
   스냅샷을 만들고, 격리된 마운트에서 새 이미지/노드/모델을 테스트하고,
   `/system_stats`, GPU 가시성, 예상 노드, 대표 워크플로를 검증한다.
