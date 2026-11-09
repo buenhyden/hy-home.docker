@@ -90,22 +90,22 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         compose = yaml.safe_load((N8N / "docker-compose.yml").read_text())
         for name in ("n8n", "n8n-worker"):
             service = compose["services"][name]
-            self.assertEqual("2.43.6", str(service["build"]["args"]["N8N_VERSION"]))
-            self.assertEqual("hyhome/n8n:2.43.6-local", service["image"])
+            self.assertEqual("2.46.6", str(service["build"]["args"]["N8N_VERSION"]))
+            self.assertEqual("hyhome/n8n:2.46.6-local", service["image"])
         runners = {compose["services"][n]["image"] for n in ("n8n-task-runner-worker",)}
         self.assertEqual(1, len(runners))
         self.assertEqual(
-            "n8nio/runners:2.43.6@sha256:3168a82b29b3a8ec9acbe876d9e654b3333dfd630b257f6cc2bc81fc5f93b2bf",
+            "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
             runners.pop(),
         )
         for name in ("Dockerfile", "dev.Dockerfile"):
             source = (N8N / name).read_text()
             self.assertEqual(
-                {"2.43.6"}, set(re.findall(r"^ARG N8N_VERSION=(\S+)$", source, re.M))
+                {"2.46.6"}, set(re.findall(r"^ARG N8N_VERSION=(\S+)$", source, re.M))
             )
             self.assertIn('RUN test "$(n8n --version)" = "${N8N_VERSION}"', source)
             self.assertIn(
-                "FROM n8nio/n8n:${N8N_VERSION}@sha256:dd580fe1ab6e99e85bc66f2acf8bc8c5e9409fbe61b2e2803c5024403ef52833",
+                "FROM n8nio/n8n:${N8N_VERSION}@sha256:8602f5dfacbe2c931eeafd010de0e68182310e9f309921e780ab69182e92b3ae",
                 source,
             )
             self.assertRegex(
@@ -149,10 +149,10 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         package = json.loads((package_root / "package.json").read_text())
         lock = json.loads((package_root / "package-lock.json").read_text())
         for section in ("peerDependencies", "devDependencies"):
-            self.assertEqual("2.43.4", package[section]["n8n-workflow"])
+            self.assertEqual("2.46.5", package[section]["n8n-workflow"])
             self.assertEqual(package[section], lock["packages"][""][section])
         self.assertEqual(
-            "2.43.4", lock["packages"]["node_modules/n8n-workflow"]["version"]
+            "2.46.5", lock["packages"]["node_modules/n8n-workflow"]["version"]
         )
 
     def test_n8n_source_receipt_does_not_reuse_previous_native_acceptance(self):

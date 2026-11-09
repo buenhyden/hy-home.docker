@@ -49,6 +49,7 @@ MUTATION_OVERRIDES = {
     "scripts/lib/ops/_secret_catalog_io.py": "check-write",
     "scripts/lib/ops/secret_catalog.py": "check-write",
     "scripts/lib/ops/workspace_inventory.py": "check-write",
+    "scripts/lib/supply_chain/ledger_rebind.py": "check-write",
     "scripts/lib/ops/_workspace_render.py": "check-write",
     "scripts/lib/ops/smtp_contract.py": "runtime",
     "scripts/hooks/post-tool-validate.sh": "check-write",

@@ -1,10 +1,10 @@
 ---
 title: "Repository Authority Map"
-version: "0.5.1"
+version: "0.5.2"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-09"
 created: "2026-09-06"
 observed_at: "2026-10-07"
 review_cycle: "on-surface-change"
@@ -38,7 +38,7 @@ contents, user-global provider settings, and anything outside this repository.
 | `.agents/governance/providers/registry.yaml` | the Provider Registry | provider, model, permission and hook facts, plus the `canonical_sources` inventory every canonical file must appear in, work profiles, projections, and `generated_roots`; it owns no agent governance policy | agent governance contract |
 | `.claude/**`, `.codex/**` | authored `provider.md` per provider; everything else is generated or native mechanics | canonical contract plus authored/native distinction | `provider_surface_renderer.py --check` |
 | `docs/01.requirements/**` | the Requirement Package | solution-independent needs only | metadata, links, traceability |
-| `docs/02.architecture/**` | Description for structure, ADR for one decision | accepted decisions are superseded, never rewritten | metadata, links, taxonomy tests |
+| `docs/02.architecture/**` | Description for structure, ADR for one decision | accepted decisions are superseded, or amended in place only when the owner directs it | metadata, links, taxonomy tests |
 | `docs/03.specs/**` | the active Spec Package; its Task owns execution evidence | bounded change contract | metadata, corpus lifecycle, spec package tests |
 | `docs/05.operations/**` | the Guide, Policy, or Runbook in its role directory, or the Incident packet | operator context, controls, procedure, and incidents | operations catalog check |
 | `docs/90.references/**` | Research, Audit, or Data package | non-normative dated evidence | metadata, reference protection tests |

@@ -875,6 +875,17 @@ files:
   successor: null
   tests:
   - tests/lib/supply_chain/test_update_gates.py
+- path: scripts/lib/supply_chain/ledger_rebind.py
+  kind: library
+  authority: infra/09-platform-ops/security-updates/README.md
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - tests/lib/supply_chain/test_ledger_rebind.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/supply_chain/test_ledger_rebind.py
 - path: scripts/lib/supply_chain/security_update_gate.py
   kind: library
   authority: infra/09-platform-ops/security-updates/README.md
