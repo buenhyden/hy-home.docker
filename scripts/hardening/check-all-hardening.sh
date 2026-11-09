@@ -597,6 +597,7 @@ check_07_workflow() {
   check_not_contains "$airflow_compose" "traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "airflow double-auth middleware must not be enabled"
   check_contains "$n8n_compose" "traefik.http.routers.n8n.middlewares: gateway-standard-chain@file" "n8n gateway chain mismatch"
   check_not_contains "$n8n_compose" "sso-auth@file" "n8n keeps its own login; gateway SSO must not return"
+  check_contains "$n8n_compose" "N8N_INSTANCE_AI_SEARXNG_URL: http://searxng:8080" "n8n Assistant web search must use the internal searxng"
   check_contains "$n8n_compose" "!PathPrefix(\`/metrics\`)" "n8n router must not publish /metrics"
   check_contains "$n8n_compose" "!PathPrefix(\`/webhook/hermes-blog-ingestion\`)" "n8n router must exclude the Hermes webhook path"
 }

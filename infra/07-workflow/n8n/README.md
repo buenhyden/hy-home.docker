@@ -1,6 +1,6 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.21"
+version: "1.2.22"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -144,6 +144,8 @@ fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정
 `/usr/share/hy-home-font-builder-packages.txt`에 실제 설치 목록을 보존합니다.
 
 2026-11-09 owner 결정으로 main·worker와 task runner를 최신 vendor stable로 올렸고(pin은 Compose·Dockerfile이 소유), `n8n` router는 `gateway-standard-chain@file`만 사용합니다. gateway SSO(`sso-errors`, `sso-auth`)는 두지 않으며 UI·API 로그인은 n8n 자체 인증이 맡습니다. 번들 Zod는 3 계열이라 [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)의 영향 범위에 남으며, 요청 본문 상한 `N8N_PAYLOAD_SIZE_MAX`만 Compose의 보완 통제입니다. 새 custom image build, 서명, 전체 이미지 scan, native, HOME 적용은 `NOT_RUN`입니다.
+
+n8n Assistant는 모델 `anthropic/claude-sonnet-5`(`N8N_INSTANCE_AI_MODEL`)와 내부 웹 검색 `searxng`(`N8N_INSTANCE_AI_SEARXNG_URL`)를 씁니다. Anthropic key는 UI provider connection에 있고 Compose에는 없습니다. `searxng`는 `infra/07-workflow/n8n/searxng/settings.yml`(JSON 형식 사용)을 읽기 전용으로 mount하고, 세션 key는 시작할 때 무작위로 만들어 저장하지 않으며, host port와 route가 없고, n8n main과만 내부 `n8n_search_net`을 공유하고 인터넷에는 자신만 쓰는 `n8n_search_outbound_net`으로 나갑니다. 코드 sandbox는 아직 설정하지 않았습니다.
 
 UNIT의 네 role 정합 검사는 native workflow import·실행이나 HOME 배포를 입증하지 않습니다.
 deprecated node import 거부·JSON typeVersion·webhook·Code runner·queue·PostgreSQL·SMTP·실패 경로는 NOT_RUN입니다.

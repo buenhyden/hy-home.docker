@@ -1,0 +1,20 @@
+# SearXNG for the n8n Assistant web search. Mounted read-only at
+# /etc/searxng/settings.yml. The secret key is generated at container start
+# (see the searxng service in ../docker-compose.yml) and is not stored here.
+use_default_settings: true
+
+general:
+  # The service is internal; do not advertise or phone home.
+  instance_name: n8n-searxng
+  enable_metrics: false
+
+search:
+  # n8n's web search calls the JSON API; the stock image serves HTML only.
+  formats:
+    - html
+    - json
+
+server:
+  limiter: false
+  public_instance: false
+  image_proxy: false

@@ -67,6 +67,19 @@ volumes:
       type: none
       device: ${DEFAULT_WORKFLOW_DIR}/n8n-task-runner-worker
 
+# The n8n Assistant's web search runs on SearXNG. n8n main reaches it on
+# n8n_search_net, an internal network with no other member. SearXNG's only way
+# out is n8n_search_outbound_net, a plain bridge that only it joins; it needs the
+# public internet to query search engines and has no inbound path.
+networks:
+  n8n_search_net:
+    name: n8n_search_net
+    driver: bridge
+    internal: true
+  n8n_search_outbound_net:
+    name: n8n_search_outbound_net
+    driver: bridge
+
 services:
   n8n:
     profiles:
@@ -100,6 +113,9 @@ services:
     environment:
       <<: *n8n-common-env
       N8N_PROXY_HOPS: 1
+      # n8n Assistant: model only; the Anthropic key is a provider connection set in the UI.
+      N8N_INSTANCE_AI_MODEL: anthropic/claude-sonnet-5
+      N8N_INSTANCE_AI_SEARXNG_URL: http://searxng:8080
       N8N_PROTOCOL: https
       N8N_HOST: n8n.${DEFAULT_URL}
       N8N_PORT: ${N8N_PORT:-5678}
@@ -129,6 +145,7 @@ services:
       n8n_net: {}
       mng_data_net: {}
       obs_net: {}
+      n8n_search_net: {}
     healthcheck:
       # Readiness fails while the database connection is lost; /healthz stayed
       # green through six hours of 503s on 2026-09-29 (SPEC-0192).
@@ -338,6 +355,51 @@ services:
   # the reviewed Blog-data dev commit in the tag. Its own profile keeps it out
   # of every existing selection; n8n-worker (ingest) and Traefik (exact-path
   # export and attestation routes) are its only peers.
+  # Web search for the n8n Assistant (N8N_INSTANCE_AI_SEARXNG_URL). Internal
+  # only: no host port, no Traefik route. The secret key is random per start
+  # because nothing here keeps sessions or signed links.
+  searxng:
+    profiles:
+      - workflow
+      - workflow-n8n
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-med
+    image: searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2
+    container_name: searxng
+    hostname: searxng
+    user: '977:977'
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        SEARXNG_SECRET="$$(head -c 24 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9')"
+        export SEARXNG_SECRET
+        exec /usr/local/searxng/entrypoint.sh
+    environment:
+      GRANIAN_HOST: 0.0.0.0
+      GRANIAN_PORT: '8080'
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    tmpfs:
+      - /tmp
+      - /run
+      - /var/cache/searxng:uid=977,gid=977,mode=0700
+    expose:
+      - '8080'
+    healthcheck:
+      test: ['CMD', '/usr/local/searxng/.venv/bin/python', '-c', "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3).status == 200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      n8n_search_net: {}
+      n8n_search_outbound_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
   blog-ingestion:
     profiles:
       - blog-ingestion

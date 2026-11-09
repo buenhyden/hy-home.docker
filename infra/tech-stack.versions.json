@@ -1899,6 +1899,28 @@
           ]
         }
       ]
+    },
+    {
+      "component": "Compose image: searxng/searxng",
+      "tier": "07-workflow",
+      "classification": "external",
+      "repository_classifications": {
+        "searxng/searxng": "external"
+      },
+      "images": [
+        "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2"
+      ],
+      "compose_files": [
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "images": [
+            "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2"
+          ]
+        }
+      ]
     }
   ],
   "required_image_inputs": [
