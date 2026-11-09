@@ -84,7 +84,6 @@ services:
       comfyui_ingress_net: {}
       flower_ingress_net: {}
       kafka_connect_ingress_net: {}
-      kafka_rest_proxy_ingress_net: {}
       loki_ingress_net: {}
       mailpit_ingress_net: {}
       mlflow_ingress_net: {}

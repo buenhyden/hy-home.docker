@@ -180,7 +180,6 @@ SSO_ONLY_BACKENDS = (
     "comfyui",
     "flower",
     "kafka-connect",
-    "kafka-rest-proxy",
     "loki",
     "mailpit",
     "mlflow",

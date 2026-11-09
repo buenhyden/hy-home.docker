@@ -23,7 +23,6 @@ services:
       - messaging-broker
       - messaging-schema
       - messaging-connect
-      - messaging-rest
       - messaging-admin
       - cdc
     extends:
@@ -82,7 +81,6 @@ services:
       - messaging
       - messaging-schema
       - messaging-connect
-      - messaging-rest
       - messaging-admin
       - cdc
     extends:
@@ -306,58 +304,6 @@ services:
       <<: *tier-label
       traefik.enable: 'false'
 
-  kafka-rest-proxy:
-    profiles:
-      - messaging
-      - messaging-rest
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-infra-med
-    image: confluentinc/cp-kafka-rest:8.3.2
-    container_name: kafka-rest-proxy
-    hostname: kafka-rest-proxy
-    read_only: true
-    tmpfs:
-      - /tmp:uid=1000,gid=1000,mode=1777
-      - /etc/kafka-rest:uid=1000,gid=1000,mode=0775
-      - /var/log/confluent:uid=1000,gid=1000,mode=0775
-    labels:
-      <<: *tier-label
-      traefik.docker.network: kafka_rest_proxy_ingress_net
-      traefik.enable: 'true'
-      traefik.http.routers.kafka-rest.rule: Host(`kafka-rest.${DEFAULT_URL}`)
-      traefik.http.routers.kafka-rest.entrypoints: websecure
-      traefik.http.routers.kafka-rest.tls: 'true'
-      # No authentication in the REST Proxy; clients use kafka-rest-proxy:${KAFKA_REST_PROXY_PORT:-8082} on kafka_net.
-      traefik.http.routers.kafka-rest.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
-      traefik.http.services.kafka-rest.loadbalancer.server.port: ${KAFKA_REST_PROXY_PORT:-8082}
-    environment:
-      KAFKA_REST_HOST_NAME: kafka-rest-proxy
-      KAFKA_REST_LISTENERS: 'http://0.0.0.0:${KAFKA_REST_PROXY_PORT:-8082}'
-      KAFKA_REST_BOOTSTRAP_SERVERS: '${KAFKA_BOOTSTRAP_SERVERS_URI:-PLAINTEXT://kafka-1:19092}'
-      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
-    depends_on:
-      kafka-1:
-        condition: service_healthy
-      schema-registry:
-        condition: service_healthy
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - >-
-          if command -v ub >/dev/null 2>&1; then
-            ub kr-ready localhost ${KAFKA_REST_PROXY_PORT:-8082} 20;
-          else
-            cub kr-ready localhost ${KAFKA_REST_PROXY_PORT:-8082} 20;
-          fi
-      interval: 15s
-      timeout: 30s
-      retries: 10
-      start_period: 60s
-    networks:
-      kafka_rest_proxy_ingress_net: {}
-      kafka_net: {}
-
   kafbat-ui:
     profiles:
       - messaging
@@ -475,7 +421,6 @@ services:
       - messaging-broker
       - messaging-schema
       - messaging-connect
-      - messaging-rest
       - messaging-admin
       - cdc
     extends:

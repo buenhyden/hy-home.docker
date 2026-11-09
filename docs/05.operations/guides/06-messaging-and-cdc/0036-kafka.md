@@ -1,6 +1,6 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -17,7 +17,6 @@ implementation_services:
   - 'kafka-connect'
   - 'kafka-exporter'
   - 'kafka-init'
-  - 'kafka-rest-proxy'
   - 'schema-registry'
 created: "2026-05-10"
 ---
@@ -26,7 +25,7 @@ created: "2026-05-10"
 
 ## Overview
 
-이 가이드는 OPTIONAL 이벤트 스트리밍 기능인 Kafka family의 구성, 프로파일, 접근 경계를 설명한다. 정상 root는 단일 KRaft broker와 Schema Registry, Connect, REST Proxy, Kafbat UI, exporter, init job을 정의한다. 다중 broker 학습은 독립 LAB으로 분리했다.
+이 가이드는 OPTIONAL 이벤트 스트리밍 기능인 Kafka family의 구성, 프로파일, 접근 경계를 설명한다. 정상 root는 단일 KRaft broker와 Schema Registry, Connect, Kafbat UI, exporter, init job을 정의한다. 다중 broker 학습은 독립 LAB으로 분리했다.
 
 ## Scope
 
@@ -47,18 +46,17 @@ Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. 정상 root에는 단일
 ### Current implementation
 
 [`infra/05-messaging/kafka/docker-compose.yml`](../../../../infra/05-messaging/kafka/docker-compose.yml)은
-정상 서비스 8개를 정의한다. [`Kafka LAB 안내`](../../../../labs/kafka-cluster/README.md)와 [`labs/kafka-cluster/docker-compose.yml`](../../../../labs/kafka-cluster/docker-compose.yml)은
+정상 서비스 7개를 정의한다. [`Kafka LAB 안내`](../../../../labs/kafka-cluster/README.md)와 [`labs/kafka-cluster/docker-compose.yml`](../../../../labs/kafka-cluster/docker-compose.yml)은
 LAB 전용 브로커 3개·exporter·init 5개를 독립 Compose project로 정의하며 정상 root가 include하지 않는다.
 
 | Service | Role | Selector |
 | --- | --- | --- |
-| `kafka-1` | 단일 KRaft broker/controller | `messaging`, `messaging-broker`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
-| `schema-registry` | Avro schema 저장소/API | `messaging`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
+| `kafka-1` | 단일 KRaft broker/controller | `messaging`, `messaging-broker`, `messaging-schema`, `messaging-connect`, `messaging-admin`, `cdc` |
+| `schema-registry` | Avro schema 저장소/API | `messaging`, `messaging-schema`, `messaging-connect`, `messaging-admin`, `cdc` |
 | `kafka-connect` | Debezium connector runtime | `messaging`, `messaging-connect`, `messaging-admin`, `cdc` |
 | `debezium-db-provision` | `dev-pg/platform_dev` 일반 테이블·outbox source role·publication; hypertable CDC 미검증 | `cdc` |
-| `kafka-rest-proxy` | REST producer/consumer API | `messaging`, `messaging-rest` |
 | `kafbat-ui` | native OIDC/RBAC 관리 UI | `messaging`, `messaging-admin` |
-| `kafka-exporter` | broker/consumer lag 메트릭 | `kafka-1`과 같은 일곱 profile |
+| `kafka-exporter` | broker/consumer lag 메트릭 | `kafka-1`과 같은 여섯 profile |
 | `kafka-init` | RF1 topic bootstrap | `messaging`, `messaging-broker` |
 | `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init` | 독립 RF3 실습 closure | `lab-kafka` |
 
@@ -73,7 +71,7 @@ Kafbat은 자체 `auth.type: OAUTH2` 구성을 tmpfs에 렌더링하고,
 적용한다. 이 서비스의 Traefik route는 `gateway-standard-chain@file`을
 사용한다. gateway는 전송/헤더 보호를 담당하고, 인증 자체는 Kafbat이 수행한다.
 이 native-OIDC route에는 forwarding-auth gateway chain을 붙이면 안 된다.
-Kafka Connect, Schema Registry, REST Proxy route는 `gateway-standard-chain@file`에 `sso-errors@file`/`sso-auth@file`을 더한다. Connect API는
+Kafka Connect, Schema Registry route는 `gateway-standard-chain@file`에 `sso-errors@file`/`sso-auth@file`을 더한다. Connect API는
 provider 파일을 참조하는 connector를 생성할 수 있으므로 익명 gateway
 접근을 허용하지 않는다. `kafka_net` peer(Kafbat 포함)는
 여전히 인증 없이 포트 8083에 직접 접근할 수 있다. 이 내부 경로는 기록된
@@ -97,7 +95,6 @@ connector의 schema ID 이력을, Connect는 connector config/offset/status를
 | `kafka-connect` | connector worker/internal state; PG Debezium만 copied build | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `kafka-exporter` | broker/consumer lag metrics | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `kafka-init` | RF1 topic creation job; 단일 broker 필요 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/05-messaging/kafka/docker-compose.yml) |
-| `kafka-rest-proxy` | HTTP→Kafka 변환; native auth 선언 없음 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `schema-registry` | schema-ID/history; Kafka state에 의존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init` | 격리 KRaft RF3 실습 | 실제 quorum·topic 상태 미검증 | [LAB 선택·상태](../../../../labs/kafka-cluster/README.md) |
 
@@ -105,14 +102,14 @@ connector의 schema ID 이력을, Connect는 connector config/offset/status를
 
 ### Images, configuration and resource controls
 
-Compose 파일은 핀된 Confluent Kafka/Schema/Connect/REST, Kafbat, Kafka
+Compose 파일은 핀된 Confluent Kafka/Schema/Connect, Kafbat, Kafka
 exporter 이미지 계열을 소유한다. 저장소 Renovate가 업데이트를 제안하면 버전
 projection은 파생된다. broker 키에는 `CLUSTER_ID`, `KAFKA_PROCESS_ROLES`,
 quorum/listener/advertised-listener/log/replication 설정, node ID가 포함된다.
-Schema, Connect, REST는 각자의 네임스페이스 키를 사용하며, Kafbat은
+Schema, Connect는 각자의 네임스페이스 키를 사용하며, Kafbat은
 `KAFKA_CLUSTERS_0_*`, `DYNAMIC_CONFIG_ENABLED`, `KAFBAT_OAUTH_CLIENT_ID`와
 client-secret 파일을 사용한다. broker와 Connect는 high stateful 템플릿을,
-Schema/REST/Kafbat은 medium infrastructure 템플릿을, exporter는 low를, init
+Schema/Kafbat은 medium infrastructure 템플릿을, exporter는 low를, init
 job은 low를 extend한다. 모든 장기 실행 서비스는 healthcheck를 선언한다.
 
 ### Static preflight and profile choice
