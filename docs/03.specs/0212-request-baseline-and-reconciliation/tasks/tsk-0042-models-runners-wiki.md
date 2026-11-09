@@ -1,6 +1,6 @@
 ---
 title: "Models, Runners and Wiki Preparation Task"
-version: "0.1.14"
+version: "0.1.15"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -300,6 +300,17 @@ environment. Open WebUI held 0 knowledge bases and 0 files, so nothing migrates.
 It receives the Qdrant read-write key (AI-008); Qdrant offers only that key and
 the read-only one. The HOME apply is a separate approved step.
 
+### Open WebUI Qdrant HOME apply (2026-11-09)
+
+With owner approval, `open-webui` was recreated on `main` `294ad4df8`. It reported
+unhealthy until application startup finished after about three minutes, then
+healthy; the 15-second start period is short for this image. A probe through the
+Open WebUI vector client inserted two synthetic documents with real 768-dimension
+Ollama embeddings, returned the matching one first, and deleted its collection.
+The shared `open-webui_knowledge` collection now exists and holds no probe data
+from the failed earlier attempt. File upload and answer generation in the UI were
+not exercised. ComfyUI is stopped and, per the owner, leaves the `ai` profile.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -311,6 +322,7 @@ the read-only one. The HOME apply is a separate approved step.
 | Current final model source review | 61 | W66 | Independent code review of final exact-integer-dimension source and tests | Frozen current owner packet | PASS | `p03_code_review`, 2026-11-02: APPROVED with no remaining finding. Production core suite 26/26 PASS; formatter/linter and diff check PASS. Reviewed CLI `13eaef9e4a0613ca9c034b334358249efbb7ab0bdc6aa44799d68f571fc61c10`, core `0f608559560a84973bf344554d8421df95484c90fd46566e042a2eaa075cf922`, HTTP `87a16f423e3bdc6e5650f858095f72deb161f6eb90ae98a153134467e622bbaf`, policy `dfe205b314113fe3604e25bc0d6101a0338b33bf0a65bf7b45cd605a8c55842f`, core tests `89241a8d24a490a805549419cbab18491a279e68e589164fda40e33a3960881c`. Synthetic source/isolated scope only. | required | - |
 | D06 HOME model actors and cloud refusal | 61 | W66 | In-container calls from each n8n actor and a cloud-model request | HOME Ollama, `n8n`, `n8n-worker`, worker runner, 2026-11-08 | PASS | Worker: 8 models, 768-dim embedding, `gemma4:e2b` generation 200; main and runner cannot reach Ollama; cloud model 403 with `OLLAMA_NO_CLOUD=1` | required | - |
 | D06 T06 data census | 65 | W70 | Read-only Qdrant metric, Open WebUI database, MLflow API, Crawl4AI log and Hermes report census | HOME, 2026-11-09 | NOT_RUN | Evaluation BLOCKED: no evaluable data set, owner or baseline; resume conditions in D06 T06 evaluation resume conditions. | required | - |
+| Open WebUI Qdrant HOME apply | 65 | W70 | `open-webui` recreate, health and vector-client index, search and delete probe | HOME, `main` `294ad4df8` | PASS | Healthy after a 3-minute start; correct top result; probe collection removed. UI file flow NOT_RUN. | required | - |
 | Open WebUI Qdrant source | 65 | W70 | `test_openwebui_oidc_entrypoint` RED then GREEN and root render | Compose, entrypoint and AI-008 catalog consumer | PASS | 4 new assertions failed before and pass after; live indexing NOT_RUN. | required | - |
 | Open WebUI Qdrant CI | 65 | W70 | GitHub `candidate-quality` on #840 | Runs 42547867536 and 42549318802 | FAIL | Service inventory was stale, then `QDRANT_API_KEY_FILE` lacked a secret-file support row. | required | - |
 | Open WebUI Qdrant CI rerun | 65 | W70 | GitHub `candidate-quality` on #840 | Inventory refreshed; support row added | NOT_RUN | Awaiting the rerun; the failing checks pass locally (254 tests OK, 31 skipped; operations catalog PASS). | required | - |

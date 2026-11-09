@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Implementation"
-version: "0.2.5"
+version: "0.2.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-09"
 ---
 
 # ComfyUI
@@ -13,7 +13,7 @@ updated: "2026-11-08"
 
 이미지 워크플로우 서비스로 상시 실행이 요구됩니다. Ollama와 공유하는 GPU 워크로드의 동시성은 함께 측정해야 하며 런타임 이미지 예외는 별도 소유자가 관리합니다.
 
-Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 프로필이 활성화를 제어합니다.
+Lifecycle: **OPTIONAL** (소유자가 2026-11-09 HOME에서 제외). 루트 Compose가 이 정의를 include하며, 명시적 프로필이 활성화를 제어합니다.
 
 ## Audience
 
@@ -71,9 +71,9 @@ Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되�
 
 ### Convergence contract
 
-- Classification: **HOME**. Exact profiles: `ai`, `ai-image`.
+- Classification: **OPTIONAL**. Exact profile: `ai-image`.
 - Source authority: 이 패키지의 Compose와 선택된 이미지/빌드 입력. `infra/tech-stack.versions.json`은 파생 프로젝션입니다.
-- Root preflight: `docker compose --profile ai config --quiet`. Root targeted start: `docker compose --profile ai up -d comfyui`.
+- Root preflight: `docker compose --profile ai-image config --quiet`. Root targeted start: `docker compose --profile ai-image up -d comfyui`.
 - Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/09-ai-and-search/0081-comfyui.md`; ID: `GDE-0081`, `POL-0081`, `RUN-0081`.
 - 해당 런북의 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다. 모델/콘텐츠 출처를 보존하고, 실행 중인 파일시스템 복사본을 복구 근거로 사용하지 않습니다.
 

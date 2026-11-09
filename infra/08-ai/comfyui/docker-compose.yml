@@ -49,7 +49,6 @@ volumes:
 services:
   comfyui:
     profiles:
-      - ai
       - ai-image
     extends:
       file: ../../common-optimizations.yml

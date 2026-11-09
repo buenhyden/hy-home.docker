@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.15.1"
+version: "1.15.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -37,7 +37,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `admin` | domain | 데이터·로그·노트북 관리 UI | `dozzle`, `redisinsight` | No | normal service startup | current |
 | `admin-data` | role | Valkey 데이터 탐색 UI | `redisinsight` | No | normal service startup | current |
 | `admin-logs` | role | 컨테이너 로그 UI | `dozzle` | No | normal service startup | current |
-| `ai` | domain | HOME 언어·이미지 AI와 vector 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui`, `comfyui` | No | normal service startup | current |
+| `ai` | domain | HOME 언어 AI와 vector 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
 | `ai-image` | capability | GPU 이미지 생성 | `comfyui` | No | normal service startup | current |
 | `ai-llm` | capability | 언어 모델 추론·채팅·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
 | `alerting` | capability | 메트릭 경보 전달 | `prometheus`, `grafana`, `alertmanager` | No | normal service startup | current |
@@ -318,7 +318,7 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | JupyterLab, MLflow | data science·실험 추적 | MLflow는 JupyterLab | 3.5 / 3328 | MNG PostgreSQL DB, object store artifact | MLflow OPTIONAL; JupyterLab은 2026-11-04 LAB `labs/jupyterlab/docker-compose.yml`로 이전 | 실험 추적 수요가 없을 때 | 미실행 |
 | Open Notebook, SurrealDB | notebook | 이름 있는 소비자 없음 | 1.5 / 768 | `open-notebook-data`, `surrealdb-data` | OPTIONAL | 소비자가 없으면 퇴역 검토 | 미실행 |
 | Crawl4AI | crawling API | 없음 | 2 / 4096 | 없음 | OPTIONAL; 소비자가 생기지 않으면 퇴역 검토 | 다음 검토까지 소비자가 없을 때 | 미실행 |
-| ComfyUI | GPU 이미지 생성 | HOME `ai-image` | 2 / 4096 | `comfyui-models` 등 7개 volume | HOME 유지; GPU를 Ollama와 공유 | 이미지 생성 수요가 없을 때 | 실행 |
+| ComfyUI | GPU 이미지 생성 | 명시 선택 `ai-image` | 2 / 4096 | `comfyui-models` 등 7개 volume | HOME 제외(소유자 2026-11-09); GPU를 Ollama와 공유 | 이미지 생성 수요가 없을 때 | 중지 |
 | Pact Broker, SonarQube | contract·SAST | 이름 있는 소비자 없음 | 3.5 / 2816 | `sonarqube-*` volume, MNG PostgreSQL DB | Pact Broker OPTIONAL; SonarQube는 2026-11-04 LAB `labs/sonarqube/docker-compose.yml`로 이전 | 계약·SAST 소비자가 없을 때 | 미실행 |
 | 독립 `labs/*/docker-compose.yml` | HA·replica·backend·부하 실습 | 실습 목적별 | LAB별 렌더 | `LAB_DATA_DIR` 아래 LAB별 경로 | LAB; `lab.py`로만 실행 | 실습 목적이 없어지면 해당 LAB 퇴역 | `hy-home-lab-*` project 없음 |
 
