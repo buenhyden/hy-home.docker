@@ -2288,7 +2288,7 @@ files:
   sha256: b98c860fe58b4d2caea3427dd1c66bba6d641392069c44e89cd6e05136f554ca
   review:
     state: UNREVIEWED
-- path: docs/02.architecture/decisions/0058-home-tiers-versus-labs.md
+- path: docs/02.architecture/decisions/0062-home-lab-membership.md
   tracked: true
   kind: document
   bytes: 10791

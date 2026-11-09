@@ -24,7 +24,7 @@ are standalone LAB entrypoints (`labs/lakehouse/docker-compose.yml`, `labs/dbt/d
 `labs/superset/docker-compose.yml`, `labs/jupyterlab/docker-compose.yml`) that join no HOME network and reach
 HOME stores only through approved LAB endpoint inputs; `infra/12-analytics` holds
 no root package. The former description
-covered only `04-data/analytics` storage engines; ADR-0058 makes the storage
+covered only `04-data/analytics` storage engines; ADR-0062 makes the storage
 versus processing boundary explicit. OpenSearch remains in Data; InfluxDB is retired (ADR-0047).
 
 ## Scope
@@ -38,7 +38,7 @@ operational telemetry. Each LAB is its own Compose project (`hy-home-lab-<name>`
 ### Traceability
 
 - [REQ-0005](../../01.requirements/0005-data-analytics.md)
-- [ADR-0058](../decisions/0058-home-tiers-versus-labs.md)
+- [ADR-0062](../decisions/0062-home-lab-membership.md)
 - SPEC-0197
 
 ## Structure

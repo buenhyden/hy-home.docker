@@ -10,7 +10,7 @@ artifact_id: "SPEC-0204"
 parent_ids:
 - "REQ-0027"
 - "AD-0031"
-- "ADR-0058"
+- "ADR-0062"
 created: "2026-10-03"
 ---
 
@@ -640,7 +640,7 @@ Missing permission or target defers only the dependent operation.
 - [Current request reconciliation](../0212-request-baseline-and-reconciliation/spec.md)
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
-- [ADR-0058](../../02.architecture/decisions/0058-home-tiers-versus-labs.md)
+- [ADR-0062](../../02.architecture/decisions/0062-home-lab-membership.md)
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037](../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)

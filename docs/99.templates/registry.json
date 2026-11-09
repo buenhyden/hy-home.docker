@@ -4834,8 +4834,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 61,
-      "next_number": 62,
+      "high_water": 62,
+      "next_number": 63,
       "reserved_history": [
         3,
         5,
@@ -4867,7 +4867,8 @@
         40,
         41,
         43,
-        45
+        45,
+        58
       ],
       "child_spaces": {}
     },

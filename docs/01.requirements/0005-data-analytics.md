@@ -105,7 +105,7 @@ No separately numbered solution-independent interface requirement is defined.
 ### Traceability
 
 - **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/descriptions/0012-data-analytics-architecture.md)
-- **ADR**: [ADR-0058 HOME Tiers versus LABs](../02.architecture/decisions/0058-home-tiers-versus-labs.md) (supersedes ADR-0015), [0047-dev-timescale-influx-retirement-and-load-tools.md](../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
+- **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/decisions/0062-home-lab-membership.md) (supersedes ADR-0015), [0047-dev-timescale-influx-retirement-and-load-tools.md](../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
 - **Spec**: [SPEC-0262 analytics LAB migration](../03.specs/0262-analytics-labs-migration/spec.md); SPEC-0180 (lakehouse adoption and the removal of ksqlDB and StarRocks) is retired and its body is in version history.
 - **Guide**: [Operations guides](../05.operations/guides/README.md)
 - **Retired domain Spec SPEC-0005** (data-analytics): replaced by the data-analytics guides, policies and runbooks in the operations catalog under `docs/05.operations/`.

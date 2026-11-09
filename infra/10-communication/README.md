@@ -23,7 +23,7 @@ Stalwart와 설정 helper는 SPEC-0262에서 독립 [Stalwart LAB](../../labs/st
 
 ## Scope
 
-ADR-0058 capability tier 이름과 메일 경계 안내만 유지한다. 메일 내용, 비밀 원문,
+ADR-0062 capability tier 이름과 메일 경계 안내만 유지한다. 메일 내용, 비밀 원문,
 도메인 공급자 설정 변경은 범위 밖이다.
 
 ## Structure

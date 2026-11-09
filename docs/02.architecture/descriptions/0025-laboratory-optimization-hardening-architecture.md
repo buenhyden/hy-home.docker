@@ -113,7 +113,7 @@ state.
 
 - **PRD**: [REQ-0012](../../01.requirements/0012-laboratory.md)
 - **Tier Architecture Description**: [AD-0011 Administration and Experimentation Architecture Description](0011-laboratory-architecture.md)
-- **ADR**: [ADR-0058](../decisions/0058-home-tiers-versus-labs.md)
+- **ADR**: [ADR-0062](../decisions/0062-home-lab-membership.md)
 - **Spec**: [SPEC-0263 LAB promotion contract](../../03.specs/0263-lab-promotion-contract/spec.md)
 - **Guide**: [Laboratory optimization hardening guide](../../05.operations/guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
 - **Policy**: [Laboratory optimization hardening policy](../../05.operations/policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
