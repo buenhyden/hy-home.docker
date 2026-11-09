@@ -149,10 +149,10 @@ class WorkflowVersionBundleTests(unittest.TestCase):
         package = json.loads((package_root / "package.json").read_text())
         lock = json.loads((package_root / "package-lock.json").read_text())
         for section in ("peerDependencies", "devDependencies"):
-            self.assertEqual("2.43.4", package[section]["n8n-workflow"])
+            self.assertEqual("2.46.5", package[section]["n8n-workflow"])
             self.assertEqual(package[section], lock["packages"][""][section])
         self.assertEqual(
-            "2.43.4", lock["packages"]["node_modules/n8n-workflow"]["version"]
+            "2.46.5", lock["packages"]["node_modules/n8n-workflow"]["version"]
         )
 
     def test_n8n_source_receipt_does_not_reuse_previous_native_acceptance(self):

@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.29"
+version: "0.1.30"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -319,6 +319,11 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | n8n 2.46.6 signature, full-image scan, build, native and HOME | 60 | W65 | Publisher signature, SBOM or scan, `hyhome/n8n` build, native queue and HOME recreate | Same inputs | NOT_RUN | Out of this source unit; the local image build and every recreate wait for their own approval | required | - |
 | n8n router without gateway SSO | 57 | W62 | Static Compose label, Compose render, `RouteAuthContractTests`, `SsoOnlyIngressContractTests`, hardening gate | Branch base `0220de58a` plus this change | PASS | `traefik.http.routers.n8n.middlewares` is `gateway-standard-chain@file`; `docker compose --env-file .env.example config -q` exits 0; `check-all-hardening.sh` ALL PASS; `hermes-webhook.yml` unchanged | required | - |
 | n8n live login without gateway SSO | 57 | W62 | Browser or HTTP check after the Traefik reload | HOME `n8n` host | NOT_RUN | No Traefik reload or recreate performed; confirm the n8n login page answers without a Keycloak redirect after the approved apply | required | - |
+| n8n router exclusions for `/metrics` and the Hermes path | 57 | W62 | Static Compose rule, Compose render, hardening gate pins, `RouteAuthContractTests`, catalog check | Branch HEAD `1899263f4` plus this change | PASS | Rule excludes both prefixes; `docker compose --env-file .env.example config -q` exits 0; `check-all-hardening.sh` ALL PASS; Prometheus targets `n8n:5678` directly | required | - |
+| n8n router exclusions live behaviour | 57 | W62 | Request to `/metrics`, a GET and a trailing-slash request to the Hermes path through Traefik | HOME gateway | NOT_RUN | No Traefik reload or recreate performed | required | - |
+| OpsflowSmtp `n8n-workflow` pin and node tests | 60 | W65 | `npm ci`, `npm test` and `npm run test:coverage` in a scratch copy of the node | Branch HEAD `1899263f4` lock (zod 3.25.76, no zod override) | PASS | 38 of 38 pass; coverage 97.51 percent lines, 95.56 branches, 88.57 functions | required | - |
+| OpsflowSmtp `npm audit` | 60 | W65 | `npm audit --package-lock-only` full and `--omit=dev` | Same lock | FAIL | Full audit: 3 high through GHSA-mrhx-c7xc-m3w5 on the `n8n-workflow` dev path; production audit: 0. No exception recorded; the failure is stored in `package-lookups.json` | required | - |
+| Dockerfile `n8n --version` and node load check | 60 | W65 | Build-time `RUN` check | `hyhome/n8n` image | NOT_RUN | Image not built; the node's `npm test` loads `n8n-workflow` 2.46.5 from the lock, which is not the image check | required | - |
 | n8n documentation and catalog checks | 57 | W62 | `check-operations-catalog.py`, `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` | Branch base `0220de58a` plus this change | PASS | Catalog PASS after patching the stale n8n router cell in `m0021`; metadata 12 selected, 0 violations; links 0 failures | required | - |
 | n8n consumer test suites | 60 | W65 | 41 modules naming n8n, `2.43.6` or `sso-auth`, plus `test_p02_service_contracts` and `test_compose_baseline_gates` | Branch base `0220de58a` plus this change, venv on `PATH` | FAIL | 1069 tests, 51 failures, 83 declared skips; the same 51 fail on a clean checkout of `0220de58a` (`test_update_gates` stale `source_input_sha256` for 50 rows and the root census); none is new and the n8n rows, `test_workflow_version_bundle`, `test_sec01_next_tool_candidates` and `test_p08_ci_routing` pass | required | - |
 
@@ -902,11 +907,38 @@ previous source bindings and the previous lookups are archived inside the same f
 `test_update_gates` still fails for 50 rows and the root census on a clean
 `0220de58a` because other root Compose files changed after their last re-binding
 (see the 2026-11-08 root source re-binding); this change neither fixes nor worsens
-that set. The OpsflowSmtp lock stays on `n8n-workflow` 2.43.4: 2.46.5, which 2.46.6
-bundles, needs zod 3 while the lock overrides zod 4.6.6, and the node's unit tests then
-fail to load it (`zod.string().ip is not a function`). The image resolves
-`n8n-workflow` from the pinned base through `NODE_PATH`. Signatures, a full-image
+that set. Signatures, a full-image
 scan, the `hyhome/n8n` build, native and HOME acceptance are `NOT_RUN`.
+
+Follow-up on the same day, on PR #849. The owner asked that the n8n versions be
+unified ("n8n-workflow도 업데이트. n8n 관련 버전은 통일한다."), so the OpsflowSmtp
+package and lock pin `n8n-workflow` 2.46.5, which 2.46.6 bundles. The `zod: 4.6.6`
+override was removed because `n8n-workflow` 2.46.5 does not load under Zod 4
+(`zod.string().ip is not a function`); the axios override stays (the lock resolves
+axios 1.20.0). The lock now resolves zod 3.25.76 in the dev tree. In a scratch copy
+`npm test` passes 38 of 38 and the coverage script passes (97.51 percent lines, 95.56
+branches). `npm audit` on the full lock now reports three high findings, all through
+GHSA-mrhx-c7xc-m3w5 (`zod`, `@n8n/expression-runtime`, `n8n-workflow`); the production
+audit reports zero. The owner withdrew the Zod acceptance, so no exception or new
+acceptance is recorded: the package-lookups record shows the failing full audit as
+observed, and the previous zero-finding audits are archived beside it. This is the
+open item to decide: either an `n8n-workflow` release on Zod 4 or a separate owner
+decision. The runtime image is unaffected, because the deployable package carries no
+`node_modules`.
+
+Two router fixes follow from removing SSO. The `n8n` router rule is now
+``Host(`n8n.${DEFAULT_URL}`) && !PathPrefix(`/metrics`) && !PathPrefix(`/webhook/hermes-blog-ingestion`)``.
+`N8N_METRICS` serves unauthenticated `/metrics` on the app port, which the Host-only
+router would now publish; Prometheus scrapes `n8n:5678` on the internal network and is
+unaffected. A trailing-slash, non-POST or wrong-source request to the Hermes path
+used to miss the exact-path Hermes router and fall through to the general router,
+skipping its source allowlist, body limit and rate limit; the exclusion closes that.
+The Hermes router keeps priority 1000 and is unchanged apart from its header comment,
+which no longer claims an `sso-auth` chain. The hardening gate pins both exclusions.
+The stale n8n statements in AD-0007 and AD-0022 now say n8n uses its own login. ADR-0059
+(accepted) still says Flower and n8n keep the SSO chain in its decision text. The
+architecture guide forbids rewriting an accepted decision body and requires a separately
+approved new ADR to replace it, so it is left unchanged and reported.
 
 ## Handoff
 

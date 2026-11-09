@@ -118,7 +118,7 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.n8n.rule: Host(`n8n.${DEFAULT_URL}`)
+      traefik.http.routers.n8n.rule: Host(`n8n.${DEFAULT_URL}`) && !PathPrefix(`/metrics`) && !PathPrefix(`/webhook/hermes-blog-ingestion`)
       traefik.http.routers.n8n.entrypoints: websecure
       traefik.http.routers.n8n.middlewares: gateway-standard-chain@file
       traefik.http.routers.n8n.tls: 'true'

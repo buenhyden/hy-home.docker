@@ -770,8 +770,8 @@
   ],
   "meaning": "Public source requirements/package.json and package-index latest metadata; not installed SBOM/advisory or candidate native proof.",
   "n8n_source_preparation": {
-    "source_revision": "0220de58af38b5f8b78368b9640085922760854a",
-    "checked_at": "2026-11-09T06:43:53.233408+00:00",
+    "source_revision": "1899263f4e50f1ed410b44d37691621b01dfd2c5",
+    "checked_at": "2026-11-09T07:27:10.954179+00:00",
     "npm": {
       "url": "https://registry.npmjs.org/n8n/2.46.6",
       "checked_at": "2026-11-09T06:43:53.233408+00:00",
@@ -795,32 +795,58 @@
     },
     "audit_all": {
       "command": "npm audit --package-lock-only --ignore-scripts --json --registry=https://registry.npmjs.org/",
-      "observed_at": "2026-10-15T15:41:21.655093+00:00",
-      "exit_code": 0,
+      "observed_at": "2026-11-09T07:27:10.954179+00:00",
+      "exit_code": 1,
       "metadata": {
         "vulnerabilities": {
           "info": 0,
           "low": 0,
           "moderate": 0,
-          "high": 0,
+          "high": 3,
           "critical": 0,
-          "total": 0
+          "total": 3
         },
         "dependencies": {
           "prod": 2,
-          "dev": 154,
+          "dev": 157,
           "optional": 23,
           "peer": 0,
           "peerOptional": 0,
-          "total": 155
+          "total": 158
         }
       },
       "error": null,
-      "findings": {}
+      "findings": {
+        "@n8n/expression-runtime": {
+          "severity": "high",
+          "direct": false,
+          "via": [
+            "zod"
+          ],
+          "range": ">=0.14.3"
+        },
+        "n8n-workflow": {
+          "severity": "high",
+          "direct": true,
+          "via": [
+            "@n8n/expression-runtime",
+            "zod"
+          ],
+          "range": ">=1.76.0"
+        },
+        "zod": {
+          "severity": "high",
+          "direct": false,
+          "via": [
+            "https://github.com/advisories/GHSA-mrhx-c7xc-m3w5"
+          ],
+          "range": "<4.6.6"
+        }
+      }
     },
     "audit_production": {
       "command": "npm audit --package-lock-only --ignore-scripts --json --registry=https://registry.npmjs.org/ --omit=dev",
-      "observed_at": "2026-10-15T15:41:22.350864+00:00",
+      "observed_at": "2026-11-09T07:27:10.954179+00:00",
       "exit_code": 0,
       "metadata": {
         "vulnerabilities": {
@@ -833,17 +859,17 @@
         },
         "dependencies": {
           "prod": 2,
-          "dev": 154,
+          "dev": 157,
           "optional": 23,
           "peer": 0,
           "peerOptional": 0,
-          "total": 155
+          "total": 158
         }
       },
       "error": null,
       "findings": {}
     },
-    "meaning": "Official npm metadata/audit for custom-node lock only; not a full-image or upstream n8n transitive scan. The audit_all and audit_production observations cover the unchanged custom-node lock (n8n-workflow 2.43.4) and were not re-run; the npm and workflow_package lookups describe the bundled n8n 2.46.6 base.",
+    "meaning": "Official npm metadata/audit for the custom-node lock only; not a full-image or upstream n8n transitive scan. The full audit FAILS with 3 high findings through the zod advisory on the n8n-workflow dev path; no exception is recorded.",
     "historical_n8n_source_preparations": [
       {
         "archived_at": "2026-11-09T06:43:53.233408+00:00",
@@ -869,6 +895,60 @@
           "version": "2.43.4",
           "integrity": "sha512-PwA5kqdoVmjIjn7+KNZw8hw4nkFgvYAU4bZ3so8IyKdOabHh/idPz8PHclVSn/FbhizTuGv4rU/w3FUgVbbCuw=="
         }
+      },
+      {
+        "archived_at": "2026-11-09T07:27:10.954179+00:00",
+        "audit_all": {
+          "command": "npm audit --package-lock-only --ignore-scripts --json --registry=https://registry.npmjs.org/",
+          "observed_at": "2026-10-15T15:41:21.655093+00:00",
+          "exit_code": 0,
+          "metadata": {
+            "vulnerabilities": {
+              "info": 0,
+              "low": 0,
+              "moderate": 0,
+              "high": 0,
+              "critical": 0,
+              "total": 0
+            },
+            "dependencies": {
+              "prod": 2,
+              "dev": 154,
+              "optional": 23,
+              "peer": 0,
+              "peerOptional": 0,
+              "total": 155
+            }
+          },
+          "error": null,
+          "findings": {}
+        },
+        "audit_production": {
+          "command": "npm audit --package-lock-only --ignore-scripts --json --registry=https://registry.npmjs.org/ --omit=dev",
+          "observed_at": "2026-10-15T15:41:22.350864+00:00",
+          "exit_code": 0,
+          "metadata": {
+            "vulnerabilities": {
+              "info": 0,
+              "low": 0,
+              "moderate": 0,
+              "high": 0,
+              "critical": 0,
+              "total": 0
+            },
+            "dependencies": {
+              "prod": 2,
+              "dev": 154,
+              "optional": 23,
+              "peer": 0,
+              "peerOptional": 0,
+              "total": 155
+            }
+          },
+          "error": null,
+          "findings": {}
+        },
+        "meaning": "Audits of the previous lock (n8n-workflow 2.43.4 with the zod 4.6.6 override)."
       }
     ]
   }

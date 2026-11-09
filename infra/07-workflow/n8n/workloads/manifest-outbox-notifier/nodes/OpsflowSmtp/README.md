@@ -1,10 +1,10 @@
 ---
 title: "Opsflow SMTP 개발 캡처 노드"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-09"
 ---
 
 # Opsflow SMTP 개발 캡처 노드
@@ -35,8 +35,8 @@ P05 작성자, SEC01·P03·P02 담당자와 독립 검토자입니다.
 ## Tech Stack
 
 선택 upstream n8n commit
-`34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7`의
-[workflow package](https://github.com/n8n-io/n8n/blob/34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7/packages/workflow/package.json)
+`bb72d756104542adb549b6966a57e21459bd52a2`(현재 pin의 stable release tag)의
+[workflow package](https://github.com/n8n-io/n8n/blob/bb72d756104542adb549b6966a57e21459bd52a2/packages/workflow/package.json)
 API와 동일한 `n8n-workflow` package pin을 개발·peer metadata에 둡니다.
 서비스 버전과 package 버전은 서로 다릅니다. 검증된 compiler·Nodemailer pin은
 package/lock에만 선언합니다. `npm ci --ignore-scripts`는 dependency lifecycle을 실행하지 않습니다.
@@ -53,11 +53,13 @@ Nodemailer의 주소 parser 보안 수정은 검토된
 
 개발용으로 설치된 `n8n-workflow` → expression runtime → Zod 경로의
 [Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)에는 Zod 3 수정판이
-없습니다. 소유자 승인에 따라 이 dev 트리에만 Zod major package-scoped override를 적용하며,
-build·coverage 시험과 전체·production 감사 0건을 확인했습니다. API package는 downgrade하지
-않습니다. 배포 패키지는 `node_modules`를 포함하지 않고, `n8n-workflow`는 n8n 호스트가
-제공하는 정확한 peer 의존성입니다. 설치된 n8n 이미지의 Zod와 실제 실행 환경의 영향은
-이 override가 바꾸지 않으며 SEC01 담당으로 미확인입니다. 이 결과는 설치 이미지·실제 송신·
+없고, `n8n-workflow`는 Zod 4에서 로드되지 않습니다. 따라서 이 dev 트리는 Zod override를
+두지 않고 `n8n-workflow`가 요구하는 Zod 3 계열을 설치합니다. build·coverage 시험은 통과하지만
+`npm audit` 전체 감사는 이 경로의 high 3건을 보고하고 production 감사는 0건입니다.
+예외나 수용은 기록하지 않습니다(소유자가 기한부 수용을 철회했습니다). API package는
+downgrade하지 않습니다. 배포 패키지는 `node_modules`를 포함하지 않고, `n8n-workflow`는 n8n
+호스트가 제공하는 정확한 peer 의존성입니다. 설치된 n8n 이미지의 Zod와 실제 실행 환경의
+영향은 이 dev 트리와 무관하며 SEC01 담당으로 미확인입니다. 이 결과는 설치 이미지·실제 송신·
 전체 보안 수용의 PASS가 아닙니다.
 
 ## Configuration
