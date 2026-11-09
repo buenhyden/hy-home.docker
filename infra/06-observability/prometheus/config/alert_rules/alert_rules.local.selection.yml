@@ -60,7 +60,7 @@ groups:
           summary: "PostgreSQL exporter backend status is missing"
       - alert: ObservationValkeyBackendMetricMissing
         expr: |
-          up{job=~"mng-valkey-exporter|dev-valkey-exporter|airflow-valkey-exporter|n8n-valkey-exporter|oauth2-proxy-valkey-exporter",expected_state="on"} == 1
+          up{job=~"mng-valkey-exporter|dev-valkey-exporter",expected_state="on"} == 1
           unless on(job, instance) redis_up
         for: 5m
         labels:

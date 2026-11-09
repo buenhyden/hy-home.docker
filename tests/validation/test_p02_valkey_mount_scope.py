@@ -1,96 +1,60 @@
-"""Least-privilege script mounts for the three P02 dedicated Valkey brokers."""
+"""ADR-0062 decision 10: no per-app dedicated Valkey broker or exporter remains."""
 
 from __future__ import annotations
 
-import re
 import unittest
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-VALKEY_SCRIPTS = ROOT / "infra/04-data/mng-db/valkey/scripts"
-RUNTIME_SCRIPTS = Path("/usr/local/lib/hy-home/valkey")
+REMOVED_SERVICES = {
+    "infra/07-workflow/airflow/docker-compose.yml": "airflow-valkey",
+    "infra/07-workflow/n8n/docker-compose.yml": "n8n-valkey",
+    "infra/02-auth/oauth2-proxy/docker-compose.yml": "oauth2-proxy-valkey",
+}
+REMOVED_OVERLAYS = (
+    "infra/07-workflow/airflow/docker-compose.monitor-acl.yml",
+    "infra/07-workflow/n8n/docker-compose.monitor-acl.yml",
+    "infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml",
+)
+REMOVED_SECRETS = {
+    "airflow_valkey_password",
+    "airflow_valkey_monitor_password",
+    "n8n_valkey_password",
+    "n8n_valkey_monitor_password",
+    "oauth2_valkey_monitor_password",
+}
 
 
-def _strings(value: object) -> list[str]:
-    if isinstance(value, str):
-        return [value]
-    if isinstance(value, list):
-        return [item for child in value for item in _strings(child)]
-    if isinstance(value, dict):
-        return [item for child in value.values() for item in _strings(child)]
-    return []
+class DedicatedValkeyRemovalTests(unittest.TestCase):
+    def test_leaf_compose_files_declare_no_dedicated_broker_or_exporter(self) -> None:
+        for relative_path, broker in REMOVED_SERVICES.items():
+            with self.subTest(service=broker):
+                document = yaml.safe_load((ROOT / relative_path).read_text())
+                services = document["services"]
+                self.assertNotIn(broker, services)
+                self.assertNotIn(broker + "-exporter", services)
+                volumes = document.get("volumes") or {}
+                self.assertNotIn(broker + "-data", volumes)
+                self.assertNotIn("dedicated-valkey", str(document))
 
+    def test_monitor_overlays_and_dedicated_secrets_are_gone(self) -> None:
+        for relative_path in REMOVED_OVERLAYS:
+            self.assertFalse((ROOT / relative_path).exists(), relative_path)
+        root = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
+        self.assertEqual(set(), REMOVED_SECRETS & set(root["secrets"]))
 
-class DedicatedValkeyMountScopeTests(unittest.TestCase):
-    cases = (
-        (
+    def test_apps_keep_the_shared_management_valkey(self) -> None:
+        for relative_path in (
             "infra/07-workflow/airflow/docker-compose.yml",
-            "airflow-valkey",
-            "airflow_valkey_password",
-        ),
-        (
             "infra/07-workflow/n8n/docker-compose.yml",
-            "n8n-valkey",
-            "n8n_valkey_password",
-        ),
-        (
             "infra/02-auth/oauth2-proxy/docker-compose.yml",
-            "oauth2-proxy-valkey",
-            "oauth2_valkey_password",
-        ),
-    )
-
-    def test_brokers_mount_only_the_two_required_scripts_and_app_secret(self) -> None:
-        expected_mounts = {
-            (
-                (VALKEY_SCRIPTS / name).resolve(),
-                RUNTIME_SCRIPTS / name,
-                "ro",
-            )
-            for name in ("start-dedicated.sh", "render-monitor-acl.sh")
-        }
-        for relative_path, service_name, app_secret in self.cases:
-            with self.subTest(service=service_name):
-                path = ROOT / relative_path
-                service = yaml.safe_load(path.read_text())["services"][service_name]
-                script_mounts = set()
-                for volume in service["volumes"]:
-                    source, target, *options = volume.split(":")
-                    target_path = Path(target)
-                    if (
-                        target_path == RUNTIME_SCRIPTS
-                        or RUNTIME_SCRIPTS in target_path.parents
-                    ):
-                        script_mounts.add(
-                            (
-                                (path.parent / source).resolve(),
-                                target_path,
-                                ",".join(options),
-                            )
-                        )
-                self.assertEqual(expected_mounts, script_mounts)
-                self.assertNotIn(
-                    VALKEY_SCRIPTS.resolve(),
-                    {source for source, _, _ in script_mounts},
-                )
-                self.assertNotIn(
-                    RUNTIME_SCRIPTS / "start.sh",
-                    {target for _, target, _ in script_mounts},
-                )
-
-                declared = {
-                    item if isinstance(item, str) else item["source"]
-                    for item in service["secrets"]
-                }
-                self.assertEqual({app_secret}, declared)
-                references = {
-                    match
-                    for value in _strings(service)
-                    for match in re.findall(r"/run/secrets/([A-Za-z0-9_]+)", value)
-                }
-                self.assertEqual({app_secret}, references)
+        ):
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text()
+                self.assertIn("mng-valkey", text)
+                self.assertIn("mng_valkey_password", text)
 
 
 if __name__ == "__main__":

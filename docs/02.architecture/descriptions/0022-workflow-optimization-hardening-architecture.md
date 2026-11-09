@@ -1,6 +1,6 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.2.1"
+version: "1.2.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -78,8 +78,8 @@ the standard middleware; Airflow and n8n authenticate users natively.
 
 - **Runtime / Platform**: Docker Compose (`infra/07-workflow/*`)
 - **Deployment Model**:
-  - Airflow distributed components; the `dedicated-valkey` profile starts `airflow-valkey`, and without it `${AIRFLOW_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
-  - n8n queue mode + external runner; the `dedicated-valkey` profile starts `n8n-valkey`, and without it `${N8N_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
+  - Airflow distributed components; `${AIRFLOW_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
+  - n8n queue mode + external runner; `${N8N_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
 - **Verification**: the registered `infrastructure-hardening` gate in
   `.github/workflow-contract.yml` and Compose validation
 

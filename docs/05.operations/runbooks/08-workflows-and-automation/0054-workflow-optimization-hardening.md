@@ -1,6 +1,6 @@
 ---
 title: "07-Workflow Optimization Hardening Runbook"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -56,8 +56,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    - middleware 회귀:
      - Airflow의 승인된 native Keycloak SSO와 `gateway-standard-chain@file`을 복원한다. Flower에는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을, n8n에는 `gateway-standard-chain@file`만 복원한다(n8n 자체 로그인, owner 결정 2026-11-09). 로그인·권한 검증 전 정상으로 선언하지 않는다.
    - Airflow startup race:
-     - `dedicated-valkey` profile을 선택한 경우 `airflow-valkey` `service_healthy` dependency 복원
-     - 선택하지 않은 경우 shared `mng-valkey` broker 경계와 validation evidence 확인
+     - shared `mng-valkey` broker 경계와 validation evidence 확인
    - n8n worker/task-runner 이상:
      - healthcheck/depends_on 계약 복원
    - n8n image drift:

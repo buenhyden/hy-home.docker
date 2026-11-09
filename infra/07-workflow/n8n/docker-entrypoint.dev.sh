@@ -14,7 +14,7 @@ broker_user=${N8N_VALKEY_USERNAME-}
 broker_secret=${N8N_VALKEY_SECRET:-mng_valkey_password}
 broker_db=${N8N_VALKEY_DB-0}
 case "$broker_host:$broker_user:$broker_secret:$broker_db" in
-  mng-valkey::mng_valkey_password:0|n8n-valkey::n8n_valkey_password:0|mng-valkey:n8n:mng_valkey_n8n_password:0) ;;
+  mng-valkey::mng_valkey_password:0|mng-valkey:n8n:mng_valkey_n8n_password:0) ;;
   *) echo "unsupported n8n broker selection" >&2; exit 1 ;;
 esac
 if [ "${QUEUE_BULL_REDIS_HOST-$broker_host}" != "$broker_host" ] ||

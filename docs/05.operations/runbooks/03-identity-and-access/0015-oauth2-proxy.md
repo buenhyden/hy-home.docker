@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -73,7 +73,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
    - state/CSRF 오류가 있으면 `cookie_domains=.${DEFAULT_URL}`, `cookie_secure=true`, HTTPS 진입, browser stale cookie를 함께 확인한다.
 4. session store 대응
    - tracked default는 `OAUTH2_PROXY_SESSION_STORE_TYPE=redis`, `OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:${VALKEY_PORT:-6379}`이다.
-   - shared path는 `mng-valkey`; `dedicated-valkey` profile은 `oauth2-proxy-valkey`를 추가할 뿐이다. 실제 proxy backend 전환은 `OAUTH2_PROXY_VALKEY_HOST`, selected image, entrypoint secret path가 함께 맞을 때만 성립한다.
+   - 세션 저장소는 공유 `mng-valkey`뿐이다(앱별 전용 Valkey는 ADR-0062 결정 10으로 제거됨). `OAUTH2_PROXY_VALKEY_HOST`, selected image, entrypoint secret path가 함께 맞아야 한다.
    - `/ping`은 process health이고 `/ready`는 Redis/Valkey 연결까지 확인한다.
    - Valkey credential rotation 후 기존 sessions는 무효화될 수 있으며 secret 값은 출력하지 않는다.
 5. logout 진단
@@ -95,7 +95,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 
 ### Lifecycle, helpers and change acceptance
 
-Proxy의 issuer·CA와 선택 Valkey가 준비되어야 한다. 기본 공유 경로에서 `auth`
+Proxy의 issuer·CA와 공유 `mng-valkey`가 준비되어야 한다. 기본 공유 경로에서 `auth`
 선택이 DB/Valkey readiness를 기다린다고 가정하지 않는다. 기존 로컬 image를
 사용하는 승인된 대상 기동·중지는 다음과 같다.
 
@@ -111,29 +111,8 @@ docker compose stop oauth2-proxy
 반영되지 않는다. image가 없거나 build 선택이 불명확하면 [RUN-0086](../10-platform-and-backup/0086-dependency-version-management.md)의
 별도 검토·build 절차로 넘기고 여기서 임의 build/pull하지 않는다.
 
-전용 대안을 승인받은 경우 먼저 Valkey bind 경로의 존재·UID999 권한·용량,
-전용 Secret 참조, exporter 포트, Proxy Dockerfile/host/credential 일치를 확인한다.
-이미지와 volume 입력이 준비된 뒤에만 아래 순서로 수행한다.
-
-```bash
-docker compose --profile dedicated-valkey up -d --no-deps --no-build --pull never oauth2-proxy-valkey
-# Valkey healthy를 확인한 다음 실행한다.
-docker compose --profile dedicated-valkey up -d --no-deps --no-build --pull never oauth2-proxy-valkey-exporter
-docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
-```
-
-첫 서비스 healthy가 아니면 exporter로 진행하지 않는다. exporter healthcheck는
-`/metrics` 응답만 보므로 수집기의 target UP/`redis_up`을 별도로 확인한다. 값·세션
-본문·password 환경 변수가 포함될 수 있는 원문 health/inspect/process 출력은 금지한다.
-접속 전환은 일치하는 Proxy image·설정·Secret을 별도 승인된 재생성으로 적용한
-뒤 `/ready`와 신규 login으로 확인한다. 재시작만으로 build 선택이 바뀌지 않는다.
-중지는 Proxy 소비자 영향 확인 → exporter → 전용 Valkey 순서로 대상만 정하며
-공유 `mng-valkey`는 이 절차로 중지/flush하지 않는다.
-
-전용 Valkey AOF 손실 시 세션 재로그인이 기본 복구다. exporter는 state가 없으므로
-동일 선언으로 재생성하며 DB backup/credential 발급 기능이 없다. 전용 volume
-삭제는 소비자 전환·재로그인 영향·보존 disposition이 승인되기 전에는 수행하지
-않는다. cleanup을 위해 `down -v`나 `FLUSHALL`을 사용하지 않는다.
+공유 `mng-valkey`는 이 절차로 중지/flush하지 않는다. 세션 손실 시 재로그인이 기본
+복구이며 cleanup을 위해 `down -v`나 `FLUSHALL`을 사용하지 않는다.
 
 ## Verification
 
@@ -157,7 +136,7 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
-- 전용 Valkey credential의 노출 경계는 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#rules)를 따른다. `docker inspect`, `docker top`, `/proc/*/cmdline`·`environ`, 원문 `.State.Health.Log`는 기록하지 않는다.
+- Valkey credential의 노출 경계는 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#rules)를 따른다. `docker inspect`, `docker top`, `/proc/*/cmdline`·`environ`, 원문 `.State.Health.Log`는 기록하지 않는다.
 
 ### Shared Valkey outage rehearsal (2026-09-22, owner-approved)
 
@@ -189,7 +168,6 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
   - `infra/02-auth/oauth2-proxy/Dockerfile`
   - `infra/02-auth/oauth2-proxy/dev.Dockerfile`
   - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
-  - `infra/02-auth/oauth2-proxy/docker-compose.monitor-acl.yml`(사용한 경우)
 - [ ] 위 Lifecycle의 승인된 대상 재생성과 hash 점검 수행
 - [ ] `/ping`, `/ready`, 로그인 시나리오 재검증
 

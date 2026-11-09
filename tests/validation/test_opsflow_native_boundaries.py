@@ -102,7 +102,7 @@ class NativeGuardTests(unittest.TestCase):
         self.assertIn("require_secret /run/secrets/n8n_runner_auth_token", entrypoint)
         self.assertIn(
             'case "$broker_host:$broker_user:$broker_secret:$broker_db" in\n  '
-            "mng-valkey::mng_valkey_password:0|n8n-valkey::n8n_valkey_password:0|"
+            "mng-valkey::mng_valkey_password:0|"
             "mng-valkey:n8n:mng_valkey_n8n_password:0) ;;",
             entrypoint,
         )
@@ -119,7 +119,7 @@ class NativeGuardTests(unittest.TestCase):
         fixture.start_n8n(synthetic)
 
         self.assertEqual([args[0] for args, _ in calls], ["main", "worker"])
-        self.assertEqual(ALIASES["valkey"], "n8n-valkey")
+        self.assertEqual(ALIASES["valkey"], "mng-valkey")
         for _, kwargs in calls:
             env = dict(value.split("=", 1) for value in kwargs["env"])
             targets = {
@@ -129,22 +129,22 @@ class NativeGuardTests(unittest.TestCase):
                 targets,
                 {
                     "/run/secrets/n8n_db_password",
-                    "/run/secrets/n8n_valkey_password",
+                    "/run/secrets/mng_valkey_password",
                     "/run/secrets/n8n_encryption_key",
                     "/run/secrets/n8n_runner_auth_token",
                 },
             )
-            self.assertEqual(env["N8N_VALKEY_HOST"], "n8n-valkey")
-            self.assertEqual(env["N8N_VALKEY_SECRET"], "n8n_valkey_password")
+            self.assertEqual(env["N8N_VALKEY_HOST"], "mng-valkey")
+            self.assertEqual(env["N8N_VALKEY_SECRET"], "mng_valkey_password")
             self.assertNotIn("N8N_VALKEY_USERNAME", env)
             self.assertNotIn("N8N_VALKEY_DB", env)
-            self.assertEqual(env["QUEUE_BULL_REDIS_HOST"], "n8n-valkey")
+            self.assertEqual(env["QUEUE_BULL_REDIS_HOST"], "mng-valkey")
             self.assertNotIn("N8N_CUSTOM_EXTENSIONS", env)
             self.assertNotIn("N8N_RUNNERS_ENABLED", env)
             self.assertEqual(env["N8N_LOG_LEVEL"], "debug")
             self.assertEqual(
                 env["QUEUE_BULL_REDIS_PASSWORD_FILE"],
-                "/run/secrets/n8n_valkey_password",
+                "/run/secrets/mng_valkey_password",
             )
             self.assertEqual(env["N8N_USER_FOLDER"], "/tmp")
 

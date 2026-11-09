@@ -19,12 +19,7 @@ from urllib.parse import quote
 MAX_SECRET_BYTES = 4096
 SECRETS_DIRECTORY = Path("/run/secrets")
 ERROR = "Airflow connection: invalid input"
-BROKERS = frozenset(
-    {
-        ("mng-valkey", "mng_valkey_password"),
-        ("airflow-valkey", "airflow_valkey_password"),
-    }
-)
+BROKERS = frozenset({("mng-valkey", "mng_valkey_password")})
 
 
 class ConnectionError(ValueError):

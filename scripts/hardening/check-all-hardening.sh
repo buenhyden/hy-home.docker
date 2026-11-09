@@ -352,8 +352,6 @@ check_02_auth() {
   start_tier "$tier"
 
   local keycloak_compose="infra/02-auth/keycloak/docker-compose.yml"
-  local valkey_image
-  local oauth_valkey_compose_image
   local oauth_full_compose="infra/02-auth/oauth2-proxy/docker-compose.yml"
   local oauth_dockerfile="infra/02-auth/oauth2-proxy/Dockerfile"
   local oauth_dev_dockerfile="infra/02-auth/oauth2-proxy/dev.Dockerfile"
@@ -393,30 +391,7 @@ check_02_auth() {
   check_service_network "$oauth_full_compose" "oauth2-proxy" "edge_net"
   check_not_contains "$oauth_full_compose" "v7.14.2" "root-active oauth2-proxy stale image reference"
 
-  check_contains "$oauth_full_compose" "- oauth2_valkey_password" "dedicated-valkey oauth2-proxy secret missing"
-  valkey_image="$(registry_component_image "Valkey")"
-  oauth_valkey_compose_image="$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey")"
-  if [[ "$oauth_valkey_compose_image" != "$valkey_image" ]]; then
-    fail "oauth2-proxy valkey image tag mismatch"
-  fi
-
-  local oauth_valkey_exporter_compose_image=""
-  local oauth_valkey_exporter_registry_image=""
-  local oauth_valkey_exporter_lookup_failed=0
-  if ! oauth_valkey_exporter_compose_image="$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey-exporter")"; then
-    fail "oauth2-proxy valkey exporter compose image contract invalid"
-    oauth_valkey_exporter_lookup_failed=1
-  fi
-  if ! oauth_valkey_exporter_registry_image="$(registry_component_image "Valkey Exporter" "infra/02-auth/oauth2-proxy/docker-compose.yml")"; then
-    fail "oauth2-proxy valkey exporter registry source contract invalid"
-    oauth_valkey_exporter_lookup_failed=1
-  fi
-  if (( oauth_valkey_exporter_lookup_failed == 0 )) &&
-    [[ "$oauth_valkey_exporter_compose_image" != "$oauth_valkey_exporter_registry_image" ]]; then
-    fail "oauth2-proxy valkey exporter registry drift"
-  fi
-  check_service_network "$oauth_full_compose" "oauth2-proxy-valkey" "mng_data_net"
-  check_service_network "$oauth_full_compose" "oauth2-proxy-valkey-exporter" "mng_data_net"
+  check_contains "$oauth_full_compose" "- oauth2_valkey_password" "oauth2-proxy production entrypoint secret missing"
 
   local oauth_source_image oauth_dev_source_image
   oauth_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dockerfile")"
@@ -444,7 +419,6 @@ check_02_auth() {
   check_service_healthcheck "$keycloak_compose" "keycloak"
   check_service_healthcheck "$oauth_full_compose" "oauth2-proxy"
   check_service_healthcheck "$oauth_full_compose" "oauth2-proxy"
-  check_service_healthcheck "$oauth_full_compose" "oauth2-proxy-valkey"
 }
 
 # --- Tier 03: Security ---

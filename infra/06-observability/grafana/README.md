@@ -1,6 +1,6 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.3.3"
+version: "1.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -119,8 +119,6 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 01-gateway | `traefik` | `traefik` | `Gateway/traefik`, `Infrastructure/containers` |  |
 | 02-auth | `keycloak` | `keycloak` | `Security/keycloak-troubleshooting`, `Security/keycloak-capacity-planning`, `Infrastructure/containers` |  |
 | 02-auth | `oauth2-proxy` | `oauth2-proxy` | `Gateway/oauth2-proxy`, `Infrastructure/containers` |  |
-| 02-auth | `oauth2-proxy-valkey` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
-| 02-auth | `oauth2-proxy-valkey-exporter` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 03-security | `openbao` | `openbao` | `Security/openbao`, `Infrastructure/containers` |  |
 | 03-security | `openbao-agent` | `openbao-agent` | `Security/openbao`, `Infrastructure/containers` | auth success/failure panels in the Agent row of `Security/openbao` |
 | 04-data | `mng-pg` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
@@ -173,15 +171,11 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 07-workflow | `airflow-scheduler` | `airflow-monitor` | `Applications/airflow`, `Applications/airflow-db`, `Infrastructure/containers` |  |
 | 07-workflow | `airflow-statsd-exporter` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
 | 07-workflow | `airflow-triggerer` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
-| 07-workflow | `airflow-valkey` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
-| 07-workflow | `airflow-valkey-exporter` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 07-workflow | `airflow-worker` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
 | 07-workflow | `blog-ingestion` | none | `Infrastructure/containers` | own `blog-ingestion` profile; container metrics and logs only, receipt counts via Gateway `/v1/summary` |
 | 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` |  |
 | 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Applications/hermes-research`, `Infrastructure/containers` | `Applications/hermes-research`는 Hermes 플러그인이 node-exporter textfile로 쓰는 지표(SPEC-0265) |
 | 07-workflow | `n8n-task-runner-worker` | none | `Infrastructure/containers` | container metrics and logs only; its isolated runner network keeps Gatus out |
-| 07-workflow | `n8n-valkey` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
-| 07-workflow | `n8n-valkey-exporter` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | queue load comes from `n8n_scaling_mode_queue_jobs_*` on the `n8n` job |
 | 07-workflow | `searxng` | none | `Infrastructure/containers` | container metrics and logs only; SearXNG's own metrics are off |
 | 08-ai | `comfyui` | none | `Infrastructure/containers` | container metrics and logs only |

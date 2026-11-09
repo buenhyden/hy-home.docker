@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.4.1"
+version: "1.4.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0076"
 parent_ids:
@@ -44,8 +44,8 @@ DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자를
   프로세스도 닿지 않는다. `edge_net`에 없으므로 n8n 같은 edge peer도 닿지 않고,
   `mng_data_net`, `dev_data_net` peer가 UI 포트에 직접 붙으면 연결이 거부된다.
   Traefik은 `traefik.docker.network: redisinsight_ingress_net`으로 이 주소를 쓴다.
-- 선택형 n8n·Airflow 전용 Valkey(`dedicated-valkey`)는 운영자가 실제로 조회할 때만
-  해당 망을 붙인다. 기본 선언에는 `n8n_net`, `airflow_net`이 없다.
+- n8n·Airflow는 공유 `mng-valkey`를 쓰며 앱별 전용 Valkey는 없다(ADR-0062 결정 10).
+  기본 선언에는 `n8n_net`, `airflow_net`이 없다.
 - `RI_ENCRYPTION_KEY`(`secrets/data/redisinsight/encryption_key.txt`)로 저장된 연결
   비밀번호를 암호화한다. 이 키는 설정의 `encryption` 동의가 켜져 있을 때만 쓰인다.
   새 `/data`에서는 자동으로 켜지고, 기존 `/data`는 런북 절차로 한 번 켠다.

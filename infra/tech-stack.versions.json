@@ -153,20 +153,11 @@
         "valkey/valkey:9.1.2-alpine"
       ],
       "compose_files": [
-        "infra/02-auth/oauth2-proxy/docker-compose.yml",
         "infra/04-data/dev-db/docker-compose.yml",
         "infra/04-data/mng-db/docker-compose.yml",
-        "infra/07-workflow/airflow/docker-compose.yml",
-        "infra/07-workflow/n8n/docker-compose.yml",
         "labs/valkey-cluster/docker-compose.yml"
       ],
       "sources": [
-        {
-          "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "images": [
-            "valkey/valkey:9.1.2-alpine"
-          ]
-        },
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
@@ -175,18 +166,6 @@
         },
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
-          "images": [
-            "valkey/valkey:9.1.2-alpine"
-          ]
-        },
-        {
-          "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-          "images": [
-            "valkey/valkey:9.1.2-alpine"
-          ]
-        },
-        {
-          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
             "valkey/valkey:9.1.2-alpine"
           ]
@@ -754,20 +733,11 @@
         "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
       ],
       "compose_files": [
-        "infra/02-auth/oauth2-proxy/docker-compose.yml",
         "infra/04-data/dev-db/docker-compose.yml",
         "infra/04-data/mng-db/docker-compose.yml",
-        "infra/07-workflow/airflow/docker-compose.yml",
-        "infra/07-workflow/n8n/docker-compose.yml",
         "labs/valkey-cluster/docker-compose.yml"
       ],
       "sources": [
-        {
-          "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "images": [
-            "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
-          ]
-        },
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
@@ -776,18 +746,6 @@
         },
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
-          "images": [
-            "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
-          ]
-        },
-        {
-          "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-          "images": [
-            "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
-          ]
-        },
-        {
-          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
             "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
           ]

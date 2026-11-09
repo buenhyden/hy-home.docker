@@ -16,7 +16,7 @@ ai/ollama/models/manifests
 ai/ollama/models/manifests-v2
 auth/keycloak
 management/jupyterlab
-# Airflow logs follow their own retention and airflow-valkey is a live broker.
+# Airflow logs follow their own retention.
 workflow/airflow/dags
 workflow/airflow/config
 workflow/airflow/plugins

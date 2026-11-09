@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.34"
+version: "0.1.35"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1087,6 +1087,50 @@ tech-stack projection, POL-0078 (`workflow`, `workflow-n8n`), the `m0021` invent
 (`render_service_inventory`), GDE-0053 `implementation_services` and its Assistant
 paragraph, the n8n README, AD-0026 network table and the Grafana coverage README were
 updated. Nothing was started, so neither SearXNG nor the Assistant settings are live.
+
+### 2026-11-09 dedicated Valkey removal (ADR-0062 decision 10)
+
+The owner accepted ADR-0062, whose decision 10 removes the per-app Valkey and exporter
+sets of airflow, n8n and oauth2-proxy (`dedicated-valkey` profile, never created in
+HOME). Airflow, n8n and OAuth2 Proxy keep the shared `mng-valkey`; `mng-valkey`,
+`dev-valkey` and their exporters stay.
+
+Done in source only; no container, volume or image was touched. Six services left their
+Compose files (`airflow-valkey`, `airflow-valkey-exporter`, `n8n-valkey`,
+`n8n-valkey-exporter`, `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`) with the
+three `docker-compose.monitor-acl.yml` overlays, the `airflow-valkey-data`,
+`n8n-valkey-data` and `oauth2-proxy-valkey-data` volume declarations, the optional
+`depends_on` entries, the `dedicated-valkey` profile (POL-0078, operations catalog), the
+three exporter scrape comments, the exporter names in the `ObservationValkeyBackendMetricMissing`
+selection, and the root Secret declarations `airflow_valkey_password`, `n8n_valkey_password` and
+the three `*_valkey_monitor_password`. The n8n entrypoints no longer accept the
+`n8n-valkey::n8n_valkey_password:0` selection and `connection_uri.py` no longer accepts
+the `airflow-valkey` pair; the shared pair and the shared named-account pair stay. The
+OpenBao secret catalog lost CACHE-008, CACHE-009, CACHE-028, CACHE-029 and CACHE-030;
+their IDs are not reused. The SEC01 ledger archived the six rows in a `source_refreshes`
+record (`removed_services`, `removed_entries`), adjusted the P08 observation counts
+(denominator 97 to 91, services with a related source 83 to 80), re-bound 15 rows and 5
+include hashes with `ledger_rebind`, and rehashed the n8n source binding identically in
+`update-ledger.json` and `build-inputs.json` with the old binding archived. The tech-stack
+projection and the `m0021` inventory were regenerated, and Stage 05 guides, policies and
+runbooks, AD-0002, AD-0007, AD-0022 and the service READMEs were updated.
+`oauth2_valkey_password` stays: the alternative `Dockerfile` entrypoint of oauth2-proxy
+reads it, and the secret file lives under `secrets/db/mng-valkey/`.
+
+Held. The public registry `secrets/SENSITIVE_ENV_VARS.md.example` still lists CACHE-008,
+CACHE-009, CACHE-028, CACHE-029 and CACHE-030, and `secrets/README.md` still names
+`db/n8n-valkey/`; the project permissions deny agent edits under `secrets/`, so the owner
+removes those five rows and that clause. Until then the secret catalog contract and the
+secret metadata sync tests report `catalog_public_source_drift`.
+
+Owner decisions that remain: the volumes `hy-home-infra_airflow-valkey-data` and
+`hy-home-infra_n8n-valkey-data` (and any stopped container or image of the six services)
+are untouched and need separate approval to remove; the private files under
+`secrets/db/airflow-valkey/`, `secrets/db/n8n-valkey/`, `secrets/db/oauth2-valkey/` and
+`secrets/db/mng-valkey/airflow_password.txt` are not deleted; and the now unmounted
+`infra/04-data/mng-db/valkey/scripts/start-dedicated.sh` and `render-monitor-acl.sh`
+(with their script-level tests and `test_p02_secret_presentation_native`) are kept for a
+separate retirement.
 
 ## Handoff
 

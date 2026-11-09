@@ -350,30 +350,6 @@ scrape_configs:
 
   # Off in HOME (2026-11-09): these services never run in the HOME selection, so
   # their scrapes only failed DNS. Uncomment a job when its service starts.
-  # - job_name: "airflow-valkey-exporter"
-  #   static_configs:
-  #     - targets: ["airflow-valkey-exporter:9121"]
-  #       labels:
-  #         cluster: "hy-home"
-  #         namespace: "hy-home"
-  #         domain: "datastores"
-
-  # - job_name: "n8n-valkey-exporter"
-  #   static_configs:
-  #     - targets: ["n8n-valkey-exporter:9121"]
-  #       labels:
-  #         cluster: "hy-home"
-  #         namespace: "hy-home"
-  #         domain: "datastores"
-
-  # - job_name: "oauth2-proxy-valkey-exporter"
-  #   static_configs:
-  #     - targets: ["oauth2-proxy-valkey-exporter:9121"]
-  #       labels:
-  #         cluster: "hy-home"
-  #         namespace: "hy-home"
-  #         domain: "datastores"
-
   # - job_name: "opensearch"
   #   metrics_path: "/_prometheus/metrics"
   #   scheme: https

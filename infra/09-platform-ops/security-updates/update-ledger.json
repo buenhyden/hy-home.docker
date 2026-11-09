@@ -10,8 +10,6 @@
     "airflow-scheduler",
     "airflow-statsd-exporter",
     "airflow-triggerer",
-    "airflow-valkey",
-    "airflow-valkey-exporter",
     "airflow-worker",
     "alertmanager",
     "alloy",
@@ -56,15 +54,11 @@
     "mng-valkey-exporter",
     "n8n",
     "n8n-task-runner-worker",
-    "n8n-valkey",
-    "n8n-valkey-exporter",
     "n8n-worker",
     "neo4j",
     "nginx",
     "node-exporter",
     "oauth2-proxy",
-    "oauth2-proxy-valkey",
-    "oauth2-proxy-valkey-exporter",
     "ollama",
     "ollama-exporter",
     "open-webui",
@@ -105,7 +99,7 @@
   "include_inputs": [
     {
       "path": "docker-compose.yml",
-      "sha256": "6d87e9c77d46b7065317c12deff6adb4e8c9214412e2bcf0fa4ee09d870e72b1"
+      "sha256": "4699ac84f845f1a05b6a826cb25664807d658c670ed3d14b373c640fdff768e1"
     },
     {
       "path": "infra/01-gateway/nginx/docker-compose.yml",
@@ -121,7 +115,7 @@
     },
     {
       "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-      "sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522"
+      "sha256": "9a2e4315a128e4f2e4911798da04e95fc083e6a193d9732a749e6a86bafc5d2b"
     },
     {
       "path": "infra/03-security/openbao/docker-compose.yml",
@@ -149,7 +143,7 @@
     },
     {
       "path": "infra/04-data/redisinsight/docker-compose.yml",
-      "sha256": "90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a"
+      "sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279"
     },
     {
       "path": "infra/04-data/seaweedfs/docker-compose.yml",
@@ -169,11 +163,11 @@
     },
     {
       "path": "infra/07-workflow/airflow/docker-compose.yml",
-      "sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e"
+      "sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529"
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297"
+      "sha256": "2173a45eb26ef3df43d8710d7570e51234e3848e188774d36916177555cc3471"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -389,7 +383,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -554,7 +548,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -701,7 +695,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -866,7 +860,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1028,7 +1022,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1177,7 +1171,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1266,346 +1260,6 @@
       }
     },
     {
-      "service": "airflow-valkey",
-      "scope": "root",
-      "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "valkey/valkey:9.1.2-alpine",
-      "profiles_declared": [
-        "dedicated-valkey"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "9.1.3",
-      "target_version": "9.1.3",
-      "channel": "stable",
-      "checked_at": "2026-11-02T22:00:46.071399+00:00",
-      "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-      "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-      "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-26",
-      "advisory_urls": [
-        "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
-      ],
-      "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-11-02T22:00:46.071399+00:00",
-        "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
-        "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
-        "service_owner_role": "Valkey/P02 owner"
-      },
-      "source_owner_repository": "valkey-io/valkey",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "9.1.3",
-      "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "valkey-io/valkey public-latest"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-11-02T22:00:46.071399+00:00",
-        "release_status": "SOURCE_RELEASE_OBSERVED",
-        "release_fact_refs": [
-          "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-          "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
-        ],
-        "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
-        "next_owner": "SEC01 and service owner",
-        "source_target_security_native_deployment": "NOT_PROMOTED"
-      },
-      "current_public_assessment": {
-        "owner": "SEC01 and service owner",
-        "review_at": "2026-11-09",
-        "candidate": "9.1.3",
-        "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
-        "evidence_refs": [
-          "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-          "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
-        ],
-        "decision": "BLOCKED",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
-        "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "UNKNOWN",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN",
-          "upstream_reported_tag": "9.1.2"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "valkey/valkey:9.1.3-alpine",
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
-      "current_target_artifact_binding": {
-        "source_version": "9.1.2",
-        "source_image": "valkey/valkey:9.1.2-alpine",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
-      },
-      "p08_previous_release_assessment": {
-        "latest_version": "9.1.2",
-        "target_version": "9.1.2",
-        "target_source_image": "valkey/valkey:9.1.2-alpine",
-        "target_index_digest": "UNKNOWN",
-        "target_manifest_digest": "UNKNOWN",
-        "target_config_digest": "UNKNOWN",
-        "target_declared_digest": "UNKNOWN",
-        "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-        "target_build_materials": [],
-        "upstream_reported_tag": "9.1.2",
-        "channel": "stable",
-        "checked_at": "2026-10-26T09:43:16.477477+00:00",
-        "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
-        "source_release_date": "2026-09-01T00:01:31Z",
-        "advisory_urls": [],
-        "applicability": "UNKNOWN",
-        "support_end": "UNKNOWN",
-        "compatibility": "NOT_RUN",
-        "backup": "NOT_RUN",
-        "rollback": "NOT_RUN",
-        "native_test": "NOT_RUN",
-        "deployment": "NOT_RUN",
-        "signature": "NOT_RUN",
-        "sbom_scan": "NOT_RUN",
-        "disposition": "NO_CHANGE_APPLICATION_VERSION",
-        "blocker": {
-          "owner": "SEC01",
-          "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-          "next_validation_due": "2026-10-27T00:00:00+00:00",
-          "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
-          "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
-          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-          "service_owner_role": "Existing service owner named by current_public_assessment"
-        },
-        "official_release_assessment": {
-          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-          "release_fact_refs": [
-            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/valkey-io~1valkey public-latest"
-          ],
-          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-          "next_owner": "SEC01 release/artifact evidence owner and airflow-valkey service build/migration/recovery owner",
-          "source_target_security_native_deployment": "UNCHANGED"
-        },
-        "current_public_assessment": {
-          "supplier_group": "valkey-io/valkey public-latest",
-          "owner": "SEC01 and existing service owner",
-          "review_at": "2026-10-27",
-          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-          "candidate": "9.1.2",
-          "fact_checked_at": "2026-10-26T09:43:16.477477+00:00",
-          "published_at": "2026-09-01T00:01:31Z",
-          "eligible_after_7_days": "2026-09-08T00:01:31+00:00",
-          "evidence_refs": [
-            "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
-            "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
-          ],
-          "decision": "NO_CHANGE_APPLICATION_VERSION",
-          "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
-          "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
-          "service": "airflow-valkey",
-          "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-          "current_declared": "valkey/valkey:9.1.2-alpine",
-          "resolved_source": {
-            "image": "valkey/valkey:9.1.2-alpine",
-            "build": null,
-            "chain": [
-              "infra/07-workflow/airflow/docker-compose.yml#airflow-valkey",
-              "infra/common-optimizations.yml#template-stateful-low"
-            ]
-          },
-          "existing_target_version": "UNKNOWN",
-          "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-        }
-      },
-      "p08_candidate_assessment": {
-        "source_release": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-        "advisory": "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9",
-        "checked_at": "2026-11-02T22:00:46.071399+00:00",
-        "registry_metadata_scope": "Docker Hub tag/index and linux/amd64 descriptor observation only; separate local inspection is a self-reported result. Signature, provenance, SBOM, compatibility and recovery remain NOT_RUN.",
-        "candidate_image": "valkey/valkey:9.1.3-alpine",
-        "upstream_base_registry_index": null,
-        "upstream_base_registry_amd64": null,
-        "private_applicability": "NOT_INSPECTED",
-        "candidate_activation": "NOT_APPLIED",
-        "native_acceptance": "NOT_RUN",
-        "registry_observed_date": "2026-11-03 Asia/Seoul",
-        "registry_reproduction_command": "docker buildx imagetools inspect valkey/valkey:9.1.3-alpine",
-        "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
-        "local_artifact_inspection": {
-          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
-          "reported_by": "/root/p08_candidates",
-          "reported_date": "2026-11-03 Asia/Seoul",
-          "exact_timestamp": null,
-          "raw_receipt": "NOT_SAVED",
-          "steps": [
-            {
-              "command": "docker pull valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-              "exit_code": null,
-              "exact_timestamp": null
-            },
-            {
-              "command": "docker image inspect valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-              "exit_code": null,
-              "exact_timestamp": null
-            }
-          ],
-          "reported_observations": "linux/amd64 image inspection reported RepoDigest, image ID, OCI source and VALKEY_VERSION=9.1.3; original output and exit status not retained.",
-          "limitations": "Reported metadata does not establish artifact signature, provenance, SBOM, compatibility or recovery acceptance."
-        },
-        "reported_isolated_compatibility": {
-          "reported_by": "/root/p08_candidates",
-          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
-          "candidate_platform_manifest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-          "reported_checks": [
-            "actual client",
-            "default and non-default ports",
-            "shared and dedicated topology",
-            "named ACL",
-            "AOF and RDB",
-            "cold restore into separate test volume"
-          ],
-          "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
-          "source_activation": "NOT_APPLIED"
-        },
-        "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
-      }
-    },
-    {
-      "service": "airflow-valkey-exporter",
-      "scope": "root",
-      "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "profiles_declared": [
-        "dedicated-valkey"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "1.96.0",
-      "target_version": "1.93.0",
-      "channel": "stable",
-      "checked_at": "2026-10-26T09:41:16Z",
-      "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
-      "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
-      "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-24T04:28:05Z",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_SEVEN_DAY_SOAK",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "oliver006/redis_exporter",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "v1.93.0",
-      "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
-      "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
-      "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied.",
-      "official_supplier_lookup_refs": [
-        "oliver006/redis_exporter"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/oliver006~1redis_exporter"
-        ],
-        "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-        "next_owner": "SEC01 release/artifact evidence owner and airflow-valkey-exporter service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "oliver006/redis_exporter",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "v1.96.0",
-        "fact_checked_at": "2026-10-26T09:41:16Z",
-        "published_at": "2026-10-24T04:28:05Z",
-        "eligible_after_7_days": "2026-10-31T04:28:05+00:00",
-        "evidence_refs": [
-          "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
-          "/tmp/hyhome-v30-r27-observability-release-research-20261026.json",
-          "https://hub.docker.com/v2/repositories/oliver006/redis_exporter/tags/v1.96.0-alpine"
-        ],
-        "decision": "DEFER_SEVEN_DAY_SOAK",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "service": "airflow-valkey-exporter",
-        "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-        "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-        "resolved_source": {
-          "image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-          "build": null,
-          "chain": [
-            "infra/07-workflow/airflow/docker-compose.yml#airflow-valkey-exporter",
-            "infra/common-optimizations.yml#template-infra-low"
-          ]
-        },
-        "existing_target_version": "1.93.0",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-      }
-    },
-    {
       "service": "airflow-worker",
       "scope": "root",
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
@@ -1682,7 +1336,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -4494,7 +4148,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -7913,7 +7567,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+      "source_input_sha256": "2173a45eb26ef3df43d8710d7570e51234e3848e188774d36916177555cc3471",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -8191,7 +7845,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+      "source_input_sha256": "2173a45eb26ef3df43d8710d7570e51234e3848e188774d36916177555cc3471",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
@@ -8395,346 +8049,6 @@
       }
     },
     {
-      "service": "n8n-valkey",
-      "scope": "root",
-      "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "valkey/valkey:9.1.2-alpine",
-      "profiles_declared": [
-        "dedicated-valkey"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "9.1.3",
-      "target_version": "9.1.3",
-      "channel": "stable",
-      "checked_at": "2026-11-02T22:00:46.071399+00:00",
-      "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-      "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-      "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-26",
-      "advisory_urls": [
-        "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
-      ],
-      "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-11-02T22:00:46.071399+00:00",
-        "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
-        "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
-        "service_owner_role": "Valkey/P02 owner"
-      },
-      "source_owner_repository": "valkey-io/valkey",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "9.1.3",
-      "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "valkey-io/valkey public-latest"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-11-02T22:00:46.071399+00:00",
-        "release_status": "SOURCE_RELEASE_OBSERVED",
-        "release_fact_refs": [
-          "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-          "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
-        ],
-        "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
-        "next_owner": "SEC01 and service owner",
-        "source_target_security_native_deployment": "NOT_PROMOTED"
-      },
-      "current_public_assessment": {
-        "owner": "SEC01 and service owner",
-        "review_at": "2026-11-09",
-        "candidate": "9.1.3",
-        "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
-        "evidence_refs": [
-          "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-          "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
-        ],
-        "decision": "BLOCKED",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
-        "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "UNKNOWN",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN",
-          "upstream_reported_tag": "9.1.2"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "valkey/valkey:9.1.3-alpine",
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
-      "current_target_artifact_binding": {
-        "source_version": "9.1.2",
-        "source_image": "valkey/valkey:9.1.2-alpine",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
-      },
-      "p08_previous_release_assessment": {
-        "latest_version": "9.1.2",
-        "target_version": "9.1.2",
-        "target_source_image": "valkey/valkey:9.1.2-alpine",
-        "target_index_digest": "UNKNOWN",
-        "target_manifest_digest": "UNKNOWN",
-        "target_config_digest": "UNKNOWN",
-        "target_declared_digest": "UNKNOWN",
-        "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-        "target_build_materials": [],
-        "upstream_reported_tag": "9.1.2",
-        "channel": "stable",
-        "checked_at": "2026-10-26T09:43:16.477477+00:00",
-        "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
-        "source_release_date": "2026-09-01T00:01:31Z",
-        "advisory_urls": [],
-        "applicability": "UNKNOWN",
-        "support_end": "UNKNOWN",
-        "compatibility": "NOT_RUN",
-        "backup": "NOT_RUN",
-        "rollback": "NOT_RUN",
-        "native_test": "NOT_RUN",
-        "deployment": "NOT_RUN",
-        "signature": "NOT_RUN",
-        "sbom_scan": "NOT_RUN",
-        "disposition": "NO_CHANGE_APPLICATION_VERSION",
-        "blocker": {
-          "owner": "SEC01",
-          "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-          "next_validation_due": "2026-10-27T00:00:00+00:00",
-          "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
-          "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
-          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-          "service_owner_role": "Existing service owner named by current_public_assessment"
-        },
-        "official_release_assessment": {
-          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-          "release_fact_refs": [
-            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/valkey-io~1valkey public-latest"
-          ],
-          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-          "next_owner": "SEC01 release/artifact evidence owner and n8n-valkey service build/migration/recovery owner",
-          "source_target_security_native_deployment": "UNCHANGED"
-        },
-        "current_public_assessment": {
-          "supplier_group": "valkey-io/valkey public-latest",
-          "owner": "SEC01 and existing service owner",
-          "review_at": "2026-10-27",
-          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-          "candidate": "9.1.2",
-          "fact_checked_at": "2026-10-26T09:43:16.477477+00:00",
-          "published_at": "2026-09-01T00:01:31Z",
-          "eligible_after_7_days": "2026-09-08T00:01:31+00:00",
-          "evidence_refs": [
-            "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
-            "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
-          ],
-          "decision": "NO_CHANGE_APPLICATION_VERSION",
-          "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
-          "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
-          "service": "n8n-valkey",
-          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-          "current_declared": "valkey/valkey:9.1.2-alpine",
-          "resolved_source": {
-            "image": "valkey/valkey:9.1.2-alpine",
-            "build": null,
-            "chain": [
-              "infra/07-workflow/n8n/docker-compose.yml#n8n-valkey",
-              "infra/common-optimizations.yml#template-stateful-low"
-            ]
-          },
-          "existing_target_version": "UNKNOWN",
-          "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-        }
-      },
-      "p08_candidate_assessment": {
-        "source_release": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-        "advisory": "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9",
-        "checked_at": "2026-11-02T22:00:46.071399+00:00",
-        "registry_metadata_scope": "Docker Hub tag/index and linux/amd64 descriptor observation only; separate local inspection is a self-reported result. Signature, provenance, SBOM, compatibility and recovery remain NOT_RUN.",
-        "candidate_image": "valkey/valkey:9.1.3-alpine",
-        "upstream_base_registry_index": null,
-        "upstream_base_registry_amd64": null,
-        "private_applicability": "NOT_INSPECTED",
-        "candidate_activation": "NOT_APPLIED",
-        "native_acceptance": "NOT_RUN",
-        "registry_observed_date": "2026-11-03 Asia/Seoul",
-        "registry_reproduction_command": "docker buildx imagetools inspect valkey/valkey:9.1.3-alpine",
-        "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
-        "local_artifact_inspection": {
-          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
-          "reported_by": "/root/p08_candidates",
-          "reported_date": "2026-11-03 Asia/Seoul",
-          "exact_timestamp": null,
-          "raw_receipt": "NOT_SAVED",
-          "steps": [
-            {
-              "command": "docker pull valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-              "exit_code": null,
-              "exact_timestamp": null
-            },
-            {
-              "command": "docker image inspect valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-              "exit_code": null,
-              "exact_timestamp": null
-            }
-          ],
-          "reported_observations": "linux/amd64 image inspection reported RepoDigest, image ID, OCI source and VALKEY_VERSION=9.1.3; original output and exit status not retained.",
-          "limitations": "Reported metadata does not establish artifact signature, provenance, SBOM, compatibility or recovery acceptance."
-        },
-        "reported_isolated_compatibility": {
-          "reported_by": "/root/p08_candidates",
-          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
-          "candidate_platform_manifest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-          "reported_checks": [
-            "actual client",
-            "default and non-default ports",
-            "shared and dedicated topology",
-            "named ACL",
-            "AOF and RDB",
-            "cold restore into separate test volume"
-          ],
-          "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
-          "source_activation": "NOT_APPLIED"
-        },
-        "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
-      }
-    },
-    {
-      "service": "n8n-valkey-exporter",
-      "scope": "root",
-      "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "profiles_declared": [
-        "dedicated-valkey"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "1.96.0",
-      "target_version": "1.93.0",
-      "channel": "stable",
-      "checked_at": "2026-10-26T09:41:16Z",
-      "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
-      "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
-      "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-24T04:28:05Z",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_SEVEN_DAY_SOAK",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "oliver006/redis_exporter",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "v1.93.0",
-      "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
-      "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
-      "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied.",
-      "official_supplier_lookup_refs": [
-        "oliver006/redis_exporter"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/oliver006~1redis_exporter"
-        ],
-        "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-        "next_owner": "SEC01 release/artifact evidence owner and n8n-valkey-exporter service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "oliver006/redis_exporter",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "v1.96.0",
-        "fact_checked_at": "2026-10-26T09:41:16Z",
-        "published_at": "2026-10-24T04:28:05Z",
-        "eligible_after_7_days": "2026-10-31T04:28:05+00:00",
-        "evidence_refs": [
-          "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
-          "/tmp/hyhome-v30-r27-observability-release-research-20261026.json",
-          "https://hub.docker.com/v2/repositories/oliver006/redis_exporter/tags/v1.96.0-alpine"
-        ],
-        "decision": "DEFER_SEVEN_DAY_SOAK",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "service": "n8n-valkey-exporter",
-        "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-        "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-        "resolved_source": {
-          "image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-          "build": null,
-          "chain": [
-            "infra/07-workflow/n8n/docker-compose.yml#n8n-valkey-exporter",
-            "infra/common-optimizations.yml#template-infra-low"
-          ]
-        },
-        "existing_target_version": "1.93.0",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-      }
-    },
-    {
       "service": "n8n-worker",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
@@ -8809,7 +8123,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+      "source_input_sha256": "2173a45eb26ef3df43d8710d7570e51234e3848e188774d36916177555cc3471",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -9506,7 +8820,7 @@
       "upstream_reported_tag": "v7.15.5",
       "next_fact_command": "gh release view --repo oauth2-proxy/oauth2-proxy --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522",
+      "source_input_sha256": "9a2e4315a128e4f2e4911798da04e95fc083e6a193d9732a749e6a86bafc5d2b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "UNKNOWN",
@@ -9561,346 +8875,6 @@
           ]
         },
         "existing_target_version": "7.15.5",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-      }
-    },
-    {
-      "service": "oauth2-proxy-valkey",
-      "scope": "root",
-      "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-      "current_declared": "valkey/valkey:9.1.2-alpine",
-      "profiles_declared": [
-        "dedicated-valkey"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "9.1.3",
-      "target_version": "9.1.3",
-      "channel": "stable",
-      "checked_at": "2026-11-02T22:00:46.071399+00:00",
-      "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-      "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-      "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-26",
-      "advisory_urls": [
-        "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
-      ],
-      "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "BLOCKED",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-11-02T22:00:46.071399+00:00",
-        "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
-        "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
-        "service_owner_role": "Valkey/P02 owner"
-      },
-      "source_owner_repository": "valkey-io/valkey",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "9.1.3",
-      "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "valkey-io/valkey public-latest"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-11-02T22:00:46.071399+00:00",
-        "release_status": "SOURCE_RELEASE_OBSERVED",
-        "release_fact_refs": [
-          "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-          "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
-        ],
-        "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
-        "next_owner": "SEC01 and service owner",
-        "source_target_security_native_deployment": "NOT_PROMOTED"
-      },
-      "current_public_assessment": {
-        "owner": "SEC01 and service owner",
-        "review_at": "2026-11-09",
-        "candidate": "9.1.3",
-        "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
-        "evidence_refs": [
-          "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-          "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
-        ],
-        "decision": "BLOCKED",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
-        "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "UNKNOWN",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN",
-          "upstream_reported_tag": "9.1.2"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "valkey/valkey:9.1.3-alpine",
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
-      "current_target_artifact_binding": {
-        "source_version": "9.1.2",
-        "source_image": "valkey/valkey:9.1.2-alpine",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
-      },
-      "p08_previous_release_assessment": {
-        "latest_version": "9.1.2",
-        "target_version": "9.1.2",
-        "target_source_image": "valkey/valkey:9.1.2-alpine",
-        "target_index_digest": "UNKNOWN",
-        "target_manifest_digest": "UNKNOWN",
-        "target_config_digest": "UNKNOWN",
-        "target_declared_digest": "UNKNOWN",
-        "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-        "target_build_materials": [],
-        "upstream_reported_tag": "9.1.2",
-        "channel": "stable",
-        "checked_at": "2026-10-26T09:43:16.477477+00:00",
-        "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
-        "source_release_date": "2026-09-01T00:01:31Z",
-        "advisory_urls": [],
-        "applicability": "UNKNOWN",
-        "support_end": "UNKNOWN",
-        "compatibility": "NOT_RUN",
-        "backup": "NOT_RUN",
-        "rollback": "NOT_RUN",
-        "native_test": "NOT_RUN",
-        "deployment": "NOT_RUN",
-        "signature": "NOT_RUN",
-        "sbom_scan": "NOT_RUN",
-        "disposition": "NO_CHANGE_APPLICATION_VERSION",
-        "blocker": {
-          "owner": "SEC01",
-          "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-          "next_validation_due": "2026-10-27T00:00:00+00:00",
-          "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
-          "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
-          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-          "service_owner_role": "Existing service owner named by current_public_assessment"
-        },
-        "official_release_assessment": {
-          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-          "release_fact_refs": [
-            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/valkey-io~1valkey public-latest"
-          ],
-          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-          "next_owner": "SEC01 release/artifact evidence owner and oauth2-proxy-valkey service build/migration/recovery owner",
-          "source_target_security_native_deployment": "UNCHANGED"
-        },
-        "current_public_assessment": {
-          "supplier_group": "valkey-io/valkey public-latest",
-          "owner": "SEC01 and existing service owner",
-          "review_at": "2026-10-27",
-          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-          "candidate": "9.1.2",
-          "fact_checked_at": "2026-10-26T09:43:16.477477+00:00",
-          "published_at": "2026-09-01T00:01:31Z",
-          "eligible_after_7_days": "2026-09-08T00:01:31+00:00",
-          "evidence_refs": [
-            "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
-            "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
-          ],
-          "decision": "NO_CHANGE_APPLICATION_VERSION",
-          "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
-          "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
-          "service": "oauth2-proxy-valkey",
-          "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-          "current_declared": "valkey/valkey:9.1.2-alpine",
-          "resolved_source": {
-            "image": "valkey/valkey:9.1.2-alpine",
-            "build": null,
-            "chain": [
-              "infra/02-auth/oauth2-proxy/docker-compose.yml#oauth2-proxy-valkey",
-              "infra/common-optimizations.yml#template-stateful-low"
-            ]
-          },
-          "existing_target_version": "UNKNOWN",
-          "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-        }
-      },
-      "p08_candidate_assessment": {
-        "source_release": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-        "advisory": "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9",
-        "checked_at": "2026-11-02T22:00:46.071399+00:00",
-        "registry_metadata_scope": "Docker Hub tag/index and linux/amd64 descriptor observation only; separate local inspection is a self-reported result. Signature, provenance, SBOM, compatibility and recovery remain NOT_RUN.",
-        "candidate_image": "valkey/valkey:9.1.3-alpine",
-        "upstream_base_registry_index": null,
-        "upstream_base_registry_amd64": null,
-        "private_applicability": "NOT_INSPECTED",
-        "candidate_activation": "NOT_APPLIED",
-        "native_acceptance": "NOT_RUN",
-        "registry_observed_date": "2026-11-03 Asia/Seoul",
-        "registry_reproduction_command": "docker buildx imagetools inspect valkey/valkey:9.1.3-alpine",
-        "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
-        "local_artifact_inspection": {
-          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
-          "reported_by": "/root/p08_candidates",
-          "reported_date": "2026-11-03 Asia/Seoul",
-          "exact_timestamp": null,
-          "raw_receipt": "NOT_SAVED",
-          "steps": [
-            {
-              "command": "docker pull valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-              "exit_code": null,
-              "exact_timestamp": null
-            },
-            {
-              "command": "docker image inspect valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-              "exit_code": null,
-              "exact_timestamp": null
-            }
-          ],
-          "reported_observations": "linux/amd64 image inspection reported RepoDigest, image ID, OCI source and VALKEY_VERSION=9.1.3; original output and exit status not retained.",
-          "limitations": "Reported metadata does not establish artifact signature, provenance, SBOM, compatibility or recovery acceptance."
-        },
-        "reported_isolated_compatibility": {
-          "reported_by": "/root/p08_candidates",
-          "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
-          "candidate_platform_manifest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
-          "reported_checks": [
-            "actual client",
-            "default and non-default ports",
-            "shared and dedicated topology",
-            "named ACL",
-            "AOF and RDB",
-            "cold restore into separate test volume"
-          ],
-          "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
-          "source_activation": "NOT_APPLIED"
-        },
-        "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
-      }
-    },
-    {
-      "service": "oauth2-proxy-valkey-exporter",
-      "scope": "root",
-      "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-      "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "profiles_declared": [
-        "dedicated-valkey"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "1.96.0",
-      "target_version": "1.93.0",
-      "channel": "stable",
-      "checked_at": "2026-10-26T09:41:16Z",
-      "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
-      "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
-      "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-24T04:28:05Z",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_SEVEN_DAY_SOAK",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "oliver006/redis_exporter",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "v1.93.0",
-      "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
-      "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
-      "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-      "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied.",
-      "official_supplier_lookup_refs": [
-        "oliver006/redis_exporter"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/oliver006~1redis_exporter"
-        ],
-        "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-        "next_owner": "SEC01 release/artifact evidence owner and oauth2-proxy-valkey-exporter service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "oliver006/redis_exporter",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "v1.96.0",
-        "fact_checked_at": "2026-10-26T09:41:16Z",
-        "published_at": "2026-10-24T04:28:05Z",
-        "eligible_after_7_days": "2026-10-31T04:28:05+00:00",
-        "evidence_refs": [
-          "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
-          "/tmp/hyhome-v30-r27-observability-release-research-20261026.json",
-          "https://hub.docker.com/v2/repositories/oliver006/redis_exporter/tags/v1.96.0-alpine"
-        ],
-        "decision": "DEFER_SEVEN_DAY_SOAK",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "service": "oauth2-proxy-valkey-exporter",
-        "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-        "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-        "resolved_source": {
-          "image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
-          "build": null,
-          "chain": [
-            "infra/02-auth/oauth2-proxy/docker-compose.yml#oauth2-proxy-valkey-exporter",
-            "infra/common-optimizations.yml#template-infra-readonly-low"
-          ]
-        },
-        "existing_target_version": "1.93.0",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
       }
     },
@@ -12693,7 +11667,7 @@
       "upstream_reported_tag": "3.8.0",
       "next_fact_command": "gh release view --repo RedisInsight/RedisInsight --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a",
+      "source_input_sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -15444,7 +14418,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: external producer/source contract not inspected",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+      "source_input_sha256": "2173a45eb26ef3df43d8710d7570e51234e3848e188774d36916177555cc3471",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -15500,7 +14474,7 @@
       "upstream_reported_tag": "2026.11.9-57ff753ad",
       "next_fact_command": "docker buildx imagetools inspect searxng/searxng:latest",
       "source_refreshed_at": "2026-11-09T09:32:23.140566+00:00",
-      "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+      "source_input_sha256": "2173a45eb26ef3df43d8710d7570e51234e3848e188774d36916177555cc3471",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -26447,6 +25421,1275 @@
         }
       ],
       "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 7 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "94afb9ce8b0c057359d33d4160601f301ab507ef",
+      "refreshed_at": "2026-11-09T11:11:34.257367+00:00",
+      "revision_scope": "ADR-0062 decision 10 dedicated Valkey removal; source files have reviewed uncommitted edits",
+      "removed_services": [
+        "airflow-valkey",
+        "airflow-valkey-exporter",
+        "n8n-valkey",
+        "n8n-valkey-exporter",
+        "oauth2-proxy-valkey",
+        "oauth2-proxy-valkey-exporter"
+      ],
+      "removed_entries": [
+        {
+          "service": "airflow-valkey",
+          "scope": "root",
+          "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+          "current_declared": "valkey/valkey:9.1.2-alpine",
+          "profiles_declared": [
+            "dedicated-valkey"
+          ],
+          "build_source": null,
+          "current_running": [],
+          "runtime_presence": "NOT_OBSERVED",
+          "latest_version": "9.1.3",
+          "target_version": "9.1.3",
+          "channel": "stable",
+          "checked_at": "2026-11-02T22:00:46.071399+00:00",
+          "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+          "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+          "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+          "target_config_digest": "UNKNOWN",
+          "platform": "linux/amd64",
+          "source_release_date": "2026-10-26",
+          "advisory_urls": [
+            "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
+          ],
+          "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
+          "support_end": "UNKNOWN",
+          "compatibility": "NOT_RUN",
+          "backup": "NOT_RUN",
+          "rollback": "NOT_RUN",
+          "native_test": "NOT_RUN",
+          "deployment": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "sbom_scan": "NOT_RUN",
+          "disposition": "BLOCKED",
+          "blocker": {
+            "owner": "SEC01",
+            "discovered_at": "2026-11-02T22:00:46.071399+00:00",
+            "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
+            "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+            "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+            "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+            "service_owner_role": "Valkey/P02 owner"
+          },
+          "source_owner_repository": "valkey-io/valkey",
+          "current_repo_digests": [],
+          "current_image_ids": [],
+          "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+          "upstream_reported_tag": "9.1.3",
+          "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+          "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+          "official_supplier_lookup_refs": [
+            "valkey-io/valkey public-latest"
+          ],
+          "supplier_lookup_blocker": null,
+          "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+          "official_release_assessment": {
+            "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+            "release_status": "SOURCE_RELEASE_OBSERVED",
+            "release_fact_refs": [
+              "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+              "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
+            ],
+            "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+            "next_owner": "SEC01 and service owner",
+            "source_target_security_native_deployment": "NOT_PROMOTED"
+          },
+          "current_public_assessment": {
+            "owner": "SEC01 and service owner",
+            "review_at": "2026-11-09",
+            "candidate": "9.1.3",
+            "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+            "evidence_refs": [
+              "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+              "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
+            ],
+            "decision": "BLOCKED",
+            "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+            "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+            "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
+          },
+          "historical_target_artifact_binding": {
+            "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+            "fields": {
+              "target_version": "UNKNOWN",
+              "target_index_digest": "UNKNOWN",
+              "target_manifest_digest": "UNKNOWN",
+              "target_config_digest": "UNKNOWN",
+              "upstream_reported_tag": "9.1.2"
+            },
+            "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+          },
+          "target_source_image": "valkey/valkey:9.1.3-alpine",
+          "target_declared_digest": "UNKNOWN",
+          "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
+          "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+          "current_target_artifact_binding": {
+            "source_version": "9.1.2",
+            "source_image": "valkey/valkey:9.1.2-alpine",
+            "status": "UNBOUND_CURRENT_TARGET",
+            "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+          },
+          "p08_previous_release_assessment": {
+            "latest_version": "9.1.2",
+            "target_version": "9.1.2",
+            "target_source_image": "valkey/valkey:9.1.2-alpine",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "target_build_materials": [],
+            "upstream_reported_tag": "9.1.2",
+            "channel": "stable",
+            "checked_at": "2026-10-26T09:43:16.477477+00:00",
+            "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
+            "source_release_date": "2026-09-01T00:01:31Z",
+            "advisory_urls": [],
+            "applicability": "UNKNOWN",
+            "support_end": "UNKNOWN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "disposition": "NO_CHANGE_APPLICATION_VERSION",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
+              "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "official_release_assessment": {
+              "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+              "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+              "release_fact_refs": [
+                "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/valkey-io~1valkey public-latest"
+              ],
+              "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+              "next_owner": "SEC01 release/artifact evidence owner and airflow-valkey service build/migration/recovery owner",
+              "source_target_security_native_deployment": "UNCHANGED"
+            },
+            "current_public_assessment": {
+              "supplier_group": "valkey-io/valkey public-latest",
+              "owner": "SEC01 and existing service owner",
+              "review_at": "2026-10-27",
+              "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+              "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+              "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "candidate": "9.1.2",
+              "fact_checked_at": "2026-10-26T09:43:16.477477+00:00",
+              "published_at": "2026-09-01T00:01:31Z",
+              "eligible_after_7_days": "2026-09-08T00:01:31+00:00",
+              "evidence_refs": [
+                "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
+                "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
+              ],
+              "decision": "NO_CHANGE_APPLICATION_VERSION",
+              "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
+              "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
+              "service": "airflow-valkey",
+              "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+              "current_declared": "valkey/valkey:9.1.2-alpine",
+              "resolved_source": {
+                "image": "valkey/valkey:9.1.2-alpine",
+                "build": null,
+                "chain": [
+                  "infra/07-workflow/airflow/docker-compose.yml#airflow-valkey",
+                  "infra/common-optimizations.yml#template-stateful-low"
+                ]
+              },
+              "existing_target_version": "UNKNOWN",
+              "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+            }
+          },
+          "p08_candidate_assessment": {
+            "source_release": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+            "advisory": "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9",
+            "checked_at": "2026-11-02T22:00:46.071399+00:00",
+            "registry_metadata_scope": "Docker Hub tag/index and linux/amd64 descriptor observation only; separate local inspection is a self-reported result. Signature, provenance, SBOM, compatibility and recovery remain NOT_RUN.",
+            "candidate_image": "valkey/valkey:9.1.3-alpine",
+            "upstream_base_registry_index": null,
+            "upstream_base_registry_amd64": null,
+            "private_applicability": "NOT_INSPECTED",
+            "candidate_activation": "NOT_APPLIED",
+            "native_acceptance": "NOT_RUN",
+            "registry_observed_date": "2026-11-03 Asia/Seoul",
+            "registry_reproduction_command": "docker buildx imagetools inspect valkey/valkey:9.1.3-alpine",
+            "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
+            "local_artifact_inspection": {
+              "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+              "reported_by": "/root/p08_candidates",
+              "reported_date": "2026-11-03 Asia/Seoul",
+              "exact_timestamp": null,
+              "raw_receipt": "NOT_SAVED",
+              "steps": [
+                {
+                  "command": "docker pull valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+                  "exit_code": null,
+                  "exact_timestamp": null
+                },
+                {
+                  "command": "docker image inspect valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+                  "exit_code": null,
+                  "exact_timestamp": null
+                }
+              ],
+              "reported_observations": "linux/amd64 image inspection reported RepoDigest, image ID, OCI source and VALKEY_VERSION=9.1.3; original output and exit status not retained.",
+              "limitations": "Reported metadata does not establish artifact signature, provenance, SBOM, compatibility or recovery acceptance."
+            },
+            "reported_isolated_compatibility": {
+              "reported_by": "/root/p08_candidates",
+              "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+              "candidate_platform_manifest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+              "reported_checks": [
+                "actual client",
+                "default and non-default ports",
+                "shared and dedicated topology",
+                "named ACL",
+                "AOF and RDB",
+                "cold restore into separate test volume"
+              ],
+              "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
+              "source_activation": "NOT_APPLIED"
+            },
+            "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
+          }
+        },
+        {
+          "service": "airflow-valkey-exporter",
+          "scope": "root",
+          "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+          "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "profiles_declared": [
+            "dedicated-valkey"
+          ],
+          "build_source": null,
+          "current_running": [],
+          "runtime_presence": "NOT_OBSERVED",
+          "latest_version": "1.96.0",
+          "target_version": "1.93.0",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:41:16Z",
+          "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
+          "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
+          "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
+          "platform": "linux/amd64",
+          "source_release_date": "2026-10-24T04:28:05Z",
+          "advisory_urls": [],
+          "applicability": "UNKNOWN",
+          "support_end": "UNKNOWN",
+          "compatibility": "NOT_RUN",
+          "backup": "NOT_RUN",
+          "rollback": "NOT_RUN",
+          "native_test": "NOT_RUN",
+          "deployment": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "sbom_scan": "NOT_RUN",
+          "disposition": "DEFER_SEVEN_DAY_SOAK",
+          "blocker": {
+            "owner": "SEC01",
+            "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+            "next_validation_due": "2026-10-27T00:00:00+00:00",
+            "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+            "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+            "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "service_owner_role": "Existing service owner named by current_public_assessment"
+          },
+          "source_owner_repository": "oliver006/redis_exporter",
+          "current_repo_digests": [],
+          "current_image_ids": [],
+          "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+          "upstream_reported_tag": "v1.93.0",
+          "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+          "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+          "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+          "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied.",
+          "official_supplier_lookup_refs": [
+            "oliver006/redis_exporter"
+          ],
+          "supplier_lookup_blocker": null,
+          "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+          "official_release_assessment": {
+            "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+            "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+            "release_fact_refs": [
+              "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/oliver006~1redis_exporter"
+            ],
+            "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+            "next_owner": "SEC01 release/artifact evidence owner and airflow-valkey-exporter service build/migration/recovery owner",
+            "source_target_security_native_deployment": "UNCHANGED"
+          },
+          "current_public_assessment": {
+            "supplier_group": "oliver006/redis_exporter",
+            "owner": "SEC01 and existing service owner",
+            "review_at": "2026-10-27",
+            "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+            "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "candidate": "v1.96.0",
+            "fact_checked_at": "2026-10-26T09:41:16Z",
+            "published_at": "2026-10-24T04:28:05Z",
+            "eligible_after_7_days": "2026-10-31T04:28:05+00:00",
+            "evidence_refs": [
+              "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
+              "/tmp/hyhome-v30-r27-observability-release-research-20261026.json",
+              "https://hub.docker.com/v2/repositories/oliver006/redis_exporter/tags/v1.96.0-alpine"
+            ],
+            "decision": "DEFER_SEVEN_DAY_SOAK",
+            "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+            "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+            "service": "airflow-valkey-exporter",
+            "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+            "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+            "resolved_source": {
+              "image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+              "build": null,
+              "chain": [
+                "infra/07-workflow/airflow/docker-compose.yml#airflow-valkey-exporter",
+                "infra/common-optimizations.yml#template-infra-low"
+              ]
+            },
+            "existing_target_version": "1.93.0",
+            "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+          }
+        },
+        {
+          "service": "n8n-valkey",
+          "scope": "root",
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "current_declared": "valkey/valkey:9.1.2-alpine",
+          "profiles_declared": [
+            "dedicated-valkey"
+          ],
+          "build_source": null,
+          "current_running": [],
+          "runtime_presence": "NOT_OBSERVED",
+          "latest_version": "9.1.3",
+          "target_version": "9.1.3",
+          "channel": "stable",
+          "checked_at": "2026-11-02T22:00:46.071399+00:00",
+          "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+          "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+          "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+          "target_config_digest": "UNKNOWN",
+          "platform": "linux/amd64",
+          "source_release_date": "2026-10-26",
+          "advisory_urls": [
+            "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
+          ],
+          "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
+          "support_end": "UNKNOWN",
+          "compatibility": "NOT_RUN",
+          "backup": "NOT_RUN",
+          "rollback": "NOT_RUN",
+          "native_test": "NOT_RUN",
+          "deployment": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "sbom_scan": "NOT_RUN",
+          "disposition": "BLOCKED",
+          "blocker": {
+            "owner": "SEC01",
+            "discovered_at": "2026-11-02T22:00:46.071399+00:00",
+            "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
+            "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+            "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+            "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+            "service_owner_role": "Valkey/P02 owner"
+          },
+          "source_owner_repository": "valkey-io/valkey",
+          "current_repo_digests": [],
+          "current_image_ids": [],
+          "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+          "upstream_reported_tag": "9.1.3",
+          "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+          "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+          "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+          "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+          "official_supplier_lookup_refs": [
+            "valkey-io/valkey public-latest"
+          ],
+          "supplier_lookup_blocker": null,
+          "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+          "official_release_assessment": {
+            "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+            "release_status": "SOURCE_RELEASE_OBSERVED",
+            "release_fact_refs": [
+              "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+              "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
+            ],
+            "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+            "next_owner": "SEC01 and service owner",
+            "source_target_security_native_deployment": "NOT_PROMOTED"
+          },
+          "current_public_assessment": {
+            "owner": "SEC01 and service owner",
+            "review_at": "2026-11-09",
+            "candidate": "9.1.3",
+            "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+            "evidence_refs": [
+              "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+              "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
+            ],
+            "decision": "BLOCKED",
+            "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+            "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+            "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
+          },
+          "historical_target_artifact_binding": {
+            "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+            "fields": {
+              "target_version": "UNKNOWN",
+              "target_index_digest": "UNKNOWN",
+              "target_manifest_digest": "UNKNOWN",
+              "target_config_digest": "UNKNOWN",
+              "upstream_reported_tag": "9.1.2"
+            },
+            "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+          },
+          "target_source_image": "valkey/valkey:9.1.3-alpine",
+          "target_declared_digest": "UNKNOWN",
+          "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
+          "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+          "current_target_artifact_binding": {
+            "source_version": "9.1.2",
+            "source_image": "valkey/valkey:9.1.2-alpine",
+            "status": "UNBOUND_CURRENT_TARGET",
+            "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+          },
+          "p08_previous_release_assessment": {
+            "latest_version": "9.1.2",
+            "target_version": "9.1.2",
+            "target_source_image": "valkey/valkey:9.1.2-alpine",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "target_build_materials": [],
+            "upstream_reported_tag": "9.1.2",
+            "channel": "stable",
+            "checked_at": "2026-10-26T09:43:16.477477+00:00",
+            "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
+            "source_release_date": "2026-09-01T00:01:31Z",
+            "advisory_urls": [],
+            "applicability": "UNKNOWN",
+            "support_end": "UNKNOWN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "disposition": "NO_CHANGE_APPLICATION_VERSION",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
+              "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "official_release_assessment": {
+              "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+              "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+              "release_fact_refs": [
+                "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/valkey-io~1valkey public-latest"
+              ],
+              "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+              "next_owner": "SEC01 release/artifact evidence owner and n8n-valkey service build/migration/recovery owner",
+              "source_target_security_native_deployment": "UNCHANGED"
+            },
+            "current_public_assessment": {
+              "supplier_group": "valkey-io/valkey public-latest",
+              "owner": "SEC01 and existing service owner",
+              "review_at": "2026-10-27",
+              "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+              "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+              "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "candidate": "9.1.2",
+              "fact_checked_at": "2026-10-26T09:43:16.477477+00:00",
+              "published_at": "2026-09-01T00:01:31Z",
+              "eligible_after_7_days": "2026-09-08T00:01:31+00:00",
+              "evidence_refs": [
+                "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
+                "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
+              ],
+              "decision": "NO_CHANGE_APPLICATION_VERSION",
+              "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
+              "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
+              "service": "n8n-valkey",
+              "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+              "current_declared": "valkey/valkey:9.1.2-alpine",
+              "resolved_source": {
+                "image": "valkey/valkey:9.1.2-alpine",
+                "build": null,
+                "chain": [
+                  "infra/07-workflow/n8n/docker-compose.yml#n8n-valkey",
+                  "infra/common-optimizations.yml#template-stateful-low"
+                ]
+              },
+              "existing_target_version": "UNKNOWN",
+              "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+            }
+          },
+          "p08_candidate_assessment": {
+            "source_release": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+            "advisory": "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9",
+            "checked_at": "2026-11-02T22:00:46.071399+00:00",
+            "registry_metadata_scope": "Docker Hub tag/index and linux/amd64 descriptor observation only; separate local inspection is a self-reported result. Signature, provenance, SBOM, compatibility and recovery remain NOT_RUN.",
+            "candidate_image": "valkey/valkey:9.1.3-alpine",
+            "upstream_base_registry_index": null,
+            "upstream_base_registry_amd64": null,
+            "private_applicability": "NOT_INSPECTED",
+            "candidate_activation": "NOT_APPLIED",
+            "native_acceptance": "NOT_RUN",
+            "registry_observed_date": "2026-11-03 Asia/Seoul",
+            "registry_reproduction_command": "docker buildx imagetools inspect valkey/valkey:9.1.3-alpine",
+            "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
+            "local_artifact_inspection": {
+              "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+              "reported_by": "/root/p08_candidates",
+              "reported_date": "2026-11-03 Asia/Seoul",
+              "exact_timestamp": null,
+              "raw_receipt": "NOT_SAVED",
+              "steps": [
+                {
+                  "command": "docker pull valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+                  "exit_code": null,
+                  "exact_timestamp": null
+                },
+                {
+                  "command": "docker image inspect valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+                  "exit_code": null,
+                  "exact_timestamp": null
+                }
+              ],
+              "reported_observations": "linux/amd64 image inspection reported RepoDigest, image ID, OCI source and VALKEY_VERSION=9.1.3; original output and exit status not retained.",
+              "limitations": "Reported metadata does not establish artifact signature, provenance, SBOM, compatibility or recovery acceptance."
+            },
+            "reported_isolated_compatibility": {
+              "reported_by": "/root/p08_candidates",
+              "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+              "candidate_platform_manifest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+              "reported_checks": [
+                "actual client",
+                "default and non-default ports",
+                "shared and dedicated topology",
+                "named ACL",
+                "AOF and RDB",
+                "cold restore into separate test volume"
+              ],
+              "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
+              "source_activation": "NOT_APPLIED"
+            },
+            "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
+          }
+        },
+        {
+          "service": "n8n-valkey-exporter",
+          "scope": "root",
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "profiles_declared": [
+            "dedicated-valkey"
+          ],
+          "build_source": null,
+          "current_running": [],
+          "runtime_presence": "NOT_OBSERVED",
+          "latest_version": "1.96.0",
+          "target_version": "1.93.0",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:41:16Z",
+          "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
+          "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
+          "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
+          "platform": "linux/amd64",
+          "source_release_date": "2026-10-24T04:28:05Z",
+          "advisory_urls": [],
+          "applicability": "UNKNOWN",
+          "support_end": "UNKNOWN",
+          "compatibility": "NOT_RUN",
+          "backup": "NOT_RUN",
+          "rollback": "NOT_RUN",
+          "native_test": "NOT_RUN",
+          "deployment": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "sbom_scan": "NOT_RUN",
+          "disposition": "DEFER_SEVEN_DAY_SOAK",
+          "blocker": {
+            "owner": "SEC01",
+            "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+            "next_validation_due": "2026-10-27T00:00:00+00:00",
+            "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+            "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+            "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "service_owner_role": "Existing service owner named by current_public_assessment"
+          },
+          "source_owner_repository": "oliver006/redis_exporter",
+          "current_repo_digests": [],
+          "current_image_ids": [],
+          "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+          "upstream_reported_tag": "v1.93.0",
+          "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+          "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+          "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+          "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+          "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+          "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied.",
+          "official_supplier_lookup_refs": [
+            "oliver006/redis_exporter"
+          ],
+          "supplier_lookup_blocker": null,
+          "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+          "official_release_assessment": {
+            "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+            "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+            "release_fact_refs": [
+              "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/oliver006~1redis_exporter"
+            ],
+            "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+            "next_owner": "SEC01 release/artifact evidence owner and n8n-valkey-exporter service build/migration/recovery owner",
+            "source_target_security_native_deployment": "UNCHANGED"
+          },
+          "current_public_assessment": {
+            "supplier_group": "oliver006/redis_exporter",
+            "owner": "SEC01 and existing service owner",
+            "review_at": "2026-10-27",
+            "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+            "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "candidate": "v1.96.0",
+            "fact_checked_at": "2026-10-26T09:41:16Z",
+            "published_at": "2026-10-24T04:28:05Z",
+            "eligible_after_7_days": "2026-10-31T04:28:05+00:00",
+            "evidence_refs": [
+              "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
+              "/tmp/hyhome-v30-r27-observability-release-research-20261026.json",
+              "https://hub.docker.com/v2/repositories/oliver006/redis_exporter/tags/v1.96.0-alpine"
+            ],
+            "decision": "DEFER_SEVEN_DAY_SOAK",
+            "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+            "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+            "service": "n8n-valkey-exporter",
+            "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+            "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+            "resolved_source": {
+              "image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+              "build": null,
+              "chain": [
+                "infra/07-workflow/n8n/docker-compose.yml#n8n-valkey-exporter",
+                "infra/common-optimizations.yml#template-infra-low"
+              ]
+            },
+            "existing_target_version": "1.93.0",
+            "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+          }
+        },
+        {
+          "service": "oauth2-proxy-valkey",
+          "scope": "root",
+          "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "current_declared": "valkey/valkey:9.1.2-alpine",
+          "profiles_declared": [
+            "dedicated-valkey"
+          ],
+          "build_source": null,
+          "current_running": [],
+          "runtime_presence": "NOT_OBSERVED",
+          "latest_version": "9.1.3",
+          "target_version": "9.1.3",
+          "channel": "stable",
+          "checked_at": "2026-11-02T22:00:46.071399+00:00",
+          "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+          "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+          "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+          "target_config_digest": "UNKNOWN",
+          "platform": "linux/amd64",
+          "source_release_date": "2026-10-26",
+          "advisory_urls": [
+            "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
+          ],
+          "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
+          "support_end": "UNKNOWN",
+          "compatibility": "NOT_RUN",
+          "backup": "NOT_RUN",
+          "rollback": "NOT_RUN",
+          "native_test": "NOT_RUN",
+          "deployment": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "sbom_scan": "NOT_RUN",
+          "disposition": "BLOCKED",
+          "blocker": {
+            "owner": "SEC01",
+            "discovered_at": "2026-11-02T22:00:46.071399+00:00",
+            "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
+            "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+            "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+            "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+            "service_owner_role": "Valkey/P02 owner"
+          },
+          "source_owner_repository": "valkey-io/valkey",
+          "current_repo_digests": [],
+          "current_image_ids": [],
+          "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+          "upstream_reported_tag": "9.1.3",
+          "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+          "source_input_sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522",
+          "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+          "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+          "official_supplier_lookup_refs": [
+            "valkey-io/valkey public-latest"
+          ],
+          "supplier_lookup_blocker": null,
+          "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+          "official_release_assessment": {
+            "assessed_at": "2026-11-02T22:00:46.071399+00:00",
+            "release_status": "SOURCE_RELEASE_OBSERVED",
+            "release_fact_refs": [
+              "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+              "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
+            ],
+            "remaining_barrier": "Source release and advisory do not establish OCI publisher identity, OCI signature, installation, compatibility or recovery.",
+            "next_owner": "SEC01 and service owner",
+            "source_target_security_native_deployment": "NOT_PROMOTED"
+          },
+          "current_public_assessment": {
+            "owner": "SEC01 and service owner",
+            "review_at": "2026-11-09",
+            "candidate": "9.1.3",
+            "fact_checked_at": "2026-11-02T22:00:46.071399+00:00",
+            "evidence_refs": [
+              "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+              "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
+            ],
+            "decision": "BLOCKED",
+            "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+            "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+            "rollback": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion"
+          },
+          "historical_target_artifact_binding": {
+            "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+            "fields": {
+              "target_version": "UNKNOWN",
+              "target_index_digest": "UNKNOWN",
+              "target_manifest_digest": "UNKNOWN",
+              "target_config_digest": "UNKNOWN",
+              "upstream_reported_tag": "9.1.2"
+            },
+            "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+          },
+          "target_source_image": "valkey/valkey:9.1.3-alpine",
+          "target_declared_digest": "UNKNOWN",
+          "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
+          "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+          "current_target_artifact_binding": {
+            "source_version": "9.1.2",
+            "source_image": "valkey/valkey:9.1.2-alpine",
+            "status": "UNBOUND_CURRENT_TARGET",
+            "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+          },
+          "p08_previous_release_assessment": {
+            "latest_version": "9.1.2",
+            "target_version": "9.1.2",
+            "target_source_image": "valkey/valkey:9.1.2-alpine",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "target_build_materials": [],
+            "upstream_reported_tag": "9.1.2",
+            "channel": "stable",
+            "checked_at": "2026-10-26T09:43:16.477477+00:00",
+            "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
+            "source_release_date": "2026-09-01T00:01:31Z",
+            "advisory_urls": [],
+            "applicability": "UNKNOWN",
+            "support_end": "UNKNOWN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "disposition": "NO_CHANGE_APPLICATION_VERSION",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
+              "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "official_release_assessment": {
+              "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+              "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+              "release_fact_refs": [
+                "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/valkey-io~1valkey public-latest"
+              ],
+              "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+              "next_owner": "SEC01 release/artifact evidence owner and oauth2-proxy-valkey service build/migration/recovery owner",
+              "source_target_security_native_deployment": "UNCHANGED"
+            },
+            "current_public_assessment": {
+              "supplier_group": "valkey-io/valkey public-latest",
+              "owner": "SEC01 and existing service owner",
+              "review_at": "2026-10-27",
+              "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+              "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+              "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "candidate": "9.1.2",
+              "fact_checked_at": "2026-10-26T09:43:16.477477+00:00",
+              "published_at": "2026-09-01T00:01:31Z",
+              "eligible_after_7_days": "2026-09-08T00:01:31+00:00",
+              "evidence_refs": [
+                "https://github.com/valkey-io/valkey/releases/tag/9.1.2",
+                "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
+              ],
+              "decision": "NO_CHANGE_APPLICATION_VERSION",
+              "reason": "The exact selected application version matches this fresh published final release. Build wrappers/base images/packages, unsigned artifact metadata and operational acceptance retain their separate recorded boundaries.",
+              "exit_condition": "Retain current application selection; recheck release/channel at review date and separately resolve component build/security/runtime evidence.",
+              "service": "oauth2-proxy-valkey",
+              "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+              "current_declared": "valkey/valkey:9.1.2-alpine",
+              "resolved_source": {
+                "image": "valkey/valkey:9.1.2-alpine",
+                "build": null,
+                "chain": [
+                  "infra/02-auth/oauth2-proxy/docker-compose.yml#oauth2-proxy-valkey",
+                  "infra/common-optimizations.yml#template-stateful-low"
+                ]
+              },
+              "existing_target_version": "UNKNOWN",
+              "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+            }
+          },
+          "p08_candidate_assessment": {
+            "source_release": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+            "advisory": "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9",
+            "checked_at": "2026-11-02T22:00:46.071399+00:00",
+            "registry_metadata_scope": "Docker Hub tag/index and linux/amd64 descriptor observation only; separate local inspection is a self-reported result. Signature, provenance, SBOM, compatibility and recovery remain NOT_RUN.",
+            "candidate_image": "valkey/valkey:9.1.3-alpine",
+            "upstream_base_registry_index": null,
+            "upstream_base_registry_amd64": null,
+            "private_applicability": "NOT_INSPECTED",
+            "candidate_activation": "NOT_APPLIED",
+            "native_acceptance": "NOT_RUN",
+            "registry_observed_date": "2026-11-03 Asia/Seoul",
+            "registry_reproduction_command": "docker buildx imagetools inspect valkey/valkey:9.1.3-alpine",
+            "raw_registry_receipt": "NOT_SAVED; tool output reported by candidate investigator",
+            "local_artifact_inspection": {
+              "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+              "reported_by": "/root/p08_candidates",
+              "reported_date": "2026-11-03 Asia/Seoul",
+              "exact_timestamp": null,
+              "raw_receipt": "NOT_SAVED",
+              "steps": [
+                {
+                  "command": "docker pull valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+                  "exit_code": null,
+                  "exact_timestamp": null
+                },
+                {
+                  "command": "docker image inspect valkey/valkey:9.1.3-alpine@sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+                  "exit_code": null,
+                  "exact_timestamp": null
+                }
+              ],
+              "reported_observations": "linux/amd64 image inspection reported RepoDigest, image ID, OCI source and VALKEY_VERSION=9.1.3; original output and exit status not retained.",
+              "limitations": "Reported metadata does not establish artifact signature, provenance, SBOM, compatibility or recovery acceptance."
+            },
+            "reported_isolated_compatibility": {
+              "reported_by": "/root/p08_candidates",
+              "status": "REPORTED_PASS_RAW_RECEIPT_UNAVAILABLE",
+              "candidate_platform_manifest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+              "reported_checks": [
+                "actual client",
+                "default and non-default ports",
+                "shared and dedicated topology",
+                "named ACL",
+                "AOF and RDB",
+                "cold restore into separate test volume"
+              ],
+              "limitations": "Self-reported isolated synthetic candidate trial. Raw command log and independent reproduction are unavailable. Does not establish publisher identity, signature, provenance, SBOM, production compatibility, backup, rollback or acceptance.",
+              "source_activation": "NOT_APPLIED"
+            },
+            "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
+          }
+        },
+        {
+          "service": "oauth2-proxy-valkey-exporter",
+          "scope": "root",
+          "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "profiles_declared": [
+            "dedicated-valkey"
+          ],
+          "build_source": null,
+          "current_running": [],
+          "runtime_presence": "NOT_OBSERVED",
+          "latest_version": "1.96.0",
+          "target_version": "1.93.0",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:41:16Z",
+          "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
+          "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
+          "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
+          "platform": "linux/amd64",
+          "source_release_date": "2026-10-24T04:28:05Z",
+          "advisory_urls": [],
+          "applicability": "UNKNOWN",
+          "support_end": "UNKNOWN",
+          "compatibility": "NOT_RUN",
+          "backup": "NOT_RUN",
+          "rollback": "NOT_RUN",
+          "native_test": "NOT_RUN",
+          "deployment": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "sbom_scan": "NOT_RUN",
+          "disposition": "DEFER_SEVEN_DAY_SOAK",
+          "blocker": {
+            "owner": "SEC01",
+            "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+            "next_validation_due": "2026-10-27T00:00:00+00:00",
+            "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+            "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+            "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "service_owner_role": "Existing service owner named by current_public_assessment"
+          },
+          "source_owner_repository": "oliver006/redis_exporter",
+          "current_repo_digests": [],
+          "current_image_ids": [],
+          "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+          "upstream_reported_tag": "v1.93.0",
+          "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+          "source_input_sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522",
+          "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+          "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+          "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+          "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+          "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied.",
+          "official_supplier_lookup_refs": [
+            "oliver006/redis_exporter"
+          ],
+          "supplier_lookup_blocker": null,
+          "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+          "official_release_assessment": {
+            "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+            "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+            "release_fact_refs": [
+              "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/oliver006~1redis_exporter"
+            ],
+            "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+            "next_owner": "SEC01 release/artifact evidence owner and oauth2-proxy-valkey-exporter service build/migration/recovery owner",
+            "source_target_security_native_deployment": "UNCHANGED"
+          },
+          "current_public_assessment": {
+            "supplier_group": "oliver006/redis_exporter",
+            "owner": "SEC01 and existing service owner",
+            "review_at": "2026-10-27",
+            "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+            "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "candidate": "v1.96.0",
+            "fact_checked_at": "2026-10-26T09:41:16Z",
+            "published_at": "2026-10-24T04:28:05Z",
+            "eligible_after_7_days": "2026-10-31T04:28:05+00:00",
+            "evidence_refs": [
+              "https://github.com/oliver006/redis_exporter/releases/tag/v1.96.0",
+              "/tmp/hyhome-v30-r27-observability-release-research-20261026.json",
+              "https://hub.docker.com/v2/repositories/oliver006/redis_exporter/tags/v1.96.0-alpine"
+            ],
+            "decision": "DEFER_SEVEN_DAY_SOAK",
+            "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+            "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+            "service": "oauth2-proxy-valkey-exporter",
+            "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+            "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+            "resolved_source": {
+              "image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+              "build": null,
+              "chain": [
+                "infra/02-auth/oauth2-proxy/docker-compose.yml#oauth2-proxy-valkey-exporter",
+                "infra/common-optimizations.yml#template-infra-readonly-low"
+              ]
+            },
+            "existing_target_version": "1.93.0",
+            "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+          }
+        }
+      ],
+      "meaning": "The per-app dedicated Valkey and exporter sets of airflow, n8n and oauth2-proxy (dedicated-valkey profile, never created in HOME) are removed from the Compose files together with their monitor-acl overlays; Airflow, n8n and OAuth2 Proxy keep the shared mng-valkey. The six ledger rows are archived here with their SOURCE-only evidence unchanged; the volumes hy-home-infra_airflow-valkey-data and hy-home-infra_n8n-valkey-data and any stopped container or image are untouched, and removal from the host needs owner approval. Compose file hashes of the touched files are not re-bound by this record; the SEC01 re-binding refresh owns them."
+    },
+    {
+      "source_revision": "94afb9ce8b0c057359d33d4160601f301ab507ef",
+      "refreshed_at": "2026-11-09T11:13:26.608659+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "9652001e420c9b15edd80c71f5148e58a510bfe49812c5603e679757379b16b3",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "6d87e9c77d46b7065317c12deff6adb4e8c9214412e2bcf0fa4ee09d870e72b1"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "324fe5abe10d6bfd3a1ff45f7166e4a69dd73c0fc177e4fcd98d525e4a242120"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "886a82e79c5327ef7f9a46ae624b99ec17a2c0e91f5f0ffeb6bb8fdf62d2826e"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "36a4adb3d656350be6527d0b9a2a72420cf8a976968340b0cbc1472c4b58abc9"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "c4c15d13071b930485237c071ce037062e6f1ac0ea420d6b4099cafcf03782ad"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "2e64d8890f01155dde31370d70caa347050fc04f2f223cbd144db50b02ae015a"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/08-ai/open-webui/docker-compose.yml",
+          "sha256": "84fb9ffe43c5988732c42e02dffc4dd0c894f35cb0eea7c504a127fc8ac9961c"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0297f9a834155942aab9a0ff7c22f93607f17ad4a0051dd573e207cff5c34c41"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "docker-compose.yml",
+        "infra/02-auth/oauth2-proxy/docker-compose.yml",
+        "infra/04-data/redisinsight/docker-compose.yml",
+        "infra/07-workflow/airflow/docker-compose.yml",
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "airflow-apiserver",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-dag-processor",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-init",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-scheduler",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-statsd-exporter",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-triggerer",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-worker",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "blog-ingestion",
+          "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "flower",
+          "source_input_sha256": "6b585a58440636ea3479ea65e5215366c5d8740e97b73f0de057f7de8d904e6e",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n",
+          "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-task-runner-worker",
+          "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-worker",
+          "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "oauth2-proxy",
+          "source_input_sha256": "80a00d5ee538292551a553bf616204201cc8d7e22b1d4dbaf46fd3ed8e3e7522",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "redisinsight",
+          "source_input_sha256": "90f9e4145644e405499210e600eac652cd819707e248979a4837e4ce3b5cd23a",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "searxng",
+          "source_input_sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297",
+          "source_refreshed_at": "2026-11-09T09:32:23.140566+00:00"
+        }
+      ],
+      "meaning": "5 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 15 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {
@@ -31066,10 +31309,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-09T10:26:51Z",
-      "source_revision": "be3cab6a6a8a456c9b114f373a7ba15194d6c038",
-      "source_state": "SOURCE_REVIEW_ONLY: the SearXNG service, its network and settings, and the n8n Assistant environment are uncommitted on top of this revision.",
-      "input_sha256": "ebbbbba6e046cf2830b7202e2169312fb6ce09b9efe5af7e007ee5f7ecd1b29f",
+      "checked_at": "2026-11-09T11:13:51Z",
+      "source_revision": "94afb9ce8b0c057359d33d4160601f301ab507ef",
+      "source_state": "SOURCE_REVIEW_ONLY: the removal of the dedicated n8n-valkey and n8n-valkey-exporter services (ADR-0062 decision 10) is uncommitted on top of this revision.",
+      "input_sha256": "8b49871c9e3544e0428a08ecf6e3fbc3247340a5e974022f59655eca559fb7dd",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -31086,15 +31329,15 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297"
+          "sha256": "2173a45eb26ef3df43d8710d7570e51234e3848e188774d36916177555cc3471"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
-          "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+          "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
-          "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+          "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
         },
         {
           "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
@@ -31141,7 +31384,7 @@
           "sha256": "ff8f202f552f2e3104ebfd48126f62ea8e17f7424165d891cb7ce277ae01f3bf"
         }
       ],
-      "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed after adding the SearXNG web-search service and the n8n Assistant model and search settings; no custom image build, signature, scan, native or HOME acceptance.",
+      "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed after removing the dedicated n8n-valkey and n8n-valkey-exporter services and the n8n-valkey entrypoint selection; no custom image build, signature, scan, native or HOME acceptance.",
       "native_test": "NOT_RUN",
       "home": "NOT_RUN",
       "signature": "NOT_RUN",
@@ -32906,6 +33149,92 @@
           "full_image_sbom_scan": "NOT_RUN",
           "recovery": "NOT_RUN"
         }
+      },
+      {
+        "archived_at": "2026-11-09T11:13:51Z",
+        "source_binding": {
+          "checked_at": "2026-11-09T10:26:51Z",
+          "source_revision": "be3cab6a6a8a456c9b114f373a7ba15194d6c038",
+          "source_state": "SOURCE_REVIEW_ONLY: the SearXNG service, its network and settings, and the n8n Assistant environment are uncommitted on top of this revision.",
+          "input_sha256": "ebbbbba6e046cf2830b7202e2169312fb6ce09b9efe5af7e007ee5f7ecd1b29f",
+          "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+          "input_files": [
+            {
+              "path": "infra/07-workflow/n8n/Dockerfile",
+              "sha256": "c1ebe842ab2a0ba02aecc6d6ae3e57101f338544cb54cc455779dfc6a1d3bc01"
+            },
+            {
+              "path": "infra/07-workflow/n8n/custom/.gitkeep",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            {
+              "path": "infra/07-workflow/n8n/dev.Dockerfile",
+              "sha256": "a3f4c2f52ef070da7c34238f8915b951428ad7cf126b71b06d478f548b2f90f2"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-compose.yml",
+              "sha256": "597b3facf81249a37af5b8d4ea6dda02cf15a54ebd6d2db349fcd2614f343297"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+              "sha256": "19f3fb0a5ce6612f578162563588673e576bb4bf110c3c6f1041bdb8b198ce99"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+              "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+              "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+              "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+              "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+              "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+              "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+              "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+              "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+              "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+            },
+            {
+              "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+              "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+            },
+            {
+              "path": "tests/validation/test_workflow_version_bundle.py",
+              "sha256": "ff8f202f552f2e3104ebfd48126f62ea8e17f7424165d891cb7ce277ae01f3bf"
+            }
+          ],
+          "meaning": "Same existing n8n Compose/build/COPY/custom-node/version-test source paths rehashed after adding the SearXNG web-search service and the n8n Assistant model and search settings; no custom image build, signature, scan, native or HOME acceptance.",
+          "native_test": "NOT_RUN",
+          "home": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "full_image_sbom_scan": "NOT_RUN",
+          "recovery": "NOT_RUN"
+        }
       }
     ],
     "current_source_acceptance_limit": {
@@ -33436,22 +33765,19 @@
     "current_public_assessment_ref": "release-lookups.json#/root_official_refresh/public_metadata_continuations/1"
   },
   "p08_public_release_observations": {
-    "root_service_denominator": 97,
+    "root_service_denominator": 91,
     "source_query_denominator": 61,
     "observed_source_count": 60,
     "failed_source_count": 1,
-    "services_with_related_source": 83,
+    "services_with_related_source": 80,
     "services_without_related_source": [
-      "airflow-valkey",
       "blog-ingestion",
       "crawl4ai-loopback",
       "dev-valkey",
       "mng-valkey",
       "n8n",
       "n8n-task-runner-worker",
-      "n8n-valkey",
       "n8n-worker",
-      "oauth2-proxy-valkey",
       "ollama-exporter",
       "searxng",
       "storybook",
@@ -33493,11 +33819,8 @@
         "source_cache_freshness": "today",
         "result": "OBSERVED",
         "related_root_services": [
-          "airflow-valkey-exporter",
           "dev-valkey-exporter",
-          "mng-valkey-exporter",
-          "n8n-valkey-exporter",
-          "oauth2-proxy-valkey-exporter"
+          "mng-valkey-exporter"
         ],
         "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
         "raw_receipt": "NOT_SAVED",
@@ -34539,9 +34862,12 @@
       "removed_at": "2026-11-08T01:48:04.395677+00:00",
       "root_service_denominator_before_removal": 97,
       "removed_services_without_related_source": [
-        "n8n-task-runner"
+        "n8n-task-runner",
+        "airflow-valkey",
+        "n8n-valkey",
+        "oauth2-proxy-valkey"
       ],
-      "meaning": "SPEC-0269 removed the idle n8n main task runner after the observation; it had no related source in this batch, so the observation rows, counts of related services, tags and timestamps are unchanged. ADR-0062 decision 10 then removed kafka-rest-proxy; it is dropped from the related-service list of its one query row and counted out of services_with_related_source, and the query row, tags and timestamps are unchanged.",
+      "meaning": "SPEC-0269 removed the idle n8n main task runner after the observation; it had no related source in this batch, so the observation rows, counts of related services, tags and timestamps are unchanged. ADR-0062 decision 10 then removed kafka-rest-proxy; it is dropped from the related-service list of its one query row and counted out of services_with_related_source, and the query row, tags and timestamps are unchanged. ADR-0062 decision 10 then removed the dedicated Valkey sets: the three brokers had no related source in this batch, and the three exporters are dropped from the related-service list of their one query row and counted out of services_with_related_source; the query row, tags and timestamps are unchanged.",
       "removed_services_with_related_source": [
         {
           "service": "kafka-rest-proxy",
@@ -34549,6 +34875,30 @@
           "root_service_denominator_before_removal": 97,
           "query_urls": [
             "https://docs.confluent.io/platform/current/release-notes/index.html"
+          ]
+        },
+        {
+          "service": "airflow-valkey-exporter",
+          "removed_at": "2026-11-09T11:11:34.257367+00:00",
+          "root_service_denominator_before_removal": 97,
+          "query_urls": [
+            "https://github.com/oliver006/redis_exporter/releases/latest"
+          ]
+        },
+        {
+          "service": "n8n-valkey-exporter",
+          "removed_at": "2026-11-09T11:11:34.257367+00:00",
+          "root_service_denominator_before_removal": 97,
+          "query_urls": [
+            "https://github.com/oliver006/redis_exporter/releases/latest"
+          ]
+        },
+        {
+          "service": "oauth2-proxy-valkey-exporter",
+          "removed_at": "2026-11-09T11:11:34.257367+00:00",
+          "root_service_denominator_before_removal": 97,
+          "query_urls": [
+            "https://github.com/oliver006/redis_exporter/releases/latest"
           ]
         }
       ]

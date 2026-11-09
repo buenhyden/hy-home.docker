@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "POL-0015"
 parent_ids:
@@ -42,11 +42,9 @@ created: "2026-05-17"
     지정할 수 있다. 값을 환경 변수 리터럴로 두지 않는다.
   - SSO route 통과는 Keycloak group `/admins`(`allowed_groups`)로 제한하고,
     `trusted_ips`는 두지 않으며 `trusted_proxy_ips`는 Traefik `edge_net` 주소로 한정한다.
-  - 기본 세션 저장소는 공유 `mng-valkey`다. `dedicated-valkey` profile은
-    `oauth2-proxy-valkey`와 exporter를 추가하며, Proxy 접속 대상을 자동으로 바꾸지 않는다.
-  - 전용 세션 저장소를 사용할 때 `OAUTH2_PROXY_VALKEY_HOST`는 `oauth2-proxy-valkey`를
-    가리켜야 한다. 선택한 이미지의 entrypoint가 읽는 세션 시크릿도 해당 저장소와
-    일치해야 한다. Profile만 선택한 상태를 전용 저장소 전환 완료로 간주하지 않는다.
+  - 세션 저장소는 공유 `mng-valkey`다. 앱별 전용 Valkey와 exporter는 ADR-0062 결정 10으로
+    제거되었고, `OAUTH2_PROXY_VALKEY_HOST`는 `mng-valkey`를 가리켜야 한다. 선택한
+    이미지의 entrypoint가 읽는 세션 시크릿도 해당 저장소와 일치해야 한다.
   - 이미지 실행 계정은 non-root여야 한다(`dev.Dockerfile`은 `oauth2proxy`, `Dockerfile`은 UID 100/GID 101).
   - 세션 정책은 `cookie_secure=true`, `cookie_httponly=true`, `cookie_samesite=lax`, `cookie_refresh=1h`, `cookie_expire=12h`를 유지한다.
   - 기본 운영 모드는 fail-closed다.
@@ -57,20 +55,15 @@ created: "2026-05-17"
   - fail-open 상시 운영
   - 시크릿을 Compose/문서에 평문으로 저장
 
-### Helper and session boundaries
+### Session boundaries
 
-이 정책은 `oauth2-proxy-valkey`와 `oauth2-proxy-valkey-exporter`에도 적용한다.
-전용 저장소와 exporter는 host port나 공개 route를 추가하지 않으며, 둘 다 Compose
-healthcheck를 유지한다([POL-0006](../01-common/0006-infrastructure-optimization-governance.md)).
 Valkey AOF는 세션 persistence이며 백업을 대신하지 않는다. 세션 손실 시 재로그인
 영향을 고지하고 공유 `mng-valkey`를 Proxy 복구만을 위해 비우거나 삭제하지 않는다.
-전용 volume 제거도 대상과 세션 무효화 범위를 승인받은 뒤에만 수행한다.
 
 ### Credential exposure boundary
 
-전용 Valkey server는 렌더링된 ACL 파일(`/run/valkey/users.acl`, tmpfs)로, exporter는
-`REDIS_PASSWORD` 환경 변수로, 인증 health probe는 `REDISCLI_AUTH`로 password를 소비한다.
-Docker daemon/host process 접근도 credential 신뢰 경계다. full
+Proxy는 entrypoint가 Secret 파일에서 읽어 `OAUTH2_PROXY_REDIS_PASSWORD` 환경 변수로
+password를 소비한다. Docker daemon/host process 접근도 credential 신뢰 경계다. full
 `docker inspect`, `docker top`/process `ps`, `/proc/*/cmdline`·`environ`, 원문
 `.State.Health.Log`는 기록하지 않는다. 서비스명·image identity·health 상태·재시작
 횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았다.

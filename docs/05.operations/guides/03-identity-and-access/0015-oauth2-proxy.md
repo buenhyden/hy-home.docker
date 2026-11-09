@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -12,8 +12,6 @@ parent_ids:
 implementation_services:
   infra/02-auth/oauth2-proxy/docker-compose.yml:
   - oauth2-proxy
-  - oauth2-proxy-valkey
-  - oauth2-proxy-valkey-exporter
 created: "2026-05-10"
 ---
 
@@ -21,7 +19,7 @@ created: "2026-05-10"
 
 ## Overview
 
-이 문서는 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하는 방법을 설명한다. `oauth2-proxy`의 lifecycle class는 **HOME**이고, `oauth2-proxy-valkey`와 `oauth2-proxy-valkey-exporter` helper의 class는 **OPTIONAL**이다. Keycloak OIDC provider, redis/Valkey session storage, cookie와 token의 차이, callback/logout 경계를 함께 다룬다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. OAuth2 Proxy 전체 login/logout acceptance는 별도 런북 증거가 필요하다.
+이 문서는 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하는 방법을 설명한다. `oauth2-proxy`의 lifecycle class는 **HOME**이다. 세션 저장소는 공유 `mng-valkey`이며 앱별 전용 Valkey와 exporter는 ADR-0062 결정 10으로 제거되었다. Keycloak OIDC provider, redis/Valkey session storage, cookie와 token의 차이, callback/logout 경계를 함께 다룬다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. OAuth2 Proxy 전체 login/logout acceptance는 별도 런북 증거가 필요하다.
 
 ## Scope
 
@@ -37,18 +35,15 @@ created: "2026-05-10"
 
 - `infra/02-auth/keycloak` 정상 동작
 - `infra/02-auth/oauth2-proxy` 구성 파일 접근
-- 공유 `mng-valkey` 또는 `dedicated-valkey` profile의 `oauth2-proxy-valkey` 세션 저장소 준비
-- 사용할 저장소에 맞는 `OAUTH2_PROXY_VALKEY_HOST` 및 이미지/entrypoint의 세션 시크릿
-  경로 확인. Profile은 서비스를 추가할 뿐 Proxy의 기본 호스트나 이미지를 전환하지 않는다.
-  공유 경로는 `dev.Dockerfile`/`docker-entrypoint.dev.sh`의 `mng_valkey_password`,
-  전용 경로는 `Dockerfile`/`docker-entrypoint.sh`의 `oauth2_valkey_password`를 사용한다.
-  `docker-compose.monitor-acl.yml` overlay를 쓰면 exporter는 `oauth2_valkey_monitor_password`로
-  접속한다.
+- 공유 `mng-valkey` 세션 저장소 준비
+- `OAUTH2_PROXY_VALKEY_HOST`(기본 `mng-valkey`) 및 이미지/entrypoint의 세션 시크릿
+  경로 확인. 기본 경로는 `dev.Dockerfile`/`docker-entrypoint.dev.sh`의 `mng_valkey_password`,
+  `Dockerfile`/`docker-entrypoint.sh` 대안은 `oauth2_valkey_password`를 사용한다.
   이미지 선택은 기존 `OAUTH2_PROXY_DOCKERFILE` 구성에 따른다.
 
 ## Concepts
 
-구현 소스는 [infra/02-auth/oauth2-proxy/docker-compose.yml](../../../../infra/02-auth/oauth2-proxy/docker-compose.yml)이다. `oauth2-proxy-valkey-exporter`는 OAuth2 session-store metric을 제공하며, 활성화 여부는 작성된 Compose profile을 따른다.
+구현 소스는 [infra/02-auth/oauth2-proxy/docker-compose.yml](../../../../infra/02-auth/oauth2-proxy/docker-compose.yml)이다. 세션 저장소의 metric은 `mng-valkey-exporter`가 제공한다.
 
 ## Usage
 
@@ -64,39 +59,30 @@ Alpine 최종 stage로 복사한다. 추가 package 설치는 없다. non-root �
 주입하지만 이미 설정된 `OAUTH2_PROXY_REDIS_PASSWORD`가 있으면 보존한다.
 
 `OAUTH2_PROXY_DOCKERFILE=Dockerfile`인 대안은 같은 upstream/Alpine FROM,
-UID 100/GID 101과 [전용 entrypoint](../../../../infra/02-auth/oauth2-proxy/docker-entrypoint.sh)를
+UID 100/GID 101과 [대안 entrypoint](../../../../infra/02-auth/oauth2-proxy/docker-entrypoint.sh)를
 사용해 `oauth2_valkey_password`를 읽는다. private override의 실제 선택은 미확인이다.
-어느 선택도 `dedicated-valkey` profile이 자동 변경하지 않는다. 이미지 생성 결과와
-설치 버전은 build를 실행하기 전까지 미검증이다.
+이미지 생성 결과와 설치 버전은 build를 실행하기 전까지 미검증이다.
 
 ### Services, inputs and persistence
 
 | 서비스 | 선택·연결·상태·정상 신호 |
 | --- | --- |
-| `oauth2-proxy` | HOME, `core`/`auth`/`dev`/`local`; `edge_net`, `obs_net`, `mng_data_net`; host port 없음. Keycloak과 선택 Valkey가 필요하지만 `depends_on` 없음. `/ping`은 process, `/ready`는 backend 연결, 인증된 callback/거부는 별도 검사. 내부 metrics 44180은 route하지 않는다. |
-| `oauth2-proxy-valkey` | OPTIONAL, `dedicated-valkey`; `mng_data_net`에서 `${VALKEY_PORT:-6379}`, `start-dedicated.sh`가 `/run/valkey/users.acl`에 렌더링한 ACL로 인증하고 AOF 활성화. bind-backed `/data`는 `${DEFAULT_AUTH_DIR}/valkey`, UID/GID 999. `PONG` health는 연결 검사이며 session 복구 검증이 아니다. |
-| `oauth2-proxy-valkey-exporter` | OPTIONAL, 같은 profile; 전용 Valkey healthy를 기다린다. `mng_data_net`과 `obs_net`에서 `${VALKEY_EXPORTER_PORT:-9121}` metrics listener, host port/route/영속 volume 없음. Compose healthcheck는 `http://localhost:9121/metrics` 응답만 보므로 실행 상태와 scrape 성공을 별도로 본다. |
+| `oauth2-proxy` | HOME, `core`/`auth`/`dev`/`local`; `edge_net`, `obs_net`, `mng_data_net`; host port 없음. Keycloak과 공유 `mng-valkey`가 필요하지만 `depends_on` 없음. `/ping`은 process, `/ready`는 backend 연결, 인증된 callback/거부는 별도 검사. 내부 metrics 44180은 route하지 않는다. |
 
 필수 입력은 `OAUTH2_PROXY_CLIENT_ID`, `DEFAULT_URL`, `DEFAULT_CERT_DIR`와
-client/cookie Secret, 선택 저장소 password다. 전용 대안은 `DEFAULT_AUTH_DIR`,
-`OAUTH2_PROXY_VALKEY_HOST`, Dockerfile 선택, exporter의 `VALKEY_EXPORTER_PORT`를
-함께 확인한다. 전용 Valkey와 exporter는 `VALKEY_PORT`(기본 6379)를 검증해 listener와
-접속 주소에 쓴다. exporter listener는 `VALKEY_EXPORTER_PORT`(기본 9121)를 따르지만
-healthcheck는 9121로 고정되어 있어 이 값을 바꾸면 probe가 불일치한다. Proxy의 실제
+client/cookie Secret, 저장소 password다. `OAUTH2_PROXY_VALKEY_HOST`와
+Dockerfile 선택, `VALKEY_PORT`(기본 6379)를 함께 확인한다. Proxy의 실제
 listener는 cfg의 `http_address`가 아니라 `OAUTH2_PROXY_HTTP_ADDRESS`(`${OAUTH2_PROXY_PORT:-4180}`)가
 정한다. 모든 입력 확인은 값 공개 없이 수행한다.
 
 Proxy의 cfg와 CA는 읽기 전용, 세션은 외부 Valkey가 소유한다. Proxy는 CPU 1/
-512 MiB, 두 helper는 각각 CPU 0.5/256 MiB를 공통 template에서 상속한다.
-공유·전용 Valkey는 dev-valkey와 같이 `maxmemory 128mb`와 `noeviction`으로
-시작해 256 MiB 한도 전에 쓰기를 OOM 오류로 거부한다. AOF·세션 증가와 디스크 여유는
-함께 본다. exporter는 `redis_up`과 target `UP`을 구분한다. exporter는 Secret 파일을
-`REDIS_PASSWORD` 환경 변수로, 전용 Valkey healthcheck는 `REDISCLI_AUTH`로 읽으므로 전체
-inspect/environment 출력은 수집하지 않는다. 영속성·삭제·자원 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md)가 소유한다.
+512 MiB를 공통 template에서 상속한다. 공유 `mng-valkey`는 dev-valkey와 같이
+`maxmemory 128mb`와 `noeviction`으로 시작해 256 MiB 한도 전에 쓰기를 OOM 오류로
+거부한다. AOF·세션 증가와 디스크 여유는 함께 본다. exporter는 `redis_up`과 target
+`UP`을 구분한다. 전체 inspect/environment 출력은 수집하지 않는다. 영속성·삭제·자원 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md)가 소유한다.
 
 공식 [선언 릴리스의 endpoint 문서](https://raw.githubusercontent.com/oauth2-proxy/oauth2-proxy/v7.15.5/docs/docs/features/endpoints.md)와 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
-[provider 문서](https://raw.githubusercontent.com/oauth2-proxy/oauth2-proxy/v7.15.5/docs/docs/configuration/providers/keycloak_oidc.md), <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
-[exporter 설정](https://raw.githubusercontent.com/oliver006/redis_exporter/v1.93.0/README.md)을 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
+[provider 문서](https://raw.githubusercontent.com/oauth2-proxy/oauth2-proxy/v7.15.5/docs/docs/configuration/providers/keycloak_oidc.md)를 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
 대조했다. Valkey의 AOF 선언은 backup·HA 보장이 아니다.
 
 ### Tracked Configuration Snapshot
@@ -111,7 +97,7 @@ inspect/environment 출력은 수집하지 않는다. 영속성·삭제·자원 
 | Cookie 이름 | `__Secure-sso-cookie` | config 파일 |
 | Cookie 수명 | refresh `1h`, 만료 `12h` | config 파일 |
 | Session store | Valkey에 `redis` protocol로 연결 | compose 환경 설정과 공식 session-storage 문서 |
-| Session backend | 기본값은 `mng-valkey`; `dedicated-valkey`는 `oauth2-proxy-valkey`와 해당 exporter만 추가함 | compose 환경 설정/profile |
+| Session backend | `mng-valkey`(`OAUTH2_PROXY_VALKEY_HOST` 기본값) | compose 환경 설정 |
 | Provider CA | `/etc/ssl/certs/rootCA.pem`, `ssl_insecure_skip_verify=false` | compose 환경 설정/config 파일 |
 | Callback route | `Host(auth.${DEFAULT_URL}) && PathPrefix(/oauth2)`, `gateway-standard-chain@file` | Traefik label |
 | 허용 group | `allowed_groups = ["/admins"]`; Keycloak `groups` claim의 `/admins`만 SSO route 통과 | config 파일 |
@@ -134,7 +120,6 @@ The tracked config requests `openid email profile offline_access groups`, uses P
 1. Compose 런타임 계약 확인
    - `template-infra-readonly-med` 사용
    - 기본 경로는 `docker-compose.yml`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, 공유 `mng-valkey`를 사용
-   - `dedicated-valkey` profile은 같은 `docker-compose.yml`에서 `oauth2-proxy-valkey`와 그 exporter를 추가로 선택
    - Compose command override는 없고 선택 entrypoint가 기본 `--config /etc/oauth2-proxy.cfg`를 추가하는지 확인
    - `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS` 확인
 2. 엔트리포인트 시크릿 주입 확인
@@ -175,7 +160,7 @@ Valkey 세션과 cookie/client/저장소 자격 증명은 서로 다른 복구 �
 - `trusted_ips`를 추가하거나 `trusted_proxy_ips`를 Traefik 주소 밖으로 넓혀 SSO 우회나 forwarded header spoofing 위험을 만드는 경우
 - Keycloak `/admins` group에 없는 사용자의 거부를 장애로 오해하는 경우
 
-Valkey credential은 프로세스 인자로 전달하지 않는다(healthcheck는 `REDISCLI_AUTH`, exporter는 `REDIS_PASSWORD`, server는 렌더된 ACL). 노출 경계와 증거 취급 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#credential-exposure-boundary)가 소유한다.
+Valkey credential은 프로세스 인자로 전달하지 않는다(Secret 파일을 entrypoint가 환경 변수로 읽는다). 노출 경계와 증거 취급 기준은 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#credential-exposure-boundary)가 소유한다.
 
 ## Related Documents
 
