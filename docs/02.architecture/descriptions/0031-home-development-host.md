@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.5.0"
+version: "0.5.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -104,7 +104,8 @@ Runtime pins come from Compose and Dockerfile declarations. The version registry
 is a derived Compose image projection; source inventory separately inspects
 Dockerfile build sources. Documents route to the applicable source or projection
 instead of repeating patch pins without context.
-Renovate owns enabled infrastructure managers and Dependabot owns Storybook npm.
+Renovate is the sole dependency updater: it owns the enabled infrastructure managers and
+npm for Storybook and the OpsflowSmtp node. Dependabot version updates are retired.
 
 ## Quality and Risks
 

@@ -72,9 +72,19 @@ created: "2026-09-19"
    ```
 
    repository/global 모드를 구분한다. 의존성·런타임이 없으면 `BLOCKED`로 기록한다.
+   Renovate가 유일한 updater이므로 `.github/dependabot.yml`이 다시 생기지 않았고
+   `npm` manager가 Storybook과 OpsflowSmtp `package.json`만 가리키는지도 확인한다.
+   `tests.validation.test_tech_stack_version_contract`가 이 계약을 검사한다.
 4. 관련 build source와 문서 계약, 기존 동기화 테스트의 누락·중복·제거·digest·
    local/custom·서로 다른 source version 사례를 검증한다. 현재 gate가 요구하는
    범위만 실행하며 Compose image projection PASS로 build pin을 대체하지 않는다.
+
+### Dependabot 보안 업데이트 중단 (owner 단계)
+
+Renovate의 첫 정상 실행(Dependency Dashboard 생성, 대상 PR 제안)을 확인한 뒤, owner가
+GitHub 저장소 설정에서 Dependabot automatic security fixes만 끈다. Dependabot alerts는
+Renovate `vulnerabilityAlerts`의 입력이므로 켜 둔다. 이 문서는 해당 원격 설정을 바꾸지
+않으며, 실행은 owner의 별도 승인과 기록으로만 한다. 첫 실행 전에는 설정을 유지한다.
 
 ### Static configuration validation
 
@@ -161,7 +171,7 @@ Git rollback은 database 파일이나 migration을 downgrade하지 않는다. �
 
 - [운영 인덱스](../../README.md)
 - [파생 이미지 projection](../../../../infra/tech-stack.versions.json)
-- [Renovate 정책](../../../../renovate.json5), [Dependabot 범위](../../../../.github/dependabot.yml)
+- [Renovate 정책](../../../../renovate.json5)
 
 ### Traceability
 

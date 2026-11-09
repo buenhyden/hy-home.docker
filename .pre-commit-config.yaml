@@ -77,12 +77,6 @@ repos:
       - id: actionlint
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
-  - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.37.2
-    hooks:
-      - id: check-dependabot
-        files: ^\.github/dependabot\.yml$
-
   # --- 5. Infrastructure & Docker ---
   - repo: https://github.com/hadolint/hadolint
     rev: v2.14.0

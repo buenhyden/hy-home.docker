@@ -29,7 +29,16 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
 RENOVATE_CONFIG = ROOT / "renovate.json5"
 RENOVATE_GLOBAL_CONFIG = ROOT / "infra/09-platform-ops/renovate/config/config.js"
-DEPENDABOT_CONFIG = ROOT / ".github/dependabot.yml"
+DEPENDABOT_CONFIG = ".github/dependabot.yml"
+NPM_TARGETS = (
+    "projects/storybook/nextjs",
+    "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp",
+)
+NPM_FILE_PATTERNS = [
+    r"/^projects\/storybook\/nextjs\/(?:packages\/[^/]+\/)?package\.json$/",
+    r"/^infra\/07-workflow\/n8n\/workloads\/manifest-outbox-notifier"
+    r"\/nodes\/OpsflowSmtp\/package\.json$/",
+]
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
 OAUTH_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/Dockerfile"
 OAUTH_DEV_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"
@@ -60,7 +69,6 @@ def declared_images(path: pathlib.Path) -> set[str]:
 def updater_contract_findings(
     renovate: dict[str, object],
     global_config: dict[str, object],
-    dependabot: dict[str, object],
     root: pathlib.Path,
 ) -> tuple[str, ...]:
     findings: list[str] = []
@@ -71,6 +79,7 @@ def updater_contract_findings(
         "github-actions",
         "custom.regex",
         "pip_requirements",
+        "npm",
     }
     if not isinstance(managers, list) or set(managers) != expected_managers:
         findings.append("Renovate manager ownership drift")
@@ -86,8 +95,54 @@ def updater_contract_findings(
         for rule in renovate.get("packageRules") or []
     ):
         findings.append("image-local Python pins must not automerge")
-    if isinstance(managers, list) and "npm" in managers:
-        findings.append("npm updater ownership overlaps Dependabot")
+
+    npm = renovate.get("npm")
+    if not isinstance(npm, dict) or npm.get("managerFilePatterns") != NPM_FILE_PATTERNS:
+        findings.append("npm ownership must stay limited to Storybook and OpsflowSmtp")
+    package_rules = [
+        rule for rule in renovate.get("packageRules") or [] if isinstance(rule, dict)
+    ]
+    npm_rules = [rule for rule in package_rules if rule.get("matchManagers") == ["npm"]]
+    if not any(rule.get("automerge") is False for rule in npm_rules):
+        findings.append("npm packages must not automerge")
+    if not any(
+        rule.get("matchUpdateTypes") == ["major"]
+        and rule.get("dependencyDashboardApproval") is True
+        for rule in npm_rules
+    ):
+        findings.append("npm major updates need Dashboard approval")
+    if not any(
+        rule.get("groupName") == "storybook-nextjs-minor-patch"
+        and rule.get("matchUpdateTypes") == ["minor", "patch"]
+        and rule.get("matchFileNames") == ["projects/storybook/nextjs/**"]
+        and "automerge" not in rule
+        for rule in npm_rules
+    ):
+        findings.append("Storybook minor and patch grouping drift")
+    if not any(
+        rule.get("matchPackageNames") == ["typescript"]
+        and rule.get("allowedVersions") == "<7.0.0"
+        and rule.get("matchFileNames") == ["projects/storybook/nextjs/**"]
+        for rule in npm_rules
+    ):
+        findings.append("Storybook TypeScript must stay below 7.0.0")
+    if not any(
+        rule.get("matchPackageNames") == ["n8n-workflow"]
+        and rule.get("enabled") is False
+        for rule in npm_rules
+    ):
+        findings.append("n8n-workflow must stay a manual update")
+    if (root / DEPENDABOT_CONFIG).exists():
+        findings.append("Dependabot version updates must stay retired")
+    for directory in NPM_TARGETS:
+        for filename in ("package.json", "package-lock.json"):
+            if not (root / directory / filename).is_file():
+                findings.append(f"npm target {directory} is missing {filename}")
+    ignore_paths = renovate.get("ignorePaths")
+    if not isinstance(ignore_paths, list) or "labs/**" not in ignore_paths:
+        findings.append("labs must stay ignored")
+    if renovate.get("prConcurrentLimit") != 5 or renovate.get("prHourlyLimit") != 2:
+        findings.append("Renovate pull-request limit drift")
 
     custom_managers = renovate.get("customManagers")
     expected_pattern = r"/^infra\/09-platform-ops\/opentofu\/docker-compose\.yml$/"
@@ -161,32 +216,6 @@ def updater_contract_findings(
     }:
         findings.append("Renovate version projection task drift")
 
-    updates = dependabot.get("updates")
-    if not isinstance(updates, list) or len(updates) != 1:
-        findings.append("Dependabot ownership must contain one npm target")
-    else:
-        update = updates[0]
-        directory = update.get("directory")
-        if update.get("package-ecosystem") != "npm":
-            findings.append("Dependabot must own npm only")
-        if update.get("open-pull-requests-limit") != 5:
-            findings.append("Dependabot pull-request limit drift")
-        if update.get("cooldown") != {"default-days": 7}:
-            findings.append("Dependabot cooldown drift")
-        if update.get("schedule") != {
-            "interval": "weekly",
-            "day": "wednesday",
-            "time": "05:00",
-            "timezone": "Asia/Seoul",
-        }:
-            findings.append("Dependabot staggered schedule drift")
-        if not isinstance(directory, str) or not directory.startswith("/"):
-            findings.append("Dependabot directory is invalid")
-        else:
-            target = root / directory.removeprefix("/")
-            for filename in ("package.json", "package-lock.json"):
-                if not (target / filename).is_file():
-                    findings.append(f"Dependabot target is missing {filename}")
     return tuple(findings)
 
 
@@ -210,9 +239,7 @@ class UpdaterOwnershipContractTests(unittest.TestCase):
         self.assertFalse((ROOT / "renovate.json").exists())
 
     @staticmethod
-    def load_contracts() -> tuple[
-        dict[str, object], dict[str, object], dict[str, object]
-    ]:
+    def load_contracts() -> tuple[dict[str, object], dict[str, object]]:
         renovate = json.loads(RENOVATE_CONFIG.read_text(encoding="utf-8"))
         result = subprocess.run(
             [
@@ -226,9 +253,28 @@ class UpdaterOwnershipContractTests(unittest.TestCase):
             capture_output=True,
             text=True,
         )
-        global_config = json.loads(result.stdout)
-        dependabot = yaml.safe_load(DEPENDABOT_CONFIG.read_text(encoding="utf-8"))
-        return renovate, global_config, dependabot
+        return renovate, json.loads(result.stdout)
+
+    @staticmethod
+    def npm_root(
+        directory: str, *, omit: tuple[str, ...] = (), extra: tuple[str, ...] = ()
+    ) -> pathlib.Path:
+        """Build a root holding every npm target file except those in omit."""
+        root = pathlib.Path(directory)
+        for target in NPM_TARGETS:
+            (root / target).mkdir(parents=True)
+            for filename in ("package.json", "package-lock.json"):
+                if f"{target}/{filename}" not in omit:
+                    (root / target / filename).write_text("{}\n")
+        for relative in extra:
+            (root / relative).parent.mkdir(parents=True, exist_ok=True)
+            (root / relative).write_text("version: 2\n")
+        return root
+
+    def mutated(self, mutate) -> tuple[str, ...]:
+        renovate, global_config = self.load_contracts()
+        mutate(renovate)
+        return updater_contract_findings(renovate, global_config, ROOT)
 
     def test_current_updater_ownership_is_non_overlapping_and_fail_closed(
         self,
@@ -238,71 +284,120 @@ class UpdaterOwnershipContractTests(unittest.TestCase):
             updater_contract_findings(*self.load_contracts(), ROOT),
         )
 
-    def test_npm_overlap_mutation_is_detected(self) -> None:
-        renovate, global_config, dependabot = self.load_contracts()
-        overlap = json.loads(json.dumps(renovate))
-        overlap["enabledManagers"].append("npm")
+    def test_dependabot_config_is_absent(self) -> None:
+        self.assertFalse((ROOT / DEPENDABOT_CONFIG).exists())
+
+    def test_npm_manager_removal_mutation_is_detected(self) -> None:
         self.assertIn(
-            "npm updater ownership overlaps Dependabot",
-            updater_contract_findings(overlap, global_config, dependabot, ROOT),
+            "Renovate manager ownership drift",
+            self.mutated(lambda r: r["enabledManagers"].remove("npm")),
+        )
+
+    def test_broad_npm_ownership_mutation_is_detected(self) -> None:
+        self.assertIn(
+            "npm ownership must stay limited to Storybook and OpsflowSmtp",
+            self.mutated(lambda r: r["npm"].update(managerFilePatterns=["/.*/"])),
+        )
+
+    def test_npm_automerge_mutation_is_detected(self) -> None:
+        def mutate(renovate: dict[str, object]) -> None:
+            for rule in renovate["packageRules"]:
+                if rule.get("matchManagers") == ["npm"]:
+                    rule.pop("automerge", None)
+
+        self.assertIn("npm packages must not automerge", self.mutated(mutate))
+
+    def test_npm_major_approval_mutation_is_detected(self) -> None:
+        def mutate(renovate: dict[str, object]) -> None:
+            for rule in renovate["packageRules"]:
+                rule.pop("dependencyDashboardApproval", None)
+
+        self.assertIn("npm major updates need Dashboard approval", self.mutated(mutate))
+
+    def drop_rule(self, key: str, value: object) -> tuple[str, ...]:
+        def mutate(renovate: dict[str, object]) -> None:
+            renovate["packageRules"] = [
+                rule for rule in renovate["packageRules"] if rule.get(key) != value
+            ]
+
+        return self.mutated(mutate)
+
+    def test_storybook_typescript_constraint_mutation_is_detected(self) -> None:
+        self.assertIn(
+            "Storybook TypeScript must stay below 7.0.0",
+            self.drop_rule("allowedVersions", "<7.0.0"),
+        )
+
+    def test_storybook_grouping_mutation_is_detected(self) -> None:
+        self.assertIn(
+            "Storybook minor and patch grouping drift",
+            self.drop_rule("groupName", "storybook-nextjs-minor-patch"),
+        )
+
+    def test_n8n_workflow_exclusion_mutation_is_detected(self) -> None:
+        self.assertIn(
+            "n8n-workflow must stay a manual update",
+            self.drop_rule("matchPackageNames", ["n8n-workflow"]),
+        )
+
+    def test_unignored_labs_mutation_is_detected(self) -> None:
+        self.assertIn(
+            "labs must stay ignored",
+            self.mutated(lambda r: r["ignorePaths"].remove("labs/**")),
+        )
+
+    def test_pull_request_limit_mutation_is_detected(self) -> None:
+        self.assertIn(
+            "Renovate pull-request limit drift",
+            self.mutated(lambda r: r.update(prConcurrentLimit=50)),
         )
 
     def test_broad_custom_regex_mutation_is_detected(self) -> None:
-        renovate, global_config, dependabot = self.load_contracts()
-        broad = json.loads(json.dumps(renovate))
-        broad["customManagers"][0]["managerFilePatterns"] = ["/.*/"]
         self.assertIn(
             "custom regex manager file ownership is broad",
-            updater_contract_findings(broad, global_config, dependabot, ROOT),
+            self.mutated(
+                lambda r: r["customManagers"][0].update(managerFilePatterns=["/.*/"])
+            ),
         )
 
     def test_unsafe_allowed_commands_mutation_is_detected(self) -> None:
-        renovate, global_config, dependabot = self.load_contracts()
+        renovate, global_config = self.load_contracts()
         unsafe_global = {**global_config, "allowedCommands": [".*"]}
         self.assertIn(
             "Renovate command allowlist is unsafe",
-            updater_contract_findings(renovate, unsafe_global, dependabot, ROOT),
+            updater_contract_findings(renovate, unsafe_global, ROOT),
         )
 
     def test_enabled_scripts_mutation_is_detected(self) -> None:
-        renovate, global_config, dependabot = self.load_contracts()
+        renovate, global_config = self.load_contracts()
         enabled = {**global_config, "allowScripts": True}
         self.assertIn(
             "Renovate scripts must remain disabled",
-            updater_contract_findings(renovate, enabled, dependabot, ROOT),
+            updater_contract_findings(renovate, enabled, ROOT),
         )
 
-    def test_missing_dependabot_package_json_mutation_is_detected(self) -> None:
-        renovate, global_config, dependabot = self.load_contracts()
+    def test_restored_dependabot_config_mutation_is_detected(self) -> None:
+        renovate, global_config = self.load_contracts()
         with tempfile.TemporaryDirectory() as temporary_directory:
-            target = pathlib.Path(temporary_directory) / "projects/storybook/nextjs"
-            target.mkdir(parents=True)
-            (target / "package-lock.json").write_text("{}\n")
+            root = self.npm_root(temporary_directory, extra=(DEPENDABOT_CONFIG,))
             self.assertEqual(
-                ("Dependabot target is missing package.json",),
-                updater_contract_findings(
-                    renovate,
-                    global_config,
-                    dependabot,
-                    pathlib.Path(temporary_directory),
-                ),
+                ("Dependabot version updates must stay retired",),
+                updater_contract_findings(renovate, global_config, root),
             )
 
-    def test_missing_dependabot_package_lock_mutation_is_detected(self) -> None:
-        renovate, global_config, dependabot = self.load_contracts()
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            target = pathlib.Path(temporary_directory) / "projects/storybook/nextjs"
-            target.mkdir(parents=True)
-            (target / "package.json").write_text("{}\n")
-            self.assertEqual(
-                ("Dependabot target is missing package-lock.json",),
-                updater_contract_findings(
-                    renovate,
-                    global_config,
-                    dependabot,
-                    pathlib.Path(temporary_directory),
-                ),
-            )
+    def test_missing_npm_target_file_mutations_are_detected(self) -> None:
+        renovate, global_config = self.load_contracts()
+        for target in NPM_TARGETS:
+            for filename in ("package.json", "package-lock.json"):
+                with self.subTest(target=target, filename=filename):
+                    with tempfile.TemporaryDirectory() as temporary_directory:
+                        root = self.npm_root(
+                            temporary_directory, omit=(f"{target}/{filename}",)
+                        )
+                        self.assertEqual(
+                            (f"npm target {target} is missing {filename}",),
+                            updater_contract_findings(renovate, global_config, root),
+                        )
 
 
 class TechStackVersionContractTests(unittest.TestCase):

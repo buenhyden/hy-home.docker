@@ -10,7 +10,8 @@
     "dockerfile",
     "github-actions",
     "custom.regex",
-    "pip_requirements"
+    "pip_requirements",
+    "npm"
   ],
 
   "docker-compose": {
@@ -23,6 +24,14 @@
     "description": "Only image-local Python pins under infra/ belong to Renovate; the scripts/ CI requirements and tests/requirements-integration.txt keep their existing manual ownership",
     "managerFilePatterns": [
       "/^infra\\/.+\\/requirements\\.txt$/"
+    ]
+  },
+
+  "npm": {
+    "description": "Only the Storybook project (root and workspaces, lock at projects/storybook/nextjs/package-lock.json) and the OpsflowSmtp n8n node belong to Renovate npm; labs/** stays ignored",
+    "managerFilePatterns": [
+      "/^projects\\/storybook\\/nextjs\\/(?:packages\\/[^/]+\\/)?package\\.json$/",
+      "/^infra\\/07-workflow\\/n8n\\/workloads\\/manifest-outbox-notifier\\/nodes\\/OpsflowSmtp\\/package\\.json$/"
     ]
   },
 
@@ -132,6 +141,38 @@
         "pip_requirements"
       ],
       "automerge": false
+    },
+
+    {
+      "description": "npm: major updates need Dashboard approval; never automerge",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Never automerge npm packages",
+      "matchManagers": ["npm"],
+      "automerge": false
+    },
+    {
+      "description": "Storybook: group minor and patch updates",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["projects/storybook/nextjs/**"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "storybook-nextjs-minor-patch"
+    },
+    {
+      "description": "Storybook: typescript-eslint (via eslint-config-next) rejects TypeScript 7; the 7.0.2 bump broke the frontend lint twice. Lift once typescript-eslint supports it (typescript-eslint/typescript-eslint#10940)",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["projects/storybook/nextjs/**"],
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<7.0.0"
+    },
+    {
+      "description": "OpsflowSmtp n8n-workflow must equal what the n8n image bundles, so it changes manually together with n8n",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["n8n-workflow"],
+      "enabled": false
     },
 
     {

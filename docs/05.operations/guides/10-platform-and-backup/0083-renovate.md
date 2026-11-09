@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-09"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -46,14 +46,15 @@ request를 생성하거나 갱신할 수 있다.
 - [Repository configuration](../../../../renovate.json5)
 - [Dependency-version policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md) (`POL-0086`)
 
-`renovate.json5`는 `docker-compose`, `dockerfile`, `github-actions`, `custom.regex`, `pip_requirements` manager만 켠다.
+`renovate.json5`는 `docker-compose`, `dockerfile`, `github-actions`, `custom.regex`, `pip_requirements`, `npm` manager만 켠다.
 `docker-compose` manager는 `infra/` 아래의 모든 `docker-compose*.yml`·`compose*.yml`을, `pip_requirements`는 `infra/` 아래의
-`requirements.txt`만 추적하며 `labs/**`, `docs/98.archive/**`, `**/fixtures/**`는 `ignorePaths`로 제외한다. 추적 목록은
+`requirements.txt`만, `npm`은 Storybook 프로젝트(`projects/storybook/nextjs`와 workspace)와 OpsflowSmtp 노드 `package.json`만 추적하며 `labs/**`, `docs/98.archive/**`, `**/fixtures/**`는 `ignorePaths`로 제외한다. 추적 목록은
 [renovate.json5](../../../../renovate.json5)가 소유한다.
 
 `POL-0086`은 manager, release age, security update, automerge, updater
 overlap을 관장한다. 이 package는 job 경계를 관장한다. `allowScripts: false`와
-좁은 global command allowlist가 실행을 제한한다. cache는 다시 만들 수 있으며 Git
+좁은 global command allowlist가 실행을 제한한다. npm lockfile 갱신은 lifecycle script 없이
+`package-lock.json`만 다시 쓰므로 이 제한과 충돌하지 않는다. cache는 다시 만들 수 있으며 Git
 policy, 원격 repository 상태, token owner가 authoritative하다.
 
 ### 일반적인 사용
