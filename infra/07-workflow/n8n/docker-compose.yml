@@ -422,7 +422,12 @@ services:
       SANDBOX_API_RUNNER_CONTROL_GRPC_TLS_KEY_FILE: /tls/api/control-grpc-api-client.key
       SANDBOX_API_RUNNER_CONTROL_GRPC_TLS_SERVER_NAME: n8n-sandbox-runner-1
     volumes:
-      - n8n-sandbox-tls:/tls:ro
+      - type: volume
+        source: n8n-sandbox-tls
+        target: /tls/api
+        read_only: true
+        volume:
+          subpath: api
     tmpfs:
       - /tmp
       - /run
@@ -501,7 +506,12 @@ services:
       SANDBOX_RUNNER_CONTROL_GRPC_TLS_KEY_FILE: /tls/runner/control-grpc-server.key
       SANDBOX_RUNNER_CONTROL_GRPC_TLS_CLIENT_CA_FILE: /tls/runner/ca.crt
     volumes:
-      - n8n-sandbox-tls:/tls:ro
+      - type: volume
+        source: n8n-sandbox-tls
+        target: /tls/runner
+        read_only: true
+        volume:
+          subpath: runner
       - n8n-sandbox-docker:/var/lib/docker
     expose:
       - '8080'
