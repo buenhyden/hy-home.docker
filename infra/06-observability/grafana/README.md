@@ -122,7 +122,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 02-auth | `oauth2-proxy-valkey` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 02-auth | `oauth2-proxy-valkey-exporter` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 03-security | `openbao` | `openbao` | `Security/openbao`, `Infrastructure/containers` |  |
-| 03-security | `openbao-agent` | `openbao-agent` | `Infrastructure/containers` | auth counters and scrape health; alerts only, no dashboard |
+| 03-security | `openbao-agent` | `openbao-agent` | `Security/openbao`, `Infrastructure/containers` | auth success/failure panels in the Agent row of `Security/openbao` |
 | 04-data | `mng-pg` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-exporter` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-init` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -165,7 +165,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 06-observability | `loki` | `loki` | `Observability/loki-operational`, `Observability/loki-reads`, `Observability/loki-writes`, `Observability/loki-chunks`, `Infrastructure/containers` |  |
 | 06-observability | `node-exporter` | `node-exporter` | `Infrastructure/node-exporter`, `Infrastructure/containers` | host network namespace, listener on the `obs_net` gateway |
 | 06-observability | `prometheus` | `prometheus` | `Observability/prometheus-overview`, `Infrastructure/containers` |  |
-| 06-observability | `pushgateway` | none | `Infrastructure/containers` | container metrics and logs only |
+| 06-observability | `pushgateway` | none | `Infrastructure/containers` | stopped 2026-11-09: no producer pushes to it; add the scrape job with the first producer (GDE-0046) |
 | 06-observability | `pyroscope` | `pyroscope` | `Observability/pyroscope`, `Infrastructure/containers` |  |
 | 06-observability | `tempo` | `tempo` | `Observability/tempo-operational`, `Observability/tempo-reads`, `Observability/tempo-writes`, `Infrastructure/containers` |  |
 | 07-workflow | `airflow-apiserver` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
@@ -180,17 +180,17 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 07-workflow | `blog-ingestion` | none | `Infrastructure/containers` | own `blog-ingestion` profile; container metrics and logs only, receipt counts via Gateway `/v1/summary` |
 | 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` |  |
 | 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Applications/hermes-research`, `Infrastructure/containers` | `Applications/hermes-research`는 Hermes 플러그인이 node-exporter textfile로 쓰는 지표(SPEC-0265) |
-| 07-workflow | `n8n-task-runner-worker` | none | `Infrastructure/containers` | container metrics and logs only |
+| 07-workflow | `n8n-task-runner-worker` | none | `Infrastructure/containers` | container metrics and logs only; its isolated runner network keeps Gatus out |
 | 07-workflow | `n8n-valkey` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
 | 07-workflow | `n8n-valkey-exporter` | none | `Infrastructure/redis`, `Infrastructure/containers` | Scrape job commented out: the service never runs in HOME (2026-11-09). |
-| 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | container metrics and logs only |
+| 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | queue load comes from `n8n_scaling_mode_queue_jobs_*` on the `n8n` job |
 | 08-ai | `comfyui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `crawl4ai` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `crawl4ai-egress` | none | `Infrastructure/containers` | container metrics and logs only; egress decisions in its log |
 | 08-ai | `crawl4ai-loopback` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `ollama` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
 | 08-ai | `ollama-exporter` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
-| 08-ai | `open-webui` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `open-webui` | none | `Infrastructure/containers` | no Prometheus endpoint; Gatus probes `/health` |
 | 09-platform-ops | `backup-sqlite-export` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `conftest` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `k6` | k6 remote write | `Infrastructure/k6`, `Infrastructure/containers` |  |

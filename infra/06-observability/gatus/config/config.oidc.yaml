@@ -81,3 +81,11 @@ endpoints:
     interval: 30s
     conditions:
       - '[CONNECTED] == true'
+
+  # Open WebUI has no Prometheus endpoint; probe its health over edge_net.
+  - name: Open WebUI
+    group: ai
+    url: http://open-webui:${OLLAMA_WEBUI_PORT}/health
+    interval: 60s
+    conditions:
+      - '[STATUS] == 200'
