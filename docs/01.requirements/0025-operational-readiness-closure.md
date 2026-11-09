@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
@@ -14,8 +14,8 @@ created: "2026-07-19"
 ## Overview
 
 Static documents and Compose rendering alone cannot prove startup/readiness,
-data recovery, artifact trust, or promotion/rollback behavior. This
-requirement reproduces the four behaviors in a locally isolated environment
+artifact trust, or promotion/rollback behavior. This
+requirement reproduces the three behaviors in a locally isolated environment
 using sample artifacts and synthetic state owned by the repository, and
 records the actually verified scope without overstatement.
 
@@ -23,9 +23,8 @@ records the actually verified scope without overstatement.
 
 ### Constraints
 
-- Scope is limited to local isolated Compose readiness, synthetic PostgreSQL
-  logical recovery, sample-service supply chain, and local
-  promotion/rollback.
+- Scope is limited to local isolated Compose readiness, sample-service supply
+  chain, and local promotion/rollback.
 - Production/shared runtime, real data, registry publication, OIDC signing,
   and remote GitHub configuration and deployment are out of scope.
 - Automatic cleanup is allowed only for precisely identified task-owned
@@ -39,9 +38,6 @@ records the actually verified scope without overstatement.
   unique Compose project and provide bounded readiness and teardown results.
 - **REQ-0025-FR-0002**: The runtime rehearsal must use synthetic
   configuration and task-owned network/volume/project identity.
-- **REQ-0025-FR-0003**: The PostgreSQL rehearsal must perform logical backup,
-  restore, a representative major-version upgrade, and integrity comparison
-  of synthetic state.
 - **REQ-0025-FR-0004**: SBOM, vulnerability verdict, provenance, and
   signature verification for the repository sample web service must be bound to
   the same image digest and reject tampering and identity mismatch.
@@ -96,8 +92,6 @@ records the actually verified scope without overstatement.
 
 - The core readiness rehearsal verifies readiness, timeout, and cleanup
   boundaries.
-- The PostgreSQL rehearsal verifies backup/restore and the integrity oracle
-  of synthetic state.
 - The supply-chain verification and policy check produce digest-bound
   positive and negative verdicts.
 - The delivery rehearsal verifies canary, promotion, injected failure, and
@@ -112,9 +106,13 @@ records the actually verified scope without overstatement.
 - **Architecture Description**: [AD-0028 Operational Readiness Closure](../02.architecture/descriptions/0028-operational-readiness-closure.md)
 - **Decision**: [ADR-0028 Local-Isolated Readiness Evidence](../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Implementation**: `scripts/operations/check-compose-core-readiness.sh`,
-  `scripts/operations/rehearse-postgres-logical-upgrade.sh`,
   `scripts/security/verify-sample-service-supply-chain.sh`,
   `scripts/validation/check-supply-chain-policy.py`,
   `scripts/operations/rehearse-sample-service-delivery.sh`
 - **Sample artifact**: `examples/sample-web-service/`
 - **Operations**: [Release management runbook](../05.operations/runbooks/10-platform-and-backup/0009-release-management.md)
+- **Retired**: REQ-0025-FR-0003 required a synthetic PostgreSQL 17 to 18
+  logical backup, restore, upgrade, and integrity rehearsal, implemented by
+  `rehearse-postgres-logical-upgrade.sh` and runbook RUN-0032. Both were
+  deleted on 2026-11-10: every HOME PostgreSQL service already runs major 18
+  and no later major image exists to rehearse against.

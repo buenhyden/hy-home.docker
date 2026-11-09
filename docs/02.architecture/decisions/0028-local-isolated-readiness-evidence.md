@@ -1,10 +1,10 @@
 ---
 title: "Local-Isolated Readiness Evidence"
-version: "1.0.3"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-10"
 layer: "architecture"
 artifact_id: "ADR-0028"
 parent_ids:
@@ -16,8 +16,8 @@ created: "2026-07-19"
 ## Context
 
 Compose rendering and static validation do not prove observed readiness,
-representative recovery, artifact trust, or promotion/rollback. The repository
-implements the current scripts and sample service that perform these four
+artifact trust, or promotion/rollback. The repository
+implements the current scripts and sample service that perform these three
 lanes, and their execution must not encroach on other workloads or remote state.
 
 ## Decision Drivers
@@ -37,7 +37,7 @@ behavior.
 
 ### Local-isolated contract-first rehearsal
 
-Independently validates the four lanes using synthetic input and a unique
+Independently validates the three lanes using synthetic input and a unique
 project identity. Production realism is limited, but blast radius and
 reproducibility are clear.
 
@@ -52,9 +52,6 @@ Adopt local-isolated contract-first rehearsal.
 
 - Compose readiness: `check-compose-core-readiness.sh` and the common library
   validate the exact service set, timeout, health, and owned teardown.
-- PostgreSQL recovery: `rehearse-postgres-logical-upgrade.sh` validates
-  synthetic logical backup/restore, representative upgrade, and the integrity
-  oracle.
 - Supply chain: `verify-sample-service-supply-chain.sh` and
   `check-supply-chain-policy.py` combine SBOM, policy, provenance, signature,
   and negative fixtures on the sample-service digest.
@@ -71,6 +68,16 @@ Adopt local-isolated contract-first rehearsal.
 - Raw output and ephemeral key material cannot become tracked evidence, and the
   current Task retains only a secret-scrubbed summary.
 
+### Follow-up
+
+On 2026-11-10 the owner directed retirement of the PostgreSQL recovery lane,
+amended here in place. That lane ran `rehearse-postgres-logical-upgrade.sh`, a
+synthetic PostgreSQL 17 to 18 logical backup, restore, upgrade, and integrity
+oracle rehearsal with runbook RUN-0032. Every HOME PostgreSQL service already
+runs major 18 and no later major image exists, so the pinned 17 to 18 harness
+had nothing left to rehearse and could not follow image updates. The harness,
+its fixture, test, and runbook were deleted and REQ-0025-FR-0003 retired.
+
 ## Related Documents
 
 ### Traceability
@@ -79,6 +86,5 @@ Adopt local-isolated contract-first rehearsal.
 - [AD-0028 Operational Readiness Closure](../descriptions/0028-operational-readiness-closure.md)
 - `examples/sample-web-service/`
 - `tests/validation/test_compose_core_readiness.py`
-- `tests/validation/test_postgres_logical_upgrade_rehearsal.py`
 - `tests/lib/supply_chain/test_supply_chain_policy.py`
 - `tests/validation/test_sample_service_delivery_rehearsal.py`
