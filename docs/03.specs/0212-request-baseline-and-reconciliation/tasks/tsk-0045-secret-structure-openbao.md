@@ -1,6 +1,6 @@
 ---
 title: "Secret Structure and OpenBao Contract Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -413,8 +413,8 @@ documented SPEC-0262 state, pinned by `test_secret_catalog_contract` and
 `test_secret_metadata_sync`: the HOME file remains the source for the LAB-033
 copy, and the Agent still renders `12-analytics/superset` with no root consumer.
 Retiring that render touches `agent.hcl`, its templates, restore inputs, tests
-and KV data and needs an owner-run Agent restart, so it waits for an owner
-decision. The seven `LAB_SUPABASE_*` keys in private `labs/.env` have no tracked
+and KV data and needs an owner-run Agent restart, so the owner chose on
+2026-11-09 to keep it. The seven `LAB_SUPABASE_*` keys in private `labs/.env` have no tracked
 consumer because `labs/supabase` no longer exists; their removal is an
 owner-run edit.
 
