@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.10"
+version: "0.1.12"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -524,6 +524,30 @@ fix them. Most HOME targets are scraped and have dashboards. Five were not:
   that network would weaken the isolation, so it stays cAdvisor and Docker
   health only.
 
+### Post-reboot applies (2026-11-09)
+
+- **Databases (#844).** Both Postgres servers were stopped with `pg_ctl stop -m
+  fast` as `postgres` (the old containers still lacked `KILL`), then recreated
+  by a target selector plan. Both started from `database system was shut down
+  at …` with no crash recovery, and now carry `CAP_KILL`, a 60 s stop grace and
+  `unless-stopped`. `airflow-scheduler` had restarted mid-stop and was
+  restarted once more; it is healthy.
+- **logrotate.** The owner installed the #844 rule; `/etc/logrotate.d/openbao`
+  matches the repository (root:root 0644) and `logrotate -d` parses it.
+- **Kafka (#845).** The Connect 3.7.0 image was built (593 s) and loads
+  `io.debezium.connector.postgresql.PostgresConnector` 3.7.0.Final. A target
+  plan recreated `kafka-1`, `schema-registry`, `kafka-connect` and
+  `kafka-exporter`, all healthy; `kafbat-ui` followed (68 s start). Idle use:
+  broker 4.4% CPU / 723 MiB, Connect 0.6% / 523 MiB.
+- **Prometheus.** Plan `63f0095a0d0c` recreated it; all 34 active targets are
+  up. `ObservationSelectionInvalid` fired briefly from the previous plan's
+  recording series and cleared within two minutes.
+- **OpenBao Agent.** The owner reran RUN-0103 `agent-restart` once container
+  starts eased; it succeeded.
+- **Gatus (#846).** Recreated with the Open WebUI endpoint;
+  `gatus_results_endpoint_success{key="ai_open-webui"}` reads 1, and the mounted
+  Grafana `Security/openbao.json` holds the Agent panels.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -572,6 +596,7 @@ fix them. Most HOME targets are scraped and have dashboards. Five were not:
 | Never-run scrape jobs | 83 | W88 | Target and `expected_state` readback; 3-day `max_over_time(up)` | 8 down targets after the reboot | PASS | All 8 `off` and never up; 4 jobs commented out, 34 jobs remain in both configs. | required | - |
 | HOME coverage gaps | 83 | W88 | Live label and target readback, Gatus probe, `test_gatus_oidc`, Compose suites, operations catalog | Five services named above | PASS | Agent panels added, Open WebUI probed, pushgateway stopped with 0 groups; 171 tests OK. | required | - |
 | Reboot: OpenBao Agent restart | 85 | W90 | RUN-0103 `agent-restart` and audit readback | Issuer `4f2e7f9b`, journal `rolled_back` | FAIL | Helper sink container exceeded 20 s under I/O pressure (52 s measured); no server write. | required | - |
+| Reboot: OpenBao Agent restart rerun | 85 | W90 | RUN-0103 `agent-restart` and audit readback | Same issuer after I/O eased (container start 11-22 s) | PASS | `issue rc=0`; journal `complete`; Agent healthy and authenticated at 06:32:40Z; health script exit 0; all rendered outputs present with 0640/0600. | required | Reboot: OpenBao Agent restart |
 
 ## Criterion Acceptance
 
