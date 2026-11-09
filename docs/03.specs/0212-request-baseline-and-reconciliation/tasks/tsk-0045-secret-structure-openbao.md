@@ -1,6 +1,6 @@
 ---
 title: "Secret Structure and OpenBao Contract Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -405,6 +405,18 @@ itself; no key dropped or defaulted), and deleted the trailing registry table.
 The rendered Compose configuration was unchanged: 96 service hashes and the
 whole-render digest matched before and after. The check then returned
 `MATCH` for both files.
+
+**D11 handoff review (2026-11-09).** `IAM-009` needs no change: `kafbat-ui` is
+still a declared root service under an optional profile and is merely not
+started on HOME, so `ACTIVE_KEEP` and its Agent output stand. `IAM-013` is the
+documented SPEC-0262 state, pinned by `test_secret_catalog_contract` and
+`test_secret_metadata_sync`: the HOME file remains the source for the LAB-033
+copy, and the Agent still renders `12-analytics/superset` with no root consumer.
+Retiring that render touches `agent.hcl`, its templates, restore inputs, tests
+and KV data and needs an owner-run Agent restart, so it waits for an owner
+decision. The seven `LAB_SUPABASE_*` keys in private `labs/.env` have no tracked
+consumer because `labs/supabase` no longer exists; their removal is an
+owner-run edit.
 
 ## Evidence
 
