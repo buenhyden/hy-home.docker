@@ -1,10 +1,10 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.41"
+version: "0.1.42"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0041"
 parent_ids:
@@ -1349,3 +1349,9 @@ now mounts only its own subpath (`api`, `runner`) read-only.
 A security review noted that a failure between certificate generation and the final `rm`
 would leave `ca.key` in `n8n-sandbox-tls`. The job now removes it through a shell `trap` on
 exit. Reproduced on the pinned image: the key stayed before the change and is gone after it.
+
+### 2026-11-10 Renovate memory limit
+
+After the sole-updater configuration, a Renovate run exited with code 134: the Node heap
+reached about 512 MB under the 1 GiB limit. The limit and reservation are now 2 GiB for
+this on-demand job.
