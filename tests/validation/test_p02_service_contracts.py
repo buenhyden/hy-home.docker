@@ -1139,5 +1139,11 @@ class N8nCodeSandboxContractTests(unittest.TestCase):
         self.assertEqual(["cadvisor", "n8n-sandbox-runner-1"], privileged)
 
 
+class SandboxCertificateJobTests(unittest.TestCase):
+    def test_ca_key_is_removed_on_every_exit_path(self):
+        compose = (ROOT / "infra/07-workflow/n8n/docker-compose.yml").read_text()
+        self.assertIn("trap 'rm -f /tls/ca.key' EXIT;", compose)
+
+
 if __name__ == "__main__":
     unittest.main()

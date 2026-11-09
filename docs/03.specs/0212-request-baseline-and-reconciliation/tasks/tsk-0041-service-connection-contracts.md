@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.39"
+version: "0.1.40"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1318,3 +1318,9 @@ deleted.
 A security review found that `n8n-sandbox-api` and `n8n-sandbox-runner-1` both mounted the
 whole `n8n-sandbox-tls` volume, so each could read the other's private keys. Each service
 now mounts only its own subpath (`api`, `runner`) read-only.
+
+### 2026-11-09 n8n code sandbox: CA key removal on every exit path
+
+A security review noted that a failure between certificate generation and the final `rm`
+would leave `ca.key` in `n8n-sandbox-tls`. The job now removes it through a shell `trap` on
+exit. Reproduced on the pinned image: the key stayed before the change and is gone after it.

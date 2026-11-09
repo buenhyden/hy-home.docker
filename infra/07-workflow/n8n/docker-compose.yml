@@ -372,9 +372,10 @@ services:
     entrypoint: ['sh', '-c']
     command:
       - >
+        trap 'rm -f /tls/ca.key' EXIT;
         bootstrap-mtls.sh --out-dir /tls --api-san n8n-sandbox-api
         --control-san-prefix n8n-sandbox-runner &&
-        chown -R sandbox-api:sandbox-api /tls/api && rm -f /tls/ca.key
+        chown -R sandbox-api:sandbox-api /tls/api
     environment:
       NUM_RUNNERS: '1'
     volumes:
