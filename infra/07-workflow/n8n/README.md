@@ -1,6 +1,6 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.21"
+version: "1.2.22"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -60,7 +60,7 @@ n8n/
 | Config files | `docker-compose.yml`, `docker-compose.ollama-local.yml` |
 | Config values | env 키: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE` 외 다수; 프로필: `workflow`, `workflow-n8n`, Blog-data 수집 Gateway 전용 `blog-ingestion` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 무조건 루트 include되며 프로필(`workflow`, `workflow-n8n`)로 선택됨 |
-| Networks | `edge_net`, `mng_data_net`, `n8n_net`, `obs_net`; `n8n-worker`와 `blog-ingestion`만 내부·격리 `n8n_blog_ingest_net`을, Traefik과 `blog-ingestion`만 내부·격리 `blog_export_net`을 공유함. runner는 `n8n_net`에 없고 `n8n-worker`와 `n8n-task-runner-worker`만 내부·격리 `n8n_worker_runner_net`을 공유함. worker의 task broker는 그 망 주소 `10.250.23.2`에만 bind하고 worker healthcheck도 그 주소를 씀(SPEC-0267). main은 queue mode에서 수동 실행을 worker로 넘기므로(`OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true`) task runner를 시작하지 않고 runner도 두지 않음(SPEC-0269) |
+| Networks | `edge_net`, `mng_data_net`, `n8n_net`, `obs_net`; `n8n-worker`도 Alloy OTLP 전송을 위해 `obs_net`에 붙고, `n8n-worker`와 `blog-ingestion`만 내부·격리 `n8n_blog_ingest_net`을, Traefik과 `blog-ingestion`만 내부·격리 `blog_export_net`을 공유함. runner는 `n8n_net`에 없고 `n8n-worker`와 `n8n-task-runner-worker`만 내부·격리 `n8n_worker_runner_net`을 공유함. worker의 task broker는 그 망 주소 `10.250.23.2`에만 bind하고 worker healthcheck도 그 주소를 씀(SPEC-0267). main은 queue mode에서 수동 실행을 worker로 넘기므로(`OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true`) task runner를 시작하지 않고 runner도 두지 않음(SPEC-0269) |
 | Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:ro`, `n8n-valkey-data:/data:rw`; 두 runner는 `./n8n-task-runners.json:/etc/n8n-task-runners.json:ro`와 `/tmp` tmpfs만 마운트함. `n8n-task-runner-data`, `n8n-task-runner-worker-data`는 rollback·기존 호스트 데이터 보존용으로 선언만 남고 마운트되지 않음 |
 | Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`, `${VALKEY_EXPORTER_PORT:-9121}`. `N8N_BROKER_PORT`는 main·worker의 `N8N_RUNNERS_BROKER_PORT`로, `N8N_TASK_RUNNER_PORT`는 두 runner의 `N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT`로 전달됩니다. 선택형 전용 Valkey는 단일 `${VALKEY_PORT:-6379}`를 listener·health·exporter에 사용합니다 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
@@ -144,6 +144,8 @@ fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정
 `/usr/share/hy-home-font-builder-packages.txt`에 실제 설치 목록을 보존합니다.
 
 2026-11-09 owner 결정으로 main·worker와 task runner를 최신 vendor stable로 올렸고(pin은 Compose·Dockerfile이 소유), `n8n` router는 `gateway-standard-chain@file`만 사용합니다. gateway SSO(`sso-errors`, `sso-auth`)는 두지 않으며 UI·API 로그인은 n8n 자체 인증이 맡습니다. 번들 Zod는 3 계열이라 [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)의 영향 범위에 남으며, 요청 본문 상한 `N8N_PAYLOAD_SIZE_MAX`만 Compose의 보완 통제입니다. 새 custom image build, 서명, 전체 이미지 scan, native, HOME 적용은 `NOT_RUN`입니다.
+
+n8n의 OpenTelemetry 모듈은 license 없이 켜지며 `N8N_OTEL_ENABLED=true`와 `N8N_OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4318`, service별 `N8N_OTEL_EXPORTER_SERVICE_NAME`(`n8n`, `n8n-worker`)만 설정합니다. 나머지 `N8N_OTEL_*` 옵션은 기본값이라 production 실행만, 100% sampling, node span 포함, start marker span 없음입니다. 속성은 workflow·node ID와 이름, 실행 mode·상태·오류 형식, node item 수이고 credential과 실행 payload는 없지만, 실패 span에는 오류 메시지와 stack이 exception 이벤트로 실리고 외부 HTTP 요청에는 `traceparent` 헤더가 붙습니다. Alloy가 없으면 시작 연결 확인이 오류를 로그에 남기고 추적만 건너뜁니다.
 
 UNIT의 네 role 정합 검사는 native workflow import·실행이나 HOME 배포를 입증하지 않습니다.
 deprecated node import 거부·JSON typeVersion·webhook·Code runner·queue·PostgreSQL·SMTP·실패 경로는 NOT_RUN입니다.
