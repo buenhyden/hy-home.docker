@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.38"
+version: "0.1.39"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1312,3 +1312,9 @@ Held. The public registry `secrets/SENSITIVE_ENV_VARS.md.example` still lists CA
 the owner removes that row. The secret catalog contract and metadata sync tests report
 the drift until then. The private file `secrets/db/mng-valkey/oauth2_password.txt` is not
 deleted.
+
+### 2026-11-09 n8n code sandbox: per-principal mTLS mounts
+
+A security review found that `n8n-sandbox-api` and `n8n-sandbox-runner-1` both mounted the
+whole `n8n-sandbox-tls` volume, so each could read the other's private keys. Each service
+now mounts only its own subpath (`api`, `runner`) read-only.
