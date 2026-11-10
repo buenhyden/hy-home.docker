@@ -2428,7 +2428,6 @@
           "tests/validation/test_p02_gateway_port_validation.py",
           "tests/validation/test_p02_prometheus_contracts.py",
           "tests/validation/test_p02_valkey_mount_scope.py",
-          "infra/01-gateway/nginx/",
           "infra/01-gateway/traefik/",
           "infra/02-auth/keycloak/",
           "infra/02-auth/oauth2-proxy/",

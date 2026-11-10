@@ -1100,28 +1100,6 @@
       ]
     },
     {
-      "component": "Compose image: nginx",
-      "tier": "01-gateway",
-      "classification": "external",
-      "repository_classifications": {
-        "nginx": "external"
-      },
-      "images": [
-        "nginx:alpine@sha256:713fc2ebfd92e8217db451477182ee91944b123d2b1ee9fd5a8c6e91ca6c3a11"
-      ],
-      "compose_files": [
-        "infra/01-gateway/nginx/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/01-gateway/nginx/docker-compose.yml",
-          "images": [
-            "nginx:alpine@sha256:713fc2ebfd92e8217db451477182ee91944b123d2b1ee9fd5a8c6e91ca6c3a11"
-          ]
-        }
-      ]
-    },
-    {
       "component": "Compose image: opensearchproject/opensearch-dashboards",
       "tier": "04-data",
       "classification": "external",

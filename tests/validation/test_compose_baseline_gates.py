@@ -4510,16 +4510,6 @@ SEAWEEDFS_SERVICES = (
 class SeaweedfsContractTests(unittest.TestCase):
     """Static S06 contracts; SeaweedfsRehearsalTests proves them at runtime."""
 
-    def test_nginx_cdn_is_a_read_only_prefix_to_cdn_bucket(self) -> None:
-        conf = (ROOT / "infra/01-gateway/nginx/config/nginx.conf").read_text(
-            encoding="utf-8"
-        )
-        block = conf[conf.index("location ^~ /cdn/ {") :]
-        block = block[: block.index("\n        }\n")]
-        self.assertIn("limit_except GET HEAD { deny all; }", block)
-        self.assertIn("proxy_pass http://seaweedfs_s3/cdn-bucket/;", block)
-        self.assertNotIn("minio", conf)
-
     def services(self) -> dict[str, dict]:
         import yaml
 
@@ -5457,7 +5447,6 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "tempo-bucket",
             "mlflow-artifacts",
             "tfstate",
-            "cdn-bucket",
         ):
             self.assertEqual(
                 0,
@@ -5494,29 +5483,12 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             denied = self.aws(*args, **loki)
             self.assertNotEqual(0, denied.returncode, args)
             self.assertIn("AccessDenied", denied.stderr, args)
-        put = self.aws(
-            "s3api",
-            "put-object",
-            "--bucket",
-            "cdn-bucket",
-            "--key",
-            "asset.txt",
-            "--body",
-            "/io/scope.txt",
-            "--content-type",
-            "text/plain",
-        )
-        self.assertEqual(0, put.returncode, put.stderr)
         codes = self.probe(
             "client",
             self.STATUS
-            + "print(status('GET', 'http://seaweedfs-s3:8333/cdn-bucket/asset.txt'),"
-            " status('GET', 'http://seaweedfs-s3:8333/cdn-bucket?list-type=2'),"
-            " status('PUT', 'http://seaweedfs-s3:8333/cdn-bucket/x', b'x'),"
-            " status('DELETE', 'http://seaweedfs-s3:8333/cdn-bucket/asset.txt'),"
-            " status('GET', 'http://seaweedfs-s3:8333/loki-bucket/k'))",
+            + "print(status('GET', 'http://seaweedfs-s3:8333/loki-bucket/k'))",
         )
-        self.assertEqual("200 403 403 403 403", codes)
+        self.assertEqual("403", codes)
 
 
 def _labels(service: dict) -> set[str]:
