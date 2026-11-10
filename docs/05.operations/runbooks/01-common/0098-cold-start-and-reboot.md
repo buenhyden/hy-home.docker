@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.4.2"
+version: "0.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0098"
 created: "2026-09-25"
@@ -87,6 +87,34 @@ docker compose ps -a --format json
 예상 결과: 현재 project의 예상 지속 실행 service가 복귀하고 job은 의도한 종료
 상태다. 누락·추가·Exited·반복 재시작은 owner와 확인한다. `start_period`는 실패
 계수의 유예 기간이며 시작 완료 SLA가 아니다. 상태 JSON의 이름·상태만 기록한다.
+
+### Overlay 적용 점검 절차
+
+규칙과 등록부는 [POL-0078](../../policies/01-common/0078-compose-profile-vocabulary.md#home-compose-overlay-등록부와-적용-규칙)이 소유한다. 이 절은 절차만 둔다. 값은 출력하지 않는다.
+
+1. root `.env`의 `COMPOSE_FILE`이 base만 가리키는지 센다. 둘 중 하나여야 한다.
+   `grep -c '^COMPOSE_FILE="\?docker-compose.yml"\?$' .env`가 `1`이거나,
+   `grep -c '^COMPOSE_FILE=' .env`가 `0`이다. 그 밖이면 해당 줄을 `COMPOSE_FILE="docker-compose.yml"`로
+   고치거나 지운다. 선택기는 그 밖의 값을 `compose_file_overlay_forbidden`으로 거부한다.
+2. Opsflow Worker의 보호 디렉터리를 쓰려면 `.env`에 `OPSFLOW_SECRET_DIR=<저장소 밖 경로>`를 둔다
+   (`grep -c '^OPSFLOW_SECRET_DIR=.' .env`가 `1`). 없으면 추적된 빈 placeholder가 mount돼 DAG가 읽기 시점에 실패한다.
+3. 렌더링을 값 없이 검증한다. 결과는 이미지·망·mount 대상만 출력한다.
+
+```bash
+docker compose --profile workflow config --format json | python3 -c '
+import json, sys
+for n, s in json.load(sys.stdin)["services"].items():
+    if n in ("airflow-worker", "airflow-scheduler", "n8n-worker", "ollama", "mng-valkey"):
+        print(n, s.get("image"), sorted(s.get("networks") or []),
+              sorted(v.get("target", "") for v in s.get("volumes", [])),
+              sorted(x["source"] for x in s.get("secrets", [])))'
+```
+
+   기대: `airflow-worker`에 `dev_data_net`·`object_net`·`/run/opsflow`, `n8n-worker`와 `ollama`에
+   `n8n_ollama_net`, `mng-valkey`에 `mng_valkey_n8n_password`.
+4. 유지보수 overlay는 소유 Runbook이 정한 창 안에서만 `docker compose -f docker-compose.yml -f <overlay> ...`로
+   적용하고, 끝나면 base만으로 해당 서비스를 승인된 창에서 다시 만든다.
+5. 서비스 재생성은 별도 승인 작업이다. `.env` 편집만으로 실행 중 컨테이너는 바뀌지 않는다.
 
 ### 2. 데이터와 인증 기반: `mng-pg`, `mng-valkey`, Traefik, Keycloak
 
