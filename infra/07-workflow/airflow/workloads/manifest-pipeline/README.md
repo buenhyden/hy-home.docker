@@ -43,14 +43,14 @@ SEC01의 호환 이미지·dependencies와 P03의 endpoint·실제 worker UID/GI
 받아야 합니다. 이미지에는 필요한 패키지를 빌드 시 설치하며 startup pip를
 사용하지 않습니다. 소스 기본 UID와 관측된 UID가 달라 어느 쪽도 가정하지 않습니다.
 
-overlay 규칙은 [POL-0078](../../../../../docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md#home-compose-overlay-등록부와-적용-규칙)이 소유하며 이 workload는 overlay를 쓰지 않습니다. Airflow Compose가 apiserver·scheduler·dag-processor·triggerer·worker에
+overlay 규칙은 POL-0078이 소유하며 이 workload는 overlay를 쓰지 않습니다. Airflow Compose가 apiserver·scheduler·dag-processor·triggerer·worker에
 이 폴더의 DAG와 `workflow_lib`를 읽기 전용으로 mount하고, worker에만 DEV/object network와
 `OPSFLOW_SECRET_DIR`(없으면 추적된 빈 `secret-placeholder/`)을 `/run/opsflow`로 mount합니다.
 `OPSFLOW_SECRET_DIR`에는 worker 전용 보호 디렉터리의 정확한 경로를 지정합니다. 기본 이미지를 그대로 쓰며
 n8n 변경은 없습니다.
 
 Worker는 `pg.json`, `s3.json`과 TLS를 선택한 경우 같은 보호 폴더의
-`ca.pem`을 읽습니다. [CA 전달](workflow_lib/tls.py)은 보호된 경로·소유자·권한·
+`ca.pem`을 읽습니다. CA 전달(`workflow_lib/tls.py`)은 보호된 경로·소유자·권한·
 단일 regular file·크기·PEM 인증서를 확인하고, 검증한 bytes를 쓰기 금지한
 메모리 사본으로 고정해 driver에 전달합니다. Linux memfd·seal·procfs가 없거나
 검증에 실패하면 연결을 거부합니다. TLS를 선택한 PostgreSQL은 `verify-full`만 지원하며,

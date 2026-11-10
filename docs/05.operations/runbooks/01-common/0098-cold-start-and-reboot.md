@@ -88,7 +88,7 @@ docker compose ps -a --format json
 상태다. 누락·추가·Exited·반복 재시작은 owner와 확인한다. `start_period`는 실패
 계수의 유예 기간이며 시작 완료 SLA가 아니다. 상태 JSON의 이름·상태만 기록한다.
 
-### Overlay 적용과 root COMPOSE_FILE 점검 (owner-run)
+### Overlay 적용 점검 절차
 
 규칙과 등록부는 [POL-0078](../../policies/01-common/0078-compose-profile-vocabulary.md#home-compose-overlay-등록부와-적용-규칙)이 소유한다. 이 절은 절차만 둔다. 값은 출력하지 않는다.
 

@@ -198,7 +198,7 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 
 이 절이 overlay 적용 규칙의 유일한 소유자다. 다른 문서는 이 절을 링크하고 규칙을
 다시 쓰지 않는다. 절차는
-[RUN-0098](../../runbooks/01-common/0098-cold-start-and-reboot.md#overlay-적용과-root-compose_file-점검-owner-run)이 소유한다.
+[RUN-0098](../../runbooks/01-common/0098-cold-start-and-reboot.md#overlay-적용-점검-절차)이 소유한다.
 
 - 어떤 overlay도 root `.env`의 `COMPOSE_FILE`로 적용하지 않는다. HOME의 `COMPOSE_FILE`은
   `docker-compose.yml` 하나이거나 미설정이다. 소유자는 평문 `docker compose`를 쓰므로
