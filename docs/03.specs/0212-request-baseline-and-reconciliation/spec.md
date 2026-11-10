@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.44.0"
+version: "1.44.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -150,7 +150,7 @@ contract and Runbook procedure for review; every step runs later in an
 owner-approved window, so no HOME change is authorized by this amendment.
 
 The owner decision of 2026-11-10 adds criteria 104 and 105 and W109–W110 in
-TSK-0052. TSK-0047 set criteria 86 and 89 to not-required and handed their
+TSK-0052; a same-day owner decision reframed 104 to dated lookups. TSK-0047 set criteria 86 and 89 to not-required and handed their
 unfinished evidence here. The amendment authorizes the Task only; every
 network lookup waits for the owner to approve its host scope in that Task.
 
@@ -756,10 +756,12 @@ hold, authorization and recovery requirements have been established.
      run, unpause), each with its own recorded check, in an owner-approved
      window. Rollback removes installed files, keeps backups and drops nothing
      that existed before.
-104. TSK-0052 gives each current ledger entry a fresh review and a reviewed
-     decision from official release and advisory sources, so the
-     latest-version gate passes, or records the entries it cannot review as
-     explicit residuals without inventing a lookup.
+104. TSK-0052 records a dated official lookup (latest stable version, channel
+     and release URL) and a decision for each ledger entry, starting with the
+     services HOME runs: current, update through Renovate after its soak, or
+     residual. The latest-version gate result is recorded as an observation;
+     its 24-hour freshness and every-service-latest rule are not a pass
+     condition, and no lookup is invented.
 105. TSK-0052 binds each selected image artifact to its own publisher
      signature, provenance and SBOM evidence where the publisher provides it.
      A receipt for one artifact never proves another, and missing material

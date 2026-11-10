@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -28,8 +28,8 @@ to its own signature, provenance and SBOM evidence. Nothing has run.
 
 On 2026-11-10 the owner (@buenhyden) set TSK-0047 criteria 86 and 89 to
 not-required and approved this dedicated Task for the unfinished work. That
-decision opens the Task only. Every network lookup waits for the owner to
-approve its host scope in N1 below, under the
+decision opens the Task only. Every network lookup stays inside the host
+scope the owner approved in Owner decisions 2026-11-10, under the
 [approval boundaries](../../../../.agents/governance/approval-boundaries.md).
 No image pull, deployment or HOME change is part of this Task.
 
@@ -51,19 +51,32 @@ on 2026-11-10 `security_update_gate` exits 2, with all 89 ledger entries
 
 Services that HOME runs go first; the rest follow in the same Task.
 
-### Open owner items
+### Owner decisions 2026-11-10
 
-| Item | Question | Needed by |
-| --- | --- | --- |
-| N1 | Which hosts may lookups reach? Already approved for earlier work: `github.com`, `api.github.com`, Sigstore, `cgr.dev`, the Alpine mirrors, `proxy.golang.org` and `sum.golang.org`. Registry reads also need Docker Hub, `ghcr.io` and `quay.io` metadata endpoints. | W109, W110 |
-| N2 | All 89 entries now, or the services HOME runs first and the rest later? | W109 |
+The owner (@buenhyden) answered the open items on 2026-11-10. N1: lookups may
+reach the hosts already approved for earlier work (`github.com`,
+`api.github.com`, Sigstore, `cgr.dev`, the Alpine mirrors, `proxy.golang.org`,
+`sum.golang.org`), registry metadata on Docker Hub (`registry-1.docker.io`,
+`auth.docker.io`), `ghcr.io` and `quay.io`, and each project's official
+release or advisory page when it is not on GitHub, recorded per host. All
+access is read-only metadata; no image layer is pulled. N2: the services HOME
+runs come first; the remaining entries follow in this Task.
+
+The same day the owner reframed criterion 104. The latest-version gate needs a
+lookup under 24 hours old for every entry and every service on its latest
+version; on 2026-11-10 it exits 2 with `fresh_lookup` 89, `latest_mismatch` 32,
+`stable_channel` 11, `primary_release_reference` 8 and `latest_unresolved` 5.
+That conflicts with Renovate's 7-day release soak and cannot stay passing, so
+104 now records a dated lookup and a decision per entry and keeps the gate
+result as an observation.
 
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Ledger fresh review | 104 | W109 | `security_update_gate` against the update ledger | 89 entries at the start of the Task | NOT_RUN | Waits for N1 and N2. | required | - |
-| Artifact verification | 105 | W110 | Per-artifact signature, provenance and SBOM verification | Selected image digests | NOT_RUN | Waits for N1 and W109. | required | - |
+| Ledger fresh review | 104 | W109 | Dated official lookup and decision per entry | HOME-running entries first | NOT_RUN | Not started; N1 and N2 answered. | required | - |
+| Latest-version gate observation | 104 | W109 | `latest_version_gate` against the update ledger | `main` `648a78a26`, 89 entries | FAIL | Exit 2 on 2026-11-10: `fresh_lookup` 89, `latest_mismatch` 32, `stable_channel` 11, `primary_release_reference` 8, `latest_unresolved` 5. Recorded as an observation; not a pass condition after the reframing. | optional | - |
+| Artifact verification | 105 | W110 | Per-artifact signature, provenance and SBOM verification | Selected image digests | NOT_RUN | Not started; waits for W109. | required | - |
 
 ## Criterion Acceptance
 

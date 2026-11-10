@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.44.0"
+version: "1.44.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -260,7 +260,7 @@ Secret access or remote integration.
 | W106 | 101 | Bind Attester retry and SQLite backup/restore to one report's stored evidence and state | W104 | TSK-0050 | Mixed-record, tamper, interruption, concurrent replay and owned backup/restore regressions |
 | W107 | 102 | Publish current trust-boundary, route and external-receiver handoffs without mutating watched routes | W103–W106 | TSK-0050 | Documentation/readme/runbook checks, offline gate and explicit operational/remote residuals |
 | W108 | 103 | Install the Opsflow manifest workload in HOME in six ordered, separately checked steps without editing the image | W72 | TSK-0051 | Per-step backup, `008_checks.sql`, permission canary, paused import, synthetic run and unpause evidence; NOT_RUN until an approved window |
-| W109 | 104 | Give every current ledger entry a fresh review and reviewed decision from official sources | None | TSK-0052 | `security_update_gate` exit 0, or each unreviewable entry recorded as a residual |
+| W109 | 104 | Record a dated official lookup and a decision for each ledger entry, HOME-running services first | None | TSK-0052 | Per-entry lookup receipts and decisions; latest-version gate result recorded as an observation |
 | W110 | 105 | Bind each selected artifact to its own signature, provenance and SBOM evidence | W109 | TSK-0052 | Per-artifact Cosign or publisher verification receipts; missing material recorded |
 
 ### Current v30 continuation and delivery
