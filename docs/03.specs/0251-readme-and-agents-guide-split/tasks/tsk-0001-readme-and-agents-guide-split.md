@@ -1,10 +1,10 @@
 ---
 title: "README and Agent Guide Split Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0251-TSK-0001"
 parent_ids:
@@ -197,6 +197,14 @@ Local checks are recorded above. Independent review 1 and re-review 2 requested
 changes (E23, E24); both sets are addressed on this branch and await
 re-review. Hosted CI on PR #728 is not observed here, and no criterion is
 accepted yet.
+
+### Merge receipt 2026-11-10
+
+Recorded 2026-11-10 from `gh pr view`: #728 merge `4adeb3d37` at
+2026-11-03T23:19:36Z. Hosted checks on the merged PR: every completed check
+SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
+is a candidate that passed hosted CI. This receipt is not owner acceptance: no
+criterion is accepted and the status is unchanged.
 
 ## Related Documents
 

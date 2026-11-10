@@ -1,10 +1,10 @@
 ---
 title: "REQ-0027 Approval Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0261-TSK-0001"
 parent_ids:
@@ -105,6 +105,12 @@ progress under the approved parents. Hosted CI has not run.
 - Hosted CI has not run.
 - REQ-0027 and the promoted documents are not Task package members, so their
   transitions are recorded under Decisions, not in Lifecycle Events.
+
+### Supersession note 2026-11-10
+
+On 2026-11-10 the Dependabot references at lines 68 and 79 are superseded:
+`.github/dependabot.yml` no longer exists and `renovate.json5` is the sole
+dependency updater (PR #850, merge `87d3a18c8`). Earlier entries are unchanged.
 
 ## Evidence
 
