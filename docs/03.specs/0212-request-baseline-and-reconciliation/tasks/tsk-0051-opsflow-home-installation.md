@@ -1,10 +1,10 @@
 ---
 title: "Opsflow First HOME Installation Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0051"
 parent_ids:
@@ -74,6 +74,21 @@ owner records an answer here, and the step that needs it does not start before.
 | O6 | What are the admin user names on `dev-pg` and `mng-pg`, and the backup target directory, and is that admin password file mounted inside each container? | Step 1 |
 | O7 | Which synthetic input key and body are used (the repository fixture is `fixtures/2026-10-10.json` for source `hy-home.docker`), and how does the one triggered run proceed while the DAG stays paused? The invalid-input case needs a different `business_date` and starts only after the first run ends (`max_active_runs=1`, source and business-date uniqueness); any run still queued must be recorded before step 6 unpauses. | Step 5 |
 | O8 | Which existing audit administrator login runs `008_checks.sql`? Its header and the `005`/`007` headers limit them to an approved isolated DB; does the owner approve running them on HOME `opsflow_dev`? | Step 2 |
+
+### Read-only answers 2026-11-10
+
+These came from read-only checks against HOME on 2026-11-10 and from the
+repository at `0b7ffe8bc`. None of them changed HOME, and none of them approves a
+step. O1, O7 and O8 stay open for the owner; O3 still needs the owner's
+credential decision.
+
+| Item | Observed fact | Effect on the steps |
+| --- | --- | --- |
+| O2 | A `psql` read on HOME `dev-pg` as the admin user returned no database matching `opsflow%` and no role matching `opsflow%`. | Step 2 needs `opsflow_dev` and the five `opsflow_*` roles provisioned first; the migrations cannot run against roles that do not exist. |
+| O3 | No `opsflow` entry exists under `infra/04-data/seaweedfs`. | The worker S3 identity must be created; the owner chooses its access key name and secret file. |
+| O4 | `airflow-worker` is attached only to `airflow_net` and `mng_data_net` and has no `/run/opsflow` mount. `compose.workflow.override.yml` binds the DAG and `workflow_lib` from `${OPSFLOW_CODE_DIR}` and requires `${OPSFLOW_AIRFLOW_IMAGE}`. | Step 4 follows the override route, which recreates `airflow-worker` with the extra networks and mounts; copying files into the DAG directory alone would leave the worker without database and object-store access. |
+| O5 | The running `airflow-worker` image imports `boto3`, `psycopg2`, `jsonschema` and `pydantic`. | The current image may be named as `OPSFLOW_AIRFLOW_IMAGE`; a separate reviewed image is needed only if the workload adds a dependency the image lacks. |
+| O6 | The admin user is `postgres` on both `dev-pg` and `mng-pg`, and each container can read its mounted `POSTGRES_PASSWORD_FILE` (`/run/secrets/dev_pg_admin_password`, `/run/secrets/mng_postgres_password`). The values were not read. The backup target directory is still the owner's choice. | Step 1 can run inside each container with its own admin file once the owner names the backup directory. |
 
 ## Evidence
 
