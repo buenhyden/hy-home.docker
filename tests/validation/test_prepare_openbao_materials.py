@@ -53,7 +53,11 @@ class Signed(unittest.TestCase):
         )
         self.private = private
 
-    def package(self, control=b"control", data=b"data", tamper=False):
+    def package(self, control=None, data=b"data", tamper=False, data_member=None):
+        data_member = data_member or tar_member("f", data)
+        if control is None:
+            digest = hashlib.sha256(tar_member("f", data)).hexdigest()
+            control = b"pkgname = pkg\ndatahash = " + digest.encode() + b"\n"
         control_member = tar_member(".PKGINFO", control)
         sig = subprocess.run(
             ["openssl", "dgst", "-sha1", "-sign", str(self.private)],
@@ -61,11 +65,7 @@ class Signed(unittest.TestCase):
             capture_output=True,
             check=True,
         ).stdout
-        raw = (
-            tar_member(".SIGN.RSA.test.rsa.pub", sig)
-            + control_member
-            + tar_member("f", data)
-        )
+        raw = tar_member(".SIGN.RSA.test.rsa.pub", sig) + control_member + data_member
         if tamper:
             raw = (
                 tar_member(".SIGN.RSA.test.rsa.pub", sig)
@@ -94,6 +94,15 @@ class Signed(unittest.TestCase):
         self.assertEqual("pkg-1-r0.apk", result["filename"])
         self.assertEqual(hashlib.sha256(raw).hexdigest(), result["sha256"])
         self.assertEqual(checksum, result["index_control_checksum"])
+
+    def test_signed_datahash_binds_the_data_segment(self):
+        prep.verify_datahash(prep.gzip_members(self.package()))
+        swapped = self.package(data_member=tar_member("f", b"other data"))
+        with self.assertRaises(prep.Blocked):
+            prep.verify_datahash(prep.gzip_members(swapped))
+        missing = self.package(control=b"pkgname = pkg\n")
+        with self.assertRaises(prep.Blocked):
+            prep.verify_datahash(prep.gzip_members(missing))
 
     def test_tampered_control_segment_is_rejected(self):
         segments = prep.gzip_members(self.package(tamper=True))

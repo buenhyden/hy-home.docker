@@ -121,6 +121,25 @@ def gzip_members(raw: bytes) -> list[tuple[bytes, bytes]]:
     return members
 
 
+def verify_datahash(segments: list) -> None:
+    """Bind the data segment to the signed control: APK v2 signs only the control,
+    whose .PKGINFO ``datahash`` is the sha256 of the compressed data stream."""
+    if len(segments) != 3:
+        raise Blocked("apk-segment-count")
+    control = tarfile.open(fileobj=BytesIO(segments[1][1]))
+    try:
+        info = control.extractfile(".PKGINFO").read().decode()
+    except (KeyError, AttributeError) as error:
+        raise Blocked("apk-pkginfo-missing") from error
+    values = [
+        line.split("=", 1)[1].strip()
+        for line in info.splitlines()
+        if line.split("=", 1)[0].strip() == "datahash"
+    ]
+    if len(values) != 1 or values[0] != hashlib.sha256(segments[2][0]).hexdigest():
+        raise Blocked("apk-datahash-mismatch")
+
+
 def verify_rsa(
     scratch: Path, key: Path, key_name: str, segments: list, signed: int
 ) -> None:
@@ -653,6 +672,7 @@ def prepare(root: Path, *, allow_go_proxy: bool) -> dict:
         raw = target.read_bytes()
         segments = gzip_members(raw)
         verify_rsa(scratch, key, key_name, segments, 1)
+        verify_datahash(segments)
         rows.append(closure_row(row, raw, segments))
     pins.update(apk_requested=requested, apk_closure=rows)
 
