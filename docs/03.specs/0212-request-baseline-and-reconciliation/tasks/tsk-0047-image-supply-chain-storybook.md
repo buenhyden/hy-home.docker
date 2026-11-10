@@ -1,6 +1,6 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -202,6 +202,15 @@ analyzed and reviewed. No criterion is accepted by this review.
   eslint chain therefore stayed open; later on 2026-11-10 the owner accepted it
   as development-tooling risk as well and asked for eslint to move to the
   newest 10.x release, which does not change the advisory exposure.
+- OpenBao r2 material rehearsal (2026-11-10): after the owner approved a
+  one-time fetch from github.com, dl-cdn.alpinelinux.org, alpinelinux.org,
+  cgr.dev and the Sigstore public-good endpoints, the preparing agent contacted
+  two hosts outside that approval: `go version` inside the source tree
+  auto-downloaded a Go toolchain from proxy.golang.org into `~/go/pkg/mod`, and
+  documentation was read through raw.githubusercontent.com. Neither fetched a
+  build material. The owner then approved proxy.golang.org and sum.golang.org,
+  deleted the three rehearsal directories under `/tmp`, and the next run sets
+  `GOTOOLCHAIN=local` and uses only the approved hosts.
 
 ## Evidence
 
