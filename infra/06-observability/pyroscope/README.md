@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Continuous Profiling"
-version: "1.0.6"
+version: "1.0.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 created: "2026-03-19"
 ---
 
@@ -31,7 +31,7 @@ Pyroscope는 애플리케이션을 연속적으로 프로파일링하여 성능 
 
 ### Out of Scope
 
-- 애플리케이션 수준 프로파일링 에이전트 ([Grafana Alloy](../alloy/README.md)에서 처리).
+- 애플리케이션 수준 프로파일링 SDK/에이전트: Go pprof는 [Grafana Alloy](../alloy/README.md)가 가져옵니다. n8n(Node)·Python·Java 서비스는 SDK나 eBPF가 필요해 아직 수집하지 않으며 계획은 GDE-0047의 Open item에 있습니다.
 - 프로파일링 데이터의 장기 보관 (Retention Policy(`docs/05.operations/policies/07-observability/0047-pyroscope.md`)에서 관리).
 
 ## Structure
@@ -62,13 +62,15 @@ pyroscope/
 ## Configuration
 
 - **Ingestion**: HTTP를 통한 Protobuf로 프로파일링 데이터를 수신합니다 (포트 4040).
-- **Storage**: 로컬 파일시스템 백엔드(`/var/lib/pyroscope`).
-- **Retention**: `pyroscope.yaml`에 고정 보존 기간이 선언되어 있지 않습니다. 용량 및 보존 변경은 정책 검토가 필요합니다.
+- **Storage**: 로컬 파일시스템 백엔드(`/var/lib/pyroscope`). 데이터는 Compose 볼륨 `pyroscope-data`/`pyroscope-metastore`가 호스트 폴더 `${DEFAULT_OBSERVABILITY_DIR}/pyroscope`·`pyroscope-metastore`(HDD)로 bind되어 있습니다. Docker named volume이 아니라 이미 호스트 폴더입니다.
+- **Retention**: `limits.retention_period: 168h`(7일). 2026-11-10 측정에서 30초 scrape 기준 하루 약 0.12 GB가 쌓였고(2026-10-16/17에 2.7 GB 급증이 있어 총 5.2 GB), 기본값 31일은 개인 PC HDD에 비해 길어서 7일로 줄였습니다. v2 저장소는 block 안의 모든 데이터가 기간을 넘기고 `cleanup_grace_period`(6h)가 지난 뒤 block 단위로 지우므로 용량은 적용 뒤 점진적으로 줄어듭니다(첫 정리 시점은 미검증). 근거: [Configuration parameters](https://grafana.com/docs/pyroscope/latest/configure-server/reference-configuration-parameters/)(핀된 Pyroscope 버전의 문서).
+- **Scrape cost**: Alloy는 60초 간격으로 가져오고 block/mutex profile을 끕니다(CPU·memory·goroutine만). 두 profile은 서비스가 sampling rate를 켠 경우(tempo, alloy, pyroscope, grafana)에만 값이 있어 가치가 낮습니다.
+- **Grafana**: 데이터소스 UID `Pyroscope`, Drilldown > Profiles 앱(`grafana-pyroscope-app`), `Observability/pyroscope` 대시보드(서비스별 시계열과 flamegraph). Tempo `tracesToProfiles`는 서비스 단위 시간창으로 연결됩니다(span ID 라벨이 없어 span 단위는 아님).
 
 ## Operational Status
 
 > [!IMPORTANT]
-> Pyroscope는 현재 `/var/lib/pyroscope`에 마운트된 로컬 파일시스템 백엔드를 사용합니다. `pyroscope.yaml`에는 고정 보존 기간이 선언되어 있지 않습니다. 용량 및 보존 변경에는 승인된 설정 업데이트가 필요합니다.
+> Pyroscope는 현재 `/var/lib/pyroscope`에 마운트된 로컬 파일시스템 백엔드를 사용하며 보존 기간은 7일(`retention_period: 168h`)입니다. 용량 및 보존 변경에는 승인된 설정 업데이트가 필요합니다. 설정 변경은 컨테이너를 재생성해야 적용됩니다.
 
 ## Validation
 
@@ -106,6 +108,6 @@ pyroscope/
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. **Flamegraph Analysis**: Grafana의 `traceqlEditor` 기능 토글로 프로파일을 트레이스와 연관 짓습니다.
+1. **Flamegraph Analysis**: Grafana의 Drilldown > Profiles 또는 `Observability / Pyroscope` 대시보드에서 서비스별 flamegraph를 봅니다. Tempo span 상세의 프로파일 링크는 같은 `service_name`의 시간창을 엽니다.
 2. **Resource Monitoring**: 프로파일링 수집은 CPU 사용량이 클 수 있으므로, 피크 부하 동안 `pyroscope` 컨테이너 통계를 모니터링합니다.
 3. **Traceability**: 재매핑 로직과 커스텀 레이블은 전용 시스템 가이드를 참고합니다.
