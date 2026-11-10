@@ -49,7 +49,7 @@
         "quay.io/keycloak/keycloak": "external"
       },
       "images": [
-        "quay.io/keycloak/keycloak:26.7.4-0"
+        "quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c"
       ],
       "compose_files": [
         "infra/02-auth/keycloak/docker-compose.yml"
@@ -58,7 +58,7 @@
         {
           "compose_file": "infra/02-auth/keycloak/docker-compose.yml",
           "images": [
-            "quay.io/keycloak/keycloak:26.7.4-0"
+            "quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c"
           ]
         }
       ]
@@ -73,7 +73,8 @@
       },
       "images": [
         "ghcr.io/zalando/spilo-17:4.0-p3",
-        "postgres:18.6-alpine"
+        "postgres:18.6-alpine",
+        "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395"
       ],
       "compose_files": [
         "infra/04-data/mng-db/docker-compose.yml",
@@ -95,31 +96,31 @@
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine"
+            "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395"
           ]
         },
         {
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine"
+            "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395"
           ]
         },
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine"
+            "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395"
           ]
         },
         {
           "compose_file": "infra/08-ai/mlflow/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine"
+            "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395"
           ]
         },
         {
           "compose_file": "infra/11-quality/pact-broker/docker-compose.yml",
           "images": [
-            "postgres:18.6-alpine"
+            "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395"
           ]
         },
         {
@@ -150,7 +151,8 @@
         "valkey/valkey": "external"
       },
       "images": [
-        "valkey/valkey:9.1.2-alpine"
+        "valkey/valkey:9.1.2-alpine",
+        "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b"
       ],
       "compose_files": [
         "infra/04-data/dev-db/docker-compose.yml",
@@ -161,13 +163,13 @@
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
-            "valkey/valkey:9.1.2-alpine"
+            "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b"
           ]
         },
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "valkey/valkey:9.1.2-alpine"
+            "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b"
           ]
         },
         {
@@ -186,7 +188,8 @@
         "confluentinc/cp-kafka": "external"
       },
       "images": [
-        "confluentinc/cp-kafka:8.3.2"
+        "confluentinc/cp-kafka:8.3.2",
+        "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48"
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml",
@@ -196,7 +199,7 @@
         {
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
           "images": [
-            "confluentinc/cp-kafka:8.3.2"
+            "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48"
           ]
         },
         {
@@ -215,7 +218,7 @@
         "kafbat/kafka-ui": "external"
       },
       "images": [
-        "kafbat/kafka-ui:v1.5.0"
+        "kafbat/kafka-ui:v1.5.0@sha256:7cda86a33344160309fdb65146332e4da65db81a945614f2fe32e210803f6fd1"
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml"
@@ -224,7 +227,7 @@
         {
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
           "images": [
-            "kafbat/kafka-ui:v1.5.0"
+            "kafbat/kafka-ui:v1.5.0@sha256:7cda86a33344160309fdb65146332e4da65db81a945614f2fe32e210803f6fd1"
           ]
         }
       ]
@@ -465,7 +468,7 @@
         "redis/redisinsight": "external"
       },
       "images": [
-        "redis/redisinsight:3.8.0"
+        "redis/redisinsight:3.8.0@sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84"
       ],
       "compose_files": [
         "infra/04-data/redisinsight/docker-compose.yml"
@@ -474,7 +477,7 @@
         {
           "compose_file": "infra/04-data/redisinsight/docker-compose.yml",
           "images": [
-            "redis/redisinsight:3.8.0"
+            "redis/redisinsight:3.8.0@sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84"
           ]
         }
       ]
@@ -531,7 +534,7 @@
         "yanwk/comfyui-boot": "external"
       },
       "images": [
-        "yanwk/comfyui-boot:cu126-slim"
+        "yanwk/comfyui-boot:cu126-slim@sha256:2860c103583fbbd03f2e324116395a47e68ad0ef84fc3689f03b42a63fba41a6"
       ],
       "compose_files": [
         "infra/08-ai/comfyui/docker-compose.yml"
@@ -540,7 +543,7 @@
         {
           "compose_file": "infra/08-ai/comfyui/docker-compose.yml",
           "images": [
-            "yanwk/comfyui-boot:cu126-slim"
+            "yanwk/comfyui-boot:cu126-slim@sha256:2860c103583fbbd03f2e324116395a47e68ad0ef84fc3689f03b42a63fba41a6"
           ]
         }
       ]
@@ -663,7 +666,7 @@
         "prom/alertmanager": "external"
       },
       "images": [
-        "prom/alertmanager:v0.34.1"
+        "prom/alertmanager:v0.34.1@sha256:e9733bafb1bdef9b00e25a21f8f99dc26a22224bf16641ad754d1649f4c3357a"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -672,7 +675,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "prom/alertmanager:v0.34.1"
+            "prom/alertmanager:v0.34.1@sha256:e9733bafb1bdef9b00e25a21f8f99dc26a22224bf16641ad754d1649f4c3357a"
           ]
         }
       ]
@@ -685,7 +688,7 @@
         "quay.io/prometheus/node-exporter": "external"
       },
       "images": [
-        "quay.io/prometheus/node-exporter:v1.12.1"
+        "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -694,7 +697,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "quay.io/prometheus/node-exporter:v1.12.1"
+            "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
           ]
         }
       ]
@@ -766,7 +769,7 @@
         "azbuilder/api-server": "external"
       },
       "images": [
-        "azbuilder/api-server:2.33.2"
+        "azbuilder/api-server:2.33.2@sha256:032e14e2b0262d50607bd7404479a1bb7defa480599d82ef9a4c7c5e298e230e"
       ],
       "compose_files": [
         "infra/09-platform-ops/terrakube/docker-compose.yml"
@@ -775,7 +778,7 @@
         {
           "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
           "images": [
-            "azbuilder/api-server:2.33.2"
+            "azbuilder/api-server:2.33.2@sha256:032e14e2b0262d50607bd7404479a1bb7defa480599d82ef9a4c7c5e298e230e"
           ]
         }
       ]
@@ -788,7 +791,7 @@
         "azbuilder/executor": "external"
       },
       "images": [
-        "azbuilder/executor:2.33.2"
+        "azbuilder/executor:2.33.2@sha256:28601c154938008df0a3ca2c3f0acca93349555c411427c0ee110da44d5fe2d6"
       ],
       "compose_files": [
         "infra/09-platform-ops/terrakube/docker-compose.yml"
@@ -797,7 +800,7 @@
         {
           "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
           "images": [
-            "azbuilder/executor:2.33.2"
+            "azbuilder/executor:2.33.2@sha256:28601c154938008df0a3ca2c3f0acca93349555c411427c0ee110da44d5fe2d6"
           ]
         }
       ]
@@ -810,7 +813,7 @@
         "azbuilder/terrakube-ui": "external"
       },
       "images": [
-        "azbuilder/terrakube-ui:2.33.2"
+        "azbuilder/terrakube-ui:2.33.2@sha256:04a5c7a0a756365be2eb386e82d9a128726dd359b7a4a807ef3fff6039e0bdd5"
       ],
       "compose_files": [
         "infra/09-platform-ops/terrakube/docker-compose.yml"
@@ -819,7 +822,7 @@
         {
           "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
           "images": [
-            "azbuilder/terrakube-ui:2.33.2"
+            "azbuilder/terrakube-ui:2.33.2@sha256:04a5c7a0a756365be2eb386e82d9a128726dd359b7a4a807ef3fff6039e0bdd5"
           ]
         }
       ]
@@ -876,7 +879,7 @@
         "confluentinc/cp-schema-registry": "external"
       },
       "images": [
-        "confluentinc/cp-schema-registry:8.3.2"
+        "confluentinc/cp-schema-registry:8.3.2@sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c"
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml"
@@ -885,7 +888,7 @@
         {
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
           "images": [
-            "confluentinc/cp-schema-registry:8.3.2"
+            "confluentinc/cp-schema-registry:8.3.2@sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c"
           ]
         }
       ]
@@ -942,7 +945,8 @@
         "danielqsj/kafka-exporter": "external"
       },
       "images": [
-        "danielqsj/kafka-exporter:v1.10.0"
+        "danielqsj/kafka-exporter:v1.10.0",
+        "danielqsj/kafka-exporter:v1.10.0@sha256:346a53c2489a3530790d01f7b96632496d0d58926662f4c35bb65f569db2ab42"
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml",
@@ -952,7 +956,7 @@
         {
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
           "images": [
-            "danielqsj/kafka-exporter:v1.10.0"
+            "danielqsj/kafka-exporter:v1.10.0@sha256:346a53c2489a3530790d01f7b96632496d0d58926662f4c35bb65f569db2ab42"
           ]
         },
         {
@@ -1015,7 +1019,7 @@
         "lucabecker42/ollama-exporter": "external"
       },
       "images": [
-        "lucabecker42/ollama-exporter:1.0.3"
+        "lucabecker42/ollama-exporter:1.0.3@sha256:9fb1f4c5bc4ff819eb13e148debeb7fd474a4c8956d83d39928ea22d95d3de5c"
       ],
       "compose_files": [
         "infra/08-ai/ollama/docker-compose.yml"
@@ -1024,7 +1028,7 @@
         {
           "compose_file": "infra/08-ai/ollama/docker-compose.yml",
           "images": [
-            "lucabecker42/ollama-exporter:1.0.3"
+            "lucabecker42/ollama-exporter:1.0.3@sha256:9fb1f4c5bc4ff819eb13e148debeb7fd474a4c8956d83d39928ea22d95d3de5c"
           ]
         }
       ]
@@ -1081,7 +1085,7 @@
         "neo4j": "external"
       },
       "images": [
-        "neo4j:5.26.30-community"
+        "neo4j:5.26.30-community@sha256:3388e05ee53c8313d01acdf33e63ad175af95a92226dc8551160564439ce2c8c"
       ],
       "compose_files": [
         "infra/04-data/neo4j/docker-compose.yml"
@@ -1090,7 +1094,7 @@
         {
           "compose_file": "infra/04-data/neo4j/docker-compose.yml",
           "images": [
-            "neo4j:5.26.30-community"
+            "neo4j:5.26.30-community@sha256:3388e05ee53c8313d01acdf33e63ad175af95a92226dc8551160564439ce2c8c"
           ]
         }
       ]
@@ -1103,7 +1107,7 @@
         "nginx": "external"
       },
       "images": [
-        "nginx:alpine"
+        "nginx:alpine@sha256:713fc2ebfd92e8217db451477182ee91944b123d2b1ee9fd5a8c6e91ca6c3a11"
       ],
       "compose_files": [
         "infra/01-gateway/nginx/docker-compose.yml"
@@ -1112,7 +1116,7 @@
         {
           "compose_file": "infra/01-gateway/nginx/docker-compose.yml",
           "images": [
-            "nginx:alpine"
+            "nginx:alpine@sha256:713fc2ebfd92e8217db451477182ee91944b123d2b1ee9fd5a8c6e91ca6c3a11"
           ]
         }
       ]
@@ -1155,7 +1159,7 @@
         "prom/statsd-exporter": "external"
       },
       "images": [
-        "prom/statsd-exporter:v0.31.0"
+        "prom/statsd-exporter:v0.31.0@sha256:1d5d341c4eb7abdd3445a3f85c3d498402b676ad29b4cf0421f5d280943871ab"
       ],
       "compose_files": [
         "infra/07-workflow/airflow/docker-compose.yml"
@@ -1164,7 +1168,7 @@
         {
           "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
           "images": [
-            "prom/statsd-exporter:v0.31.0"
+            "prom/statsd-exporter:v0.31.0@sha256:1d5d341c4eb7abdd3445a3f85c3d498402b676ad29b4cf0421f5d280943871ab"
           ]
         }
       ]
@@ -1177,7 +1181,8 @@
         "prometheuscommunity/postgres-exporter": "external"
       },
       "images": [
-        "prometheuscommunity/postgres-exporter:v0.20.1"
+        "prometheuscommunity/postgres-exporter:v0.20.1",
+        "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e"
       ],
       "compose_files": [
         "infra/04-data/dev-db/docker-compose.yml",
@@ -1188,13 +1193,13 @@
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
-            "prometheuscommunity/postgres-exporter:v0.20.1"
+            "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e"
           ]
         },
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "prometheuscommunity/postgres-exporter:v0.20.1"
+            "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e"
           ]
         },
         {
@@ -1455,7 +1460,6 @@
         "python": "external"
       },
       "images": [
-        "python:3.13.15-alpine",
         "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f"
       ],
       "compose_files": [
@@ -1472,7 +1476,7 @@
         {
           "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
           "images": [
-            "python:3.13.15-alpine"
+            "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f"
           ]
         }
       ]
@@ -1485,7 +1489,7 @@
         "restic/restic": "external"
       },
       "images": [
-        "restic/restic:0.19.1"
+        "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510"
       ],
       "compose_files": [
         "infra/09-platform-ops/restic/docker-compose.yml"
@@ -1494,7 +1498,7 @@
         {
           "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
           "images": [
-            "restic/restic:0.19.1"
+            "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510"
           ]
         }
       ]
@@ -1536,7 +1540,7 @@
         "wiremock/wiremock": "external"
       },
       "images": [
-        "wiremock/wiremock:3.13.2-alpine"
+        "wiremock/wiremock:3.13.2-alpine@sha256:f8c42a38dca3f4a1d7219af11c80438740f39eebb1505b0f029aed743c20e147"
       ],
       "compose_files": [
         "infra/11-quality/wiremock/docker-compose.yml"
@@ -1545,7 +1549,7 @@
         {
           "compose_file": "infra/11-quality/wiremock/docker-compose.yml",
           "images": [
-            "wiremock/wiremock:3.13.2-alpine"
+            "wiremock/wiremock:3.13.2-alpine@sha256:f8c42a38dca3f4a1d7219af11c80438740f39eebb1505b0f029aed743c20e147"
           ]
         }
       ]
@@ -1558,7 +1562,7 @@
         "pactfoundation/pact-broker": "external"
       },
       "images": [
-        "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2"
+        "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2@sha256:420341d4fbfb00a621c313f47e530ad75703f969bbc7520d0d72bc71bb53cef9"
       ],
       "compose_files": [
         "infra/11-quality/pact-broker/docker-compose.yml"
@@ -1567,7 +1571,7 @@
         {
           "compose_file": "infra/11-quality/pact-broker/docker-compose.yml",
           "images": [
-            "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2"
+            "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2@sha256:420341d4fbfb00a621c313f47e530ad75703f969bbc7520d0d72bc71bb53cef9"
           ]
         }
       ]

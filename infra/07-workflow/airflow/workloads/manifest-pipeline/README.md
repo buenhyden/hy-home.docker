@@ -1,10 +1,10 @@
 ---
 title: "Independent Manifest Pipeline"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-10"
 ---
 
 # Independent Manifest Pipeline
@@ -75,9 +75,12 @@ S3 TLS 소스 계약은 명시적 `https://seaweedfs-s3:443`과 고정
 Admin·reader·notifier 자격 증명은 이 폴더에 두지 않습니다.
 기존 DEV provisioner는 schema version 2의 함수 전용 Opsflow 계약을 지원합니다.
 Owner는 NOLOGIN이며 migrator만 명시적 SET ROLE 권한을 갖고 runtime은 승인된
-함수/view만 소비합니다. 공개 `pg/provision/opsflow.json`의 `password_secrets: null`은
-발급·정본 연결이 남았다는 뜻이며 실행 가능한 자격이 아닙니다. 실제 역할·자격 연결과
-pool 한 slot 생성은 별도 실행 대상입니다. 기존 generic table-grant 계약을 이 workload에
+함수/view만 소비합니다. 공개 `pg/provision/opsflow.json`은 로그인 네 개의 secret 이름
+(`dev_pg_opsflow_{migrator,ingest,notifier,reader}_password`)을 선언하지만 값 파일 생성과
+실제 역할 발급은 owner가 승인한 별도 실행 대상입니다. worker의 S3 identity
+`opsflow-worker`는 `seaweedfs/config/s3-identities.conf`에 선언되며 `/run/opsflow`의
+`pg.json`·`s3.json`을 만드는 입력(`OPSFLOW_SECRET_DIR`)은 저장소가 정의하지 않는 열린
+항목입니다. pool 한 slot 생성도 별도 실행 대상입니다. 기존 generic table-grant 계약을 이 workload에
 대입하거나 미지정 자격을 자동 발급하지 않습니다.
 
 ### Validation
