@@ -169,6 +169,26 @@ Held for the owner: `secrets/` is denied to agents, so the owner removes the PG-
 `secrets/README.md` if any, and the matching entry in `test_secret_metadata_sync.py`
 (`LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS["PG-025"]`) in the same change.
 
+### 2026-11-10 Flower opt-in profile (ADR-0062 amendment)
+
+The owner decided on 2026-11-10 that Airflow `flower` leaves the HOME `workflow` and
+`workflow-airflow` profiles for the dedicated opt-in profile `airflow-flower`. Sanitized
+read-only evidence: 0 requests in 7 days, and the Airflow UI, the worker healthcheck and the
+statsd metrics already cover task and worker state.
+
+Done in source: the Compose profile moved, and `airflow-apiserver` and `airflow-init`, which Flower depends on, also joined
+`airflow-flower` so the profile renders alone; POL-0078 registers `airflow-flower` (capability) and
+drops `flower` from the two Airflow profile rows; both Prometheus files label the `flower` job
+`expected_state: "off"`, so `PrometheusInfraTargetsMissing` (which filters `expected_state!="off"`)
+does not fire while Flower is not selected, and a comment on the rule says to flip the label to
+`on` when the profile starts; the dashboard `Applications/flower` is kept. The SEC01 ledger rows
+were re-bound with `ledger_rebind` and the `flower` row's `profiles_declared` was set by hand
+(recorded in that refresh's `revision_scope`); the `m0021` inventory was regenerated; the
+workflow and Grafana READMEs were updated.
+
+Nothing was started, stopped or recreated, so Prometheus still scrapes the old label set and the
+`flower` container still runs until the owner recreates `prometheus` and removes `flower`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |

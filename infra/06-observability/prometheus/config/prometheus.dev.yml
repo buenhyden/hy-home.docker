@@ -284,6 +284,9 @@ scrape_configs:
           namespace: "hy-home"
           domain: "workflow"
 
+  # Flower is opt-in (profile airflow-flower), so it is off by default and
+  # expected_state "off" keeps PrometheusInfraTargetsMissing silent; set it to
+  # "on" while the profile runs.
   - job_name: "flower"
     static_configs:
       - targets: ["flower:5555"]
@@ -291,6 +294,7 @@ scrape_configs:
           cluster: "hy-home"
           namespace: "hy-home"
           domain: "workflow"
+          expected_state: "off"
 
   - job_name: "n8n-monitor"
     static_configs:

@@ -1,6 +1,6 @@
 ---
 title: "HOME Membership and Planned LABs"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -114,6 +114,18 @@ configures a schema registry or a Connect cluster, and the profiles `cdc`,
 `messaging-schema` and `messaging-connect` are retired from POL-0078. The running HOME
 containers, images, the `kafka-connect-data` volume and the Debezium secret file are left
 for separately approved retirement steps.
+
+### Amendment of 2026-11-10: Airflow Flower becomes opt-in
+
+The owner also decided on 2026-11-10 that Airflow `flower` (Celery monitoring UI) no longer
+starts with HOME. It stays in `infra/07-workflow/airflow/` but moves from the `workflow` and
+`workflow-airflow` profiles to the opt-in profile `airflow-flower` (POL-0078, capability). The
+evidence, with no content recorded: 0 requests in 7 days, while the Airflow UI, the worker
+healthcheck and the statsd metrics already cover task and worker state. Its Grafana dashboard
+stays; the Prometheus job `flower` carries `expected_state: "off"` so
+`PrometheusInfraTargetsMissing` stays silent until Flower is started and the label is set to
+`on`. The HOME `07-workflow` members (airflow, n8n) do not change. The running `flower`
+container is left for a separately approved retirement step.
 
 ### Traceability
 

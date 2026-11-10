@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.16.0"
+version: "1.18.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -38,6 +38,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `admin-data` | role | Valkey 데이터 탐색 UI | `redisinsight` | No | normal service startup | current |
 | `admin-logs` | role | 컨테이너 로그 UI | `dozzle` | No | normal service startup | current |
 | `ai` | domain | HOME 언어 AI와 vector 저장소; Open WebUI는 LAB `lab-open-webui`(ADR-0062 개정) | `qdrant`, `ollama`, `ollama-exporter` | No | normal service startup | current |
+| `airflow-flower` | capability | Airflow Celery 모니터링 UI Flower; 2026-11-10 owner 결정(ADR-0062 개정)으로 HOME 선택에서 제외한 opt-in. Airflow 코어와 broker가 먼저 필요 | `airflow-apiserver`, `airflow-init`, `flower` | No | initialization: airflow-init(Flower가 의존); Prometheus job `flower`의 `expected_state`를 `on`으로 바꿔야 경보 대상이 됨 | current |
 | `ai-image` | capability | GPU 이미지 생성 | `comfyui` | No | normal service startup | current |
 | `ai-llm` | capability | 언어 모델 추론·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter` | No | normal service startup | current |
 | `alerting` | capability | 메트릭 경보 전달 | `prometheus`, `grafana`, `alertmanager` | No | normal service startup | current |
@@ -106,8 +107,8 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `tooling` | capability | 개발 registry; SonarQube는 LAB `sast`(SPEC-0262) | `registry` | No | normal service startup | current |
 | `tracing` | capability | 분산 trace 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `tempo`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `valkey-cluster` | topology | 독립 LAB Valkey sharding 실험 구성 | `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter` | No | initialization: valkey-cluster-init | current |
-| `workflow` | domain | HOME Airflow·n8n·worker·runner | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter`, `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng` | No | initialization: airflow-init | current |
-| `workflow-airflow` | capability | Airflow 스케줄링·worker·초기화 | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter` | No | initialization: airflow-init | current |
+| `workflow` | domain | HOME Airflow·n8n·worker·runner | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `airflow-statsd-exporter`, `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng` | No | initialization: airflow-init | current |
+| `workflow-airflow` | capability | Airflow 스케줄링·worker·초기화 | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `airflow-statsd-exporter` | No | initialization: airflow-init | current |
 | `workflow-n8n` | capability | n8n 자동화와 worker·task runner·Assistant 웹 검색 | `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng` | No | normal service startup | current |
 
 ## Rules
@@ -297,7 +298,7 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | Loki | HOME 로그 저장·Grafana 조회 | Alloy, Grafana | 2 / 2048 | `loki-data` | HOME 유지 | 로그 수집을 다른 backend로 옮길 때 | 실행 |
 | Dozzle | 실시간 container 로그 UI | 운영자 | 1 / 512 | `dozzle-data` | OPTIONAL `admin`; 상주는 소유자 선택 | Grafana Loki 조회로 충분해질 때 | 실행 |
 | OpenSearch (single) | 전문 검색·분석 실험 | 이름 있는 소비자 없음 | 3 / 2560 | `opensearch-data`, `opensearch-dashboards-data` | OPTIONAL on-demand; 상주하지 않음 | 검색 소비자가 없으면 퇴역 검토 | 미실행 |
-| Airflow | 예약 batch·backfill DAG | DAG, Flower | 10 / 9472 | `airflow-dags`·`-config`·`-plugins`·`-logs` | HOME 유지 | 예약 DAG가 없어질 때 | 실행 |
+| Airflow | 예약 batch·backfill DAG | DAG; Flower는 opt-in `airflow-flower` | 10 / 9472 | `airflow-dags`·`-config`·`-plugins`·`-logs` | HOME 유지 | 예약 DAG가 없어질 때 | 실행 |
 | n8n | 외부 이벤트·webhook·알림 | workflow | 5 / 4608 | `n8n-data`, task runner volume | HOME 유지 | 이벤트 workflow가 없어질 때 | 실행 |
 | Mailpit | 개발 SMTP 캡처 | 앱 메일 시험 | 1 / 512 | `mailpit-data` | DEV on-demand | 메일 시험이 없을 때 | 미실행 |
 | Stalwart | 실제 메일 서버 | 이름 있는 소비자 없음 | 1.5 / 768 | `stalwart-data`(SPEC-0262 이후 `${LAB_DATA_DIR}/stalwart/data`) | 2026-11-04 LAB `labs/stalwart/docker-compose.yml`로 이전 | 메일 수신 계획이 없으면 퇴역 검토 | 미실행 |

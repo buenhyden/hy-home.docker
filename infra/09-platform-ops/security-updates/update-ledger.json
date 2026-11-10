@@ -162,7 +162,7 @@
     },
     {
       "path": "infra/07-workflow/airflow/docker-compose.yml",
-      "sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529"
+      "sha256": "765936213d2da017337d6080d4227b2e441f8953f786a672b1e693cb67ef4b68"
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -308,7 +308,8 @@
       "current_declared": "hy-home/airflow:3.3.2-keycloak",
       "profiles_declared": [
         "workflow",
-        "workflow-airflow"
+        "workflow-airflow",
+        "airflow-flower"
       ],
       "build_source": {
         "context": "../../..",
@@ -378,7 +379,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+      "source_input_sha256": "765936213d2da017337d6080d4227b2e441f8953f786a672b1e693cb67ef4b68",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -543,7 +544,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+      "source_input_sha256": "765936213d2da017337d6080d4227b2e441f8953f786a672b1e693cb67ef4b68",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -638,7 +639,8 @@
       "current_declared": "hy-home/airflow:3.3.2-keycloak",
       "profiles_declared": [
         "workflow",
-        "workflow-airflow"
+        "workflow-airflow",
+        "airflow-flower"
       ],
       "build_source": {
         "context": "../../..",
@@ -690,7 +692,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+      "source_input_sha256": "765936213d2da017337d6080d4227b2e441f8953f786a672b1e693cb67ef4b68",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -855,7 +857,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+      "source_input_sha256": "765936213d2da017337d6080d4227b2e441f8953f786a672b1e693cb67ef4b68",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1017,7 +1019,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+      "source_input_sha256": "765936213d2da017337d6080d4227b2e441f8953f786a672b1e693cb67ef4b68",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1166,7 +1168,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+      "source_input_sha256": "765936213d2da017337d6080d4227b2e441f8953f786a672b1e693cb67ef4b68",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1331,7 +1333,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+      "source_input_sha256": "765936213d2da017337d6080d4227b2e441f8953f786a672b1e693cb67ef4b68",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -3963,8 +3965,7 @@
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
       "current_declared": "hy-home/airflow:3.3.2-keycloak",
       "profiles_declared": [
-        "workflow",
-        "workflow-airflow"
+        "airflow-flower"
       ],
       "build_source": {
         "context": "../../..",
@@ -4034,7 +4035,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+      "source_input_sha256": "765936213d2da017337d6080d4227b2e441f8953f786a672b1e693cb67ef4b68",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -29613,6 +29614,576 @@
         }
       ],
       "meaning": "4 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 12 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "5aebe5144b8f15ce0b0d2b6ac0897332bfdcd83f",
+      "refreshed_at": "2026-11-10T03:01:29.212511+00:00",
+      "revision_scope": "Compose file hash re-binding only; flower profiles_declared moved to airflow-flower and airflow-apiserver and airflow-init gained it (owner decision 2026-11-10)",
+      "input_manifest_sha256": "d2b03c384ca69375d5374fd5559f11ecff56392414ac4a5f7b306c29eb7df0dc",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "cecec05b3f86a0df6655caaa95dfbd81570b7f6500810cc30c20c7a6fff15b35"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "349f8ec9e775b8bf74f7fbcefb6d7f2fcf7694265f34d3e3bd9eba05abefb5c0"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "00ed3dbee1fd4e8440ca1c8a273450401dd214f8a34df1b3819c649ea9c4019f"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/07-workflow/airflow/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "airflow-apiserver",
+          "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-dag-processor",
+          "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-init",
+          "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-scheduler",
+          "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-statsd-exporter",
+          "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-triggerer",
+          "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-worker",
+          "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "flower",
+          "source_input_sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 8 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "5aebe5144b8f15ce0b0d2b6ac0897332bfdcd83f",
+      "refreshed_at": "2026-11-10T03:10:42.181890+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "2e94a31b904f33ec2934356aa677e4d919d7682f5b6ce18ac1c924df20ac037a",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "cecec05b3f86a0df6655caaa95dfbd81570b7f6500810cc30c20c7a6fff15b35"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "349f8ec9e775b8bf74f7fbcefb6d7f2fcf7694265f34d3e3bd9eba05abefb5c0"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "8366cd3204250cd2b4f11f99ceb6336f11e85215b02c462562ad5fb3663f62d7"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "00ed3dbee1fd4e8440ca1c8a273450401dd214f8a34df1b3819c649ea9c4019f"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/07-workflow/airflow/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "airflow-apiserver",
+          "source_input_sha256": "8366cd3204250cd2b4f11f99ceb6336f11e85215b02c462562ad5fb3663f62d7",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-dag-processor",
+          "source_input_sha256": "8366cd3204250cd2b4f11f99ceb6336f11e85215b02c462562ad5fb3663f62d7",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-init",
+          "source_input_sha256": "8366cd3204250cd2b4f11f99ceb6336f11e85215b02c462562ad5fb3663f62d7",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-scheduler",
+          "source_input_sha256": "8366cd3204250cd2b4f11f99ceb6336f11e85215b02c462562ad5fb3663f62d7",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-statsd-exporter",
+          "source_input_sha256": "8366cd3204250cd2b4f11f99ceb6336f11e85215b02c462562ad5fb3663f62d7",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-triggerer",
+          "source_input_sha256": "8366cd3204250cd2b4f11f99ceb6336f11e85215b02c462562ad5fb3663f62d7",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-worker",
+          "source_input_sha256": "8366cd3204250cd2b4f11f99ceb6336f11e85215b02c462562ad5fb3663f62d7",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "flower",
+          "source_input_sha256": "8366cd3204250cd2b4f11f99ceb6336f11e85215b02c462562ad5fb3663f62d7",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 8 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "5aebe5144b8f15ce0b0d2b6ac0897332bfdcd83f",
+      "refreshed_at": "2026-11-10T03:20:44.686630+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "4b6f120065d9fb7c86d175a1a5fc6486b71c1c2bd0429fc5c419e1f5b214fa31",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "cecec05b3f86a0df6655caaa95dfbd81570b7f6500810cc30c20c7a6fff15b35"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "349f8ec9e775b8bf74f7fbcefb6d7f2fcf7694265f34d3e3bd9eba05abefb5c0"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "4c74c4ecf7a66237838c64dd57bba93bca654de466182503e3bc46f69884adbe"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "00ed3dbee1fd4e8440ca1c8a273450401dd214f8a34df1b3819c649ea9c4019f"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/07-workflow/airflow/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "airflow-apiserver",
+          "source_input_sha256": "4c74c4ecf7a66237838c64dd57bba93bca654de466182503e3bc46f69884adbe",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-dag-processor",
+          "source_input_sha256": "4c74c4ecf7a66237838c64dd57bba93bca654de466182503e3bc46f69884adbe",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-init",
+          "source_input_sha256": "4c74c4ecf7a66237838c64dd57bba93bca654de466182503e3bc46f69884adbe",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-scheduler",
+          "source_input_sha256": "4c74c4ecf7a66237838c64dd57bba93bca654de466182503e3bc46f69884adbe",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-statsd-exporter",
+          "source_input_sha256": "4c74c4ecf7a66237838c64dd57bba93bca654de466182503e3bc46f69884adbe",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-triggerer",
+          "source_input_sha256": "4c74c4ecf7a66237838c64dd57bba93bca654de466182503e3bc46f69884adbe",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-worker",
+          "source_input_sha256": "4c74c4ecf7a66237838c64dd57bba93bca654de466182503e3bc46f69884adbe",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "flower",
+          "source_input_sha256": "4c74c4ecf7a66237838c64dd57bba93bca654de466182503e3bc46f69884adbe",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 8 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {

@@ -1,6 +1,6 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.4.0"
+version: "1.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -170,7 +170,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 07-workflow | `airflow-triggerer` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
 | 07-workflow | `airflow-worker` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
 | 07-workflow | `blog-ingestion` | none | `Infrastructure/containers` | own `blog-ingestion` profile; container metrics and logs only, receipt counts via Gateway `/v1/summary` |
-| 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` |  |
+| 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` | opt-in `airflow-flower`; job `expected_state` is `off` until started |
 | 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Applications/hermes-research`, `Infrastructure/containers` | `Applications/hermes-research`는 Hermes 플러그인이 node-exporter textfile로 쓰는 지표(SPEC-0265) |
 | 07-workflow | `n8n-task-runner-worker` | none | `Infrastructure/containers` | container metrics and logs only; its isolated runner network keeps Gatus out |
 | 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | queue load comes from `n8n_scaling_mode_queue_jobs_*` on the `n8n` job |
