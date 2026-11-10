@@ -1,10 +1,10 @@
 ---
 title: "Traefik & Nginx Hybrid Gateway Architecture"
-version: "1.1.3"
+version: "1.2.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "architecture"
 artifact_id: "ADR-0001"
 parent_ids:
@@ -59,6 +59,13 @@ The confirming evidence for this decision is limited to the Architecture Descrip
     profile. The decision sentence is preserved as a record of its time.
     Recorded by SPEC-0176.
   - Nginx handles detailed proxy pass, header manipulation, and buffering configuration internally.
+
+    Amended 2026-11-10: the owner retired the Nginx leaf
+    (`infra/01-gateway/nginx/`) and its `nginx` profile. It was an alternative
+    gateway selected only by that profile, no Nginx container existed in HOME,
+    and the seven-day Traefik router metrics showed every live route on
+    Traefik. Traefik is now the only gateway; the Secondary Path Proxy
+    decision above is preserved as a record of its time and no longer applies.
 - **Service Flow**: default root flow is `Client -> Traefik (Edge) -> Backend Service`; specialized flow is `Client -> Traefik (Edge) -> Nginx (Specialized) -> Backend Service` only when the Nginx leaf is explicitly deployed.
 
 ## Consequences

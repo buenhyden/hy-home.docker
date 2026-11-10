@@ -115,7 +115,6 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 
 | Layer | Service | Metrics source | Dashboards | Note |
 | --- | --- | --- | --- | --- |
-| 01-gateway | `nginx` | none | `Infrastructure/containers` | container metrics and logs only |
 | 01-gateway | `traefik` | `traefik` | `Gateway/traefik`, `Infrastructure/containers` |  |
 | 02-auth | `keycloak` | `keycloak` | `Security/keycloak-troubleshooting`, `Security/keycloak-capacity-planning`, `Infrastructure/containers` |  |
 | 02-auth | `oauth2-proxy` | `oauth2-proxy` | `Gateway/oauth2-proxy`, `Infrastructure/containers` |  |

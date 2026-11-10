@@ -328,13 +328,9 @@ check_01_gateway() {
 
   local traefik_compose="infra/01-gateway/traefik/docker-compose.yml"
   local traefik_middleware="infra/01-gateway/traefik/dynamic/middleware.yml"
-  local nginx_compose="infra/01-gateway/nginx/docker-compose.yml"
-  local nginx_conf="infra/01-gateway/nginx/config/nginx.conf"
 
   check_file "$traefik_compose"
   check_file "$traefik_middleware"
-  check_file "$nginx_compose"
-  check_file "$nginx_conf"
 
   check_contains "$traefik_compose" "service: template-infra-readonly-med" "traefik compose template mismatch"
   check_contains "$traefik_compose" "traefik.http.routers.dashboard.middlewares: dashboard-auth@file,gateway-standard-chain@file" "traefik dashboard middleware chain mismatch"
@@ -342,8 +338,6 @@ check_01_gateway() {
   check_contains "$traefik_middleware" "average: 100 # requests per second" "gateway rate limit average mismatch"
   check_contains "$traefik_middleware" "burst: 200" "gateway rate limit burst mismatch"
   check_contains "$traefik_middleware" "          - req-rate-limit" "gateway-standard-chain rate limiter missing"
-  check_contains "$nginx_compose" "service: template-infra-readonly-low" "nginx compose template mismatch"
-  check_contains "$nginx_conf" "server_tokens off;" "nginx server_tokens off missing"
 }
 
 # --- Tier 02: Auth ---

@@ -720,7 +720,6 @@ _FIXED_PROFILE_CATEGORIES = {
     "couchdb": "topology",
     "lab-kafka": "topology",
     "mongodb": "topology",
-    "nginx": "topology",
     "opensearch": "topology",
     "opensearch-cluster": "topology",
     "postgres-ha": "topology",

@@ -98,11 +98,6 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         clients = (
             ("infra/01-gateway/traefik/docker-compose.yml", "traefik", "/certs"),
             (
-                "infra/01-gateway/nginx/docker-compose.yml",
-                "nginx",
-                "/etc/nginx/certs",
-            ),
-            (
                 "infra/04-data/opensearch/docker-compose.yml",
                 "opensearch",
                 "/usr/share/opensearch/config/certs",

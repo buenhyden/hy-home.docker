@@ -83,7 +83,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init, mng-pg-monitor-provision | current |
 | `mongodb` | topology | 독립 LAB MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` | No | initialization: mongo-key-generator, mongo-init | current |
 | `n8n-sandbox` | capability | n8n Assistant 코드 sandbox: 인증서 생성 job, sandbox API, privileged Docker-in-Docker runner(owner 결정 2026-11-09); 기본 선택에서 제외 | `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1` | No | initialization: n8n-sandbox-certs (mTLS 자료 생성) | current |
-| `nginx` | topology | Traefik 대체 gateway; 기본 ingress port 중복 금지 | `nginx`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `notebook` | capability | Open Notebook과 SurrealDB 저장소 | `surrealdb`, `open_notebook` | No | normal service startup | current |
 | `obs` | domain | 전체 관측 기능; HOME에 필요한 하위 선택만 권장 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway` | No | initialization: seaweedfs-buckets, grafana-db-provision | current |
 | `obs-core` | capability | 메트릭 수집·대시보드 | `prometheus`, `grafana`, `grafana-db-provision` | No | initialization: grafana-db-provision | current |
@@ -260,7 +259,6 @@ Grafana query와 선택 profile의 예상 상태는 별도로 확인한다.
 
 | Selection | Constraint |
 | --- | --- |
-| nginx with core/local/dev | 기본 ingress 80/443 중복을 해소하거나 gateway 하나만 선택 |
 | lab-kafka | `labs/kafka-cluster/docker-compose.yml`의 별도 project·cluster ID·data directory가 필요하다. 3 broker, replication factor 3, `min.insync.replicas=2`로 같은 host의 broker 하나 손실을 견디지만 host HA가 아니다. HOME `kafka-1`은 replication factor 1의 단일 broker이며 장애 내성이 없다 |
 | lab-locust | `labs/locust/docker-compose.yml`의 별도 project·network·scenario/result volume을 사용하며 root `testing` profile에 포함되지 않음 |
 | opensearch with opensearch-cluster | 서로 다른 Compose project의 대체 토폴로지; LAB은 별도 network·state·credential을 사용 |
@@ -325,7 +323,6 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | Service group | Role | Consumer | 비용(CPU / MiB) | 보존 데이터 | Decision | 퇴역 조건 | Host 2026-10-08 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Traefik | 기본 ingress·TLS·ForwardAuth | 모든 routed UI | 1 / 512 | 없음(설정은 Git) | HOME 유지 | 대체하지 않음 | 실행 |
-| Nginx | 대체 gateway 실습 | 이름 있는 소비자 없음 | 0.5 / 256 | 없음 | OPTIONAL `nginx`; 80/443을 Traefik과 공유하므로 HOME 선택에 넣지 않음 | 실습 수요가 없으면 퇴역 검토 | 미실행 |
 | Loki | HOME 로그 저장·Grafana 조회 | Alloy, Grafana | 2 / 2048 | `loki-data` | HOME 유지 | 로그 수집을 다른 backend로 옮길 때 | 실행 |
 | Dozzle | 실시간 container 로그 UI | 운영자 | 1 / 512 | `dozzle-data` | OPTIONAL `admin`; 상주는 소유자 선택 | Grafana Loki 조회로 충분해질 때 | 실행 |
 | OpenSearch (single) | 전문 검색·분석 실험 | 이름 있는 소비자 없음 | 3 / 2560 | `opensearch-data`, `opensearch-dashboards-data` | OPTIONAL on-demand; 상주하지 않음 | 검색 소비자가 없으면 퇴역 검토 | 미실행 |
@@ -376,6 +373,7 @@ source·문서·secret을 함께 제거한다.
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
 - Original enablement decision: SPEC-0156 (retired)
 - Sibling resolution: SPEC-0171 (retired)
+- `nginx` profile와 `infra/01-gateway/nginx`는 2026-11-10 소유자 결정으로 퇴역했다. 근거와 기록은 SPEC-0212 TSK-0048에 있다.
 
 ## Verification
 

@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0048"
 parent_ids:
@@ -84,7 +84,7 @@ not a retirement candidate.
 | Valkey cluster / single | MNG Valkey and P02 named-ACL/dedicated-broker contract | RETAIN_SEPARATE | actual topology use UNKNOWN | P02/P06 own listener and credentials; no inferred cluster retirement |
 | InfluxDB / business time-series | no corroborated current public consumer in this Task | UNKNOWN | UNKNOWN | require exact source, consumer and retention/recovery contract |
 | Prometheus/Grafana variants | `infra/06-observability`; Grafana datasource declarations | RETAIN | runtime use UNKNOWN | P07 owns expected-target and backend evidence; no second monitoring source is created |
-| Traefik / Nginx | `infra/01-gateway/traefik`, `infra/01-gateway/nginx` | RETAIN_SEPARATE | routed UI / named Nginx consumer UNKNOWN | Traefik remains default ingress; Nginx stays documented optional mode |
+| Traefik / Nginx | `infra/01-gateway/traefik`; `infra/01-gateway/nginx` retired 2026-11-10 | RETAIN_TRAEFIK_RETIRE_NGINX | routed UI; Nginx had no named consumer | Traefik is the only gateway; see Nginx gateway retirement below |
 | k6 / Locust | `infra/11-quality/k6`; Locust current source/consumer UNKNOWN | RETAIN_K6_DEFER_LOCUST | UNKNOWN | do not create or remove a load tool without a named workload and budget |
 | Schema Registry | Kafka source and Kafbat schema-registry declaration | RETAIN_OPTIONAL | historical CDC consumer scope only | P04 keeps current `platform_dev` evidence; Opsflow adoption needs an actual consumer |
 | Airflow / n8n | `infra/07-workflow/airflow`, `infra/07-workflow/n8n` | RETAIN_SEPARATE | P04 batch/backfill; P05 event/notification source scope | distinct execution models; current operation remains NOT_RUN |
@@ -95,6 +95,38 @@ not a retirement candidate.
 | OpenTofu / Terrakube | `infra/09-platform-ops/{opentofu,terrakube}` | RETAIN_SEPARATE | operator use UNKNOWN | client tooling and optional server have distinct recovery/authority boundaries |
 | Mailpit / Stalwart | `infra/11-quality/mailpit`, `infra/10-communication/stalwart` | RETAIN_SEPARATE | P05 isolated capture; actual Stalwart sender UNKNOWN | capture is not final delivery; P06 owns credentials and Secret lifecycle |
 | NoSQL / graph stores | Neo4j, OpenSearch, SurrealDB/Qdrant declaration surfaces | DEFER_OPTIONAL | consumer/data owner UNKNOWN | no candidate removal until consumer, backup reader and recovery evidence are explicit |
+
+### Nginx gateway retirement (2026-11-10)
+
+On 2026-11-10 the owner decided to retire `infra/01-gateway/nginx` from the
+repository, replacing the 2026-11-03 RETAIN_SEPARATE disposition above.
+Owner-reported evidence, not re-collected by this change: Nginx was an
+alternative gateway selected only by the `nginx` profile; no Nginx container
+exists in HOME; the seven-day Traefik router metrics show every live route on
+Traefik; and its ingress role duplicates Traefik entirely. No container was
+started, stopped or changed, and no secret or `.env` content was read.
+
+Disposition and consumer cutover, all in one change:
+
+- Removed the `infra/01-gateway/nginx/` leaf, its root `include` entry, the
+  `nginx` profile and its row in the POL-0078 vocabulary (Traceability records
+  the retirement) and its `seaweedfs` companion profile membership.
+- Retired the Nginx Guide, Policy and Runbook (`GDE-0011`, `POL-0011`,
+  `RUN-0011`) and their README rows. Their still-current meaning, that Traefik
+  is the default and only ingress, already lives in the Traefik documents,
+  AD-0001 and POL-0078; ADR-0001 carries a dated amendment.
+- Removed the Nginx hardening check, the `nginx` profile category entry, the
+  P02 Nginx tests and their registrations, the `nginx:alpine` floating-image
+  exception and the tech-stack projection row.
+- Moved the SEC01 `nginx` ROOT row to `historical_lab_entries` with
+  `current_scope: removed` and recorded the removal in `source_refreshes`;
+  counts and the related-source mapping were adjusted without new vendor,
+  signature, scan or acceptance evidence.
+- Removed the SeaweedFS `cdn-bucket` creation (`BUCKETS`), its anonymous `Read:cdn-bucket`
+  identity and the related tests and docs after confirming by repository grep
+  that no service other than Nginx referenced the bucket. Deleting the bucket
+  data in HOME is a separate approved step and was not performed. The
+  historical SEC01 lookup records for nginx are kept.
 
 ### Historical/source reconciliation
 
@@ -149,6 +181,7 @@ executor handoffs.
 | Broad CI plan | 91 | W96 | Public-plan execution | Existing CI plan | FAIL | 7 failures/323 errors from existing `leaf.p03-hermes` public-execution parity residual; separate P03/CI ownership remains. | required | - |
 | Workflow expected-list residual | 93 | W98 | Expected-selector list comparison | Existing workflow test expectation | FAIL | Six P04/P05 registration expectation differences; distinct from P03 execution parity. | required | - |
 | P09 DATA review refresh | 90 | W95 | Local inventory scan then validate | 98 retained public review receipts | PASS | 42,018/42,018 files listed; whole review 6/2,322; partial 78/2,322; render 0/17; runtime/restore 0/112. Metadata/listing only. | required | - |
+| Nginx gateway retirement | 90 | W95 | Static retirement checks | Owner decision 2026-11-10; changed files | PASS | Compose validation (63 selections), 01-gateway hardening, operations catalog, script manifest, document links/metadata/lifecycle, SEC01 and affected test modules passed locally. The Nginx absence and Traefik route evidence is owner-reported, not re-collected; no container was started, stopped or changed. | required | - |
 | Service operation, storage move, credential use, external deletion, remote CI | 92 | W97 | Authorized-operation boundary | Current authorization | NOT_RUN | Not authorized in this Task. | required | - |
 
 ## Criterion Acceptance

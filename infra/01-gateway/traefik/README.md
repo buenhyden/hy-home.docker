@@ -1,10 +1,10 @@
 ---
 title: "Traefik Edge Router"
-version: "1.0.9"
+version: "1.0.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 created: "2025-11-12"
 ---
 
@@ -38,7 +38,7 @@ Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker �
 ### Out of Scope
 
 - 애플리케이션 수준의 비즈니스 로직.
-- 상세한 경로 기반 재작성(일부는 Nginx에 위임).
+- 상세한 경로 기반 재작성.
 - 개별 서비스 컨테이너 정의(각자의 infra 폴더에서 관리).
 
 ## Structure
