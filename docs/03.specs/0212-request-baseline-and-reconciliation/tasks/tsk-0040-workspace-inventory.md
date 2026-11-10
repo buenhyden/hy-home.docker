@@ -1,10 +1,10 @@
 ---
 title: "Workspace Inventory Task"
-version: "0.2.4"
+version: "0.2.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0040"
 parent_ids:
@@ -426,6 +426,21 @@ The ledger was then regenerated from a clean tree with the renewed receipts and
 curation: files fully reviewed 9/2,028, partially 89/2,028, STALE 0, missing 0;
 81 requirement rows, none without a subject. Runtime, restore and Hosted CI
 remain NOT_RUN.
+
+### Full local profile run 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) allowed one run of the local full profile
+(`run-ci-gate.py --profile full --local-only`) as an exception to the no-labs
+rerun rule. A first attempt with the uv-managed Python 3.14.8 stopped at the
+toolchain preflight (no memfd sealing) before any leaf ran. The run itself
+used `~/.local/python-3.14.8` with sealing and an offline hash-locked
+controller environment at `main` `e447444c6`, from 13:06:46Z to 13:15:34Z.
+`leaf.local-hook-rule-tests` passed. `leaf.local-candidate-preflight` printed
+both of its step results (metadata check-changed 0 violations, tech-stack in
+sync) and the runner then reported exit 124 (timed out) at 8.8 minutes,
+under the leaf's 15-minute budget; the other 12 leaves did not run. The cause
+is unconfirmed. Criteria 51 to 55 stay pending: the five full-gate FAIL rows
+still need a passing full profile, and no further run is authorized.
 
 ## Evidence
 
