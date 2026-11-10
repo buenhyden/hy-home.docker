@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.43"
+version: "0.1.44"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -341,6 +341,8 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | Traefik v3.7.17 pin and digests | 60 | W65 | Anonymous Docker Hub registry API and GitHub latest-release API, release notes and v3.7 migration guide read | Branch base `be3cab6a6`; `traefik:v3.7.17` | PASS | Index `sha256:f4bb143d…86f5a` (raw SHA256 equals `Docker-Content-Digest`), linux/amd64 manifest `sha256:e15b8921…81511a`, config `sha256:d848e658…bcb2e21`; release `v3.7.17` published 2026-10-30, not a prerelease; recorded in the SEC01 files | required | - |
 | Traefik v3.7.17 signature, scan, config boot and HOME | 60 | W65 | Publisher signature, SBOM or scan, config boot, recreate | Same inputs | NOT_RUN | The image was not pulled or inspected; the running Traefik is unchanged and every recreate waits for its own approval | required | - |
 | Traefik v3.7.17 consumer checks | 60 | W65 | `test_update_gates`, `test_compose_baseline_gates`, `test_p02_service_contracts`, `test_tech_stack_version_contract`; `docker compose --env-file .env.example config -q`; `check-all-hardening.sh 01-gateway` | Branch base `be3cab6a6` plus this change | PASS | 286 tests OK, 31 declared skips; Compose render exits 0; `check-all-hardening.sh 01-gateway` ALL PASS | required | - |
+| n8n code sandbox secret metadata rerun | 60 | W65 | `test_secret_metadata_sync` against the public secret metadata | Current `main` `11e41fb43` public secret metadata | PASS | `test_secret_metadata_sync`: 57 tests OK on 2026-11-10; the sandbox secret rows are present. Live sandbox start stays NOT_RUN. | required | n8n code sandbox secret metadata |
+| n8n consumer test suites rerun | 60 | W65 | 41 modules naming n8n, `2.43.6` or `sso-auth`, plus `test_p02_service_contracts` and `test_compose_baseline_gates` | Current `main` `11e41fb43`, 42 modules naming n8n, `2.43.6` or `sso-auth`, venv on `PATH` | PASS | 1131 tests OK, 79 declared skips, 0 failures in 352.8 s on 2026-11-10; the earlier stale `test_update_gates` rows are rebound. | required | n8n consumer test suites |
 
 ## Criterion Acceptance
 
