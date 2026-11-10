@@ -5,7 +5,7 @@ x-wiremock: &wiremock
   extends:
     file: ../../common-optimizations.yml
     service: template-infra-readonly-med
-  image: wiremock/wiremock:3.13.2-alpine
+  image: wiremock/wiremock:3.13.2-alpine@sha256:f8c42a38dca3f4a1d7219af11c80438740f39eebb1505b0f029aed743c20e147
   user: '1000:1000'
   volumes:
     - ./mappings:/home/wiremock/mappings:ro

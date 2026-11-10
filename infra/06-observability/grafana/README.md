@@ -98,7 +98,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 - **Loki**: `uid: Loki`, URL `http://loki:3100`
 - **Tempo**: `uid: Tempo`, URL `http://tempo:3200`, `tracesToLogsV2`가 `Loki`와 연결됨
 - **Alertmanager**: `uid: alertmanager`, URL `http://alertmanager:9093`
-- **Pyroscope**: 데이터소스 타입 `grafana-pyroscope-datasource`, URL `http://pyroscope:4040`
+- **Pyroscope**: `uid: Pyroscope`, 데이터소스 타입 `grafana-pyroscope-datasource`, URL `http://pyroscope:4040`, `minStep: 60s`(Alloy scrape 간격). 데이터소스는 한 개뿐이며 파일 맨 위 `deleteDatasources`는 UID 없이 만든 옛 항목을 한 번 지우는 마이그레이션이다. Drilldown > Profiles 앱은 Grafana 기본 preinstall로 설치되므로 provisioning이 없다
 
 ### Dashboards and Access
 
@@ -115,7 +115,6 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 
 | Layer | Service | Metrics source | Dashboards | Note |
 | --- | --- | --- | --- | --- |
-| 01-gateway | `nginx` | none | `Infrastructure/containers` | container metrics and logs only |
 | 01-gateway | `traefik` | `traefik` | `Gateway/traefik`, `Infrastructure/containers` |  |
 | 02-auth | `keycloak` | `keycloak` | `Security/keycloak-troubleshooting`, `Security/keycloak-capacity-planning`, `Infrastructure/containers` |  |
 | 02-auth | `oauth2-proxy` | `oauth2-proxy` | `Gateway/oauth2-proxy`, `Infrastructure/containers` |  |
@@ -277,7 +276,7 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 | `Observability/loki-reads` | `hyhome-loki-reads` | grafana/loki production/loki-mixin-compiled loki-reads.json; job selectors set to the single-binary job |
 | `Observability/loki-writes` | `hyhome-loki-writes` | grafana/loki production/loki-mixin-compiled loki-writes.json; job selectors set to the single-binary job |
 | `Observability/prometheus-overview` | `hyhome-prometheus` | monitoring-mixins prometheus/prometheus.json (2026-08-27) |
-| `Observability/pyroscope` | `hyhome-pyroscope` | Local dashboard: no external dashboard matches pyroscope |
+| `Observability/pyroscope` | `hyhome-pyroscope` | Local dashboard: 서비스별 CPU·메모리·goroutine 시계열, `Service` 변수를 따르는 flamegraph, Pyroscope 서버 지표 |
 | `Observability/tempo-operational` | `hyhome-tempo-operational` | grafana/tempo operations/tempo-mixin-compiled tempo-operational.json; job selectors set to the single-binary job |
 | `Observability/tempo-reads` | `hyhome-tempo-reads` | grafana/tempo operations/tempo-mixin-compiled tempo-reads.json; job selectors set to the single-binary job |
 | `Observability/tempo-writes` | `hyhome-tempo-writes` | grafana/tempo operations/tempo-mixin-compiled tempo-writes.json; job selectors set to the single-binary job |

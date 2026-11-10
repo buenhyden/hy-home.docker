@@ -64,9 +64,8 @@ provision job은 실행할 때마다 비밀번호를 비밀 파일에 맞추므�
 바꾸고 job을 다시 실행한 뒤 exporter를 재생성하는 순서입니다. 두 엔진 모두
 `mng_data_net`을 사용합니다.
 
-선택형 [`docker-compose.n8n-acl.yml`](docker-compose.n8n-acl.yml)은 공유 Valkey에
-별도 `n8n` 계정을 선언합니다. 기본 stack은 새 비밀 파일을 마운트하거나 요구하지
-않습니다. 선택 시 `mng_valkey_n8n_password`의 원본은
+`docker-compose.yml`의 `MNG_VALKEY_N8N_ENABLED`는 공유 Valkey에
+별도 `n8n` 계정을 선언합니다. 이 stack은 `mng_valkey_n8n_password`를 항상 마운트하며 원본은
 `secrets/db/mng-valkey/n8n_password.txt` (`CACHE-027`) 하나이며, 실제 UID999와
 추가 secrets group에서 읽을 수 있는 단일 링크 일반 파일(0400/0600 소유자 읽기
 또는 0440/0640 group 읽기)만 허용합니다. 비어 있거나 중복·symlink·잘못된 mode는

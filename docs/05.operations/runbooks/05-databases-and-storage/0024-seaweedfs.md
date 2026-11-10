@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.5.1"
+version: "1.5.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -50,7 +50,7 @@ HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
 ```
 
 rehearsal은 disposable data에서 실제 service를 렌더링한다. anonymous 및
-wrong-credential 보호 대상 요청이 거부되는지(CDN 익명 read 예외 유지), filer와 volume HTTP가 JWT를 요구하는지,
+wrong-credential 보호 대상 요청이 거부되는지, filer와 volume HTTP가 JWT를 요구하는지,
 gRPC가 client certificate를 요구하는지, consumer S3 API, restart 후
 persistence, volume server가 다운된 동안 read가 실패하는지, 빈 store로의
 backup과 restore를 확인한다.
@@ -82,7 +82,7 @@ backup과 restore를 확인한다.
    operator)으로 생성한 뒤
    `docker compose --profile seaweedfs up -d --wait`를 실행한다.
 4. admin identity로 검증한다: disposable bucket을 만들고 삭제하며, anonymous
-   보호 대상 요청이 403을 반환하고 CDN anonymous-read 예외만 허용되는지 확인한다.
+   보호 대상 요청이 403을 반환하는지 확인한다.
 
 ### Retained MinIO data
 

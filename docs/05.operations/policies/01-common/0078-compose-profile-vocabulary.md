@@ -81,7 +81,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init, mng-pg-monitor-provision | current |
 | `mongodb` | topology | 독립 LAB MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` | No | initialization: mongo-key-generator, mongo-init | current |
 | `n8n-sandbox` | capability | n8n Assistant 코드 sandbox: 인증서 생성 job, sandbox API, privileged Docker-in-Docker runner(owner 결정 2026-11-09); 기본 선택에서 제외 | `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1` | No | initialization: n8n-sandbox-certs (mTLS 자료 생성) | current |
-| `nginx` | topology | Traefik 대체 gateway; 기본 ingress port 중복 금지 | `nginx`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `notebook` | capability | Open Notebook과 SurrealDB 저장소 | `surrealdb`, `open_notebook` | No | normal service startup | current |
 | `obs` | domain | 전체 관측 기능; HOME에 필요한 하위 선택만 권장 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway` | No | initialization: seaweedfs-buckets, grafana-db-provision | current |
 | `obs-core` | capability | 메트릭 수집·대시보드 | `prometheus`, `grafana`, `grafana-db-provision` | No | initialization: grafana-db-provision | current |
@@ -192,6 +191,38 @@ broker·영속 저장소·관측 종속성을 함께 유지한다. `core`만으�
 DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이다. config 성공은
 무인 재기동이나 live readiness를 증명하지 않는다.
 
+### HOME Compose overlay 등록부와 적용 규칙
+
+이 절이 overlay 적용 규칙의 유일한 소유자다. 다른 문서는 이 절을 링크하고 규칙을
+다시 쓰지 않는다. 절차는
+[RUN-0098](../../runbooks/01-common/0098-cold-start-and-reboot.md#overlay-적용-점검-절차)이 소유한다.
+
+- 어떤 overlay도 root `.env`의 `COMPOSE_FILE`로 적용하지 않는다. HOME의 `COMPOSE_FILE`은
+  `docker-compose.yml` 하나이거나 미설정이다. 소유자는 평문 `docker compose`를 쓰므로
+  HOME에서 항상 실행돼야 하는 변경은 overlay가 아니라 base Compose 파일에 둔다.
+- 유지보수·롤백처럼 일시적인 overlay는 파일로 남기고, 해당 Runbook 절차 안에서
+  명시적 `-f docker-compose.yml -f <overlay>`로만 적용한다. 절차가 끝나면 base만으로
+  서비스를 다시 만든다. 실행 프로세스의 `COMPOSE_FILE` 환경 변수는 적용 근거가 아니다.
+- 선택기(`scripts/lib/ops/compose_start.py`)는 `.env`의 `COMPOSE_FILE`이
+  `docker-compose.yml` 외의 값이면 값을 출력하지 않고 `compose_file_overlay_forbidden`으로
+  fail-closed 거부한다.
+- 등록부의 기계 판독 원본은 `infra/compose-overlays.json`이다. `x-hyhome-overlay`
+  marker를 가진 추적 파일은 모두 이 표와 JSON에 한 변경으로 함께 등록한다.
+  `tests/validation/test_compose_overlay_register.py`가 marker 파일·JSON·이 표의 불일치를
+  실패로 보고한다.
+- 필수 입력은 이름만 쓰며 값은 문서·로그·`.env.example`에 쓰지 않는다. 입력은 overlay를
+  적용하기 전에 준비한다.
+- HOME 상시 변경이던 n8n Valkey ACL(`mng-valkey`), n8n Worker와 Ollama 사이
+  `n8n_ollama_net`, Opsflow manifest-pipeline의 Airflow 코드 mount·Worker 망과
+  `OPSFLOW_SECRET_DIR` mount는 base 파일로 합쳤고 overlay 파일은 없다.
+- 선택형 서비스 확장의 형식은 위 [Typed optional root overlays](#typed-optional-root-overlays)가 정한다.
+
+| Overlay | Base | 목적 | 필수 입력(이름만) | 적용 방식 | 소유 문서 |
+| --- | --- | --- | --- | --- | --- |
+| `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml` | `docker-compose.yml` | n8n manifest outbox notifier 망 | 없음 | 명시적 `-f`, HOME 미적용 | [RUN-0053](../../runbooks/08-workflows-and-automation/0053-n8n.md) |
+| `infra/08-ai/comfyui/docker-compose.egress.yml` | `infra/08-ai/comfyui/docker-compose.yml` | ComfyUI 외부 망(유지보수 한정) | 없음 | 명시적 `-f`, HOME 미적용 | [RUN-0081](../../runbooks/09-ai-and-search/0081-comfyui.md) |
+| `infra/01-gateway/traefik/compose.window-ca.override.yml` | `infra/01-gateway/traefik/docker-compose.yml` | Traefik owner-window CA mount | 없음 | 명시적 `-f`, owner window 한정 | [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md) |
+
 ### Companion, exclusion and side effects
 
 Producer의 모든 profile은 기존 Exporter와 필요한 monitor provision job을 함께
@@ -204,11 +235,7 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 `kafbat-ui`만 Target한 의존성 closure에는 Exporter가 빠지므로 해당 Producer의
 아래 companion 목록을 target 합집합에 포함한다. 이 계약은 임의 Docker CLI 명령을
 가로채는 장치가 아니며 bare Producer 기동 자체를 Compose 오류라고 주장하지 않는다.
-선택기는 저장소 루트 `.env`의 `COMPOSE_FILE`이 가리키는 파일을 같은 순서로 계획 입력(해시
-포함)과 `-f` 목록에 넣고, 관측 overlay를 마지막에 붙인다. 첫 파일은 `docker-compose.yml`이어야
-하며 저장소 밖 경로·`..`·중복·없는 파일은 거부한다. 실행 프로세스의 `COMPOSE_FILE` 환경 변수는
-신뢰하지 않는다. 관측 선택을 HOME 전체와 맞추려면 `--target`이 아니라 `--selection HOME`으로
-계획한다.
+관측 선택을 HOME 전체와 맞추려면 `--target`이 아니라 `--selection HOME`으로 계획한다.
 
 | Producer | Explicit targets |
 | --- | --- |
@@ -230,7 +257,6 @@ Grafana query와 선택 profile의 예상 상태는 별도로 확인한다.
 
 | Selection | Constraint |
 | --- | --- |
-| nginx with core/local/dev | 기본 ingress 80/443 중복을 해소하거나 gateway 하나만 선택 |
 | lab-kafka | `labs/kafka-cluster/docker-compose.yml`의 별도 project·cluster ID·data directory가 필요하다. 3 broker, replication factor 3, `min.insync.replicas=2`로 같은 host의 broker 하나 손실을 견디지만 host HA가 아니다. HOME `kafka-1`은 replication factor 1의 단일 broker이며 장애 내성이 없다 |
 | lab-locust | `labs/locust/docker-compose.yml`의 별도 project·network·scenario/result volume을 사용하며 root `testing` profile에 포함되지 않음 |
 | opensearch with opensearch-cluster | 서로 다른 Compose project의 대체 토폴로지; LAB은 별도 network·state·credential을 사용 |
@@ -294,7 +320,6 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | Service group | Role | Consumer | 비용(CPU / MiB) | 보존 데이터 | Decision | 퇴역 조건 | Host 2026-10-08 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Traefik | 기본 ingress·TLS·ForwardAuth | 모든 routed UI | 1 / 512 | 없음(설정은 Git) | HOME 유지 | 대체하지 않음 | 실행 |
-| Nginx | 대체 gateway 실습 | 이름 있는 소비자 없음 | 0.5 / 256 | 없음 | OPTIONAL `nginx`; 80/443을 Traefik과 공유하므로 HOME 선택에 넣지 않음 | 실습 수요가 없으면 퇴역 검토 | 미실행 |
 | Loki | HOME 로그 저장·Grafana 조회 | Alloy, Grafana | 2 / 2048 | `loki-data` | HOME 유지 | 로그 수집을 다른 backend로 옮길 때 | 실행 |
 | Dozzle | 실시간 container 로그 UI | 운영자 | 1 / 512 | `dozzle-data` | OPTIONAL `admin`; 상주는 소유자 선택 | Grafana Loki 조회로 충분해질 때 | 실행 |
 | OpenSearch (single) | 전문 검색·분석 실험 | 이름 있는 소비자 없음 | 3 / 2560 | `opensearch-data`, `opensearch-dashboards-data` | OPTIONAL on-demand; 상주하지 않음 | 검색 소비자가 없으면 퇴역 검토 | 미실행 |
@@ -345,6 +370,7 @@ source·문서·secret을 함께 제거한다.
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
 - Original enablement decision: SPEC-0156 (retired)
 - Sibling resolution: SPEC-0171 (retired)
+- `nginx` profile와 `infra/01-gateway/nginx`는 2026-11-10 소유자 결정으로 퇴역했다. 근거와 기록은 SPEC-0212 TSK-0048에 있다.
 
 ## Verification
 

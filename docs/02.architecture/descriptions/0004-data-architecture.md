@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.2.1"
+version: "1.3.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -75,7 +75,7 @@ The root Compose includes every `infra/04-data` package; profiles select them:
 `mng-db` by `mng`, `core`, `dev` and `local` (`mng-pg` also by `mlops`,
 `data-science`, `contract-testing` and `bi`); `dev-db` by `dev-data`,
 `analytics-engineering`, `cdc` and `quality-results`; `seaweedfs` by
-`seaweedfs`, `storage`, the observability storage profiles, `nginx`, `mlops`,
+`seaweedfs`, `storage`, the observability storage profiles, `mlops`,
 `data-science` and `lakehouse`; `qdrant` by `ai`, `ai-llm` and `qdrant`;
 `neo4j` by `graph`; `opensearch` by `opensearch`; `redisinsight` by `admin`
 and `admin-data`. LAB entrypoints are separate projects, excluded even from

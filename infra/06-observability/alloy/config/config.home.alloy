@@ -255,9 +255,23 @@ pyroscope.scrape "go_services" {
     {"__address__" = "node-exporter:9100", "service_name" = "node-exporter"},
     {"__address__" = "mng-pg-exporter:9187", "service_name" = "mng-pg-exporter"},
     {"__address__" = "registry:5001", "service_name" = "registry"},
+    {"__address__" = "dev-pg-exporter:9187", "service_name" = "dev-pg-exporter"},
   ]
-  scrape_interval = "30s"
+  // 60 s halves the ingested volume of 30 s; the CPU profile still covers the
+  // whole interval, so no CPU time goes unsampled. block and mutex stay off:
+  // they are empty unless a service sets a sampling rate, and only four
+  // services here do (checked 2026-11-10).
+  scrape_interval = "60s"
   forward_to      = [pyroscope.write.local_pyroscope.receiver]
+
+  profiling_config {
+    profile.block {
+      enabled = false
+    }
+    profile.mutex {
+      enabled = false
+    }
+  }
 }
 
 // SeaweedFS answers /debug/pprof/block and /mutex only after the scrape
@@ -266,7 +280,7 @@ pyroscope.scrape "seaweedfs" {
   targets = [
     {"__address__" = "seaweedfs-s3:9327", "service_name" = "seaweedfs-s3"},
   ]
-  scrape_interval = "30s"
+  scrape_interval = "60s"
   forward_to      = [pyroscope.write.local_pyroscope.receiver]
 
   profiling_config {

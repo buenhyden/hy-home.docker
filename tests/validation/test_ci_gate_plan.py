@@ -1034,7 +1034,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "tests/validation/test_p02_gateway_port_validation.py",
             "tests/validation/test_p02_prometheus_contracts.py",
             "tests/validation/test_p02_valkey_mount_scope.py",
-            "infra/01-gateway/nginx/scripts/validate-upstream-ports.sh",
             "infra/02-auth/keycloak/docker-compose.yml",
             "infra/04-data/mng-db/docker-compose.yml",
             "infra/06-observability/docker-compose.yml",

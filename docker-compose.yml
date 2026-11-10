@@ -61,6 +61,9 @@ networks:
   # Each external Code runner shares an internal bridge only with its broker
   # process. The bridge isolates peers; it is not a per-port firewall on the
   # paired n8n container (SPEC-0212-TSK-0042).
+  # n8n-worker <-> ollama only; shared by two includes, so declared here.
+  n8n_ollama_net:
+    internal: true
   n8n_worker_runner_net:
     name: n8n_worker_runner_net
     internal: true
@@ -564,7 +567,6 @@ include:
   # are evaluated. SPEC-0171 folded them into the file they duplicated and is
   # completed, so every Compose file under infra/ appears in this list.
   # 01-gateway
-  - infra/01-gateway/nginx/docker-compose.yml
   - infra/01-gateway/traefik/docker-compose.yml
   # 02-auth
   - infra/02-auth/keycloak/docker-compose.yml

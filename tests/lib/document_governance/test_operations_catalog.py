@@ -740,10 +740,10 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
     def test_resolved_bundle_requires_published_postmortem_and_current_owner(self):
         for state, owner, expected in (
             (None, "", "incident-postmortem-required"),
-            ("draft", "GDE-0011", "incident-postmortem-required"),
+            ("draft", "GDE-0013", "incident-postmortem-required"),
             ("published", "GDE-9999", "incident-corrective-owner-required"),
             ("published", "inc-2026-0001", "incident-corrective-owner-required"),
-            ("published", "GDE-0011", None),
+            ("published", "GDE-0013", None),
             ("published", "no corrective action: transient fixture", None),
         ):
             with self.subTest(state=state, owner=owner):
@@ -772,7 +772,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         cases = (
             (
                 "unique-owned",
-                "## Overview\n### Corrective Actions\nGDE-0011\n"
+                "## Overview\n### Corrective Actions\nGDE-0013\n"
                 "## Corrective Actions\n",
                 False,
             ),
@@ -783,7 +783,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             ),
             (
                 "ambiguous",
-                "## Overview\n### Corrective Actions\nGDE-0011\n"
+                "## Overview\n### Corrective Actions\nGDE-0013\n"
                 "### Corrective Actions\nGDE-0012\n## Corrective Actions\n",
                 True,
             ),
@@ -873,7 +873,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         with context:
             source = (
                 root
-                / "docs/05.operations/guides/02-gateway-and-networking/0011-nginx.md"
+                / "docs/05.operations/guides/02-gateway-and-networking/0013-traefik.md"
             )
             target = source.with_name("0999-untracked.md")
             target.write_text(

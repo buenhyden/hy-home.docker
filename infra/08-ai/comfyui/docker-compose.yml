@@ -61,7 +61,7 @@ services:
     #     PUID: ${COMFYUI_UID:-1000}
     #     PGID: ${COMFYUI_GID:-1000}
     # image: hy-home/comfyui:${COMFYUI_IMAGE_TAG:-v0.36.0-cu126}
-    image: yanwk/comfyui-boot:cu126-slim
+    image: yanwk/comfyui-boot:cu126-slim@sha256:2860c103583fbbd03f2e324116395a47e68ad0ef84fc3689f03b42a63fba41a6
     container_name: comfyui
     hostname: comfyui
     restart: unless-stopped
