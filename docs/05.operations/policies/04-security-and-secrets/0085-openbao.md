@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.10.0"
+version: "0.10.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -226,6 +226,7 @@ owner는 SEC01(SPEC-0204 TSK-0009)에서 자체 빌드 OpenBao image의 잔여 �
 CVE-2025-60876, GO-2026-5932 처분)을 받아들였다. 처음 수용한 manifest `46bf9b5c`(Go 1.27.2)는 <!-- runtime-version-exception: history — 교체 전 수용 image의 builder Go 버전이며 build-inputs.json이 현재 pin을 소유함 -->
 2026-10-21 stable 조회에서 Go 1.27.3의 crypto/x509 수정(CVE-2026-111943)이 나와 교체됐고, owner는 같은
 처분을 가진 교체 image manifest `a58fb110`(Go 1.27.3)을 같은 날 승인했다("이미지 교체 승인"). 교체 image의 재스캔(Grype DB 2026-10-20)도 CVE-2025-60876 Medium 3건과 GO-2026-5932 Unknown 1건만 보고했고, 두 항목의 처분은 바뀌지 않았다. <!-- runtime-version-exception: history — 승인 시점 교체 image의 builder Go 버전이며 build-inputs.json이 pin을 소유함 -->
+2026-11-10에 image가 OpenBao v2.7.2 기반 r3 manifest `ef27a440`(Go 1.27.3, x/net 0.62.0, Alpine 3.24.4)으로 교체됐다. 재스캔(Grype DB 2026-11-10)은 Critical 0, High 1, Medium 5, Unknown 1이다. owner는 같은 날 fixed release가 없는 go-jose/v3 v3.0.5의 GHSA-mgcc-cww5-fp2q(High)와 GHSA-vvm8-gf78-28g4·GHSA-4w3g-jfj2-cw2q(Medium)의 잔여 위험을 수용했다("accept go-jose v3 residual risk"). go-jose/v3는 hashicorp/cap와 okta-sdk-golang을 통해 package 수준에서 도달하며 호출 수준 도달은 추적하지 않았다. 서명 없음, CVE-2025-60876, GO-2026-5932 처분은 그대로다. <!-- runtime-version-exception: history — 승인 시점 교체 image의 builder Go와 x/net 버전이며 build-inputs.json이 pin을 소유함 -->
 만료는 SEC01 기준 15 수용이나 image 교체 중 이른 때다. 서명 없음은 기준 15 수용 뒤에도 남을 수 있으므로 그때 따로 판단한다. 이와
 별도로, window 시작 7일 안의 stable 조회에서 이 image에 영향을 주는 보안 수정이 나오면 W4·W5
 gate가 실패한다. 같은 window가 쓰는 Traefik·Prometheus image의 수용은 각 서비스 정책
