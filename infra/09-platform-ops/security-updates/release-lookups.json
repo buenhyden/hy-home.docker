@@ -18162,5 +18162,2419 @@
         ]
       }
     ]
+  },
+  "master_20261110_public_refresh": {
+    "schema_version": 1,
+    "task": "SPEC-0212-TSK-0052",
+    "source_revision": "648a78a261cdd058f6c5ed94f560aca73fba145b",
+    "retrieved_at": "2026-11-10T13:47:09.345Z",
+    "meaning": "Anonymous public release metadata and local source routing only. No image pull/build, signature execution, deployment or acceptance. GitHub non-prerelease is not vendor stable-channel proof.",
+    "github": {
+      "apache/airflow": {
+        "repo": "apache/airflow",
+        "request_url": "https://api.github.com/repos/apache/airflow/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:30.098Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "3.4.0",
+        "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
+        "published_at": "2026-11-06T13:08:22Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 15,
+        "security_asset_metadata": [
+          {
+            "name": "apache_airflow-3.4.0-py3-none-any.whl.asc",
+            "digest": "sha256:965ceb6d562e40af567629d2efb48c7105b584949b8149f045398c0e1cf9b3b4",
+            "size": 297
+          },
+          {
+            "name": "apache_airflow-3.4.0-py3-none-any.whl.sha512",
+            "digest": "sha256:f29d449cc6becf94e53d5cc3786ce4742a84800c90bfa173a2a5d221090c7293",
+            "size": 168
+          },
+          {
+            "name": "apache_airflow-3.4.0-source.tar.gz.asc",
+            "digest": "sha256:29e89fc1f003f7740297a608533b51feba008e94fa01a14a03ba64927ccdaf33",
+            "size": 297
+          },
+          {
+            "name": "apache_airflow-3.4.0-source.tar.gz.sha512",
+            "digest": "sha256:cad482082a997e38df9e66acdcba31aa00ddc628b28e8c32b3f89906daabf54a",
+            "size": 165
+          },
+          {
+            "name": "apache_airflow-3.4.0.tar.gz.asc",
+            "digest": "sha256:82f593b7bd2f13adc65ffa8c00e326df599366085e97814f81b192d9527e60be",
+            "size": 297
+          },
+          {
+            "name": "apache_airflow-3.4.0.tar.gz.sha512",
+            "digest": "sha256:688c2816ed546b081c7fa06ed63b87eee0bd48fa46bafc0e8b778e2af450ee65",
+            "size": 158
+          },
+          {
+            "name": "apache_airflow_core-3.4.0-py3-none-any.whl.asc",
+            "digest": "sha256:002646c9ef948a609fdd1ab836e24fa902ce47745aa23c2e4f8ddaa6f57d03f2",
+            "size": 297
+          },
+          {
+            "name": "apache_airflow_core-3.4.0-py3-none-any.whl.sha512",
+            "digest": "sha256:7afc52ae3f05bc0c473644980712ee7612a1a31a8a73e587dde5905c3e49cad8",
+            "size": 173
+          },
+          {
+            "name": "apache_airflow_core-3.4.0.tar.gz.asc",
+            "digest": "sha256:b17f891c5dcee051ba3f61747c03319a5048e233174d0a123bc5a4dd1a10159e",
+            "size": 297
+          },
+          {
+            "name": "apache_airflow_core-3.4.0.tar.gz.sha512",
+            "digest": "sha256:0d71b75f1262b656dbbfb637910ca777c4571c8684c899033c53700c6e033f31",
+            "size": 163
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "prometheus/statsd_exporter": {
+        "repo": "prometheus/statsd_exporter",
+        "request_url": "https://api.github.com/repos/prometheus/statsd_exporter/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:30.252Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v0.31.0",
+        "release_url": "https://github.com/prometheus/statsd_exporter/releases/tag/v0.31.0",
+        "published_at": "2026-09-02T13:29:16Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 40,
+        "security_asset_metadata": [
+          {
+            "name": "sha256sums.txt",
+            "digest": "sha256:ad0d80d66c66934ccd1ce23bdaea06f338c2e02ee3d1267d553ae2bf962a1949",
+            "size": 4240
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "prometheus/alertmanager": {
+        "repo": "prometheus/alertmanager",
+        "request_url": "https://api.github.com/repos/prometheus/alertmanager/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:30.218Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v0.35.0",
+        "release_url": "https://github.com/prometheus/alertmanager/releases/tag/v0.35.0",
+        "published_at": "2026-11-09T17:01:58Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 40,
+        "security_asset_metadata": [
+          {
+            "name": "sha256sums.txt",
+            "digest": "sha256:1b982096e19c058c17d1dac6d14ed0c1f7708f79473cd4aec397418a08dfa236",
+            "size": 4120
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "grafana/alloy": {
+        "repo": "grafana/alloy",
+        "request_url": "https://api.github.com/repos/grafana/alloy/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:29.989Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.21.3",
+        "release_url": "https://github.com/grafana/alloy/releases/tag/v1.21.3",
+        "published_at": "2026-10-28T18:32:15Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": true,
+        "release_asset_count": 22,
+        "security_asset_metadata": [
+          {
+            "name": "SHA256SUMS",
+            "digest": "sha256:2e3c0f39869e967fed83a5f846d11588411fbe28c921523ca647080c61a9a739",
+            "size": 1955
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "google/cadvisor": {
+        "repo": "google/cadvisor",
+        "request_url": "https://api.github.com/repos/google/cadvisor/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:30.739Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v0.60.6",
+        "release_url": "https://github.com/google/cadvisor/releases/tag/v0.60.6",
+        "published_at": "2026-09-18T22:43:39Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 2,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "YanWenKun/ComfyUI-Docker": {
+        "repo": "YanWenKun/ComfyUI-Docker",
+        "request_url": "https://api.github.com/repos/YanWenKun/ComfyUI-Docker/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:29.893Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v6.0",
+        "release_url": "https://github.com/YanWenKun/ComfyUI-Docker/releases/tag/v6.0",
+        "published_at": "2025-10-15T08:06:12Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "open-policy-agent/conftest": {
+        "repo": "open-policy-agent/conftest",
+        "request_url": "https://api.github.com/repos/open-policy-agent/conftest/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:29.987Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v0.71.1",
+        "release_url": "https://github.com/open-policy-agent/conftest/releases/tag/v0.71.1",
+        "published_at": "2026-10-06T04:53:53Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 25,
+        "security_asset_metadata": [
+          {
+            "name": "checksums.txt",
+            "digest": "sha256:5e5d7e2c0e88b3437cb659a921e0b88e997e4e0a49d01be52a9569136f01dbf9",
+            "size": 2496
+          },
+          {
+            "name": "conftest_0.71.1_Darwin_arm64.tar.gz.sbom.json",
+            "digest": "sha256:f165d6f01a6e5d499a2dc1c069a263e26ff77fb8b5d6e48d9f07b7a073a680d3",
+            "size": 262030
+          },
+          {
+            "name": "conftest_0.71.1_Darwin_x86_64.tar.gz.sbom.json",
+            "digest": "sha256:4624447d192e9f5d8f9de507034e0d7a3c6f886b159077f5e2f24c38e5aa6680",
+            "size": 262193
+          },
+          {
+            "name": "conftest_0.71.1_Linux_arm64.tar.gz.sbom.json",
+            "digest": "sha256:ea2fd526c82074c2e2a93567ae22e9d268576b56783b953ab615e32b93cb4961",
+            "size": 261867
+          },
+          {
+            "name": "conftest_0.71.1_Linux_ppc64le.tar.gz.sbom.json",
+            "digest": "sha256:f49dc8475668a95f8abca242edb93babacee7905ffabe2a4fb503e58461335b5",
+            "size": 262193
+          },
+          {
+            "name": "conftest_0.71.1_Linux_s390x.tar.gz.sbom.json",
+            "digest": "sha256:365bdc45c9d6ee77cb3b1153efd2d236103c4c21b29c23d4fba220bd1da9d367",
+            "size": 261867
+          },
+          {
+            "name": "conftest_0.71.1_Linux_x86_64.tar.gz.sbom.json",
+            "digest": "sha256:5ddeaec93cba58073034049204afd8ba98f360e60ca4cbd535f4c2d8a3ee51a2",
+            "size": 262030
+          },
+          {
+            "name": "conftest_0.71.1_Windows_arm64.zip.sbom.json",
+            "digest": "sha256:3d18497b347631b10a483b9d5a448080db75856b3ec68713a622abbda6e4d3d5",
+            "size": 265466
+          },
+          {
+            "name": "conftest_0.71.1_Windows_x86_64.zip.sbom.json",
+            "digest": "sha256:d8477010b49b8119f2779238f72ed91aa92251dd2081bb18b61fbb63974853d8",
+            "size": 265631
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "unclecode/crawl4ai": {
+        "repo": "unclecode/crawl4ai",
+        "request_url": "https://api.github.com/repos/unclecode/crawl4ai/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:29.961Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v0.9.5",
+        "release_url": "https://github.com/unclecode/crawl4ai/releases/tag/v0.9.5",
+        "published_at": "2026-10-14T10:25:39Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "NVIDIA/dcgm-exporter": {
+        "repo": "NVIDIA/dcgm-exporter",
+        "request_url": "https://api.github.com/repos/NVIDIA/dcgm-exporter/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.138Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "4.9.0",
+        "release_url": "https://github.com/NVIDIA/dcgm-exporter/releases/tag/4.9.0",
+        "published_at": "2026-11-06T18:50:01Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "prometheus-community/postgres_exporter": {
+        "repo": "prometheus-community/postgres_exporter",
+        "request_url": "https://api.github.com/repos/prometheus-community/postgres_exporter/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.215Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v0.20.1",
+        "release_url": "https://github.com/prometheus-community/postgres_exporter/releases/tag/v0.20.1",
+        "published_at": "2026-07-08T02:06:53Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 40,
+        "security_asset_metadata": [
+          {
+            "name": "sha256sums.txt",
+            "digest": "sha256:4d07fd40168445baf9c71d31d500fc43b995659d5ca000d1f15b50071b4a62aa",
+            "size": 4318
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "valkey-io/valkey": {
+        "repo": "valkey-io/valkey",
+        "request_url": "https://api.github.com/repos/valkey-io/valkey/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.012Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "9.1.3",
+        "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
+        "published_at": "2026-10-26T23:21:45Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "oliver006/redis_exporter": {
+        "repo": "oliver006/redis_exporter",
+        "request_url": "https://api.github.com/repos/oliver006/redis_exporter/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.394Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.97.0",
+        "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.97.0",
+        "published_at": "2026-11-04T06:56:29Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 24,
+        "security_asset_metadata": [
+          {
+            "name": "sha256sums.txt",
+            "digest": "sha256:b96065913048e76b3b53fcd3a91ba533081c373806f69b95edd4ed06669f6742",
+            "size": 2491
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "amir20/dozzle": {
+        "repo": "amir20/dozzle",
+        "request_url": "https://api.github.com/repos/amir20/dozzle/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.138Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v11.4.2",
+        "release_url": "https://github.com/amir20/dozzle/releases/tag/v11.4.2",
+        "published_at": "2026-11-08T16:10:39Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "TwiN/gatus": {
+        "repo": "TwiN/gatus",
+        "request_url": "https://api.github.com/repos/TwiN/gatus/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.040Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v5.38.0",
+        "release_url": "https://github.com/TwiN/gatus/releases/tag/v5.38.0",
+        "published_at": "2026-10-28T20:44:28Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "grafana/grafana": {
+        "repo": "grafana/grafana",
+        "request_url": "https://api.github.com/repos/grafana/grafana/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.138Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v13.3.0",
+        "release_url": "https://github.com/grafana/grafana/releases/tag/v13.3.0",
+        "published_at": "2026-10-27T11:08:50Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 13,
+        "security_asset_metadata": [
+          {
+            "name": "grafana-v13.3.0.spdx.json",
+            "digest": "sha256:684c4a344c08e09c5d96b349b1ebeba0525b7e44d6f1689de77a0540352b3b6c",
+            "size": 3823460
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "grafana/k6": {
+        "repo": "grafana/k6",
+        "request_url": "https://api.github.com/repos/grafana/k6/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.482Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v2.3.0",
+        "release_url": "https://github.com/grafana/k6/releases/tag/v2.3.0",
+        "published_at": "2026-09-21T15:17:03Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 10,
+        "security_asset_metadata": [
+          {
+            "name": "k6-v2.3.0-checksums.txt",
+            "digest": "sha256:8ebbfcd5a13d68ac67d488c2b5f28bf901ea22d2fbbfb15f5345d65c39163be2",
+            "size": 746
+          },
+          {
+            "name": "k6-v2.3.0-spdx.json",
+            "digest": "sha256:4adaddd904f02e8c7947d9d201f11eec55b86950be7d8fc2d30bd531077dfceb",
+            "size": 487001
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "kafbat/kafka-ui": {
+        "repo": "kafbat/kafka-ui",
+        "request_url": "https://api.github.com/repos/kafbat/kafka-ui/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.015Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.5.0",
+        "release_url": "https://github.com/kafbat/kafka-ui/releases/tag/v1.5.0",
+        "published_at": "2026-04-20T18:11:44Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 1,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "danielqsj/kafka_exporter": {
+        "repo": "danielqsj/kafka_exporter",
+        "request_url": "https://api.github.com/repos/danielqsj/kafka_exporter/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:43.240Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.11.0",
+        "release_url": "https://github.com/danielqsj/kafka_exporter/releases/tag/v1.11.0",
+        "published_at": "2026-10-23T03:15:05Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 38,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "keycloak/keycloak": {
+        "repo": "keycloak/keycloak",
+        "request_url": "https://api.github.com/repos/keycloak/keycloak/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:53.476Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "26.8.2",
+        "release_url": "https://github.com/keycloak/keycloak/releases/tag/26.8.2",
+        "published_at": "2026-11-05T16:00:19Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 21,
+        "security_asset_metadata": [
+          {
+            "name": "keycloak-26.8.2.tar.gz.asc",
+            "digest": "sha256:2e373feff23932632b3805d9290ada6fb8194f51f39f28146e8bc7fefb3f9d08",
+            "size": 228
+          },
+          {
+            "name": "keycloak-26.8.2.zip.asc",
+            "digest": "sha256:e98eb7e3da5d4d13d142c49e353d2921f16cfa29a599d3d113ca598de127b5c2",
+            "size": 228
+          },
+          {
+            "name": "keycloak-api-docs-26.8.2.zip.asc",
+            "digest": "sha256:78edf304a1bdd4caa695aa74c5d95e5521206418d8ec7d76e3ae7dbe26c8af15",
+            "size": 228
+          },
+          {
+            "name": "keycloak-documentation-26.8.2.zip.asc",
+            "digest": "sha256:2fafb5e4a0afe4e5e96bdf2ea341be22f260d64accee8fa90939cc8465f9d363",
+            "size": 228
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "grafana/loki": {
+        "repo": "grafana/loki",
+        "request_url": "https://api.github.com/repos/grafana/loki/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:53.651Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v3.7.9",
+        "release_url": "https://github.com/grafana/loki/releases/tag/v3.7.9",
+        "published_at": "2026-10-20T22:53:57Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 48,
+        "security_asset_metadata": [
+          {
+            "name": "loki-v3.7.9.spdx.json",
+            "digest": "sha256:8fb03b07c5b4c186a389c066ea0de47fc1ef08d78f21561da538e797358b2e14",
+            "size": 665748
+          },
+          {
+            "name": "SHA256SUMS",
+            "digest": "sha256:7e09a44c699e0240dc502afe7dafe17509ff6dd04c4ef0dd377a8dc563ffe305",
+            "size": 2559
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "axllent/mailpit": {
+        "repo": "axllent/mailpit",
+        "request_url": "https://api.github.com/repos/axllent/mailpit/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:53.445Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.33.1",
+        "release_url": "https://github.com/axllent/mailpit/releases/tag/v1.33.1",
+        "published_at": "2026-11-07T23:38:50Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 8,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "mlflow/mlflow": {
+        "repo": "mlflow/mlflow",
+        "request_url": "https://api.github.com/repos/mlflow/mlflow/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:53.448Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v3.18.0",
+        "release_url": "https://github.com/mlflow/mlflow/releases/tag/v3.18.0",
+        "published_at": "2026-11-04T06:51:02Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "n8n-io/n8n": {
+        "repo": "n8n-io/n8n",
+        "request_url": "https://api.github.com/repos/n8n-io/n8n/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:53.558Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "n8n@2.47.3",
+        "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.47.3",
+        "published_at": "2026-11-09T08:21:35Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 3,
+        "security_asset_metadata": [
+          {
+            "name": "sbom-source.cdx.json",
+            "digest": "sha256:1a707de95ae479e878c3c8fce4f96fbbb221c18247dd69481358ace465c26ff7",
+            "size": 8122395
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "prometheus/node_exporter": {
+        "repo": "prometheus/node_exporter",
+        "request_url": "https://api.github.com/repos/prometheus/node_exporter/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:53.530Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.12.1",
+        "release_url": "https://github.com/prometheus/node_exporter/releases/tag/v1.12.1",
+        "published_at": "2026-07-14T12:34:45Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 21,
+        "security_asset_metadata": [
+          {
+            "name": "sha256sums.txt",
+            "digest": "sha256:589109afe06b57058f20c865aafe9f56ff4e812026b7394f161289a6668d1f50",
+            "size": 2128
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "oauth2-proxy/oauth2-proxy": {
+        "repo": "oauth2-proxy/oauth2-proxy",
+        "request_url": "https://api.github.com/repos/oauth2-proxy/oauth2-proxy/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:53.514Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v7.15.6",
+        "release_url": "https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.6",
+        "published_at": "2026-11-05T15:16:01Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 33,
+        "security_asset_metadata": [
+          {
+            "name": "oauth2-proxy-v7.15.6.darwin-amd64-sha256sum.txt",
+            "digest": "sha256:d4eec4cd6fb07cf499414270982db6e330049a0d55e9deed9ee8738188a92147",
+            "size": 113
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.darwin-amd64.tar.gz-sha256sum.txt",
+            "digest": "sha256:528e3ce72ca8f047ae5c022de1ef3e2453ae831da82a6e048bccac690b526254",
+            "size": 107
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.darwin-arm64-sha256sum.txt",
+            "digest": "sha256:49ce659c316169dfdb1cea0d3ace75bc0d9a87ff21a400d9061287c8cc92d62e",
+            "size": 113
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.darwin-arm64.tar.gz-sha256sum.txt",
+            "digest": "sha256:a22aa943da04b45e72830a94265220882201cf82af9da20862261337a56913d8",
+            "size": 107
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.freebsd-amd64-sha256sum.txt",
+            "digest": "sha256:23276d583d62dfbc1a936623787ff9c89465b9bcdfed326cc93ff3bf163426ea",
+            "size": 114
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.freebsd-amd64.tar.gz-sha256sum.txt",
+            "digest": "sha256:3904d1917dc546d54068db5a9d00df72b55154bf51e2bd4e2e2c4e7619290321",
+            "size": 108
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-amd64-sha256sum.txt",
+            "digest": "sha256:e51d4b73b0d7b53a0ed2ea62f0e0305cc067e0dd51150e8c2aabe8fee7a335e7",
+            "size": 112
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-amd64.tar.gz-sha256sum.txt",
+            "digest": "sha256:e76530f06072130a7ca87d0493e37cbcf43442033099d9e85248cd5a0b100b5f",
+            "size": 106
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-arm64-sha256sum.txt",
+            "digest": "sha256:c4e40af42843eb920bbed7042cc1d234c8d14a061bf78913f63d2dbc06819563",
+            "size": 112
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-arm64.tar.gz-sha256sum.txt",
+            "digest": "sha256:50cc66f2a798c2d985241e2c41ff3b12b276012f449515a171a87e56ccf291be",
+            "size": 106
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-armv5-sha256sum.txt",
+            "digest": "sha256:e8b3ee374e33151c61c755068fa8d16cfcf0312fb0ebb8fd858d612773fcdf88",
+            "size": 112
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-armv5.tar.gz-sha256sum.txt",
+            "digest": "sha256:a5703d7ff388e832c74a09e90ecd794a7d6fbf6755f60a3cdd0aaa0527f7dd4d",
+            "size": 106
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-armv6-sha256sum.txt",
+            "digest": "sha256:0cd514690b7f5608eee30de375cbde3d5be2908a4c030d89720cffbde078e289",
+            "size": 112
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-armv6.tar.gz-sha256sum.txt",
+            "digest": "sha256:2b2a6e9df72a8a3f30b8a16ae60d48cf3114e86f02fc4fb31c8b109b5da5127f",
+            "size": 106
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-armv7-sha256sum.txt",
+            "digest": "sha256:518dfa99b1765dd1234ffc73d18d8f3b5035913926f178d23dd061fb8222496c",
+            "size": 112
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-armv7.tar.gz-sha256sum.txt",
+            "digest": "sha256:3ed88652282c18e234de40283e63477c6da50f93f1b4e261311f700a649fbd4f",
+            "size": 106
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-ppc64le-sha256sum.txt",
+            "digest": "sha256:65ce0ef50644e53f766f694cd031658dc3d636aa55c0f2f418376a050f8be218",
+            "size": 114
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-ppc64le.tar.gz-sha256sum.txt",
+            "digest": "sha256:874a13fcb5629317febb1fdda0fc9b5c2955265f5e3d27113cc80d35cd9d65ba",
+            "size": 108
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-s390x-sha256sum.txt",
+            "digest": "sha256:b525b12fa5654d772c2f9d49f8f7f37e95efd88112a39abe6e53014705cb6312",
+            "size": 112
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.linux-s390x.tar.gz-sha256sum.txt",
+            "digest": "sha256:04d14a81165766293e98a8254925e41d086687d59f9ff36c57d59174432efb94",
+            "size": 106
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.windows-amd64-sha256sum.txt",
+            "digest": "sha256:ab08a67c689a741517a2af484d5b7fe70c6bf9ccad6c3f8918e4e32331e7ec4a",
+            "size": 118
+          },
+          {
+            "name": "oauth2-proxy-v7.15.6.windows-amd64.tar.gz-sha256sum.txt",
+            "digest": "sha256:c0b87414928d9e5d50fe772cd74f59c23604ae22b98e445c6c13214db6aee484",
+            "size": 108
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "ollama/ollama": {
+        "repo": "ollama/ollama",
+        "request_url": "https://api.github.com/repos/ollama/ollama/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:53.549Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v0.40.16",
+        "release_url": "https://github.com/ollama/ollama/releases/tag/v0.40.16",
+        "published_at": "2026-11-09T18:21:19Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 17,
+        "security_asset_metadata": [
+          {
+            "name": "sha256sum.txt",
+            "digest": "sha256:99d2505da1bfa40d582e295825d232763823667b495bd73e2145e94671c28eb9",
+            "size": 1472
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "lfnovo/open-notebook": {
+        "repo": "lfnovo/open-notebook",
+        "request_url": "https://api.github.com/repos/lfnovo/open-notebook/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:53.656Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.15.1",
+        "release_url": "https://github.com/lfnovo/open-notebook/releases/tag/v1.15.1",
+        "published_at": "2026-11-04T14:19:57Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "openbao/openbao": {
+        "repo": "openbao/openbao",
+        "request_url": "https://api.github.com/repos/openbao/openbao/releases/latest",
+        "retrieved_at": "2026-11-10T13:43:54.039Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v2.7.2",
+        "release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.2",
+        "published_at": "2026-10-26T20:24:37Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": true,
+        "release_asset_count": 203,
+        "security_asset_metadata": [
+          {
+            "name": "checksums.txt",
+            "digest": "sha256:d839d376448eceef3ccb5cdd44c4a0749a92a6e4aa2fdaf47255cfa949dfb77e",
+            "size": 6959
+          },
+          {
+            "name": "checksums.txt.gpgsig",
+            "digest": "sha256:9307adebc1d5df49bd5c72a59950aa7993dae0450aa837747dae3075f92a34ea",
+            "size": 566
+          },
+          {
+            "name": "checksums.txt.sigstore.json",
+            "digest": "sha256:8d9f6d15b1dfb25451e37fed84e33661f685ded41c765829710af8c5bbf1adf2",
+            "size": 10347
+          },
+          {
+            "name": "openbao-gpg-pub-20240618.asc",
+            "digest": "sha256:1862a196422947124282e026ea4e09d6f7c5d383b628d90c17906936e6e5a8e0",
+            "size": 6896
+          },
+          {
+            "name": "openbao_2.7.2_darwin_amd64.tar.gz.sbom.json",
+            "digest": "sha256:dbde028a74cd9d44f673fb4206bda019af9469bb112170a3de9cb3d88edd57e8",
+            "size": 469190
+          },
+          {
+            "name": "openbao_2.7.2_darwin_amd64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:ca8866821841b95cb9df45799b3418c49ae542f715a17c91370f70d2227577ca",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_darwin_amd64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:988922962ea23d42d92358ef48310d982ce7409d2b038fc19da361c858b873c9",
+            "size": 10155
+          },
+          {
+            "name": "openbao_2.7.2_darwin_amd64.tar.gz.sigstore.json",
+            "digest": "sha256:4fd96e80722879c2c2bdb4b137882644491fab53394c922f1f0c504bb1af7dbf",
+            "size": 10303
+          },
+          {
+            "name": "openbao_2.7.2_darwin_arm64.tar.gz.sbom.json",
+            "digest": "sha256:444dfcfd06985085a86b2f280347a22faa6e440d2cd1bfc2cb521386f9a6d06b",
+            "size": 469190
+          },
+          {
+            "name": "openbao_2.7.2_darwin_arm64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:430d8e76d9fd228858772b07606f10902402d97683349fd7809d1e63da7a64f1",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_darwin_arm64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:4415014ccf37ead81aff8cebb4a4901bac439957b885871542929306bba45524",
+            "size": 10291
+          },
+          {
+            "name": "openbao_2.7.2_darwin_arm64.tar.gz.sigstore.json",
+            "digest": "sha256:e2740c50c0060ba4d0c3ec3c3598eb197e4e859d6c112bd49a0ff2e1d5e54e19",
+            "size": 10287
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_amd64.tar.gz.sbom.json",
+            "digest": "sha256:62c8b894ab580461f541ea34870d4381ccb0c7069d03477788a87ccbf1a1af92",
+            "size": 469850
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_amd64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:1918607b66fcf07e5156985203074a56e178e573f9aa120f14b9fb4064b84730",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_amd64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:6f14cee009a15a44da8581396ec466f1bb2d664e082d875c4edd340105bdff30",
+            "size": 10159
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_amd64.tar.gz.sigstore.json",
+            "digest": "sha256:3dec5eeb82d868131f21cc220a823c430d4595df1abc122f71f50de695378512",
+            "size": 10147
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_arm64.tar.gz.sbom.json",
+            "digest": "sha256:5ec140115ae75cbb4a2cf42e5bf4719354f4dc88969e2dd5f90049e6ffaa1fae",
+            "size": 469850
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_arm64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:aead1568b8f41f9beadba4075b0a6ec87dfd6cf5ff2b1195b092566901873d49",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_arm64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:e654fbae7aa91820b1693516cd1fa72369d6624b4ca6f10e6f382c3e4ff2e7e3",
+            "size": 10195
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_arm64.tar.gz.sigstore.json",
+            "digest": "sha256:3fed31c7ca3f938e48348d308f7a212765af9e6ceb4829ae285e3cf824fc6eab",
+            "size": 10059
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_armv6.tar.gz.sbom.json",
+            "digest": "sha256:2a343241f8521eaf7a49389ed6a0464399b6bea08342da96e556e4d5893fa611",
+            "size": 469850
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_armv6.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:14146da69b5a9434116a83289e8e2148e3aaf675819b58478cd562b036524faf",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_armv6.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:b813d06793e2828e65481ae759cef09a95e0debacd6b23259b1804a3629d5d4c",
+            "size": 10199
+          },
+          {
+            "name": "openbao_2.7.2_freebsd_armv6.tar.gz.sigstore.json",
+            "digest": "sha256:e5b84385c0b6a1b17d84013d10dc4c7df83121206fad59d2a68475aae49cb67c",
+            "size": 10243
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.deb.sbom.json",
+            "digest": "sha256:7a7fafb26cc8237b3150ede6a4a89fceec5452fea5c05901bd61cb44545394ec",
+            "size": 2583
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.deb.sbom.json.gpgsig",
+            "digest": "sha256:3840ca56c19a9dcb0718183c54db4af30cc8d19d1850e6b0c5327541873d94ed",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.deb.sbom.json.sigstore.json",
+            "digest": "sha256:e0c59de4722b942fe13d704bb06918999e7d8629eeb6f3717ae3491f4a0dd676",
+            "size": 10247
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.deb.sigstore.json",
+            "digest": "sha256:3515a4a33297d8fa35a23dfe67f294b1b3c0073541fbbd094e2c9e706510199a",
+            "size": 10247
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.pkg.tar.zst.sbom.json",
+            "digest": "sha256:3eee2e99023be41a730d8749f6260dad1b425c7c4dad66cf8a1fac3d05fb2493",
+            "size": 478373
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.pkg.tar.zst.sbom.json.gpgsig",
+            "digest": "sha256:857112c6fb017e65d72f33efae7c657492987f614753f40f573bbc18171430b9",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.pkg.tar.zst.sbom.json.sigstore.json",
+            "digest": "sha256:c9c78aaf651f128a936259d0d939312f209f88a82c7c94fc27569992ada1256a",
+            "size": 10103
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.pkg.tar.zst.sigstore.json",
+            "digest": "sha256:c4d62666155361c270bfc6eeeafc3104696f628dc2f51805a9bb4403dbc6d4b9",
+            "size": 10195
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.rpm.sbom.json",
+            "digest": "sha256:8d3c4c952885f335c5cb9584265315084dcce5e9d1c5d6759dc57cec601375a7",
+            "size": 2679
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.rpm.sbom.json.gpgsig",
+            "digest": "sha256:04659e3386f4b4f7cee02523d4a6662835b8b1ae5741dd8d675d5cf763d9c5ca",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.rpm.sbom.json.sigstore.json",
+            "digest": "sha256:5085b822b109bf3a3076b9456d5538eb9ebc2e0b2d17e7cbe035a020e853989e",
+            "size": 10295
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.rpm.sigstore.json",
+            "digest": "sha256:ddfc5e32e6356974f77663858563d9dc005ef5900f9853c0256fa942ae7d5418",
+            "size": 10247
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.tar.gz.sbom.json",
+            "digest": "sha256:baf83d86c9f34d1a84fd72f86e3a199f5864fdd1d2a8834f57b2147229c7b37b",
+            "size": 472200
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:257582aeca0c8a093dce5d161089c8023ff1312112de161f8d5763353e8bd430",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:f8e6d67ef0e29062b81ac7bdae491d53fcbe9b550783f485e07b402ca331abcd",
+            "size": 10295
+          },
+          {
+            "name": "openbao_2.7.2_linux_amd64.tar.gz.sigstore.json",
+            "digest": "sha256:57c9e6f892332ac9d3df6c62b94dc24b13ce0d562405723421990529e66a96de",
+            "size": 10203
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.deb.sbom.json",
+            "digest": "sha256:5170c5d3a6b8a417d1d6facb768a94042d5374f7d3a8b42ed54569d032a9d61c",
+            "size": 2583
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.deb.sbom.json.gpgsig",
+            "digest": "sha256:76fad4b680426efe8191a4bdb0209b0db93d2008bde83adbe20b2ac0a3851242",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.deb.sbom.json.sigstore.json",
+            "digest": "sha256:139e5aec9330abfcab1994d1acfc6aab033beabc4e17e0a421ee5ec9fb762e04",
+            "size": 10299
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.deb.sigstore.json",
+            "digest": "sha256:1eb99e477759ac767c730d732bcb1a30ed69613286a0cce23e682a714c767cc4",
+            "size": 10251
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.pkg.tar.zst.sbom.json",
+            "digest": "sha256:369d235d078ade0f3faa882ea606242ac8f30cea14dd4bf57adc5b27d792aeab",
+            "size": 478373
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.pkg.tar.zst.sbom.json.gpgsig",
+            "digest": "sha256:b4fe20f3f924a1ccc81d7b180ffe8f25ce979b39990803f2169117b20158f5c1",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.pkg.tar.zst.sbom.json.sigstore.json",
+            "digest": "sha256:4a0d73685acdc860fe57df6174070aeabf7516d6bc43938b39a0b720fbf61298",
+            "size": 10203
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.pkg.tar.zst.sigstore.json",
+            "digest": "sha256:a9c68d5c26b88a327a1aebd0535a1c4a7866d06dd519954ec6b5944fdb670001",
+            "size": 10251
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.rpm.sbom.json",
+            "digest": "sha256:2f0419103877fc54909fc38ed71c991f6ecc9ef840b7c2bcd10c000ab5545f84",
+            "size": 2680
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.rpm.sbom.json.gpgsig",
+            "digest": "sha256:4661a13f5ea5398ea76fb81e9c074775b45aa939a2e05d1f9cc06ff2d37a56d7",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.rpm.sbom.json.sigstore.json",
+            "digest": "sha256:9c117afae6051206bd3adb304ca998e86c9d5d764546484b32f2ec6f35dab530",
+            "size": 10299
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.rpm.sigstore.json",
+            "digest": "sha256:c3fbb70d12f301a4e9eeaa5843192df4d3c9f336d341aa7a43365ae2e88515f4",
+            "size": 10199
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.tar.gz.sbom.json",
+            "digest": "sha256:6821d350d748b5da6c5db772d3502b2074ceef5b5d21d103b563521b95fb1fa3",
+            "size": 472200
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:2f7174c691b1589fdad98f897da753c105d101afb15151992aef65981d5de5c4",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:02055d3dad14d1f4cc51a14939da8885b115f51f8f8e9937a64a7d9c6c350542",
+            "size": 10191
+          },
+          {
+            "name": "openbao_2.7.2_linux_arm64.tar.gz.sigstore.json",
+            "digest": "sha256:172ddf304cd46bf2d158a5f745b46211147ca3f5abf823ee5a30cde911a80db3",
+            "size": 10247
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.deb.sbom.json",
+            "digest": "sha256:6ed8bbd5da821c528434f0e4bf1977410b13ceceac7c0e48465e00217bf66a07",
+            "size": 2583
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.deb.sbom.json.gpgsig",
+            "digest": "sha256:7fc86dbd30e5f0218e8945ccac81cd754e5199bb929e14dba9ea8eb419cc43c9",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.deb.sbom.json.sigstore.json",
+            "digest": "sha256:0dea8846279642d2a0398de6b478888c3ad3a02928a1121fd3ca42fc2d63191f",
+            "size": 10299
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.deb.sigstore.json",
+            "digest": "sha256:edcb9fbd8e93c8a6acf3b75594153fdc98a63dd593c2eadb08a1cbe67bc6d291",
+            "size": 10199
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.rpm.sbom.json",
+            "digest": "sha256:fdbe365473512aeac4cc1e6bfd918c63f0cf26572f434cc58453a671b7a7cef9",
+            "size": 2680
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.rpm.sbom.json.gpgsig",
+            "digest": "sha256:48665eaa8b323324bfd09cef7f88ebc6e8a4d09201e32b9b00a90a493f8bec8f",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.rpm.sbom.json.sigstore.json",
+            "digest": "sha256:2b6c11c8d2d9f7b6c272bbcab12351b8c17a5473e7ad5bf8e9acd7f28ca4bfa4",
+            "size": 10347
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.rpm.sigstore.json",
+            "digest": "sha256:28e1b28951195c4db1893f0723ad714918adc5f823b4f1e20d4112f8953a86e6",
+            "size": 10247
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.tar.gz.sbom.json",
+            "digest": "sha256:2f41bdd5f09f81b8be6538a7059c563e6e27323ecf69fd9f47241a539ea96e11",
+            "size": 472200
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:c588d3d1924eda21a1d3a0d7559ae5ed76d6467503c3b0ac21fcb022ab741d26",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:ed28dea8defdf4f4d2f7d351ce6f1c723aad0983983a5132fc08792b19e7c080",
+            "size": 10251
+          },
+          {
+            "name": "openbao_2.7.2_linux_armv6.tar.gz.sigstore.json",
+            "digest": "sha256:78fbba1c56030db406acf586a1ce160e199bf65d0efc1e4df1df47bc7b9870e1",
+            "size": 10103
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.deb.sbom.json",
+            "digest": "sha256:17cd80e985f44ca719135b82377945152585ba2fffdba7a8aa9ae897970842f5",
+            "size": 2605
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.deb.sbom.json.gpgsig",
+            "digest": "sha256:bce345c540bcedf7994b6ff0811c2fada8f588aba6c17297164c08a8e871bf64",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.deb.sbom.json.sigstore.json",
+            "digest": "sha256:f74ab7e5283f25d60f7c8c967aef2ff78a37aab32ae5d26569dfd985ca39b5aa",
+            "size": 10203
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.deb.sigstore.json",
+            "digest": "sha256:308dc53fcee2e6b4805f3b1deee11377344be49a9afe2b2425ebe4b111b84e31",
+            "size": 10143
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.rpm.sbom.json",
+            "digest": "sha256:d7fff2a3a02d06f131de9c0fed35860d6c60aed94255c1de3117274ea9dc3b17",
+            "size": 2700
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.rpm.sbom.json.gpgsig",
+            "digest": "sha256:efbd98210982d9351ba3a5765aecd429031bddc69bc9930279d45e51e078ad09",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.rpm.sbom.json.sigstore.json",
+            "digest": "sha256:faa1d9886bf6f665712a753d1378a96e9da22a87309c363337d7d703d8cf28f2",
+            "size": 10199
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.rpm.sigstore.json",
+            "digest": "sha256:0f0320d87d07790c1a0eaebc79f4d3aa03328945f7d6db3440aa5febe24d3e79",
+            "size": 10199
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.tar.gz.sbom.json",
+            "digest": "sha256:976a8ff9f849585d222abf49f21d2e16f1f4689196aa50faa179a38627945592",
+            "size": 472794
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:a2ba34d677f0f7863b050e30594e71780cbd5d686fbc62763d5f048689af29f0",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:06fd680ce81796edc3f0ac7b0721e734de453c92bc57849eb51c79efcab33059",
+            "size": 10195
+          },
+          {
+            "name": "openbao_2.7.2_linux_ppc64le.tar.gz.sigstore.json",
+            "digest": "sha256:e5569b5119c503585e24aba1ea20808229fffd814c8ef14c4cac82343237c971",
+            "size": 10111
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.deb.sbom.json",
+            "digest": "sha256:5e908be4d4f7bbe79dae0cb7f4a6e30418bb245e42d086be4d7eace102c44694",
+            "size": 2605
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.deb.sbom.json.gpgsig",
+            "digest": "sha256:3396d20f51dda180b50cfeb7ef3b768cf2d918f91271ed3ea76de898eb7bd421",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.deb.sbom.json.sigstore.json",
+            "digest": "sha256:66f2e2fb86e27775d180b4f80ccf6ce5a9b9abec675a3a496bf8d23b92b94952",
+            "size": 10103
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.deb.sigstore.json",
+            "digest": "sha256:8daa36ff6362709d8abb2355e004a208b7259a4871316ce5b7b4e6cb6a429a56",
+            "size": 10155
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.rpm.sbom.json",
+            "digest": "sha256:8f29e6fd6d23953c94aa31560e4eed6ffc465b4eb553f35bdd0bf642c05629cd",
+            "size": 2700
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.rpm.sbom.json.gpgsig",
+            "digest": "sha256:d54416fc78e55bca60721dffd7f0cde8d74c422ad54bbfa831d9b46e5f67beff",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.rpm.sbom.json.sigstore.json",
+            "digest": "sha256:396fe112b4bf8a1162febdea06b87d520ba7a6953d0830e7a0d4d93447af1c8d",
+            "size": 10247
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.rpm.sigstore.json",
+            "digest": "sha256:2389d1f82d8fe17fc18b428465bf28f87c9fcc59abcea36ff09c641588dc5d55",
+            "size": 10155
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.tar.gz.sbom.json",
+            "digest": "sha256:e35991d18ae6b40a088695e5929c90b02afb5cc97ad68c5da4444133b2c830f1",
+            "size": 472794
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:2bc28b5b8c06d8d76c96f00b3904c936ac72ccbe50bd503c3c82acb5a5eb37f2",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:ab2f88d832cea79f5c54656c5791553aef7ade5d85a7f5293bef9f8406ff7276",
+            "size": 10295
+          },
+          {
+            "name": "openbao_2.7.2_linux_riscv64.tar.gz.sigstore.json",
+            "digest": "sha256:e66ff61f3e5a1dc2700173c5d005d6ede7889219c9b7c1e428b2eb49063cba1a",
+            "size": 10063
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.deb.sbom.json",
+            "digest": "sha256:bbfe37d6d326a42a8570e5cc7fd83bb9f3d3b758a1cde20f6d824daf5aafd0bf",
+            "size": 2583
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.deb.sbom.json.gpgsig",
+            "digest": "sha256:c32f3de0088755fbcf91d974e10acccbce1eb24e2a195574bf6b2ddf0786dc93",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.deb.sbom.json.sigstore.json",
+            "digest": "sha256:f07fc9d2a253caabcf4a907b33a288ca8a884c62ae401ef70b737e125358a090",
+            "size": 10243
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.deb.sigstore.json",
+            "digest": "sha256:019eb7cb30db3b43e0f4b5a621669257d1c596f38912956e5b1a1dbb7f50ee18",
+            "size": 10107
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.rpm.sbom.json",
+            "digest": "sha256:32d3095cc27387519ff105c428bae064763fdf964175448ecf147438a0fc3bb5",
+            "size": 2678
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.rpm.sbom.json.gpgsig",
+            "digest": "sha256:4e3c8834c0ee6f79e256984c473c7217231920a7bd74a1197aba6c28e8a732e5",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.rpm.sbom.json.sigstore.json",
+            "digest": "sha256:824bcf8a45e24881f25610c3ef3aa1a87ba481a43dd44b244e2ec848c092e21d",
+            "size": 10303
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.rpm.sigstore.json",
+            "digest": "sha256:7233cf407f1b1e7533f3ba4b6772021d8ad2f27828531ca07deff088248f04d4",
+            "size": 10243
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.tar.gz.sbom.json",
+            "digest": "sha256:0554f981fba4c333f841590c98c01240e20e8da2aa58749045a70e02427d1c48",
+            "size": 472200
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:bc7c260d3fe77f057d297be8b71b09a2a7107221be1ef387398e3bf510f24b8e",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:7fb8111a0c9c8f0db3d8a5c46eb410880b11a49a729fd10c7ce8a8e0e6cf3d82",
+            "size": 10347
+          },
+          {
+            "name": "openbao_2.7.2_linux_s390x.tar.gz.sigstore.json",
+            "digest": "sha256:2693fffb0985687b3837d7082aa43f1cb7947b6886529de899e16c425284cbcd",
+            "size": 10255
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_amd64.tar.gz.sbom.json",
+            "digest": "sha256:894135183bf2150d64c1f936badd20f699daa7eacbe758aae54a16da7ad5e607",
+            "size": 469555
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_amd64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:9fb636c0cc020aa598701b912c33398249d5bd171e2be30f18ddbc2750db587f",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_amd64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:c66f238a3d9f3d3273a4d9bb834048b9c3b841183daa6e2b5d708848fa344969",
+            "size": 10107
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_amd64.tar.gz.sigstore.json",
+            "digest": "sha256:81aa4e21b47d521a110fb7aa2ae909030776badb9fecb84af8805d31fef4548d",
+            "size": 10203
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_arm64.tar.gz.sbom.json",
+            "digest": "sha256:73f4b4d2cbeecd419c42eb951556ec494aa0d6cf1e4e6925b071c2ad8a4b16c6",
+            "size": 469555
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_arm64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:b0845b31dba2d6094237105a0cd52cf4c307d85f1d984a1cf7593cb4f9513587",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_arm64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:5f3c2b472a78101bfcb5622a4e06c30dce7c4fa0d9389ea8b3eb9276c35d0483",
+            "size": 10579
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_arm64.tar.gz.sigstore.json",
+            "digest": "sha256:33cbe633949d4a0295f55f551a5d4e0e67ef1c12368b48ed6756a6804b373780",
+            "size": 10479
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_armv6.tar.gz.sbom.json",
+            "digest": "sha256:4462fb86dbaac403cde74f89cafc745185fd8a5f5995b74ef1d19a5977f57cbf",
+            "size": 469555
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_armv6.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:38ee14af7b6164c5397728e411060b87ce9851fdfdb2b964ab95a7bedfab7a2b",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_armv6.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:e0d941992e95fbc0c039b4ef87abb6a66482bc5d209ea2009c54a09f6fd49339",
+            "size": 10399
+          },
+          {
+            "name": "openbao_2.7.2_netbsd_armv6.tar.gz.sigstore.json",
+            "digest": "sha256:8dce495c329a15b6dc0d346c54344672fe271ed928e4b38ee50e65434b51bc14",
+            "size": 10491
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_amd64.tar.gz.sbom.json",
+            "digest": "sha256:8f97ca79f659340dd97e0b2e9d0d7d98fdf89b91a6b9829c2d6977bcf2cc25b2",
+            "size": 468217
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_amd64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:8432049d0ffe0e16b22b2dc30c5a1489fbfa1bc80502f13994e26eb65cd457c6",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_amd64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:eaa4e73751c910a47d34e98033e478e47ff087730931e05eb3f033f94002cae6",
+            "size": 10099
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_amd64.tar.gz.sigstore.json",
+            "digest": "sha256:17d6412d569db401869103e4b38854f244b14d0ff576b1e61dc17564a2ad617a",
+            "size": 10143
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_arm64.tar.gz.sbom.json",
+            "digest": "sha256:e6d44a08924fc4d9059624d98e71437a029887214e8596fc8aeaf8169f1df11f",
+            "size": 468217
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_arm64.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:36e0cb88947781cd01139156cd253e516885d1d3167b7e5a3aa360582f30015f",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_arm64.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:2248615d67ca141b9f3bf976f4af0a6c0bea0826c6a53d36d99f77e4d789933a",
+            "size": 10203
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_arm64.tar.gz.sigstore.json",
+            "digest": "sha256:68982488c28cee6541ba298097429324692b54057aab6d1782fe0c7fc49bbcce",
+            "size": 10103
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_armv6.tar.gz.sbom.json",
+            "digest": "sha256:5d7ba374bd56cd320d51c3f03c798631a8455e8e389ef6c2e27a24b5561a1a62",
+            "size": 468217
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_armv6.tar.gz.sbom.json.gpgsig",
+            "digest": "sha256:f9fc2bdae885fd3fa95f4e717f7d8e3ae114d808af13c1846d79479ebc89f1b1",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_armv6.tar.gz.sbom.json.sigstore.json",
+            "digest": "sha256:8a9016d863509d3535b554bf62027ac01369e42a3d6095d96a3422c8ef3efbe2",
+            "size": 10395
+          },
+          {
+            "name": "openbao_2.7.2_openbsd_armv6.tar.gz.sigstore.json",
+            "digest": "sha256:a9a6e4ba17809ba6160b6c28458e202eee19278c0d0fd36167967614fab57390",
+            "size": 10291
+          },
+          {
+            "name": "openbao_2.7.2_windows_amd64.zip.sbom.json",
+            "digest": "sha256:040123205f748f09c49ac8cc16bbb061df78fef7ac772439ec57ebe93f77e7f8",
+            "size": 473854
+          },
+          {
+            "name": "openbao_2.7.2_windows_amd64.zip.sbom.json.gpgsig",
+            "digest": "sha256:a88283d6f36f5bd4d80bc622d42db6f414239043c7fbb4c34d580fe36cbfc568",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_windows_amd64.zip.sbom.json.sigstore.json",
+            "digest": "sha256:d0202fb293311463d217fa6641e5cf2395894d8e0f9df4555e92bdf93ea8ccf4",
+            "size": 10047
+          },
+          {
+            "name": "openbao_2.7.2_windows_amd64.zip.sigstore.json",
+            "digest": "sha256:f20df2a2e89ff53546bb7569bf5e9a2fbe12ca7e5e9b6c035b310459527bfaa2",
+            "size": 10247
+          },
+          {
+            "name": "openbao_2.7.2_windows_arm64.zip.sbom.json",
+            "digest": "sha256:9f4c349a2252adc9da7871b366284b87fef099d7d4d3c37a15e2ffa2ee857585",
+            "size": 473854
+          },
+          {
+            "name": "openbao_2.7.2_windows_arm64.zip.sbom.json.gpgsig",
+            "digest": "sha256:3799d56ab5dab3e31289fa55283016dedf4c4cae64a7fe720c170db8eca99951",
+            "size": 566
+          },
+          {
+            "name": "openbao_2.7.2_windows_arm64.zip.sbom.json.sigstore.json",
+            "digest": "sha256:023f43f7df31bafc2f9e14a32b25a0285ecca123794224fb9a7d3182eb0bbd32",
+            "size": 10195
+          },
+          {
+            "name": "openbao_2.7.2_windows_arm64.zip.sigstore.json",
+            "digest": "sha256:41361d8a64f47132ee81f8d36344cfe2472640eeb4c258d6ae321f77bb8c03ea",
+            "size": 10199
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "opensearch-project/OpenSearch": {
+        "repo": "opensearch-project/OpenSearch",
+        "request_url": "https://api.github.com/repos/opensearch-project/OpenSearch/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:03.714Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "3.9.0",
+        "release_url": "https://github.com/opensearch-project/OpenSearch/releases/tag/3.9.0",
+        "published_at": "2026-09-29T21:54:18Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": true,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "opensearch-project/OpenSearch-Dashboards": {
+        "repo": "opensearch-project/OpenSearch-Dashboards",
+        "request_url": "https://api.github.com/repos/opensearch-project/OpenSearch-Dashboards/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:03.910Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "3.9.0",
+        "release_url": "https://github.com/opensearch-project/OpenSearch-Dashboards/releases/tag/3.9.0",
+        "published_at": "2026-10-12T05:57:55Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": true,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "opentofu/opentofu": {
+        "repo": "opentofu/opentofu",
+        "request_url": "https://api.github.com/repos/opentofu/opentofu/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:04.031Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.13.9",
+        "release_url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.9",
+        "published_at": "2026-11-05T19:09:38Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 164,
+        "security_asset_metadata": [
+          {
+            "name": "tofu_1.13.9_386.apk.pem",
+            "digest": "sha256:be70a75ecd756a715a3f99448ef27431bd0510295e3b26dbb3323fff05ead6e7",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_386.apk.sig",
+            "digest": "sha256:ff9dca3e1269256cf20a47222dfd56410209c86cb0695fc158bd4cd473a7a4ca",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_386.deb.pem",
+            "digest": "sha256:faa1d53846fa75edf27c6ae20c3a2d593ecd9c3d99de1ff3641b95aedaaf0315",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_386.deb.sig",
+            "digest": "sha256:37204233a14676cb863a5982e2e70f4664a3c2ddd650c21557ae85d6921c2408",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_386.rpm.pem",
+            "digest": "sha256:2218af3d66921465a0596c6fed7f9a54f3289e8496f83b52ecf5f3d68dda9c48",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_386.rpm.sig",
+            "digest": "sha256:ba9818a7f75b590405c5d702b09e988bdb92dc8829c72d3720769a5abdbd2650",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_amd64.apk.pem",
+            "digest": "sha256:369a8e1101c9419e497d3efa5c6f79ff5243a2a80207a228d96fee6ff3b55d92",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_amd64.apk.sig",
+            "digest": "sha256:f2a164643c732c4c39e9c7e9cdbecb507a7a0ab2755ab5d64fd3133c3ca7bc7a",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_amd64.deb.pem",
+            "digest": "sha256:bdcc0aee732957d42cc492bdaf94a25dec4ea34b827bfca1e5ab12d66bd247c1",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_amd64.deb.sig",
+            "digest": "sha256:bab69b7c7e3a42315116d06c55fa05b10bfdc37acc708e1c84ffc23413b9b837",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_amd64.rpm.pem",
+            "digest": "sha256:683e232a87983a56fc568e0f44c9a4adc017075d22a97edf4e048c7c5c4af34d",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_amd64.rpm.sig",
+            "digest": "sha256:daf5c7cc7132d6888814aaa412cc7f8356a87226f1ed47c4673a5c0adb02d695",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_arm.apk.pem",
+            "digest": "sha256:d35ded1825e98b9fed89506fe1876330c9fc0cdd28c42ac43470fca2b7cb3ee2",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_arm.apk.sig",
+            "digest": "sha256:fb32e0e657d2ca4055ee92c59fc2ba7f86b0bd58431a42253b23b26c2d0116b8",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_arm.deb.pem",
+            "digest": "sha256:abb6445ff1234facdbcf59eeb4c52c24e7fb35a216a98d86ea4af76a3968521b",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_arm.deb.sig",
+            "digest": "sha256:56de770bdc1ab135b4cc61631266b76d1cda9b88b9b2485c625823294dd1637d",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_arm.rpm.pem",
+            "digest": "sha256:5fcce2230223144c1c4c23dac9f080708d5c05fd39d6eeebee2109c5f6cc19b8",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_arm.rpm.sig",
+            "digest": "sha256:0da3419b059a7d83a269d293f4e5b217b180b0223ac57edf89a2e12befccdd63",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_arm64.apk.pem",
+            "digest": "sha256:437753c3db6cf573471604735d29ed2e9d209fbd2c2da745141c4a5956960bdc",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_arm64.apk.sig",
+            "digest": "sha256:51573a86b798238eb9e42c9a793596fe54d5909edb121ee71c8a25774d382f11",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_arm64.deb.pem",
+            "digest": "sha256:b5ed9b259347723952344547874fbe95fd2c8c6d10f66c8a2c49d8998620f4e4",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_arm64.deb.sig",
+            "digest": "sha256:4acd813687a5b1d559c39f35defc15709900ceede59a26d78d7f3804b928afad",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_arm64.rpm.pem",
+            "digest": "sha256:b6c8c0ef39b351d8dc42d049ebaaa29d02e4c1199388b320ea6c2b6653c02fe0",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_arm64.rpm.sig",
+            "digest": "sha256:a476596184e44cb1d33d11d868851c6ea787ac1e1ef8c97a8bdd62a1c5de0f57",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_darwin_amd64.tar.gz.pem",
+            "digest": "sha256:0fc733d369ce70e1e70b9954d662bd22dd0a637b7bdaae55d48e236343a2a56b",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_darwin_amd64.tar.gz.sig",
+            "digest": "sha256:44a8f2c407ce0f65edc73a7c6658cf09714798ce5e4d1a959607666712310544",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_darwin_amd64.zip.pem",
+            "digest": "sha256:0b1ef78cfc0fd7dd90f302e385387a20b15485c7de0a24f3d5d3c1d30764bcc5",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_darwin_amd64.zip.sig",
+            "digest": "sha256:e161c7b13758aa44442f912a670ebc0b5380f328041d3fe870d015d995bc2d28",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_darwin_arm64.tar.gz.pem",
+            "digest": "sha256:fca913f431b9bbc81f2ec64d1276bed9cb5023e515bb4e246fa2d3fbda614d3a",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_darwin_arm64.tar.gz.sig",
+            "digest": "sha256:cced4de0255851165e6539eea9caab6c0e97fffad6c3fc05e0ad4a2e578f7feb",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_darwin_arm64.zip.pem",
+            "digest": "sha256:6841cc6d807418a1d328e904968eeb707dcb7b5d897cb8a6da6c511361520b3d",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_darwin_arm64.zip.sig",
+            "digest": "sha256:7b1e38eaa6ad37fda626a067be0358078f518893db8e7569d3b0187578827faf",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_386.tar.gz.pem",
+            "digest": "sha256:c6ee0c9ba53575d08f36bc8f5a0259cba198ab3691e1f3bbbb1274e7137b13b6",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_386.tar.gz.sig",
+            "digest": "sha256:f4a4751c0a4b0eb7afd377f0ae1c34226d86c838d60a74003d313a42bac300fe",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_386.zip.pem",
+            "digest": "sha256:87098c2eb5fb311ad4d2eee31597e12c89ffcb76dbd9c6c72bed24fb177c0eab",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_386.zip.sig",
+            "digest": "sha256:a6296a4b465941c8b672d98944bd77397c8de8e8faa6895718f9f610e0c2df64",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_amd64.tar.gz.pem",
+            "digest": "sha256:f8409764200a2d0ae8121ccc38748a19443fae9f372ba55718391f3ae72bcff5",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_amd64.tar.gz.sig",
+            "digest": "sha256:399be771f4a515c9244470f26cb9778068003dacbeae111fcc90b2292458a68e",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_amd64.zip.pem",
+            "digest": "sha256:ff3ca1e213157d04db263f9508eb572e7cfbdb185606505edea100f96772f153",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_amd64.zip.sig",
+            "digest": "sha256:e0261c525258a7fe6a7b0c8c083ae1b8c473dfa122bab5d014b00137442703d4",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_arm.tar.gz.pem",
+            "digest": "sha256:a5d11637bfaa713bd7e4fd5d85e27eb16d845a315ee484167a6f9a8f1c292690",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_arm.tar.gz.sig",
+            "digest": "sha256:c70d1b48234b27ea1a5ae0fd6abf1c89c14f3fcf85b7fd30b96dbe8ae47ebec1",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_arm.zip.pem",
+            "digest": "sha256:efe20eb4c985632deb70c122fb2a29e3d6c7fd0711c0395c5d644c9f4e5c81c5",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_freebsd_arm.zip.sig",
+            "digest": "sha256:93559781374a7e1c2356d38a036684e7e962490d366aaec4d2057c26e3081e23",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_linux_386.tar.gz.pem",
+            "digest": "sha256:229e7e72ef6cae3c63b93b9c81b01a3d2bcb28fef73463022d82abb4cdcefee0",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_linux_386.tar.gz.sig",
+            "digest": "sha256:a94196f553ea2134f5112423d25d491dabc900fc3bfe0e05e630377e1138bc56",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_linux_386.zip.pem",
+            "digest": "sha256:ef8cf93b3dee164162b9e99258d7dab40beca57f6bdaf9a5b483afabbdd519bf",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_linux_386.zip.sig",
+            "digest": "sha256:26f5d75b87072a4e8cb9619e20985a074733d77d8ab9c1f46116aa4b94ecab6f",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_linux_amd64.tar.gz.pem",
+            "digest": "sha256:f1c8e2a9096788e5a23022c98df12bcbf7cdf6af563eff9e8d4fdf19bffd102c",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_linux_amd64.tar.gz.sig",
+            "digest": "sha256:94beb4c6e561a83e7c74078a4fd35f6a096200f6c673a43c8239513a4fa2f83e",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_linux_amd64.zip.pem",
+            "digest": "sha256:6897f2cdc8272e1f25a43c990386607aec104442ae340d638f60404e6b07ce17",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_linux_amd64.zip.sig",
+            "digest": "sha256:c738f33f31a3157057c63ff7eb134952a0b1df09f575503a0f0c0005ffafc784",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_linux_arm.tar.gz.pem",
+            "digest": "sha256:70c2dd0bf9e10c34bc0ecc631b439083e07a08fb9039ec08df2557509aab77c4",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_linux_arm.tar.gz.sig",
+            "digest": "sha256:b7fd0342081daee5278d8368e4af372db0addc8685bc511f4b81826193944816",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_linux_arm.zip.pem",
+            "digest": "sha256:e154122859d6e11231a4094d7702953a03ad59c11d95ed55ce02088d10dbe134",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_linux_arm.zip.sig",
+            "digest": "sha256:7b3f876f1fff6abba2f9121e01748d30929e7d870d91a8843bed79fe467dab44",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_linux_arm64.tar.gz.pem",
+            "digest": "sha256:ef386cb26a5028566bb3b028a3af2af81eb2574da2ec537ed740d3b52edaff30",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_linux_arm64.tar.gz.sig",
+            "digest": "sha256:25eeafed2b1f51f6b1d010f412fbaddd039e16616b2818446965365b7f74ada0",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_linux_arm64.zip.pem",
+            "digest": "sha256:906c508ef6dfd055dde98d8c0d166496d6dd9039534d1aa2b4ee649094ed91eb",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_linux_arm64.zip.sig",
+            "digest": "sha256:470d29e3d744e4eeac2f419db08e9f00ab433d3bc59aa01a1d21e5cebc458448",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_openbsd_amd64.tar.gz.pem",
+            "digest": "sha256:3a405d9c9839a4bdffcedbe3e66365a47081940117eecaa5fb1406b625dab7f5",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_openbsd_amd64.tar.gz.sig",
+            "digest": "sha256:857b9660c0d84e81b8c0faffc702785e0dc185db9962665fc88a68ea0271a54b",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_openbsd_amd64.zip.pem",
+            "digest": "sha256:d8e28268c38129dbc8a9fdb47ce0c4cfdde2d00488cec32fc7d15794ae6ea06b",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_openbsd_amd64.zip.sig",
+            "digest": "sha256:62ac45eb28f7b0eb0b0005069114f1da4ebfaab58b63f6c358f67a305a6646ea",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_SHA256SUMS",
+            "digest": "sha256:f8a2925243a71078e84a911f1bb8eaf9c0974c3d5637475921a6af01082d080c",
+            "size": 3734
+          },
+          {
+            "name": "tofu_1.13.9_SHA256SUMS.gpgsig",
+            "digest": "sha256:8cdfa942cbefc45d2649d1f5f85576e41c9bc55bded0c1206cb64a794bc4836d",
+            "size": 566
+          },
+          {
+            "name": "tofu_1.13.9_SHA256SUMS.pem",
+            "digest": "sha256:aefca0fe5f10ae90c1d2c3426bd698a924262c0f5663f5e9f8025b049c718099",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_SHA256SUMS.sig",
+            "digest": "sha256:3bf438124813c3584a2b812df2c0e54e93f74acb133778672a8ecf6830dbda3f",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_solaris_amd64.tar.gz.pem",
+            "digest": "sha256:336e85b0f21cfcd369b23a0815bb714f71574b575e5f9eed2094eb56e62d6b4f",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_solaris_amd64.tar.gz.sig",
+            "digest": "sha256:2be0615af56de4caf51c5d6e0fabfad96f4ee77a29a248e2b582883c79dc0d0a",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_solaris_amd64.zip.pem",
+            "digest": "sha256:96a5b8229231cb2642ae9cdab1865bdbb4054451eadab1b24767fb0a79d23a4a",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_solaris_amd64.zip.sig",
+            "digest": "sha256:14ed6028e8d0de1172aa14c66bd9a4c2e2d1d217a4faeebc96c94a0142291e00",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_windows_386.tar.gz.pem",
+            "digest": "sha256:6d768712cd3524cb81b6d0de467f5d73cd07745741324c20dffed0fc67c4f56f",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_windows_386.tar.gz.sig",
+            "digest": "sha256:6a5ce1eae144f57cf66a85a20b5fa16ce7a754e91e69618dacee8af51f0ba620",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_windows_386.zip.pem",
+            "digest": "sha256:995a3e0cc5402e904f3de9a17a6e368e95b7e3b07fc65c351dc73e5a80130de4",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_windows_386.zip.sig",
+            "digest": "sha256:e6fc425bbd6e4769b560603d5f4fcbef4e9408dae2b169fef0fde55d6a999534",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_windows_amd64.tar.gz.pem",
+            "digest": "sha256:c4e6d46ae54f9561dc15929f1edcf9ea4bba2d43695f439fbc0bbe153974bcee",
+            "size": 3296
+          },
+          {
+            "name": "tofu_1.13.9_windows_amd64.tar.gz.sig",
+            "digest": "sha256:51d738c4dacaf4f80356191b5adae041646ef05812324f5becde59cde1d4c669",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_windows_amd64.zip.pem",
+            "digest": "sha256:adf2f70fbe29dad2b4e4a67311fdd15e7f5057eaccfaf362394e6912c0873875",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_windows_amd64.zip.sig",
+            "digest": "sha256:feb4e1e3b89f8599b6c6e4adb4b8e44118dac8a68966a80107217057e1848311",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_windows_arm64.tar.gz.pem",
+            "digest": "sha256:c9458f175c36f7c84da5b643a4189db591a3ba6a1d5e9212cf3ad45f7d3966d3",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_windows_arm64.tar.gz.sig",
+            "digest": "sha256:7c8ee543d16002f5f48aad00f7d6d1aecd64f8dc8b0cdce4a8376d208727adaf",
+            "size": 96
+          },
+          {
+            "name": "tofu_1.13.9_windows_arm64.zip.pem",
+            "digest": "sha256:18664bc3c98a8487cf908c0689c8ddfe5dd2cb2d8bac24919784e5438b45d93d",
+            "size": 3292
+          },
+          {
+            "name": "tofu_1.13.9_windows_arm64.zip.sig",
+            "digest": "sha256:7b6e3d6054c42bd6ee224c496d317f856e5d8537bc7b30f8f6ef987124a16e8c",
+            "size": 96
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "pact-foundation/pact_broker": {
+        "repo": "pact-foundation/pact_broker",
+        "request_url": "https://api.github.com/repos/pact-foundation/pact_broker/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:03.777Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v2.122.0",
+        "release_url": "https://github.com/pact-foundation/pact_broker/releases/tag/v2.122.0",
+        "published_at": "2026-10-01T04:18:01Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 1,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "prometheus/prometheus": {
+        "repo": "prometheus/prometheus",
+        "request_url": "https://api.github.com/repos/prometheus/prometheus/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:03.901Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v3.16.0",
+        "release_url": "https://github.com/prometheus/prometheus/releases/tag/v3.16.0",
+        "published_at": "2026-11-05T16:06:52Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": true,
+        "release_asset_count": 37,
+        "security_asset_metadata": [
+          {
+            "name": "sha256sums.txt",
+            "digest": "sha256:8ad106c1533afc9c650c8d0c10677c4b8820a20d38ab2ab6eeb9a27a3e06f9a3",
+            "size": 3725
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "prometheus/pushgateway": {
+        "repo": "prometheus/pushgateway",
+        "request_url": "https://api.github.com/repos/prometheus/pushgateway/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:04.064Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.11.4",
+        "release_url": "https://github.com/prometheus/pushgateway/releases/tag/v1.11.4",
+        "published_at": "2026-10-08T11:14:45Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 40,
+        "security_asset_metadata": [
+          {
+            "name": "sha256sums.txt",
+            "digest": "sha256:40b4b158133903f22f72b438dc873916067851017b43ec216ea395c3833b39f7",
+            "size": 4084
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "grafana/pyroscope": {
+        "repo": "grafana/pyroscope",
+        "request_url": "https://api.github.com/repos/grafana/pyroscope/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:03.735Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v2.4.3",
+        "release_url": "https://github.com/grafana/pyroscope/releases/tag/v2.4.3",
+        "published_at": "2026-11-03T21:09:45Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 15,
+        "security_asset_metadata": [
+          {
+            "name": "checksums.txt",
+            "digest": "sha256:d6383544ef7012d0a0993a846c80410603bc1b0d249cc3e2e96649bdd1a77dea",
+            "size": 1410
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "qdrant/qdrant": {
+        "repo": "qdrant/qdrant",
+        "request_url": "https://api.github.com/repos/qdrant/qdrant/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:03.884Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v1.20.0",
+        "release_url": "https://github.com/qdrant/qdrant/releases/tag/v1.20.0",
+        "published_at": "2026-10-22T14:14:12Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 8,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "redis/RedisInsight": {
+        "repo": "redis/RedisInsight",
+        "request_url": "https://api.github.com/repos/redis/RedisInsight/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:03.739Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "3.8.0",
+        "release_url": "https://github.com/redis/RedisInsight/releases/tag/3.8.0",
+        "published_at": "2026-07-21T07:51:57Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 10,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "distribution/distribution": {
+        "repo": "distribution/distribution",
+        "request_url": "https://api.github.com/repos/distribution/distribution/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:03.849Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v3.1.2",
+        "release_url": "https://github.com/distribution/distribution/releases/tag/v3.1.2",
+        "published_at": "2026-09-24T12:21:27Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 21,
+        "security_asset_metadata": [
+          {
+            "name": "registry_3.1.2_linux_amd64.provenance.json",
+            "digest": "sha256:1b82b676668cc3b504cfb4747af664e2a8784e15647aef989276d8732a120e4f",
+            "size": 47700
+          },
+          {
+            "name": "registry_3.1.2_linux_amd64.tar.gz.sha256",
+            "digest": "sha256:d378e54898ba99baa4893d496c7897051e3e778165eb4ea49a5cdf50bb6f3608",
+            "size": 65
+          },
+          {
+            "name": "registry_3.1.2_linux_arm64.provenance.json",
+            "digest": "sha256:aeebc15bd9f20ae4769d96f5920856a6b42d72e83235133e299acb263fcca808",
+            "size": 47700
+          },
+          {
+            "name": "registry_3.1.2_linux_arm64.tar.gz.sha256",
+            "digest": "sha256:565452f3215ba59b72c93ae963984401ac818a0942ee6d981e2e8ace68ac2557",
+            "size": 65
+          },
+          {
+            "name": "registry_3.1.2_linux_armv6.provenance.json",
+            "digest": "sha256:8b760870cbcd82da8afe801741e631aca4736b02572cb4042f0906903d34d8d0",
+            "size": 47701
+          },
+          {
+            "name": "registry_3.1.2_linux_armv6.tar.gz.sha256",
+            "digest": "sha256:cb46a10367bf109fb583dbca139c137532892ea963c23f13294682f9da164649",
+            "size": 65
+          },
+          {
+            "name": "registry_3.1.2_linux_armv7.provenance.json",
+            "digest": "sha256:e96ba4d79e3fa4d10a7ea9430075603428bf34c77fcd23762a8ad68fb6c305db",
+            "size": 47701
+          },
+          {
+            "name": "registry_3.1.2_linux_armv7.tar.gz.sha256",
+            "digest": "sha256:a1e63853b61006dce969805a0b02aed78cc8b6f2520b925e426d654246f7fcc4",
+            "size": 65
+          },
+          {
+            "name": "registry_3.1.2_linux_ppc64le.provenance.json",
+            "digest": "sha256:050cccaa03b87b4da0f04343bf3d7a9f961e408b38a19a9c207181edddf82769",
+            "size": 47708
+          },
+          {
+            "name": "registry_3.1.2_linux_ppc64le.tar.gz.sha256",
+            "digest": "sha256:36a2abc6851231962b86279f49c16eaa9fa347a57637d7539d9efc2c8715d106",
+            "size": 65
+          },
+          {
+            "name": "registry_3.1.2_linux_riscv64.provenance.json",
+            "digest": "sha256:9de1c1578c38e0a3d4e708ef37b9b86ddc80f3eb83627bff2a36880c8b4342d8",
+            "size": 47708
+          },
+          {
+            "name": "registry_3.1.2_linux_riscv64.tar.gz.sha256",
+            "digest": "sha256:3b5c883c28d06990346b178bb9f9326cb45366e2ad5ff3abd2e5b3ba8b1b41b5",
+            "size": 65
+          },
+          {
+            "name": "registry_3.1.2_linux_s390x.provenance.json",
+            "digest": "sha256:47f693063799deae57f8faa22305a1cd04bc84b156f8bfe45309e5b26abebe31",
+            "size": 47700
+          },
+          {
+            "name": "registry_3.1.2_linux_s390x.tar.gz.sha256",
+            "digest": "sha256:b0ded42f3c9dc94f08797d151b0e94f2c0feb7e1a14297f35bd0fb4f3cfd3714",
+            "size": 65
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "renovatebot/renovate": {
+        "repo": "renovatebot/renovate",
+        "request_url": "https://api.github.com/repos/renovatebot/renovate/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:17.055Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "44.226.1",
+        "release_url": "https://github.com/renovatebot/renovate/releases/tag/44.226.1",
+        "published_at": "2026-11-10T13:30:16Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": true,
+        "release_asset_count": 2,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "restic/restic": {
+        "repo": "restic/restic",
+        "request_url": "https://api.github.com/repos/restic/restic/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:16.667Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v0.19.1",
+        "release_url": "https://github.com/restic/restic/releases/tag/v0.19.1",
+        "published_at": "2026-07-05T08:13:33Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 29,
+        "security_asset_metadata": [
+          {
+            "name": "restic-0.19.1.tar.gz.asc",
+            "digest": "sha256:6e5ad378c9aa9ab25b87e3bbed66e5dbb6eca57d4659f292d97352a69f86c3ff",
+            "size": 833
+          },
+          {
+            "name": "SHA256SUMS",
+            "digest": "sha256:fb520966ee01d2a3d4219c66762c66efa56300833b6f639f36082b7462f91cb8",
+            "size": 2503
+          },
+          {
+            "name": "SHA256SUMS.asc",
+            "digest": "sha256:649f3a48d322c3d7a457ef58e2dc4c5094b1f823192cdbac3f092ea23e194d9a",
+            "size": 833
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "seaweedfs/seaweedfs": {
+        "repo": "seaweedfs/seaweedfs",
+        "request_url": "https://api.github.com/repos/seaweedfs/seaweedfs/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:16.790Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "4.53",
+        "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.53",
+        "published_at": "2026-11-08T18:10:39Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 80,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "surrealdb/surrealdb": {
+        "repo": "surrealdb/surrealdb",
+        "request_url": "https://api.github.com/repos/surrealdb/surrealdb/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:16.683Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v4.0.1",
+        "release_url": "https://github.com/surrealdb/surrealdb/releases/tag/v4.0.1",
+        "published_at": "2026-11-09T16:56:21Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 7,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "grafana/tempo": {
+        "repo": "grafana/tempo",
+        "request_url": "https://api.github.com/repos/grafana/tempo/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:16.686Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v3.1.1",
+        "release_url": "https://github.com/grafana/tempo/releases/tag/v3.1.1",
+        "published_at": "2026-10-21T17:02:10Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 10,
+        "security_asset_metadata": [
+          {
+            "name": "SHA256SUMS",
+            "digest": "sha256:a3560d64a46b2c8d073996faef139e20045d6c30f6cc339f88f6a08401045dc5",
+            "size": 865
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "terrakube-io/terrakube": {
+        "repo": "terrakube-io/terrakube",
+        "request_url": "https://api.github.com/repos/terrakube-io/terrakube/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:16.876Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "2.34.1",
+        "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
+        "published_at": "2026-11-09T18:00:04Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "traefik/traefik": {
+        "repo": "traefik/traefik",
+        "request_url": "https://api.github.com/repos/traefik/traefik/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:16.733Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "v3.7.18",
+        "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.18",
+        "published_at": "2026-11-10T08:23:37Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 20,
+        "security_asset_metadata": [
+          {
+            "name": "traefik_v3.7.18_checksums.txt",
+            "digest": "sha256:b2d9a41273f3f15df36c0a2ff9dd45079972ae666136252f576178836f9883e4",
+            "size": 1825
+          }
+        ],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "wiremock/wiremock": {
+        "repo": "wiremock/wiremock",
+        "request_url": "https://api.github.com/repos/wiremock/wiremock/releases/latest",
+        "retrieved_at": "2026-11-10T13:44:16.683Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "3.13.2",
+        "release_url": "https://github.com/wiremock/wiremock/releases/tag/3.13.2",
+        "published_at": "2025-11-14T14:39:57Z",
+        "prerelease": false,
+        "draft": false,
+        "immutable": false,
+        "release_asset_count": 0,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "searxng/searxng": {
+        "repo": "searxng/searxng",
+        "request_url": "https://api.github.com/repos/searxng/searxng/releases/latest",
+        "retrieved_at": "2026-11-10T13:46:24.278Z",
+        "result": "LOOKUP_FAILED",
+        "error": "CONNECTOR_ERROR",
+        "message": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/releases/releases#get-the-latest-release\",\"status\":\"404\"}",
+        "release_asset_count": null,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      },
+      "n8n-io/n8n-sandbox-service": {
+        "repo": "n8n-io/n8n-sandbox-service",
+        "request_url": "https://api.github.com/repos/n8n-io/n8n-sandbox-service/releases/latest",
+        "retrieved_at": "2026-11-10T13:46:24.126Z",
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "tag": "service/v1.14.0",
+        "release_url": "https://github.com/n8n-io/n8n-sandbox-service/releases/tag/service/v1.14.0",
+        "published_at": "2026-11-06T13:54:12Z",
+        "prerelease": false,
+        "draft": false,
+        "release_asset_count": 1,
+        "security_asset_metadata": [],
+        "stable_channel": "NOT_INFERRED_FROM_GITHUB_FINAL",
+        "artifact_verification": "NOT_RUN: metadata presence does not verify a signature, provenance or SBOM for an OCI/custom subject"
+      }
+    },
+    "vendor": [
+      {
+        "id": "python",
+        "request_url": "https://www.python.org/downloads/",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "VENDOR_ACTIVE_RELEASE_TABLE_READ",
+        "latest_version": "3.15.2",
+        "selected_channel": "bugfix",
+        "source_release_date": "2026-10-25",
+        "release_url": "https://www.python.org/downloads/release/python-3152/",
+        "conclusion": "3.15 is active bugfix; 3.16 is prerelease. Current final download is 3.15.2. Image digest/signature not verified."
+      },
+      {
+        "id": "postgresql",
+        "request_url": "https://www.postgresql.org/support/versioning/",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "VENDOR_SUPPORTED_RELEASE_TABLE_READ",
+        "latest_version": "18.6",
+        "selected_channel": "supported",
+        "source_release_date": null,
+        "release_url": "https://www.postgresql.org/support/versioning/",
+        "conclusion": "Major18 is the highest released supported row, current minor18.6; 19 RC1 is a prerelease. Custom Timescale/pgBackRest wrappers retain separate evidence."
+      },
+      {
+        "id": "confluent",
+        "request_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "VENDOR_RELEASE_FAMILY_READ",
+        "latest_release_family": "8.4",
+        "latest_version": null,
+        "conclusion": "Current docs identify release family8.4 and Kafka4.4. Exact cp-kafka patch/tag/digest is not established by this page. Target8.3.2 unchanged."
+      },
+      {
+        "id": "neo4j",
+        "request_url": "https://neo4j.com/deployment-center/",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "VENDOR_RELEASE_AND_LTS_ROWS_READ",
+        "latest_version": "2026.10.2",
+        "selected_lts_version": "5.26.33",
+        "source_release_date": "2026-11-06",
+        "conclusion": "Vendor lists2026.10.2 and5.26.33. Preserve selected5.26LTS; global latest and selected supported line are separate. OCI signature not verified."
+      },
+      {
+        "id": "aws_cli",
+        "request_url": "https://raw.githubusercontent.com/aws/aws-cli/v2/CHANGELOG.rst",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "VENDOR_CHANGELOG_HEAD_READ",
+        "latest_version": "2.39.7",
+        "conclusion": "Official v2 changelog head is2.39.7. Docker image publication/digest/signature not established."
+      }
+    ],
+    "registry": [
+      {
+        "id": "ollama_exporter_hub",
+        "request_url": "https://hub.docker.com/v2/repositories/lucabecker42/ollama-exporter/tags?page_size=10",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "LOOKUP_FAILED",
+        "error": "WEB_TOOL_URL_NOT_ACCESSIBLE; direct anonymous HTTPS retry failed DNS resolution(exit6).",
+        "remaining": "No confirmed source repository or vendor stable channel; prior unsigned OCI labels remain historical."
+      },
+      {
+        "id": "sandbox_api_hub",
+        "request_url": "https://hub.docker.com/v2/repositories/n8nio/n8n-sandbox-service-api/tags?page_size=10",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "LOOKUP_FAILED",
+        "error": "WEB_TOOL_URL_NOT_ACCESSIBLE",
+        "remaining": "Official GitHub final release observed independently; exact declared OCI artifact metadata/signature not retrieved."
+      },
+      {
+        "id": "sandbox_runner_hub",
+        "request_url": "https://hub.docker.com/v2/repositories/n8nio/n8n-sandbox-service-runner-dind/tags?page_size=10",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "LOOKUP_FAILED",
+        "error": "WEB_TOOL_URL_NOT_ACCESSIBLE",
+        "remaining": "Official GitHub final release observed independently; exact declared OCI artifact metadata/signature not retrieved."
+      },
+      {
+        "id": "searxng_hub",
+        "request_url": "https://hub.docker.com/v2/repositories/searxng/searxng/tags?page_size=10",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "LOOKUP_FAILED",
+        "error": "WEB_TOOL_URL_NOT_ACCESSIBLE",
+        "remaining": "GitHub latest release404 is a release-endpoint observation, not proof of no tags or stable product support."
+      },
+      {
+        "id": "unmatched_sandbox_hub_probe",
+        "request_url": "https://hub.docker.com/v2/repositories/n8nio/n8n-sandbox/tags?page_size=5",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "result": "LOOKUP_FAILED",
+        "error": "WEB_TOOL_URL_NOT_ACCESSIBLE",
+        "remaining": "Initial candidate endpoint was not the actual declared image repository. Not used as artifact evidence; subsequent exact API and runner endpoint failures are recorded separately."
+      }
+    ],
+    "approved_scope": {
+      "operations": [
+        "GET public release metadata",
+        "GET vendor release/channel documentation",
+        "GET anonymous registry tag metadata"
+      ],
+      "forbidden": [
+        "credentials",
+        "image layers",
+        "live containers",
+        "external workspace source",
+        "remote writes",
+        "paid inference"
+      ]
+    },
+    "owner_reconciliation": "Reuse concurrently integrated SPEC-0212-TSK-0052; no duplicate supply-chain Task",
+    "query_limits": {
+      "github_latest_endpoints": 48,
+      "github_get_attempts": 49,
+      "explanation": "Apache Airflow latest was fetched once for connector contract validation and once in the grouped pass. All other latest endpoints were fetched once; no collection pagination or binary download.",
+      "registry_distinct_urls_attempted": 5,
+      "registry_direct_https_retry_attempts": 1,
+      "registry_response_limit": "No image layer requests; web retrieval rejected endpoint URLs, and one direct anonymous HTTPS attempt used connect timeout5s/overall10s and failed DNS.",
+      "vendor_scope": "Five exact public release/channel/changelog pages; follow-up find operations only in the same Confluent and Neo4j pages."
+    }
   }
 }

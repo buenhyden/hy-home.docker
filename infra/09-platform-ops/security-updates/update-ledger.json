@@ -459,6 +459,26 @@
         },
         "existing_target_version": "3.3.2",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/apache~1airflow",
+        "published_final_tag": "3.4.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/airflow:3.3.2-keycloak",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -624,6 +644,26 @@
         },
         "existing_target_version": "3.3.2",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/apache~1airflow",
+        "published_final_tag": "3.4.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/airflow:3.3.2-keycloak",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -771,6 +811,26 @@
         },
         "existing_target_version": "3.3.2",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/apache~1airflow",
+        "published_final_tag": "3.4.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/airflow:3.3.2-keycloak",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -936,6 +996,26 @@
         },
         "existing_target_version": "3.3.2",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/apache~1airflow",
+        "published_final_tag": "3.4.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/airflow:3.3.2-keycloak",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -1083,7 +1163,27 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/prometheus~1statsd_exporter",
+        "published_final_tag": "v0.31.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "prom/statsd-exporter:v0.31.0@sha256:1d5d341c4eb7abdd3445a3f85c3d498402b676ad29b4cf0421f5d280943871ab",
+          "declared_digest": "sha256:1d5d341c4eb7abdd3445a3f85c3d498402b676ad29b4cf0421f5d280943871ab",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "airflow-triggerer",
@@ -1248,6 +1348,26 @@
         },
         "existing_target_version": "3.3.2",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/apache~1airflow",
+        "published_final_tag": "3.4.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/airflow:3.3.2-keycloak",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -1413,6 +1533,26 @@
         },
         "existing_target_version": "3.3.2",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/apache~1airflow",
+        "published_final_tag": "3.4.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/airflow:3.3.2-keycloak",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -1553,6 +1693,26 @@
         "source_image": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/prometheus~1alertmanager",
+        "published_final_tag": "v0.35.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
+          "declared_digest": "sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -1684,6 +1844,26 @@
         "source_image": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/grafana~1alloy",
+        "published_final_tag": "v1.21.3",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
+          "declared_digest": "sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -1697,10 +1877,10 @@
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "3.13.18",
+      "latest_version": "3.15.2",
       "target_version": "3.15.2",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.python.org/downloads/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -1826,7 +2006,33 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "3.13.18",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.python.org/downloads/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/0",
+        "observed_stable_version": "3.15.2",
+        "artifact_boundary": {
+          "declared_subject": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "declared_digest": "sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "cadvisor",
@@ -1947,6 +2153,26 @@
         },
         "existing_target_version": "0.60.6",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/google~1cadvisor",
+        "published_final_tag": "v0.60.6",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
+          "declared_digest": "sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -2093,6 +2319,26 @@
         "source_image": "yanwk/comfyui-boot:cu126-slim@sha256:2860c103583fbbd03f2e324116395a47e68ad0ef84fc3689f03b42a63fba41a6",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/YanWenKun~1ComfyUI-Docker",
+        "published_final_tag": "v6.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "yanwk/comfyui-boot:cu126-slim@sha256:2860c103583fbbd03f2e324116395a47e68ad0ef84fc3689f03b42a63fba41a6",
+          "declared_digest": "sha256:2860c103583fbbd03f2e324116395a47e68ad0ef84fc3689f03b42a63fba41a6",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -2195,6 +2441,26 @@
         },
         "existing_target_version": "0.71.1",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/open-policy-agent~1conftest",
+        "published_final_tag": "v0.71.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "openpolicyagent/conftest:v0.71.1@sha256:0e77cdf7c1fcde035f3c579e4aaa6664ee2a8be5777eaa9af9f520cdd02280c0",
+          "declared_digest": "sha256:0e77cdf7c1fcde035f3c579e4aaa6664ee2a8be5777eaa9af9f520cdd02280c0",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -2363,7 +2629,27 @@
         },
         "runtime_security_acceptance": "NOT_RUN"
       },
-      "upstream_tag_evidence_kind": "CURRENT_PUBLIC_PUBLISHED_SOURCE_FACT_NOT_RUNNING_COMMAND_OUTPUT"
+      "upstream_tag_evidence_kind": "CURRENT_PUBLIC_PUBLISHED_SOURCE_FACT_NOT_RUNNING_COMMAND_OUTPUT",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/unclecode~1crawl4ai",
+        "published_final_tag": "v0.9.5",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "unclecode/crawl4ai:0.9.5@sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9",
+          "declared_digest": "sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "crawl4ai-egress",
@@ -2390,10 +2676,10 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "3.13.18",
+      "latest_version": "3.15.2",
       "target_version": "3.15.2",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.python.org/downloads/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -2523,7 +2809,33 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "3.13.18",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.python.org/downloads/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/0",
+        "observed_stable_version": "3.15.2",
+        "artifact_boundary": {
+          "declared_subject": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "declared_digest": "sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "crawl4ai-loopback",
@@ -2536,11 +2848,11 @@
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
+      "latest_version": "3.15.2",
       "target_version": "3.15.2",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
+      "channel": "stable",
+      "checked_at": "2026-11-10T13:47:09.345Z",
+      "release_url": "https://www.python.org/downloads/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
@@ -2588,6 +2900,32 @@
         "source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "UNKNOWN",
+          "channel": "UNKNOWN",
+          "checked_at": null,
+          "release_url": null
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/0",
+        "observed_stable_version": "3.15.2",
+        "artifact_boundary": {
+          "declared_subject": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "declared_digest": "sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -2727,6 +3065,26 @@
         "source_image": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/NVIDIA~1dcgm-exporter",
+        "published_final_tag": "4.9.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
+          "declared_digest": "sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -2743,7 +3101,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -2865,6 +3223,33 @@
         "source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -2901,7 +3286,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -3008,6 +3393,33 @@
           "current_source_target": "18.6",
           "channel": "stable",
           "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
+        }
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
         }
       }
     },
@@ -3158,7 +3570,27 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/prometheus-community~1postgres_exporter",
+        "published_final_tag": "v0.20.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
+          "declared_digest": "sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "dev-pg-monitor-provision",
@@ -3191,7 +3623,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -3317,6 +3749,33 @@
         "source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -3334,7 +3793,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -3456,6 +3915,33 @@
         "source_image": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -3710,6 +4196,26 @@
           "source_activation": "NOT_APPLIED"
         },
         "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/valkey-io~1valkey",
+        "published_final_tag": "9.1.3",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+          "declared_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -3838,6 +4344,26 @@
         "source_image": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/oliver006~1redis_exporter",
+        "published_final_tag": "v1.97.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
+          "declared_digest": "sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -3982,6 +4508,26 @@
         "source_image": "amir20/dozzle:v11.4.2@sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/amir20~1dozzle",
+        "published_final_tag": "v11.4.2",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "amir20/dozzle:v11.4.2@sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
+          "declared_digest": "sha256:08cd5230e21e364241f3dcf26191f293166f7835654eb7e41168b9c685f0947b",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -4147,6 +4693,26 @@
         },
         "existing_target_version": "3.3.2",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/apache~1airflow",
+        "published_final_tag": "3.4.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/airflow:3.3.2-keycloak",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -4623,7 +5189,27 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
       },
-      "upstream_tag_evidence_kind": "CURRENT_PUBLIC_PUBLISHED_SOURCE_FACT_NOT_RUNNING_COMMAND_OUTPUT"
+      "upstream_tag_evidence_kind": "CURRENT_PUBLIC_PUBLISHED_SOURCE_FACT_NOT_RUNNING_COMMAND_OUTPUT",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/TwiN~1gatus",
+        "published_final_tag": "v5.38.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy/gatus:local",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "grafana",
@@ -4774,7 +5360,27 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_tag_evidence_kind": "CURRENT_PUBLIC_PUBLISHED_SOURCE_FACT_NOT_RUNNING_COMMAND_OUTPUT"
+      "upstream_tag_evidence_kind": "CURRENT_PUBLIC_PUBLISHED_SOURCE_FACT_NOT_RUNNING_COMMAND_OUTPUT",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/grafana~1grafana",
+        "published_final_tag": "v13.3.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
+          "declared_digest": "sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "grafana-db-provision",
@@ -4806,7 +5412,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -4920,6 +5526,33 @@
         "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declared_digest": "sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -5026,6 +5659,26 @@
         },
         "existing_target_version": "2.3.0",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/grafana~1k6",
+        "published_final_tag": "v2.3.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "UNKNOWN",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -5173,7 +5826,27 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/kafbat~1kafka-ui",
+        "published_final_tag": "v1.5.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "kafbat/kafka-ui:v1.5.0@sha256:7cda86a33344160309fdb65146332e4da65db81a945614f2fe32e210803f6fd1",
+          "declared_digest": "sha256:7cda86a33344160309fdb65146332e4da65db81a945614f2fe32e210803f6fd1",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "kafka-1",
@@ -5319,6 +5992,26 @@
         "source_image": "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_RELEASE_FAMILY_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/2",
+        "latest_release_family": "8.4",
+        "exact_latest_patch": "UNVERIFIED",
+        "top_level_stable_lookup": "UNCHANGED",
+        "artifact_boundary": {
+          "declared_subject": "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
+          "declared_digest": "sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -5471,7 +6164,27 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/danielqsj~1kafka_exporter",
+        "published_final_tag": "v1.11.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "danielqsj/kafka-exporter:v1.10.0@sha256:346a53c2489a3530790d01f7b96632496d0d58926662f4c35bb65f569db2ab42",
+          "declared_digest": "sha256:346a53c2489a3530790d01f7b96632496d0d58926662f4c35bb65f569db2ab42",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "kafka-init",
@@ -5594,6 +6307,26 @@
         "source_image": "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_RELEASE_FAMILY_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/2",
+        "latest_release_family": "8.4",
+        "exact_latest_patch": "UNVERIFIED",
+        "top_level_stable_lookup": "UNCHANGED",
+        "artifact_boundary": {
+          "declared_subject": "confluentinc/cp-kafka:8.3.2@sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
+          "declared_digest": "sha256:5e8f3ab5b4977c9a8fd6137d26af2caad878aca316f24c55f08206217e3cec48",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -5752,6 +6485,26 @@
         "source_image": "quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/keycloak~1keycloak",
+        "published_final_tag": "26.8.2",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+          "declared_digest": "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -5899,6 +6652,26 @@
         "source_image": "hy/loki:3.7.8-seaweedfs",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/grafana~1loki",
+        "published_final_tag": "v3.7.9",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy/loki:3.7.8-seaweedfs",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -6043,6 +6816,26 @@
         "source_image": "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/axllent~1mailpit",
+        "published_final_tag": "v1.33.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
+          "declared_digest": "sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -6171,6 +6964,26 @@
         "source_image": "hy-home/mlflow:3.16.1-local",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/mlflow~1mlflow",
+        "published_final_tag": "v3.18.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/mlflow:3.17.2-local",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -6188,7 +7001,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -6298,6 +7111,33 @@
         "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declared_digest": "sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -6338,7 +7178,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -6443,6 +7283,33 @@
           "current_source_target": "18.6",
           "channel": "stable",
           "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
+        }
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/mng-pg:18.6-pgbackrest",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
         }
       }
     },
@@ -6597,7 +7464,27 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/prometheus-community~1postgres_exporter",
+        "published_final_tag": "v0.20.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
+          "declared_digest": "sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "mng-pg-init",
@@ -6634,7 +7521,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -6748,6 +7635,33 @@
         "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declared_digest": "sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -6785,7 +7699,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -6899,6 +7813,33 @@
         "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declared_digest": "sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -7156,6 +8097,26 @@
           "source_activation": "NOT_APPLIED"
         },
         "local_sbom_report_reference": "update-ledger.json#/p08_valkey_local_sbom_observation"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/valkey-io~1valkey",
+        "published_final_tag": "9.1.3",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+          "declared_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -7287,6 +8248,26 @@
         "source_image": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/oliver006~1redis_exporter",
+        "published_final_tag": "v1.97.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
+          "declared_digest": "sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -7571,6 +8552,26 @@
         "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
         "archived_at": "2026-11-09T06:43:53.233408+00:00",
         "reason": "Candidate 2.45.7 superseded by the owner-requested 2.46.6 source pin."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/n8n-io~1n8n",
+        "published_final_tag": "n8n@2.47.3",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hyhome/n8n:2.46.6-local",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0041 criterion60"
+        }
       }
     },
     {
@@ -7843,6 +8844,26 @@
         "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
         "archived_at": "2026-11-09T06:43:53.233408+00:00",
         "reason": "Candidate 2.45.7 superseded by the owner-requested 2.46.6 source pin."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/n8n-io~1n8n",
+        "published_final_tag": "n8n@2.47.3",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+          "declared_digest": "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0041 criterion60"
+        }
       }
     },
     {
@@ -8127,6 +9148,26 @@
         "candidate_evidence_scope": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
         "archived_at": "2026-11-09T06:43:53.233408+00:00",
         "reason": "Candidate 2.45.7 superseded by the owner-requested 2.46.6 source pin."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/n8n-io~1n8n",
+        "published_final_tag": "n8n@2.47.3",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hyhome/n8n:2.46.6-local",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0041 criterion60"
+        }
       }
     },
     {
@@ -8264,7 +9305,27 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_RELEASE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/3",
+        "latest_product_version": "2026.10.2",
+        "selected_lts_latest": "5.26.33",
+        "top_level_stable_lookup": "UNCHANGED; selected LTS and product latest require an explicit channel decision",
+        "artifact_boundary": {
+          "declared_subject": "neo4j:5.26.33-community@sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6",
+          "declared_digest": "sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "node-exporter",
@@ -8405,6 +9466,26 @@
         "source_image": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/prometheus~1node_exporter",
+        "published_final_tag": "v1.12.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+          "declared_digest": "sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -8535,6 +9616,26 @@
         },
         "existing_target_version": "7.15.5",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/oauth2-proxy~1oauth2-proxy",
+        "published_final_tag": "v7.15.6",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "UNKNOWN",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -8680,6 +9781,26 @@
         "source_image": "ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/ollama~1ollama",
+        "published_final_tag": "v0.40.16",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
+          "declared_digest": "sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -8827,7 +9948,26 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "LOOKUP_FAILED",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/registry/0",
+        "error": "Anonymous Docker Hub retrieval unavailable; direct DNS retry failed",
+        "recovery": "Retry exact publisher metadata endpoint when network transport works; establish source ownership and channel before adoption",
+        "artifact_boundary": {
+          "declared_subject": "lucabecker42/ollama-exporter:1.0.3@sha256:9fb1f4c5bc4ff819eb13e148debeb7fd474a4c8956d83d39928ea22d95d3de5c",
+          "declared_digest": "sha256:9fb1f4c5bc4ff819eb13e148debeb7fd474a4c8956d83d39928ea22d95d3de5c",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "open_notebook",
@@ -8928,6 +10068,26 @@
         },
         "existing_target_version": "1.15.0",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/lfnovo~1open-notebook",
+        "published_final_tag": "v1.15.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "lfnovo/open_notebook:1.15.0-single@sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3",
+          "declared_digest": "sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -9304,6 +10464,26 @@
         "source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/openbao~1openbao",
+        "published_final_tag": "v2.7.2",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+          "declared_digest": "sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -9680,6 +10860,26 @@
         "source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/openbao~1openbao",
+        "published_final_tag": "v2.7.2",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+          "declared_digest": "sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -9955,7 +11155,27 @@
           ],
           "meaning": "Prior ROOT/LAB scope interpretation superseded; old observations retained."
         }
-      ]
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/opensearch-project~1OpenSearch",
+        "published_final_tag": "3.9.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "UNKNOWN",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "opensearch-dashboards",
@@ -10144,7 +11364,27 @@
           "target_build_materials": [],
           "meaning": "Prior ROOT/LAB scope interpretation superseded; old observations retained."
         }
-      ]
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/opensearch-project~1OpenSearch-Dashboards",
+        "published_final_tag": "3.9.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "opensearchproject/opensearch-dashboards:3.9.0@sha256:256d4cea5928868ac09bca642a0ac8285a2b7e4b7fdd45c4ec06e75a5cf3184c",
+          "declared_digest": "sha256:256d4cea5928868ac09bca642a0ac8285a2b7e4b7fdd45c4ec06e75a5cf3184c",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "opentofu",
@@ -10261,6 +11501,26 @@
         },
         "existing_target_version": "1.13.1",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/opentofu~1opentofu",
+        "published_final_tag": "v1.13.9",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/opentofu:1.13.1-local",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -10400,7 +11660,27 @@
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
-      "upstream_reported_tag": "UNKNOWN"
+      "upstream_reported_tag": "UNKNOWN",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/pact-foundation~1pact_broker",
+        "published_final_tag": "v2.122.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2@sha256:420341d4fbfb00a621c313f47e530ad75703f969bbc7520d0d72bc71bb53cef9",
+          "declared_digest": "sha256:420341d4fbfb00a621c313f47e530ad75703f969bbc7520d0d72bc71bb53cef9",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "pact-broker-db-provision",
@@ -10416,7 +11696,7 @@
       "latest_version": "18.6",
       "target_version": "18.6",
       "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
+      "checked_at": "2026-11-10T13:47:09.345Z",
       "release_url": "https://www.postgresql.org/support/versioning/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -10526,6 +11806,33 @@
         "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "historical_stable_lookup_observations": [
+        {
+          "latest_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/"
+        }
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_SUPPORTED_STABLE_LINE_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/1",
+        "observed_stable_version": "18.6",
+        "custom_wrapper_verification": "NOT_RUN",
+        "artifact_boundary": {
+          "declared_subject": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "declared_digest": "sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -10671,7 +11978,27 @@
         "target_manifest_digest": "sha256:86b17a25c2db1d16a61b16b3c8f336679eb19e26333d03e808da387206e40faa",
         "target_config_digest": "sha256:66416213a3b43651d3521acc3987277b4f97ad0ae29acc581f910ef9bd3959bd"
       },
-      "source_release_note": "Digests verified through the anonymous registry API on 2026-10-30T03:01:50Z: index and linux/amd64 manifest raw SHA256 equal the registry Docker-Content-Digest; config digest is a descriptor only."
+      "source_release_note": "Digests verified through the anonymous registry API on 2026-10-30T03:01:50Z: index and linux/amd64 manifest raw SHA256 equal the registry Docker-Content-Digest; config digest is a descriptor only.",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/prometheus~1prometheus",
+        "published_final_tag": "v3.16.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
+          "declared_digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "pushgateway",
@@ -10799,6 +12126,26 @@
         "source_image": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/prometheus~1pushgateway",
+        "published_final_tag": "v1.11.4",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
+          "declared_digest": "sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -10928,6 +12275,26 @@
         "source_image": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/grafana~1pyroscope",
+        "published_final_tag": "v2.4.3",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
+          "declared_digest": "sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -11065,6 +12432,26 @@
         },
         "existing_target_version": "1.19.2",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/qdrant~1qdrant",
+        "published_final_tag": "v1.20.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "qdrant/qdrant:v1.19.2-unprivileged@sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
+          "declared_digest": "sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -11205,6 +12592,26 @@
         "source_image": "redis/redisinsight:3.8.0@sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/redis~1RedisInsight",
+        "published_final_tag": "3.8.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "redis/redisinsight:3.8.0@sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84",
+          "declared_digest": "sha256:b5e19ee240abef6edb435871b90ff8a210995422e8e018ab61c0339d318a1f84",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -11325,6 +12732,26 @@
         },
         "existing_target_version": "3.1.2",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/distribution~1distribution",
+        "published_final_tag": "v3.1.2",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "registry:3.1.2@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8",
+          "declared_digest": "sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -11449,6 +12876,26 @@
         "source_image": "renovate/renovate:44.225.1-full@sha256:0ffd67ededcc1fffefd95b0984633f764e464a8420fb6bd03b9b3cb8734b72de",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/renovatebot~1renovate",
+        "published_final_tag": "44.226.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "renovate/renovate:44.225.1-full@sha256:0ffd67ededcc1fffefd95b0984633f764e464a8420fb6bd03b9b3cb8734b72de",
+          "declared_digest": "sha256:0ffd67ededcc1fffefd95b0984633f764e464a8420fb6bd03b9b3cb8734b72de",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -11570,6 +13017,26 @@
         "source_image": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/restic~1restic",
+        "published_final_tag": "v0.19.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510",
+          "declared_digest": "sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -11691,6 +13158,26 @@
         "source_image": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/restic~1restic",
+        "published_final_tag": "v0.19.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "restic/restic:0.19.1@sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510",
+          "declared_digest": "sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -11817,6 +13304,25 @@
         "source_image": "amazon/aws-cli:2.39.3@sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "VENDOR_CHANGELOG_FACTS",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/vendor/4",
+        "latest_changelog_version": "2.39.7",
+        "top_level_stable_lookup": "UNCHANGED; package changelog is not image publication",
+        "artifact_boundary": {
+          "declared_subject": "amazon/aws-cli:2.39.3@sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f",
+          "declared_digest": "sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -11962,6 +13468,26 @@
         },
         "existing_target_version": "4.48",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/seaweedfs~1seaweedfs",
+        "published_final_tag": "4.53",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+          "declared_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -12091,6 +13617,26 @@
         },
         "existing_target_version": "4.48",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/seaweedfs~1seaweedfs",
+        "published_final_tag": "4.53",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+          "declared_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -12220,6 +13766,26 @@
         },
         "existing_target_version": "4.48",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/seaweedfs~1seaweedfs",
+        "published_final_tag": "4.53",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+          "declared_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -12349,6 +13915,26 @@
         },
         "existing_target_version": "4.48",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/seaweedfs~1seaweedfs",
+        "published_final_tag": "4.53",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "chrislusf/seaweedfs:4.48@sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+          "declared_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -12469,6 +14055,26 @@
         },
         "existing_target_version": "UNKNOWN",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "LOCAL_PRODUCER_SOURCE_LOCATED",
+        "producer": "scripts/operations/storybook_image.py",
+        "selected_source_revision": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
+        "verification": "NOT_RUN; build/verify uses Docker and was not invoked",
+        "remaining": "Exact built index, trusted publisher identity, signature and per-subject SBOM/provenance receipts",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/storybook:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -12589,6 +14195,26 @@
         },
         "existing_target_version": "UNKNOWN",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "LOCAL_PRODUCER_SOURCE_LOCATED",
+        "producer": "scripts/operations/storybook_image.py",
+        "selected_source_revision": "9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
+        "verification": "NOT_RUN; build/verify uses Docker and was not invoked",
+        "remaining": "Exact built index, trusted publisher identity, signature and per-subject SBOM/provenance receipts",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/storybook-mcp:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -12908,7 +14534,27 @@
           "target_config_digest": "UNKNOWN",
           "target_build_materials": []
         }
-      ]
+      ],
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/surrealdb~1surrealdb",
+        "published_final_tag": "v4.0.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "UNKNOWN",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "tempo",
@@ -13037,6 +14683,26 @@
         },
         "existing_target_version": "3.1.0",
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/grafana~1tempo",
+        "published_final_tag": "v3.1.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "hy/tempo:3.1.0-seaweedfs",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -13158,6 +14824,26 @@
         "source_image": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/terrakube-io~1terrakube",
+        "published_final_tag": "2.34.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+          "declared_digest": "sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -13279,6 +14965,26 @@
         "source_image": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/terrakube-io~1terrakube",
+        "published_final_tag": "2.34.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+          "declared_digest": "sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -13400,6 +15106,26 @@
         "source_image": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/terrakube-io~1terrakube",
+        "published_final_tag": "2.34.1",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+          "declared_digest": "sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -13658,6 +15384,26 @@
         "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
         "archived_at": "2026-11-09T10:22:16.962783+00:00",
         "reason": "Pin traefik:v3.7.16 superseded by v3.7.17 (GHSA-xv5x-242w-7hf7, High, published 2026-11-02: per-connection backend transport leak from unauthenticated NTLM/Negotiate Authorization headers in v3.7.14 through v3.7.16)."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/traefik~1traefik",
+        "published_final_tag": "v3.7.18",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
+          "declared_digest": "sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -13779,6 +15525,26 @@
         "source_image": "wiremock/wiremock:3.13.2-alpine@sha256:f8c42a38dca3f4a1d7219af11c80438740f39eebb1505b0f029aed743c20e147",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/wiremock~1wiremock",
+        "published_final_tag": "3.13.2",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "wiremock/wiremock:3.13.2-alpine@sha256:f8c42a38dca3f4a1d7219af11c80438740f39eebb1505b0f029aed743c20e147",
+          "declared_digest": "sha256:f8c42a38dca3f4a1d7219af11c80438740f39eebb1505b0f029aed743c20e147",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
       }
     },
     {
@@ -13834,7 +15600,26 @@
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
       "supplier_lookup_blocker": "Local image; independently verified producer and release evidence are not available in this workspace.",
-      "official_supplier_observation_scope": "NONE; existing vendor observations do not verify this local artifact."
+      "official_supplier_observation_scope": "NONE; existing vendor observations do not verify this local artifact.",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "EXTERNAL_SOURCE_EXCLUDED",
+        "owner": "blog-data",
+        "meaning": "Current declared image retained; external workspace was not inspected",
+        "remaining": "Exact producer/artifact handoff within separately authorized external scope",
+        "artifact_boundary": {
+          "declared_subject": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
+          "declared_digest": null,
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "searxng",
@@ -13893,7 +15678,29 @@
       "official_supplier_observation_scope": "Registry descriptors only; no supplier release, advisory or signature observation.",
       "target_source_image": "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2",
       "target_declared_digest": "sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified."
+      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified.",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "LOOKUP_FAILED",
+        "lookup_refs": [
+          "release-lookups.json#/master_20261110_public_refresh/github/searxng~1searxng",
+          "release-lookups.json#/master_20261110_public_refresh/registry/3"
+        ],
+        "error": "GitHub latest release404; Docker Hub metadata inaccessible",
+        "meaning": "No claim of no tags/releases or verified stable channel",
+        "artifact_boundary": {
+          "declared_subject": "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2",
+          "declared_digest": "sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "n8n-sandbox-certs",
@@ -13951,7 +15758,27 @@
       "official_supplier_observation_scope": "Registry descriptors only; no supplier release, advisory or signature observation.",
       "target_source_image": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
       "target_declared_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified."
+      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified.",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/n8n-io~1n8n-sandbox-service",
+        "published_final_tag": "service/v1.14.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+          "declared_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "n8n-sandbox-api",
@@ -14009,7 +15836,27 @@
       "official_supplier_observation_scope": "Registry descriptors only; no supplier release, advisory or signature observation.",
       "target_source_image": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
       "target_declared_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified."
+      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified.",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/n8n-io~1n8n-sandbox-service",
+        "published_final_tag": "service/v1.14.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+          "declared_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     },
     {
       "service": "n8n-sandbox-runner-1",
@@ -14067,7 +15914,27 @@
       "official_supplier_observation_scope": "Registry descriptors only; no supplier release, advisory or signature observation.",
       "target_source_image": "n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
       "target_declared_digest": "sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified."
+      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 manifest responses (hashes match descriptors); signature and provenance not verified.",
+      "master_20261110_public_refresh": {
+        "task": "SPEC-0212-TSK-0052",
+        "retrieved_at": "2026-11-10T13:47:09.345Z",
+        "declared_source_retained": true,
+        "result": "PUBLISHED_FINAL_RELEASE",
+        "lookup_ref": "release-lookups.json#/master_20261110_public_refresh/github/n8n-io~1n8n-sandbox-service",
+        "published_final_tag": "service/v1.14.0",
+        "vendor_stable_channel": "NOT_INFERRED",
+        "top_level_stable_lookup": "UNCHANGED; separate vendor channel interpretation required",
+        "artifact_boundary": {
+          "declared_subject": "n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
+          "declared_digest": "sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
+          "digest_evidence": "Source declaration only; not a retrieved/verified artifact",
+          "signature": "NOT_RUN",
+          "provenance": "NOT_RUN",
+          "sbom": "NOT_RUN",
+          "upstream_metadata_proves_custom_image": false,
+          "next_owner": "SPEC-0212-TSK-0052 criterion105"
+        }
+      }
     }
   ],
   "deployed": false,
@@ -44791,5 +46658,29 @@
       ],
       "raw_receipt": "NOT_SAVED"
     }
+  },
+  "master_20261110_public_refresh": {
+    "task": "SPEC-0212-TSK-0052",
+    "retrieved_at": "2026-11-10T13:47:09.345Z",
+    "source_revision": "648a78a261cdd058f6c5ed94f560aca73fba145b",
+    "entries_assessed": 89,
+    "results": {
+      "PUBLISHED_FINAL_RELEASE": 67,
+      "VENDOR_STABLE_LINE_FACTS": 3,
+      "VENDOR_SUPPORTED_STABLE_LINE_FACTS": 10,
+      "VENDOR_RELEASE_FAMILY_FACTS": 2,
+      "VENDOR_RELEASE_LINE_FACTS": 1,
+      "LOOKUP_FAILED": 2,
+      "VENDOR_CHANGELOG_FACTS": 1,
+      "LOCAL_PRODUCER_SOURCE_LOCATED": 2,
+      "EXTERNAL_SOURCE_EXCLUDED": 1
+    },
+    "lookup_ref": "release-lookups.json#/master_20261110_public_refresh",
+    "new_image_pins": false,
+    "stable_lookup_refreshes": 13,
+    "github_final_is_vendor_stable": false,
+    "runtime_or_artifact_verification": "NOT_RUN",
+    "prior_failures": "Preserved; selected stable lookup fields change only for direct Python/PostgreSQL vendor tables.",
+    "owner_reconciliation": "Reuse concurrently integrated SPEC-0212-TSK-0052; no duplicate supply-chain Task"
   }
 }
