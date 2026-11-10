@@ -5,8 +5,6 @@ import subprocess
 import tempfile
 import unittest
 
-import yaml
-
 from scripts.lib.document_governance.operations_catalog import (
     validate_active_operations_references,
 )
@@ -137,17 +135,6 @@ class OperationsAuthorityTests(unittest.TestCase):
         for relative in expected:
             with self.subTest(path=relative):
                 self.assertTrue((ROOT / relative).is_file())
-
-    def test_postgres_rehearsal_keeps_operations_manifest_kind(self) -> None:
-        manifest = yaml.safe_load(
-            (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
-        )
-        rehearsal = next(
-            row
-            for row in manifest["files"]
-            if row["path"] == "scripts/operations/rehearse-postgres-logical-upgrade.sh"
-        )
-        self.assertEqual("operations", rehearsal["kind"])
 
 
 if __name__ == "__main__":

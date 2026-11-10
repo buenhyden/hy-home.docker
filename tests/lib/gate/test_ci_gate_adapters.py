@@ -681,7 +681,7 @@ class CiGateAdapterTests(unittest.TestCase):
             "tests.lib.gate.test_ci_gate_adapters",
             "tests.lib.gate.test_ci_gate_contract",
             "tests.lib.gate.test_github_workflow_contract",
-            "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
+            "tests.lib.ops.test_compose_core_readiness",
             "tests.lib.supply_chain.test_grype_db_seed",
         )
         for module in modules:

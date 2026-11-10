@@ -58,7 +58,6 @@ _COMPLETE_CAPABILITY_ARGV = {
     "check-document-links.py": ("--mode", "all"),
     "check-document-metadata.py": ("--mode", "check-changed"),
     "check-supply-chain-policy.py": ("--check",),
-    "rehearse-postgres-logical-upgrade.sh": ("--check-config-only",),
 }
 _REQUIRED_PUBLIC_VALIDATOR_BINDINGS = {
     "leaf.conftest-policy": (
@@ -121,10 +120,7 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.supply-chain-fixture-policy",
         "leaf.supply-chain-deterministic-policy",
     ),
-    "local.compose-validation": (
-        "leaf.compose-validation",
-        "leaf.postgres-logical-upgrade-config",
-    ),
+    "local.compose-validation": ("leaf.compose-validation",),
     "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
     "local.template-security-baseline": (
         "leaf.template-security-baseline",

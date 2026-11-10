@@ -259,7 +259,6 @@ class PublicSuiteModelTests(unittest.TestCase):
                 "tests.lib.hooks.test_tool_payload",
             },
             "operations": {
-                "tests.validation.test_postgres_logical_upgrade_rehearsal",
                 "tests.lib.supply_chain.test_grype_db_seed",
                 "tests.lib.ops.test_compose_core_readiness",
                 "tests.validation.test_compose_core_readiness",

@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Health and Recovery Triage Runbook"
-version: "2.0.2"
+version: "2.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0031"
 parent_ids:
@@ -130,7 +130,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Rollback or Recovery
 
-위 HA 계약은 미구현이다. RUN-0032는 별도 fixture 한 DB의 synthetic PG17→18 logical rehearsal이며 `--no-owner --no-acl`을 사용하고 globals/roles, 모든 DB, Patroni/etcd, pg-router를 복원·검증하지 않는다. 성공해도 이 HA 계약의 acceptance가 아니다. 이 변경에서는 backup/restore, DCS reset, leadership mutation, credential rotation이나 volume replacement를 실행하지 않았다.
+위 HA 계약은 미구현이다. 이 변경에서는 backup/restore, DCS reset, leadership mutation, credential rotation이나 volume replacement를 실행하지 않았다.
 
 1. 승인된 router-only 재생성만 위 조건에서 가능하다. `pg-cluster-init` 재실행은 role/database mutation이며 triage나 rollback이 아니다.
 2. 실패한 격리 cluster와 전용 volumes를 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. source cluster, DCS와 tracked volumes는 변경하지 않는다.
@@ -151,7 +151,6 @@ leader를 확인할 수 없거나, etcd quorum 관련 증상이 나타나거나,
 
 - [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
-- [Logical upgrade restore rehearsal](../05-databases-and-storage/0032-postgresql-logical-upgrade-restore-rehearsal.md) (`RUN-0032`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/15-labs/0031-postgresql-cluster.md)

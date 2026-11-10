@@ -1,10 +1,10 @@
 ---
 title: "Repository Support Staging"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 created: "2026-09-27"
 ---
 
@@ -53,7 +53,6 @@ created: "2026-09-27"
 | `scripts/security/seed-grype-db-cache.sh` | Grype DB seed |
 | `scripts/security/verify-sample-service-supply-chain.sh` | 공급망 검증 기록 |
 | `scripts/operations/rehearse-sample-service-delivery.sh` | 배포 리허설 입력과 기록 |
-| `scripts/operations/rehearse-postgres-logical-upgrade.sh` | 업그레이드 리허설 인계 파일 |
 | `scripts/lib/ops/compose-core-readiness.sh` | readiness 기록 |
 
 ## Usage

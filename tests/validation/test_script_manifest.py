@@ -424,7 +424,7 @@ class ScriptManifestTests(unittest.TestCase):
             is_runbook_authority(
                 "docs/05.operations/runbooks/"
                 "05-databases-and-storage/"
-                "0032-postgresql-logical-upgrade-restore-rehearsal.md"
+                "0028-management-database.md"
             )
         )
         rejected = (
