@@ -1,10 +1,10 @@
 ---
 title: "Legacy Document Status Ban Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0256-TSK-0001"
 parent_ids:
@@ -187,6 +187,14 @@ onto 4adeb3d37 and 46a7811dd; the rows from E16 on are the review-fix runs.
 Independent review requested changes I1 to I4 and M1 to M8, which commits
 bf3ea869e and b8893cc28 and the follow-up test fix address. Hosted CI has not
 run, and no criterion is accepted yet.
+
+### Merge receipt 2026-11-10
+
+Recorded 2026-11-10 from `gh pr view`: #735 merge `0ab42bc30` at
+2026-11-04T03:57:25Z. Hosted checks on the merged PR: every completed check
+SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
+is a candidate that passed hosted CI. This receipt is not owner acceptance: no
+criterion is accepted and the status is unchanged.
 
 ## Related Documents
 

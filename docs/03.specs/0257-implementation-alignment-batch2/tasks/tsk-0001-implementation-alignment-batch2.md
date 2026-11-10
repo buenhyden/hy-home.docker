@@ -1,10 +1,10 @@
 ---
 title: "Implementation Alignment Batch 2 Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0257-TSK-0001"
 parent_ids:
@@ -106,6 +106,16 @@ progress under the approved parents. Hosted CI has not run.
 
 Local checks E2 and E4 to E9 pass. No independent review has run and hosted
 CI is not observed; no criterion is accepted yet.
+
+### Merge receipt 2026-11-10
+
+Recorded 2026-11-10 from `gh pr view`: #736 merge `52d08bf94` at
+2026-11-04T04:36:55Z. Hosted checks on the merged PR: every completed check
+SUCCESS, the rest SKIPPED, none failing. The Task cites #730, which never
+merged (no merged PR carries that number); #736 is the merged change.
+Candidate quality: the merged change is a candidate that passed hosted CI.
+This receipt is not owner acceptance: no criterion is accepted and the status
+is unchanged.
 
 ## Related Documents
 

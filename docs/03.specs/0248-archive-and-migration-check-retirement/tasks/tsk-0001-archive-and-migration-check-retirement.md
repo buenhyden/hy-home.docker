@@ -1,10 +1,10 @@
 ---
 title: "Archive and Migration Check Retirement Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0248-TSK-0001"
 parent_ids:
@@ -191,6 +191,15 @@ Local checks are recorded above. Independent review of PR #721 requested
 changes (I1–I6, M1–M5); they are addressed in this branch and recorded in the
 Evidence table, with M3 and M4 kept as forward dependencies. Hosted CI for the
 corrected head has not run, and no criterion is accepted yet.
+
+### Merge receipt 2026-11-10
+
+Recorded 2026-11-10 from `gh pr view`: #721 merge `ec8555d09` at
+2026-11-03T06:33:54Z; #722 merge `b9fdd67d4` at 2026-11-03T08:12:37Z; #723
+merge `85904818e` at 2026-11-03T13:14:59Z. Hosted checks on the merged PR:
+every completed check SUCCESS, the rest SKIPPED, none failing. Candidate
+quality: the merged change is a candidate that passed hosted CI. This receipt
+is not owner acceptance: no criterion is accepted and the status is unchanged.
 
 ## Related Documents
 
