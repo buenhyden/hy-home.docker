@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -548,6 +548,12 @@ fix them. Most HOME targets are scraped and have dashboards. Five were not:
   `gatus_results_endpoint_success{key="ai_open-webui"}` reads 1, and the mounted
   Grafana `Security/openbao.json` holds the Agent panels.
 
+### Owner acceptance 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) accepted criteria 82 and 84 after the
+target-plan reruns, the independent launcher re-review and the isolated OTLP
+fixture run.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -600,6 +606,8 @@ fix them. Most HOME targets are scraped and have dashboards. Five were not:
 | Companion selection rerun | 82 | W87 | Source and synthetic selection and CLI checks | `compose-start.py plan --target` for `n8n-worker`, `airflow-scheduler` and `grafana` at `main` `11e41fb43`; `tests.lib.ops.test_compose_start` | PASS | All three plans exit 0; `grafana` pulls `loki` and `prometheus` as `optional-dependency`, `airflow-scheduler` adds provision job `airflow-init`; 25/25 tests OK. Plan only, nothing started. Independent re-review of post-`1c128b43` changes is not claimed. | required | Companion selection |
 | Launcher candidate rerun | 82 | W87 | Public target plan and synthetic launcher suite | `compose-start.py plan --target` for `n8n-worker`, `airflow-scheduler` and `grafana` at `main` `11e41fb43`; `tests.lib.ops.test_compose_start` | PASS | The active optional dependency the earlier candidate omitted is now in the closure (`optional-dependency:grafana` rows); exit 0 and 25/25 tests OK. | required | Launcher candidate |
 | Document metadata rerun | 85 | W90 | `check-document-metadata.py --mode check-changed` | This Task with explicit base `origin/main` (merge base `11e41fb43`) | PASS | `check-changed` selected 1 document, 0 violations, finished in 3 min 32 s on 2026-11-10. | required | Document metadata |
+| Launcher re-review 2026-11-10 | 82 | W87 | Active optional dependency closure and independent review | Source digest prefix `f7ca8f45`, CLI `158400ce`, tests `1e395441` at `main` `5f4160d1a` | PASS | Independent re-review APPROVED: required, companion and active-profile optional closure, cycle detection and the overlay, plan-mismatch and partial-Prometheus refusals hold; `execute_plan` starts only plan targets. Minor follow-ups: implicit `network_mode`/`volumes_from`/`links` service references are not refused, two refusal tests accept any `ValueError`, missing-dependency and optional-cycle cases lack tests, one test needs Docker instead of skipping. | required | - |
+| Authenticated OTLP delivery rerun | 84 | W89 | Pinned isolated Alloy/Prometheus test | `examples/operations/quality-metrics/acceptance.py` at `main` `5f4160d1a`; cached Alloy v1.20.1 `2aa2099a`, Prometheus v3.15.1 `fa330227`, probe `79e7a9b9` | PASS | Exit 0 on 2026-11-10: 22 PASS lines covering delta and cumulative counters and histograms, the unauthenticated producer rejected with 401, a missing identity dropped, retry and epoch reset; owned containers and network removed with no volume deletion. k6 stage not run; live Grafana datasource and prior-state recovery stay NOT_RUN. | required | Authenticated OTLP delivery |
 
 ## Criterion Acceptance
 
@@ -611,9 +619,9 @@ Actual Grafana, trace and log delivery and durable restore remain NOT_RUN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 82 | pending | Companion selection | IMPLEMENT_GAP until implemented and reviewed. | SPEC-0212 TSK-0046 |
+| 82 | accepted | Companion selection, Launcher candidate, Corrected launcher review, Companion selection rerun, Launcher candidate rerun, Launcher re-review 2026-11-10 | Accepted by owner @buenhyden on 2026-11-10: current target plans and the 25-test suite pass and the independent re-review approves the current source. Four minor follow-ups stay open as recorded in the re-review row. | SPEC-0212 TSK-0046 |
 | 83 | pending | Expected targets and alert semantics | IMPLEMENT_GAP until implemented and verified. | SPEC-0212 TSK-0046 |
-| 84 | pending | Authenticated OTLP delivery | REUSE_ACCEPTED only for recorded SPEC-0214 scope; new proof remains separate. | SPEC-0212 TSK-0046 |
+| 84 | accepted | Authenticated OTLP delivery, Authenticated OTLP delivery rerun | Accepted by owner @buenhyden on 2026-11-10 on the pinned isolated fixture: authenticated OTLP delivery passes and an unauthenticated producer is rejected. Live Grafana datasource and prior-state recovery stay NOT_RUN. | SPEC-0212 TSK-0046 |
 | 85 | pending | Selection and recovery handoff | IMPLEMENT_GAP; HOME/reload/remote acceptance remains NOT_RUN. | SPEC-0212 TSK-0046 |
 
 ## Review and Completion
