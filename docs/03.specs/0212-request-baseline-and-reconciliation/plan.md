@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.43.1"
+version: "1.44.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -124,6 +124,10 @@ outside the authorized local source and owned-isolation scope.
 W108 records D12, the first Opsflow installation in HOME, in TSK-0051. The
 2026-11-06 owner decision authorizes the Task and Runbook procedure for review
 only; the six steps run later, one at a time, in an owner-approved window.
+
+W109–W110 record the supply-chain evidence that TSK-0047 handed off for
+criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
+lookups start only after the owner approves the network host scope there.
 
 W81–W86 implement the approved local P06 plan in TSK-0045. Existing OpenBao
 consumer acceptances and public catalog authority remain scoped to their own
@@ -256,6 +260,8 @@ Secret access or remote integration.
 | W106 | 101 | Bind Attester retry and SQLite backup/restore to one report's stored evidence and state | W104 | TSK-0050 | Mixed-record, tamper, interruption, concurrent replay and owned backup/restore regressions |
 | W107 | 102 | Publish current trust-boundary, route and external-receiver handoffs without mutating watched routes | W103–W106 | TSK-0050 | Documentation/readme/runbook checks, offline gate and explicit operational/remote residuals |
 | W108 | 103 | Install the Opsflow manifest workload in HOME in six ordered, separately checked steps without editing the image | W72 | TSK-0051 | Per-step backup, `008_checks.sql`, permission canary, paused import, synthetic run and unpause evidence; NOT_RUN until an approved window |
+| W109 | 104 | Give every current ledger entry a fresh review and reviewed decision from official sources | None | TSK-0052 | `security_update_gate` exit 0, or each unreviewable entry recorded as a residual |
+| W110 | 105 | Bind each selected artifact to its own signature, provenance and SBOM evidence | W109 | TSK-0052 | Per-artifact Cosign or publisher verification receipts; missing material recorded |
 
 ### Current v30 continuation and delivery
 
