@@ -1,6 +1,6 @@
 ---
 title: "Role, Resource and Retirement Input Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -218,6 +218,13 @@ workflow and Grafana READMEs were updated.
 Nothing was started, stopped or recreated, so Prometheus still scrapes the old label set and the
 `flower` container still runs until the owner recreates `prometheus` and removes `flower`.
 
+### Owner decisions 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) set the service operation, storage move,
+credential, deletion and remote CI boundary row to not required, because
+criterion 92 reuses SPEC-0246 C1-C6 at its recorded scope and authorizes none
+of those operations, and accepted criterion 92.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -233,7 +240,8 @@ Nothing was started, stopped or recreated, so Prometheus still scrapes the old l
 | Workflow expected-list residual | 93 | W98 | Expected-selector list comparison | Existing workflow test expectation | FAIL | Six P04/P05 registration expectation differences; distinct from P03 execution parity. | required | - |
 | P09 DATA review refresh | 90 | W95 | Local inventory scan then validate | 98 retained public review receipts | PASS | 42,018/42,018 files listed; whole review 6/2,322; partial 78/2,322; render 0/17; runtime/restore 0/112. Metadata/listing only. | required | - |
 | Nginx gateway retirement | 90 | W95 | Static retirement checks | Owner decision 2026-11-10; changed files | PASS | Compose validation (63 selections), 01-gateway hardening, operations catalog, script manifest, document links/metadata/lifecycle, SEC01 and affected test modules passed locally. The Nginx absence and Traefik route evidence is owner-reported, not re-collected; no container was started, stopped or changed. | required | - |
-| Service operation, storage move, credential use, external deletion, remote CI | 92 | W97 | Authorized-operation boundary | Current authorization | NOT_RUN | Not authorized in this Task. | required | - |
+| Service operation, storage move, credential use, external deletion, remote CI | 92 | W97 | Authorized-operation boundary | Current authorization | NOT_RUN | Not authorized in this Task. | optional | - |
+| C1–C6 acceptance readback | 92 | W97 | Historical acceptance readback | POL-0102 Traceability at `59d1fe69f` | PASS | POL-0102 records owner acceptance of all six SPEC-0246 criteria C1–C6 with dates; no migration, restore or runtime check was run. | required | - |
 
 ## Criterion Acceptance
 
@@ -241,7 +249,7 @@ Nothing was started, stopped or recreated, so Prometheus still scrapes the old l
 | --- | --- | --- | --- | --- |
 | 90 | pending | Current public role mapping, P09 DATA review refresh | Source declaration scope is current; actual use and ownership remain unverified. | SPEC-0212 TSK-0048 |
 | 91 | pending | Resource assessment binding, Common-control overlay helper | Source tests pass; runtime/mutation remains blocked because effective controls and receipt are unverified. | SPEC-0212 TSK-0048 |
-| 92 | pending | C1–C6 historical placement | Existing SPEC-0246 acceptance, summarized in POL-0102, is reused at its recorded scope; measured drift plus an approved recovery plan is required to reopen. | @buenhyden |
+| 92 | accepted | C1–C6 historical placement, C1–C6 acceptance readback | Existing SPEC-0246 acceptance, summarized in POL-0102, is reused at its recorded scope; measured drift plus an approved recovery plan is required to reopen. The operation boundary row is out of scope by the criterion wording, and the owner set it to not required and accepted 92 on 2026-11-10. | @buenhyden |
 | 93 | pending | Retirement parser | Parser rejection tests pass; apply remains blocked pending exact owner, writer stop and target approval. | SPEC-0212 TSK-0048 |
 
 ## Review and Completion

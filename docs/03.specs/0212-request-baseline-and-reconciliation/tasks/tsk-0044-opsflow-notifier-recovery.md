@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.5.3"
+version: "0.5.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0044"
 parent_ids:
@@ -939,6 +939,12 @@ capture. HOME n8n itself is current: `n8n`, `n8n-worker` and the runner run
 2.43.6 with `N8N_RUNNERS_TASK_TIMEOUT=300`, and execution 127 ran through
 the queue to `success` on 2026-11-08.
 
+### Owner decisions 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) handed the Python dependency audit
+capability (pip-audit is not installed) to P08 supply-chain work and accepted
+criterion 73. The audit row stays NOT_RUN and is optional for this Task.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -977,7 +983,7 @@ the queue to `success` on 2026-11-08.
 | AST knowledge graph update | 72 | W77 | AST-only graphify update command | Final tested source | PASS | Exit0;97skipped,20SQL+9HCLmissingoptionalparsers,5othernosymbols;no dependency install/fullsemanticclaim | required | - |
 | Restricted Node package audit | 75 | W80 | Selected Node package lock audit | Existing unchanged package lock | FAIL | Restricted DNS failure only; no installation/scripts | required | - |
 | Authorized Node package audit | 75 | W80 | Selected Node package lock audit | Same existing lock/authorized host context | PASS | npm audit--package-lock-only--ignore-scripts--json:0vulnerabilities/155deps,exit0;not container-image/provenance audit | required | Restricted Node package audit |
-| Python dependency audit availability | 73 | W78 | Applicable Python audit capability | No Python manifest/lock changes;pip-audit PATH check | NOT_RUN | Tool absent/notinvoked/notinstalled;no Python auditPASS;P08supply-chain handoff | required | - |
+| Python dependency audit availability | 73 | W78 | Applicable Python audit capability | No Python manifest/lock changes;pip-audit PATH check | NOT_RUN | Tool absent/notinvoked/notinstalled;no Python auditPASS;P08supply-chain handoff | optional | - |
 | Normal staged payload wrapper | 72 | W77 | Registered normal local-staged validation | Final staging after this evidence update | NOT_RUN | Await exact staging/actual hook receipt; no prospectivePASS | required | - |
 | Notifier retry/recovery source and tests | 73 | W78 | Approved SQL/Node/native normal-rejection-recovery checks | Reviewed final components and actual owned receipts | PASS | SQL14behavior,Node38tests and native6executions/quiescedrestorePASS; liveactiveSMTPinterruption explicitly TEST_RESIDUAL | required | - |
 | Selected binary/storage contract | 74 | W79 | Exact-source and input.binary rejection checks | Tagged2.43.6 binary-data.config.ts and selected node/test | PASS | Tagged unset-mode queue→database fallback; node binary/cardinality rejection in38PASS; no new storage/consumer and actual overrides uninspected | required | - |
@@ -1018,7 +1024,7 @@ the queue to `success` on 2026-11-08.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 72 | pending | Issued P05 baseline and leases, P08 source-binding parity GREEN, Final workspace inventory and comparisons | REUSE_ACCEPTED only for original C19/C22 scope; current source/image/runtime equivalence separate. | SPEC-0212 TSK-0044 |
-| 73 | pending | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review, n8n stall-recovery guards GREEN, Post-restore capture-order guard GREEN, Native stall-recovery restore rehearsal, Independent stall-recovery code re-review, Main-restart and retry guards GREEN, Native main-restart and retry rehearsal, HOME n8n recovery target inspection | TEST_RESIDUAL: reviewed source and actual SQL-only behavior PASS; native-only driver trace below80 but combined conservative83.8028% meets80; paired DB/metadata+same-key fresh credential consumption PASS; isolated same-input replay, restored outbox-state equivalence and next-claim PASS; the stopped-worker interruption result was superseded by review, and the SIGKILL mid-DATA interruption with lease-expiry recovery PASS (Native kill-based interruption rehearsal); the correction passed independent re-review. The two former residuals pass in the isolated fixture through n8n 2.43.6's own stall recovery (Native stall-recovery restore rehearsal): the surviving job was removed by n8n, the interrupted execution became `crashed`, and the strengthened barrier then accepted restore. The criterion passed independent review; it stays TEST_RESIDUAL because the same-input replay covers repeated publication, not replay of an n8n execution, and HOME operation is NOT_RUN. | SPEC-0212 TSK-0044 |
+| 73 | accepted | SQL recovery source GREEN, Independent SQL source review, SQL-only runtime corrected, SQL QA driver coverage, Combined SQL QA driver coverage, Final candidate native quiesced rehearsal, Restore replay and interruption guards GREEN, Review-fix guards GREEN, Native kill-based interruption rehearsal, Independent replay/interruption code re-review, n8n stall-recovery guards GREEN, Post-restore capture-order guard GREEN, Native stall-recovery restore rehearsal, Independent stall-recovery code re-review, Main-restart and retry guards GREEN, Native main-restart and retry rehearsal, HOME n8n recovery target inspection | TEST_RESIDUAL accepted: the recovery and no-send reprocess source and native rehearsals pass. The owner handed the absent pip-audit capability to P08 supply-chain work on 2026-11-10, so the Python audit row is optional and stays NOT_RUN; no Python audit PASS is claimed. | SPEC-0212 TSK-0044 |
 | 74 | accepted | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0044 |
 | 75 | pending | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | SOURCE_READY with scoped actual native increment PASS; formal owner acceptance, actual P06 producer and operating rotation remain separate. | SPEC-0212 TSK-0044 |
 

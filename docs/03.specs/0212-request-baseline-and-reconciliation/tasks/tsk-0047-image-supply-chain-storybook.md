@@ -1,6 +1,6 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -212,6 +212,16 @@ analyzed and reviewed. No criterion is accepted by this review.
   deleted the three rehearsal directories under `/tmp`, and the next run sets
   `GOTOOLCHAIN=local` and uses only the approved hosts.
 
+### Owner decisions 2026-11-10
+
+The owner (@buenhyden) decided three items on 2026-11-10. For criterion 86
+the owner accepts the latest-version gate FAIL as the record of missing lookups
+the criterion asks for; acceptance waits for a passing gate row, since a FAIL
+resolves only through a later PASS and a same-day rerun still fails. Criterion 87 is re-targeted to the deployed n8n
+2.46.6, so the cancelled 2.45.7 pulls and the unrun 2.45.7 verification no
+longer bind it. For criterion 88 the accepted moderate findings are recorded
+by a high-threshold audit that passes.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -228,9 +238,9 @@ analyzed and reviewed. No criterion is accepted by this review.
 | P08 list refresh recovery | 86 | W91 | Inventory scan then validate | Public inputs and 98 retained review receipts | PASS | 41,985/41,985 files listed; whole-body 6/2,320, partial 78/2,320, render 0/17, runtime/restore 0/112. Metadata/listing only. | required | - |
 | Valkey candidate isolation | 87 | W92 | Owned candidate isolation | Valkey 9.1.3, synthetic ACL and cold-copy volume | PASS | Reported ACL denial, AOF/RDB and shared/dedicated roundtrips passed; this is a narrow fixture restore, not complete recovery or Compose parity. | required | - |
 | n8n candidate preparation | 87 | W92 | Main/Runner index and platform lookup | n8n 2.45.7 candidates | PASS | Exact index/platform lookup passed; this is source/artifact metadata only. | required | - |
-| n8n candidate bounded pulls | 87 | W92 | Bounded candidate pull | n8n 2.45.7 candidates | CANCELLED | Both pulls stopped at the five-minute boundary (exit 130); custom build, peer, Queue, Runner, SMTP and restore remain unrun. | required | - |
+| n8n candidate bounded pulls | 87 | W92 | Bounded candidate pull | n8n 2.45.7 candidates | CANCELLED | Both pulls stopped at the five-minute boundary (exit 130); custom build, peer, Queue, Runner, SMTP and restore remain unrun. | optional | - |
 | Supply-ledger candidate metadata | 87 | W92 | Candidate and registry-metadata review | Five Valkey and four n8n source rows | PASS | Release/advisory and registry observations were corrected; this is not candidate signature, SBOM, compatibility, native or operational evidence. | required | - |
-| Candidate runtime and artifact verification | 87 | W92 | Isolated runtime and per-artifact review | Selected candidates | NOT_RUN | Custom-image digest is unknown; candidate signature, SBOM, compatibility, native and operation evidence remains unrun or unknown. | required | - |
+| Candidate runtime and artifact verification | 87 | W92 | Isolated runtime and per-artifact review | Selected candidates | NOT_RUN | Custom-image digest is unknown; candidate signature, SBOM, compatibility, native and operation evidence remains unrun or unknown. | optional | - |
 | Storybook clean lock install | 88 | W93 | Offline isolated `npm ci` | Tracked 10.6.3 lock and cached packages | PASS | 550 packages installed; local installation was not overwritten. | required | - |
 | Storybook isolated regressions | 88 | W93 | Lint/typecheck/build and synthetic UI/auth checks | Isolated copy and synthetic credentials | PASS | lint/typecheck/build; auth/MCP 9/9; browser 14/14 including 320px; static image 7/7; six Button/AsyncState render states. Remote auth is not run. | required | - |
 | Storybook audit | 88 | W93 | `npm audit` | Isolated dependency metadata | ERROR | DNS `EAI_AGAIN`; this does not establish absence of advisories. | required | - |
@@ -241,14 +251,15 @@ analyzed and reviewed. No criterion is accepted by this review.
 | Selected candidate verification | 89 | W94 | Registry artifact and bounded isolated test review | Candidate writer packet | NOT_RUN | Valkey functional isolation is narrow; n8n and per-artifact verification are incomplete, so no deployment or rollback conclusion follows. | required | - |
 | Storybook audit rerun | 88 | W93 | `npm audit` | Copies of the Storybook 10.6.5 `package.json` and `package-lock.json` at `27cd872ea` | FAIL | Exit 1: 13 moderate, 0 high, 0 critical over 744 dependencies; two development-tooling advisories (`glob` GHSA-3g3m-2fjr-6pw4, `minimatch` GHSA-g3hv-75wg-m249). See Owner review 2026-11-10. | required | - |
 | n8n advisory fixed-range readback | 87 | W92 | Official advisory patched-range readback | GHSA-prmc-fg87-r4gh and the n8n 2.46.6 pin and HOME containers at `27cd872ea` | PASS | Patched `>= 2.46.1`; repository and HOME run 2.46.6, so the 2.45.7 candidate is superseded. SSRF/egress and private-workflow review stays open. | required | - |
+| Storybook audit high threshold | 88 | W93 | `npm audit` | Copies of the Storybook `package.json` and `package-lock.json` at `59d1fe69f`, `--audit-level=high` | PASS | Exit 0: 0 high, 0 critical over 744 dependencies. 17 moderate packages trace to the two advisories the owner accepted as development-tooling risk (`glob` GHSA-3g3m-2fjr-6pw4, `minimatch` GHSA-g3hv-75wg-m249). | required | Storybook audit, Storybook audit rerun |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 86 | pending | Ledger repair regression, Latest-version gate | Public observations improve source mapping but incomplete fresh lookups, unmapped rows and artifact evidence remain. | SPEC-0212 TSK-0047 |
-| 87 | pending | Valkey candidate isolation, n8n candidate preparation, n8n advisory fixed-range readback | Exact source, candidate artifact and isolated/recovery evidence remain incomplete. The n8n 2.45.7 candidate is superseded by the deployed 2.46.6, which is in the advisory's patched range; the next n8n activation still needs private-workflow and SSRF/egress review. | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
-| 88 | pending | Storybook clean lock install, Storybook isolated regressions, Storybook audit, Storybook audit rerun | Isolated lock regression passed for the superseded 10.6.3 lock. The 10.6.5 audit reports 13 moderate development-tooling findings and no high or critical; the owner accepted the Storybook-chain findings as development-tooling risk on 2026-11-10; the eslint chain has no upgrade fix and the owner accepted it the same way. Current runtime and remote device remain separate. | SPEC-0212 TSK-0047 |
+| 86 | pending | Ledger repair regression, Latest-version gate | The owner decided on 2026-11-10 to accept this as recorded: the criterion records missing lookups, and the latest-version gate FAIL is that record. Acceptance stays pending because a FAIL row resolves only through a later PASS: a 2026-11-10 rerun still exits 2 with all 89 entries `blocked-evidence` (no fresh review or reviewed decision). Fresh lookups and artifact evidence are not claimed. | SPEC-0212 TSK-0047 |
+| 87 | pending | Valkey candidate isolation, n8n candidate preparation, n8n advisory fixed-range readback | The owner re-targeted the n8n evaluation from the superseded 2.45.7 candidate to the deployed 2.46.6 on 2026-11-10, so the 2.45.7 pull and verification rows are optional. 2.46.6 is in the advisory patched range; its signature and scan stay open under TSK-0041 criterion 60. No required observation is unresolved; owner acceptance is pending. | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
+| 88 | pending | Storybook clean lock install, Storybook isolated regressions, Storybook audit, Storybook audit rerun, Storybook audit high threshold | The high-threshold audit passes with 0 high and 0 critical; the remaining moderate findings are the two development-tooling advisories the owner accepted on 2026-11-10. No required observation is unresolved; owner acceptance is pending. | SPEC-0212 TSK-0047 |
 | 89 | pending | Supply-chain gate, Selected candidate verification | No cross-artifact inference; unavailable signing, provenance and SBOM material remains explicit. | SPEC-0212 TSK-0047 |
 
 ## Review and Completion
