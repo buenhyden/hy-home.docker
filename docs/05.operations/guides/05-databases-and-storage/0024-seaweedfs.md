@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.6.1"
+version: "1.6.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -93,6 +93,7 @@ master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leve
 | MLflow | `mlflow-artifacts` | `mlflow` | STRG-013 |
 | Terrakube | `tfstate` | `terrakube` | STRG-014 |
 | Spark (Iceberg) | `lakehouse` table bucket | `lakehouse` | STRG-015 |
+| Opsflow worker (Airflow) | `opsflow-dev` (`manifest-*` prefix 한정, delete 거부 정책 별도) | `opsflow-worker` | STRG-016 |
 | Nginx `/cdn/` | `cdn-bucket` | `anonymous` (object reads only) | none |
 
 `seaweedfs-buckets`(aws-cli, admin identity)는 다섯 개 bucket을 생성하고,
