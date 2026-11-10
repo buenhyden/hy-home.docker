@@ -125,11 +125,11 @@
     },
     {
       "path": "infra/04-data/dev-db/docker-compose.yml",
-      "sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f"
+      "sha256": "fe6b82f585b60bcc48c452e4faabb674d45fe554c4b15d61ad7ddba70661947e"
     },
     {
       "path": "infra/04-data/mng-db/docker-compose.yml",
-      "sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6"
+      "sha256": "ee6e7b4ab05f059047ac318feb34f557c048d2312b74e0cc680b2da6dccc4c7c"
     },
     {
       "path": "infra/04-data/neo4j/docker-compose.yml",
@@ -2876,7 +2876,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "fe6b82f585b60bcc48c452e4faabb674d45fe554c4b15d61ad7ddba70661947e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3038,7 +3038,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "fe6b82f585b60bcc48c452e4faabb674d45fe554c4b15d61ad7ddba70661947e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3179,7 +3179,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "fe6b82f585b60bcc48c452e4faabb674d45fe554c4b15d61ad7ddba70661947e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3327,7 +3327,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "fe6b82f585b60bcc48c452e4faabb674d45fe554c4b15d61ad7ddba70661947e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3466,7 +3466,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "fe6b82f585b60bcc48c452e4faabb674d45fe554c4b15d61ad7ddba70661947e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3553,7 +3553,7 @@
       "service": "dev-valkey",
       "scope": "root",
       "compose_file": "infra/04-data/dev-db/docker-compose.yml",
-      "current_declared": "valkey/valkey:9.1.2-alpine",
+      "current_declared": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
       "profiles_declared": [
         "dev-data"
       ],
@@ -3579,15 +3579,15 @@
       "channel": "stable",
       "checked_at": "2026-11-02T22:00:46.071399+00:00",
       "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-      "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-      "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+      "target_index_digest": "UNKNOWN",
+      "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-10-26",
       "advisory_urls": [
         "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
       ],
-      "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
+      "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
       "compatibility": "NOT_RUN",
       "backup": "NOT_RUN",
@@ -3599,10 +3599,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-02T22:00:46.071399+00:00",
-        "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+        "discovered_at": "2026-11-10T11:55:19+09:00",
+        "next_validation_due": "2026-11-17T11:55:19+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "service_owner_role": "Valkey/P02 owner"
       },
@@ -3614,10 +3614,10 @@
         "sha256:a0dbf4c1d5708782907c10e2c72deff317518518b5288a58416981d9db95d30b"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "9.1.3",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_refreshed_at": "2026-11-10T11:55:19+09:00",
+      "source_input_sha256": "fe6b82f585b60bcc48c452e4faabb674d45fe554c4b15d61ad7ddba70661947e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3662,15 +3662,15 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "valkey/valkey:9.1.3-alpine",
+      "target_source_image": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "9.1.2",
-        "source_image": "valkey/valkey:9.1.2-alpine",
+        "source_version": "9.1.3",
+        "source_image": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
       "p08_previous_release_assessment": {
         "latest_version": "9.1.2",
@@ -3869,7 +3869,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T06:36:12+09:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "fe6b82f585b60bcc48c452e4faabb674d45fe554c4b15d61ad7ddba70661947e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
@@ -6619,7 +6619,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+      "source_input_sha256": "ee6e7b4ab05f059047ac318feb34f557c048d2312b74e0cc680b2da6dccc4c7c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6762,7 +6762,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+      "source_input_sha256": "ee6e7b4ab05f059047ac318feb34f557c048d2312b74e0cc680b2da6dccc4c7c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6914,7 +6914,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+      "source_input_sha256": "ee6e7b4ab05f059047ac318feb34f557c048d2312b74e0cc680b2da6dccc4c7c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7054,7 +7054,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+      "source_input_sha256": "ee6e7b4ab05f059047ac318feb34f557c048d2312b74e0cc680b2da6dccc4c7c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7118,7 +7118,7 @@
       "service": "mng-valkey",
       "scope": "root",
       "compose_file": "infra/04-data/mng-db/docker-compose.yml",
-      "current_declared": "valkey/valkey:9.1.2-alpine",
+      "current_declared": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
       "profiles_declared": [
         "mng",
         "core",
@@ -7147,15 +7147,15 @@
       "channel": "stable",
       "checked_at": "2026-11-02T22:00:46.071399+00:00",
       "release_url": "https://github.com/valkey-io/valkey/releases/tag/9.1.3",
-      "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
-      "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+      "target_index_digest": "UNKNOWN",
+      "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-10-26",
       "advisory_urls": [
         "https://github.com/valkey-io/valkey/security/advisories/GHSA-f4q9-j22m-xqq9"
       ],
-      "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
+      "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
       "compatibility": "NOT_RUN",
       "backup": "NOT_RUN",
@@ -7167,10 +7167,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-02T22:00:46.071399+00:00",
-        "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
-        "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
-        "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+        "discovered_at": "2026-11-10T11:55:19+09:00",
+        "next_validation_due": "2026-11-17T11:55:19+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
         "service_owner_role": "Valkey/P02 owner"
       },
@@ -7182,10 +7182,10 @@
         "sha256:a0dbf4c1d5708782907c10e2c72deff317518518b5288a58416981d9db95d30b"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "9.1.3",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+      "source_refreshed_at": "2026-11-10T11:55:19+09:00",
+      "source_input_sha256": "ee6e7b4ab05f059047ac318feb34f557c048d2312b74e0cc680b2da6dccc4c7c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7230,15 +7230,15 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "valkey/valkey:9.1.3-alpine",
+      "target_source_image": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "9.1.2",
-        "source_image": "valkey/valkey:9.1.2-alpine",
+        "source_version": "9.1.3",
+        "source_image": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
       "p08_previous_release_assessment": {
         "latest_version": "9.1.2",
@@ -7440,7 +7440,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T06:36:12+09:00",
-      "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+      "source_input_sha256": "ee6e7b4ab05f059047ac318feb34f557c048d2312b74e0cc680b2da6dccc4c7c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
@@ -29707,6 +29707,300 @@
         }
       ],
       "meaning": "3 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 16 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "bb95ea7f8db6ee81f2ac3a61fd038516e45ce3d3",
+      "refreshed_at": "2026-11-10T11:55:19+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "ded8aed63aacae3b03a149f15cb012f9863a9a0033ec1ffe15774b68d17e4d9f",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "02c36b14b06ac3e753c958ba79d7272452cefe8696f8145aa830e788f473faf7"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "00ed3dbee1fd4e8440ca1c8a273450401dd214f8a34df1b3819c649ea9c4019f"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/04-data/dev-db/docker-compose.yml",
+        "infra/04-data/mng-db/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "dev-perf-provision",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-pg",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-pg-exporter",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-pg-monitor-provision",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-platform-provision",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-valkey",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-valkey-exporter",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-11-10T06:36:12+09:00"
+        },
+        {
+          "service": "mng-pg",
+          "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mng-pg-exporter",
+          "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mng-pg-init",
+          "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mng-pg-monitor-provision",
+          "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mng-valkey",
+          "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mng-valkey-exporter",
+          "source_input_sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6",
+          "source_refreshed_at": "2026-11-10T06:36:12+09:00"
+        }
+      ],
+      "meaning": "2 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 13 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "dev-valkey",
+        "mng-valkey"
+      ],
+      "previous_service_images": [
+        {
+          "service": "dev-valkey",
+          "current_declared": "valkey/valkey:9.1.2-alpine",
+          "proposed_declared": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+          "previous_fields": {
+            "target_version": "9.1.3",
+            "target_source_image": "valkey/valkey:9.1.3-alpine",
+            "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
+            "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-02T22:00:46.071399+00:00",
+              "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
+              "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+              "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+              "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+              "service_owner_role": "Valkey/P02 owner"
+            },
+            "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+            "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+            "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
+            "upstream_reported_tag": "9.1.3",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "mng-valkey",
+          "current_declared": "valkey/valkey:9.1.2-alpine",
+          "proposed_declared": "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+          "previous_fields": {
+            "target_version": "9.1.3",
+            "target_source_image": "valkey/valkey:9.1.3-alpine",
+            "target_digest_evidence": "Docker Hub public registry index and linux/amd64 platform manifest metadata only; signatures/provenance and custom builds NOT_RUN",
+            "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-02T22:00:46.071399+00:00",
+              "next_validation_due": "2026-11-09T22:00:46.071399+00:00",
+              "reason": "Candidate source release and registry descriptors do not establish complete artifact, compatibility, authorization, migration or recovery; active source remains unchanged.",
+              "exit_condition": "Obtain and verify exact candidate artifacts; execute scoped compatibility, ACL or queue and independent restore tests; preserve prior state before any authorized transition.",
+              "rollback_boundary": "Restore prior verified image and independently restored state; tag downgrade alone cannot prove state compatibility.",
+              "service_owner_role": "Valkey/P02 owner"
+            },
+            "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+            "target_index_digest": "sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b",
+            "target_manifest_digest": "sha256:de6fbe9626fea9f6f297b6867d2c8cf8f0394ee5ed171613166fc093cb49d0a6",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN: cluster mode and authenticated oversized publish required; standalone is not affected",
+            "upstream_reported_tag": "9.1.3",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
     }
   ],
   "delivery_preconditions": {
