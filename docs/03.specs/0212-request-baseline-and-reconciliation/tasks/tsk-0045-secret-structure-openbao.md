@@ -1,8 +1,8 @@
 ---
 title: "Secret Structure and OpenBao Contract Task"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-10"
 layer: "specs"
@@ -425,6 +425,19 @@ The old copy is absent, so the private equality comparison can never run; the
 owner accepted criterion 80 on single-source grounds (D07 SMTP single source)
 and the equality row became optional with its NOT_RUN result unchanged.
 
+### Owner closure 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) closed this Task after criteria 76 to 81
+were each accepted or not-required with no unresolved required observation.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0045 | draft | ready | #inputs-and-authorization |
+| SPEC-0212-TSK-0045 | ready | in-progress | #d07-re-verification-2026-11-08 |
+| SPEC-0212-TSK-0045 | in-progress | completed | #owner-closure-2026-11-10 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -460,6 +473,10 @@ and the equality row became optional with its NOT_RUN result unchanged.
 | 81 | accepted | Retirement and recovery assessment | The retirement and recovery assessment is recorded and unknown targets stay held with no deletion, which is what the criterion requires; PG-025 was retired separately with an explicit owner decision. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0045 |
 
 ## Review and Completion
+
+On 2026-11-10 the owner (@buenhyden) closed this Task: criteria 76 to 81 are each
+accepted or not-required and no required observation is unresolved. The
+paragraphs below are kept as the state they recorded at the time.
 
 Current implementation, independent review and local checks are pending.
 No prospective test or historical acceptance is promoted to current operation.

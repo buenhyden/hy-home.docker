@@ -1,8 +1,8 @@
 ---
 title: "Opsflow Data Path Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-10"
 layer: "specs"
@@ -448,6 +448,19 @@ so the changes rest on static review and direct measurement:
 - **Connect image.** Only `...-debezium-3.6.3` exists locally; the declared
   3.7.0 image must be built before Connect can start.
 
+### Owner closure 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) closed this Task after criteria 66 to 71
+were each accepted or not-required with no unresolved required observation.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0043 | draft | ready | #inputs-and-authorization |
+| SPEC-0212-TSK-0043 | ready | in-progress | #implementation-and-recovery-contract |
+| SPEC-0212-TSK-0043 | in-progress | completed | #owner-closure-2026-11-10 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -512,6 +525,10 @@ so the changes rest on static review and direct measurement:
 | 71 | accepted | Iceberg current-workload reconciliation | The optional Iceberg platform stays accepted and adoption for this workload is deferred, which is what the criterion requires; no expiry or orphan deletion is authorized. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0043 |
 
 ## Review and Completion
+
+On 2026-11-10 the owner (@buenhyden) closed this Task: criteria 66 to 71 are each
+accepted or not-required and no required observation is unresolved. The
+paragraphs below are kept as the state they recorded at the time.
 
 On 2026-11-10 the owner accepted criteria 67 and 69 after reviewing the
 2026-11-04 original-deadline rehearsal (Worker run, independent restore and
