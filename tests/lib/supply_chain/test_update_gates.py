@@ -583,7 +583,7 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 self.assertEqual("NOT_RUN", row[field])
         self.assertTrue(row["supplier_lookup_blocker"])
 
-    def test_selected_security_candidates_are_current_without_promoting_acceptance(
+    def test_selected_security_candidates_remain_bound_without_promoting_acceptance(
         self,
     ):
         root = Path(__file__).resolve().parents[3]
@@ -609,7 +609,6 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             for name in names:
                 with self.subTest(service=name):
                     row = by_name[name]
-                    self.assertEqual(version, row["latest_version"])
                     self.assertEqual(version, row["target_version"])
                     self.assertTrue(
                         any(advisory in url for url in row["advisory_urls"])
@@ -621,6 +620,19 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     self.assertEqual("NOT_RUN", row["sbom_scan"])
                     self.assertIn("p08_previous_release_assessment", row)
                     self.assertIn("p08_candidate_assessment", row)
+                    refresh = row["master_20261111_public_refresh"]
+                    self.assertEqual(version, refresh["target_version_retained"])
+                    self.assertTrue(refresh["declared_source_retained"])
+                    self.assertTrue(
+                        refresh["security_applicability_review"].startswith("NOT_RUN")
+                    )
+                    mismatch = row["latest_version"] != row["target_version"]
+                    self.assertEqual(
+                        mismatch,
+                        "latest_mismatch" in refresh["latest_gate_missing"],
+                    )
+                    if mismatch:
+                        self.assertTrue(refresh["remaining_latest_actions"])
 
     def test_valkey_candidate_pull_receipt_is_not_promoted_from_self_report(self):
         root = Path(__file__).resolve().parents[3]
