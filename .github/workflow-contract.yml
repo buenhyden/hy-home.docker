@@ -2687,10 +2687,10 @@
       "security_disposition": "approved-node24"
     },
     "github/codeql-action/upload-sarif": {
-      "sha": "1c5b675653bb5c22dbe9b12b556ec555138e09fd",
+      "sha": "9b3254085494b55a0f7c4c2b3d2d52cc712ce370",
       "runtime": "node24",
-      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/1c5b675653bb5c22dbe9b12b556ec555138e09fd/upload-sarif/action.yml",
-      "retrieved_at": "2026-09-28",
+      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/9b3254085494b55a0f7c4c2b3d2d52cc712ce370/upload-sarif/action.yml",
+      "retrieved_at": "2026-11-10",
       "consumers": [
         ".github/workflows/ci-quality.yml"
       ],
