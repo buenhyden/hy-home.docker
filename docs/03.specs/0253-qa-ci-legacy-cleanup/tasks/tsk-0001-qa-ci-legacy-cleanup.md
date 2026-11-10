@@ -1,6 +1,6 @@
 ---
 title: "QA and CI Legacy Cleanup Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -195,6 +195,15 @@ progress under the approved parents. Hosted CI has not run.
 Local checks are recorded above, last on head 1914065b1 (E16, E17). The
 independent review of PR #729 approved after fixes; those fixes are on this
 branch. Hosted CI passed on 09171c663 (E15). No criterion is accepted yet.
+
+### Merge receipt 2026-11-10
+
+Recorded 2026-11-10 from `gh pr view`: #896 merge `2ba0539cf` at
+2026-11-10T00:22:36Z. Hosted checks on the merged PR: every completed check
+SUCCESS, the rest SKIPPED, none failing. #896 retired RUN-0032 (the PostgreSQL
+logical upgrade rehearsal). Candidate quality: the merged change is a
+candidate that passed hosted CI. This receipt is not owner acceptance: no
+criterion is accepted and the status is unchanged.
 
 ## Related Documents
 

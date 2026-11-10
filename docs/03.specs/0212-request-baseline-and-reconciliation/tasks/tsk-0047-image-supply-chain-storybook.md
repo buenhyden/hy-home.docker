@@ -1,10 +1,10 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0047"
 parent_ids:
@@ -146,6 +146,29 @@ receipt and sets `freshness_verified`, `stable_channel_verified` and
 `oci_availability_verified` to `false`. Public tags and pages do not
 prove OCI availability, stable-channel support, security applicability,
 compatibility, license, runtime or deployment acceptance.
+
+### D09 evidence 2026-11-10
+
+Recorded 2026-11-10; no criterion is accepted.
+
+1. Superseded candidates: n8n 2.45.7 and Storybook 10.6.3. Current n8n is
+   2.46.6; npm latest stable is 2.46.7 (published 2026-11-09, inside the 7-day
+   soak) and the `next` channel 2.47.3 is rejected as non-stable. Storybook
+   10.6.5 is current; 10.6.6 (published 2026-11-05) and next 16.4.6 (published
+   2026-11-09) are in soak; vitest 5.1.0 (published 2026-11-02) is eligible,
+   pending a Renovate group. Valkey 9.1.3-alpine (pushed 2026-10-27) is
+   eligible; the 9.2 release candidates are rejected.
+2. Merged changes: #859 Ollama 0.40.15 (`921276b53`; HOME applied, GPU 100%,
+   33/33 layers); #865 redis_exporter v1.96.0 (`3bce085dd`; HOME applied);
+   #854 alpine 3.24.3 (`4528c1ea7`; oauth2-proxy rebuilt and applied); #892
+   dcgm-exporter 4.9.0 metric names (`161fbdf3f`; HOME applied, Prometheus rules
+   reloaded, dashboard checked by the owner); #895 n8n font-noto pin so the
+   image rebuilds (`0b7ffe8bc`; n8n and n8n-worker rebuilt and recreated); #891
+   Renovate CI-toolchain and SurrealDB v2 rules (`bf922ad6c`). Open: #897
+   Renovate digest pinning and grouping; #898 codeql-action 4.39.1.
+3. Bitnami: 0 active images.
+4. Remaining NOT_RUN: cgroup/resource measurement, Storybook a11y/MCP
+   regression, rollback rehearsal.
 
 ## Evidence
 
