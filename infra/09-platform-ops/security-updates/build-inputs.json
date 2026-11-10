@@ -1615,12 +1615,12 @@
     {
       "service": "openbao",
       "build_input": "infra/03-security/openbao/build/Dockerfile",
-      "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+      "input_sha256": "8c907d78dd30f67cef46a6b414757ac8f47a2908775fa5d96099351b49890fae",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 2,
-          "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+          "declaration": "FROM docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b"
         },
         {
           "line": 3,
@@ -1638,7 +1638,7 @@
       "package_inputs": [
         {
           "path": "infra/03-security/openbao/build/build-inputs.json",
-          "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+          "sha256": "d5920f1f3b1e9a44eb40075429296de4b6d590ad7c2ea42514c7dbe55ceb2ef4"
         },
         {
           "path": "infra/03-security/openbao/build/go-modules.patch",
@@ -1650,21 +1650,21 @@
         },
         {
           "path": "infra/03-security/openbao/scripts/build-owned-image.py",
-          "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+          "sha256": "310a4955f0502f63f56add705b1aaa9eb5722041dca640493624c2145a2a77c6"
         }
       ],
-      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+      "installed_sbom": "SCANNED_WITH_FINDINGS: selected prebuilt owned artifact sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0 (build packet aada2d21e2cf17e02c96f98138c4c99666f77d3889178dc8574b4c1cf16676f2, materials 98f732432f3b3f60e0f0c4ff04a6354bc186ccb0b785323eb121bfe61a808482, config e415f6422518840aee65a678fcb95a6bd5fd390de4eef2ace2ec91365beabd4a, layer 30d2a3dfdc54f1dc825562b85132166a0e84c6f0128e3b38dab007d28375d862, binary 7e7a4489eba0e36e3f5210c16292676e93d50504eb91b97e7f7cc8e885745025); Syft 1.54.1 SBOM SHA256 76608bad773e695d0b3c87578855c0cc213e30689694d928d1418286cf62a970, 320 packages; Grype offline DB v6.1.10 built 2026-11-10T06:21:20Z: 13 matches, 8 unique, 0 Critical, 4 High, 8 Medium, 1 Unknown (module-granularity matches; GO-2026-6860 x/net v0.60.0, GHSA-mgcc-cww5-fp2q go-jose, GO-2026-6865 klauspost/compress); no review, acceptance or deployment claimed",
+      "source_refreshed_at": "2026-11-10T09:49:25.016031+00:00"
     },
     {
       "service": "openbao-agent",
       "build_input": "infra/03-security/openbao/build/Dockerfile",
-      "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+      "input_sha256": "8c907d78dd30f67cef46a6b414757ac8f47a2908775fa5d96099351b49890fae",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 2,
-          "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+          "declaration": "FROM docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b"
         },
         {
           "line": 3,
@@ -1682,7 +1682,7 @@
       "package_inputs": [
         {
           "path": "infra/03-security/openbao/build/build-inputs.json",
-          "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+          "sha256": "d5920f1f3b1e9a44eb40075429296de4b6d590ad7c2ea42514c7dbe55ceb2ef4"
         },
         {
           "path": "infra/03-security/openbao/build/go-modules.patch",
@@ -1694,11 +1694,11 @@
         },
         {
           "path": "infra/03-security/openbao/scripts/build-owned-image.py",
-          "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+          "sha256": "310a4955f0502f63f56add705b1aaa9eb5722041dca640493624c2145a2a77c6"
         }
       ],
-      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+      "installed_sbom": "SCANNED_WITH_FINDINGS: selected prebuilt owned artifact sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0 (build packet aada2d21e2cf17e02c96f98138c4c99666f77d3889178dc8574b4c1cf16676f2, materials 98f732432f3b3f60e0f0c4ff04a6354bc186ccb0b785323eb121bfe61a808482, config e415f6422518840aee65a678fcb95a6bd5fd390de4eef2ace2ec91365beabd4a, layer 30d2a3dfdc54f1dc825562b85132166a0e84c6f0128e3b38dab007d28375d862, binary 7e7a4489eba0e36e3f5210c16292676e93d50504eb91b97e7f7cc8e885745025); Syft 1.54.1 SBOM SHA256 76608bad773e695d0b3c87578855c0cc213e30689694d928d1418286cf62a970, 320 packages; Grype offline DB v6.1.10 built 2026-11-10T06:21:20Z: 13 matches, 8 unique, 0 Critical, 4 High, 8 Medium, 1 Unknown (module-granularity matches; GO-2026-6860 x/net v0.60.0, GHSA-mgcc-cww5-fp2q go-jose, GO-2026-6865 klauspost/compress); no review, acceptance or deployment claimed",
+      "source_refreshed_at": "2026-11-10T09:49:25.016031+00:00"
     }
   ],
   "meaning": "Current selected33 consumer source rows (22Dockerfiles+1inline source); declarations and public package-input hashes only. No build, installed SBOM, scan or Native receipt generated. Historical final_candidate_source_freeze remains historical and is not promoted.",
@@ -7439,6 +7439,101 @@
           "source_binding": "infra/13-experience/storybook/README.md links this Dockerfile; mcp image has separately unresolved build source.",
           "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
           "compose_build_args": {}
+        }
+      ]
+    },
+    {
+      "preserved_at": "2026-11-10T09:49:25.016031+00:00",
+      "source_revision": "4c33d6cecc3087b1c5b0d8ef79b7d25e7e52e0a6",
+      "meaning": "Prior owned OpenBao r1 source records (Dockerfile, build-inputs, patch, OCI helper and build helper hashes, Alpine base digest d56c381f, installed SBOM and scan receipt) preserved before the r2 packet; no r1 result is inferred for r2",
+      "inputs": [
+        {
+          "service": "openbao",
+          "build_input": "infra/03-security/openbao/build/Dockerfile",
+          "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+            },
+            {
+              "line": 3,
+              "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+            },
+            {
+              "line": 4,
+              "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/03-security/openbao/build/build-inputs.json",
+              "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+            },
+            {
+              "path": "infra/03-security/openbao/build/go-modules.patch",
+              "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+            },
+            {
+              "path": "infra/03-security/openbao/build/owned_image_oci.py",
+              "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+            },
+            {
+              "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+              "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+            }
+          ],
+          "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "openbao-agent",
+          "build_input": "infra/03-security/openbao/build/Dockerfile",
+          "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+            },
+            {
+              "line": 3,
+              "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+            },
+            {
+              "line": 4,
+              "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/03-security/openbao/build/build-inputs.json",
+              "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+            },
+            {
+              "path": "infra/03-security/openbao/build/go-modules.patch",
+              "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+            },
+            {
+              "path": "infra/03-security/openbao/build/owned_image_oci.py",
+              "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+            },
+            {
+              "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+              "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+            }
+          ],
+          "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
         }
       ]
     }
