@@ -197,7 +197,7 @@
       "groupName": "observability container images"
     },
     {
-      "description": "Group non-major image updates of the stateless tiers: every image update rewrites the shared SEC01 ledger, so separate PRs conflict after each merge. Data (04) and messaging (05) tiers stay one PR per image for data-format review; Airflow (constraints bundle) and the n8n sandbox keep their own PRs",
+      "description": "Group non-major image updates of the stateless tiers: every image update rewrites the shared SEC01 ledger, so separate PRs conflict after each merge. Data (04) and messaging (05) tiers stay one PR per image for data-format review; Airflow (constraints bundle), Keycloak (minor releases migrate its database schema on start) and the n8n sandbox keep their own PRs",
       "matchManagers": ["docker-compose", "dockerfile", "custom.regex"],
       "matchFileNames": [
         "infra/01-gateway/**",
@@ -209,7 +209,7 @@
         "infra/11-quality/**",
         "infra/13-experience/**"
       ],
-      "matchPackageNames": ["!apache/airflow", "!n8nio/**"],
+      "matchPackageNames": ["!apache/airflow", "!quay.io/keycloak/keycloak", "!n8nio/**"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "stateless tier container images"
     },
