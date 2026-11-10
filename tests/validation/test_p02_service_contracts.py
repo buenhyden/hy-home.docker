@@ -173,7 +173,6 @@ SSO_ONLY_BACKENDS = (
     "cadvisor",
     "comfyui",
     "flower",
-    "kafka-connect",
     "loki",
     "mailpit",
     "mlflow",
@@ -181,7 +180,6 @@ SSO_ONLY_BACKENDS = (
     "prometheus",
     "pushgateway",
     "pyroscope",
-    "schema-registry",
     "tempo",
     "terrakube-ui",
 )

@@ -78,7 +78,7 @@ class OptionalIntegrationContractTests(unittest.TestCase):
             self.assertFalse(missing_companions(match[1].split()), producer)
             self.assertTrue(missing_companions({producer}), producer)
         self.assertIn("mng-pg-exporter", missing_companions({"mng-pg-init"}))
-        self.assertIn("kafka-exporter", missing_companions({"kafka-connect"}))
+        self.assertIn("kafka-exporter", missing_companions({"kafbat-ui"}))
 
     def test_every_producer_profile_selects_its_existing_exporter_and_provisioner(self):
         for path, producer, companions in (

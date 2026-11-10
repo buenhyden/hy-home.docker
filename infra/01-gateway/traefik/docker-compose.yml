@@ -83,7 +83,6 @@ services:
       cadvisor_ingress_net: {}
       comfyui_ingress_net: {}
       flower_ingress_net: {}
-      kafka_connect_ingress_net: {}
       loki_ingress_net: {}
       mailpit_ingress_net: {}
       mlflow_ingress_net: {}
@@ -91,7 +90,6 @@ services:
       prometheus_ingress_net: {}
       pushgateway_ingress_net: {}
       pyroscope_ingress_net: {}
-      schema_registry_ingress_net: {}
       tempo_ingress_net: {}
       terrakube_ui_ingress_net: {}
       # The metrics and ping entrypoint binds here only (SPEC-0267).

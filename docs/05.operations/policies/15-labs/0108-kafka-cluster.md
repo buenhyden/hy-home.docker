@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB Operations Policy"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0108"
 parent_ids:
@@ -33,6 +33,9 @@ LAB 전용 `lab-kafka` profile과 project `hy-home-lab-kafka`에 적용된다. H
   `${DEFAULT_MESSAGE_BROKER_DIR}`를 가리키지 않는다.
 - `lab_kafka_net`은 internal로 유지한다. host port, HOME `kafka_net`, Traefik route를 추가하지 않는다.
   현재 source는 인증과 TLS 없이 PLAINTEXT이므로 LAB network 밖으로 열지 않는다.
+- `lab-schema-registry`와 `lab-kafka-connect`는 같은 `lab_kafka_net` 안에만 두고 gateway route, host port,
+  Docker secret, connector 정의와 원천 DB 자격 증명을 선언하지 않는다. connector 등록과 credential 도입은
+  별도 승인과 LAB 전용 secret 행이 필요하다.
 - 선언된 limit, healthcheck, replication factor 3과 `min.insync.replicas` 2를 유지한다. 세 broker가
   한 host에 있으므로 host 가용성을 주장하지 않는다.
 - 기동·정지는 `scripts/operations/lab.py`만 쓰며 `down -v`와 volume prune을 쓰지 않는다.

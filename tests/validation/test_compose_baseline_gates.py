@@ -1049,12 +1049,6 @@ FEATURE_JOBS = (
         {"lab-dbt"},
     ),
     (
-        "infra/05-messaging/kafka/docker-compose.yml",
-        "debezium-db-provision",
-        "infra/05-messaging/kafka/connect/debezium/provisioning/dev-pg.sql",
-        {"cdc"},
-    ),
-    (
         "infra/11-quality/pact-broker/docker-compose.yml",
         "pact-broker-db-provision",
         "infra/11-quality/pact-broker/provisioning/mng-pg.sql",
@@ -1070,7 +1064,6 @@ FEATURE_JOBS = (
 FEATURE_SECRETS = {
     "mlflow_db_password",
     "dbt_db_password",
-    "debezium_postgres_password",
     "seaweedfs_s3_mlflow_secret_key",
     "pact_broker_db_password",
     "superset_db_password",
@@ -1144,9 +1137,7 @@ class FeatureProvisioningContractTests(unittest.TestCase):
                 self.assertEqual(
                     set(), set(service.get("secrets", [])) & FEATURE_SECRETS
                 )
-                self.assertNotRegex(
-                    _runner_text(service), r"mlflow|dbt|debezium|pact|superset"
-                )
+                self.assertNotRegex(_runner_text(service), r"mlflow|dbt|pact|superset")
 
     def test_feature_jobs_supply_every_input_without_argv_secrets(self) -> None:
         for compose, job, sql_path, profiles in FEATURE_JOBS:
@@ -1197,108 +1188,10 @@ class FeatureProvisioningContractTests(unittest.TestCase):
                     "service_completed_successfully",
                     service["depends_on"][
                         "dev-platform-provision"
-                        if job in {"dbt-db-provision", "debezium-db-provision"}
+                        if job == "dbt-db-provision"
                         else "mng-pg-init"
                     ]["condition"],
                 )
-
-    def test_debezium_connector_matches_provisioned_names_and_allowed_path(
-        self,
-    ) -> None:
-        connector = json.loads(
-            (
-                ROOT
-                / "infra/05-messaging/kafka/connect/debezium/postgres-connector.json"
-            ).read_text(encoding="utf-8")
-        )
-        env = _compose_service(
-            "infra/05-messaging/kafka/docker-compose.yml", "debezium-db-provision"
-        )["environment"]
-        self.assertEqual(env["DEBEZIUM_DB_USER"], connector["database.user"])
-        self.assertEqual(
-            _default(env["DEBEZIUM_DB_NAME"]), connector["database.dbname"]
-        )
-        self.assertEqual(
-            {env["DEBEZIUM_SCHEMA"], env["DEBEZIUM_HEARTBEAT_SCHEMA"]},
-            set(connector["schema.include.list"].split(",")),
-        )
-        self.assertIn(
-            env["DEBEZIUM_HEARTBEAT_SCHEMA"] + ".heartbeat",
-            connector["heartbeat.action.query"],
-        )
-        self.assertEqual(env["DEBEZIUM_PUBLICATION"], connector["publication.name"])
-        self.assertEqual("disabled", connector["publication.autocreate.mode"])
-        example = (ROOT / ".env.example").read_text(encoding="utf-8")
-        self.assertIn("DEV_PG_ADMIN_USER=", example)
-        self.assertEqual("platform_dev", connector["database.dbname"])
-        worker = _compose_service(
-            "infra/05-messaging/kafka/docker-compose.yml", "kafka-connect"
-        )
-        allowed = worker["environment"][
-            "CONNECT_CONFIG_PROVIDERS_FILE_PARAM_ALLOWED_PATHS"
-        ]
-        match = re.fullmatch(
-            r"\$\{file:([^:]+):password\}", connector["database.password"]
-        )
-        self.assertIsNotNone(match)
-        assert match is not None
-        self.assertEqual(allowed, str(Path(match.group(1)).parent))
-        renderer = (
-            ROOT / "infra/05-messaging/kafka/connect/render-connect-secrets.sh"
-        ).read_text()
-        self.assertIn(f"dir={allowed}\n", renderer)
-        self.assertIn("debezium_postgres_password", worker["secrets"])
-
-    def test_properties_escaping_matches_java_properties_rules(self) -> None:
-        # Execute the renderer's escaping lines, then parse like Properties.load.
-        script = (
-            ROOT / "infra/05-messaging/kafka/connect/render-connect-secrets.sh"
-        ).read_text()
-        lines = script.splitlines()
-        start = next(
-            n
-            for n, line in enumerate(lines)
-            if line.strip().startswith('value="${value//')
-        )
-        end = next(n for n in range(start, len(lines)) if lines[n].strip() == "esac")
-        # Execute the renderer's own escaping block: backslash, then leading blank.
-        escaping = "\n".join(lines[start : end + 1])
-        self.assertIn("case", escaping)
-        for raw in (
-            "plain",
-            r"back\slash",
-            " leading",
-            "\tleading-tab",
-            "\fleading-ff",
-            "a=b:c#!",
-            "tail\\",
-        ):
-            with self.subTest(raw=raw):
-                out = subprocess.run(
-                    [
-                        "bash",
-                        "-c",
-                        f'value="$1"\n{escaping}\nprintf "%s" "$value"',
-                        "_",
-                        raw,
-                    ],
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                ).stdout
-                # java.util.Properties: skip unescaped leading blanks, then unescape.
-                parsed, index = [], 0
-                while index < len(out) and out[index] in " \t\f":
-                    index += 1
-                while index < len(out):
-                    char = out[index]
-                    if char == "\\" and index + 1 < len(out):
-                        parsed.append(out[index + 1])
-                        index += 2
-                        continue
-                    parsed.append(char)
-                    index += 1
-                self.assertEqual(raw, "".join(parsed))
 
 
 @unittest.skipUnless(
@@ -1423,7 +1316,6 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             "dev_pg_platform_reader_password": "platform-reader-synthetic",
             "mlflow_db_password": "ml'quote\\slash pw",
             "dbt_db_password": "dbt-synthetic",
-            "debezium_postgres_password": "dbz-synthetic",
             "superset_db_password": "ss'quote\\slash@pw",
             "superset_secret_key": "synthetic-superset-signing-key",
             "superset_oidc_client_secret": "synthetic-oidc",
@@ -1539,7 +1431,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         env = {
             key: _default(str(value)) for key, value in service["environment"].items()
         }
-        dev_job = job in {"dbt-db-provision", "debezium-db-provision"}
+        dev_job = job == "dbt-db-provision"
         env.update(
             PGHOST=f"{self.tag}-{'dev' if dev_job else 'db'}",
             PGPORT="5432",
@@ -1605,7 +1497,6 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             for job in (
                 "mlflow-db-provision",
                 "dbt-db-provision",
-                "debezium-db-provision",
             ):
                 with self.subTest(job=job):
                     result = self.provision(job)
@@ -1616,11 +1507,11 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         ).stdout.strip()
         dev_roles = self.sql(
             "SELECT string_agg(rolname||':'||rolsuper||rolreplication||rolcreatedb, ',' ORDER BY rolname)"
-            " FROM pg_roles WHERE rolname IN ('dbt','debezium')",
+            " FROM pg_roles WHERE rolname IN ('dbt')",
             host="dev",
         ).stdout.strip()
         self.assertEqual("mlflow:falsefalsefalse", mng_roles)
-        self.assertEqual("dbt:falsefalsefalse,debezium:falsetruefalse", dev_roles)
+        self.assertEqual("dbt:falsefalsefalse", dev_roles)
         # The feature role logs in with a password containing quote/backslash.
         self.assertEqual(
             "mlflow",
@@ -1718,35 +1609,9 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             self.sql(
                 "SELECT count(*) FROM app.later",
                 "platform_dev",
-                "debezium",
-                "dbz-synthetic",
+                "dbt",
+                "dbt-synthetic",
             ).returncode,
-        )
-        self.assertNotEqual(
-            0,
-            self.sql(
-                "INSERT INTO app.orders VALUES (2)",
-                "platform_dev",
-                "debezium",
-                "dbz-synthetic",
-            ).returncode,
-        )
-        publication = self.sql(
-            "SELECT count(*) FROM pg_publication_tables WHERE pubname='hyhome_platform_publication'"
-            " AND tablename IN ('orders','later','heartbeat')",
-            "platform_dev",
-        ).stdout.strip()
-        self.assertEqual("3", publication)
-        # The heartbeat action query succeeds; other schemas stay read-only.
-        heartbeat = json.loads(
-            (
-                ROOT
-                / "infra/05-messaging/kafka/connect/debezium/postgres-connector.json"
-            ).read_text()
-        )["heartbeat.action.query"]
-        self.assertEqual(
-            0,
-            self.sql(heartbeat, "platform_dev", "debezium", "dbz-synthetic").returncode,
         )
         # A service role this job did not create is never altered.
         result = self.provision("dbt-db-provision", DBT_DB_USER="platform_runtime")
@@ -2521,31 +2386,6 @@ python3() {
                 else:
                     self.assertEqual(1, result.returncode)
                     self.assertFalse((staging / "agent-memory.sqlite3").exists())
-
-
-CDC_KAFKA_COMPOSE = ROOT / "infra/05-messaging/kafka/docker-compose.yml"
-CDC_CONNECTOR = (
-    ROOT / "infra/05-messaging/kafka/connect/debezium/postgres-connector.json"
-)
-
-
-def _cdc_docker(*args, check=True, timeout=180, **kw):
-    return subprocess.run(
-        ["docker", *args],
-        capture_output=True,
-        text=True,
-        check=check,
-        timeout=timeout,
-        **kw,
-    )
-
-
-def _cdc_after(record):
-    # Avro JSON wraps the nullable row in its union branch, named after the
-    # record ("hyhome.platform.app.orders.Value").
-    ((branch, row),) = record["after"].items()
-    assert branch.endswith(".Value"), branch
-    return row
 
 
 SSO_MIDDLEWARE = Path(
@@ -3873,271 +3713,6 @@ class StorybookIngressRehearsalTests(SsoStack, unittest.TestCase):
         out = self.browse("storybook:bob", *self.paths)
         self.assertEqual(403, out["callback"])
         self.assert_refused(out)
-
-
-@unittest.skipUnless(
-    os.environ.get("HYHOME_CDC_REHEARSAL") == "1",
-    "set HYHOME_CDC_REHEARSAL=1 to run the disposable CDC stream rehearsal (needs Docker)",
-)
-class CdcStreamRehearsalTests(unittest.TestCase):
-    """Rehearse the tracked connector end to end on synthetic data only.
-
-    Every container joins one temporary internal network under the aliases the
-    tracked connector names, publishes no port, and is removed afterwards.
-    """
-
-    # A password with Properties-significant characters proves the renderer.
-    SPECIAL_VALUE = " lead\\back#hash=eq:colon!é"
-
-    @classmethod
-    def image(cls, service):
-        import yaml
-
-        return yaml.safe_load(CDC_KAFKA_COMPOSE.read_text())["services"][service][
-            "image"
-        ]
-
-    @classmethod
-    def setUpClass(cls):
-        cls.tag = f"hycdc{os.getpid()}"
-        cls.tmp = tempfile.TemporaryDirectory()
-        cls.addClassCleanup(cls.tmp.cleanup)
-        secret = Path(cls.tmp.name) / "debezium_postgres_password"
-        secret.write_text(cls.SPECIAL_VALUE)
-        secret.chmod(0o644)
-        _cdc_docker("network", "create", "--internal", cls.tag)
-        cls.addClassCleanup(_cdc_docker, "network", "rm", cls.tag, check=False)
-        dev_image = re.search(
-            r"^FROM (\S+)",
-            (ROOT / "infra/04-data/dev-db/pg/Dockerfile").read_text(),
-            re.M,
-        ).group(1)
-        run = ["run", "-d", "--network", cls.tag]
-        specs = {
-            "pg": (["--network-alias", "dev-pg", "-e", "POSTGRES_USER=admin",
-                    "-e", "POSTGRES_PASSWORD=synthetic-admin", dev_image, "postgres",
-                    "-c", "wal_level=logical", "-c", "shared_preload_libraries=timescaledb"]),
-            "kafka": (["--network-alias", "kafka-1",
-                       "-e", "CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qg",
-                       "-e", "KAFKA_NODE_ID=1",
-                       "-e", "KAFKA_PROCESS_ROLES=broker,controller",
-                       "-e", "KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9093",
-                       "-e", "KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:19092,CONTROLLER://0.0.0.0:9093",
-                       "-e", "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:19092",
-                       "-e", "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT",
-                       "-e", "KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER",
-                       "-e", "KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT",
-                       "-e", "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1",
-                       "-e", "KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1",
-                       "-e", "KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1",
-                       "-e", "KAFKA_AUTO_CREATE_TOPICS_ENABLE=false",
-                       "-e", "KAFKA_HEAP_OPTS=-Xms256M -Xmx512M",
-                       cls.image("kafka-1")]),
-            "sr": (["--network-alias", "schema-registry",
-                    "-e", "SCHEMA_REGISTRY_HOST_NAME=schema-registry",
-                    "-e", "SCHEMA_REGISTRY_LISTENERS=http://0.0.0.0:8081",
-                    "-e", "SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS=PLAINTEXT://kafka-1:19092",
-                    "-e", "SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR=1",
-                    cls.image("schema-registry")]),
-            "client": (["python:3.13.15-alpine", "sleep", "infinity"]),
-        }  # fmt: skip
-        for name, args in specs.items():
-            cls.addClassCleanup(
-                _cdc_docker, "rm", "-f", f"{cls.tag}-{name}", check=False
-            )
-            _cdc_docker(*run, "--name", f"{cls.tag}-{name}", *args)
-            if name == "pg":
-                # Finish the image's init (temporary server stop and checkpoint)
-                # before the JVM services start: under their I/O the init stop
-                # overran pg_ctl's 60 s wait and the container exited. The TCP
-                # probe only answers once the final server is up.
-                cls.wait(
-                    lambda: cls.sql("SELECT 1", db="postgres") == "1",
-                    "postgres",
-                    tries=150,
-                    container="pg",
-                )
-        cls.addClassCleanup(_cdc_docker, "rm", "-f", f"{cls.tag}-connect", check=False)
-        cls.start_connect(secret)
-        cls.provision()
-        cls.wait(cls.connect_ready, "kafka connect", tries=120)
-
-    @classmethod
-    def start_connect(cls, secret):
-        import yaml
-
-        env = yaml.safe_load(CDC_KAFKA_COMPOSE.read_text())["services"][
-            "kafka-connect"
-        ]["environment"]
-        args = []
-        for key, value in env.items():
-            if key == "KAFKA_OPTS":
-                continue  # the JMX agent jar is not mounted here
-            value = re.sub(r"\$\{[A-Z_]+:-([^}]*)\}", r"\1", str(value))
-            args += ["-e", f"{key}={value}"]
-        _cdc_docker(
-            "run", "-d", "--name", f"{cls.tag}-connect", "--network", cls.tag,
-            "--network-alias", "kafka-connect",
-            "-v", f"{secret}:/run/secrets/debezium_postgres_password:ro",
-            "-v", f"{ROOT}/infra/05-messaging/kafka/connect/render-connect-secrets.sh:/usr/local/bin/render-connect-secrets.sh:ro",
-            *args, cls.image("kafka-connect"),
-            "/bin/bash", "/usr/local/bin/render-connect-secrets.sh",
-        )  # fmt: skip
-
-    @classmethod
-    def wait(cls, probe, what, tries=60, container="connect"):
-        for _ in range(tries):
-            try:
-                if probe():
-                    return
-            except Exception:
-                pass
-            time.sleep(2)
-        logs = _cdc_docker(
-            "logs", "--tail", "25", f"{cls.tag}-{container}", check=False
-        )
-        raise AssertionError(
-            f"{what} not ready\n{logs.stdout[-3000:]}{logs.stderr[-3000:]}"
-        )
-
-    @classmethod
-    def sql(cls, query, db="platform_dev"):
-        out = _cdc_docker(
-            "exec", f"{cls.tag}-pg", "psql", "-h", "127.0.0.1", "-v", "ON_ERROR_STOP=1", "-U", "admin",
-            "-d", db, "-Atc", query,
-        )  # fmt: skip
-        return out.stdout.strip()
-
-    CLIENT = """
-import sys, urllib.request
-method, url = sys.argv[1], sys.argv[2]
-data = sys.stdin.buffer.read() or None
-req = urllib.request.Request(url, data=data, method=method,
-                             headers={"Content-Type": "application/json"})
-try:
-    print(urllib.request.urlopen(req, timeout=20).read().decode())
-except urllib.error.HTTPError as error:
-    print(error.read().decode())
-"""
-
-    @classmethod
-    def http(cls, method, url, body=None):
-        # Neither the Connect nor the Registry image ships curl.
-        return _cdc_docker(
-            "exec", "-i", f"{cls.tag}-client", "python", "-c", cls.CLIENT, method, url,
-            input=body or "", check=False,
-        ).stdout  # fmt: skip
-
-    @classmethod
-    def connect_ready(cls):
-        return cls.http("GET", "http://kafka-connect:8083/connectors").startswith("[")
-
-    @classmethod
-    def provision(cls):
-        cls.sql("CREATE ROLE platform_owner NOLOGIN", db="postgres")
-        cls.sql("CREATE DATABASE platform_dev OWNER platform_owner", db="postgres")
-        cls.sql("CREATE SCHEMA app AUTHORIZATION platform_owner")
-        cls.sql(
-            "CREATE TABLE app.orders (id int PRIMARY KEY, item text NOT NULL);"
-            "ALTER TABLE app.orders OWNER TO platform_owner;"
-            "INSERT INTO app.orders VALUES (1, 'snapshot-a'), (2, 'snapshot-b')"
-        )
-        env = {
-            "DEBEZIUM_DB_USER": "debezium",
-            "DEBEZIUM_DB_NAME": "platform_dev",
-            "DEBEZIUM_SCHEMA": "app",
-            "DEBEZIUM_HEARTBEAT_SCHEMA": "debezium_heartbeat",
-            "DEBEZIUM_PUBLICATION": "hyhome_platform_publication",
-            "DEBEZIUM_SOURCE_OWNER": "platform_owner",
-            "DEBEZIUM_DB_PASSWORD": cls.SPECIAL_VALUE,
-        }
-        args = ["exec", "-i"]
-        for key, value in env.items():
-            args += ["-e", f"{key}={value}"]
-        sql = ROOT / "infra/05-messaging/kafka/connect/debezium/provisioning/dev-pg.sql"
-        _cdc_docker(
-            *args, f"{cls.tag}-pg", "psql", "-h", "127.0.0.1", "-q", "-U", "admin", "-d", "postgres",
-            "-f", "-", input=sql.read_text(),
-        )  # fmt: skip
-
-    def consume(self, count):
-        out = _cdc_docker(
-            "exec", f"{self.tag}-sr", "kafka-avro-console-consumer",
-            "--bootstrap-server", "kafka-1:19092", "--topic", "hyhome.platform.app.orders",
-            "--from-beginning", "--max-messages", str(count), "--timeout-ms", "60000",
-            "--property", "schema.registry.url=http://localhost:8081",
-            "--group", f"rehearsal-{uuid.uuid4().hex[:8]}",
-            check=False, timeout=120,
-        ).stdout  # fmt: skip
-        return [json.loads(line) for line in out.splitlines() if line.startswith("{")]
-
-    def running(self):
-        status = json.loads(
-            self.http(
-                "GET", "http://kafka-connect:8083/connectors/hyhome-platform/status"
-            )
-        )
-        tasks = status.get("tasks") or [{}]
-        return status["connector"]["state"] == tasks[0].get("state") == "RUNNING"
-
-    def slot(self, column):
-        return self.sql(
-            f"SELECT {column} FROM pg_replication_slots"
-            " WHERE slot_name = 'hyhome_platform_slot'"
-        )
-
-    def test_1_stream_decode_evolve_and_resume(self):
-        config = json.loads(CDC_CONNECTOR.read_text())
-        config = config.get("config", config)
-        body = self.http(
-            "PUT",
-            "http://kafka-connect:8083/connectors/hyhome-platform/config",
-            json.dumps(config),
-        )
-        self.assertIn('"name":"hyhome-platform"', body.replace(" ", ""), body[:400])
-        self.wait(self.running, "connector RUNNING", tries=90)
-        # The connector created the slot; provisioning never does.
-        self.wait(lambda: self.slot("active") == "t", "active slot")
-
-        rows = self.consume(2)
-        self.assertEqual(
-            ["snapshot-a", "snapshot-b"], sorted(_cdc_after(r)["item"] for r in rows)
-        )
-
-        # A streamed row, then an additive column: a second registered version.
-        self.sql("INSERT INTO app.orders VALUES (3, 'stream-c')")
-        self.sql("ALTER TABLE app.orders ADD COLUMN note text")
-        self.sql("INSERT INTO app.orders VALUES (4, 'stream-d', 'evolved')")
-        # Three partitions (topic.creation.default.partitions) order only per
-        # key, so rows are compared by primary key.
-        rows = {_cdc_after(r)["id"]: _cdc_after(r) for r in self.consume(4)}
-        self.assertEqual({1, 2, 3, 4}, set(rows))
-        self.assertEqual("stream-d", rows[4]["item"])
-        self.assertIn("evolved", json.dumps(rows[4]["note"]))
-        versions = self.http(
-            "GET",
-            "http://schema-registry:8081/subjects/hyhome.platform.app.orders-value/versions",
-        )
-        self.assertEqual([1, 2], json.loads(versions))
-
-        # A restarted worker resumes from its stored offset without a second
-        # snapshot: exactly one new event follows the four already read.
-        _cdc_docker("restart", f"{self.tag}-connect")
-        self.wait(self.connect_ready, "kafka connect after restart", tries=120)
-        self.wait(self.running, "connector RUNNING after restart", tries=90)
-        self.sql("INSERT INTO app.orders VALUES (5, 'after-restart', NULL)")
-        ids = sorted(_cdc_after(r)["id"] for r in self.consume(6))
-        self.assertEqual([1, 2, 3, 4, 5], ids)
-
-    def test_2_heartbeat_writes_and_advances_the_slot(self):
-        before = self.slot("confirmed_flush_lsn")
-        time.sleep(75)  # the tracked heartbeat.interval.ms is 60000
-        beats = self.sql(
-            "SELECT count(*) FROM debezium_heartbeat.heartbeat"
-            " WHERE beat_at > now() - interval '2 minutes'"
-        )
-        self.assertEqual("1", beats)
-        self.assertNotEqual(before, self.slot("confirmed_flush_lsn"))
 
 
 @unittest.skipUnless(

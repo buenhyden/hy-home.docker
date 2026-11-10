@@ -90,6 +90,11 @@ volumes:
 
 services:
   airflow-apiserver:
+    # Flower depends on the API server, so its opt-in profile selects it too.
+    profiles:
+      - workflow
+      - workflow-airflow
+      - airflow-flower
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -380,6 +385,8 @@ services:
     profiles:
       - workflow
       - workflow-airflow
+      # flower depends on this job, so its opt-in profile selects it too.
+      - airflow-flower
     container_name: airflow-init
     hostname: airflow-init
     group_add:
@@ -489,10 +496,13 @@ services:
   #     - airflow
   #   networks:
   #     airflow_net: {}
+  # Opt-in since the 2026-11-10 owner decision (ADR-0062 amendment): 0 requests in
+  # 7 days; the Airflow UI, the worker healthcheck and the statsd metrics cover
+  # task and worker state. Start it with the `airflow-flower` profile; HOME
+  # (`workflow`) no longer selects it.
   flower:
     profiles:
-      - workflow
-      - workflow-airflow
+      - airflow-flower
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
