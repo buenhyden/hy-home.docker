@@ -409,6 +409,9 @@ services:
       GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH: contains(groups[*], '/admins')
       # [5] 기타 기능 설정
       GF_FEATURE_TOGGLES_ENABLE: 'traceqlEditor'
+      # Since 13.2 Grafana fetches newer preinstalled plugins on every start;
+      # updates go through an image change instead (Administration > Plugins).
+      GF_PLUGINS_PREINSTALL_AUTO_UPDATE: 'false'
       # [추가] PKCE 활성화: Keycloak의 보안 요구 사항을 충족시킵니다.
       GF_AUTH_GENERIC_OAUTH_USE_PKCE: 'true'
       # S256 방식을 명시적으로 지정 (필요 시)
