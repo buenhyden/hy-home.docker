@@ -36,7 +36,6 @@ HOSTS = {"github.com", "dl-cdn.alpinelinux.org", "alpinelinux.org"}
 # GitHub serves release assets from its own CDN after a github.com redirect.
 REDIRECT_SUFFIX = ".githubusercontent.com"
 MIRROR = "https://dl-cdn.alpinelinux.org/alpine/v3.24"
-RELEASE = "https://github.com/openbao/openbao/releases/download/v2.7.1"
 
 # Pinned by tool-images.json (cosign v3.1.3 linux/amd64 digest).
 COSIGN = "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8"
@@ -379,8 +378,10 @@ def write_receipt(proof: Path, label: str, document: dict) -> str:
 
 
 def source_receipt(docker: Docker, proof: Path, inputs: dict) -> str:
+    # the pinned release assets
+    release = inputs["source_archive_url"].rsplit("/", 1)[0]
     for name in ("checksums.txt", "checksums.txt.sigstore.json"):
-        fetch(f"{RELEASE}/{name}", proof / name, 4 * 1024**2)
+        fetch(f"{release}/{name}", proof / name, 4 * 1024**2)
     arguments = [
         "verify-blob",
         "--bundle",
