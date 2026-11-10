@@ -209,7 +209,7 @@
         "infra/11-quality/**",
         "infra/13-experience/**"
       ],
-      "matchPackageNames": ["*", "!apache/airflow", "!n8nio/**"],
+      "matchPackageNames": ["!apache/airflow", "!n8nio/**"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "stateless tier container images"
     },
