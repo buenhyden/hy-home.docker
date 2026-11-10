@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.43.1"
+version: "1.44.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -148,6 +148,11 @@ The owner decision of 2026-11-06 adds criterion 103 and W108 in TSK-0051 for
 D12, the first Opsflow installation in HOME. It records the ordered execution
 contract and Runbook procedure for review; every step runs later in an
 owner-approved window, so no HOME change is authorized by this amendment.
+
+The owner decision of 2026-11-10 adds criteria 104 and 105 and W109–W110 in
+TSK-0052. TSK-0047 set criteria 86 and 89 to not-required and handed their
+unfinished evidence here. The amendment authorizes the Task only; every
+network lookup waits for the owner to approve its host scope in that Task.
 
 ## Scope
 
@@ -751,6 +756,14 @@ hold, authorization and recovery requirements have been established.
      run, unpause), each with its own recorded check, in an owner-approved
      window. Rollback removes installed files, keeps backups and drops nothing
      that existed before.
+104. TSK-0052 gives each current ledger entry a fresh review and a reviewed
+     decision from official release and advisory sources, so the
+     latest-version gate passes, or records the entries it cannot review as
+     explicit residuals without inventing a lookup.
+105. TSK-0052 binds each selected image artifact to its own publisher
+     signature, provenance and SBOM evidence where the publisher provides it.
+     A receipt for one artifact never proves another, and missing material
+     stays an explicit residual.
 
 ## Failure Conditions
 
