@@ -140,6 +140,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_restic_offsite_cap",
                 "tests.validation.test_openbao_audit_rotation",
                 "tests.validation.test_openbao_owned_image_contract",
+                "tests.validation.test_prepare_openbao_materials",
                 "tests.validation.test_sec01_version_contract",
                 "tests.validation.test_sec01_next_stable_candidates",
                 "tests.validation.test_sec01_next_tool_candidates",
@@ -149,6 +150,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.lib.ops.test_opsflow_adapters",
                 "tests.lib.ops.test_opsflow_provision_contract",
                 "tests.validation.test_opsflow_airflow_contract",
+                "tests.validation.test_compose_overlay_register",
                 "tests.validation.test_airflow_connection_uri",
                 "tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests",
                 "tests.validation.test_opsflow_native_boundaries",
@@ -173,7 +175,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             arguments[1:boundary],
         )
         optional = arguments[boundary + 1 : -1]
-        self.assertEqual(32, len(optional))
+        self.assertEqual(31, len(optional))
         self.assertEqual(len(optional), len(set(optional)))
         self.assertTrue(
             all(scope.rsplit(".", 1)[0] in arguments[1:boundary] for scope in optional)
@@ -374,7 +376,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         boundary = compose_arguments.index("--optional-runtime-skips")
         optional = compose_arguments[boundary + 1 : -1]
         self.assertNotIn(module, optional)
-        self.assertEqual(32, len(optional))
+        self.assertEqual(31, len(optional))
 
     def setUp(self) -> None:
         self.module = load_contract_module()

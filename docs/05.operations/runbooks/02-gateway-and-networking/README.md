@@ -24,7 +24,6 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [01-Gateway Nginx Runbook](0011-nginx.md) | `RUN-0011` | 이 런북은 Nginx readonly/tmpfs 전환 이후 발생 가능한 장애, `nginx -t` 실패, `/ping` 헬스체크 실패 상황의 복구 절차를 정의한다. |
 | [01-Gateway Traefik Runbook](0013-traefik.md) | `RUN-0013` | 이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다. |
 | [Compose Network Membership Runbook](0077-ip-address-management.md) | `RUN-0077` | Compose 서비스의 network membership과 고정 주소를 변경하거나 DNS/IP 충돌을 진단하는 절차다. |
 

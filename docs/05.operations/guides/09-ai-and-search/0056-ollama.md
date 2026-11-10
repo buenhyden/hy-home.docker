@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.7"
+version: "2.0.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -20,7 +20,7 @@ created: "2026-05-10"
 
 ## Overview
 
-이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 현재 구현은 `infra/08-ai/ollama/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `ollama`와 `ollama-exporter`는 `ai`, `ai-llm` 또는 `ollama` profile을 선택할 때 기동된다. 모델 라이프사이클, GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름은 그 profile이 선택된 런타임을 기준으로 수행한다.
+이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 현재 구현은 `infra/08-ai/ollama/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `ollama`와 `ollama-exporter`는 `ai`, `ai-llm` 또는 `ollama` profile을 선택할 때 기동된다. 모델 라이프사이클, GPU 가속 확인, HOME 소비자 연동, exporter 관측 흐름은 그 profile이 선택된 런타임을 기준으로 수행한다.
 
 ## Scope
 
@@ -37,7 +37,7 @@ created: "2026-05-10"
 
 - Ollama 모델 운용 절차를 표준화한다.
 - API/CLI/관측(Exporter) 경로를 일관된 방식으로 점검한다.
-- Open WebUI/RAG 연동 전에 필요한 추론 계층 준비 상태를 확보한다.
+- Open Notebook 등 HOME 소비자 연동 전에 필요한 추론 계층 준비 상태를 확보한다.
 
 ## Concepts
 
@@ -102,11 +102,14 @@ GTX 1060 6 GiB에서는 [tev1:0.8b](https://ollama.com/library/tev1)를 먼저 �
 
 [tev1:0.8b](https://ollama.com/library/tev1)가 없으면 승인된 rehearsal에서만 `docker compose exec ollama ollama pull tev1:0.8b`로 가져온 뒤 위 요청을 실행한다.
 
-#### Open WebUI Integration Check
+#### Consumer Integration Check
 
-1. Open WebUI 환경변수 `OLLAMA_BASE_URL`가 `http://ollama:${OLLAMA_PORT:-11434}`를 가리키는지 확인.
-2. Open WebUI UI에서 모델 목록이 정상 조회되는지 확인.
+1. HOME 소비자(Open Notebook 등)가 `http://ollama:${OLLAMA_PORT:-11434}`를 가리키는지 확인.
+2. 소비자 화면이나 API에서 모델 목록이 정상 조회되는지 확인.
 3. 모델 미노출 시 `ollama` health/log를 먼저 확인.
+
+Open WebUI는 2026-11-10부터 독립 LAB이며 HOME network에 합류하지 않는다. LAB은 승인된 endpoint
+(`LAB_OPEN_WEBUI_OLLAMA_BASE_URL`)로만 Ollama에 닿는다([GDE-0057](../15-labs/0057-open-webui.md)).
 
 #### Exporter Observability Check
 
@@ -121,10 +124,10 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 - **목적·분류**: `ollama`와 `ollama-exporter`는 소유자가 확인한 `HOME` local inference 및 metric 서비스다.
 - **profile·구현 소유권**: `ai`/`ai-llm`은 Ollama를 선택하고 `ollama`는 해당 서비스만 선택하는 방법을 제공한다. [Compose](../../../../infra/08-ai/ollama/docker-compose.yml)와 선택된 image 선언이 구현을 소유한다.
-- **흐름·의존성**: Open WebUI와 승인된 client는 `ai_net`으로 Ollama를 호출하며 exporter는 Prometheus에 제공할 metric을 위해 Ollama API를 읽는다. NVIDIA runtime/driver, model storage, Traefik, gateway auth와 root CA가 전제 조건이다. loopback host port는 운영자 endpoint이며 public route는 계속 gateway의 보호를 받는다.
+- **흐름·의존성**: Open Notebook 등 승인된 HOME client는 `ai_net`으로 Ollama를 호출하며 exporter는 Prometheus에 제공할 metric을 위해 Ollama API를 읽는다. NVIDIA runtime/driver, model storage, Traefik, gateway auth와 root CA가 전제 조건이다. loopback host port는 운영자 endpoint이며 public route는 계속 gateway의 보호를 받는다.
 - **상태·환경 설정**: `ollama-data:/root/.ollama`는 model manifest/blob을 담는다. model 이름, source, digest, parameter, license와 호환성 evidence를 보존한다. cache에 있다는 사실만으로 출처가 입증되지는 않는다. port/model/concurrency 변수는 secret이 아니다. remote registry credential을 사용하는 경우 해당 secret 소유자의 규칙을 따르며 Compose 출력이나 log에 포함하지 않는다.
 - **자원·보안**: Compose는 CPU 4개, 8 GiB limit, 4 GiB reservation과 GPU 접근을 선언한다. 이는 source limit이며 측정된 CPU/RAM/VRAM 여유 용량이 아니다. 인증되지 않은 non-loopback API를 노출하거나 검토하지 않은 model/tool content를 실행하지 않는다.
-- **정상 사용·수명 주기**: `docker compose --profile ai config --quiet`로 렌더링하고 명시적으로 승인된 model을 list/pull한다. `/api/tags`와 대표 inference를 검증하며 exporter/GPU 신호를 관찰한다. image나 model migration 전에 digest와 model 출처를 기록하고, model volume 또는 재현 가능한 manifest를 보존한다. 호환성 경계를 한 번에 하나씩 변경한 뒤 inference와 Open WebUI 연동을 다시 확인한다.
+- **정상 사용·수명 주기**: `docker compose --profile ai config --quiet`로 렌더링하고 명시적으로 승인된 model을 list/pull한다. `/api/tags`와 대표 inference를 검증하며 exporter/GPU 신호를 관찰한다. image나 model migration 전에 digest와 model 출처를 기록하고, model volume 또는 재현 가능한 manifest를 보존한다. 호환성 경계를 한 번에 하나씩 변경한 뒤 inference와 HOME 소비자 연동을 다시 확인한다.
 - **공식 문서·license**: 공식 [Ollama 저장소](https://github.com/ollama/ollama)와 release note를 따른다. Ollama에는 MIT license가 적용된다. 각 model의 별도 조건도 기록하고 검토해야 한다.
 
 ### Model and exporter capacity boundary
@@ -149,7 +152,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 ### Common Checks
 
-- 직접 API는 호스트 loopback에서만 접근한다. Open WebUI와 exporter는 `ollama` 서비스 DNS로 통신하며, 원격 접근은 인증된 gateway 경로를 사용한다. 기존 LAN 직접 API 소비자는 설정 적용 전에 전환해야 한다.
+- 직접 API는 호스트 loopback에서만 접근한다. HOME 소비자와 exporter는 `ollama` 서비스 DNS로 통신하며, 원격 접근은 인증된 gateway 경로를 사용한다. 기존 LAN 직접 API 소비자는 설정 적용 전에 전환해야 한다.
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
@@ -169,7 +172,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 - **GPU 미인식**: 컨테이너는 실행되지만 CPU 추론으로 강등됨.
 - **VRAM OOM**: 대형 모델 동시 로드 시 응답 실패/지연.
-- **모델 태그 불일치**: Open WebUI 설정 모델명과 Ollama 실제 태그 불일치.
+- **모델 태그 불일치**: 소비자 설정 모델명과 Ollama 실제 태그 불일치.
 - **Exporter 미수집**: host-published 포트로 오해해 localhost에서 직접 조회하는 경우. exporter는 compose healthcheck와 `ai_net` 내부 scrape 경로를 기준으로 확인한다.
 
 ## Related Documents

@@ -85,7 +85,6 @@ def _render_root(overrides: dict[str, str], profiles: tuple[str, ...] = ()) -> d
             "workflow-airflow",
             "ai",
             "notebook",
-            "nginx",
         ):
             args.extend(("--profile", profile))
         args.extend(("config", "--format", "json"))
@@ -113,11 +112,10 @@ def _render_root(overrides: dict[str, str], profiles: tuple[str, ...] = ()) -> d
 # A documentation-only address (RFC 5737) marks LAN publications in the render.
 LAN_SENTINEL = "198.51.100.7"
 LOOPBACK = {"127.0.0.1", "::1"}
-# The only host-LAN publications: the Traefik/Nginx web gateway and the
+# The only host-LAN publications: the Traefik web gateway and the
 # POL-0096 cluster exceptions (Loki, Tempo, Alloy OTLP, mng-valkey).
 LAN_ALLOWED = {
     "traefik": {80, 443},
-    "nginx": {80, 443},
     "loki": {3100},
     "tempo": {3200},
     "alloy": {4317, 4318},
@@ -175,7 +173,6 @@ SSO_ONLY_BACKENDS = (
     "cadvisor",
     "comfyui",
     "flower",
-    "kafka-connect",
     "loki",
     "mailpit",
     "mlflow",
@@ -183,7 +180,6 @@ SSO_ONLY_BACKENDS = (
     "prometheus",
     "pushgateway",
     "pyroscope",
-    "schema-registry",
     "tempo",
     "terrakube-ui",
 )
@@ -606,15 +602,14 @@ class ListenerPortContractTests(unittest.TestCase):
             " ".join(service["healthcheck"]["test"]),
         )
 
-    def test_open_webui_listener_health_and_gateway_use_one_port(self) -> None:
-        service = _service("infra/08-ai/open-webui/docker-compose.yml", "open-webui")
+    def test_open_webui_lab_listener_health_and_port_use_one_port(self) -> None:
+        # ADR-0062 amendment: a LAB with no gateway route; the listener is fixed.
+        service = _service("labs/open-webui/docker-compose.yml", "open-webui")
         environment = _environment(service)
-        self.assertEqual("${OLLAMA_WEBUI_PORT:-8080}", environment.get("PORT"))
+        self.assertEqual("8080", environment.get("PORT"))
         self.assertEqual(
-            "${OLLAMA_WEBUI_PORT:-8080}",
-            service["labels"][
-                "traefik.http.services.open-webui.loadbalancer.server.port"
-            ],
+            ["${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}:8080"],
+            service["ports"],
         )
         self.assertIn(
             "localhost:$${PORT}/health",
@@ -650,7 +645,6 @@ class ListenerPortContractTests(unittest.TestCase):
                 "KEYCLOAK_MANAGEMENT_PORT": "19000",
                 "KEYCLOAK_PORT": "18080",
                 "OAUTH2_PROXY_PORT": "14180",
-                "OLLAMA_WEBUI_PORT": "18081",
                 "POSTGRES_HOST_PORT": "25439",
                 "POSTGRES_PORT": "15432",
                 "VALKEY_MNG_HOST_PORT": "26389",
@@ -665,7 +659,6 @@ class ListenerPortContractTests(unittest.TestCase):
                 "0.0.0.0:14180",
             ),
             "keycloak": ("KC_HTTP_PORT", "8080", "18080"),
-            "open-webui": ("PORT", "8080", "18081"),
             "airflow-apiserver": ("AIRFLOW__API__PORT", "8080", "18082"),
         }
         for service_name, (key, default, override) in expected.items():
@@ -692,14 +685,6 @@ class ListenerPortContractTests(unittest.TestCase):
         self.assertEqual(
             "14180", str(changed["gatus"]["environment"]["OAUTH2_PROXY_PORT"])
         )
-        self.assertEqual(
-            "4180", str(baseline["nginx"]["environment"]["OAUTH2_PROXY_PORT"])
-        )
-        self.assertEqual(
-            "14180", str(changed["nginx"]["environment"]["OAUTH2_PROXY_PORT"])
-        )
-        self.assertEqual("8080", str(baseline["nginx"]["environment"]["KEYCLOAK_PORT"]))
-        self.assertEqual("18080", str(changed["nginx"]["environment"]["KEYCLOAK_PORT"]))
         self.assertIn("port=15432", _command(changed["mng-pg"]))
         self.assertEqual(
             "15432", str(changed["mng-pg"]["environment"]["POSTGRES_PORT"])
@@ -857,7 +842,7 @@ class OpenNotebookPortAndReadinessTests(unittest.TestCase):
         "scripts/hardening/check-all-hardening.sh",
         "scripts/lib/hardening-lib.sh",
         "infra/08-ai/ollama/docker-compose.yml",
-        "infra/08-ai/open-webui/docker-compose.yml",
+        "labs/open-webui/docker-compose.yml",
         "infra/08-ai/open-notebook/docker-compose.yml",
     )
 

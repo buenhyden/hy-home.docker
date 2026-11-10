@@ -47,7 +47,6 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/guides/02-gateway-and-networking/0011-nginx.md
   - docs/05.operations/guides/02-gateway-and-networking/0012-edge-routing-stack.md
   disposition: retain
   successor: null
@@ -1024,6 +1023,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_port_contract.py
+- path: scripts/operations/prepare-openbao-materials.py
+  kind: operations
+  authority: infra/03-security/openbao/build/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - infra/03-security/openbao/build/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_prepare_openbao_materials.py
 - path: scripts/operations/prometheus-isolated-restore.py
   kind: operations
   authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md
@@ -1047,18 +1057,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
-- path: scripts/operations/rehearse-postgres-logical-upgrade.sh
-  kind: operations
-  authority: docs/05.operations/runbooks/05-databases-and-storage/0032-postgresql-logical-upgrade-restore-rehearsal.md
-  lifecycle: active
-  mutation: runtime
-  consumers:
-  - .github/workflow-contract.yml
-  - docs/05.operations/runbooks/05-databases-and-storage/0032-postgresql-logical-upgrade-restore-rehearsal.md
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
 - path: scripts/operations/rehearse-sample-service-delivery.sh
   kind: operations
   authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md

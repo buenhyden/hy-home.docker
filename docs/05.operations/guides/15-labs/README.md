@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 가이드"
-version: "0.3.1"
+version: "0.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 ---
 
@@ -29,6 +29,7 @@ layer: "operations"
 | [CouchDB Usage Guide](0026-couchdb.md) | `GDE-0026` | 이 문서는 CouchDB Compose 구현의 3노드 클러스터 사용 기준을 설명한다. `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`는 정확히 `couchdb` profile과 선언된 ne |
 | [MongoDB Usage Guide](0027-mongodb.md) | `GDE-0027` | 이 문서는 MongoDB Compose 구현의 replica set 사용 기준을 설명한다. 일곱 서비스는 모두 정확히 `mongodb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이고 두 da |
 | [PostgreSQL Cluster Usage Guide](0031-postgresql-cluster.md) | `GDE-0031` | 이 문서는 PostgreSQL cluster Compose 구현의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 |
+| [Open WebUI Usage Guide](0057-open-webui.md) | `GDE-0057` | 독립 LAB `labs/open-webui/docker-compose.yml`의 채팅·RAG 웹 애플리케이션이다. gateway route 없이 loopback port로 게시하며 Ollama와 Keycloak은 LAB 입력으로만 찾는다. |
 | [Locust Usage Guide](0062-locust.md) | `GDE-0062` | Locust는 `labs/locust/docker-compose.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다. HOME root Compose와 `testing` profile에는 포함되지 않는다. |
 | [SonarQube Usage Guide](0066-sonarqube.md) | `GDE-0066` | SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(project `hy-home-lab-sonarqube`)의 `sonarqube` service로 운영하는 코드 품질·SAST 도구다. |
 | [Stalwart Mail Server Guide](0070-mail.md) | `GDE-0070` | 이 가이드는 독립 LAB `labs/stalwart/docker-compose.yml`(project `hy-home-lab-stalwart`)의 메일 서버 Stalwart 구성, 네트워크 경계, 일반 사용 방법을 설명한다. |

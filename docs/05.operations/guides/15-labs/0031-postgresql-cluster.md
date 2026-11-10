@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Usage Guide"
-version: "2.1.4"
+version: "2.1.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
@@ -40,14 +40,14 @@ created: "2026-05-10"
 | 환경 설정·secret | Patroni/service 식별자는 환경 key이다. HAProxy, superuser, replication, exporter와 service password는 Docker Secret이다. |
 | Health·자원 | etcd health, `patronictl list`, HAProxy 점검, exporter를 사용한다. service는 Compose에 선언된 template을 사용하며 LAB 전체에 필요한 용량을 확보해야 한다. |
 | 보안 | secret을 처리하는 Spilo entrypoint와 라우팅된 client 연결을 사용한다. 같은 host의 member는 다른 host를 통한 DR이 아니다. |
-| Backup·upgrade | globals와 database별 logical dump를 보존한다. upgrade/제거 전에 새 DCS/cluster에 복구하고 `RUN-0032`를 사용한다(synthetic single-DB rehearsal만 해당하며 HA globals/ACL/router 복원은 미구현). |
+| Backup·upgrade | globals와 database별 logical dump를 보존한다. upgrade/제거 전에 새 DCS/cluster에 복구한다(HA globals/ACL/router 복원은 미구현). |
 | License·edition | PostgreSQL에는 PostgreSQL License가 적용된다. Spilo, Patroni, etcd, HAProxy와 exporter는 각각 별도 license가 적용되는 의존성이다. |
 
 ## Usage
 
 ### Identity-specific behavior
 
-etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 identity/data가 다르다. helper PostgreSQL image는 server major를 뜻하지 않는다. `pg-router`는 write/read backend 와 stats 를 제공하며 config syntax health 는 실제 routing 을 증명하지 않는다. init 는 roles/grants/database mutation, exporter0/1/2 는 서로 다른 PG target 이다. 실제 HA globals/모든 DB/ACL/extension/router restore 는 미구현이며 RUN-0032의 synthetic 17→18 rehearsal과 분리한다. 한 host 의 quorum 은 host disaster recovery 가 아니다.
+etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 identity/data가 다르다. helper PostgreSQL image는 server major를 뜻하지 않는다. `pg-router`는 write/read backend 와 stats 를 제공하며 config syntax health 는 실제 routing 을 증명하지 않는다. init 는 roles/grants/database mutation, exporter0/1/2 는 서로 다른 PG target 이다. 실제 HA globals/모든 DB/ACL/extension/router restore 는 미구현이다. 한 host 의 quorum 은 host disaster recovery 가 아니다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
@@ -116,7 +116,6 @@ etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 
 
 - [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
-- [Logical upgrade restore rehearsal](../../runbooks/05-databases-and-storage/0032-postgresql-logical-upgrade-restore-rehearsal.md) (`RUN-0032`(synthetic single-DB rehearsal만 해당; HA globals/ACL/router 복원은 미구현))
 
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/15-labs/0031-postgresql-cluster.md)

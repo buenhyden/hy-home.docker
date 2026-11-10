@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 created: "2025-11-24"
 ---
 
@@ -97,7 +97,7 @@ AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와
 HOME은 `core mng ai workflow storage obs-core obs-host availability logs alerting tracing profiling obs-gpu registry`의
 profile 조합이다. 현재 서비스 목록은 공개 예제 환경의 `docker compose config --services`로 조회한다. 위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
 AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼저 확인한다.
-초기화 job의 성공 종료와 daemon의 health를 구분한다. cluster·legacy·maintenance
+초기화 job의 성공 종료와 daemon의 health를 구분한다. cluster·maintenance
 프로파일은 업무 소비자와 검증 목적이 확인될 때만 별도로 선택한다.
 
 ## Getting Started
@@ -122,14 +122,14 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 
 | Tier | Category | Key Services | Status |
 | :--- | :--- | :--- | :--- |
-| **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | HOME / 선택적; disposition 참고 |
+| **01** | **Gateway** | [Traefik](./01-gateway/traefik) | HOME / 선택적; disposition 참고 |
 | **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / 선택적; disposition 참고 |
 | **03** | **Security** | [OpenBao](./03-security/openbao) | HOME 부트스트랩 |
 | **04** | **Data** | [mng-db](./04-data/mng-db), [SeaweedFS](./04-data/seaweedfs), [Qdrant](./04-data/qdrant), [RedisInsight](./04-data/redisinsight) | HOME / 선택적; disposition 참고 |
 | **05** | **Messaging** | [Kafka](./05-messaging/kafka) | 선택적; 패키지의 profile 참조 |
 | **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo), [Dozzle](./06-observability/dozzle) | HOME / 선택적; disposition 참고 |
 | **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / 선택적; disposition 참고 |
-| **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui), [ComfyUI](./08-ai/comfyui), [Open Notebook](./08-ai/open-notebook), [MLflow](./08-ai/mlflow) | HOME / 선택적 |
+| **08** | **AI** | [Ollama](./08-ai/ollama), [ComfyUI](./08-ai/comfyui), [Open Notebook](./08-ai/open-notebook), [MLflow](./08-ai/mlflow); Open WebUI는 [LAB](../labs/README.md)으로 이동(ADR-0062 개정) | HOME / 선택적 |
 | **09** | **Platform Operations** | [OpenTofu](./09-platform-ops/opentofu), [Terrakube](./09-platform-ops/terrakube), [Registry](./09-platform-ops/registry), [Renovate](./09-platform-ops/renovate), [Restic](./09-platform-ops/restic) | HOME / 명시적 작업 |
 | **10** | **Communication** | 없음; Stalwart는 [LAB](../labs/README.md)으로 이동(SPEC-0262) | root 패키지 없음 |
 | **11** | **Quality** | [k6](./11-quality/k6), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |

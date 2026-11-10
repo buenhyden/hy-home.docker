@@ -1,10 +1,10 @@
 ---
 title: "Secret Structure and OpenBao Contract Task"
-version: "0.1.5"
+version: "0.3.1"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0045"
 parent_ids:
@@ -418,6 +418,26 @@ and KV data and needs an owner-run Agent restart, so the owner chose on
 consumer because `labs/supabase` no longer exists; their removal is an
 owner-run edit.
 
+### Criterion 80 owner decision 2026-11-10
+
+Criterion 80 records a missing historical SMTP copy without claiming equality.
+The old copy is absent, so the private equality comparison can never run; the
+owner accepted criterion 80 on single-source grounds (D07 SMTP single source)
+and the equality row became optional with its NOT_RUN result unchanged.
+
+### Owner closure 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) closed this Task after criteria 76 to 81
+were each accepted or not-required with no unresolved required observation.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0045 | draft | ready | #inputs-and-authorization |
+| SPEC-0212-TSK-0045 | ready | in-progress | #d07-re-verification-2026-11-08 |
+| SPEC-0212-TSK-0045 | in-progress | completed | #owner-closure-2026-11-10 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -428,29 +448,35 @@ owner-run edit.
 | Historical acceptance reconciliation | 78 | W83 | Source and scoped prior Task readback | Prior operator records and current versions | PASS | Existing acceptance and applicability; no current HOME result | required | - |
 | Consumer and n8n handoff | 79 | W84 | Producer and native credential boundary readback | Current catalog and P05 Task | PASS | Existing acceptance and applicability; RUN-0106 handoff | required | - |
 | SMTP source safety and alias | 80 | W85 | Bounded read, race and alias regression | Frozen SMTP source and synthetic inputs | PASS | SMTP reader correction; independent QA/security and 93 synthetic tests | required | - |
-| SMTP private equality | 80 | W85 | Authorized read-only comparison | Fixed canonical/historical paths | NOT_RUN | OLD_ABSENT, comparison_performed=false; exit 2, comparison blocked | required | - |
+| SMTP private equality | 80 | W85 | Authorized read-only comparison | Fixed canonical/historical paths | NOT_RUN | OLD_ABSENT, comparison_performed=false; exit 2, comparison blocked | optional | - |
 | D07 private structure check | 77 | W82 | Owner-run read-only `check --read-private` | Actual protected paths; fixed output only | FAIL | `BLOCKED`: the public registry alias rows from the LAB moves were refused by the checker | required | - |
 | D07 structure checker alias fix | 77 | W82 | `test_secret_structure` RED then GREEN | Identifier-only unique alias rows; repository public examples | PASS | 2 new tests failed before, 24 pass after | required | - |
 | D07 private key-set comparison | 77 | W82 | Owner-run `--sync-metadata-prune-check` and name-only key/ID comparison | Actual protected paths; names only | FAIL | `files_changed=3`; registry IDs equal; 16 private-only `.env` keys classified; owner chose removal of 15 and a public `COMPOSE_FILE` | required | - |
 | D07 SMTP single source | 80 | W85 | Owner-run `smtp-equality --read-private` with catalog and Compose reading | Actual protected paths; catalog aliases | PASS | `OLD_ABSENT`; COMM-003 `source_retired`; no root reference; one canonical file | required | - |
 | D07 private structure recheck | 77 | W82 | Owner-run read-only `check --read-private` | Actual protected paths after #827; fixed output only | FAIL | `DRIFT`: env first difference at public line 8 (comment), registry `PRIVATE_EXTRA` | required | - |
-| D07 private structure realignment | 77 | W82 | Owner-run read-only `check --read-private` | Owner-realigned `.env` and registry; Compose render digest unchanged | PASS | `MATCH` for env and registry; 96 service hashes equal before and after | required | D07 private structure recheck |
+| D07 private structure realignment | 77 | W82 | Owner-run read-only `check --read-private` | Owner-realigned `.env` and registry; Compose render digest unchanged | PASS | `MATCH` for env and registry; 96 service hashes equal before and after | required | D07 private structure recheck, D07 private structure check |
 | Retirement and recovery assessment | 81 | W86 | Reader, custody, backup and ownership review | Public source and prior receipts | PASS | Existing acceptance and applicability; no new deletion target | required | - |
 | Workspace public inventory | 76 | W81 | Scan, compare and metadata validation | Frozen public paths, current curation and explicit new paths | PASS | Current workspace inventory; no private output or runtime/render execution | required | - |
 | Changed document and lifecycle gates | 76 | W81 | Metadata, links, operations catalog, Registry and corpus lifecycle | Exact P06 document set after schema corrections | PASS | CI registration and known residual; two earlier metadata FAILs retained, one historical link warning remains | required | - |
+| D07 private key-set prune | 77 | W82 | Owner-run `--sync-metadata-prune-check` and name-only key/ID comparison | Owner-pruned `.env` and registry after a name-only review on 2026-11-10 | PASS | Before: `files_changed=2`, rc 1; private-only names were nine retired `.env` keys (Kafka JMX and REST proxy, Open WebUI, the folded Opsflow overlay) and registry rows CACHE-028 to CACHE-030, each traced to its removal commit. The owner backed up both files and ran `--sync-metadata-prune`; the check then returned `files_changed=0`, rc 0, and `docker compose --profile '*' config` rendered with no unset-variable warning. | required | D07 private key-set comparison |
+| Private structure observation after realignment | 77 | W82 | Authorized read-only full structure comparison | Owner-realigned `.env` and registry (2026-11-09) | PASS | The same `secret-structure.py check --read-private` comparison as the D07 private structure realignment row returned `MATCH` for env and registry; recorded under this Check so it resolves the 2026-11-02 observation. | required | Private structure observation |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 76 | pending | Baseline and writer leases | SOURCE_READY pending scoped catalog checks. | SPEC-0212 TSK-0045 |
-| 77 | pending | Protected structure tests, Private structure observation | TEST_RESIDUAL: synthetic and security checks passed; real env and registry DRIFT, private correction outside scope. | SPEC-0212 TSK-0045 |
+| 76 | accepted | Baseline and writer leases | The public catalog stays the sole metadata authority; the baseline, workspace inventory and document/lifecycle gates passed, and the catalog contract tests passed again on 2026-11-10. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0045 |
+| 77 | accepted | Protected structure tests, Private structure observation, D07 private structure realignment, D07 private key-set prune, Private structure observation after realignment | TEST_PASS: synthetic and security checks passed, and the owner's 2026-11-09 realignment made the real env and registry structure `MATCH` with the Compose render unchanged. The 2026-11-10 prune made the exact key and row sets match (`--sync-metadata-prune-check` rc 0). Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0045 |
 | 78 | accepted | Historical acceptance reconciliation | REUSE_ACCEPTED only within historical evidence scope; current equivalence is separate. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0045 |
-| 79 | pending | Consumer and n8n handoff | TEST_RESIDUAL: handoff recorded; actual producer/consumer authorization and rotation remain separate. | SPEC-0212 TSK-0045 |
-| 80 | pending | SMTP source safety and alias, SMTP private equality | SOURCE_READY: bounded reader and synthetic review pass; old-copy absence prevents equality comparison. | SPEC-0212 TSK-0045 |
-| 81 | pending | Retirement and recovery assessment | BLOCKED for actual retirement without exact target, authorization and recovery evidence. | SPEC-0212 TSK-0045 |
+| 79 | accepted | Consumer and n8n handoff | Completed transitions and the n8n native credential handoff are recorded; actual producer/consumer authorization and rotation are outside this criterion and tracked separately. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0045 |
+| 80 | accepted | SMTP source safety and alias, D07 SMTP single source | Accepted on single-source grounds without claiming equality: the old copy is absent (`OLD_ABSENT`), COMM-003 is `source_retired` and one canonical file remains. The criterion forbids claiming equality, so the private equality comparison is optional and stays NOT_RUN. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0045 |
+| 81 | accepted | Retirement and recovery assessment | The retirement and recovery assessment is recorded and unknown targets stay held with no deletion, which is what the criterion requires; PG-025 was retired separately with an explicit owner decision. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0045 |
 
 ## Review and Completion
+
+On 2026-11-10 the owner (@buenhyden) closed this Task: criteria 76 to 81 are each
+accepted or not-required and no required observation is unresolved. The
+paragraphs below are kept as the state they recorded at the time.
 
 Current implementation, independent review and local checks are pending.
 No prospective test or historical acceptance is promoted to current operation.

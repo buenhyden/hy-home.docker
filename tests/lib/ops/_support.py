@@ -22,7 +22,7 @@ EXPECTED_PORTS = {"18000", "18443", "18082", "18083", "18200"}
 EXPECTED_IMAGES = {
     "keycloak": (
         "quay.io/keycloak/keycloak@"
-        "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c"
+        "sha256:723b1d6e254c0fc96d5cffec860c7e0744d6a3277822b865bb538cf891575e41"
     ),
     "oauth2-proxy": (
         "quay.io/oauth2-proxy/oauth2-proxy@"
@@ -30,7 +30,7 @@ EXPECTED_IMAGES = {
     ),
     "traefik": (
         "traefik@"
-        "sha256:24841fe2de7304c149343d877d2923b4c8800a38ba015dea9174c23b20e344a0"
+        "sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a"
     ),
     "vault": (
         "hashicorp/vault@"

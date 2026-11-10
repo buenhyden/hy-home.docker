@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Usage Guide"
-version: "1.1.7"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0037"
 parent_ids:
@@ -61,7 +61,7 @@ TLS/SASL, credential 회전, topic 변경, 서비스 재시작 같은 runtime �
 
 ### Common Checks
 
-- root `messaging`/`cdc` render, LAB `lab-kafka` render, `bash scripts/hardening/check-all-hardening.sh 05-messaging`. 명령 순서는 RUN-0037이 소유한다.
+- root `messaging` render, LAB `lab-kafka` render, `bash scripts/hardening/check-all-hardening.sh 05-messaging`. 명령 순서는 RUN-0037이 소유한다.
 
 ### Traceability
 

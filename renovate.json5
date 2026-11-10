@@ -21,7 +21,7 @@
   },
 
   "pip_requirements": {
-    "description": "Only image-local Python pins under infra/ belong to Renovate; the scripts/ CI requirements and tests/requirements-integration.txt keep their existing manual ownership",
+    "description": "Adds image-local requirements.txt files under infra/; managerFilePatterns extends Renovate's default requirements pattern, so the scripts/ and tests/ requirements stay with Renovate as well",
     "managerFilePatterns": [
       "/^infra\\/.+\\/requirements\\.txt$/"
     ]
@@ -38,7 +38,9 @@
   "ignorePaths": [
     "docs/98.archive/**",
     "**/fixtures/**",
-    "labs/**"
+    "labs/**",
+    "infra/**/compose.window-*.override.yml",
+    "infra/03-security/openbao/build/**"
   ],
 
   "timezone": "Asia/Seoul",
@@ -101,6 +103,11 @@
       "description": "The HOME GPU is a GTX 1060 (Pascal, compute 6.1), which CUDA 13 no longer supports; hold the base image on 12.x.",
       "matchPackageNames": ["nvidia/cuda"],
       "allowedVersions": "/^12\\./"
+    },
+    {
+      "description": "open-notebook supports SurrealDB 2.x only (upstream pins surrealdb/surrealdb:v2; v3 support is open in lfnovo/open-notebook#378), and 3.x cannot read 2.x data without an export migration; hold the image on v2.x.",
+      "matchPackageNames": ["surrealdb/surrealdb"],
+      "allowedVersions": "/^v2\\./"
     },
     {
       "description": "인프라 주요 버전 변경은 Dashboard 승인 후 제안",
@@ -191,7 +198,47 @@
       ],
       "groupName": "observability container images"
     },
+    {
+      "description": "Group non-major image updates of the stateless tiers: every image update rewrites the shared SEC01 ledger, so separate PRs conflict after each merge. Data (04) and messaging (05) tiers stay one PR per image for data-format review; Airflow (constraints bundle), Keycloak (minor releases migrate its database schema on start) and the n8n sandbox keep their own PRs",
+      "matchManagers": ["docker-compose", "dockerfile", "custom.regex"],
+      "matchFileNames": [
+        "infra/01-gateway/**",
+        "infra/02-auth/**",
+        "infra/03-security/**",
+        "infra/07-workflow/**",
+        "infra/08-ai/**",
+        "infra/09-platform-ops/**",
+        "infra/11-quality/**",
+        "infra/13-experience/**"
+      ],
+      "matchPackageNames": ["!apache/airflow", "!quay.io/keycloak/keycloak", "!n8nio/**"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "stateless tier container images"
+    },
+    {
+      "description": "Pin every container image to its digest: the SEC01 ledger refuses tag-only targets (#856, #866), so a tag-only pin can never be updated through CI",
+      "matchManagers": ["docker-compose", "dockerfile", "custom.regex"],
+      "pinDigests": true
+    },
+    {
+      "description": "Batch digest-only refreshes into one PR",
+      "matchManagers": ["docker-compose", "dockerfile", "custom.regex"],
+      "matchUpdateTypes": ["digest"],
+      "groupName": "container image digests"
+    },
+    {
+      "description": "One PR adds all missing digest pins",
+      "matchManagers": ["docker-compose", "dockerfile", "custom.regex"],
+      "matchUpdateTypes": ["pinDigest"],
+      "groupName": "container image digest pins"
+    },
 
+    {
+      "description": "CI toolchain versions in setup-step inputs (python-version, uv version and checksum, node-version) are pinned together with the workflow contract tests, gate evidence and the uv-generated lock, so they change in one manual PR",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["uses-with"],
+      "enabled": false
+    },
     {
       "description": "Group GitHub Actions patch and minor updates",
       "matchUpdateTypes": ["patch", "minor"],

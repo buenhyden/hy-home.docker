@@ -32,6 +32,9 @@ LAB_ENDPOINTS = {
     "LAB_SUPERSET_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
     "LAB_SONARQUBE_DB_HOST": "lab-endpoint.invalid",
     "LAB_STALWART_DEFAULT_URL": "lab.invalid",
+    "LAB_OPEN_WEBUI_OLLAMA_BASE_URL": "http://lab-endpoint.invalid:11434",
+    "LAB_OPEN_WEBUI_DEFAULT_URL": "lab.invalid",
+    "LAB_OPEN_WEBUI_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
 }
 
 
@@ -84,7 +87,7 @@ class RenderedModels(unittest.TestCase):
 
 class RootClosureTests(RenderedModels):
     def test_wildcard_root_render_selects_no_lab_service(self) -> None:
-        self.assertEqual(14, len(self.labs))
+        self.assertEqual(15, len(self.labs))
         root_services = set(self.root["services"])
         for name, lab in self.labs.items():
             with self.subTest(lab=name):
@@ -256,7 +259,7 @@ class LabInventoryAndSelectionTests(RenderedModels):
         ]
         self.assertEqual([], offenders)
 
-    def test_home_selection_starts_no_lab_or_alternate_gateway(self) -> None:
+    def test_home_selection_starts_no_lab_service(self) -> None:
         import re
 
         policy = (
@@ -266,10 +269,8 @@ class LabInventoryAndSelectionTests(RenderedModels):
         row = next(line for line in policy.splitlines() if line.startswith("| HOME |"))
         profiles = re.findall(r"`([A-Za-z0-9][A-Za-z0-9_.-]*)`", row)
         self.assertTrue(profiles)
-        self.assertNotIn("nginx", profiles)
         arguments = [item for name in profiles for item in ("--profile", name)]
         home = render("--env-file", ".env.example", *arguments)
-        self.assertNotIn("nginx", home["services"])
         lab_services = {s for lab in self.labs.values() for s in lab["services"]}
         self.assertEqual(set(), lab_services & set(home["services"]))
 

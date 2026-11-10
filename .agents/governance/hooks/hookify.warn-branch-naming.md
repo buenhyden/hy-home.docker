@@ -1,15 +1,15 @@
 ---
 title: "WARNING: branch naming rule violation"
-version: "1.0.5"
+version: "1.0.6"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 action: "warn"
 enabled: true
 event: "bash"
 name: "warn-branch-naming"
-pattern: "git\\s+(checkout\\s+-b|switch\\s+-c)\\s+(?!(build|chore|ci|deps|docs|feat|fix|hotfix|perf|refactor|release|revert|style|test|dependabot|codex)/)"
+pattern: "git\\s+(checkout\\s+-b|switch\\s+-c)\\s+(?!(build|chore|ci|deps|docs|feat|fix|hotfix|perf|refactor|release|revert|style|test|renovate|codex)/)"
 ---
 
 # WARNING: branch naming rule violation
@@ -37,7 +37,7 @@ The branch name does not follow the Branching Strategy in
 | `fix/[<issue-id>-]<description>` | bug fix |
 | `hotfix/<description>` | urgent production fix |
 | `<type>/<description>` | any other type admitted by `.cz.toml` |
-| `dependabot/**`, `codex/**` | automation-owned branches |
+| `renovate/**`, `codex/**` | automation-owned branches |
 
 **Correct examples:**
 

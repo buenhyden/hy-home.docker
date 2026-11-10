@@ -343,6 +343,18 @@ class SecurityUpdateGateTests(unittest.TestCase):
 
 
 class UpdateEvidencePackageTests(unittest.TestCase):
+    def test_tracked_ledger_files_are_canonical_for_renovate_rebind(self):
+        # Renovate's postUpgradeTasks run ledger_rebind, which refuses a
+        # non-canonical file; a hand edit with ensure_ascii broke every PR.
+        from scripts.lib.supply_chain.ledger_rebind import _load
+
+        package = Path(__file__).resolve().parents[3] / (
+            "infra/09-platform-ops/security-updates"
+        )
+        for name in ("update-ledger.json", "build-inputs.json"):
+            with self.subTest(name):
+                _load(package / name)
+
     def test_current_native_aggregate_cannot_claim_a_single_invocation(self):
         root = Path(__file__).resolve().parents[3]
         package = root / "infra/09-platform-ops/security-updates"
@@ -453,10 +465,13 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             # The supabase LAB rows lost their current file on 2026-11-06
             # (SPEC-0263 W8); the original root row stays as history.
             if row["current_scope"] == "removed":
-                # Only the retired supabase root rows may lose their file.
-                self.assertEqual(
-                    "infra/04-data/supabase/docker-compose.yml",
+                # Only the retired supabase and nginx root rows may lose their file.
+                self.assertIn(
                     row["original_root_row"]["compose_file"],
+                    {
+                        "infra/04-data/supabase/docker-compose.yml",
+                        "infra/01-gateway/nginx/docker-compose.yml",
+                    },
                 )
                 self.assertIsNone(row["current_compose_file"])
                 self.assertEqual("root", row["original_root_row"]["scope"])
@@ -831,16 +846,12 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             self.assertTrue(row["compose_file"].startswith("infra/"))
             self.assertEqual("NOT_RUN", row["deployment"])
             if row["service"] in {"openbao", "openbao-agent"}:
-                self.assertEqual(
-                    "sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8",
-                    row["target_declared_digest"],
-                )
-                self.assertEqual(
-                    "PASS: selected owned artifact scan receipt SHA256 "
-                    "8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b",
-                    row["sbom_scan"],
-                )
-                self.assertEqual("NOT_UPSTREAM_SIGNED", row["signature"])
+                # 2026-11-10: the r2 pin is bound but not yet reviewed; the r1
+                # evidence receipt stays in the history rows, not on this row.
+                self.assertIn("net0.62.0-r1@sha256:ef27a440", row["current_declared"])
+                self.assertEqual("UNKNOWN", row["target_declared_digest"])
+                self.assertTrue(row["sbom_scan"].startswith("NOT_RUN"))
+                self.assertTrue(row["signature"].startswith("NOT_RUN"))
             elif row["service"] in {"traefik", "prometheus"}:
                 # 2026-10-30: the adopted fixed pin is unscanned; the prior
                 # pin's offline scan receipt is kept as history.

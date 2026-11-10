@@ -1,10 +1,10 @@
 ---
 title: "Traefik and Prometheus Fixed Image Pins Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0021"
 parent_ids:
@@ -177,6 +177,12 @@ for the adopted images.
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0021 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0021 | ready | in-progress | #source-pins-2026-10-30 |
+
+### Supersession note 2026-11-10
+
+On 2026-11-10 the Traefik v3.7.16 pin is superseded by v3.7.17 (PR #881,
+merge `125a884d1`; `infra/01-gateway/traefik/docker-compose.yml:13`). The
+Prometheus pin is unchanged. Earlier entries are unchanged.
 
 ## Evidence
 

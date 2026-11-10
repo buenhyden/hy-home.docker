@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.31"
+version: "1.4.32"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -156,8 +156,9 @@ RDB를 빈 data 디렉터리에 `dump.rdb`로 두고 `--save ''`, `--appendonly 
 한다. 2026-10-08 합성 데이터로 시험했을 때 key, stream 2건, pending 1건이 그대로
 돌아왔고 `XAUTOCLAIM`이 pending 항목을 넘겨받았다. HOME 복구는 별도 승인이다.
 
-Open WebUI는 세 부분을 함께 복구해야 한다. `webui.db`는 SQLite online backup
-export로, `uploads/`와 `.webui_secret_key`는 state 허용 목록으로 백업한다. 이 key가
+Open WebUI는 2026-11-10 독립 LAB으로 옮겨 HOME backup 대상이 아니다. 이전 snapshot에서 복구할 때는
+세 부분을 함께 복구해야 한다. `webui.db`는 SQLite online backup
+export로, `uploads/`와 `.webui_secret_key`는 state 허용 목록으로 백업했다. 이 key가
 없으면 기존 session과 key로 암호화된 값을 쓸 수 없다. 이전에는 key가 container
 layer에 생성돼 재생성마다 바뀌었다. 이제 `WEBUI_SECRET_KEY_FILE`이 data volume을
 가리킨다. SPEC-0226 적용 때 실행 중이던 key를 먼저 volume에 복사했으므로 key는

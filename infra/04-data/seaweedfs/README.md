@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS"
-version: "1.3.2"
+version: "1.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-10"
 created: "2025-12-06"
 ---
 
@@ -24,7 +24,7 @@ MinIO를 대체했습니다.
 [`docker-compose.yml`](docker-compose.yml)이 `seaweedfs-master`,
 `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`를 정의합니다. `seaweedfs`,
 `storage-seaweedfs` profile과 모든 S3 소비자 profile(`storage`, `obs`, `logs`,
-`tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`)이 `seaweedfs-buckets`와
+`tracing`, `mlops`, `data-science`, `lakehouse`)이 `seaweedfs-buckets`와
 함께 이들을 선택합니다. Iceberg table bucket job은 SPEC-0262에서
 [lakehouse LAB](../../../labs/lakehouse/docker-compose.yml)으로 옮겼고, root `lakehouse`는 SeaweedFS만 선택합니다.
 S3가 유일한 인터페이스입니다. FUSE mount는 S04에서 제거되었고 master와
@@ -36,7 +36,7 @@ filer에는 route가 없습니다.
 | --- | --- |
 | `docker-compose.yml` | 4개 서비스, 데이터 디스크 bind volume, secret |
 | `config/hyhome-seaweedfs.sh` | 시작 스크립트: secret으로 JWT, gRPC mTLS, S3 identity 설정을 구성함 |
-| `config/s3-identities.conf` | bucket 범위의 소비자 identity(loki, tempo, mlflow, terrakube, lakehouse)와 익명 CDN 읽기 |
+| `config/s3-identities.conf` | bucket 범위의 소비자 identity(loki, tempo, mlflow, terrakube, lakehouse, prefix 한정 `opsflow-worker`) |
 | `config/seaweedfs-buckets.sh` | `seaweedfs-buckets` job: admin identity로 수행하는 idempotent bucket 생성 |
 | `bin/gen-grpc-certs.sh` | 호스트 스크립트: SeaweedFS 전용 gRPC CA와 인증서를 발급함 |
 

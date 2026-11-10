@@ -1,10 +1,10 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0048"
 parent_ids:
@@ -41,9 +41,11 @@ backup 책임 경계를 다룬다.
     요구한다. 현재 `tempo.yaml`에는 해당 설정이 없어 미준수다. 선언된
     upstream의 기본값은 24h 요구를 충족하지 않는다. 별도 승인된 구현 변경과
     실제 삭제 검증 전에는 retention compliant로 판정하지 않는다.
-  - Pyroscope profiles는 local filesystem backend를 사용한다. 현재
-    `pyroscope.yaml`에는 고정 retention period가 선언되어 있지 않으므로
-    capacity 추이와 storage usage를 점검한다.
+  - Pyroscope profiles는 local filesystem backend를 사용하며 `pyroscope.yaml`의
+    `limits.retention_period: 168h`(7일)를 선언한다. v2 저장소는 block의 모든
+    데이터가 기간을 넘기고 metastore 유예(`cleanup_grace_period`, 기본 6h)가
+    지난 뒤 block 단위로 지우므로 디스크 사용량은 그만큼 늦게 줄어든다. capacity
+    추이와 storage usage를 계속 점검한다.
   - Grafana dashboard backup은 `infra/06-observability/grafana/dashboards/`
     JSON assets를 version-controlled source로 유지한다. LAB 서비스 dashboard는
     SPEC-0225부터 각 LAB 폴더의 `labs/<name>/dashboards/`에서 따로 관리한다.
@@ -66,7 +68,7 @@ Loki marker는 영속 `/loki` 밖의 `/tmp/loki/compactor`에 있고 object-stor
 
 Loki와 Tempo의 SeaweedFS collection(`loki-bucket`, `tempo-bucket`)은 Restic state set에서 제외한다(owner 2026-10-10, SPEC-0228). 보존 기간이 짧은 telemetry라 손실 시 복원하지 않고 새로 수집하며, 위 보존 기간은 백업이 아니라 각 서비스 설정으로 지킨다.
 
-Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본값을 따른다. 이는 실제 보존 이력을 관찰한 결과가 아니다. Pyroscope는 고정 기간이 없고 기본값·disk pressure 동작이 무기한 보존을 약속하지 않는다. Pushgateway는 process restart 때 metric을 잃는다. 어느 것도 승인된 backup/archive를 대신하지 않는다.
+Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본값을 따른다. 이는 실제 보존 이력을 관찰한 결과가 아니다. Pyroscope는 `retention_period: 168h`를 선언하지만 삭제는 block 단위·유예 이후이며 backup/archive가 아니다. Pushgateway는 process restart 때 metric을 잃는다. 어느 것도 승인된 backup/archive를 대신하지 않는다.
 
 ## Exceptions
 
@@ -94,8 +96,8 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
   `rg -n 'retention_enabled: true|retention_period: 168h' infra/06-observability/loki/config/loki-config.yaml`
 - Tempo 필수값 점검(현재 일치하지 않으며 구현 결함으로 기록하고 PASS로 처리하지 않는다):
   `rg -n 'block_retention: 24h|compacted_block_retention: 1h' infra/06-observability/tempo/config/tempo.yaml`
-- Pyroscope의 고정 retention 미선언 경계(출력이 없어야 정상):
-  `rg -n 'retention' infra/06-observability/pyroscope/config/pyroscope.yaml`
+- Pyroscope 필수값 점검(`retention_period: 168h`가 출력되어야 정상):
+  `rg -n 'retention_period' infra/06-observability/pyroscope/config/pyroscope.yaml`
 - Documentation contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 

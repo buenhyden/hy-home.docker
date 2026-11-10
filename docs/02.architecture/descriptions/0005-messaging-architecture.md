@@ -1,10 +1,10 @@
 ---
 title: "Messaging Architecture Description"
-version: "1.4.1"
+version: "1.5.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "architecture"
 artifact_id: "AD-0005"
 parent_ids:
@@ -17,17 +17,17 @@ created: "2026-03-26"
 ## Overview
 
 `05-messaging` is the optional Kafka event-streaming boundary. The HOME
-implementation has one Kafka KRaft broker, Schema Registry, Kafka Connect,
-Kafbat UI, Kafka Exporter, a topic-init job and a Debezium
-database provisioning job. No second broker family is part of the
-architecture.
+implementation has one Kafka KRaft broker, Kafbat UI, Kafka Exporter and a
+topic-init job. Schema Registry and Kafka Connect (Debezium CDC) moved to the LAB
+`labs/kafka-cluster` by the ADR-0062 amendment of 2026-11-10. No second broker
+family is part of the architecture.
 
 ## Scope
 
-- **Owns:** Kafka topics, configuration and KRaft state, schema history,
-  Connect runtime state, metrics export and Kafbat administration.
+- **Owns:** Kafka topics, configuration and KRaft state, metrics export and
+  Kafbat administration.
 - **Consumes:** `01-gateway` TLS and routing, `02-auth` Keycloak identity,
-  `04-data` `dev-pg` for CDC, and `06-observability` metrics and logs.
+  and `06-observability` metrics and logs.
 - **Does not own:** the Keycloak lifecycle, OAuth2 Proxy sessions, workflow
   orchestration, producer source-of-truth data, or external connector systems.
 
@@ -39,15 +39,13 @@ All services are in `infra/05-messaging/kafka/docker-compose.yml` on
 `kafka_net`:
 
 - `kafka-1`, the single broker, and `kafka-exporter` (with `obs_net`).
-- `schema-registry` and `kafka-connect` (also on `dev_data_net`), each
-  routed through ForwardAuth.
-- `kafbat-ui`, routed with `gateway-standard-chain@file` only.
-- `kafka-init`, which declares replication factor 1, and
-  `debezium-db-provision` for the CDC source.
+- `kafbat-ui`, routed with `gateway-standard-chain@file` only; it configures
+  neither a schema registry nor a Connect cluster.
+- `kafka-init`, which declares replication factor 1.
 
 The three-broker `lab-kafka-1/2/3` topology is a separate project in
 `labs/kafka-cluster/docker-compose.yml`; its init job declares replication
-factor 3.
+factor 3, and it also runs `lab-schema-registry` and `lab-kafka-connect`.
 
 ## Runtime and Deployment
 
@@ -55,8 +53,6 @@ factor 3.
 
 ```text
 producer / consumer -> kafka-1
-schema-registry -> kafka-1 _schemas topic
-kafka-connect -> kafka-1 + dev-pg / approved external system
 browser -> Traefik standard chain -> kafbat-ui -> Keycloak OIDC
 ```
 
@@ -67,13 +63,11 @@ Kafbat.
 
 ### Deployment View
 
-`messaging` selects the full stack; `messaging-broker`, `messaging-schema`,
-`messaging-connect` and `messaging-admin` select narrower
-sets, and `cdc` selects the broker, Schema Registry, Connect, exporter and the
-Debezium provisioning job. Broker and Connect volumes are separate bind-backed
-named volumes. Recovery must coordinate topic records and configs, consumer
-offsets, KRaft metadata, Schema Registry subjects and IDs, connector
-definitions and Connect internal state. The preferred path is producer replay
+`messaging` selects the full stack; `messaging-broker` and `messaging-admin`
+select narrower sets. The broker volume is a separate bind-backed named volume.
+Recovery must coordinate topic records and configs, consumer offsets and KRaft
+metadata (plus Schema Registry subjects and Connect state when the LAB uses
+them). The preferred path is producer replay
 or approved replication into a fresh isolated cluster; raw log-directory copy
 and live cluster-ID reuse are outside the architecture.
 

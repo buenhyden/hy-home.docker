@@ -13,13 +13,13 @@ created: "2026-07-06"
 
 ## Overview
 
-이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 루트 stack은 두 파일을 모두 무조건 include하고 profile이 기동을 가른다. Traefik은 `core`/`dev`/`local`이, Nginx는 전용 `nginx` profile이 선택하며, 컨테이너 실행은 승인된 runtime context에서만 다룬다.
+이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 루트 stack은 Traefik 파일을 무조건 include하고 profile이 기동을 가른다. Traefik은 `core`/`dev`/`local`이 선택하며, 컨테이너 실행은 승인된 runtime context에서만 다룬다.
 
 ## Scope
 
 ### Audience and Goal
 
-대상은 Infrastructure Operator, Backend Developer, Contributor다. `core`/`dev`/`local`이 선택하는 Traefik edge router를 검증하고, `nginx` profile이 그리는 Nginx path-proxy boundary를 이해하는 것이 목적이다.
+대상은 Infrastructure Operator, Backend Developer, Contributor다. `core`/`dev`/`local`이 선택하는 Traefik edge router를 검증하는 것이 목적이다.
 
 사전 조건은 다음과 같다.
 
@@ -30,7 +30,7 @@ created: "2026-07-06"
 
 ## Concepts
 
-root [docker-compose.yml](../../../../docker-compose.yml)은 `infra/01-gateway/nginx/docker-compose.yml`과 `infra/01-gateway/traefik/docker-compose.yml`을 함께 include하고 flow-scoped network와 external network contract를 선언한다. 두 gateway는 같은 `${HOST_LAN_BIND_IP}`의 80/443을 게시하므로 동시에 선택하지 않는다. Nginx는 `seaweedfs-s3`에 `service_healthy`로 의존하고 OAuth2 Proxy·Keycloak을 upstream으로 참조한다.
+root [docker-compose.yml](../../../../docker-compose.yml)은 `infra/01-gateway/traefik/docker-compose.yml`을 include하고 flow-scoped network와 external network contract를 선언한다. Traefik은 `${HOST_LAN_BIND_IP}`의 80/443을 게시하며 OAuth2 Proxy·Keycloak 인증 경로를 ForwardAuth로 참조한다.
 
 ## Usage
 
@@ -50,16 +50,14 @@ bash scripts/hardening/check-all-hardening.sh 01-gateway
 ```
 
 - 승인 후 runtime 증거는 실행 중인 root stack에서 Traefik dashboard와 `docker compose exec traefik traefik healthcheck --ping`을 확인한다.
-- 승인 후 Nginx runtime 증거는 명시적으로 provision된 Nginx context에서만 `docker compose exec nginx nginx -t`를 실행한다.
 
-runtime start/stop/reload action은 이 가이드의 범위가 아니다. Nginx health의 HTTP redirect·placeholder 인증 한계는 [Nginx Guide](0011-nginx.md),
-Traefik chain의 limiter·401/403 차이는 [Traefik Guide](0013-traefik.md)에
+runtime start/stop/reload action은 이 가이드의 범위가 아니다. Traefik chain의 limiter·401/403 차이는 [Traefik Guide](0013-traefik.md)에
 명시되어 있다. 정적 검증만으로 이 한계가 해소되거나 인증·복구가 성공한 것은 아니다.
 시스템 영향과 profile 공통 의미는 [System Guide](../01-common/0099-system-operations.md)를 따른다.
 
 ### Runbook Handoff
 
-runtime recovery는 [Traefik runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md)과 [Nginx runbook](../../runbooks/02-gateway-and-networking/0011-nginx.md)이 처리한다.
+runtime recovery는 [Traefik runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md)이 처리한다.
 
 ### Traceability
 
@@ -79,4 +77,3 @@ runtime recovery는 [Traefik runbook](../../runbooks/02-gateway-and-networking/0
 
 - [Operations index](../../README.md)
 - [Gateway Traefik guide](0013-traefik.md)
-- [Gateway Nginx guide](0011-nginx.md)

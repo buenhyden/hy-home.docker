@@ -1,10 +1,10 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.1.8"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 created: "2025-12-03"
 ---
 
@@ -64,9 +64,8 @@ provision job은 실행할 때마다 비밀번호를 비밀 파일에 맞추므�
 바꾸고 job을 다시 실행한 뒤 exporter를 재생성하는 순서입니다. 두 엔진 모두
 `mng_data_net`을 사용합니다.
 
-선택형 [`docker-compose.n8n-acl.yml`](docker-compose.n8n-acl.yml)은 공유 Valkey에
-별도 `n8n` 계정을 선언합니다. 기본 stack은 새 비밀 파일을 마운트하거나 요구하지
-않습니다. 선택 시 `mng_valkey_n8n_password`의 원본은
+`docker-compose.yml`의 `MNG_VALKEY_N8N_ENABLED`는 공유 Valkey에
+별도 `n8n` 계정을 선언합니다. 이 stack은 `mng_valkey_n8n_password`를 항상 마운트하며 원본은
 `secrets/db/mng-valkey/n8n_password.txt` (`CACHE-027`) 하나이며, 실제 UID999와
 추가 secrets group에서 읽을 수 있는 단일 링크 일반 파일(0400/0600 소유자 읽기
 또는 0440/0640 group 읽기)만 허용합니다. 비어 있거나 중복·symlink·잘못된 mode는
@@ -84,7 +83,7 @@ PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포
 사용하며 init은 완료 여부로 게이트됩니다. `pg/init-scripts/init_users_dbs.sql`은
 기본 role/database 초기화를 소유하며 optional-capability secret은 절대 읽지
 않습니다. `pg/provision/run-feature-provision.sh`는 feature 소유 job
-(`mlflow-db-provision`, `dbt-db-provision`, `debezium-db-provision`)의 공유
+(`mlflow-db-provision`, `dbt-db-provision`)의 공유
 입력 처리기입니다. 연결 전에 식별자와 secret 파일을 검증하고 secret은
 argv가 아니라 psql 환경(`\getenv`)으로 전달합니다. 각 feature는 자신의 SQL과
 grant를 자신의 패키지에 둡니다. 그 외 엔진 설정은 Compose에 남아 있습니다.
@@ -106,8 +105,7 @@ restore)를 사용합니다. Valkey 복구는 RDB export를 사용합니다. 둘
 ## Related Documents
 
 [문서 진입점](../../../docs/README.md)을 사용해 Stage 05 subject
-`docs/05.operations/guides/05-databases-and-storage/0028-management-database.md`, synthetic rehearsal
-RUN-0032, 백업 subject `docs/05.operations/guides/10-platform-and-backup/0021-backup-and-restore.md`
+`docs/05.operations/guides/05-databases-and-storage/0028-management-database.md`, 백업 subject `docs/05.operations/guides/10-platform-and-backup/0021-backup-and-restore.md`
 (POL/GDE/RUN-0021)을 찾으십시오. 공식 소스:
 [PostgreSQL backup](https://www.postgresql.org/docs/current/backup.html),
 [upgrade](https://www.postgresql.org/docs/current/upgrading.html),

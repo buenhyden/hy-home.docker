@@ -467,7 +467,13 @@ def check_seal(response, cluster):
         or type(response.get("t")) is not int
         or response["t"] != 2
         or response.get("version")
-        not in {"2.6.2", "2.7.1", "2.7.1+hyhome.go1.27.3.net0.60.0.r1"}
+        not in {
+            "2.6.2",
+            "2.7.1",
+            "2.7.1+hyhome.go1.27.3.net0.60.0.r1",
+            "2.7.1+hyhome.go1.27.3.net0.60.0.r2",
+            "2.7.2+hyhome.go1.27.3.net0.62.0.r1",
+        }
         or response.get("cluster_id") != cluster
     ):
         raise Blocked()

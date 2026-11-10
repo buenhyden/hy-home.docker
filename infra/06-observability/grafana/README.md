@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.3.4"
+version: "1.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 created: "2026-01-12"
 ---
 
@@ -98,7 +98,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 - **Loki**: `uid: Loki`, URL `http://loki:3100`
 - **Tempo**: `uid: Tempo`, URL `http://tempo:3200`, `tracesToLogsV2`가 `Loki`와 연결됨
 - **Alertmanager**: `uid: alertmanager`, URL `http://alertmanager:9093`
-- **Pyroscope**: 데이터소스 타입 `grafana-pyroscope-datasource`, URL `http://pyroscope:4040`
+- **Pyroscope**: `uid: Pyroscope`, 데이터소스 타입 `grafana-pyroscope-datasource`, URL `http://pyroscope:4040`, `minStep: 60s`(Alloy scrape 간격). 데이터소스는 한 개뿐이며 파일 맨 위 `deleteDatasources`는 UID 없이 만든 옛 항목을 한 번 지우는 마이그레이션이다. Drilldown > Profiles 앱은 Grafana 기본 preinstall로 설치되므로 provisioning이 없다
 
 ### Dashboards and Access
 
@@ -115,7 +115,6 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 
 | Layer | Service | Metrics source | Dashboards | Note |
 | --- | --- | --- | --- | --- |
-| 01-gateway | `nginx` | none | `Infrastructure/containers` | container metrics and logs only |
 | 01-gateway | `traefik` | `traefik` | `Gateway/traefik`, `Infrastructure/containers` |  |
 | 02-auth | `keycloak` | `keycloak` | `Security/keycloak-troubleshooting`, `Security/keycloak-capacity-planning`, `Infrastructure/containers` |  |
 | 02-auth | `oauth2-proxy` | `oauth2-proxy` | `Gateway/oauth2-proxy`, `Infrastructure/containers` |  |
@@ -145,13 +144,10 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 04-data | `dev-platform-provision` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
 | 04-data | `dev-valkey` | `dev-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` | read-only `devmonitor` ACL user |
 | 04-data | `dev-valkey-exporter` | `dev-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
-| 05-messaging | `debezium-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 05-messaging | `kafbat-ui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 05-messaging | `kafka-1` | `kafka-broker` | `Infrastructure/kafka-cluster`, `Infrastructure/kafka-topics`, `Infrastructure/containers` |  |
-| 05-messaging | `kafka-connect` | `kafka-connect` | `Infrastructure/kafka-connect`, `Infrastructure/containers` |  |
 | 05-messaging | `kafka-exporter` | `kafka-exporter` | `Infrastructure/kafka-consumer-lag`, `Infrastructure/containers` |  |
 | 05-messaging | `kafka-init` | none | `Infrastructure/containers` | container metrics and logs only |
-| 05-messaging | `schema-registry` | `schema-registry` | `Infrastructure/schema-registry`, `Infrastructure/containers` |  |
 | 06-observability | `alertmanager` | `alertmanager` | `Observability/alertmanager-overview`, `Infrastructure/containers` |  |
 | 06-observability | `alloy` | `alloy` | `Observability/alloy-controller`, `Observability/alloy-resources`, `Observability/alloy-opentelemetry`, `Observability/alloy-loki`, `Infrastructure/containers` |  |
 | 06-observability | `cadvisor` | `cadvisor` | `Infrastructure/containers` |  |
@@ -173,7 +169,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 07-workflow | `airflow-triggerer` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
 | 07-workflow | `airflow-worker` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
 | 07-workflow | `blog-ingestion` | none | `Infrastructure/containers` | own `blog-ingestion` profile; container metrics and logs only, receipt counts via Gateway `/v1/summary` |
-| 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` |  |
+| 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` | opt-in `airflow-flower`; job `expected_state` is `off` until started |
 | 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Applications/hermes-research`, `Infrastructure/containers` | `Applications/hermes-research`는 Hermes 플러그인이 node-exporter textfile로 쓰는 지표(SPEC-0265) |
 | 07-workflow | `n8n-task-runner-worker` | none | `Infrastructure/containers` | container metrics and logs only; its isolated runner network keeps Gatus out |
 | 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | queue load comes from `n8n_scaling_mode_queue_jobs_*` on the `n8n` job |
@@ -187,7 +183,6 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 08-ai | `crawl4ai-loopback` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `ollama` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
 | 08-ai | `ollama-exporter` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
-| 08-ai | `open-webui` | none | `Infrastructure/containers` | no Prometheus endpoint; Gatus probes `/health` |
 | 09-platform-ops | `backup-sqlite-export` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `conftest` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `k6` | k6 remote write | `Infrastructure/k6`, `Infrastructure/containers` |  |
@@ -259,7 +254,6 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 | `Infrastructure/perf-results` | `hyhome-perf-results` | Local dashboard: `perf_db.quality.run_results` security-invoker view와 프로젝트 RLS; datasource·실제 조회 미승인 |
 | `Infrastructure/k6` | `infrastructure-k6` | grafana.com dashboard 19665 revision 3 (2024-04-30)을 SPEC-0214에서 k6 OTLP 출력 형태로 재지정: `project_id`와 run attempt `instance`(`<run_id>-a<attempt>`, `All=.*`) 필터, `k6_` 접두사, millisecond histogram의 `histogram_quantile($quantile, sum by (le) …)`, `condition="nonzero"` 기반 실패율. URL·check 이름은 무한 label이라 버리므로 URL별·check별 panel 대신 method/status별 분위수와 집계 check 비율만 둡니다. 격리 harness가 실제 k6 출력에서 30개 중 28개 query의 데이터를 확인(나머지 2개는 check·dropped iteration이 없는 시나리오) |
 | `Infrastructure/kafka-cluster` | `hyhome-kafka-cluster` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-cluster-kraft.json |
-| `Infrastructure/kafka-connect` | `hyhome-kafka-connect` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-connect-cluster.json |
 | `Infrastructure/kafka-consumer-lag` | `hyhome-kafka-consumer-lag` | grafana.com dashboard 7589 revision 5 (2018-08-21) |
 | `Infrastructure/kafka-topics` | `hyhome-kafka-topics` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-topics-kraft.json |
 | `Infrastructure/node-exporter` | `rYdddlPWk` | grafana.com dashboard 1860 revision 45 (2026-04-11) |
@@ -269,7 +263,6 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 | `Infrastructure/postgresql` | `hyhome-postgres` | grafana.com dashboard 9628 revision 8 (2024-12-06) |
 | `Infrastructure/qdrant-overview` | `hyhome-qdrant` | grafana.com dashboard 24603 revision 1 (2025-12-25) |
 | `Infrastructure/redis` | `hyhome-redis` | oliver006/redis_exporter contrib/grafana_prometheus_redis_dashboard.json (= grafana.com 763 revision 6) |
-| `Infrastructure/schema-registry` | `hyhome-schema-registry` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/schema-registry-cluster.json |
 | `Infrastructure/seaweedfs` | `hyhome-seaweedfs` | seaweedfs/seaweedfs other/metrics/grafana_seaweedfs.json (2026-09-01) |
 | `Observability/alertmanager-overview` | `hyhome-alertmanager` | monitoring-mixins alertmanager/alertmanager-overview.json (2026-06-20) |
 | `Observability/alloy-controller` | `hyhome-alloy-controller` | grafana/alloy@5f45ab2e5a0a operations/alloy-mixin/rendered/dashboards/alloy-controller.json |
@@ -283,7 +276,7 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 | `Observability/loki-reads` | `hyhome-loki-reads` | grafana/loki production/loki-mixin-compiled loki-reads.json; job selectors set to the single-binary job |
 | `Observability/loki-writes` | `hyhome-loki-writes` | grafana/loki production/loki-mixin-compiled loki-writes.json; job selectors set to the single-binary job |
 | `Observability/prometheus-overview` | `hyhome-prometheus` | monitoring-mixins prometheus/prometheus.json (2026-08-27) |
-| `Observability/pyroscope` | `hyhome-pyroscope` | Local dashboard: no external dashboard matches pyroscope |
+| `Observability/pyroscope` | `hyhome-pyroscope` | Local dashboard: 서비스별 CPU·메모리·goroutine 시계열, `Service` 변수를 따르는 flamegraph, Pyroscope 서버 지표 |
 | `Observability/tempo-operational` | `hyhome-tempo-operational` | grafana/tempo operations/tempo-mixin-compiled tempo-operational.json; job selectors set to the single-binary job |
 | `Observability/tempo-reads` | `hyhome-tempo-reads` | grafana/tempo operations/tempo-mixin-compiled tempo-reads.json; job selectors set to the single-binary job |
 | `Observability/tempo-writes` | `hyhome-tempo-writes` | grafana/tempo operations/tempo-mixin-compiled tempo-writes.json; job selectors set to the single-binary job |

@@ -12,35 +12,44 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-COMPOSE = ROOT / "infra/08-ai/open-webui/docker-compose.yml"
-ENTRYPOINT = ROOT / "infra/08-ai/open-webui/docker-entrypoint.sh"
+# ADR-0062 amendment (2026-11-10): Open WebUI is a standalone LAB.
+COMPOSE = ROOT / "labs/open-webui/docker-compose.yml"
+ENTRYPOINT = ROOT / "labs/open-webui/docker-entrypoint.sh"
 
 
 class OpenWebUiOidcComposeTests(unittest.TestCase):
-    def test_secret_key_lives_in_the_backed_up_volume(self):
+    def test_secret_key_lives_in_the_lab_data_root(self):
         # The image sets WEBUI_SECRET_KEY empty, so start.sh would generate the
         # key in the container layer and lose it on every recreation.
-        service = yaml.safe_load(COMPOSE.read_text())["services"]["open-webui"]
+        compose = yaml.safe_load(COMPOSE.read_text())
+        service = compose["services"]["open-webui"]
         key = service["environment"]["WEBUI_SECRET_KEY_FILE"]
         self.assertEqual("/app/backend/data/.webui_secret_key", key)
-        self.assertIn("open-webui:/app/backend/data:rw", service["volumes"])
+        self.assertIn("open-webui-data:/app/backend/data:rw", service["volumes"])
+        self.assertTrue(
+            compose["volumes"]["open-webui-data"]["driver_opts"]["device"].startswith(
+                "${LAB_DATA_DIR:?"
+            )
+        )
+        # HOME Restic no longer copies LAB data.
         include = (
             ROOT / "infra/09-platform-ops/restic/sets/state-include.txt"
         ).read_text()
-        self.assertIn("\nai/open-webui/.webui_secret_key\n", include)
+        self.assertNotIn("open-webui", include)
 
     def test_service_uses_native_oidc_after_verified_cutover(self):
         service = yaml.safe_load(COMPOSE.read_text())["services"]["open-webui"]
         environment = service["environment"]
+        domain = "${LAB_OPEN_WEBUI_DEFAULT_URL:?set the HOME gateway domain}"
 
         self.assertEqual("home-openwebui", environment["OAUTH_CLIENT_ID"])
         self.assertEqual(
-            "https://keycloak.${DEFAULT_URL}/realms/hy-home.realm/"
+            f"https://keycloak.{domain}/realms/hy-home.realm/"
             ".well-known/openid-configuration",
             environment["OPENID_PROVIDER_URL"],
         )
         self.assertEqual(
-            "https://chat.${DEFAULT_URL}/oauth/oidc/callback",
+            f"https://chat.{domain}/oauth/oidc/callback",
             environment["OPENID_REDIRECT_URI"],
         )
         self.assertEqual("S256", environment["OAUTH_CODE_CHALLENGE_METHOD"])
@@ -62,18 +71,27 @@ class OpenWebUiOidcComposeTests(unittest.TestCase):
         self.assertEqual(
             ["/usr/local/bin/open-webui-oidc-entrypoint.sh"], service["entrypoint"]
         )
-        self.assertIn("openwebui_oidc_client_secret", service["secrets"])
+        self.assertEqual(
+            [
+                {
+                    "source": "lab_open_webui_oidc_client_secret",
+                    "target": "openwebui_oidc_client_secret",
+                }
+            ],
+            service["secrets"],
+        )
         self.assertIn(
             "./docker-entrypoint.sh:/usr/local/bin/open-webui-oidc-entrypoint.sh:ro",
             service["volumes"],
         )
         self.assertIn(
-            "${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro",
+            "${LAB_OPEN_WEBUI_CA_FILE:?set the HOME root CA certificate file}"
+            ":/etc/ssl/certs/hy-home-rootCA.pem:ro",
             service["volumes"],
         )
-        self.assertEqual(
-            "gateway-standard-chain@file",
-            service["labels"]["traefik.http.routers.open-webui.middlewares"],
+        self.assertEqual("false", service["labels"]["traefik.enable"])
+        self.assertFalse(
+            [key for key in service["labels"] if key.startswith("traefik.http")]
         )
 
     def test_hardening_accepts_native_contract_and_rejects_password_auth(self):
@@ -83,13 +101,13 @@ class OpenWebUiOidcComposeTests(unittest.TestCase):
                 "scripts/hardening/check-all-hardening.sh",
                 "scripts/lib/hardening-lib.sh",
                 "infra/08-ai/ollama/docker-compose.yml",
-                "infra/08-ai/open-webui/docker-compose.yml",
+                "labs/open-webui/docker-compose.yml",
                 "infra/08-ai/open-notebook/docker-compose.yml",
             ):
                 target = root / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text((ROOT / name).read_text())
-            target = root / "infra/08-ai/open-webui/docker-compose.yml"
+            target = root / "labs/open-webui/docker-compose.yml"
             original = target.read_text()
             for enabled in (False, True):
                 target.write_text(
@@ -120,23 +138,30 @@ class OpenWebUiOidcComposeTests(unittest.TestCase):
                 )
 
 
-class OpenWebUiQdrantComposeTests(unittest.TestCase):
-    def test_vector_store_is_qdrant_over_the_ai_network(self):
-        service = yaml.safe_load(COMPOSE.read_text())["services"]["open-webui"]
+class OpenWebUiLabIsolationTests(unittest.TestCase):
+    def test_lab_joins_no_home_network_or_service(self):
+        compose = yaml.safe_load(COMPOSE.read_text())
+        service = compose["services"]["open-webui"]
         environment = service["environment"]
-        self.assertEqual("qdrant", environment["VECTOR_DB"])
+        self.assertEqual(["lab-open-webui"], service["profiles"])
+        self.assertEqual({"lab_open_webui_net": {}}, service["networks"])
         self.assertEqual(
-            "http://qdrant:${QDRANT_PORT:-6333}", environment["QDRANT_URI"]
+            {"lab_open_webui_net": {"name": "hy-home-lab-open-webui"}},
+            compose["networks"],
         )
+        self.assertNotIn("depends_on", service)
+        # Qdrant is a HOME service; the LAB keeps the built-in local store.
+        for key in ("VECTOR_DB", "QDRANT_URI", "QDRANT_API_KEY_FILE"):
+            self.assertNotIn(key, environment)
         self.assertEqual(
-            "/run/secrets/qdrant_api_key", environment["QDRANT_API_KEY_FILE"]
+            "${LAB_OPEN_WEBUI_OLLAMA_BASE_URL:?set an approved Ollama endpoint}",
+            environment["OLLAMA_BASE_URL"],
         )
-        self.assertNotIn("QDRANT_API_KEY", environment)
-        self.assertIn("qdrant_api_key", service["secrets"])
+        self.assertEqual("false", environment["ENABLE_OPENAI_API"])
         self.assertEqual(
-            "service_healthy", service["depends_on"]["qdrant"]["condition"]
+            "${LAB_SECRET_DIR:-../../secrets/labs}/open-webui/oidc_client_secret.txt",
+            compose["secrets"]["lab_open_webui_oidc_client_secret"]["file"],
         )
-        self.assertIn("ai_net", service["networks"])
 
 
 class OpenWebUiOidcEntrypointTests(unittest.TestCase):

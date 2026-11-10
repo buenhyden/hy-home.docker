@@ -1,9 +1,9 @@
 ARG N8N_VERSION=2.46.6
 
-FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS font-builder
+FROM alpine:3.24.3@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a AS font-builder
 RUN apk add --no-cache \
   fontconfig=2.17.1-r1 \
-  font-noto=2026.06.01-r0 \
+  font-noto=2026.11.01-r0 \
   font-noto-cjk=0_git20220127-r1 \
   font-dejavu=2.37-r6 \
   font-liberation=2.1.5-r2 \
@@ -13,7 +13,7 @@ RUN apk add --no-cache \
   fc-cache -f -v
 
 # Latest stable Current builder; exact-image compatibility is separately verified.
-FROM node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS opsflow-builder
+FROM node:26.13.0-alpine3.24@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216 AS opsflow-builder
 WORKDIR /build/opsflow
 COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund --bin-links=false
