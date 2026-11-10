@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.4.3"
+version: "1.4.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -218,8 +218,9 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
      `dags/README.md`는 넣지 않는다. 임시 디렉터리의 `dags/source_manifest_ingest.py`와 `workflow_lib/`를
      `${DEFAULT_WORKFLOW_DIR}/airflow/dags/`(`/opt/airflow/dags`로 bind) 바로 아래에 두고,
      설치한 모든 파일 경로를 `"$BK/installed-files.txt"`에 기록한다. 대상에 같은 이름이 이미 있으면 중단한다.
-     각 파일 `sha256sum`을 commit의 blob과 비교한다. `airflow-worker`의 `/run/opsflow`(`pg.json`, `s3.json`)와
-     `dev_data_net`·`object_net`은 O4 결정 없이는 붙이지 않는다.
+     각 파일 `sha256sum`을 commit의 blob과 비교한다. `airflow-worker`의 `/run/opsflow`와 `dev_data_net`·`object_net`은 O4 결정 없이는 붙이지 않는다.
+     workload override는 base Compose에 합쳐져 있고 overlay는 쓰지 않는다([규칙](../../policies/01-common/0078-compose-profile-vocabulary.md#home-compose-overlay-등록부와-적용-규칙),
+     [점검 절차](../01-common/0098-cold-start-and-reboot.md#overlay-적용과-root-compose_file-점검-owner-run)).
      확인: `docker exec airflow-scheduler airflow dags list-import-errors`,
      `docker exec airflow-scheduler airflow dags details source_manifest_ingest`.
    - 기대 결과: import 오류가 없고 DAG가 paused다.

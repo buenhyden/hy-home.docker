@@ -178,22 +178,11 @@ def _compose_files(root):
     value = values[0]
     if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
         value = value[1:-1]
-    files = tuple(value.split(":"))
-    if (
-        files[0] != "docker-compose.yml"
-        or len(files) != len(set(files))
-        or any(
-            not re.fullmatch(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*\.ya?ml", name)
-            or ".." in name.split("/")
-            for name in files
-        )
-    ):
-        raise ValueError("invalid_compose_file")
-    for name in files[1:]:
-        try:
-            _text(root, name)
-        except Exception:
-            raise ValueError("invalid_compose_file") from None
+    # POL-0078: no overlay is applied through COMPOSE_FILE; maintenance overlays
+    # use an explicit -f in their runbook. Anything but the root file is refused.
+    if value != "docker-compose.yml":
+        raise ValueError("compose_file_overlay_forbidden")
+    files = ("docker-compose.yml",)
     return files
 
 
