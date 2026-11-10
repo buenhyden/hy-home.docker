@@ -13,7 +13,7 @@ RUN apk add --no-cache \
   fc-cache -f -v
 
 # Latest stable Current builder; exact-image compatibility is separately verified.
-FROM node:26.11.1-alpine3.24@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a AS opsflow-builder
+FROM node:26.13.0-alpine3.24@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216 AS opsflow-builder
 WORKDIR /build/opsflow
 COPY ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json ./workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund --bin-links=false
