@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.4.0"
+version: "0.5.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
@@ -30,12 +30,13 @@ Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, 현
 | --- | --- | --- |
 | Compose 이미지와 일반 Dockerfile | Renovate | 활성화된 Docker manager; 소스 pin 변경 검토됨 |
 | OpenTofu 인라인 Dockerfile | Renovate custom manager | 좁게 선언된 소스 패턴, 임의의 regex 범위 없음 |
-| GitHub Actions 및 활성화된 인프라 manager | Renovate | 인프라 automerge 비활성화 |
+| GitHub Actions `uses` 참조 | Renovate | patch/minor 그룹; SHA를 올리는 PR은 같은 PR에서 `.github/workflow-contract.yml`의 승인된 action 기록도 갱신(선례 #898) |
+| CI toolchain `uses-with` 입력(`python-version`, setup-uv `version`/체크섬, `node-version`) | 수동 | Renovate 비활성; workflow-contract 테스트, gate 증거, uv lock과 함께 고정되므로 하나의 수동 PR로 변경 |
 | Storybook npm | Renovate `npm` | `projects/storybook/nextjs`(workspace 포함)만; minor/patch 그룹, TypeScript 7 미만(typescript-eslint가 TypeScript 7을 거부), major Dashboard 승인, automerge 금지 |
 | OpsflowSmtp npm | Renovate `npm` | n8n 노드 `package.json` 하나만; `n8n-workflow`는 n8n 이미지가 번들한 버전과 같아야 하므로 갱신 제외하고 n8n과 함께 수동 변경 |
 | OpenTofu provider/module 의존성 | operator가 검토하는 workspace owner | tooling 패키지에 현재 추적되는 provider/module manifest가 없음; 그런 manifest가 처음 생길 때 범위가 제한된 manager를 활성화 |
 | 이미지 내부 `infra/**/requirements.txt` | Renovate `pip_requirements` | 설정된 좁은 경로만; major Dashboard 승인, automerge 금지 |
-| Python 검증 도구와 pre-commit hook | maintainer 검토 | pin된 requirements/hook revision; 현재 활성화된 자동 manager 범위 밖 |
+| pre-commit hook revision | maintainer 검토 | pre-commit manager가 꺼져 있어 자동 범위 밖; `requirements.txt` pin은 위 `pip_requirements`가 소관 |
 | Derived Compose 이미지 registry | synchronization script | 추적되는 모든 인프라 Compose 저장소를 정확히 한 번씩, 명시적인 local/custom 분류와 파일별 정확한 소스 그룹으로 |
 | 설명형 문서 | human/agent 검토와 기존 metadata validator | authority 링크; 정당화된 정확 리터럴 예외만 |
 
@@ -49,7 +50,7 @@ datasource가 릴리스 timestamp를 제공할 때, 정기적인 patch/minor 업
 infra automerge를 활성화하거나 self-host allowedCommands를 넓히지 않는다. 설정 구문은
 저장소/전역 모드를 분리한 공식 strict validator를 통과해야 한다.
 
-Renovate가 유일한 의존성 버전 updater다. Dependabot version updates는 폐지했고
+Renovate가 유일한 의존성 버전 updater다(#850). Dependabot version updates는 폐지했고
 `.github/dependabot.yml`은 존재하지 않는다. Renovate `npm` manager는 위 두 대상의
 `managerFilePatterns`로만 제한하며 `labs/**`는 계속 `ignorePaths`로 제외한다. 새
 updater나 manager 범위가 같은 파일을 겹쳐 소유하게 만들지 않는다. GitHub Actions는
@@ -58,12 +59,42 @@ updater나 manager 범위가 같은 파일을 겹쳐 소유하게 만들지 않�
 (automatic security fixes)는 Renovate의 첫 정상 실행을 확인한 뒤 owner가 별도 단계로 끈다.
 이 문서는 그 원격 설정을 바꾸지 않으며 승인도 주지 않는다.
 
-이미지 태그는 소스 pin이지만 변경 가능한 상태로 남을 수 있다. 존재하는 digest는
-유지한다. 플랫폼 manifest, 업데이트 동작, 롤백 identity를 검증한 뒤 컴포넌트별로 digest
-고정을 제안한다. 현재 정책은 Renovate digest pinning을 전역적으로 활성화하거나 일반
-태그를 불변으로 취급하지 않는다. 예외 종료 조건은 검증된 digest를 요구할 수 있다. 의도된
-아키텍처와 이미지 소스를 확인하지 않은 채 digest를 임의로 만들거나 다른 registry의
-digest로 대체하지 않는다.
+### Renovate 운영 규칙
+
+이 절이 Renovate의 업데이트 규칙을 소유한다. 값은 `renovate.json5`가 소유하며 이 절은
+의도와 한계만 적는다. 다른 문서는 이 절을 링크하고 규칙을 복제하지 않는다.
+
+- **digest pin**: 컨테이너 manager(`docker-compose`, `dockerfile`, `custom.regex`)는
+  `pinDigests`를 켜서 모든 이미지를 `tag@sha256:<digest>`로 고정한다. SEC01 ledger는 tag만 있는
+  대상을 거부하므로 tag-only pin은 CI로 갱신할 수 없다. digest 추가(`pinDigest`)는 한 PR,
+  digest 갱신(`digest`)은 한 PR로 묶는다. digest를 임의로 만들거나 다른 registry의 것으로
+  대체하지 않는다.
+- **그룹**: 상태 비저장 tier(01, 02, 03, 07, 08, 09, 11, 13)의 non-major 이미지 업데이트는
+  한 PR이다. 모든 이미지 업데이트가 공유 SEC01 ledger를 다시 쓰므로 PR을 나누면 머지마다 충돌한다.
+  데이터(04)·메시징(05) tier 이미지, `apache/airflow`(constraints bundle),
+  `quay.io/keycloak/keycloak`(시작 시 DB schema migration), `n8nio/**`는 이미지당 PR 하나를 유지한다.
+  관측성 tier는 patch/minor 그룹, Storybook npm은 minor/patch 그룹이다.
+- **보류**: `nvidia/cuda`는 12.x(GTX 1060 Pascal은 CUDA 13 미지원), `surrealdb/surrealdb`는
+  v2.x(open-notebook이 v2만 지원하고 3.x는 2.x 데이터를 export 마이그레이션 없이 읽지 못함),
+  TypeScript는 7 미만이다. 해제 조건은 `renovate.json5`의 설명이 가진 근거가 바뀔 때다.
+  n8n core/runners 이미지와 `n8n-workflow`는 Renovate가 건드리지 않고 하나의 수동 호환성 묶음으로 바꾼다.
+- **속도 제한**: `minimumReleaseAge` 7일, `prConcurrentLimit` 5, `prHourlyLimit` 2.
+  major 업데이트는 Dashboard 승인 후에만 제안하고 인프라 이미지·npm·pip는 automerge하지 않는다.
+  Dashboard에서 속도 제한으로 대기 중인 항목은 필요한 것만 하나씩 체크하고 "create all"을 쓰지 않는다.
+- **일정과 커밋**: 일정 창은 월요일 00–05시(KST)다. 커밋 제목의 대소문자는 보존한다
+  (`commitMessageLowerCase: never`).
+- **ledger 재결합**: PR마다 `postUpgradeTasks`가 `sync-tech-stack-versions.sh --write`와
+  `sync-update-ledger.sh --write`를 실행해 SEC01 ledger를 다시 묶는다. 받아들인 행은
+  검증되지 않은 상태(`BLOCKED`/`UNKNOWN`/`NOT_RUN`)이며 서명·scan·호환성 증거가 아니다. 같은
+  저장소의 전체 `name:tag@sha256` 참조가 바뀐 기존 행만 받아들이고 그 외(tag-only 대상, 새
+  서비스, 제거)는 종료 코드 2로 거부한다. ledger와 파생 registry를 손으로 고치는 것은
+  정상 경로가 아니며, 거부 사유를 해소한 뒤 같은 도구로 다시 쓴다.
+  절차는 [security-updates README](../../../../infra/09-platform-ops/security-updates/README.md)에 있다.
+- **적용 분리**: 머지된 이미지 변경은 HOME에 적용되지 않는다. 적용(recreate)은 별도 승인이
+  필요하고 CI는 local 빌드 이미지를 빌드하지 않는다. 머지가 적용·검증의 증거가 아니다.
+
+PR 처리 규칙(rebase 방법, 한 번에 하나씩 머지, 수동 close 금지)은 영문 거버넌스인
+`github-governance.md` 3절이 소유하고, 실행 순서는 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)이 소유한다.
 
 ## Exceptions
 

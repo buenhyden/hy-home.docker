@@ -1,10 +1,10 @@
 ---
 title: "Renovate Runbook"
-version: "0.3.0"
+version: "0.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0083"
 parent_ids:
@@ -44,8 +44,13 @@ Renovate job의 정적 점검, 승인된 live run, 잘못된 변경의 복구, s
 3. remote write가 승인된 경우에만 job을 실행한다.
 
    ```bash
-   docker compose --profile dependency-update run --rm --no-deps renovate
+   docker compose -p hy-home-infra --profile dependency-update run --rm --no-deps renovate
    ```
+
+   실행의 성공 여부는 wrapper 종료 코드가 아니라 Renovate 자체의 run 종료 코드와 로그로 판단한다.
+   Renovate PR을 갱신(rebase)하려면 `rebase` label을 붙이거나 job을 다시 실행한다. GitHub
+   update-branch는 쓰지 않는다(merge commit이 commitizen 검사를 깨뜨림, #893).
+   PR 처리 규칙은 [POL-0086](../../policies/10-platform-and-backup/0086-dependency-version-management.md#renovate-운영-규칙)이 소유한다.
 
 4. 정제된 exit status를 기록하고 생성된 remote 변경 사항을 열거한다. 각 branch/PR를 검토한다.
    이 실행 승인 범위에서는 merge나 close를 하지 않는다.
@@ -61,6 +66,7 @@ validation한 뒤, 제한된 repository 집합에 대해 dry-run/discovery를 �
 
 ### 승인된 systemd 설치
 
+주간 timer(`hyhome-renovate.timer`)는 HOME 호스트에 설치된 기본 실행이다. 위 Compose 명령은 머지 사이의 rebase·재시도용 온디맨드 실행이다.
 host unit을 설치하거나 교체하는 것은 별도 승인이 필요한 host 변경이다.
 symlink 대신 검토된 파일을 복사해 checkout이나 branch 전환, pull이 systemd가
 실행하는 내용을 조용히 바꾸지 못하게 한다. 설치본과 현재 추적 파일을 별도로 비교한다.

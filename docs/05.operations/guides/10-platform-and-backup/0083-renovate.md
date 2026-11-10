@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.4.1"
+version: "0.5.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -31,8 +31,9 @@ systemd timer 동작을 확인하는 것이다. live run과 복구 절차는 [Re
 
 ## Concepts
 
-Renovate는 `dependency-update`에서만 선택하는 **DEV** one-shot repository
-유지보수 작업이다. HOME과 일반 `tooling` 시작에서는 제외된다. root Compose
+Renovate는 `dependency-update`에서만 선택하는 one-shot repository
+유지보수 작업이며 HOME 호스트에서 self-hosted로 실행한다. HOME 기본 기동과 일반 `tooling` 시작에서는 제외된다.
+업데이트 규칙은 [POL-0086](../../policies/10-platform-and-backup/0086-dependency-version-management.md#renovate-운영-규칙)을 따른다. root Compose
 project는 `renovate.json5`, self-host 설정, `renovate_token` Docker Secret,
 cache volume을 제공한다. live run은 원격 repository를 읽고 branch와 pull
 request를 생성하거나 갱신할 수 있다.
@@ -74,6 +75,7 @@ policy, 원격 repository 상태, token owner가 authoritative하다.
 
 ### systemd 예약 실행
 
+주간 timer는 HOME 호스트에 설치되어 활성화된 기본 실행이다(월요일, 일정 창 00–05시 KST). Compose `run --rm` 명령은 rebase·재시도용 온디맨드 실행이다.
 repository는 `infra/09-platform-ops/renovate/systemd/`에 systemd unit 파일 두 개를
 제공한다.
 

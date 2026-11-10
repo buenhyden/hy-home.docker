@@ -1,17 +1,17 @@
 ---
 title: "Renovate Implementation"
-version: "0.2.1"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-10"
 ---
 
 # Renovate
 
 ## Overview
 
-명시적 버전 업데이트 작업입니다. 저장소 정책은 renovate.json5이며
+HOME 호스트의 self-hosted 버전 업데이트 작업입니다. 설치된 주간 systemd timer가 기본 실행이고, 온디맨드 실행(rebase·재시도)은 `docker compose -p hy-home-infra --profile dependency-update run --rm --no-deps renovate`입니다. 업데이트 규칙은 `POL-0086`(`docs/05.operations/policies/10-platform-and-backup/0086-dependency-version-management.md`)이 소유합니다. 저장소 정책은 renovate.json5이며
 config/config.js가 self-host 명령 allowlist를 소유합니다. renovate_token은
 Docker Secret으로 마운트됩니다. 캐시 볼륨은 일회용이며 게시되는 호스트 포트는
 없습니다.
