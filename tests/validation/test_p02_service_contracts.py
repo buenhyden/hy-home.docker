@@ -452,6 +452,12 @@ class SecondaryListenerContractTests(unittest.TestCase):
                     self.assertIn(alias, attachment.get("aliases") or [])
                 self.assertEqual(address, self._bind_value(name))
 
+    def test_grafana_preinstalled_plugins_do_not_auto_update(self) -> None:
+        # Since 13.2 Grafana fetches newer preinstalled plugins on each start,
+        # which reaches the plugin catalog and delays health past its check.
+        environment = self.services["grafana"]["environment"]
+        self.assertEqual("false", environment.get("GF_PLUGINS_PREINSTALL_AUTO_UPDATE"))
+
     def test_grafana_metrics_require_basic_auth(self) -> None:
         # Grafana serves /metrics on the routed port 3000, so it cannot be
         # bound apart; built-in basic auth guards it instead (SPEC-0267).
