@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway) Requirements"
-version: "1.3.0"
+version: "1.3.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "requirements"
 artifact_id: "REQ-0001"
 created: "2026-03-26"
@@ -27,8 +27,7 @@ reachable from outside.
 
 - **In scope**: the edge router for all external HTTP and HTTPS traffic, TLS
   termination, automatic route discovery for opted-in services, the shared
-  middleware chain, and an optional special-path proxy for rewrites the edge
-  router does not cover.
+  middleware chain.
 - **Out of scope**: business logic inside services, long-term log storage
   (Observability tier) and the authentication server itself (Auth tier).
 
@@ -70,9 +69,6 @@ reachable from outside.
 - **Security auditor**: checks which routes require which access control.
 - **Administrator**: views current routes and their status through an
   authenticated gateway dashboard.
-- **Special-path consumer**: a few paths (for example, `/keycloak/` and
-  `/cdn/`) need path rewriting and header handling beyond the edge router; that
-  proxy runs only when explicitly selected.
 
 ### Non-functional Requirements
 
@@ -101,6 +97,5 @@ defined.
 - [Gateway architecture description](../02.architecture/descriptions/0001-gateway-architecture.md)
 - [ADR-0001: Traefik and Nginx hybrid gateway](../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
 - [Traefik policy](../05.operations/policies/02-gateway-and-networking/0013-traefik.md)
-- [Nginx policy](../05.operations/policies/02-gateway-and-networking/0011-nginx.md)
 - Retired domain Spec SPEC-0001 (gateway): replaced by the gateway guides,
   policies and runbooks under `docs/05.operations/`.

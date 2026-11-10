@@ -116,7 +116,8 @@ datasources:
     access: proxy
     url: http://pyroscope:4040
     jsonData:
-      minStep: 15s
+      # Equal to Alloy's pyroscope.scrape interval; a smaller step only draws gaps.
+      minStep: 60s
 
   # Read-only SQL datasources for the n8n and Airflow dashboards. The role is
   # created by grafana-db-provision with SELECT on named tables only, and

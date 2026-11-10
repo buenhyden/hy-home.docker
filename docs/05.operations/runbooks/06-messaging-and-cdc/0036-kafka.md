@@ -136,7 +136,7 @@ schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
 ### Traceability
 
 - Runtime source: [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml)
-  및 [Connect image Dockerfile](../../../../infra/05-messaging/kafka/Dockerfile.connect).
+  및 [Connect image Dockerfile](../../../../labs/kafka-cluster/connect/Dockerfile).
 - Artifact: `RUN-0036`; parent guide: `GDE-0036`.
 - 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
 

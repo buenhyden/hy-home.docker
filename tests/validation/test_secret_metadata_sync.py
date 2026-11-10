@@ -42,11 +42,12 @@ REGISTRY_PATH_EXCEPTIONS = {
     "OBS-013": "secrets/observability/prometheus/prometheus_api_password.txt",
     "SEC-003": "secrets/security/openbao/openbao_unseal_keys.txt",
 }
-# SPEC-0262: a root file whose only consumer moved to a LAB-only copy. IAM-013
-# stays because it feeds the OpenBao import
-# (consumer-migration/oidc-client-secrets.sh). SPEC-0263 retired the other
+# SPEC-0262 and the ADR-0062 amendment: a root file whose only consumer moved
+# to a LAB-only copy. IAM-011 and IAM-013 stay because they feed the OpenBao
+# import (consumer-migration/oidc-client-secrets.sh). SPEC-0263 retired the other
 # relocated rows into aliases of their LAB-* copies.
 LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS = {
+    "IAM-011": "secrets/auth/open-webui/openwebui_oidc_client_secret.txt",
     "IAM-013": "secrets/auth/superset/superset_oidc_client_secret.txt",
 }
 CUTOVER_REGISTRY_PATH_EXCEPTIONS = {
@@ -1536,6 +1537,21 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual(env_before, (self.root / ".env").read_bytes())
 
 
+SYNTHETIC_ACL = Path("infra/04-data/mng-db/docker-compose.synthetic-acl.yml")
+SYNTHETIC_ACL_MODEL = {
+    "x-hyhome-overlay": {
+        "version": 1,
+        "base": "infra/04-data/mng-db/docker-compose.yml",
+    },
+    "services": {
+        "mng-valkey": {
+            "environment": {"MNG_VALKEY_N8N_ENABLED": "1"},
+            "secrets": ["mng_valkey_n8n_password"],
+        }
+    },
+}
+
+
 class PublicSecretSchemaTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -1560,36 +1576,37 @@ class PublicSecretSchemaTests(unittest.TestCase):
             source_context=self.source_context,
         )
 
-    def test_optional_activation_keeps_base_grants_and_records_closed_provenance(self):
+    def test_n8n_named_account_grant_is_a_plain_base_grant(self):
         contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
         self.assertEqual(set(), contract["missing_grants"])
         base = "infra/04-data/mng-db/docker-compose.yml"
-        self.assertNotIn(
+        self.assertIn(
             "mng_valkey_n8n_password", contract["base_grants"][(base, "mng-valkey")]
         )
-        self.assertIn(
-            (
-                base,
-                "mng-valkey",
-                "mng_valkey_n8n_password",
-                "infra/04-data/mng-db/docker-compose.n8n-acl.yml",
-                ("MNG_VALKEY_N8N_ENABLED",),
-                ("infra/04-data/mng-db/valkey/scripts/render-acl.sh",),
-            ),
-            contract["conditional_overlay_grants"],
-        )
+        self.assertFalse(contract["conditional_overlay_grants"])
 
     def _activation_contract(self, overlays, environment=None):
         base = "infra/04-data/mng-db/docker-compose.yml"
         compose_texts = self.compose_texts
-        if environment is not None:
-            document = yaml.load(compose_texts[base], Loader=_ComposeLoader)
-            service = document["services"]["mng-valkey"]
-            service = service | {"environment": service["environment"] | environment}
-            document = document | {
-                "services": document["services"] | {"mng-valkey": service}
+        # The shipped base now carries the grant; the conditional-coverage logic is
+        # still checked against the former base that lacked it.
+        document = yaml.load(compose_texts[base], Loader=_ComposeLoader)
+        service = document["services"]["mng-valkey"]
+        service = service | {
+            "secrets": [
+                x for x in service["secrets"] if x != "mng_valkey_n8n_password"
+            ],
+            "environment": {
+                k: v
+                for k, v in service["environment"].items()
+                if k != "MNG_VALKEY_N8N_ENABLED"
             }
-            compose_texts = compose_texts | {base: yaml.safe_dump(document)}
+            | (environment or {}),
+        }
+        document = document | {
+            "services": document["services"] | {"mng-valkey": service}
+        }
+        compose_texts = compose_texts | {base: yaml.safe_dump(document)}
         return secret_contract(
             ROOT,
             compose_texts | self.lab_compose_texts,
@@ -1599,8 +1616,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
         )
 
     def test_conditional_coverage_rejects_wrong_activation_or_overlay_delta(self):
-        path = Path("infra/04-data/mng-db/docker-compose.n8n-acl.yml")
-        model = self.source_context["overlay_inputs"][path]
+        path = SYNTHETIC_ACL
+        model = SYNTHETIC_ACL_MODEL
         service = model["services"]["mng-valkey"]
         variants = [
             ("absent", {}),
@@ -1674,8 +1691,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 )
 
     def test_conditional_coverage_never_replaces_base_or_direct_grants(self):
-        path = Path("infra/04-data/mng-db/docker-compose.n8n-acl.yml")
-        overlays = {path: self.source_context["overlay_inputs"][path]}
+        path = SYNTHETIC_ACL
+        overlays = {path: SYNTHETIC_ACL_MODEL}
         for environment in (
             {"MNG_VALKEY_N8N_ENABLED": "1"},
             {"DIRECT_REFERENCE": "/run/secrets/mng_valkey_n8n_password"},
@@ -1690,8 +1707,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
         self.assertEqual(set(), disabled["missing_grants"])
 
     def test_conditional_coverage_rejects_conflicting_target_sources(self):
-        path = Path("infra/04-data/mng-db/docker-compose.n8n-acl.yml")
-        model = self.source_context["overlay_inputs"][path]
+        path = SYNTHETIC_ACL
+        model = SYNTHETIC_ACL_MODEL
         service = model["services"]["mng-valkey"]
         grants = service["secrets"] + [
             {"source": "grafana_admin_password", "target": "mng_valkey_password"}
@@ -1822,9 +1839,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 self.assertNotIn("surreal_db", Path(row["path"]).parts)
         # SPEC-0263 retired PG-023 into an alias of its LAB-029 copy.
         self.assertNotIn("PG-023", rows)
-        self.assertEqual(
-            "secrets/db/dev-pg/debezium_password.txt", rows["PG-025"]["path"]
-        )
+        # ADR-0062 amendment (2026-11-10): the Debezium CDC path left HOME and the
+        # LAB declares no credential, so PG-025 was retired.
+        self.assertNotIn("PG-025", rows)
         self.assertEqual(
             "secrets/db/mng-pg/grafana_reader_password.txt", rows["PG-030"]["path"]
         )

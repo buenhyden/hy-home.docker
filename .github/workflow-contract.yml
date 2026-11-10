@@ -347,19 +347,6 @@
       "suite_key": "compose-validation"
     },
     {
-      "gate_id": "leaf.postgres-logical-upgrade-config",
-      "kind": "leaf",
-      "entrypoint": "scripts/operations/rehearse-postgres-logical-upgrade.sh",
-      "argv": [
-        "--check-config-only"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "postgres-logical-upgrade-config"
-    },
-    {
       "gate_id": "leaf.dependency-vulnerability-audit",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -736,6 +723,7 @@
         "tests.validation.test_restic_offsite_cap",
         "tests.validation.test_openbao_audit_rotation",
         "tests.validation.test_openbao_owned_image_contract",
+        "tests.validation.test_prepare_openbao_materials",
         "tests.validation.test_sec01_version_contract",
         "tests.validation.test_sec01_next_stable_candidates",
         "tests.validation.test_sec01_next_tool_candidates",
@@ -745,6 +733,7 @@
         "tests.lib.ops.test_opsflow_adapters",
         "tests.lib.ops.test_opsflow_provision_contract",
         "tests.validation.test_opsflow_airflow_contract",
+        "tests.validation.test_compose_overlay_register",
         "tests.validation.test_airflow_connection_uri",
         "tests.validation.test_opsflow_database_rehearsal.OpsflowDatabaseRehearsalBoundaryTests",
         "tests.validation.test_opsflow_native_boundaries",
@@ -776,7 +765,6 @@
         "tests.validation.test_compose_baseline_gates.ContainerThrottleAlertNativeTests",
         "tests.validation.test_crawl4ai_egress.Crawl4AIEgressRehearsalTests",
         "tests.validation.test_mng_valkey_acl.MngValkeyAclNativeTests",
-        "tests.validation.test_compose_baseline_gates.CdcStreamRehearsalTests",
         "tests.validation.test_mng_pg_init_sql.MngPgInitSqlTests",
         "tests.validation.test_redisinsight_rehearsal.RedisInsightRehearsalTests",
         "tests.validation.test_datastore_observation_rehearsal.DatastoreObservationRehearsalTests",
@@ -1015,7 +1003,6 @@
         "run-unittest",
         "tests.lib.ops.test_compose_core_readiness",
         "tests.validation.test_compose_core_readiness",
-        "tests.validation.test_postgres_logical_upgrade_rehearsal",
         "tests.lib.supply_chain.test_grype_db_seed",
         "tests.lib.supply_chain.test_supply_chain_policy",
         "tests.lib.supply_chain.test_ledger_rebind",
@@ -1115,8 +1102,7 @@
       "kind": "aggregate",
       "opaque": false,
       "children": [
-        "leaf.compose-validation",
-        "leaf.postgres-logical-upgrade-config"
+        "leaf.compose-validation"
       ]
     },
     {
@@ -1411,20 +1397,6 @@
       },
       {
         "suite": "operations",
-        "gate_id": "leaf.postgres-logical-upgrade-config",
-        "entrypoint": "scripts/operations/rehearse-postgres-logical-upgrade.sh",
-        "argv": [
-          "--check-config-only"
-        ],
-        "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
-        ]
-      },
-      {
-        "suite": "operations",
         "gate_id": "leaf.supply-chain-deterministic-policy",
         "entrypoint": "scripts/validation/check-supply-chain-policy.py",
         "argv": [
@@ -1657,7 +1629,6 @@
           "scripts/operations/check-config-mount-hashes.py",
           "scripts/operations/gen-secrets.sh",
           "scripts/operations/lab.py",
-          "scripts/operations/rehearse-postgres-logical-upgrade.sh",
           "scripts/operations/rehearse-sample-service-delivery.sh"
         ],
         "suites": [
@@ -1694,7 +1665,6 @@
           "scripts/validation/check-template-security-baseline.sh",
           "scripts/validation/validate-docker-compose.sh",
           "tests/lib/supply_chain/",
-          "tests/validation/test_postgres_logical_upgrade_rehearsal.py",
           "tests/validation/test_supply_chain_secure_output.py",
           "tests/validation/test_supply_chain_wrapper.py",
           "tests/validation/test_p08_ci_routing.py",
@@ -1798,6 +1768,7 @@
           "tests/validation/test_restic_offsite_cap.py",
           "tests/validation/test_openbao_audit_rotation.py",
           "tests/validation/test_openbao_owned_image_contract.py",
+          "tests/validation/test_prepare_openbao_materials.py",
           "tests/validation/test_sec01_version_contract.py",
           "tests/validation/test_sec01_next_stable_candidates.py",
           "tests/validation/test_sec01_next_tool_candidates.py",
@@ -1980,6 +1951,8 @@
           "tests/lib/ops/test_opsflow_adapters.py",
           "tests/lib/ops/test_opsflow_provision_contract.py",
           "tests/validation/test_opsflow_airflow_contract.py",
+          "tests/validation/test_compose_overlay_register.py",
+          "infra/compose-overlays.json",
           "tests/validation/test_airflow_connection_uri.py",
           "tests/validation/_opsflow_airflow_native_guards.py",
           "tests/validation/_opsflow_airflow_native_evidence.py",
@@ -2216,7 +2189,6 @@
       {
         "prefixes": [
           "scripts/hardening/check-all-hardening.sh",
-          "scripts/operations/rehearse-postgres-logical-upgrade.sh",
           "scripts/operations/check-compose-core-readiness.sh",
           "scripts/operations/rehearse-sample-service-delivery.sh",
           "scripts/operations/gen-secrets.sh",
@@ -2457,7 +2429,6 @@
           "tests/validation/test_p02_gateway_port_validation.py",
           "tests/validation/test_p02_prometheus_contracts.py",
           "tests/validation/test_p02_valkey_mount_scope.py",
-          "infra/01-gateway/nginx/",
           "infra/01-gateway/traefik/",
           "infra/02-auth/keycloak/",
           "infra/02-auth/oauth2-proxy/",
@@ -2467,7 +2438,7 @@
           "infra/07-workflow/airflow/",
           "infra/07-workflow/n8n/",
           "infra/08-ai/open-notebook/",
-          "infra/08-ai/open-webui/"
+          "labs/open-webui/"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"
@@ -2496,6 +2467,8 @@
           "tests/lib/ops/test_opsflow_adapters.py",
           "tests/lib/ops/test_opsflow_provision_contract.py",
           "tests/validation/test_opsflow_airflow_contract.py",
+          "tests/validation/test_compose_overlay_register.py",
+          "infra/compose-overlays.json",
           "tests/validation/test_airflow_connection_uri.py",
           "tests/validation/_opsflow_airflow_native_guards.py",
           "tests/validation/_opsflow_airflow_native_evidence.py",
@@ -2719,10 +2692,10 @@
       "security_disposition": "approved-node24"
     },
     "github/codeql-action/upload-sarif": {
-      "sha": "1c5b675653bb5c22dbe9b12b556ec555138e09fd",
+      "sha": "1fc58d04a4d4374f921bdac573c3811c240f9c26",
       "runtime": "node24",
-      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/1c5b675653bb5c22dbe9b12b556ec555138e09fd/upload-sarif/action.yml",
-      "retrieved_at": "2026-09-28",
+      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/1fc58d04a4d4374f921bdac573c3811c240f9c26/upload-sarif/action.yml",
+      "retrieved_at": "2026-11-10",
       "consumers": [
         ".github/workflows/ci-quality.yml"
       ],

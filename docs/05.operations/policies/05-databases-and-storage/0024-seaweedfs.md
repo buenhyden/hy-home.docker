@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.7.1"
+version: "1.7.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-05-17"
 ## Scope
 
 SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다. HOME 대상이다.
-S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`, `nginx`,
+S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`,
 `mlops`, `data-science`, `lakehouse`)은 4개 서비스와 `seaweedfs-buckets`도 함께
 선택하며, `seaweedfs`와 `storage-seaweedfs` profile도 마찬가지다. root `lakehouse`는 SeaweedFS만
 선택하고, `seaweedfs-table-bucket`은 SPEC-0262에서 독립 LAB `labs/lakehouse/docker-compose.yml`로 옮겨졌다. Terrakube(`iac`, HOME이 제외하는 자동화
@@ -37,14 +37,14 @@ profile)는 `storage`와 함께 동작한다.
   때문이다. `/data` mount만으로는 경로를 증명하지 못하며, rehearsal이 파일이
   실제로 그 위치에 있는지 확인한다.
 - **S3 identity.** `seaweedfs-s3`는 secret으로 구성된 명시적 identity(admin:
-  `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`와 STRG-010)로만 시작한다. Identity 구성은 scoped 인증을 요구하며 명시된 CDN anonymous-read 예외만 허용한다. S07에서 추가된 모든 consumer는
+  `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`와 STRG-010)로만 시작한다. Identity 구성은 scoped 인증을 요구하며 anonymous 접근은 허용하지 않는다. S07에서 추가된 모든 consumer는
   `config/s3-identities.conf`에 자신의 bucket(loki, tempo, mlflow, terrakube,
   lakehouse)으로 범위가 한정된 identity를 갖는다. 어떤 consumer도 admin을 쓰지
-  않으며, `anonymous`는 `cdn-bucket`의 객체만 읽을 수 있다. Bucket은 consumer가
+  않으며, `anonymous` identity는 정의하지 않는다(Nginx `/cdn/`과 `cdn-bucket`은 2026-11-10에 퇴역). Bucket은 consumer가
   아니라 `seaweedfs-buckets`가 생성한다.
 - **IAM 우회 금지.** Volume과 filer HTTP는 읽기/쓰기 모두 STRG-008과 STRG-009로
   서명된 JWT를 요구한다. S3 route만 있고 master와 filer에는 Traefik route가
-  없다. CDN은 S3를 통한 public-read bucket이며 filer를 거치지 않는다.
+  없다.
 - **내부 전송.** 모든 gRPC port는 SeaweedFS 전용 CA(`infra/04-data/seaweedfs/bin/gen-grpc-certs.sh`; CA
   key는 발급 후 폐기)로 mutual TLS를 사용한다. S3는 `object_net`에서 SigV4
   서명을 사용한 plain HTTP이며, host client에는 Traefik을 통한 HTTPS를

@@ -152,6 +152,8 @@ require(process.argv[1]).selfCheckWrongPassword().catch(error=>{console.error(er
             "+hkeys",
             "+hvals",
             "+pexpire",
+            # n8n's patched Bull returns claimed jobs with an LPOP loop.
+            "+lpop",
         ):
             self.assertIn(rule, line.split())
         for rule in (

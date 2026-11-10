@@ -1615,12 +1615,12 @@
     {
       "service": "openbao",
       "build_input": "infra/03-security/openbao/build/Dockerfile",
-      "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+      "input_sha256": "54515b745eed980c41eed3657adfc21632e6c39ee490444d60edcf37d5943bbf",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 2,
-          "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+          "declaration": "FROM docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b"
         },
         {
           "line": 3,
@@ -1638,11 +1638,11 @@
       "package_inputs": [
         {
           "path": "infra/03-security/openbao/build/build-inputs.json",
-          "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+          "sha256": "7dd24e78be26806bc7dc022e834fd1591c257858f647a316fb00e9b78537e081"
         },
         {
           "path": "infra/03-security/openbao/build/go-modules.patch",
-          "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+          "sha256": "b662b703a34800e5d5a0305408704483d3bfeb81c0e2100454bfa0a05b034fb0"
         },
         {
           "path": "infra/03-security/openbao/build/owned_image_oci.py",
@@ -1650,21 +1650,21 @@
         },
         {
           "path": "infra/03-security/openbao/scripts/build-owned-image.py",
-          "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+          "sha256": "d48e89cfc318b9397fd9ec84d6a2a0df8a8c975a882ae04fce4dfcaa7cbcd661"
         }
       ],
-      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+      "installed_sbom": "SCANNED_WITH_FINDINGS: selected prebuilt owned artifact sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5 (OpenBao v2.7.2 commit 9e0a0d3c3504a0a00b45e61355afac5e35c78379, build packet c0970155c3a1d085373d7b72c709048bc5a29ef96dda9853b9a431c9c2f63a62, materials 2a419c3f9bcd7142a434a3d5798f3fcc63f77664a53c8549d28f4c6aece2de4f, config 38762e7a053e89e19df758a375eeb5ae97997e3132e091b41a2da29736ade32b, layer df6934febe358411590bdd8224eeb2b20895957170783b5ce27d98deade2546b, binary a3ca5fb39265e24570ed2171bfbedcfe2fadab6fe9a8c34f7627a07ed938db20); Syft 1.54.1 SBOM SHA256 79515e3c8572d7da4a559b0daf856b1ce4658dae9ccd427b253f9c0fc54e366c, 320 library components; Grype 0.120.1 offline DB v6.1.10 built 2026-11-10T06:21:20Z: 7 matches, 0 Critical, 1 High, 5 Medium, 1 Unknown (High GHSA-mgcc-cww5-fp2q go-jose/v3 v3.0.5, no fixed release; Medium CVE-2025-60876 busybox x3 and two further go-jose/v3 advisories; Unknown GO-2026-5932 x/crypto v0.58.0, tagged fix not released); module-granularity matches; no review, acceptance or deployment claimed",
+      "source_refreshed_at": "2026-11-10T11:05:45.344167+00:00"
     },
     {
       "service": "openbao-agent",
       "build_input": "infra/03-security/openbao/build/Dockerfile",
-      "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+      "input_sha256": "54515b745eed980c41eed3657adfc21632e6c39ee490444d60edcf37d5943bbf",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 2,
-          "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+          "declaration": "FROM docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b"
         },
         {
           "line": 3,
@@ -1682,11 +1682,11 @@
       "package_inputs": [
         {
           "path": "infra/03-security/openbao/build/build-inputs.json",
-          "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+          "sha256": "7dd24e78be26806bc7dc022e834fd1591c257858f647a316fb00e9b78537e081"
         },
         {
           "path": "infra/03-security/openbao/build/go-modules.patch",
-          "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+          "sha256": "b662b703a34800e5d5a0305408704483d3bfeb81c0e2100454bfa0a05b034fb0"
         },
         {
           "path": "infra/03-security/openbao/build/owned_image_oci.py",
@@ -1694,11 +1694,11 @@
         },
         {
           "path": "infra/03-security/openbao/scripts/build-owned-image.py",
-          "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+          "sha256": "d48e89cfc318b9397fd9ec84d6a2a0df8a8c975a882ae04fce4dfcaa7cbcd661"
         }
       ],
-      "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+      "installed_sbom": "SCANNED_WITH_FINDINGS: selected prebuilt owned artifact sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5 (OpenBao v2.7.2 commit 9e0a0d3c3504a0a00b45e61355afac5e35c78379, build packet c0970155c3a1d085373d7b72c709048bc5a29ef96dda9853b9a431c9c2f63a62, materials 2a419c3f9bcd7142a434a3d5798f3fcc63f77664a53c8549d28f4c6aece2de4f, config 38762e7a053e89e19df758a375eeb5ae97997e3132e091b41a2da29736ade32b, layer df6934febe358411590bdd8224eeb2b20895957170783b5ce27d98deade2546b, binary a3ca5fb39265e24570ed2171bfbedcfe2fadab6fe9a8c34f7627a07ed938db20); Syft 1.54.1 SBOM SHA256 79515e3c8572d7da4a559b0daf856b1ce4658dae9ccd427b253f9c0fc54e366c, 320 library components; Grype 0.120.1 offline DB v6.1.10 built 2026-11-10T06:21:20Z: 7 matches, 0 Critical, 1 High, 5 Medium, 1 Unknown (High GHSA-mgcc-cww5-fp2q go-jose/v3 v3.0.5, no fixed release; Medium CVE-2025-60876 busybox x3 and two further go-jose/v3 advisories; Unknown GO-2026-5932 x/crypto v0.58.0, tagged fix not released); module-granularity matches; no review, acceptance or deployment claimed",
+      "source_refreshed_at": "2026-11-10T11:05:45.344167+00:00"
     }
   ],
   "meaning": "Current selected33 consumer source rows (22Dockerfiles+1inline source); declarations and public package-input hashes only. No build, installed SBOM, scan or Native receipt generated. Historical final_candidate_source_freeze remains historical and is not promoted.",
@@ -2780,15 +2780,15 @@
     "source_revision": "598e89e7bca27555df241922f714d217d3650d8d",
     "checked_at": "2026-11-09T10:51:25.176224+00:00",
     "source_binding": {
-      "checked_at": "2026-11-09T15:09:56.580669+00:00",
-      "source_revision": "8e3b81483aefa95347fa9f09733040f11e8b01a3",
-      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
-      "input_sha256": "40ba844cf5c354b2daebce4e2c1b6e053c6f6e82f74512431fd1d5e7462001f8",
+      "checked_at": "2026-11-10T14:39:40+09:00",
+      "source_revision": "8cffec69dcb3dace4e8aa423ff62b9fa04682be3",
+      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed after a Renovate-proposed update.",
+      "input_sha256": "97aa61dd956ba41081a169df6fa6df93a9a5aa3ccb4eb45fd5fa0235ea22fed7",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
           "path": "infra/07-workflow/n8n/Dockerfile",
-          "sha256": "c1ebe842ab2a0ba02aecc6d6ae3e57101f338544cb54cc455779dfc6a1d3bc01"
+          "sha256": "f0ec9f34e38e1692fe13dbf7eefcd3d6c6e8d35998713185f0c08310ee5aa9ce"
         },
         {
           "path": "infra/07-workflow/n8n/custom/.gitkeep",
@@ -2796,11 +2796,11 @@
         },
         {
           "path": "infra/07-workflow/n8n/dev.Dockerfile",
-          "sha256": "a3f4c2f52ef070da7c34238f8915b951428ad7cf126b71b06d478f548b2f90f2"
+          "sha256": "425dcc27f1830ab0d45a2145dd14b95c9b25196409b7d4ae0ab500b3aed15151"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+          "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -5127,6 +5127,342 @@
         "full_image_sbom_scan": "NOT_RUN",
         "recovery": "NOT_RUN",
         "archived_at": "2026-11-09T15:09:56.580669+00:00"
+      },
+      {
+        "checked_at": "2026-11-09T15:09:56.580669+00:00",
+        "source_revision": "8e3b81483aefa95347fa9f09733040f11e8b01a3",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "40ba844cf5c354b2daebce4e2c1b6e053c6f6e82f74512431fd1d5e7462001f8",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "c1ebe842ab2a0ba02aecc6d6ae3e57101f338544cb54cc455779dfc6a1d3bc01"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "a3f4c2f52ef070da7c34238f8915b951428ad7cf126b71b06d478f548b2f90f2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-10T06:58:42+09:00"
+      },
+      {
+        "checked_at": "2026-11-10T06:58:42+09:00",
+        "source_revision": "3bce085dd8e2ac0931b40b9eff9de3c7c7c9a239",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "db560f450b16f763a588f4e98261a795b38ee6f7bb6b9b04588bbe1430b5bd8d",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "21a9ec03dc8b8f2e760d69d48fccdb1cedd90a3ad1c8c78e5ebc76baa849ccab"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "e20f6ae7f67b45b596c38ec0e872a513126ccbe708d76ebb02b3a5a2e49f4369"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-09T23:33:34.864841+00:00"
+      },
+      {
+        "checked_at": "2026-11-09T23:33:34.864841+00:00",
+        "source_revision": "0f99b6c20ee02d9522c6058b96a4a7dcee1bea09",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "8f0597fe6957d017ffbdb97183cdd5986145351970b4709f70c347ef2e2ae96b",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "ddc98498eeddd449d9c0f308b97c20165db94ee47e739f9d94ea3ece28efa663"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "10a645adc0514004873a7baa1b615726d52ab0fdcaa0b4114770335b149c0d03"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-10T14:16:59+09:00"
+      },
+      {
+        "checked_at": "2026-11-10T14:16:59+09:00",
+        "source_revision": "2249fb911accf9d05fe234452421f6472f9158ad",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "ab607efd8d3cb0d556f4d1d8bee6568b2eb16c13a80f2f99c2666f19408d71f7",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "ddc98498eeddd449d9c0f308b97c20165db94ee47e739f9d94ea3ece28efa663"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "10a645adc0514004873a7baa1b615726d52ab0fdcaa0b4114770335b149c0d03"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-10T14:39:40+09:00"
       }
     ],
     "isolated_candidate_build_and_module_smoke": {
@@ -7187,6 +7523,196 @@
           "source_binding": "infra/13-experience/storybook/README.md links this Dockerfile; mcp image has separately unresolved build source.",
           "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
           "compose_build_args": {}
+        }
+      ]
+    },
+    {
+      "preserved_at": "2026-11-10T09:49:25.016031+00:00",
+      "source_revision": "4c33d6cecc3087b1c5b0d8ef79b7d25e7e52e0a6",
+      "meaning": "Prior owned OpenBao r1 source records (Dockerfile, build-inputs, patch, OCI helper and build helper hashes, Alpine base digest d56c381f, installed SBOM and scan receipt) preserved before the r2 packet; no r1 result is inferred for r2",
+      "inputs": [
+        {
+          "service": "openbao",
+          "build_input": "infra/03-security/openbao/build/Dockerfile",
+          "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+            },
+            {
+              "line": 3,
+              "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+            },
+            {
+              "line": 4,
+              "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/03-security/openbao/build/build-inputs.json",
+              "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+            },
+            {
+              "path": "infra/03-security/openbao/build/go-modules.patch",
+              "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+            },
+            {
+              "path": "infra/03-security/openbao/build/owned_image_oci.py",
+              "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+            },
+            {
+              "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+              "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+            }
+          ],
+          "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "openbao-agent",
+          "build_input": "infra/03-security/openbao/build/Dockerfile",
+          "input_sha256": "8c38fee707ba455b741ec86b150e01a46efbe3dc3267aea1a780454b43dc7f38",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "declaration": "FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395"
+            },
+            {
+              "line": 3,
+              "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+            },
+            {
+              "line": 4,
+              "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/03-security/openbao/build/build-inputs.json",
+              "sha256": "6e30d733cb58c176058e8dd88f886812f9d87d12c9f0303a6a8246e93871626e"
+            },
+            {
+              "path": "infra/03-security/openbao/build/go-modules.patch",
+              "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+            },
+            {
+              "path": "infra/03-security/openbao/build/owned_image_oci.py",
+              "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+            },
+            {
+              "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+              "sha256": "70ffbd0a5d9fa6b66f1c5aab0e423cb38f8f2754393d46e9826e2d62756ab930"
+            }
+          ],
+          "installed_sbom": "PASS: selected prebuilt owned artifact sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8; scan receipt SHA256 8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b (Syft 1.54.1, Grype 0.120.1 DB 2026-10-20, 0 Critical/High)",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        }
+      ]
+    },
+    {
+      "preserved_at": "2026-11-10T11:05:45.344167+00:00",
+      "source_revision": "4c33d6cecc3087b1c5b0d8ef79b7d25e7e52e0a6",
+      "meaning": "Prior owned OpenBao r2 source records (v2.7.1 source, Alpine base digest 0f49f331, r2 Dockerfile, build-inputs, patch and build helper hashes, installed SBOM summary) preserved before the r3 packet; no r2 result is inferred for r3",
+      "inputs": [
+        {
+          "service": "openbao",
+          "build_input": "infra/03-security/openbao/build/Dockerfile",
+          "input_sha256": "8c907d78dd30f67cef46a6b414757ac8f47a2908775fa5d96099351b49890fae",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "declaration": "FROM docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b"
+            },
+            {
+              "line": 3,
+              "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+            },
+            {
+              "line": 4,
+              "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/03-security/openbao/build/build-inputs.json",
+              "sha256": "d5920f1f3b1e9a44eb40075429296de4b6d590ad7c2ea42514c7dbe55ceb2ef4"
+            },
+            {
+              "path": "infra/03-security/openbao/build/go-modules.patch",
+              "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+            },
+            {
+              "path": "infra/03-security/openbao/build/owned_image_oci.py",
+              "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+            },
+            {
+              "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+              "sha256": "310a4955f0502f63f56add705b1aaa9eb5722041dca640493624c2145a2a77c6"
+            }
+          ],
+          "installed_sbom": "SCANNED_WITH_FINDINGS: selected prebuilt owned artifact sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0 (build packet aada2d21e2cf17e02c96f98138c4c99666f77d3889178dc8574b4c1cf16676f2, materials 98f732432f3b3f60e0f0c4ff04a6354bc186ccb0b785323eb121bfe61a808482, config e415f6422518840aee65a678fcb95a6bd5fd390de4eef2ace2ec91365beabd4a, layer 30d2a3dfdc54f1dc825562b85132166a0e84c6f0128e3b38dab007d28375d862, binary 7e7a4489eba0e36e3f5210c16292676e93d50504eb91b97e7f7cc8e885745025); Syft 1.54.1 SBOM SHA256 76608bad773e695d0b3c87578855c0cc213e30689694d928d1418286cf62a970, 320 packages; Grype offline DB v6.1.10 built 2026-11-10T06:21:20Z: 13 matches, 8 unique, 0 Critical, 4 High, 8 Medium, 1 Unknown (module-granularity matches; GO-2026-6860 x/net v0.60.0, GHSA-mgcc-cww5-fp2q go-jose, GO-2026-6865 klauspost/compress); no review, acceptance or deployment claimed",
+          "source_refreshed_at": "2026-11-10T09:49:25.016031+00:00"
+        },
+        {
+          "service": "openbao-agent",
+          "build_input": "infra/03-security/openbao/build/Dockerfile",
+          "input_sha256": "8c907d78dd30f67cef46a6b414757ac8f47a2908775fa5d96099351b49890fae",
+          "compose_build_args": {},
+          "declarations": [
+            {
+              "line": 2,
+              "declaration": "FROM docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b"
+            },
+            {
+              "line": 3,
+              "declaration": "COPY --chmod=555 bao /usr/bin/bao"
+            },
+            {
+              "line": 4,
+              "declaration": "COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh"
+            },
+            {
+              "line": 5,
+              "declaration": "COPY --chmod=644 LICENSE /licenses/mozilla.txt"
+            }
+          ],
+          "package_inputs": [
+            {
+              "path": "infra/03-security/openbao/build/build-inputs.json",
+              "sha256": "d5920f1f3b1e9a44eb40075429296de4b6d590ad7c2ea42514c7dbe55ceb2ef4"
+            },
+            {
+              "path": "infra/03-security/openbao/build/go-modules.patch",
+              "sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8"
+            },
+            {
+              "path": "infra/03-security/openbao/build/owned_image_oci.py",
+              "sha256": "04ff9a1e3c61ed8b8a5ba9cec8ad21bb43fc40ea5cf52022a3e5185208590453"
+            },
+            {
+              "path": "infra/03-security/openbao/scripts/build-owned-image.py",
+              "sha256": "310a4955f0502f63f56add705b1aaa9eb5722041dca640493624c2145a2a77c6"
+            }
+          ],
+          "installed_sbom": "SCANNED_WITH_FINDINGS: selected prebuilt owned artifact sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0 (build packet aada2d21e2cf17e02c96f98138c4c99666f77d3889178dc8574b4c1cf16676f2, materials 98f732432f3b3f60e0f0c4ff04a6354bc186ccb0b785323eb121bfe61a808482, config e415f6422518840aee65a678fcb95a6bd5fd390de4eef2ace2ec91365beabd4a, layer 30d2a3dfdc54f1dc825562b85132166a0e84c6f0128e3b38dab007d28375d862, binary 7e7a4489eba0e36e3f5210c16292676e93d50504eb91b97e7f7cc8e885745025); Syft 1.54.1 SBOM SHA256 76608bad773e695d0b3c87578855c0cc213e30689694d928d1418286cf62a970, 320 packages; Grype offline DB v6.1.10 built 2026-11-10T06:21:20Z: 13 matches, 8 unique, 0 Critical, 4 High, 8 Medium, 1 Unknown (module-granularity matches; GO-2026-6860 x/net v0.60.0, GHSA-mgcc-cww5-fp2q go-jose, GO-2026-6865 klauspost/compress); no review, acceptance or deployment claimed",
+          "source_refreshed_at": "2026-11-10T09:49:25.016031+00:00"
         }
       ]
     }

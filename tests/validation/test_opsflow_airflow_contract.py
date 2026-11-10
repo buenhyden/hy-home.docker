@@ -369,42 +369,56 @@ class AirflowContractTests(unittest.TestCase):
         self.assertTrue(caught.exception.__suppress_context__)
         self.assertEqual(self.task_calls[-1], ("store", "exit"))
 
-    def test_overlay_preserves_roles_and_worker_only_access(self):
-        overlay = yaml.load(
-            (WORKLOAD / "compose.workflow.override.yml").read_text(),
-            Loader=OverlayLoader,
-        )
-        roles = {
+    def test_base_compose_mounts_code_and_gives_worker_only_access(self):
+        compose = yaml.safe_load(
+            (WORKLOAD.parents[1] / "docker-compose.yml").read_text()
+        )["services"]
+        coded = {
             "airflow-apiserver",
             "airflow-scheduler",
             "airflow-dag-processor",
             "airflow-worker",
             "airflow-triggerer",
-            "airflow-init",
-            "flower",
         }
-        self.assertEqual(set(overlay["services"]), roles)
-        for role, model in overlay["services"].items():
-            self.assertEqual(model["image"], "${OPSFLOW_AIRFLOW_IMAGE:?}")
-            self.assertIsNone(model["build"])
-            self.assertEqual(model["pull_policy"], "never")
-            for key in ("user", "command", "entrypoint"):
-                self.assertNotIn(key, model)
-            mounts = model.get("volumes", [])
-            self.assertEqual(
-                sum(mount["target"] == "/run/opsflow" for mount in mounts),
-                int(role == "airflow-worker"),
-            )
+        for role, model in compose.items():
+            if not role.startswith(("airflow-", "flower")):
+                continue
+            mounts = [
+                m
+                for m in model.get("volumes", [])
+                if isinstance(m, dict)
+                and m["target"].startswith(("/run/opsflow", "/opt/airflow/dags/"))
+            ]
+            expected = set()
+            if role in coded:
+                expected = {
+                    "/opt/airflow/dags/source_manifest_ingest.py",
+                    "/opt/airflow/dags/workflow_lib",
+                }
+            if role == "airflow-worker":
+                expected.add("/run/opsflow")
+            self.assertEqual(expected, {m["target"] for m in mounts}, role)
             for mount in mounts:
                 self.assertTrue(mount["read_only"])
                 self.assertFalse(mount["bind"]["create_host_path"])
-            if role == "airflow-worker":
-                self.assertEqual(set(model["networks"]), {"dev_data_net", "object_net"})
-                self.assertNotIn("secrets", model)
-            else:
-                self.assertNotIn("networks", model)
-        self.assertNotIn("networks", overlay)
-        self.assertNotIn("secrets", overlay)
+            networks = set(model.get("networks", {}))
+            self.assertEqual(
+                role == "airflow-worker",
+                {"dev_data_net", "object_net"} <= networks,
+                role,
+            )
+            if role in coded:
+                self.assertEqual(model["image"], "hy-home/airflow:3.3.2-keycloak")
+        worker = [
+            m
+            for m in compose["airflow-worker"]["volumes"]
+            if isinstance(m, dict) and m["target"] == "/run/opsflow"
+        ]
+        self.assertEqual(
+            worker[0]["source"],
+            "${OPSFLOW_SECRET_DIR:-./workloads/manifest-pipeline/secret-placeholder}",
+        )
+        self.assertTrue((WORKLOAD / "secret-placeholder/.gitkeep").is_file())
 
 
 class CursorDouble:

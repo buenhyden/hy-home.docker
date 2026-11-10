@@ -1,10 +1,10 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.0"
+version: "0.1.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0047"
 parent_ids:
@@ -147,6 +147,85 @@ receipt and sets `freshness_verified`, `stable_channel_verified` and
 prove OCI availability, stable-channel support, security applicability,
 compatibility, license, runtime or deployment acceptance.
 
+### D09 evidence 2026-11-10
+
+Recorded 2026-11-10; no criterion is accepted.
+
+1. Superseded candidates: n8n 2.45.7 and Storybook 10.6.3. Current n8n is
+   2.46.6; npm latest stable is 2.46.7 (published 2026-11-09, inside the 7-day
+   soak) and the `next` channel 2.47.3 is rejected as non-stable. Storybook
+   10.6.5 is current; 10.6.6 (published 2026-11-05) and next 16.4.6 (published
+   2026-11-09) are in soak; vitest 5.1.0 (published 2026-11-02) is eligible,
+   pending a Renovate group. Valkey 9.1.3-alpine (pushed 2026-10-27) is
+   eligible; the 9.2 release candidates are rejected.
+2. Merged changes: #859 Ollama 0.40.15 (`921276b53`; HOME applied, GPU 100%,
+   33/33 layers); #865 redis_exporter v1.96.0 (`3bce085dd`; HOME applied);
+   #854 alpine 3.24.3 (`4528c1ea7`; oauth2-proxy rebuilt and applied); #892
+   dcgm-exporter 4.9.0 metric names (`161fbdf3f`; HOME applied, Prometheus rules
+   reloaded, dashboard checked by the owner); #895 n8n font-noto pin so the
+   image rebuilds (`0b7ffe8bc`; n8n and n8n-worker rebuilt and recreated); #891
+   Renovate CI-toolchain and SurrealDB v2 rules (`bf922ad6c`). Open: #897
+   Renovate digest pinning and grouping; #898 codeql-action 4.39.1.
+3. Bitnami: 0 active images.
+4. Remaining NOT_RUN: cgroup/resource measurement, Storybook a11y/MCP
+   regression, rollback rehearsal.
+
+### Owner review 2026-11-10
+
+The owner asked for the Storybook audit and the n8n candidate verification to be
+analyzed and reviewed. No criterion is accepted by this review.
+
+- Storybook audit: `npm audit --package-lock-only --json` ran on copies of
+  `projects/storybook/nextjs/package.json` and `package-lock.json` (Storybook
+  10.6.5 lock) at `27cd872ea`, without touching `node_modules`. It completed
+  with exit 1: 744 dependencies, 13 moderate, 0 high, 0 critical. All 13 trace
+  to two advisories in development tooling (eslint and the Storybook Vite build
+  chain): `glob` GHSA-3g3m-2fjr-6pw4 and `minimatch` GHSA-g3hv-75wg-m249; the
+  `eslint` and `typescript-eslint` chain has a fix (`eslint@9.39.5`), the
+  Storybook chain has none yet. The earlier ERROR was the isolated
+  environment's DNS failure, not an advisory result. The 10.6.3 clean install
+  and isolated regression PASS rows describe the superseded lock; the 10.6.5
+  lock has only this audit.
+- n8n candidate: 2.45.7 existed for GHSA-prmc-fg87-r4gh. The advisory's
+  patched ranges are `>= 2.45.5`, `>= 2.46.1` and `>= 3.0.1`; the repository pin
+  and both HOME containers run 2.46.6, which #895 rebuilt and recreated, so the
+  2.45.7 bounded pulls and candidate verification no longer have a subject. The
+  private-workflow and SSRF/egress review that the boundaries above require
+  before an activation did not precede the 2.46.6 deployment; it stays open and
+  applies to the next n8n activation (2.46.7 after its soak).
+- Storybook audit decision (owner, 2026-11-10): the owner accepted the
+  Storybook-chain findings as development-tooling risk until an upstream fix
+  ships, and asked for the eslint chain to be fixed. No eslint fix exists: the
+  suggested `eslint@9.39.5` is a major downgrade from the pinned 10.13.0, and
+  the newest `@eslint/config-array` (0.23.5) still requires `minimatch ^10`,
+  while the patched releases are `minimatch` 11.0.1 and `glob` 14.0.2. The
+  eslint chain therefore stayed open; later on 2026-11-10 the owner accepted it
+  as development-tooling risk as well and asked for eslint to move to the
+  newest 10.x release, which does not change the advisory exposure.
+- OpenBao r2 material rehearsal (2026-11-10): after the owner approved a
+  one-time fetch from github.com, dl-cdn.alpinelinux.org, alpinelinux.org,
+  cgr.dev and the Sigstore public-good endpoints, the preparing agent contacted
+  two hosts outside that approval: `go version` inside the source tree
+  auto-downloaded a Go toolchain from proxy.golang.org into `~/go/pkg/mod`, and
+  documentation was read through raw.githubusercontent.com. Neither fetched a
+  build material. The owner then approved proxy.golang.org and sum.golang.org,
+  deleted the three rehearsal directories under `/tmp`, and the next run sets
+  `GOTOOLCHAIN=local` and uses only the approved hosts.
+
+### OpenBao r3 owner acceptance 2026-11-10
+
+r2 failed the RUN-0105 SEC01 gate (x/net, go-jose v4 and klauspost Highs with fixed releases, and OpenBao v2.7.2 as a newer security release), so the owner approved r3 on v2.7.2. Its scan has Critical 0 and one High, GHSA-mgcc-cww5-fp2q in go-jose/v3 v3.0.5 with no fixed release; the owner accepted that residual risk with the two go-jose/v3 Mediums on 2026-11-10, recorded in POL-0085. The HOME cutover still needs the RUN-0105 window.
+
+### Owner decisions 2026-11-10
+
+The owner (@buenhyden) decided three items on 2026-11-10. For criterion 86
+the owner accepts the latest-version gate FAIL as the record of missing lookups
+the criterion asks for; acceptance waits for a passing gate row, since a FAIL
+resolves only through a later PASS and a same-day rerun still fails. Criterion 87 is re-targeted to the deployed n8n
+2.46.6, so the cancelled 2.45.7 pulls and the unrun 2.45.7 verification no
+longer bind it. For criterion 88 the accepted moderate findings are recorded
+by a high-threshold audit that passes.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -163,9 +242,9 @@ compatibility, license, runtime or deployment acceptance.
 | P08 list refresh recovery | 86 | W91 | Inventory scan then validate | Public inputs and 98 retained review receipts | PASS | 41,985/41,985 files listed; whole-body 6/2,320, partial 78/2,320, render 0/17, runtime/restore 0/112. Metadata/listing only. | required | - |
 | Valkey candidate isolation | 87 | W92 | Owned candidate isolation | Valkey 9.1.3, synthetic ACL and cold-copy volume | PASS | Reported ACL denial, AOF/RDB and shared/dedicated roundtrips passed; this is a narrow fixture restore, not complete recovery or Compose parity. | required | - |
 | n8n candidate preparation | 87 | W92 | Main/Runner index and platform lookup | n8n 2.45.7 candidates | PASS | Exact index/platform lookup passed; this is source/artifact metadata only. | required | - |
-| n8n candidate bounded pulls | 87 | W92 | Bounded candidate pull | n8n 2.45.7 candidates | CANCELLED | Both pulls stopped at the five-minute boundary (exit 130); custom build, peer, Queue, Runner, SMTP and restore remain unrun. | required | - |
+| n8n candidate bounded pulls | 87 | W92 | Bounded candidate pull | n8n 2.45.7 candidates | CANCELLED | Both pulls stopped at the five-minute boundary (exit 130); custom build, peer, Queue, Runner, SMTP and restore remain unrun. | optional | - |
 | Supply-ledger candidate metadata | 87 | W92 | Candidate and registry-metadata review | Five Valkey and four n8n source rows | PASS | Release/advisory and registry observations were corrected; this is not candidate signature, SBOM, compatibility, native or operational evidence. | required | - |
-| Candidate runtime and artifact verification | 87 | W92 | Isolated runtime and per-artifact review | Selected candidates | NOT_RUN | Custom-image digest is unknown; candidate signature, SBOM, compatibility, native and operation evidence remains unrun or unknown. | required | - |
+| Candidate runtime and artifact verification | 87 | W92 | Isolated runtime and per-artifact review | Selected candidates | NOT_RUN | Custom-image digest is unknown; candidate signature, SBOM, compatibility, native and operation evidence remains unrun or unknown. | optional | - |
 | Storybook clean lock install | 88 | W93 | Offline isolated `npm ci` | Tracked 10.6.3 lock and cached packages | PASS | 550 packages installed; local installation was not overwritten. | required | - |
 | Storybook isolated regressions | 88 | W93 | Lint/typecheck/build and synthetic UI/auth checks | Isolated copy and synthetic credentials | PASS | lint/typecheck/build; auth/MCP 9/9; browser 14/14 including 320px; static image 7/7; six Button/AsyncState render states. Remote auth is not run. | required | - |
 | Storybook audit | 88 | W93 | `npm audit` | Isolated dependency metadata | ERROR | DNS `EAI_AGAIN`; this does not establish absence of advisories. | required | - |
@@ -174,14 +253,17 @@ compatibility, license, runtime or deployment acceptance.
 | Upstream supply negative observations | 89 | W94 | Exact-subject absence/error observation | Runners image/SLSA and n8n CycloneDX | FAIL | Runners signature exit 10, SLSA exit 1 and n8n CycloneDX exit 1; Valkey signing identity/issuer was not assessable. | required | - |
 | Valkey local SBOM observation | 89 | W94 | Offline Syft scan | Canonical amd64 candidate | PASS | CycloneDX 1.7 SBOM, Alpine 3.24.3 and 716 components, exit 0. Locally generated SBOM is not publisher attestation; Grype lacked offline DB. | required | - |
 | Selected candidate verification | 89 | W94 | Registry artifact and bounded isolated test review | Candidate writer packet | NOT_RUN | Valkey functional isolation is narrow; n8n and per-artifact verification are incomplete, so no deployment or rollback conclusion follows. | required | - |
+| Storybook audit rerun | 88 | W93 | `npm audit` | Copies of the Storybook 10.6.5 `package.json` and `package-lock.json` at `27cd872ea` | FAIL | Exit 1: 13 moderate, 0 high, 0 critical over 744 dependencies; two development-tooling advisories (`glob` GHSA-3g3m-2fjr-6pw4, `minimatch` GHSA-g3hv-75wg-m249). See Owner review 2026-11-10. | required | - |
+| n8n advisory fixed-range readback | 87 | W92 | Official advisory patched-range readback | GHSA-prmc-fg87-r4gh and the n8n 2.46.6 pin and HOME containers at `27cd872ea` | PASS | Patched `>= 2.46.1`; repository and HOME run 2.46.6, so the 2.45.7 candidate is superseded. SSRF/egress and private-workflow review stays open. | required | - |
+| Storybook audit high threshold | 88 | W93 | `npm audit` | Copies of the Storybook `package.json` and `package-lock.json` at `59d1fe69f`, `--audit-level=high` | PASS | Exit 0: 0 high, 0 critical over 744 dependencies. 17 moderate packages trace to the two advisories the owner accepted as development-tooling risk (`glob` GHSA-3g3m-2fjr-6pw4, `minimatch` GHSA-g3hv-75wg-m249). | required | Storybook audit, Storybook audit rerun |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 86 | pending | Ledger repair regression, Latest-version gate | Public observations improve source mapping but incomplete fresh lookups, unmapped rows and artifact evidence remain. | SPEC-0212 TSK-0047 |
-| 87 | pending | Valkey candidate isolation, n8n candidate preparation | Exact source, candidate artifact and isolated/recovery evidence remain incomplete; deferred n8n work also needs private-workflow and SSRF/egress review. | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
-| 88 | pending | Storybook clean lock install, Storybook isolated regressions, Storybook audit | Isolated lock regression passed; current runtime, remote device and audit remain separate. | SPEC-0212 TSK-0047 |
+| 86 | pending | Ledger repair regression, Latest-version gate | The owner decided on 2026-11-10 to accept this as recorded: the criterion records missing lookups, and the latest-version gate FAIL is that record. Acceptance stays pending because a FAIL row resolves only through a later PASS: a 2026-11-10 rerun still exits 2 with all 89 entries `blocked-evidence` (no fresh review or reviewed decision). Fresh lookups and artifact evidence are not claimed. | SPEC-0212 TSK-0047 |
+| 87 | accepted | Valkey candidate isolation, n8n candidate preparation, n8n advisory fixed-range readback | The owner re-targeted the n8n evaluation from the superseded 2.45.7 candidate to the deployed 2.46.6 on 2026-11-10, so the 2.45.7 pull and verification rows are optional. 2.46.6 is in the advisory patched range; its signature and scan stay open under TSK-0041 criterion 60. No required observation is unresolved; owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
+| 88 | accepted | Storybook clean lock install, Storybook isolated regressions, Storybook audit, Storybook audit rerun, Storybook audit high threshold | The high-threshold audit passes with 0 high and 0 critical; the remaining moderate findings are the two development-tooling advisories the owner accepted on 2026-11-10. No required observation is unresolved; owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0047 |
 | 89 | pending | Supply-chain gate, Selected candidate verification | No cross-artifact inference; unavailable signing, provenance and SBOM material remains explicit. | SPEC-0212 TSK-0047 |
 
 ## Review and Completion

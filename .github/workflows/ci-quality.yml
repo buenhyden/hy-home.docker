@@ -270,7 +270,7 @@ jobs:
         shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
         run: '"$TRUSTED_PYTHON_PATH" scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif'
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
+        uses: github/codeql-action/upload-sarif@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4.39.2
         with:
           sarif_file: results.sarif
           category: zizmor

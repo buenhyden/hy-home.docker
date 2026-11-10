@@ -1,6 +1,6 @@
-FROM grafana/tempo:3.1.0@sha256:3076b8dcdfb32fd6bc5ccef85e7b7313e6199b9cb84366257fc17ecb696db5fd AS upstream
+FROM grafana/tempo:3.1.1@sha256:64e2fbd56d9c2b3412a4b430a58ea59e91a670b1e75f920a0c702213ad145044 AS upstream
 
-FROM alpine:3.24.2
+FROM alpine:3.24.3@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a
 
 RUN apk add --no-cache busybox wget ca-certificates \
     && addgroup -S -g 10001 observability \

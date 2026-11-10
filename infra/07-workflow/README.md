@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.2.4"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 created: "2025-11-12"
 ---
 
@@ -70,7 +70,7 @@ created: "2025-11-12"
 | `airflow-apiserver` | HTTP | `workflow` | Native Keycloak Auth Manager |
 | `airflow-scheduler` | internal | `workflow` | internal |
 | `airflow-worker` | internal | `workflow` | internal |
-| `flower` | HTTP | `workflow` | OAuth2 Proxy ForwardAuth |
+| `flower` | HTTP | `airflow-flower`(opt-in) | OAuth2 Proxy ForwardAuth |
 | `n8n` | HTTP | `workflow` | OAuth2 Proxy ForwardAuth |
 | `n8n-worker` | internal | `workflow` | internal |
 
@@ -100,7 +100,8 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 
 | Package/services | Class | Exact profiles |
 | --- | --- | --- |
-| Airflow core, Flower, StatsD exporter | HOME | `workflow`, `workflow-airflow` |
+| Airflow core, StatsD exporter | HOME | `workflow`, `workflow-airflow` |
+| Flower | opt-in(2026-11-10 owner 결정) | `airflow-flower` |
 | n8n core, workers, task runners | HOME | `workflow`, `workflow-n8n` |
 
 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/guides/08-workflows-and-automation/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.

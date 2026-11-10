@@ -31,7 +31,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    image: quay.io/keycloak/keycloak:26.7.4-0
+    image: quay.io/keycloak/keycloak:26.7.4-0@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c
     container_name: keycloak
     hostname: keycloak
     group_add:

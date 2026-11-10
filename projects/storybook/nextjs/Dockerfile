@@ -2,7 +2,7 @@
 # (scripts/operations/storybook_image.py); the caller supplies that commit.
 ARG NODE_IMAGE=node:24.21.0-alpine3.24@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1
 ARG STORYBOOK_SOURCE_REVISION
-ARG NGINX_IMAGE=nginxinc/nginx-unprivileged:1.31.6-alpine3.24@sha256:26b0bf6fbf07297983cb341998d79c831508787de26627dd2a112321b9c3a4af
+ARG NGINX_IMAGE=nginxinc/nginx-unprivileged:1.31.7-alpine3.24@sha256:b5047b9b76845eac124358373c6852377c52e4b05834a47647e955dd91cb8f1e
 FROM ${NODE_IMAGE} AS build
 WORKDIR /work
 COPY package.json package-lock.json ./

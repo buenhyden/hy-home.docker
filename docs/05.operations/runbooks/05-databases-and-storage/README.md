@@ -1,10 +1,10 @@
 ---
 title: "데이터베이스와 저장소 런북"
-version: "0.1.7"
+version: "0.1.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 ---
 
@@ -28,7 +28,6 @@ layer: "operations"
 | [SeaweedFS Stack Health and Recovery Runbook](0024-seaweedfs.md) | `RUN-0024` | SeaweedFS 스택의 정적 진단, 경보 대응, 최초 활성화, 백업·격리 복구 절차를 다룬다. |
 | [Management Database Health and Recovery Runbook](0028-management-database.md) | `RUN-0028` | management database의 정적 진단, 계획된 백업·격리 복구, monitor 계정과 경보 대응 절차를 다룬다. |
 | [04-Data Optimization Hardening Runbook](0030-data-optimization-hardening.md) | `RUN-0030` | data tier(`infra/04-data`)의 정적 hardening 점검 절차와 회귀 대응을 다룬다. 서비스 실행과 데이터 복구는 포함하지 않는다. |
-| [PostgreSQL Logical Upgrade and Restore Rehearsal Runbook](0032-postgresql-logical-upgrade-restore-rehearsal.md) | `RUN-0032` | synthetic fixture를 PostgreSQL source major에서 logical backup으로 캡처해 target major isolated image에 복원·비교하는 로컬 rehearsal 절차다. |
 | [Neo4j Health and Recovery Triage Runbook](0033-neo4j.md) | `RUN-0033` | 단일 Community `neo4j`의 health triage와 offline dump 격리 복원 rehearsal 계약을 다룬다. |
 | [04-Data Storage Exhaustion Runbook](0035-storage-exhaustion.md) | `RUN-0035` | 디스크 부족 경보·쓰기 거부 시 데이터를 삭제하지 않고 원인 owner를 가려 조치를 정하는 triage 절차다. |
 | [RedisInsight Recovery Runbook](0076-redisinsight.md) | `RUN-0076` | RedisInsight의 gateway 접근, 설정 보존, inspector 비밀 회전, 업그레이드와 복구 절차를 다룬다. |

@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Operations Policy"
-version: "1.2.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0047"
 parent_ids:
@@ -49,9 +49,12 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
   - Profile label에 cardinality가 높은 값이나 secret이 포함된 값을 쓰지 않는다.
   - Pyroscope route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
     middleware chain을 유지한다.
-  - 고정 retention 기간은 현재 `pyroscope.yaml`에 선언되어 있지 않다. 보관
+  - `limits.retention_period: 168h`(7일)를 유지한다. 개인 PC HDD에서 하루 약
+    0.12 GB(30초 scrape 기준)가 쌓이므로 기본값 31일은 필요 이상으로 길다. 보관
     기간 변경은 config/capacity 검증과 [retention policy](0048-telemetry-retention.md)
     갱신을 함께 요구한다.
+  - Alloy `pyroscope.scrape`는 `scrape_interval = "60s"`와 block/mutex profile
+    off를 유지한다. 간격을 줄이거나 profile type을 켜는 변경은 용량 근거가 필요하다.
 - **Allowed**:
   - Development/debug 상황에서 임시 고빈도 profiling을 사용할 수 있으나,
     CPU/storage 영향과 rollback note를 남긴다.
@@ -74,7 +77,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 
 ### Profile storage and source limits
 
-두 Alloy 설정에는 Go와 별도 SeaweedFS pprof source가 있다. 선택 파일·target과 제한된 profile query로 수신을 확인하며 writer/receiver readiness만으로 판정하지 않는다. Pyroscope는 선언 volume의 로컬 filesystem과 ingestion/cardinality 한도를 사용한다. 고정 retention은 없고 기본값·disk pressure 정리가 무기한 보존을 보장하지 않는다. 기간 요구는 별도 승인된 설정·용량 검토가 필요하다. wget 존재를 가정하지 않고 선언된 `profilecli ready` probe를 쓴다. Profile/config를 일관되게 보존하고 삭제는 POL-0048을 따른다.
+두 Alloy 설정에는 Go(11개 대상)와 별도 SeaweedFS pprof source가 있다. 선택 파일·target과 제한된 profile query로 수신을 확인하며 writer/receiver readiness만으로 판정하지 않는다. Pyroscope는 선언 volume의 로컬 filesystem과 ingestion/cardinality 한도를 사용한다. retention은 `limits.retention_period: 168h`로 고정하며 삭제는 block 단위·유예 이후다. 기간 변경은 별도 승인된 설정·용량 검토가 필요하다. wget 존재를 가정하지 않고 선언된 `profilecli ready` probe를 쓴다. Profile/config를 일관되게 보존하고 삭제는 POL-0048을 따른다.
 
 ## Exceptions
 

@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB source"
-version: "0.3.2"
+version: "0.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 created: "2026-10-12"
 ---
 
@@ -42,7 +42,7 @@ build source·설정·helper·Grafana 대시보드가 함께 있습니다. `labs
 | Cassandra | [Compose](cassandra/docker-compose.yml), [안내](cassandra/README.md) | [promotion.yaml](cassandra/promotion.yaml) | 대시보드 |
 | CouchDB | [Compose](couchdb/docker-compose.yml), [안내](couchdb/README.md) | [promotion.yaml](couchdb/promotion.yaml) | [initializer](couchdb/couchdb-cluster-init.sh) |
 | MongoDB | [Compose](mongodb/docker-compose.yml), [안내](mongodb/README.md) | [promotion.yaml](mongodb/promotion.yaml) | 대시보드 |
-| Kafka | [Compose](kafka-cluster/docker-compose.yml), [안내](kafka-cluster/README.md) | [promotion.yaml](kafka-cluster/promotion.yaml) | 독립 Compose source |
+| Kafka | [Compose](kafka-cluster/docker-compose.yml), [안내](kafka-cluster/README.md) | [promotion.yaml](kafka-cluster/promotion.yaml) | Schema Registry·Connect(Debezium) build·대시보드 |
 | OpenSearch | [Compose](opensearch-cluster/docker-compose.yml), [안내](opensearch-cluster/README.md) | [promotion.yaml](opensearch-cluster/promotion.yaml) | [Dashboards 설정](opensearch-cluster/opensearch-cluster-dashboards.config) |
 | Lakehouse | [Compose](lakehouse/docker-compose.yml), [안내](lakehouse/README.md) | [promotion.yaml](lakehouse/promotion.yaml) | [Spark](lakehouse/spark/README.md), [Trino](lakehouse/trino/README.md), [Flink](lakehouse/flink/README.md), [GX](lakehouse/great-expectations/README.md), [table bucket job](lakehouse/seaweedfs-table-bucket.sh) |
 | dbt | [Compose](dbt/docker-compose.yml), [안내](dbt/README.md) | [promotion.yaml](dbt/promotion.yaml) | build·project |
@@ -50,6 +50,7 @@ build source·설정·helper·Grafana 대시보드가 함께 있습니다. `labs
 | JupyterLab | [Compose](jupyterlab/docker-compose.yml), [안내](jupyterlab/README.md) | [promotion.yaml](jupyterlab/promotion.yaml) | build |
 | SonarQube | [Compose](sonarqube/docker-compose.yml), [안내](sonarqube/README.md) | [promotion.yaml](sonarqube/promotion.yaml) | 독립 Compose source |
 | Stalwart | [Compose](stalwart/docker-compose.yml), [안내](stalwart/README.md) | [promotion.yaml](stalwart/promotion.yaml) | 설정 helper |
+| Open WebUI | [Compose](open-webui/docker-compose.yml), [안내](open-webui/README.md) | [promotion.yaml](open-webui/promotion.yaml) | OIDC entrypoint |
 
 [공개 환경 예시](.env.example)는 정적 구성 입력이며 실제 비밀값을 저장하지 않습니다.
 
@@ -68,7 +69,7 @@ build source·설정·helper·Grafana 대시보드가 함께 있습니다. `labs
 | [OpenSearch Cluster](opensearch-cluster/README.md) | 세 노드 검색 토폴로지 | `opensearch-cluster` | HOME 단일 노드와 별개 |
 | [Locust](locust/README.md) | 독립 부하 검증 image source | `labs/locust/docker-compose.yml` | root include와 HOME 상태를 공유하지 않음 |
 
-SPEC-0262로 root에서 옮긴 LAB은 다음과 같습니다. LAB은 HOME network에
+SPEC-0262와 ADR-0062 개정으로 root에서 옮긴 LAB은 다음과 같습니다. LAB은 HOME network에
 연결되지 않으므로 HOME SeaweedFS·mng-pg·dev-pg·MLflow가 필요한 LAB은
 [.env.example](.env.example)의 `LAB_*` endpoint 입력으로만 대상을 지정합니다.
 HOME은 이 서비스들을 LAB network에 기본으로 게시하지 않으므로 도달 가능한
@@ -84,6 +85,7 @@ Secret은 다른 데이터 LAB처럼 `LAB_SECRET_DIR` 아래 LAB 전용 파일�
 | JupyterLab | 단일 사용자 notebook | `jupyterlab` / `labs/jupyterlab/docker-compose.yml` | 선택 `LAB_JUPYTERLAB_MLFLOW_TRACKING_URI` |
 | SonarQube | 정적 분석 서버 | `sast` / `labs/sonarqube/docker-compose.yml` | `LAB_SONARQUBE_DB_HOST` |
 | Stalwart | 메일 서버 실험 | `mail-server` / `labs/stalwart/docker-compose.yml` | 없음(자체 완결) |
+| Open WebUI | 로컬 LLM 채팅·RAG, native Keycloak OIDC(ADR-0062 개정 2026-11-10) | `lab-open-webui` / `labs/open-webui/docker-compose.yml` | `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`, `LAB_OPEN_WEBUI_DEFAULT_URL`, `LAB_OPEN_WEBUI_CA_FILE` |
 
 Locust 전용 공개 입력은 [.env.example](.env.example)의 `LAB_LOCUST_*`를
 사용합니다. Locust source는 이 독립 entrypoint용이며 root profile에 추가하지

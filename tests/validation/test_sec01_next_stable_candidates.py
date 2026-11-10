@@ -189,7 +189,7 @@ class NextStableCandidates(unittest.TestCase):
     def test_oauth_binary_copy_and_nonroot_secret_wrapper_preserved(self):
         dockerfile = (ROOT / "infra/02-auth/oauth2-proxy/Dockerfile").read_text()
         self.assertIn(
-            "quay.io/oauth2-proxy/oauth2-proxy:v7.15.5@sha256:8498b0d0ef0a7b29686414000a08aee467f02d0299c9ed1e006a8f33fc017916 AS src",
+            "quay.io/oauth2-proxy/oauth2-proxy:v7.15.6@sha256:c3415e8660af553f5e18f5d90db050614c02493c0ac6260ac59442f6d9b12048 AS src",
             dockerfile,
         )
         self.assertIn("COPY --from=src /bin/oauth2-proxy /bin/oauth2-proxy", dockerfile)
@@ -204,7 +204,7 @@ class NextStableCandidates(unittest.TestCase):
         self.assertEqual(choice, "${OAUTH2_PROXY_DOCKERFILE:-dev.Dockerfile}")
         effective_default = choice.split(":-", 1)[1][:-1]
         self.assertEqual(effective_default, "dev.Dockerfile")
-        expected = "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.5@sha256:8498b0d0ef0a7b29686414000a08aee467f02d0299c9ed1e006a8f33fc017916 AS src"
+        expected = "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.6@sha256:c3415e8660af553f5e18f5d90db050614c02493c0ac6260ac59442f6d9b12048 AS src"
         for selected in (effective_default, "Dockerfile"):
             with self.subTest(selected=selected):
                 source = (ROOT / "infra/02-auth/oauth2-proxy" / selected).read_text()

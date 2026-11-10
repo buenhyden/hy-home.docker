@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 런북"
-version: "0.3.1"
+version: "0.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 ---
 
@@ -29,6 +29,7 @@ layer: "operations"
 | [CouchDB Cluster Triage Runbook](0026-couchdb.md) | `RUN-0026` | 범위: LAB 전용 CouchDB 3노드 cluster의 상태, cluster-init 결과, membership, 격리 network의 route 한계를 점검한다. 이 런북은 현재 compose에 맞는 점검 순서와, 별도 승인 후 수행할 fresh  |
 | [MongoDB Replica Set Triage Runbook](0027-mongodb.md) | `RUN-0027` | 범위: LAB 전용 MongoDB replica set의 상태, init job 결과, Mongo Express 접속을 파괴적 데이터 작업 없이 점검한다. 이 런북은 현재 compose에 맞는 점검 순서와, 별도 승인 후 수행할 oplog-consis |
 | [PostgreSQL Cluster Health and Recovery Triage Runbook](0031-postgresql-cluster.md) | `RUN-0031` | 범위: LAB 전용 PostgreSQL HA cluster의 상태, etcd quorum 증상, HAProxy routing, Patroni leadership, init job 상태, exporter readiness를 파괴적 데이터 작업 없이 점검 |
+| [Open WebUI Runbook](0057-open-webui.md) | `RUN-0057` | Open WebUI LAB의 준비·기동·장애 대응과 HOME 컨테이너·volume 퇴역 단계를 다루는 런북이다. |
 | [Locust Recovery Runbook](0062-locust.md) | `RUN-0062` | Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다. 시나리오 파일 복구와 승인된 upgrade canary도 다룬다. |
 | [SonarQube Runbook](0066-sonarqube.md) | `RUN-0066` | SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다. |
 | [Stalwart Mail Runbook](0070-mail.md) | `RUN-0070` | 이 런북은 Stalwart의 listener, 인증, TLS, DNS, queue 장애 진단과 메일박스·설정 복구, 승인된 최초 기동과 업그레이드 절차를 정의한다. |

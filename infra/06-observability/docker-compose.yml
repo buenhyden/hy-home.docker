@@ -254,7 +254,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/alloy:v1.20.1@sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f
+    image: grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4
     container_name: alloy
     # Own reservation: peak 0.023 CPU / 217 MiB, above its template's other members;
     # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).
@@ -346,7 +346,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
-    image: grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f
+    image: grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205
     container_name: grafana
     hostname: grafana
     group_add:
@@ -506,7 +506,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-job-low
-    image: postgres:18.6-alpine
+    image: postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395
     container_name: grafana-db-provision
     hostname: grafana-db-provision
     group_add:
@@ -550,7 +550,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-readonly-low
-    image: quay.io/prometheus/node-exporter:v1.12.1
+    image: quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0
     container_name: node-exporter
     # The host network namespace makes the netdev, netstat, sockstat and
     # tcpstat collectors report the host, not this container. The listener is
@@ -680,7 +680,6 @@ services:
       OAUTH2_PROXY_PORT: '${OAUTH2_PROXY_PORT:-4180}'
       POSTGRES_PORT: '${POSTGRES_PORT:-5432}'
       VALKEY_PORT: '${VALKEY_PORT:-6379}'
-      OLLAMA_WEBUI_PORT: '${OLLAMA_WEBUI_PORT:-8080}'
       DEFAULT_URL: '${DEFAULT_URL}'
       GATUS_OIDC_ALLOWED_SUBJECT: '${GATUS_OIDC_ALLOWED_SUBJECT}'
       # P06: set GATUS_CLIENT_SECRET_FILE under /run/openbao/gatus; unset rolls back.
@@ -736,7 +735,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/pyroscope:2.4.0@sha256:b7e62699a27463aa3533efe3f88c320da594da495731fd6eabca6f44f92cdd7b
+    image: grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b
     container_name: pyroscope
     hostname: pyroscope
     # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
@@ -779,7 +778,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
-    image: prom/alertmanager:v0.34.1
+    image: prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b
     container_name: alertmanager
     hostname: alertmanager
     group_add:
@@ -828,7 +827,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-readonly-low
-    image: prom/pushgateway:v1.11.4@sha256:91a56b89b97dd8a5e1e4fa8b5bbbd86dd57a87a2a3cee3a3ce3368b40ef158ef
+    image: prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d
     container_name: pushgateway
     hostname: pushgateway
     expose:
@@ -865,7 +864,7 @@ services:
       file: ../common-optimizations.yml
       service: template-host-observer-med
 
-    image: nvcr.io/nvidia/k8s/dcgm-exporter:4.8.4
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9
     container_name: dcgm-exporter
     hostname: dcgm-exporter
 

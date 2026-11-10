@@ -36,6 +36,9 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/07-observability/0045-prometheus.md'
 
       # [What] Infra Targets Missing (Optional Tier) / 인프라 잡 타겟 다운(옵션)
+      # `flower` is an opt-in service (profile airflow-flower). Its scrape job
+      # carries expected_state="off" by default, so this rule skips it while the
+      # profile is not selected; flip the label to "on" when you start Flower.
       - alert: PrometheusInfraTargetsMissing
         expr: sum by (job) (up{job=~"loki|manage-postgres|mng-valkey-exporter|n8n-monitor|airflow-monitor|flower|qdrant|seaweedfs-s3|keycloak|oauth2-proxy|grafana|pyroscope|gatus|registry|ollama-exporter|node-exporter|dcgm-exporter",expected_state!="off"})
           == 0

@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.4.3"
+version: "1.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -106,7 +106,7 @@ Helper의 성공 출력은 `_CMD` 소비용 연결 주소다. 단독 출력, 전
 3. Celery worker 응답 확인: `docker compose exec airflow-apiserver celery --app airflow.providers.celery.executors.celery_executor.app inspect ping`. Remote control이 허용된 worker의 응답이 없으면 실패로 기록하고 원인을 먼저 진단한다.
 4. 스케줄을 pause하고 실행/예약 태스크와 외부 부작용을 조정한 뒤 승인된 worker 재시작만 수행한다: `docker compose restart airflow-worker`. 자동 재실행이나 task clear를 복구 전제로 삼지 않는다.
 
-5. Flower(`flower.${DEFAULT_URL}`) 또는 worker 로그에서 heartbeat 회복 여부를 확인한다.
+5. Flower(opt-in `airflow-flower`를 시작한 경우 `flower.${DEFAULT_URL}`) 또는 worker 로그에서 heartbeat 회복 여부를 확인한다.
 
 ### 시나리오 2: 메타데이터 DB 오류
 
@@ -218,8 +218,9 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
      `dags/README.md`는 넣지 않는다. 임시 디렉터리의 `dags/source_manifest_ingest.py`와 `workflow_lib/`를
      `${DEFAULT_WORKFLOW_DIR}/airflow/dags/`(`/opt/airflow/dags`로 bind) 바로 아래에 두고,
      설치한 모든 파일 경로를 `"$BK/installed-files.txt"`에 기록한다. 대상에 같은 이름이 이미 있으면 중단한다.
-     각 파일 `sha256sum`을 commit의 blob과 비교한다. `airflow-worker`의 `/run/opsflow`(`pg.json`, `s3.json`)와
-     `dev_data_net`·`object_net`은 O4 결정 없이는 붙이지 않는다.
+     각 파일 `sha256sum`을 commit의 blob과 비교한다. `airflow-worker`의 `/run/opsflow`와 `dev_data_net`·`object_net`은 O4 결정 없이는 붙이지 않는다.
+     workload override는 base Compose에 합쳐져 있고 overlay는 쓰지 않는다([규칙](../../policies/01-common/0078-compose-profile-vocabulary.md#home-compose-overlay-등록부와-적용-규칙),
+     [점검 절차](../01-common/0098-cold-start-and-reboot.md#overlay-적용-점검-절차)).
      확인: `docker exec airflow-scheduler airflow dags list-import-errors`,
      `docker exec airflow-scheduler airflow dags details source_manifest_ingest`.
    - 기대 결과: import 오류가 없고 DAG가 paused다.

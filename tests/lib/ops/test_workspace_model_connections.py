@@ -12,15 +12,6 @@ from tests.lib.ops.test_workspace_connections import WorkspaceConnectionFixture
 
 class WorkspaceModelConnectionTests(WorkspaceConnectionFixture, unittest.TestCase):
     def test_p03_ai_compose_connections_remain_source_only_and_value_free(self):
-        webui = self.put(
-            "infra/08-ai/open-webui/docker-compose.yml",
-            """
-services:
-  open-webui:
-    environment:
-      OLLAMA_BASE_URL: http://ollama:${OLLAMA_PORT:-11434}
-""",
-        )
         notebook = self.put(
             "infra/08-ai/open-notebook/docker-compose.yml",
             """
@@ -44,13 +35,12 @@ services:
       OLLAMA_HOST: ollama:${OLLAMA_PORT:-11434}
 """,
         )
-        result = self.inspect(webui, notebook, exporter)
+        result = self.inspect(notebook, exporter)
         p03 = [row for row in result["connections"] if row["owner"] == "P03"]
-        self.assertEqual(len(p03), 3)
+        self.assertEqual(len(p03), 2)
         self.assertEqual(
             {(row["caller_roles"][0], row["provider"]) for row in p03},
             {
-                ("open-webui", "ollama"),
                 ("open_notebook", "ollama"),
                 ("open_notebook", "surrealdb"),
             },
@@ -356,12 +346,12 @@ networks:
 
     def test_p03_compose_credential_endpoint_is_a_gap_without_value_echo(self):
         row = self.put(
-            "infra/08-ai/open-webui/docker-compose.yml",
+            "infra/08-ai/open-notebook/docker-compose.yml",
             """
 services:
-  open-webui:
+  open_notebook:
     environment:
-      OLLAMA_BASE_URL: http://user:PRIVATE@ollama:11434
+      OLLAMA_API_BASE: http://user:PRIVATE@ollama:11434
 """,
         )
         result = self.inspect(row)

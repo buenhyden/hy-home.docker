@@ -1,10 +1,10 @@
 ---
 title: "System Operations Guide"
-version: "0.3.2"
+version: "0.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -59,8 +59,8 @@ POL-0078을 함께 확인한다. profile은 보안 격리나 별도 호스트가
 | 보호된 백업과 격리 복원 | 명시한 범위·복구 시점의 복원 및 앱 검증 | 다른 데이터와 전체 호스트 장애 복구 |
 
 티어 번호는 기동 순서가 아니다. 예를 들어 [Airflow](../../../../infra/07-workflow/airflow/docker-compose.yml)는
-`airflow-init`의 `service_completed_successfully`를, [Open WebUI](../../../../infra/08-ai/open-webui/docker-compose.yml)는
-Ollama의 `service_healthy`를 기다린다. 관리 DB·broker의 주소를 사용하는 것과
+`airflow-init`의 `service_completed_successfully`를, [Open Notebook](../../../../infra/08-ai/open-notebook/docker-compose.yml)은
+SurrealDB의 `service_healthy`를 기다린다. 관리 DB·broker의 주소를 사용하는 것과
 Compose의 `depends_on`으로 기동을 기다리는 것은 별개다. Keycloak과 OAuth2 Proxy,
 workflow의 실제 관리 DB·broker 연결도 각 선언에서 확인한다. 조건 의미는
 [Compose 기동 순서](https://docs.docker.com/compose/how-tos/startup-order/)를 따른다.
@@ -78,17 +78,18 @@ workflow의 실제 관리 DB·broker 연결도 각 선언에서 확인한다. �
 [동적 middleware](../../../../infra/01-gateway/traefik/dynamic/middleware.yml)가 결정한다.
 모든 host 게시 포트가 이 경로를 통과하는 것은 아니다. 예를 들어 관리 PostgreSQL은
 loopback, 관리 Valkey는 설정된 LAN 주소에 게시된다. 직접 접속도 서비스 Policy의
-접근 경계를 확인한다. Nginx는 별도 선택 대안이며 ingress 중복은 POL-0078에서 다룬다.
+접근 경계를 확인한다.
 
 - **Proxy 인증 경로**: ComfyUI·Flower처럼 SSO middleware를 붙인 요청은
   Traefik → OAuth2 Proxy의 인증 확인 → 앱으로 흐른다. 로그인은 Keycloak으로
   이동하고 OAuth2 Proxy callback으로 돌아온다. [OAuth2 Proxy 선언](../../../../infra/02-auth/oauth2-proxy/docker-compose.yml)은
   기본 session 저장소를 관리 Valkey로 지정한다. 공통 middleware는 사용자 식별
   헤더만 전달하므로 이것만으로 앱 고유 권한이나 API token 인증을 대신하지 않는다.
-- **앱 자체 로그인 경로**: Open WebUI와 Grafana는 Compose에 선언된 Keycloak
+- **앱 자체 로그인 경로**: Grafana는 Compose에 선언된 Keycloak
   OIDC/OAuth 설정을 사용한다. gateway 통과와 앱 내부 로그인·role 승인을 따로
   확인한다. 적용 차이는 [앱 인증 통합](../03-identity-and-access/0079-application-auth-integration.md),
-  [Open WebUI](../09-ai-and-search/0057-open-webui.md), [Grafana](../07-observability/0041-grafana.md)가 소유한다.
+  [Grafana](../07-observability/0041-grafana.md)가 소유한다. Open WebUI는 2026-11-10 이후
+  gateway route 없는 [독립 LAB](../15-labs/0057-open-webui.md)이다.
 - **인증의 데이터 의존성**: [Keycloak 선언](../../../../infra/02-auth/keycloak/docker-compose.yml)은
   관리 PostgreSQL을 사용한다. 여러 앱의 로그인이 함께 실패하면 gateway만
   재시작하지 말고 Keycloak과 관리 DB, proxy 경로라면 Valkey까지 영향 범위를 좁힌다.
@@ -114,7 +115,7 @@ worker·외부 runner를 함께 사용한다. UI가 열리는 것과 작업 완�
 Airflow, n8n, OAuth2 Proxy는 공유 `mng-valkey`를 쓰며 앱별 전용 Valkey는 없다.
 이 공유 상태를 중단하면 여러 소비자에게 영향이 간다.
 
-Open WebUI는 Ollama를 `ai_net`으로 호출하고 자체 데이터를 mount에 보존한다.
+Open WebUI는 HOME network에 합류하지 않는 독립 LAB이며 승인된 Ollama endpoint만 LAB 입력으로 받는다.
 Qdrant는 별도 vector 저장소이며 `ai` 선택에 포함된다는 사실만으로 모든 앱의
 검색 요청이 Qdrant를 거친다고 해석하지 않는다. [Ollama](../../../../infra/08-ai/ollama/docker-compose.yml)와
 [ComfyUI](../../../../infra/08-ai/comfyui/docker-compose.yml)는 같은 호스트 GPU를
@@ -142,14 +143,14 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 
 | 티어 | 운영 책임과 대표 subject | 주요 의존성과 장애 영향 |
 | --- | --- | --- |
-| 01 Gateway | [Traefik](../02-gateway-and-networking/0013-traefik.md), [Nginx 대안](../02-gateway-and-networking/0011-nginx.md): 도메인 요청 진입 | 인증 경로와 대상 앱의 network·readiness; ingress 실패는 여러 웹 앱에 영향 |
+| 01 Gateway | [Traefik](../02-gateway-and-networking/0013-traefik.md): 도메인 요청 진입 | 인증 경로와 대상 앱의 network·readiness; ingress 실패는 여러 웹 앱에 영향 |
 | 02 Auth | [Keycloak](../03-identity-and-access/0014-keycloak.md), [OAuth2 Proxy](../03-identity-and-access/0015-oauth2-proxy.md): 로그인과 세션 | 관리 PostgreSQL·Valkey, gateway·CA; 여러 앱 로그인에 공통 영향 |
 | 03 Security | [OpenBao](../04-security-and-secrets/0085-openbao.md): secret authority와 renderer | owner unseal·인증, 보존된 Raft·Agent 상태; healthy만으로 소비자 갱신 불명 |
 | 04 Data | [관리 DB](../05-databases-and-storage/0028-management-database.md), [개발 DB](../05-databases-and-storage/0100-development-database.md), [객체 저장소](../05-databases-and-storage/0024-seaweedfs.md), [OpenSearch](../05-databases-and-storage/0019-opensearch.md), [Neo4j](../05-databases-and-storage/0033-neo4j.md), [Qdrant](../09-ai-and-search/0034-qdrant.md), [RedisInsight](../05-databases-and-storage/0076-redisinsight.md) | 공유 상태와 선택적 DB 관리; 대상 데이터와 관리 UI 상태를 구분 |
 | 05 Messaging | [Kafka](../06-messaging-and-cdc/0036-kafka.md): 메시지·schema·connector | broker와 초기화; CDC 선택은 관리 DB 준비도 필요, 재처리 여부는 서비스 판단 |
 | 06 Observability | [LGTM](../07-observability/0042-lgtm-stack.md), [Dozzle](../07-observability/0072-dozzle.md) | 공유 객체 저장소·host/GPU 가시성; Dozzle leaf는 기존 admin 선택 유지 |
 | 07 Workflow | [Airflow](../08-workflows-and-automation/0050-airflow.md), [n8n](../08-workflows-and-automation/0053-n8n.md): 스케줄·작업 실행 | 관리 DB·broker·초기화·worker·runner; 화면 성공은 작업 성공이 아님 |
-| 08 AI | [Ollama](../09-ai-and-search/0056-ollama.md), [Open WebUI](../09-ai-and-search/0057-open-webui.md), [ComfyUI](../09-ai-and-search/0081-comfyui.md), [Open Notebook](../09-ai-and-search/0073-open-notebook.md), [Crawl4AI](../09-ai-and-search/0091-crawl4ai.md), [MLflow](../13-analytics-and-data-quality/0088-mlflow.md) | 추론·이미지·지식 앱·실험 상태; SurrealDB·관리 DB·객체 저장소·GPU 경계 |
+| 08 AI | [Ollama](../09-ai-and-search/0056-ollama.md), [ComfyUI](../09-ai-and-search/0081-comfyui.md), [Open Notebook](../09-ai-and-search/0073-open-notebook.md), [Crawl4AI](../09-ai-and-search/0091-crawl4ai.md), [MLflow](../13-analytics-and-data-quality/0088-mlflow.md) | 추론·이미지·지식 앱·실험 상태; SurrealDB·관리 DB·객체 저장소·GPU 경계 |
 | 09 Platform Operations | [Terrakube](../10-platform-and-backup/0069-terrakube.md), [OpenTofu](../10-platform-and-backup/0082-opentofu.md), [Registry](../10-platform-and-backup/0065-registry.md), [Renovate](../10-platform-and-backup/0083-renovate.md), [백업](../10-platform-and-backup/0021-backup-and-restore.md) | IaC·아티팩트·의존성·공통 복구 작업; 공유 데이터 의존성 |
 | 10 Communication | `infra/10-communication`에는 Compose 서비스가 없다. [Stalwart LAB](../15-labs/0070-mail.md)은 `labs/stalwart` | 독립 LAB 메일 서버와 설정 helper; HOME network 밖이며 외부 배달은 별도 범위 |
 | 11 Quality | [k6](../12-testing-and-quality/0061-k6.md), [성능 검사](../12-testing-and-quality/0064-performance-testing.md), [SonarQube LAB](../15-labs/0066-sonarqube.md), [WireMock](../12-testing-and-quality/0092-wiremock.md), [Pact](../12-testing-and-quality/0093-pact-broker.md), [Conftest](../12-testing-and-quality/0095-conftest.md), [Mailpit](../11-mail-and-notifications/0084-mailpit.md) | 승인된 대상·합성 데이터·계약·정책 검사; 개발 캡처와 운영 메일 구분 |

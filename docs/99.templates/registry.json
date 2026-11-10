@@ -1879,7 +1879,8 @@
         "labs/superset/README.md",
         "labs/jupyterlab/README.md",
         "labs/sonarqube/README.md",
-        "labs/stalwart/README.md"
+        "labs/stalwart/README.md",
+        "labs/open-webui/README.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
@@ -4657,7 +4658,6 @@
           "current_issued": [
             1,
             2,
-            3,
             4,
             5,
             6,
@@ -4667,6 +4667,7 @@
             10
           ],
           "reserved_history": [
+            3,
             11,
             12,
             13,
@@ -5137,6 +5138,7 @@
         18,
         20,
         23,
+        32,
         38,
         67,
         68,

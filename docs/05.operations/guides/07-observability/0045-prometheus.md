@@ -126,7 +126,7 @@ check에서 GeForce GTX 1060 6 GB 1대, 설치된 NVIDIA driver, `nvidia` Docker
 NVIDIA Container Toolkit을 확인했다(정확한 버전은 pin이 아니라 Task evidence다).
 DCGM은 data-center GPU를 대상으로 하며 이 consumer card에서는 일부 field가 누락될
 수 있다. 그래서 승인된 실행이 `up{job="dcgm-exporter"} == 1`과 비어있지 않은
-`DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_FB_USED` series를 예상되는 `gpu`/`modelName`
+`DCGM_FI_DEV_GPU_TEMP_CELSIUS`, `DCGM_FI_DEV_FB_USED_BYTES` series를 예상되는 `gpu`/`modelName`
 label과 함께 보여주기 전까지 collection은 **미검증** 상태다.
 
 #### Alerting Rule System

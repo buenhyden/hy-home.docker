@@ -1,5 +1,5 @@
 # Consumed by build-owned-image.py inside its bounded public runtime container.
-FROM docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395
+FROM docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b
 COPY --chmod=555 bao /usr/bin/bao
 COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --chmod=644 LICENSE /licenses/mozilla.txt
@@ -10,6 +10,6 @@ USER openbao
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["server", "-dev", "-dev-no-store-token"]
 LABEL org.opencontainers.image.source="https://github.com/openbao/openbao"
-LABEL org.opencontainers.image.revision="a5db72cef75c24b920ade02065b18dd8eb666bac"
-LABEL org.opencontainers.image.version="2.7.1+hyhome.go1.27.3.net0.60.0.r1"
+LABEL org.opencontainers.image.revision="9e0a0d3c3504a0a00b45e61355afac5e35c78379"
+LABEL org.opencontainers.image.version="2.7.2+hyhome.go1.27.3.net0.62.0.r1"
 LABEL com.hyhome.openbao.upstream_signed="false"

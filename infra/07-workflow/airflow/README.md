@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.2.10"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 created: "2025-11-12"
 ---
 
@@ -240,8 +240,8 @@ docker compose exec airflow-apiserver airflow dags list
 
 ### Convergence contract
 
-- Airflow core/Flower/StatsD 서비스는 `workflow`/`workflow-airflow`에서 **HOME**입니다. 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
-- Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d airflow-apiserver airflow-scheduler airflow-dag-processor airflow-worker airflow-triggerer flower airflow-statsd-exporter`.
+- Airflow core/StatsD 서비스는 `workflow`/`workflow-airflow`에서 **HOME**입니다. Flower는 2026-11-10 owner 결정(7일간 요청 0건)으로 opt-in `airflow-flower` profile로 옮겼고 HOME이 시작하지 않습니다. Prometheus job `flower`는 `expected_state: "off"`이며 Flower를 시작하면 `on`으로 바꿉니다. 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
+- Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d airflow-apiserver airflow-scheduler airflow-dag-processor airflow-worker airflow-triggerer airflow-statsd-exporter`.
 - Broker는 `AIRFLOW_VALKEY_HOST`/`AIRFLOW_VALKEY_SECRET`의 기본값(`mng-valkey`, `mng_valkey_password`)뿐이며 `connection_uri.py`가 다른 조합을 거부합니다.
 - 운영 문서는 아래 탐색점의 `GDE-0050`, `POL-0050`, `RUN-0050`을 사용합니다. HOME 격리 복구는 미실행입니다.
 

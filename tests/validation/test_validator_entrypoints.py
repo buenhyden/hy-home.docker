@@ -36,7 +36,6 @@ SHELL_ENTRYPOINTS = (
     "scripts/knowledge/report-graphify-health.sh",
     "scripts/operations/check-compose-core-readiness.sh",
     "scripts/operations/gen-secrets.sh",
-    "scripts/operations/rehearse-postgres-logical-upgrade.sh",
     "scripts/operations/sync-tech-stack-versions.sh",
     "scripts/operations/use-qa-ci-tools.sh",
     "scripts/validation/check-candidate-preflight.sh",

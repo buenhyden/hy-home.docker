@@ -25,14 +25,9 @@ class Blocked(Exception):
 
 
 SELECTION = {
-    "golang.org/x/crypto": ("v0.56.0", "v0.57.0"),
-    "golang.org/x/mod": ("v0.38.0", "v0.41.0"),
-    "golang.org/x/net": ("v0.58.0", "v0.60.0"),
-    "golang.org/x/sync": ("v0.22.0", "v0.23.0"),
-    "golang.org/x/sys": ("v0.47.0", "v0.48.0"),
-    "golang.org/x/term": ("v0.45.0", "v0.46.0"),
-    "golang.org/x/text": ("v0.41.0", "v0.42.0"),
-    "golang.org/x/tools": ("v0.48.0", "v0.49.0"),
+    "github.com/go-jose/go-jose/v4": ("v4.1.4", "v4.1.9"),
+    "github.com/klauspost/compress": ("v1.19.2", "v1.20.4"),
+    "golang.org/x/net": ("v0.61.0", "v0.62.0"),
 }
 
 
@@ -480,14 +475,14 @@ def build_inputs(build: Path) -> dict:
     expected = {
         "schema_version": 1,
         "builder_version": "go1.27.3",
-        "version": "2.7.1+hyhome.go1.27.3.net0.60.0.r1",
-        "upstream_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
-        "source_archive_sha256": "6da0c07e61d8dfd2ab72ad47cb96691fb7abfecd460a55272545346575c37711",
+        "version": "2.7.2+hyhome.go1.27.3.net0.62.0.r1",
+        "upstream_commit": "9e0a0d3c3504a0a00b45e61355afac5e35c78379",
+        "source_archive_sha256": "f50ac5b150e780728b0f8c5c1533e6542576ff3834f9a89d6c9921e6759f0109",
         "builder": "cgr.dev/chainguard/go@sha256:0c664830ca01dbc9fb797ec3b815ac73ba0a3c9faa42dfe5ad55ab7dc48e66a4",
-        "runtime": "docker.io/library/alpine@sha256:d56c381f961d307a21b3ca004cf1e3910f106644aefb1f43e654c8a56c4fd395",
-        "tag": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1",
-        "commit_date": "2026-10-01T13:32:54Z",
-        "source_date_epoch": 1790861574,
+        "runtime": "docker.io/library/alpine@sha256:0f49f331d9212aff11b932863be4eb01cdf962969aa86dab7d1ee21ac6f5f52b",
+        "tag": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1",
+        "commit_date": "2026-10-26T19:32:27Z",
+        "source_date_epoch": 1793043147,
     }
     if any(inputs.get(key) != value for key, value in expected.items()):
         raise Blocked("unreviewed-build-input")
@@ -508,8 +503,8 @@ def compile_command(inputs: dict) -> str:
     flags = " ".join(
         f"-X {namespace}{key}={value}"
         for key, value in (
-            ("fullVersion", "2.7.1"),
-            ("VersionMetadata", "hyhome.go1.27.3.net0.60.0.r1"),
+            ("fullVersion", "2.7.2"),
+            ("VersionMetadata", "hyhome.go1.27.3.net0.62.0.r1"),
             ("GitCommit", inputs["upstream_commit"]),
             ("CommitDate", inputs["commit_date"]),
         )
@@ -548,7 +543,7 @@ def verify_binary(path: Path, information: Path, inputs: dict) -> str:
         for line in info.splitlines()
         if len(parts := line.split()) >= 3 and parts[0] == "dep"
     }
-    if selected.get("golang.org/x/net") != "v0.60.0" or any(
+    if selected.get("golang.org/x/net") != "v0.62.0" or any(
         selected.get(name, value) != value for name, value in inputs["modules"].items()
     ):
         raise Blocked("binary-module-selection")

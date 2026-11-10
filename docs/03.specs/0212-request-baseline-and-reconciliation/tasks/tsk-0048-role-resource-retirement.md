@@ -1,10 +1,10 @@
 ---
 title: "Role, Resource and Retirement Input Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0048"
 parent_ids:
@@ -84,7 +84,7 @@ not a retirement candidate.
 | Valkey cluster / single | MNG Valkey and P02 named-ACL/dedicated-broker contract | RETAIN_SEPARATE | actual topology use UNKNOWN | P02/P06 own listener and credentials; no inferred cluster retirement |
 | InfluxDB / business time-series | no corroborated current public consumer in this Task | UNKNOWN | UNKNOWN | require exact source, consumer and retention/recovery contract |
 | Prometheus/Grafana variants | `infra/06-observability`; Grafana datasource declarations | RETAIN | runtime use UNKNOWN | P07 owns expected-target and backend evidence; no second monitoring source is created |
-| Traefik / Nginx | `infra/01-gateway/traefik`, `infra/01-gateway/nginx` | RETAIN_SEPARATE | routed UI / named Nginx consumer UNKNOWN | Traefik remains default ingress; Nginx stays documented optional mode |
+| Traefik / Nginx | `infra/01-gateway/traefik`; `infra/01-gateway/nginx` retired 2026-11-10 | RETAIN_TRAEFIK_RETIRE_NGINX | routed UI; Nginx had no named consumer | Traefik is the only gateway; see Nginx gateway retirement below |
 | k6 / Locust | `infra/11-quality/k6`; Locust current source/consumer UNKNOWN | RETAIN_K6_DEFER_LOCUST | UNKNOWN | do not create or remove a load tool without a named workload and budget |
 | Schema Registry | Kafka source and Kafbat schema-registry declaration | RETAIN_OPTIONAL | historical CDC consumer scope only | P04 keeps current `platform_dev` evidence; Opsflow adoption needs an actual consumer |
 | Airflow / n8n | `infra/07-workflow/airflow`, `infra/07-workflow/n8n` | RETAIN_SEPARATE | P04 batch/backfill; P05 event/notification source scope | distinct execution models; current operation remains NOT_RUN |
@@ -95,6 +95,38 @@ not a retirement candidate.
 | OpenTofu / Terrakube | `infra/09-platform-ops/{opentofu,terrakube}` | RETAIN_SEPARATE | operator use UNKNOWN | client tooling and optional server have distinct recovery/authority boundaries |
 | Mailpit / Stalwart | `infra/11-quality/mailpit`, `infra/10-communication/stalwart` | RETAIN_SEPARATE | P05 isolated capture; actual Stalwart sender UNKNOWN | capture is not final delivery; P06 owns credentials and Secret lifecycle |
 | NoSQL / graph stores | Neo4j, OpenSearch, SurrealDB/Qdrant declaration surfaces | DEFER_OPTIONAL | consumer/data owner UNKNOWN | no candidate removal until consumer, backup reader and recovery evidence are explicit |
+
+### Nginx gateway retirement (2026-11-10)
+
+On 2026-11-10 the owner decided to retire `infra/01-gateway/nginx` from the
+repository, replacing the 2026-11-03 RETAIN_SEPARATE disposition above.
+Owner-reported evidence, not re-collected by this change: Nginx was an
+alternative gateway selected only by the `nginx` profile; no Nginx container
+exists in HOME; the seven-day Traefik router metrics show every live route on
+Traefik; and its ingress role duplicates Traefik entirely. No container was
+started, stopped or changed, and no secret or `.env` content was read.
+
+Disposition and consumer cutover, all in one change:
+
+- Removed the `infra/01-gateway/nginx/` leaf, its root `include` entry, the
+  `nginx` profile and its row in the POL-0078 vocabulary (Traceability records
+  the retirement) and its `seaweedfs` companion profile membership.
+- Retired the Nginx Guide, Policy and Runbook (`GDE-0011`, `POL-0011`,
+  `RUN-0011`) and their README rows. Their still-current meaning, that Traefik
+  is the default and only ingress, already lives in the Traefik documents,
+  AD-0001 and POL-0078; ADR-0001 carries a dated amendment.
+- Removed the Nginx hardening check, the `nginx` profile category entry, the
+  P02 Nginx tests and their registrations, the `nginx:alpine` floating-image
+  exception and the tech-stack projection row.
+- Moved the SEC01 `nginx` ROOT row to `historical_lab_entries` with
+  `current_scope: removed` and recorded the removal in `source_refreshes`;
+  counts and the related-source mapping were adjusted without new vendor,
+  signature, scan or acceptance evidence.
+- Removed the SeaweedFS `cdn-bucket` creation (`BUCKETS`), its anonymous `Read:cdn-bucket`
+  identity and the related tests and docs after confirming by repository grep
+  that no service other than Nginx referenced the bucket. Deleting the bucket
+  data in HOME is a separate approved step and was not performed. The
+  historical SEC01 lookup records for nginx are kept.
 
 ### Historical/source reconciliation
 
@@ -135,6 +167,64 @@ checks the target; this is not a deletion success receipt. Secret copies,
 SMTP-specific retirement and protected recovery material remain P06/existing
 executor handoffs.
 
+### 2026-11-10 Kafka CDC LAB move (ADR-0062 amendment)
+
+The owner decided on 2026-11-10 to move `kafka-connect` and `schema-registry` (the Debezium
+CDC path) out of HOME into `labs/kafka-cluster` (`lab-kafka-connect`, `lab-schema-registry`).
+The Kafka broker stays the only broker (ADR-0052); `kafka-1`, `kafka-init`, `kafka-exporter` and
+`kafbat-ui` stay.
+
+Sanitized read-only evidence, no content or secret recorded:
+
+- Kafka CDC: Connect has 0 connectors, Schema Registry 0 subjects, Kafka has zero consumer
+  groups, the topics `application-logs` and `infra-events` hold 0 messages, and the CDC
+  source database `platform_dev` does not exist in HOME (also T03 in TSK-0043). Cost is about
+  650 MiB RSS plus two Traefik routers, a Debezium replication secret and a provisioning job.
+
+Done in source: the two services, `debezium-db-provision`, its provisioning SQL, the connector
+sample, the Connect secret renderer and the two JMX rule files left HOME (Git history keeps
+them); the Dockerfile and the Connect and Schema Registry dashboards moved to the LAB;
+kafbat-ui no longer configures a schema registry or Connect and depends on `kafka-1` only; the
+Prometheus jobs, the two ingress networks, the root `debezium_postgres_password` secret, the
+`cdc`, `messaging-schema` and `messaging-connect` profiles and the HOME `CdcStreamRehearsalTests`
+were removed. PG-025 then lost its last consumer; on 2026-11-10 the owner retired it because nothing uses it and the LAB declares no credential, so its catalog row, its test exception and its public registry row were removed and the owner deleted `debezium_password.txt`.
+The SEC01 ledger archived the three rows (`source_refreshes`, `historical_lab_entries`),
+`ledger_rebind` re-bound the hashes, the tech-stack projection and the `m0021` inventory were
+regenerated, and POL-0078, GDE/POL/RUN-0036 and GDE/POL/RUN-0108 were updated.
+
+Nothing was started, stopped or recreated. The running HOME `kafka-connect` and
+`schema-registry` containers and the `kafka-connect-data` volume remain until the owner approves
+their retirement.
+
+The owner removed the PG-025 row from `secrets/SENSITIVE_ENV_VARS.md.example` in the same change, since `secrets/` is denied to agents, and prunes the private registry row after merge with `gen-secrets.sh --sync-metadata-prune`.
+
+### 2026-11-10 Flower opt-in profile (ADR-0062 amendment)
+
+The owner decided on 2026-11-10 that Airflow `flower` leaves the HOME `workflow` and
+`workflow-airflow` profiles for the dedicated opt-in profile `airflow-flower`. Sanitized
+read-only evidence: 0 requests in 7 days, and the Airflow UI, the worker healthcheck and the
+statsd metrics already cover task and worker state.
+
+Done in source: the Compose profile moved, and `airflow-apiserver` and `airflow-init`, which Flower depends on, also joined
+`airflow-flower` so the profile renders alone; POL-0078 registers `airflow-flower` (capability) and
+drops `flower` from the two Airflow profile rows; both Prometheus files label the `flower` job
+`expected_state: "off"`, so `PrometheusInfraTargetsMissing` (which filters `expected_state!="off"`)
+does not fire while Flower is not selected, and a comment on the rule says to flip the label to
+`on` when the profile starts; the dashboard `Applications/flower` is kept. The SEC01 ledger rows
+were re-bound with `ledger_rebind` and the `flower` row's `profiles_declared` was set by hand
+(recorded in that refresh's `revision_scope`); the `m0021` inventory was regenerated; the
+workflow and Grafana READMEs were updated.
+
+Nothing was started, stopped or recreated, so Prometheus still scrapes the old label set and the
+`flower` container still runs until the owner recreates `prometheus` and removes `flower`.
+
+### Owner decisions 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) set the service operation, storage move,
+credential, deletion and remote CI boundary row to not required, because
+criterion 92 reuses SPEC-0246 C1-C6 at its recorded scope and authorizes none
+of those operations, and accepted criterion 92.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -149,7 +239,9 @@ executor handoffs.
 | Broad CI plan | 91 | W96 | Public-plan execution | Existing CI plan | FAIL | 7 failures/323 errors from existing `leaf.p03-hermes` public-execution parity residual; separate P03/CI ownership remains. | required | - |
 | Workflow expected-list residual | 93 | W98 | Expected-selector list comparison | Existing workflow test expectation | FAIL | Six P04/P05 registration expectation differences; distinct from P03 execution parity. | required | - |
 | P09 DATA review refresh | 90 | W95 | Local inventory scan then validate | 98 retained public review receipts | PASS | 42,018/42,018 files listed; whole review 6/2,322; partial 78/2,322; render 0/17; runtime/restore 0/112. Metadata/listing only. | required | - |
-| Service operation, storage move, credential use, external deletion, remote CI | 92 | W97 | Authorized-operation boundary | Current authorization | NOT_RUN | Not authorized in this Task. | required | - |
+| Nginx gateway retirement | 90 | W95 | Static retirement checks | Owner decision 2026-11-10; changed files | PASS | Compose validation (63 selections), 01-gateway hardening, operations catalog, script manifest, document links/metadata/lifecycle, SEC01 and affected test modules passed locally. The Nginx absence and Traefik route evidence is owner-reported, not re-collected; no container was started, stopped or changed. | required | - |
+| Service operation, storage move, credential use, external deletion, remote CI | 92 | W97 | Authorized-operation boundary | Current authorization | NOT_RUN | Not authorized in this Task. | optional | - |
+| C1–C6 acceptance readback | 92 | W97 | Historical acceptance readback | POL-0102 Traceability at `59d1fe69f` | PASS | POL-0102 records owner acceptance of all six SPEC-0246 criteria C1–C6 with dates; no migration, restore or runtime check was run. | required | - |
 
 ## Criterion Acceptance
 
@@ -157,7 +249,7 @@ executor handoffs.
 | --- | --- | --- | --- | --- |
 | 90 | pending | Current public role mapping, P09 DATA review refresh | Source declaration scope is current; actual use and ownership remain unverified. | SPEC-0212 TSK-0048 |
 | 91 | pending | Resource assessment binding, Common-control overlay helper | Source tests pass; runtime/mutation remains blocked because effective controls and receipt are unverified. | SPEC-0212 TSK-0048 |
-| 92 | pending | C1–C6 historical placement | Existing SPEC-0246 acceptance, summarized in POL-0102, is reused at its recorded scope; measured drift plus an approved recovery plan is required to reopen. | @buenhyden |
+| 92 | accepted | C1–C6 historical placement, C1–C6 acceptance readback | Existing SPEC-0246 acceptance, summarized in POL-0102, is reused at its recorded scope; measured drift plus an approved recovery plan is required to reopen. The operation boundary row is out of scope by the criterion wording, and the owner set it to not required and accepted 92 on 2026-11-10. | @buenhyden |
 | 93 | pending | Retirement parser | Parser rejection tests pass; apply remains blocked pending exact owner, writer stop and target approval. | SPEC-0212 TSK-0048 |
 
 ## Review and Completion
