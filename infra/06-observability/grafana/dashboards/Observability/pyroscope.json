@@ -406,5 +406,5 @@
       }
     ]
   },
-  "description": "Per-service CPU, memory and goroutine profiles pulled by Alloy (flamegraph panels follow the Service variable), then the Pyroscope server's own request and object-store metrics. Provisioned by hy-home (SPEC-0193)."
+  "description": "Local dashboard: per-service CPU, memory and goroutine profiles pulled by Alloy (flamegraph panels follow the Service variable), then the Pyroscope server's own request and object-store metrics. Provisioned by hy-home (SPEC-0193)."
 }
