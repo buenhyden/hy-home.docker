@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Operations Policy"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -62,7 +62,7 @@ created: "2026-05-10"
   - 회귀 baseline 저장/비교 및 시나리오 태그 표준화
   - 분산 실행 토폴로지와 데이터 초기화/정리 루틴 문서화
 - **renovate 승인 조건**:
-  - `dependency-update` 작업 범위(수동 실행과 `hyhome-renovate.timer` 주간 실행)와 최소 token 권한을 유지한다.
+  - `dependency-update` 작업 범위(온디맨드 실행; systemd timer는 선택)와 최소 token 권한을 유지한다.
   - self-host `allowedCommands` 허용 목록과 변경 PR 검증을 확인한다.
 
 ### 확장 게이트와 현재 제한
