@@ -14,6 +14,14 @@ limits:
   max_label_name_length: 1024
   max_label_value_length: 2048
   max_label_names_per_series: 30
+  # Steady growth measured 2026-11-10 (file mtimes): about 0.12 GB/day at the
+  # 30 s scrape, plus a 2.7 GB burst on 2026-10-16/17; the volume held 5.2 GB.
+  # The 31d default keeps that burst until mid-November and settles near
+  # 3.7 GB steady. 7d settles near 0.45 GB at the 60 s scrape and still answers
+  # "what changed since last weekend". v2 storage deletes whole blocks only
+  # after all their data has aged out plus the metastore.index
+  # cleanup_grace_period (6h default), so disk use lags the setting by that.
+  retention_period: 168h
 
 multitenancy_enabled: false
 

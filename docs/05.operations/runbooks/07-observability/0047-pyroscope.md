@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.1.4"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0047"
 parent_ids:
@@ -34,7 +34,7 @@ created: "2026-05-17"
 
 ## Prerequisites
 
-`pyroscope`의 filesystem volume과 선택 Alloy source를 먼저 확인한다. `profiling`은 승인된 HOME 선택에 포함되며 실제 source 수신은 별도 검증한다. 교체·중지 전 입력을 멈추고 일관된 local data를 보존한다. 기간 미선언을 무기한 보존 계약으로 취급하지 않는다.
+`pyroscope`의 filesystem volume과 선택 Alloy source를 먼저 확인한다. `profiling`은 승인된 HOME 선택에 포함되며 실제 source 수신은 별도 검증한다. 교체·중지 전 입력을 멈추고 일관된 local data를 보존한다. 7일 retention은 backup이나 archive 계약이 아니다.
 
 ## Procedure
 
@@ -101,7 +101,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Profile storage and source limits
 
-이 항목은 [POL-0047](../../policies/07-observability/0047-pyroscope.md#profile-storage-and-source-limits)이 소유한다. 요약: Alloy의 Go/SeaweedFS pprof source는 writer/receiver readiness만으로 수신을 증명하지 않는다. Pyroscope에는 고정 retention이 없고 기본값이나 disk pressure 정리가 무기한 보존을 보장하지 않는다. readiness는 `wget` 대신 선언된 `profilecli ready` probe를 쓴다.
+이 항목은 [POL-0047](../../policies/07-observability/0047-pyroscope.md#profile-storage-and-source-limits)이 소유한다. 요약: Alloy의 Go/SeaweedFS pprof source는 writer/receiver readiness만으로 수신을 증명하지 않는다. retention은 `limits.retention_period: 168h`(7일)이며 삭제는 block 단위로 유예(`cleanup_grace_period` 6h) 뒤에 일어난다. Alloy는 60초 간격으로 block/mutex 없이 수집한다. readiness는 `wget` 대신 선언된 `profilecli ready` probe를 쓴다.
 
 ### Planned isolated restore rehearsal
 
@@ -130,7 +130,7 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 
 - **Logs**: `docker logs --tail=200 pyroscope`, `docker logs --tail=200 alloy`
 - **Health**: Pyroscope `/ready`, Grafana Pyroscope datasource
-- **Config**: `pyroscope.yaml`, Alloy `pyroscope.scrape "go_services"`, `pyroscope.scrape "seaweedfs"`(block·mutex profile off: SeaweedFS가 scrape timeout 뒤에야 응답한다)와 `pyroscope.write`(HOME은 `config.home.alloy`), Grafana datasource provisioning(UID `Pyroscope`)
+- **Config**: `pyroscope.yaml`, Alloy `pyroscope.scrape "go_services"`(60초, block·mutex off, `dev-pg-exporter`·`kafka-exporter` 포함), `pyroscope.scrape "seaweedfs"`(block·mutex profile off: SeaweedFS가 scrape timeout 뒤에야 응답한다)와 `pyroscope.write`(HOME은 `config.home.alloy`), Grafana datasource provisioning(UID `Pyroscope`)
 - **Profile sources**: `service_name` label 값을 조회해 수집 중인 서비스를 확인한다. 2026-09-30 기준 11개(alertmanager, alloy, grafana, loki, mng-pg-exporter, node-exporter, prometheus, pyroscope, registry, seaweedfs-s3, tempo)다.
 
   ```bash

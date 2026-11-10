@@ -101,7 +101,7 @@
   "include_inputs": [
     {
       "path": "docker-compose.yml",
-      "sha256": "dee42f9da472962aba65e8a2f685c2e03ba055e7755d6ae4bf03fdf9ce152a9f"
+      "sha256": "7e032ab03a673560fe42c47f2963cf9342cd866add40495e67d6e2981b5f3541"
     },
     {
       "path": "infra/01-gateway/nginx/docker-compose.yml",
@@ -129,7 +129,7 @@
     },
     {
       "path": "infra/04-data/mng-db/docker-compose.yml",
-      "sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25"
+      "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
     },
     {
       "path": "infra/04-data/neo4j/docker-compose.yml",
@@ -165,11 +165,11 @@
     },
     {
       "path": "infra/07-workflow/airflow/docker-compose.yml",
-      "sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce"
+      "sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba"
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+      "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -185,7 +185,7 @@
     },
     {
       "path": "infra/08-ai/ollama/docker-compose.yml",
-      "sha256": "843744fffca982b39a95fe050196fa884dc76e17be4357205f40ae0d0cc587b7"
+      "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
     },
     {
       "path": "infra/08-ai/open-notebook/docker-compose.yml",
@@ -381,7 +381,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+      "source_input_sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -546,7 +546,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+      "source_input_sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -693,7 +693,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+      "source_input_sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -858,7 +858,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+      "source_input_sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1020,7 +1020,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+      "source_input_sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1170,7 +1170,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+      "source_input_sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1335,7 +1335,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+      "source_input_sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -1721,8 +1721,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:21:01+09:00",
-        "next_validation_due": "2026-11-17T14:21:01+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -1741,7 +1741,7 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T14:21:01+09:00",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
       "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -2414,8 +2414,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:21:01+09:00",
-        "next_validation_due": "2026-11-17T14:21:01+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -2438,7 +2438,7 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T14:21:01+09:00",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
       "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -2560,8 +2560,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:21:01+09:00",
-        "next_validation_due": "2026-11-17T14:21:01+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit; no runtime state is held by the forwarder.",
@@ -2573,7 +2573,7 @@
       "effective_current_digest_type": "NOT_OBSERVED",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: no release lookup or artifact inspection has been run for this service",
-      "source_refreshed_at": "2026-11-10T14:21:01+09:00",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
       "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
@@ -4188,7 +4188,7 @@
       "upstream_reported_tag": "3.3.2",
       "next_fact_command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+      "source_input_sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "hy-home/airflow:3.3.2-keycloak",
@@ -6269,8 +6269,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:21:01+09:00",
-        "next_validation_due": "2026-11-17T14:21:01+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -6286,7 +6286,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-10T14:21:01+09:00",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
       "source_input_sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -6701,7 +6701,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6844,7 +6844,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6997,7 +6997,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7148,7 +7148,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7290,7 +7290,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T03:08:02+00:00",
-      "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7545,7 +7545,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T06:36:12+09:00",
-      "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
@@ -7682,7 +7682,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -7960,7 +7960,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
@@ -8238,7 +8238,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -9045,8 +9045,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:21:01+09:00",
-        "next_validation_due": "2026-11-17T14:21:01+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -9062,8 +9062,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo ollama/ollama --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T14:21:01+09:00",
-      "source_input_sha256": "843744fffca982b39a95fe050196fa884dc76e17be4357205f40ae0d0cc587b7",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
@@ -9215,7 +9215,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "843744fffca982b39a95fe050196fa884dc76e17be4357205f40ae0d0cc587b7",
+      "source_input_sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11884,8 +11884,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:21:01+09:00",
-        "next_validation_due": "2026-11-17T14:21:01+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -11897,7 +11897,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-10T14:21:01+09:00",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
       "source_input_sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -13745,8 +13745,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:21:01+09:00",
-        "next_validation_due": "2026-11-17T14:21:01+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -13758,7 +13758,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T14:21:01+09:00",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
       "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -13866,8 +13866,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:21:01+09:00",
-        "next_validation_due": "2026-11-17T14:21:01+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -13879,7 +13879,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T14:21:01+09:00",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
       "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -13987,8 +13987,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:21:01+09:00",
-        "next_validation_due": "2026-11-17T14:21:01+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -14000,7 +14000,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T14:21:01+09:00",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
       "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -14501,7 +14501,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: external producer/source contract not inspected",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -14557,7 +14557,7 @@
       "upstream_reported_tag": "2026.11.9-57ff753ad",
       "next_fact_command": "docker buildx imagetools inspect searxng/searxng:latest",
       "source_refreshed_at": "2026-11-09T09:32:23.140566+00:00",
-      "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -14615,7 +14615,7 @@
       "upstream_reported_tag": "1.8.1",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
       "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
-      "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -14673,7 +14673,7 @@
       "upstream_reported_tag": "1.8.1",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
       "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
-      "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -14731,7 +14731,7 @@
       "upstream_reported_tag": "1.8.1",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-runner-dind:latest",
       "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
-      "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -31854,10 +31854,10 @@
       ]
     },
     {
-      "source_revision": "8c1e2f97c20d4f24c89cca195d82d97e172b9536",
-      "refreshed_at": "2026-11-10T14:21:01+09:00",
-      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
-      "input_manifest_sha256": "cc8c39e6c5f7ed4738488a5ed21023df8df9df9067c518b2da1b6e362ffd0515",
+      "source_revision": "2249fb911accf9d05fe234452421f6472f9158ad",
+      "refreshed_at": "2026-11-10T14:16:59+09:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "c0251d0e68e9f82c8a4f9c85db573b68b3f75732104ba24d86c1eb3480db0101",
       "previous_include_inputs": [
         {
           "path": "docker-compose.yml",
@@ -31997,6 +31997,280 @@
         }
       ],
       "changed_inputs": [
+        "docker-compose.yml",
+        "infra/04-data/mng-db/docker-compose.yml",
+        "infra/07-workflow/airflow/docker-compose.yml",
+        "infra/07-workflow/n8n/docker-compose.yml",
+        "infra/08-ai/ollama/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "airflow-apiserver",
+          "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-dag-processor",
+          "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-init",
+          "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-scheduler",
+          "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-statsd-exporter",
+          "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "airflow-triggerer",
+          "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "airflow-worker",
+          "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "blog-ingestion",
+          "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "flower",
+          "source_input_sha256": "b7b6b511670de38c574d121bb6f5b343a234a4be15fd00b2025b30a97312c9ce",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mng-pg",
+          "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mng-pg-exporter",
+          "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "mng-pg-init",
+          "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "mng-pg-monitor-provision",
+          "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "mng-valkey",
+          "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+          "source_refreshed_at": "2026-11-10T03:08:02+00:00"
+        },
+        {
+          "service": "mng-valkey-exporter",
+          "source_input_sha256": "b876800927a87e0b765211874a35e2c730323efaa4b4b94f8e349d6b55f4da25",
+          "source_refreshed_at": "2026-11-10T06:36:12+09:00"
+        },
+        {
+          "service": "n8n",
+          "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-sandbox-api",
+          "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+          "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00"
+        },
+        {
+          "service": "n8n-sandbox-certs",
+          "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+          "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00"
+        },
+        {
+          "service": "n8n-sandbox-runner-1",
+          "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+          "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00"
+        },
+        {
+          "service": "n8n-task-runner-worker",
+          "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-worker",
+          "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "ollama",
+          "source_input_sha256": "81c1078909ff3b06084fb1131abd4ab0a4272a1c760e58d00380cc2a1ff44e8c",
+          "source_refreshed_at": "2026-11-10T03:39:53+09:00"
+        },
+        {
+          "service": "ollama-exporter",
+          "source_input_sha256": "81c1078909ff3b06084fb1131abd4ab0a4272a1c760e58d00380cc2a1ff44e8c",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "searxng",
+          "source_input_sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09",
+          "source_refreshed_at": "2026-11-09T09:32:23.140566+00:00"
+        }
+      ],
+      "meaning": "5 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 24 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "8cffec69dcb3dace4e8aa423ff62b9fa04682be3",
+      "refreshed_at": "2026-11-10T14:39:40+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "c192147e39d6598fc0d8f2ccbd01ec51a0d6fab8a30df10c7b249facd5055cfc",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7e032ab03a673560fe42c47f2963cf9342cd866add40495e67d6e2981b5f3541"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "1f456cdfe5897f3309f2791324c9d6987491a852a9f26e7e0a8abb8a7042fa33"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "b4fac13262e3e6d022d3f357f54be3c1b530496a55192f8f957d95afc565f7e2"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "3d7a5afb275294240c18f96f246d06f34a14630e35ef0947c9fc6f1a485b670d"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "37dc2cb58c35277eebac6062dfc5fadcec47d1775226c3eb3690f43990041112"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "59b08460ef4f5722a25c66d556aeaa588f05f7233ec32d197f1f37b03f4a7b8b"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "bb1f26a3ad1e05e42b0b157331c74e0c9d52093bf9df9ba80d0c41d8a8eda638"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "c567ca166971331217a51b42e86990c45881d6a24ae9be26e0563040bf9d26fe"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "8a812b47f6fa0127637fe7c81beb02de9f8a74077d8612e44ab6e509e3d52cfd"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "fc03de6594fe7bda58107b7cb54ec3d0fd6267781798de3f939d013fc4f5b4e8"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "930e41282b55e3a5c55a2d7e32087bd94d2c004f7643af48eb1f8d24572f27db"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
         "infra/08-ai/crawl4ai/docker-compose.yml",
         "infra/08-ai/ollama/docker-compose.yml",
         "infra/09-platform-ops/renovate/docker-compose.yml",
@@ -32032,12 +32306,12 @@
         },
         {
           "service": "ollama",
-          "source_input_sha256": "81c1078909ff3b06084fb1131abd4ab0a4272a1c760e58d00380cc2a1ff44e8c",
+          "source_input_sha256": "8a812b47f6fa0127637fe7c81beb02de9f8a74077d8612e44ab6e509e3d52cfd",
           "source_refreshed_at": "2026-11-10T03:39:53+09:00"
         },
         {
           "service": "ollama-exporter",
-          "source_input_sha256": "81c1078909ff3b06084fb1131abd4ab0a4272a1c760e58d00380cc2a1ff44e8c",
+          "source_input_sha256": "8a812b47f6fa0127637fe7c81beb02de9f8a74077d8612e44ab6e509e3d52cfd",
           "source_refreshed_at": "2026-11-10T12:48:10+09:00"
         },
         {
@@ -37169,10 +37443,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-10T14:21:01+09:00",
-      "source_revision": "8c1e2f97c20d4f24c89cca195d82d97e172b9536",
+      "checked_at": "2026-11-10T14:39:40+09:00",
+      "source_revision": "8cffec69dcb3dace4e8aa423ff62b9fa04682be3",
       "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed after a Renovate-proposed update.",
-      "input_sha256": "67d61e44c3275ebcd308bad5a3b90842c136c43fe0eb628bac0dc42486aff4c8",
+      "input_sha256": "97aa61dd956ba41081a169df6fa6df93a9a5aa3ccb4eb45fd5fa0235ea22fed7",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -37189,7 +37463,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+          "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -39766,7 +40040,91 @@
         "signature": "NOT_RUN",
         "full_image_sbom_scan": "NOT_RUN",
         "recovery": "NOT_RUN",
-        "archived_at": "2026-11-10T14:21:01+09:00"
+        "archived_at": "2026-11-10T14:16:59+09:00"
+      },
+      {
+        "checked_at": "2026-11-10T14:16:59+09:00",
+        "source_revision": "2249fb911accf9d05fe234452421f6472f9158ad",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "ab607efd8d3cb0d556f4d1d8bee6568b2eb16c13a80f2f99c2666f19408d71f7",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "ddc98498eeddd449d9c0f308b97c20165db94ee47e739f9d94ea3ece28efa663"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "10a645adc0514004873a7baa1b615726d52ab0fdcaa0b4114770335b149c0d03"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-10T14:39:40+09:00"
       }
     ],
     "current_source_acceptance_limit": {

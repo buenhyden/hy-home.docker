@@ -1907,12 +1907,5 @@
       ]
     }
   ],
-  "required_image_inputs": [
-    {
-      "compose_file": "infra/07-workflow/airflow/workloads/manifest-pipeline/compose.workflow.override.yml",
-      "variables": [
-        "OPSFLOW_AIRFLOW_IMAGE"
-      ]
-    }
-  ]
+  "required_image_inputs": []
 }

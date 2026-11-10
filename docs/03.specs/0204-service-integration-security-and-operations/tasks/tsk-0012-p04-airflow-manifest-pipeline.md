@@ -1328,6 +1328,7 @@ The public-safe proposed commands below are templates, not authorization to
 execute. They use no private environment file or credential value.
 
 ```sh
+# doc-paths: illustrative
 # Render only; <ROOT_MAIN> is the selected repository main path. The candidate
 # image is isolation-only and <REQUIRED: OPSFLOW_SECRET_DIR> must stay absent.
 OPSFLOW_CODE_DIR='<REQUIRED: public workload source>' \
