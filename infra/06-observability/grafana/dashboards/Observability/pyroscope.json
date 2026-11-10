@@ -15,7 +15,181 @@
   "refresh": "1m",
   "panels": [
     {
-      "id": 1,
+      "type": "timeseries",
+      "title": "CPU by service",
+      "description": "Total CPU time sampled per step, from Alloy's pprof scrape.",
+      "datasource": {
+        "type": "grafana-pyroscope-datasource",
+        "uid": "Pyroscope"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ns"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-pyroscope-datasource",
+            "uid": "Pyroscope"
+          },
+          "queryType": "metrics",
+          "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+          "labelSelector": "{service_name=~\".+\"}",
+          "groupBy": [
+            "service_name"
+          ]
+        }
+      ],
+      "id": 1
+    },
+    {
+      "type": "timeseries",
+      "title": "In-use memory by service",
+      "description": "Go heap in use, from Alloy's pprof scrape.",
+      "datasource": {
+        "type": "grafana-pyroscope-datasource",
+        "uid": "Pyroscope"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-pyroscope-datasource",
+            "uid": "Pyroscope"
+          },
+          "queryType": "metrics",
+          "profileTypeId": "memory:inuse_space:bytes:space:bytes",
+          "labelSelector": "{service_name=~\".+\"}",
+          "groupBy": [
+            "service_name"
+          ]
+        }
+      ],
+      "id": 2
+    },
+    {
+      "type": "flamegraph",
+      "title": "CPU flamegraph: $service",
+      "datasource": {
+        "type": "grafana-pyroscope-datasource",
+        "uid": "Pyroscope"
+      },
+      "description": "Pick the service in the Service variable; Drilldown > Profiles gives the same data with diffing.",
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-pyroscope-datasource",
+            "uid": "Pyroscope"
+          },
+          "queryType": "profile",
+          "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+          "labelSelector": "{service_name=\"$service\"}",
+          "groupBy": []
+        }
+      ],
+      "id": 3
+    },
+    {
+      "type": "flamegraph",
+      "title": "In-use memory flamegraph: $service",
+      "datasource": {
+        "type": "grafana-pyroscope-datasource",
+        "uid": "Pyroscope"
+      },
+      "description": "Pick the service in the Service variable; Drilldown > Profiles gives the same data with diffing.",
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-pyroscope-datasource",
+            "uid": "Pyroscope"
+          },
+          "queryType": "profile",
+          "profileTypeId": "memory:inuse_space:bytes:space:bytes",
+          "labelSelector": "{service_name=\"$service\"}",
+          "groupBy": []
+        }
+      ],
+      "id": 4
+    },
+    {
+      "type": "timeseries",
+      "title": "Goroutines by service",
+      "description": "A steady climb in one service is a goroutine leak.",
+      "datasource": {
+        "type": "grafana-pyroscope-datasource",
+        "uid": "Pyroscope"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 22
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-pyroscope-datasource",
+            "uid": "Pyroscope"
+          },
+          "queryType": "metrics",
+          "profileTypeId": "goroutine:goroutine:count:goroutine:count",
+          "labelSelector": "{service_name=~\".+\"}",
+          "groupBy": [
+            "service_name"
+          ]
+        }
+      ],
+      "id": 5
+    },
+    {
+      "id": 6,
       "type": "timeseries",
       "title": "Requests by route",
       "datasource": {
@@ -26,7 +200,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 30
       },
       "fieldConfig": {
         "defaults": {
@@ -48,7 +222,7 @@
       ]
     },
     {
-      "id": 2,
+      "id": 7,
       "type": "timeseries",
       "title": "p99 latency by route",
       "datasource": {
@@ -59,7 +233,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 30
       },
       "fieldConfig": {
         "defaults": {
@@ -81,7 +255,7 @@
       ]
     },
     {
-      "id": 3,
+      "id": 8,
       "type": "timeseries",
       "title": "Object store operations",
       "datasource": {
@@ -92,7 +266,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 38
       },
       "fieldConfig": {
         "defaults": {
@@ -114,7 +288,7 @@
       ]
     },
     {
-      "id": 4,
+      "id": 9,
       "type": "timeseries",
       "title": "Object store failures",
       "datasource": {
@@ -125,7 +299,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 38
       },
       "fieldConfig": {
         "defaults": {
@@ -148,7 +322,89 @@
     }
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "name": "service",
+        "label": "Service",
+        "type": "custom",
+        "hide": 0,
+        "query": "prometheus,alertmanager,loki,tempo,alloy,pyroscope,grafana,node-exporter,mng-pg-exporter,dev-pg-exporter,kafka-exporter,registry,seaweedfs-s3",
+        "current": {
+          "selected": false,
+          "text": "grafana",
+          "value": "grafana"
+        },
+        "options": [
+          {
+            "selected": false,
+            "text": "prometheus",
+            "value": "prometheus"
+          },
+          {
+            "selected": false,
+            "text": "alertmanager",
+            "value": "alertmanager"
+          },
+          {
+            "selected": false,
+            "text": "loki",
+            "value": "loki"
+          },
+          {
+            "selected": false,
+            "text": "tempo",
+            "value": "tempo"
+          },
+          {
+            "selected": false,
+            "text": "alloy",
+            "value": "alloy"
+          },
+          {
+            "selected": false,
+            "text": "pyroscope",
+            "value": "pyroscope"
+          },
+          {
+            "selected": true,
+            "text": "grafana",
+            "value": "grafana"
+          },
+          {
+            "selected": false,
+            "text": "node-exporter",
+            "value": "node-exporter"
+          },
+          {
+            "selected": false,
+            "text": "mng-pg-exporter",
+            "value": "mng-pg-exporter"
+          },
+          {
+            "selected": false,
+            "text": "dev-pg-exporter",
+            "value": "dev-pg-exporter"
+          },
+          {
+            "selected": false,
+            "text": "kafka-exporter",
+            "value": "kafka-exporter"
+          },
+          {
+            "selected": false,
+            "text": "registry",
+            "value": "registry"
+          },
+          {
+            "selected": false,
+            "text": "seaweedfs-s3",
+            "value": "seaweedfs-s3"
+          }
+        ],
+        "multi": false,
+        "includeAll": false
+      }
+    ]
   },
-  "description": "Local dashboard: no external dashboard matches pyroscope. Provisioned by hy-home (SPEC-0193)."
+  "description": "Local dashboard: per-service CPU, memory and goroutine profiles pulled by Alloy (flamegraph panels follow the Service variable), then the Pyroscope server's own request and object-store metrics. Provisioned by hy-home (SPEC-0193)."
 }
