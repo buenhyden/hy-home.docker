@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -163,6 +163,73 @@ compatibility, recovery, runtime, deployment, or rollback checks. Historical
 receipts remain bound to their recorded subjects; criterion105 artifact
 verification remains NOT_RUN.
 
+### Official-advisory applicability continuation 2026-11-11
+
+The durable review receipt is
+`release-lookups.json#/master_20261111_advisory_review`; its gate receipt is
+`#/master_20261111_advisory_review/gate_revalidation`. Every one of the 89
+current ledger subjects now has a `reviewed_at` value, exact declared/source
+binding, an official-advisory discovery/decision record or explicit
+missing-origin residual, coverage limit, security applicability, separate
+source action, and a latest-version disposition. The same records cover all 58
+previous latest-version residuals. No declared pin, source input, selected
+artifact, signature, provenance, SBOM, scan, compatibility, recovery or
+acceptance field changed.
+
+The bounded anonymous GitHub catalogue retrieval made 59 GET requests across
+54 repositories and returned 1,088 records representing 688 unique advisory
+identifiers; 51 endpoints completed. It is discovery evidence rather than a
+claim that an empty or incomplete listing has no vulnerability: n8n returned
+the same 100 records for four requested pages, SurrealDB returned the same 100
+records for two pages before a 403, and `ollama-exporter` returned 404. The two
+subjects without a primary advisory-source result are `ollama-exporter` and
+external `blog-ingestion`. The absence of concrete advisory references and the
+catalogue limitations are retained independently, so an endpoint failure or
+empty result is not treated as absence of a security issue.
+
+The security gate exits 2 with `ledger_complete=false`. It reports 29
+ledger-complete rows pending independent verification, 54 `blocked-evidence`
+rows, and six `blocked-no-fix` rows (60 blocked rows in total). Of the 89
+reviewed classifications, 29 are component-scoped `NOT_AFFECTED`, 18 are
+`AFFECTED` (12 patch candidates still need digest, scan, compatibility,
+recovery and residual approval; six have no patch), and 42 are `UNKNOWN` and
+therefore deferred. The 42 typed `reviewed_decision` residuals mean an
+inconclusive classification, not an unreviewed subject. A component-scoped
+`NOT_AFFECTED` decision does not assert that its complete image is clean.
+
+The following decisions are source-only and separate normal version currency
+from a security patch decision. Five declared image consumers carry the
+affected pgBackRest component and require a candidate patch; encrypted
+repositories also require a separately approved key/subkey inspection and, if
+necessary, a new backup plus restore rehearsal. Qdrant's declared single-node
+topology does not show the documented exploit path, but its version range is
+affected. SurrealDB requires a candidate move from 2.7 to 4.0.1 with separate
+migration, backup and restore planning, and Open Notebook requires the 1.15.1
+fix candidate. The two OpenBao rows retain the vendor-unpatched `go-jose/v3`
+line residual; existing acceptance is not renewed. SeaweedFS has publisher
+no-fix evidence. Gatus lacks sufficient fixed-range evidence and remains
+`UNKNOWN` even though normal version work is tracked.
+
+Source binding discrepancies remain explicit residuals. MLflow has a 3.16.1
+candidate, 3.17.2 rendered output and 3.18.0 Dockerfile input; OAuth has a
+7.15.5 candidate but a 7.15.6 Dockerfile input. Pushgateway's selected 1.11.5
+is newer than the reported 1.11.4 and is not downgraded. Neo4j's selected 5.26
+LTS line and Confluent's supported 8.3 line are retained independently of
+their newer global/current lines. n8n's direct production changelog names
+2.47.3 stable and 2.48.0 beta, while the rendered GitHub UI difference remains
+recorded; incomplete catalogue coverage and its separate runner product leave
+the aggregate security decision `UNKNOWN`.
+
+The revalidated `latest_version_gate` also exits 2 with `ready=false`: 33 of
+89 rows are complete and 56 retain residuals. The overlapping reasons are 43
+target/latest mismatches, 21 missing stable-channel proofs, four unresolved
+latest values, and three each lacking fresh lookup or primary reference. Its
+89-service/33-file closure remains
+`44e286a69d910939ba36f59fd65a08a4f4ac7a1ae5dd8e9be11e29af4bfdac84`.
+Twelve numeric current/candidate pairs are component proposals only, not
+selected-image changes. No operational upgrade, image pull, build, scan,
+deployment, credential use, recovery action or risk-acceptance renewal ran.
+
 ## Evidence
 
 The first two NOT_RUN rows preserve initial issuance. Their N1/N2 wait text
@@ -180,25 +247,32 @@ rows. Exact artifact execution has not run.
 | Revalidated latest-version gate | 104 | W109 | `latest_version_gate` | 89-entry ledger; source HEAD `b17895e7181431b7282f8e95bc6c5e4f44ab4517` | FAIL | Exit2;31 complete,58 residual;43 mismatch,26 channel,4 unresolved,3 fresh and3 reference; counts overlap, service coverage exact | required | - |
 | Revalidated security-update gate | 104 | W109 | `security_update_gate` | Same 89-entry ledger | FAIL | Exit2;0 complete;89 fresh-review,89 decision,79 advisory residuals; release facts do not establish security applicability | required | - |
 | Revalidation regression | 104 | W109 | focused supply-chain regression | Updated ledger facts | PASS | Initial suite:94 PASS in4.781s. The first post-change run recorded three obsolete n8n-2.46.6 expectation failures in4.839s; a first corrected suite passed94 tests in7.295s. The final robustness run passed94 tests in5.411s; it requires a residual action only for a version mismatch, rather than for every other residual. Ruff, formatting and diff checks passed. Static policy remains PASS (five contracts/13 cases). | required | - |
+| Official-advisory continuation | 104 | W109 | anonymous official advisory applicability review | All 89 current ledger subjects and all 58 preceding latest residuals; source base `305d93a8dbb16b71f7c34a55a7b20370f78d6f6f` | PASS | `release-lookups.json#/master_20261111_advisory_review`; 59 GitHub GETs/54 repositories, 1,088 returned records/688 unique identifiers, with incomplete n8n and SurrealDB pagination and `ollama-exporter` 404 retained as limits | required | - |
+| Revalidated latest-version gate (advisory continuation) | 104 | W109 | `latest_version_gate` | 89-entry ledger and 33-file source closure | FAIL | Exit2; 33 complete and 56 residual;43 mismatch,21 channel,4 unresolved,3 fresh and3 reference residuals (overlap); exact service coverage and closure hash retained | required | - |
+| Revalidated security-update gate (advisory continuation) | 104 | W109 | `security_update_gate` | Same 89-entry ledger | FAIL | Exit2; all89 fresh reviews recorded;29 ledger-complete pending independent verification,54 blocked-evidence and6 blocked-no-fix. No artifact-level security proof or operational acceptance is inferred. | required | - |
+| Advisory gate policy check | 104 | W109 | static supply-chain policy | Updated review contract | PASS | Five contracts/13 cases; policy/static result only, not a live artifact or recovery observation | required | - |
+| Advisory review regression | 104 | W109 | focused supply-chain gate tests | Frozen `master_20261111_advisory_review` records | PASS | TDD RED: one expected missing-key failure; integration then exposed and corrected three empty-reason failures. Initial GREEN:96 tests in4.970s, including two new tests in0.104s; Ruff, formatting and lint passed. No production gate code changed. | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 104 | pending | Ledger fresh review | Official source facts refreshed for the remaining lookup scope, but latest and security gates both FAIL; 58 latest residual rows and all 89 security reviews remain unresolved. | SPEC-0212 TSK-0052 |
+| 104 | pending | Ledger fresh review | All89 entries now have an official-advisory applicability classification and reviewed decision, but both gates FAIL:56 latest residuals remain and security rows still require independent artifact/compatibility/recovery evidence or retain an explicit block/defer. | SPEC-0212 TSK-0052 |
 | 105 | pending | Artifact verification | No verification has run. | SPEC-0212 TSK-0052 |
 
 ## Review and Completion
 
 Current source research and isolated checks have run as recorded above. The
 original unrun statements and the first RED regression receipt remain
-historical. The corrected regression suite is green. The latest-version and
-security gates still fail, and exact artifact execution remains NOT_RUN. No
-criterion is accepted.
+historical. The final GREEN regression receipt and the static policy check are
+PASS. The
+latest-version and security gates still fail, and exact artifact execution
+remains NOT_RUN. No criterion is accepted.
 
 Completion needs a passing latest-version gate or each remaining entry recorded
-as a residual, and a verification row for each selected artifact. A receipt
-for one artifact never proves another.
+as a residual, independently verified security dispositions for affected or
+blocked components, and a verification row for each selected artifact. A
+receipt for one component or artifact never proves another.
 
 ## Related Documents
 

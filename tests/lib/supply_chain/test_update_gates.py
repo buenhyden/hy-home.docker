@@ -11,7 +11,7 @@ import unittest
 from datetime import UTC, datetime
 from pathlib import Path
 
-from scripts.lib.supply_chain.latest_version_gate import evaluate
+from scripts.lib.supply_chain.latest_version_gate import evaluate, expected_from_root
 from scripts.lib.supply_chain.security_update_gate import assess
 
 NOW = datetime(2026, 10, 10, 10, tzinfo=UTC)
@@ -633,6 +633,301 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     )
                     if mismatch:
                         self.assertTrue(refresh["remaining_latest_actions"])
+
+    def test_current_advisory_review_covers_every_bound_root_subject(self):
+        root = Path(__file__).resolve().parents[3]
+        package = root / "infra/09-platform-ops/security-updates"
+        ledger = json.loads((package / "update-ledger.json").read_text())
+        releases = json.loads((package / "release-lookups.json").read_text())
+        review_key = "master_20261111_advisory_review"
+
+        self.assertTrue(review_key in ledger, f"missing ledger {review_key}")
+        self.assertTrue(review_key in releases, f"missing lookup {review_key}")
+        ledger_review = ledger[review_key]
+        lookup_review = releases[review_key]
+        self.assertEqual(
+            f"release-lookups.json#/{review_key}", ledger_review["lookup_ref"]
+        )
+        self.assertLessEqual(
+            {"reviews", "summary", "github_advisory_catalog", "research_packets"},
+            set(lookup_review),
+        )
+        expected, _inventory = expected_from_root(root)
+        expected = set(expected)
+        self.assertEqual(expected, {row["service"] for row in ledger["entries"]})
+        self.assertEqual(expected, set(ledger["expected_services"]))
+        self.assertEqual(expected, set(lookup_review["reviews"]))
+        catalog = lookup_review["github_advisory_catalog"]
+        repositories = catalog["repositories"]
+        self.assertEqual(54, len(repositories))
+        self.assertEqual(1088, catalog["returned_records"])
+        self.assertEqual(688, catalog["unique_advisories"])
+        self.assertEqual(
+            51,
+            sum(row["listing_complete_for_endpoint"] for row in repositories.values()),
+        )
+        n8n_catalog = repositories["n8n-io/n8n"]
+        self.assertEqual(
+            (400, 100, 300, True, False),
+            (
+                n8n_catalog["returned_records"],
+                n8n_catalog["unique_advisories"],
+                n8n_catalog["duplicate_records"],
+                n8n_catalog["repeated_response_detected"],
+                n8n_catalog["listing_complete_for_endpoint"],
+            ),
+        )
+        self.assertEqual(4, len(n8n_catalog["pages"]))
+        self.assertEqual(
+            1,
+            len({page["response_sha256"] for page in n8n_catalog["pages"]}),
+        )
+        self.assertIs(n8n_catalog["pages"][-1]["has_next"], True)
+        surreal_catalog = repositories["surrealdb/surrealdb"]
+        self.assertEqual(
+            (200, 100, 100, True, False),
+            (
+                surreal_catalog["returned_records"],
+                surreal_catalog["unique_advisories"],
+                surreal_catalog["duplicate_records"],
+                surreal_catalog["repeated_response_detected"],
+                surreal_catalog["listing_complete_for_endpoint"],
+            ),
+        )
+        self.assertEqual(
+            surreal_catalog["pages"][0]["response_sha256"],
+            surreal_catalog["pages"][1]["response_sha256"],
+        )
+        self.assertEqual(403, surreal_catalog["pages"][2]["http_status"])
+        ollama_exporter = repositories["lucabecker42/ollama-exporter"]
+        self.assertIs(ollama_exporter["listing_complete_for_endpoint"], False)
+        self.assertEqual(404, ollama_exporter["pages"][0]["http_status"])
+        for row in ledger["entries"]:
+            with self.subTest(service=row["service"]):
+                review = row[review_key]
+                self.assertEqual(review, lookup_review["reviews"][row["service"]])
+                self.assertLessEqual(
+                    {
+                        "reviewed_subject",
+                        "security_applicability",
+                        "source_action",
+                        "advisory_refs",
+                        "coverage_limits",
+                        "reason",
+                        "latest_disposition",
+                    },
+                    set(review),
+                )
+                subject = review["reviewed_subject"]
+                self.assertEqual(
+                    {
+                        "declaration",
+                        "source_input_sha256",
+                        "assessment_version",
+                        "version_binding_note",
+                    },
+                    set(subject),
+                )
+                self.assertEqual(row["current_declared"], subject["declaration"])
+                self.assertEqual(
+                    row["source_input_sha256"], subject["source_input_sha256"]
+                )
+                self.assertTrue(subject["assessment_version"])
+                self.assertIn(
+                    review["security_applicability"],
+                    {"AFFECTED", "NOT_AFFECTED", "UNKNOWN"},
+                )
+                self.assertIn(
+                    review["source_action"],
+                    {"patch", "retain", "defer", "blocked"},
+                )
+                self.assertTrue(
+                    all(
+                        isinstance(url, str) and url.startswith("https://")
+                        for url in review["advisory_refs"]
+                    )
+                )
+                self.assertTrue(review["coverage_limits"])
+                self.assertTrue(review["reason"].strip())
+                self.assertEqual(
+                    {
+                        "action",
+                        "target_retained",
+                        "observed_latest",
+                        "previous_gate_missing",
+                        "reason",
+                        "next_action",
+                    },
+                    set(review["latest_disposition"]),
+                )
+                latest = review["latest_disposition"]
+                self.assertTrue(latest["action"])
+                self.assertEqual(row["target_version"], latest["target_retained"])
+                self.assertEqual(row["latest_version"], latest["observed_latest"])
+                self.assertEqual(
+                    row["master_20261111_public_refresh"]["latest_gate_missing"],
+                    latest["previous_gate_missing"],
+                )
+                self.assertTrue(latest["reason"].strip())
+                self.assertTrue(latest["next_action"].strip())
+                reviewed_at = datetime.fromisoformat(row["reviewed_at"])
+                self.assertIsNotNone(reviewed_at.tzinfo)
+                reviewed_at_utc = reviewed_at.astimezone(UTC)
+                self.assertLessEqual(
+                    datetime(2026, 11, 10, 20, tzinfo=UTC), reviewed_at_utc
+                )
+                self.assertLessEqual(
+                    reviewed_at_utc, datetime(2026, 11, 11, 15, tzinfo=UTC)
+                )
+                applicability = review["security_applicability"]
+                if applicability == "AFFECTED":
+                    self.assertIn(row["decision"], {"patch", "no-fix"})
+                    self.assertIs(row["affected_confirmed"], True)
+                else:
+                    expected_decision = {
+                        "NOT_AFFECTED": ("not-affected", False),
+                        "UNKNOWN": ("defer", None),
+                    }[applicability]
+                    self.assertEqual(expected_decision[0], row["decision"])
+                    self.assertIs(expected_decision[1], row["affected_confirmed"])
+                if applicability == "NOT_AFFECTED":
+                    self.assertTrue(review["concrete_advisory_refs"])
+                    self.assertLessEqual(
+                        set(review["concrete_advisory_refs"]),
+                        set(review["advisory_refs"]),
+                    )
+                if review["advisory_refs"]:
+                    self.assertLessEqual(
+                        set(review["advisory_refs"]), set(row["advisory_urls"])
+                    )
+                else:
+                    self.assertEqual("UNKNOWN", applicability)
+                    self.assertEqual("defer", row["decision"])
+                    self.assertFalse(row["advisory_urls"])
+                self.assertIn(review["reason"], row["reason"])
+                self.assertNotIn(row["applicability"], {"AFFECTED", "NOT_AFFECTED"})
+        mlflow = next(row for row in ledger["entries"] if row["service"] == "mlflow")
+        mlflow_review = mlflow[review_key]
+        assessment_version = mlflow_review["reviewed_subject"]["assessment_version"]
+        for version in ("3.16.1", "3.17.2", "3.18.0"):
+            self.assertIn(version, assessment_version)
+        self.assertEqual("UNKNOWN", mlflow_review["security_applicability"])
+        self.assertEqual("defer", mlflow["decision"])
+        self.assertIsNone(mlflow["affected_confirmed"])
+        self.assertTrue(mlflow_review["latest_disposition"]["target_retained"])
+        self.assertEqual(
+            "3.18.0", mlflow_review["latest_disposition"]["observed_latest"]
+        )
+
+    def test_advisory_decisions_preserve_unknown_and_unverified_patch_boundaries(self):
+        root = Path(__file__).resolve().parents[3]
+        ledger = json.loads(
+            (
+                root / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        review_key = "master_20261111_advisory_review"
+        expected, _inventory = expected_from_root(root)
+        assessed = assess(
+            ledger["entries"],
+            datetime(2026, 11, 11, 12, tzinfo=UTC),
+            expected_services=expected,
+        )
+        gate_by_service = {row["service"]: row for row in assessed["entries"]}
+        by_service = {row["service"]: row for row in ledger["entries"]}
+
+        self.assertFalse(assessed["ledger_complete"])
+        self.assertTrue(assessed["coverage_checked"])
+        self.assertEqual([], assessed["missing_services"])
+        self.assertEqual([], assessed["unexpected_services"])
+        n8n_review = by_service["n8n"][review_key]
+        runner_review = by_service["n8n-task-runner-worker"][review_key]
+        self.assertEqual("UNKNOWN", n8n_review["security_applicability"])
+        self.assertEqual(
+            "UNKNOWN",
+            runner_review["security_applicability"],
+        )
+        self.assertNotEqual(
+            n8n_review["reviewed_subject"], runner_review["reviewed_subject"]
+        )
+        self.assertNotEqual(n8n_review["reason"], runner_review["reason"])
+        self.assertEqual(
+            "UNKNOWN",
+            by_service["opensearch"][review_key]["security_applicability"],
+        )
+        for row in ledger["entries"]:
+            review = row[review_key]
+            gate = gate_by_service[row["service"]]
+            applicability = review["security_applicability"]
+            with self.subTest(service=row["service"], applicability=applicability):
+                if applicability == "UNKNOWN":
+                    self.assertEqual("defer", row["decision"])
+                    self.assertIsNone(row["affected_confirmed"])
+                    self.assertEqual("blocked-evidence", gate["status"])
+                    self.assertIn("reviewed_decision", gate["missing"])
+                if applicability != "AFFECTED":
+                    continue
+                self.assertIs(row["affected_confirmed"], True)
+                if row["decision"] == "no-fix":
+                    self.assertEqual("blocked-no-fix", gate["status"])
+                    continue
+                self.assertEqual("patch", row["decision"])
+                self.assertEqual("blocked-evidence", gate["status"])
+                self.assertNotIn("explicit_upstream_version", gate["missing"])
+                component = review["patch_component"]
+                self.assertEqual(
+                    {
+                        "name",
+                        "current_version",
+                        "candidate_version",
+                        "evidence_refs",
+                        "scope",
+                    },
+                    set(component),
+                )
+                self.assertEqual(component["current_version"], row["current_version"])
+                self.assertEqual(
+                    component["candidate_version"], row["candidate_version"]
+                )
+                self.assertNotEqual(
+                    component["current_version"], component["candidate_version"]
+                )
+                for version in (
+                    component["current_version"],
+                    component["candidate_version"],
+                ):
+                    self.assertRegex(version, r"^[0-9]+(?:\.[0-9]+)+")
+                self.assertTrue(component["name"])
+                self.assertTrue(component["evidence_refs"])
+                self.assertLessEqual(
+                    set(component["evidence_refs"]), set(review["advisory_refs"])
+                )
+                self.assertTrue(component["scope"])
+                for field in (
+                    "compatibility",
+                    "backup",
+                    "rollback",
+                    "native_test",
+                    "deployment",
+                ):
+                    self.assertEqual("NOT_RUN", row[field])
+                self.assertTrue(row["signature"].startswith("NOT_RUN"))
+                self.assertTrue(row["sbom_scan"].startswith("NOT_RUN"))
+                self.assertFalse(
+                    {
+                        "candidate_image",
+                        "scan_at",
+                        "scan_digest",
+                        "recovery",
+                        "residual_disposition",
+                    }
+                    & set(row)
+                )
+        for service in ("qdrant", "open_notebook"):
+            with self.subTest(known_fixed_patch=service):
+                row = by_service[service]
+                self.assertEqual("AFFECTED", row[review_key]["security_applicability"])
+                self.assertEqual("patch", row["decision"])
 
     def test_valkey_candidate_pull_receipt_is_not_promoted_from_self_report(self):
         root = Path(__file__).resolve().parents[3]
