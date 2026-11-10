@@ -472,6 +472,7 @@ def check_seal(response, cluster):
             "2.7.1",
             "2.7.1+hyhome.go1.27.3.net0.60.0.r1",
             "2.7.1+hyhome.go1.27.3.net0.60.0.r2",
+            "2.7.2+hyhome.go1.27.3.net0.62.0.r1",
         }
         or response.get("cluster_id") != cluster
     ):

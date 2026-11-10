@@ -27,12 +27,13 @@ class ReviewRegressionTests(unittest.TestCase):
     run_ceremony = fixtures.CeremonyTests.run_ceremony
 
     def test_exact_owned_version_is_supported_and_unknown_suffixes_are_denied(self):
-        owned = "2.7.1+hyhome.go1.27.3.net0.60.0.r2"
+        owned = "2.7.2+hyhome.go1.27.3.net0.62.0.r1"
         M.check_seal({**fixtures.seal(), "version": owned}, CLUSTER)
-        M.check_seal(
-            {**fixtures.seal(), "version": "2.7.1+hyhome.go1.27.3.net0.60.0.r1"},
-            CLUSTER,
-        )
+        for earlier in (
+            "2.7.1+hyhome.go1.27.3.net0.60.0.r1",
+            "2.7.1+hyhome.go1.27.3.net0.60.0.r2",
+        ):
+            M.check_seal({**fixtures.seal(), "version": earlier}, CLUSTER)
         for unknown in (
             owned + ".other",
             "2.7.1+hyhome.go1.27.2.net0.60.0.r2",
