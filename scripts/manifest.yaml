@@ -1024,6 +1024,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_port_contract.py
+- path: scripts/operations/prepare-openbao-materials.py
+  kind: operations
+  authority: infra/03-security/openbao/build/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - infra/03-security/openbao/build/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_prepare_openbao_materials.py
 - path: scripts/operations/prometheus-isolated-restore.py
   kind: operations
   authority: docs/05.operations/runbooks/07-observability/0045-prometheus.md

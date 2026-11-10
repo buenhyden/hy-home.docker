@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry": "infra/supply-chain.tool-images.json",
-  "registry_sha256": "91b114514954245c484454f2e5e45c0874e4596b3a6a1871fbd7c0de12ed3c33",
+  "registry_sha256": "8188088efe48448c2a363fc019ba9ff2de490301c4f7b0ea3e5f33758194a4ff",
   "observed_at": "2026-10-10T15:03:22.115486+00:00",
   "tools": [
     {

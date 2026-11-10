@@ -1,4 +1,45 @@
 {
+  "bounded_contracts": [
+    {
+      "approval": "infra/supply-chain.network-approvals.md#openbao-material-fetch (owner, 2026-11-10)",
+      "command_contract": "keyless-verify-and-verify-blob-bounded-public",
+      "config_id": "sha256:192a38e9dabb6b28359fc4706992d91ad325f366630a68dd7c3d50bcef059db8",
+      "consumer": "scripts/operations/prepare-openbao-materials.py",
+      "digest": "sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+      "expected_version": "v3.1.3",
+      "forbidden_mounts": [
+        "docker socket",
+        "docker or registry auth config",
+        "HOME",
+        "secrets",
+        "writable host paths"
+      ],
+      "identity_sources": [
+        "https://openbao.org/docs/install/#cosign",
+        "https://edu.chainguard.dev/chainguard/containers/security-and-compliance/verifying-chainguard-images-and-metadata-signatures-with-cosign/"
+      ],
+      "image": "gcr.io/projectsigstore/cosign:v3.1.3",
+      "limits": {
+        "cap_drop": "ALL",
+        "cpus": "1",
+        "memory": "512m",
+        "memory_swap": "512m",
+        "no_new_privileges": true,
+        "pids": 32,
+        "read_only_rootfs": true,
+        "timeout_seconds": 150,
+        "tmpfs": "/tmp:rw,nosuid,nodev,noexec,size=16m,mode=1777",
+        "user": "65532:65532"
+      },
+      "name": "cosign",
+      "network_mode": "public-bridge-sigstore-registry",
+      "permitted_commands": [
+        "verify",
+        "verify-blob"
+      ],
+      "repo_digest": "gcr.io/projectsigstore/cosign@sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8"
+    }
+  ],
   "effective_date": "2026-10-10",
   "owner_role": "security-auditor",
   "policy_id": "supply-chain-tool-images-v1",
