@@ -335,7 +335,7 @@
       "latest_version": "3.4.0",
       "target_version": "3.3.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
       "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
       "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
@@ -520,7 +520,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Network-facing API uses the shared custom image; core has the 3.3.2 backfill enumeration fix, but provider/OS status is incomplete and 3.4.0 adds access-control hardening.",
@@ -580,6 +580,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/airflow-apiserver",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/airflow-apiserver"
       }
     },
     {
@@ -621,7 +625,7 @@
       "latest_version": "3.4.0",
       "target_version": "3.3.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
       "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
       "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
@@ -806,7 +810,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. It executes DAG-author code under the documented soft same-UID boundary; empty core advisory listing does not resolve provider or image risk.",
@@ -866,6 +870,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/airflow-dag-processor",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/airflow-dag-processor"
       }
     },
     {
@@ -893,7 +901,7 @@
       "latest_version": "3.4.0",
       "target_version": "3.3.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
       "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
       "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
@@ -1074,7 +1082,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. One-shot initialization uses the same unresolved custom image and privileged database migration surface.",
@@ -1134,6 +1142,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/airflow-init",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/airflow-init"
       }
     },
     {
@@ -1175,7 +1187,7 @@
       "latest_version": "3.4.0",
       "target_version": "3.3.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
       "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
       "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
@@ -1360,7 +1372,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Scheduler has metadata-database and scheduling authority; provider and image advisory evidence is incomplete.",
@@ -1420,6 +1432,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/airflow-scheduler",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/airflow-scheduler"
       }
     },
     {
@@ -1624,7 +1640,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No published repository advisory was returned, but no exact image SBOM or transitive/OS scan was available. The release updates dependencies, which does not establish selected-image absence of vulnerabilities.",
@@ -1682,6 +1698,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/airflow-statsd-exporter"
       }
     },
     {
@@ -1723,7 +1742,7 @@
       "latest_version": "3.4.0",
       "target_version": "3.3.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
       "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
       "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
@@ -1908,7 +1927,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The official model documents execution of DAG-author trigger code and soft in-process API protection; provider/OS evidence is incomplete.",
@@ -1968,6 +1987,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/airflow-triggerer",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/airflow-triggerer"
       }
     },
     {
@@ -2009,7 +2032,7 @@
       "latest_version": "3.4.0",
       "target_version": "3.3.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
       "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
       "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
@@ -2194,7 +2217,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Workers execute DAG code; exact core is known but the custom image and provider set are not fully advisory-bound.",
@@ -2254,6 +2277,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/airflow-worker",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/airflow-worker"
       }
     },
     {
@@ -2285,7 +2312,7 @@
       "latest_version": "0.35.0",
       "target_version": "0.34.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.606055+00:00",
       "release_url": "https://github.com/prometheus/alertmanager/releases/tag/v0.35.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -2522,6 +2549,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/alertmanager"
       }
     },
     {
@@ -3212,7 +3242,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository advisory was listed; no image SBOM/transitive scan was performed. cAdvisor is privileged/high-trust and exposes host/container telemetry, so absence of a direct advisory cannot close the risk.",
@@ -3272,6 +3302,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/cadvisor"
       }
     },
     {
@@ -3303,7 +3336,7 @@
       "latest_version": "6.0",
       "target_version": "UNKNOWN",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:49.707610+00:00",
       "release_url": "https://github.com/YanWenKun/ComfyUI-Docker/releases/tag/v6.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -3486,7 +3519,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The selected image is a digest-pinned build of the moving cu126-slim tag, but no embedded ComfyUI revision was established. The image copies a bundled tree only on first start and skips it when an existing persisted ComfyUI tree is present, so the image digest alone does not bind the running core revision.",
@@ -3565,6 +3598,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/comfyui",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/comfyui"
       }
     },
     {
@@ -3724,7 +3761,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed for the repository, but image and transitive dependency absence was not established.",
@@ -3782,6 +3819,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/conftest"
       }
     },
     {
@@ -3812,7 +3852,7 @@
       "latest_version": "0.9.5",
       "target_version": "0.9.5",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:51.305406+00:00",
       "release_url": "https://github.com/unclecode/crawl4ai/releases/tag/v0.9.5",
       "target_index_digest": "sha256:0b05666882bfb67f45d559a5b827839c54127b74aedd723f8ab338a3571b5fc9",
       "target_manifest_digest": "sha256:636a6f9e5127f54771f14f709bf1b95693aacc30512426b26d09768b0269f1f4",
@@ -4147,6 +4187,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/crawl4ai"
       }
     },
     {
@@ -5072,7 +5115,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
@@ -5174,6 +5217,9 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/dev-perf-provision"
       }
     },
     {
@@ -5390,7 +5436,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
@@ -5492,6 +5538,9 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/dev-pg"
       }
     },
     {
@@ -5525,7 +5574,7 @@
       "latest_version": "0.20.1",
       "target_version": "0.20.1",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.523118+00:00",
       "release_url": "https://github.com/prometheus-community/postgres_exporter/releases/tag/v0.20.1",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -5702,7 +5751,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No published repository advisory was returned, but the exact image and transitive dependency closure were not evaluated.",
@@ -5762,6 +5811,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/dev-pg-exporter",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/dev-pg-exporter"
       }
     },
     {
@@ -5993,7 +6046,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
@@ -6095,6 +6148,9 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/dev-pg-monitor-provision"
       }
     },
     {
@@ -6306,7 +6362,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; 2.30.2 is later than the highest official patched floor 2.29.1 in the complete public repository advisory endpoint.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
@@ -6408,6 +6464,9 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/dev-platform-provision"
       }
     },
     {
@@ -6846,7 +6905,7 @@
       "latest_version": "1.97.0",
       "target_version": "1.96.0",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:17Z",
+      "checked_at": "2026-11-10T22:26:50.534471+00:00",
       "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.97.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -7007,7 +7066,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The empty direct advisory listing is not a full Alpine image or transitive dependency result. No official security statement makes 1.97.0 a mandatory security update.",
@@ -7068,6 +7127,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/dev-valkey-exporter",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/dev-valkey-exporter"
       }
     },
     {
@@ -7402,7 +7465,7 @@
       "latest_version": "3.4.0",
       "target_version": "3.3.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.245533+00:00",
       "release_url": "https://github.com/apache/airflow/releases/tag/3.4.0",
       "target_index_digest": "sha256:8c139dddc7fcb484970340045848ae9f4d8d09f5b5444762e96f5b80504886f2",
       "target_manifest_digest": "sha256:c9096805e76159e0b18d55a5e357b1958894c291ebf88e9af2a497de208f227e",
@@ -7587,7 +7650,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Flower shares the custom Airflow image but exposes a different monitoring UI and Celery-provider surface; core advisories alone cannot decide it.",
@@ -7647,6 +7710,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/flower",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/flower"
       }
     },
     {
@@ -7682,7 +7749,7 @@
       "latest_version": "5.38.0",
       "target_version": "5.37.0",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:49.713579+00:00",
       "release_url": "https://github.com/TwiN/gatus/releases/tag/v5.38.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -8188,7 +8255,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected source predates v5.38 token-redaction, WebSocket timeout and maintenance fixes. Coordinator: a security-relevant5.38 hardening release is recorded, but no explicit vendor affected-version range or built custom-artifact receipt confirms aggregate affectedness; prepare an update without inventing a formal range.",
@@ -8257,6 +8324,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/gatus",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/gatus"
       }
     },
     {
@@ -9095,7 +9166,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The direct k6 repository has no published advisories, but that does not evaluate the exact image. The inventory's current_declared=UNKNOWN is corrected by the Dockerfile pin above.",
@@ -9156,6 +9227,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/k6"
       }
     },
     {
@@ -9461,7 +9535,7 @@
       "latest_version": "8.4.1",
       "target_version": "8.3.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:10Z",
+      "checked_at": "2026-11-10T22:26:51.912294+00:00",
       "release_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -9687,6 +9761,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/kafka-1"
       }
     },
     {
@@ -9723,7 +9800,7 @@
       "latest_version": "1.11.0",
       "target_version": "1.10.0",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:17Z",
+      "checked_at": "2026-11-10T22:26:49.741279+00:00",
       "release_url": "https://github.com/danielqsj/kafka_exporter/releases/tag/v1.11.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -9902,7 +9979,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Release-note statements do not substitute for exact selected-image dependency or vulnerability evidence, and the empty advisory endpoint is not an absence proof.",
@@ -9963,6 +10040,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/kafka-exporter",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/kafka-exporter"
       }
     },
     {
@@ -9980,7 +10061,7 @@
       "latest_version": "8.4.1",
       "target_version": "8.3.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:10Z",
+      "checked_at": "2026-11-10T22:26:51.912294+00:00",
       "release_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -10202,6 +10283,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/kafka-init"
       }
     },
     {
@@ -10235,7 +10319,7 @@
       "latest_version": "26.8.2",
       "target_version": "26.7.4",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:17Z",
+      "checked_at": "2026-11-10T22:26:50.084205+00:00",
       "release_url": "https://github.com/keycloak/keycloak/releases/tag/26.8.2",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -10504,7 +10588,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Multiple official issues reproduce on 26.7.x or explicitly include 26.7.4, and the supported security line has moved to 26.8.2.",
@@ -10825,6 +10909,13 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "candidate_image": "quay.io/keycloak/keycloak@sha256:c126f032d43b941ed7c5ccca7d6571596d8eab84d748afd7c86989e48ef07b8f",
+      "scan_digest": "sha256:c126f032d43b941ed7c5ccca7d6571596d8eab84d748afd7c86989e48ef07b8f",
+      "scan_at": "2026-11-10T22:24:57.089413+00:00",
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/keycloak",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/keycloak"
       }
     },
     {
@@ -10859,7 +10950,7 @@
       "latest_version": "3.7.9",
       "target_version": "3.7.8",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:18Z",
+      "checked_at": "2026-11-10T22:26:49.774996+00:00",
       "release_url": "https://github.com/grafana/loki/releases/tag/v3.7.9",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -11036,7 +11127,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Direct Loki CVEs are fixed in 3.7.8, but the official 3.7.9 release contains concrete dependency security updates absent from the declared 3.7.8 tag. Vulnerable dependency versions are confirmed; service-path reachability is not. The locally changed Dockerfile is a patched source candidate, not evidence that hy/loki:3.7.8-seaweedfs was rebuilt or accepted.",
@@ -11103,6 +11194,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/loki",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/loki"
       }
     },
     {
@@ -11135,7 +11230,7 @@
       "latest_version": "1.33.1",
       "target_version": "1.33.0",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:17Z",
+      "checked_at": "2026-11-10T22:26:49.734477+00:00",
       "release_url": "https://github.com/axllent/mailpit/releases/tag/v1.33.1",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -11420,6 +11515,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/mailpit"
       }
     },
     {
@@ -11440,7 +11538,7 @@
       "latest_version": "3.18.0",
       "target_version": "3.16.1",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:17Z",
+      "checked_at": "2026-11-10T22:26:50.095178+00:00",
       "release_url": "https://github.com/mlflow/mlflow/releases/tag/v3.18.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -11623,7 +11721,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Current Dockerfile is 3.18.0 and visible advisories are fixed there, but Compose still labels output 3.17.2 and no digest/build receipt proves the artifact. Historical GHSA-wqmh-qccw-pqwf returns 404.",
@@ -11712,6 +11810,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/mlflow",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/mlflow"
       }
     },
     {
@@ -12169,7 +12271,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 18.6 is the fixed release for current supported PostgreSQL 18 advisories.; Selected 2.57.0 and 2.58.0 are below 2.59.3, and both repository configs set repo1-cipher-type=aes-256-cbc, satisfying the vendor's encrypted-repository condition.",
@@ -12248,6 +12350,9 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/mng-pg"
       }
     },
     {
@@ -12285,7 +12390,7 @@
       "latest_version": "0.20.1",
       "target_version": "0.20.1",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:16Z",
+      "checked_at": "2026-11-10T22:26:50.523118+00:00",
       "release_url": "https://github.com/prometheus-community/postgres_exporter/releases/tag/v0.20.1",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -12462,7 +12567,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No published repository advisory was returned, but the exact image and transitive dependency closure were not evaluated.",
@@ -12522,6 +12627,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/mng-pg-exporter",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/mng-pg-exporter"
       }
     },
     {
@@ -13502,7 +13611,7 @@
       "latest_version": "1.97.0",
       "target_version": "1.96.0",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:17Z",
+      "checked_at": "2026-11-10T22:26:50.534471+00:00",
       "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.97.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -13663,7 +13772,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The empty direct advisory listing is not a full Alpine image or transitive dependency result. No official security statement makes 1.97.0 a mandatory security update.",
@@ -13724,6 +13833,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/mng-valkey-exporter",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/mng-valkey-exporter"
       }
     },
     {
@@ -13761,8 +13874,8 @@
       "latest_version": "2.47.3",
       "target_version": "2.46.6",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:17Z",
-      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.47.3",
+      "checked_at": "2026-11-10T22:28:59.825797+00:00",
+      "release_url": "https://docs.n8n.io/release-notes/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
@@ -14166,7 +14279,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 2.46.6 is above every 2.x fixed floor in the 100 unique official npm:n8n advisories returned; this verdict is limited to that bounded set and not to transitive image contents. Coordinator: the100 observed core advisories are excluded at2.46.6, but repeated-response pagination is incomplete and custom components are unresolved. The bounded NOT_AFFECTED observation is not an aggregate clearance.",
@@ -14438,6 +14551,10 @@
           "observed_by_coordinator_at": "2026-11-10T21:47:20.284064+00:00",
           "reason": "Current canonical vendor statement explicitly names production stable2.47.3 and beta2.48.0, corroborated by the fresh release API2.47.3 with prerelease=false. The separately rendered GitHub UI2.46.7/stale prerelease labels are retained as a source conflict and do not override the direct production-channel declaration. Security applicability remains independent and UNKNOWN."
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n"
       }
     },
     {
@@ -14469,8 +14586,8 @@
       "latest_version": "2.47.3",
       "target_version": "2.46.6",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:17Z",
-      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.47.3",
+      "checked_at": "2026-11-10T22:28:59.825797+00:00",
+      "release_url": "https://docs.n8n.io/release-notes/",
       "target_index_digest": "sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
       "target_manifest_digest": "sha256:c4b43bc62c6dcce8053817f492f0bf434547651ad3def4b680bd2ccb44f11257",
       "target_config_digest": "sha256:97fb470643639c38c09eb896b492cf7471f69dcebdb9cbd1457d8ef75776ccf8",
@@ -14769,7 +14886,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The official advisory records name npm:n8n, not the n8nio/runners image. Even task-runner-themed advisories cannot be transferred without a component manifest or vendor statement.",
@@ -14839,6 +14956,10 @@
           "observed_by_coordinator_at": "2026-11-10T21:47:20.284064+00:00",
           "reason": "Current canonical vendor statement explicitly names production stable2.47.3 and beta2.48.0, corroborated by the fresh release API2.47.3 with prerelease=false. The separately rendered GitHub UI2.46.7/stale prerelease labels are retained as a source conflict and do not override the direct production-channel declaration. Security applicability remains independent and UNKNOWN."
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n-task-runner-worker",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n-task-runner-worker"
       }
     },
     {
@@ -14876,8 +14997,8 @@
       "latest_version": "2.47.3",
       "target_version": "2.46.6",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:17Z",
-      "release_url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.47.3",
+      "checked_at": "2026-11-10T22:28:59.825797+00:00",
+      "release_url": "https://docs.n8n.io/release-notes/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
@@ -15281,7 +15402,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. It uses the identical npm:n8n 2.46.6 custom image; all reviewed official 2.x affected ranges end by fixed 2.46.1 or earlier. Coordinator: the100 observed core advisories are excluded at2.46.6, but repeated-response pagination is incomplete and custom components are unresolved. The bounded NOT_AFFECTED observation is not an aggregate clearance.",
@@ -15553,6 +15674,10 @@
           "observed_by_coordinator_at": "2026-11-10T21:47:20.284064+00:00",
           "reason": "Current canonical vendor statement explicitly names production stable2.47.3 and beta2.48.0, corroborated by the fresh release API2.47.3 with prerelease=false. The separately rendered GitHub UI2.46.7/stale prerelease labels are retained as a source conflict and do not override the direct production-channel declaration. Security applicability remains independent and UNKNOWN."
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n-worker",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n-worker"
       }
     },
     {
@@ -15569,8 +15694,8 @@
       "latest_version": "2026.10.2",
       "target_version": "5.26.33",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:10Z",
-      "release_url": "https://neo4j.com/deployment-center/",
+      "checked_at": "2026-11-10T22:26:52.186439+00:00",
+      "release_url": "https://neo4j.com/release-notes/database/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
@@ -15806,6 +15931,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/neo4j"
       }
     },
     {
@@ -16004,7 +16132,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public repository advisory was listed; exact Quay image components were not scanned. Host filesystem/proc/sys exposure makes image-level evidence material.",
@@ -16062,6 +16190,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/node-exporter"
       }
     },
     {
@@ -16098,7 +16229,7 @@
       "latest_version": "7.15.6",
       "target_version": "7.15.5",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:18Z",
+      "checked_at": "2026-11-10T22:26:50.516379+00:00",
       "release_url": "https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.6",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -16268,7 +16399,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The current tracked source is already v7.15.6. The ten rendered project advisories are fixed at or before 7.15.5, and v7.15.6 contains the official dependency security refresh; only the stale inventory target remains UNKNOWN without its exact SBOM. Coordinator: current Dockerfiles select7.15.6 while the retained ledger candidate is7.15.5 and current_declared isUNKNOWN. Direct-source exclusions are retained, but artifact/candidate binding must be reconciled before aggregate clearance.",
@@ -16359,6 +16490,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/oauth2-proxy",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/oauth2-proxy"
       }
     },
     {
@@ -16391,7 +16526,7 @@
       "latest_version": "0.40.16",
       "target_version": "0.40.16",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:18Z",
+      "checked_at": "2026-11-10T22:26:50.513605+00:00",
       "release_url": "https://github.com/ollama/ollama/releases/tag/v0.40.16",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -16566,7 +16701,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The one checked GitHub-reviewed Linux-relevant advisory does not include 0.40.16 and the selected version equals inventory latest; the publisher repository has no public advisories, which is not full-image clearance.",
@@ -16629,6 +16764,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/ollama",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/ollama"
       }
     },
     {
@@ -16668,7 +16807,10 @@
       "target_config_digest": "UNKNOWN",
       "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
-      "advisory_urls": [],
+      "advisory_urls": [
+        "https://nodejs.org/en/blog/vulnerability/october-2026-security-releases",
+        "https://www.openssl-library.org/news/vulnerabilities-3.5/index.html"
+      ],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
       "compatibility": "NOT_RUN",
@@ -16834,7 +16976,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Neither a public repository advisory listing nor image/transitive security evidence was available; selected 1.0.3 equals the inventoried latest but the channel is unknown.",
@@ -16882,6 +17024,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/ollama-exporter",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/ollama-exporter"
       }
     },
     {
@@ -16898,7 +17044,7 @@
       "latest_version": "1.15.1",
       "target_version": "1.15.0",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:18Z",
+      "checked_at": "2026-11-10T22:26:50.088781+00:00",
       "release_url": "https://github.com/lfnovo/open-notebook/releases/tag/v1.15.1",
       "target_index_digest": "sha256:63e2f16daa327b64a98bfad622e0d4b7254a6a437cf266b036169ad25bf3b0c3",
       "target_manifest_digest": "sha256:8e7f9749d3ec6b0069d11e8e5b9ff4450ff8b440a3eb6e4122c8a9e68179c11b",
@@ -17057,7 +17203,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 1.15.0 is explicitly included in two publisher ranges; both are fixed by 1.15.1.",
@@ -17163,6 +17309,13 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "candidate_image": "docker.io/lfnovo/open_notebook@sha256:9bb0d6fa50f9292ab737e35651fa1b3c227662c60f2a68dfe99fbbdcdc5cdd31",
+      "scan_digest": "sha256:9bb0d6fa50f9292ab737e35651fa1b3c227662c60f2a68dfe99fbbdcdc5cdd31",
+      "scan_at": "2026-11-10T22:25:07.453626+00:00",
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/open_notebook",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/open_notebook"
       }
     },
     {
@@ -17197,7 +17350,7 @@
       "latest_version": "2.7.2",
       "target_version": "2.7.2",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:18Z",
+      "checked_at": "2026-11-10T22:26:50.676852+00:00",
       "release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.2",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -17652,7 +17805,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "no-fix",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Core 2.7.2 advisories are fixed, but the exact image contains affected go-jose/v3 3.0.5 and affected-but-tracked-unreachable BusyBox wget. Existing owner acceptance is preserved, not renewed.",
@@ -17830,6 +17983,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/openbao",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/no_fix/openbao"
       }
     },
     {
@@ -17864,7 +18021,7 @@
       "latest_version": "2.7.2",
       "target_version": "2.7.2",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:18Z",
+      "checked_at": "2026-11-10T22:26:50.676852+00:00",
       "release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.2",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -18319,7 +18476,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "no-fix",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The Agent uses the same exact custom image and shares package-level residuals. Its command changes reachability, not package presence.",
@@ -18497,6 +18654,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/openbao-agent",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/no_fix/openbao-agent"
       }
     },
     {
@@ -18833,7 +18994,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The official OpenSearch 3.9.0 base and security plugin are outside observed affected ranges, but the service builds an unbuilt custom image that adds opensearch-prometheus-exporter 3.9.0.0.",
@@ -18901,6 +19062,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/opensearch"
       }
     },
     {
@@ -19238,7 +19402,7 @@
       "latest_version": "1.13.9",
       "target_version": "1.13.1",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:19Z",
+      "checked_at": "2026-11-10T22:26:50.613241+00:00",
       "release_url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.9",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -19411,7 +19575,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected v1.13.1 precedes the v1.13.2 vendor security release. The release explicitly says previous versions are vulnerable to attacker-controlled HTTP/2 dependency-install CPU consumption and adds compromised-intermediate filtering. OpenTofu is used precisely for dependency initialization against remote registries/backends, so the first path crosses its normal trust boundary even though actual runtime exposure was not observed.",
@@ -19526,6 +19690,10 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/opentofu",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/opentofu"
       }
     },
     {
@@ -20061,7 +20229,7 @@
       "latest_version": "3.16.0",
       "target_version": "3.15.1",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:19Z",
+      "checked_at": "2026-11-10T22:26:50.891813+00:00",
       "release_url": "https://github.com/prometheus/prometheus/releases/tag/v3.16.0",
       "target_index_digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
       "target_manifest_digest": "sha256:d445d1806b38f85b5c394a1b87f94113fde0473b45245922c2e8b1bd41fa68ae",
@@ -20318,6 +20486,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/prometheus"
       }
     },
     {
@@ -20349,7 +20520,7 @@
       "latest_version": "1.11.4",
       "target_version": "1.11.5",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:19Z",
+      "checked_at": "2026-11-10T22:26:50.923184+00:00",
       "release_url": "https://github.com/prometheus/pushgateway/releases/tag/v1.11.4",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -20507,7 +20678,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The selected image is ahead of the official Latest release pointer, while the public advisory listing is empty and no exact image SBOM was evaluated. Neither downgrade nor security acceptance is justified from this evidence.",
@@ -20567,6 +20738,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/pushgateway",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/pushgateway"
       }
     },
     {
@@ -20853,7 +21028,7 @@
       "latest_version": "1.20.0",
       "target_version": "1.19.2",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:19Z",
+      "checked_at": "2026-11-10T22:26:50.882635+00:00",
       "release_url": "https://github.com/qdrant/qdrant/releases/tag/v1.20.0",
       "target_index_digest": "sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b",
       "target_manifest_digest": "sha256:390ca16351185f9913c23d0c95ded0cdf2ce17e525dd7fbe58d3339c9c80e633",
@@ -21022,7 +21197,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 1.19.2 is within GHSA-frc7-44gm-99qq's version range below 1.20.0. The tracked Compose is statically single-node, does not enable clustering, and does not expose port 6335, so the described internal-gRPC path is not active in the declared topology; this lowers current exposure but does not change version applicability.",
@@ -21103,6 +21278,13 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "candidate_image": "docker.io/qdrant/qdrant@sha256:9ae17b1c0af34c07c4ebebbb43168fffb584b56304874e70a522b0cad6cb137d",
+      "scan_digest": "sha256:9ae17b1c0af34c07c4ebebbb43168fffb584b56304874e70a522b0cad6cb137d",
+      "scan_at": "2026-11-10T22:24:54.466002+00:00",
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/qdrant",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/qdrant"
       }
     },
     {
@@ -21134,7 +21316,7 @@
       "latest_version": "3.8.0",
       "target_version": "3.8.0",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:19Z",
+      "checked_at": "2026-11-10T22:26:50.885748+00:00",
       "release_url": "https://github.com/redis/RedisInsight/releases/tag/3.8.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -21304,7 +21486,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 3.8.0 equals the inventoried latest and contains the stated older fixes, but absence of repository advisories is not image/transitive clearance.",
@@ -21364,6 +21546,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/redisinsight",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/redisinsight"
       }
     },
     {
@@ -21634,11 +21820,11 @@
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "44.227.3",
+      "latest_version": "44.227.4",
       "target_version": "44.225.1",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:19Z",
-      "release_url": "https://github.com/renovatebot/renovate/releases/tag/44.227.3",
+      "checked_at": "2026-11-10T22:26:50.981125+00:00",
+      "release_url": "https://github.com/renovatebot/renovate/releases/tag/44.227.4",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
@@ -21942,6 +22128,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/renovate"
       }
     },
     {
@@ -22120,7 +22309,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 0.19.1 equals the inventoried stable latest, but the repository publishes no advisory entries and the exact container base/tools were not inspected.",
@@ -22178,6 +22367,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/restic"
       }
     },
     {
@@ -22356,7 +22548,7 @@
         "remaining_latest_actions": [],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 0.19.1 equals the inventoried stable latest, but the repository publishes no advisory entries and the exact container base/tools were not inspected.",
@@ -22414,6 +22606,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/restic-offsite"
       }
     },
     {
@@ -22439,8 +22634,8 @@
       "latest_version": "2.40.0",
       "target_version": "2.39.3",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:05:03Z",
-      "release_url": "https://raw.githubusercontent.com/aws/aws-cli/v2/CHANGELOG.rst",
+      "checked_at": "2026-11-10T22:28:59.976015+00:00",
+      "release_url": "https://raw.githubusercontent.com/aws/aws-cli/2.40.0/CHANGELOG.rst",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
@@ -22658,6 +22853,9 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/seaweedfs-buckets"
       }
     },
     {
@@ -22697,7 +22895,7 @@
       "latest_version": "4.53",
       "target_version": "4.48",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:51.074506+00:00",
       "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.53",
       "target_index_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
       "target_manifest_digest": "sha256:aba492e2a4e4c90bff795745e8e660affa1f09e7650f5981bd7bccd1a06cd931",
@@ -22921,7 +23119,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "no-fix",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 4.48 is explicitly inside GHSA-5vhw-52xr-8x4j and inside four open-ended publisher ranges. A stable 4.53 exists, but the publisher records do not state fixed versions for these five entries, so upgrading alone is not proof of remediation.",
@@ -23096,6 +23294,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/seaweedfs-filer",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/no_fix/seaweedfs-filer"
       }
     },
     {
@@ -23135,7 +23337,7 @@
       "latest_version": "4.53",
       "target_version": "4.48",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:51.074506+00:00",
       "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.53",
       "target_index_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
       "target_manifest_digest": "sha256:aba492e2a4e4c90bff795745e8e660affa1f09e7650f5981bd7bccd1a06cd931",
@@ -23343,7 +23545,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "no-fix",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 4.48 is explicitly inside GHSA-5vhw-52xr-8x4j and inside four open-ended publisher ranges. A stable 4.53 exists, but the publisher records do not state fixed versions for these five entries, so upgrading alone is not proof of remediation.",
@@ -23518,6 +23720,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/seaweedfs-master",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/no_fix/seaweedfs-master"
       }
     },
     {
@@ -23557,7 +23763,7 @@
       "latest_version": "4.53",
       "target_version": "4.48",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:51.074506+00:00",
       "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.53",
       "target_index_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
       "target_manifest_digest": "sha256:aba492e2a4e4c90bff795745e8e660affa1f09e7650f5981bd7bccd1a06cd931",
@@ -23765,7 +23971,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "no-fix",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 4.48 is explicitly inside GHSA-5vhw-52xr-8x4j and inside four open-ended publisher ranges. A stable 4.53 exists, but the publisher records do not state fixed versions for these five entries, so upgrading alone is not proof of remediation.",
@@ -23940,6 +24146,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/seaweedfs-s3",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/no_fix/seaweedfs-s3"
       }
     },
     {
@@ -23979,7 +24189,7 @@
       "latest_version": "4.53",
       "target_version": "4.48",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:51.074506+00:00",
       "release_url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.53",
       "target_index_digest": "sha256:4e61d15fd35994cb1e43e1e553dff106794841fd9a99ade2fc8c8bfce4d7872d",
       "target_manifest_digest": "sha256:aba492e2a4e4c90bff795745e8e660affa1f09e7650f5981bd7bccd1a06cd931",
@@ -24187,7 +24397,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "no-fix",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected 4.48 is explicitly inside GHSA-5vhw-52xr-8x4j and inside four open-ended publisher ranges. A stable 4.53 exists, but the publisher records do not state fixed versions for these five entries, so upgrading alone is not proof of remediation.",
@@ -24362,6 +24572,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/seaweedfs-volume",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/no_fix/seaweedfs-volume"
       }
     },
     {
@@ -24552,7 +24766,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The reviewed Storybook/Next server issues do not affect the declared static architecture, but NGINX/base packages and selected artifact contents are unverified.",
@@ -24615,6 +24829,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/storybook",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/storybook"
       }
     },
     {
@@ -24806,7 +25024,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected Node24.21.0 base predates the vendor24.22.1 security release. Concrete source component is in the affected24.x range; actual image/runtime exposure remains unverified.",
@@ -24887,6 +25105,10 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/storybook-mcp",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/storybook-mcp"
       }
     },
     {
@@ -24907,7 +25129,7 @@
       "latest_version": "4.0.1",
       "target_version": "2.7.0",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:51.251768+00:00",
       "release_url": "https://github.com/surrealdb/surrealdb/releases/tag/v4.0.1",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -25363,7 +25585,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Although the ledger's custom current_declared is UNKNOWN, infra/08-ai/open-notebook/surrealdb/Dockerfile copies the exact v2.7.0 binary. That version is below 3.3.0 for three Critical cross-tenant advisories and below 4.0.0 for eighteen newly observed advisories.",
@@ -25743,6 +25965,10 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/surrealdb",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/surrealdb"
       }
     },
     {
@@ -25777,7 +26003,7 @@
       "latest_version": "3.1.1",
       "target_version": "3.1.0",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:50.100878+00:00",
       "release_url": "https://github.com/grafana/tempo/releases/tag/v3.1.1",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -25939,7 +26165,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "patch",
       "affected_confirmed": true,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The vendor explicitly identifies 3.1.1 as a security release updating Go for the enumerated CVEs. The compose declaration remains a 3.1.0-derived custom tag. The locally changed Dockerfile is a patched source candidate, not evidence that the declared custom image was built, signed, or deployed.",
@@ -26024,6 +26250,10 @@
           ],
           "scope": "Source-only upstream component proposal; no new complete image/artifact was selected or verified."
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/tempo",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/patch/tempo"
       }
     },
     {
@@ -26040,7 +26270,7 @@
       "latest_version": "2.34.1",
       "target_version": "2.33.3",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:51.246426+00:00",
       "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -26208,7 +26438,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
@@ -26269,6 +26499,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/terrakube-api",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/terrakube-api"
       }
     },
     {
@@ -26285,7 +26519,7 @@
       "latest_version": "2.34.1",
       "target_version": "2.33.3",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:51.246426+00:00",
       "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -26453,7 +26687,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
@@ -26514,6 +26748,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/terrakube-executor",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/terrakube-executor"
       }
     },
     {
@@ -26530,7 +26768,7 @@
       "latest_version": "2.34.1",
       "target_version": "2.33.3",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:51.246426+00:00",
       "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.34.1",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -26698,7 +26936,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No public publisher advisory is listed, which is not dependency/image clearance, and the proposed latest channel is not established as stable by the checked release source.",
@@ -26759,6 +26997,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/terrakube-ui",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/terrakube-ui"
       }
     },
     {
@@ -26791,7 +27033,7 @@
       "latest_version": "3.7.18",
       "target_version": "3.7.17",
       "channel": "stable",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:51.262580+00:00",
       "release_url": "https://github.com/traefik/traefik/releases/tag/v3.7.18",
       "target_index_digest": "sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a",
       "target_manifest_digest": "sha256:e15b8921020b4fd81de5746b170dfceec221d2450711449f6427e4692881511a",
@@ -27165,7 +27407,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. 3.7.17 is the publisher fix for the current Traefik advisory. Stable 3.7.18 is now official, but its release notes do not by themselves bind the Go toolchain in the selected image or prove resolution of every carried Go advisory.",
@@ -27417,6 +27659,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/traefik",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/traefik"
       }
     },
     {
@@ -27781,7 +28027,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The local image is tagged with external Blog-data dev commitbcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48; no local source object, package inventory or exact-subject receipt establishes its dependencies.",
@@ -27832,6 +28078,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/blog-ingestion",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/blog-ingestion"
       }
     },
     {
@@ -27954,7 +28204,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. Selected dated revision equals the inventoried latest, but an empty public repository advisory list is not image/dependency clearance.",
@@ -28014,6 +28264,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/searxng",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/searxng"
       }
     },
     {
@@ -28030,7 +28284,7 @@
       "latest_version": "1.14.0",
       "target_version": "1.8.1",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:50.121046+00:00",
       "release_url": "https://github.com/n8n-io/n8n-sandbox-service/releases/tag/service/v1.14.0",
       "target_index_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
       "target_manifest_digest": "sha256:a82705b50707dc2244b1fe8e9cf35f41fd048a037b79dedb3eb24294c63fc136",
@@ -28135,7 +28389,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. The repository endpoint is empty but transitive/image status and the 1.8.1-to-1.14.0 delta are unreviewed; the service's one-shot certificate role differs from API runtime.",
@@ -28196,6 +28450,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n-sandbox-certs",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n-sandbox-certs"
       }
     },
     {
@@ -28212,7 +28470,7 @@
       "latest_version": "1.14.0",
       "target_version": "1.8.1",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:50.121046+00:00",
       "release_url": "https://github.com/n8n-io/n8n-sandbox-service/releases/tag/service/v1.14.0",
       "target_index_digest": "sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
       "target_manifest_digest": "sha256:a82705b50707dc2244b1fe8e9cf35f41fd048a037b79dedb3eb24294c63fc136",
@@ -28317,7 +28575,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. No published repository advisory is not absence proof; API key, tenant authorization, runner routing, storage and metrics boundaries require version-specific evidence.",
@@ -28378,6 +28636,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n-sandbox-api",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n-sandbox-api"
       }
     },
     {
@@ -28394,7 +28656,7 @@
       "latest_version": "1.14.0",
       "target_version": "1.8.1",
       "channel": "UNKNOWN",
-      "checked_at": "2026-11-10T21:00:20Z",
+      "checked_at": "2026-11-10T22:26:50.121046+00:00",
       "release_url": "https://github.com/n8n-io/n8n-sandbox-service/releases/tag/service/v1.14.0",
       "target_index_digest": "sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
       "target_manifest_digest": "sha256:61d482b8e6a65a8f71afe278cf369c29f969ae18d06fc139500eaef2484c0a33",
@@ -28499,7 +28761,7 @@
         ],
         "next_evidence_owner": "SPEC-0212-TSK-0052 W109; W110 criterion105 for exact artifacts (n8n full image criterion60 remains TSK-0041)"
       },
-      "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
+      "reviewed_at": "2026-11-10T22:35:50.207336+00:00",
       "decision": "defer",
       "affected_confirmed": null,
       "reason": "Scope: the explicitly reviewed official advisory/direct-component set; full-image/base/transitive status remains unverified. DinD/guest-host boundaries are security-critical; no published repository advisory does not cover Docker/OS packages, and the 1.8.1-to-1.14.0 delta is unreviewed.",
@@ -28560,6 +28822,10 @@
           "current_version": null,
           "candidate_version": null
         }
+      },
+      "master_20261111_artifact_review": {
+        "latest_ref": "release-lookups.json#/master_20261111_artifact_review/latest/n8n-sandbox-runner-1",
+        "security_ref": "release-lookups.json#/master_20261111_artifact_review/defer/n8n-sandbox-runner-1"
       }
     }
   ],
@@ -59330,6 +59596,21 @@
       "operations_executed": 0,
       "unique_github_advisories": 688,
       "returned_github_records": 1088
+    }
+  },
+  "master_20261111_artifact_review": {
+    "lookup_ref": "release-lookups.json#/master_20261111_artifact_review",
+    "summary": {
+      "previous_latest_residuals": 56,
+      "security_rows_reassessed": 60,
+      "published_final_candidates_scanned": 3,
+      "custom_candidate_services_blocked": 9,
+      "distinct_build_inputs_scanned": 4,
+      "declared_defer_scans_completed": 20,
+      "distinct_declared_images_scanned": 17,
+      "no_fix": 6,
+      "deferred": 42,
+      "operations": "NOT_RUN"
     }
   }
 }

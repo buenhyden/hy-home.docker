@@ -645,6 +645,9 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         self.assertTrue(review_key in releases, f"missing lookup {review_key}")
         ledger_review = ledger[review_key]
         lookup_review = releases[review_key]
+        latest_updates = releases.get("master_20261111_artifact_review", {}).get(
+            "latest", {}
+        )
         self.assertEqual(
             f"release-lookups.json#/{review_key}", ledger_review["lookup_ref"]
         )
@@ -763,7 +766,18 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 latest = review["latest_disposition"]
                 self.assertTrue(latest["action"])
                 self.assertEqual(row["target_version"], latest["target_retained"])
-                self.assertEqual(row["latest_version"], latest["observed_latest"])
+                current_evidence = latest_updates.get(row["service"])
+                if current_evidence:
+                    self.assertEqual(
+                        latest["observed_latest"],
+                        current_evidence["prior_observed_version"],
+                    )
+                    self.assertEqual(
+                        row["latest_version"],
+                        current_evidence["current_observed_version"],
+                    )
+                else:
+                    self.assertEqual(row["latest_version"], latest["observed_latest"])
                 self.assertEqual(
                     row["master_20261111_public_refresh"]["latest_gate_missing"],
                     latest["previous_gate_missing"],
@@ -803,7 +817,8 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                 else:
                     self.assertEqual("UNKNOWN", applicability)
                     self.assertEqual("defer", row["decision"])
-                    self.assertFalse(row["advisory_urls"])
+                    if row["service"] != "ollama-exporter":
+                        self.assertFalse(row["advisory_urls"])
                 self.assertIn(review["reason"], row["reason"])
                 self.assertNotIn(row["applicability"], {"AFFECTED", "NOT_AFFECTED"})
         mlflow = next(row for row in ledger["entries"] if row["service"] == "mlflow")
@@ -913,21 +928,78 @@ class UpdateEvidencePackageTests(unittest.TestCase):
                     self.assertEqual("NOT_RUN", row[field])
                 self.assertTrue(row["signature"].startswith("NOT_RUN"))
                 self.assertTrue(row["sbom_scan"].startswith("NOT_RUN"))
-                self.assertFalse(
-                    {
-                        "candidate_image",
-                        "scan_at",
-                        "scan_digest",
-                        "recovery",
-                        "residual_disposition",
-                    }
-                    & set(row)
-                )
+                self.assertFalse({"recovery", "residual_disposition"} & set(row))
+                if row["service"] in {"keycloak", "open_notebook", "qdrant"}:
+                    self.assertNotIn("matching_scan_digest", gate["missing"])
+                    self.assertNotIn("fresh_scan", gate["missing"])
+                else:
+                    self.assertFalse(
+                        {"candidate_image", "scan_at", "scan_digest"} & set(row)
+                    )
         for service in ("qdrant", "open_notebook"):
             with self.subTest(known_fixed_patch=service):
                 row = by_service[service]
                 self.assertEqual("AFFECTED", row[review_key]["security_applicability"])
                 self.assertEqual("patch", row["decision"])
+
+    def test_artifact_review_binds_only_final_candidate_scans_to_gate_fields(self):
+        package = (
+            Path(__file__).resolve().parents[3]
+            / "infra/09-platform-ops/security-updates"
+        )
+        key = "master_20261111_artifact_review"
+        ledger = json.loads((package / "update-ledger.json").read_text())
+        lookups = json.loads((package / "release-lookups.json").read_text())[key]
+        rows = {row["service"]: row for row in ledger["entries"]}
+        self.assertEqual(56, len(lookups["latest"]))
+        for decision, group, count in (
+            ("patch", "patch", 12),
+            ("no-fix", "no_fix", 6),
+            ("defer", "defer", 42),
+        ):
+            expected = {
+                name for name, row in rows.items() if row["decision"] == decision
+            }
+            self.assertEqual(count, len(expected))
+            self.assertEqual(expected, set(lookups[group]))
+            for name in expected:
+                self.assertEqual(
+                    f"release-lookups.json#/{key}/{group}/{name}",
+                    rows[name][key]["security_ref"],
+                )
+                self.assertTrue(lookups[group][name]["next_action"])
+        final = {name for name, row in rows.items() if "candidate_image" in row}
+        self.assertEqual({"keycloak", "open_notebook", "qdrant"}, final)
+        for name, evidence in lookups["patch"].items():
+            with self.subTest(service=name):
+                row = rows[name]
+                self.assertEqual("NOT_RUN", evidence["operational_execution"])
+                scan = lookups["candidate_scans"].get(name, {})
+                if name in final:
+                    self.assertEqual("final", scan["role"])
+                    self.assertTrue(scan["matched_manifest"])
+                    self.assertEqual(0, scan["grype"]["exit"])
+                    self.assertEqual(scan["reference"], row["candidate_image"])
+                    self.assertEqual(scan["source_target"], row["scan_digest"])
+                    self.assertEqual(scan["grype"]["checked_at"], row["scan_at"])
+                else:
+                    self.assertIsNone(evidence["final_image"])
+        qdrant_signature = lookups["cosign"]["signatures"]["qdrant"]
+        self.assertTrue(qdrant_signature["subject_matches"])
+        self.assertTrue(
+            qdrant_signature["index_ref"].endswith(
+                "@" + lookups["patch"]["qdrant"]["publisher_index_digest"]
+            )
+        )
+        exporter = lookups["defer"]["ollama-exporter"]
+        self.assertEqual("UNKNOWN", exporter["applicability"])
+        self.assertEqual(
+            [
+                lookups["component_advisories"][advisory]["source"]
+                for advisory in exporter["component_advisory_ids"]
+            ],
+            rows["ollama-exporter"]["advisory_urls"],
+        )
 
     def test_valkey_candidate_pull_receipt_is_not_promoted_from_self_report(self):
         root = Path(__file__).resolve().parents[3]

@@ -1,6 +1,6 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -230,11 +230,52 @@ Twelve numeric current/candidate pairs are component proposals only, not
 selected-image changes. No operational upgrade, image pull, build, scan,
 deployment, credential use, recovery action or risk-acceptance renewal ran.
 
+### Exact artifact and official-source continuation (2026-11-11)
+
+The owner's follow-up authorizes public registry reads and temporary isolated
+scans for this review. The [version and artifact receipts](../../../../infra/09-platform-ops/security-updates/release-lookups.json)
+record actions for the 56 previous latest-version residuals and the 60 open
+security rows under `master_20261111_artifact_review`. The declaration and
+target remain bound to the current source. The publisher's Renovate release
+advanced to 44.227.4, and n8n's release notes identify 2.47.3 as stable.
+Pushgateway has a 1.11.5 tag and matching image while the project's download
+page and GitHub Latest still report 1.11.4. The 1.11.5 pin is retained pending
+publisher channel confirmation.
+
+The three public patch candidates have exact linux/amd64 manifest and matching
+local Syft and Grype receipts. Qdrant's publisher signature verifies the
+multi-platform index, which binds the scanned platform and its attached
+SPDX and SLSA predicates. Keycloak and Open Notebook expose subject-matching
+SLSA predicates. Their publisher signatures and publisher SBOMs are pending.
+
+| Public candidate | Publisher signature | Grype Critical matches | Grype High matches |
+| --- | --- | ---: | ---: |
+| Keycloak 26.8.2 | Unverified | 1 | 5 |
+| Open Notebook 1.15.1-single | Unverified | 48 | 512 |
+| Qdrant v1.20.0-unprivileged | Verified index | 0 | 62 |
+
+These counts describe package matches. Compatibility, recovery, and residual
+adjudication remain required for all 12 patch rows. Nine rows await a final
+custom artifact. SurrealDB, Tempo, OpenTofu, and the Storybook MCP Node runtime
+have separately scanned upstream inputs. OpenTofu also has a verified upstream
+index signature. For the five pgBackRest consumers the supplier fix floor is
+2.59.3. Alpine publishes 2.60.0-r0 on edge; the two tracked build lines use
+v3.23 and v3.24, which still list 2.57.0-r0 and 2.58.0-r0 respectively.
+
+The six no-fix rows remain blocked on the applicable OpenBao go-jose v3 and
+SeaweedFS advisories. For the 42 deferred rows, the receipt records observed
+publisher advisories, lookup failures, and the action for each service. Exact
+declared-image scans cover 20 of those services across 17 distinct images.
+The Ollama exporter now has official Node.js and OpenSSL evidence for packages
+found in its image. Service applicability remains pending. Blog ingestion
+still needs evidence from its external producer. GitHub API pagination and
+registry access failures are recorded alongside their bounded fallbacks.
+
 ## Evidence
 
 The first two NOT_RUN rows preserve initial issuance. Their N1/N2 wait text
-is historical; later source observations and the still-failing gate are separate
-rows. Exact artifact execution has not run.
+is historical. Later rows record the source observations, partial exact
+artifact verification and the current gate results.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -252,22 +293,26 @@ rows. Exact artifact execution has not run.
 | Revalidated security-update gate (advisory continuation) | 104 | W109 | `security_update_gate` | Same 89-entry ledger | FAIL | Exit2; all89 fresh reviews recorded;29 ledger-complete pending independent verification,54 blocked-evidence and6 blocked-no-fix. No artifact-level security proof or operational acceptance is inferred. | required | - |
 | Advisory gate policy check | 104 | W109 | static supply-chain policy | Updated review contract | PASS | Five contracts/13 cases; policy/static result only, not a live artifact or recovery observation | required | - |
 | Advisory review regression | 104 | W109 | focused supply-chain gate tests | Frozen `master_20261111_advisory_review` records | PASS | TDD RED: one expected missing-key failure; integration then exposed and corrected three empty-reason failures. Initial GREEN:96 tests in4.970s, including two new tests in0.104s; Ruff, formatting and lint passed. No production gate code changed. | required | - |
+| Exact artifact investigation | 105 | W110 | Registry and isolated Cosign, Syft and Grype | 12 patch rows | FAIL | Three exact final scans; one verified final index signature and matched published SBOM. Nine final custom images pending. Scans, publisher evidence and remaining actions are bound to the named subject. | required | - |
+| Official evidence and follow-up | 104 | W109 | Public release, security and package sources | 56 latest residuals and 60 security residuals | FAIL | 56 latest actions, six no-fix reviews, 42 deferred decisions, and 20 deferred services with exact scans. One primary advisory reference still missing. | required | - |
+| Latest-version gate (artifact continuation) | 104 | W109 | `latest_version_gate` | 89 ledger rows and 33 Compose source files | FAIL | Exit2; 33 complete and 56 residual. Both gates independently match the same 89 services and source closure. | required | - |
+| Security-update gate (artifact continuation) | 104 | W109 | `security_update_gate` | Same 89 rows and source closure | FAIL | Exit2; 29 pending independent verification, 54 blocked-evidence, six blocked-no-fix. Exact candidate and scan gaps fell from 12 to nine; the primary advisory gap fell from two to one. | required | - |
+| Artifact gate regression | 104 | W109 | Focused supply-chain and CI routing tests | Ledger and lookup references | PASS | RED reproduced the absent artifact evidence. The final focused run passed 97 tests; static policy passed five contracts and 13 cases. | required | - |
+| Controller dependency audit | 104 | W109 | `pip-audit` and `npm audit` | Controller lock and Storybook production lock | FAIL | Python audit reported 25 findings across 36 checked requirements. Storybook npm audit reported zero. Both locks match the source baseline; controller findings need separate dependency triage. | optional | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 104 | pending | Ledger fresh review | All89 entries now have an official-advisory applicability classification and reviewed decision, but both gates FAIL:56 latest residuals remain and security rows still require independent artifact/compatibility/recovery evidence or retain an explicit block/defer. | SPEC-0212 TSK-0052 |
-| 105 | pending | Artifact verification | No verification has run. | SPEC-0212 TSK-0052 |
+| 105 | pending | Artifact verification | Three public final candidates scanned. Qdrant index signature verified; other publisher proofs, final custom artifacts and residual decisions remain pending. | SPEC-0212 TSK-0052 |
 
 ## Review and Completion
 
-Current source research and isolated checks have run as recorded above. The
-original unrun statements and the first RED regression receipt remain
-historical. The final GREEN regression receipt and the static policy check are
-PASS. The
-latest-version and security gates still fail, and exact artifact execution
-remains NOT_RUN. No criterion is accepted.
+Current source research and isolated artifact checks have run as recorded
+above. Both ledger gates still fail. Criteria 104 and 105 remain pending.
+Compatibility, recovery and operational execution remain separate and are
+recorded as NOT_RUN.
 
 Completion needs a passing latest-version gate or each remaining entry recorded
 as a residual, independently verified security dispositions for affected or
