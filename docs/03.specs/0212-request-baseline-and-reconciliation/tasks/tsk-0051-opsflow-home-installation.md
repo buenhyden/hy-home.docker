@@ -1,8 +1,8 @@
 ---
 title: "Opsflow First HOME Installation Task"
-version: "0.1.3"
+version: "1.0.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-10"
 layer: "specs"
@@ -52,9 +52,9 @@ this Task does not copy them.
 | 1 | Back up `opsflow_dev` on `dev-pg`, the Airflow metadata DB `airflow` on `mng-pg` and the `opsflow-dev` bucket listing | Backup files exist, have nonzero size and recorded SHA-256; listing saved | O6 | PASS |
 | 2 | Apply migrations `001`, `003`, `004`, `005`, `007` from `infra/07-workflow/airflow/workloads/manifest-pipeline/sql/` to `opsflow_dev` with session_user `opsflow_migrator` and current_user `opsflow_owner`, each with its own SHA-256; `002` and `006` are isolated-only and do not run in HOME | `008_checks.sql`, run as the audit administrator with the `007` SHA-256, ends its read-only transaction in ROLLBACK without error | O1, O2, O8 | PASS |
 | 3 | Create bucket `opsflow-dev`, apply the worker identity and the `WorkerCannotDelete` bucket policy | Eight permission canaries return the expected statuses | O3 | PASS |
-| 4 | Install `dags/source_manifest_ingest.py` and `workflow_lib/` at the reviewed commit, image unchanged, recording every installed path in the backup directory | File SHA-256 match the commit; `airflow dags list` shows the DAG paused with no import error | O1, O4, O5 | not run |
-| 5 | Create pool `manifest_ingest` (1 slot), keep the DAG paused, run one synthetic business date and one invalid input on `airflow-worker` through Celery | Raw, validated, published and outbox rows exist; the invalid input is quarantined with `application/json` | O7 | not run |
-| 6 | Unpause `source_manifest_ingest` | DAG reports unpaused; no unplanned run started | - | not run |
+| 4 | Install `dags/source_manifest_ingest.py` and `workflow_lib/` at the reviewed commit, image unchanged, recording every installed path in the backup directory | File SHA-256 match the commit; `airflow dags list` shows the DAG paused with no import error | O1, O4, O5 | PASS |
+| 5 | Create pool `manifest_ingest` (1 slot), keep the DAG paused, run one synthetic business date and one invalid input on `airflow-worker` through Celery | Raw, validated, published and outbox rows exist; the invalid input is quarantined with `application/json` | O7 | PASS |
+| 6 | Unpause `source_manifest_ingest` | DAG reports unpaused; no unplanned run started | - | PASS |
 
 Rollback removes the installed files, keeps every backup and drops nothing that
 existed before step 1.
@@ -138,10 +138,49 @@ Step record:
   principal `arn:aws:iam::000000000000:user/opsflow-worker` was applied. The eight
   repository canaries plus a read of `loki-bucket` as the worker all matched
   (`ALL_PASS`). Two canary objects remain in `opsflow-dev`.
-- Step 4 is on hold: the owner forbade adding the workflow override to `.env`
-  `COMPOSE_FILE` and asked for an explicit overlay rule, so the override is being
-  folded into the base Airflow Compose file in a separate change. Step 4 runs
-  after that change merges.
+- Step 4 waited while the owner forbade adding the workflow override to `.env`
+  `COMPOSE_FILE`; the override was folded into the base Airflow Compose file by
+  the overlay-policy change (merge `30be19b9b`). Step 4 then recreated the five
+  Airflow services from that revision with the image unchanged (`e851244c…`), all
+  healthy. `airflow-worker` joined `airflow_net`, `dev_data_net`, `mng_data_net`
+  and `object_net`; the SHA-256 of the mounted DAG file and `workflow_lib/`
+  matched the commit; `airflow dags list-import-errors` reported no data;
+  `source_manifest_ingest` stayed paused; `pg.json` and `s3.json` passed the
+  `workflow_lib` contract inside the worker. `airflow-worker` first waited on the
+  API server dependency and was started separately.
+- Step 5: pool `manifest_ingest` (1 slot) was created and the fixture was uploaded
+  as `manifest-input/hy-home.docker/2026-10-10.json` and `2026-10-11.json`. Run
+  `e2e-step5-2026-10-10` succeeded: `ops_flow.runs`, `documents`,
+  `published_documents`, `outbox` and `current_runs` each hold one row and the
+  validated object is under `manifest-validated/hy-home.docker/`. Run
+  `e2e-step5-2026-10-11` failed as designed on the partition mismatch: the input
+  was written to `manifest-quarantine/hy-home.docker/2026-10-11/` with
+  ContentType `application/json`, and nothing was published. The helper script
+  stopped on a warning line in the `list-runs` output after creating the second
+  run; the DAG was paused again at once, and with no schedule no other run could
+  start. Only these two runs exist (`step5-runs.txt`).
+- Step 6: the owner ran `airflow dags unpause source_manifest_ingest`; its table
+  printed the prior state, and `airflow dags list` and `dags details` then
+  reported `is_paused False` with `timetable_summary None`. The run list still
+  held only the two step 5 runs.
+
+### Owner acceptance 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) accepted criterion 103 with all six steps
+at PASS and closed this Task. In the same session the owner approved removing
+the test objects from `opsflow-dev`: the two step 5 inputs under
+`manifest-input/hy-home.docker/` and the canary objects
+`manifest-input/permission-canary` and `manifest-validated/permission-write`
+were deleted with the SeaweedFS admin identity. The validated object, which
+`ops_flow.documents` references, and the step 5 quarantine object remain.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0051 | draft | ready | #2026-11-10-owner-decisions |
+| SPEC-0212-TSK-0051 | ready | in-progress | #execution-2026-11-10 |
+| SPEC-0212-TSK-0051 | in-progress | completed | #owner-acceptance-2026-11-10 |
 
 ### Open owner items
 
@@ -183,21 +222,21 @@ credential decision.
 | Step 3 bucket and canaries | 103 | W108 | Permission canaries | `opsflow-dev` bucket and worker identity at `7f93e6080` | PASS | `step3-canary.json` in the step 1 backup directory (`ALL_PASS`). | required | - |
 | O8 isolated rehearsal | 103 | W108 | `tests.validation.test_opsflow_database_rehearsal` | reviewed `postgres:18.6-alpine` image at `7f93e6080` | PASS | 13 of 13 after rerunning two container-readiness failures alone; see Execution 2026-11-10. | required | - |
 | Step 1-a provisioning | 103 | W108 | Database, role login flags and cross-database CONNECT | HOME `dev-pg` after `cluster-connect.sql` at `7f93e6080` | PASS | See Execution 2026-11-10 (steps 1-a-0 and 1-a). | required | - |
-| Step 4 code install | 103 | W108 | File hashes and paused DAG import | DAG directory and `airflow-worker` mounts | NOT_RUN | Not started; waits for O1, O4 and O5. | required | - |
-| Step 5 synthetic run | 103 | W108 | Rows and quarantine readback | Pool `manifest_ingest`, one synthetic and one invalid input | NOT_RUN | Not started; waits for O7. | required | - |
-| Step 6 unpause | 103 | W108 | DAG pause state | `source_manifest_ingest` | NOT_RUN | Not started; only after step 5 PASS. | required | - |
+| Step 4 code install | 103 | W108 | File hashes and paused DAG import | DAG directory and `airflow-worker` mounts at `30be19b9b` | PASS | See Execution 2026-11-10 (step 4). | required | - |
+| Step 5 synthetic run | 103 | W108 | Rows and quarantine readback | Pool `manifest_ingest`, one synthetic and one invalid input at `30be19b9b` | PASS | `step5-runs.txt` in the step 1 backup directory; see Execution 2026-11-10 (step 5). | required | - |
+| Step 6 unpause | 103 | W108 | DAG pause state | `source_manifest_ingest` at `30be19b9b` | PASS | `is_paused False`; only the two step 5 runs exist. | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 103 | pending | Step 1 backups, Step 2 migrations, Step 3 bucket and canaries, Step 4 code install, Step 5 synthetic run, Step 6 unpause | No step has run. | SPEC-0212 TSK-0051 |
+| 103 | accepted | Step 1 backups, Step 2 migrations, Step 3 bucket and canaries, Step 4 code install, Step 5 synthetic run, Step 6 unpause | All six steps passed on 2026-11-10; the owner accepted on 2026-11-10. | SPEC-0212 TSK-0051 |
 
 ## Review and Completion
 
-The Task and the runbook section are open for owner review. Completion needs
-every step's Evidence row recorded as PASS in an approved window. A failed step
-stops the run, applies that step's rollback and records the failure here.
+Every step's Evidence row is PASS from the approved 2026-11-10 window, and the
+owner accepted criterion 103 and closed this Task on 2026-11-10 (see Owner
+acceptance 2026-11-10 in the Work Log).
 
 ## Related Documents
 
