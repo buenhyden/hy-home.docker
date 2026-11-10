@@ -1,10 +1,10 @@
 ---
 title: "Independent Manifest Pipeline"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-10"
 ---
 
 # Independent Manifest Pipeline
@@ -28,7 +28,7 @@ P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다
 - [workflow_lib/](workflow_lib/README.md): parser와 전용 adapter.
 - [sql/](sql/README.md): migration과 실행 가능한 SQL 검사.
 - [fixtures/](fixtures/README.md): 공개 합성 manifest와 값 없는 접속 예시.
-- [Compose override](compose.workflow.override.yml): 기존 root 모델 위의 선택 변경.
+- Compose 변경은 [airflow Compose](../../docker-compose.yml)에 합쳐져 있고 별도 override는 없습니다.
 
 ## Usage
 
@@ -39,26 +39,18 @@ SDK double·driver double의 PASS는 실제 DAG import나 DEV 실행의 증거�
 
 ### Configuration
 
-이 override의 선택형 서비스 확장 분류에는 `x-hyhome-overlay`의 정수 version과
-추적된 root include base를 명시해야 합니다. 검토한 root와 override를 순서대로
-명시한 `-f` 조합에서 기존 서비스 profile을 상속하며 단독 기동하지 않습니다.
-새 서비스·top-level 자원·profile 재정의를 추가하지 않고 기존 Guide와 inventory를
-중복 등록하지 않습니다. Marker 분류는 이미지·권한·DEV/HOME 실행 수용이 아닙니다.
-관련 정책 문서는 기존 [문서 탐색](../../../../../docs/README.md)에서 찾습니다.
-실제 소스 분류 입력은 이 override의 marker와 공통 분류기가 소비합니다.
-
 SEC01의 호환 이미지·dependencies와 P03의 endpoint·실제 worker UID/GID 계약을
 받아야 합니다. 이미지에는 필요한 패키지를 빌드 시 설치하며 startup pip를
 사용하지 않습니다. 소스 기본 UID와 관측된 UID가 달라 어느 쪽도 가정하지 않습니다.
 
-Override의 `OPSFLOW_AIRFLOW_IMAGE`에는 검토한 로컬 immutable 이미지,
-`OPSFLOW_CODE_DIR`에는 이 폴더, `OPSFLOW_SECRET_DIR`에는 worker 전용 보호
-디렉터리의 정확한 경로를 지정합니다. 상속된 build를 `!reset`으로 제거하고
-자동 pull을 막습니다. 기존 command·user·management network·volume는 유지하며
-worker에만 DEV/object network와 `/run/opsflow`를 추가합니다. n8n 변경은 없습니다.
+overlay 규칙은 POL-0078이 소유하며 이 workload는 overlay를 쓰지 않습니다. Airflow Compose가 apiserver·scheduler·dag-processor·triggerer·worker에
+이 폴더의 DAG와 `workflow_lib`를 읽기 전용으로 mount하고, worker에만 DEV/object network와
+`OPSFLOW_SECRET_DIR`(없으면 추적된 빈 `secret-placeholder/`)을 `/run/opsflow`로 mount합니다.
+`OPSFLOW_SECRET_DIR`에는 worker 전용 보호 디렉터리의 정확한 경로를 지정합니다. 기본 이미지를 그대로 쓰며
+n8n 변경은 없습니다.
 
 Worker는 `pg.json`, `s3.json`과 TLS를 선택한 경우 같은 보호 폴더의
-`ca.pem`을 읽습니다. [CA 전달](workflow_lib/tls.py)은 보호된 경로·소유자·권한·
+`ca.pem`을 읽습니다. CA 전달(`workflow_lib/tls.py`)은 보호된 경로·소유자·권한·
 단일 regular file·크기·PEM 인증서를 확인하고, 검증한 bytes를 쓰기 금지한
 메모리 사본으로 고정해 driver에 전달합니다. Linux memfd·seal·procfs가 없거나
 검증에 실패하면 연결을 거부합니다. TLS를 선택한 PostgreSQL은 `verify-full`만 지원하며,
@@ -75,9 +67,12 @@ S3 TLS 소스 계약은 명시적 `https://seaweedfs-s3:443`과 고정
 Admin·reader·notifier 자격 증명은 이 폴더에 두지 않습니다.
 기존 DEV provisioner는 schema version 2의 함수 전용 Opsflow 계약을 지원합니다.
 Owner는 NOLOGIN이며 migrator만 명시적 SET ROLE 권한을 갖고 runtime은 승인된
-함수/view만 소비합니다. 공개 `pg/provision/opsflow.json`의 `password_secrets: null`은
-발급·정본 연결이 남았다는 뜻이며 실행 가능한 자격이 아닙니다. 실제 역할·자격 연결과
-pool 한 slot 생성은 별도 실행 대상입니다. 기존 generic table-grant 계약을 이 workload에
+함수/view만 소비합니다. 공개 `pg/provision/opsflow.json`은 로그인 네 개의 secret 이름
+(`dev_pg_opsflow_{migrator,ingest,notifier,reader}_password`)을 선언하지만 값 파일 생성과
+실제 역할 발급은 owner가 승인한 별도 실행 대상입니다. worker의 S3 identity
+`opsflow-worker`는 `seaweedfs/config/s3-identities.conf`에 선언되며 `/run/opsflow`의
+`pg.json`·`s3.json`을 만드는 입력(`OPSFLOW_SECRET_DIR`)은 저장소가 정의하지 않는 열린
+항목입니다. pool 한 slot 생성도 별도 실행 대상입니다. 기존 generic table-grant 계약을 이 workload에
 대입하거나 미지정 자격을 자동 발급하지 않습니다.
 
 ### Validation

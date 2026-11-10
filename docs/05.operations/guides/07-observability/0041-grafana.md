@@ -1,10 +1,10 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.1.9"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
@@ -121,7 +121,7 @@ created: "2026-05-10"
 - **Metrics Drilldown**: Prometheus datasource의 `timeInterval`이 scrape 간격(30 s)과 같아 `$__rate_interval`이 샘플 네 개를 덮는다.
 - **Logs Drilldown**: Loki의 `volume_enabled`, `pattern_ingester`, `discover_log_levels`가 서비스별 볼륨, 패턴, 레벨 보기를 채운다.
 - **Traces Drilldown**: Tempo는 TraceQL metrics를 기본으로 답한다. Tempo datasource가 검색과 metrics 결과를 streaming으로 받으므로 Tempo에 `stream_over_http_enabled: true`가 있어야 한다. 없으면 Drilldown이 "An error occurred in the query"를 띄운다(2026-09-30). trace를 보내는 서비스는 Traefik, Keycloak, Grafana이며 샘플링은 10%다. Airflow tracing은 fork하는 프로세스를 멈추게 해 꺼 두었다(RUN-0050).
-- **Profiles Drilldown**: Alloy `go_services`의 10개 대상과 별도 SeaweedFS source가 `/debug/pprof`을 제공하는 총 11개(Prometheus, Alertmanager, Loki, Tempo, Alloy, Pyroscope, Grafana:6060, node-exporter, SeaweedFS S3, `mng-pg-exporter`, registry)에서 30초마다 가져온다. eBPF는 쓰지 않는다.
+- **Profiles Drilldown**: Alloy `go_services`의 10개 대상과 별도 SeaweedFS source가 `/debug/pprof`을 제공하는 총 13개(Prometheus, Alertmanager, Loki, Tempo, Alloy, Pyroscope, Grafana:6060, node-exporter, SeaweedFS S3, `mng-pg-exporter`, `dev-pg-exporter`, `kafka-exporter`, registry)에서 60초마다 가져온다. eBPF는 쓰지 않는다. Grafana가 기동 때 기본 preinstall로 `grafana-pyroscope-app`(`autoEnabled`, `preload`)을 설치하므로 Drilldown > Profiles는 별도 provisioning 없이 열린다. 앱 provisioning은 플러그인이 아직 없는 새 volume의 첫 기동에서 시작을 막을 수 있어 추가하지 않았다. 설치 검사가 `grafana.com`을 해석하지 못하면 `plugin.backgroundinstaller` 오류와 `plugins.dedupe` 경고가 로그에 남지만 이미 설치된 플러그인은 동작한다. 서비스별 CPU·메모리·goroutine 시계열과 flamegraph는 `Observability/pyroscope` 대시보드에도 있다.
 - **SQL datasources**: `n8n-db`, `airflow-db`는 `grafana-db-provision`이 만든 `grafana_reader`로 접속한다. 이 role은 n8n `execution_entity`·`workflow_entity`와 Airflow `dag`·`dag_run`·`task_instance`만 `SELECT`하며, 세션은 읽기 전용이고 statement timeout 30 s, datasource마다 연결 2개(`maxOpenConns`)로 제한된다.
 
 ### External dashboard survey (2026-09-29)

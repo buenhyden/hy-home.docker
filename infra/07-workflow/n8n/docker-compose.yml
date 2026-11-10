@@ -235,6 +235,8 @@ services:
       n8n_worker_runner_net:
         ipv4_address: 10.250.23.2
       mng_data_net: {}
+      # Internal path to Ollama for the Local Node; Main and runners stay off it.
+      n8n_ollama_net: {}
       # Production webhook executions run here; the only Gateway peer.
       n8n_blog_ingest_net: {}
       # Reaches Alloy's OTLP receiver for the worker's workflow and node spans.

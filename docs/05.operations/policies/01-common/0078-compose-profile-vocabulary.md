@@ -193,6 +193,38 @@ broker·영속 저장소·관측 종속성을 함께 유지한다. `core`만으�
 DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이다. config 성공은
 무인 재기동이나 live readiness를 증명하지 않는다.
 
+### HOME Compose overlay 등록부와 적용 규칙
+
+이 절이 overlay 적용 규칙의 유일한 소유자다. 다른 문서는 이 절을 링크하고 규칙을
+다시 쓰지 않는다. 절차는
+[RUN-0098](../../runbooks/01-common/0098-cold-start-and-reboot.md#overlay-적용-점검-절차)이 소유한다.
+
+- 어떤 overlay도 root `.env`의 `COMPOSE_FILE`로 적용하지 않는다. HOME의 `COMPOSE_FILE`은
+  `docker-compose.yml` 하나이거나 미설정이다. 소유자는 평문 `docker compose`를 쓰므로
+  HOME에서 항상 실행돼야 하는 변경은 overlay가 아니라 base Compose 파일에 둔다.
+- 유지보수·롤백처럼 일시적인 overlay는 파일로 남기고, 해당 Runbook 절차 안에서
+  명시적 `-f docker-compose.yml -f <overlay>`로만 적용한다. 절차가 끝나면 base만으로
+  서비스를 다시 만든다. 실행 프로세스의 `COMPOSE_FILE` 환경 변수는 적용 근거가 아니다.
+- 선택기(`scripts/lib/ops/compose_start.py`)는 `.env`의 `COMPOSE_FILE`이
+  `docker-compose.yml` 외의 값이면 값을 출력하지 않고 `compose_file_overlay_forbidden`으로
+  fail-closed 거부한다.
+- 등록부의 기계 판독 원본은 `infra/compose-overlays.json`이다. `x-hyhome-overlay`
+  marker를 가진 추적 파일은 모두 이 표와 JSON에 한 변경으로 함께 등록한다.
+  `tests/validation/test_compose_overlay_register.py`가 marker 파일·JSON·이 표의 불일치를
+  실패로 보고한다.
+- 필수 입력은 이름만 쓰며 값은 문서·로그·`.env.example`에 쓰지 않는다. 입력은 overlay를
+  적용하기 전에 준비한다.
+- HOME 상시 변경이던 n8n Valkey ACL(`mng-valkey`), n8n Worker와 Ollama 사이
+  `n8n_ollama_net`, Opsflow manifest-pipeline의 Airflow 코드 mount·Worker 망과
+  `OPSFLOW_SECRET_DIR` mount는 base 파일로 합쳤고 overlay 파일은 없다.
+- 선택형 서비스 확장의 형식은 위 [Typed optional root overlays](#typed-optional-root-overlays)가 정한다.
+
+| Overlay | Base | 목적 | 필수 입력(이름만) | 적용 방식 | 소유 문서 |
+| --- | --- | --- | --- | --- | --- |
+| `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml` | `docker-compose.yml` | n8n manifest outbox notifier 망 | 없음 | 명시적 `-f`, HOME 미적용 | [RUN-0053](../../runbooks/08-workflows-and-automation/0053-n8n.md) |
+| `infra/08-ai/comfyui/docker-compose.egress.yml` | `infra/08-ai/comfyui/docker-compose.yml` | ComfyUI 외부 망(유지보수 한정) | 없음 | 명시적 `-f`, HOME 미적용 | [RUN-0081](../../runbooks/09-ai-and-search/0081-comfyui.md) |
+| `infra/01-gateway/traefik/compose.window-ca.override.yml` | `infra/01-gateway/traefik/docker-compose.yml` | Traefik owner-window CA mount | 없음 | 명시적 `-f`, owner window 한정 | [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md) |
+
 ### Companion, exclusion and side effects
 
 Producer의 모든 profile은 기존 Exporter와 필요한 monitor provision job을 함께
@@ -205,11 +237,7 @@ Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `dep
 `kafka-connect`만 Target한 의존성 closure에는 Exporter가 빠지므로 해당 Producer의
 아래 companion 목록을 target 합집합에 포함한다. 이 계약은 임의 Docker CLI 명령을
 가로채는 장치가 아니며 bare Producer 기동 자체를 Compose 오류라고 주장하지 않는다.
-선택기는 저장소 루트 `.env`의 `COMPOSE_FILE`이 가리키는 파일을 같은 순서로 계획 입력(해시
-포함)과 `-f` 목록에 넣고, 관측 overlay를 마지막에 붙인다. 첫 파일은 `docker-compose.yml`이어야
-하며 저장소 밖 경로·`..`·중복·없는 파일은 거부한다. 실행 프로세스의 `COMPOSE_FILE` 환경 변수는
-신뢰하지 않는다. 관측 선택을 HOME 전체와 맞추려면 `--target`이 아니라 `--selection HOME`으로
-계획한다.
+관측 선택을 HOME 전체와 맞추려면 `--target`이 아니라 `--selection HOME`으로 계획한다.
 
 | Producer | Explicit targets |
 | --- | --- |

@@ -11,5 +11,10 @@
     "notifier": "opsflow_notifier",
     "reader": "opsflow_reader"
   },
-  "password_secrets": null
+  "password_secrets": {
+    "migrator": "dev_pg_opsflow_migrator_password",
+    "ingest": "dev_pg_opsflow_ingest_password",
+    "notifier": "dev_pg_opsflow_notifier_password",
+    "reader": "dev_pg_opsflow_reader_password"
+  }
 }

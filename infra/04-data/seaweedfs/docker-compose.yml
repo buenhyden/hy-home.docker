@@ -206,6 +206,7 @@ services:
       - seaweedfs_s3_mlflow_secret_key
       - seaweedfs_s3_terrakube_secret_key
       - seaweedfs_s3_lakehouse_secret_key
+      - seaweedfs_s3_opsflow_worker_secret_key
     expose:
       - ${SEAWEEDFS_S3_HTTP_PORT:-8333}
       - ${SEAWEEDFS_ICEBERG_PORT:-8181}

@@ -114,6 +114,17 @@ services:
         target: /run/openbao/airflow
         read_only: true
         bind: {create_host_path: false}
+      # Opsflow manifest-pipeline code (SPEC-0212 TSK-0051), read-only repo paths.
+      - type: bind
+        source: ./workloads/manifest-pipeline/dags/source_manifest_ingest.py
+        target: /opt/airflow/dags/source_manifest_ingest.py
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./workloads/manifest-pipeline/workflow_lib
+        target: /opt/airflow/dags/workflow_lib
+        read_only: true
+        bind: {create_host_path: false}
     environment:
       <<: *airflow-common-env
 
@@ -177,6 +188,23 @@ services:
     <<: *airflow-common
     container_name: airflow-scheduler
     hostname: airflow-scheduler
+    volumes:
+      - airflow-dags:/opt/airflow/dags
+      - airflow-plugins:/opt/airflow/plugins
+      - airflow-logs:/opt/airflow/logs
+      - airflow-config:/opt/airflow/config
+      - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+      # Opsflow manifest-pipeline code (SPEC-0212 TSK-0051), read-only repo paths.
+      - type: bind
+        source: ./workloads/manifest-pipeline/dags/source_manifest_ingest.py
+        target: /opt/airflow/dags/source_manifest_ingest.py
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./workloads/manifest-pipeline/workflow_lib
+        target: /opt/airflow/dags/workflow_lib
+        read_only: true
+        bind: {create_host_path: false}
     group_add:
       - '${SECRETS_GID:-1000}'
     read_only: false
@@ -208,6 +236,23 @@ services:
         reservations:
           cpus: "2.00"
           memory: 512M
+    volumes:
+      - airflow-dags:/opt/airflow/dags
+      - airflow-plugins:/opt/airflow/plugins
+      - airflow-logs:/opt/airflow/logs
+      - airflow-config:/opt/airflow/config
+      - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+      # Opsflow manifest-pipeline code (SPEC-0212 TSK-0051), read-only repo paths.
+      - type: bind
+        source: ./workloads/manifest-pipeline/dags/source_manifest_ingest.py
+        target: /opt/airflow/dags/source_manifest_ingest.py
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./workloads/manifest-pipeline/workflow_lib
+        target: /opt/airflow/dags/workflow_lib
+        read_only: true
+        bind: {create_host_path: false}
     group_add:
       - '${SECRETS_GID:-1000}'
     read_only: false
@@ -233,6 +278,30 @@ services:
     <<: *airflow-common
     container_name: airflow-worker
     hostname: airflow-worker
+    volumes:
+      - airflow-dags:/opt/airflow/dags
+      - airflow-plugins:/opt/airflow/plugins
+      - airflow-logs:/opt/airflow/logs
+      - airflow-config:/opt/airflow/config
+      - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+      # Opsflow manifest-pipeline code (SPEC-0212 TSK-0051), read-only repo paths.
+      - type: bind
+        source: ./workloads/manifest-pipeline/dags/source_manifest_ingest.py
+        target: /opt/airflow/dags/source_manifest_ingest.py
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./workloads/manifest-pipeline/workflow_lib
+        target: /opt/airflow/dags/workflow_lib
+        read_only: true
+        bind: {create_host_path: false}
+      # Worker-only pg.json/s3.json directory outside the repo. The tracked
+      # placeholder holds no secret, so the DAG fails closed at read time.
+      - type: bind
+        source: ${OPSFLOW_SECRET_DIR:-./workloads/manifest-pipeline/secret-placeholder}
+        target: /run/opsflow
+        read_only: true
+        bind: {create_host_path: false}
     group_add:
       - '${SECRETS_GID:-1000}'
     read_only: false
@@ -240,6 +309,8 @@ services:
     networks:
       airflow_net: {}
       mng_data_net: {}
+      dev_data_net: {}
+      object_net: {}
     environment:
       <<: *airflow-common-env
       DUMB_INIT_SETSID: '0'
@@ -262,6 +333,23 @@ services:
     <<: *airflow-common
     container_name: airflow-triggerer
     hostname: airflow-triggerer
+    volumes:
+      - airflow-dags:/opt/airflow/dags
+      - airflow-plugins:/opt/airflow/plugins
+      - airflow-logs:/opt/airflow/logs
+      - airflow-config:/opt/airflow/config
+      - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+      # Opsflow manifest-pipeline code (SPEC-0212 TSK-0051), read-only repo paths.
+      - type: bind
+        source: ./workloads/manifest-pipeline/dags/source_manifest_ingest.py
+        target: /opt/airflow/dags/source_manifest_ingest.py
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./workloads/manifest-pipeline/workflow_lib
+        target: /opt/airflow/dags/workflow_lib
+        read_only: true
+        bind: {create_host_path: false}
     group_add:
       - '${SECRETS_GID:-1000}'
     mem_limit: 384m
@@ -455,7 +543,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: prom/statsd-exporter:v0.31.0
+    image: prom/statsd-exporter:v0.31.0@sha256:1d5d341c4eb7abdd3445a3f85c3d498402b676ad29b4cf0421f5d280943871ab
     container_name: airflow-statsd-exporter
     hostname: airflow-statsd-exporter
     healthcheck:

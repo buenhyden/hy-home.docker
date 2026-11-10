@@ -54,6 +54,8 @@ examples/.generated/
 # Example
 
 .env
+.env.bak*
+.env.*.bak
 !.env.example
 # Temporary .env rewrites (oidc-client-secrets.sh).
 /.env.oidc.*

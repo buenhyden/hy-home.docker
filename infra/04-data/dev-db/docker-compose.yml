@@ -129,6 +129,10 @@ services:
       - dev_pg_platform_migrator_password
       - dev_pg_platform_runtime_password
       - dev_pg_platform_reader_password
+      - dev_pg_opsflow_migrator_password
+      - dev_pg_opsflow_ingest_password
+      - dev_pg_opsflow_notifier_password
+      - dev_pg_opsflow_reader_password
     depends_on:
       dev-pg:
         condition: service_healthy
@@ -204,7 +208,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: prometheuscommunity/postgres-exporter:v0.20.1
+    image: prometheuscommunity/postgres-exporter:v0.20.1@sha256:ac5ec343104fae0e2d84a27bb8d69b38430a11910c5382cad85d478d2bab713e
     container_name: dev-pg-exporter
     hostname: dev-pg-exporter
     group_add:
@@ -242,7 +246,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: valkey/valkey:9.1.2-alpine
+    image: valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b
     container_name: dev-valkey
     # Own reservation: peak 0.045 CPU / 3 MiB, above its template's other members;
     # peak x 1.5 with the 0.05 / 32M floor (owner decision, 2026-11-06).

@@ -93,6 +93,7 @@ master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leve
 | MLflow | `mlflow-artifacts` | `mlflow` | STRG-013 |
 | Terrakube | `tfstate` | `terrakube` | STRG-014 |
 | Spark (Iceberg) | `lakehouse` table bucket | `lakehouse` | STRG-015 |
+| Opsflow worker (Airflow) | `opsflow-dev` (`manifest-*` prefix 한정, delete 거부 정책 별도) | `opsflow-worker` | STRG-016 |
 
 `seaweedfs-buckets`(aws-cli, admin identity)는 네 개 bucket을 생성하고,
 `lakehouse` table bucket과 그 policy, `dev`/`test` namespace는 lakehouse LAB의

@@ -71,7 +71,7 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 승인된 recreate 전까지 이전 설정을 유지한다. recreate하면 management database의
 공유 DB 연결이 중단된다. Compose는 모든 consumer를 자동 재시작하지 않는다. logical WAL은 WAL 볼륨을 소폭 늘리고, slot은
 등록된 CDC connector만 생성한다. Valkey는 `${DEFAULT_MANAGEMENT_DIR}/valkey`의
-`mng-valkey-data`를 소유하고 AOF를 활성화하며 `mng_valkey_password`, `mng_valkey_monitor_password`, `mng_valkey_inspector_password`로 ACL을 만든다. n8n 전용 ACL 사용자는 opt-in overlay `infra/04-data/mng-db/docker-compose.n8n-acl.yml`(`mng_valkey_n8n_password`)로만 추가된다.
+`mng-valkey-data`를 소유하고 AOF를 활성화하며 `mng_valkey_password`, `mng_valkey_monitor_password`, `mng_valkey_inspector_password`로 ACL을 만든다. n8n 전용 ACL 사용자는 같은 Compose의 `MNG_VALKEY_N8N_ENABLED`와 `mng_valkey_n8n_password`로 추가된다.
 256 MiB 컨테이너 한도 아래 `maxmemory 128mb`·`noeviction`이라, 가득 차면 OOM kill 대신
 쓰기 오류를 반환하고 기존 큐 key는 축출하지 않는다.
 둘 다 `mng_data_net`을 사용한다. PostgreSQL host port(`POSTGRES_HOST_PORT`,

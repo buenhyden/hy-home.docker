@@ -61,6 +61,9 @@ networks:
   # Each external Code runner shares an internal bridge only with its broker
   # process. The bridge isolates peers; it is not a per-port firewall on the
   # paired n8n container (SPEC-0212-TSK-0042).
+  # n8n-worker <-> ollama only; shared by two includes, so declared here.
+  n8n_ollama_net:
+    internal: true
   n8n_worker_runner_net:
     name: n8n_worker_runner_net
     internal: true
@@ -421,6 +424,14 @@ secrets:
     file: ./secrets/db/dev-pg/platform_runtime_password.txt
   dev_pg_platform_reader_password:
     file: ./secrets/db/dev-pg/platform_reader_password.txt
+  dev_pg_opsflow_migrator_password:
+    file: ./secrets/db/dev-pg/opsflow_migrator_password.txt
+  dev_pg_opsflow_ingest_password:
+    file: ./secrets/db/dev-pg/opsflow_ingest_password.txt
+  dev_pg_opsflow_notifier_password:
+    file: ./secrets/db/dev-pg/opsflow_notifier_password.txt
+  dev_pg_opsflow_reader_password:
+    file: ./secrets/db/dev-pg/opsflow_reader_password.txt
   dev_pg_monitor_password:
     file: ./secrets/db/dev-pg/monitor_password.txt
   keycloak_db_password:
@@ -476,6 +487,8 @@ secrets:
     file: ./secrets/storage/seaweedfs/seaweedfs_s3_terrakube_secret_key.txt
   seaweedfs_s3_lakehouse_secret_key:
     file: ./secrets/storage/seaweedfs/seaweedfs_s3_lakehouse_secret_key.txt
+  seaweedfs_s3_opsflow_worker_secret_key:
+    file: ./secrets/storage/seaweedfs/seaweedfs_s3_opsflow_worker_secret_key.txt
 
   # ── OpenSearch ──────────────────────────────────────────
   opensearch_admin_password:

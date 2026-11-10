@@ -46,7 +46,6 @@ n8n/
 ├── Dockerfile
 ├── dev.Dockerfile
 ├── docker-compose.yml  # n8n, worker, task runner, and queue wiring
-├── docker-compose.ollama-local.yml # 선택형 Worker/Ollama internal 망
 ├── docker-entrypoint*.sh
 ├── custom/
 └── README.md           # This file
@@ -57,7 +56,7 @@ n8n/
 | Field | Evidence |
 | --- | --- |
 | Purpose | n8n Low-code Automation 서비스 leaf. [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 루트 include가 활성화됨. 선택형 Ollama overlay는 root include 밖에서 명시적으로 결합함 |
-| Config files | `docker-compose.yml`, `docker-compose.ollama-local.yml` |
+| Config files | `docker-compose.yml` |
 | Config values | env 키: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE` 외 다수; 프로필: `workflow`, `workflow-n8n`, Blog-data 수집 Gateway 전용 `blog-ingestion` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 무조건 루트 include되며 프로필(`workflow`, `workflow-n8n`)로 선택됨 |
 | Networks | `edge_net`, `mng_data_net`, `n8n_net`, `obs_net`; `n8n-worker`도 Alloy OTLP 전송을 위해 `obs_net`에 붙고, `n8n-worker`와 `blog-ingestion`만 내부·격리 `n8n_blog_ingest_net`을, Traefik과 `blog-ingestion`만 내부·격리 `blog_export_net`을 공유함. runner는 `n8n_net`에 없고 `n8n-worker`와 `n8n-task-runner-worker`만 내부·격리 `n8n_worker_runner_net`을 공유함. worker의 task broker는 그 망 주소 `10.250.23.2`에만 bind하고 worker healthcheck도 그 주소를 씀(SPEC-0267). main은 queue mode에서 수동 실행을 worker로 넘기므로(`OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true`) task runner를 시작하지 않고 runner도 두지 않음(SPEC-0269) |
@@ -110,10 +109,10 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 거부합니다. 전용 Valkey의 username 없는 기존 pair도 유지합니다. 설정이 준비됐다는
 사실은 실제 Bull queue의 인증·Retry·복원 인수가 아닙니다.
 
-[`docker-compose.ollama-local.yml`](docker-compose.ollama-local.yml)은 실제 실행자인
-`n8n-worker`와 `ollama`만 새 `internal:true` 망에 추가합니다. Main/Code Runner에는
+`docker-compose.yml`은 실제 실행자인
+`n8n-worker`와 `ollama`만 `n8n_ollama_net`(`internal:true`, 루트 Compose 선언)에 붙입니다. Main/Code Runner에는
 추가 망을 주지 않습니다. 기존 Ollama `edge_net`/`ai_net` peer 접근은 유지되므로
-이 overlay를 전체 API 격리라고 표현하지 않습니다. 저장된 Ollama Credential·Node
+이 망을 전체 API 격리라고 표현하지 않습니다. 저장된 Ollama Credential·Node
 실행과 거부·복구는 별도이며 Cloud 호출·fallback은 추가하지 않습니다.
 정확한 선택과 인수 절차는
 [워크플로와 자동화 런북 목록](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의

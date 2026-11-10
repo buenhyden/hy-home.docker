@@ -73,7 +73,7 @@ case "$component" in
                 "$access" "$admin_key"
             grep -vE '^[[:space:]]*(#|$)' /opt/hyhome/s3-identities.conf | while read -r name secret actions; do
                 case "$name" in '' | *[!a-z0-9-]*) echo "seaweedfs: bad identity name" >&2; exit 64 ;; esac
-                case "$actions" in '' | *[!A-Za-z0-9:,.-]*) echo "seaweedfs: bad actions for $name" >&2; exit 64 ;; esac
+                case "$actions" in '' | *[!A-Za-z0-9:,./*-]*) echo "seaweedfs: bad actions for $name" >&2; exit 64 ;; esac
                 list="\"$(printf '%s' "$actions" | sed 's/,/","/g')\""
                 if [ "$secret" = - ]; then
                     [ "$name" = anonymous ] || { echo "seaweedfs: only anonymous may have no secret" >&2; exit 64; }
