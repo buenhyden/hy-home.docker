@@ -4182,7 +4182,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
     checks are the ones HOME uses. Tests run in name order.
     """
 
-    AWS_IMAGE = "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce"
+    AWS_IMAGE = "amazon/aws-cli:2.39.3@sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f"
     PROBE_IMAGE = "python:3.13.15-alpine"
     ACCESS = "rehearsaladmin"
 
