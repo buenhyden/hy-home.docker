@@ -1,6 +1,6 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -130,7 +130,7 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 
 - **Logs**: `docker logs --tail=200 pyroscope`, `docker logs --tail=200 alloy`
 - **Health**: Pyroscope `/ready`, Grafana Pyroscope datasource
-- **Config**: `pyroscope.yaml`, Alloy `pyroscope.scrape "go_services"`(60초, block·mutex off, `dev-pg-exporter`·`kafka-exporter` 포함), `pyroscope.scrape "seaweedfs"`(block·mutex profile off: SeaweedFS가 scrape timeout 뒤에야 응답한다)와 `pyroscope.write`(HOME은 `config.home.alloy`), Grafana datasource provisioning(UID `Pyroscope`)
+- **Config**: `pyroscope.yaml`, Alloy `pyroscope.scrape "go_services"`(60초, block·mutex off, `dev-pg-exporter` 포함, pprof를 내보내지 않는 `kafka-exporter` 제외), `pyroscope.scrape "seaweedfs"`(block·mutex profile off: SeaweedFS가 scrape timeout 뒤에야 응답한다)와 `pyroscope.write`(HOME은 `config.home.alloy`), Grafana datasource provisioning(UID `Pyroscope`)
 - **Profile sources**: `service_name` label 값을 조회해 수집 중인 서비스를 확인한다. 2026-09-30 기준 11개(alertmanager, alloy, grafana, loki, mng-pg-exporter, node-exporter, prometheus, pyroscope, registry, seaweedfs-s3, tempo)다.
 
   ```bash
