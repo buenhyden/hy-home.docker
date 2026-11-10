@@ -1,10 +1,10 @@
 ---
 title: "Owned OpenBao Build"
-version: "0.1.2"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-11-10"
 ---
 
 # Owned OpenBao build
@@ -13,7 +13,7 @@ updated: "2026-10-21"
 
 OpenBao 2.7.1의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.3, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
 `golang.org/x/net` 0.60.0 및 그 모듈 그래프가 요구하는 일곱 버전을 사용합니다. <!-- runtime-version-exception: migration — 검토된 build packet의 고정 module migration material이며 build-inputs.json이 pin을 소유함 -->
-결과 버전은 `2.7.1+hyhome.go1.27.3.net0.60.0.r1`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
+결과 버전은 `2.7.1+hyhome.go1.27.3.net0.60.0.r2`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
 서명된 이미지가 아닙니다. 다른 의존성의 취약점 해결을 보장하지 않습니다.
 
 ## Audience
@@ -31,6 +31,10 @@ export만 정렬된 한 layer로 포장합니다. HOME 배포, 인증, 발급은
 2026-10-21 packet은 Go 1.27.3 builder로 다시 고정했습니다(CVE-2026-111943, crypto/x509). <!-- runtime-version-exception: migration — 검토된 build packet의 고정 builder 변경이며 build-inputs.json이 pin을 소유함 -->
 source, module, APK 입력은 그대로이고 builder와 그 서명 receipt만 바뀌었습니다.
 이 README는 packet의 일부이므로 바꾸면 packet SHA와 image label이 달라집니다.
+
+2026-11-10 packet(`r2`)은 runtime을 Alpine 3.24 계열 최신 digest로, APK closure를 현재 서명된
+v3.24 main/community APKINDEX 기준으로 다시 고정했습니다. source, Go module, patch 입력은 그대로이고
+두 publisher receipt는 새로 검증했습니다. 정확한 digest와 version은 build-inputs.json이 소유합니다.
 
 ## Structure
 
@@ -96,6 +100,40 @@ P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증�
 [Dockerfile](Dockerfile), 공개 material receipt를 같은 packet으로 확인합니다.
 실제 build와 OCI 검증은 [helper](../scripts/build-owned-image.py)의 제한된 phase를
 사용하며, HOME 배포·인증·발급·복구는 소유 Runbook의 별도 수용 절차를 따릅니다.
+
+### Material 준비 절차
+
+다음 build를 같은 방식으로 재현하려면 [준비 script](../../../../scripts/operations/prepare-openbao-materials.py)를
+사용합니다. 공개 자료만 받으며 HOME, 인증, secret, `labs/`는 건드리지 않습니다.
+
+1. 전제: [network 승인 문서](../../../supply-chain.network-approvals.md)에
+   `OpenBao material network approval: confirmed` 줄이 있어야 합니다. 허용 host는 `github.com`
+   (OpenBao release asset), `dl-cdn.alpinelinux.org`, `alpinelinux.org`, `cgr.dev`와 Sigstore 공개 TUF/Rekor/Fulcio뿐입니다.
+   Go module 캐시를 받는 `proxy.golang.org`와 `sum.golang.org`는 별도 승인이 있을 때만 `--allow-go-proxy`로 엽니다.
+2. 실행: `python3 -I scripts/operations/prepare-openbao-materials.py`. 출력은 새 0700
+   `/tmp/hyhome-p01-owned-build-<UTC>/` 아래이며(helper가 이 경로만 받습니다) 이미 있으면 거부합니다.
+   `materials/`가 `--materials-directory`, `materials/materials.json`의 SHA-256이 `--materials-sha256`입니다.
+3. 순서: 고정된 Alpine key(URL과 SHA-256 pin)와 source archive(pin) 받기 → 두 APKINDEX를 key로 RSA 서명 검증 →
+   cosign 컨테이너로 publisher receipt 생성 → `apk_requested` 이름을 현재 index에서 dependency와 `install_if`까지
+   풀어 closure 계산 → 각 APK를 받아 크기, index control checksum, key 서명 검증 → source를 풀고(symlink는
+   manifest가 거부하므로 제외하고 `omitted_symlinks`로 기록) go-modules.patch 적용 → 격리 컨테이너로 module 캐시를 받고
+   network 없이 `go mod verify`와 `go list -deps`로 확인 → `materials.json` 작성.
+4. Receipt: `source_checksums`는 release의 `checksums.txt`를 `cosign verify-blob --bundle checksums.txt.sigstore.json`과
+   OpenBao 공식 문서의 identity regexp `^https://github.com/openbao/openbao/.github/workflows/release.yml@refs/heads/(main|release/.+)$`,
+   issuer `https://token.actions.githubusercontent.com`으로 검증한 뒤 pin된 source archive의 SHA-256이 그 파일에 있는지 확인합니다.
+   `builder`는 pin된 `cgr.dev/chainguard/go` index와 child digest를 `cosign verify`와 Chainguard 공식 문서의 identity
+   `https://github.com/chainguard-images/images/.github/workflows/release.yaml@refs/heads/main`, 같은 issuer로 검증합니다.
+   Identity는 검증 대상 인증서에서 가져오지 않고 다음 공식 문서에서만 가져옵니다.
+   <https://openbao.org/docs/install/#cosign>(원문은 OpenBao 저장소의 `website/content/docs/install.mdx`)와
+   <https://edu.chainguard.dev/chainguard/containers/security-and-compliance/verifying-chainguard-images-and-metadata-signatures-with-cosign/>.
+   OpenBao 문서는 고정 identity 대신 이 regexp를 제시합니다. Receipt에는 PASS, exit 0, 정확한 명령, identity, issuer와
+   subject digest가 들어갑니다.
+5. Cosign은 [tool 이미지 registry](../../../supply-chain.tool-images.json)의 `bounded_contracts`에 등록된
+   고정 digest 이미지만 쓰며 read-only rootfs, cap drop ALL, no-new-privileges, CPU 1, RAM 512 MiB, PID 32,
+   150초 한도로 실행합니다. Docker socket, 인증 설정, HOME, secret, 쓰기 가능한 host 경로는 mount하지 않습니다.
+6. 출력된 `apk_indexes`, `apk_requested`, `apk_closure`, `publisher_receipts`를 build-inputs.json에 반영하고
+   `recipe_sha256`(Dockerfile의 SHA-256)을 다시 계산한 뒤, packet SHA(`current_packet` 규칙)를 계산하여
+   `build-owned-image.py --phase plan`이 FAIL 없이 끝나는지 확인합니다. 그 뒤에만 `--phase build`를 승인된 창에서 실행합니다.
 
 ## Related Documents
 
