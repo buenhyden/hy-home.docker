@@ -196,6 +196,40 @@
       ],
       "groupName": "observability container images"
     },
+    {
+      "description": "Group non-major image updates of the stateless tiers: every image update rewrites the shared SEC01 ledger, so separate PRs conflict after each merge. Data (04) and messaging (05) tiers stay one PR per image for data-format review; Airflow (constraints bundle) and the n8n sandbox keep their own PRs",
+      "matchManagers": ["docker-compose", "dockerfile", "custom.regex"],
+      "matchFileNames": [
+        "infra/01-gateway/**",
+        "infra/02-auth/**",
+        "infra/03-security/**",
+        "infra/07-workflow/**",
+        "infra/08-ai/**",
+        "infra/09-platform-ops/**",
+        "infra/11-quality/**",
+        "infra/13-experience/**"
+      ],
+      "matchPackageNames": ["!apache/airflow", "!n8nio/**"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "stateless tier container images"
+    },
+    {
+      "description": "Pin every container image to its digest: the SEC01 ledger refuses tag-only targets (#856, #866), so a tag-only pin can never be updated through CI",
+      "matchManagers": ["docker-compose", "dockerfile", "custom.regex"],
+      "pinDigests": true
+    },
+    {
+      "description": "Batch digest-only refreshes into one PR",
+      "matchManagers": ["docker-compose", "dockerfile", "custom.regex"],
+      "matchUpdateTypes": ["digest"],
+      "groupName": "container image digests"
+    },
+    {
+      "description": "One PR adds all missing digest pins",
+      "matchManagers": ["docker-compose", "dockerfile", "custom.regex"],
+      "matchUpdateTypes": ["pinDigest"],
+      "groupName": "container image digest pins"
+    },
 
     {
       "description": "CI toolchain versions in setup-step inputs (python-version, uv version and checksum, node-version) are pinned together with the workflow contract tests, gate evidence and the uv-generated lock, so they change in one manual PR",
