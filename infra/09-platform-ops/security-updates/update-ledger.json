@@ -113,7 +113,7 @@
     },
     {
       "path": "infra/03-security/openbao/docker-compose.yml",
-      "sha256": "cbacfdadeab48c20d5d76f10a384ff65149f5dcb691c2eb4e6b4eb748dd27bf4"
+      "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
     },
     {
       "path": "infra/04-data/dev-db/docker-compose.yml",
@@ -141,7 +141,7 @@
     },
     {
       "path": "infra/04-data/seaweedfs/docker-compose.yml",
-      "sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3"
+      "sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1"
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
@@ -1464,8 +1464,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T20:09:22+09:00",
-        "next_validation_due": "2026-11-17T20:09:22+09:00",
+        "discovered_at": "2026-11-10T11:20:38+00:00",
+        "next_validation_due": "2026-11-17T11:20:38+00:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -1481,7 +1481,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T20:09:22+09:00",
+      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
       "source_input_sha256": "a5cccb1337d262a6fe4132b15085835104eb2ca93605e090517663d4b553f796",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -1606,8 +1606,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T20:09:22+09:00",
-        "next_validation_due": "2026-11-17T20:09:22+09:00",
+        "discovered_at": "2026-11-10T11:20:38+00:00",
+        "next_validation_due": "2026-11-17T11:20:38+00:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -1623,7 +1623,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-10T20:09:22+09:00",
+      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
       "source_input_sha256": "a5cccb1337d262a6fe4132b15085835104eb2ca93605e090517663d4b553f796",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -3889,8 +3889,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T20:09:22+09:00",
-        "next_validation_due": "2026-11-17T20:09:22+09:00",
+        "discovered_at": "2026-11-10T11:20:38+00:00",
+        "next_validation_due": "2026-11-17T11:20:38+00:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -3906,7 +3906,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-10T20:09:22+09:00",
+      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
       "source_input_sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -4680,8 +4680,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T20:09:22+09:00",
-        "next_validation_due": "2026-11-17T20:09:22+09:00",
+        "discovered_at": "2026-11-10T11:20:38+00:00",
+        "next_validation_due": "2026-11-17T11:20:38+00:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -4697,7 +4697,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T20:09:22+09:00",
+      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
       "source_input_sha256": "a5cccb1337d262a6fe4132b15085835104eb2ca93605e090517663d4b553f796",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -8934,7 +8934,7 @@
       "service": "openbao",
       "scope": "root",
       "compose_file": "infra/03-security/openbao/docker-compose.yml",
-      "current_declared": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+      "current_declared": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
       "profiles_declared": [
         "security",
         "secrets",
@@ -8960,7 +8960,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "2.7.1",
-      "target_version": "2.7.1",
+      "target_version": "2.7.2",
       "channel": "stable",
       "checked_at": "2026-10-26T09:43:13.382626+00:00",
       "release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
@@ -8986,8 +8986,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T19:02:40+09:00",
-        "next_validation_due": "2026-11-17T19:02:40+09:00",
+        "discovered_at": "2026-11-10T20:16:36+09:00",
+        "next_validation_due": "2026-11-17T20:16:36+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -9003,11 +9003,11 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo openbao/openbao --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T19:02:40+09:00",
-      "source_input_sha256": "cbacfdadeab48c20d5d76f10a384ff65149f5dcb691c2eb4e6b4eb748dd27bf4",
+      "source_refreshed_at": "2026-11-10T20:16:36+09:00",
+      "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+      "target_source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
@@ -9300,8 +9300,8 @@
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
       },
       "current_target_artifact_binding": {
-        "source_version": "2.7.1",
-        "source_image": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+        "source_version": "2.7.2",
+        "source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
@@ -9310,7 +9310,7 @@
       "service": "openbao-agent",
       "scope": "root",
       "compose_file": "infra/03-security/openbao/docker-compose.yml",
-      "current_declared": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+      "current_declared": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
       "profiles_declared": [
         "security",
         "secrets",
@@ -9336,7 +9336,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "2.7.1",
-      "target_version": "2.7.1",
+      "target_version": "2.7.2",
       "channel": "stable",
       "checked_at": "2026-10-26T09:43:13.382626+00:00",
       "release_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
@@ -9362,8 +9362,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T19:02:40+09:00",
-        "next_validation_due": "2026-11-17T19:02:40+09:00",
+        "discovered_at": "2026-11-10T20:16:36+09:00",
+        "next_validation_due": "2026-11-17T20:16:36+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -9379,11 +9379,11 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo openbao/openbao --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T19:02:40+09:00",
-      "source_input_sha256": "cbacfdadeab48c20d5d76f10a384ff65149f5dcb691c2eb4e6b4eb748dd27bf4",
+      "source_refreshed_at": "2026-11-10T20:16:36+09:00",
+      "source_input_sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+      "target_source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
@@ -9676,8 +9676,8 @@
         "assessed_at": "2026-10-26T10:32:14.784990+00:00"
       },
       "current_target_artifact_binding": {
-        "source_version": "2.7.1",
-        "source_image": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+        "source_version": "2.7.2",
+        "source_image": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
@@ -10722,8 +10722,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T20:09:22+09:00",
-        "next_validation_due": "2026-11-17T20:09:22+09:00",
+        "discovered_at": "2026-11-10T11:20:38+00:00",
+        "next_validation_due": "2026-11-17T11:20:38+00:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -10738,7 +10738,7 @@
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-10T20:09:22+09:00",
+      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
       "source_input_sha256": "a5cccb1337d262a6fe4132b15085835104eb2ca93605e090517663d4b553f796",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -10850,8 +10850,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T20:09:22+09:00",
-        "next_validation_due": "2026-11-17T20:09:22+09:00",
+        "discovered_at": "2026-11-10T11:20:38+00:00",
+        "next_validation_due": "2026-11-17T11:20:38+00:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -10867,7 +10867,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-10T20:09:22+09:00",
+      "source_refreshed_at": "2026-11-10T11:20:38+00:00",
       "source_input_sha256": "a5cccb1337d262a6fe4132b15085835104eb2ca93605e090517663d4b553f796",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
@@ -11697,7 +11697,7 @@
       "service": "seaweedfs-buckets",
       "scope": "root",
       "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
-      "current_declared": "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+      "current_declared": "amazon/aws-cli:2.39.3@sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f",
       "profiles_declared": [
         "seaweedfs",
         "storage-seaweedfs",
@@ -11714,14 +11714,14 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "2.38.5",
-      "target_version": "2.37.12",
+      "target_version": "2.39.3",
       "channel": "stable",
       "checked_at": "2026-10-26T09:45:12.544894+00:00",
       "release_url": "https://raw.githubusercontent.com/aws/aws-cli/v2/CHANGELOG.rst",
-      "target_index_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
-      "target_manifest_digest": "sha256:4295c1f8da478a3aaa1e015b2d4b3772ae9cdd104ce891e4008efb9592d3ce82",
+      "target_index_digest": "UNKNOWN",
+      "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
@@ -11733,13 +11733,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_IMAGE_SOAK_AND_S3_COMPATIBILITY",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Officialv2changelogandimageagree;selectedDockerimagepushed22Octsosoakuntil29Oct. ChangelogsaysbundledPython3.14.8,notnew25Oct3.14.10fix;nosafetyclaimfromlatesttag.",
-        "exit_condition": "After29Octexactartifact/sourcecontrolsandSeaweedFSs3bucket/tablecontractfailure+idempotencetests;noactualbucketwritewithoutseparateauthorization.",
+        "discovered_at": "2026-11-10T20:31:24+09:00",
+        "next_validation_due": "2026-11-17T20:31:24+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -11747,15 +11747,15 @@
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "2.37.12",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+      "source_refreshed_at": "2026-11-10T20:31:24+09:00",
+      "source_input_sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "amazon/aws-cli:2.37.12",
-      "target_declared_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
-      "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed.",
+      "target_source_image": "amazon/aws-cli:2.39.3@sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f",
+      "target_declared_digest": "UNKNOWN",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
         "aws/aws-cli",
         "aws-cli-changelog"
@@ -11810,6 +11810,13 @@
           "channel": "stable",
           "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
         }
+      },
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "current_target_artifact_binding": {
+        "source_version": "2.39.3",
+        "source_image": "amazon/aws-cli:2.39.3@sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -11887,7 +11894,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+      "source_input_sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -12032,7 +12039,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+      "source_input_sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -12161,7 +12168,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+      "source_input_sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -12290,7 +12297,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+      "source_input_sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -33082,10 +33089,10 @@
       "meaning": "5 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 20 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     },
     {
-      "source_revision": "9429dc14b1e9bcb89bd04a69b5fd3b120ccab9b9",
-      "refreshed_at": "2026-11-10T20:09:22+09:00",
+      "source_revision": "c16925b86c9a0b9e4db3cf2e2ddc46698093979d",
+      "refreshed_at": "2026-11-10T20:16:36+09:00",
       "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
-      "input_manifest_sha256": "54aedc20922284d05d0c7ae4b6d907e233d07826ed861ec4df1ac0656e6749e7",
+      "input_manifest_sha256": "584e2e59b65a0c6f7880208876a969f2cb5c9e3da7e8951131e1514574a54a13",
       "previous_include_inputs": [
         {
           "path": "docker-compose.yml",
@@ -33134,6 +33141,451 @@
         {
           "path": "infra/04-data/seaweedfs/docker-compose.yml",
           "sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "bb1f26a3ad1e05e42b0b157331c74e0c9d52093bf9df9ba80d0c41d8a8eda638"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "c567ca166971331217a51b42e86990c45881d6a24ae9be26e0563040bf9d26fe"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/03-security/openbao/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "openbao",
+          "source_input_sha256": "cbacfdadeab48c20d5d76f10a384ff65149f5dcb691c2eb4e6b4eb748dd27bf4",
+          "source_refreshed_at": "2026-11-10T19:02:40+09:00"
+        },
+        {
+          "service": "openbao-agent",
+          "source_input_sha256": "cbacfdadeab48c20d5d76f10a384ff65149f5dcb691c2eb4e6b4eb748dd27bf4",
+          "source_refreshed_at": "2026-11-10T19:02:40+09:00"
+        }
+      ],
+      "meaning": "2 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 2 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "openbao",
+        "openbao-agent"
+      ],
+      "previous_service_images": [
+        {
+          "service": "openbao",
+          "current_declared": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+          "proposed_declared": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+          "previous_fields": {
+            "target_version": "2.7.1",
+            "target_source_image": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T19:02:40+09:00",
+              "next_validation_due": "2026-11-17T19:02:40+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T19:02:40+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "openbao-agent",
+          "current_declared": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+          "proposed_declared": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5",
+          "previous_fields": {
+            "target_version": "2.7.1",
+            "target_source_image": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T19:02:40+09:00",
+              "next_validation_due": "2026-11-17T19:02:40+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T19:02:40+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
+    },
+    {
+      "source_revision": "ffd218d981a74cf260500c4e6d91d743494374f1",
+      "refreshed_at": "2026-11-10T20:31:24+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "30c4bcdf90b32505e8f458d3e5fb715315825110913bb8839bd0ecc4c91fa8af",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "cb4914ec740966bfc9c9b8d6ee1d537859dd8994bc52190fd54d265c5c3f3fbc"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "3d7a5afb275294240c18f96f246d06f34a14630e35ef0947c9fc6f1a485b670d"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "f5ff8a8581e719a3b8398ed24503f6ac92c97b7bca8480fc800f78406eff7889"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "bb1f26a3ad1e05e42b0b157331c74e0c9d52093bf9df9ba80d0c41d8a8eda638"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "c567ca166971331217a51b42e86990c45881d6a24ae9be26e0563040bf9d26fe"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/04-data/seaweedfs/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "seaweedfs-buckets",
+          "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-filer",
+          "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-master",
+          "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-s3",
+          "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-volume",
+          "source_input_sha256": "d36018753d74a627e48b9990aa8a1350af8e6e9678cf7adab9134440482ce8a3",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        }
+      ],
+      "meaning": "1 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 5 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "seaweedfs-buckets"
+      ],
+      "previous_service_images": [
+        {
+          "service": "seaweedfs-buckets",
+          "current_declared": "amazon/aws-cli:2.37.12@sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+          "proposed_declared": "amazon/aws-cli:2.39.3@sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f",
+          "previous_fields": {
+            "target_version": "2.37.12",
+            "target_source_image": "amazon/aws-cli:2.37.12",
+            "target_digest_evidence": "Fresh public registry metadata distinguishes the OCI index and linux/amd64 manifest; no pull, signature, scan, build, runtime or HOME deployment was performed.",
+            "disposition": "DEFER_IMAGE_SOAK_AND_S3_COMPATIBILITY",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "Officialv2changelogandimageagree;selectedDockerimagepushed22Octsosoakuntil29Oct. ChangelogsaysbundledPython3.14.8,notnew25Oct3.14.10fix;nosafetyclaimfromlatesttag.",
+              "exit_condition": "After29Octexactartifact/sourcecontrolsandSeaweedFSs3bucket/tablecontractfailure+idempotencetests;noactualbucketwritewithoutseparateauthorization.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
+            "target_index_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+            "target_manifest_digest": "sha256:4295c1f8da478a3aaa1e015b2d4b3772ae9cdd104ce891e4008efb9592d3ce82",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "sha256:ce44b800602264c12298bbf3399055a4cefdb9ed4a098abe564afe26e7071bce",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "2.37.12",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
+    },
+    {
+      "source_revision": "67da941223a88a2d058cc36a6921ad103c8c25e3",
+      "refreshed_at": "2026-11-10T11:20:38+00:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "7dcdcf3859fa9a4f11badac3033e7291bb1fc817d2ab4350973f9194a67612e3",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "cb4914ec740966bfc9c9b8d6ee1d537859dd8994bc52190fd54d265c5c3f3fbc"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "3d7a5afb275294240c18f96f246d06f34a14630e35ef0947c9fc6f1a485b670d"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "f5ff8a8581e719a3b8398ed24503f6ac92c97b7bca8480fc800f78406eff7889"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1"
         },
         {
           "path": "infra/05-messaging/kafka/docker-compose.yml",

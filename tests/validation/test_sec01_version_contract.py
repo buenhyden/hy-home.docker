@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-OPENBAO = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0"
+OPENBAO = "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5"
 
 # Renovate bumps these pins, so Compose and the SEC01 ledger row are the source of
 # truth; the test keeps the repository, the full tag@sha256 form and the ledger row.

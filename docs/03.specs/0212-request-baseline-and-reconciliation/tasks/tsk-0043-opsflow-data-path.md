@@ -1,8 +1,8 @@
 ---
 title: "Opsflow Data Path Task"
-version: "0.2.1"
+version: "0.2.3"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-10"
 layer: "specs"
@@ -448,6 +448,19 @@ so the changes rest on static review and direct measurement:
 - **Connect image.** Only `...-debezium-3.6.3` exists locally; the declared
   3.7.0 image must be built before Connect can start.
 
+### Owner closure 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) closed this Task after criteria 66 to 71
+were each accepted or not-required with no unresolved required observation.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0043 | draft | ready | #inputs-and-authorization |
+| SPEC-0212-TSK-0043 | ready | in-progress | #implementation-and-recovery-contract |
+| SPEC-0212-TSK-0043 | in-progress | completed | #owner-closure-2026-11-10 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -509,9 +522,13 @@ so the changes rest on static review and direct measurement:
 | 68 | accepted | CDC current-consumer reconciliation, T03 HOME stream observation, T03 isolated CDC stream rehearsal rerun, T03 owner-approved stop and cleanup | SOURCE_READY; HOME stack measured idle with no consumer; the isolated CDC stream rehearsal passes on the Debezium 3.6.3 image (the 3.7.0.Final build, plugin loading and rehearsal are NOT_RUN); the idle stack is stopped and leftovers removed with owner approval. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0043 |
 | 69 | accepted | Quality publication regressions, D12 HOME publication result | SOURCE_READY: current unit/adapter quality blocking is evidenced, and actual Worker publication and quarantine passed on HOME on 2026-11-10. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0043 |
 | 70 | not-required | Experiment input decision | No actual dataset, version, time field, target, baseline or data owner exists, so no experiment is invented. Owner @buenhyden set this to not-required on 2026-11-10; a real experiment reopens it through a new Task. | SPEC-0212 TSK-0043 |
-| 71 | pending | Iceberg current-workload reconciliation | REUSE_ACCEPTED only for the evidenced optional platform; workload adoption is deferred. | SPEC-0212 TSK-0043 |
+| 71 | accepted | Iceberg current-workload reconciliation | The optional Iceberg platform stays accepted and adoption for this workload is deferred, which is what the criterion requires; no expiry or orphan deletion is authorized. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0043 |
 
 ## Review and Completion
+
+On 2026-11-10 the owner (@buenhyden) closed this Task: criteria 66 to 71 are each
+accepted or not-required and no required observation is unresolved. The
+paragraphs below are kept as the state they recorded at the time.
 
 On 2026-11-10 the owner accepted criteria 67 and 69 after reviewing the
 2026-11-04 original-deadline rehearsal (Worker run, independent restore and
