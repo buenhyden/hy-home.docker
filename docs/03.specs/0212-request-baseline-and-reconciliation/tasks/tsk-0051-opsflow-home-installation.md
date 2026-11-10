@@ -1,10 +1,10 @@
 ---
 title: "Opsflow First HOME Installation Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0051"
 parent_ids:
@@ -58,6 +58,35 @@ this Task does not copy them.
 
 Rollback removes the installed files, keeps every backup and drops nothing that
 existed before step 1.
+
+### 2026-11-10 owner decisions
+
+On 2026-11-10 the owner (@buenhyden) approved the recommended answers to
+O1 through O8. They set what each step does; they do not approve any HOME
+change, which still needs the per-step owner approval below.
+
+- O1: four login secrets, `dev_pg_opsflow_migrator_password`,
+  `dev_pg_opsflow_ingest_password`, `dev_pg_opsflow_notifier_password` and
+  `dev_pg_opsflow_reader_password`, referenced by `opsflow.json`. The owner
+  role stays NOLOGIN. The owner creates the four value files; the tracked
+  wiring is in the `feat/opsflow-credential-wiring` change.
+- O3: one bucket-scoped S3 identity `opsflow-worker` for `opsflow-dev` with no
+  delete permission (the `WorkerCannotDelete` bucket policy), secret
+  `seaweedfs_s3_opsflow_worker_secret_key`. The owner creates its value file.
+- O6: backups go to `~/storage/backups/opsflow-pre-install-<timestamp>/`, each
+  file with its size and SHA-256 recorded.
+- O7: step 5 briefly unpauses the DAG, runs the `fixtures/2026-10-10.json`
+  fixture, pauses it again, then runs the invalid input with business_date
+  `2026-10-11`; the final unpause happens only in step 6.
+- O8: migrations `001` to `008` are first rehearsed on a throwaway isolated
+  postgres container; the HOME apply follows under a recorded owner approval,
+  with the `dev-pg` administrator `postgres` running `008` read-only.
+- Executor and window: the agent runs each step with per-step owner approval,
+  in a 60 to 90 minute window that avoids the 08:00 Hermes cron.
+
+Still open after these answers: O2 (whether the roles already exist), O4, O5,
+and where the worker `pg.json` and `s3.json` under `OPSFLOW_SECRET_DIR` come
+from; the repository does not define that source.
 
 ### Open owner items
 
