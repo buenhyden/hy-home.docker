@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.45.0"
+version: "1.46.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -158,6 +158,11 @@ The direct implementation request of2026-11-10 adds criterion106/W111 in
 TSK-0053 for the master assessment and current-guidance corrections. The
 concurrently issued TSK-0052 retains criteria104/105 and its existing
 supply-chain scope. SPEC-0270 separately owns memory capacity/search/backup.
+
+The owner decision of 2026-11-11 adds criterion 107 and W112 in TSK-0054 for
+the failing Hermes `devops` daily brief. It authorizes investigation and a
+repository-side fix only; Hermes agent configuration outside the repository
+and any paid model change stay owner decisions.
 
 ## Scope
 
@@ -775,6 +780,10 @@ hold, authorization and recovery requirements have been established.
      corrects current guidance and routes remaining source/native/operational
      obligations to their existing owners. An assessment table does not prove
      full semantic atomization or operational acceptance.
+107. TSK-0054 restores the scheduled Hermes `devops` daily brief so one
+     scheduled run submits a final report through the Gateway and the
+     `HermesResearchNoSuccess` and `HermesResearchBlocked` alerts for it
+     resolve, or records the external cause as an explicit residual.
 
 ## Failure Conditions
 
