@@ -716,7 +716,6 @@ _FIXED_PROFILE_CATEGORIES = {
     "dependency-update": "automation",
     "testing": "automation",
     "iac": "automation",
-    "legacy-vault": "lifecycle",
     "cassandra": "topology",
     "couchdb": "topology",
     "lab-kafka": "topology",

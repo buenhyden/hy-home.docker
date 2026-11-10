@@ -35,15 +35,6 @@ class Provenance:
 
 
 @dataclasses.dataclass(frozen=True)
-class ArchivedMetadata:
-    """The exact legacy recovery fields found on one baseline document."""
-
-    source: pathlib.PurePosixPath
-    archived_commit: str
-    archived_from: pathlib.PurePosixPath
-
-
-@dataclasses.dataclass(frozen=True)
 class HistoricalDocument:
     """An explicit recovery blob, never a fallback to a current file or HEAD."""
 
@@ -413,72 +404,6 @@ def recovery_commit_is_valid(commit: object) -> bool:
     """Return whether a recovery identity is one exact immutable commit OID."""
 
     return isinstance(commit, str) and _RECOVERY_COMMIT.fullmatch(commit) is not None
-
-
-def read_archived_metadata_batch(
-    paths: Iterable[pathlib.PurePosixPath | pathlib.Path | str],
-    commit: str,
-    *,
-    repo_root: pathlib.Path,
-) -> tuple[ArchivedMetadata, ...]:
-    """Read legacy recovery fields in one bounded Git invocation.
-
-    Missing records are omitted so the caller can apply its exact reviewed
-    exception authority. Duplicate fields and malformed values fail closed.
-    """
-
-    if not recovery_commit_is_valid(commit):
-        raise ValueError("baseline commit must be one full lowercase commit ID")
-    selected = tuple(pathlib.PurePosixPath(path) for path in paths)
-    if not selected or len(selected) > 512 or len(set(selected)) != len(selected):
-        raise ValueError("baseline metadata paths must be 1..512 unique entries")
-    if any(not _safe_relative_path(path) for path in selected):
-        raise ValueError("baseline metadata path is unsafe")
-    result = _run_git(
-        repo_root,
-        [
-            "grep",
-            "-z",
-            "-E",
-            "^archived_(commit|from):",
-            commit,
-            "--",
-            *(path.as_posix() for path in selected),
-        ],
-    )
-    if result.returncode not in {0, 1}:
-        raise ValueError("bounded Git metadata scan failed")
-    found: dict[pathlib.PurePosixPath, dict[str, str]] = {}
-    prefix = f"{commit}:"
-    for raw in result.stdout.splitlines():
-        try:
-            raw_path, raw_field = raw.split(b"\0", 1)
-            rendered_path = raw_path.decode("utf-8")
-            rendered_field = raw_field.decode("utf-8")
-            key, value = rendered_field.split(":", 1)
-        except (UnicodeError, ValueError) as error:
-            raise ValueError("bounded Git metadata output is malformed") from error
-        if not rendered_path.startswith(prefix):
-            raise ValueError("bounded Git metadata output has a foreign commit")
-        source = pathlib.PurePosixPath(rendered_path.removeprefix(prefix))
-        if source not in selected or key not in {"archived_commit", "archived_from"}:
-            raise ValueError("bounded Git metadata output is outside the request")
-        values = found.setdefault(source, {})
-        if key in values:
-            raise ValueError(f"duplicate legacy recovery field: {source}:{key}")
-        values[key] = value.strip()
-    records: list[ArchivedMetadata] = []
-    for source, values in sorted(found.items()):
-        if set(values) != {"archived_commit", "archived_from"}:
-            raise ValueError(f"partial legacy recovery metadata: {source}")
-        archived_commit = values["archived_commit"]
-        archived_from = pathlib.PurePosixPath(values["archived_from"])
-        if not recovery_commit_is_valid(archived_commit) or not _safe_relative_path(
-            archived_from
-        ):
-            raise ValueError(f"invalid legacy recovery metadata: {source}")
-        records.append(ArchivedMetadata(source, archived_commit, archived_from))
-    return tuple(records)
 
 
 def resolve_git_provenance(

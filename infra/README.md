@@ -97,7 +97,7 @@ AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와
 HOME은 `core mng ai workflow storage obs-core obs-host availability logs alerting tracing profiling obs-gpu registry`의
 profile 조합이다. 현재 서비스 목록은 공개 예제 환경의 `docker compose config --services`로 조회한다. 위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
 AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼저 확인한다.
-초기화 job의 성공 종료와 daemon의 health를 구분한다. cluster·legacy·maintenance
+초기화 job의 성공 종료와 daemon의 health를 구분한다. cluster·maintenance
 프로파일은 업무 소비자와 검증 목적이 확인될 때만 별도로 선택한다.
 
 ## Getting Started
