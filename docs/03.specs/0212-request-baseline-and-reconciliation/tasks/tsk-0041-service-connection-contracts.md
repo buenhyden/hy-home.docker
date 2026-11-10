@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.42"
+version: "0.1.43"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1355,3 +1355,61 @@ exit. Reproduced on the pinned image: the key stayed before the change and is go
 After the sole-updater configuration, a Renovate run exited with code 134: the Node heap
 reached about 512 MB under the 1 GiB limit. The limit and reservation are now 2 GiB for
 this on-demand job.
+
+### 2026-11-10 open-webui moved to a LAB (ADR-0062 amendment)
+
+The owner amended ADR-0062 on 2026-11-10 (decision 13): open-webui leaves HOME `08-ai` for
+the standalone LAB `labs/open-webui/`. Evidence recorded in the ADR without user content: one
+user, one chat, last activity 2026-10-26, no files and no knowledge entries; no dependent
+service; every role duplicated in HOME (Hermes and the n8n Assistant/Agents for chat, the
+n8n Assistant with SearXNG for web search, Qdrant with n8n for RAG, Hermes faster-whisper for
+speech-to-text; `ENABLE_OPENAI_API` false); a 16.5 GB image, about 840 MiB RSS, an OIDC client
+secret, a Traefik router and Renovate churn; and a bundled PyTorch cu128 build without sm_61
+kernels for the GTX 1060.
+
+Done in source only; no container, volume or image was touched. The Compose file, entrypoint
+and README moved as renames to `labs/open-webui/` and follow the Superset LAB pattern:
+project `hy-home-lab-open-webui`, profile `lab-open-webui`, network `lab_open_webui_net` only,
+no Traefik route, UI on `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}`,
+data at `${LAB_DATA_DIR}/open-webui/data`, required inputs `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`,
+`LAB_OPEN_WEBUI_DEFAULT_URL` and `LAB_OPEN_WEBUI_CA_FILE`, and the LAB-only secret
+`lab_open_webui_oidc_client_secret` (catalog `LAB-037`) mounted at the original target. Qdrant
+and `depends_on` are gone because the LAB reaches no HOME network. `promotion.yaml` is
+`kind: undecided`. The root include, the root `openwebui_oidc_client_secret` declaration,
+`OPENWEBUI_OIDC_CLIENT_SECRET_FILE` and `OLLAMA_WEBUI_PORT`, the Gatus probes and their port
+variable, the Restic mount, SQLite export and state include rows, and the Grafana coverage row
+were removed. The 08-ai hardening function now checks the `labs/` source (no gateway route, LAB
+bind port, native OIDC flags, LAB network, healthcheck). As with Superset, the OpenBao Agent
+still renders `08-ai/open-webui` and `IAM-011` keeps feeding the OpenBao import through
+`consumer-migration/oidc-client-secrets.sh`; no root consumer binds it. The SEC01 ledger moved the
+row to `historical_lab_entries` with a `source_refreshes` record, dropped it from the P08
+related-service list (denominator 94 to 93, related services 80 to 79), and `ledger_rebind`
+re-bound 16 rows and 3 include hashes; the tech-stack projection was regenerated with
+`sync-tech-stack-versions.sh --write`. GDE/POL/RUN-0057 moved to `15-labs/`, the `m0021`
+inventory was re-rendered with `render_service_inventory`, and Stage 05 cross-references,
+POL-0078 (`ai`, `ai-llm`, new `lab-open-webui`), READMEs and pinning tests were updated. The
+three open-webui rows left the root-only `infra/secret-file-support.json`, and the LAB inputs
+joined the synthetic sets of `compose_controls.py` and `test_lab_isolation.py`.
+
+Verification at base 0b7ffe8bc with the change staged: `validate-docker-compose.sh` passed
+(64 selections, HOME 44 services); `check-all-hardening.sh 08-ai` passed;
+`check-template-security-baseline.sh` reported 22 scopes, 708 services, 0 findings;
+`check-operations-catalog.py`, `check-document-links.py --mode all` (0 failures),
+`check-document-metadata.py --mode check-changed` (0 violations), the corpus lifecycle, agent
+governance, script manifest, supply-chain policy and conftest checks passed. The full unittest
+discovery ran 3431 tests: the only failures are the three secret-registry assertions held
+below; `test_service_runtime_compatibility` passed after the support-file change.
+
+Held. `secrets/SENSITIVE_ENV_VARS.md.example` needs a `LAB-037` row for
+`secrets/labs/open-webui/oidc_client_secret.txt`; agent edits under `secrets/` are denied, so
+the owner adds it. Until then `test_secret_catalog_contract` (issued IDs, view round-trip
+`catalog_public_source_drift`) and `test_secret_metadata_sync` (registered path) fail on that row.
+
+Owner decisions that remain, each a separate approval, in the order of RUN-0057 "HOME
+retirement steps": a final consistent backup of `${DEFAULT_AI_MODEL_DIR}/open-webui`; stopping
+and removing the HOME `open-webui` container and its image; keeping, migrating to the LAB data
+root or deleting the volume `hy-home-infra_open-webui`; keeping or retiring the Keycloak client
+`home-openwebui` (and registering a LAB redirect if kept); and `chat.${DEFAULT_URL}` DNS and
+certificate cleanup. Stage 01 and Stage 02 text that still places Open WebUI in HOME (REQ-0009,
+REQ-0013, AD-0008, AD-0013, AD-0023, ADR-0059) is reconciled by its owners, as the ADR-0062
+follow-up states.

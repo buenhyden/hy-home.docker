@@ -1,0 +1,32 @@
+# SPEC-0263 promotion manifest for the open-webui LAB.
+# resources.services copies the rendered per-container limits and
+# reservations; disk_gib is an estimate.
+# Secret destinations are a plan only and are never created here.
+# kind undecided: the owner has not named a promotion target yet.
+kind: undecided
+integrations:
+- kind: gateway-route
+  owner: infra/01-gateway/traefik/
+- kind: oidc-client
+  owner: infra/02-auth/keycloak/
+- kind: openbao
+  owner: infra/03-security/openbao/
+secrets:
+- row: LAB-037
+  destination: secrets/auth/open-webui/openwebui_oidc_client_secret.txt
+documents:
+  guide: docs/05.operations/guides/15-labs/0057-open-webui.md
+  runbook: docs/05.operations/runbooks/15-labs/0057-open-webui.md
+  guide_target: docs/05.operations/guides/09-ai-and-search/
+  runbook_target: docs/05.operations/runbooks/09-ai-and-search/
+resources:
+  services:
+    open-webui:
+      cpus: 2.0
+      memory_mib: 2048
+      reservations:
+        cpus: 0.05
+        memory_mib: 800
+  disk_gib:
+    data: 2
+    images: 17

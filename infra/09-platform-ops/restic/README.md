@@ -1,10 +1,10 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.2.3"
+version: "1.2.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-11-10"
 ---
 
 # Restic Backup Jobs
@@ -57,7 +57,7 @@ Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고�
   모든 소스는 읽기 전용으로 마운트됩니다. `/repo/state`와 `/repo/host`만
   쓰기 가능합니다. 저장소와 staging은 `create_host_path: false`를 사용합니다.
 - `backup-sqlite-export`는 WAL 리더가 `-shm` 파일을 필요로 하기 때문에만
-  Grafana, Gatus, Open WebUI 데이터 디렉터리를 쓰기 가능하게 마운트하며
+  Grafana와 Gatus 데이터 디렉터리를 쓰기 가능하게 마운트하며
   UID 1000이 소유하는 0600 복사본을 staging에 씁니다.
 - `restic`은 저장소 인덱스와 tmpfs 캐시에 `mem_limit: 1g`를 가지며, 측정 전이므로
   reservation은 limit과 같다(POL-0107). `cmd`는

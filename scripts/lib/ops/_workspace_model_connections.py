@@ -83,29 +83,6 @@ def compose_rows(
     path = source["path"]
     rows: list[dict[str, Any]] = []
 
-    if path == "infra/08-ai/open-webui/docker-compose.yml":
-        service = definitions.get("open-webui")
-        env = environment(service)
-        if "OLLAMA_BASE_URL" in env:
-            rows.extend(
-                _endpoint_row(
-                    service_name="open-webui",
-                    provider_value=env["OLLAMA_BASE_URL"],
-                    source=source,
-                    services=services,
-                    gaps=gaps,
-                    endpoint=endpoint,
-                    row=row,
-                    auth="none",
-                    secrets=[],
-                    disposition="adopted",
-                    reason="local-model-provider-source",
-                    owner="P03",
-                    level="source-declared",
-                    suffix="p03:open-webui:ollama",
-                )
-            )
-
     if path == "infra/08-ai/open-notebook/docker-compose.yml":
         service = definitions.get("open_notebook")
         env = environment(service)

@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.15"
+version: "0.1.16"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-11-10"
 created: "2026-10-11"
 ---
 
@@ -317,6 +317,8 @@ bind합니다(`create_host_path: false`). 각 `<stem>.txt`는 `0640`, `<stem>.ve
 
 SPEC-0262 이후 Superset은 `labs/superset/docker-compose.yml` LAB이며 LAB 전용 secret을 읽습니다. Agent는
 `12-analytics/superset` 출력을 계속 render하지만 이를 bind하는 root 소비자는 없습니다.
+ADR-0062 개정(2026-11-10) 이후 Open WebUI도 `labs/open-webui/docker-compose.yml` LAB이며 같은
+방식으로 LAB 전용 secret을 읽고, `08-ai/open-webui` 출력을 bind하는 root 소비자는 없습니다.
 
 모든 KV field 이름은 `client_secret`입니다. `health-agent.sh`는 이제 `agent.hcl`에서 template
 목록을 읽어 각 `.txt`의 bytes와 mode, 각 `.version`과 KV `current_version`을 비교하고, `out` 아래에

@@ -42,9 +42,13 @@ LAB_PATCH_IMAGES = {
         "labs/stalwart/docker-compose.yml",
         "stalwart",
     ): "stalwartlabs/stalwart:v0.16.27@sha256:c429b311c93db5606598abc1c68225a85a6953183848ae01bee9c6a98885836c",
+    (
+        "labs/open-webui/docker-compose.yml",
+        "open-webui",
+    ): "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
 }
 
-# Renovate bumps the version; the CUDA variant and the digest pin stay.
+# The CUDA variant and the digest pin stay (a LAB since the ADR-0062 amendment).
 OPEN_WEBUI = re.compile(
     r"^ghcr\.io/open-webui/open-webui:v\d+\.\d+\.\d+-cuda@sha256:[0-9a-f]{64}$"
 )
@@ -115,13 +119,14 @@ class CandidateContract(unittest.TestCase):
 
     def test_openwebui_minor_refresh_keeps_exact_cuda_variant(self):
         compose = yaml.safe_load(
-            (ROOT / "infra/08-ai/open-webui/docker-compose.yml").read_text(
-                encoding="utf-8"
-            )
+            (ROOT / "labs/open-webui/docker-compose.yml").read_text(encoding="utf-8")
         )
         image = compose["services"]["open-webui"]["image"]
         self.assertRegex(image, OPEN_WEBUI)
-        self.assertEqual(image, ledger_pin("open-webui"))
+        self.assertEqual(
+            image,
+            LAB_PATCH_IMAGES[("labs/open-webui/docker-compose.yml", "open-webui")],
+        )
 
     def test_opensearch_root_args_keep_lab_default_pair_unchanged(self):
         package = ROOT / "infra/04-data/opensearch"

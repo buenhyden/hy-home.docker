@@ -168,7 +168,7 @@ class TierLayoutTests(unittest.TestCase):
             "infra/06-observability/docker-compose.yml",
             "infra/01-gateway/traefik/dynamic/middleware.yml",
             "infra/08-ai/ollama/docker-compose.yml",
-            "infra/08-ai/open-webui/docker-compose.yml",
+            "labs/open-webui/docker-compose.yml",
             "infra/04-data/redisinsight/docker-compose.yml",
             "infra/06-observability/dozzle/docker-compose.yml",
             "infra/08-ai/open-notebook/docker-compose.yml",

@@ -583,13 +583,16 @@ check_08_ai() {
   start_tier "$tier"
 
   local ollama_compose="infra/08-ai/ollama/docker-compose.yml"
-  local webui_compose="infra/08-ai/open-webui/docker-compose.yml"
+  # Open WebUI is a standalone LAB (ADR-0062 amendment 2026-11-10), checked
+  # here from its labs/ folder.
+  local webui_compose="labs/open-webui/docker-compose.yml"
 
   check_file "$ollama_compose"
   check_file "$webui_compose"
 
   check_contains "$ollama_compose" "sso-auth@file" "ollama sso missing"
-  check_contains "$webui_compose" "traefik.http.routers.open-webui.middlewares: gateway-standard-chain@file" "open-webui native oidc gateway chain missing"
+  check_not_contains "$webui_compose" "traefik.http" "open-webui LAB must not have a gateway route"
+  check_contains "$webui_compose" '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}:8080' "open-webui LAB port must use the LAB bind address"
   check_not_contains "$webui_compose" "sso-auth" "open-webui double-auth middleware must not be enabled"
   check_not_contains "$webui_compose" "WEBUI_AUTH_TRUSTED_" "open-webui trusted-header auth must not be enabled"
   check_contains "$webui_compose" "OAUTH_CLIENT_ID: home-openwebui" "open-webui dedicated oidc client missing"
@@ -597,7 +600,10 @@ check_08_ai() {
   check_contains "$webui_compose" "ENABLE_PASSWORD_AUTH: 'false'" "open-webui password auth must be disabled"
   check_contains "$webui_compose" "ENABLE_OAUTH_SIGNUP: 'false'" "open-webui oauth signup must be disabled"
   check_contains "$webui_compose" "OAUTH_MERGE_ACCOUNTS_BY_EMAIL: 'false'" "open-webui temporary email merge must be disabled"
-  check_contains "$webui_compose" "openwebui_oidc_client_secret" "open-webui oidc secret missing"
+  check_contains "$webui_compose" "ENABLE_OPENAI_API: 'false'" "open-webui direct OpenAI path must stay disabled"
+  check_contains "$webui_compose" "target: openwebui_oidc_client_secret" "open-webui oidc secret missing"
+  check_service_network "$webui_compose" "open-webui" "lab_open_webui_net"
+  check_service_healthcheck "$webui_compose" "open-webui"
   local open_notebook_compose="infra/08-ai/open-notebook/docker-compose.yml"
   check_file "$open_notebook_compose"
   # Owner decision b90b74837: Open Notebook relies on its own password plus the
