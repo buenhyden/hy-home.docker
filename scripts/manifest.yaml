@@ -675,6 +675,66 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_compose_start.py
+- path: scripts/lib/ops/memory_backup.py
+  kind: library
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/lib/ops/memory_cli.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_memory_backup.py
+- path: scripts/lib/ops/memory_capacity.py
+  kind: library
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/lib/ops/memory_backup.py
+  - scripts/lib/ops/memory_cli.py
+  - scripts/lib/ops/memory_local.py
+  - scripts/operations/agent_memory.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_memory_capacity.py
+  - tests/validation/test_agent_memory_capacity.py
+- path: scripts/lib/ops/memory_cli.py
+  kind: library
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/operations/agent_memory.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_agent_memory_capacity.py
+- path: scripts/lib/ops/memory_local.py
+  kind: library
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - scripts/lib/ops/memory_backup.py
+  - scripts/operations/agent_memory.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_memory_local.py
+- path: scripts/lib/ops/memory_search.py
+  kind: library
+  authority: .agents/governance/environment-constraints.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/ops/memory_cli.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/ops/test_memory_search.py
 - path: scripts/lib/ops/memory_sources.py
   kind: library
   authority: .agents/governance/environment-constraints.md
@@ -920,6 +980,7 @@ files:
   successor: null
   tests:
   - tests/lib/hooks/test_agent_memory.py
+  - tests/validation/test_agent_memory_capacity.py
 - path: scripts/operations/check-compose-core-readiness.sh
   kind: operations
   authority: docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md

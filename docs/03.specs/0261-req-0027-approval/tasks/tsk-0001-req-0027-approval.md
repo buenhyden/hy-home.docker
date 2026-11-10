@@ -1,6 +1,6 @@
 ---
 title: "REQ-0027 Approval Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -112,6 +112,19 @@ On 2026-11-10 the Dependabot references at lines 68 and 79 are superseded:
 `.github/dependabot.yml` no longer exists and `renovate.json5` is the sole
 dependency updater (PR #850, merge `87d3a18c8`). Earlier entries are unchanged.
 
+### Hosted CI evidence follow-up 2026-11-10
+
+A read-only GitHub lookup on 2026-11-10 for the actual implementation commit
+`a30e3598eb29bba094fbf76934d04eeac2b82858` returned CI Quality Gates run
+[41780400564](https://github.com/buenhyden/hy-home.docker/actions/runs/41780400564)
+with conclusion success. Job126410378613, `candidate-quality`, completed
+successfully; `main-security` was skipped in that pull-request run. This
+resolves E5's missing hosted-CI observation for that original candidate only.
+The earlier unpushed/NOT_RUN text and E5 are preserved as dated history, not
+rewritten. It does not prove the current source diff, runtime, backup, login,
+restore, or a new owner acceptance. A fresh-context independent document
+review and criteria1-4 owner decisions remain pending.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -124,6 +137,7 @@ dependency updater (PR #850, merge `87d3a18c8`). Earlier entries are unchanged.
 | E6 | 4 | W4 | metadata | `check-changed --base-ref origin/main` and `check-active`, package complete and staged on e3bdc5133 | PASS | selected 16, zero violations; selected 544, zero violations | required | - |
 | E7 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref origin/main`, same tree | PASS | lifecycle zero, occupancy zero | required | - |
 | E8 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, `entrypoint`, same tree | PASS | catalog PASS; every link mode PASS, 879 documents, 8109 links, zero failures | required | - |
+| E9 | 4 | W4 | hosted-ci | Original implementation commit a30e3598eb29bba094fbf76934d04eeac2b82858 | PASS | Read-only 2026-11-10 lookup: run41780400564, candidate-quality job126410378613 success; main-security skipped | required | E5 |
 
 ## Criterion Acceptance
 
@@ -136,8 +150,10 @@ dependency updater (PR #850, merge `87d3a18c8`). Earlier entries are unchanged.
 
 ## Review and Completion
 
-Local checks are recorded above. Independent review and hosted CI have not
-run, and no criterion is accepted yet.
+Local checks are recorded above. The original candidate hosted-CI result is
+now evidenced by E9. Hosted CI for the current diff, fresh-context independent
+review and owner criterion decisions remain pending; no criterion is accepted
+yet. Earlier unrun statements are preserved as the history they recorded.
 
 ## Related Documents
 

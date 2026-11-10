@@ -266,7 +266,7 @@ if (( state_kib >= max_gib * 1024 * 1024 )); then
     status=1
     restic_ok=false
 else
-    "${compose[@]}" run --rm --no-deps restic backup || { status=1; restic_ok=false; }
+    python3 "$repo_root/scripts/operations/agent_memory.py" backup-run --target state || { status=1; restic_ok=false; }
 fi
 "${compose[@]}" run --rm --no-deps restic check || { status=1; restic_ok=false; }
 
@@ -284,9 +284,13 @@ print("yes" if env.get("BACKUP_OFFSITE_R2_ACCOUNT_ID") and env.get("BACKUP_OFFSI
 if [[ "$offsite_configured" != yes ]]; then
     echo "offsite copy not configured (BACKUP_OFFSITE_R2_*); skipped"
 elif [[ "$restic_ok" == true ]]; then
-    offsite_log="$("${compose[@]}" run --rm --no-deps restic-offsite copy)" || { echo "offsite copy to R2 failed" >&2; status=1; }
+    offsite_log="$(python3 "$repo_root/scripts/operations/agent_memory.py" backup-run --target offsite)" || { echo "offsite copy to R2 failed" >&2; status=1; }
     printf '%s\n' "${offsite_log:-}"
-    offsite_bytes="$(sed -n 's/^R2 repository size: \([0-9][0-9]*\) bytes$/\1/p' <<<"${offsite_log:-}")"
+    offsite_bytes="$(python3 -c 'import json,sys
+try:
+    value = json.load(sys.stdin).get("offsite_repo_bytes")
+    if type(value) is int and value >= 0: print(value)
+except (ValueError, AttributeError): pass' <<<"${offsite_log:-}")"
     # The R2 size feeds the free-tier alert on every run that measured it,
     # failed or refused ones included (ADR-0056; owner cap 10 GB).
     if [[ -n "$offsite_bytes" ]]; then

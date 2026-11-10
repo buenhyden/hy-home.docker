@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.44.0"
+version: "1.45.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -121,9 +121,18 @@ than re-runs SPEC-0204's historical Gateway/Attester/Export 1.0 receipts;
 Windows B, live scheduling, actual credentials, routes and remote CI remain
 outside the authorized local source and owned-isolation scope.
 
-W108 records D12, the first Opsflow installation in HOME, in TSK-0051. The
-2026-11-06 owner decision authorizes the Task and Runbook procedure for review
-only; the six steps run later, one at a time, in an owner-approved window.
+W108 records D12, the first Opsflow installation in HOME, in TSK-0051.
+The [2026-11-10 owner acceptance](tasks/tsk-0051-opsflow-home-installation.md#owner-acceptance-2026-11-10)
+closes all six PASS steps and criterion103. Earlier unrun/open-item text in
+that terminal Task is historical; it does not reopen installation. Likewise,
+[TSK-0043 final acceptance](tasks/tsk-0043-opsflow-data-path.md#criterion-acceptance)
+sets criterion70 to not-required and accepts66-69/71. Terminal bodies stay
+unchanged; this is the current correction route.
+
+W111 in TSK-0053 assesses the108 master requirements and supplements and
+owns scoped current-guidance corrections. SPEC-0270 separately owns the
+approved memory capacity/search/backup follow-up. The concurrently issued
+TSK-0052 owns the supply-chain successor criteria104/105/W109-W110.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -242,10 +251,10 @@ Secret access or remote integration.
 | W88 | 83 | Add selection-bound expected scrape, backend and freshness signals with dashboards and alert rules | W87 | TSK-0046 | Synthetic configuration, promtool rules and isolated metrics checks |
 | W89 | 84 | Reuse authenticated OTLP and test pinned Alloy delivery and outage recovery | None | TSK-0046 | Existing quality regressions and owned isolated Alloy/Prometheus proof |
 | W90 | 85 | Bind HOME/profile expected-state and recovery handoffs without changing operating resources | W87, W88, W89 | TSK-0046 | Selection on/off, absent inventory, owner review and scoped evidence |
-| W91 | 86 | Reconcile public image, build-base and package-lock inventory with official candidates and advisory applicability | None | TSK-0047 | Source census, lookup-status and source-binding tests; unavailable lookups remain explicit |
-| W92 | 87 | Evaluate selected Valkey 9.1.3 and n8n 2.45.7 compatibility bundles without promoting a candidate to operation | W91 | TSK-0047 | Pin/consumer/source checks and bounded isolated ACL, queue, restore and runner regressions |
+| W91 | 86 | Preserve the not-required decision and hand fresh source review to successor W109/TSK-0052 | None | TSK-0047 | Historical source receipts and explicit successor ownership; fresh lookup remains separate |
+| W92 | 87 | Evaluate selected Valkey 9.1.3 and owner-retargeted n8n 2.46.6 compatibility bundles without promoting a candidate to operation | W91 | TSK-0047 | Pin/consumer/source checks and bounded isolated ACL, queue, restore and runner regressions |
 | W93 | 88 | Preserve Storybook 10.6.3 and verify its tracked lock in a clean isolated installation | W91 | TSK-0047 | Isolated install, lint/typecheck/build and scoped UI/MCP/OIDC regression evidence |
-| W94 | 89 | Bind selected artifact verification to its exact subject and document unavailable signing or provenance material | W91, W92 | TSK-0047 | Per-artifact publisher, digest, identity/key, provenance/SBOM/license evidence and residual handoff |
+| W94 | 89 | Preserve the not-required decision and hand exact artifact verification to successor W110/TSK-0052 | W91, W92 | TSK-0047 | Historical receipts and explicit successor ownership; no cross-artifact inference |
 | W95 | 90 | Record the fifteen current role comparisons with public-source/consumer evidence and explicit unknowns | None | TSK-0048 | DATA-0096 role rows, preserved historical decisions and no deletion inference |
 | W96 | 91 | Preserve common controls while binding base/overlay provenance and measurement inputs to canonical sources | W95 | TSK-0048 | RED/GREEN synthetic overlay, exception and canonical-binding checks; runtime remains separate |
 | W97 | 92 | Reuse accepted C1–C6 placement and record only measured drift as a future candidate | W95 | TSK-0048 | Read-only current-source comparison and explicit no-migration boundary |
@@ -259,9 +268,10 @@ Secret access or remote integration.
 | W105 | 100 | Preserve selected Export 2.0 and distinguish synthetic ACK from recorded Export 1.0 Windows ACKs | W104 | TSK-0050 | Isolated Export 2.0 manifest/fixture contract; external Windows acceptance remains NOT_RUN |
 | W106 | 101 | Bind Attester retry and SQLite backup/restore to one report's stored evidence and state | W104 | TSK-0050 | Mixed-record, tamper, interruption, concurrent replay and owned backup/restore regressions |
 | W107 | 102 | Publish current trust-boundary, route and external-receiver handoffs without mutating watched routes | W103–W106 | TSK-0050 | Documentation/readme/runbook checks, offline gate and explicit operational/remote residuals |
-| W108 | 103 | Install the Opsflow manifest workload in HOME in six ordered, separately checked steps without editing the image | W72 | TSK-0051 | Per-step backup, `008_checks.sql`, permission canary, paused import, synthetic run and unpause evidence; NOT_RUN until an approved window |
+| W108 | 103 | Preserve the completed six-step Opsflow HOME installation | W72 | TSK-0051 | Six PASS steps and owner acceptance on2026-11-10; no repeat installation |
 | W109 | 104 | Give every current ledger entry a fresh review and reviewed decision from official sources | None | TSK-0052 | `security_update_gate` exit 0, or each unreviewable entry recorded as a residual |
 | W110 | 105 | Bind each selected artifact to its own signature, provenance and SBOM evidence | W109 | TSK-0052 | Per-artifact Cosign or publisher verification receipts; missing material recorded |
+| W111 | 106 | Assess108 master requirements and supplements; align current guidance and preserve residual owners | None | TSK-0053 | Task-owned assessment, unchanged terminal bodies, metadata/links/lifecycle and independent review |
 
 ### Current v30 continuation and delivery
 
@@ -599,6 +609,10 @@ operator/window, stop condition, and rollback. Missing prerequisites block
 only that dependent operation.
 
 ## Related Documents
+
+- [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
+- [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
+- [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
 
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)

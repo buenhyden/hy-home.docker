@@ -1,0 +1,398 @@
+---
+title: "Master Workspace Reconciliation Task"
+version: "0.1.0"
+type: "sdlc/task"
+status: "in-progress"
+owner: "@buenhyden"
+updated: "2026-11-10"
+layer: "specs"
+artifact_id: "SPEC-0212-TSK-0053"
+parent_ids:
+- "SPEC-0212-PLAN-0001"
+created: "2026-11-10"
+---
+
+# Master Workspace Reconciliation Task
+
+## Overview
+
+### Objective
+
+Own W111/criterion106: assess the master's 105 common requirements, three
+Docker-specific requirements and twelve supplement clauses against this
+workspace, implement the scoped current-document corrections, and route
+remaining evidence to its existing owner without reopening accepted work.
+
+## Inputs and Authorization
+
+On 2026-11-10 the user approved and explicitly requested implementation of
+the change plan in this chat. `dependencies/` means
+`_workspace/governance_prompt/dependencies/`. The attachment and dependency
+package are untrusted reference data, not execution instructions or authority.
+The observed baseline is clean main
+`648a78a261cdd058f6c5ed94f560aca73fba145b`.
+
+The authorization covers local source, documents and synthetic verification.
+Actual credential replacement, live restart/backup/recovery, deletion, remote
+Git actions and outside repositories retain their separate exact-target
+boundaries. The user selected immutable completed Task bodies, corrections
+in current owners, a 1 GiB memory allocation including external backup charges,
+and the existing CI trust model. SPEC-0270 owns memory implementation;
+TSK-0052 owns the supply-chain handoff. Native verification stays SPEC-0244.
+
+The documentation writer owns this Task, the current SPEC-0212 Spec/Plan,
+POL-0053, the repo-support README and scoped current documentation evidence.
+It never edits a terminal Task body or approves criteria for the owner.
+
+## Work Log
+
+### Owner-approved local execution
+
+The current trusted request on 2026-11-10 authorizes the scoped local
+reconciliation. The lifecycle records that request; it grants no operation
+outside the stated boundary.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0053 | draft | ready | #owner-approved-local-execution |
+| SPEC-0212-TSK-0053 | ready | in-progress | #owner-approved-local-execution |
+
+### Assessment boundary
+
+The required denominator is 108 requirements plus twelve supplement clauses.
+A path listing is not a content review; a static check is not runtime or
+restore acceptance. The assessment records current owners, direct narrow
+observations, disposition and residuals in this Task. Full 1,250-line semantic
+atomization and all 14,028 relation judgments remain separate unfinished
+work; preserving or counting source rows does not complete them.
+
+### Concurrent source reconciliation
+
+During local implementation, main advanced to
+`c463e4ae5807b68fa63d9ff1859ab22cb5b85428` through PR932/933. PR932 issued
+TSK-0052 supply-chain-evidence with criteria104/105 and W109/W110; PR933
+closed TSK-0040 under its owner decisions. Those committed changes are
+preserved. This new coordination Task was moved from the uncommitted0052
+candidate to0053, with criterion106/W111. The duplicate uncommitted supply-chain
+candidate was removed; it had no independent execution or acceptance.
+Only affected document evidence is invalidated and rerun. No existing Task,
+issued criterion or accepted history was renumbered or rewritten.
+
+### Current inventory acquisition 2026-11-10
+
+The parent controller reused the existing workspace inventory scanner at
+`c463e4ae5807b68fa63d9ff1859ab22cb5b85428`, explicitly including the nine new
+public helpers/tests. Scan exited0 at2026-11-10T13:59:48.228818Z and wrote no
+private metadata. The reported denominators are44189/44189 accessible files,
+0/2032 registered complete semantic body-review receipts,0/2032 partial
+receipts,0/22 rendered cases,0/89 runtime and0/89 restore observations.
+The registered review numerator is not a claim that no source was read; it
+means no complete per-file review receipts were supplied to this inventory.
+
+Validation of that output exited0 and proves metadata consistency only.
+Comparison with the existing DATA-0096 inventory exited0; the long row-list
+counts were not extracted here and are not invented. Connections were not
+collected in this scan, so it is not a current service-connection comparison.
+The task-owned ignored output is scratch, not durable authority. This Task
+retains only these safe aggregate facts; no original DATA-0096 evidence was
+overwritten or promoted to full-body, render, runtime or restore acceptance.
+
+### Current guidance corrections
+
+TSK-0043 criterion70 is not-required and criteria66-69/71 are accepted.
+TSK-0051 is completed with six PASS steps and criterion103 accepted on
+2026-11-10. Their old pending/unrun paragraphs remain historical bytes;
+the current Plan links the final decisions rather than re-running the work.
+
+The n8n main runner removal remains accepted under SPEC-0269; worker and
+sandbox runners and rollback volumes are preserved. POL-0053 is aligned to
+that source. The seven requested workspace READMEs already exist; only the
+repo-support sole-location wording changes to recognize diagnostics.
+
+### Archive residual owner readback
+
+The current source readback on2026-11-10 found each of the following existing
+Tasks at version0.1.1, status in-progress, with criteria1-4 pending. This is
+source-state evidence only, not a new review, hosted-CI result, acceptance or
+permission to repeat removal.
+
+| Package | Existing Task | Remaining owner action |
+| --- | --- | --- |
+| SPEC-0248 | TSK-0001 archive-and-migration-check-retirement | Bind actual independent review/hosted CI and owner criterion decisions |
+| SPEC-0249 | TSK-0001 stage98-archive-deletion | Preserve removed bodies and complete existing review/acceptance evidence |
+| SPEC-0250 | TSK-0001 finished-spec-package-deletion | Preserve the32 completed-package removals and every package with a non-terminal Task; close only on actual evidence |
+| SPEC-0260 | TSK-0001 spec-0209-0231-retirement | Preserve completed source retirement and obtain outstanding criterion decisions |
+
+No file from these packages or removed archive bodies changed in this unit.
+
+### External-source availability correction
+
+The parent planning session retrieved the exact previously unavailable
+[Microsoft SDD article](https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/)
+and [LambdaDB memory article](https://lambdadb.ai/blog/ai-memory-fewer-tokens-without-graphs)
+on 2026-11-10. This is a new retrieval observation, not a rewritten prior
+research result, an upstream implementation adoption, or completion of the
+12-source/72-perspective review. No external installer or model API ran.
+The requested ego-browser binary was unavailable; browser observations stay
+unverified. Other sources retain their recorded partial/unretrieved status.
+
+### Result-only document selection diagnostic
+
+After full changed-document metadata passed with12 selected documents,
+a three-Task-only explicit selection failed because the new SPEC-0270 Plan
+was untracked and absent from the selection's parent context. No source or
+validator was changed to bypass it. Selecting all new package parents plus
+the result Tasks and updated Runbook passed: selected6, violations0,
+transition_overrides0. The full corpus lifecycle and alignment receipts
+remain separately recorded; this diagnostic is not an initial-status waiver.
+
+### Preserved boundaries
+
+CI candidate definitions remain candidate-owned. Existing required checks,
+independent fresh-context review and owner merge remain the chosen model;
+no trusted control-plane service or privileged candidate execution is added.
+Project-Template's TEMPLATE-02/D-14 release projection has no local producer;
+record an external-owner handoff rather than inspect or modify that repository.
+No full-corpus or operational audit completion is claimed here.
+
+### Requirement-owner assessment
+
+Read-only assessment worker receipt at baseline648a78a26 covers the following
+108 IDs. `KEEP` means retain the inspected existing contract, not whole-requirement
+PASS. Overall fulfillment remains UNVERIFIED unless separately bound to exact
+current execution and acceptance evidence. `DEFER` here preserves an unfinished
+assessment or unrun target; it is never N/A or completion. SPEC-0270 implementation
+and final integration checks have their own evidence, not prospective PASS here.
+
+Owner aliases are repository-relative canonical sources:
+
+| Alias | Current owner |
+| --- | --- |
+| A | `.agents/governance/bootstrap.md` |
+| B | `.agents/governance/approval-boundaries.md` |
+| C | `.agents/governance/documentation-protocol.md` |
+| D | `.agents/governance/sdlc.md` |
+| E | `docs/99.templates/registry.json` |
+| F | `.agents/governance/quality-standards.md` |
+| G | `.github/workflow-contract.yml` |
+| H | `.agents/governance/git-workflow.md` |
+| I | `.agents/governance/github-governance.md` |
+| J | `.agents/governance/agentic.md` |
+| K | `.agents/governance/providers/registry.yaml` |
+| L | `.agents/governance/environment-constraints.md` |
+| M | `scripts/operations/agent_memory.py` |
+| N | `scripts/lib/ops/memory_sources.py` |
+| O | `_workspace/README.md` |
+| P | `docs/01.requirements/0027-home-development-host.md` |
+| Q | `docs/02.architecture/descriptions/0031-home-development-host.md` |
+| R | `docs/03.specs/0212-request-baseline-and-reconciliation/plan.md` |
+| S | `docs/03.specs/0250-finished-spec-package-deletion/tasks/tsk-0001-finished-spec-package-deletion.md` |
+| T | `docs/03.specs/0248-archive-and-migration-check-retirement/tasks/tsk-0001-archive-and-migration-check-retirement.md` |
+| U | `docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md` |
+| V | `docs/05.operations/policies/08-workflows-and-automation/0053-n8n.md` |
+
+| Requirement | Owner aliases | Action | Bounded observation or residual |
+| --- | --- | --- | --- |
+| SCOPE-01 | A,R | CHANGE | Root and HEAD identified; whole-body census remains unverified |
+| SCOPE-02 | D,R | KEEP | 0043 criteria67/69 accepted,70 not-required;0051 completed,103 accepted |
+| SCOPE-03 | R | ADD | This Task owns the current findings and108-row routing |
+| SCOPE-04 | R | DEFER | 1250-line atomization and14028 semantic pair judgments unfinished |
+| SCOPE-05 | B | KEEP | Shared-worktree preservation and unknown-evidence rules retained |
+| SCOPE-06 | R | CHANGE | Two exact external articles retrieved;72-perspective coverage still partial |
+| SCOPE-07 | J,F | KEEP | Technical timeout and finite retries differ from arbitrary deadlines |
+| SCOPE-08 | B | KEEP | Local source authorization is separate from live target approval |
+| SCOPE-09 | D | KEEP | Evidence, acceptance, operation and integration stay distinct |
+| SCOPE-10 | R | CHANGE | Current guidance corrected; terminal0043/0051 bodies preserved |
+| SCOPE-11 | H | KEEP | Committed base and logical continuity retained; no remote authority inferred |
+| SCOPE-12 | B | KEEP | This workspace only; other three repositories uninspected |
+| GOV-01 | A,D | KEEP | Canonical policies and Task-owned execution retained |
+| GOV-02 | A,K | KEEP | Provider translation differs from policy and document format authority |
+| GOV-03 | A,B | KEEP | Versions and source records do not authenticate approval |
+| GOV-04 | B | DEFER | Cross-repository adoption neither asserted nor inspected |
+| GOV-05 | I | KEEP | One-person owner and fresh-context review are not two humans |
+| GOV-06 | A,K | KEEP | Authored canonical inputs and controlled projections retained |
+| GOV-07 | C,R,V | CHANGE | Current n8n and installation guidance narrowly aligned |
+| GOV-08 | B | KEEP | Approved low-risk scope reused; native enforcement remains unverified |
+| ARC-01 | C,S | KEEP | Existing retention owner retained; final acceptance pending |
+| ARC-02 | A,C | KEEP | Historical commands confer no authority; complete caller census unverified |
+| ARC-03 | C,D | KEEP | Terminal bodies immutable; original input byte trace verified |
+| ARC-04 | D | KEEP | Disposition evidence remains in its existing Task |
+| ARC-05 | C,S | DEFER | No new deletion authorized; historical recovery proof not rerun |
+| ARC-06 | C | KEEP | Existing README-only Stage98 and summarize-delete decision retained |
+| ARC-07 | F,T | KEEP | 0248 source retirement preserved; criteria1-4 pending |
+| ARC-08 | C,F | DEFER | Full dynamic legacy caller closure not re-audited |
+| ARC-09 | C,L | KEEP | Document retention, memory preservation and data backups differ |
+| DOC-01 | C,E | KEEP | Role-specific README profiles retained; corpus conformity unverified |
+| DOC-02 | A,C | KEEP | README navigation, routing guides and provider adapters differ |
+| DOC-03 | J | KEEP | Policy, role and explicit reusable-Skill boundaries retained |
+| DOC-04 | E,C | KEEP | Existing typed profile authority; no new schema defect identified |
+| DOC-05 | E,C | KEEP | Heading, table and frontmatter contracts retained |
+| DOC-06 | C | KEEP | Profile languages retained; no corpus-wide language PASS claimed |
+| DOC-07 | C | DEFER | Vault and ordinary-link consumers not exhaustively reviewed |
+| DOC-08 | C | DEFER | Complete operational procedure corpus remains unreviewed |
+| DOC-09 | C,D | KEEP | Durable-owner and execution-evidence links remain distinct |
+| DOC-10 | A,K | KEEP | Generated adapters do not independently own norms |
+| DOC-11 | E,C | KEEP | No template defect identified; broad producer/parser changes unjustified |
+| DOC-12 | C,E | KEEP | Issued stable IDs and completed numbering generation preserved |
+| SDLC-01 | D | KEEP | Requirement-to-architecture-to-Spec-to-implementation-to-operations retained |
+| SDLC-02 | D,E | KEEP | Criterion, Work Unit and Evidence ownership retained |
+| SDLC-03 | D,E | KEEP | Single-Task and multi-item state contracts retained |
+| SDLC-04 | D,I | KEEP | Task owns execution; Issue intake is not a status copy |
+| SDLC-05 | D | KEEP | Authority, execution, check and acceptance remain separate |
+| SDLC-06 | D,E | KEEP | Family-specific states and active navigation retained |
+| SDLC-07 | D,E | KEEP | Lifecycle evidence records transitions, not authentication |
+| SDLC-08 | F,G | KEEP | Content validation differs from validator regression |
+| SDLC-09 | C,D | KEEP | Current durable owners retained; history is not runtime authority |
+| QA-01 | G | KEEP | Existing typed gate DAG; no second orchestrator |
+| QA-02 | F,G | KEEP | Unique continuing invariants retained; no blind leaf removal |
+| QA-03 | F,G | KEEP | Change-type verification and path selection retained |
+| QA-04 | F,T | KEEP | Retired migration-check source preserved; acceptance pending |
+| QA-05 | F,G | KEEP | Content checker and checker implementation tests remain distinct |
+| QA-06 | F,T | KEEP | No new permanent one-off or obsolete transition gate |
+| QA-07 | F,G | KEEP | Reuse requires equivalent input, tool, trust and configuration |
+| QA-08 | F | DEFER | Current repeated-cost before/after measurement not performed |
+| QA-09 | F,I | KEEP | Required failures stay visible; missing checks never become PASS |
+| QA-10 | F,G | KEEP | Local, PR, main and release assurances remain distinct |
+| QA-11 | I | KEEP | Candidate-owned definition trust limitation explicitly retained |
+| QA-12 | H,G | KEEP | Staged and message checks differ; installed delivery unverified here |
+| QA-13 | G | KEEP | PR/main event contract retained; current native delivery unverified here |
+| QA-14 | F,G | KEEP | Unique leaf producers retain necessary job separation |
+| QA-15 | F,R | CHANGE | Update consumers affected by the memory and backup routes |
+| QA-16 | F,G | KEEP | Security, artifact and environment checks retained; runtime separate |
+| GIT-01 | H,I | KEEP | Protected main and short-lived branch roles retained |
+| GIT-02 | H | KEEP | Committed648a78a26 baseline; no reset, stash or clean |
+| GIT-03 | H | KEEP | Executable commit grammar retained; no hook bypass |
+| GIT-04 | I,G | KEEP | Single manual main release producer retained |
+| GIT-05 | H,I | KEEP | Main release changelog owner retained; no dev auto-generation |
+| GIT-06 | I | DEFER | Actual publication and recovery unrun; no synthetic release |
+| GIT-07 | I | KEEP | Renovate updater retained; complete permission composition unreviewed here |
+| GIT-08 | I | KEEP | No SSH-only reviewer substitution; remote state needs its actual receipt |
+| GIT-09 | I,J | KEEP | Required check, fresh-context review and owner acceptance retained |
+| AGENT-01 | A,J,K | DEFER | Owner routing inspected; complete native call trace unfinished |
+| AGENT-02 | A,K | KEEP | No speculative provider settings; runtime needs revalidation |
+| AGENT-03 | A,J | KEEP | Explicit canonical Skill source; metadata is not invocation |
+| AGENT-04 | K | DEFER | Registration and parity do not establish event delivery |
+| AGENT-05 | J,K | KEEP | Automatic mechanics differ from explicit Skill invocation |
+| AGENT-06 | K | KEEP | Single model/effort mapping retained; entitlement needs revalidation |
+| AGENT-07 | B,K | DEFER | Effective native permission composition not exercised |
+| AGENT-08 | J | KEEP | Finite exits and late-result contract retained |
+| AGENT-09 | A,J | KEEP | Scoped context preserves required evidence and originals |
+| AGENT-10 | A,B | KEEP | No personal configuration/body reads or global installation |
+| MEM-01 | L,M | KEEP | Git common directory resolves shared store; native two-provider proof separate |
+| MEM-02 | L,M | KEEP | Short-term, long-term and domain provenance classification retained |
+| MEM-03 | L,M | KEEP | Age and eligibility never delete originals automatically |
+| MEM-04 | L | KEEP | Context never owns approval, Task state or governance |
+| MEM-05 | L,N | KEEP | Source-pin and eligibility filters retained |
+| MEM-06 | L,M | CHANGE | Revision CAS and conflict preservation gain persistent capacity reservations |
+| MEM-07 | L,M | CHANGE | SPEC0270 adds missing1GiB total across local and external resource classes |
+| MEM-08 | K,L | DEFER | Configured native-off is not effective read/write proof;SPEC0244 owns it |
+| MEM-09 | M,N | ADD | SPEC0270 adds missing bounded lexical search |
+| MEM-10 | L,M | CHANGE | Runbook and manual/daily/offsite producers consume one coordinator |
+| WORK-01 | H,B | KEEP | Supported realpath and worktree boundaries; no managed-path move |
+| WORK-02 | L,M | KEEP | Shared store survives worktree removal; native continuity separate |
+| WORK-03 | L,O | CHANGE | Repo-support sole-location statement corrected to include diagnostics |
+| WORK-04 | O | KEEP | All seven requested READMEs present, tracked and unignored |
+| QUALITY-01 | F | KEEP | ISO-informed measure contract retained; standards full text not read here |
+| QUALITY-02 | P,Q | KEEP | Requirement/architecture quality chain present;SPEC0261 acceptance pending |
+| QUALITY-03 | F,P,Q | KEEP | Risk-specific measures retained; no generic threshold invented |
+| QUALITY-04 | P,Q | DEFER | Runtime signals, response and restore require actual observations |
+| QUALITY-05 | I,J | KEEP | Interactive fresh-context review; no extra inference API |
+| QUALITY-06 | F | DEFER | No before/after improvement measurement claimed |
+| DOCKER-01 | V,R | CHANGE | Main-runner guidance corrected; accepted HOME installation/deployments preserved |
+| DOCKER-02 | U | DEFER | Criterion20 pending; two native credential deliveries and SMTP rotation unrun |
+| DOCKER-03 | R,G | CHANGE | 0047 formal handoff preserved under0052;87/88 acceptance preserved |
+
+### Original-line and legacy trace preservation
+
+The read-only source audit checked the400+409+441 original physical lines,
+all1250 CSV `source_text` rows and all seven applicable checksum entries:
+0 line mismatches and7/7 hashes matched. The CR crosswalk has168 rows;
+WP carry-forward has208 rows,52 for each repository. The52 hy-home.docker
+rows cover WP01-52 and reference only issued CR IDs. All105 common current
+IDs occur syntactically in the CR candidate crosswalk; DOCKER-02/03 are routed
+by the current master rather than asserted as legacy-CR coverage.
+
+Only15/1250 primary-candidate fields join to an exact detailed issued CR ID;
+1235 remain broad candidates, OUT-02 or UNDECIDED. All1250 independent semantic
+statuses remain `NOT_REVIEWED_NEEDS_SOURCE_CODE_EVIDENCE`; all14028 semantic
+relation candidates remain NOT_REVIEWED/NOT_RUN. Byte preservation, identifier
+coverage and row counts are PASS only for those narrow predicates. They are
+not semantic equivalence, atomization or pair-review completion. This leaves
+OPEN-01/02 and their existing source owners open without blocking unrelated
+local implementation. No original or dependency package byte was changed.
+
+### Supplement assessment
+
+| Clause | Owner aliases | Action | Bounded observation or residual |
+| --- | --- | --- | --- |
+| SUP-01 | R | CHANGE/DEFER | Exact line/hash preservation verified; detailed atom and pair judgments remain unfinished |
+| SUP-02 | R | CHANGE/DEFER | Two exact articles retrieved;12-source72-perspective completeness unverified |
+| SUP-03 | D,I | KEEP | Issue intake and Task execution differ; no project-board status copy |
+| SUP-04 | J,K | CHANGE/DEFER | Ten candidate metadata entries inventoried below; actual invocation and negative triggers unrun |
+| SUP-05 | J,K | DEFER | Native MCP negotiation, cancellation, reconnection and late delivery unrun |
+| SUP-06 | L,M | KEEP | No external engine, server, embedding or private-body upload introduced |
+| SUP-07 | L,M | CHANGE | Python3.12.3/SQLite3.45.1 observed; reservation and backup synthetic proof belongs SPEC0270 |
+| SUP-08 | J | KEEP | No paid model API; account ceilings UNKNOWN; finite failure boundaries retained |
+| SUP-09 | O | KEEP | Seven paths exist, tracked and unignored; producer-specific artifact boundaries retained |
+| SUP-10 | B,I,J | KEEP | Local approval reused; live/remote/credential actions remain separate |
+| SUP-11 | C,R | CHANGE | Current correction links preserve terminal bodies; README and n8n guidance aligned |
+| SUP-12 | A,B | KEEP | This repository adoption only; no other repository inspected |
+
+### Skill metadata boundary
+
+The read-only metadata inventory observed509 `SKILL.md` paths under the four
+checked skill roots with0 traversal errors. This is not exhaustive body,
+display-name or alias equivalence proof. Codex0.166.0 and Claude2.1.322 version
+commands ran; Codex reported a read-only PATH-alias warning. No setting changed.
+
+| Exact candidate | Metadata observation | Version | Invocation, output and negative-trigger evidence |
+| --- | --- | --- | --- |
+| superpowers:using-superpowers | SOURCE_PRESENT; start-conversation metadata | 7.0.1 | NOT_RUN |
+| superpowers:brainstorming | SOURCE_PRESENT; creative/behaviour planning metadata | 7.0.1 | NOT_RUN |
+| superpowers:executing-plans | SOURCE_PRESENT; implementation metadata | 7.0.1 | NOT_RUN |
+| superpowers:subagent-driven-development | SOURCE_PRESENT; independent plan-work metadata | 7.0.1 | NOT_RUN |
+| superpowers:finishing-a-development-branch | SOURCE_PRESENT; verified integration metadata | 7.0.1 | NOT_RUN |
+| skill-creator | SOURCE_PRESENT_AMBIGUOUS; two installed candidates | VERSION_UNVERIFIED | NOT_RUN |
+| skill-stocktake | NOT_INSTALLED_WITHIN_CHECKED_ROOTS | UNKNOWN | NOT_RUN |
+| skill-improver | NOT_INSTALLED_WITHIN_CHECKED_ROOTS | UNKNOWN | NOT_RUN |
+| Harness:Evolve | NOT_INSTALLED_WITHIN_CHECKED_ROOTS | UNKNOWN | NOT_RUN |
+| Harness:Harness | NOT_INSTALLED_WITHIN_CHECKED_ROOTS | UNKNOWN | NOT_RUN |
+
+The two skill-creator candidates are the system source under `.codex/skills`
+and the user source under `.agents/skills`; they are not certified equivalent.
+The five superpowers entries were read as source metadata under package7.0.1,
+not invoked. Missing-root metadata does not prove unsupported runtime features.
+
+## Evidence
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Current master assessment | 106 | W111 | requirement-owner-assessment | Master WMC-20261110-04, dependency trace and baseline648a78a26 | PASS | Requirement-owner and supplement tables;108/108 IDs checked, source trace counts verified; semantic/runtime completeness explicitly unverified | required | - |
+| Current inventory metadata | 106 | W111 | workspace-inventory-metadata | Current root c463e4ae5 plus nine explicit new public helpers/tests | PASS | Scan/validate/compare exit0; aggregates in Current inventory acquisition; semantic/render/runtime/restore receipt numerators remain0 | optional | - |
+| Current document verification | 106 | W111 | metadata-links-lifecycle | Scoped final documents | NOT_RUN | Awaiting actual documentation checks | required | - |
+| Document source verification | 106 | W111 | metadata-links-lifecycle | Current scoped documents after c463e4ae5 ownership reconciliation | PASS | Metadata selected12 violations0; corpus lifecycle0 and occupancy0; alignment908 documents/8253 links failures0, warnings0 | required | Current document verification |
+| Independent reconciliation review | 106 | W111 | independent-document-review | Scoped final diff | NOT_RUN | Awaiting read-only reviewer | required | - |
+| Final reconciliation review | 106 | W111 | independent-document-review | Current c463e4ae5 ownership, source-protection and document diff | PASS | Independent governance/document review approved; terminal TSK-0043 and TSK-0051 unchanged; current source implementation evidence remains SPEC-0270 | required | Independent reconciliation review |
+| Source implementation handoff | 106 | W111 | source-handoff | Final SPEC-0270 source at current c463e4ae5 plus task-owned diff | PASS | Memory/capacity/search/backup implementation; parent selected135 PASS and3 native NOT_RUN; branch coverage81.41 percent, combined89.125 percent; code/security approved, criterion acceptance remains with SPEC-0270 | optional | - |
+
+## Criterion Acceptance
+
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 106 | pending | - | - | SPEC-0212 TSK-0053 |
+
+## Review and Completion
+
+In progress. Narrow completed scopes remain protected; unresolved semantic,
+source, native, artifact and operational obligations keep exact owners and
+resume conditions. This Task cannot close another owner's criterion.
+
+## Related Documents
+
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Memory follow-up](../../0270-shared-memory-capacity-and-search/spec.md)
+- [Supply-chain successor](tsk-0052-supply-chain-evidence.md)
+- [Inventory data](../../../90.references/data/0096-workspace-inventory/README.md)

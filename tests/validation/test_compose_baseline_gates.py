@@ -2059,7 +2059,12 @@ class BackupContractTests(unittest.TestCase):
         init = script.split("    init)")[1].split(";;")[0]
         self.assertIn("already initialized; skipped", init)
         passthrough = script.split("    cmd)")[1]
-        self.assertIn("forget | prune)", passthrough)
+        self.assertIn(
+            "snapshots | stats | ls | cat | find | check | diff | dump | list | version)",
+            passthrough,
+        )
+        self.assertIn("cmd runs read-only commands only", passthrough)
+        self.assertIn('exec restic --no-lock "$@"', passthrough)
 
     def test_orchestrator_never_sources_env_and_checks_disk_separation(self) -> None:
         script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text(
@@ -2303,11 +2308,13 @@ docker() {
         script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text(
             encoding="utf-8"
         )
-        copy = script.index("restic-offsite copy")
+        copy = script.index("backup-run --target offsite")
         self.assertLess(script.index("restic check || "), copy)
         self.assertIn("offsite copy not configured", script)
         self.assertIn('[[ "$restic_ok" == true ]]', script)
-        self.assertRegex(script, r"restic-offsite copy\)\" \|\| \{[^}]*status=1")
+        self.assertRegex(
+            script, r"backup-run --target offsite\)\" \|\| \{[^}]*status=1"
+        )
         self.assertIn("restic-offsite check", script)
         self.assertIn("hyhome_backup_offsite_repo_bytes", script)
         rules = (
@@ -2332,7 +2339,8 @@ docker() {
         ]
         # Saved into staging before Restic reads it; the EXIT trap removes it.
         self.assertLess(
-            script.index("# Shared agent memory"), script.index("restic backup")
+            script.index("# Shared agent memory"),
+            script.index("backup-run --target state"),
         )
         harness = """set -euo pipefail
 status=0

@@ -15,7 +15,20 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from scripts.lib.ops.memory_capacity import MemoryCapacity
 from scripts.operations import agent_memory as memory
+
+
+def initialize_capacity(path):
+    MemoryCapacity(path).reconcile(
+        {
+            "schema_version": 1,
+            "complete": True,
+            "local_paths": [],
+            "external_snapshots": [],
+        }
+    )
+
 
 ROOT = Path(__file__).resolve().parents[3]
 CLI = ROOT / "scripts/operations/agent_memory.py"
@@ -43,6 +56,7 @@ class StoreTests(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.base = Path(directory.name)
         self.path = self.base / ".workspace-memory" / "memory.sqlite3"
+        initialize_capacity(self.path)
         self.connection = memory.connect(self.path)
         self.addCleanup(self.connection.close)
 
@@ -245,6 +259,7 @@ class StoreTests(unittest.TestCase):
         self.assertEqual([output], list(output.parent.iterdir()))
 
         restored = self.base / "restored" / "memory.sqlite3"
+        initialize_capacity(restored)
         memory.restore(output, restored)
         connection = memory.connect(restored)
         self.addCleanup(connection.close)
@@ -294,6 +309,7 @@ class StoreTests(unittest.TestCase):
         self.assertEqual([], failures)
         self.assertFalse(thread.is_alive())
         target = self.base / "restored" / "memory.sqlite3"
+        initialize_capacity(target)
         memory.restore(output, target)
         restored = memory.connect(target)
         try:
@@ -402,6 +418,7 @@ class StoreTests(unittest.TestCase):
         output = directory / "memory.sqlite3"
         memory.backup(self.connection, output)
         restored = self.base / "restored" / "memory.sqlite3"
+        initialize_capacity(restored)
         memory.restore(output, restored)
         connection = memory.connect(restored)
         self.addCleanup(connection.close)
@@ -416,12 +433,15 @@ class StoreTests(unittest.TestCase):
         )
         database.commit()
         database.close()
+        tampered.chmod(0o600)
         target = self.base / "fresh" / "memory.sqlite3"
+        initialize_capacity(target)
         with self.assertRaisesRegex(memory.MemoryStoreError, "schema differs"):
             memory.restore(tampered, target)
         self.assertFalse(target.exists())
 
         failing = self.base / "failing" / "memory.sqlite3"
+        initialize_capacity(failing)
         real_connect = sqlite3.connect
 
         def failing_source(database: object, *args: object, **kwargs: object):
@@ -435,7 +455,10 @@ class StoreTests(unittest.TestCase):
         with mock.patch.object(memory.sqlite3, "connect", side_effect=failing_source):
             with self.assertRaisesRegex(memory.MemoryStoreError, "no store was left"):
                 memory.restore(output, failing)
-        self.assertEqual([], list(failing.parent.iterdir()))
+        self.assertEqual(
+            {"capacity.sqlite3", "capacity.lock", "copy.lock"},
+            {p.name for p in failing.parent.iterdir()},
+        )
 
     def _backup_file(self) -> Path:
         write(self.connection, "gate", 0, "kept")
@@ -448,11 +471,16 @@ class StoreTests(unittest.TestCase):
     def test_restore_publishes_atomically_and_never_replaces_a_store(self) -> None:
         output = self._backup_file()
         target = self.base / "race" / "memory.sqlite3"
+        initialize_capacity(target)
         real_connect = sqlite3.connect
         seen: list[bool] = []
 
         def racing(database: object, *args: object, **kwargs: object):
-            if not kwargs.get("uri") and str(database) != ":memory:":
+            if (
+                not kwargs.get("uri")
+                and str(database) != ":memory:"
+                and Path(str(database)).name != "capacity.sqlite3"
+            ):
                 # The store path stays absent while the copy is built, and a
                 # session creating it meanwhile must win.
                 seen.append(target.exists())
@@ -464,11 +492,15 @@ class StoreTests(unittest.TestCase):
                 memory.restore(output, target)
         self.assertEqual([False], seen)
         self.assertEqual("other session", target.read_text())
-        self.assertEqual([target], list(target.parent.iterdir()))
+        self.assertEqual(
+            {target.name, "capacity.sqlite3", "capacity.lock", "copy.lock"},
+            {p.name for p in target.parent.iterdir()},
+        )
 
     def test_restore_reports_a_permission_failure(self) -> None:
         output = self._backup_file()
         target = self.base / "denied" / "memory.sqlite3"
+        initialize_capacity(target)
         with mock.patch.object(
             memory, "_private_directory", side_effect=PermissionError("denied")
         ):
@@ -537,6 +569,7 @@ class WorktreeStoreTests(unittest.TestCase):
                 "--owner",
                 "claude",
             )
+            initialize_capacity(main / ".workspace-memory" / "memory.sqlite3")
             written = self.cli(linked, *put, body="from the worktree")
             self.assertEqual(0, written.returncode, written.stderr)
             self.assertTrue((main / ".workspace-memory" / "memory.sqlite3").is_file())
@@ -620,6 +653,7 @@ class WorktreeStoreTests(unittest.TestCase):
                 "--source-ref",
                 json.dumps(reference),
             ]
+            initialize_capacity(main / ".workspace-memory" / "memory.sqlite3")
             written = self.cli(main, *args, body="reviewed claim")
             self.assertEqual(0, written.returncode, written.stderr)
             self.assertEqual(0, self.cli(linked, "get", "current").returncode)

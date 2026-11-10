@@ -1,6 +1,6 @@
 ---
 title: "Repository Support Staging"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -14,7 +14,9 @@ created: "2026-09-27"
 
 `_workspace/repo-support`는 비밀이 아닌 저장소 지원 산출물을 잠시 두는
 공간이며 Git이 무시합니다. agent 작업, migration, dry-run, 분석에서 생기는
-짧은 수명의 파일을 둘 수 있는 `_workspace` 안의 유일한 승인 위치입니다.
+짧은 수명의 지원 파일을 둡니다. 진단 산출물은 같은 `_workspace`의
+`diagnostics/`가 소유하며, 두 위치의 용도와 보존 경계는 상위 README를
+따릅니다.
 
 이 디렉터리는 활성 문서 stage, archive, 운영 폴더, 런타임 설정, 장기 증거
 보관소가 아닙니다.
