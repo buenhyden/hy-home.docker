@@ -38,7 +38,8 @@
   "ignorePaths": [
     "docs/98.archive/**",
     "**/fixtures/**",
-    "labs/**"
+    "labs/**",
+    "infra/**/compose.window-*.override.yml"
   ],
 
   "timezone": "Asia/Seoul",
