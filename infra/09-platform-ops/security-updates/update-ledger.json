@@ -4296,7 +4296,7 @@
         "discovered_at": "2026-10-26T10:32:14.784990+00:00",
         "next_validation_due": "2026-10-27T00:00:00+00:00",
         "reason": "Mature v5.37.0 archive/commit/hash and exact zero-fuzz owned OIDC patch compatibility verified; existing Go1.26.4 satisfies declared Go1.26.3 floor. Existing SDK/base debt preserved; no new image built or accepted.",
-        "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1\u21921.59.0 native/recovery acceptance remain separate before deployment.",
+        "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1→1.59.0 native/recovery acceptance remain separate before deployment.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -4339,7 +4339,7 @@
         "candidate": "v5.37.0",
         "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
         "reason": "Mature v5.37.0 archive/commit/hash and exact zero-fuzz owned OIDC patch compatibility verified; existing Go1.26.4 satisfies declared Go1.26.3 floor. Existing SDK/base debt preserved; no new image built or accepted.",
-        "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1\u21921.59.0 native/recovery acceptance remain separate before deployment.",
+        "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1→1.59.0 native/recovery acceptance remain separate before deployment.",
         "evidence_refs": [
           "/tmp/hyhome-v30-r27-public/github-observations-retry.json",
           "current selected source files",
@@ -32717,7 +32717,7 @@
           "owner": "SEC01",
           "discovered_at": "2026-10-26T10:32:14.784990+00:00",
           "next_validation_due": "2026-10-27T00:00:00+00:00",
-          "reason": "Official update-center version/date2026-10-12 and OCI imageOct17 agree;7daysoak maturedOct24. Official same-year direct upgrade and PG14\u201318 support checked, producer entrypoint matches current secret wrapper. DB/plugin/OIDC/health/restore remain NOT_RUN.",
+          "reason": "Official update-center version/date2026-10-12 and OCI imageOct17 agree;7daysoak maturedOct24. Official same-year direct upgrade and PG14–18 support checked, producer entrypoint matches current secret wrapper. DB/plugin/OIDC/health/restore remain NOT_RUN.",
           "exit_condition": "Apply only leased source pin and unchanged-control regression with exact index/amd64 verification, derived/source-ledger parity and independent final diff review; runtime follows separate approved target.",
           "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
           "service_owner_role": "Existing service owner named by current_public_assessment"
@@ -32759,7 +32759,7 @@
           "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
           "candidate": "26.10.0.133078-community",
           "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
-          "reason": "Official update-center version/date2026-10-12 and OCI imageOct17 agree;7daysoak maturedOct24. Official same-year direct upgrade and PG14\u201318 support checked, producer entrypoint matches current secret wrapper. DB/plugin/OIDC/health/restore remain NOT_RUN.",
+          "reason": "Official update-center version/date2026-10-12 and OCI imageOct17 agree;7daysoak maturedOct24. Official same-year direct upgrade and PG14–18 support checked, producer entrypoint matches current secret wrapper. DB/plugin/OIDC/health/restore remain NOT_RUN.",
           "exit_condition": "Apply only leased source pin and unchanged-control regression with exact index/amd64 verification, derived/source-ledger parity and independent final diff review; runtime follows separate approved target.",
           "eligible_after_7_days": "product 2026-10-19 (date only); selected OCI tag 2026-10-24T04:53:38.905627Z",
           "evidence_refs": [

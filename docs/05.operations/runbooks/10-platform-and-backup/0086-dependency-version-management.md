@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Runbook"
-version: "0.3.1"
+version: "0.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0086"
 parent_ids:
@@ -63,6 +63,8 @@ created: "2026-09-19"
    전체 `name:tag@sha256` 참조로 같은 저장소의 이미지가 바뀐 기존 행만 검증되지
    않은(`UNKNOWN`/`NOT_RUN`) 상태로 받아들이고, 그 외 변경은 종료 코드 2로 거부하며
    CI가 불일치를 잡는다. 사람이 고친 Compose 변경에는 자동으로 실행되지 않는다.
+   이 ledger 갱신이 정상 경로이며 ledger를 손으로 고치지 않는다. 규칙은
+   [POL-0086](../../policies/10-platform-and-backup/0086-dependency-version-management.md#renovate-운영-규칙)이 소유한다.
 3. 지원되는 Node 또는 승인된 도구 container에서 공식 strict validator를 실행한다.
    도구를 실행하려고 임의로 설치하거나 네트워크 updater를 시작하지 않는다.
 
@@ -78,6 +80,14 @@ created: "2026-09-19"
 4. 관련 build source와 문서 계약, 기존 동기화 테스트의 누락·중복·제거·digest·
    local/custom·서로 다른 source version 사례를 검증한다. 현재 gate가 요구하는
    범위만 실행하며 Compose image projection PASS로 build pin을 대체하지 않는다.
+
+### Renovate PR 처리
+
+1. Dependency Dashboard에서 속도 제한 대기 항목은 필요한 것만 체크한다.
+2. 보안 영향이 큰 PR부터 한 번에 하나씩 머지한다. 머지 뒤 남은 PR은 Renovate를 실행해 rebase한다.
+3. PR을 손으로 닫지 않는다. 닫으면 그 버전이 무시되므로 Renovate가 자동으로 닫게 둔다.
+4. 머지는 적용이 아니다. HOME 적용(recreate)은 별도 승인으로 진행하고 local 빌드 이미지는 CI가 검증하지 않으므로
+   해당 서비스 Runbook으로 확인한다(n8n font-noto 사고, #895).
 
 ### Dependabot 보안 업데이트 중단 (owner 단계)
 
