@@ -1,8 +1,8 @@
 ---
 title: "Workspace Inventory Task"
-version: "0.2.5"
+version: "0.2.6"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-10"
 layer: "specs"
@@ -442,6 +442,23 @@ under the leaf's 15-minute budget; the other 12 leaves did not run. The cause
 is unconfirmed. Criteria 51 to 55 stay pending: the five full-gate FAIL rows
 still need a passing full profile, and no further run is authorized.
 
+### Owner disposition 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) reviewed criteria 51 to 55 and set them to
+not-required. Their content passed in bounded source checks, the 720/720
+selected-leaf run and the D01 revalidation. The remaining requirement, a
+passing repository-wide local full profile, does not test P01 content and
+stopped on a runner timeout in its one approved run. A runner fix is separate
+CI work. With every criterion not-required, the owner closed this Task.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0040 | draft | ready | #inputs-and-authorization |
+| SPEC-0212-TSK-0040 | ready | in-progress | #work-allocation |
+| SPEC-0212-TSK-0040 | in-progress | completed | #owner-disposition-2026-11-10 |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -494,13 +511,17 @@ still need a passing full profile, and no further run is authorized.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 51 | pending | Initial identity, Boundary verification, Document boundary contracts, Final selected boundary checks | SOURCE_READY; bounded source checks PASS, final P12/operator acceptance remains separate | SPEC-0212 TSK-0040 |
-| 52 | pending | Inventory verification, Follow-up render disposition, Final selected inventory checks | SOURCE_READY; selected local checks PASS; one readiness fixture is a leaf IMPLEMENT_GAP, no runtime acceptance | SPEC-0212 TSK-0040 |
-| 53 | pending | Acceptance reuse, Document reuse contracts, Final selected reuse checks | SOURCE_READY; scoped historical acceptance preserved; final P12/operator acceptance remains separate | SPEC-0212 TSK-0040 |
-| 54 | pending | Ownership verification, Document ownership contracts, Final selected ownership checks | SOURCE_READY; source leases assigned and reviewed, actual operator identities remain explicit unknowns | SPEC-0212 TSK-0040 |
-| 55 | pending | Official research, Follow-up official research, Final selected research checks | SOURCE_READY for inventory changes; product-specific research and final acceptance scopes remain separate | SPEC-0212 TSK-0040 |
+| 51 | not-required | Initial identity, Boundary verification, Document boundary contracts, Final selected boundary checks | Not required: owner @buenhyden retired this criterion on 2026-11-10. Its content is evidenced by the bounded boundary checks and the 720/720 selected-leaf run; the only missing item is the repository-wide 14-leaf local full profile, which checks hooks, documents, CI and release surfaces rather than P01 and stopped on a runner timeout in its one approved run. The full-gate FAIL and NOT_RUN rows stay as recorded. | SPEC-0212 TSK-0040 |
+| 52 | not-required | Inventory verification, Follow-up render disposition, Final selected inventory checks | Not required: owner @buenhyden retired this criterion on 2026-11-10. Its content is evidenced by the inventory verification, the render disposition, the 720/720 selected-leaf run and the D01 ledger revalidation; the only missing item is the repository-wide 14-leaf local full profile, which checks hooks, documents, CI and release surfaces rather than P01 and stopped on a runner timeout in its one approved run. The full-gate FAIL and NOT_RUN rows stay as recorded. | SPEC-0212 TSK-0040 |
+| 53 | not-required | Acceptance reuse, Document reuse contracts, Final selected reuse checks | Not required: owner @buenhyden retired this criterion on 2026-11-10. Its content is evidenced by the reuse contracts and the 720/720 selected-leaf run; the only missing item is the repository-wide 14-leaf local full profile, which checks hooks, documents, CI and release surfaces rather than P01 and stopped on a runner timeout in its one approved run. The full-gate FAIL and NOT_RUN rows stay as recorded. | SPEC-0212 TSK-0040 |
+| 54 | not-required | Ownership verification, Document ownership contracts, Final selected ownership checks | Not required: owner @buenhyden retired this criterion on 2026-11-10. Its content is evidenced by the ownership verification and the 720/720 selected-leaf run; the only missing item is the repository-wide 14-leaf local full profile, which checks hooks, documents, CI and release surfaces rather than P01 and stopped on a runner timeout in its one approved run. The full-gate FAIL and NOT_RUN rows stay as recorded. | SPEC-0212 TSK-0040 |
+| 55 | not-required | Official research, Follow-up official research, Final selected research checks | Not required: owner @buenhyden retired this criterion on 2026-11-10. Its content is evidenced by the official research rows and the 720/720 selected-leaf run; the only missing item is the repository-wide 14-leaf local full profile, which checks hooks, documents, CI and release surfaces rather than P01 and stopped on a runner timeout in its one approved run. The full-gate FAIL and NOT_RUN rows stay as recorded. | SPEC-0212 TSK-0040 |
 
 ## Review and Completion
+
+On 2026-11-10 the owner (@buenhyden) set criteria 51 to 55 to not-required and
+closed this Task; see Owner disposition 2026-11-10. The paragraphs below are
+kept as the state they recorded at the time.
 
 The bounded source, tests, CI registration and reusable ledger are implemented.
 At initial delivery, seven authored source/test fingerprints matched the
