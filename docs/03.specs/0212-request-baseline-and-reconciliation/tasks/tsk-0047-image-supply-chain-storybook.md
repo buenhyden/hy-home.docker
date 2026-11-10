@@ -1,6 +1,6 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -225,6 +225,22 @@ resolves only through a later PASS and a same-day rerun still fails. Criterion 8
 2.46.6, so the cancelled 2.45.7 pulls and the unrun 2.45.7 verification no
 longer bind it. For criterion 88 the accepted moderate findings are recorded
 by a high-threshold audit that passes.
+
+### HOME image deployments 2026-11-10
+
+The owner approved two HOME image deployments on 2026-11-10; neither changes
+a criterion acceptance. #905: mailpit v1.33.0, crawl4ai sidecars on Python
+3.15.2, ollama 0.40.16, oauth2-proxy v7.15.6, mlflow 3.18.0 and n8n and
+n8n-worker 2.46.6; mng-valkey and dev-valkey run 9.1.3. #858: grafana 13.3.0,
+alloy v1.21.3, pyroscope 2.4.3, dozzle v11.4.2, alertmanager v0.34.2, and loki
+and tempo rebuilt on bases 3.7.9 and 3.1.1 (local tags keep their old names).
+Before the Grafana recreate its data volume was copied to
+`hy-home-infra_grafana-data-pre-13.3.0` (525.4 MB) with Grafana stopped. All
+seven services are healthy with no restart; Prometheus shows 31 of 32 active
+targets up, the down one being the opt-in `flower`. Alerts that were firing
+before the deploy stay as they were; Grafana updated its bundled cloudwatch
+plugin from the network at start. openbao and openbao-agent still run 2.7.1 r1
+until the RUN-0105 window.
 
 ## Evidence
 

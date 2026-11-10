@@ -1,10 +1,10 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.12"
+version: "0.1.13"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0046"
 parent_ids:
@@ -597,6 +597,9 @@ fix them. Most HOME targets are scraped and have dashboards. Five were not:
 | HOME coverage gaps | 83 | W88 | Live label and target readback, Gatus probe, `test_gatus_oidc`, Compose suites, operations catalog | Five services named above | PASS | Agent panels added, Open WebUI probed, pushgateway stopped with 0 groups; 171 tests OK. | required | - |
 | Reboot: OpenBao Agent restart | 85 | W90 | RUN-0103 `agent-restart` and audit readback | Issuer `4f2e7f9b`, journal `rolled_back` | FAIL | Helper sink container exceeded 20 s under I/O pressure (52 s measured); no server write. | required | - |
 | Reboot: OpenBao Agent restart rerun | 85 | W90 | RUN-0103 `agent-restart` and audit readback | Same issuer after I/O eased (container start 11-22 s) | PASS | `issue rc=0`; journal `complete`; Agent healthy and authenticated at 06:32:40Z; health script exit 0; all rendered outputs present with 0640/0600. | required | Reboot: OpenBao Agent restart |
+| Companion selection rerun | 82 | W87 | Source and synthetic selection and CLI checks | `compose-start.py plan --target` for `n8n-worker`, `airflow-scheduler` and `grafana` at `main` `11e41fb43`; `tests.lib.ops.test_compose_start` | PASS | All three plans exit 0; `grafana` pulls `loki` and `prometheus` as `optional-dependency`, `airflow-scheduler` adds provision job `airflow-init`; 25/25 tests OK. Plan only, nothing started. Independent re-review of post-`1c128b43` changes is not claimed. | required | Companion selection |
+| Launcher candidate rerun | 82 | W87 | Public target plan and synthetic launcher suite | `compose-start.py plan --target` for `n8n-worker`, `airflow-scheduler` and `grafana` at `main` `11e41fb43`; `tests.lib.ops.test_compose_start` | PASS | The active optional dependency the earlier candidate omitted is now in the closure (`optional-dependency:grafana` rows); exit 0 and 25/25 tests OK. | required | Launcher candidate |
+| Document metadata rerun | 85 | W90 | `check-document-metadata.py --mode check-changed` | This Task with explicit base `origin/main` (merge base `11e41fb43`) | PASS | `check-changed` selected 1 document, 0 violations, finished in 3 min 32 s on 2026-11-10. | required | Document metadata |
 
 ## Criterion Acceptance
 
