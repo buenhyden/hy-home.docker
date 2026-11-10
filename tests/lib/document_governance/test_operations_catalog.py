@@ -2548,26 +2548,17 @@ services:
 
     def test_fixed_safety_category_relabels_are_rejected(self) -> None:
         root = self._repo(
-            services_b=(
-                "  z:\n    profiles: [beta]\n"
-                "  tofu:\n    profiles: [iac]\n"
-                "  vault:\n    profiles: [legacy-vault]\n"
-            ),
+            services_b=("  z:\n    profiles: [beta]\n  tofu:\n    profiles: [iac]\n"),
             rows=(
                 "| `alpha` | domain | a | `x`, `y` | 2 |",
                 "| `dev` | baseline | a | `x` | 1 |",
                 "| `beta` | domain | b | `z` | 1 |",
                 "| `iac` | domain | iac | `tofu` | 1 |",
-                "| `legacy-vault` | capability | vault | `vault` | 1 |",
             ),
         )
         messages = [message for _, _, message in self._findings(root)]
         self.assertIn(
             "profile iac must use safety category automation, found domain", messages
-        )
-        self.assertIn(
-            "profile legacy-vault must use safety category lifecycle, found capability",
-            messages,
         )
 
     def test_home_rejects_forbidden_profiles_and_dependency_escape(self) -> None:

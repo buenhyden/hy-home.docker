@@ -42,11 +42,12 @@ REGISTRY_PATH_EXCEPTIONS = {
     "OBS-013": "secrets/observability/prometheus/prometheus_api_password.txt",
     "SEC-003": "secrets/security/openbao/openbao_unseal_keys.txt",
 }
-# SPEC-0262: a root file whose only consumer moved to a LAB-only copy. IAM-013
-# stays because it feeds the OpenBao import
-# (consumer-migration/oidc-client-secrets.sh). SPEC-0263 retired the other
+# SPEC-0262 and the ADR-0062 amendment: a root file whose only consumer moved
+# to a LAB-only copy. IAM-011 and IAM-013 stay because they feed the OpenBao
+# import (consumer-migration/oidc-client-secrets.sh). SPEC-0263 retired the other
 # relocated rows into aliases of their LAB-* copies.
 LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS = {
+    "IAM-011": "secrets/auth/open-webui/openwebui_oidc_client_secret.txt",
     "IAM-013": "secrets/auth/superset/superset_oidc_client_secret.txt",
 }
 CUTOVER_REGISTRY_PATH_EXCEPTIONS = {

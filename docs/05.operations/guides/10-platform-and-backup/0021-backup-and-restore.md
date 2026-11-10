@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -38,7 +38,7 @@ HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackR
 | `mng-pg` 내부 pgBackRest | management PostgreSQL cluster의 physical backup, 연속적인 WAL archive, point-in-time recovery | 다른 모든 engine; database별 logical export |
 | Restic (`restic` job) | `sets/state-include.txt`에 allowlist된 file-safe tree의 encrypted, deduplicated snapshot, consistent export, `secrets/`와 `.env` | allowlist되지 않은 모든 것, 특히 live engine directory(PostgreSQL, Valkey, Kafka, OpenBao Raft, TSDB, log, search, LAB store)와 ComfyUI model |
 | `restic-offsite` job | 로컬 Restic repository 두 개(state set의 `pgbackrest/`와 `dev-pgbackrest/` 포함)를 Cloudflare R2 repository 하나로 `restic copy`, 원격 `check` | 로컬 쓰기, 자동 원격 snapshot 삭제(owner-run 승인 prune는 RUN-0021) |
-| `backup-sqlite-export` job | Online Backup API를 통한 Grafana, Gatus, Open WebUI SQLite database의 consistent copy | 다른 SQLite 파일 |
+| `backup-sqlite-export` job | Online Backup API를 통한 Grafana, Gatus SQLite database의 consistent copy(Open WebUI는 2026-11-10 LAB 이전으로 제외) | 다른 SQLite 파일 |
 | Host orchestrator `hyhome-backup.sh` | 순서, single-run lock, cross-disk preflight, PostgreSQL globals와 Valkey RDB export | retention delete (`forget-prune`) |
 
 실행 중인 PostgreSQL data directory의 복사본은 database backup이 아니다.
@@ -75,7 +75,7 @@ Restic은 낮은 block-I/O weight를 받는다. Spark는 LAB(`labs/lakehouse/`)�
 | 저장소 | 측정한 입력 | 범위·한계 |
 | --- | --- | --- |
 | pgBackRest (SSD) | 전체 database 96 MB; WAL 약 14 MB/h (압축 전 330 MB/day; `archive_timeout`마다 강제 전환되는 segment는 zstd가 제거하는 0으로 채워짐) | full backup 2개와 그 differential 및 WAL(약 2주); 계획 추정치는 2 GB 미만이며 기록된 크기로 대체될 예정 |
-| Restic state (SSD) | allowlist된 tree (Open WebUI upload, Airflow DAG/config/plugin 등; loopback registry는 다시 pull·build할 수 있는 archive라 2026-10-20부터 제외) 및 export 약 10 MB | deduplicated; `forget-prune`까지 일일 변경분만큼 증가하며 2026-09-22 당시 연간 5 GB 미만 추정; 09-30 관측으로 폐기된 예측 |
+| Restic state (SSD) | allowlist된 tree (Airflow DAG/config/plugin 등; loopback registry는 다시 pull·build할 수 있는 archive라 2026-10-20부터 제외) 및 export 약 10 MB | deduplicated; `forget-prune`까지 일일 변경분만큼 증가하며 2026-09-22 당시 연간 5 GB 미만 추정; 09-30 관측으로 폐기된 예측 |
 | Restic host (data disk) | `secrets/`와 `.env`, 수 킬로바이트 | 무시할 수준 |
 | Staging | 실행 중에만 export | 종료마다 비워짐 |
 

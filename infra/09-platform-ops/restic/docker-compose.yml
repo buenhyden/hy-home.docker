@@ -199,11 +199,6 @@ services:
         bind:
           create_host_path: false
       - type: bind
-        source: ${DEFAULT_AI_MODEL_DIR}/open-webui
-        target: /src/open-webui
-        bind:
-          create_host_path: false
-      - type: bind
         source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/staging
         target: /exports
         bind:

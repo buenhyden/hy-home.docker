@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Policy"
-version: "1.6.0"
+version: "1.6.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -40,7 +40,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | Management Valkey: OAuth2 Proxy session과 Airflow/n8n broker/cache | `mng-valkey-data` → `${DEFAULT_MANAGEMENT_DIR}/valkey`; AOF 활성화 | Point-in-time RDB stream(`valkey-cli --rdb -`)을 export staging으로, 이후 Restic snapshot; live AOF 디렉터리는 제외; queued work를 replay할지 discard할지 기록 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; queued-job semantics는 incident 승인 필요 | Synthetic RDB export/reload rehearsal 2026-09-22; HOME-data restore 없음. Recovery: [RUN-0028](../../runbooks/05-databases-and-storage/0028-management-database.md) |
 | OpenBao secrets와 Raft state | `openbao-data` → `${DEFAULT_SECURITY_DIR}/openbao/data` | 별도 offline custody로 authenticated Raft snapshot; seal/recovery material은 해당 security runbook을 따른다 | Barrier encryption은 encrypted backup custody를 대체하지 않는다; daily 30일, monthly 1년 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. OpenBao security operations가 recovery를 소유한다. `openbao-agent-data`와 `openbao-agent-out`은 생성된 secret material을 담으며 일반 archive 밖에 있다. |
 | OpenBao Agent 생성 auth/render state | `openbao-agent-data` → `${DEFAULT_SECURITY_DIR}/openbao/agent`; `openbao-agent-out` → `${DEFAULT_SECURITY_DIR}/openbao/out` | rendered secret output은 일반적으로 backup하지 않는다. agent를 재인증하고 restore된 OpenBao에서 다시 render해 recovery한다; non-secret template source는 별도로 보존한다 | Output은 secret을 담고 source-at-rest encryption은 미검증; 일반 retention 없음 | derived output에는 data RPO가 적용되지 않는다; recovery target 4시간, 미검증 | No rehearsal. Security operations가 재인증, template 검증, stale output의 안전한 폐기를 소유한다. |
-| Open WebUI application state | `open-webui` → `${DEFAULT_AI_MODEL_DIR}/open-webui` | `backup-sqlite-export`가 SQLite Online Backup API로 integrity check와 함께 `webui.db`를 복사; upload와 기타 파일은 Restic으로 직접; live database 파일과 cache는 제외 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 8시간; planning target, 미검증 | Synthetic WAL-database export rehearsal 2026-09-22; HOME-data restore 없음. AI operations subject가 isolated validation을 소유한다. |
+| Open WebUI application state | 2026-11-10 LAB 이전으로 HOME 백업 대상 아님; `${LAB_DATA_DIR}/open-webui/data` | HOME Restic·`backup-sqlite-export`에서 제외. HOME volume `${DEFAULT_AI_MODEL_DIR}/open-webui`는 퇴역 승인 전 최종 일관 backup이 필요([RUN-0057](../../runbooks/15-labs/0057-open-webui.md#home-retirement-steps)) | 이전 snapshot은 BKP-002 Restic 보존 정책을 따름 | 해당 없음 | 2026-09-22 synthetic export rehearsal은 이력 |
 | SeaweedFS object와 filer metadata | `seaweedfs-{master,volume,filer}` → `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` | Orchestrator가 vacuum을 일시 중지하고, `fs.meta.save`로 filer metadata를 export하며, Restic이 volume과 master tree를 읽고, 종료 시 vacuum을 재개한다; live leveldb2 filer store는 file-copy하지 않는다 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12; 8 GiB state budget에 포함; `loki-bucket`·`tempo-bucket` collection volume file은 제외 | RPO 24시간, RTO 8시간; planning target | Isolated rehearsal 2026-09-22: 빈 store로의 restore가 동일한 object를 반환; 아직 HOME data 없음. GDE/RUN-0024가 validation을 소유한다. |
 | Gatus availability history | `gatus-data` → `${DEFAULT_OBSERVABILITY_DIR}/gatus`; WAL mode의 `/data/gatus.db`에 SQLite | uncheckpointed WAL page를 포함한 `backup-sqlite-export` Online Backup API 복사, 이후 Restic | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; planning target, 미검증 | Synthetic WAL export rehearsal 2026-09-22; HOME-data restore 없음. Gatus operations subject가 validation을 소유한다. |
 | 공유 에이전트 memory 저장소(Claude·Codex) | main checkout의 `.workspace-memory/memory.sqlite3`; rollback journal의 SQLite, Git이 무시 | `hyhome-backup.sh`가 `scripts/operations/agent_memory.py backup`(SQLite Online Backup API와 integrity check)으로 staging에 복사, 이후 Restic; 저장소가 없으면 건너뜀 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; planning target, 미검증 | 합성 저장소 harness 시험 2026-10-13; HOME 실행·복원 없음. 규칙은 [환경 제약 5절](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory), 절차는 [RUN-0021](../../runbooks/10-platform-and-backup/0021-backup-and-restore.md)이 소유한다. |

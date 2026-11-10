@@ -1,10 +1,10 @@
 ---
 title: "Ollama Operations Policy"
-version: "2.0.3"
+version: "2.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0056"
 parent_ids:
@@ -26,7 +26,7 @@ Ollama 추론 엔진 운영 전반:
 - GPU/VRAM 자원 통제
 - 추론 계층 변경 승인 및 검증
 
-- **Systems**: `ollama`, `ollama-exporter`, `open-webui`
+- **Systems**: `ollama`, `ollama-exporter`. Open WebUI LAB은 승인된 endpoint로만 접근한다.
 - **Environments**: 로컬·개발·홈랩과 운영 환경에 준하는 rehearsal
 
 ## Rules

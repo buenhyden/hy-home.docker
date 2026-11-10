@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.10"
+version: "1.0.11"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -16,20 +16,20 @@ created: "2026-05-17"
 
 ## Overview
 
-이 런북은 Ollama 추론 계층 장애에 대한 즉시 실행 절차를 제공한다. GPU 미인식, VRAM OOM, API 장애를 신속히 진단·복구하고 상위 서비스(Open WebUI) 영향도를 최소화한다.
+이 런북은 Ollama 추론 계층 장애에 대한 즉시 실행 절차를 제공한다. GPU 미인식, VRAM OOM, API 장애를 신속히 진단·복구하고 상위 HOME 소비자 영향도를 최소화한다.
 
 > 범위: Ollama 추론 서비스
 
 - Ollama 추론 가용성을 빠르게 복구한다.
 - GPU 경로 이상과 리소스 고갈 문제를 표준 절차로 처리한다.
-- 복구 후 Open WebUI 연동 상태를 검증한다.
+- 복구 후 HOME 소비자 연동 상태를 검증한다.
 
 ## Trigger
 
 - Ollama API(`/api/tags`, `/api/generate`) 호출 실패.
 - 컨테이너 내부 GPU 미인식 또는 CPU fallback 발생.
 - 모델 로드 시 VRAM OOM으로 추론 실패.
-- Open WebUI에서 모델 목록 미표시.
+- 소비자에서 모델 목록 미표시.
 
 ## Prerequisites
 
@@ -50,7 +50,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] 호스트 `nvidia-smi` 정상 여부 확인
 - [ ] `ollama` 컨테이너 healthcheck 확인
 - [ ] 최근 모델 변경/배포 이력 확인
-- [ ] Open WebUI 영향 범위 확인
+- [ ] HOME 소비자 영향 범위 확인
 
 ### Initial Health & API Check
 
@@ -87,12 +87,14 @@ docker compose exec ollama ollama list
 
 - 운영 기준 모델 태그가 존재하는지 확인한다.
 
-### Open WebUI Dependency Recheck
+### Consumer Dependency Recheck
 
 ```bash
-# Open WebUI 컨테이너에서 Ollama 접근 확인
-docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
+# HOME 소비자(Open Notebook) 컨테이너에서 Ollama 접근 확인
+docker compose exec open_notebook curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 ```
+
+Open WebUI는 2026-11-10부터 HOME network 밖의 독립 LAB이며 승인된 endpoint로만 Ollama에 닿는다.
 
 ### Scoped Upgrade Check and Rollback
 
@@ -106,7 +108,7 @@ docker compose --project-name hy-home-infra --profile ollama ps ollama
 curl -f http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/api/tags
 ```
 
-재생성 뒤 version, health, 기존 digest, loopback 포트, GPU 요청, `ai_net`/`edge_net`, exporter와 Open WebUI backend `/api/tags`를 확인한다. decision 확인은 Guide의 synthetic `tev1:0.8b` 요청과 `keep_alive: 0`을 사용한다.
+재생성 뒤 version, health, 기존 digest, loopback 포트, GPU 요청, `ai_net`/`edge_net`, exporter와 HOME 소비자 `/api/tags`를 확인한다. decision 확인은 Guide의 synthetic `tev1:0.8b` 요청과 `keep_alive: 0`을 사용한다.
 
 GPU warm-up entrypoint(`cat /usr/lib/ollama/cuda_v12/* > /dev/null; exec /bin/ollama serve`)는 경로가 없어도 조용히 넘어가므로, 재생성 전에 새 image pin에 `cuda_v12` 경로가 있는지, 재생성 뒤 GPU가 실제로 선택됐는지 확인한다. GTX 1060(compute 6.1)은 CUDA 12 runtime을 쓴다. `OLLAMA_LLM_LIBRARY=cuda_v12`는 discovery를 미리 읽은 `cuda_v12`로 한정한다. 0.40.12는 이 설정 없이 읽지 않은 `cuda_v13`·`vulkan`을 먼저 시험해 30초 watchdog을 넘기고 CPU로 fallback했다. 새 image에서 `cuda_v12` 이름이 바뀌면 entrypoint와 이 변수를 함께 고친다. entrypoint 변경은 별도 승인 대상이다.
 
@@ -128,7 +130,7 @@ docker logs ollama 2>&1 | grep 'msg="inference compute"'
 - **Prompt Rollback**: 모델별 기본 프롬프트를 직전 안정값으로 복원
 - **Model Fallback**: operator approval을 받은 뒤에만 경량 모델로 전환
 - **Tool Disable / Revoke**: 문제 모델 호출 경로 일시 차단
-- **Eval Re-run**: 추론 smoke test + Open WebUI 연동 테스트 재실행
+- **Eval Re-run**: 추론 smoke test + HOME 소비자 연동 테스트 재실행
 - **Trace Capture**: 장애 시간대 API/리소스 로그 보존
 
 ## Verification
@@ -136,14 +138,14 @@ docker logs ollama 2>&1 | grep 'msg="inference compute"'
 - [ ] `curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags` 성공
 - [ ] `docker compose exec ollama nvidia-smi` 성공
 - [ ] 기본 추론 요청(`/api/generate`) 성공
-- [ ] Open WebUI에서 모델 조회/채팅 성공
+- [ ] HOME 소비자에서 모델 조회 성공
 
 ### Observability and Evidence Sources
 
 - **Signals**:
   - GPU 사용률 급락(미인식), VRAM 과점유, API 에러율 증가
 - **Evidence to Capture**:
-  - `ollama`/`open-webui` 로그
+  - `ollama`와 소비자 로그
   - 수행 명령과 결과
   - 복구 전후 지표 스냅샷
   - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태는 관련 Task/Incident에 남긴다
@@ -170,7 +172,7 @@ docker logs ollama 2>&1 | grep 'msg="inference compute"'
 
 1. 이미지 digest, 드라이버·runtime 버전, 모델 목록, manifest·blob checksum, 모델 출처·라이선스, Compose profile, 대표 추론 요청과 기대 불변 조건을 기록한다. 모델 받기와 활성 추론을 중지한 뒤 `ollama-data`의 일관된 중지 상태 복사본이나 승인된 스토리지 snapshot을 만든다.
 2. 공개 경로가 없는 별도 프로젝트와 격리 모델 경로에 복원한다. 모델 catalog(`models/manifests`, `manifests-v2`)는 restic state snapshot의 `/src/state/ollama-models/` 아래에서 복원한다. SPEC-0246 이전 snapshot에는 `/src/state/volumes/ai/ollama/models/` 아래에 있다. 재구축을 선택하면 모델을 이름으로 다시 받고, 받은 digest가 복원한 manifest와 같은지 확인한다. 다르면 upstream tag가 바뀐 것이므로 받지 않은 것으로 보고 승인을 받는다. 라이선스·checksum도 확인한다.
-3. 호환되는 GPU·runtime 설정으로 Ollama를 기동하고 `/api/tags`, 모델 digest, GPU 인식, 대표 추론 한 건, exporter 수집을 확인한다. Open WebUI는 격리 endpoint에 대해서만 시험한다.
+3. 호환되는 GPU·runtime 설정으로 Ollama를 기동하고 `/api/tags`, 모델 digest, GPU 인식, 대표 추론 한 건, exporter 수집을 확인한다. 소비자는 격리 endpoint에 대해서만 시험한다.
 4. 불일치하면 격리 서비스를 중지하고 로그·checksum을 보존한 뒤 변경하지 않은 백업·원본 manifest로 돌아간다. 운영 volume이나 경로 교체에는 별도 변경 승인이 필요하다.
 
 ### Escalation
