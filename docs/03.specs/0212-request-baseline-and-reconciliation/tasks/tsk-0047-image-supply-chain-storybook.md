@@ -1,6 +1,6 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -170,6 +170,30 @@ Recorded 2026-11-10; no criterion is accepted.
 4. Remaining NOT_RUN: cgroup/resource measurement, Storybook a11y/MCP
    regression, rollback rehearsal.
 
+### Owner review 2026-11-10
+
+The owner asked for the Storybook audit and the n8n candidate verification to be
+analyzed and reviewed. No criterion is accepted by this review.
+
+- Storybook audit: `npm audit --package-lock-only --json` ran on copies of
+  `projects/storybook/nextjs/package.json` and `package-lock.json` (Storybook
+  10.6.5 lock) at `27cd872ea`, without touching `node_modules`. It completed
+  with exit 1: 744 dependencies, 13 moderate, 0 high, 0 critical. All 13 trace
+  to two advisories in development tooling (eslint and the Storybook Vite build
+  chain): `glob` GHSA-3g3m-2fjr-6pw4 and `minimatch` GHSA-g3hv-75wg-m249; the
+  `eslint` and `typescript-eslint` chain has a fix (`eslint@9.39.5`), the
+  Storybook chain has none yet. The earlier ERROR was the isolated
+  environment's DNS failure, not an advisory result. The 10.6.3 clean install
+  and isolated regression PASS rows describe the superseded lock; the 10.6.5
+  lock has only this audit.
+- n8n candidate: 2.45.7 existed for GHSA-prmc-fg87-r4gh. The advisory's
+  patched ranges are `>= 2.45.5`, `>= 2.46.1` and `>= 3.0.1`; the repository pin
+  and both HOME containers run 2.46.6, which #895 rebuilt and recreated, so the
+  2.45.7 bounded pulls and candidate verification no longer have a subject. The
+  private-workflow and SSRF/egress review that the boundaries above require
+  before an activation did not precede the 2.46.6 deployment; it stays open and
+  applies to the next n8n activation (2.46.7 after its soak).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -197,14 +221,16 @@ Recorded 2026-11-10; no criterion is accepted.
 | Upstream supply negative observations | 89 | W94 | Exact-subject absence/error observation | Runners image/SLSA and n8n CycloneDX | FAIL | Runners signature exit 10, SLSA exit 1 and n8n CycloneDX exit 1; Valkey signing identity/issuer was not assessable. | required | - |
 | Valkey local SBOM observation | 89 | W94 | Offline Syft scan | Canonical amd64 candidate | PASS | CycloneDX 1.7 SBOM, Alpine 3.24.3 and 716 components, exit 0. Locally generated SBOM is not publisher attestation; Grype lacked offline DB. | required | - |
 | Selected candidate verification | 89 | W94 | Registry artifact and bounded isolated test review | Candidate writer packet | NOT_RUN | Valkey functional isolation is narrow; n8n and per-artifact verification are incomplete, so no deployment or rollback conclusion follows. | required | - |
+| Storybook audit rerun | 88 | W93 | `npm audit` | Copies of the Storybook 10.6.5 `package.json` and `package-lock.json` at `27cd872ea` | FAIL | Exit 1: 13 moderate, 0 high, 0 critical over 744 dependencies; two development-tooling advisories (`glob` GHSA-3g3m-2fjr-6pw4, `minimatch` GHSA-g3hv-75wg-m249). See Owner review 2026-11-10. | required | - |
+| n8n advisory fixed-range readback | 87 | W92 | Official advisory patched-range readback | GHSA-prmc-fg87-r4gh and the n8n 2.46.6 pin and HOME containers at `27cd872ea` | PASS | Patched `>= 2.46.1`; repository and HOME run 2.46.6, so the 2.45.7 candidate is superseded. SSRF/egress and private-workflow review stays open. | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 86 | pending | Ledger repair regression, Latest-version gate | Public observations improve source mapping but incomplete fresh lookups, unmapped rows and artifact evidence remain. | SPEC-0212 TSK-0047 |
-| 87 | pending | Valkey candidate isolation, n8n candidate preparation | Exact source, candidate artifact and isolated/recovery evidence remain incomplete; deferred n8n work also needs private-workflow and SSRF/egress review. | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
-| 88 | pending | Storybook clean lock install, Storybook isolated regressions, Storybook audit | Isolated lock regression passed; current runtime, remote device and audit remain separate. | SPEC-0212 TSK-0047 |
+| 87 | pending | Valkey candidate isolation, n8n candidate preparation, n8n advisory fixed-range readback | Exact source, candidate artifact and isolated/recovery evidence remain incomplete. The n8n 2.45.7 candidate is superseded by the deployed 2.46.6, which is in the advisory's patched range; the next n8n activation still needs private-workflow and SSRF/egress review. | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
+| 88 | pending | Storybook clean lock install, Storybook isolated regressions, Storybook audit, Storybook audit rerun | Isolated lock regression passed for the superseded 10.6.3 lock. The 10.6.5 audit reports 13 moderate development-tooling findings and no high or critical; the owner decides whether to accept them or wait for fixes. Current runtime and remote device remain separate. | SPEC-0212 TSK-0047 |
 | 89 | pending | Supply-chain gate, Selected candidate verification | No cross-artifact inference; unavailable signing, provenance and SBOM material remains explicit. | SPEC-0212 TSK-0047 |
 
 ## Review and Completion
