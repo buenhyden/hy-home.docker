@@ -150,7 +150,8 @@
         "valkey/valkey": "external"
       },
       "images": [
-        "valkey/valkey:9.1.2-alpine"
+        "valkey/valkey:9.1.2-alpine",
+        "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b"
       ],
       "compose_files": [
         "infra/04-data/dev-db/docker-compose.yml",
@@ -161,13 +162,13 @@
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
-            "valkey/valkey:9.1.2-alpine"
+            "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b"
           ]
         },
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "valkey/valkey:9.1.2-alpine"
+            "valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b"
           ]
         },
         {
