@@ -11,7 +11,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
-    image: postgres:18.6-alpine
+    image: postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395
     container_name: mlflow-db-provision
     hostname: mlflow-db-provision
     group_add:

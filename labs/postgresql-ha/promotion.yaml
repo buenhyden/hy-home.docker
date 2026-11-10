@@ -19,8 +19,6 @@ replaces:
   - dev-perf-provision
   consumers:
   - infra/04-data/dev-db/docker-compose.yml
-  - infra/05-messaging/kafka/docker-compose.yml
-  - infra/05-messaging/kafka/connect/debezium/postgres-connector.json
   - infra/06-observability/grafana/dashboards/Infrastructure/postgresql.json
   - infra/06-observability/prometheus/config/prometheus.yml
   - infra/06-observability/prometheus/config/prometheus.dev.yml

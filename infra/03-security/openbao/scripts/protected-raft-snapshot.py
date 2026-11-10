@@ -23,7 +23,7 @@ from pathlib import Path
 
 HOST = "openbao.hy.home.arpa"
 PARENT_NAME = "protected-maintenance.py"
-PARENT_SHA256 = "b6b820b6561558020842376a06729f7663de3410188a544a6662024c4575568c"
+PARENT_SHA256 = "b15ddff27618627745b5f3ffe712fb6aeb83fe74d94ae7ef55370dac0de2cde4"
 ARCHIVE_NAME = "protected-snapshot-archive.py"
 ARCHIVE_SHA256 = "48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868"
 ARCHIVE_API = ("ArchiveBlocked", "MAX_COMPRESSED", "validate_archive")
@@ -34,7 +34,13 @@ PERIOD = 720 * 60 * 60
 MAX_COMPRESSED = 32 * 1024 * 1024
 REQUEST_SECONDS = 300
 TTL_MARGIN = 60
-VERSIONS = frozenset({"2.6.2", "2.7.1+hyhome.go1.27.3.net0.60.0.r1"})
+VERSIONS = frozenset(
+    {
+        "2.6.2",
+        "2.7.1+hyhome.go1.27.3.net0.60.0.r1",
+        "2.7.1+hyhome.go1.27.3.net0.60.0.r2",
+    }
+)
 LOOKUP = "auth/token/lookup-self"
 RENEW = "auth/token/renew-self"
 SEAL = "sys/seal-status"

@@ -87,7 +87,7 @@ OpenBao의 `healthy`는 unseal만, Agent의 `healthy`는 token과 template 출�
 
 | 관찰한 증상 | 먼저 비교할 안전한 관찰 | 분기와 기존 절차 |
 | --- | --- | --- |
-| 여러 웹 도메인 모두 실패 | Docker 응답, Traefik 상태, 보고된 TLS·접속 실패 범위 | daemon부터 응답하지 않으면 host owner에게 전달. gateway만 실패하면 [Traefik](../02-gateway-and-networking/0013-traefik.md); Nginx 대안을 선택했다면 [Nginx](../02-gateway-and-networking/0011-nginx.md). 포트 충돌·network 의문은 [0077](../02-gateway-and-networking/0077-ip-address-management.md) |
+| 여러 웹 도메인 모두 실패 | Docker 응답, Traefik 상태, 보고된 TLS·접속 실패 범위 | daemon부터 응답하지 않으면 host owner에게 전달. gateway만 실패하면 [Traefik](../02-gateway-and-networking/0013-traefik.md). 포트 충돌·network 의문은 [0077](../02-gateway-and-networking/0077-ip-address-management.md) |
 | 웹은 열리나 여러 로그인이 실패·반복 | Keycloak·관리 DB 상태; proxy 경로인지 앱 자체 로그인인지 | Keycloak/DB 이상이면 [Keycloak](../03-identity-and-access/0014-keycloak.md)과 [관리 DB](../05-databases-and-storage/0028-management-database.md). proxy 경로만 실패하면 Valkey와 [OAuth2 Proxy](../03-identity-and-access/0015-oauth2-proxy.md). 한 앱의 권한 실패만 있으면 [앱 인증 통합](../../guides/03-identity-and-access/0079-application-auth-integration.md)을 거쳐 해당 앱 Runbook |
 | 재부팅 뒤 secret 의존 기능 실패, OpenBao는 healthy | sealed 여부와 Agent 인증·출력 갱신의 기존 확인 기록 | 기록이 없거나 실패하면 healthy로 통과하지 않는다. [RUN-0098](0098-cold-start-and-reboot.md)에서 [OpenBao](../04-security-and-secrets/0085-openbao.md) owner-run 단계로 전달; SecretID·token을 여기서 읽지 않음 |
 | Airflow·n8n 화면은 열리나 작업 정체 | 관리 DB·Valkey 상태, 초기화 작업 종료, 해당 worker/runner 상태 | 공유 기반 이상이면 [관리 DB](../05-databases-and-storage/0028-management-database.md), 한 작업 경로만 실패하면 [Airflow](../08-workflows-and-automation/0050-airflow.md) 또는 [n8n](../08-workflows-and-automation/0053-n8n.md); 재실행·queue 삭제는 선택하지 않음 |

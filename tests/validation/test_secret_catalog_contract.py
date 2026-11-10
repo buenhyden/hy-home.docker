@@ -30,9 +30,7 @@ class SecretCatalogContractTests(unittest.TestCase):
         named = entries["CACHE-027"]
         self.assertEqual("secrets/db/mng-valkey/n8n_password.txt", named["source_path"])
         self.assertEqual("ACTIVE_KEEP", named["disposition"])
-        self.assertIn(
-            "infra/04-data/mng-db/docker-compose.n8n-acl.yml", named["consumers"]
-        )
+        self.assertIn("infra/04-data/mng-db/docker-compose.yml", named["consumers"])
         self.assertIn("infra/07-workflow/n8n/docker-compose.yml", named["consumers"])
         self.assertNotEqual(entries["CACHE-007"]["source_path"], named["source_path"])
         self.assertIn(

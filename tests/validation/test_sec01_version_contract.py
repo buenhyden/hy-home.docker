@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-OPENBAO = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r1@sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8"
+OPENBAO = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0"
 
 # Renovate bumps these pins, so Compose and the SEC01 ledger row are the source of
 # truth; the test keeps the repository, the full tag@sha256 form and the ledger row.
@@ -132,7 +132,7 @@ class CandidateContract(unittest.TestCase):
         package = ROOT / "infra/04-data/opensearch"
         dockerfile = (package / "Dockerfile").read_text()
         self.assertIn(
-            "ARG OPENSEARCH_BASE_IMAGE=opensearchproject/opensearch:3.8.0\n"
+            "ARG OPENSEARCH_BASE_IMAGE=opensearchproject/opensearch:3.8.0@sha256:fafe3fc3587088674669235575aa166228c48bdb940294a8cdbbc1da75236a40\n"
             "FROM ${OPENSEARCH_BASE_IMAGE}",
             dockerfile,
         )
@@ -159,7 +159,7 @@ class CandidateContract(unittest.TestCase):
 
     def test_opensearch_root_selection_does_not_override_lab_builds(self):
         package = ROOT / "infra/04-data/opensearch"
-        dashboards = "opensearchproject/opensearch-dashboards:3.9.0@sha256:4bdb8ded547ce7f4c379a10261f1b4aad58726900c215be570a7d1fe86f2a7d8"
+        dashboards = "opensearchproject/opensearch-dashboards:3.9.0@sha256:256d4cea5928868ac09bca642a0ac8285a2b7e4b7fdd45c4ec06e75a5cf3184c"
         root = yaml.safe_load((package / "docker-compose.yml").read_text())
         lab = yaml.safe_load(
             (ROOT / "labs/opensearch-cluster/docker-compose.yml").read_text()
@@ -452,6 +452,7 @@ class CandidateContract(unittest.TestCase):
         self.assertTrue(matches("infra/03-security/openbao/docker-compose.yml"))
         self.assertFalse(matches("labs/comfyui.yml"))
         self.assertIn("labs/**", config["ignorePaths"])
+        self.assertIn("infra/03-security/openbao/build/**", config["ignorePaths"])
 
 
 if __name__ == "__main__":

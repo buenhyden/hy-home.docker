@@ -1,10 +1,10 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -46,7 +46,9 @@ TimescaleDB Community 기반 `dev-pg`, 승인된 내부 fixture의 계정·DB를
 `dev-valkey`를 소유한다. 지표는 exporter 둘이 Prometheus에 제공한다(`dev-pg-exporter`는 `dev-pg`와 같은 네 profile, `dev-valkey-exporter`는 `dev-data`만). `dev-pg-monitor-provision`이 통계·설정 읽기 권한만 가진 `dev_pg_monitor` role을 만들고, `dev-pg-exporter`(`9187`)가 이 role로 접속한다. `dev-valkey-exporter`(`9121`)는 읽기 전용 `devmonitor` ACL 사용자로 접속한다. 두 exporter는 관리자 비밀을 받지 않고 각자의 monitor secret(`dev_pg_monitor_password`, `dev_valkey_monitor_password`)만 쓴다. 두 exporter는 `dev_data_net`과 `obs_net`에 붙고 호스트 포트는 없다. DB 서비스는 `dev_data_net`과 독립 bind-backed state(`dev-pg-data`, `dev-valkey-data`)를 사용한다. `dev-pg`는 `dev-data`, `analytics-engineering`, `cdc`, `quality-results`에서, `dev-valkey`는 `dev-data`에서만 선택되며, host port는 `dev-pg`의 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}`뿐이다. 내부 fixture
 `hyhome-platform` project의 `platform_dev` database role은
 `dev_pg_platform_migrator_password`, `dev_pg_platform_runtime_password`,
-`dev_pg_platform_reader_password`를 쓴다.
+`dev_pg_platform_reader_password`를 쓴다. 함수 전용 `hyhome-opsflow` project의 로그인 네 개는
+`dev_pg_opsflow_{migrator,ingest,notifier,reader}_password`를 쓰며, 같은 provision job에 mount만 되어 있다
+(entrypoint는 `platform.json`; Opsflow 적용은 owner 승인 아래 `opsflow.json`으로 별도 실행한다).
 image, profile, host exposure, resource limit, mount 및 secret reference는 Compose와
 각 엔진 README가 권위다.
 

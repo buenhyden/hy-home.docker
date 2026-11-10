@@ -23,7 +23,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-ai-high
-    image: ollama/ollama:0.40.15@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761
+    image: ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592
     container_name: ollama
     hostname: ollama
     read_only: false
@@ -81,6 +81,7 @@ services:
     networks:
       ollama_ingress_net: {}
       ai_net: {}
+      n8n_ollama_net: {}
       # openclaw_default:
     healthcheck:
       test: [ 'CMD-SHELL', 'ollama list >/dev/null 2>&1 || exit 1' ]
@@ -97,7 +98,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: lucabecker42/ollama-exporter:1.0.3
+    image: lucabecker42/ollama-exporter:1.0.3@sha256:9fb1f4c5bc4ff819eb13e148debeb7fd474a4c8956d83d39928ea22d95d3de5c
     container_name: ollama-exporter
     hostname: ollama-exporter
     read_only: true

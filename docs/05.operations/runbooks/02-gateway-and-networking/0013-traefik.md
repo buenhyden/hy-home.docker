@@ -31,7 +31,7 @@ created: "2026-05-17"
 ## Prerequisites
 
 저장소 루트, 승인된 Docker context의 `traefik`만 대상으로 한다. `core`/`dev`/
-`local` 중 기존 선택과 Nginx 비활성, host bind/80·443, root network, 인증서와
+`local` 중 기존 선택, host bind/80·443, root network, 인증서와
 BasicAuth Secret 참조, `${DEFAULT_SECURITY_DIR}/openbao/tls/ca.pem` 존재를 확인한다. Docker socket은 host 제어 접근이므로 전체 API
 응답이나 secret mount 내용을 증거로 출력하지 않는다. config/image 변경·restart는
 서비스 영향과 이전 config/certificate/image identity가 확인된 별도 승인이 필요하다.

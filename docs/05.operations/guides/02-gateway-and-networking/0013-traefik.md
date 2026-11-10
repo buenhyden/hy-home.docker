@@ -48,8 +48,7 @@ created: "2026-05-10"
 `traefik`은 HOME이며 `core`/`dev`/`local`로 선택한다. host bind는
 `HOST_LAN_BIND_IP`, host 포트는 `HTTP_HOST_PORT`/`HTTPS_HOST_PORT`에서 정한다.
 [정적 설정](../../../../infra/01-gateway/traefik/config/traefik.yml)의 내부 80/443과
-Compose의 `HTTP_PORT`/`HTTPS_PORT`는 일치해야 한다. OPTIONAL Nginx와 동시에
-같은 host 포트를 사용하지 않는다. Compose `depends_on`은 없지만 실제 요청은
+Compose의 `HTTP_PORT`/`HTTPS_PORT`는 일치해야 한다. Compose `depends_on`은 없지만 실제 요청은
 대상 앱·OAuth2 Proxy·Keycloak과 공유 DB/Valkey readiness에 의존한다.
 
 [동적 middleware](../../../../infra/01-gateway/traefik/dynamic/middleware.yml)의
