@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier Architecture Description"
-version: "1.3.0"
+version: "1.4.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "architecture"
 artifact_id: "AD-0001"
 parent_ids:
@@ -17,9 +17,9 @@ created: "2026-03-26"
 ## Overview
 
 The Gateway tier is the single ingress of `hy-home.docker`. Traefik provides
-Docker-label service discovery, TLS termination and shared middleware; Nginx is
-an alternative leaf for special-path routing. Requirement owners, implementers
-and operators share this view.
+Docker-label service discovery, TLS termination and shared middleware. The
+former alternative Nginx leaf was retired on 2026-11-10. Requirement owners,
+implementers and operators share this view.
 
 ## Scope
 
@@ -40,12 +40,13 @@ and operators share this view.
 - `traefik` (`infra/01-gateway/traefik/`) joins `edge_net`, `obs_net` and the
   dedicated ingress networks; its static config is `config/traefik.yml` and its
   file provider loads `dynamic/` (middleware, TLS, file routes).
-- `nginx` (`infra/01-gateway/nginx/`) joins `edge_net` and `object_net` and
-  serves the `/oauth2/`, `/app/`, `/keycloak/` and SeaweedFS `/cdn/` paths with
-  a local proxy cache.
 
-The two leaves are alternative host listeners. Nginx is not chained behind
-Traefik in the current Compose.
+Traefik is the only gateway leaf. The alternative Nginx leaf (selected only by
+the `nginx` profile; `/oauth2/`, `/keycloak/` and SeaweedFS `/cdn/` paths) was
+retired on 2026-11-10 by owner decision: no Nginx container existed in HOME and
+the seven-day Traefik router metrics showed every live route on Traefik. The
+SeaweedFS `cdn-bucket` and its anonymous read identity remain defined and have
+no gateway consumer.
 
 ## Runtime and Deployment
 
@@ -53,7 +54,6 @@ Traefik in the current Compose.
 
 ```text
 Internet -> Traefik (TLS termination, middleware) -> service container
-Internet -> Nginx (TLS termination, path rewrite) -> Keycloak / SeaweedFS CDN   (nginx profile only)
 ```
 
 The gateway forwards or rewrites request metadata (headers, path) and does not
@@ -62,11 +62,9 @@ the gateway keeps no state of its own.
 
 ### Deployment View
 
-The root Compose includes both leaves unconditionally; a profile decides which
-starts. `traefik` is selected by `core`, `dev` or `local`; `nginx` only by
-`nginx`, which also starts SeaweedFS. Both publish host ports 80/443, so they
-must not be selected together. The Traefik image is pinned by digest; Nginx uses
-`nginx:alpine`.
+The root Compose includes the Traefik leaf unconditionally; a profile decides
+whether it starts. `traefik` is selected by `core`, `dev` or `local` and
+publishes host ports 80/443. The Traefik image is pinned by digest.
 
 ## Quality and Risks
 
@@ -74,7 +72,7 @@ must not be selected together. The Traefik image is pinned by digest; Nginx uses
 
 - **Security:** HSTS (`stsSeconds: 31536000`), rate limiting and request
   buffering come from `dynamic/middleware.yml`. Traefik sets no TLS minimum
-  version, so Go defaults apply; Nginx allows TLS 1.2 and 1.3.
+  version, so Go defaults apply.
 - **Reliability:** the Docker provider adds and removes routes as containers
   change health and state.
 - **Scalability:** a new service is routed by Docker labels only.
@@ -85,18 +83,14 @@ must not be selected together. The Traefik image is pinned by digest; Nginx uses
 
 ### Risks
 
-- Selecting `nginx` and a Traefik profile together collides on host ports
-  80/443.
-- `nginx:alpine` is an unpinned floating tag, unlike the digest-pinned Traefik
-  image.
+- Traefik is the single ingress, so a Traefik outage affects every routed UI.
 
 ### Evolution
 
-A Traefik TLS minimum version or an Nginx retirement needs a Stage 03 change
-and, for the hybrid itself, a superseding ADR.
+A Traefik TLS minimum version needs a Stage 03 change.
 
 ## Related Documents
 
 - [REQ-0001 Gateway requirements](../../01.requirements/0001-gateway.md)
-- [ADR-0001 Traefik and Nginx hybrid](../decisions/0001-traefik-nginx-hybrid.md)
+- [ADR-0001 Traefik and Nginx hybrid](../decisions/0001-traefik-nginx-hybrid.md) (Nginx half retired 2026-11-10)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)

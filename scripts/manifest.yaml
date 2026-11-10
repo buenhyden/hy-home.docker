@@ -47,7 +47,6 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/guides/02-gateway-and-networking/0011-nginx.md
   - docs/05.operations/guides/02-gateway-and-networking/0012-edge-routing-stack.md
   disposition: retain
   successor: null

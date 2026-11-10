@@ -4512,16 +4512,6 @@ SEAWEEDFS_SERVICES = (
 class SeaweedfsContractTests(unittest.TestCase):
     """Static S06 contracts; SeaweedfsRehearsalTests proves them at runtime."""
 
-    def test_nginx_cdn_is_a_read_only_prefix_to_cdn_bucket(self) -> None:
-        conf = (ROOT / "infra/01-gateway/nginx/config/nginx.conf").read_text(
-            encoding="utf-8"
-        )
-        block = conf[conf.index("location ^~ /cdn/ {") :]
-        block = block[: block.index("\n        }\n")]
-        self.assertIn("limit_except GET HEAD { deny all; }", block)
-        self.assertIn("proxy_pass http://seaweedfs_s3/cdn-bucket/;", block)
-        self.assertNotIn("minio", conf)
-
     def services(self) -> dict[str, dict]:
         import yaml
 

@@ -98,7 +98,7 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 | Path | Purpose |
 | --- | --- |
 | [공통 운영](01-common/README.md) | 기동 선택, 명명·환경·버전 관리와 작업 공간의 공통 전제를 확인한다. |
-| [게이트웨이와 네트워크](02-gateway-and-networking/README.md) | Traefik 기본 gateway, 선택 Nginx와 네트워크·포트의 역할을 이해한다. |
+| [게이트웨이와 네트워크](02-gateway-and-networking/README.md) | Traefik gateway와 네트워크·포트의 역할을 이해한다. |
 | [인증과 접근](03-identity-and-access/README.md) | Keycloak·OAuth2 Proxy의 SSO, OIDC와 기계 인증 경계를 이해한다. |
 | [보안과 비밀값](04-security-and-secrets/README.md) | OpenBao, 제한 자격 전달과 독립 복구 자료의 역할을 이해한다. |
 | [데이터베이스와 저장소](05-databases-and-storage/README.md) | DEV·MNG 데이터 소유권과 PostgreSQL·Valkey·객체 저장의 용도를 구분한다. |

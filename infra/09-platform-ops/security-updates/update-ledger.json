@@ -59,7 +59,6 @@
     "n8n-task-runner-worker",
     "n8n-worker",
     "neo4j",
-    "nginx",
     "node-exporter",
     "oauth2-proxy",
     "ollama",
@@ -102,11 +101,7 @@
   "include_inputs": [
     {
       "path": "docker-compose.yml",
-      "sha256": "157a921d035786050c53c174bb1ca257c50c6e9d59dd8c5fd14485e1107571f5"
-    },
-    {
-      "path": "infra/01-gateway/nginx/docker-compose.yml",
-      "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+      "sha256": "9f4abff3bf57c3cb9069ca24539137ecf1dc8d4f07adad45660cc44f5e6c481a"
     },
     {
       "path": "infra/01-gateway/traefik/docker-compose.yml",
@@ -150,7 +145,7 @@
     },
     {
       "path": "infra/04-data/seaweedfs/docker-compose.yml",
-      "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+      "sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f"
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
@@ -8484,145 +8479,6 @@
       }
     },
     {
-      "service": "nginx",
-      "scope": "root",
-      "compose_file": "infra/01-gateway/nginx/docker-compose.yml",
-      "current_declared": "nginx:alpine",
-      "profiles_declared": [
-        "nginx"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "1.31.8",
-      "target_version": "1.31.8",
-      "channel": "mainline",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
-      "release_url": "https://nginx.org/en/download.html",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "UNKNOWN",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_CHANNEL_AND_SOAK",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "alpine is current mainline alias, not stable. Changing to1.30.6 is a channel switch; selected candidate image pushed22Oct, normal7days incomplete.",
-        "exit_condition": "Confirm intended stable channel with existing exception owner; after29Oct exact digest and nginx-t on tracked config; gateway remainsTraefik.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "nginx:alpine",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "nginx"
-      ],
-      "supplier_lookup_blocker": "Mutable alpine image tag not pinned; stable1.30.6 versus mainline1.31.7 requires image/digest decision.",
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "COMPONENT_RELEASES_VERIFIED_IMAGE_MAPPING_REQUIRED",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/nginx"
-        ],
-        "remaining_barrier": "Mutable alpine image tag not pinned; stable1.30.6 versus mainline1.31.7 requires image/digest decision.",
-        "next_owner": "SEC01 release/artifact evidence owner and nginx service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED",
-        "legacy_supplier_lookup_blocker": "Historical source-only interpretation preserved verbatim; current dated remaining_barrier supersedes its release-channel assessment only."
-      },
-      "current_public_assessment": {
-        "supplier_group": "nginx",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "vendorstable1.30.6;mainline1.31.8",
-        "decision": "DEFER_CHANNEL_AND_SOAK",
-        "reason": "alpine is current mainline alias, not stable. Changing to1.30.6 is a channel switch; selected candidate image pushed22Oct, normal7days incomplete.",
-        "exit_condition": "Confirm intended stable channel with existing exception owner; after29Oct exact digest and nginx-t on tracked config; gateway remainsTraefik.",
-        "eligible_after_7_days": "2026-10-29T16:50:56.683777Z",
-        "evidence_refs": [
-          "nginx-downloads",
-          "nginx-current-tag",
-          "nginx-stable-oci",
-          "https://nginx.org/en/download.html",
-          "https://raw.githubusercontent.com/docker-library/official-images/master/library/nginx",
-          "https://hub.docker.com/v2/repositories/library/nginx/tags/1.30.6-alpine"
-        ],
-        "fact_checked_at": "2026-10-26T09:45:12.544894+00:00",
-        "service": "nginx",
-        "compose_file": "infra/01-gateway/nginx/docker-compose.yml",
-        "current_declared": "nginx:alpine",
-        "resolved_source": {
-          "image": "nginx:alpine",
-          "build": null,
-          "chain": [
-            "infra/01-gateway/nginx/docker-compose.yml#nginx",
-            "infra/common-optimizations.yml#template-infra-readonly-low"
-          ]
-        },
-        "existing_target_version": "1.30.5",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00",
-        "selected_component": {
-          "latest": "1.31.8",
-          "current_source_target": "1.31.8",
-          "channel": "mainline",
-          "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
-        },
-        "alternate_vendor_stable": "1.30.6",
-        "version_kind": "Source alias mainline resolution from official-images; runtime config/installed version not observed."
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "1.30.5",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "nginx:alpine",
-      "target_build_materials": [],
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
-      "current_target_artifact_binding": {
-        "source_version": "1.31.8",
-        "source_image": "nginx:alpine",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
-      }
-    },
-    {
       "service": "node-exporter",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
@@ -12408,7 +12264,6 @@
         "obs",
         "logs",
         "tracing",
-        "nginx",
         "mlops",
         "data-science",
         "lakehouse"
@@ -12453,7 +12308,7 @@
       "upstream_reported_tag": "2.37.12",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "amazon/aws-cli:2.37.12",
@@ -12527,7 +12382,6 @@
         "obs",
         "logs",
         "tracing",
-        "nginx",
         "mlops",
         "data-science",
         "lakehouse"
@@ -12590,7 +12444,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -12672,7 +12526,6 @@
         "obs",
         "logs",
         "tracing",
-        "nginx",
         "mlops",
         "data-science",
         "lakehouse"
@@ -12735,7 +12588,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -12801,7 +12654,6 @@
         "obs",
         "logs",
         "tracing",
-        "nginx",
         "mlops",
         "data-science",
         "lakehouse"
@@ -12864,7 +12716,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -12930,7 +12782,6 @@
         "obs",
         "logs",
         "tracing",
-        "nginx",
         "mlops",
         "data-science",
         "lakehouse"
@@ -12993,7 +12844,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -29608,6 +29459,194 @@
           }
         }
       ]
+    },
+    {
+      "source_revision": "8f13443868cdb9900f4279f22b58451285e749f3",
+      "refreshed_at": "2026-11-10T12:00:00.000000+00:00",
+      "revision_scope": "nginx gateway retirement; source files have reviewed uncommitted edits",
+      "removed_inputs": [
+        "infra/01-gateway/nginx/docker-compose.yml"
+      ],
+      "removed_services": [
+        "nginx"
+      ],
+      "meaning": "The owner retired infra/01-gateway/nginx on 2026-11-10: it was an alternative gateway selected only by the nginx profile, no nginx container exists in HOME, and Traefik serves all HOME routing. Its original ROOT row is preserved in historical_lab_entries with current_scope removed. Only ROOT membership, include hashes and the SeaweedFS profile list changed. No new vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "8f13443868cdb9900f4279f22b58451285e749f3",
+      "refreshed_at": "2026-11-10T02:09:59.892932+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "aabf0d08fbb40aec3f1575cbcd65a2fdf4baa97234526a66ba96a2fe89533e03",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "157a921d035786050c53c174bb1ca257c50c6e9d59dd8c5fd14485e1107571f5"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "00ed3dbee1fd4e8440ca1c8a273450401dd214f8a34df1b3819c649ea9c4019f"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/08-ai/open-webui/docker-compose.yml",
+          "sha256": "84fb9ffe43c5988732c42e02dffc4dd0c894f35cb0eea7c504a127fc8ac9961c"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "docker-compose.yml",
+        "infra/04-data/seaweedfs/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "seaweedfs-buckets",
+          "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-filer",
+          "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-master",
+          "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-s3",
+          "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-volume",
+          "source_input_sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        }
+      ],
+      "meaning": "2 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 5 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {
@@ -33787,6 +33826,151 @@
         },
         "candidate_evidence_scope": "Reviewed current source and public producer/artifact facts only; all new image build/Native/security/restore/HOME acceptance remain separate."
       }
+    },
+    {
+      "service": "nginx",
+      "current_scope": "removed",
+      "current_compose_file": null,
+      "disposition": "RETIRED",
+      "original_root_row": {
+        "service": "nginx",
+        "scope": "root",
+        "compose_file": "infra/01-gateway/nginx/docker-compose.yml",
+        "current_declared": "nginx:alpine",
+        "profiles_declared": [
+          "nginx"
+        ],
+        "build_source": null,
+        "current_running": [],
+        "runtime_presence": "NOT_OBSERVED",
+        "latest_version": "1.31.8",
+        "target_version": "1.31.8",
+        "channel": "mainline",
+        "checked_at": "2026-10-26T09:45:12.544894+00:00",
+        "release_url": "https://nginx.org/en/download.html",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": "UNKNOWN",
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "DEFER_CHANNEL_AND_SOAK",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+          "next_validation_due": "2026-10-27T00:00:00+00:00",
+          "reason": "alpine is current mainline alias, not stable. Changing to1.30.6 is a channel switch; selected candidate image pushed22Oct, normal7days incomplete.",
+          "exit_condition": "Confirm intended stable channel with existing exception owner; after29Oct exact digest and nginx-t on tracked config; gateway remainsTraefik.",
+          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "service_owner_role": "Existing service owner named by current_public_assessment"
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [],
+        "current_image_ids": [],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "nginx:alpine",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+        "source_input_sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+        "official_supplier_lookup_refs": [
+          "nginx"
+        ],
+        "supplier_lookup_blocker": "Mutable alpine image tag not pinned; stable1.30.6 versus mainline1.31.7 requires image/digest decision.",
+        "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+        "official_release_assessment": {
+          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+          "release_status": "COMPONENT_RELEASES_VERIFIED_IMAGE_MAPPING_REQUIRED",
+          "release_fact_refs": [
+            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/nginx"
+          ],
+          "remaining_barrier": "Mutable alpine image tag not pinned; stable1.30.6 versus mainline1.31.7 requires image/digest decision.",
+          "next_owner": "SEC01 release/artifact evidence owner and nginx service build/migration/recovery owner",
+          "source_target_security_native_deployment": "UNCHANGED",
+          "legacy_supplier_lookup_blocker": "Historical source-only interpretation preserved verbatim; current dated remaining_barrier supersedes its release-channel assessment only."
+        },
+        "current_public_assessment": {
+          "supplier_group": "nginx",
+          "owner": "SEC01 and existing service owner",
+          "review_at": "2026-10-27",
+          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "candidate": "vendorstable1.30.6;mainline1.31.8",
+          "decision": "DEFER_CHANNEL_AND_SOAK",
+          "reason": "alpine is current mainline alias, not stable. Changing to1.30.6 is a channel switch; selected candidate image pushed22Oct, normal7days incomplete.",
+          "exit_condition": "Confirm intended stable channel with existing exception owner; after29Oct exact digest and nginx-t on tracked config; gateway remainsTraefik.",
+          "eligible_after_7_days": "2026-10-29T16:50:56.683777Z",
+          "evidence_refs": [
+            "nginx-downloads",
+            "nginx-current-tag",
+            "nginx-stable-oci",
+            "https://nginx.org/en/download.html",
+            "https://raw.githubusercontent.com/docker-library/official-images/master/library/nginx",
+            "https://hub.docker.com/v2/repositories/library/nginx/tags/1.30.6-alpine"
+          ],
+          "fact_checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "service": "nginx",
+          "compose_file": "infra/01-gateway/nginx/docker-compose.yml",
+          "current_declared": "nginx:alpine",
+          "resolved_source": {
+            "image": "nginx:alpine",
+            "build": null,
+            "chain": [
+              "infra/01-gateway/nginx/docker-compose.yml#nginx",
+              "infra/common-optimizations.yml#template-infra-readonly-low"
+            ]
+          },
+          "existing_target_version": "1.30.5",
+          "assessed_at": "2026-10-26T10:32:14.784990+00:00",
+          "selected_component": {
+            "latest": "1.31.8",
+            "current_source_target": "1.31.8",
+            "channel": "mainline",
+            "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
+          },
+          "alternate_vendor_stable": "1.30.6",
+          "version_kind": "Source alias mainline resolution from official-images; runtime config/installed version not observed."
+        },
+        "historical_target_artifact_binding": {
+          "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+          "fields": {
+            "target_version": "1.30.5",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN"
+          },
+          "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+        },
+        "target_source_image": "nginx:alpine",
+        "target_build_materials": [],
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+        "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+        "current_target_artifact_binding": {
+          "source_version": "1.31.8",
+          "source_image": "nginx:alpine",
+          "status": "UNBOUND_CURRENT_TARGET",
+          "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        }
+      }
     }
   ],
   "root_scope_reconciliation": {
@@ -37271,11 +37455,11 @@
     "current_public_assessment_ref": "release-lookups.json#/root_official_refresh/public_metadata_continuations/1"
   },
   "p08_public_release_observations": {
-    "root_service_denominator": 94,
+    "root_service_denominator": 93,
     "source_query_denominator": 61,
     "observed_source_count": 60,
     "failed_source_count": 1,
-    "services_with_related_source": 80,
+    "services_with_related_source": 79,
     "services_without_related_source": [
       "blog-ingestion",
       "crawl4ai-loopback",
@@ -38230,9 +38414,7 @@
         "checked_at_utc": "2026-11-02T22:16:19Z",
         "source_cache_freshness": "today",
         "result": "OBSERVED",
-        "related_root_services": [
-          "nginx"
-        ],
+        "related_root_services": [],
         "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
         "raw_receipt": "NOT_SAVED",
         "freshness_verified": false,
@@ -38376,7 +38558,7 @@
         "n8n-valkey",
         "oauth2-proxy-valkey"
       ],
-      "meaning": "SPEC-0269 removed the idle n8n main task runner after the observation; it had no related source in this batch, so the observation rows, counts of related services, tags and timestamps are unchanged. ADR-0062 decision 10 then removed kafka-rest-proxy; it is dropped from the related-service list of its one query row and counted out of services_with_related_source, and the query row, tags and timestamps are unchanged. ADR-0062 decision 10 then removed the dedicated Valkey sets: the three brokers had no related source in this batch, and the three exporters are dropped from the related-service list of their one query row and counted out of services_with_related_source; the query row, tags and timestamps are unchanged.",
+      "meaning": "SPEC-0269 removed the idle n8n main task runner after the observation; it had no related source in this batch, so the observation rows, counts of related services, tags and timestamps are unchanged. ADR-0062 decision 10 then removed kafka-rest-proxy; it is dropped from the related-service list of its one query row and counted out of services_with_related_source, and the query row, tags and timestamps are unchanged. ADR-0062 decision 10 then removed the dedicated Valkey sets: the three brokers had no related source in this batch, and the three exporters are dropped from the related-service list of their one query row and counted out of services_with_related_source; the query row, tags and timestamps are unchanged. The owner then retired the nginx gateway on 2026-11-10; it is dropped from the related-service list of its one query row and counted out of services_with_related_source, and the query row, tags and timestamps are unchanged.",
       "removed_services_with_related_source": [
         {
           "service": "kafka-rest-proxy",
@@ -38408,6 +38590,14 @@
           "root_service_denominator_before_removal": 97,
           "query_urls": [
             "https://github.com/oliver006/redis_exporter/releases/latest"
+          ]
+        },
+        {
+          "service": "nginx",
+          "removed_at": "2026-11-10T12:00:00.000000+00:00",
+          "root_service_denominator_before_removal": 94,
+          "query_urls": [
+            "https://nginx.org/en/download.html"
           ]
         }
       ]

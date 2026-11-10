@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 created: "2025-11-24"
 ---
 
@@ -122,7 +122,7 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 
 | Tier | Category | Key Services | Status |
 | :--- | :--- | :--- | :--- |
-| **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | HOME / 선택적; disposition 참고 |
+| **01** | **Gateway** | [Traefik](./01-gateway/traefik) | HOME / 선택적; disposition 참고 |
 | **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / 선택적; disposition 참고 |
 | **03** | **Security** | [OpenBao](./03-security/openbao) | HOME 부트스트랩 |
 | **04** | **Data** | [mng-db](./04-data/mng-db), [SeaweedFS](./04-data/seaweedfs), [Qdrant](./04-data/qdrant), [RedisInsight](./04-data/redisinsight) | HOME / 선택적; disposition 참고 |

@@ -85,7 +85,6 @@ def _render_root(overrides: dict[str, str], profiles: tuple[str, ...] = ()) -> d
             "workflow-airflow",
             "ai",
             "notebook",
-            "nginx",
         ):
             args.extend(("--profile", profile))
         args.extend(("config", "--format", "json"))
@@ -113,11 +112,10 @@ def _render_root(overrides: dict[str, str], profiles: tuple[str, ...] = ()) -> d
 # A documentation-only address (RFC 5737) marks LAN publications in the render.
 LAN_SENTINEL = "198.51.100.7"
 LOOPBACK = {"127.0.0.1", "::1"}
-# The only host-LAN publications: the Traefik/Nginx web gateway and the
+# The only host-LAN publications: the Traefik web gateway and the
 # POL-0096 cluster exceptions (Loki, Tempo, Alloy OTLP, mng-valkey).
 LAN_ALLOWED = {
     "traefik": {80, 443},
-    "nginx": {80, 443},
     "loki": {3100},
     "tempo": {3200},
     "alloy": {4317, 4318},
@@ -692,14 +690,6 @@ class ListenerPortContractTests(unittest.TestCase):
         self.assertEqual(
             "14180", str(changed["gatus"]["environment"]["OAUTH2_PROXY_PORT"])
         )
-        self.assertEqual(
-            "4180", str(baseline["nginx"]["environment"]["OAUTH2_PROXY_PORT"])
-        )
-        self.assertEqual(
-            "14180", str(changed["nginx"]["environment"]["OAUTH2_PROXY_PORT"])
-        )
-        self.assertEqual("8080", str(baseline["nginx"]["environment"]["KEYCLOAK_PORT"]))
-        self.assertEqual("18080", str(changed["nginx"]["environment"]["KEYCLOAK_PORT"]))
         self.assertIn("port=15432", _command(changed["mng-pg"]))
         self.assertEqual(
             "15432", str(changed["mng-pg"]["environment"]["POSTGRES_PORT"])

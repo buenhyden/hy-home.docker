@@ -114,8 +114,6 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 
 - [traefik](../../../../infra/01-gateway/traefik/README.md): 엔트리포인트별 `rate-limit`/`retry`/`circuit-breaker` 표준화, `restart`/자원 제한 보강
   ([OPER](../../guides/02-gateway-and-networking/0013-traefik.md), [RUN](../../runbooks/02-gateway-and-networking/0013-traefik.md))
-- [nginx](../../../../infra/01-gateway/nginx/README.md): 업스트림 헬스체크/타임아웃 일원화, `read_only`+`tmpfs` 적용, 정적 자산 캐시 정책 강화
-  ([OPER](../../guides/02-gateway-and-networking/0011-nginx.md), [RUN](../../runbooks/02-gateway-and-networking/0011-nginx.md))
 
 #### 02-auth
 

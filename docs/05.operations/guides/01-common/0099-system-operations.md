@@ -78,7 +78,7 @@ workflow의 실제 관리 DB·broker 연결도 각 선언에서 확인한다. �
 [동적 middleware](../../../../infra/01-gateway/traefik/dynamic/middleware.yml)가 결정한다.
 모든 host 게시 포트가 이 경로를 통과하는 것은 아니다. 예를 들어 관리 PostgreSQL은
 loopback, 관리 Valkey는 설정된 LAN 주소에 게시된다. 직접 접속도 서비스 Policy의
-접근 경계를 확인한다. Nginx는 별도 선택 대안이며 ingress 중복은 POL-0078에서 다룬다.
+접근 경계를 확인한다.
 
 - **Proxy 인증 경로**: ComfyUI·Flower처럼 SSO middleware를 붙인 요청은
   Traefik → OAuth2 Proxy의 인증 확인 → 앱으로 흐른다. 로그인은 Keycloak으로
@@ -142,7 +142,7 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 
 | 티어 | 운영 책임과 대표 subject | 주요 의존성과 장애 영향 |
 | --- | --- | --- |
-| 01 Gateway | [Traefik](../02-gateway-and-networking/0013-traefik.md), [Nginx 대안](../02-gateway-and-networking/0011-nginx.md): 도메인 요청 진입 | 인증 경로와 대상 앱의 network·readiness; ingress 실패는 여러 웹 앱에 영향 |
+| 01 Gateway | [Traefik](../02-gateway-and-networking/0013-traefik.md): 도메인 요청 진입 | 인증 경로와 대상 앱의 network·readiness; ingress 실패는 여러 웹 앱에 영향 |
 | 02 Auth | [Keycloak](../03-identity-and-access/0014-keycloak.md), [OAuth2 Proxy](../03-identity-and-access/0015-oauth2-proxy.md): 로그인과 세션 | 관리 PostgreSQL·Valkey, gateway·CA; 여러 앱 로그인에 공통 영향 |
 | 03 Security | [OpenBao](../04-security-and-secrets/0085-openbao.md): secret authority와 renderer | owner unseal·인증, 보존된 Raft·Agent 상태; healthy만으로 소비자 갱신 불명 |
 | 04 Data | [관리 DB](../05-databases-and-storage/0028-management-database.md), [개발 DB](../05-databases-and-storage/0100-development-database.md), [객체 저장소](../05-databases-and-storage/0024-seaweedfs.md), [OpenSearch](../05-databases-and-storage/0019-opensearch.md), [Neo4j](../05-databases-and-storage/0033-neo4j.md), [Qdrant](../09-ai-and-search/0034-qdrant.md), [RedisInsight](../05-databases-and-storage/0076-redisinsight.md) | 공유 상태와 선택적 DB 관리; 대상 데이터와 관리 UI 상태를 구분 |

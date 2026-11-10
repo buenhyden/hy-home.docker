@@ -55,7 +55,6 @@ services:
       - obs
       - logs
       - tracing
-      - nginx
       - mlops
       - data-science
       - lakehouse

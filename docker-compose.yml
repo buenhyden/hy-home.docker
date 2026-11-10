@@ -577,7 +577,6 @@ include:
   # are evaluated. SPEC-0171 folded them into the file they duplicated and is
   # completed, so every Compose file under infra/ appears in this list.
   # 01-gateway
-  - infra/01-gateway/nginx/docker-compose.yml
   - infra/01-gateway/traefik/docker-compose.yml
   # 02-auth
   - infra/02-auth/keycloak/docker-compose.yml

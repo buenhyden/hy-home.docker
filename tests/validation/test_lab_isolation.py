@@ -256,7 +256,7 @@ class LabInventoryAndSelectionTests(RenderedModels):
         ]
         self.assertEqual([], offenders)
 
-    def test_home_selection_starts_no_lab_or_alternate_gateway(self) -> None:
+    def test_home_selection_starts_no_lab_service(self) -> None:
         import re
 
         policy = (
@@ -266,10 +266,8 @@ class LabInventoryAndSelectionTests(RenderedModels):
         row = next(line for line in policy.splitlines() if line.startswith("| HOME |"))
         profiles = re.findall(r"`([A-Za-z0-9][A-Za-z0-9_.-]*)`", row)
         self.assertTrue(profiles)
-        self.assertNotIn("nginx", profiles)
         arguments = [item for name in profiles for item in ("--profile", name)]
         home = render("--env-file", ".env.example", *arguments)
-        self.assertNotIn("nginx", home["services"])
         lab_services = {s for lab in self.labs.values() for s in lab["services"]}
         self.assertEqual(set(), lab_services & set(home["services"]))
 

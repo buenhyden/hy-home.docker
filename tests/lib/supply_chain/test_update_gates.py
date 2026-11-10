@@ -453,10 +453,13 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             # The supabase LAB rows lost their current file on 2026-11-06
             # (SPEC-0263 W8); the original root row stays as history.
             if row["current_scope"] == "removed":
-                # Only the retired supabase root rows may lose their file.
-                self.assertEqual(
-                    "infra/04-data/supabase/docker-compose.yml",
+                # Only the retired supabase and nginx root rows may lose their file.
+                self.assertIn(
                     row["original_root_row"]["compose_file"],
+                    {
+                        "infra/04-data/supabase/docker-compose.yml",
+                        "infra/01-gateway/nginx/docker-compose.yml",
+                    },
                 )
                 self.assertIsNone(row["current_compose_file"])
                 self.assertEqual("root", row["original_root_row"]["scope"])

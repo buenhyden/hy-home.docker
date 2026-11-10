@@ -24,7 +24,6 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [01-Gateway Nginx Operations Policy](0011-nginx.md) | `POL-0011` | 이 문서는 `01-gateway`의 Nginx 운영 정책을 정의한다. Nginx는 특수 경로(`/oauth2/`, `/keycloak/`, `/cdn/`) 프록시 역할을 수행하며, `Balanced` 하드닝 기준을 준수한다. |
 | [01-Gateway Traefik Operations Policy](0013-traefik.md) | `POL-0013` | 이 문서는 `01-gateway`의 Traefik 운영 정책을 정의한다. 런타임 모델은 `Traefik Primary`이며, 표준 하드닝 강도는 `Balanced`다. |
 | [Compose Network Membership Operations Policy](0077-ip-address-management.md) | `POL-0077` | 이 문서는 `hy-home.docker` 시스템의 Docker network 소속과 주소 할당 정책을 정의한다. IP 충돌 방지 및 일관성 유지를 위한 통제 기준을 제공한다. |
 
