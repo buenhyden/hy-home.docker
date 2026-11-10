@@ -1,10 +1,10 @@
 ---
 title: "AI Runtime Pin Verification Task"
-version: "0.4.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0226-TSK-0001"
 parent_ids:
@@ -177,6 +177,7 @@ The owner ratified the Plan on 2026-10-29.
 | SPEC-0226-PLAN-0001 | draft | approved | #plan-approval |
 | SPEC-0226-TSK-0001 | draft | ready | #inputs-and-authorization |
 | SPEC-0226-TSK-0001 | ready | in-progress | #owner-decision-2026-10-29 |
+| SPEC-0226-TSK-0001 | in-progress | completed | #owner-closure-2026-11-10 |
 
 ### Criterion 1 risk acceptance 2026-10-29
 
@@ -298,6 +299,14 @@ migration, HOME recreation of `open-webui` only, and an offline scan of the new
 image. This Task completes when that scan is recorded and the owner decides on
 it.
 
+### Owner closure 2026-11-10
+
+On 2026-11-10 the owner decided to move Open WebUI out of HOME into a LAB
+(unused: one chat, last activity 2026-10-26; its bundled PyTorch cu128 cannot
+use the HOME GTX 1060). That decision withdraws the HOME Open WebUI upgrade
+and its scan, which were this Task's last completion condition above, and the
+owner closed the Task with all six criteria accepted.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -352,9 +361,15 @@ no `/oauth/oidc/login` or callback for Open WebUI after the rollout other than
 the two redirect checks of W4 and W5; Open WebUI writes no access log; and
 Keycloak logs only error events. The check therefore rests on the owner's
 report, which is consistent with an existing session (four-week JWT) still
-being accepted after recreation. Not complete: the restic snapshot listing
-(first possible on the 2026-10-11 run) and the owner's decision on the scan
-findings remain.
+being accepted after recreation. The two items then left open were resolved
+later and are recorded in Criterion Acceptance: the owner accepted the scan
+risk on 2026-10-29 (criterion 1), and the owner backup rerun on 2026-10-30
+put the Ollama catalog, Open WebUI key and SQLite export in restic snapshot
+`1726fde5` and its R2 copy (criterion 3). With all six criteria accepted, the
+owner closed this Task on 2026-11-10 after deciding to move Open WebUI to a
+LAB, which withdrew the remaining Open WebUI upgrade scan (see Owner closure
+2026-11-10 in the Work Log). Scanning the current Ollama pin (0.40.15) and the
+Open WebUI LAB move are separate follow-ups, not part of this Task.
 
 ## Related Documents
 
