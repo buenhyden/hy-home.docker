@@ -949,9 +949,24 @@ class UpdateEvidencePackageTests(unittest.TestCase):
         )
         key = "master_20261111_artifact_review"
         ledger = json.loads((package / "update-ledger.json").read_text())
-        lookups = json.loads((package / "release-lookups.json").read_text())[key]
+        releases = json.loads((package / "release-lookups.json").read_text())
+        lookups = releases[key]
         rows = {row["service"]: row for row in ledger["entries"]}
-        self.assertEqual(56, len(lookups["latest"]))
+        prior_gate = releases["master_20261111_advisory_review"]["gate_revalidation"][
+            "latest_version_gate"
+        ]["output"]
+        latest_residuals = {
+            row["service"]
+            for row in prior_gate["entries"]
+            if not row["evidence_complete"]
+        }
+        self.assertEqual(56, len(latest_residuals))
+        self.assertEqual(latest_residuals, set(lookups["latest"]))
+        for name in latest_residuals:
+            self.assertEqual(
+                f"release-lookups.json#/{key}/latest/{name}",
+                rows[name][key]["latest_ref"],
+            )
         for decision, group, count in (
             ("patch", "patch", 12),
             ("no-fix", "no_fix", 6),

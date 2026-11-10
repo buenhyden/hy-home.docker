@@ -73456,7 +73456,8 @@
         "missing_services": [],
         "unexpected_services": [],
         "input_manifest_sha256": "44e286a69d910939ba36f59fd65a08a4f4ac7a1ae5dd8e9be11e29af4bfdac84",
-        "output_sha256": "97664eb7bca71e0ccd795e121c7e77d57263618ec6952a811bc9052229d4146a"
+        "output_sha256": "97664eb7bca71e0ccd795e121c7e77d57263618ec6952a811bc9052229d4146a",
+        "ledger_sha256": "89e22f4c2ecfcbcbf9d395b77fd68a36188c0394ac41738325ffb615c3527590"
       },
       "security_update_gate": {
         "command": "python3 -m scripts.lib.supply_chain.security_update_gate --input infra/09-platform-ops/security-updates/update-ledger.json",
@@ -73479,7 +73480,9 @@
         "missing_services": [],
         "unexpected_services": [],
         "input_manifest_sha256": "44e286a69d910939ba36f59fd65a08a4f4ac7a1ae5dd8e9be11e29af4bfdac84",
-        "output_sha256": "ffd2b39c2b369ec2b6d60cdce5a4730d068ac2284d4a6ed8fd81866125b4e60a"
+        "output_sha256": "ffd2b39c2b369ec2b6d60cdce5a4730d068ac2284d4a6ed8fd81866125b4e60a",
+        "evaluated_at": "2026-11-10T22:35:52.272146+00:00",
+        "ledger_sha256": "89e22f4c2ecfcbcbf9d395b77fd68a36188c0394ac41738325ffb615c3527590"
       }
     }
   }
