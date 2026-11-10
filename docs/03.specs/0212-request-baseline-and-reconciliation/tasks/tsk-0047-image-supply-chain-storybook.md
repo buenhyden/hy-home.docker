@@ -1,6 +1,6 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -211,6 +211,10 @@ analyzed and reviewed. No criterion is accepted by this review.
   build material. The owner then approved proxy.golang.org and sum.golang.org,
   deleted the three rehearsal directories under `/tmp`, and the next run sets
   `GOTOOLCHAIN=local` and uses only the approved hosts.
+
+### OpenBao r3 owner acceptance 2026-11-10
+
+r2 failed the RUN-0105 SEC01 gate (x/net, go-jose v4 and klauspost Highs with fixed releases, and OpenBao v2.7.2 as a newer security release), so the owner approved r3 on v2.7.2. Its scan has Critical 0 and one High, GHSA-mgcc-cww5-fp2q in go-jose/v3 v3.0.5 with no fixed release; the owner accepted that residual risk with the two go-jose/v3 Mediums on 2026-11-10, recorded in POL-0085. The HOME cutover still needs the RUN-0105 window.
 
 ## Evidence
 

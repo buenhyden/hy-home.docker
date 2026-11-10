@@ -20,7 +20,7 @@ from tests.validation._openbao_tls_delay_native import (
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "infra/03-security/openbao/scripts/check-tls-material.sh"
-IMAGE = "hy-home/openbao:2.7.1-go1.27.3-net0.60.0-r2@sha256:88d38aa323abcb9fb1eab544bd593ec323f2b6c00152bab1947665e2fb3b42b0"
+IMAGE = "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1@sha256:ef27a440806b6190aefba291da73b16b59a7c800f7eb6799ae209302fad59af5"
 MARKER = "synthetic-private-material"
 CID = "a" * 64
 

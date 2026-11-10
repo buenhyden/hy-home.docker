@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "version": "2.7.1+hyhome.go1.27.3.net0.60.0.r2",
-  "tag": "hy-home/openbao:2.7.1-go1.27.3-net0.60.0.r2",
-  "upstream_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
-  "commit_date": "2026-10-01T13:32:54Z",
-  "source_date_epoch": 1790861574,
-  "source_archive_sha256": "6da0c07e61d8dfd2ab72ad47cb96691fb7abfecd460a55272545346575c37711",
-  "source_archive_url": "https://github.com/openbao/openbao/releases/download/v2.7.1/openbao-dist-v2.7.1.tar.xz",
+  "version": "2.7.2+hyhome.go1.27.3.net0.62.0.r1",
+  "tag": "hy-home/openbao:2.7.2-go1.27.3-net0.62.0-r1",
+  "upstream_commit": "9e0a0d3c3504a0a00b45e61355afac5e35c78379",
+  "commit_date": "2026-10-26T19:32:27Z",
+  "source_date_epoch": 1793043147,
+  "source_archive_sha256": "f50ac5b150e780728b0f8c5c1533e6542576ff3834f9a89d6c9921e6759f0109",
+  "source_archive_url": "https://github.com/openbao/openbao/releases/download/v2.7.2/openbao-dist-v2.7.2.tar.xz",
   "builder": "cgr.dev/chainguard/go@sha256:0c664830ca01dbc9fb797ec3b815ac73ba0a3c9faa42dfe5ad55ab7dc48e66a4",
   "builder_index": "sha256:79d209c423918068c0cc6061b8452468fad709e1dfdaddbf7be4562aa09bb2c4",
   "builder_version": "go1.27.3",
@@ -17,17 +17,12 @@
     "community": "2f7e6294f27beb60fc4731c62f31ca4d49c334cb20ca7dba3f0987bb0e7e92a8",
     "main": "1c393e745f0c3af8b94d6a6125373d00cc88b401ad468d28a5d0dc7f7ee7c829"
   },
-  "go_patch_sha256": "44fbd3e44e80cb8d1769f7f0a9b74e245289f572ee3ad12365b36c223d8acee8",
-  "recipe_sha256": "8c907d78dd30f67cef46a6b414757ac8f47a2908775fa5d96099351b49890fae",
+  "go_patch_sha256": "b662b703a34800e5d5a0305408704483d3bfeb81c0e2100454bfa0a05b034fb0",
+  "recipe_sha256": "54515b745eed980c41eed3657adfc21632e6c39ee490444d60edcf37d5943bbf",
   "modules": {
-    "golang.org/x/crypto": "v0.57.0",
-    "golang.org/x/mod": "v0.41.0",
-    "golang.org/x/net": "v0.60.0",
-    "golang.org/x/sync": "v0.23.0",
-    "golang.org/x/sys": "v0.48.0",
-    "golang.org/x/term": "v0.46.0",
-    "golang.org/x/text": "v0.42.0",
-    "golang.org/x/tools": "v0.49.0"
+    "github.com/go-jose/go-jose/v4": "v4.1.9",
+    "github.com/klauspost/compress": "v1.20.4",
+    "golang.org/x/net": "v0.62.0"
   },
   "apk_requested": {
     "ca-certificates": "20261020-r0",
@@ -41,8 +36,8 @@
     "zlib": "1.4-r0"
   },
   "publisher_receipts": {
-    "builder": "2e3514422442307b5303109c7d0bd779f402baea4897574583fc9b626f4be4cc",
-    "source_checksums": "dfb67136ce1ce2285e81687e8bae4364126ad6c76e46ccef57d5256c53da1f82"
+    "builder": "234e0194bd6e287da67a5f1e74d1e5e5d1a2a4717911e8d9096b425e2e5ecc53",
+    "source_checksums": "a7d2d6c1a25d00f4882f68828490c6dae35b72a38d65cb76599ac248a70e2781"
   },
   "boundary": {
     "memory_bytes": 4294967296,
