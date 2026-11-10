@@ -56,14 +56,6 @@ rbac:
           value: ".*"
           actions: all
 
-        - resource: schema
-          value: ".*"
-          actions: all
-
-        - resource: connect
-          value: ".*"
-          actions: all
-
         - resource: acl
           actions: all
 
@@ -87,14 +79,6 @@ rbac:
             - MESSAGES_READ
 
         - resource: consumer
-          value: ".*"
-          actions: [ view ]
-
-        - resource: schema
-          value: ".*"
-          actions: [ view ]
-
-        - resource: connect
           value: ".*"
           actions: [ view ]
 

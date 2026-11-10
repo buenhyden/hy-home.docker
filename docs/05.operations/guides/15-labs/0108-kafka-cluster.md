@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB Usage Guide"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0108"
 parent_ids:
@@ -16,6 +16,8 @@ implementation_services:
   - lab-kafka-3
   - lab-kafka-exporter
   - lab-kafka-init
+  - lab-schema-registry
+  - lab-kafka-connect
 created: "2026-11-05"
 ---
 
@@ -45,6 +47,8 @@ include하지 않는다. 세 broker가 한 host를 공유하므로 host 장애 �
 | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3` | KRaft broker와 controller를 겸하는 node | `kafka-broker-api-versions` healthcheck; topic·ISR 상태는 별도 확인 |
 | `lab-kafka-exporter` | `lab-kafka-1`을 target으로 하는 metrics exporter | `/metrics` 응답; scrape 연결은 없음 |
 | `lab-kafka-init` | `lab-events`(3 partition)와 `lab-logs`(6 partition)를 replication factor 3으로 만드는 one-shot job | 종료 코드; 실제 topic 상태는 별도 확인 |
+| `lab-schema-registry` | Avro 등 schema 저장소; 세 broker의 `_schemas` topic(replication factor 3)을 쓴다 | `sr-ready` healthcheck; subject 상태는 별도 확인 |
+| `lab-kafka-connect` | Debezium PostgreSQL plugin을 담은 Connect worker(`lab-schema-registry`를 converter로 사용) | `/connectors` REST 200 healthcheck; connector는 선언하지 않음 |
 
 - 정확한 image pin, limit과 template은 Compose와
   [공통 template](../../../../infra/common-optimizations.yml)이 소유한다. broker는
@@ -53,8 +57,13 @@ include하지 않는다. 세 broker가 한 host를 공유하므로 host 장애 �
   topic 자동 생성은 꺼져 있다.
 - broker 상태는 `${LAB_DATA_DIR}/kafka/{1,2,3}`의 bind volume이며 HOME
   `${DEFAULT_MESSAGE_BROKER_DIR}`와 분리된다.
-- `lab_kafka_net`은 internal network다. host port, HOME `kafka_net`, secret, Schema Registry,
-  Connect는 연결하지 않는다. PLAINTEXT 접근은 LAB network 안에 한정한다.
+- `lab_kafka_net`은 internal network다. host port, HOME `kafka_net`, secret은 연결하지 않는다.
+  Schema Registry와 Connect는 이 LAB network 안에서만 도달한다. PLAINTEXT 접근은 LAB network 안에 한정한다.
+- Schema Registry와 Connect는 2026-11-10 owner 결정(ADR-0062 개정)으로 HOME `05-messaging`에서 옮겼다.
+  HOME에서는 connector 0개, subject 0개였고 CDC 원천 DB `platform_dev`도 없었다. 이 LAB에는 connector,
+  원천 DB, credential, gateway route가 없어 connector 등록은 운영자 승인 단계다. 이전 Debezium
+  connector 예시, 복제 role provisioning SQL과 secret renderer는 제거했으며 Git 이력이 보존한다.
+  Connect 상태(`_connect-*` topic)는 broker에 있고 별도 data volume이 없다.
 
 ## Usage
 

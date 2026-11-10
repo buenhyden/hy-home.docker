@@ -1,6 +1,6 @@
 ---
 title: "Airflow Runbook"
-version: "1.4.4"
+version: "1.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -106,7 +106,7 @@ Helper의 성공 출력은 `_CMD` 소비용 연결 주소다. 단독 출력, 전
 3. Celery worker 응답 확인: `docker compose exec airflow-apiserver celery --app airflow.providers.celery.executors.celery_executor.app inspect ping`. Remote control이 허용된 worker의 응답이 없으면 실패로 기록하고 원인을 먼저 진단한다.
 4. 스케줄을 pause하고 실행/예약 태스크와 외부 부작용을 조정한 뒤 승인된 worker 재시작만 수행한다: `docker compose restart airflow-worker`. 자동 재실행이나 task clear를 복구 전제로 삼지 않는다.
 
-5. Flower(`flower.${DEFAULT_URL}`) 또는 worker 로그에서 heartbeat 회복 여부를 확인한다.
+5. Flower(opt-in `airflow-flower`를 시작한 경우 `flower.${DEFAULT_URL}`) 또는 worker 로그에서 heartbeat 회복 여부를 확인한다.
 
 ### 시나리오 2: 메타데이터 DB 오류
 

@@ -1,10 +1,10 @@
 ---
 title: "Airflow Usage Guide"
-version: "1.1.7"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0050"
 parent_ids:
@@ -91,7 +91,7 @@ Keycloak auth manager가 처리한다. Keycloak client secret이나 JWT secret�
 #### UI 접근 및 모니터링
 
 - **Main UI**: `https://airflow.${DEFAULT_URL}` (작업 모니터링, 로그 확인)
-- **Flower Dashboard**: `https://flower.${DEFAULT_URL}` (Celery 워커 부하 상태 확인)
+- **Flower Dashboard**: `https://flower.${DEFAULT_URL}` (Celery 워커 부하 상태 확인; 2026-11-10부터 opt-in `airflow-flower` profile이며 HOME이 시작하지 않음)
 - **Metrics**: Prometheus/Grafana를 통해 StatsD 지표 확인 가능
 
 #### 개발 환경 검증

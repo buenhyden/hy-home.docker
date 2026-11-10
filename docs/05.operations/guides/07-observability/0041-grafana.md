@@ -105,7 +105,7 @@ created: "2026-05-10"
 - **LAB dashboard**: SPEC-0225부터 LAB 서비스(HAProxy, Valkey Cluster, MongoDB, Cassandra, etcd)의 대시보드는 각 LAB 폴더의 `labs/<name>/dashboards/`에 있고 HOME Grafana에는 provisioning되지 않는다.
 - **One role per dashboard**: 같은 소스를 같은 목적으로 그리는 대시보드는 하나만 둔다. 계약 테스트가 두 대시보드의 쿼리가 절반 이상 겹치면 실패한다.
 - **External first**: 서비스가 방출하는 메트릭 이름과 맞는 벤더 저장소, monitoring-mixins, grafana.com 대시보드가 있으면 그것을 쓴다. 파일에 넣을 때 `__inputs`를 provisioned UID로 풀고, `hyhome-*` UID를 붙이고, `description`에 출처와 revision(또는 commit)을 남긴다. README의 Dashboard Sources 표가 전체 출처 목록이다. 로컬 대시보드는 맞는 외부 대시보드가 없을 때만 둔다(Ollama, OAuth2 Proxy, Flower, Pyroscope, Airflow Runs (DB)).
-- **Label contract**: 모든 scrape target에 `cluster="hy-home"`, `namespace="hy-home"`가 붙는다. mixin 대시보드의 `cluster`/`namespace` 변수가 이 라벨로 채워진다. Kafka job 이름 `kafka-broker`, `kafka-connect`, `schema-registry`와 `kafka_connect_cluster_id`, `env` 라벨은 Confluent 대시보드가 그대로 동작하도록 맞춘 값이다.
+- **Label contract**: 모든 scrape target에 `cluster="hy-home"`, `namespace="hy-home"`가 붙는다. mixin 대시보드의 `cluster`/`namespace` 변수가 이 라벨로 채워진다. Kafka job 이름 `kafka-broker`와 `env` 라벨은 Confluent 대시보드가 그대로 동작하도록 맞춘 값이다. Connect·Schema Registry job과 대시보드는 LAB `kafka-cluster`로 옮겼다.
 - **Single-binary exception**: Loki와 Tempo mixin 대시보드는 microservice마다 job을 나눠 고른다(`job=~"($namespace)/(querier|...)"`). 여기서는 둘 다 단일 바이너리이므로 이 두 계열만 job selector를 `job="loki"`, `job="tempo"`로 바꿔 넣었다.
 
 ### Signal correlation and Drilldown
