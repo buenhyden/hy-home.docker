@@ -167,6 +167,57 @@ checks the target; this is not a deletion success receipt. Secret copies,
 SMTP-specific retirement and protected recovery material remain P06/existing
 executor handoffs.
 
+### 2026-11-10 Kafka CDC LAB move (ADR-0062 amendment)
+
+The owner decided on 2026-11-10 to move `kafka-connect` and `schema-registry` (the Debezium
+CDC path) out of HOME into `labs/kafka-cluster` (`lab-kafka-connect`, `lab-schema-registry`).
+The Kafka broker stays the only broker (ADR-0052); `kafka-1`, `kafka-init`, `kafka-exporter` and
+`kafbat-ui` stay.
+
+Sanitized read-only evidence, no content or secret recorded:
+
+- Kafka CDC: Connect has 0 connectors, Schema Registry 0 subjects, Kafka has zero consumer
+  groups, the topics `application-logs` and `infra-events` hold 0 messages, and the CDC
+  source database `platform_dev` does not exist in HOME (also T03 in TSK-0043). Cost is about
+  650 MiB RSS plus two Traefik routers, a Debezium replication secret and a provisioning job.
+
+Done in source: the two services, `debezium-db-provision`, its provisioning SQL, the connector
+sample, the Connect secret renderer and the two JMX rule files left HOME (Git history keeps
+them); the Dockerfile and the Connect and Schema Registry dashboards moved to the LAB;
+kafbat-ui no longer configures a schema registry or Connect and depends on `kafka-1` only; the
+Prometheus jobs, the two ingress networks, the root `debezium_postgres_password` secret, the
+`cdc`, `messaging-schema` and `messaging-connect` profiles and the HOME `CdcStreamRehearsalTests`
+were removed. PG-025 then lost its last consumer; on 2026-11-10 the owner retired it because nothing uses it and the LAB declares no credential, so its catalog row, its test exception and its public registry row were removed and the owner deleted `debezium_password.txt`.
+The SEC01 ledger archived the three rows (`source_refreshes`, `historical_lab_entries`),
+`ledger_rebind` re-bound the hashes, the tech-stack projection and the `m0021` inventory were
+regenerated, and POL-0078, GDE/POL/RUN-0036 and GDE/POL/RUN-0108 were updated.
+
+Nothing was started, stopped or recreated. The running HOME `kafka-connect` and
+`schema-registry` containers and the `kafka-connect-data` volume remain until the owner approves
+their retirement.
+
+The owner removed the PG-025 row from `secrets/SENSITIVE_ENV_VARS.md.example` in the same change, since `secrets/` is denied to agents, and prunes the private registry row after merge with `gen-secrets.sh --sync-metadata-prune`.
+
+### 2026-11-10 Flower opt-in profile (ADR-0062 amendment)
+
+The owner decided on 2026-11-10 that Airflow `flower` leaves the HOME `workflow` and
+`workflow-airflow` profiles for the dedicated opt-in profile `airflow-flower`. Sanitized
+read-only evidence: 0 requests in 7 days, and the Airflow UI, the worker healthcheck and the
+statsd metrics already cover task and worker state.
+
+Done in source: the Compose profile moved, and `airflow-apiserver` and `airflow-init`, which Flower depends on, also joined
+`airflow-flower` so the profile renders alone; POL-0078 registers `airflow-flower` (capability) and
+drops `flower` from the two Airflow profile rows; both Prometheus files label the `flower` job
+`expected_state: "off"`, so `PrometheusInfraTargetsMissing` (which filters `expected_state!="off"`)
+does not fire while Flower is not selected, and a comment on the rule says to flip the label to
+`on` when the profile starts; the dashboard `Applications/flower` is kept. The SEC01 ledger rows
+were re-bound with `ledger_rebind` and the `flower` row's `profiles_declared` was set by hand
+(recorded in that refresh's `revision_scope`); the `m0021` inventory was regenerated; the
+workflow and Grafana READMEs were updated.
+
+Nothing was started, stopped or recreated, so Prometheus still scrapes the old label set and the
+`flower` container still runs until the owner recreates `prometheus` and removes `flower`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |

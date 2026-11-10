@@ -1,6 +1,6 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.1.9"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -83,7 +83,7 @@ PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포
 사용하며 init은 완료 여부로 게이트됩니다. `pg/init-scripts/init_users_dbs.sql`은
 기본 role/database 초기화를 소유하며 optional-capability secret은 절대 읽지
 않습니다. `pg/provision/run-feature-provision.sh`는 feature 소유 job
-(`mlflow-db-provision`, `dbt-db-provision`, `debezium-db-provision`)의 공유
+(`mlflow-db-provision`, `dbt-db-provision`)의 공유
 입력 처리기입니다. 연결 전에 식별자와 secret 파일을 검증하고 secret은
 argv가 아니라 psql 환경(`\getenv`)으로 전달합니다. 각 feature는 자신의 SQL과
 grant를 자신의 패키지에 둡니다. 그 외 엔진 설정은 Compose에 남아 있습니다.

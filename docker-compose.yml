@@ -164,15 +164,6 @@ networks:
       config:
         - subnet: 10.250.28.0/24
           ip_range: 10.250.28.128/25
-  kafka_connect_ingress_net:
-    name: kafka_connect_ingress_net
-    internal: true
-    driver_opts:
-      com.docker.network.bridge.gateway_mode_ipv4: isolated
-    ipam:
-      config:
-        - subnet: 10.250.29.0/24
-          ip_range: 10.250.29.128/25
   loki_ingress_net:
     name: loki_ingress_net
     internal: true
@@ -236,15 +227,6 @@ networks:
       config:
         - subnet: 10.250.37.0/24
           ip_range: 10.250.37.128/25
-  schema_registry_ingress_net:
-    name: schema_registry_ingress_net
-    internal: true
-    driver_opts:
-      com.docker.network.bridge.gateway_mode_ipv4: isolated
-    ipam:
-      config:
-        - subnet: 10.250.38.0/24
-          ip_range: 10.250.38.128/25
   tempo_ingress_net:
     name: tempo_ingress_net
     internal: true
@@ -550,9 +532,6 @@ secrets:
 
   mlflow_db_password:
     file: ./secrets/db/mng-pg/mlflow_password.txt
-
-  debezium_postgres_password:
-    file: ./secrets/db/dev-pg/debezium_password.txt
 
   pact_broker_db_password:
     file: ./secrets/db/mng-pg/pact_broker_password.txt

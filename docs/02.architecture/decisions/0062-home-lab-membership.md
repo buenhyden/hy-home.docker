@@ -1,6 +1,6 @@
 ---
 title: "HOME Membership and Planned LABs"
-version: "0.3.0"
+version: "0.5.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -42,7 +42,7 @@ Target HOME members by tier, after the follow-up moves:
 | Tier | HOME members |
 | --- | --- |
 | `04-data` | dev-db, mng-db, qdrant, redisinsight, seaweedfs |
-| `05-messaging` | kafka-1, schema-registry, kafka-connect, kafka-exporter, kafbat-ui (on demand through the messaging profiles) |
+| `05-messaging` | kafka-1, kafka-exporter, kafbat-ui (on demand through the messaging profiles) |
 | `06-observability` | LGTM stack, Alloy and the other observability services, including pushgateway; dozzle |
 | `07-workflow` | airflow, n8n |
 | `08-ai` | crawl4ai, mlflow, ollama |
@@ -56,7 +56,8 @@ Planned LABs, pending until each move lands under `labs/<name>/`: comfyui,
 neo4j, open-notebook (with its surrealdb), pact-broker, wiremock and terrakube.
 Until its move merges, each still runs from its root include.
 
-Existing LABs: cassandra, couchdb, dbt, jupyterlab, kafka-cluster, lakehouse (Flink,
+Existing LABs: cassandra, couchdb, dbt, jupyterlab, kafka-cluster (with Schema
+Registry and Kafka Connect), lakehouse (Flink,
 Spark, Trino, Great Expectations), locust, mongodb, open-webui, opensearch-cluster,
 postgresql-ha, sonarqube, stalwart, superset and valkey-cluster.
 
@@ -85,6 +86,46 @@ This is the same rationale as the other planned LABs: an unused service widens
 the attack surface, hardening checks, secret catalog and update ledgers. The
 move landed in the same change as this amendment; the running HOME container
 and its volume are left for separately approved retirement steps.
+
+### Amendment of 2026-11-10: Kafka CDC (kafka-connect and schema-registry)
+
+The owner amended this record on 2026-11-10 to move the Debezium change-data-capture
+path, `kafka-connect` and `schema-registry`, out of the HOME `05-messaging` tier into
+the existing LAB `labs/kafka-cluster/` (`lab-kafka-connect`, `lab-schema-registry`).
+The Kafka broker stays the only broker ([ADR-0052](0052-kafka-only-messaging-broker.md));
+kafka-1, kafka-init, kafka-exporter and kafbat-ui stay in HOME. The evidence, with no
+user content or secret recorded, read on 2026-11-10 (also SPEC-0212 TSK-0043 "T03 Kafka
+and CDC re-review"):
+
+- Use: Connect has 0 connectors, Schema Registry 0 subjects, Kafka has zero consumer
+  groups, and the topics `application-logs` and `infra-events` hold 0 messages.
+- Source: the CDC source database `platform_dev` does not exist in HOME, so the
+  tracked connector could not run.
+- Cost: about 650 MiB RSS, two Traefik routers, two ingress networks, a Debezium
+  replication secret (PG-025), a built Connect image and a provisioning job
+  (`debezium-db-provision`) in the HOME update ledgers and hardening checks.
+
+The move landed in the same change as this amendment. `labs/kafka-cluster` gains
+Schema Registry and Connect on its internal `lab_kafka_net` against the three LAB brokers;
+no connector, source database or credential is declared there, so a connector is an
+operator step. `debezium-db-provision`, its provisioning SQL, the connector sample and
+the Connect secret renderer were removed (Git history keeps them), kafbat-ui no longer
+configures a schema registry or a Connect cluster, and the profiles `cdc`,
+`messaging-schema` and `messaging-connect` are retired from POL-0078. The running HOME
+containers, images, the `kafka-connect-data` volume and the Debezium secret file are left
+for separately approved retirement steps.
+
+### Amendment of 2026-11-10: Airflow Flower becomes opt-in
+
+The owner also decided on 2026-11-10 that Airflow `flower` (Celery monitoring UI) no longer
+starts with HOME. It stays in `infra/07-workflow/airflow/` but moves from the `workflow` and
+`workflow-airflow` profiles to the opt-in profile `airflow-flower` (POL-0078, capability). The
+evidence, with no content recorded: 0 requests in 7 days, while the Airflow UI, the worker
+healthcheck and the statsd metrics already cover task and worker state. Its Grafana dashboard
+stays; the Prometheus job `flower` carries `expected_state: "off"` so
+`PrometheusInfraTargetsMissing` stays silent until Flower is started and the label is set to
+`on`. The HOME `07-workflow` members (airflow, n8n) do not change. The running `flower`
+container is left for a separately approved retirement step.
 
 ### Traceability
 
@@ -242,9 +283,8 @@ Evidence is the owner decisions of 2026-11-09 and 2026-11-10, the root Compose i
     removed: it has no consumer and no native authentication. The dedicated
     per-app Valkey and exporter sets for airflow, n8n and oauth2-proxy
     (`dedicated-valkey` profile, never created in HOME) are removed.
-11. These stay in HOME: the Kafka stack (kafka-1, schema-registry,
-    kafka-connect, kafka-exporter, kafbat-ui; on demand through the messaging
-    profiles), qdrant, redisinsight, dev-db, mng-db, seaweedfs, crawl4ai,
+11. These stay in HOME: the Kafka stack (kafka-1, kafka-exporter,
+    kafbat-ui; on demand through the messaging profiles), qdrant, redisinsight, dev-db, mng-db, seaweedfs, crawl4ai,
     mlflow, ollama, opentofu, registry, renovate, restic,
     conftest, k6, mailpit, storybook, and the observability services including
     pushgateway.
@@ -256,6 +296,9 @@ Evidence is the owner decisions of 2026-11-09 and 2026-11-10, the root Compose i
 13. open-webui (08-ai) leaves HOME and is the LAB `labs/open-webui/` (amendment
     of 2026-11-10), with native Keycloak OIDC, no gateway route, a LAB-only
     client secret and its hardening checks against the `labs/` source.
+14. schema-registry and kafka-connect (05-messaging) leave HOME and run in the LAB
+    `labs/kafka-cluster/` (amendment of 2026-11-10). `debezium-db-provision` and its
+    Debezium assets are removed; the Kafka broker stays the only broker (ADR-0052).
 
 ## Consequences
 
