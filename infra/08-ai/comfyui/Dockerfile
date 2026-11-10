@@ -1,6 +1,6 @@
-# syntax=docker/dockerfile:1.27
+# syntax=docker/dockerfile:1.27@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
 
-FROM nvidia/cuda:12.9.2-cudnn-runtime-ubuntu24.04
+FROM nvidia/cuda:12.9.2-cudnn-runtime-ubuntu24.04@sha256:070f8f2672df1b05b84c0409a5fd1d54ddfd646e5b9d8dee7878131271b563fc
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG COMFYUI_REF=v0.36.0

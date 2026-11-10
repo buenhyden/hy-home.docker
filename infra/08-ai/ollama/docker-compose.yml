@@ -97,7 +97,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: lucabecker42/ollama-exporter:1.0.3
+    image: lucabecker42/ollama-exporter:1.0.3@sha256:9fb1f4c5bc4ff819eb13e148debeb7fd474a4c8956d83d39928ea22d95d3de5c
     container_name: ollama-exporter
     hostname: ollama-exporter
     read_only: true
