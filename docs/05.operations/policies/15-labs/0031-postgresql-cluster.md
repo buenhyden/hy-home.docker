@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Operations Policy"
-version: "2.1.4"
+version: "2.1.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0031"
 parent_ids:
@@ -51,7 +51,7 @@ created: "2026-05-17"
   검증하며, test를 `pg-router`를 통해 라우팅한다. Patroni/etcd state는
   logical data로 복원하지 않고 재구축한다.
 - **Required**: Upgrade나 removal 전에 용량, WAL/dump 공간, 호환성, rollback
-  evidence를 검토한다. Physical restore를 즉석에서 만들지 않는다. `RUN-0032`는 synthetic single-DB PG17→18/`--no-owner --no-acl` 범위로, 위 HA restore 통제를 충족하지 않는다. 실제 HA 복원 구현·독립 검토가 없으므로 운영 복원은 중단한다.
+  evidence를 검토한다. Physical restore를 즉석에서 만들지 않는다. 실제 HA 복원 구현·독립 검토가 없으므로 운영 복원은 중단한다.
 - **Allowed**: Evidence 수집을 위한 read-only `patronictl list`,
   `pg_isready`, HAProxy config 검증, compose config 렌더링, 로그, exporter
   metrics 확인.
@@ -98,7 +98,6 @@ N/A - 현재 승인된 예외 없음.
 
 - [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
-- [Logical upgrade restore rehearsal](../../runbooks/05-databases-and-storage/0032-postgresql-logical-upgrade-restore-rehearsal.md) (`RUN-0032`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/15-labs/0031-postgresql-cluster.md)

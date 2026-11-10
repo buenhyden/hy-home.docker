@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Architecture"
-version: "1.0.5"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "architecture"
 artifact_id: "AD-0028"
 parent_ids:
@@ -16,8 +16,7 @@ created: "2026-07-19"
 
 ## Overview
 
-This architecture aligns Compose readiness, PostgreSQL logical recovery,
-sample-service supply chain, and local delivery under one isolation
+This architecture aligns Compose readiness, sample-service supply chain, and local delivery under one isolation
 principle. The maintainer, operator, security reviewer, and release reviewer
 must each independently verify the subject identity, failure boundary,
 cleanup, and evidence of every lane.
@@ -28,8 +27,6 @@ cleanup, and evidence of every lane.
   synthetic input.
 - `examples/sample-web-service/` is the shared artifact for supply-chain and
   delivery.
-- The PostgreSQL lane uses only synthetic schema/data and a task-owned
-  temporary volume.
 - Registry publication, production/shared runtime, live data, credentials,
   remote deployment, and GitHub setting mutation are out of bounds.
 - Raw artifacts and logs are transient, and only a redacted summary remains
@@ -42,7 +39,6 @@ cleanup, and evidence of every lane.
 | Lane | Current implementation | Primary output |
 | --- | --- | --- |
 | Compose readiness | `scripts/operations/check-compose-core-readiness.sh` and `scripts/lib/ops/compose-core-readiness.sh` | bounded readiness and cleanup verdict |
-| PostgreSQL recovery | `scripts/operations/rehearse-postgres-logical-upgrade.sh` | backup/restore and integrity verdict |
 | Supply chain | `scripts/security/verify-sample-service-supply-chain.sh` and `scripts/validation/check-supply-chain-policy.py` | digest-bound trust verdict |
 | Local delivery | `scripts/operations/rehearse-sample-service-delivery.sh` | canary, promotion, rollback verdict |
 
@@ -56,8 +52,7 @@ recovery guidance without owning the architectural decision.
 
 Each wrapper follows the `preflight → allocate → execute → verify → summarize → cleanup`
 order. The Compose lane's readiness and the
-supply-chain lane's verified digest become delivery input. The recovery lane
-uses a separate synthetic state and integrity oracle. A failure does not skip
+supply-chain lane's verified digest become delivery input. A failure does not skip
 required verification and exits non-zero along with the owned cleanup
 result.
 
@@ -91,6 +86,9 @@ allocated itself.
 ### Evolution
 
 - A new lane follows the same wrapper order and isolation boundary.
+- The PostgreSQL recovery lane, a synthetic 17 to 18 logical upgrade
+  rehearsal, was removed on 2026-11-10 because every HOME PostgreSQL service
+  already runs major 18; ADR-0028 Follow-up records the retirement.
 
 ## Related Documents
 
@@ -98,7 +96,6 @@ allocated itself.
 - [ADR-0028 Local-Isolated Readiness Evidence](../decisions/0028-local-isolated-readiness-evidence.md)
 - `examples/sample-web-service/`
 - `tests/validation/test_compose_core_readiness.py`
-- `tests/validation/test_postgres_logical_upgrade_rehearsal.py`
 - `tests/lib/supply_chain/test_supply_chain_policy.py`
 - `tests/validation/test_sample_service_delivery_rehearsal.py`
 

@@ -1,10 +1,10 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.4.1"
+version: "1.4.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-10"
 created: "2026-03-05"
 ---
 
@@ -48,7 +48,7 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 
 여기에 쓰는 스크립트는 `repo-support/` 아래 하위 디렉터리 이름을
 각자 정해 씁니다. 예를 들어 `scripts/security/verify-sample-service-supply-chain.sh`와
-`scripts/operations/rehearse-postgres-logical-upgrade.sh`가 있습니다.
+`scripts/operations/rehearse-sample-service-delivery.sh`가 있습니다.
 
 ## Allowed Surface
 

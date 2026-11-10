@@ -347,19 +347,6 @@
       "suite_key": "compose-validation"
     },
     {
-      "gate_id": "leaf.postgres-logical-upgrade-config",
-      "kind": "leaf",
-      "entrypoint": "scripts/operations/rehearse-postgres-logical-upgrade.sh",
-      "argv": [
-        "--check-config-only"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "postgres-logical-upgrade-config"
-    },
-    {
       "gate_id": "leaf.dependency-vulnerability-audit",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -1015,7 +1002,6 @@
         "run-unittest",
         "tests.lib.ops.test_compose_core_readiness",
         "tests.validation.test_compose_core_readiness",
-        "tests.validation.test_postgres_logical_upgrade_rehearsal",
         "tests.lib.supply_chain.test_grype_db_seed",
         "tests.lib.supply_chain.test_supply_chain_policy",
         "tests.lib.supply_chain.test_ledger_rebind",
@@ -1115,8 +1101,7 @@
       "kind": "aggregate",
       "opaque": false,
       "children": [
-        "leaf.compose-validation",
-        "leaf.postgres-logical-upgrade-config"
+        "leaf.compose-validation"
       ]
     },
     {
@@ -1411,20 +1396,6 @@
       },
       {
         "suite": "operations",
-        "gate_id": "leaf.postgres-logical-upgrade-config",
-        "entrypoint": "scripts/operations/rehearse-postgres-logical-upgrade.sh",
-        "argv": [
-          "--check-config-only"
-        ],
-        "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
-        ]
-      },
-      {
-        "suite": "operations",
         "gate_id": "leaf.supply-chain-deterministic-policy",
         "entrypoint": "scripts/validation/check-supply-chain-policy.py",
         "argv": [
@@ -1657,7 +1628,6 @@
           "scripts/operations/check-config-mount-hashes.py",
           "scripts/operations/gen-secrets.sh",
           "scripts/operations/lab.py",
-          "scripts/operations/rehearse-postgres-logical-upgrade.sh",
           "scripts/operations/rehearse-sample-service-delivery.sh"
         ],
         "suites": [
@@ -1694,7 +1664,6 @@
           "scripts/validation/check-template-security-baseline.sh",
           "scripts/validation/validate-docker-compose.sh",
           "tests/lib/supply_chain/",
-          "tests/validation/test_postgres_logical_upgrade_rehearsal.py",
           "tests/validation/test_supply_chain_secure_output.py",
           "tests/validation/test_supply_chain_wrapper.py",
           "tests/validation/test_p08_ci_routing.py",
@@ -2216,7 +2185,6 @@
       {
         "prefixes": [
           "scripts/hardening/check-all-hardening.sh",
-          "scripts/operations/rehearse-postgres-logical-upgrade.sh",
           "scripts/operations/check-compose-core-readiness.sh",
           "scripts/operations/rehearse-sample-service-delivery.sh",
           "scripts/operations/gen-secrets.sh",
