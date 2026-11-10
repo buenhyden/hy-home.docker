@@ -1839,9 +1839,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 self.assertNotIn("surreal_db", Path(row["path"]).parts)
         # SPEC-0263 retired PG-023 into an alias of its LAB-029 copy.
         self.assertNotIn("PG-023", rows)
-        self.assertEqual(
-            "secrets/db/dev-pg/debezium_password.txt", rows["PG-025"]["path"]
-        )
+        # ADR-0062 amendment (2026-11-10): the Debezium CDC path left HOME and the
+        # LAB declares no credential, so PG-025 was retired.
+        self.assertNotIn("PG-025", rows)
         self.assertEqual(
             "secrets/db/mng-pg/grafana_reader_password.txt", rows["PG-030"]["path"]
         )

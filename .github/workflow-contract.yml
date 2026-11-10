@@ -765,7 +765,6 @@
         "tests.validation.test_compose_baseline_gates.ContainerThrottleAlertNativeTests",
         "tests.validation.test_crawl4ai_egress.Crawl4AIEgressRehearsalTests",
         "tests.validation.test_mng_valkey_acl.MngValkeyAclNativeTests",
-        "tests.validation.test_compose_baseline_gates.CdcStreamRehearsalTests",
         "tests.validation.test_mng_pg_init_sql.MngPgInitSqlTests",
         "tests.validation.test_redisinsight_rehearsal.RedisInsightRehearsalTests",
         "tests.validation.test_datastore_observation_rehearsal.DatastoreObservationRehearsalTests",

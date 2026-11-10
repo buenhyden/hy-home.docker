@@ -1,10 +1,10 @@
 ---
 title: "개발 PostgreSQL"
-version: "0.1.2"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-11-10"
 created: "2026-10-02"
 ---
 
@@ -12,7 +12,7 @@ created: "2026-10-02"
 
 ## Overview
 
-`dev-pg`는 Compose와 Dockerfile에 선언된 TimescaleDB Community/PG 단일 인스턴스의 **소스 선언**입니다. `dev-data` 프로파일은 개발 PostgreSQL과 Valkey만 선택합니다. `dev-platform-provision`은 `analytics-engineering` 또는 `cdc` 프로파일에서만 선택되며 명시된 `hyhome-platform` 기술 fixture의 `platform_dev` 데이터베이스를 만들도록 설계됐습니다. 공무원·언어 학습 앱이나 외부 업무 프로젝트 데이터베이스는 기본 설치에서 생성하지 않습니다.
+`dev-pg`는 Compose와 Dockerfile에 선언된 TimescaleDB Community/PG 단일 인스턴스의 **소스 선언**입니다. `dev-data` 프로파일은 개발 PostgreSQL과 Valkey만 선택합니다. `dev-platform-provision`은 `analytics-engineering` 프로파일에서만 선택되며 명시된 `hyhome-platform` 기술 fixture의 `platform_dev` 데이터베이스를 만들도록 설계됐습니다. 공무원·언어 학습 앱이나 외부 업무 프로젝트 데이터베이스는 기본 설치에서 생성하지 않습니다.
 
 ## Audience
 
