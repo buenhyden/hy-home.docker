@@ -1,6 +1,6 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -56,7 +56,7 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 
 - 로그: Compose project가 `hy-home-infra`인 컨테이너만 유지하고 `service_name`, `container_name`, `compose_project`, `env`, `scope`를 다시 표기해 Loki로 보낸다.
 - trace: OTLP gRPC 4317과 HTTP 4318을 받아 Tempo로 전달한다. 이 두 port는 trace만 처리하며 metric은 버려진다.
-- profile: `pyroscope.scrape "go_services"`가 12개 대상(`dev-pg-exporter`, `kafka-exporter` 포함)을 60초 간격으로 block/mutex 없이, 별도 `pyroscope.scrape "seaweedfs"`가 지원되지 않는 block/mutex를 제외한 profile을 수집해 Pyroscope로 보낸다. eBPF는 쓰지 않는다.
+- profile: `pyroscope.scrape "go_services"`가 11개 대상(`dev-pg-exporter` 포함; `kafka-exporter`는 `/debug/pprof/*`에 pprof 대신 HTML을 돌려주므로 제외)을 60초 간격으로 block/mutex 없이, 별도 `pyroscope.scrape "seaweedfs"`가 지원되지 않는 block/mutex를 제외한 profile을 수집해 Pyroscope로 보낸다. eBPF는 쓰지 않는다.
 
 `config.home.alloy`의 OTLP trace 수신 주석에 따르면 hy-home.k8s의 Istio가 `192.168.0.13:4317`로 보낸다. k3d OTLP 진입은 [POL-0096](../../policies/10-platform-and-backup/0096-k8s-integration.md)이 관장한다.
 

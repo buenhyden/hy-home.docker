@@ -148,7 +148,6 @@ pyroscope.scrape "go_services" {
     {"__address__" = "mng-pg-exporter:9187", "service_name" = "mng-pg-exporter"},
     {"__address__" = "registry:5001", "service_name" = "registry"},
     {"__address__" = "dev-pg-exporter:9187", "service_name" = "dev-pg-exporter"},
-    {"__address__" = "kafka-exporter:9308", "service_name" = "kafka-exporter"},
   ]
   // 60 s halves the ingested volume of 30 s; the CPU profile still covers the
   // whole interval, so no CPU time goes unsampled. block and mutex stay off:

@@ -452,6 +452,7 @@ class CandidateContract(unittest.TestCase):
         self.assertTrue(matches("infra/03-security/openbao/docker-compose.yml"))
         self.assertFalse(matches("labs/comfyui.yml"))
         self.assertIn("labs/**", config["ignorePaths"])
+        self.assertIn("infra/03-security/openbao/build/**", config["ignorePaths"])
 
 
 if __name__ == "__main__":

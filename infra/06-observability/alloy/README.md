@@ -1,6 +1,6 @@
 ---
 title: "Grafana Alloy Unified Collector"
-version: "1.0.8"
+version: "1.0.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -32,7 +32,7 @@ Alloy는 `hy-home.docker` 플랫폼의 통합 수집 에이전트입니다. 프�
   - Metrics -> Prometheus가 Alloy `/metrics`를 직접 scrape함; self remote-write는 제거됨. 품질 OTLP metrics는 project·environment·service와 k6의 `condition`·`expected_response`·`method`·`status`·`scenario`·producer `instance`만 남긴 뒤 delta→cumulative 변환과 remote write로 전달합니다.
   - Logs -> Loki
   - Traces -> Tempo
-  - Profiling -> 선언된 Go pprof/SeaweedFS scrape 소스(13개, 60초, block/mutex off)에서 Pyroscope writer로 전달
+  - Profiling -> 선언된 Go pprof/SeaweedFS scrape 소스(12개, 60초, block/mutex off)에서 Pyroscope writer로 전달
 - **Status**: Alloy UI를 통한 실시간 파이프라인 디버깅.
 
 ### Out of Scope
