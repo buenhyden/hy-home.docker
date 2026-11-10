@@ -1,6 +1,6 @@
 ---
 title: "Opsflow Data Path Task"
-version: "0.1.9"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -472,7 +472,7 @@ so the changes rest on static review and direct measurement:
 | Narrow owned S3 permission retry | 67 | W72 | Owned S3 permission diagnostic | The one authorized cached-S3 retry after principal/source correction; three owned roles | FAIL | ERROR after 190.468s: 180-second work deadline reached during administrator permission canaries, before old/new action matrices. No corrected-policy runtime PASS, Worker publication, input quarantine or independent restore follows. The 0.001s admission denial is preserved separately; no third runtime is performed. Value-free receipt: native-storage-retry-resumed.log. | required | - |
 | D04 narrow S3 permission rerun | 67 | W72 | Owned S3 permission diagnostic | storage-admin 0.25 CPU, cached images | PASS | 125.5 s; old principal delete 204, corrected matrix PASS; residue 0 | required | Narrow owned S3 permission retry |
 | D04 full Worker rerun | 67 | W72 | Owned native Worker and restore rehearsal | Both D04 fixes, unchanged 780 s deadline | FAIL | S3 matrix, quarantine, Celery publication retry/replay PASS; recovery stopped at the 780 s deadline (812.8 s); owned residue removed to 0; restore NOT_RUN | required | - |
-| Optimized full Worker and restore rehearsal | 67 | W72 | Owned native Worker and restore rehearsal | Airflow roles 1 CPU, unchanged 780 s/900 s deadlines, registered test unmodified | PASS | 2 tests OK in 889.3 s with the narrow S3 test; recovery PASS (empty PG18.6 metadata/DEV, empty SeaweedFS, metadata/tags read back, Worker replay); measured 719.5 s, work ended 683.7 s; residue 0 | required | First owned native Worker and restore rehearsal |
+| Optimized full Worker and restore rehearsal | 67 | W72 | Owned native Worker and restore rehearsal | Airflow roles 1 CPU, unchanged 780 s/900 s deadlines, registered test unmodified | PASS | 2 tests OK in 889.3 s with the narrow S3 test; recovery PASS (empty PG18.6 metadata/DEV, empty SeaweedFS, metadata/tags read back, Worker replay); measured 719.5 s, work ended 683.7 s; residue 0 | required | First owned native Worker and restore rehearsal, D04 full Worker rerun |
 | Narrow retry cleanup postcondition | 67 | W72 | Owned S3 retry cleanup | Exact retry probe, three roles and two networks | PASS | Confirmed absent; retained lists zero and attempt directory null. This is cleanup only, not data recovery or closure of the first full native FAIL. | optional | - |
 | P04 local implementation and review | 67 | W72 | Approved source, RED/GREEN, coverage and independent review | Final owner packets and DATA-0096 file fingerprints | PASS | URI, pipeline, IaC, native source and corrective scenario QA are independently reviewed. Native data 13 unit PASS, 289/300 lines (96.33%); scenario QA 11 PASS, 528/538 lines (98.1413%), independent 11 PASS in 0.115s. Python controller line coverage is not branch coverage or proof that embedded container programs/DB/IAM/queue executed. Full native and narrow timeout remain separate failed evidence. | required | - |
 | CDC current-consumer reconciliation | 68 | W73 | Tracked connector/provisioner, ADR and historical receipt readback | Existing platform_dev path; no live query or registration | PASS | Preserved consumer and acceptance scopes; current CDC is SOURCE_READY and Opsflow adoption is deferred, not a new runtime PASS | required | - |
@@ -505,13 +505,19 @@ so the changes rest on static review and direct measurement:
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 66 | accepted | Issued P04 baseline and documentation leases, Current public inventory and comparison, Local document metadata and links, Operations catalog projection correction, Final independent document review, Registry-backed document integration, Graphify AST freshness | REUSE_ACCEPTED for bounded existing ownership with current affected source regressions; operating roles and restore remain independently unaccepted. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0043 |
-| 67 | pending | P04 local implementation and review, D04 narrow S3 permission rerun, Optimized full Worker and restore rehearsal, D12 HOME installation result | SOURCE_READY: S3 matrix, input quarantine, Celery publication retry/replay and independent recovery pass in the isolated native rehearsal within the unchanged deadline; the D12 HOME installation passed on 2026-11-10 (D12 HOME installation result); owner acceptance pending. | SPEC-0212 TSK-0043 |
+| 67 | accepted | P04 local implementation and review, D04 narrow S3 permission rerun, Optimized full Worker and restore rehearsal, D12 HOME installation result | SOURCE_READY: S3 matrix, input quarantine, Celery publication retry/replay and independent recovery pass in the isolated native rehearsal within the unchanged deadline; the D12 HOME installation passed on 2026-11-10 (D12 HOME installation result). Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0043 |
 | 68 | accepted | CDC current-consumer reconciliation, T03 HOME stream observation, T03 isolated CDC stream rehearsal rerun, T03 owner-approved stop and cleanup | SOURCE_READY; HOME stack measured idle with no consumer; the isolated CDC stream rehearsal passes on the Debezium 3.6.3 image (the 3.7.0.Final build, plugin loading and rehearsal are NOT_RUN); the idle stack is stopped and leftovers removed with owner approval. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0043 |
-| 69 | pending | Quality publication regressions, D12 HOME publication result | SOURCE_READY: current unit/adapter quality blocking is evidenced, and actual Worker publication and quarantine passed on HOME on 2026-11-10; owner acceptance pending. | SPEC-0212 TSK-0043 |
+| 69 | accepted | Quality publication regressions, D12 HOME publication result | SOURCE_READY: current unit/adapter quality blocking is evidenced, and actual Worker publication and quarantine passed on HOME on 2026-11-10. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0043 |
 | 70 | pending | Experiment input decision | BLOCKED on actual inputs by user choice; no experiment is invented. | SPEC-0212 TSK-0043 |
 | 71 | pending | Iceberg current-workload reconciliation | REUSE_ACCEPTED only for the evidenced optional platform; workload adoption is deferred. | SPEC-0212 TSK-0043 |
 
 ## Review and Completion
+
+On 2026-11-10 the owner accepted criteria 67 and 69 after reviewing the
+2026-11-04 original-deadline rehearsal (Worker run, independent restore and
+replay PASS in 889.3 s) and the D12 HOME installation. The paragraph below
+predates both and is kept as the state it recorded at the time; 70 and 71 stay
+pending.
 
 All authorized source changes and independent code/security/SQL/IaC/QA reviews
 are complete. Current P04.02 is TEST_RESIDUAL, not full feature acceptance:

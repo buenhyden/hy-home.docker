@@ -1,10 +1,10 @@
 ---
 title: "Secret Structure and OpenBao Contract Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0045"
 parent_ids:
@@ -444,7 +444,7 @@ owner-run edit.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 76 | pending | Baseline and writer leases | SOURCE_READY pending scoped catalog checks. | SPEC-0212 TSK-0045 |
-| 77 | pending | Protected structure tests, Private structure observation | TEST_RESIDUAL: synthetic and security checks passed; real env and registry DRIFT, private correction outside scope. | SPEC-0212 TSK-0045 |
+| 77 | pending | Protected structure tests, Private structure observation, D07 private structure realignment | TEST_PASS: synthetic and security checks passed, and the owner's 2026-11-09 realignment made the real env and registry structure `MATCH` with the Compose render unchanged. A fresh `--sync-metadata-prune-check` exit 0 is not yet recorded. | SPEC-0212 TSK-0045 |
 | 78 | accepted | Historical acceptance reconciliation | REUSE_ACCEPTED only within historical evidence scope; current equivalence is separate. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0045 |
 | 79 | pending | Consumer and n8n handoff | TEST_RESIDUAL: handoff recorded; actual producer/consumer authorization and rotation remain separate. | SPEC-0212 TSK-0045 |
 | 80 | pending | SMTP source safety and alias, SMTP private equality | SOURCE_READY: bounded reader and synthetic review pass; old-copy absence prevents equality comparison. | SPEC-0212 TSK-0045 |
