@@ -1,6 +1,6 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -193,6 +193,15 @@ analyzed and reviewed. No criterion is accepted by this review.
   private-workflow and SSRF/egress review that the boundaries above require
   before an activation did not precede the 2.46.6 deployment; it stays open and
   applies to the next n8n activation (2.46.7 after its soak).
+- Storybook audit decision (owner, 2026-11-10): the owner accepted the
+  Storybook-chain findings as development-tooling risk until an upstream fix
+  ships, and asked for the eslint chain to be fixed. No eslint fix exists: the
+  suggested `eslint@9.39.5` is a major downgrade from the pinned 10.13.0, and
+  the newest `@eslint/config-array` (0.23.5) still requires `minimatch ^10`,
+  while the patched releases are `minimatch` 11.0.1 and `glob` 14.0.2. The
+  eslint chain therefore stays open: either accept it the same way or force the
+  patched majors through `overrides` with a lint and Storybook build
+  regression.
 
 ## Evidence
 
@@ -230,7 +239,7 @@ analyzed and reviewed. No criterion is accepted by this review.
 | --- | --- | --- | --- | --- |
 | 86 | pending | Ledger repair regression, Latest-version gate | Public observations improve source mapping but incomplete fresh lookups, unmapped rows and artifact evidence remain. | SPEC-0212 TSK-0047 |
 | 87 | pending | Valkey candidate isolation, n8n candidate preparation, n8n advisory fixed-range readback | Exact source, candidate artifact and isolated/recovery evidence remain incomplete. The n8n 2.45.7 candidate is superseded by the deployed 2.46.6, which is in the advisory's patched range; the next n8n activation still needs private-workflow and SSRF/egress review. | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
-| 88 | pending | Storybook clean lock install, Storybook isolated regressions, Storybook audit, Storybook audit rerun | Isolated lock regression passed for the superseded 10.6.3 lock. The 10.6.5 audit reports 13 moderate development-tooling findings and no high or critical; the owner decides whether to accept them or wait for fixes. Current runtime and remote device remain separate. | SPEC-0212 TSK-0047 |
+| 88 | pending | Storybook clean lock install, Storybook isolated regressions, Storybook audit, Storybook audit rerun | Isolated lock regression passed for the superseded 10.6.3 lock. The 10.6.5 audit reports 13 moderate development-tooling findings and no high or critical; the owner accepted the Storybook-chain findings as development-tooling risk on 2026-11-10; the eslint chain has no upgrade fix and stays open. Current runtime and remote device remain separate. | SPEC-0212 TSK-0047 |
 | 89 | pending | Supply-chain gate, Selected candidate verification | No cross-artifact inference; unavailable signing, provenance and SBOM material remains explicit. | SPEC-0212 TSK-0047 |
 
 ## Review and Completion
