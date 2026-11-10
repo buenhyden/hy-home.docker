@@ -187,7 +187,7 @@ them); the Dockerfile and the Connect and Schema Registry dashboards moved to th
 kafbat-ui no longer configures a schema registry or Connect and depends on `kafka-1` only; the
 Prometheus jobs, the two ingress networks, the root `debezium_postgres_password` secret, the
 `cdc`, `messaging-schema` and `messaging-connect` profiles and the HOME `CdcStreamRehearsalTests`
-were removed. PG-025 in the OpenBao catalog keeps its row with no consumer, like PG-020.
+were removed. PG-025 then lost its last consumer; on 2026-11-10 the owner retired it because nothing uses it and the LAB declares no credential, so its catalog row, its test exception and its public registry row were removed and the owner deleted `debezium_password.txt`.
 The SEC01 ledger archived the three rows (`source_refreshes`, `historical_lab_entries`),
 `ledger_rebind` re-bound the hashes, the tech-stack projection and the `m0021` inventory were
 regenerated, and POL-0078, GDE/POL/RUN-0036 and GDE/POL/RUN-0108 were updated.
@@ -196,10 +196,7 @@ Nothing was started, stopped or recreated. The running HOME `kafka-connect` and
 `schema-registry` containers and the `kafka-connect-data` volume remain until the owner approves
 their retirement.
 
-Held for the owner: `secrets/` is denied to agents, so the owner removes the PG-025 row from
-`secrets/SENSITIVE_ENV_VARS.md.example`, the `db/dev-pg/debezium_password` mention in
-`secrets/README.md` if any, and the matching entry in `test_secret_metadata_sync.py`
-(`LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS["PG-025"]`) in the same change.
+The owner removed the PG-025 row from `secrets/SENSITIVE_ENV_VARS.md.example` in the same change, since `secrets/` is denied to agents, and prunes the private registry row after merge with `gen-secrets.sh --sync-metadata-prune`.
 
 ### 2026-11-10 Flower opt-in profile (ADR-0062 amendment)
 
