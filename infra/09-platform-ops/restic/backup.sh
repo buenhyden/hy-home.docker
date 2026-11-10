@@ -30,6 +30,34 @@ require_initialized() {
 action="${1:-snapshots}"
 [ "$#" -gt 0 ] && shift
 
+# Registered mutations receive a one-operation stdin admission only after the
+# host has persisted capacity. This prevents accidental direct entrypoint use;
+# an operator with arbitrary Docker access can still bypass the entrypoint.
+require_memory_admission() {
+    IFS= read -r admission || { echo "memory capacity admission absent" >&2; exit 64; }
+    [ "${#admission}" -le 256 ] || { echo "invalid memory capacity admission" >&2; exit 64; }
+    actual="$(printf '%s\n' "$admission" | sha256sum | cut -d' ' -f1)"
+    if [ -z "${HYHOME_MEMORY_ADMISSION_SHA256:-}" ] ||
+        [ "$actual" != "$HYHOME_MEMORY_ADMISSION_SHA256" ]; then
+        echo "memory capacity admission mismatch" >&2; exit 64;
+    fi
+    case "$admission" in
+        'HYHOME_MEMORY_BUDGET_V1 state '*) ;;
+        *) echo "memory capacity admission target mismatch" >&2; exit 64 ;;
+    esac
+    IFS=' ' read -r protocol target request nonce extra <<EOF
+$admission
+EOF
+    if [ "$protocol" != HYHOME_MEMORY_BUDGET_V1 ] || [ "$target" != state ] ||
+        [ -n "$extra" ] || [ "${#request}" -ne 64 ] || [ "${#nonce}" -ne 64 ]; then
+        echo "invalid memory capacity admission fields" >&2; exit 64
+    fi
+    case "$request$nonce" in *[!0-9a-f]*) echo "invalid memory capacity admission fields" >&2; exit 64 ;; esac
+    MEMORY_OPERATION_TAG="memory-op-$request"
+    unset protocol target request nonce extra
+    unset admission actual HYHOME_MEMORY_ADMISSION_SHA256
+}
+
 case "$action" in
     snapshots)
         for set in $SETS; do
@@ -51,6 +79,11 @@ case "$action" in
         done
         ;;
     backup)
+        echo "use agent_memory.py backup-run --target state" >&2
+        exit 64
+        ;;
+    budget-backup)
+        require_memory_admission
         for set in $SETS; do
             require_initialized "$set"
         done
@@ -74,7 +107,7 @@ case "$action" in
         echo /src/state/pgbackrest >>"$list"
         echo /src/state/dev-pgbackrest >>"$list"
         RESTIC_REPOSITORY="$(repo_for state)" restic backup \
-            --host hy-home --tag hyhome-state \
+            --host hy-home --tag hyhome-state --tag "$MEMORY_OPERATION_TAG" \
             --exclude-file "$SETS_DIR/state-exclude.txt" --exclude-caches \
             --files-from-verbatim "$list"
         RESTIC_REPOSITORY="$(repo_for host)" restic backup \
@@ -103,14 +136,15 @@ case "$action" in
     cmd)
         set_name="${1:?cmd needs a set}"
         shift
-        # Deletions go only through forget-prune and its confirmation.
+        # Mutations go through their owned entrypoint, never generic cmd.
         case "${1:-}" in
-            forget | prune)
-                echo "use forget-prune for '$1'" >&2
+            snapshots | stats | ls | cat | find | check | diff | dump | list | version) ;;
+            *)
+                echo "cmd runs read-only commands only; use the owned operation" >&2
                 exit 64
                 ;;
         esac
-        RESTIC_REPOSITORY="$(repo_for "$set_name")" exec restic "$@"
+        RESTIC_REPOSITORY="$(repo_for "$set_name")" exec restic --no-lock "$@"
         ;;
     *)
         echo "unknown action: $action" >&2

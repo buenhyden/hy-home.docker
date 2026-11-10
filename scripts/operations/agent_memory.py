@@ -3,22 +3,27 @@
 
 from __future__ import annotations
 
-import argparse
 import datetime as dt
 import fcntl
 import hashlib
 import json
 import os
 import sqlite3
-import stat
 import subprocess
 import sys
-import tempfile
+import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+from scripts.lib.ops.memory_capacity import (  # noqa: E402
+    CapacityError,
+    MemoryCapacity,
+    operation_fingerprint,
+    validate_backup_destination,
+)
+from scripts.lib.ops.memory_local import run_local_copy  # noqa: E402
 from scripts.lib.ops.memory_sources import (  # noqa: E402
     REVIEW_STATES,
     reuse_state,
@@ -194,10 +199,14 @@ def _view(
     connection: sqlite3.Connection, row: sqlite3.Row, cwd: Path | None = None
 ) -> dict[str, object]:
     record = _record(row)
-    metadata = connection.execute(
-        "SELECT metadata FROM provenance WHERE memory_id=? AND revision=?",
-        (row["memory_id"], row["revision"]),
-    ).fetchone()
+    metadata = (
+        connection.execute(
+            "SELECT metadata FROM provenance WHERE memory_id=? AND revision=?",
+            (row["memory_id"], row["revision"]),
+        ).fetchone()
+        if "provenance" in _sidecars(connection)
+        else None
+    )
     provenance = (
         json.loads(metadata[0])
         if metadata
@@ -268,6 +277,7 @@ def current_records(
 
 
 def usage(connection: sqlite3.Connection) -> dict[str, object]:
+    sidecars = _sidecars(connection)
     revisions, body_bytes = connection.execute(
         "SELECT count(*), coalesce(sum(length(CAST(body AS BLOB))), 0) FROM revisions"
     ).fetchone()
@@ -287,15 +297,28 @@ def usage(connection: sqlite3.Connection) -> dict[str, object]:
             "database_page_bytes": MAX_DATABASE_BYTES,
             "journal_backup_temporary_bytes": MAX_DATABASE_BYTES,
         },
-        "conflicts": connection.execute("SELECT count(*) FROM conflicts").fetchone()[0],
+        "conflicts": connection.execute("SELECT count(*) FROM conflicts").fetchone()[0]
+        if "conflicts" in sidecars
+        else 0,
         "metadata_bytes": _metadata_bytes(connection),
         "conflict_body_bytes": connection.execute(
             "SELECT coalesce(sum(length(CAST(body AS BLOB))),0) FROM conflicts"
-        ).fetchone()[0],
+        ).fetchone()[0]
+        if "conflicts" in sidecars
+        else 0,
         "sqlite_version": sqlite3.sqlite_version,
         "database_page_limit": connection.execute("PRAGMA max_page_count").fetchone()[
             0
         ],
+    }
+
+
+def _sidecars(connection: sqlite3.Connection) -> set[str]:
+    return {
+        row[0]
+        for row in connection.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('provenance','conflicts')"
+        )
     }
 
 
@@ -304,9 +327,17 @@ def _metadata_bytes(connection: sqlite3.Connection) -> int:
         sum(len(str(row[c]).encode()) for c in COLUMNS if c != "body")
         for row in connection.execute("SELECT * FROM revisions")
     )
-    sidecar_bytes = connection.execute(
-        "SELECT coalesce(sum(length(CAST(metadata AS BLOB))+256),0) FROM (SELECT metadata FROM provenance UNION ALL SELECT metadata FROM conflicts)"
-    ).fetchone()[0]
+    tables = _sidecars(connection)
+    union = " UNION ALL ".join(
+        f"SELECT metadata FROM {table}" for table in sorted(tables)
+    )
+    sidecar_bytes = (
+        connection.execute(
+            f"SELECT coalesce(sum(length(CAST(metadata AS BLOB))+256),0) FROM ({union})"
+        ).fetchone()[0]
+        if union
+        else 0
+    )
     return revision_bytes + sidecar_bytes
 
 
@@ -354,7 +385,7 @@ def _has_room(
     )
 
 
-def put(
+def _put(
     connection: sqlite3.Connection,
     *,
     memory_id: str,
@@ -506,7 +537,83 @@ def put(
     return current + 1
 
 
+def put(connection: sqlite3.Connection, **arguments) -> int:
+    path = Path(connection.execute("PRAGMA database_list").fetchone()[2])
+    manager = MemoryCapacity(path)
+    identity = arguments.get("request_key")
+    inputs = {key: value for key, value in arguments.items() if key != "cwd"}
+    fingerprint = operation_fingerprint(inputs)
+    key = "put:" + (
+        hashlib.sha256((identity + fingerprint).encode()).hexdigest()
+        if identity
+        else uuid.uuid4().hex
+    )
+    try:
+        admission = manager.reserve(key, fingerprint, 0)
+        if admission["replay"]:
+            if admission["state"] != "completed":
+                prior = (
+                    None
+                    if identity is None
+                    else connection.execute(
+                        "SELECT revision FROM provenance WHERE request_key=?",
+                        (identity,),
+                    ).fetchone()
+                )
+                if prior is None:
+                    raise MemoryStoreError(
+                        EXIT_BUSY, "MEMORY_STORE_BUSY: unresolved memory operation"
+                    )
+                revision = _put(connection, **arguments)
+                manager.resolve(
+                    key,
+                    [],
+                    result={"revision": revision},
+                    evidence_ref="committed matching memory request provenance",
+                )
+                return revision
+            result = admission["result"]
+            if "error_code" in result:
+                raise MemoryStoreError(
+                    result["error_code"], result["message"], **result["details"]
+                )
+            return result["revision"]
+        try:
+            revision = _put(connection, **arguments)
+        except MemoryStoreError as error:
+            manager.settle(
+                key,
+                [],
+                result={
+                    "error_code": error.code,
+                    "message": str(error),
+                    "details": error.details,
+                },
+            )
+            raise
+        manager.settle(key, [], result={"revision": revision})
+        return revision
+    except CapacityError as error:
+        raise MemoryStoreError(EXIT_CAPACITY, str(error)) from error
+
+
 def backup(connection: sqlite3.Connection, output: Path) -> None:
+    path = Path(connection.execute("PRAGMA database_list").fetchone()[2])
+    _backup_destination(path, output)
+    manager = MemoryCapacity(path)
+    try:
+        run_local_copy(
+            manager,
+            "manual-backup",
+            path,
+            output,
+            lambda: _backup_locked(connection, output),
+        )
+    except CapacityError as error:
+        raise MemoryStoreError(EXIT_CAPACITY, str(error)) from error
+
+
+def _backup_locked(connection: sqlite3.Connection, output: Path) -> None:
     store = Path(connection.execute("PRAGMA database_list").fetchone()[2])
     descriptor = os.open(store, os.O_RDONLY | os.O_NOFOLLOW)
     try:
@@ -522,30 +629,17 @@ def backup(connection: sqlite3.Connection, output: Path) -> None:
         os.close(descriptor)
 
 
+def _backup_destination(store: Path, output: Path) -> None:
+    try:
+        validate_backup_destination(store, output)
+    except CapacityError as error:
+        raise MemoryStoreError(EXIT_BACKUP, str(error)) from error
+
+
 def _backup(connection: sqlite3.Connection, output: Path) -> None:
     output = output.absolute()
     store = Path(connection.execute("PRAGMA database_list").fetchone()[2]).resolve()
-    if output.resolve() in {
-        store,
-        store.with_name(store.name + "-journal"),
-        store.with_name(store.name + "-wal"),
-    }:
-        raise MemoryStoreError(
-            EXIT_BACKUP, "MEMORY_BACKUP_FAILED: the output is the store itself"
-        )
-    if output.parent.resolve() != output.parent or not output.parent.is_dir():
-        raise MemoryStoreError(
-            EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {output.parent} is not a directory"
-        )
-    directory = output.parent.stat()
-    if directory.st_uid != os.geteuid():
-        raise MemoryStoreError(
-            EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {output.parent} is not owned by you"
-        )
-    if stat.S_IMODE(directory.st_mode) & 0o077:
-        raise MemoryStoreError(
-            EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {output.parent} is not 0700"
-        )
+    _backup_destination(store, output)
     temporary = output.with_name(f".{output.name}.tmp")
     try:
         if store.stat().st_size > MAX_DATABASE_BYTES:
@@ -615,6 +709,24 @@ def _validate_snapshot(connection: sqlite3.Connection) -> None:
 
 
 def restore(source: Path, path: Path) -> None:
+    if path.exists() or path.is_symlink():
+        raise MemoryStoreError(EXIT_CONFLICT, "MEMORY_RESTORE_REFUSED: target exists")
+    manager = MemoryCapacity(path)
+    temporary = path.with_name("." + path.name + ".restore-" + uuid.uuid4().hex)
+    try:
+        run_local_copy(
+            manager,
+            "restore",
+            source,
+            path,
+            lambda: _restore(source, path, temporary),
+            temporary=temporary,
+        )
+    except CapacityError as error:
+        raise MemoryStoreError(EXIT_CAPACITY, str(error)) from error
+
+
+def _restore(source: Path, path: Path, temporary: Path) -> None:
     """Publish a complete restored store exclusively; never replace a live store."""
     if (
         source.is_symlink()
@@ -642,13 +754,9 @@ def restore(source: Path, path: Path) -> None:
             raise MemoryStoreError(
                 EXIT_CONFLICT, f"MEMORY_RESTORE_REFUSED: {path} exists"
             )
-        descriptor, name = tempfile.mkstemp(
-            prefix=f".{path.name}.restore-", dir=path.parent
-        )
-        os.close(descriptor)
-        temporary = Path(name)
+        _create_private(temporary)
         try:
-            # mkstemp creates the copy privately before SQLite opens it.
+            # Exclusive creation makes the copy private before SQLite opens it.
             target = sqlite3.connect(temporary)
             try:
                 backup_db.backup(target)
@@ -672,135 +780,9 @@ def restore(source: Path, path: Path) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    commands = parser.add_subparsers(dest="command", required=True)
-    get_parser = commands.add_parser("get")
-    get_parser.add_argument("memory_id")
-    get_parser.add_argument(
-        "--historical",
-        action="store_true",
-        help="include preserved, noncurrent context",
-    )
-    history_parser = commands.add_parser("history")
-    history_parser.add_argument("memory_id")
-    history_parser.add_argument("--limit", type=int, default=10)
-    list_parser = commands.add_parser("list")
-    list_parser.add_argument("--tier", choices=TIERS)
-    list_parser.add_argument(
-        "--all", action="store_true", help="include ineligible records"
-    )
-    put_parser = commands.add_parser(
-        "put", help="write a new revision; body is read from stdin"
-    )
-    put_parser.add_argument("memory_id")
-    put_parser.add_argument("--expected-revision", type=int, required=True)
-    put_parser.add_argument("--tier", choices=TIERS, required=True)
-    put_parser.add_argument("--owner", required=True)
-    put_parser.add_argument("--source-ref", action="append", default=[])
-    put_parser.add_argument("--sensitivity", choices=SENSITIVITY, default="internal")
-    put_parser.add_argument("--request-key")
-    put_parser.add_argument(
-        "--review-state", choices=REVIEW_STATES, default="candidate"
-    )
-    put_parser.add_argument("--domain-id")
-    eligibility_parser = commands.add_parser("set-eligibility")
-    eligibility_parser.add_argument("memory_id")
-    eligibility_parser.add_argument("--expected-revision", type=int, required=True)
-    eligibility_parser.add_argument("--owner", required=True)
-    eligibility_parser.add_argument("eligibility", choices=ELIGIBILITY)
-    commands.add_parser("usage")
-    commands.add_parser("export", help="current records as JSON")
-    backup_parser = commands.add_parser("backup")
-    backup_parser.add_argument("--output", type=Path, required=True)
-    restore_parser = commands.add_parser("restore", help="rebuild a missing store")
-    restore_parser.add_argument("--input", type=Path, required=True)
-    arguments = parser.parse_args(argv)
+    from scripts.lib.ops.memory_cli import run
 
-    try:
-        path = store_path()
-        if arguments.command == "restore":
-            restore(arguments.input, path)
-            return 0
-        connection = connect(path)
-        existing_identity = connection.execute(
-            "SELECT workspace_id FROM revisions LIMIT 1"
-        ).fetchone()
-        workspace_id = (
-            existing_identity[0] if existing_identity else path.parent.parent.as_posix()
-        )
-        result: object
-        if arguments.command == "get":
-            result = get(
-                connection, arguments.memory_id, current_only=not arguments.historical
-            )
-            if result is None:
-                print(f"MEMORY_NOT_FOUND: {arguments.memory_id}", file=sys.stderr)
-                return 1
-        elif arguments.command == "history":
-            result = history(connection, arguments.memory_id, arguments.limit)
-        elif arguments.command in {"list", "export"}:
-            tier = getattr(arguments, "tier", None)
-            result = current_records(
-                connection, tier, arguments.command == "export" or arguments.all
-            )
-        elif arguments.command == "usage":
-            result = usage(connection)
-        elif arguments.command == "backup":
-            backup(connection, arguments.output)
-            result = {"backup": arguments.output.as_posix()}
-        elif arguments.command == "put":
-            revision = put(
-                connection,
-                memory_id=arguments.memory_id,
-                expected_revision=arguments.expected_revision,
-                workspace_id=workspace_id,
-                tier=arguments.tier,
-                owner=arguments.owner,
-                body=sys.stdin.read(MAX_BODY_BYTES + 1),
-                source_refs=[
-                    json.loads(ref) if ref.startswith("{") else ref
-                    for ref in arguments.source_ref
-                ],
-                sensitivity=arguments.sensitivity,
-                request_key=arguments.request_key,
-                review_state=arguments.review_state,
-                domain_id=arguments.domain_id,
-            )
-            result = {"memory_id": arguments.memory_id, "revision": revision}
-        else:
-            row = get(connection, arguments.memory_id)
-            if row is None:
-                raise MemoryStoreError(
-                    EXIT_CONFLICT,
-                    f"MEMORY_REVISION_CONFLICT: {arguments.memory_id} does not exist",
-                )
-            revision = put(
-                connection,
-                memory_id=arguments.memory_id,
-                expected_revision=arguments.expected_revision,
-                workspace_id=workspace_id,
-                tier=str(row["tier"]),
-                owner=arguments.owner,
-                body=str(row["body"]),
-                source_refs=list(row["source_refs"]),  # type: ignore[arg-type]
-                sensitivity=str(row["sensitivity"]),
-                eligibility=arguments.eligibility,
-                review_state="withdrawn"
-                if arguments.eligibility == "ineligible"
-                else "candidate",
-                domain_id=row["provenance"]["domain_id"],
-            )
-            result = {"memory_id": arguments.memory_id, "revision": revision}
-    except MemoryStoreError as error:
-        print(error, file=sys.stderr)
-        if error.details:
-            print(json.dumps(error.details, sort_keys=True), file=sys.stderr)
-        return error.code
-    except (OSError, sqlite3.Error, ValueError, TypeError) as error:
-        print(f"MEMORY_UNAVAILABLE: {type(error).__name__}", file=sys.stderr)
-        return EXIT_UNAVAILABLE
-    print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0
+    return run(argv, sys.modules[__name__])
 
 
 if __name__ == "__main__":

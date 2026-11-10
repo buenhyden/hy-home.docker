@@ -67,6 +67,8 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0268 | [ComfyUI 필요 시 외부 연결](./0268-comfyui-egress-on-demand/) | ComfyUI의 외부 연결을 기본 render에서 빼고, 모델·custom node 설치 같은 유지보수 때만 opt-in overlay로 붙였다 떼도록 함 |
 | SPEC-0269 | [n8n 유휴 main runner 제거](./0269-n8n-idle-main-runner-removal/) | offload 모드에서 broker가 없는 main 쪽 task runner를 없애 n8n API로 가는 불필요한 경로를 닫고, runner rehearsal fixture를 worker broker 구성에 맞추며 남은 TEST_RESIDUAL과 정리 경쟁 조건을 해소함 |
 
+| SPEC-0270 | [공유 기억 용량·검색](./0270-shared-memory-capacity-and-search/) | 1 GiB 공통 용량 원장, 읽기 전용 검색, 수동·일일·offsite 백업 예약과 중단 복구를 구현함 |
+
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)
 규칙대로 읽을 때 계산하며 표나 frontmatter에 적지 않습니다. 새 lifecycle

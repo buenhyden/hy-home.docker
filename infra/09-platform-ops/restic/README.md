@@ -1,6 +1,6 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.2.4"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -34,8 +34,8 @@ Valkey RDB, SQLite 데이터베이스 세 개), `secrets/`와 `.env`.
 ```text
 restic/
 ├── docker-compose.yml     # restic, restic-offsite, backup-sqlite-export (profile backup)
-├── backup.sh              # snapshots | init | backup | check | forget-prune | cmd
-├── offsite.sh             # R2: snapshots | init | copy | check | forget-prune (confirmed) | artifact (RUN-0085 W3b) | cmd
+├── backup.sh              # 조회·초기화·검사·승인된 처분, host coordinator의 내부 backup
+├── offsite.sh             # R2 조회·검사·승인된 처분/복구, host coordinator의 내부 copy
 ├── export_sqlite.py       # Online Backup API copies with integrity check
 ├── sets/                  # state-include, state-exclude, host-exclude
 ├── bin/hyhome-backup.sh   # host orchestrator (lock, disk preflight, order)
@@ -60,8 +60,9 @@ Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고�
   Grafana와 Gatus 데이터 디렉터리를 쓰기 가능하게 마운트하며
   UID 1000이 소유하는 0600 복사본을 staging에 씁니다.
 - `restic`은 저장소 인덱스와 tmpfs 캐시에 `mem_limit: 1g`를 가지며, 측정 전이므로
-  reservation은 limit과 같다(POL-0107). `cmd`는
-  `forget`/`prune`을 거부하고 이는 `forget-prune`을 통해서만 실행됩니다.
+  reservation은 limit과 같다(POL-0107). `cmd`는 읽기 명령만 전달하고
+  `--no-lock`으로 저장소의 잠금 객체도 만들지 않습니다. 삭제는 기존
+  `forget-prune`과 확인 절차를 통해서만 실행됩니다.
 - 환경 변수 키: `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`,
   `BACKUP_STATE_MAX_GIB`,
   `DEFAULT_MOUNT_VOLUME_PATH`, `DEFAULT_OBSERVABILITY_DIR`, `DEFAULT_AI_MODEL_DIR`,
@@ -90,6 +91,26 @@ Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고�
   (RUN-0021 8.5, 무료 한도 관리는 8.6).
 - `mng-pg`는 로컬 빌드이며 레지스트리가 없습니다. pull에는
   `docker compose pull --ignore-buildable`을 사용합니다.
+- 기억을 포함하는 snapshot과 offsite copy는
+  [공유 기억 CLI](../../../scripts/operations/agent_memory.py)의
+  `backup-run --target state` 또는 `backup-run --target offsite`를 사용합니다.
+  직접 `restic backup`·`restic-offsite copy` entrypoint는 이 경로를 안내하고
+  종료합니다. 호스트가 먼저 용량을 예약한 뒤 내부 작업에 한 번의 stdin
+  admission을 전달합니다. 이는 임의 Docker 명령을 실행할 수 있는 운영자를
+  인증하거나 제한하는 보안 경계는 아닙니다.
+- 최초 적용 시 `capacity reconcile`로 실제 백업 메타데이터를 확인합니다.
+  다른 위치에 있는 기존 기억 복사본은 `--legacy-output PATH`로 각각 추가합니다.
+  DB 본문을 읽지 않고 파일 속성과 Restic snapshot 목록으로 집계합니다.
+  이 도구가 임의 위치의 모든 과거 복사본을 자동 발견한다고 가정하지 않습니다.
+- timeout이나 취소 뒤 예약은 유지됩니다. 같은 요청의 이름·소유 label이
+  일치하는 컨테이너가 실제 종료됐고 결과 snapshot도 확인되어야
+  `capacity reconcile`이 예약을 정산합니다. 컨테이너 부재나 기존 원격
+  snapshot만으로 실행 종료를 추정하지 않습니다. 완료 후에는 확인된 해당
+  컨테이너만 제거하며 volume 삭제나 강제 종료는 하지 않습니다.
+- 기억의 1 GiB는 논리 할당량입니다. 위치별 snapshot 64 MiB를 계산하고,
+  offsite 복사 때는 정확한 원본 snapshot ID로 이미 복사된 항목만 제외합니다.
+  같은 파일 tree라는 이유만으로 서로 다른 snapshot을 합산에서 빼지 않습니다.
+  실제 디스크·R2 용량 보호는 위의 기존 제한을 계속 사용합니다.
 
 ## Validation
 

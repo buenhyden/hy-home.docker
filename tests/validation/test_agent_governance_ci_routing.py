@@ -146,6 +146,29 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             ),
         )
 
+    def test_memory_capacity_search_and_backup_use_the_memory_route(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        for path in (
+            "scripts/lib/ops/memory_capacity.py",
+            "scripts/lib/ops/memory_search.py",
+            "scripts/lib/ops/memory_cli.py",
+            "scripts/lib/ops/memory_local.py",
+            "scripts/lib/ops/memory_backup.py",
+            "tests/lib/ops/test_memory_capacity.py",
+            "tests/lib/ops/test_memory_search.py",
+            "tests/lib/ops/test_memory_backup.py",
+            "tests/lib/ops/test_memory_local.py",
+            "tests/validation/test_agent_memory_capacity.py",
+            "tests/validation/test_memory_backup_contract.py",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(
+                    ("agent-governance", "repository-integrity"),
+                    contract.select_public_suites(public, "changed", (path,)),
+                )
+
     @staticmethod
     def _write_executable(path: pathlib.Path, text: str) -> None:
         path.write_text(text, encoding="utf-8")

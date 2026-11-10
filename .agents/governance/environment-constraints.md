@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.9.1"
+version: "1.10.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 ---
 
 # Environment Constraints
@@ -153,9 +153,10 @@ This project has a graphify knowledge graph at `graphify-out/`.
   nothing.
 - A record never holds a secret. This rests on the writer's care: the CLI
   does not scan bodies, and `export` and backups are plaintext.
-- Limits are logical: the CLI refuses a write that would cross them and keeps
+- Limits are logical: the CLI refuses growth that would cross them and keeps
   every existing revision. No filesystem quota enforces them, so none is
-  claimed. The backup and restore runbook refreshes one online backup.
+  claimed. The backup and restore runbook owns inventory, admission and
+  recovery for manual, daily and offsite copies.
 - A new revision uses schema 2; existing schema 1 bodies, revisions, and
   sources are preserved as they are. `candidate`, `current`, `needs-review`,
   `superseded`, and `withdrawn` are kept apart as separate provenance.
@@ -197,12 +198,45 @@ This project has a graphify knowledge graph at `graphify-out/`.
 - Every reconnect reapplies a SQLite page limit worth 64 MiB. A database
   already larger than that keeps its page count, so the limit cannot drop;
   `usage` shows the real value and new writes are refused. The 64 MiB budgets
-  for the database, the rollback journal, the fixed backup, and a temporary
+  for the database, the rollback journal, each backup, and a temporary
   copy are not filesystem hard quotas. The journal budget is observed only,
   and backup and restore refuse a copy over 64 MiB. Concurrent backups are
   serialized by an advisory lock on the source inode, check a clean snapshot,
-  and atomically replace the one fixed backup. No capacity overrun ever
+  and atomically publish their registered output under capacity admission.
+  No capacity overrun ever
   allows an existing revision to be deleted automatically.
+- A separate ignored `.workspace-memory/capacity.sqlite3` ledger and stable
+  `capacity.lock` govern a 1 GiB (1,073,741,824-byte) shared allocation. The
+  ledger includes its own storage, memory databases and journals, temporary
+  copies, registered manual/daily exports, and memory-containing local
+  Restic and R2 snapshots. Each external snapshot location is charged 64 MiB;
+  compression and deduplication never create presumed credits. Existing
+  body, metadata and individual database/copy limits still apply. This is
+  conservative logical allocation, not measured physical storage or a quota.
+- Every sanctioned growth entrypoint durably reserves capacity before I/O,
+  then verifies and settles its result. The shared lock and ledger transaction
+  prevent concurrent allocation of the same remaining bytes. Identical request
+  identities and inputs reuse the recorded result; conflicting inputs refuse.
+  Pending or uncertain reservations remain charged after interruption and
+  never expire by age. Explicit metadata-based reconciliation is required
+  before reclaiming their allocation.
+- Missing, corrupt, incomplete or inaccessible capacity inventory and exhausted
+  capacity refuse new writes and copies, without deleting old data or blocking
+  existing reads. Initial inventory is a separate operator action through the
+  CLI; source installation neither initializes the real ledger nor infers an
+  empty backup inventory. Restoring a memory snapshot never rewinds the
+  independent capacity ledger.
+- Manual `backup --output`, daily export, local snapshot and offsite copy use
+  the same capacity admission. A host coordinator calls the shell-only backup
+  jobs; their generic command routes allow only read-only operations. A
+  producer-bound admission prevents accidental bypass of this route; it is
+  not authentication against an operator who controls Docker or the files.
+- `search --query TEXT --limit N` provides deterministic local lexical search
+  of currently reusable records, defaulting to 10 results with a maximum of
+  50. It returns identity, revision, provenance and short excerpts. Full bodies
+  remain available through the existing retrieval commands. Search and
+  `capacity status` open existing state read-only: they never initialize a
+  database or schema, change permissions, or add a service or model API call.
 
 ## Exceptions
 

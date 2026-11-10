@@ -119,6 +119,30 @@ require_initialized() {
 action="${1:-snapshots}"
 [ "$#" -gt 0 ] && shift
 
+require_memory_admission() {
+    IFS= read -r admission || { echo "memory capacity admission absent" >&2; exit 64; }
+    [ "${#admission}" -le 256 ] || { echo "invalid memory capacity admission" >&2; exit 64; }
+    actual="$(printf '%s\n' "$admission" | sha256sum | cut -d' ' -f1)"
+    if [ -z "${HYHOME_MEMORY_ADMISSION_SHA256:-}" ] ||
+        [ "$actual" != "$HYHOME_MEMORY_ADMISSION_SHA256" ]; then
+        echo "memory capacity admission mismatch" >&2; exit 64;
+    fi
+    case "$admission" in
+        'HYHOME_MEMORY_BUDGET_V1 offsite '*) ;;
+        *) echo "memory capacity admission target mismatch" >&2; exit 64 ;;
+    esac
+    IFS=' ' read -r protocol target request nonce extra <<EOF
+$admission
+EOF
+    if [ "$protocol" != HYHOME_MEMORY_BUDGET_V1 ] || [ "$target" != offsite ] ||
+        [ -n "$extra" ] || [ "${#request}" -ne 64 ] || [ "${#nonce}" -ne 64 ]; then
+        echo "invalid memory capacity admission fields" >&2; exit 64
+    fi
+    case "$request$nonce" in *[!0-9a-f]*) echo "invalid memory capacity admission fields" >&2; exit 64 ;; esac
+    unset protocol target request nonce extra
+    unset admission actual HYHOME_MEMORY_ADMISSION_SHA256
+}
+
 case "$action" in
     snapshots)
         require_initialized
@@ -134,6 +158,11 @@ case "$action" in
         fi
         ;;
     copy)
+        echo "use agent_memory.py backup-run --target offsite" >&2
+        exit 64
+        ;;
+    budget-copy)
+        require_memory_admission
         require_initialized
         # copy skips snapshots the remote already has. --no-lock applies to
         # the read-only source only; the orchestrator's flock excludes writers.
@@ -310,7 +339,7 @@ case "$action" in
                 exit 64
                 ;;
         esac
-        exec restic "$@"
+        exec restic --no-lock "$@"
         ;;
     *)
         echo "unknown action: $action" >&2
