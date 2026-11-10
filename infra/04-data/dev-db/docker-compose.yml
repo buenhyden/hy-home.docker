@@ -129,6 +129,10 @@ services:
       - dev_pg_platform_migrator_password
       - dev_pg_platform_runtime_password
       - dev_pg_platform_reader_password
+      - dev_pg_opsflow_migrator_password
+      - dev_pg_opsflow_ingest_password
+      - dev_pg_opsflow_notifier_password
+      - dev_pg_opsflow_reader_password
     depends_on:
       dev-pg:
         condition: service_healthy

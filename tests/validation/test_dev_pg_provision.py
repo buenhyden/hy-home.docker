@@ -100,25 +100,21 @@ class ProjectProvisionTests(unittest.TestCase):
                         r"(?<!:):(?:'[A-Za-z_][A-Za-z0-9_]*'|\"[A-Za-z_][A-Za-z0-9_]*\")",
                     )
 
-    def test_pending_opsflow_fixture_validates_but_cannot_emit_sql(self):
+    def test_opsflow_fixture_binds_four_distinct_login_secrets(self):
         fixture = SOURCE.parent / "opsflow.json"
         project = MODULE.validate(json.loads(fixture.read_text()))
         self.assertEqual(2, project["schema_version"])
-        self.assertIsNone(project["password_secrets"])
-        self.assertEqual(opsflow_manifest(bound=False)["roles"], project["roles"])
-        with self.assertRaisesRegex(ValueError, "credential bindings pending"):
-            MODULE.sql_for(project)
+        self.assertEqual(opsflow_manifest()["roles"], project["roles"])
+        self.assertEqual(
+            {
+                kind: f"dev_pg_opsflow_{kind}_password"
+                for kind in ("migrator", "ingest", "notifier", "reader")
+            },
+            project["password_secrets"],
+        )
+        MODULE.sql_for(project)
 
-    def test_pending_opsflow_cli_stops_before_secret_or_sql_access(self):
-        fixture = SOURCE.parent / "opsflow.json"
-        with (
-            mock.patch.object(sys, "argv", [str(SOURCE), str(fixture)]),
-            mock.patch.object(MODULE, "read_secret") as read_secret,
-        ):
-            self.assertEqual(64, MODULE.main())
-        read_secret.assert_not_called()
-
-    def test_pending_opsflow_validate_only_is_structural(self):
+    def test_opsflow_validate_only_is_complete(self):
         fixture = SOURCE.parent / "opsflow.json"
         with (
             mock.patch.object(
@@ -129,9 +125,7 @@ class ProjectProvisionTests(unittest.TestCase):
         ):
             self.assertEqual(0, MODULE.main())
         read_secret.assert_not_called()
-        output.assert_called_once_with(
-            "project manifest structurally valid; credential bindings pending"
-        )
+        output.assert_called_once_with("project manifest valid")
 
     def test_function_only_sql_has_exact_roles_and_no_broad_acl(self):
         sql = MODULE.sql_for(MODULE.validate(opsflow_manifest()))

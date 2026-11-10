@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.6.1"
+version: "1.6.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 ---
 
 # Git Workflow Governance
@@ -69,8 +69,9 @@ automatic enforcement from configuration alone.
   satisfy a branch name.
 - Emergency hotfix branches use `hotfix/<short-description>` and preserve the
   same PR, validation and explicit runtime authorization boundaries.
-- Automation branch exceptions: `dependabot/**` and `codex/**` are allowed for
-  tool-generated PR branches only. They must still merge through the PR
+- Automation branch exceptions: `renovate/**` and `codex/**` are allowed for
+  tool-generated PR branches only (Renovate is the sole dependency updater;
+  see `docs/05.operations/policies/10-platform-and-backup/0086-dependency-version-management.md`). They must still merge through the PR
   protocol and required checks.
 - Create a branch's linked worktree under the ignored `.worktrees/<branch>`
   directory. Remove a worktree and its merged branch when the work ends. A
