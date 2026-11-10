@@ -1,6 +1,6 @@
 ---
 title: "Renovate Runbook"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -64,9 +64,9 @@ Git에서 복원하고, 잘못된 원격 branch/PR을 개별적으로 검토하�
 validation한 뒤, 제한된 repository 집합에 대해 dry-run/discovery를 실행하고
 단일 승인된 canary repository를 실행한다.
 
-### 승인된 systemd 설치 (선택)
+### 승인된 systemd 설치
 
-기본 경로는 온디맨드 실행이며 이 절은 예약 실행이 별도로 승인된 경우에만 쓴다.
+주간 timer(`hyhome-renovate.timer`)는 HOME 호스트에 설치된 기본 실행이다. 위 Compose 명령은 머지 사이의 rebase·재시도용 온디맨드 실행이다.
 host unit을 설치하거나 교체하는 것은 별도 승인이 필요한 host 변경이다.
 symlink 대신 검토된 파일을 복사해 checkout이나 branch 전환, pull이 systemd가
 실행하는 내용을 조용히 바꾸지 못하게 한다. 설치본과 현재 추적 파일을 별도로 비교한다.

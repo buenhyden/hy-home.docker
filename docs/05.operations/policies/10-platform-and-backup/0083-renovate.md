@@ -1,6 +1,6 @@
 ---
 title: "Renovate Policy"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -16,7 +16,7 @@ created: "2026-09-19"
 
 ## Overview
 
-Renovate는 HOME 호스트에서 self-hosted로 실행하는 온디맨드 Compose job(`dependency-update` profile)이며
+Renovate는 HOME 호스트에서 self-hosted로 실행하는 Compose job(`dependency-update` profile)이며 설치된 주간 systemd timer(월요일, 일정 창 00–05시 KST)가 기본 실행이고 Compose `run --rm`은 rebase·재시도용 온디맨드 실행이며
 원격 저장소 쓰기 권한을 가진다. HOME이나 일반 도구 기동에는 절대 포함되지 않는다.
 상시 서비스가 아니며 메모리 상한은 2 GiB다.
 
@@ -44,7 +44,7 @@ Renovate는 HOME 호스트에서 self-hosted로 실행하는 온디맨드 Compos
 
 ### 예약 실행 책임
 
-기본 실행은 온디맨드이며 systemd timer는 설치를 전제하지 않는 선택 사본이다. 설치하면
+설치된 주간 systemd timer가 기본 실행이고 Compose `run --rm`은 온디맨드 실행이다.
 timer가 시작한 실행과 수동 실행에는 같은 승인·근거 규칙이 적용된다.
 `Persistent=true`의 catch-up도 원격 변경 승인 범위에 포함해야 한다. 책임자는
 `@buenhyden`이며 host unit 설치·교체는 검토된 사본으로만 수행한다. 이미지 태그는
