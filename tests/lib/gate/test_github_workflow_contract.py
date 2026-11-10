@@ -374,7 +374,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         boundary = compose_arguments.index("--optional-runtime-skips")
         optional = compose_arguments[boundary + 1 : -1]
         self.assertNotIn(module, optional)
-        self.assertEqual(32, len(optional))
+        self.assertEqual(31, len(optional))
 
     def setUp(self) -> None:
         self.module = load_contract_module()
