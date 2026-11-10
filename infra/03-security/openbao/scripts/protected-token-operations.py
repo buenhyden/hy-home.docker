@@ -21,7 +21,7 @@ import time
 import types
 from pathlib import Path
 
-MAINTENANCE_SHA256 = "b15ddff27618627745b5f3ffe712fb6aeb83fe74d94ae7ef55370dac0de2cde4"
+MAINTENANCE_SHA256 = "184f5cdda3709caadfddc8d27149377c9f3af61de6d7e58232373b06ffe43a3e"
 PRIOR_POLICY_SHA256 = "84af105c666312712a0d6809e0a4c037ed66e7157027e94ac1d79c132131a608"
 POLICY_SHA256 = "1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622"
 POLICY_FILE = "infra/03-security/openbao/config/policies/backup-snapshot.hcl"
