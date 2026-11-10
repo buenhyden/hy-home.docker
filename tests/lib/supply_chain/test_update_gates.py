@@ -343,6 +343,18 @@ class SecurityUpdateGateTests(unittest.TestCase):
 
 
 class UpdateEvidencePackageTests(unittest.TestCase):
+    def test_tracked_ledger_files_are_canonical_for_renovate_rebind(self):
+        # Renovate's postUpgradeTasks run ledger_rebind, which refuses a
+        # non-canonical file; a hand edit with ensure_ascii broke every PR.
+        from scripts.lib.supply_chain.ledger_rebind import _load
+
+        package = Path(__file__).resolve().parents[3] / (
+            "infra/09-platform-ops/security-updates"
+        )
+        for name in ("update-ledger.json", "build-inputs.json"):
+            with self.subTest(name):
+                _load(package / name)
+
     def test_current_native_aggregate_cannot_claim_a_single_invocation(self):
         root = Path(__file__).resolve().parents[3]
         package = root / "infra/09-platform-ops/security-updates"
