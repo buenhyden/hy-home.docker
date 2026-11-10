@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Usage Guide"
-version: "1.2.6"
+version: "1.2.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -85,7 +85,7 @@ Qdrant는 API key를 환경 변수로만 읽으므로, Compose 시작 스크립�
 ## Troubleshooting
 
 - 현재 compose는 host port publish가 아니라 SSO 뒤의 Traefik REST route와 internal expose를 사용한다.
-- 새 클라이언트는 key를 secret file로 받아야 한다. 컨테이너 환경변수나 로그에 key 값을 남기지 않는다. Open WebUI는 Qdrant를 쓰지 않는다(`VECTOR_DB` 미설정, 로컬 저장소 사용).
+- 새 클라이언트는 key를 secret file로 받아야 한다. 컨테이너 환경변수나 로그에 key 값을 남기지 않는다. Open WebUI는 HOME network 밖의 독립 LAB이라 Qdrant를 쓰지 않는다(`VECTOR_DB` 미설정, 로컬 저장소 사용).
 - create/search/delete collection 예시는 데이터 mutation 또는 application workflow이므로 일반 usage check가 아니라 application guide 또는 승인된 runbook에서 다룬다.
 - snapshot restore compatibility는 same minor 또는 next minor로 제한하고 target collection 부재/force semantics와 약 2배 disk headroom을 사전 확인한다.
 

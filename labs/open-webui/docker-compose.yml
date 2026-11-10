@@ -1,0 +1,99 @@
+# Independent Open WebUI LAB entrypoint (ADR-0062); never included by the root.
+# It joins no HOME network and has no gateway route. The Ollama endpoint is a
+# required LAB input; Keycloak is reached through its public gateway name.
+name: hy-home-lab-open-webui
+
+x-tier-label: &tier-label
+  hy-home.tier: lab
+  traefik.enable: 'false'
+
+volumes:
+  # webui.db, uploads, the local vector store and the generated session key.
+  open-webui-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/open-webui/data
+
+networks:
+  lab_open_webui_net:
+    name: hy-home-lab-open-webui
+
+# LAB-only secret under LAB_SECRET_DIR; no root value is shared. It mounts at
+# its original /run/secrets name, which the entrypoint reads.
+secrets:
+  lab_open_webui_oidc_client_secret:
+    file: ${LAB_SECRET_DIR:-../../secrets/labs}/open-webui/oidc_client_secret.txt
+
+services:
+  open-webui:
+    # Reservation (measured in HOME; SPEC-0263-TSK-0002 Measurements).
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 800M
+    profiles:
+      - lab-open-webui
+    extends:
+      file: ../../infra/common-optimizations.yml
+      service: template-stateful-med
+    image: ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25
+    container_name: open-webui
+    hostname: open-webui
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    mem_limit: 2g
+    cpus: "2.00"
+    entrypoint:
+      - /usr/local/bin/open-webui-oidc-entrypoint.sh
+    environment:
+      PORT: '8080'
+      OLLAMA_BASE_URL: '${LAB_OPEN_WEBUI_OLLAMA_BASE_URL:?set an approved Ollama endpoint}'
+      # VECTOR_DB unset: the built-in local store under the LAB data root.
+      RAG_EMBEDDING_ENGINE: ollama
+      # The image leaves WEBUI_SECRET_KEY empty, so start.sh keeps a generated key
+      # in this file; in the LAB data root it survives recreation.
+      WEBUI_SECRET_KEY_FILE: /app/backend/data/.webui_secret_key
+      # Open WebUI keeps saved values in webui.db, which override these on restart.
+      RAG_EMBEDDING_MODEL: embeddinggemma-2:740m
+      # Local Ollama only: no direct OpenAI cloud path without an approved contract.
+      ENABLE_OPENAI_API: 'false'
+      WEBUI_URL: 'https://chat.${LAB_OPEN_WEBUI_DEFAULT_URL:?set the HOME gateway domain}'
+      OAUTH_CLIENT_ID: home-openwebui
+      OAUTH_PROVIDER_NAME: Keycloak
+      OAUTH_SCOPES: openid profile email
+      OPENID_PROVIDER_URL: 'https://keycloak.${LAB_OPEN_WEBUI_DEFAULT_URL:?set the HOME gateway domain}/realms/hy-home.realm/.well-known/openid-configuration'
+      OPENID_REDIRECT_URI: 'https://chat.${LAB_OPEN_WEBUI_DEFAULT_URL:?set the HOME gateway domain}/oauth/oidc/callback'
+      OAUTH_CODE_CHALLENGE_METHOD: S256
+      ENABLE_OAUTH_PERSISTENT_CONFIG: 'false'
+      ENABLE_OAUTH_SIGNUP: 'false'
+      ENABLE_LOGIN_FORM: 'false'
+      ENABLE_PASSWORD_AUTH: 'false'
+      OAUTH_MERGE_ACCOUNTS_BY_EMAIL: 'false'
+      ENABLE_OAUTH_ROLE_MANAGEMENT: 'false'
+      ENABLE_OAUTH_GROUP_MANAGEMENT: 'false'
+      ENABLE_OAUTH_GROUP_CREATION: 'false'
+      WEBUI_AUTH_COOKIE_SECURE: 'true'
+      ENABLE_OAUTH_ID_TOKEN_COOKIE: 'false'
+    volumes:
+      - open-webui-data:/app/backend/data:rw
+      - ./docker-entrypoint.sh:/usr/local/bin/open-webui-oidc-entrypoint.sh:ro
+      - ${LAB_OPEN_WEBUI_CA_FILE:?set the HOME root CA certificate file}:/etc/ssl/certs/hy-home-rootCA.pem:ro
+    secrets:
+      - source: lab_open_webui_oidc_client_secret
+        target: openwebui_oidc_client_secret
+    # No gateway route: the UI is published on the LAB bind address only.
+    ports:
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}:8080'
+    networks:
+      lab_open_webui_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'curl -f "http://localhost:$${PORT}/health" || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s

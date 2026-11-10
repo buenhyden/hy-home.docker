@@ -972,9 +972,7 @@ class OpenWebuiLocalModelContractTests(unittest.TestCase):
         import yaml
 
         service = yaml.safe_load(
-            (ROOT / "infra/08-ai/open-webui/docker-compose.yml").read_text(
-                encoding="utf-8"
-            )
+            (ROOT / "labs/open-webui/docker-compose.yml").read_text(encoding="utf-8")
         )["services"]["open-webui"]
         environment = service["environment"]
         self.assertEqual("ollama", environment["RAG_EMBEDDING_ENGINE"])
@@ -6447,7 +6445,6 @@ ROUTES_WITHOUT_SSO = {
     "hermes-dashboard": "native-oidc",
     "kafka-ui": "native-oidc",
     "n8n": "native-login",
-    "open-webui": "native-oidc",
     "openbao": "native-oidc",
     # The identity provider and the ForwardAuth service themselves
     "keycloak": "identity-provider",

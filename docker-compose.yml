@@ -387,8 +387,6 @@ secrets:
     file: ./secrets/auth/oauth2-proxy/oauth2_proxy_cookie_secret.txt
   kafbat_client_secret:
     file: ./secrets/auth/kafbat/kafbat_client_secret.txt
-  openwebui_oidc_client_secret:
-    file: ./secrets/auth/open-webui/openwebui_oidc_client_secret.txt
   gatus_oidc_client_secret:
     file: ./secrets/auth/gatus/gatus_oidc_client_secret.txt
   grafana_client_secret:
@@ -606,7 +604,6 @@ include:
   - infra/08-ai/mlflow/docker-compose.yml
   - infra/08-ai/ollama/docker-compose.yml
   - infra/08-ai/open-notebook/docker-compose.yml
-  - infra/08-ai/open-webui/docker-compose.yml
   # 09-platform-ops
   - infra/09-platform-ops/opentofu/docker-compose.yml
   - infra/09-platform-ops/registry/docker-compose.yml

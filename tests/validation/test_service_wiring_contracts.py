@@ -232,7 +232,7 @@ class OptionalIntegrationContractTests(unittest.TestCase):
 
 class OpenWebUiVectorStoreTests(unittest.TestCase):
     def test_no_vector_db_url_without_a_selected_vector_db(self) -> None:
-        env = _service("infra/08-ai/open-webui/docker-compose.yml", "open-webui")[
+        env = _service("labs/open-webui/docker-compose.yml", "open-webui")[
             "environment"
         ]
         if "VECTOR_DB_URL" in env:
@@ -244,7 +244,7 @@ class AiRuntimeContractTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.ollama = _service("infra/08-ai/ollama/docker-compose.yml", "ollama")
-        self.webui = _service("infra/08-ai/open-webui/docker-compose.yml", "open-webui")
+        self.webui = _service("labs/open-webui/docker-compose.yml", "open-webui")
         self.ollama_env = dict(e.split("=", 1) for e in self.ollama["environment"])
 
     def test_images_are_the_requested_tags_pinned_by_digest(self) -> None:
@@ -297,12 +297,12 @@ class AiRuntimeContractTests(unittest.TestCase):
             )
         )
 
-    def test_renovate_tracks_both_compose_files(self) -> None:
+    def test_renovate_tracks_ollama_and_ignores_the_open_webui_lab(self) -> None:
         renovate = json.loads((ROOT / "renovate.json5").read_text(encoding="utf-8"))
         patterns = renovate["docker-compose"]["managerFilePatterns"]
-        for name in ("ollama", "open-webui"):
-            path = f"infra/08-ai/{name}/docker-compose.yml"
-            self.assertTrue(any(re.search(pattern[1:-1], path) for pattern in patterns))
+        path = "infra/08-ai/ollama/docker-compose.yml"
+        self.assertTrue(any(re.search(pattern[1:-1], path) for pattern in patterns))
+        # ADR-0062 amendment: Open WebUI is a LAB, outside Renovate's scope.
         self.assertIn("labs/**", renovate["ignorePaths"])
 
 

@@ -28,6 +28,7 @@ LABS = (
     "lakehouse",
     "locust",
     "mongodb",
+    "open-webui",
     "opensearch-cluster",
     "postgresql-ha",
     "sonarqube",
@@ -51,6 +52,9 @@ OPERATOR_INPUTS = {
     "LAB_SUPERSET_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
     "LAB_SONARQUBE_DB_HOST": "lab-endpoint.invalid",
     "LAB_STALWART_DEFAULT_URL": "lab.invalid",
+    "LAB_OPEN_WEBUI_OLLAMA_BASE_URL": "http://lab-endpoint.invalid:11434",
+    "LAB_OPEN_WEBUI_DEFAULT_URL": "lab.invalid",
+    "LAB_OPEN_WEBUI_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
 }
 DATA_DIR = tempfile.mkdtemp(prefix="lab-layout-data-")
 

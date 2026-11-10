@@ -1,10 +1,10 @@
 ---
 title: "운영 가이드"
-version: "0.2.7"
+version: "0.2.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 ---
 
@@ -105,7 +105,7 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 | [메시징과 CDC](06-messaging-and-cdc/README.md) | Kafka·CDC의 원천, topic·slot·offset과 소비 흐름을 이해한다. |
 | [관측](07-observability/README.md) | Alloy·Prometheus·Grafana와 로그·추적·프로파일 신호의 의미를 이해한다. |
 | [워크플로와 자동화](08-workflows-and-automation/README.md) | Airflow 배치와 n8n 통지, 실행 주체·재시도·outbox 의미를 이해한다. |
-| [AI와 검색](09-ai-and-search/README.md) | 기존 Ollama·Open WebUI·Qdrant·ComfyUI의 사용·데이터·GPU 경계를 이해한다. |
+| [AI와 검색](09-ai-and-search/README.md) | 기존 Ollama·Qdrant·ComfyUI의 사용·데이터·GPU 경계를 이해한다. |
 | [플랫폼과 백업](10-platform-and-backup/README.md) | 플랫폼 도구, 이미지 공급망과 backup·restore의 사용 전제를 이해한다. |
 | [메일과 통지](11-mail-and-notifications/README.md) | 공용 SMTP, mail capture와 수락·외부 배달 상태를 구분한다. |
 | [시험과 품질](12-testing-and-quality/README.md) | k6·WireMock·Pact Broker·Conftest와 성능 시험의 역할·경계를 이해한다. |
