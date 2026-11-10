@@ -39,15 +39,15 @@ while read -r P01_SOURCE_HASH P01_SOURCE_PATH; do
   printf '%s  %s\n' "$P01_SOURCE_HASH" "$P01_CLIENT_DIR/$P01_SOURCE_PATH" | /usr/bin/sha256sum -c - || exit 1
   /usr/bin/chmod 0400 "$P01_CLIENT_DIR/$P01_SOURCE_PATH" || exit 1
 done <<'P01_SOURCE_MANIFEST'
-b6b820b6561558020842376a06729f7663de3410188a544a6662024c4575568c infra/03-security/openbao/scripts/protected-maintenance.py
-1ffe30c089361c7a7129bcce2407d08418222722aad2cba6e90804213b7c433b infra/03-security/openbao/scripts/protected-token-operations.py
-05be43d5e2b9e8f067c2b81d4872666e89a1300fd2d21ecfee12db13e8aa5853 infra/03-security/openbao/scripts/protected-raft-snapshot.py
+b15ddff27618627745b5f3ffe712fb6aeb83fe74d94ae7ef55370dac0de2cde4 infra/03-security/openbao/scripts/protected-maintenance.py
+5507460b45786e49e3022b10e5bbf951007176dd1d93db2991486836f1a79d88 infra/03-security/openbao/scripts/protected-token-operations.py
+53e4dd3b0d90849597581e2fee004032ceaadcc4ad26022b85a71d130951c7eb infra/03-security/openbao/scripts/protected-raft-snapshot.py
 48ff7d0e0ee6e39b00c5105df5fa20891b70ac5e0e820715aad0b675ab028868 infra/03-security/openbao/scripts/protected-snapshot-archive.py
 fd266cdd46d950cc8d6cc8704497fd1454bd51c47f1c4b071b24cfbf79bba724 infra/03-security/openbao/scripts/protected-snapshot-custody.py
-32412b2a6f4d28f6e6105066dafd61d876443cd3160bb4feb120d7e175e3c6ef infra/03-security/openbao/scripts/protected-semantic-restore.py
+a2c850a11c584e2ef3ec15a8e04b78516b0ee30228c4afded6736f7b63f3ccb7 infra/03-security/openbao/scripts/protected-semantic-restore.py
 b5aa92bdf528eb92993fc46061ead65b72bf71efe30182cca7cc5b5706ab396e infra/03-security/openbao/scripts/protected-semantic-execution.py
 1aa658e05aee76127c7961abd218020fe6a319fd26253c78ecefb3ae99d4b622 infra/03-security/openbao/config/policies/backup-snapshot.hcl
-d2bfabe2b12271d5fdb3785c32f41c2a534fafed4126712e710c3ad0a3be2ec3 infra/03-security/openbao/scripts/protected-renderer-roles.py
+b73e601a46a687702a0e4f7b043d936068ae9048b6163a3f7d3ea6e6270fd8da infra/03-security/openbao/scripts/protected-renderer-roles.py
 3a24759ae95ac6363353c9d5d28de787c75bb3c60e1af6bc4bbe34b103799a4e infra/03-security/openbao/config/policies/renderer.hcl
 0ab86b526e0506b658184e0be20a9713a737262f921f1019f2f38609c394d3e5 infra/03-security/openbao/config/policies/renderer-issuer.hcl
 a42f0b23de31acbeaf3c88761ebc2ba5a696fbdfcfe6667062ed864e9998a7a5 infra/03-security/openbao/config/policies/renderer-cleanup.hcl

@@ -846,16 +846,12 @@ class UpdateEvidencePackageTests(unittest.TestCase):
             self.assertTrue(row["compose_file"].startswith("infra/"))
             self.assertEqual("NOT_RUN", row["deployment"])
             if row["service"] in {"openbao", "openbao-agent"}:
-                self.assertEqual(
-                    "sha256:a58fb1109971e506e9de1a360aec48ae07af7b6ccf409f8bac329e30e8fde8c8",
-                    row["target_declared_digest"],
-                )
-                self.assertEqual(
-                    "PASS: selected owned artifact scan receipt SHA256 "
-                    "8e32274b3b95bb3eddd911be57e1fd1200e29e676e41783a73ede34c0cf6f87b",
-                    row["sbom_scan"],
-                )
-                self.assertEqual("NOT_UPSTREAM_SIGNED", row["signature"])
+                # 2026-11-10: the r2 pin is bound but not yet reviewed; the r1
+                # evidence receipt stays in the history rows, not on this row.
+                self.assertIn("net0.60.0-r2@sha256:88d38aa3", row["current_declared"])
+                self.assertEqual("UNKNOWN", row["target_declared_digest"])
+                self.assertTrue(row["sbom_scan"].startswith("NOT_RUN"))
+                self.assertTrue(row["signature"].startswith("NOT_RUN"))
             elif row["service"] in {"traefik", "prometheus"}:
                 # 2026-10-30: the adopted fixed pin is unscanned; the prior
                 # pin's offline scan receipt is kept as history.
