@@ -22,7 +22,6 @@
     "crawl4ai-egress",
     "crawl4ai-loopback",
     "dcgm-exporter",
-    "debezium-db-provision",
     "dev-perf-provision",
     "dev-pg",
     "dev-pg-exporter",
@@ -38,7 +37,6 @@
     "k6",
     "kafbat-ui",
     "kafka-1",
-    "kafka-connect",
     "kafka-exporter",
     "kafka-init",
     "keycloak",
@@ -81,7 +79,6 @@
     "renovate",
     "restic",
     "restic-offsite",
-    "schema-registry",
     "searxng",
     "seaweedfs-buckets",
     "seaweedfs-filer",
@@ -101,7 +98,7 @@
   "include_inputs": [
     {
       "path": "docker-compose.yml",
-      "sha256": "02c36b14b06ac3e753c958ba79d7272452cefe8696f8145aa830e788f473faf7"
+      "sha256": "cecec05b3f86a0df6655caaa95dfbd81570b7f6500810cc30c20c7a6fff15b35"
     },
     {
       "path": "infra/01-gateway/nginx/docker-compose.yml",
@@ -109,7 +106,7 @@
     },
     {
       "path": "infra/01-gateway/traefik/docker-compose.yml",
-      "sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999"
+      "sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74"
     },
     {
       "path": "infra/02-auth/keycloak/docker-compose.yml",
@@ -125,7 +122,7 @@
     },
     {
       "path": "infra/04-data/dev-db/docker-compose.yml",
-      "sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f"
+      "sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85"
     },
     {
       "path": "infra/04-data/mng-db/docker-compose.yml",
@@ -153,7 +150,7 @@
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
-      "sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe"
+      "sha256": "349f8ec9e775b8bf74f7fbcefb6d7f2fcf7694265f34d3e3bd9eba05abefb5c0"
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
@@ -2707,121 +2704,6 @@
       }
     },
     {
-      "service": "debezium-db-provision",
-      "scope": "root",
-      "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-      "current_declared": "postgres:18.6-alpine",
-      "profiles_declared": [
-        "cdc"
-      ],
-      "build_source": null,
-      "current_running": [],
-      "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "18.6",
-      "target_version": "18.6",
-      "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
-      "release_url": "https://www.postgresql.org/support/versioning/",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "UNKNOWN",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "NO_CHANGE_VERSION",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Vendor version table confirms current18.6; mutable alpine tag was pushed2026-10-26, so public metadata does not identify the deployed config or Alpine package set.",
-        "exit_condition": "Retain server/provisioner major equality; exact current/new base config+package ABI before any digest replacement.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [],
-      "current_image_ids": [],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "postgres:18.6-alpine",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "postgresql",
-        "alpine"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/postgresql",
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/alpine"
-        ],
-        "remaining_barrier": "Verified component release facts do not select a new combined custom image. Bind each selected base/extension/tool version to its exact built artifact, then assess compatibility, scan and recovery before HOME rollout.",
-        "next_owner": "SEC01 release/artifact evidence owner and debezium-db-provision service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "postgresql,alpine",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "PostgreSQL18.6 current supported major, EOL2030-11-14",
-        "decision": "NO_CHANGE_VERSION",
-        "reason": "Vendor version table confirms current18.6; mutable alpine tag was pushed2026-10-26, so public metadata does not identify the deployed config or Alpine package set.",
-        "exit_condition": "Retain server/provisioner major equality; exact current/new base config+package ABI before any digest replacement.",
-        "eligible_after_7_days": "NOT_CLAIMED",
-        "evidence_refs": [
-          "postgres-version",
-          "postgres-oci",
-          "https://www.postgresql.org/support/versioning/",
-          "https://hub.docker.com/v2/repositories/library/postgres/tags/18.6-alpine"
-        ],
-        "fact_checked_at": "2026-10-26T09:45:12.544894+00:00",
-        "service": "debezium-db-provision",
-        "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-        "current_declared": "postgres:18.6-alpine",
-        "resolved_source": {
-          "image": "postgres:18.6-alpine",
-          "build": null,
-          "chain": [
-            "infra/05-messaging/kafka/docker-compose.yml#debezium-db-provision",
-            "infra/common-optimizations.yml#template-job-low"
-          ]
-        },
-        "existing_target_version": "18.6",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00",
-        "selected_component": {
-          "latest": "18.6",
-          "current_source_target": "18.6",
-          "channel": "stable",
-          "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
-        }
-      }
-    },
-    {
       "service": "dev-perf-provision",
       "scope": "root",
       "compose_file": "infra/04-data/dev-db/docker-compose.yml",
@@ -2876,7 +2758,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3038,7 +2920,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3179,7 +3061,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3327,7 +3209,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3466,7 +3348,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3617,7 +3499,7 @@
       "upstream_reported_tag": "9.1.3",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -3869,7 +3751,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T06:36:12+09:00",
-      "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+      "source_input_sha256": "544582dc12f7f93a7be61c388e4fc8f4b81124191431c521f35abd8af1530d85",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
@@ -4296,7 +4178,7 @@
         "discovered_at": "2026-10-26T10:32:14.784990+00:00",
         "next_validation_due": "2026-10-27T00:00:00+00:00",
         "reason": "Mature v5.37.0 archive/commit/hash and exact zero-fuzz owned OIDC patch compatibility verified; existing Go1.26.4 satisfies declared Go1.26.3 floor. Existing SDK/base debt preserved; no new image built or accepted.",
-        "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1\u21921.59.0 native/recovery acceptance remain separate before deployment.",
+        "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1→1.59.0 native/recovery acceptance remain separate before deployment.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -4339,7 +4221,7 @@
         "candidate": "v5.37.0",
         "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
         "reason": "Mature v5.37.0 archive/commit/hash and exact zero-fuzz owned OIDC patch compatibility verified; existing Go1.26.4 satisfies declared Go1.26.3 floor. Existing SDK/base debt preserved; no new image built or accepted.",
-        "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1\u21921.59.0 native/recovery acceptance remain separate before deployment.",
+        "exit_condition": "Exact pinned Go/module/OIDC tests, full-image security and SQLite1.50.1→1.59.0 native/recovery acceptance remain separate before deployment.",
         "evidence_refs": [
           "/tmp/hyhome-v30-r27-public/github-observations-retry.json",
           "current selected source files",
@@ -5211,7 +5093,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+      "source_input_sha256": "349f8ec9e775b8bf74f7fbcefb6d7f2fcf7694265f34d3e3bd9eba05abefb5c0",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5362,7 +5244,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+      "source_input_sha256": "349f8ec9e775b8bf74f7fbcefb6d7f2fcf7694265f34d3e3bd9eba05abefb5c0",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5417,168 +5299,6 @@
           "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
         }
       }
-    },
-    {
-      "service": "kafka-connect",
-      "scope": "root",
-      "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-      "current_declared": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
-      "profiles_declared": [
-        "messaging",
-        "messaging-connect",
-        "messaging-admin",
-        "cdc"
-      ],
-      "build_source": {
-        "context": ".",
-        "dockerfile": "Dockerfile.connect"
-      },
-      "current_running": [
-        {
-          "project": "hy-home-infra",
-          "service": "kafka-connect",
-          "image_reference": "hy-home/kafka-connect:8.3.2-debezium-3.6.3",
-          "image_id": "sha256:c51e936b184a54225992aa96031693c258f2d74d53bfccb746017e74a2af93e4",
-          "state": "running",
-          "platform": "linux",
-          "repo_digests": [
-            "hy-home/kafka-connect@sha256:c51e936b184a54225992aa96031693c258f2d74d53bfccb746017e74a2af93e4"
-          ],
-          "os": "linux",
-          "architecture": "amd64"
-        }
-      ],
-      "runtime_presence": "OBSERVED",
-      "latest_version": "8.3.2",
-      "target_version": "8.3.2",
-      "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
-      "release_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "UNKNOWN",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Debezium PostgreSQL connector source pin raised from 3.6.3.Final to 3.7.0.Final (quay.io/debezium/connect:3.7.0.Final, index sha256:9716a72bce5313186d7528cf5ea00f3e2d1a0a71ba84156d38417d0262cf3599, read-only quay API 2026-11-06) by owner decision 2026-11-06 (static change only). The 3.7 release notes list no PostgreSQL breaking change. Image build, plugin loading, snapshot/offset/restart/recovery checks, scan and HOME recreation are NOT_RUN; the messaging stack is stopped.",
-        "exit_condition": "Owner steps: approved build, offline Syft/Grype scan, plugin loading plus snapshot/offset/restart/recovery checks preserving existing slots/offsets, then re-run the latest/security gates at the delivery head.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [
-        "hy-home/kafka-connect@sha256:c51e936b184a54225992aa96031693c258f2d74d53bfccb746017e74a2af93e4"
-      ],
-      "current_image_ids": [
-        "sha256:c51e936b184a54225992aa96031693c258f2d74d53bfccb746017e74a2af93e4"
-      ],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-11-06T09:00:00+00:00",
-      "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "confluent-platform",
-        "debezium-release-page"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/confluent-platform",
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/debezium-release-page"
-        ],
-        "remaining_barrier": "Verified component release facts do not select a new combined custom image. Bind each selected base/extension/tool version to its exact built artifact, then assess compatibility, scan and recovery before HOME rollout.",
-        "next_owner": "SEC01 release/artifact evidence owner and kafka-connect service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "confluent-platform,debezium-release-page",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "CP8.3.2 with Debezium 3.7.0.Final (adopted in source)",
-        "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
-        "reason": "Debezium PostgreSQL connector source pin raised from 3.6.3.Final to 3.7.0.Final (quay.io/debezium/connect:3.7.0.Final, index sha256:9716a72bce5313186d7528cf5ea00f3e2d1a0a71ba84156d38417d0262cf3599, read-only quay API 2026-11-06) by owner decision 2026-11-06 (static change only). The 3.7 release notes list no PostgreSQL breaking change. Image build, plugin loading, snapshot/offset/restart/recovery checks, scan and HOME recreation are NOT_RUN; the messaging stack is stopped.",
-        "exit_condition": "Owner steps: approved build, offline Syft/Grype scan, plugin loading plus snapshot/offset/restart/recovery checks preserving existing slots/offsets, then re-run the latest/security gates at the delivery head.",
-        "eligible_after_7_days": "NOT_CLAIMED",
-        "evidence_refs": [
-          "confluent-release",
-          "https://docs.confluent.io/platform/current/release-notes/index.html"
-        ],
-        "fact_checked_at": "2026-11-06T09:00:00+00:00",
-        "service": "kafka-connect",
-        "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-        "current_declared": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
-        "resolved_source": {
-          "image": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
-          "build": {
-            "context": ".",
-            "dockerfile": "Dockerfile.connect"
-          },
-          "chain": [
-            "infra/05-messaging/kafka/docker-compose.yml#kafka-connect",
-            "infra/common-optimizations.yml#template-stateful-high"
-          ]
-        },
-        "existing_target_version": "UNKNOWN",
-        "assessed_at": "2026-11-06T09:00:00+00:00",
-        "selected_component": {
-          "latest": "8.3.2",
-          "current_source_target": "8.3.2",
-          "channel": "stable",
-          "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
-        }
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "UNKNOWN",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
-      "target_build_materials": [],
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
-      "current_target_artifact_binding": {
-        "source_version": "8.3.2",
-        "source_image": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
-      },
-      "source_release_note": "Tag and index digest read through the anonymous quay.io tag API on 2026-11-06; no pull, signature, scan, build, runtime or HOME deployment was performed. current_running keeps the 3.6.3 build observed on 2026-10-10."
     },
     {
       "service": "kafka-exporter",
@@ -5659,7 +5379,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+      "source_input_sha256": "349f8ec9e775b8bf74f7fbcefb6d7f2fcf7694265f34d3e3bd9eba05abefb5c0",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -5787,7 +5507,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+      "source_input_sha256": "349f8ec9e775b8bf74f7fbcefb6d7f2fcf7694265f34d3e3bd9eba05abefb5c0",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12097,161 +11817,6 @@
       }
     },
     {
-      "service": "schema-registry",
-      "scope": "root",
-      "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-      "current_declared": "confluentinc/cp-schema-registry:8.3.2",
-      "profiles_declared": [
-        "messaging",
-        "messaging-schema",
-        "messaging-connect",
-        "messaging-rest",
-        "messaging-admin",
-        "cdc"
-      ],
-      "build_source": null,
-      "current_running": [
-        {
-          "project": "hy-home-infra",
-          "service": "schema-registry",
-          "image_reference": "confluentinc/cp-schema-registry:8.3.2",
-          "image_id": "sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c",
-          "state": "running",
-          "platform": "linux",
-          "repo_digests": [
-            "confluentinc/cp-schema-registry@sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c"
-          ],
-          "os": "linux",
-          "architecture": "amd64"
-        }
-      ],
-      "runtime_presence": "OBSERVED",
-      "latest_version": "8.3.2",
-      "target_version": "8.3.2",
-      "channel": "stable",
-      "checked_at": "2026-10-26T09:45:12.544894+00:00",
-      "release_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "UNKNOWN",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "NO_CHANGE_VERSION",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Official current release notes list8.3.2; KafkaStreams native-memory leakfixed8.3.2. No newer current8.3patch verified.",
-        "exit_condition": "Keep coordinated images/plugin boundary; newartifact scan/compatibility separate.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "UNKNOWN",
-      "current_repo_digests": [
-        "confluentinc/cp-schema-registry@sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c"
-      ],
-      "current_image_ids": [
-        "sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c"
-      ],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "next_fact_command": [
-        "docker",
-        "buildx",
-        "imagetools",
-        "inspect",
-        "confluentinc/cp-schema-registry:8.3.2",
-        "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
-      ],
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "confluent-platform"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/confluent-platform"
-        ],
-        "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-        "next_owner": "SEC01 release/artifact evidence owner and schema-registry service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "confluent-platform",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "ConfluentPlatform8.3.2 current patch",
-        "decision": "NO_CHANGE_VERSION",
-        "reason": "Official current release notes list8.3.2; KafkaStreams native-memory leakfixed8.3.2. No newer current8.3patch verified.",
-        "exit_condition": "Keep coordinated images/plugin boundary; newartifact scan/compatibility separate.",
-        "eligible_after_7_days": "NOT_CLAIMED",
-        "evidence_refs": [
-          "confluent-release",
-          "https://docs.confluent.io/platform/current/release-notes/index.html"
-        ],
-        "fact_checked_at": "2026-10-26T09:45:12.544894+00:00",
-        "service": "schema-registry",
-        "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
-        "current_declared": "confluentinc/cp-schema-registry:8.3.2",
-        "resolved_source": {
-          "image": "confluentinc/cp-schema-registry:8.3.2",
-          "build": null,
-          "chain": [
-            "infra/05-messaging/kafka/docker-compose.yml#schema-registry",
-            "infra/common-optimizations.yml#template-infra-med"
-          ]
-        },
-        "existing_target_version": "UNKNOWN",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00",
-        "selected_component": {
-          "latest": "8.3.2",
-          "current_source_target": "8.3.2",
-          "channel": "stable",
-          "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
-        }
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "UNKNOWN",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "confluentinc/cp-schema-registry:8.3.2",
-      "target_build_materials": [],
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
-      "current_target_artifact_binding": {
-        "source_version": "8.3.2",
-        "source_image": "confluentinc/cp-schema-registry:8.3.2",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
-      }
-    },
-    {
       "service": "seaweedfs-buckets",
       "scope": "root",
       "compose_file": "infra/04-data/seaweedfs/docker-compose.yml",
@@ -14036,7 +13601,7 @@
         "--raw"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999",
+      "source_input_sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "vendor_channel_evidence": {
@@ -29707,6 +29272,347 @@
         }
       ],
       "meaning": "3 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 16 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "5fe1dfad3eeee7b3da8732799d10d2d10fd6f9e4",
+      "refreshed_at": "2026-11-10T12:00:00.000000+00:00",
+      "revision_scope": "ADR-0062 amendment Kafka CDC LAB move; source files have reviewed uncommitted edits",
+      "removed_services": [
+        "debezium-db-provision",
+        "kafka-connect",
+        "schema-registry"
+      ],
+      "removed_entries": [
+        {
+          "service": "debezium-db-provision",
+          "scope": "root",
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "current_declared": "postgres:18.6-alpine",
+          "profiles_declared": [
+            "cdc"
+          ],
+          "build_source": null,
+          "current_running": [],
+          "runtime_presence": "NOT_OBSERVED",
+          "latest_version": "18.6",
+          "target_version": "18.6",
+          "channel": "stable",
+          "checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "release_url": "https://www.postgresql.org/support/versioning/",
+          "target_index_digest": "UNKNOWN",
+          "target_manifest_digest": "UNKNOWN",
+          "target_config_digest": "UNKNOWN",
+          "platform": "linux/amd64",
+          "source_release_date": "UNKNOWN",
+          "advisory_urls": [],
+          "applicability": "UNKNOWN",
+          "support_end": "UNKNOWN",
+          "compatibility": "NOT_RUN",
+          "backup": "NOT_RUN",
+          "rollback": "NOT_RUN",
+          "native_test": "NOT_RUN",
+          "deployment": "NOT_RUN",
+          "signature": "NOT_RUN",
+          "sbom_scan": "NOT_RUN",
+          "disposition": "NO_CHANGE_VERSION",
+          "blocker": {
+            "owner": "SEC01",
+            "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+            "next_validation_due": "2026-10-27T00:00:00+00:00",
+            "reason": "Vendor version table confirms current18.6; mutable alpine tag was pushed2026-10-26, so public metadata does not identify the deployed config or Alpine package set.",
+            "exit_condition": "Retain server/provisioner major equality; exact current/new base config+package ABI before any digest replacement.",
+            "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "service_owner_role": "Existing service owner named by current_public_assessment"
+          },
+          "source_owner_repository": "UNKNOWN",
+          "current_repo_digests": [],
+          "current_image_ids": [],
+          "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+          "next_fact_command": [
+            "docker",
+            "buildx",
+            "imagetools",
+            "inspect",
+            "postgres:18.6-alpine",
+            "--format",
+            "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+          ],
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+          "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+          "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+          "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+          "official_supplier_lookup_refs": [
+            "postgresql",
+            "alpine"
+          ],
+          "supplier_lookup_blocker": null,
+          "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+          "official_release_assessment": {
+            "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+            "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+            "release_fact_refs": [
+              "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/postgresql",
+              "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/alpine"
+            ],
+            "remaining_barrier": "Verified component release facts do not select a new combined custom image. Bind each selected base/extension/tool version to its exact built artifact, then assess compatibility, scan and recovery before HOME rollout.",
+            "next_owner": "SEC01 release/artifact evidence owner and debezium-db-provision service build/migration/recovery owner",
+            "source_target_security_native_deployment": "UNCHANGED"
+          },
+          "current_public_assessment": {
+            "supplier_group": "postgresql,alpine",
+            "owner": "SEC01 and existing service owner",
+            "review_at": "2026-10-27",
+            "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+            "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+            "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+            "candidate": "PostgreSQL18.6 current supported major, EOL2030-11-14",
+            "decision": "NO_CHANGE_VERSION",
+            "reason": "Vendor version table confirms current18.6; mutable alpine tag was pushed2026-10-26, so public metadata does not identify the deployed config or Alpine package set.",
+            "exit_condition": "Retain server/provisioner major equality; exact current/new base config+package ABI before any digest replacement.",
+            "eligible_after_7_days": "NOT_CLAIMED",
+            "evidence_refs": [
+              "postgres-version",
+              "postgres-oci",
+              "https://www.postgresql.org/support/versioning/",
+              "https://hub.docker.com/v2/repositories/library/postgres/tags/18.6-alpine"
+            ],
+            "fact_checked_at": "2026-10-26T09:45:12.544894+00:00",
+            "service": "debezium-db-provision",
+            "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+            "current_declared": "postgres:18.6-alpine",
+            "resolved_source": {
+              "image": "postgres:18.6-alpine",
+              "build": null,
+              "chain": [
+                "infra/05-messaging/kafka/docker-compose.yml#debezium-db-provision",
+                "infra/common-optimizations.yml#template-job-low"
+              ]
+            },
+            "existing_target_version": "18.6",
+            "assessed_at": "2026-10-26T10:32:14.784990+00:00",
+            "selected_component": {
+              "latest": "18.6",
+              "current_source_target": "18.6",
+              "channel": "stable",
+              "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
+            }
+          }
+        }
+      ],
+      "meaning": "The owner amended ADR-0062 on 2026-11-10: kafka-connect and schema-registry moved to the standalone LAB entrypoint labs/kafka-cluster/docker-compose.yml (lab-kafka-connect, lab-schema-registry) and their original ROOT rows are preserved in historical_lab_entries with their evidence unchanged; the Dockerfile.connect build input moved to labs/kafka-cluster/connect/Dockerfile. debezium-db-provision (postgres:18.6-alpine) and its provisioning SQL, connector sample and Connect secret renderer were removed; its ROOT row is archived in this record. labs/** is outside Renovate and this ledger. The running HOME containers, images and volumes are untouched; stopping and removing them needs owner approval. No new vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "5fe1dfad3eeee7b3da8732799d10d2d10fd6f9e4",
+      "refreshed_at": "2026-11-10T02:33:14.245609+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "77880a90ed5eb670b1e86585845339796068bd17d9bf9f237aba068608632236",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "02c36b14b06ac3e753c958ba79d7272452cefe8696f8145aa830e788f473faf7"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "00ed3dbee1fd4e8440ca1c8a273450401dd214f8a34df1b3819c649ea9c4019f"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "docker-compose.yml",
+        "infra/01-gateway/traefik/docker-compose.yml",
+        "infra/04-data/dev-db/docker-compose.yml",
+        "infra/05-messaging/kafka/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "dev-perf-provision",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-pg",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-pg-exporter",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-pg-monitor-provision",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-platform-provision",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-valkey",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "dev-valkey-exporter",
+          "source_input_sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f",
+          "source_refreshed_at": "2026-11-10T06:36:12+09:00"
+        },
+        {
+          "service": "kafbat-ui",
+          "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "kafka-1",
+          "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "kafka-exporter",
+          "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "kafka-init",
+          "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "traefik",
+          "source_input_sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "4 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 12 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {
@@ -32717,7 +32623,7 @@
           "owner": "SEC01",
           "discovered_at": "2026-10-26T10:32:14.784990+00:00",
           "next_validation_due": "2026-10-27T00:00:00+00:00",
-          "reason": "Official update-center version/date2026-10-12 and OCI imageOct17 agree;7daysoak maturedOct24. Official same-year direct upgrade and PG14\u201318 support checked, producer entrypoint matches current secret wrapper. DB/plugin/OIDC/health/restore remain NOT_RUN.",
+          "reason": "Official update-center version/date2026-10-12 and OCI imageOct17 agree;7daysoak maturedOct24. Official same-year direct upgrade and PG14–18 support checked, producer entrypoint matches current secret wrapper. DB/plugin/OIDC/health/restore remain NOT_RUN.",
           "exit_condition": "Apply only leased source pin and unchanged-control regression with exact index/amd64 verification, derived/source-ledger parity and independent final diff review; runtime follows separate approved target.",
           "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
           "service_owner_role": "Existing service owner named by current_public_assessment"
@@ -32759,7 +32665,7 @@
           "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
           "candidate": "26.10.0.133078-community",
           "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
-          "reason": "Official update-center version/date2026-10-12 and OCI imageOct17 agree;7daysoak maturedOct24. Official same-year direct upgrade and PG14\u201318 support checked, producer entrypoint matches current secret wrapper. DB/plugin/OIDC/health/restore remain NOT_RUN.",
+          "reason": "Official update-center version/date2026-10-12 and OCI imageOct17 agree;7daysoak maturedOct24. Official same-year direct upgrade and PG14–18 support checked, producer entrypoint matches current secret wrapper. DB/plugin/OIDC/health/restore remain NOT_RUN.",
           "exit_condition": "Apply only leased source pin and unchanged-control regression with exact index/amd64 verification, derived/source-ledger parity and independent final diff review; runtime follows separate approved target.",
           "eligible_after_7_days": "product 2026-10-19 (date only); selected OCI tag 2026-10-24T04:53:38.905627Z",
           "evidence_refs": [
@@ -34031,6 +33937,335 @@
           "status": "UNBOUND_CURRENT_TARGET",
           "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
         }
+      }
+    },
+    {
+      "service": "schema-registry",
+      "current_scope": "lab",
+      "current_compose_file": "labs/kafka-cluster/docker-compose.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "schema-registry",
+        "scope": "root",
+        "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+        "current_declared": "confluentinc/cp-schema-registry:8.3.2",
+        "profiles_declared": [
+          "messaging",
+          "messaging-schema",
+          "messaging-connect",
+          "messaging-rest",
+          "messaging-admin",
+          "cdc"
+        ],
+        "build_source": null,
+        "current_running": [
+          {
+            "project": "hy-home-infra",
+            "service": "schema-registry",
+            "image_reference": "confluentinc/cp-schema-registry:8.3.2",
+            "image_id": "sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c",
+            "state": "running",
+            "platform": "linux",
+            "repo_digests": [
+              "confluentinc/cp-schema-registry@sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c"
+            ],
+            "os": "linux",
+            "architecture": "amd64"
+          }
+        ],
+        "runtime_presence": "OBSERVED",
+        "latest_version": "8.3.2",
+        "target_version": "8.3.2",
+        "channel": "stable",
+        "checked_at": "2026-10-26T09:45:12.544894+00:00",
+        "release_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": "UNKNOWN",
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "NO_CHANGE_VERSION",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+          "next_validation_due": "2026-10-27T00:00:00+00:00",
+          "reason": "Official current release notes list8.3.2; KafkaStreams native-memory leakfixed8.3.2. No newer current8.3patch verified.",
+          "exit_condition": "Keep coordinated images/plugin boundary; newartifact scan/compatibility separate.",
+          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "service_owner_role": "Existing service owner named by current_public_assessment"
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [
+          "confluentinc/cp-schema-registry@sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c"
+        ],
+        "current_image_ids": [
+          "sha256:482d3048b3f6029bae5794b5c3b5e2eea8d61ca064dacd32241315e818fd8d7c"
+        ],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "confluentinc/cp-schema-registry:8.3.2",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+        "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+        "official_supplier_lookup_refs": [
+          "confluent-platform"
+        ],
+        "supplier_lookup_blocker": null,
+        "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+        "official_release_assessment": {
+          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+          "release_fact_refs": [
+            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/confluent-platform"
+          ],
+          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+          "next_owner": "SEC01 release/artifact evidence owner and schema-registry service build/migration/recovery owner",
+          "source_target_security_native_deployment": "UNCHANGED"
+        },
+        "current_public_assessment": {
+          "supplier_group": "confluent-platform",
+          "owner": "SEC01 and existing service owner",
+          "review_at": "2026-10-27",
+          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "candidate": "ConfluentPlatform8.3.2 current patch",
+          "decision": "NO_CHANGE_VERSION",
+          "reason": "Official current release notes list8.3.2; KafkaStreams native-memory leakfixed8.3.2. No newer current8.3patch verified.",
+          "exit_condition": "Keep coordinated images/plugin boundary; newartifact scan/compatibility separate.",
+          "eligible_after_7_days": "NOT_CLAIMED",
+          "evidence_refs": [
+            "confluent-release",
+            "https://docs.confluent.io/platform/current/release-notes/index.html"
+          ],
+          "fact_checked_at": "2026-10-26T09:45:12.544894+00:00",
+          "service": "schema-registry",
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "current_declared": "confluentinc/cp-schema-registry:8.3.2",
+          "resolved_source": {
+            "image": "confluentinc/cp-schema-registry:8.3.2",
+            "build": null,
+            "chain": [
+              "infra/05-messaging/kafka/docker-compose.yml#schema-registry",
+              "infra/common-optimizations.yml#template-infra-med"
+            ]
+          },
+          "existing_target_version": "UNKNOWN",
+          "assessed_at": "2026-10-26T10:32:14.784990+00:00",
+          "selected_component": {
+            "latest": "8.3.2",
+            "current_source_target": "8.3.2",
+            "channel": "stable",
+            "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
+          }
+        },
+        "historical_target_artifact_binding": {
+          "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+          "fields": {
+            "target_version": "UNKNOWN",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN"
+          },
+          "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+        },
+        "target_source_image": "confluentinc/cp-schema-registry:8.3.2",
+        "target_build_materials": [],
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+        "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+        "current_target_artifact_binding": {
+          "source_version": "8.3.2",
+          "source_image": "confluentinc/cp-schema-registry:8.3.2",
+          "status": "UNBOUND_CURRENT_TARGET",
+          "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        }
+      }
+    },
+    {
+      "service": "kafka-connect",
+      "current_scope": "lab",
+      "current_compose_file": "labs/kafka-cluster/docker-compose.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "kafka-connect",
+        "scope": "root",
+        "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+        "current_declared": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
+        "profiles_declared": [
+          "messaging",
+          "messaging-connect",
+          "messaging-admin",
+          "cdc"
+        ],
+        "build_source": {
+          "context": ".",
+          "dockerfile": "Dockerfile.connect"
+        },
+        "current_running": [
+          {
+            "project": "hy-home-infra",
+            "service": "kafka-connect",
+            "image_reference": "hy-home/kafka-connect:8.3.2-debezium-3.6.3",
+            "image_id": "sha256:c51e936b184a54225992aa96031693c258f2d74d53bfccb746017e74a2af93e4",
+            "state": "running",
+            "platform": "linux",
+            "repo_digests": [
+              "hy-home/kafka-connect@sha256:c51e936b184a54225992aa96031693c258f2d74d53bfccb746017e74a2af93e4"
+            ],
+            "os": "linux",
+            "architecture": "amd64"
+          }
+        ],
+        "runtime_presence": "OBSERVED",
+        "latest_version": "8.3.2",
+        "target_version": "8.3.2",
+        "channel": "stable",
+        "checked_at": "2026-10-26T09:45:12.544894+00:00",
+        "release_url": "https://docs.confluent.io/platform/current/release-notes/index.html",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": "UNKNOWN",
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+          "next_validation_due": "2026-10-27T00:00:00+00:00",
+          "reason": "Debezium PostgreSQL connector source pin raised from 3.6.3.Final to 3.7.0.Final (quay.io/debezium/connect:3.7.0.Final, index sha256:9716a72bce5313186d7528cf5ea00f3e2d1a0a71ba84156d38417d0262cf3599, read-only quay API 2026-11-06) by owner decision 2026-11-06 (static change only). The 3.7 release notes list no PostgreSQL breaking change. Image build, plugin loading, snapshot/offset/restart/recovery checks, scan and HOME recreation are NOT_RUN; the messaging stack is stopped.",
+          "exit_condition": "Owner steps: approved build, offline Syft/Grype scan, plugin loading plus snapshot/offset/restart/recovery checks preserving existing slots/offsets, then re-run the latest/security gates at the delivery head.",
+          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "service_owner_role": "Existing service owner named by current_public_assessment"
+        },
+        "source_owner_repository": "UNKNOWN",
+        "current_repo_digests": [
+          "hy-home/kafka-connect@sha256:c51e936b184a54225992aa96031693c258f2d74d53bfccb746017e74a2af93e4"
+        ],
+        "current_image_ids": [
+          "sha256:c51e936b184a54225992aa96031693c258f2d74d53bfccb746017e74a2af93e4"
+        ],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "next_fact_command": [
+          "docker",
+          "buildx",
+          "imagetools",
+          "inspect",
+          "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
+          "--format",
+          "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        ],
+        "source_refreshed_at": "2026-11-06T09:00:00+00:00",
+        "source_input_sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+        "official_supplier_lookup_refs": [
+          "confluent-platform",
+          "debezium-release-page"
+        ],
+        "supplier_lookup_blocker": null,
+        "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+        "official_release_assessment": {
+          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+          "release_fact_refs": [
+            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/confluent-platform",
+            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/debezium-release-page"
+          ],
+          "remaining_barrier": "Verified component release facts do not select a new combined custom image. Bind each selected base/extension/tool version to its exact built artifact, then assess compatibility, scan and recovery before HOME rollout.",
+          "next_owner": "SEC01 release/artifact evidence owner and kafka-connect service build/migration/recovery owner",
+          "source_target_security_native_deployment": "UNCHANGED"
+        },
+        "current_public_assessment": {
+          "supplier_group": "confluent-platform,debezium-release-page",
+          "owner": "SEC01 and existing service owner",
+          "review_at": "2026-10-27",
+          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "candidate": "CP8.3.2 with Debezium 3.7.0.Final (adopted in source)",
+          "decision": "SOURCE_PREPARED_RUNTIME_NOT_RUN",
+          "reason": "Debezium PostgreSQL connector source pin raised from 3.6.3.Final to 3.7.0.Final (quay.io/debezium/connect:3.7.0.Final, index sha256:9716a72bce5313186d7528cf5ea00f3e2d1a0a71ba84156d38417d0262cf3599, read-only quay API 2026-11-06) by owner decision 2026-11-06 (static change only). The 3.7 release notes list no PostgreSQL breaking change. Image build, plugin loading, snapshot/offset/restart/recovery checks, scan and HOME recreation are NOT_RUN; the messaging stack is stopped.",
+          "exit_condition": "Owner steps: approved build, offline Syft/Grype scan, plugin loading plus snapshot/offset/restart/recovery checks preserving existing slots/offsets, then re-run the latest/security gates at the delivery head.",
+          "eligible_after_7_days": "NOT_CLAIMED",
+          "evidence_refs": [
+            "confluent-release",
+            "https://docs.confluent.io/platform/current/release-notes/index.html"
+          ],
+          "fact_checked_at": "2026-11-06T09:00:00+00:00",
+          "service": "kafka-connect",
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "current_declared": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
+          "resolved_source": {
+            "image": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
+            "build": {
+              "context": ".",
+              "dockerfile": "Dockerfile.connect"
+            },
+            "chain": [
+              "infra/05-messaging/kafka/docker-compose.yml#kafka-connect",
+              "infra/common-optimizations.yml#template-stateful-high"
+            ]
+          },
+          "existing_target_version": "UNKNOWN",
+          "assessed_at": "2026-11-06T09:00:00+00:00",
+          "selected_component": {
+            "latest": "8.3.2",
+            "current_source_target": "8.3.2",
+            "channel": "stable",
+            "meaning": "Selected application/component source fact only. Other components and exact artifact/runtime have independent disposition; global major is not conflated with retained channel."
+          }
+        },
+        "historical_target_artifact_binding": {
+          "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+          "fields": {
+            "target_version": "UNKNOWN",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN"
+          },
+          "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+        },
+        "target_source_image": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
+        "target_build_materials": [],
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+        "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+        "current_target_artifact_binding": {
+          "source_version": "8.3.2",
+          "source_image": "hy-home/kafka-connect:8.3.2-debezium-3.7.0",
+          "status": "UNBOUND_CURRENT_TARGET",
+          "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        },
+        "source_release_note": "Tag and index digest read through the anonymous quay.io tag API on 2026-11-06; no pull, signature, scan, build, runtime or HOME deployment was performed. current_running keeps the 3.6.3 build observed on 2026-10-10."
       }
     }
   ],

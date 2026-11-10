@@ -311,7 +311,7 @@ scrape_configs:
   # ============================================================================
   # ON-DEMAND (OPTIONAL services; down while stopped)
   # ============================================================================
-  # Job names kafka-broker, kafka-connect and schema-registry match the Confluent dashboards.
+  # Job name kafka-broker matches the Confluent dashboard.
   - job_name: "kafka-broker"
     static_configs:
       - targets: ["kafka-1:9404"]
@@ -328,25 +328,6 @@ scrape_configs:
           cluster: "hy-home"
           namespace: "hy-home"
           domain: "messaging"
-
-  - job_name: "kafka-connect"
-    static_configs:
-      - targets: ["kafka-connect:9404"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "messaging"
-          env: "hy-home"
-          kafka_connect_cluster_id: "kafka-connect-cluster"
-
-  - job_name: "schema-registry"
-    static_configs:
-      - targets: ["schema-registry:9404"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "messaging"
-          env: "hy-home"
 
   # Off in HOME (2026-11-09): these services never run in the HOME selection, so
   # their scrapes only failed DNS. Uncomment a job when its service starts.

@@ -1,6 +1,6 @@
 ---
 title: "독립 LAB source"
-version: "0.3.3"
+version: "0.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -42,7 +42,7 @@ build source·설정·helper·Grafana 대시보드가 함께 있습니다. `labs
 | Cassandra | [Compose](cassandra/docker-compose.yml), [안내](cassandra/README.md) | [promotion.yaml](cassandra/promotion.yaml) | 대시보드 |
 | CouchDB | [Compose](couchdb/docker-compose.yml), [안내](couchdb/README.md) | [promotion.yaml](couchdb/promotion.yaml) | [initializer](couchdb/couchdb-cluster-init.sh) |
 | MongoDB | [Compose](mongodb/docker-compose.yml), [안내](mongodb/README.md) | [promotion.yaml](mongodb/promotion.yaml) | 대시보드 |
-| Kafka | [Compose](kafka-cluster/docker-compose.yml), [안내](kafka-cluster/README.md) | [promotion.yaml](kafka-cluster/promotion.yaml) | 독립 Compose source |
+| Kafka | [Compose](kafka-cluster/docker-compose.yml), [안내](kafka-cluster/README.md) | [promotion.yaml](kafka-cluster/promotion.yaml) | Schema Registry·Connect(Debezium) build·대시보드 |
 | OpenSearch | [Compose](opensearch-cluster/docker-compose.yml), [안내](opensearch-cluster/README.md) | [promotion.yaml](opensearch-cluster/promotion.yaml) | [Dashboards 설정](opensearch-cluster/opensearch-cluster-dashboards.config) |
 | Lakehouse | [Compose](lakehouse/docker-compose.yml), [안내](lakehouse/README.md) | [promotion.yaml](lakehouse/promotion.yaml) | [Spark](lakehouse/spark/README.md), [Trino](lakehouse/trino/README.md), [Flink](lakehouse/flink/README.md), [GX](lakehouse/great-expectations/README.md), [table bucket job](lakehouse/seaweedfs-table-bucket.sh) |
 | dbt | [Compose](dbt/docker-compose.yml), [안내](dbt/README.md) | [promotion.yaml](dbt/promotion.yaml) | build·project |

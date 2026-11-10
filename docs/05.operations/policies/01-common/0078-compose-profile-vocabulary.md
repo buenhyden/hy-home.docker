@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.15.5"
+version: "1.16.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -50,7 +50,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `blog-ingestion` | capability | 서버 A의 Blog-data 수집 Gateway; n8n-worker(수집)와 Traefik(Export·Attestation 정확한 경로)만 각자의 내부 격리망으로 접근 | `blog-ingestion` | No | 검토된 Blog-data `dev` 커밋으로 로컬 빌드한 이미지가 없으면 시작 실패 | current |
 | `batch-metrics` | capability | 배치 작업 메트릭 수집 | `prometheus`, `grafana`, `pushgateway` | No | normal service startup | current |
 | `cassandra` | topology | 독립 LAB 단일 Cassandra 노드; 내부망 무인증 | `cassandra-node1` | No | normal service startup; 실제 기동은 별도 승인 | current |
-| `cdc` | capability | Debezium 원천은 dev-pg; 다른 관리 도구 metadata는 mng-pg에 유지 | `dev-pg`, `dev-platform-provision`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `kafka-1`, `schema-registry`, `kafka-connect`, `debezium-db-provision`, `kafka-exporter` | No | initialization: debezium-db-provision (복제 role·grant·publication); connector 등록·snapshot은 별도 승인; monitoring initialization: dev-pg-monitor-provision | current |
 | `contract-testing` | capability | Pact Broker 계약 저장·검증 결과와 feature 소유 DB 준비 | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `pact-broker-db-provision`, `pact-broker` | No | initialization: pact-broker-db-provision (role·database); pact 게시·검증 결과 쓰기; monitoring initialization: mng-pg-monitor-provision | current |
 | `core` | baseline | 접근·인증·secret 기반과 관리 DB; HOME 앱 전체는 아님 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init; monitoring initialization: mng-pg-monitor-provision | current |
 | `couchdb` | topology | 독립 LAB CouchDB 복제 구성과 초기화 | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` | No | initialization: couchdb-cluster-init | current |
@@ -64,7 +63,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인; Terrakube state는 `storage`와 함께 선택 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
 | `jupyterlab` | topology | 독립 LAB `labs/jupyterlab/docker-compose.yml`의 token 보호 단일 사용자 notebook(SPEC-0262) | `jupyterlab` | No | `${LAB_DATA_DIR}/jupyterlab/work` bind; host port는 `LAB_HOST_BIND_IP`에만; MLflow endpoint는 선택 입력 | current |
 | `lab-dbt` | topology | 독립 LAB `labs/dbt/docker-compose.yml`의 dbt 변환 작업(SPEC-0262) | `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기; `LAB_DBT_DB_HOST` 승인 전 렌더링 전용 | current |
-| `lab-kafka` | topology | 독립 LAB Kafka 3-broker KRaft 구성·exporter·초기화 | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init` | No | initialization: lab-kafka-init | current |
+| `lab-kafka` | topology | 독립 LAB Kafka 3-broker KRaft 구성·exporter·초기화와 Schema Registry·Debezium plugin Connect(ADR-0062 개정 2026-11-10) | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init`, `lab-schema-registry`, `lab-kafka-connect` | No | initialization: lab-kafka-init; connector·원천 DB·credential은 선언하지 않으며 운영자 승인 대상 | current |
 | `lab-lakehouse` | topology | 독립 LAB `labs/lakehouse/docker-compose.yml`의 Iceberg batch·유지보수, SQL 조회, streaming 적재, 데이터 품질 검사(SPEC-0262) | `seaweedfs-table-bucket`, `spark`, `trino`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations` | No | initialization: seaweedfs-table-bucket (table bucket·policy·namespace); 기본 `spark` 명령은 namespace 조회만; S3·catalog endpoint 승인 전 렌더링 전용 | current |
 | `lab-locust` | topology | root에서 분리된 Locust master/worker headless 부하 LAB | `lab-locust-master`, `lab-locust-worker` | No | `labs/locust/docker-compose.yml`의 별도 project/network/volume; target 승인 후에만 트래픽 생성 | current |
 | `lab-open-webui` | topology | 독립 LAB `labs/open-webui/docker-compose.yml`의 채팅·RAG 웹; Keycloak native OIDC(ADR-0062 개정 2026-11-10) | `open-webui` | No | `${LAB_DATA_DIR}/open-webui/data` bind; host port는 `LAB_HOST_BIND_IP`에만; `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` 승인 전 렌더링 전용 | current |
@@ -74,11 +73,9 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `mail-dev` | capability | 개발 SMTP 캡처 | `mailpit` | No | normal service startup | current |
 | `mail-server` | topology | 독립 LAB `labs/stalwart/docker-compose.yml`의 자체 완결 메일 서버; relay 없음, SMTP는 LAB network에만, 관리 UI는 `LAB_HOST_BIND_IP` loopback 게시(SPEC-0262) | `stalwart`, `stalwart-config` | No | initialization: stalwart-config (도메인·listener·relay 금지 plan 적용; listener 변경은 재시작 후) | current |
-| `messaging` | domain | Kafka broker·schema·connect·관리 UI | `kafka-1`, `schema-registry`, `kafka-connect`, `kafbat-ui`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
-| `messaging-admin` | role | Kafka 관리 UI와 직접 종속 서비스 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafbat-ui`, `kafka-exporter` | No | normal service startup | current |
+| `messaging` | domain | Kafka broker·관리 UI(Schema Registry·Connect는 LAB `lab-kafka`, ADR-0062 개정 2026-11-10) | `kafka-1`, `kafbat-ui`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
+| `messaging-admin` | role | Kafka 관리 UI와 직접 종속 서비스 | `kafka-1`, `kafbat-ui`, `kafka-exporter` | No | normal service startup | current |
 | `messaging-broker` | role | Kafka 단일 broker·초기화·exporter | `kafka-1`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
-| `messaging-connect` | role | Kafka Connect와 broker·schema 종속성 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-exporter` | No | normal service startup | current |
-| `messaging-schema` | role | Kafka schema registry | `kafka-1`, `schema-registry`, `kafka-exporter` | No | normal service startup | current |
 | `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets; monitoring initialization: mng-pg-monitor-provision | current |
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` | No | initialization: mng-pg-init, mng-pg-monitor-provision | current |
 | `mongodb` | topology | 독립 LAB MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` | No | initialization: mongo-key-generator, mongo-init | current |
@@ -203,7 +200,7 @@ provisioning 권한을 먼저 준비한다. 아래 직접 Target 목록은 같�
 readiness·백업 조건을 확인한 뒤에만 `up -d <목록>`으로 수행한다. Producer에서
 Exporter로 역방향 `depends_on`을 추가하지 않는다. 이 조건은 `depends_on`으로
 암묵적으로 기동하는 Producer에도 적용한다. 예를 들어 `mng-pg-init`이나
-`kafka-connect`만 Target한 의존성 closure에는 Exporter가 빠지므로 해당 Producer의
+`kafbat-ui`만 Target한 의존성 closure에는 Exporter가 빠지므로 해당 Producer의
 아래 companion 목록을 target 합집합에 포함한다. 이 계약은 임의 Docker CLI 명령을
 가로채는 장치가 아니며 bare Producer 기동 자체를 Compose 오류라고 주장하지 않는다.
 선택기는 저장소 루트 `.env`의 `COMPOSE_FILE`이 가리키는 파일을 같은 순서로 계획 입력(해시
@@ -240,8 +237,7 @@ Grafana query와 선택 profile의 예상 상태는 별도로 확인한다.
 | testing | root는 k6 버전만 확인; 격리 runner의 부하·샘플 데이터 생성은 대상과 실행량을 별도 승인 |
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
 | tooling | root는 registry만 선택; SonarQube는 LAB `sast` profile로 `labs/sonarqube/docker-compose.yml`에서만 선택; update/IaC/load 작업 제외 |
-| mlops / data-science / analytics-engineering / cdc / contract-testing / bi | 도구 metadata는 `mng-pg`·`mng-pg-init`을 사용한다. dbt·CDC 업무 원천은 `dev-pg`·`dev-platform-provision`을 요구한다. dbt·Superset LAB은 HOME network에 합류하지 않으므로 같은 profile 이름의 root 선택은 그 DB를 LAB에 도달 가능하게 만들지 않는다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
-| cdc with dev-pg | 새 원천의 publication·slot·offset·snapshot은 이전 mng-pg LSN에서 이어지지 않는다. connector 등록과 writer/reader 전환은 별도 승인 후 시행한다 |
+| mlops / data-science / analytics-engineering / contract-testing / bi | 도구 metadata는 `mng-pg`·`mng-pg-init`을 사용한다. dbt 업무 원천은 `dev-pg`·`dev-platform-provision`을 요구한다. dbt·Superset LAB은 HOME network에 합류하지 않으므로 같은 profile 이름의 root 선택은 그 DB를 LAB에 도달 가능하게 만들지 않는다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
 | crawl4ai | internal network만 사용하고 외부로는 `crawl4ai-egress`만 통과; 소비자는 승인된 변경으로 `crawl4ai_net`에 합류 |
 | n8n-sandbox | runner만 `privileged`(예외: `infra/common-optimizations.exceptions.json`, Conftest, p02 시험); host port·Traefik route·host Docker socket 없음; runner는 n8n 망에 합류하지 않고 API와 `n8n_sandbox_runner_net`, 인터넷과 `n8n_sandbox_outbound_net`만 사용; secret 파일 3개가 있어야 기동 |
@@ -305,7 +301,7 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | n8n | 외부 이벤트·webhook·알림 | workflow | 5 / 4608 | `n8n-data`, task runner volume | HOME 유지 | 이벤트 workflow가 없어질 때 | 실행 |
 | Mailpit | 개발 SMTP 캡처 | 앱 메일 시험 | 1 / 512 | `mailpit-data` | DEV on-demand | 메일 시험이 없을 때 | 미실행 |
 | Stalwart | 실제 메일 서버 | 이름 있는 소비자 없음 | 1.5 / 768 | `stalwart-data`(SPEC-0262 이후 `${LAB_DATA_DIR}/stalwart/data`) | 2026-11-04 LAB `labs/stalwart/docker-compose.yml`로 이전 | 메일 수신 계획이 없으면 퇴역 검토 | 미실행 |
-| Kafka `kafka-1`, Schema Registry, Connect, kafbat UI | 단일 broker 메시징·CDC | Debezium Avro connector, kafbat | 7 / 5632 | `kafka-1-data`, `kafka-connect-data` | OPTIONAL `messaging`·`cdc`; Avro 소비자가 있으므로 Schema Registry 유지 | CDC·메시징 소비자가 없어질 때 | 실행 |
+| Kafka `kafka-1`, kafbat UI | 단일 broker 메시징 | kafbat | 개정 전 7 / 5632에서 Schema Registry·Connect 제외 | `kafka-1-data` | OPTIONAL `messaging`; Schema Registry·Connect는 LAB `labs/kafka-cluster`(ADR-0062 개정 2026-11-10) | 메시징 소비자가 없어질 때 | 실행 |
 | Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | 8 / 7936 | `flink-checkpoints`(SPEC-0262 이후 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`); 데이터는 object store | 2026-11-04 LAB `labs/lakehouse/docker-compose.yml`로 이전; one-shot·예산 검사 | 기능·학습 시나리오가 없을 때 선택하지 않음 | 미실행 |
 | Superset | BI | 운영자 | 2.5 / 1792 | MNG PostgreSQL DB | 2026-11-04 LAB `labs/superset/docker-compose.yml`로 이전 | 대시보드 소비자가 없을 때 | 미실행 |
 | Open WebUI | 채팅·RAG UI | 사용자 1명, 마지막 활동 2026-10-26 | 2 / 2048 | `open-webui`(이전 후 `${LAB_DATA_DIR}/open-webui/data`) | 2026-11-10 LAB `labs/open-webui/docker-compose.yml`로 이전; HOME 컨테이너·volume 퇴역은 별도 승인 | 채팅 실험 수요가 없을 때 | 실행 |

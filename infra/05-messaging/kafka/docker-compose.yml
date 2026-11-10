@@ -8,12 +8,6 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-data
-  kafka-connect-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-kafka-connect
 
 services:
   kafka-1:
@@ -21,10 +15,7 @@ services:
     profiles:
       - messaging
       - messaging-broker
-      - messaging-schema
-      - messaging-connect
       - messaging-admin
-      - cdc
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -76,234 +67,6 @@ services:
     labels:
       <<: *tier-label
 
-  schema-registry:
-    profiles:
-      - messaging
-      - messaging-schema
-      - messaging-connect
-      - messaging-admin
-      - cdc
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-infra-med
-    image: confluentinc/cp-schema-registry:8.3.2
-    container_name: schema-registry
-    hostname: schema-registry
-    read_only: true
-    tmpfs:
-      - /tmp:uid=1000,gid=1000,mode=1777
-      - /etc/schema-registry:uid=1000,gid=1000,mode=0775
-      - /var/log/confluent:uid=1000,gid=1000,mode=0775
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:${SCHEMA_REGISTRY_PORT:-8081}'
-      SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: 'http'
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: '${KAFKA_BOOTSTRAP_SERVERS_URI:-PLAINTEXT://kafka-1:19092}'
-      SCHEMA_REGISTRY_KAFKASTORE_RETRY_BACKOFF_MS: 500
-      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 1
-      # JMX metrics for Prometheus job schema-registry (Confluent rule file, SPEC-0193).
-      SCHEMA_REGISTRY_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/confluent_schemaregistry.yml
-    volumes:
-      - ./jmx-exporter:/usr/share/jmx_exporter:ro
-    expose:
-      - '${SCHEMA_REGISTRY_PORT:-8081}'
-    labels:
-      <<: *tier-label
-      traefik.docker.network: schema_registry_ingress_net
-      traefik.enable: 'true'
-      traefik.http.routers.schema-registry.rule: Host(`schema-registry.${DEFAULT_URL}`)
-      traefik.http.routers.schema-registry.entrypoints: websecure
-      traefik.http.routers.schema-registry.tls: 'true'
-      # No authentication in Schema Registry; clients use schema-registry on kafka_net.
-      traefik.http.routers.schema-registry.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
-      traefik.http.services.schema-registry.loadbalancer.server.port: ${SCHEMA_REGISTRY_PORT:-8081}
-    depends_on:
-      kafka-1:
-        condition: service_healthy
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - >-
-          if command -v ub >/dev/null 2>&1; then
-            ub sr-ready localhost ${SCHEMA_REGISTRY_PORT:-8081} 20;
-          else
-            cub sr-ready localhost ${SCHEMA_REGISTRY_PORT:-8081} 20;
-          fi
-      interval: 15s
-      timeout: 30s
-      retries: 10
-      start_period: 60s
-    networks:
-      schema_registry_ingress_net: {}
-      obs_net: {}
-      kafka_net: {}
-
-  kafka-connect:
-    profiles:
-      - messaging
-      - messaging-connect
-      - messaging-admin
-      - cdc
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-stateful-high
-    build:
-      context: .
-      dockerfile: Dockerfile.connect
-    image: hy-home/kafka-connect:8.3.2-debezium-3.7.0
-    container_name: kafka-connect
-    hostname: kafka-connect
-    group_add:
-      - '${SECRETS_GID:-1000}'
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /etc/kafka-connect:uid=1000,gid=1000,mode=0775
-      - /etc/kafka:uid=1000,gid=1000,mode=0775
-    depends_on:
-      kafka-1:
-        condition: service_healthy
-      schema-registry:
-        condition: service_healthy
-    environment:
-      CONNECT_BOOTSTRAP_SERVERS: '${KAFKA_BOOTSTRAP_SERVERS:-kafka-1:19092}'
-      CONNECT_REST_PORT: ${KAFKA_CONNECT_PORT:-8083}
-      CONNECT_LISTENERS: 'http://0.0.0.0:${KAFKA_CONNECT_PORT:-8083}'
-      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
-      CONNECT_GROUP_ID: 'kafka-connect-cluster'
-
-      CONNECT_CONFIG_STORAGE_TOPIC: _connect-configs
-      CONNECT_OFFSET_STORAGE_TOPIC: _connect-offsets
-      CONNECT_STATUS_STORAGE_TOPIC: _connect-status
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: '${KAFKA_REPLICATION_FACTOR:-1}'
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: '${KAFKA_REPLICATION_FACTOR:-1}'
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: '${KAFKA_REPLICATION_FACTOR:-1}'
-
-      CONNECT_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
-
-      CONNECT_INTERNAL_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_INTERNAL_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
-      CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
-
-      CONNECT_PLUGIN_PATH: '/usr/share/java,/usr/share/confluent-hub-components'
-
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
-
-      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
-      CONNECT_CONFIG_PROVIDERS: file
-      CONNECT_CONFIG_PROVIDERS_FILE_CLASS: org.apache.kafka.common.config.provider.FileConfigProvider
-      # KIP-993: connector configs may resolve files only from this directory.
-      CONNECT_CONFIG_PROVIDERS_FILE_PARAM_ALLOWED_PATHS: /tmp/connect-secrets
-      # JMX metrics for Prometheus job kafka-connect (Confluent rule file, SPEC-0193).
-      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/kafka_connect.yml
-      # The image default is -Xmx2G, the whole 2g limit; leave room off-heap.
-      KAFKA_HEAP_OPTS: '-Xms256M -Xmx1G'
-
-    command:
-      - /bin/bash
-      - /usr/local/bin/render-connect-secrets.sh
-    secrets:
-      - debezium_postgres_password
-    volumes:
-      - kafka-connect-data:/var/lib/kafka-connect:rw
-      - ./connect/render-connect-secrets.sh:/usr/local/bin/render-connect-secrets.sh:ro
-      - ./jmx-exporter:/usr/share/jmx_exporter:ro
-    labels:
-      <<: *tier-label
-      traefik.docker.network: kafka_connect_ingress_net
-      traefik.enable: 'true'
-      traefik.http.routers.kafka-connect.rule: Host(`kafka-connect.${DEFAULT_URL}`)
-      traefik.http.routers.kafka-connect.entrypoints: websecure
-      traefik.http.routers.kafka-connect.tls: 'true'
-      # The REST API can create connectors that read provider-resolved
-      # credentials, so the gateway route requires SSO like other admin APIs.
-      traefik.http.routers.kafka-connect.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
-      traefik.http.services.kafka-connect.loadbalancer.server.port: ${KAFKA_CONNECT_PORT:-8083}
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - >-
-          bash -ec '
-            exec 3<>/dev/tcp/127.0.0.1/${KAFKA_CONNECT_PORT:-8083};
-
-            printf "GET /connectors HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3;
-
-            if ! IFS= read -r status <&3; then
-              echo "Kafka Connect returned no HTTP status";
-              exit 1;
-            fi;
-
-            printf "Kafka Connect health: %s\n" "$$status";
-
-            case "$$status" in
-              *" 200 "*) exit 0 ;;
-              *) exit 1 ;;
-            esac
-          '
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-    networks:
-      kafka_connect_ingress_net: {}
-      obs_net: {}
-      kafka_net: {}
-      dev_data_net: {}
-
-  # Feature-owned development CDC provisioning: dedicated replication role, read
-  # grants and the publication the connector consumes. Names must match
-  # connect/debezium/postgres-connector.json.
-  debezium-db-provision:
-    profiles:
-      - cdc
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-job-low
-    image: postgres:18.6-alpine
-    container_name: debezium-db-provision
-    hostname: debezium-db-provision
-    group_add:
-      - '${SECRETS_GID:-1000}'
-    entrypoint:
-      - /bin/sh
-      - /provision/run-feature-provision.sh
-    environment:
-      PGHOST: dev-pg
-      PGPORT: '5432'
-      PGUSER: '${DEV_PG_ADMIN_USER:-postgres}'
-      PGDATABASE: postgres
-      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/dev_pg_admin_password
-      PROVISION_SQL: /provision/dev-pg.sql
-      PROVISION_IDENTIFIERS: DEBEZIUM_DB_USER DEBEZIUM_DB_NAME DEBEZIUM_SCHEMA DEBEZIUM_HEARTBEAT_SCHEMA DEBEZIUM_PUBLICATION DEBEZIUM_SOURCE_OWNER
-      PROVISION_SECRETS: DEBEZIUM_DB_PASSWORD=/run/secrets/debezium_postgres_password
-      DEBEZIUM_DB_USER: debezium
-      # Must equal database.dbname in postgres-connector.json (contract test).
-      DEBEZIUM_DB_NAME: platform_dev
-      DEBEZIUM_SCHEMA: app
-      DEBEZIUM_HEARTBEAT_SCHEMA: debezium_heartbeat
-      DEBEZIUM_PUBLICATION: hyhome_platform_publication
-      DEBEZIUM_SOURCE_OWNER: platform_owner
-    volumes:
-      - ../../04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
-      - ./connect/debezium/provisioning/dev-pg.sql:/provision/dev-pg.sql:ro
-    secrets:
-      - dev_pg_admin_password
-      - debezium_postgres_password
-    depends_on:
-      dev-pg:
-        condition: service_healthy
-      dev-platform-provision:
-        condition: service_completed_successfully
-    networks:
-      dev_data_net: {}
-    labels:
-      <<: *tier-label
-      traefik.enable: 'false'
-
   kafbat-ui:
     profiles:
       - messaging
@@ -323,9 +86,6 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_ID}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: '${KAFKA_BOOTSTRAP_SERVERS:-kafka-1:19092}'
-      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: kafka-connect
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:${KAFKA_CONNECT_PORT:-8083}
       DYNAMIC_CONFIG_ENABLED: 'true'
       KAFBAT_OAUTH_CLIENT_ID: ${KAFBAT_OAUTH_CLIENT_ID}
       # P06: the OIDC client secret file; unset keeps /run/secrets.
@@ -399,10 +159,6 @@ services:
     depends_on:
       kafka-1:
         condition: service_healthy
-      schema-registry:
-        condition: service_healthy
-      kafka-connect:
-        condition: service_healthy
     secrets:
       - kafbat_client_secret
     healthcheck:
@@ -419,10 +175,7 @@ services:
     profiles:
       - messaging
       - messaging-broker
-      - messaging-schema
-      - messaging-connect
       - messaging-admin
-      - cdc
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

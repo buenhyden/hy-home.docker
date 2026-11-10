@@ -48,6 +48,10 @@ REGISTRY_PATH_EXCEPTIONS = {
 # relocated rows into aliases of their LAB-* copies.
 LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS = {
     "IAM-011": "secrets/auth/open-webui/openwebui_oidc_client_secret.txt",
+    # ADR-0062 amendment (2026-11-10): the Debezium CDC path left HOME, so no root
+    # Compose declares this file; the owner removes the PG-025 registry row and
+    # this exception together.
+    "PG-025": "secrets/db/dev-pg/debezium_password.txt",
     "IAM-013": "secrets/auth/superset/superset_oidc_client_secret.txt",
 }
 CUTOVER_REGISTRY_PATH_EXCEPTIONS = {

@@ -18,7 +18,7 @@ volumes:
 
 services:
   dev-pg:
-    profiles: [dev-data, analytics-engineering, cdc, quality-results]
+    profiles: [dev-data, analytics-engineering, quality-results]
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-db-med
@@ -108,7 +108,7 @@ services:
       dev_data_net: {}
 
   dev-platform-provision:
-    profiles: [analytics-engineering, cdc]
+    profiles: [analytics-engineering]
     extends:
       file: ../../common-optimizations.yml
       service: template-job-med
@@ -168,7 +168,7 @@ services:
       dev_data_net: {}
 
   dev-pg-monitor-provision:
-    profiles: [dev-data, analytics-engineering, cdc, quality-results]
+    profiles: [dev-data, analytics-engineering, quality-results]
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -200,7 +200,7 @@ services:
   # Metrics read through dev_pg_monitor (statistics and settings only) on the
   # fixed internal port; the admin secret is never mounted here.
   dev-pg-exporter:
-    profiles: [dev-data, analytics-engineering, cdc, quality-results]
+    profiles: [dev-data, analytics-engineering, quality-results]
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low

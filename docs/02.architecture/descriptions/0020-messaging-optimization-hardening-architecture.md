@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.2.6"
+version: "1.3.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -54,7 +54,7 @@ boundary.
 ### Architecture
 
 - Kafka:
-  - `messaging` profile: `kafka-1`, `schema-registry`, `kafka-connect`, `debezium-db-provision`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
+  - `messaging` profile: `kafka-1`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
   - Separate LAB `labs/kafka-cluster/docker-compose.yml` (not promoted): `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init`; no HOME state is shared
 - Gateway Path:
   - Client -> Traefik(`websecure`) -> middleware chain -> management endpoints

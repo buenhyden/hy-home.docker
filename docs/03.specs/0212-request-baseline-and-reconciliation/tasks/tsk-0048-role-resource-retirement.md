@@ -135,6 +135,40 @@ checks the target; this is not a deletion success receipt. Secret copies,
 SMTP-specific retirement and protected recovery material remain P06/existing
 executor handoffs.
 
+### 2026-11-10 Kafka CDC LAB move (ADR-0062 amendment)
+
+The owner decided on 2026-11-10 to move `kafka-connect` and `schema-registry` (the Debezium
+CDC path) out of HOME into `labs/kafka-cluster` (`lab-kafka-connect`, `lab-schema-registry`).
+The Kafka broker stays the only broker (ADR-0052); `kafka-1`, `kafka-init`, `kafka-exporter` and
+`kafbat-ui` stay.
+
+Sanitized read-only evidence, no content or secret recorded:
+
+- Kafka CDC: Connect has 0 connectors, Schema Registry 0 subjects, Kafka has zero consumer
+  groups, the topics `application-logs` and `infra-events` hold 0 messages, and the CDC
+  source database `platform_dev` does not exist in HOME (also T03 in TSK-0043). Cost is about
+  650 MiB RSS plus two Traefik routers, a Debezium replication secret and a provisioning job.
+
+Done in source: the two services, `debezium-db-provision`, its provisioning SQL, the connector
+sample, the Connect secret renderer and the two JMX rule files left HOME (Git history keeps
+them); the Dockerfile and the Connect and Schema Registry dashboards moved to the LAB;
+kafbat-ui no longer configures a schema registry or Connect and depends on `kafka-1` only; the
+Prometheus jobs, the two ingress networks, the root `debezium_postgres_password` secret, the
+`cdc`, `messaging-schema` and `messaging-connect` profiles and the HOME `CdcStreamRehearsalTests`
+were removed. PG-025 in the OpenBao catalog keeps its row with no consumer, like PG-020.
+The SEC01 ledger archived the three rows (`source_refreshes`, `historical_lab_entries`),
+`ledger_rebind` re-bound the hashes, the tech-stack projection and the `m0021` inventory were
+regenerated, and POL-0078, GDE/POL/RUN-0036 and GDE/POL/RUN-0108 were updated.
+
+Nothing was started, stopped or recreated. The running HOME `kafka-connect` and
+`schema-registry` containers and the `kafka-connect-data` volume remain until the owner approves
+their retirement.
+
+Held for the owner: `secrets/` is denied to agents, so the owner removes the PG-025 row from
+`secrets/SENSITIVE_ENV_VARS.md.example`, the `db/dev-pg/debezium_password` mention in
+`secrets/README.md` if any, and the matching entry in `test_secret_metadata_sync.py`
+(`LAB_RELOCATED_REGISTRY_PATH_EXCEPTIONS["PG-025"]`) in the same change.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |

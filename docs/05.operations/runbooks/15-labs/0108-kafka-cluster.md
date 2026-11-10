@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB Runbook"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0108"
 parent_ids:
@@ -42,8 +42,8 @@ repository root에서 합성 입력으로 render한다.
 LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --services
 ```
 
-다섯 서비스 `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init`이
-나와야 한다. 다르면 멈춘다.
+일곱 서비스 `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init`,
+`lab-schema-registry`, `lab-kafka-connect`가 나와야 한다. 다르면 멈춘다.
 
 ### Start and stop
 
@@ -66,6 +66,20 @@ python3 scripts/operations/lab.py down kafka-cluster
 3. `lab-kafka-init`이 실패하면 세 broker가 healthy인지 먼저 확인한다. init은 `--if-not-exists`이므로
    broker가 회복된 뒤 다시 실행해도 된다.
 4. topic 상태는 LAB network 안에서 `kafka-topics --describe`로 partition leader와 ISR을 확인한다.
+5. `lab-schema-registry`나 `lab-kafka-connect`가 unhealthy이면 세 broker가 healthy인지 먼저 확인한다.
+   Connect는 `lab-schema-registry`가 healthy가 된 뒤에 시작한다. 두 서비스의 상태는 broker topic
+   (`_schemas`, `_connect-*`)에 있으므로 broker 데이터를 지우지 않는다.
+
+### HOME retirement of Schema Registry and Connect (owner approval required)
+
+ADR-0062 개정(2026-11-10)은 소스만 옮긴다. HOME에는 `kafka-connect`, `schema-registry` 컨테이너, `kafka-connect-data`
+volume, 두 Traefik router와 Debezium 비밀번호 파일(`secrets/db/dev-pg/debezium_password.txt`)이 남아 있다.
+owner가 승인한 뒤에만 다음 순서를 따른다.
+
+1. 변경이 반영된 `kafbat-ui`와 `prometheus`를 재생성해 제거된 schema registry·Connect 설정과 scrape를 내린다.
+2. `kafka-connect`, `schema-registry` 컨테이너를 정지하고 제거한다. HOME `kafka-1`, `kafka-init`, `kafka-exporter`는 건드리지 않는다.
+3. `kafka-connect-data` volume과 Debezium 비밀번호 파일은 보존 여부를 결정한 뒤에만 정리한다. 삭제는 별도 승인이 필요하다.
+4. 잔여 network `kafka_connect_ingress_net`, `schema_registry_ingress_net`과 Keycloak/DNS 항목을 정리한다.
 
 ### Planned backup and isolated restore
 
