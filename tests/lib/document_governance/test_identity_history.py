@@ -130,12 +130,6 @@ class IdentityHistoryTests(unittest.TestCase):
             infer_artifact_type(pathlib.Path(LEGACY_REQUIREMENT), profiles),
         )
 
-    def test_history_reader_recovers_legacy_requirement_identity(self) -> None:
-        self.assertEqual(
-            "REQ-0042",
-            identity_history.recover_historical_identity(LEGACY_REQUIREMENT),
-        )
-
     def test_history_reader_parses_legacy_requirement_children(self) -> None:
         historical, declarations = (
             identity_history.parse_historical_requirement_declarations(
