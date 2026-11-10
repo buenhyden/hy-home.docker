@@ -1,6 +1,6 @@
 ---
 title: "Pyroscope Operations Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -77,7 +77,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 
 ### Profile storage and source limits
 
-두 Alloy 설정에는 Go(12개 대상)와 별도 SeaweedFS pprof source가 있다. 선택 파일·target과 제한된 profile query로 수신을 확인하며 writer/receiver readiness만으로 판정하지 않는다. Pyroscope는 선언 volume의 로컬 filesystem과 ingestion/cardinality 한도를 사용한다. retention은 `limits.retention_period: 168h`로 고정하며 삭제는 block 단위·유예 이후다. 기간 변경은 별도 승인된 설정·용량 검토가 필요하다. wget 존재를 가정하지 않고 선언된 `profilecli ready` probe를 쓴다. Profile/config를 일관되게 보존하고 삭제는 POL-0048을 따른다.
+두 Alloy 설정에는 Go(11개 대상)와 별도 SeaweedFS pprof source가 있다. 선택 파일·target과 제한된 profile query로 수신을 확인하며 writer/receiver readiness만으로 판정하지 않는다. Pyroscope는 선언 volume의 로컬 filesystem과 ingestion/cardinality 한도를 사용한다. retention은 `limits.retention_period: 168h`로 고정하며 삭제는 block 단위·유예 이후다. 기간 변경은 별도 승인된 설정·용량 검토가 필요하다. wget 존재를 가정하지 않고 선언된 `profilecli ready` probe를 쓴다. Profile/config를 일관되게 보존하고 삭제는 POL-0048을 따른다.
 
 ## Exceptions
 
