@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -548,6 +548,12 @@ fix them. Most HOME targets are scraped and have dashboards. Five were not:
   `gatus_results_endpoint_success{key="ai_open-webui"}` reads 1, and the mounted
   Grafana `Security/openbao.json` holds the Agent panels.
 
+### Owner acceptance 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) accepted criteria 82 and 84 after the
+target-plan reruns, the independent launcher re-review and the isolated OTLP
+fixture run.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -613,9 +619,9 @@ Actual Grafana, trace and log delivery and durable restore remain NOT_RUN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 82 | pending | Companion selection | IMPLEMENT_GAP until implemented and reviewed. | SPEC-0212 TSK-0046 |
+| 82 | accepted | Companion selection, Launcher candidate, Corrected launcher review, Companion selection rerun, Launcher candidate rerun, Launcher re-review 2026-11-10 | Accepted by owner @buenhyden on 2026-11-10: current target plans and the 25-test suite pass and the independent re-review approves the current source. Four minor follow-ups stay open as recorded in the re-review row. | SPEC-0212 TSK-0046 |
 | 83 | pending | Expected targets and alert semantics | IMPLEMENT_GAP until implemented and verified. | SPEC-0212 TSK-0046 |
-| 84 | pending | Authenticated OTLP delivery | REUSE_ACCEPTED only for recorded SPEC-0214 scope; new proof remains separate. | SPEC-0212 TSK-0046 |
+| 84 | accepted | Authenticated OTLP delivery, Authenticated OTLP delivery rerun | Accepted by owner @buenhyden on 2026-11-10 on the pinned isolated fixture: authenticated OTLP delivery passes and an unauthenticated producer is rejected. Live Grafana datasource and prior-state recovery stay NOT_RUN. | SPEC-0212 TSK-0046 |
 | 85 | pending | Selection and recovery handoff | IMPLEMENT_GAP; HOME/reload/remote acceptance remains NOT_RUN. | SPEC-0212 TSK-0046 |
 
 ## Review and Completion

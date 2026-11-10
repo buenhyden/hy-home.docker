@@ -1,6 +1,6 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.8"
+version: "0.1.9"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -242,6 +242,15 @@ before the deploy stay as they were; Grafana updated its bundled cloudwatch
 plugin from the network at start. openbao and openbao-agent still run 2.7.1 r1
 until the RUN-0105 window.
 
+### Supply-chain handoff 2026-11-10
+
+On 2026-11-10 the owner (@buenhyden) set criteria 86 and 89 to not-required in
+this Task and handed them to a dedicated supply-chain Task: fresh reviews and
+reviewed decisions for the 89 ledger entries (the latest-version gate exits 2
+with every entry `blocked-evidence`), and per-artifact signature, provenance
+and SBOM evidence. That Task opens with its own network-scope approval. The
+FAIL and NOT_RUN rows stay as recorded.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -277,10 +286,10 @@ until the RUN-0105 window.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 86 | pending | Ledger repair regression, Latest-version gate | The owner decided on 2026-11-10 to accept this as recorded: the criterion records missing lookups, and the latest-version gate FAIL is that record. Acceptance stays pending because a FAIL row resolves only through a later PASS: a 2026-11-10 rerun still exits 2 with all 89 entries `blocked-evidence` (no fresh review or reviewed decision). Fresh lookups and artifact evidence are not claimed. | SPEC-0212 TSK-0047 |
+| 86 | not-required | Ledger repair regression, Latest-version gate | Not required in this Task: owner @buenhyden handed this to a dedicated supply-chain Task on 2026-11-10. It owns fresh reviews and reviewed decisions for the 89 ledger entries; the latest-version gate still exits 2. That Task opens with its own network-scope approval; until then nothing here is claimed as verified. | SPEC-0212 TSK-0047 |
 | 87 | accepted | Valkey candidate isolation, n8n candidate preparation, n8n advisory fixed-range readback | The owner re-targeted the n8n evaluation from the superseded 2.45.7 candidate to the deployed 2.46.6 on 2026-11-10, so the 2.45.7 pull and verification rows are optional. 2.46.6 is in the advisory patched range; its signature and scan stay open under TSK-0041 criterion 60. No required observation is unresolved; owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0047 with P02/P03/P05 handoffs |
 | 88 | accepted | Storybook clean lock install, Storybook isolated regressions, Storybook audit, Storybook audit rerun, Storybook audit high threshold | The high-threshold audit passes with 0 high and 0 critical; the remaining moderate findings are the two development-tooling advisories the owner accepted on 2026-11-10. No required observation is unresolved; owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0047 |
-| 89 | pending | Supply-chain gate, Selected candidate verification | No cross-artifact inference; unavailable signing, provenance and SBOM material remains explicit. | SPEC-0212 TSK-0047 |
+| 89 | not-required | Supply-chain gate, Selected candidate verification | Not required in this Task: owner @buenhyden handed this to a dedicated supply-chain Task on 2026-11-10. It owns per-artifact signature, provenance and SBOM evidence; no cross-artifact inference is made. That Task opens with its own network-scope approval; until then nothing here is claimed as verified. | SPEC-0212 TSK-0047 |
 
 ## Review and Completion
 
