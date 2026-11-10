@@ -81,6 +81,7 @@ services:
     networks:
       ollama_ingress_net: {}
       ai_net: {}
+      n8n_ollama_net: {}
       # openclaw_default:
     healthcheck:
       test: [ 'CMD-SHELL', 'ollama list >/dev/null 2>&1 || exit 1' ]

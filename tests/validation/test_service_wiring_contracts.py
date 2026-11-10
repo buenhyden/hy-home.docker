@@ -119,44 +119,33 @@ class OptionalIntegrationContractTests(unittest.TestCase):
                         companion, _service(path, producer).get("depends_on", {})
                     )
 
-    def test_named_account_mount_is_optional_and_ollama_only_adds_the_worker(self):
+    def test_named_account_mount_and_ollama_net_live_in_the_base_files(self):
         root = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
         self.assertEqual(
             "./secrets/db/mng-valkey/n8n_password.txt",
             root["secrets"]["mng_valkey_n8n_password"]["file"],
         )
-        self.assertNotIn(
-            "mng_valkey_n8n_password",
-            _service("infra/04-data/mng-db/docker-compose.yml", "mng-valkey")[
-                "secrets"
-            ],
-        )
-        acl = yaml.safe_load(
-            (ROOT / "infra/04-data/mng-db/docker-compose.n8n-acl.yml").read_text()
-        )
-        self.assertEqual(
-            {"version": 1, "base": "infra/04-data/mng-db/docker-compose.yml"},
-            acl["x-hyhome-overlay"],
-        )
-        self.assertEqual({"mng-valkey"}, set(acl["services"]))
-        self.assertEqual(
-            "1",
-            str(acl["services"]["mng-valkey"]["environment"]["MNG_VALKEY_N8N_ENABLED"]),
-        )
-        overlay = yaml.safe_load(
-            (ROOT / "infra/07-workflow/n8n/docker-compose.ollama-local.yml").read_text()
-        )
-        self.assertEqual(
-            {"version": 1, "base": "docker-compose.yml"}, overlay["x-hyhome-overlay"]
-        )
-        self.assertEqual({"n8n_ollama_net": {"internal": True}}, overlay["networks"])
-        self.assertEqual({"n8n-worker", "ollama"}, set(overlay["services"]))
-        for service in overlay["services"].values():
-            self.assertEqual({"networks": {"n8n_ollama_net": {}}}, service)
+        valkey = _service("infra/04-data/mng-db/docker-compose.yml", "mng-valkey")
+        self.assertIn("mng_valkey_n8n_password", valkey["secrets"])
+        self.assertEqual("1", str(valkey["environment"]["MNG_VALKEY_N8N_ENABLED"]))
+        self.assertEqual({"internal": True}, root["networks"]["n8n_ollama_net"])
+        for path, name in (
+            ("infra/07-workflow/n8n/docker-compose.yml", "n8n-worker"),
+            ("infra/08-ai/ollama/docker-compose.yml", "ollama"),
+        ):
+            self.assertIn("n8n_ollama_net", _service(path, name)["networks"])
+        for name in ("n8n", "n8n-sandbox-runner-1"):
+            with self.subTest(name=name):
+                service = (
+                    _service("infra/07-workflow/n8n/docker-compose.yml", name)
+                    if name == "n8n"
+                    else {"networks": {}}
+                )
+                self.assertNotIn("n8n_ollama_net", service["networks"])
 
     @unittest.skipUnless(shutil.which("docker"), "docker CLI not available")
-    def test_public_render_preserves_defaults_and_adds_only_opted_in_connections(self):
-        def render(*overlays: str, named: bool = False):
+    def test_public_render_keeps_defaults_and_opts_in_the_named_account(self):
+        def render(named: bool = False):
             with tempfile.TemporaryDirectory() as directory:
                 env = {
                     "PATH": os.environ["PATH"],
@@ -168,18 +157,12 @@ class OptionalIntegrationContractTests(unittest.TestCase):
                         "N8N_VALKEY_USERNAME": "n8n",
                         "N8N_VALKEY_SECRET": "mng_valkey_n8n_password",
                     }
-                args = [
-                    "docker",
-                    "compose",
-                    "--env-file",
-                    ".env.example",
-                    "-f",
-                    "docker-compose.yml",
-                ]
-                for overlay in overlays:
-                    args.extend(("-f", overlay))
-                args.extend(
-                    (
+                result = subprocess.run(
+                    [
+                        "docker",
+                        "compose",
+                        "--env-file",
+                        ".env.example",
                         "--profile",
                         "mng",
                         "--profile",
@@ -189,10 +172,7 @@ class OptionalIntegrationContractTests(unittest.TestCase):
                         "config",
                         "--format",
                         "json",
-                    )
-                )
-                result = subprocess.run(
-                    args,
+                    ],
                     cwd=ROOT,
                     env=env,
                     capture_output=True,
@@ -203,11 +183,7 @@ class OptionalIntegrationContractTests(unittest.TestCase):
                 return json.loads(result.stdout)
 
         base = render()
-        optional = render(
-            "infra/04-data/mng-db/docker-compose.n8n-acl.yml",
-            "infra/07-workflow/n8n/docker-compose.ollama-local.yml",
-            named=True,
-        )
+        optional = render(named=True)
         self.assertEqual(set(base["services"]), set(optional["services"]))
         for name in ("n8n", "n8n-worker"):
             normal = base["services"][name]["environment"]
@@ -221,13 +197,10 @@ class OptionalIntegrationContractTests(unittest.TestCase):
                 "/run/secrets/mng_valkey_n8n_password",
                 named["QUEUE_BULL_REDIS_PASSWORD_FILE"],
             )
-        for name, service in optional["services"].items():
-            old = set(base["services"][name].get("networks", {}))
-            expected = (
-                old | {"n8n_ollama_net"} if name in ("n8n-worker", "ollama") else old
-            )
-            self.assertEqual(expected, set(service.get("networks", {})), name)
-        self.assertTrue(optional["networks"]["n8n_ollama_net"]["internal"])
+        for name, service in base["services"].items():
+            has = "n8n_ollama_net" in service.get("networks", {})
+            self.assertEqual(name in ("n8n-worker", "ollama"), has, name)
+        self.assertTrue(base["networks"]["n8n_ollama_net"]["internal"])
 
 
 class OpenWebUiVectorStoreTests(unittest.TestCase):
