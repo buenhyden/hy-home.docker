@@ -177,7 +177,7 @@
     },
     {
       "path": "infra/08-ai/crawl4ai/docker-compose.yml",
-      "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+      "sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a"
     },
     {
       "path": "infra/08-ai/mlflow/docker-compose.yml",
@@ -185,7 +185,7 @@
     },
     {
       "path": "infra/08-ai/ollama/docker-compose.yml",
-      "sha256": "8a812b47f6fa0127637fe7c81beb02de9f8a74077d8612e44ab6e509e3d52cfd"
+      "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
     },
     {
       "path": "infra/08-ai/open-notebook/docker-compose.yml",
@@ -201,15 +201,15 @@
     },
     {
       "path": "infra/09-platform-ops/renovate/docker-compose.yml",
-      "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+      "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
     },
     {
       "path": "infra/09-platform-ops/restic/docker-compose.yml",
-      "sha256": "fc03de6594fe7bda58107b7cb54ec3d0fd6267781798de3f939d013fc4f5b4e8"
+      "sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6"
     },
     {
       "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
-      "sha256": "930e41282b55e3a5c55a2d7e32087bd94d2c004f7643af48eb1f8d24572f27db"
+      "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
     },
     {
       "path": "infra/11-quality/conftest/docker-compose.yml",
@@ -221,7 +221,7 @@
     },
     {
       "path": "infra/11-quality/mailpit/docker-compose.yml",
-      "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+      "sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a"
     },
     {
       "path": "infra/11-quality/pact-broker/docker-compose.yml",
@@ -1691,7 +1691,7 @@
       "service": "backup-sqlite-export",
       "scope": "root",
       "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
-      "current_declared": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+      "current_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
       "profiles_declared": [
         "backup"
       ],
@@ -1699,7 +1699,7 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "3.13.18",
-      "target_version": "3.13.15",
+      "target_version": "3.15.2",
       "channel": "stable",
       "checked_at": "2026-10-26T09:45:12.544894+00:00",
       "release_url": "https://www.python.org/downloads/",
@@ -1721,8 +1721,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -1741,8 +1741,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "fc03de6594fe7bda58107b7cb54ec3d0fd6267781798de3f939d013fc4f5b4e8",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1816,14 +1816,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+      "target_source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "3.13.15",
-        "source_image": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+        "source_version": "3.15.2",
+        "source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -2264,7 +2264,7 @@
       "upstream_reported_tag": "v0.9.5",
       "next_fact_command": "gh release view --repo unclecode/crawl4ai --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd",
+      "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -2370,7 +2370,7 @@
       "service": "crawl4ai-egress",
       "scope": "root",
       "compose_file": "infra/08-ai/crawl4ai/docker-compose.yml",
-      "current_declared": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+      "current_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
       "profiles_declared": [
         "crawl4ai"
       ],
@@ -2392,14 +2392,14 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "3.13.18",
-      "target_version": "3.13.15",
+      "target_version": "3.15.2",
       "channel": "stable",
       "checked_at": "2026-10-26T09:45:12.544894+00:00",
       "release_url": "https://www.python.org/downloads/",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "UNKNOWN",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
@@ -2411,13 +2411,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_ARTIFACT_AND_SOAK",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Official25Oct security releases;3.13.18-alpine DockerHub404.3.15 major/minor runtime migration is not a same-line patch; no manager vulnerability warning verified for fast path.",
-        "exit_condition": "Exact official image available, release soak satisfied or actual configured-manager warning reviewed; sqlite backup and SSRF-egress regressions.",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -2438,8 +2438,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -2513,23 +2513,24 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+      "target_source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "3.13.15",
-        "source_image": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+        "source_version": "3.15.2",
+        "source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
-      }
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      },
+      "upstream_reported_tag": "UNKNOWN"
     },
     {
       "service": "crawl4ai-loopback",
       "scope": "root",
       "compose_file": "infra/08-ai/crawl4ai/docker-compose.yml",
-      "current_declared": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+      "current_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
       "profiles_declared": [
         "crawl4ai"
       ],
@@ -2537,7 +2538,7 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
+      "target_version": "3.15.2",
       "channel": "UNKNOWN",
       "checked_at": null,
       "release_url": null,
@@ -2559,10 +2560,10 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-09T07:25:51.392853+00:00",
-        "next_validation_due": "2026-11-16T07:25:51.392853+00:00",
-        "reason": "Service added to the public Compose source after the last SEC01 census. Its declared image is the same digest pin as the crawl4ai-egress row, but no release, signature, scan, compatibility, runtime or recovery evidence has been reviewed for this service.",
-        "exit_condition": "Review the loopback forwarder image and its release evidence as its own row; record compatibility, scan and recovery before any acceptance.",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit; no runtime state is held by the forwarder.",
         "service_owner_role": "Existing crawl4ai service owner"
       },
@@ -2572,13 +2573,23 @@
       "effective_current_digest_type": "NOT_OBSERVED",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: no release lookup or artifact inspection has been run for this service",
-      "source_refreshed_at": "2026-11-09T07:25:51.392853+00:00",
-      "source_input_sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
       "supplier_lookup_blocker": "No supplier lookup has been recorded for this service; the shared image pin is not a verified release observation.",
-      "official_supplier_observation_scope": "NONE; existing vendor observations of other rows do not verify this service."
+      "official_supplier_observation_scope": "NONE; existing vendor observations of other rows do not verify this service.",
+      "target_declared_digest": "UNKNOWN",
+      "target_source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+      "current_target_artifact_binding": {
+        "source_version": "3.15.2",
+        "source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+        "status": "UNBOUND_CURRENT_TARGET",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
+      }
     },
     {
       "service": "dcgm-exporter",
@@ -6212,7 +6223,7 @@
       "service": "mailpit",
       "scope": "root",
       "compose_file": "infra/11-quality/mailpit/docker-compose.yml",
-      "current_declared": "axllent/mailpit:v1.31.5@sha256:94f6b70c1436defae6799d9ac7ff0eeff9540465b842026d5cdb018f1c0234ea",
+      "current_declared": "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
       "profiles_declared": [
         "dev",
         "local",
@@ -6236,14 +6247,14 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "1.32.0",
-      "target_version": "1.31.5",
+      "target_version": "1.33.0",
       "channel": "stable",
       "checked_at": "2026-10-26T09:43:10.994665+00:00",
       "release_url": "https://github.com/axllent/mailpit/releases/tag/v1.32.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-10-22T22:04:42Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
@@ -6255,13 +6266,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_SEVEN_DAY_SOAK",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -6273,15 +6284,15 @@
         "sha256:74d609a42ec279aa63c6b4622a6fa9b5408d1ad5b1d76a1c4be40a265ce0863d"
       ],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "v1.31.4",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "axllent/mailpit:v1.31.5@sha256:94f6b70c1436defae6799d9ac7ff0eeff9540465b842026d5cdb018f1c0234ea",
+      "target_source_image": "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
         "axllent/mailpit"
       ],
@@ -6344,12 +6355,12 @@
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
       "target_build_materials": [],
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "1.31.5",
-        "source_image": "axllent/mailpit:v1.31.5@sha256:94f6b70c1436defae6799d9ac7ff0eeff9540465b842026d5cdb018f1c0234ea",
+        "source_version": "1.33.0",
+        "source_image": "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -8988,7 +8999,7 @@
       "service": "ollama",
       "scope": "root",
       "compose_file": "infra/08-ai/ollama/docker-compose.yml",
-      "current_declared": "ollama/ollama:0.40.15@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761",
+      "current_declared": "ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
       "profiles_declared": [
         "ai",
         "ai-llm",
@@ -9012,7 +9023,7 @@
       ],
       "runtime_presence": "OBSERVED",
       "latest_version": "0.40.11",
-      "target_version": "0.40.15",
+      "target_version": "0.40.16",
       "channel": "stable",
       "checked_at": "2026-10-26T09:43:12.740371+00:00",
       "release_url": "https://github.com/ollama/ollama/releases/tag/v0.40.11",
@@ -9034,8 +9045,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T03:39:53+09:00",
-        "next_validation_due": "2026-11-17T03:39:53+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -9051,11 +9062,11 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo ollama/ollama --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T03:39:53+09:00",
-      "source_input_sha256": "8a812b47f6fa0127637fe7c81beb02de9f8a74077d8612e44ab6e509e3d52cfd",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "ollama/ollama:0.40.15@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761",
+      "target_source_image": "ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
@@ -9123,8 +9134,8 @@
       },
       "target_build_materials": [],
       "current_target_artifact_binding": {
-        "source_version": "0.40.15",
-        "source_image": "ollama/ollama:0.40.15@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761",
+        "source_version": "0.40.16",
+        "source_image": "ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
@@ -9204,7 +9215,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "8a812b47f6fa0127637fe7c81beb02de9f8a74077d8612e44ab6e509e3d52cfd",
+      "source_input_sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11843,7 +11854,7 @@
       "service": "renovate",
       "scope": "root",
       "compose_file": "infra/09-platform-ops/renovate/docker-compose.yml",
-      "current_declared": "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1",
+      "current_declared": "renovate/renovate:44.225.1-full@sha256:0ffd67ededcc1fffefd95b0984633f764e464a8420fb6bd03b9b3cb8734b72de",
       "profiles_declared": [
         "dependency-update"
       ],
@@ -11851,14 +11862,14 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "44.182.2",
-      "target_version": "44.151.3",
+      "target_version": "44.225.1",
       "channel": "stable",
       "checked_at": "2026-10-26T09:43:14.770955+00:00",
       "release_url": "https://github.com/renovatebot/renovate/releases/tag/44.182.2",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
+      "platform": "UNKNOWN",
       "source_release_date": "2026-10-26T09:29:43Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
@@ -11870,13 +11881,13 @@
       "deployment": "NOT_RUN",
       "signature": "NOT_RUN",
       "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_SEVEN_DAY_SOAK",
+      "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+        "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
         "service_owner_role": "Existing service owner named by current_public_assessment"
       },
@@ -11884,15 +11895,15 @@
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "44.149.2",
+      "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
-      "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "target_source_image": "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1",
+      "target_source_image": "renovate/renovate:44.225.1-full@sha256:0ffd67ededcc1fffefd95b0984633f764e464a8420fb6bd03b9b3cb8734b72de",
       "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+      "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "official_supplier_lookup_refs": [
         "renovatebot/renovate"
       ],
@@ -11955,12 +11966,12 @@
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
       "target_build_materials": [],
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+      "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "44.151.3",
-        "source_image": "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1",
+        "source_version": "44.225.1",
+        "source_image": "renovate/renovate:44.225.1-full@sha256:0ffd67ededcc1fffefd95b0984633f764e464a8420fb6bd03b9b3cb8734b72de",
         "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
     },
     {
@@ -12011,7 +12022,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo restic/restic --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "fc03de6594fe7bda58107b7cb54ec3d0fd6267781798de3f939d013fc4f5b4e8",
+      "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12132,7 +12143,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo restic/restic --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "fc03de6594fe7bda58107b7cb54ec3d0fd6267781798de3f939d013fc4f5b4e8",
+      "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -13704,7 +13715,7 @@
       "service": "terrakube-api",
       "scope": "root",
       "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
-      "current_declared": "azbuilder/api-server:2.33.2@sha256:032e14e2b0262d50607bd7404479a1bb7defa480599d82ef9a4c7c5e298e230e",
+      "current_declared": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
       "profiles_declared": [
         "iac"
       ],
@@ -13712,7 +13723,7 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "2.33.3",
-      "target_version": "2.33.2",
+      "target_version": "2.33.3",
       "channel": "stable",
       "checked_at": "2026-10-26T09:43:15.822659+00:00",
       "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
@@ -13734,8 +13745,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -13747,8 +13758,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "930e41282b55e3a5c55a2d7e32087bd94d2c004f7643af48eb1f8d24572f27db",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -13809,14 +13820,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "azbuilder/api-server:2.33.2@sha256:032e14e2b0262d50607bd7404479a1bb7defa480599d82ef9a4c7c5e298e230e",
+      "target_source_image": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "2.33.2",
-        "source_image": "azbuilder/api-server:2.33.2@sha256:032e14e2b0262d50607bd7404479a1bb7defa480599d82ef9a4c7c5e298e230e",
+        "source_version": "2.33.3",
+        "source_image": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
@@ -13825,7 +13836,7 @@
       "service": "terrakube-executor",
       "scope": "root",
       "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
-      "current_declared": "azbuilder/executor:2.33.2@sha256:28601c154938008df0a3ca2c3f0acca93349555c411427c0ee110da44d5fe2d6",
+      "current_declared": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
       "profiles_declared": [
         "iac"
       ],
@@ -13833,7 +13844,7 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "2.33.3",
-      "target_version": "2.33.2",
+      "target_version": "2.33.3",
       "channel": "stable",
       "checked_at": "2026-10-26T09:43:15.822659+00:00",
       "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
@@ -13855,8 +13866,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -13868,8 +13879,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "930e41282b55e3a5c55a2d7e32087bd94d2c004f7643af48eb1f8d24572f27db",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -13930,14 +13941,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "azbuilder/executor:2.33.2@sha256:28601c154938008df0a3ca2c3f0acca93349555c411427c0ee110da44d5fe2d6",
+      "target_source_image": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "2.33.2",
-        "source_image": "azbuilder/executor:2.33.2@sha256:28601c154938008df0a3ca2c3f0acca93349555c411427c0ee110da44d5fe2d6",
+        "source_version": "2.33.3",
+        "source_image": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
@@ -13946,7 +13957,7 @@
       "service": "terrakube-ui",
       "scope": "root",
       "compose_file": "infra/09-platform-ops/terrakube/docker-compose.yml",
-      "current_declared": "azbuilder/terrakube-ui:2.33.2@sha256:04a5c7a0a756365be2eb386e82d9a128726dd359b7a4a807ef3fff6039e0bdd5",
+      "current_declared": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
       "profiles_declared": [
         "iac"
       ],
@@ -13954,7 +13965,7 @@
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
       "latest_version": "2.33.3",
-      "target_version": "2.33.2",
+      "target_version": "2.33.3",
       "channel": "stable",
       "checked_at": "2026-10-26T09:43:15.822659+00:00",
       "release_url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.3",
@@ -13976,8 +13987,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-10T14:39:40+09:00",
+        "next_validation_due": "2026-11-17T14:39:40+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -13989,8 +14000,8 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "930e41282b55e3a5c55a2d7e32087bd94d2c004f7643af48eb1f8d24572f27db",
+      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+      "source_input_sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -14051,14 +14062,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "azbuilder/terrakube-ui:2.33.2@sha256:04a5c7a0a756365be2eb386e82d9a128726dd359b7a4a807ef3fff6039e0bdd5",
+      "target_source_image": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
-        "source_version": "2.33.2",
-        "source_image": "azbuilder/terrakube-ui:2.33.2@sha256:04a5c7a0a756365be2eb386e82d9a128726dd359b7a4a807ef3fff6039e0bdd5",
+        "source_version": "2.33.3",
+        "source_image": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       }
@@ -32115,6 +32126,558 @@
         }
       ],
       "meaning": "5 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 24 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "8cffec69dcb3dace4e8aa423ff62b9fa04682be3",
+      "refreshed_at": "2026-11-10T14:39:40+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "c192147e39d6598fc0d8f2ccbd01ec51a0d6fab8a30df10c7b249facd5055cfc",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "7e032ab03a673560fe42c47f2963cf9342cd866add40495e67d6e2981b5f3541"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "1f456cdfe5897f3309f2791324c9d6987491a852a9f26e7e0a8abb8a7042fa33"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "b4fac13262e3e6d022d3f357f54be3c1b530496a55192f8f957d95afc565f7e2"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "3d7a5afb275294240c18f96f246d06f34a14630e35ef0947c9fc6f1a485b670d"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "37dc2cb58c35277eebac6062dfc5fadcec47d1775226c3eb3690f43990041112"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "59b08460ef4f5722a25c66d556aeaa588f05f7233ec32d197f1f37b03f4a7b8b"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "bb1f26a3ad1e05e42b0b157331c74e0c9d52093bf9df9ba80d0c41d8a8eda638"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ef4284afd0830fdb4459498a8a4ace15e260597c87ecc4d6430dc723b0ce29ba"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "c567ca166971331217a51b42e86990c45881d6a24ae9be26e0563040bf9d26fe"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "8a812b47f6fa0127637fe7c81beb02de9f8a74077d8612e44ab6e509e3d52cfd"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "fc03de6594fe7bda58107b7cb54ec3d0fd6267781798de3f939d013fc4f5b4e8"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "930e41282b55e3a5c55a2d7e32087bd94d2c004f7643af48eb1f8d24572f27db"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/08-ai/crawl4ai/docker-compose.yml",
+        "infra/08-ai/ollama/docker-compose.yml",
+        "infra/09-platform-ops/renovate/docker-compose.yml",
+        "infra/09-platform-ops/restic/docker-compose.yml",
+        "infra/09-platform-ops/terrakube/docker-compose.yml",
+        "infra/11-quality/mailpit/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "backup-sqlite-export",
+          "source_input_sha256": "fc03de6594fe7bda58107b7cb54ec3d0fd6267781798de3f939d013fc4f5b4e8",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "crawl4ai",
+          "source_input_sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "crawl4ai-egress",
+          "source_input_sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "crawl4ai-loopback",
+          "source_input_sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd",
+          "source_refreshed_at": "2026-11-09T07:25:51.392853+00:00"
+        },
+        {
+          "service": "mailpit",
+          "source_input_sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "ollama",
+          "source_input_sha256": "8a812b47f6fa0127637fe7c81beb02de9f8a74077d8612e44ab6e509e3d52cfd",
+          "source_refreshed_at": "2026-11-10T03:39:53+09:00"
+        },
+        {
+          "service": "ollama-exporter",
+          "source_input_sha256": "8a812b47f6fa0127637fe7c81beb02de9f8a74077d8612e44ab6e509e3d52cfd",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "renovate",
+          "source_input_sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "restic",
+          "source_input_sha256": "fc03de6594fe7bda58107b7cb54ec3d0fd6267781798de3f939d013fc4f5b4e8",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "restic-offsite",
+          "source_input_sha256": "fc03de6594fe7bda58107b7cb54ec3d0fd6267781798de3f939d013fc4f5b4e8",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "terrakube-api",
+          "source_input_sha256": "930e41282b55e3a5c55a2d7e32087bd94d2c004f7643af48eb1f8d24572f27db",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "terrakube-executor",
+          "source_input_sha256": "930e41282b55e3a5c55a2d7e32087bd94d2c004f7643af48eb1f8d24572f27db",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "terrakube-ui",
+          "source_input_sha256": "930e41282b55e3a5c55a2d7e32087bd94d2c004f7643af48eb1f8d24572f27db",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        }
+      ],
+      "meaning": "9 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 13 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "backup-sqlite-export",
+        "crawl4ai-egress",
+        "crawl4ai-loopback",
+        "mailpit",
+        "ollama",
+        "renovate",
+        "terrakube-api",
+        "terrakube-executor",
+        "terrakube-ui"
+      ],
+      "previous_service_images": [
+        {
+          "service": "backup-sqlite-export",
+          "current_declared": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+          "proposed_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "previous_fields": {
+            "target_version": "3.13.15",
+            "target_source_image": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "crawl4ai-egress",
+          "current_declared": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+          "proposed_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "previous_fields": {
+            "target_version": "3.13.15",
+            "target_source_image": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+            "disposition": "DEFER_ARTIFACT_AND_SOAK",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "Official25Oct security releases;3.13.18-alpine DockerHub404.3.15 major/minor runtime migration is not a same-line patch; no manager vulnerability warning verified for fast path.",
+              "exit_condition": "Exact official image available, release soak satisfied or actual configured-manager warning reviewed; sqlite backup and SSRF-egress regressions.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "crawl4ai-loopback",
+          "current_declared": "python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f",
+          "proposed_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "previous_fields": {
+            "target_version": "UNKNOWN",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-09T07:25:51.392853+00:00",
+              "next_validation_due": "2026-11-16T07:25:51.392853+00:00",
+              "reason": "Service added to the public Compose source after the last SEC01 census. Its declared image is the same digest pin as the crawl4ai-egress row, but no release, signature, scan, compatibility, runtime or recovery evidence has been reviewed for this service.",
+              "exit_condition": "Review the loopback forwarder image and its release evidence as its own row; record compatibility, scan and recovery before any acceptance.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit; no runtime state is held by the forwarder.",
+              "service_owner_role": "Existing crawl4ai service owner"
+            },
+            "source_refreshed_at": "2026-11-09T07:25:51.392853+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "mailpit",
+          "current_declared": "axllent/mailpit:v1.31.5@sha256:94f6b70c1436defae6799d9ac7ff0eeff9540465b842026d5cdb018f1c0234ea",
+          "proposed_declared": "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
+          "previous_fields": {
+            "target_version": "1.31.5",
+            "target_source_image": "axllent/mailpit:v1.31.5@sha256:94f6b70c1436defae6799d9ac7ff0eeff9540465b842026d5cdb018f1c0234ea",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+            "disposition": "DEFER_SEVEN_DAY_SOAK",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+              "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "v1.31.4",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "ollama",
+          "current_declared": "ollama/ollama:0.40.15@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761",
+          "proposed_declared": "ollama/ollama:0.40.16@sha256:910d0d8107b538fb0894e63163eb195de0cc7aefcbc666dc62d3b18f71124592",
+          "previous_fields": {
+            "target_version": "0.40.15",
+            "target_source_image": "ollama/ollama:0.40.15@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T03:39:53+09:00",
+              "next_validation_due": "2026-11-17T03:39:53+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T03:39:53+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "renovate",
+          "current_declared": "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1",
+          "proposed_declared": "renovate/renovate:44.225.1-full@sha256:0ffd67ededcc1fffefd95b0984633f764e464a8420fb6bd03b9b3cb8734b72de",
+          "previous_fields": {
+            "target_version": "44.151.3",
+            "target_source_image": "renovate/renovate:44.151.3-full@sha256:14d0b748ed59c05e1ab64aa325b4f3b07f78c809ca513b86b3b96b0c41426ea1",
+            "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+            "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+            "disposition": "DEFER_SEVEN_DAY_SOAK",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+              "next_validation_due": "2026-10-27T00:00:00+00:00",
+              "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+              "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "linux/amd64",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "44.149.2",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "terrakube-api",
+          "current_declared": "azbuilder/api-server:2.33.2@sha256:032e14e2b0262d50607bd7404479a1bb7defa480599d82ef9a4c7c5e298e230e",
+          "proposed_declared": "azbuilder/api-server:2.33.3@sha256:af7df0a72dda42bd5dbfead352f401b32fd6d1f46024b6b6e00c965bd764b4e8",
+          "previous_fields": {
+            "target_version": "2.33.2",
+            "target_source_image": "azbuilder/api-server:2.33.2@sha256:032e14e2b0262d50607bd7404479a1bb7defa480599d82ef9a4c7c5e298e230e",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "terrakube-executor",
+          "current_declared": "azbuilder/executor:2.33.2@sha256:28601c154938008df0a3ca2c3f0acca93349555c411427c0ee110da44d5fe2d6",
+          "proposed_declared": "azbuilder/executor:2.33.3@sha256:bb1721889d94fcdda2bf93afaf9e517ab97a11fca08fcd73172257b4212a8be8",
+          "previous_fields": {
+            "target_version": "2.33.2",
+            "target_source_image": "azbuilder/executor:2.33.2@sha256:28601c154938008df0a3ca2c3f0acca93349555c411427c0ee110da44d5fe2d6",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "terrakube-ui",
+          "current_declared": "azbuilder/terrakube-ui:2.33.2@sha256:04a5c7a0a756365be2eb386e82d9a128726dd359b7a4a807ef3fff6039e0bdd5",
+          "proposed_declared": "azbuilder/terrakube-ui:2.33.3@sha256:77302b2f8488ab1990519e0dc7d8e8231081d28b7a77ab81f585c928943bd82d",
+          "previous_fields": {
+            "target_version": "2.33.2",
+            "target_source_image": "azbuilder/terrakube-ui:2.33.2@sha256:04a5c7a0a756365be2eb386e82d9a128726dd359b7a4a807ef3fff6039e0bdd5",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
     }
   ],
   "delivery_preconditions": {
@@ -36880,15 +37443,15 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-10T14:16:59+09:00",
-      "source_revision": "2249fb911accf9d05fe234452421f6472f9158ad",
-      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
-      "input_sha256": "ab607efd8d3cb0d556f4d1d8bee6568b2eb16c13a80f2f99c2666f19408d71f7",
+      "checked_at": "2026-11-10T14:39:40+09:00",
+      "source_revision": "8cffec69dcb3dace4e8aa423ff62b9fa04682be3",
+      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed after a Renovate-proposed update.",
+      "input_sha256": "97aa61dd956ba41081a169df6fa6df93a9a5aa3ccb4eb45fd5fa0235ea22fed7",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
           "path": "infra/07-workflow/n8n/Dockerfile",
-          "sha256": "ddc98498eeddd449d9c0f308b97c20165db94ee47e739f9d94ea3ece28efa663"
+          "sha256": "f0ec9f34e38e1692fe13dbf7eefcd3d6c6e8d35998713185f0c08310ee5aa9ce"
         },
         {
           "path": "infra/07-workflow/n8n/custom/.gitkeep",
@@ -36896,7 +37459,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/dev.Dockerfile",
-          "sha256": "10a645adc0514004873a7baa1b615726d52ab0fdcaa0b4114770335b149c0d03"
+          "sha256": "425dcc27f1830ab0d45a2145dd14b95c9b25196409b7d4ae0ab500b3aed15151"
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
@@ -39478,6 +40041,90 @@
         "full_image_sbom_scan": "NOT_RUN",
         "recovery": "NOT_RUN",
         "archived_at": "2026-11-10T14:16:59+09:00"
+      },
+      {
+        "checked_at": "2026-11-10T14:16:59+09:00",
+        "source_revision": "2249fb911accf9d05fe234452421f6472f9158ad",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+        "input_sha256": "ab607efd8d3cb0d556f4d1d8bee6568b2eb16c13a80f2f99c2666f19408d71f7",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "ddc98498eeddd449d9c0f308b97c20165db94ee47e739f9d94ea3ece28efa663"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "10a645adc0514004873a7baa1b615726d52ab0fdcaa0b4114770335b149c0d03"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-10T14:39:40+09:00"
       }
     ],
     "current_source_acceptance_limit": {
