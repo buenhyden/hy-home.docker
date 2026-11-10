@@ -11,9 +11,9 @@ updated: "2026-11-10"
 
 ## Overview
 
-OpenBao 2.7.1의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.3, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
-`golang.org/x/net` 0.60.0 및 그 모듈 그래프가 요구하는 일곱 버전을 사용합니다. <!-- runtime-version-exception: migration — 검토된 build packet의 고정 module migration material이며 build-inputs.json이 pin을 소유함 -->
-결과 버전은 `2.7.1+hyhome.go1.27.3.net0.60.0.r2`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
+OpenBao 2.7.2의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.3, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
+`golang.org/x/net` 0.62.0, `go-jose/v4` 4.1.9, `klauspost/compress` 1.20.4 세 module 버전을 사용합니다. <!-- runtime-version-exception: migration — 검토된 build packet의 고정 module migration material이며 build-inputs.json이 pin을 소유함 -->
+결과 버전은 `2.7.2+hyhome.go1.27.3.net0.62.0.r1`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
 서명된 이미지가 아닙니다. 다른 의존성의 취약점 해결을 보장하지 않습니다.
 
 ## Audience
@@ -31,6 +31,11 @@ export만 정렬된 한 layer로 포장합니다. HOME 배포, 인증, 발급은
 2026-10-21 packet은 Go 1.27.3 builder로 다시 고정했습니다(CVE-2026-111943, crypto/x509). <!-- runtime-version-exception: migration — 검토된 build packet의 고정 builder 변경이며 build-inputs.json이 pin을 소유함 -->
 source, module, APK 입력은 그대로이고 builder와 그 서명 receipt만 바뀌었습니다.
 이 README는 packet의 일부이므로 바꾸면 packet SHA와 image label이 달라집니다.
+
+2026-11-10 packet(`r3`)은 source를 서명된 최신 stable release로 올리고(upstream 보안 수정 GHSA 4건) <!-- runtime-version-exception: migration — 검토된 build packet의 고정 source 변경이며 build-inputs.json이 pin을 소유함 -->
+patch를 그 release의 root go.mod/go.sum 위에서 다시 만들어 x/net, go-jose v4, klauspost/compress의 보안 수정 버전만 올렸습니다.
+Go builder, Alpine runtime과 APK closure는 그대로입니다. go-jose v3는 수정 버전이 없고 hashicorp/cap과 okta SDK를 통해
+binary에 링크되므로 이 packet이 해결하지 않는 잔여 위험으로 남습니다.
 
 2026-11-10 packet(`r2`)은 runtime을 Alpine 3.24 계열 최신 digest로, APK closure를 현재 서명된
 v3.24 main/community APKINDEX 기준으로 다시 고정했습니다. source, Go module, patch 입력은 그대로이고

@@ -160,7 +160,7 @@ class ModuleSelectionGuards(unittest.TestCase):
                 builder.module_delta(before, after)
 
     def test_duplicate_module_rows_are_not_silently_collapsed(self):
-        rows = [{"Path": "golang.org/x/net", "Version": "v0.60.0"}] * 2
+        rows = [{"Path": "golang.org/x/net", "Version": "v0.62.0"}] * 2
         with self.assertRaises(builder.Blocked):
             builder.module_delta({"Require": []}, {"Require": rows})
 
@@ -428,7 +428,7 @@ class PipelineProof(unittest.TestCase):
         raw[54:56] = (56).to_bytes(2, "little")
         (output / "bao").write_bytes(raw)
         (output / "build-info.txt").write_text(
-            "/out/bao: go1.27.3\n\tdep\tgolang.org/x/net\tv0.60.0\n"
+            "/out/bao: go1.27.3\n\tdep\tgolang.org/x/net\tv0.62.0\n"
         )
         return hashlib.sha256(raw).hexdigest()
 
