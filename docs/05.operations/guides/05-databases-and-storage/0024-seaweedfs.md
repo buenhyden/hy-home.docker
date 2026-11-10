@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.6.1"
+version: "1.6.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -72,7 +72,7 @@ filesystem free 15% 미만 10분).
 
 ### Identity-specific behavior
 
-master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leveldb2를 보존한다. s3는 Docker secret과 `config/s3-identities.conf`에서 시작 시 생성한 S3 identity config와 gRPC mTLS를 쓰며 네트워크 3개에 참여한다. Iceberg catalog 포트 `8181`(`SEAWEEDFS_ICEBERG_PORT`)도 같은 s3 process의 `0.0.0.0`에 bind되어 `edge_net`/`seaweed_internal`/`object_net` peer가 접근할 수 있다. host mapping과 catalog router는 없다. `s3.${DEFAULT_URL}` router는 `gateway-standard-chain@file`만 쓰며 요청 인증은 S3 signature identity가 담당한다. `object_net`-only 요구는 미준수이며 별도 구현 수정이 필요하다. buckets job은 admin으로 bucket을 생성하며 table-bucket은 GDE-0094 소유다. 익명 CDN read 예외를 전체 anonymous 거부로 설명하지 않는다. 인증서 교체는 모든 peer의 새 CA/leaf 수용을 검증한 승인 작업이다.
+master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leveldb2를 보존한다. s3는 Docker secret과 `config/s3-identities.conf`에서 시작 시 생성한 S3 identity config와 gRPC mTLS를 쓰며 네트워크 3개에 참여한다. Iceberg catalog 포트 `8181`(`SEAWEEDFS_ICEBERG_PORT`)도 같은 s3 process의 `0.0.0.0`에 bind되어 `edge_net`/`seaweed_internal`/`object_net` peer가 접근할 수 있다. host mapping과 catalog router는 없다. `s3.${DEFAULT_URL}` router는 `gateway-standard-chain@file`만 쓰며 요청 인증은 S3 signature identity가 담당한다. `object_net`-only 요구는 미준수이며 별도 구현 수정이 필요하다. buckets job은 admin으로 bucket을 생성하며 table-bucket은 GDE-0094 소유다. 인증서 교체는 모든 peer의 새 CA/leaf 수용을 검증한 승인 작업이다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
@@ -93,9 +93,8 @@ master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leve
 | MLflow | `mlflow-artifacts` | `mlflow` | STRG-013 |
 | Terrakube | `tfstate` | `terrakube` | STRG-014 |
 | Spark (Iceberg) | `lakehouse` table bucket | `lakehouse` | STRG-015 |
-| none (Nginx 퇴역 2026-11-10) | `cdn-bucket` | `anonymous` (object reads only) | none |
 
-`seaweedfs-buckets`(aws-cli, admin identity)는 다섯 개 bucket을 생성하고,
+`seaweedfs-buckets`(aws-cli, admin identity)는 네 개 bucket을 생성하고,
 `lakehouse` table bucket과 그 policy, `dev`/`test` namespace는 lakehouse LAB의
 `seaweedfs-table-bucket`이 `LAB_LAKEHOUSE_S3_ENDPOINT`에 idempotent하게 생성한다. HOME은 기본적으로
 S3를 LAB network에 게시하지 않으므로 소유자가 endpoint를 승인하기 전까지 이 작업은 실행되지 않는다

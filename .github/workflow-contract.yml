@@ -2434,7 +2434,7 @@
           "infra/07-workflow/airflow/",
           "infra/07-workflow/n8n/",
           "infra/08-ai/open-notebook/",
-          "infra/08-ai/open-webui/"
+          "labs/open-webui/"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

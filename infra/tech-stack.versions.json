@@ -424,11 +424,11 @@
         "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25"
       ],
       "compose_files": [
-        "infra/08-ai/open-webui/docker-compose.yml"
+        "labs/open-webui/docker-compose.yml"
       ],
       "sources": [
         {
-          "compose_file": "infra/08-ai/open-webui/docker-compose.yml",
+          "compose_file": "labs/open-webui/docker-compose.yml",
           "images": [
             "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25"
           ]

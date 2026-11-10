@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.9.1"
+version: "0.9.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -37,10 +37,10 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다.
 - 서비스 onboarding 시 `Gateway ForwardAuth` 또는 `Application-native OIDC` 중
   하나를 주 인증 경로로 명시한다.
-- 현재 HOME Native OIDC 서비스는 Airflow, Dozzle, Grafana, Kafbat UI, OpenBao, Open WebUI, Gatus다.
+- 현재 HOME Native OIDC 서비스는 Airflow, Dozzle, Grafana, Kafbat UI, OpenBao, Gatus다. Superset과 Open WebUI는 gateway route 없는 독립 LAB이다.
   Superset은 SPEC-0262 이후 gateway router가 없는 독립 LAB의 native OIDC 앱이며, LAB origin의 redirect
   등록은 소유자 승인 전까지 미결정이다. JupyterLab·SonarQube·Stalwart LAB에는 ForwardAuth가 적용되지 않는다.
-- Airflow/Grafana/Kafbat/OpenBao/Open WebUI/Gatus Traefik router는 `gateway-standard-chain@file`만 사용한다.
+- Airflow/Grafana/Kafbat/OpenBao/Gatus Traefik router는 `gateway-standard-chain@file`만 사용한다.
   Dozzle router는 여기에 `dozzle-admin-ip@docker` IP allowlist를 더하며 SSO chain은 쓰지 않는다.
 - Flower 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
   chain을 유지한다. n8n은 자체 로그인만 사용하며 `gateway-standard-chain@file`만
@@ -120,7 +120,7 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 
 추가 검증:
 
-- Airflow/Grafana/Kafbat/OpenBao/Open WebUI/Gatus router = gateway-only, Dozzle = gateway + IP allowlist; Gatus는 외부 metrics 제외
+- Airflow/Grafana/Kafbat/OpenBao/Gatus router = gateway-only, Dozzle = gateway + IP allowlist; Gatus는 외부 metrics 제외
 - ForwardAuth 대상 서비스 = SSO chain 유지
 - Keycloak client redirect URI/public URL 정합
 - Compose client secret의 Docker Secret 또는 OpenBao Agent 출력 mapping

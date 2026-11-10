@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS"
-version: "1.3.3"
+version: "1.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -36,7 +36,7 @@ filer에는 route가 없습니다.
 | --- | --- |
 | `docker-compose.yml` | 4개 서비스, 데이터 디스크 bind volume, secret |
 | `config/hyhome-seaweedfs.sh` | 시작 스크립트: secret으로 JWT, gRPC mTLS, S3 identity 설정을 구성함 |
-| `config/s3-identities.conf` | bucket 범위의 소비자 identity(loki, tempo, mlflow, terrakube, lakehouse)와 익명 CDN 읽기 |
+| `config/s3-identities.conf` | bucket 범위의 소비자 identity(loki, tempo, mlflow, terrakube, lakehouse) |
 | `config/seaweedfs-buckets.sh` | `seaweedfs-buckets` job: admin identity로 수행하는 idempotent bucket 생성 |
 | `bin/gen-grpc-certs.sh` | 호스트 스크립트: SeaweedFS 전용 gRPC CA와 인증서를 발급함 |
 

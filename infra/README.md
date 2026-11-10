@@ -129,7 +129,7 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 | **05** | **Messaging** | [Kafka](./05-messaging/kafka) | 선택적; 패키지의 profile 참조 |
 | **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo), [Dozzle](./06-observability/dozzle) | HOME / 선택적; disposition 참고 |
 | **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / 선택적; disposition 참고 |
-| **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui), [ComfyUI](./08-ai/comfyui), [Open Notebook](./08-ai/open-notebook), [MLflow](./08-ai/mlflow) | HOME / 선택적 |
+| **08** | **AI** | [Ollama](./08-ai/ollama), [ComfyUI](./08-ai/comfyui), [Open Notebook](./08-ai/open-notebook), [MLflow](./08-ai/mlflow); Open WebUI는 [LAB](../labs/README.md)으로 이동(ADR-0062 개정) | HOME / 선택적 |
 | **09** | **Platform Operations** | [OpenTofu](./09-platform-ops/opentofu), [Terrakube](./09-platform-ops/terrakube), [Registry](./09-platform-ops/registry), [Renovate](./09-platform-ops/renovate), [Restic](./09-platform-ops/restic) | HOME / 명시적 작업 |
 | **10** | **Communication** | 없음; Stalwart는 [LAB](../labs/README.md)으로 이동(SPEC-0262) | root 패키지 없음 |
 | **11** | **Quality** | [k6](./11-quality/k6), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |

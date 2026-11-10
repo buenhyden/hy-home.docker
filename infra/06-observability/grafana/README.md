@@ -186,7 +186,6 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 08-ai | `crawl4ai-loopback` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `ollama` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
 | 08-ai | `ollama-exporter` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
-| 08-ai | `open-webui` | none | `Infrastructure/containers` | no Prometheus endpoint; Gatus probes `/health` |
 | 09-platform-ops | `backup-sqlite-export` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `conftest` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `k6` | k6 remote write | `Infrastructure/k6`, `Infrastructure/containers` |  |

@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 정책"
-version: "0.3.2"
+version: "0.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 ---
 
@@ -29,6 +29,7 @@ layer: "operations"
 | [CouchDB Operations Policy](0026-couchdb.md) | `POL-0026` | `labs/couchdb/docker-compose.yml`의 CouchDB 3노드 LAB cluster의 loopback 접근, Docker Secret credential, 백업·복구와 제거 기준을 정의한다. |
 | [MongoDB Operations Policy](0027-mongodb.md) | `POL-0027` | `labs/mongodb/docker-compose.yml`의 MongoDB replica set LAB의 `mongodb` profile, Docker Secret credential, 백업·복구와 제거 기준을 정의한다. |
 | [PostgreSQL Cluster Operations Policy](0031-postgresql-cluster.md) | `POL-0031` | `labs/postgresql-ha/docker-compose.yml`의 PostgreSQL HA LAB(etcd·Patroni·HAProxy)의 `postgres-ha` profile, 접근 경계, 백업·복구 기준을 정의한다. |
+| [Open WebUI Operations Policy](0057-open-webui.md) | `POL-0057` | Open WebUI LAB의 native OIDC, LAB 경계, data·secret 취급과 HOME 잔여 상태 퇴역 승인을 통제한다. |
 | [Locust Operations Policy](0062-locust.md) | `POL-0062` | Locust는 독립 LAB capability이며, 이 정책은 test target 보호와 검토되지 않은 load·credential 수집·오해를 부르는 성능 증거를 막는다. |
 | [SonarQube Operations Policy](0066-sonarqube.md) | `POL-0066` | 이 정책은 독립 LAB `labs/sonarqube/docker-compose.yml`의 SonarQube Community Build 배포를 다룬다. |
 | [Stalwart Mail Operations Policy](0070-mail.md) | `POL-0070` | Stalwart는 독립 LAB `labs/stalwart/docker-compose.yml`의 메일 서비스다. |

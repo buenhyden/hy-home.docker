@@ -604,15 +604,14 @@ class ListenerPortContractTests(unittest.TestCase):
             " ".join(service["healthcheck"]["test"]),
         )
 
-    def test_open_webui_listener_health_and_gateway_use_one_port(self) -> None:
-        service = _service("infra/08-ai/open-webui/docker-compose.yml", "open-webui")
+    def test_open_webui_lab_listener_health_and_port_use_one_port(self) -> None:
+        # ADR-0062 amendment: a LAB with no gateway route; the listener is fixed.
+        service = _service("labs/open-webui/docker-compose.yml", "open-webui")
         environment = _environment(service)
-        self.assertEqual("${OLLAMA_WEBUI_PORT:-8080}", environment.get("PORT"))
+        self.assertEqual("8080", environment.get("PORT"))
         self.assertEqual(
-            "${OLLAMA_WEBUI_PORT:-8080}",
-            service["labels"][
-                "traefik.http.services.open-webui.loadbalancer.server.port"
-            ],
+            ["${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}:8080"],
+            service["ports"],
         )
         self.assertIn(
             "localhost:$${PORT}/health",
@@ -648,7 +647,6 @@ class ListenerPortContractTests(unittest.TestCase):
                 "KEYCLOAK_MANAGEMENT_PORT": "19000",
                 "KEYCLOAK_PORT": "18080",
                 "OAUTH2_PROXY_PORT": "14180",
-                "OLLAMA_WEBUI_PORT": "18081",
                 "POSTGRES_HOST_PORT": "25439",
                 "POSTGRES_PORT": "15432",
                 "VALKEY_MNG_HOST_PORT": "26389",
@@ -663,7 +661,6 @@ class ListenerPortContractTests(unittest.TestCase):
                 "0.0.0.0:14180",
             ),
             "keycloak": ("KC_HTTP_PORT", "8080", "18080"),
-            "open-webui": ("PORT", "8080", "18081"),
             "airflow-apiserver": ("AIRFLOW__API__PORT", "8080", "18082"),
         }
         for service_name, (key, default, override) in expected.items():
@@ -847,7 +844,7 @@ class OpenNotebookPortAndReadinessTests(unittest.TestCase):
         "scripts/hardening/check-all-hardening.sh",
         "scripts/lib/hardening-lib.sh",
         "infra/08-ai/ollama/docker-compose.yml",
-        "infra/08-ai/open-webui/docker-compose.yml",
+        "labs/open-webui/docker-compose.yml",
         "infra/08-ai/open-notebook/docker-compose.yml",
     )
 

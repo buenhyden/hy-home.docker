@@ -63,7 +63,6 @@
     "oauth2-proxy",
     "ollama",
     "ollama-exporter",
-    "open-webui",
     "open_notebook",
     "openbao",
     "openbao-agent",
@@ -101,7 +100,7 @@
   "include_inputs": [
     {
       "path": "docker-compose.yml",
-      "sha256": "9f4abff3bf57c3cb9069ca24539137ecf1dc8d4f07adad45660cc44f5e6c481a"
+      "sha256": "322ba82c9cb3517259781375fdf82e709e4105638ab1ca1b85ff466701bc4e0c"
     },
     {
       "path": "infra/01-gateway/traefik/docker-compose.yml",
@@ -145,7 +144,7 @@
     },
     {
       "path": "infra/04-data/seaweedfs/docker-compose.yml",
-      "sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f"
+      "sha256": "7de30664c00e1e5cfab8543756115cf79b80784fbb1ae2be078113cc22b3d89c"
     },
     {
       "path": "infra/05-messaging/kafka/docker-compose.yml",
@@ -153,7 +152,7 @@
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
-      "sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500"
+      "sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476"
     },
     {
       "path": "infra/06-observability/dozzle/docker-compose.yml",
@@ -188,10 +187,6 @@
       "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
     },
     {
-      "path": "infra/08-ai/open-webui/docker-compose.yml",
-      "sha256": "84fb9ffe43c5988732c42e02dffc4dd0c894f35cb0eea7c504a127fc8ac9961c"
-    },
-    {
       "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
       "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
     },
@@ -205,7 +200,7 @@
     },
     {
       "path": "infra/09-platform-ops/restic/docker-compose.yml",
-      "sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3"
+      "sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13"
     },
     {
       "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
@@ -1489,7 +1484,7 @@
       "upstream_reported_tag": "v0.34.1",
       "next_fact_command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1631,7 +1626,7 @@
       "upstream_reported_tag": "v1.20.1",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/alloy:v1.20.1",
@@ -1741,7 +1736,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3",
+      "source_input_sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -1894,7 +1889,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "ghcr.io/google/cadvisor:v0.60.6",
@@ -2633,7 +2628,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo NVIDIA/dcgm-exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T07:19:46+09:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4311,7 +4306,7 @@
       "upstream_reported_tag": "v5.37.0",
       "next_fact_command": "gh release view --repo TwiN/gatus --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4789,7 +4784,7 @@
       "upstream_reported_tag": "v13.2.4",
       "next_fact_command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f",
@@ -4971,7 +4966,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -6071,7 +6066,7 @@
       "upstream_reported_tag": "v3.7.8",
       "next_fact_command": "gh release view --repo grafana/loki --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8546,7 +8541,7 @@
       "upstream_reported_tag": "v1.12.1",
       "next_fact_command": "gh release view --repo prometheus/node_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -9036,146 +9031,6 @@
       "current_target_artifact_binding": {
         "source_version": "1.0.3",
         "source_image": "lucabecker42/ollama-exporter:1.0.3",
-        "status": "UNBOUND_CURRENT_TARGET",
-        "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
-      }
-    },
-    {
-      "service": "open-webui",
-      "scope": "root",
-      "compose_file": "infra/08-ai/open-webui/docker-compose.yml",
-      "current_declared": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
-      "profiles_declared": [
-        "ai",
-        "ai-llm"
-      ],
-      "build_source": null,
-      "current_running": [
-        {
-          "project": "hy-home-infra",
-          "service": "open-webui",
-          "image_reference": "ghcr.io/open-webui/open-webui:v0.11.4-cuda@sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1",
-          "image_id": "sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1",
-          "state": "running",
-          "platform": "linux",
-          "repo_digests": [
-            "ghcr.io/open-webui/open-webui@sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1"
-          ],
-          "os": "linux",
-          "architecture": "amd64"
-        }
-      ],
-      "runtime_presence": "OBSERVED",
-      "latest_version": "0.12.4",
-      "target_version": "0.12.0",
-      "channel": "stable",
-      "checked_at": "2026-10-26T09:43:13.072742+00:00",
-      "release_url": "https://github.com/open-webui/open-webui/releases/tag/v0.12.4",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
-      "platform": "linux/amd64",
-      "source_release_date": "2026-10-25T08:07:13Z",
-      "advisory_urls": [],
-      "applicability": "UNKNOWN",
-      "support_end": "UNKNOWN",
-      "compatibility": "NOT_RUN",
-      "backup": "NOT_RUN",
-      "rollback": "NOT_RUN",
-      "native_test": "NOT_RUN",
-      "deployment": "NOT_RUN",
-      "signature": "NOT_RUN",
-      "sbom_scan": "NOT_RUN",
-      "disposition": "DEFER_SEVEN_DAY_SOAK",
-      "blocker": {
-        "owner": "SEC01",
-        "discovered_at": "2026-10-26T10:32:14.784990+00:00",
-        "next_validation_due": "2026-10-27T00:00:00+00:00",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "service_owner_role": "Existing service owner named by current_public_assessment"
-      },
-      "source_owner_repository": "open-webui/open-webui",
-      "current_repo_digests": [
-        "ghcr.io/open-webui/open-webui@sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1"
-      ],
-      "current_image_ids": [
-        "sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1"
-      ],
-      "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
-      "upstream_reported_tag": "v0.11.4",
-      "next_fact_command": "gh release view --repo open-webui/open-webui --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "84fb9ffe43c5988732c42e02dffc4dd0c894f35cb0eea7c504a127fc8ac9961c",
-      "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
-      "official_supplier_lookup_refs": [
-        "open-webui/open-webui"
-      ],
-      "supplier_lookup_blocker": null,
-      "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
-      "official_release_assessment": {
-        "assessed_at": "2026-10-15T19:11:19.381778+00:00",
-        "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
-        "release_fact_refs": [
-          "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/open-webui~1open-webui"
-        ],
-        "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
-        "next_owner": "SEC01 release/artifact evidence owner and open-webui service build/migration/recovery owner",
-        "source_target_security_native_deployment": "UNCHANGED"
-      },
-      "current_public_assessment": {
-        "supplier_group": "open-webui/open-webui",
-        "owner": "SEC01 and existing service owner",
-        "review_at": "2026-10-27",
-        "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
-        "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
-        "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
-        "candidate": "v0.12.4",
-        "fact_checked_at": "2026-10-26T09:43:13.072742+00:00",
-        "published_at": "2026-10-25T08:07:13Z",
-        "eligible_after_7_days": "2026-11-01T08:07:13+00:00",
-        "evidence_refs": [
-          "https://github.com/open-webui/open-webui/releases/tag/v0.12.4",
-          "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
-        ],
-        "decision": "DEFER_SEVEN_DAY_SOAK",
-        "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
-        "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
-        "service": "open-webui",
-        "compose_file": "infra/08-ai/open-webui/docker-compose.yml",
-        "current_declared": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
-        "resolved_source": {
-          "image": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
-          "build": null,
-          "chain": [
-            "infra/08-ai/open-webui/docker-compose.yml#open-webui",
-            "infra/common-optimizations.yml#template-stateful-med"
-          ]
-        },
-        "existing_target_version": "UNKNOWN",
-        "assessed_at": "2026-10-26T10:32:14.784990+00:00"
-      },
-      "historical_target_artifact_binding": {
-        "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
-        "fields": {
-          "target_version": "UNKNOWN",
-          "target_index_digest": "UNKNOWN",
-          "target_manifest_digest": "UNKNOWN",
-          "target_config_digest": "UNKNOWN",
-          "upstream_reported_tag": "v0.11.4"
-        },
-        "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
-      },
-      "target_source_image": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
-      "target_build_materials": [],
-      "target_declared_digest": "UNKNOWN",
-      "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
-      "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
-      "current_target_artifact_binding": {
-        "source_version": "0.12.0",
-        "source_image": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
       }
@@ -11025,7 +10880,7 @@
       "upstream_reported_tag": "v3.15.1",
       "next_fact_command": "Run the owner steps in SPEC-0204-TSK-0021: approved pull, offline scan, promtool checks, HOME recreation.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/prometheus:v3.15.1",
@@ -11158,7 +11013,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/pushgateway:v1.11.4",
@@ -11279,7 +11134,7 @@
       "upstream_reported_tag": "v2.4.0",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/pyroscope:2.4.0",
@@ -11903,7 +11758,7 @@
       "upstream_reported_tag": "v0.19.1",
       "next_fact_command": "gh release view --repo restic/restic --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3",
+      "source_input_sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12024,7 +11879,7 @@
       "upstream_reported_tag": "v0.19.1",
       "next_fact_command": "gh release view --repo restic/restic --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3",
+      "source_input_sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12308,7 +12163,7 @@
       "upstream_reported_tag": "2.37.12",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+      "source_input_sha256": "7de30664c00e1e5cfab8543756115cf79b80784fbb1ae2be078113cc22b3d89c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "amazon/aws-cli:2.37.12",
@@ -12444,7 +12299,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+      "source_input_sha256": "7de30664c00e1e5cfab8543756115cf79b80784fbb1ae2be078113cc22b3d89c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -12588,7 +12443,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+      "source_input_sha256": "7de30664c00e1e5cfab8543756115cf79b80784fbb1ae2be078113cc22b3d89c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -12716,7 +12571,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+      "source_input_sha256": "7de30664c00e1e5cfab8543756115cf79b80784fbb1ae2be078113cc22b3d89c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -12844,7 +12699,7 @@
       "upstream_reported_tag": "4.48",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00",
-      "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+      "source_input_sha256": "7de30664c00e1e5cfab8543756115cf79b80784fbb1ae2be078113cc22b3d89c",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "chrislusf/seaweedfs:4.48",
@@ -13527,7 +13382,7 @@
       "upstream_reported_tag": "v3.1.0",
       "next_fact_command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+      "source_input_sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "hy/tempo:3.1.0-seaweedfs",
@@ -29461,26 +29316,30 @@
       ]
     },
     {
-      "source_revision": "8f13443868cdb9900f4279f22b58451285e749f3",
-      "refreshed_at": "2026-11-10T12:00:00.000000+00:00",
-      "revision_scope": "nginx gateway retirement; source files have reviewed uncommitted edits",
+      "source_revision": "0b7ffe8bc1bcac428ae816a3f0065700c22cfd37",
+      "refreshed_at": "2026-11-10T09:00:00.000000+00:00",
+      "revision_scope": "ADR-0062 amendment open-webui LAB move; source files have reviewed uncommitted edits",
       "removed_inputs": [
-        "infra/01-gateway/nginx/docker-compose.yml"
+        "infra/08-ai/open-webui/docker-compose.yml"
       ],
       "removed_services": [
-        "nginx"
+        "open-webui"
       ],
-      "meaning": "The owner retired infra/01-gateway/nginx on 2026-11-10: it was an alternative gateway selected only by the nginx profile, no nginx container exists in HOME, and Traefik serves all HOME routing. Its original ROOT row is preserved in historical_lab_entries with current_scope removed. Only ROOT membership, include hashes and the SeaweedFS profile list changed. No new vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+      "meaning": "The owner amended ADR-0062 on 2026-11-10: open-webui moved to the standalone LAB entrypoint labs/open-webui/docker-compose.yml and its original ROOT row is preserved in historical_lab_entries with its evidence unchanged. labs/** is outside Renovate and this ledger. The running HOME container, its image and its volume are untouched; stopping and removing them needs owner approval. Compose file hashes of the touched files are re-bound by the following SEC01 re-binding refresh. No new vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     },
     {
-      "source_revision": "8f13443868cdb9900f4279f22b58451285e749f3",
-      "refreshed_at": "2026-11-10T02:09:59.892932+00:00",
+      "source_revision": "0b7ffe8bc1bcac428ae816a3f0065700c22cfd37",
+      "refreshed_at": "2026-11-10T00:01:23.691933+00:00",
       "revision_scope": "Compose file hash re-binding only",
-      "input_manifest_sha256": "aabf0d08fbb40aec3f1575cbcd65a2fdf4baa97234526a66ba96a2fe89533e03",
+      "input_manifest_sha256": "4aeee5afb7d37178135177635a96495ac7b4970ae2555910d851f9fd43f734c6",
       "previous_include_inputs": [
         {
           "path": "docker-compose.yml",
           "sha256": "157a921d035786050c53c174bb1ca257c50c6e9d59dd8c5fd14485e1107571f5"
+        },
+        {
+          "path": "infra/01-gateway/nginx/docker-compose.yml",
+          "sha256": "f4162f1ae131db51901127a22d52982134ac6c1668e0b4e5daabd8dbfb606c1e"
         },
         {
           "path": "infra/01-gateway/traefik/docker-compose.yml",
@@ -29567,8 +29426,244 @@
           "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
         },
         {
-          "path": "infra/08-ai/open-webui/docker-compose.yml",
-          "sha256": "84fb9ffe43c5988732c42e02dffc4dd0c894f35cb0eea7c504a127fc8ac9961c"
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "docker-compose.yml",
+        "infra/06-observability/docker-compose.yml",
+        "infra/09-platform-ops/restic/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "alertmanager",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "alloy",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "backup-sqlite-export",
+          "source_input_sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "cadvisor",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "dcgm-exporter",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-10T07:19:46+09:00"
+        },
+        {
+          "service": "gatus",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "grafana",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "grafana-db-provision",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "loki",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "node-exporter",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "prometheus",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "pushgateway",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "pyroscope",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "restic",
+          "source_input_sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "restic-offsite",
+          "source_input_sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "tempo",
+          "source_input_sha256": "55283c0d7c7d6ad6eb765081f99eb16df7ccf67d67561c98995ae9fb22246500",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "3 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 16 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "630e536628c79e5cca00cdd937ec8b2b166c6667",
+      "refreshed_at": "2026-11-10T12:00:00.000000+00:00",
+      "revision_scope": "nginx gateway retirement; source files have reviewed uncommitted edits",
+      "removed_inputs": [
+        "infra/01-gateway/nginx/docker-compose.yml"
+      ],
+      "removed_services": [
+        "nginx"
+      ],
+      "meaning": "The owner retired infra/01-gateway/nginx on 2026-11-10: it was an alternative gateway selected only by the nginx profile, no nginx container exists in HOME, and Traefik serves all HOME routing. Its original ROOT row is preserved in historical_lab_entries with current_scope removed. Only ROOT membership, include hashes and the SeaweedFS profile list changed. No new vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "630e536628c79e5cca00cdd937ec8b2b166c6667",
+      "refreshed_at": "2026-11-10T02:35:41.644030+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "f0247492c367a594032b6f55dd3ee19b3b358013fc4592afc3e988b393521d82",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "02c36b14b06ac3e753c958ba79d7272452cefe8696f8145aa830e788f473faf7"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f01e4bf83609c78d4a3fa1c1c7e6c0678cfdb94b2d47142878953930641e83fa"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "00ed3dbee1fd4e8440ca1c8a273450401dd214f8a34df1b3819c649ea9c4019f"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
         },
         {
           "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
@@ -29584,7 +29679,7 @@
         },
         {
           "path": "infra/09-platform-ops/restic/docker-compose.yml",
-          "sha256": "2177ba5a771898bfa6a73bdafd8cc3982329c52e92013cd1431c85392a2251d3"
+          "sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13"
         },
         {
           "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
@@ -29647,6 +29742,177 @@
         }
       ],
       "meaning": "2 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 5 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "630e536628c79e5cca00cdd937ec8b2b166c6667",
+      "refreshed_at": "2026-11-10T03:05:55.215949+00:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "1bf13533df401386bedad7da65fbc0454ed31f9f2c16d26b3a857c403d301554",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "322ba82c9cb3517259781375fdf82e709e4105638ab1ca1b85ff466701bc4e0c"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "6a13e504848cd717334264e75ba57217fb2ab001bfc839f1b360a00647d8d999"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "32c2331c1028b3358f109183c226e7dbbf362cf2c477e00d02c57663ce922151"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "be7f1dbf18a56ab8affd432e661d0e245aae5cb39adccd2b8617e10cbb999992"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "809f3ab29d8a140be620d0aa7b91a424c8f9ffc9444385188babcf00420e7d1f"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "e661d24faaade271303796d3b57cfc71463e5d2e6810df8cb675c63c9d3ab3e6"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "7981486fe2ab3cc905826e147e9f630e5ed4132d1330ed99894dfd3a8dc13c64"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "3d56540fec189a87290fb8cf20ff16e25dff44099ea97378fd87100805371068"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "a5f91a9dce73072dbc4c898f32bfd75f88e4d77b3a58c636a22b8f2c3077a279"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "5da8e6b13bdd8816718b6f41f466f654423f81da903bf6d514ce3a2e5d2d0afe"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "d24e8990a9599cd4e7b1acccb7f4e9cb21f00c500a30e4c16042cbf6cca59476"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "1970db493618cfd5310b33ec30501cdc9d3eeb4fa3a85fdfc4cef68453b3d256"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "24220d237537bd76a556b25ee8fd5eb0f5464d5f66de10d6c5fb284bd2e57529"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "5978d4473ec66bd654dc9eb69834848e44e55f3e686b89e19257041560ebad09"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "303f3c7ccbc6158a490c4ca95fa6184a19c5b18e634da42d79f3d06fd1b92f8f"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "44a863616241b6cbc7e6651545b3f9821ab376fa1db4d25c7cc12e5b029775fd"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "deb93304129f3ec2e2b7196ad5c7ec2fe293cb527182110e089ec81f221269e8"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "00ed3dbee1fd4e8440ca1c8a273450401dd214f8a34df1b3819c649ea9c4019f"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "0b04710723f325062a0280794690e518b1aad877774ff750daad1480bb9a80a2"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "4179b60f395ca333804dce1d37f78246f5ed454f22cc5c0f27150cf1f3925c13"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "63332041bd1de5198f9a684660835f49d345063de52e570809ad1437408aa53b"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "15a938a1bb307c1b370bdda8bed8b28b76030c5008d1fb85c48c0adeb7855b90"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "c42bad5d9143ac439f9cdfd1e6f8c61127600d2926385a4a8db471c113d37619"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "37c5431cd3ee9de6aafaa6f6ddf62c5144918b284e629253c67a03006ece9241"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/04-data/seaweedfs/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "seaweedfs-buckets",
+          "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-filer",
+          "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-master",
+          "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-s3",
+          "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        },
+        {
+          "service": "seaweedfs-volume",
+          "source_input_sha256": "f7c6a2cec5cd64486f9e78a98965d08be17d0bfe5e8fbf69c6fd1750b8f3f29f",
+          "source_refreshed_at": "2026-11-04T11:24:00.075712+00:00"
+        }
+      ],
+      "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 5 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {
@@ -33828,6 +34094,152 @@
       }
     },
     {
+      "service": "open-webui",
+      "current_scope": "lab",
+      "current_compose_file": "labs/open-webui/docker-compose.yml",
+      "disposition": "OUT_OF_SCOPE",
+      "original_root_row": {
+        "service": "open-webui",
+        "scope": "root",
+        "compose_file": "infra/08-ai/open-webui/docker-compose.yml",
+        "current_declared": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
+        "profiles_declared": [
+          "ai",
+          "ai-llm"
+        ],
+        "build_source": null,
+        "current_running": [
+          {
+            "project": "hy-home-infra",
+            "service": "open-webui",
+            "image_reference": "ghcr.io/open-webui/open-webui:v0.11.4-cuda@sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1",
+            "image_id": "sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1",
+            "state": "running",
+            "platform": "linux",
+            "repo_digests": [
+              "ghcr.io/open-webui/open-webui@sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1"
+            ],
+            "os": "linux",
+            "architecture": "amd64"
+          }
+        ],
+        "runtime_presence": "OBSERVED",
+        "latest_version": "0.12.4",
+        "target_version": "0.12.0",
+        "channel": "stable",
+        "checked_at": "2026-10-26T09:43:13.072742+00:00",
+        "release_url": "https://github.com/open-webui/open-webui/releases/tag/v0.12.4",
+        "target_index_digest": "UNKNOWN",
+        "target_manifest_digest": "UNKNOWN",
+        "target_config_digest": "UNKNOWN",
+        "platform": "linux/amd64",
+        "source_release_date": "2026-10-25T08:07:13Z",
+        "advisory_urls": [],
+        "applicability": "UNKNOWN",
+        "support_end": "UNKNOWN",
+        "compatibility": "NOT_RUN",
+        "backup": "NOT_RUN",
+        "rollback": "NOT_RUN",
+        "native_test": "NOT_RUN",
+        "deployment": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "sbom_scan": "NOT_RUN",
+        "disposition": "DEFER_SEVEN_DAY_SOAK",
+        "blocker": {
+          "owner": "SEC01",
+          "discovered_at": "2026-10-26T10:32:14.784990+00:00",
+          "next_validation_due": "2026-10-27T00:00:00+00:00",
+          "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+          "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+          "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "service_owner_role": "Existing service owner named by current_public_assessment"
+        },
+        "source_owner_repository": "open-webui/open-webui",
+        "current_repo_digests": [
+          "ghcr.io/open-webui/open-webui@sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1"
+        ],
+        "current_image_ids": [
+          "sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1"
+        ],
+        "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
+        "upstream_reported_tag": "v0.11.4",
+        "next_fact_command": "gh release view --repo open-webui/open-webui --json tagName,publishedAt,isPrerelease,url",
+        "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
+        "source_input_sha256": "84fb9ffe43c5988732c42e02dffc4dd0c894f35cb0eea7c504a127fc8ac9961c",
+        "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
+        "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
+        "official_supplier_lookup_refs": [
+          "open-webui/open-webui"
+        ],
+        "supplier_lookup_blocker": null,
+        "official_supplier_observation_scope": "release-lookups.json#/root_official_refresh; candidate observations only. Stable/target/security/runtime fields retain their separate dated evidence.",
+        "official_release_assessment": {
+          "assessed_at": "2026-10-15T19:11:19.381778+00:00",
+          "release_status": "VERIFIED_STABLE_RELEASE_FACTS",
+          "release_fact_refs": [
+            "release-lookups.json#/root_official_refresh/release_metadata_refresh/supplier_release_interpretations/open-webui~1open-webui"
+          ],
+          "remaining_barrier": "Official product release is verified; the existing target/source pin is preserved. Exact selected artifact/platform, advisory/support applicability, image compatibility, recovery and HOME acceptance retain their separate recorded scope.",
+          "next_owner": "SEC01 release/artifact evidence owner and open-webui service build/migration/recovery owner",
+          "source_target_security_native_deployment": "UNCHANGED"
+        },
+        "current_public_assessment": {
+          "supplier_group": "open-webui/open-webui",
+          "owner": "SEC01 and existing service owner",
+          "review_at": "2026-10-27",
+          "source_implementation": "CURRENT_SOURCE_RETAINED; see specific disposition",
+          "runtime_security_delivery": "NOT_RUN; no acceptance promotion",
+          "rollback": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+          "candidate": "v0.12.4",
+          "fact_checked_at": "2026-10-26T09:43:13.072742+00:00",
+          "published_at": "2026-10-25T08:07:13Z",
+          "eligible_after_7_days": "2026-11-01T08:07:13+00:00",
+          "evidence_refs": [
+            "https://github.com/open-webui/open-webui/releases/tag/v0.12.4",
+            "/tmp/hyhome-v30-r27-public/github-observations-retry.json"
+          ],
+          "decision": "DEFER_SEVEN_DAY_SOAK",
+          "reason": "Latest published candidate is younger than the configured ordinary7daysoak. A security word in release notes is not evidence of a manager-received alert fast path. Preserve selected current pin and controls until eligibility and compatibility review.",
+          "exit_condition": "At eligible-after or later, recheck latest exact candidate/source/artifact age, compatibility and recovery; independently review before applying a pin.",
+          "service": "open-webui",
+          "compose_file": "infra/08-ai/open-webui/docker-compose.yml",
+          "current_declared": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
+          "resolved_source": {
+            "image": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
+            "build": null,
+            "chain": [
+              "infra/08-ai/open-webui/docker-compose.yml#open-webui",
+              "infra/common-optimizations.yml#template-stateful-med"
+            ]
+          },
+          "existing_target_version": "UNKNOWN",
+          "assessed_at": "2026-10-26T10:32:14.784990+00:00"
+        },
+        "historical_target_artifact_binding": {
+          "source_revision": "c05a59007aa16e8874b05805f41e7aed606260fe",
+          "fields": {
+            "target_version": "UNKNOWN",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "upstream_reported_tag": "v0.11.4"
+          },
+          "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
+        },
+        "target_source_image": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
+        "target_build_materials": [],
+        "target_declared_digest": "UNKNOWN",
+        "target_digest_evidence": "Current target has no newly verified artifact binding unless current_target_artifact_binding explicitly provides one. Historical candidate receipts are preserved separately.",
+        "candidate_evidence_scope": "Current source/version facts and specific pending disposition only; no new image build, signature, installed SBOM/scan, Native or state recovery receipt.",
+        "current_target_artifact_binding": {
+          "source_version": "0.12.0",
+          "source_image": "ghcr.io/open-webui/open-webui:v0.12.0-cuda@sha256:3a4f953b604bf8b4df9eaa765278f75180911f180cbdf984b2e7b593891e1c25",
+          "status": "UNBOUND_CURRENT_TARGET",
+          "reason": "Current source target or application component differs from prior candidate; do not reuse historical artifact/build/native results."
+        }
+      }
+    },
+    {
       "service": "nginx",
       "current_scope": "removed",
       "current_compose_file": null,
@@ -37455,11 +37867,11 @@
     "current_public_assessment_ref": "release-lookups.json#/root_official_refresh/public_metadata_continuations/1"
   },
   "p08_public_release_observations": {
-    "root_service_denominator": 93,
+    "root_service_denominator": 92,
     "source_query_denominator": 61,
     "observed_source_count": 60,
     "failed_source_count": 1,
-    "services_with_related_source": 79,
+    "services_with_related_source": 78,
     "services_without_related_source": [
       "blog-ingestion",
       "crawl4ai-loopback",
@@ -37899,9 +38311,7 @@
         "checked_at_utc": "2026-11-02T22:16:03Z",
         "source_cache_freshness": "today",
         "result": "OBSERVED",
-        "related_root_services": [
-          "open-webui"
-        ],
+        "related_root_services": [],
         "evidence_scope": "PUBLIC_SOURCE_OBSERVATION_ONLY",
         "raw_receipt": "NOT_SAVED",
         "freshness_verified": false,
@@ -38547,7 +38957,18 @@
           ]
         }
       ],
-      "meaning": "SPEC-0262 moved these services to LAB entrypoints after the observation; the original related-service mapping is kept here and the observation rows, tags and timestamps are unchanged."
+      "meaning": "SPEC-0262 moved these services to LAB entrypoints after the observation; the original related-service mapping is kept here and the observation rows, tags and timestamps are unchanged.",
+      "later_relocations": [
+        {
+          "relocated_at": "2026-11-10T09:00:00.000000+00:00",
+          "root_service_denominator_before_relocation": 94,
+          "query_url": "https://github.com/open-webui/open-webui/releases/latest",
+          "related_services": [
+            "open-webui"
+          ],
+          "meaning": "The ADR-0062 amendment of 2026-11-10 moved open-webui to labs/open-webui/docker-compose.yml after the observation; it is dropped from the related-service list of its one query row and counted out of services_with_related_source, and the query row, tag and timestamp are unchanged."
+        }
+      ]
     },
     "removed_root_service_mapping": {
       "removed_at": "2026-11-08T01:48:04.395677+00:00",
@@ -38595,7 +39016,7 @@
         {
           "service": "nginx",
           "removed_at": "2026-11-10T12:00:00.000000+00:00",
-          "root_service_denominator_before_removal": 94,
+          "root_service_denominator_before_removal": 93,
           "query_urls": [
             "https://nginx.org/en/download.html"
           ]

@@ -972,9 +972,7 @@ class OpenWebuiLocalModelContractTests(unittest.TestCase):
         import yaml
 
         service = yaml.safe_load(
-            (ROOT / "infra/08-ai/open-webui/docker-compose.yml").read_text(
-                encoding="utf-8"
-            )
+            (ROOT / "labs/open-webui/docker-compose.yml").read_text(encoding="utf-8")
         )["services"]["open-webui"]
         environment = service["environment"]
         self.assertEqual("ollama", environment["RAG_EMBEDDING_ENGINE"])
@@ -5449,7 +5447,6 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "tempo-bucket",
             "mlflow-artifacts",
             "tfstate",
-            "cdn-bucket",
         ):
             self.assertEqual(
                 0,
@@ -5486,29 +5483,12 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             denied = self.aws(*args, **loki)
             self.assertNotEqual(0, denied.returncode, args)
             self.assertIn("AccessDenied", denied.stderr, args)
-        put = self.aws(
-            "s3api",
-            "put-object",
-            "--bucket",
-            "cdn-bucket",
-            "--key",
-            "asset.txt",
-            "--body",
-            "/io/scope.txt",
-            "--content-type",
-            "text/plain",
-        )
-        self.assertEqual(0, put.returncode, put.stderr)
         codes = self.probe(
             "client",
             self.STATUS
-            + "print(status('GET', 'http://seaweedfs-s3:8333/cdn-bucket/asset.txt'),"
-            " status('GET', 'http://seaweedfs-s3:8333/cdn-bucket?list-type=2'),"
-            " status('PUT', 'http://seaweedfs-s3:8333/cdn-bucket/x', b'x'),"
-            " status('DELETE', 'http://seaweedfs-s3:8333/cdn-bucket/asset.txt'),"
-            " status('GET', 'http://seaweedfs-s3:8333/loki-bucket/k'))",
+            + "print(status('GET', 'http://seaweedfs-s3:8333/loki-bucket/k'))",
         )
-        self.assertEqual("200 403 403 403 403", codes)
+        self.assertEqual("403", codes)
 
 
 def _labels(service: dict) -> set[str]:
@@ -6437,7 +6417,6 @@ ROUTES_WITHOUT_SSO = {
     "hermes-dashboard": "native-oidc",
     "kafka-ui": "native-oidc",
     "n8n": "native-login",
-    "open-webui": "native-oidc",
     "openbao": "native-oidc",
     # The identity provider and the ForwardAuth service themselves
     "keycloak": "identity-provider",

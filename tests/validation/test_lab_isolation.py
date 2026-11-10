@@ -32,6 +32,9 @@ LAB_ENDPOINTS = {
     "LAB_SUPERSET_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
     "LAB_SONARQUBE_DB_HOST": "lab-endpoint.invalid",
     "LAB_STALWART_DEFAULT_URL": "lab.invalid",
+    "LAB_OPEN_WEBUI_OLLAMA_BASE_URL": "http://lab-endpoint.invalid:11434",
+    "LAB_OPEN_WEBUI_DEFAULT_URL": "lab.invalid",
+    "LAB_OPEN_WEBUI_CA_FILE": "/nonexistent/lab-ca/rootCA.pem",
 }
 
 
@@ -84,7 +87,7 @@ class RenderedModels(unittest.TestCase):
 
 class RootClosureTests(RenderedModels):
     def test_wildcard_root_render_selects_no_lab_service(self) -> None:
-        self.assertEqual(14, len(self.labs))
+        self.assertEqual(15, len(self.labs))
         root_services = set(self.root["services"])
         for name, lab in self.labs.items():
             with self.subTest(lab=name):

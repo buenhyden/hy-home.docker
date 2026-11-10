@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.1.2"
+version: "2.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -198,8 +198,8 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 
 - [ollama](../../../../infra/08-ai/ollama/README.md): 모델 캐시/스토리지 정책, GPU 스케줄링 및 동시성 상한, 모델 승격 절차(실험→운영) 명문화
   ([OPER](../../guides/09-ai-and-search/0056-ollama.md), [RUN](../../runbooks/09-ai-and-search/0056-ollama.md))
-- [open-webui](../../../../infra/08-ai/open-webui/README.md): SSO 강제, 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책 강화
-  ([OPER](../../guides/09-ai-and-search/0057-open-webui.md), [RUN](../../runbooks/09-ai-and-search/0057-open-webui.md))
+- [open-webui](../../../../labs/open-webui/README.md): 2026-11-10 독립 LAB으로 이전. native OIDC 유지, 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책 강화
+  ([OPER](../../guides/15-labs/0057-open-webui.md), [RUN](../../runbooks/15-labs/0057-open-webui.md))
 
 #### 09-platform-ops
 

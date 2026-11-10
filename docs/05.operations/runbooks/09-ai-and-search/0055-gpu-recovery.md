@@ -1,10 +1,10 @@
 ---
 title: "AI GPU Recovery Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "RUN-0055"
 created: "2026-03-25"
@@ -20,7 +20,7 @@ created: "2026-03-25"
 
 - Ollama GPU 가속 경로를 빠르게 복구한다.
 - Docker daemon 또는 GPU-dependent container 재시작 전에 증적과 승인 기준을 남긴다.
-- 복구 후 Ollama와 Open WebUI 연동 상태를 확인한다.
+- 복구 후 Ollama와 HOME 소비자 연동 상태를 확인한다.
 
 ## Trigger
 
@@ -32,7 +32,7 @@ created: "2026-03-25"
 
 - `docker compose exec ollama nvidia-smi`가 실패한다.
 - 모델 로딩이 GPU 미할당 또는 VRAM 접근 오류로 실패한다.
-- Open WebUI에서 모델 응답이 급격히 느려지고 GPU 사용률이 0에 머문다.
+- 소비자에서 모델 응답이 급격히 느려지고 GPU 사용률이 0에 머문다.
 
 ## Procedure
 
@@ -46,7 +46,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 - [ ] 최근 GPU driver, Docker, NVIDIA Container Toolkit 변경 이력을 확인한다.
 - [ ] Docker daemon 재시작이 다른 서비스에 미치는 영향을 확인하고 운영 승인을 받는다.
-- [ ] `ollama`와 `open-webui` 컨테이너 상태와 로그를 캡처한다.
+- [ ] `ollama` 컨테이너 상태와 로그를 캡처한다.
 
 ### 복구 단계
 
@@ -104,11 +104,10 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 - `docker compose exec ollama nvidia-smi`가 성공한다.
 - `curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags`가 성공한다.
-- `docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags`가 실행 중인 Open WebUI에서 성공한다.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker logs --tail 200 ollama`, `docker logs --tail 200 open-webui`
+- **Logs**: `docker logs --tail 200 ollama`
 - **Metrics**: `nvidia-smi`의 GPU 사용률·VRAM과 제공되는 Ollama exporter 지표
 - **Host Evidence**: Docker daemon 재시작 시각, NVIDIA driver·toolkit 버전, `docker inspect`의 device 요청
 

@@ -37,9 +37,9 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `admin` | domain | 데이터·로그·노트북 관리 UI | `dozzle`, `redisinsight` | No | normal service startup | current |
 | `admin-data` | role | Valkey 데이터 탐색 UI | `redisinsight` | No | normal service startup | current |
 | `admin-logs` | role | 컨테이너 로그 UI | `dozzle` | No | normal service startup | current |
-| `ai` | domain | HOME 언어 AI와 vector 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
+| `ai` | domain | HOME 언어 AI와 vector 저장소; Open WebUI는 LAB `lab-open-webui`(ADR-0062 개정) | `qdrant`, `ollama`, `ollama-exporter` | No | normal service startup | current |
 | `ai-image` | capability | GPU 이미지 생성 | `comfyui` | No | normal service startup | current |
-| `ai-llm` | capability | 언어 모델 추론·채팅·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
+| `ai-llm` | capability | 언어 모델 추론·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter` | No | normal service startup | current |
 | `alerting` | capability | 메트릭 경보 전달 | `prometheus`, `grafana`, `alertmanager` | No | normal service startup | current |
 | `analytics-engineering` | capability | dbt 업무 원천 dev-pg 기반; dbt 작업은 LAB `lab-dbt`(SPEC-0262) | `dev-pg`, `dev-platform-provision`, `dev-pg-monitor-provision`, `dev-pg-exporter` | No | monitoring initialization: dev-pg-monitor-provision | current |
 | `api-mock` | capability | 개발·기능 테스트용 HTTP stub 서버; bounded journal과 tracked mapping 제공 | `wiremock` | No | normal service startup; host 게시만 loopback 전용이며 project default network peer는 인증 없는 admin API에 접근 가능 | current |
@@ -67,6 +67,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `lab-kafka` | topology | 독립 LAB Kafka 3-broker KRaft 구성·exporter·초기화 | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init` | No | initialization: lab-kafka-init | current |
 | `lab-lakehouse` | topology | 독립 LAB `labs/lakehouse/docker-compose.yml`의 Iceberg batch·유지보수, SQL 조회, streaming 적재, 데이터 품질 검사(SPEC-0262) | `seaweedfs-table-bucket`, `spark`, `trino`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations` | No | initialization: seaweedfs-table-bucket (table bucket·policy·namespace); 기본 `spark` 명령은 namespace 조회만; S3·catalog endpoint 승인 전 렌더링 전용 | current |
 | `lab-locust` | topology | root에서 분리된 Locust master/worker headless 부하 LAB | `lab-locust-master`, `lab-locust-worker` | No | `labs/locust/docker-compose.yml`의 별도 project/network/volume; target 승인 후에만 트래픽 생성 | current |
+| `lab-open-webui` | topology | 독립 LAB `labs/open-webui/docker-compose.yml`의 채팅·RAG 웹; Keycloak native OIDC(ADR-0062 개정 2026-11-10) | `open-webui` | No | `${LAB_DATA_DIR}/open-webui/data` bind; host port는 `LAB_HOST_BIND_IP`에만; `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` 승인 전 렌더링 전용 | current |
 | `lab-superset` | topology | 독립 LAB `labs/superset/docker-compose.yml`의 Superset BI 웹; Keycloak native OIDC(SPEC-0262) | `superset-db-provision`, `superset-init`, `superset` | No | initialization: superset-db-provision (role·database), superset-init (migration·role 동기화·`lakehouse` DB 등록); `LAB_SUPERSET_DB_HOST` 승인 전 렌더링 전용 | current |
 | `lakehouse` | capability | SeaweedFS S3·Iceberg REST catalog 저장소; 엔진은 LAB `lab-lakehouse`(SPEC-0262) | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `mailpit` | No | initialization: mng-pg-init; monitoring initialization: mng-pg-monitor-provision | current |
@@ -304,6 +305,7 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | Kafka `kafka-1`, Schema Registry, Connect, kafbat UI | 단일 broker 메시징·CDC | Debezium Avro connector, kafbat | 7 / 5632 | `kafka-1-data`, `kafka-connect-data` | OPTIONAL `messaging`·`cdc`; Avro 소비자가 있으므로 Schema Registry 유지 | CDC·메시징 소비자가 없어질 때 | 실행 |
 | Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | 8 / 7936 | `flink-checkpoints`(SPEC-0262 이후 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`); 데이터는 object store | 2026-11-04 LAB `labs/lakehouse/docker-compose.yml`로 이전; one-shot·예산 검사 | 기능·학습 시나리오가 없을 때 선택하지 않음 | 미실행 |
 | Superset | BI | 운영자 | 2.5 / 1792 | MNG PostgreSQL DB | 2026-11-04 LAB `labs/superset/docker-compose.yml`로 이전 | 대시보드 소비자가 없을 때 | 미실행 |
+| Open WebUI | 채팅·RAG UI | 사용자 1명, 마지막 활동 2026-10-26 | 2 / 2048 | `open-webui`(이전 후 `${LAB_DATA_DIR}/open-webui/data`) | 2026-11-10 LAB `labs/open-webui/docker-compose.yml`로 이전; HOME 컨테이너·volume 퇴역은 별도 승인 | 채팅 실험 수요가 없을 때 | 실행 |
 | Neo4j | graph | 이름 있는 소비자 없음 | 1 / 512 | `neo4j-data` | OPTIONAL | graph 시나리오가 없으면 퇴역 검토 | 미실행 |
 | RedisInsight | Valkey UI | 운영자 | 1 / 512 | `redisinsight-data`(연결 정의) | OPTIONAL `admin` | Valkey 조회 수요가 없을 때 | 실행 |
 | Terrakube | IaC server | 운영자 | 4 / 3072 | MNG PostgreSQL DB | DEV; 상주 금지 | IaC 실습이 없을 때 | 미실행 |

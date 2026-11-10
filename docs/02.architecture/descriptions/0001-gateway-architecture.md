@@ -1,6 +1,6 @@
 ---
 title: "Gateway Tier Architecture Description"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -44,9 +44,7 @@ implementers and operators share this view.
 Traefik is the only gateway leaf. The alternative Nginx leaf (selected only by
 the `nginx` profile; `/oauth2/`, `/keycloak/` and SeaweedFS `/cdn/` paths) was
 retired on 2026-11-10 by owner decision: no Nginx container existed in HOME and
-the seven-day Traefik router metrics showed every live route on Traefik. The
-SeaweedFS `cdn-bucket` and its anonymous read identity remain defined and have
-no gateway consumer.
+the seven-day Traefik router metrics showed every live route on Traefik.
 
 ## Runtime and Deployment
 

@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-10"
 layer: "operations"
 artifact_id: "POL-0058"
 parent_ids:
@@ -16,12 +16,12 @@ created: "2026-05-10"
 
 ## Overview
 
-이 문서는 `08-ai` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, Ollama GPU 보호, Open WebUI stateful 운영, 모델 승격/접근 통제/로그 보존 정책을 통제한다.
+이 문서는 `08-ai` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, Ollama GPU 보호, Open WebUI LAB 경계, 모델 승격/접근 통제/로그 보존 정책을 통제한다.
 
 ## Scope
 
 - `infra/08-ai/ollama/docker-compose.yml`
-- `infra/08-ai/open-webui/docker-compose.yml`
+- `labs/open-webui/docker-compose.yml`(독립 LAB, 같은 `08-ai` 검사)
 - `scripts/hardening/check-all-hardening.sh 08-ai`
 
 - **Systems**: Ollama, Ollama Exporter, Open WebUI
@@ -32,7 +32,7 @@ created: "2026-05-10"
 - **Required**:
   - Ollama public route는
     `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다.
-    Open WebUI route는 `gateway-standard-chain@file`만 적용하고 native
+    Open WebUI는 gateway route 없는 독립 LAB이며 `LAB_HOST_BIND_IP`에만 게시하고 native
     Keycloak OIDC를 유지한다.
   - Ollama는 `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 상한을 유지한다.
   - Open WebUI는 `template-stateful-med`를 사용한다.
@@ -58,7 +58,7 @@ created: "2026-05-10"
   - GPU concurrency/queue 상한 변경 시 근거 지표 첨부
   - 모델 승격(실험 -> 운영) 체크리스트 완료
 - **Open WebUI 승인 조건**:
-  - SSO 강제 경로 검증 및 우회 금지 확인
+  - native OIDC 유지, gateway route 부재와 우회 금지 확인
   - 모델 접근 권한 분리 정책(역할/환경) 문서화
   - 대화 로그 보존 기간/마스킹 규칙/파기 절차 문서화
 

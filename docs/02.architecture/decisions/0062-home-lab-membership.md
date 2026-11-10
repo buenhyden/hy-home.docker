@@ -1,10 +1,10 @@
 ---
 title: "HOME Membership and Planned LABs"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-10"
 layer: "architecture"
 artifact_id: "ADR-0062"
 parent_ids:
@@ -45,7 +45,7 @@ Target HOME members by tier, after the follow-up moves:
 | `05-messaging` | kafka-1, schema-registry, kafka-connect, kafka-exporter, kafbat-ui (on demand through the messaging profiles) |
 | `06-observability` | LGTM stack, Alloy and the other observability services, including pushgateway; dozzle |
 | `07-workflow` | airflow, n8n |
-| `08-ai` | crawl4ai, mlflow, ollama, open-webui |
+| `08-ai` | crawl4ai, mlflow, ollama |
 | `09-platform-ops` | opentofu, registry, renovate, restic |
 | `10-communication` | none |
 | `11-quality` | conftest, k6, mailpit |
@@ -57,8 +57,34 @@ neo4j, open-notebook (with its surrealdb), pact-broker, wiremock and terrakube.
 Until its move merges, each still runs from its root include.
 
 Existing LABs: cassandra, couchdb, dbt, jupyterlab, kafka-cluster, lakehouse (Flink,
-Spark, Trino, Great Expectations), locust, mongodb, opensearch-cluster,
+Spark, Trino, Great Expectations), locust, mongodb, open-webui, opensearch-cluster,
 postgresql-ha, sonarqube, stalwart, superset and valkey-cluster.
+
+### Amendment of 2026-11-10: open-webui
+
+The owner amended this record on 2026-11-10 to move open-webui out of the HOME
+`08-ai` tier into the standalone LAB `labs/open-webui/`. The evidence, with no
+user content or secret recorded:
+
+- Use: one user, one chat, last activity 2026-10-26, no files and no knowledge
+  entries.
+- Dependents: none. Only operations documents and the OpenBao Agent template
+  referred to it.
+- Duplicated roles: local-LLM chat is served by Hermes (Telegram and its SSO
+  dashboard) and by the n8n Assistant and Agents on the same Ollama; web search
+  by the n8n Assistant through SearXNG (open-webui web search was off); RAG by
+  Qdrant with n8n, with open-notebook as a planned LAB (the open-webui vector
+  store was unused); speech-to-text by Hermes local faster-whisper `base`.
+  `ENABLE_OPENAI_API` was false and nothing consumed an OpenAI-compatible API
+  from it.
+- Cost: a 16.5 GB image, about 840 MiB RSS, an OIDC client secret, a Traefik
+  router and recurring Renovate updates. Its bundled PyTorch cu128 build has no
+  sm_61 kernels, so it cannot use the HOME GTX 1060; the GPU stays with Ollama.
+
+This is the same rationale as the other planned LABs: an unused service widens
+the attack surface, hardening checks, secret catalog and update ledgers. The
+move landed in the same change as this amendment; the running HOME container
+and its volume are left for separately approved retirement steps.
 
 ### Traceability
 
@@ -133,7 +159,7 @@ forward below.
   Locust and SonarQube in Quality, Stalwart in Communication and JupyterLab in
   Analytics, this record governs: those four are LABs now.
 
-Evidence is the owner decision of 2026-11-09, the root Compose includes, `labs/`, and
+Evidence is the owner decisions of 2026-11-09 and 2026-11-10, the root Compose includes, `labs/`, and
 `scripts/hardening/check-all-hardening.sh`. No runtime state is claimed.
 
 ## Decision Drivers
@@ -219,7 +245,7 @@ Evidence is the owner decision of 2026-11-09, the root Compose includes, `labs/`
 11. These stay in HOME: the Kafka stack (kafka-1, schema-registry,
     kafka-connect, kafka-exporter, kafbat-ui; on demand through the messaging
     profiles), qdrant, redisinsight, dev-db, mng-db, seaweedfs, crawl4ai,
-    mlflow, ollama, open-webui, opentofu, registry, renovate, restic,
+    mlflow, ollama, opentofu, registry, renovate, restic,
     conftest, k6, mailpit, storybook, and the observability services including
     pushgateway.
 12. HOME services keep the `template-stateful-*` and `template-infra-*`
@@ -227,6 +253,9 @@ Evidence is the owner decision of 2026-11-09, the root Compose includes, `labs/`
    Terrakube audit, registry signing, load-test standardization, Dozzle scope,
    admin session and RedisInsight audit policies proceed in phases through
    approved policy and runbook changes.
+13. open-webui (08-ai) leaves HOME and is the LAB `labs/open-webui/` (amendment
+    of 2026-11-10), with native Keycloak OIDC, no gateway route, a LAB-only
+    client secret and its hardening checks against the `labs/` source.
 
 ## Consequences
 
@@ -257,6 +286,10 @@ kafka-rest-proxy and `dedicated-valkey` removals; each updates POL-0078
 profiles, Traefik routes, the OpenBao secret catalog, security-update ledgers,
 docs, dashboards and scrapes, and pinning tests. The owner accepted this
 decision on 2026-11-09. Requirement and description text that still places a LAB in a HOME tier is reconciled by its owners.
+The open-webui move (decision 13) landed with its amendment on 2026-11-10;
+stopping and removing the HOME container, handling its volume, and the
+Keycloak client and DNS cleanup are separate approved runtime steps owned by
+RUN-0057.
 
 ## Related Documents
 
@@ -271,3 +304,4 @@ decision on 2026-11-09. Requirement and description text that still places a LAB
 - [ADR-0047 DEV TimescaleDB and load tools](0047-dev-timescale-influx-retirement-and-load-tools.md)
 - [POL-0094 Lakehouse](../../05.operations/policies/15-labs/0094-lakehouse.md)
 - [POL-0107 LAB promotion](../../05.operations/policies/15-labs/0107-lab-promotion.md)
+- [RUN-0057 Open WebUI LAB and HOME retirement](../../05.operations/runbooks/15-labs/0057-open-webui.md)

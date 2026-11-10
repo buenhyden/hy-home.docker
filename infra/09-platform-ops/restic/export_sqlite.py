@@ -8,7 +8,6 @@ import sys
 SOURCES = {
     "grafana": pathlib.Path("/src/grafana/grafana.db"),
     "gatus": pathlib.Path("/src/gatus/gatus.db"),
-    "open-webui": pathlib.Path("/src/open-webui/webui.db"),
 }
 TARGET = pathlib.Path("/exports/sqlite")
 

@@ -1,6 +1,6 @@
 ---
 title: "Gateway Tier (01-gateway) Requirements"
-version: "1.3.1"
+version: "1.3.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -27,8 +27,7 @@ reachable from outside.
 
 - **In scope**: the edge router for all external HTTP and HTTPS traffic, TLS
   termination, automatic route discovery for opted-in services, the shared
-  middleware chain, and an optional special-path proxy for rewrites the edge
-  router does not cover.
+  middleware chain.
 - **Out of scope**: business logic inside services, long-term log storage
   (Observability tier) and the authentication server itself (Auth tier).
 
@@ -70,9 +69,6 @@ reachable from outside.
 - **Security auditor**: checks which routes require which access control.
 - **Administrator**: views current routes and their status through an
   authenticated gateway dashboard.
-- **Special-path consumer**: a few paths (for example, `/keycloak/` and
-  `/cdn/`) need path rewriting and header handling beyond the edge router; that
-  proxy runs only when explicitly selected.
 
 ### Non-functional Requirements
 

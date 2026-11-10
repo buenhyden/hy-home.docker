@@ -122,9 +122,11 @@ Disposition and consumer cutover, all in one change:
   `current_scope: removed` and recorded the removal in `source_refreshes`;
   counts and the related-source mapping were adjusted without new vendor,
   signature, scan or acceptance evidence.
-- Left in place: the SeaweedFS `cdn-bucket` and its anonymous read identity (a
-  data and access surface the owner has not asked to remove) and the
-  historical SEC01 lookup records for nginx.
+- Removed the SeaweedFS `cdn-bucket` creation (`BUCKETS`), its anonymous `Read:cdn-bucket`
+  identity and the related tests and docs after confirming by repository grep
+  that no service other than Nginx referenced the bucket. Deleting the bucket
+  data in HOME is a separate approved step and was not performed. The
+  historical SEC01 lookup records for nginx are kept.
 
 ### Historical/source reconciliation
 
