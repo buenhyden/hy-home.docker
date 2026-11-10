@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.7.2"
+version: "1.7.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-10"
 ---
 
 # GitHub Governance Policy
@@ -84,6 +84,16 @@ rule of its own.
   a merge commit or fast-forward rather than rewriting referenced objects.
   History cleanup beyond the completed feature branch requires explicit
   authorization.
+- Renovate pull requests (`renovate/**`) follow the same protocol. The branch
+  protection requires up-to-date branches and stays strict. Bring a Renovate
+  branch up to date by running Renovate (the `rebase` label or a new run), not
+  with GitHub update-branch, whose merge commit fails the commit-message check.
+  Merge one dependency PR at a time, most security-relevant first. Never close a
+  Renovate PR by hand, because closing ignores that version; let Renovate close
+  it. A merged image change does not apply itself: the HOME recreate needs its
+  own approval, and CI does not build local images. The update rules and
+  procedure are owned by
+  `docs/05.operations/policies/10-platform-and-backup/0086-dependency-version-management.md`.
 - Draft or WIP pull requests are never merge-ready. They must list their
   remaining work in the PR template.
 - Agents must never modify another agent's in-progress branch without explicit coordination.
