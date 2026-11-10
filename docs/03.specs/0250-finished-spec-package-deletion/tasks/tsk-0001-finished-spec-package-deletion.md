@@ -1,10 +1,10 @@
 ---
 title: "Completed Spec Package Deletion Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0250-TSK-0001"
 parent_ids:
@@ -219,6 +219,14 @@ against `d6b535503` reported zero violations.
 
 Local checks are recorded above. Independent review and hosted CI have not run,
 and no criterion is accepted yet.
+
+### Merge receipt 2026-11-10
+
+Recorded 2026-11-10 from `gh pr view`: #725 merge `c5ec612ff` at
+2026-11-03T15:32:19Z. Hosted checks on the merged PR: every completed check
+SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
+is a candidate that passed hosted CI. This receipt is not owner acceptance: no
+criterion is accepted and the status is unchanged.
 
 ## Related Documents
 
