@@ -9,7 +9,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: azbuilder/api-server:2.33.2
+    image: azbuilder/api-server:2.33.2@sha256:032e14e2b0262d50607bd7404479a1bb7defa480599d82ef9a4c7c5e298e230e
     container_name: terrakube-api
     hostname: terrakube-api
     group_add:
@@ -82,7 +82,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: azbuilder/terrakube-ui:2.33.2
+    image: azbuilder/terrakube-ui:2.33.2@sha256:04a5c7a0a756365be2eb386e82d9a128726dd359b7a4a807ef3fff6039e0bdd5
     container_name: terrakube-ui
     hostname: terrakube-ui
     environment:
@@ -120,7 +120,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    image: azbuilder/executor:2.33.2
+    image: azbuilder/executor:2.33.2@sha256:28601c154938008df0a3ca2c3f0acca93349555c411427c0ee110da44d5fe2d6
     container_name: terrakube-executor
     hostname: terrakube-executor
     group_add:

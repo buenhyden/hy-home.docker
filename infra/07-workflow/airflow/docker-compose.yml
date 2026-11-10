@@ -455,7 +455,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: prom/statsd-exporter:v0.31.0
+    image: prom/statsd-exporter:v0.31.0@sha256:1d5d341c4eb7abdd3445a3f85c3d498402b676ad29b4cf0421f5d280943871ab
     container_name: airflow-statsd-exporter
     hostname: airflow-statsd-exporter
     healthcheck:

@@ -132,7 +132,7 @@ class CandidateContract(unittest.TestCase):
         package = ROOT / "infra/04-data/opensearch"
         dockerfile = (package / "Dockerfile").read_text()
         self.assertIn(
-            "ARG OPENSEARCH_BASE_IMAGE=opensearchproject/opensearch:3.8.0\n"
+            "ARG OPENSEARCH_BASE_IMAGE=opensearchproject/opensearch:3.8.0@sha256:fafe3fc3587088674669235575aa166228c48bdb940294a8cdbbc1da75236a40\n"
             "FROM ${OPENSEARCH_BASE_IMAGE}",
             dockerfile,
         )
