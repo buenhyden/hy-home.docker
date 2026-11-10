@@ -1,10 +1,10 @@
 ---
 title: "P03 Service Integration and Four-location Port Contracts Task"
-version: "0.2.15"
+version: "0.2.16"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0011"
 parent_ids:
@@ -1162,6 +1162,16 @@ membership fact, not a denial test. NOT_RUN: actual executor, endpoint and
 network denial tests for the P05 notifier, and HOME endpoint and TLS
 binding. Next input: a P03 denial case that main and runner cannot reach the
 DEV database, run under P03's own approval.
+
+### Supersession note 2026-11-10
+
+On 2026-11-10 the dedicated airflow/n8n Valkey sets and observer accounts
+recorded at lines 706-707, 758-759 and 1256-1258 are superseded by ADR-0062 decision 10
+(`docs/02.architecture/decisions/0062-home-lab-membership.md:215-218`) and
+their removal in PR #883 (`9db67f321`) and PR #885 (`7e65e6191`). n8n now uses
+the mng-valkey ACL user `n8n`, which gained `+lpop` in PR #894 (merge
+`0f99b6c20`, applied to HOME 2026-11-10;
+`infra/04-data/mng-db/valkey/scripts/render-acl.sh:68`). Earlier entries are unchanged.
 
 ## Evidence
 

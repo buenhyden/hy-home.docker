@@ -1,10 +1,10 @@
 ---
 title: "n8n Stable Source Preparation Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0017"
 parent_ids:
@@ -458,6 +458,12 @@ Log above already reports the stable source preparation, isolated build and HOME
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0017 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0017 | ready | in-progress | #owner-decision-2026-10-29 |
+
+### Supersession note 2026-11-10
+
+On 2026-11-10 the n8n 2.43.6 candidate is superseded: the current n8n and
+runners are 2.46.6 (`infra/07-workflow/n8n/docker-compose.yml:127,259`), and the
+`/tmp` checkout this Task used no longer exists. Earlier entries are unchanged.
 
 ## Evidence
 

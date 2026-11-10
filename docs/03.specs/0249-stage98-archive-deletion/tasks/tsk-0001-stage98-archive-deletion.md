@@ -1,10 +1,10 @@
 ---
 title: "Stage 98 Archive Deletion Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0249-TSK-0001"
 parent_ids:
@@ -289,6 +289,16 @@ all are addressed in this branch, as are the final re-review items 1 to 8,
 with ADR-0051 acceptance, M4 and M5 resolved in the follow-up change after
 merge. Hosted CI for the new head has
 not been observed, and no criterion is accepted yet.
+
+### Merge receipt 2026-11-10
+
+Recorded 2026-11-10 from `gh pr view`: #723 merge `85904818e` at
+2026-11-03T13:14:59Z; #724 merge `d6b535503` at 2026-11-03T13:46:50Z. Hosted
+checks on the merged PR: every completed check SUCCESS, the rest SKIPPED, none
+failing. #724 is the ADR-0051 acceptance change that shipped beside the
+deletion. Candidate quality: the merged change is a candidate that passed
+hosted CI. This receipt is not owner acceptance: no criterion is accepted and
+the status is unchanged.
 
 ## Related Documents
 

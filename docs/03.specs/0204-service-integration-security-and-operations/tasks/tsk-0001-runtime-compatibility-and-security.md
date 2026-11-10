@@ -1,10 +1,10 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.19"
+version: "1.0.20"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
@@ -1291,6 +1291,15 @@ rewriting or cancellation of already-completed work.
 | Draft package: `check-document-corpus-lifecycle.py --base-ref main`; registry JSON parse; `git diff --cached --check` | PASS (each exit 0) | Draft lifecycle and syntax only |
 | Current source static/synthetic checks | SOURCE_STATIC PASS; synthetic shell guard PASS / exact-image BLOCKED | n8n/source guards, OpenBao sealed readiness and LAB static checks exist; crawler egress deny, Agent renewal freshness and Cassandra auth remain blocked as stated below |
 | HOME n8n DB upgrade, crawler request, OpenBao unseal or service restart | NOT_RUN | Separate exact operational approval required |
+
+### Supersession note 2026-11-10
+
+On 2026-11-10 the exact-image targets at lines 1508-1509 and 1529 (n8n/runners
+2.41.6, Crawl4AI 0.9.4, OpenBao 2.6.2) are superseded by the current pins:
+n8n and runners 2.46.6 (`infra/07-workflow/n8n/docker-compose.yml:127,259`),
+Crawl4AI 0.9.5 (`infra/08-ai/crawl4ai/docker-compose.yml:37`) and
+`hy-home/openbao` 2.7.1 (`infra/03-security/openbao/docker-compose.yml:42`).
+The blocker stays as recorded; earlier entries are unchanged.
 
 ## Evidence
 

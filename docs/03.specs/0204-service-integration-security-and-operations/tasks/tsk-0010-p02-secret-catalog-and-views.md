@@ -1,10 +1,10 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.13"
+version: "0.1.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-10"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -1006,6 +1006,16 @@ NOT_RUN: SMTP credential rotation. Also not done: a catalog classification row
 for n8n execution copies and their reference and rotation class. Next input:
 classify the n8n credential execution copy in this catalog. The source is
 TSK-0013 "Owner native attempt five 2026-10-30".
+
+### Supersession note 2026-11-10
+
+On 2026-11-10 the dedicated airflow/n8n Valkey sets and observer accounts
+recorded at lines 1069-1076 are superseded by ADR-0062 decision 10
+(`docs/02.architecture/decisions/0062-home-lab-membership.md:215-218`) and
+their removal in PR #883 (`9db67f321`) and PR #885 (`7e65e6191`). n8n now uses
+the mng-valkey ACL user `n8n`, which gained `+lpop` in PR #894 (merge
+`0f99b6c20`, applied to HOME 2026-11-10;
+`infra/04-data/mng-db/valkey/scripts/render-acl.sh:68`). Earlier entries are unchanged.
 
 ## Evidence
 
