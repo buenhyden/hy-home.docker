@@ -42,9 +42,9 @@ Each package removal needs its own owner approval of that batch under the
 conditions (Q-04) block a removal and are never offered as a waiver.
 
 The SPEC-0248, 0249, 0250 and 0260 Tasks keep their own residual criteria.
-This Task records their state and does not close them. Its branch builds on
-the W01 branch (PR 954), because both edit the SPEC-0212 Spec and Plan and
-W02 consumes the retirement rules W01 consolidated.
+This Task records their state and does not close them. It starts from
+`main` `e4fd7f5f3`, after PR 954 merged the retirement rules W01
+consolidated.
 
 ## Work Log
 
@@ -64,7 +64,7 @@ approval; it grants no removal or remote operation.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| W02 obligation assessment | 110 | W115 | archive-owner-assessment | ARC-01 to ARC-09 at the W01 branch head | NOT_RUN | Assessment not yet run | required | - |
+| W02 obligation assessment | 110 | W115 | archive-owner-assessment | ARC-01 to ARC-09 at main `e4fd7f5f3` | NOT_RUN | Assessment not yet run | required | - |
 
 ## Criterion Acceptance
 
