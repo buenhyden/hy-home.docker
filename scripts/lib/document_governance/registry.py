@@ -1390,8 +1390,8 @@ def _json_schema_value(value: object) -> object:
         return {str(key): _json_schema_value(item) for key, item in value.items()}
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         return [_json_schema_value(item) for item in value]
-    if isinstance(value, (dt.datetime, dt.date)):
-        return value.isoformat()
+    # An unquoted YAML date stays a date object, so the schema's string type
+    # rejects it; the documentation protocol requires quoted date scalars.
     return value
 
 

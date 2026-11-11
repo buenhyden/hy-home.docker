@@ -3162,6 +3162,16 @@ class DocumentRegistryTests(unittest.TestCase):
             sorted(finding.code for finding in findings),
         )
 
+    def test_frontmatter_schema_rejects_unquoted_yaml_dates(self) -> None:
+        unquoted = _parse_frontmatter_text(
+            '---\ncreated: 2026-02-28\nupdated: "2026-02-28"\n---\n'
+        )
+
+        self.assertEqual(
+            ["created"],
+            [finding.path for finding in validate_frontmatter(unquoted)],
+        )
+
 
 class FolderAgentGuidePlacementTests(unittest.TestCase):
     """Folder AGENTS.md files and the Registry profile list the same paths."""
