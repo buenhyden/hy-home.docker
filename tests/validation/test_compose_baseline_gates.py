@@ -2308,13 +2308,11 @@ docker() {
         script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text(
             encoding="utf-8"
         )
-        copy = script.index("backup-run --target offsite")
+        copy = script.index("restic-offsite copy")
         self.assertLess(script.index("restic check || "), copy)
         self.assertIn("offsite copy not configured", script)
         self.assertIn('[[ "$restic_ok" == true ]]', script)
-        self.assertRegex(
-            script, r"backup-run --target offsite\)\" \|\| \{[^}]*status=1"
-        )
+        self.assertRegex(script, r"restic-offsite copy\)\" \|\| \{[^}]*status=1")
         self.assertIn("restic-offsite check", script)
         self.assertIn("hyhome_backup_offsite_repo_bytes", script)
         rules = (
@@ -2339,8 +2337,7 @@ docker() {
         ]
         # Saved into staging before Restic reads it; the EXIT trap removes it.
         self.assertLess(
-            script.index("# Shared agent memory"),
-            script.index("backup-run --target state"),
+            script.index("# Shared agent memory"), script.index("restic backup")
         )
         harness = """set -euo pipefail
 status=0

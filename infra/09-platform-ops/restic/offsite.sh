@@ -158,8 +158,31 @@ case "$action" in
         fi
         ;;
     copy)
-        echo "use agent_memory.py backup-run --target offsite" >&2
-        exit 64
+        # Daily path stays ungated until SPEC-0270 redesigns snapshot
+        # accounting; budget-copy keeps the admission-gated route.
+        require_initialized
+        # copy skips snapshots the remote already has. --no-lock applies to
+        # the read-only source only; the orchestrator's flock excludes writers.
+        # Each step is its own assignment so set -e stops on any failure.
+        remote_pairs="$(snapshot_trees)"
+        remote_trees="$(printf '%s\n' "$remote_pairs" | cut -d' ' -f2)"
+        pending=0
+        for set in $SETS; do
+            bytes="$(pending_bytes "$set")"
+            # Fail closed even in a shell that does not stop on a failed substitution.
+            case "$bytes" in '' | *[!0-9-]*) echo "pending size for $set unreadable" >&2; exit 65 ;; esac
+            pending=$((pending + bytes))
+        done
+        guard "$pending"
+        for set in $SETS; do
+            restic copy --no-lock --from-repo "/repo/$set"
+        done
+        echo "R2 latest snapshots:"
+        restic snapshots --compact --latest 1
+        # Stored bytes, which R2 bills; the orchestrator turns this line into
+        # hyhome_backup_offsite_repo_bytes.
+        size="$(stored_bytes)"
+        echo "R2 repository size: $size bytes"
         ;;
     budget-copy)
         require_memory_admission

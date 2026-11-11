@@ -50,7 +50,7 @@ class CapContractTests(unittest.TestCase):
         )
         written = script.index("hyhome_backup_offsite.prom")
         self.assertLess(written, script.index("if (( status == 0 ))"))
-        self.assertGreater(written, script.index("backup-run --target offsite"))
+        self.assertGreater(written, script.index("restic-offsite copy"))
         # The success file no longer carries the size, so no series is doubled.
         success = script[script.index("if (( status == 0 ))") :]
         self.assertNotIn("hyhome_backup_offsite_repo_bytes", success)
