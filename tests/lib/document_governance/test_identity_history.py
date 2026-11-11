@@ -244,6 +244,47 @@ class IdentityHistoryTests(unittest.TestCase):
         self.assertTrue(blobs, "the transition read no blob")
         self.assertEqual(len(blobs), len(set(blobs)))
 
+    def test_removed_identity_must_be_reserved_in_the_same_change(self) -> None:
+        from scripts.lib.document_governance import registry as registry_module
+
+        registry = load_registry()
+        adr = registry.identity_spaces["adr"]
+        number = next(
+            n for n in range(1, adr.high_water + 1) if n not in adr.reserved_history
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            source = root / "docs/99.templates/registry.json"
+            source.parent.mkdir(parents=True)
+            source.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
+            document = root / f"docs/02.architecture/decisions/{number:04d}-x.md"
+            document.parent.mkdir(parents=True)
+            document.write_text(f'---\nartifact_id: "ADR-{number:04d}"\n---\n')
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "base")
+            base = self._git(root, "rev-parse", "HEAD").strip()
+
+            def codes(candidate):
+                return {
+                    item.code
+                    for item in identity_history.validate_allocation_transition(
+                        root, candidate, {}, base
+                    )
+                }
+
+            self.assertIn("identity-retired-not-reserved", codes(registry))
+            spaces = dict(registry.identity_spaces)
+            spaces["adr"] = dataclasses.replace(
+                adr, reserved_history=(*adr.reserved_history, number)
+            )
+            reserved = dataclasses.replace(
+                registry, identity_spaces=MappingProxyType(spaces)
+            )
+            self.assertNotIn("identity-retired-not-reserved", codes(reserved))
+
     def test_reserved_history_cannot_drop_a_number(self) -> None:
         from scripts.lib.document_governance import registry as registry_module
 
