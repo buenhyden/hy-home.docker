@@ -33,7 +33,7 @@
           "permissions": {
             "contents": "read"
           },
-          "runs_on": "ubuntu-24.04",
+          "runs_on": "ubuntu-latest",
           "timeout_minutes": 30,
           "condition": "github.event_name == 'pull_request'",
           "needs": [],
@@ -44,7 +44,7 @@
             "contents": "read",
             "security-events": "write"
           },
-          "runs_on": "ubuntu-24.04",
+          "runs_on": "ubuntu-latest",
           "timeout_minutes": 15,
           "condition": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
           "needs": [],
