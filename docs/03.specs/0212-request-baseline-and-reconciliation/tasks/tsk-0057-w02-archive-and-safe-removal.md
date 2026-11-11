@@ -1,6 +1,6 @@
 ---
 title: "W02 Archive and Safe Removal Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -179,6 +179,14 @@ only at the Playwright install; its commit-range check passed. On
 installs only the Chromium binary and relies on the hosted image's system
 libraries. The adapter test changed first and failed, then passed.
 
+### Post-merge recovery proof 2026-11-12
+
+PR 955 merged as `19e6b58dc`. The last carrying commit `e4fd7f5f3` is
+reachable from `main`. All 12 files of SPEC-0226, 0266, 0268 and 0269 were
+restored from it into a new scratch folder outside the repository, and each
+restored file hashes to its `e4fd7f5f3` blob. None of the paths exists on
+`main`. Retirement precondition 5 is met for the four packages.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -187,6 +195,7 @@ libraries. The adapter test changed first and failed, then passed.
 | W02 obligation assessment result | 110 | W115 | archive-owner-assessment | ARC-01 to ARC-09 at main `e4fd7f5f3` | PASS | Per-ID table above: five KEEP; ARC-02, 05 and 08 GAP changed; ARC-07 code and ARC-08 manifest surface DEFER with scope | required | W02 obligation assessment |
 | W02 removal dry-run | 110 | W115 | removal-recovery-dry-run | Five ready packages at `e4fd7f5f3` in a scratch worktree | PASS | 15 files restored with zero byte mismatches; gates block the removal until reservation and seven link cutovers | optional | - |
 | W02 batch removal | 110 | W115 | package-retirement | Commit `58be65ebb` removing 0226, 0266, 0268, 0269; 0267 held | PASS | Promotion verified for four; reserved_history and link cutover done; metadata 0, links 0, lifecycle 0; post-merge byte comparison pending | required | - |
+| W02 post-merge recovery | 110 | W115 | removal-recovery-proof | `e4fd7f5f3` reachable from `main` `19e6b58dc`; 12 files of 0226, 0266, 0268, 0269 | PASS | 12 files restored outside the repository, 0 byte mismatches against their blobs; no path present on `main` | required | - |
 | W02 code review | 110 | W115 | independent-source-review | Fresh-context code-reviewer of `682393d7c` | PASS | APPROVED: no removed name has a code, workflow, manifest or dynamic consumer; `manifest_schema_v2` has no reader; corrected the archive-vocabulary note | required | - |
 | W02 governance suite | 110 | W115 | document-governance-unit-suite | `tests/lib/document_governance` discover while `58be65ebb` and `8330534e3` were being written | FAIL | FAILED (errors=2); test names not captured; the corpus changed during the run | optional | - |
 | W02 governance suite rerun | 110 | W115 | document-governance-unit-suite | `tests/lib/document_governance` discover at `56d32c32f`, clean tree | PASS | Ran 765 tests, OK, exit 0 | optional | W02 governance suite |
