@@ -31,7 +31,7 @@ from urllib.parse import urlsplit
 APPROVED_WEBHOOK_URL = "https://n8n.hy.home.arpa/webhook/hermes-blog-ingestion"
 MAX_REQUEST_BYTES = 4 * 1024 * 1024
 MAX_RESPONSE_BYTES = 1024 * 1024
-MAX_REQUEST_TIMEOUT = 15.0
+MAX_REQUEST_TIMEOUT = 45.0
 MAX_CREDENTIAL_LENGTH = 4096
 MAX_POLICY_LENGTH = 4096
 CHUNK = 64 * 1024
