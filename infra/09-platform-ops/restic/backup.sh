@@ -79,8 +79,37 @@ case "$action" in
         done
         ;;
     backup)
-        echo "use agent_memory.py backup-run --target state" >&2
-        exit 64
+        # Daily path stays ungated until SPEC-0270 redesigns snapshot
+        # accounting; budget-backup keeps the admission-gated route.
+        for set in $SETS; do
+            require_initialized "$set"
+        done
+        # state: only allowlisted file-safe trees plus the export staging;
+        # host: the whole secrets/ and .env mount.
+        list=/tmp/state-paths
+        : >"$list"
+        grep -v -e '^#' -e '^$' "$SETS_DIR/state-include.txt" | while read -r rel; do
+            case "$rel" in /* | *..*) echo "invalid include: $rel" >&2; exit 64 ;; esac
+            case "$rel" in
+            ai/ollama/models/*) src=/src/state/ollama-models/${rel#ai/ollama/models/} ;;
+            *) src=/src/state/volumes/$rel ;;
+            esac
+            if [ -e "$src" ]; then
+                printf '%s\n' "$src" >>"$list"
+            else
+                echo "include not present, skipped: $rel"
+            fi
+        done
+        echo /src/state/exports >>"$list"
+        echo /src/state/pgbackrest >>"$list"
+        echo /src/state/dev-pgbackrest >>"$list"
+        RESTIC_REPOSITORY="$(repo_for state)" restic backup \
+            --host hy-home --tag hyhome-state \
+            --exclude-file "$SETS_DIR/state-exclude.txt" --exclude-caches \
+            --files-from-verbatim "$list"
+        RESTIC_REPOSITORY="$(repo_for host)" restic backup \
+            --host hy-home --tag hyhome-host \
+            --exclude-file "$SETS_DIR/host-exclude.txt" /src/host
         ;;
     budget-backup)
         require_memory_admission

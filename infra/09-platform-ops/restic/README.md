@@ -91,11 +91,13 @@ Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고�
   (RUN-0021 8.5, 무료 한도 관리는 8.6).
 - `mng-pg`는 로컬 빌드이며 레지스트리가 없습니다. pull에는
   `docker compose pull --ignore-buildable`을 사용합니다.
-- 기억을 포함하는 snapshot과 offsite copy는
+- 2026-11-11부터 매일의 backup과 offsite copy는 용량 승인 없이 직접 실행합니다
+  (용량 상한이 기존 snapshot만으로 가득 차 매일 backup이 거부됐기 때문,
+  RUN-0021 "일일 경로 임시 복원"). 아래 예약 경로는 그대로 남습니다.
+- 예약 경로로 기억을 포함하는 snapshot과 offsite copy를 만들 때는
   [공유 기억 CLI](../../../scripts/operations/agent_memory.py)의
   `backup-run --target state` 또는 `backup-run --target offsite`를 사용합니다.
-  직접 `restic backup`·`restic-offsite copy` entrypoint는 이 경로를 안내하고
-  종료합니다. 호스트가 먼저 용량을 예약한 뒤 내부 작업에 한 번의 stdin
+  호스트가 먼저 용량을 예약한 뒤 내부 작업에 한 번의 stdin
   admission을 전달합니다. 이는 임의 Docker 명령을 실행할 수 있는 운영자를
   인증하거나 제한하는 보안 경계는 아닙니다.
 - 최초 적용 시 `capacity reconcile`로 실제 백업 메타데이터를 확인합니다.
