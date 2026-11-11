@@ -419,6 +419,23 @@ receives QA-ALIGN-04 once W05 names a concrete gap. The SPEC-0264 owner keeps
 the E33 Codex `exec` matcher follow-up. No product source changed in this
 intake.
 
+A read-only residual review on the same day mapped the twelve QA-C cases that
+apply to this repository to their existing tests. C12, C13 and C15 belong to
+other repositories and are N/A here under D-04. This is assertion-line
+evidence, not reproduction:
+
+| Verdict | Cases | Basis |
+| --- | --- | --- |
+| COVERED | C02, C06, C10 | Negative assertions exist, for example `test_heading.py:349`, `test_script_manifest.py:977`, `test_links.py:2501` |
+| KEEP (policy) | C11 | Acceptance is an owner decision under `output-style.md:64` and `stage-authoring-matrix.md:65`; no machine check can grant or refuse it |
+| PARTIAL | C01, C03, C04, C05, C07, C08, C09, C14 | One named negative has no asserting test: an old-version value as current (C01), a result from another revision (C03), unapproved deletion (C04), dedup dropping a unique security or deploy check (C05), a contract or vulnerability-DB change invalidating a prior PASS (C07), a local hook result replacing the hosted check (C08), SKIPPED counted as PASS (C09), rerunning completed fixed work (C14) |
+
+A PARTIAL row is a W05 candidate, not a confirmed defect. W05 must first show
+that the validator accepts the bad input before it adds a test or a fix
+(QA-ALIGN-02). Untracked, git-ignored `.pyc` caches of five removed test
+modules remain under `tests/`. No coverage is credited to them, and this
+review deleted none of them.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
