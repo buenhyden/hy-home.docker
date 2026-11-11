@@ -212,7 +212,7 @@ class SourceCollectionTests(unittest.TestCase):
 
     def test_other_execution_cannot_reuse_receipt(self):
         receipt, _ = self.collect()
-        with self.assertRaisesRegex(ValueError, "source_missing"):
+        with self.assertRaises(source_collection.SourceQuality) as caught:
             source_collection.resolve(
                 self.root,
                 JOB,
@@ -221,32 +221,71 @@ class SourceCollectionTests(unittest.TestCase):
                 [item()],
                 [receipt["receipt_id"]],
             )
+        self.assertEqual(
+            caught.exception.failures,
+            [{"item_id": "item-1", "codes": ["source_missing"]}],
+        )
 
-    def test_ordered_receipts_are_bound_to_matching_items(self):
+    def resolve(self, items, receipts=None):
+        return source_collection.resolve(
+            self.root, JOB, RUN, SCHEDULED, items, receipts
+        )
+
+    def test_items_pair_with_their_own_record_whatever_the_receipts(self):
+        # 2026-11-12 news: one wrong receipt id refused the whole report.
         first, _ = self.collect(item="item-1")
         second, _ = self.collect(item="item-2", url="https://example.org/second")
-        with self.assertRaisesRegex(ValueError, "source_mismatch"):
-            source_collection.resolve(
-                self.root,
-                JOB,
-                RUN,
-                SCHEDULED,
-                [item("item-1"), item("item-2")],
-                [second["receipt_id"], first["receipt_id"]],
-            )
+        items = [item("item-1"), item("item-2")]
+        expected = self.resolve(items, [first["receipt_id"], second["receipt_id"]])
+        self.assertEqual([row["item_id"] for row in expected], ["item-1", "item-2"])
+        self.assertEqual(
+            [row["receipt_id"] for row in expected],
+            [first["receipt_id"], second["receipt_id"]],
+        )
+        for receipts in (
+            None,
+            [],
+            [second["receipt_id"], first["receipt_id"]],
+            [first["receipt_id"], "f" * 32],
+            [first["receipt_id"]],
+            [first["receipt_id"], second["receipt_id"], "e" * 32],
+        ):
+            with self.subTest(receipts=receipts):
+                self.assertEqual(self.resolve(items, receipts), expected)
 
     def test_complete_item_receipt_pairs_may_be_reordered_together(self):
         first, _ = self.collect(item="item-1")
         second, _ = self.collect(item="item-2", url="https://example.org/second")
-        rows = source_collection.resolve(
-            self.root,
-            JOB,
-            RUN,
-            SCHEDULED,
+        rows = self.resolve(
             [item("item-2"), item("item-1")],
             [second["receipt_id"], first["receipt_id"]],
         )
         self.assertEqual([row["item_id"] for row in rows], ["item-2", "item-1"])
+
+    def test_uncollected_item_fails_alone_as_source_missing(self):
+        self.collect(item="item-1")
+        with self.assertRaises(source_collection.SourceQuality) as caught:
+            self.resolve([item("item-1"), item("never-collected")])
+        self.assertEqual(
+            caught.exception.failures,
+            [{"item_id": "never-collected", "codes": ["source_missing"]}],
+        )
+
+    def test_item_url_other_than_collected_final_url_fails_alone(self):
+        self.collect(item="item-1")
+        self.collect(item="item-2", url="https://example.org/second")
+        moved = item("item-2", source_url="https://example.org/elsewhere")
+        with self.assertRaises(source_collection.SourceQuality) as caught:
+            self.resolve([item("item-1"), moved])
+        self.assertEqual(
+            caught.exception.failures,
+            [{"item_id": "item-2", "codes": ["source_url_mismatch"]}],
+        )
+
+    def test_duplicate_item_id_is_still_a_hard_error(self):
+        self.collect(item="item-1")
+        with self.assertRaisesRegex(ValueError, "source_identity"):
+            self.resolve([item("item-1"), item("item-1")])
 
     def test_quality_failures_name_every_failing_item(self):
         receipts = [
@@ -273,15 +312,13 @@ class SourceCollectionTests(unittest.TestCase):
         self.assertEqual([row["item_id"] for row in rows], ["item-2"])
 
     def test_tampered_source_bytes_are_rejected(self):
-        receipt, _ = self.collect()
+        self.collect()
         path = next(self.root.glob("*.json"))
         record = json.loads(path.read_bytes())
         record["body_b64"] = "dGFtcGVyZWQ="
         path.write_text(json.dumps(record), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "invalid_record"):
-            source_collection.resolve(
-                self.root, JOB, RUN, SCHEDULED, [item()], [receipt["receipt_id"]]
-            )
+            self.resolve([item()])
 
     def test_receipt_is_not_returned_when_atomic_write_fails(self):
         with mock.patch.object(

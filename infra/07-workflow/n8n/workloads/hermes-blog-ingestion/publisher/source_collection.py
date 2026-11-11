@@ -336,21 +336,22 @@ def collect(root, job, run, scheduled, item, url, *, fetcher=None):
         store.close()
 
 
-def resolve(root, job, run, scheduled, items, receipt_ids):
-    """Bind ordered item/receipt pairs and evaluate actual stored source bytes."""
-    if (
-        not isinstance(items, list)
-        or not isinstance(receipt_ids, list)
-        or len(items) != len(receipt_ids)
-        or not items
-    ):
+def resolve(root, job, run, scheduled, items, receipt_ids=None):
+    """Pair each item with this run's own record by item_id; check stored bytes.
+
+    ``receipt_ids`` is accepted for the tool contract but never decides pairing
+    (plugin 0.4.5): one slipped receipt must not refuse the whole report. Rows
+    carry the paired record's ``receipt_id`` in item order.
+    """
+    del receipt_ids
+    if not isinstance(items, list) or not items:
         raise ValueError("source_receipts_required")
     store = PrivateRecords(root)
     rows, seen, failures = [], set(), []
     try:
         with store.lock(_index_name(job, run)):
             index = _index(store, job, run, scheduled)
-            for item, receipt_id in zip(items, receipt_ids, strict=True):
+            for item in items:
                 if (
                     not isinstance(item, dict)
                     or not isinstance(item.get("item_id"), str)
@@ -361,7 +362,9 @@ def resolve(root, job, run, scheduled, items, receipt_ids):
                 seen.add(item_id)
                 raw = store.read(_key(job, run, item_id) + ".json")
                 if raw is None:
-                    raise ValueError("source_missing")
+                    # Keep going, so one call names every failing item.
+                    failures.append({"item_id": item_id, "codes": ["source_missing"]})
+                    continue
                 record = _decode(raw)
                 result = _check(record, job, run, item_id, scheduled)
                 entry = index["items"].get(item_id)
@@ -369,16 +372,18 @@ def resolve(root, job, run, scheduled, items, receipt_ids):
                     entry is None
                     or entry["collection_call_id"] != record["collection_call_id"]
                     or entry["source_url"] != record["source_url"]
-                    or record["receipt_id"] != receipt_id
-                    or item.get("source_url") != result.final_url
                 ):
                     raise ValueError("source_mismatch")
+                if item.get("source_url") != result.final_url:
+                    failures.append(
+                        {"item_id": item_id, "codes": ["source_url_mismatch"]}
+                    )
+                    continue
                 text = source_check.page_text(result)
                 if len(text.encode("utf-8")) > MAX_TEXT_BYTES:
                     raise ValueError("source_too_large")
                 codes = source_check.check_item(item, text)
                 if codes:
-                    # Keep going, so one call names every failing item.
                     failures.append({"item_id": item_id, "codes": codes})
                     continue
                 rows.append(
@@ -388,6 +393,7 @@ def resolve(root, job, run, scheduled, items, receipt_ids):
                         "body_sha256": result.sha256,
                         "fetched_at": result.fetched_at,
                         "collection_call_id": record["collection_call_id"],
+                        "receipt_id": record["receipt_id"],
                         "text": text,
                     }
                 )

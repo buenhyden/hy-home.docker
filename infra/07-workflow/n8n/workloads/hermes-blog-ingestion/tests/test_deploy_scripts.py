@@ -60,7 +60,10 @@ class CronPromptTests(unittest.TestCase):
 
     def test_prompt_names_the_fields_the_tool_sets_and_accepts(self):
         parameters = self.tools.SUBMIT_RESEARCH_REPORT_SCHEMA["parameters"]
-        self.assertIn("exactly payload, source_receipts and report_path", self.prompt)
+        self.assertIn(
+            "with payload and report_path; source_receipts is optional", self.prompt
+        )
+        self.assertIn("pairs each item with its collected page by item_id", self.prompt)
         self.assertEqual(
             set(parameters["properties"]),
             {"payload", "source_receipts", "report_path"},
@@ -105,7 +108,8 @@ class CronPromptTests(unittest.TestCase):
         self.assertIn("report BLOCKED instead of shortening it", self.prompt)
         (fallback,) = [x for x in self.sentences() if "not preserved" in x]
         self.assertIn("If that is still BLOCKED", fallback)
-        self.assertIn("items [] and source_receipts []", self.prompt)
+        self.assertIn("call it with items []:", self.prompt)
+        self.assertNotIn("source_receipts []", self.prompt)
         self.assertIn("only the Gateway submission is skipped", self.prompt)
         self.assertIn(
             "Then update the report file so it names each kept item's final "
@@ -114,9 +118,11 @@ class CronPromptTests(unittest.TestCase):
         )
         self.assertIn(
             "One exception: if a result is ok false with error source_quality, "
-            "its failed_items name every item the pages do not back; remove exactly "
-            "those items and their receipts, leave every other item and receipt "
-            "unchanged, and call submit_research_report once more with the same "
+            "its failed_items name every item the pages do not back, including "
+            "source_missing (no page was collected for that item_id in this run) and "
+            "source_url_mismatch (its source_url is not the collected final URL); "
+            "remove exactly those items, leave every other item unchanged, and call "
+            "submit_research_report once more with the same "
             "report_path, leaving the file unchanged. Send the email and Telegram "
             "only after that call, and "
             "never call submit_research_report again after it.",
