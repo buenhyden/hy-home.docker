@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.11.0"
+version: "3.12.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -373,8 +373,9 @@ behavior, structure, decision, or procedure. It is retired when its status is
 terminal and its still-current meaning has moved to a canonical owner.
 
 A retired document is summarized and deleted, not preserved. Its still-current
-meaning goes to the Traceability section of the owning Stage 01 requirement or
-Stage 02 description or decision, and the original file is removed. Version
+meaning goes to its canonical agent governance, Stage 01, 02 or 05 owner, as
+the [retirement preconditions](#retirement-preconditions) require, and the
+original file is removed. Version
 history is the record of the removed body. Stage 98 (`docs/98.archive/`) holds
 no records: only its README remains, describing the disposition scheme. Its
 checks are listed in the
@@ -441,6 +442,13 @@ Retire a package or a standalone document only when all of these hold.
 3. Every inbound consumer is updated in the same logical change.
 4. Its artifact number is added to the Registry `reserved_history` of its
    identity space in the same change.
+5. The removing change records, in a Task that survives it, the last commit
+   and path that carry each removed body, and that the commit is reachable
+   from `main`. A body that exists only as uncommitted work, only in the
+   reflog, only on an unmerged or squash-dropped branch, or not at all in a
+   shallow clone blocks that removal, as does a recorded hold. After merge, the
+   same Task restores each body from that commit and compares its bytes. This
+   is a manual record, not a gate.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to

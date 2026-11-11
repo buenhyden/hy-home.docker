@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -59,7 +59,8 @@ Open WebUI LAB을 준비하거나 실험하는 AI engineer와 운영자를 위�
   `08-ai/open-webui` 출력을 계속 render하지만 LAB은 이를 bind하지 않는다. LAB 사본 준비는 별도 승인이다.
 - **Image·GPU.** [Compose](../../../../labs/open-webui/docker-compose.yml)가 CUDA tag와 digest를 고정한다.
   `labs/**`는 Renovate와 SEC01 ledger 밖이다. 번들 PyTorch cu128 build에는 sm_61 kernel이 없어 HOME GTX
-  1060을 쓸 수 없고 GPU 예약도 없다. embedding은 Ollama가 처리한다. `ENABLE_OPENAI_API=false`를 유지한다.
+  1060을 쓸 수 없고 GPU 예약도 없다. embedding은 Ollama가 처리한다. `ENABLE_OPENAI_API=false`를 유지하고 Docker socket과 terminal server는
+  연결하지 않는다(SPEC-0226, 은퇴).
 
 ## Usage
 

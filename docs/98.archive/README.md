@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "3.0.2"
+version: "3.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-11"
 layer: "archive"
 ---
 
@@ -15,8 +15,8 @@ layer: "archive"
 Stage 98은 활성 스테이지를 떠난 문서의 처분 체계를 정의합니다. 현재 이 스테이지는
 보존 기록을 담지 않으며, 이 `README.md`만 남아 있습니다.
 
-활성 스테이지에서 문서를 없앨 때는 그 내용을 Stage 01 요구사항과 Stage 02 아키텍처
-문서의 Traceability에 요약하고 원본을 삭제합니다. 삭제된 본문의 기록은 Git 이력이며,
+활성 스테이지에서 문서를 없앨 때는 그 내용을 현재 소유자(agent governance, Stage 01,
+02, 05) 문서에 요약하고 원본을 삭제합니다. 삭제된 본문의 기록은 Git 이력이며,
 폐기된 번호는 [Stage 99 Registry](../99.templates/registry.json)의
 `identity_spaces.*.reserved_history`가 보관해 다시 쓰이지 않게 합니다.
 
@@ -33,7 +33,7 @@ Stage 98은 활성 스테이지를 떠난 문서의 처분 체계를 정의합�
 ### Audience
 
 운영자, 리뷰어, AI agent가 "이 문서는 왜 사라졌는가"를 조회할 때 사용합니다. 답은
-요약을 받은 Stage 01·02 문서의 Traceability와 Git 이력에 있습니다.
+요약을 받은 현재 소유자 문서와 Git 이력에 있습니다.
 
 ## Structure
 
@@ -62,7 +62,7 @@ template은 없습니다. 기록이 없으므로 각 폴더는 지금 존재하�
 
 ## Usage
 
-1. 문서를 없애는 변경은 먼저 그 내용을 Stage 01·02 문서에 요약합니다.
+1. 문서를 없애는 변경은 먼저 그 내용을 현재 소유자 문서에 요약합니다.
 2. 원본 문서는 삭제합니다. 이 스테이지로 옮겨 보존하지 않습니다.
 3. 폐기된 artifact 번호는 Registry의 `reserved_history`에 추가합니다.
 4. 삭제된 본문이 필요하면 Git 이력에서 복구합니다.
