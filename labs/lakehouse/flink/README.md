@@ -145,5 +145,3 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 - **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
 - [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
-
----

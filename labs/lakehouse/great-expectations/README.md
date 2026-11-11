@@ -167,5 +167,3 @@ suite·SQL asset API가 후보 릴리스 소스에 존재한다.
 - **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
 - [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
-
----

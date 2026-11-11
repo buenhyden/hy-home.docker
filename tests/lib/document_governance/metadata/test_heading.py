@@ -379,11 +379,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
         order_only = {"research-member"}
         for profile_id, profile in sorted(self.registry.profiles.items()):
             # A generated body is checked by its declared producer instead.
-            if (
-                not profile.get("required_sections")
-                or profile.get("free_form_sections")
-                or profile_id == "generated"
-            ):
+            if not profile.get("required_sections") or profile_id == "generated":
                 continue
             with self.subTest(profile=profile_id):
                 self.assertTrue(profile.get("ordered_sections"))
@@ -401,11 +397,9 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 first, second = (f"## {name}\n\n" for name in required[:2])
                 start = body.index(first)
                 middle = body.index(second)
+                end = body.find("\n## ", middle) + 1 or len(body)
                 swapped = (
-                    body[:start]
-                    + body[middle : body.find("\n## ", middle) + 1]
-                    + body[start:middle]
-                    + body[body.find("\n## ", middle) + 1 :]
+                    body[:start] + body[middle:end] + body[start:middle] + body[end:]
                 )
                 self.assertIn("body-heading-order", self._findings(profile_id, swapped))
                 if self.registry.profiles[profile_id].get("nonempty_sections"):

@@ -157,5 +157,3 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 - **Runbook**: Superset Runbook (`docs/05.operations/runbooks/15-labs/0097-superset.md`)
 - [LAB 탐색](../README.md)
 - [문서 인덱스](../../docs/README.md)
-
----

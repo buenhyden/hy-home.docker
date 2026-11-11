@@ -126,5 +126,3 @@ wrapper가 필요하다는 오류로 종료합니다.
 - **Policy**: Conftest Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`)
 - **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`)
 - [Documentation index](../../../docs/README.md)
-
----

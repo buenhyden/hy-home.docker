@@ -136,5 +136,3 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 - **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
 - [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
-
----

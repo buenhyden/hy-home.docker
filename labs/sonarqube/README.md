@@ -143,5 +143,3 @@ backup·복원 절차가 필요합니다.
 - **Runbook**: SonarQube Runbook (`docs/05.operations/runbooks/15-labs/0066-sonarqube.md`)
 - [LAB 탐색](../README.md)
 - [Documentation index](../../docs/README.md)
-
----

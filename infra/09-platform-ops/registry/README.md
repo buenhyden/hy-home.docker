@@ -118,5 +118,3 @@ registry/
 - **Policy**: Registry Operations (`docs/05.operations/policies/10-platform-and-backup/0065-registry.md`)
 - **Runbook**: Registry Runbook (`docs/05.operations/runbooks/10-platform-and-backup/0065-registry.md`)
 - [Documentation index](../../../docs/README.md)
-
----

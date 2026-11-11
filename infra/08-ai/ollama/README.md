@@ -90,13 +90,6 @@ ollama/
 - Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/09-ai-and-search/0056-ollama.md`; ID: `GDE-0056`, `POL-0056`, `RUN-0056`.
 - 해당 런북의 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다. 모델/콘텐츠 출처를 보존하고 실행 중인 파일시스템 복사본을 복구 근거로 사용하지 않습니다.
 
-## Related Documents
-
-- **Guide**: Ollama usage guide (`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)
-- **Policy**: Ollama operations policy (`docs/05.operations/policies/09-ai-and-search/0056-ollama.md`)
-- **Runbook**: Ollama recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0056-ollama.md`)
-- [Documentation index](../../../docs/README.md)
-
 ## Configuration
 
 ### Environment Variables
@@ -122,3 +115,10 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 ```
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
+
+## Related Documents
+
+- **Guide**: Ollama usage guide (`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)
+- **Policy**: Ollama operations policy (`docs/05.operations/policies/09-ai-and-search/0056-ollama.md`)
+- **Runbook**: Ollama recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0056-ollama.md`)
+- [Documentation index](../../../docs/README.md)
