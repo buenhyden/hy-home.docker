@@ -432,7 +432,28 @@ evidence, not reproduction:
 
 A PARTIAL row is a W05 candidate, not a confirmed defect. W05 must first show
 that the validator accepts the bad input before it adds a test or a fix
-(QA-ALIGN-02). Untracked, git-ignored `.pyc` caches of five removed test
+(QA-ALIGN-02).
+
+A second read-only pass on the same day probed the eight PARTIAL cases with
+isolated scratch fixtures built from the existing test helpers. No repository
+file changed.
+
+| Case | Result | Evidence and residual |
+| --- | --- | --- |
+| C03a | REPRODUCED_GAP | An accepted criterion citing a PASS row whose Input names another revision is accepted; `spec_packages.py:1546` discards Input. The validator documents structural coverage only, so binding acceptance to one revision is a W01/W04 policy question, not a blind fix |
+| C03b | REJECTED_UNTESTED | `approved` in Criterion Acceptance raises at the registered acceptance domain; no test asserts it |
+| C04a | REJECTED | Deleting a Task the Plan still names raises; editing the Plan row in the same change evades it |
+| C04b | POLICY_ONLY | Retirement preconditions are review and Task evidence; no check requires a removed number in `reserved_history` (code read only, UNVERIFIED by probe) |
+| C01 | REJECTED_UNTESTED | A registry pin older than its Compose declaration fails `sync-tech-stack-versions.sh --check`; no test asserts it; a superseded approval record has no schema field (UNVERIFIED) |
+| C05 | REJECTED_UNTESTED | Removing a pinned `local.supply-chain` child yields `ci-gate-local-aggregate-children`; only the required-active pin has a removal test |
+| C07 | STRUCTURAL | CI disables caches, reads no prior artifact and refuses an existing evidence directory, so no earlier PASS is reused |
+| C08 | STRUCTURAL | The sole required check `candidate-quality` is bound to the GitHub Actions app; a local hook result cannot satisfy it |
+| C09 | STRUCTURAL | One required job with no `needs` aggregate; failures, errors and cancellations exit non-zero; `continue-on-error` is forbidden and tested |
+| C14 | POLICY_ONLY | Idempotent reruns are intended (`test_compose_baseline_gates.py:1819`); completion needs PASS evidence under `sdlc.md:101-107` |
+
+W05 handoff: add tests for C01, C03b and C05, which currently enforce without
+an asserting test. C03a and C04b need an owner policy decision before any
+validator change. Untracked, git-ignored `.pyc` caches of five removed test
 modules remain under `tests/`. No coverage is credited to them, and this
 review deleted none of them.
 
