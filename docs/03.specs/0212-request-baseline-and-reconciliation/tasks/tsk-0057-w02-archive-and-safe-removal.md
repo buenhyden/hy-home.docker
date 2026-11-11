@@ -1,6 +1,6 @@
 ---
 title: "W02 Archive and Safe Removal Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -170,6 +170,15 @@ Playwright system packages. The image diagnosis above was wrong. On
 2026-11-12 the owner chose to revert the pin and rerun after the outage;
 commit `a3b289c5d` reverts `7a109158f`. No gate workaround is added.
 
+### Playwright install without apt 2026-11-12
+
+The `azure.archive.ubuntu.com` outage continued, and run 43056362855 failed
+only at the Playwright install; its commit-range check passed. On
+2026-11-12 the owner chose to stop that step depending on apt. Commit
+`0c0168bdb` drops `--with-deps` from the `install-playwright` adapter, so CI
+installs only the Chromium binary and relies on the hosted image's system
+libraries. The adapter test changed first and failed, then passed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -184,6 +193,8 @@ commit `a3b289c5d` reverts `7a109158f`. No gate workaround is added.
 | W02 remote candidate | 110 | W115 | remote-candidate-quality | PR 955 runs on `ubuntu-latest` through `0ec2f14cb` | FAIL | Playwright `--with-deps` apt install could not resolve Ubuntu mirrors; earlier stages passed | required | - |
 | W02 runner pin checks | 110 | W115 | workflow-contract | Commit `7a109158f` | PASS | GitHub workflow contract PASS (workflows 5, jobs 7); test_github_workflow_contract 48 OK | required | - |
 | W02 remote candidate on 24.04 | 110 | W115 | remote-candidate-quality | PR 955 run 43049853619 at `fe54ee0f9` on `ubuntu-24.04` | FAIL | Same apt step failed: `azure.archive.ubuntu.com` unresolvable; public DNS SERVFAIL confirmed; pin reverted in `a3b289c5d` | required | - |
+| W02 remote candidate after message fix | 110 | W115 | remote-candidate-quality | PR 955 run 43056362855 at `6980e3bdd` | FAIL | Commit range passed; Playwright apt install failed on the mirror DNS outage | required | - |
+| W02 adapter without apt | 110 | W115 | red-green-proof | Commit `0c0168bdb` | PASS | Adapter test failed with the old vector, then test_ci_gate_adapters OK; ruff clean | required | - |
 
 ## Criterion Acceptance
 
