@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.38"
+version: "0.2.39"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4122,6 +4122,23 @@ resolution. On the last 26 hours of HOME data the new expression crosses the
 threshold only from 11:41Z to 11:51Z, and reads `0` now. Prometheus picks the
 rule up only after the change is merged and Prometheus reloads its rules.
 
+### Step 5 Owner Reconfirmation — 2026-11-11
+
+Before the 2026-11-11 window the owner answered four value-free questions,
+all "yes": (1) BKP-002, BKP-003, the R2 tokens (BKP-004/005) and Cloudflare
+account access have not been changed or moved since 2026-10-14; (2) the unseal
+shares and the CA key have not changed, so the host second copy at
+`/home/hyunyoun/data/hy-home.secrets` is still current; (3) place A (the
+separate desktop and the password manager account) is still reachable; (4) the
+recovery means for place A are still outside place A and the host. No W1b
+rekey and no backup-key rotation is recorded since 2026-10-14. The R2 listing
+in the 14:36 KST W0 preflight used the host's values, so it does not prove
+place A's values; the owner did not repeat the place A listing. This is the
+owner's statement; the agent read no value. The same day the SEC01 gate failed
+(Go 1.27.4, released 2026-11-10, fixes CVE-2026-97054 in net/http and eleven
+other CVEs; the image is built with Go 1.27.3), so the owner limited the window
+to W1–W3b and kept the server and Agent at r1.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -4200,6 +4217,7 @@ rule up only after the change is merged and Prometheus reloads its rules.
 | Semantic restore moving initial review input | 11 | W23 | Author changed frozen source/test before independent review; old hashes not accepted | source327ab851/e597962e | FAIL | Current Operation Preparation — 2026-10-14 | - |
 | Semantic restore source independent review | 11 | W23 | Code/security/IaC blockers despite28 synthetic PASS80%branch; actual recovery NOT_READY | source4ffd0ec3/tests8ba3a111 | FAIL | Current Operation Preparation — 2026-10-14 | - |
 | Actual quoted R2 local readiness correction | 11 | W23 | Minimal Compose literal normalization, independent exact review,14+10 synthetic PASS; actual exit0 LOCAL_INPUTS_READY; no remote/custody proof | inspectorff6bae4f/launcher5f75e150 | PASS | Current Operation Preparation — 2026-10-14 | Actual offsite local readiness r2/r3 |
+| Host custody step 5 reconfirmation 2026-11-11 | 11 | W23 | owner-attested reconfirmation of the 2026-10-14 RUN-0085 step 5 table, value-free: no change or move of BKP-002, BKP-003, R2 tokens or Cloudflare access; shares and CA key unchanged so the host second copy is current; place A reachable; recovery means outside place A and the host | Owner statement 2026-11-11 | PASS | Step 5 Owner Reconfirmation — 2026-11-11 | - |
 
 ## Criterion Acceptance
 
