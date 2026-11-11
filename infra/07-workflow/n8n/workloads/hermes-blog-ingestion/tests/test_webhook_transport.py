@@ -247,6 +247,16 @@ class BoundariesTests(unittest.TestCase):
         sent = process.communicate.call_args.kwargs["input"]
         self.assertIn(b"synthetic-secret", sent)
 
+    def test_reap_never_signals_a_non_child_group(self):
+        # A Mock pid converts to 1, and killpg(1) would kill every process of
+        # the user running the tests.
+        with mock.patch.object(transport.os, "killpg") as killpg:
+            for pid in (mock.MagicMock(), 0, 1, -1, True):
+                transport._kill_owned_process(
+                    mock.Mock(pid=pid, stdin=None, stdout=None)
+                )
+        killpg.assert_not_called()
+
     def test_timeout_and_interrupt_kill_only_the_owned_child_group(self):
         for failure in (
             subprocess.TimeoutExpired(["child"], 0.01),
