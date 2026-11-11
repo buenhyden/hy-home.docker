@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.8.1"
+version: "0.9.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-11"
 layer: "specs"
 artifact_id: "SPEC-0265-TSK-0001"
 parent_ids:
@@ -391,6 +391,19 @@ Plugin 0.4.3, contract v3 (`SUBMIT_CONTRACT_VERSION = 3`):
   passes `report_path`; the e2e harness writes its synthetic report the same
   way.
 
+### Owner acceptance of criteria 12 to 14 (2026-11-11)
+
+The owner accepted criteria 12, 13 and 14 on 2026-11-11 ("Accept SPEC-0265
+criteria 12–14 수용"). The operations each carry a recorded result: backup,
+restore test and switch PASS (E7), backfill dry run with no `--apply` PASS
+(E8), and installs PASS (E14, E16). The rollback is written and tested on a
+copy (E18). The delivered-run observation E9 is FAIL, because devops has
+delivered nothing on 0.4.3; it is recorded here as an open delivery issue
+and not as a pass. Because a required observation is open, criterion 12 is
+recorded as pending with the owner's decision noted; it becomes accepted when
+a later delivered devops run resolves E9. E17 now resolves E11 (same Check,
+W5). Criteria 1 to 11 stay pending.
+
 ### Design deviations
 
 - Outcome mapping: `report_store_unavailable` and `record_unavailable` are
@@ -502,11 +515,12 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 | E6 | 11 | W6 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`; `python3 scripts/validation/check-document-links.py --mode alignment`; `python3 scripts/validation/check-document-corpus-lifecycle.py` | fix round 1 working tree, committed as `49f439c37`..`b9c016f10` | PASS | metadata: 0 violations; links: 898 documents, 0 failures; lifecycle: 0 violations | required | - |
 | E7 | 12 | W7 | online backup with `c05e5b88`, restore test of that backup on a private copy with the new image (`user_version`, row counts, export states and hash, FK, integrity), Compose pin #779 then `docker compose --profile blog-ingestion up -d --no-deps blog-ingestion`, startup log and live DB check | switch window 2026-11-07 09:31-09:52 KST, image `bcefdc0c0b` `sha256:8ff847c9…` | PASS | backup integrity ok 16/121; copy and live DB `user_version` 5, counts, states and hash `221634a8…` unchanged, FK 0; `listening`, `export_enabled: true` | required | - |
 | E8 | 13 | W8 | `backfill-reports --config /run/config.json` with the 16 `--exclude-report-id`, dry run and rerun; apply only for 0.4.x reports received under schema 4 | live DB after the switch, 2026-11-07 | PASS | 0 targets, rerun 0; apply not needed (no 0.4.x report reached schema 4); `SOURCE_NOT_REPORT` 0 | required | - |
-| E9 | 12, 14 | W9 | one observed delivered run per job on 0.4.2 (store, Gateway hash match, email, Telegram, order, verifier); rollback reading | first scheduled run 2026-11-08 08:00 KST | NOT_RUN | - | required | - |
+| E9 | 12 | W9 | one observed delivered run per job (stored report, `sha256(report.md)` = outbox = Gateway hash, attestation, report and item export states, item kind) | scheduled runs 2026-11-09 to 2026-11-11 on plugin 0.4.3, read-only on server A | FAIL | news delivered 11-09 and 11-11, business ideas 11-09, 11-10 and 11-11: 5 reports, all hashes equal, `source_kind` `report`, no `KIND_MISMATCH`, all acknowledged by server B; devops delivered none (11-09 n8n `TimeoutExecutionCancelledError` on runner cold start, 11-10 `uncertain` and absent from the Gateway, 11-11 Hermes run failure); news 11-10 stopped by the Hermes loop guard before submitting; email and Telegram not checked from sent messages | required | - |
 | E14 | 12, 14 | W9 | `update-hermes-plugin.sh` (digest match, doctor), restart, `update-cron-prompts.sh` and prompt checks, `UMask` and `__pycache__` mode, address allowlist parsed by the plugin loader | plugin 0.4.2 from `82b117685`, 2026-11-07 09:29 KST | PASS | 9/9 MATCH, doctor OK, 3 prompts OK, `UMask=0077`, `__pycache__` 0700, allowlist parses | required | - |
 | E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports`, the conflict test and `test_prompt_sends_the_stored_report_on_a_conflict` | fix round 2 commits above `b9c016f10` | PASS | 438 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
 | E16 | 12, 14 | W9 | installed files against source by SHA-256, gateway start and `UMask`, `__pycache__` modes, allowlist parsed by the plugin loader, cron prompts reference `report_path` | plugin 0.4.3 from `main` `c0bcfb511`, read-only, 2026-11-08 17:30 KST | PASS | 4/4 files match; started 09:54:07 KST, `UMask=0077`; 0700/0600; 1 valid CIDR; 3 prompts on `report_path`, none on `report_markdown` | required | - |
-| E17 | 10 | W5 | live scrape of `hermes_research_*`, loaded alert rules, provisioned dashboard, promtool alert unit test on the deployed rule hash | Prometheus and Grafana on server A, 2026-11-08 | PASS | 3 series from `node-exporter:9100`; 2 rules inactive; dashboard `hyhome-hermes-research`; promtool 3.15.1 `SUCCESS`, rule SHA-256 `869383fa…` equal; no live firing observed (E11 stays NOT_RUN) | required | - |
+| E17 | 10 | W5 | live node-exporter scrape of `hermes_research.prom`, alert firing and dashboard rendering | live scrape of `hermes_research_*`, loaded alert rules, provisioned dashboard, promtool alert unit test on the deployed rule hash; Prometheus and Grafana on server A, 2026-11-08 | PASS | 3 series from `node-exporter:9100`; 2 rules inactive; dashboard `hyhome-hermes-research`; promtool 3.15.1 `SUCCESS`, rule SHA-256 `869383fa…` equal; no live firing observed (E11 stays NOT_RUN) | required | E11 |
+| E18 | 14 | W9 | rollback reading: workload README and runbook 0053 state that a failed cutover restores the pre-switch schema 4 backup with `c05e5b88` and never attaches `c05e5b88` to a schema 5 DB; the restore test showed `c05e5b88` refusing the migrated copy | #779 documents, restore test 2026-11-06 and the 2026-11-07 backup `/data/backup-pre-schema5-20261107T003121Z.sqlite3` | PASS | documented in both; `UNSUPPORTED_SCHEMA` from `c05e5b88` on the schema 5 copy; backup integrity ok | required | - |
 
 ## Criterion Acceptance
 
@@ -523,9 +537,9 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 | 9 | pending | E4 | owner acceptance | @buenhyden |
 | 10 | pending | E5, E11, E12 | owner acceptance | @buenhyden |
 | 11 | pending | E6 | owner acceptance | @buenhyden |
-| 12 | pending | E7, E9 | owner acceptance | @buenhyden |
-| 13 | pending | E8 | owner acceptance | @buenhyden |
-| 14 | pending | E9 | owner acceptance | @buenhyden |
+| 12 | pending | E7, E9, E14, E16 | owner accepted 2026-11-11; held pending because required E9 is FAIL (devops undelivered) until a later PASS resolves it | @buenhyden |
+| 13 | accepted | E8 | owner accepted 2026-11-11 | @buenhyden |
+| 14 | accepted | E18 | owner accepted 2026-11-11 | @buenhyden |
 
 ## Review and Completion
 
