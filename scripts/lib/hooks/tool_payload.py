@@ -160,6 +160,41 @@ def _patch_edits(command: object) -> list[tuple[str, str]]:
     return edits
 
 
+_EXEC_STRING = re.compile(r'"((?:[^"\\\n]|\\.)*)"|`([^`\\$]*)`')
+
+
+def _exec_patches(source: object) -> list[str]:
+    """Patch envelopes inside a Codex code-mode `exec` call.
+
+    Codex 0.167 sends every tool through one `exec` custom tool whose input is
+    JavaScript calling `tools.apply_patch("*** Begin Patch\\n...")`. Only a
+    double-quoted JSON-compatible literal or a plain template literal is
+    decoded; a patch in any other form fails closed rather than going unseen.
+    """
+    code = source if isinstance(source, str) else None
+    if isinstance(source, dict):
+        code = next(
+            (source[k] for k in ("input", "code") if isinstance(source.get(k), str)),
+            None,
+        )
+    if code is None or "*** Begin Patch" not in code:
+        return []
+    patches: list[str] = []
+    for match in _EXEC_STRING.finditer(code):
+        if match.group(1) is not None:
+            try:
+                text = json.loads(f'"{match.group(1)}"')
+            except ValueError:
+                continue
+        else:
+            text = match.group(2)
+        if "*** Begin Patch" in text:
+            patches.append(text)
+    if len(patches) != code.count("*** Begin Patch"):
+        raise PayloadError("exec patch could not be decoded")
+    return patches
+
+
 def edit_targets(root: Path, data: dict[str, object]) -> tuple[tuple[str, str], ...]:
     """Return relative path/replacement pairs, preserving all edits to each file."""
     root = root.absolute()
@@ -168,6 +203,19 @@ def edit_targets(root: Path, data: dict[str, object]) -> tuple[tuple[str, str], 
     tool = data.get("tool_name", "")
     if not isinstance(tool, str):
         raise PayloadError("tool name must be a string")
+    if tool == "exec":
+        edits = [
+            edit
+            for patch in _exec_patches(data.get("tool_input"))
+            for edit in _patch_edits(patch)
+        ]
+        return tuple(
+            dict.fromkeys(
+                (_relative_target(root, path), text)
+                for path, text in edits
+                if _repository_edit(path)
+            )
+        )
     if tool and tool not in EDIT_TOOLS:
         return ()
     source = data.get("tool_input", {})
