@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.5.0"
+version: "1.6.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -364,7 +364,7 @@ IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/restic/r2_secret_access_k
 `.env`에 `BACKUP_OFFSITE_R2_ACCOUNT_ID`(16진수 32자)와
 `BACKUP_OFFSITE_R2_BUCKET`을 넣는다. BKP-003, BKP-004, BKP-005, account ID,
 bucket 이름을 BKP-002와 함께 [RUN-0105](../04-security-and-secrets/0105-openbao-maintenance-window.md#1인-관리자-custody-절차) 1인 관리자 custody의 계정 A에
-복사한다. BKP-001은 host `secrets/`에 있어 host 백업으로 함께 복구된다. host를 잃은
+복사한다. 이 중 하나라도 회전하면 계정 A의 사본도 바꾸고 RUN-0105 custody 기록을 새로 남긴다([POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure) 변경 사건). BKP-001은 host `secrets/`에 있어 host 백업으로 함께 복구된다. host를 잃은
 뒤의 복구가 OpenBao에 기대면 안 되므로 OpenBao에는 절대 두지 않는다. 그다음
 state repository의 chunker 설정으로 원격을 초기화하고 첫 copy를 한다:
 

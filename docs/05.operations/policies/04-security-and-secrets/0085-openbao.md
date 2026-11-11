@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.10.1"
+version: "0.11.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -216,9 +216,29 @@ host 백업에 포함한다. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계�
 잃어도 R2에서 모두 복구하려는 배치이지만(R2 원격 복구는 아직 미실행), 그 장소가 뚫리면 모든 secret과 share가 노출되고 off-host 사본을 지울 수도 있으며, host를 읽는 한 주체가 threshold를 넘는다. owner는 이 노출을
 받아들였고 rekey는 하지 않는다(RUN-0105). 이 결정은 이 예외를 닫지 않는다. 이 문서는
 결정을 기록할 뿐 그 실행이나 새 credential 처리, 이 결정을 넘는 예외 확대를 승인하지 않는다.
-기존 기록에는 **만료와 종료 조건이 없다**. 위 Exceptions의 필수 항목을 충족했다고
-표시하지 않으며 @buenhyden의 후속 결정이 필요하다. 파일을 읽거나 이동하거나
-share를 재발급해 이 문서 불일치를 자동 해결하지 않는다.
+파일을 읽거나 이동하거나 share를 재발급해 이 문서 불일치를 자동 해결하지 않는다.
+
+**위험 비례 재조정(2026-11-11 owner 결정).** 이 HOME은 관리자 1명의 개인 개발 서버다.
+사설 LAN 주소(`192.168.0.13`·`.14`)에만 열려 있고, 인터넷 쪽 터널이나 공개 포트가 없다
+(2026-11-11 host 관측. 공유기 포트포워딩이 없다는 것은 owner 진술이다). 이 전제에서 custody가
+막는 실제 위험은 탈취가 아니라 host를 잃은 뒤 R2에서 복구하지 못하는 것이다. 그래서 다음과 같이 정한다.
+
+1. **유효 기간.** custody 기록은 창마다 다시 받지 않는다. 마지막 owner-attested 기록은 아래
+   변경 사건이 생기거나 반기 확인 기한이 지날 때까지 유효하다.
+2. **변경 사건.** BKP-002~005나 Cloudflare 계정 접근의 회전·이동, unseal share의 rekey·재발급,
+   CA key 교체, 장소 A의 변경·분실, 아래 노출 전제의 변경. 하나라도 생기면 다음 window 전에
+   [1인 관리자 custody 절차](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md#1인-관리자-custody-절차)로
+   새로 기록한다.
+3. **확인 방법.** 반기마다(마지막 확인 뒤 6개월 안) host가 아닌 장치에서 장소 A의 값만으로
+   R2 snapshot 목록을 받고 파일 하나를 복원한다. 진술만으로는 복구 가능성을 보이지 못하므로
+   이 복원이 확인의 근거다.
+4. **host 보조 사본**(`/home/hyunyoun/data/hy-home.secrets`)은 선택이다. 같은 disk에 있어 실수로
+   지운 경우만 막고, 그 경우는 local Restic 백업으로도 복구된다. window의 진행 조건이 아니다.
+
+**종료 조건.** 노출 전제가 바뀌면(인터넷 공개, 터널, 다른 사용자 계정 추가) 이 재조정은 끝나고,
+custody 확인은 window마다 하는 방식으로 돌아간다. 이 예외 전체는 그 변경이나 2027-05-11 반기
+검토 중 이른 때에 다시 판단한다. share 분리(threshold)는 1인 관리자 운영에서 효과가 없으므로
+계속 예외로 둔다.
 
 ### SEC01 image acceptance
 

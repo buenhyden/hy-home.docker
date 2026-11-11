@@ -1,10 +1,10 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.9"
+version: "0.1.10"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0047"
 parent_ids:
@@ -250,6 +250,70 @@ reviewed decisions for the 89 ledger entries (the latest-version gate exits 2
 with every entry `blocked-evidence`), and per-artifact signature, provenance
 and SBOM evidence. That Task opens with its own network-scope approval. The
 FAIL and NOT_RUN rows stay as recorded.
+
+### OpenBao custody reconfirmation 2026-11-11
+
+These three records belong to the OpenBao r3 window this Task prepared (see OpenBao r3 owner acceptance 2026-11-10). SPEC-0204 TSK-0006 keeps the 2026-10-14 custody record, but its tables are frozen at the pre-generation-7 source, so later owner statements are recorded here.
+
+Before the 2026-11-11 window the owner answered four value-free questions,
+all "yes": (1) BKP-002, BKP-003, the R2 tokens (BKP-004/005) and Cloudflare
+account access have not been changed or moved since 2026-10-14; (2) the unseal
+shares and the CA key have not changed, so the host second copy at
+`/home/hyunyoun/data/hy-home.secrets` is still current; (3) place A (the
+separate desktop and the password manager account) is still reachable; (4) the
+recovery means for place A are still outside place A and the host. No W1b
+rekey and no backup-key rotation is recorded since 2026-10-14. The R2 listing
+in the 14:36 KST W0 preflight used the host's values, so it does not prove
+place A's values; the owner did not repeat the place A listing. This is the
+owner's statement; the agent read no value. The same day the SEC01 gate failed
+(Go 1.27.4, released 2026-11-10, fixes CVE-2026-97054 in net/http and eleven
+other CVEs; the image is built with Go 1.27.3), so the owner limited the window
+to W1–W3b and kept the server and Agent at r1.
+
+### OpenBao window cancelled 2026-11-11
+
+At 14:44 KST the owner cancelled the 15:45 window before any step ran (W0
+preflight at 14:36 KST: `problems: 0`; `p01_run` was only defined, nothing was
+bootstrapped or issued). W1–W3b alone would have produced nothing the next
+window can use. The daily backup already takes the OpenBao Raft snapshot: W2
+finished in the 2026-10-22 window, and no run from 2026-11-09 to 2026-11-11
+logged "OpenBao snapshot token absent", so the RUN-0105 wording that the daily
+snapshot keeps failing is out of date. W3 would stop `openbao-agent`, which by
+the abort rules stays stopped until a later W5 issues a new SecretID; it also
+needs the external cluster operator's K8s writer stop, which is not arranged;
+and the pre-upgrade snapshot must be taken right before the upgrade, so a
+snapshot from today would be retaken. The next window needs an r4 image built
+with Go 1.27.4, its scan and residual-risk acceptance, an arranged K8s writer
+stop, a new `P01_APPROVED_COMMIT`, and then W1 through W7 in one window.
+
+Later on 2026-11-11 the owner stopped and deleted the k3d cluster and paused
+the k8s integration (not retired). No k3d container runs and `k3s` is inactive;
+the empty `k3d-hyhome` Docker network and the `flannel.1`/`cni0` host
+interfaces remain. The k8s documents stay as they are. For the next OpenBao
+window this removes the K8s writer stop (no External Secrets controller
+exists); the unused Kubernetes auth mount and the ESO policy in OpenBao are
+cleaned up with that window's root, or kept if the integration resumes.
+
+### OpenBao custody proportionality decision 2026-11-11
+
+After the reconfirmation the owner asked for the custody rules to match the
+real risk of this HOME: a personal development server for one administrator,
+reachable only on private LAN addresses (`192.168.0.13`, `.14`), with no
+internet tunnel or public port (host observation 2026-11-11; no router port
+forward is the owner's statement). Here custody protects recovery from R2
+after losing the host, not against theft. The owner approved three changes,
+now in POL-0085 ("위험 비례 재조정") and RUN-0105: the custody record is no
+longer retaken for every window but stays valid until a change event (key
+rotation or move, share rekey, CA key change, place A change or loss, or a
+change to the exposure premise) or until its half-yearly check is due; that
+check is a restore of one file from R2 on a non-host device with place A's
+values only, which a statement alone cannot show; and the host second copy is
+optional and not a window condition. If the exposure premise changes, the
+per-window check returns. The share-threshold exception stays, because
+splitting shares does nothing for a single administrator. RUN-0098 and
+RUN-0021 now point to the validity rule, and RUN-0105 no longer says the
+daily OpenBao snapshot fails. The first half-yearly place A restore has not
+run yet.
 
 ## Evidence
 
