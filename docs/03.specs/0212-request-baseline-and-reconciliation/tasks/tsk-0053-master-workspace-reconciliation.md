@@ -1,8 +1,8 @@
 ---
 title: "Master Workspace Reconciliation Task"
-version: "0.1.1"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-11"
 layer: "specs"
@@ -58,6 +58,7 @@ outside the stated boundary.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0053 | draft | ready | #owner-approved-local-execution |
 | SPEC-0212-TSK-0053 | ready | in-progress | #owner-approved-local-execution |
+| SPEC-0212-TSK-0053 | in-progress | completed | #owner-follow-up-decisions-2026-11-11 |
 
 ### Assessment boundary
 
@@ -503,9 +504,44 @@ REASSESS_LATEST_EVIDENCE_NOT_AUTO_REOPEN until the owner gives a scope.
 - Review residual: the new check covers top-level identity spaces only.
   Requirement child `reserved_history` lists are not compared, so removing a
   child requirement ID unreserved still passes. That is a W05 follow-up, not
-  part of this change. Untracked, git-ignored `.pyc` caches of five removed test
-modules remain under `tests/`. No coverage is credited to them, and this
-review deleted none of them.
+  part of this change.
+
+Untracked, git-ignored `.pyc` caches of five removed test modules remain under
+`tests/`. No coverage is credited to them, and this review deleted none of
+them.
+
+### Owner follow-up decisions 2026-11-11
+
+The owner then asked for the requirement child-space check, negative tests for
+move, recovery and partial removal, the E33 matcher change, and closure of this
+Task.
+
+- Child spaces: commit `725eccbde` extends `identity-retired-not-reserved` to
+  requirement FR/NFR/IF child spaces, read from requirement bodies.
+  - Only numbers within a child space's `high_water` count. Commit
+    `96028cb8f` removed a malformed cross-reference to the unissued
+    REQ-0010-FR-0011, and that is not a retirement.
+  - Review answer `d80854901` scans the same identified requirement bodies on
+    both sides, through the preserved origin path. A README mention or an
+    archived requirement therefore no longer reads as a retirement.
+  - The corpus has no unreserved gap in any of the 81 child spaces.
+  - Replays of nine historical commits flag only the two known
+    operations-subject violations.
+- Negative tests: `test_retirement_check_spares_moves_and_partial_removal`
+  covers each case below. The existing
+  `test_deleted_package_identity_requires_exact_git_recovery` already requires
+  recovery to yield no finding at all.
+  - A moved ADR.
+  - A package that loses one Task.
+  - A README mention.
+  - An unissued mention.
+  - A preserved requirement.
+  - The child removal itself, positive and reserved.
+- RED proofs: each new assertion failed against the previous code or under an
+  in-memory patch.
+- E33: implemented and recorded under SPEC-0264, with E35 and three security
+  review rounds. Its live Codex delivery and criterion 8 stay with that owner,
+  pending the owner's trust of the new hook hash.
 
 ## Evidence
 
@@ -520,6 +556,8 @@ review deleted none of them.
 | Package v14.2 delta intake | 106 | W111 | requirement-owner-assessment | v14.2 input sha256 dc348e7f, main 1d1085adf, PR metadata 935-952 | PASS | QA-17 plus five QA-ALIGN clauses assessed (KEEP/DEFER); backup contract unittest 4/4 OK; semantic, W05 crosswalk and PR diff review not done | required | - |
 | Identity retirement check | 106 | W111 | identity-retirement-regression | Commit 72571d481 with test_identity_history, test_registry, check-active and two historical replays | PASS | New test RED with the finding filtered and GREEN unpatched; check-active selected534 violations0; 630e53662 and 61aca993f now fail, d1388968c passes | optional | - |
 | Identity retirement review | 106 | W111 | independent-source-review | Fresh-context code-reviewer of 72571d481 | PASS | APPROVED, no false positive: observed is the full tracked corpus, moves and recovery keep numbers; residual: requirement child spaces are not covered and three negative tests (move, recovery, partial package) are absent | optional | - |
+| Child-space retirement check | 106 | W111 | identity-retirement-regression | Commits 725eccbde and d80854901 with test_identity_history, test_registry, check-active and nine historical replays | PASS | 31 identity tests OK; check-active selected534 violations0; only 630e53662 and 61aca993f flagged; RED against prior code | optional | - |
+| Child-space retirement review | 106 | W111 | independent-source-review | Fresh-context code-reviewer of 725eccbde, then scoped re-review of d80854901 | PASS | Round 1 CHANGES_REQUIRED (archived path, asymmetric scan); round 2 APPROVED with both resolved | optional | - |
 | Source implementation handoff | 106 | W111 | source-handoff | Final SPEC-0270 source at current c463e4ae5 plus task-owned diff | PASS | Memory/capacity/search/backup implementation; parent selected135 PASS and3 native NOT_RUN; branch coverage81.41 percent, combined89.125 percent; code/security approved, criterion acceptance remains with SPEC-0270 | optional | - |
 
 ## Criterion Acceptance
@@ -530,9 +568,18 @@ review deleted none of them.
 
 ## Review and Completion
 
-In progress. Narrow completed scopes remain protected; unresolved semantic,
-source, native, artifact and operational obligations keep exact owners and
-resume conditions. This Task cannot close another owner's criterion.
+Completed on 2026-11-11. The owner accepted criterion 106 and asked for this
+Task to be closed; see Owner follow-up decisions 2026-11-11. Every required
+Evidence row is PASS or is resolved by a later PASS. Residuals keep their
+named owners and are not closed here:
+
+- The 1,250-line atomization and the 14,028 pair judgments, which wait for an
+  owner scope.
+- C03a, on hold.
+- SPEC-0264 criterion 8 and its live Codex delivery.
+- SPEC-0270 and the archive-retirement packages.
+
+This Task does not close another owner's criterion.
 
 ## Related Documents
 

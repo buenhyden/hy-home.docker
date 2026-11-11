@@ -21,7 +21,7 @@
             "timeout": 30
           }
         ],
-        "matcher": "Bash|apply_patch"
+        "matcher": "Bash|apply_patch|exec"
       }
     ],
     "PostToolUse": [
@@ -33,7 +33,7 @@
             "timeout": 30
           }
         ],
-        "matcher": "apply_patch"
+        "matcher": "apply_patch|exec"
       }
     ],
     "Stop": [

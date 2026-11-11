@@ -55,6 +55,75 @@ class NativeEditPayloadTests(unittest.TestCase):
             edit_targets(self.root, data),
         )
 
+    def test_codex_exec_patch_maps_to_the_same_targets(self) -> None:
+        """Codex 0.167 code mode wraps apply_patch in one `exec` call (E34)."""
+        absolute = str(self.root / "infra/README.md")
+        code = (
+            "const r = await tools.apply_patch("
+            + json.dumps(
+                f"*** Begin Patch\n*** Update File: {absolute}\n@@\n+x\n*** End Patch"
+            )
+            + ");\ntext(r);\n"
+        )
+        template = "await tools.apply_patch(`*** Begin Patch\n*** Add File: a.txt\n+a\n*** End Patch`)"
+        cases = {
+            "raw string input": (code, (("infra/README.md", "x"),)),
+            "object input": ({"input": code}, (("infra/README.md", "x"),)),
+            "template literal": ({"input": template}, (("a.txt", "a"),)),
+            "no patch": ({"input": "await tools.exec_command({cmd: 'ls'})"}, ()),
+            "ordinary words": (
+                {
+                    "input": "await tools.exec_command({cmd: 'git commit -m "
+                    '"Call this. Apply with care; self.check"\'})'
+                },
+                (),
+            ),
+        }
+        for label, (tool_input, expected) in cases.items():
+            with self.subTest(label):
+                self.assertEqual(
+                    expected,
+                    edit_targets(
+                        self.root, {"tool_name": "exec", "tool_input": tool_input}
+                    ),
+                )
+        patch = '"*** Begin Patch\\n*** Add File: a.txt\\n+a\\n*** End Patch"'
+        for label, tool_input in {
+            "single-quoted": "tools.apply_patch('*** Begin Patch\\n*** Add File: a\\n+a\\n*** End Patch')",
+            "interpolated": "tools.apply_patch(`*** Begin Patch\n*** Add File: ${p}\n+a\n*** End Patch`)",
+            "split marker": 'tools.apply_patch("*** Begin " + "Patch\\n*** Add File: a\\n+a\\n*** End Patch")',
+            "variable": f"const p = {patch}; await tools.apply_patch(p)",
+            "alias": f"const f = tools.apply_patch; await f({patch})",
+            "optional call": f"await tools?.apply_patch({patch})",
+            "dynamic access": f'await tools["apply" + "_patch"]({patch})',
+            "tools as value": f"await Object.values(tools)[0]({patch})",
+            "reflection": f'await Reflect.get(tools, "apply" + "_patch")({patch})',
+            "destructuring": f"const {{apply_patch: f}} = tools; await f({patch})",
+            "eval": "eval('tools.apply' + '_patch(p)')",
+            "template CR header": "tools.apply_patch(`*** Begin Patch\n*** Add File: a\n+x\r*** Add File: b\n+y\n*** End Patch`)",
+            "escaped tools": f"await \\u0074ools.apply\\u005fpatch({patch})",
+            "constructor": "({}).constructor.constructor('return to' + 'ols')()",
+            "arrow constructor": "(() => 0).constructor('return t' + 'ools')()",
+            "unknown input shape": {"a": "x", "b": "y"},
+            "template U+2028": "tools.apply_patch(`*** Begin Patch\n*** Add File: a\n+x\u2028y\n*** End Patch`)",
+            "identifier escape": f"await tools.apply\\u005fpatch({patch})",
+            "mention in text": "await tools.exec_command({cmd: 'rg apply_patch'})",
+            "outside root": code.replace(absolute, "/etc/passwd"),
+        }.items():
+            with self.subTest(label), self.assertRaises(PayloadError):
+                edit_targets(self.root, {"tool_name": "exec", "tool_input": tool_input})
+
+    def test_codex_exec_inspection_stays_bounded(self) -> None:
+        import time
+
+        unterminated = 'tools.apply_patch("' + '\\"' * 20
+        for count in (64, 65):
+            code = unterminated * count + "x" * (900 * 1024)
+            started = time.monotonic()
+            with self.subTest(count=count), self.assertRaises(PayloadError):
+                edit_targets(self.root, {"tool_name": "exec", "tool_input": code})
+            self.assertLess(time.monotonic() - started, 2.0)
+
     def test_session_scratchpad_is_not_a_repository_target(self) -> None:
         scratch = "/tmp/claude-1000/-home-user-repo/0123abcd/scratchpad/run/final.md"
         self.assertEqual(

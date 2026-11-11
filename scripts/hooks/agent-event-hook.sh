@@ -163,7 +163,7 @@ if (project / "graphify-out" / "graph.json").is_file() and (not tool_name or too
         ".agents/governance, and stage docs."
     )
 
-edit_tools = {"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"}
+edit_tools = {"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch", "exec"}
 if not tool_name or tool_name in edit_tools:
     def service_marker_for(short_path: str) -> bool:
         target = (project / short_path).resolve()
