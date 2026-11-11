@@ -266,7 +266,8 @@ otelcol.processor.transform "hermes_metrics" {
     context = "datapoint"
     statements = [
       `set(attributes["service_name"], resource.attributes["service.name"])`,
-      `keep_keys(attributes, ["service_name", "status", "outcome", "job_kind"])`,
+      // hermes-otel bounds each instrument to these attribute keys.
+      `keep_keys(attributes, ["service_name", "platform", "reason", "type", "model", "provider", "token_type", "query_source", "api_mode", "cache_result", "cost_status", "tool_name", "gen_ai.tool.name", "gen_ai.operation.name", "gen_ai.provider.name", "gen_ai.request.model", "gen_ai.response.model", "gen_ai.token.type", "error.type", "error_type", "status_class", "retryable", "status", "role", "choice", "outcome"])`,
     ]
   }
 
@@ -304,7 +305,7 @@ prometheus.relabel "hermes_metrics" {
 
   rule {
     action = "labelkeep"
-    regex  = "__name__|service_name|instance|profile|platform|reason|api_mode|cache_result|type|tool_name|token_type|query_source|span_kind|cost_status|gen_ai_request_model|gen_ai_response_model|gen_ai_tool_name|le|quantile"
+    regex  = "__name__|service_name|instance|platform|reason|type|model|provider|token_type|query_source|api_mode|cache_result|cost_status|tool_name|gen_ai_tool_name|gen_ai_operation_name|gen_ai_provider_name|gen_ai_request_model|gen_ai_response_model|gen_ai_token_type|error_type|status_class|retryable|status|role|choice|outcome|le|quantile"
   }
 }
 

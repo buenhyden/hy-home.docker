@@ -274,6 +274,9 @@ class QualityObservabilityContractTest(unittest.TestCase):
 HERMES_DASHBOARD = (
     ROOT / "infra/06-observability/grafana/dashboards/Applications/hermes-research.json"
 )
+AGENT_DASHBOARD = (
+    ROOT / "infra/06-observability/grafana/dashboards/Applications/hermes-agent.json"
+)
 HERMES_SECRET = "hermes_otlp_token"
 
 
@@ -323,8 +326,10 @@ class HermesObservabilityContractTest(unittest.TestCase):
             self.block('otelcol.exporter.loki "hermes" {'),
         )
         transform = self.block('otelcol.processor.transform "hermes_metrics" {')
+        # The datapoint keep list is what reaches Prometheus: it holds the
+        # bounded attribute keys hermes-otel defines per instrument.
         self.assertIn(
-            'keep_keys(attributes, ["service_name", "status", "outcome", "job_kind"])',
+            'keep_keys(attributes, ["service_name", "platform", "reason", "type", "model", "provider", "token_type", "query_source", "api_mode", "cache_result", "cost_status", "tool_name", "gen_ai.tool.name", "gen_ai.operation.name", "gen_ai.provider.name", "gen_ai.request.model", "gen_ai.response.model", "gen_ai.token.type", "error.type", "error_type", "status_class", "retryable", "status", "role", "choice", "outcome"])',
             transform,
         )
         self.assertIn("otelcol.processor.batch.hermes_metrics.input", transform)
@@ -343,7 +348,7 @@ class HermesObservabilityContractTest(unittest.TestCase):
         # hermes-otel bounds each instrument to these attribute keys (dots
         # become underscores in Prometheus); anything else is dropped.
         self.assertIn(
-            'regex  = "__name__|service_name|instance|profile|platform|reason|api_mode|cache_result|type|tool_name|token_type|query_source|span_kind|cost_status|gen_ai_request_model|gen_ai_response_model|gen_ai_tool_name|le|quantile"',
+            'regex  = "__name__|service_name|instance|platform|reason|type|model|provider|token_type|query_source|api_mode|cache_result|cost_status|tool_name|gen_ai_tool_name|gen_ai_operation_name|gen_ai_provider_name|gen_ai_request_model|gen_ai_response_model|gen_ai_token_type|error_type|status_class|retryable|status|role|choice|outcome|le|quantile"',
             relabel,
         )
         self.assertIn("max_cache_size = 2048", relabel)
@@ -379,8 +384,42 @@ class HermesObservabilityContractTest(unittest.TestCase):
         self.assertEqual(["OBS-016"], [row["id"] for row in rows])
         self.assertEqual("Token", rows[0]["value_type"])
 
-    def test_dashboard_has_loki_logs_and_tempo_trace_panels(self) -> None:
+    def test_research_dashboard_keeps_only_report_panels(self) -> None:
         panels = json.loads(HERMES_DASHBOARD.read_text(encoding="utf-8"))["panels"]
+        self.assertFalse([p for p in panels if p["datasource"]["uid"] != "Prometheus"])
+
+    def test_agent_dashboard_has_the_requested_panels(self) -> None:
+        dashboard = json.loads(AGENT_DASHBOARD.read_text(encoding="utf-8"))
+        self.assertEqual("hyhome-hermes-agent", dashboard["uid"])
+        self.assertTrue(dashboard["description"].startswith("Local dashboard"))
+        panels = {p["title"]: p for p in dashboard["panels"]}
+        expected = {
+            "Active sessions": ("stat", "hermes_session_count_total"),
+            "Loop exit reasons": ("piechart", "hermes.turn.exit_reason"),
+            "Cumulative cost (USD)": ("stat", "hermes_cost_usage"),
+            "Tool execution latency (p95)": (
+                "timeseries",
+                "gen_ai_execute_tool_duration_seconds_bucket",
+            ),
+            "Time to first token (TTFT)": (
+                "heatmap",
+                "hermes_api_time_to_first_chunk_seconds_bucket",
+            ),
+            "Input/output token throughput": ("timeseries", "hermes_token_usage_total"),
+        }
+        for title, (kind, needle) in expected.items():
+            with self.subTest(panel=title):
+                self.assertEqual(kind, panels[title]["type"])
+                exprs = json.dumps(panels[title]["targets"])
+                self.assertIn(needle, exprs)
+                self.assertIn("hermes-agent", exprs)
+        self.assertIn("token_type", json.dumps(panels["Input/output token throughput"]))
+        self.assertIn(
+            "gen_ai_tool_name", json.dumps(panels["Tool execution latency (p95)"])
+        )
+
+    def test_agent_dashboard_has_loki_logs_and_tempo_trace_panels(self) -> None:
+        panels = json.loads(AGENT_DASHBOARD.read_text(encoding="utf-8"))["panels"]
         logs = [p for p in panels if p["type"] == "logs"]
         traces = [p for p in panels if p["datasource"]["uid"] == "Tempo"]
         self.assertEqual(1, len(logs))

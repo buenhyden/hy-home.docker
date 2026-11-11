@@ -149,7 +149,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 | 05-messaging | `kafka-exporter` | `kafka-exporter` | `Infrastructure/kafka-consumer-lag`, `Infrastructure/containers` |  |
 | 05-messaging | `kafka-init` | none | `Infrastructure/containers` | container metrics and logs only |
 | 06-observability | `alertmanager` | `alertmanager` | `Observability/alertmanager-overview`, `Infrastructure/containers` |  |
-| 06-observability | `alloy` | `alloy` | `Observability/alloy-controller`, `Observability/alloy-resources`, `Observability/alloy-opentelemetry`, `Observability/alloy-loki`, `Infrastructure/containers` |  |
+| 06-observability | `alloy` | `alloy` | `Observability/alloy-controller`, `Observability/alloy-resources`, `Observability/alloy-opentelemetry`, `Observability/alloy-loki`, `Infrastructure/containers`, `Applications/hermes-agent` | `Applications/hermes-agent`는 host의 Hermes agent가 hermes-otel plugin으로 Alloy 인증 OTLP 수신기(127.0.0.1:4320)에 보낸 metric·log·trace를 보여 줍니다. |
 | 06-observability | `cadvisor` | `cadvisor` | `Infrastructure/containers` |  |
 | 06-observability | `dcgm-exporter` | `dcgm-exporter` | `Infrastructure/dcgm-exporter`, `Infrastructure/containers` |  |
 | 06-observability | `gatus` | `gatus` | `Observability/gatus`, `Infrastructure/containers` |  |
@@ -243,6 +243,7 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 | `Applications/airflow-db` | `hyhome-airflow-db` | Local dashboard: no external dashboard matches airflow metadata database (read-only) |
 | `Applications/flower` | `hyhome-flower` | Local dashboard: no external dashboard matches flower |
 | `Applications/hermes-research` | `hyhome-hermes-research` | Local dashboard: no external dashboard matches the Hermes plugin textfile metrics (`hermes_research.prom`) |
+| `Applications/hermes-agent` | `hyhome-hermes-agent` | Local dashboard: no external dashboard matches the hermes-otel metric names and the Alloy Hermes receiver labels |
 | `Applications/n8n-system-health` | `applications-n8n-system-health` | grafana.com dashboard 24474 revision 1 (2025-11-26) |
 | `Applications/n8n-workflow-analytics` | `applications-n8n-workflow-analytics` | grafana.com dashboard 24475; datasource set to the read-only n8n-db |
 | `Applications/ollama` | `applications-ollama` | local: no external dashboard matches lucabecker42/ollama-exporter |

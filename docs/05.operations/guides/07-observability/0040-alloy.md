@@ -65,7 +65,7 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 ### 정상 사용
 
 - 애플리케이션 instrumentation은 가능한 OTLP endpoint를 쓴다. gRPC는 `alloy:4317`, HTTP는 `alloy:4318`이다. 현재 선언된 내부 송신자는 n8n main과 `n8n-worker`(OTLP/HTTP `alloy:4318`, `obs_net`)다.
-- Hermes agent(host systemd user unit `hermes-gateway.service`, 컨테이너 아님)는 `config.home.alloy`의 인증 수신기로만 보낸다. Hermes 설정 `monitoring.export.otlp`의 endpoint를 `http://127.0.0.1:4320`으로 두고 `Authorization: Bearer` header 값을 `secrets/observability/alloy/hermes_otlp_token.txt`에서 읽게 한다. `monitoring.gateway_health_export`도 같은 endpoint를 쓴다. Metric은 누적(cumulative) temporality로 export해야 하며, 로그는 `{service_name=~"hermes-(agent|gateway)"}`, trace는 `service.name =~ "hermes-(agent|gateway)"`로 Grafana `Applications/hermes-research`에서 본다. token 파일은 소유자가 만들고 값은 어디에도 쓰지 않는다.
+- Hermes agent(host systemd user unit `hermes-gateway.service`, 컨테이너 아님)는 `config.home.alloy`의 인증 수신기로만 보낸다. Hermes 설정 `monitoring.export.otlp`의 endpoint를 `http://127.0.0.1:4320`으로 두고 `Authorization: Bearer` header 값을 `secrets/observability/alloy/hermes_otlp_token.txt`에서 읽게 한다. `monitoring.gateway_health_export`도 같은 endpoint를 쓴다. Metric은 누적(cumulative) temporality로 export해야 하며, 로그는 `{service_name=~"hermes-(agent|gateway)"}`, trace는 `service.name =~ "hermes-(agent|gateway)"`로 Grafana `Applications/hermes-agent`에서 본다. token 파일은 소유자가 만들고 값은 어디에도 쓰지 않는다.
 - Pipeline debugging은 Alloy UI `https://alloy.${DEFAULT_URL}`에서 한다. **Graph View**에서 component 연결과 error state를, **Component Details**에서 target, receiver, exporter 상태를 본다.
 - 설정이나 collector health만으로 전달 성공을 판정하지 않는다. backend에서 실제 수신을 확인한다.
 
