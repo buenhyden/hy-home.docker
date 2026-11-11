@@ -1,6 +1,6 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.5.5"
+version: "0.5.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -945,6 +945,46 @@ On 2026-11-10 the owner (@buenhyden) handed the Python dependency audit
 capability (pip-audit is not installed) to P08 supply-chain work and accepted
 criterion 73. The audit row stays NOT_RUN and is optional for this Task.
 
+### HOME activation (2026-11-11)
+
+The owner approved each step on 2026-11-11 after the read-only window above.
+
+- DB timeout: PR #946 gave `opsflow_notifier` a 5 s `statement_timeout` in
+  `project.py`; the same value was applied on HOME `dev-pg` at 14:57 KST
+  (`ALTER ROLE opsflow_notifier IN DATABASE opsflow_dev SET statement_timeout = '5s'`)
+  and read back; the other opsflow roles stay at 30 s.
+- Step 1: the public workflow passed `build_workflow.py --check` and was
+  imported inactive as `WSyLpKMPsWUaS0dX`. The owner created the
+  `opsflow-dev-notifier` (Postgres) and `mailpit-internal-only` (SMTP)
+  credentials and bound them to the four Postgres nodes and Capture Mail. The
+  n8n UI connection test fails by design, because main `n8n` is on neither
+  network.
+- Step 2: the owner ran the capture overlay at 15:09 KST. `n8n-worker` joined
+  `dev_data_net` and `opsflow_capture_net` (internal) but not `mail_net`, and
+  reached `dev-pg:5432` and `mailpit:1025`. PR #948 folds these networks into
+  base Compose and narrows the DB path to a dedicated `opsflow_notifier_db_net`
+  after a security review; the HOME recreate for that is a separate approval.
+- Step 3, first run (15:13 KST): executions 141, 143 and 144 failed with
+  `OPSFLOW_INVALID_CREDENTIAL`, which `transportOptions()` raises before any
+  SMTP connection. Outbox 1 went to `unknown` and Mailpit stayed at 0. The
+  owner fixed the credential (Disable STARTTLS on, empty user, password and
+  client host name). The owner ran `reconcile_notification(1, 'not_sent', …)`
+  as `opsflow_migrator` with evidence SHA-256 `a166e34d…6b1cc7`; outbox 1 went
+  to `retry`. The migrator password appeared in the command the owner pasted
+  into the agent conversation; the owner chose not to rotate it (DEV-only role,
+  LAN-only host).
+- Step 3, second run (15:32 KST): execution 150 succeeded; outbox 1 reached
+  `accepted_by_smtp` on attempt 2 and Mailpit holds exactly one message
+  (`DEV manifest publication`, `notifier@opsflow.invalid` to
+  `manifest@opsflow.invalid`). The workflow was unpublished; one more poll
+  (151) found nothing and no duplicate was sent.
+- Step 4 (15:34 KST): `docker compose restart n8n-worker` came back healthy in
+  22 s; after 90 s the Bull keys were all `none`, no execution was
+  non-terminal or `crashed`, and the worker kept its networks.
+- Residual: Mailpit's UI/API (8025) is reachable from `n8n-worker` over
+  `opsflow_capture_net` without authentication. It holds only DEV capture mail
+  and delivers nothing outside; recorded in RUN-0053 by PR #948.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -1019,6 +1059,11 @@ criterion 73. The audit row stays NOT_RUN and is optional for this Task.
 | HOME producer database check | 73 | W78 | Read-only database list on HOME `dev-pg` | HOME `dev-pg`, 2026-11-08 | FAIL | `platform_dev` absent, so no outbox exists for the notifier; HOME install blocked on the P04 producer | optional | - |
 | HOME producer database check, corrected name | 73 | W78 | Read-only database list on HOME `dev-pg` | HOME `dev-pg`, 2026-11-08; producer input `pg/provision/opsflow.json` | FAIL | The notifier reads `opsflow_dev`, not `platform_dev`; `opsflow_dev` is absent too, and its role credentials are not issued (`password_secrets: null`); HOME install still blocked on the P04 producer | optional | - |
 | HOME activation preconditions 2026-11-11 | 75 | W80 | Queue, non-terminal execution, clock skew, DB timeout and outbox readback before activation | HOME, 2026-11-11 14:26 KST | NOT_RUN | Queue keys all `none`, no non-terminal execution, DB-to-worker skew 0.088 s, outbox `pending` 1; but `opsflow_notifier` has `statement_timeout=30s` and the workflow sets no lower one, which does not fit the 5 s ack budget the README requires. Activation was not attempted; the owner chose read-only for this window. | optional | - |
+| HOME notifier statement timeout 2026-11-11 | 75 | W80 | `pg_db_role_setting` readback after the ALTER ROLE | HOME, 2026-11-11 14:57 KST | PASS | `opsflow_notifier` `statement_timeout=5s`; migrator, ingest and reader stay 30s. See HOME activation (2026-11-11). | optional | - |
+| HOME notifier import and capture networks 2026-11-11 | 75 | W80 | Inactive import, credential binding readback and worker reachability | HOME, 2026-11-11 15:02–15:10 KST | PASS | Workflow `WSyLpKMPsWUaS0dX` inactive with both credentials bound; worker reaches `dev-pg:5432` and `mailpit:1025`, not on `mail_net`. | optional | - |
+| HOME notifier first activation 2026-11-11 | 75 | W80 | One-claim delivery through Mailpit | HOME, 2026-11-11 15:13 KST | FAIL | `OPSFLOW_INVALID_CREDENTIAL` before any SMTP connection; outbox 1 `unknown`, Mailpit 0; reconciled `not_sent` by the owner as `opsflow_migrator`. | optional | - |
+| HOME notifier one-claim delivery 2026-11-11 | 75 | W80 | One-claim delivery through Mailpit | HOME, 2026-11-11 15:32 KST | PASS | Execution 150 success; outbox 1 `accepted_by_smtp` (attempt 2); Mailpit exactly one message; no duplicate after unpublish. | optional | HOME notifier first activation 2026-11-11 |
+| HOME notifier worker restart drill 2026-11-11 | 75 | W80 | `docker compose restart n8n-worker`, 90 s wait, queue and execution readback | HOME, 2026-11-11 15:34–15:36 KST | PASS | Healthy in 22 s; Bull keys `none`; no non-terminal or crashed execution; networks kept. | optional | - |
 
 ## Criterion Acceptance
 
