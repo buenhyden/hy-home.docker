@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.45.0"
+version: "1.47.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -133,6 +133,12 @@ W111 in TSK-0053 assesses the108 master requirements and supplements and
 owns scoped current-guidance corrections. SPEC-0270 separately owns the
 approved memory capacity/search/backup follow-up. The concurrently issued
 TSK-0052 owns the supply-chain successor criteria104/105/W109-W110.
+
+W112 in TSK-0054 diagnoses and fixes the failing Hermes `devops` daily brief;
+configuration outside the repository stays an owner decision.
+
+W113 in TSK-0055 adds the authenticated Hermes OTLP ingest path to Alloy and
+the Hermes dashboard; Hermes configuration and the token value stay owner actions.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -272,6 +278,8 @@ Secret access or remote integration.
 | W109 | 104 | Give every current ledger entry a fresh review and reviewed decision from official sources | None | TSK-0052 | `security_update_gate` exit 0, or each unreviewable entry recorded as a residual |
 | W110 | 105 | Bind each selected artifact to its own signature, provenance and SBOM evidence | W109 | TSK-0052 | Per-artifact Cosign or publisher verification receipts; missing material recorded |
 | W111 | 106 | Assess108 master requirements and supplements; align current guidance and preserve residual owners | None | TSK-0053 | Task-owned assessment, unchanged terminal bodies, metadata/links/lifecycle and independent review |
+| W112 | 107 | Diagnose and restore the scheduled Hermes `devops` daily brief | None | TSK-0054 | One scheduled run submitted and its alerts resolved, or the external cause recorded |
+| W113 | 108 | Collect host-run Hermes OTLP traces, logs and gateway metrics through an authenticated Alloy receiver | None | TSK-0055 | Receiver and route tests, dashboard contract, then one live trace, log and metric readback after the approved apply |
 
 ### Current v30 continuation and delivery
 
