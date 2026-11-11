@@ -1,10 +1,10 @@
 ---
 title: "Master Workspace Reconciliation Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0053"
 parent_ids:
@@ -365,6 +365,60 @@ and the user source under `.agents/skills`; they are not certified equivalent.
 The five superpowers entries were read as source metadata under package7.0.1,
 not invoked. Missing-root metadata does not prove unsupported runtime features.
 
+### Package v14.2 delta intake 2026-11-11
+
+The user supplied the v14.2 W00 intake prompt on 2026-11-11 with the package
+at `_workspace/workspace_execution_tasks/` (git-ignored, read-only reference
+data). The prior `_workspace/governance_prompt/` package is ABSENT locally, so
+this intake reuses the 108-row assessment above as recorded and does not
+re-derive it. Workspace root and Git top level are both this repository;
+branch main at `1d1085adf`, clean index and worktree, one worktree, no open
+PR. The v14.2 original input SHA-256 is
+`dc348e7fc67f77ab8667cc4b1eecb50dbac2857d30617eff1246dd23d8748d23`.
+
+The delta from the 108-row denominator is QA-17, a common ID that the earlier
+105-ID declaration omitted, and its five QA-ALIGN supplement clauses. These
+clauses are supplements, not separate completion counts. The original line 229
+reuses the anchor `qa-09` for QA-17. That is a defect in the source, and it is
+preserved unedited.
+
+| ID | Owner aliases | Action | Bounded observation or residual |
+| --- | --- | --- | --- |
+| QA-17 | F,G | KEEP/DEFER | Section 3 retirement and failure rules and section 7 gate ownership already bind checks to their canonical owners; the per-check QA-C01-C15 owner-to-test crosswalk is not done (W05 handoff) |
+| QA-ALIGN-01 | F | DEFER | Per-check contract-owner trace not done; unverified test expectations stay UNVERIFIED, not policy |
+| QA-ALIGN-02 | F | DEFER | No validator or fixture contract gap reproduced in this intake; no change |
+| QA-ALIGN-03 | F,G | KEEP | Leaf-equivalence and unique-guarantee retention already in section 7 |
+| QA-ALIGN-04 | G,I | DEFER | Hook/CI wiring belongs to W06 and runs after W05 defines the gaps |
+| QA-ALIGN-05 | D | KEEP | Task Evidence `Resolves` and acceptance separation already contracted |
+
+Merged PRs since the `c463e4ae5` reconciliation, read as metadata only (base,
+head and merge commit; diffs and checks not reviewed):
+
+| PR | Head | Merge | Current owner state read from source |
+| --- | --- | --- | --- |
+| 935 | codex/tsk-0052-supply-chain-evidence | 8c55be479 | TSK-0052 in-progress |
+| 936, 937 | docs/tsk-0054, docs/tsk-0055 | 27d780a29, d5dfee003 | TSK-0054/0055 draft |
+| 938 | fix/restic-daily-backup-ungated | 6a1c3800a | Daily `backup` and offsite copy carry no memory admission; only `budget-backup` calls `require_memory_admission` |
+| 939-944, 946 | Hermes OTLP, dashboard, timeout and transport fixes | 3151b2194..0c85825b8 | TSK-0055 criterion 108 pending |
+| 940 | fix/memory-export-capacity-warning | 7d75ce3b7 | SPEC-0270 criteria 1-6 pending |
+| 945, 947, 949 | window, custody and notifier-activation evidence | cc5ba6283, 718dfce96, 681d7cb0a | Not re-read in this intake |
+| 948 | fix/notifier-capture-base | 7389fdd4a | Base Compose move preserved; DATA-0096 not regenerated |
+| 950 | docs/spec-0265-accept-12-14 | 602656a52 | Criteria 13/14 accepted; 12 pending on required E9 FAIL |
+| 951 | docs/spec-0264-codex-recheck | 6bf5221c0 | E32 PASS resolves E28; E33 delivery FAIL; criterion 8 pending |
+| 952 | fix/hermes-redrive-uncertain | 1d1085adf | Not re-read in this intake |
+
+Protected and not reopened: the #938 daily backup path, TSK-0055 criterion 108
+pending, SPEC-0264 E33 FAIL, SPEC-0265 criterion 12 pending, and the archive
+residual owners listed above. OPEN-01/02 (1,250-line atomization and the 14,028
+pair judgments) keep their recorded state. The v14.2 package's own structure
+checks are not product evidence.
+
+Handoffs, without starting the receiving work: W05 receives the QA-17 and
+QA-ALIGN-01/02 crosswalk, with the QA-C01-C15 cases as reference data. W06
+receives QA-ALIGN-04 once W05 names a concrete gap. The SPEC-0264 owner keeps
+the E33 Codex `exec` matcher follow-up. No product source changed in this
+intake.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -375,6 +429,7 @@ not invoked. Missing-root metadata does not prove unsupported runtime features.
 | Document source verification | 106 | W111 | metadata-links-lifecycle | Current scoped documents after c463e4ae5 ownership reconciliation | PASS | Metadata selected12 violations0; corpus lifecycle0 and occupancy0; alignment908 documents/8253 links failures0, warnings0 | required | Current document verification |
 | Independent reconciliation review | 106 | W111 | independent-document-review | Scoped final diff | NOT_RUN | Awaiting read-only reviewer | required | - |
 | Final reconciliation review | 106 | W111 | independent-document-review | Current c463e4ae5 ownership, source-protection and document diff | PASS | Independent governance/document review approved; terminal TSK-0043 and TSK-0051 unchanged; current source implementation evidence remains SPEC-0270 | required | Independent reconciliation review |
+| Package v14.2 delta intake | 106 | W111 | requirement-owner-assessment | v14.2 input sha256 dc348e7f, main 1d1085adf, PR metadata 935-952 | PASS | QA-17 plus five QA-ALIGN clauses assessed (KEEP/DEFER); backup contract unittest 4/4 OK; semantic, W05 crosswalk and PR diff review not done | required | - |
 | Source implementation handoff | 106 | W111 | source-handoff | Final SPEC-0270 source at current c463e4ae5 plus task-owned diff | PASS | Memory/capacity/search/backup implementation; parent selected135 PASS and3 native NOT_RUN; branch coverage81.41 percent, combined89.125 percent; code/security approved, criterion acceptance remains with SPEC-0270 | optional | - |
 
 ## Criterion Acceptance
