@@ -476,7 +476,34 @@ A third pass on the same day closed the test-only part:
   call; nested tool calls are runtime calls. It does not state whether hooks
   fire for nested calls, and the installed CLI is 0.166.0. E33 stays FAIL and
   the dispatch question stays UNVERIFIED with the SPEC-0264 owner; no hook
-  setting or trust changed. Untracked, git-ignored `.pyc` caches of five removed test
+  setting or trust changed.
+
+### Owner decisions 2026-11-11
+
+On 2026-11-11 the owner decided the open items in this chat: accept criterion
+106, approve the E33 follow-up, re-review and then implement C04b, hold C03a,
+and push the branch with a PR. The owner also named the 1,250-line atomization
+and the 14,028 pair judgments without stating an action. Those stay
+REASSESS_LATEST_EVIDENCE_NOT_AUTO_REOPEN until the owner gives a scope.
+
+- C04b: the re-review found a real defect. Commits `630e53662` (nginx
+  retirement) and `61aca993f` (supabase lab) removed operations-subject 11 and
+  29 without adding them to `reserved_history`. A corpus scan found no other
+  number at or below a space's `high_water` that was neither live nor
+  reserved. Commit `72571d481` adds `identity-retired-not-reserved` to
+  `validate_allocation_transition` and reserves 11 and 29. Replayed against
+  their parents, both defective commits now fail, and the correct
+  SPEC-0209/0231 retirement `d1388968c` still passes. The new test failed with
+  the finding filtered out and passed unpatched.
+- C03a: held. Acceptance does not bind cited Evidence to one revision, and no
+  validator change is made.
+- E33: recorded as E34 in the SPEC-0264 Task. Delivery still fails on Codex
+  0.167.1 with the matcher and trust unchanged. The matcher change waits for
+  the owner to grant the new hook hash in Codex.
+- Review residual: the new check covers top-level identity spaces only.
+  Requirement child `reserved_history` lists are not compared, so removing a
+  child requirement ID unreserved still passes. That is a W05 follow-up, not
+  part of this change. Untracked, git-ignored `.pyc` caches of five removed test
 modules remain under `tests/`. No coverage is credited to them, and this
 review deleted none of them.
 
@@ -491,13 +518,15 @@ review deleted none of them.
 | Independent reconciliation review | 106 | W111 | independent-document-review | Scoped final diff | NOT_RUN | Awaiting read-only reviewer | required | - |
 | Final reconciliation review | 106 | W111 | independent-document-review | Current c463e4ae5 ownership, source-protection and document diff | PASS | Independent governance/document review approved; terminal TSK-0043 and TSK-0051 unchanged; current source implementation evidence remains SPEC-0270 | required | Independent reconciliation review |
 | Package v14.2 delta intake | 106 | W111 | requirement-owner-assessment | v14.2 input sha256 dc348e7f, main 1d1085adf, PR metadata 935-952 | PASS | QA-17 plus five QA-ALIGN clauses assessed (KEEP/DEFER); backup contract unittest 4/4 OK; semantic, W05 crosswalk and PR diff review not done | required | - |
+| Identity retirement check | 106 | W111 | identity-retirement-regression | Commit 72571d481 with test_identity_history, test_registry, check-active and two historical replays | PASS | New test RED with the finding filtered and GREEN unpatched; check-active selected534 violations0; 630e53662 and 61aca993f now fail, d1388968c passes | optional | - |
+| Identity retirement review | 106 | W111 | independent-source-review | Fresh-context code-reviewer of 72571d481 | PASS | APPROVED, no false positive: observed is the full tracked corpus, moves and recovery keep numbers; residual: requirement child spaces are not covered and three negative tests (move, recovery, partial package) are absent | optional | - |
 | Source implementation handoff | 106 | W111 | source-handoff | Final SPEC-0270 source at current c463e4ae5 plus task-owned diff | PASS | Memory/capacity/search/backup implementation; parent selected135 PASS and3 native NOT_RUN; branch coverage81.41 percent, combined89.125 percent; code/security approved, criterion acceptance remains with SPEC-0270 | optional | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 106 | pending | - | - | SPEC-0212 TSK-0053 |
+| 106 | accepted | Current master assessment, Document source verification, Final reconciliation review, Package v14.2 delta intake | Owner accepted on 2026-11-11 in this chat; residual semantic, native and operational obligations stay with their named owners | SPEC-0212 TSK-0053 |
 
 ## Review and Completion
 
