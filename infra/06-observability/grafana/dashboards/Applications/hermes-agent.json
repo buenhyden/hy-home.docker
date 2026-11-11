@@ -20,14 +20,14 @@
         "x": 0,
         "y": 0
       },
-      "description": "Sessions created minus sessions finalized since the Hermes process started (hermes-otel counters); resets when Hermes restarts.",
+      "description": "Agents the Hermes gateway reports as running right now (hermes_gateway_active_agents, built-in gateway health export).",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "clamp_min(sum(hermes_session_count_total{service_name=\"hermes-agent\"}) - (sum(hermes_session_duration_seconds_count{service_name=\"hermes-agent\"}) or vector(0)), 0)",
+          "expr": "max(hermes_gateway_active_agents{service_name=\"hermes-gateway\"}) or vector(0)",
           "refId": "A",
           "instant": true
         }
@@ -66,14 +66,14 @@
         "x": 6,
         "y": 0
       },
-      "description": "USD cost Hermes priced per API call (actual or estimated) over the selected time range.",
+      "description": "USD cost Hermes priced per API call (actual or estimated) over the selected time range. Subscription models Hermes does not price emit no cost series, so the panel shows $0.",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "sum(increase({__name__=~\"hermes_cost_usage(_USD)?_total\",service_name=\"hermes-agent\"}[$__range]))",
+          "expr": "sum(increase({__name__=~\"hermes_cost_usage(_USD)?_total\",service_name=\"hermes-agent\"}[$__range])) or vector(0)",
           "refId": "A",
           "instant": true
         }
@@ -112,7 +112,7 @@
         "x": 12,
         "y": 0
       },
-      "description": "Turn exit reasons (hermes.turn.exit_reason) from hermes-otel log events over the selected range.",
+      "description": "Turn exit reasons (hermes.turn.exit_reason) from hermes-otel log events over the selected range. Needs hermes-otel structured events (logs.events.enabled: true).",
       "targets": [
         {
           "datasource": {
