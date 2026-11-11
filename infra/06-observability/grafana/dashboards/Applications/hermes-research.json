@@ -175,7 +175,7 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "expr": "{service_name=\"hermes\"}",
+          "expr": "{service_name=~\"hermes-(agent|gateway)\"}",
           "queryType": "range"
         }
       ]
@@ -203,7 +203,7 @@
             "uid": "Tempo"
           },
           "queryType": "traceql",
-          "query": "{ resource.service.name = \"hermes\" }",
+          "query": "{ resource.service.name =~ \"hermes-(agent|gateway)\" }",
           "limit": 20,
           "tableType": "traces"
         }

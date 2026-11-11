@@ -207,7 +207,7 @@ otelcol.receiver.otlp "quality" {
 // this authenticated receiver. Compose publishes it on host loopback only
 // (127.0.0.1:4320), so only same-host callers holding the token reach it.
 // Traces join the Tempo path below; logs go to Loki; metrics keep only a
-// bounded label set and the service_name "hermes" identity. Hermes must
+// bounded label set and a service_name of hermes-agent (hermes-otel plugin) or hermes-gateway (built-in exporter). Hermes must
 // export cumulative metrics: Prometheus drops delta sums and histograms.
 local.file "hermes_otlp_token" {
   filename  = "/run/secrets/hermes_otlp_token"
@@ -232,7 +232,7 @@ otelcol.receiver.otlp "hermes" {
 }
 
 // The Loki exporter turns only hinted resource attributes into labels. Hint
-// service.name so `{service_name="hermes"}` holds even when a namespace is set.
+// service.name so `{service_name=~"hermes-(agent|gateway)"}` holds even when a namespace is set.
 otelcol.processor.transform "hermes_logs" {
   error_mode = "ignore"
 
@@ -299,12 +299,12 @@ prometheus.relabel "hermes_metrics" {
   rule {
     action        = "keep"
     source_labels = ["service_name"]
-    regex         = "hermes"
+    regex         = "hermes-(agent|gateway)"
   }
 
   rule {
     action = "labelkeep"
-    regex  = "__name__|service_name|instance|status|outcome|job_kind|le|quantile"
+    regex  = "__name__|service_name|instance|profile|platform|reason|api_mode|cache_result|type|tool_name|token_type|query_source|span_kind|cost_status|gen_ai_request_model|gen_ai_response_model|gen_ai_tool_name|le|quantile"
   }
 }
 

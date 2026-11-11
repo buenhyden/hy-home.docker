@@ -338,8 +338,14 @@ class HermesObservabilityContractTest(unittest.TestCase):
         )
         relabel = self.block('prometheus.relabel "hermes_metrics" {')
         self.assertIn('source_labels = ["service_name"]', relabel)
-        self.assertIn('regex         = "hermes"', relabel)
+        self.assertIn('regex         = "hermes-(agent|gateway)"', relabel)
         self.assertIn('action = "labelkeep"', relabel)
+        # hermes-otel bounds each instrument to these attribute keys (dots
+        # become underscores in Prometheus); anything else is dropped.
+        self.assertIn(
+            'regex  = "__name__|service_name|instance|profile|platform|reason|api_mode|cache_result|type|tool_name|token_type|query_source|span_kind|cost_status|gen_ai_request_model|gen_ai_response_model|gen_ai_tool_name|le|quantile"',
+            relabel,
+        )
         self.assertIn("max_cache_size = 2048", relabel)
         self.assertIn(
             "forward_to     = [prometheus.remote_write.local_prometheus.receiver]",
@@ -379,12 +385,16 @@ class HermesObservabilityContractTest(unittest.TestCase):
         traces = [p for p in panels if p["datasource"]["uid"] == "Tempo"]
         self.assertEqual(1, len(logs))
         self.assertEqual({"type": "loki", "uid": "Loki"}, logs[0]["datasource"])
-        self.assertEqual('{service_name="hermes"}', logs[0]["targets"][0]["expr"])
+        self.assertEqual(
+            '{service_name=~"hermes-(agent|gateway)"}', logs[0]["targets"][0]["expr"]
+        )
         self.assertEqual(1, len(traces))
         target = traces[0]["targets"][0]
         self.assertEqual({"type": "tempo", "uid": "Tempo"}, target["datasource"])
         self.assertEqual("traceql", target["queryType"])
-        self.assertIn('resource.service.name = "hermes"', target["query"])
+        self.assertIn(
+            'resource.service.name =~ "hermes-(agent|gateway)"', target["query"]
+        )
 
 
 if __name__ == "__main__":
