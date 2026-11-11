@@ -1,6 +1,6 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.44"
+version: "0.1.45"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -343,6 +343,10 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | Traefik v3.7.17 consumer checks | 60 | W65 | `test_update_gates`, `test_compose_baseline_gates`, `test_p02_service_contracts`, `test_tech_stack_version_contract`; `docker compose --env-file .env.example config -q`; `check-all-hardening.sh 01-gateway` | Branch base `be3cab6a6` plus this change | PASS | 286 tests OK, 31 declared skips; Compose render exits 0; `check-all-hardening.sh 01-gateway` ALL PASS | required | - |
 | n8n code sandbox secret metadata rerun | 60 | W65 | `test_secret_metadata_sync` against the public secret metadata | Current `main` `11e41fb43` public secret metadata | PASS | `test_secret_metadata_sync`: 57 tests OK on 2026-11-10; the sandbox secret rows are present. Live sandbox start stays NOT_RUN. | required | n8n code sandbox secret metadata |
 | n8n consumer test suites rerun | 60 | W65 | 41 modules naming n8n, `2.43.6` or `sso-auth`, plus `test_p02_service_contracts` and `test_compose_baseline_gates` | Current `main` `11e41fb43`, 42 modules naming n8n, `2.43.6` or `sso-auth`, venv on `PATH` | PASS | 1131 tests OK, 79 declared skips, 0 failures in 352.8 s on 2026-11-10; the earlier stale `test_update_gates` rows are rebound. | required | n8n consumer test suites |
+| n8n live login without gateway SSO 2026-11-11 | 57 | W62 | Browser or HTTP check after the Traefik reload | HOME, 2026-11-11 14:26 KST, `https://n8n.hy.home.arpa` | PASS | `GET /` and `GET /signin` answered 200 with no redirect, so the n8n login page is served without a Keycloak hop. | required | n8n live login without gateway SSO |
+| n8n router exclusions live behaviour 2026-11-11 | 57 | W62 | Request to `/metrics`, a GET and a trailing-slash request to the Hermes path through Traefik | HOME, 2026-11-11 14:26 KST | PASS | `GET /metrics`, `GET /webhook/hermes-blog-ingestion`, `GET /webhook/hermes-blog-ingestion/` and `GET /webhook-test/hermes-blog-ingestion` all answered 404. | required | n8n router exclusions live behaviour |
+| n8n router letter-case behaviour live 2026-11-11 | 57 | W62 | `GET /METRICS`, `/Metrics` and a mixed-case Hermes POST through Traefik | HOME, 2026-11-11 14:26 KST | PASS | `GET /METRICS`, `GET /Metrics`, `POST /Webhook/Hermes-Blog-Ingestion`, `POST /WEBHOOK/hermes-blog-ingestion` and a trailing-slash POST all answered 404. | required | n8n router letter-case behaviour live |
+| D03 n8n named-user readback 2026-11-11 | 59 | W64 | Approved recreate of `mng-valkey`, `n8n` and `n8n-worker`, then readback | HOME, 2026-11-11 14:26 KST; containers already recreated (`mng-valkey` 9.1.3, `hyhome/n8n:2.46.6-local`) | PASS | `n8n` and `n8n-worker` set `QUEUE_BULL_REDIS_USERNAME=n8n` against `mng-valkey`; an unauthenticated `PING` answers `NOAUTH`; the inspector user is refused `ACL WHOAMI` and `ACL USERS` (least privilege). No value or hash read. The earlier FAIL row cannot be named here because its name contains a comma, which the Resolves cell uses as a separator; this row records the result without resolving it. | optional | - |
 
 ## Criterion Acceptance
 

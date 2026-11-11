@@ -1,6 +1,6 @@
 ---
 title: "Role, Resource and Retirement Input Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -242,6 +242,7 @@ of those operations, and accepted criterion 92.
 | Nginx gateway retirement | 90 | W95 | Static retirement checks | Owner decision 2026-11-10; changed files | PASS | Compose validation (63 selections), 01-gateway hardening, operations catalog, script manifest, document links/metadata/lifecycle, SEC01 and affected test modules passed locally. The Nginx absence and Traefik route evidence is owner-reported, not re-collected; no container was started, stopped or changed. | required | - |
 | Service operation, storage move, credential use, external deletion, remote CI | 92 | W97 | Authorized-operation boundary | Current authorization | NOT_RUN | Not authorized in this Task. | optional | - |
 | C1–C6 acceptance readback | 92 | W97 | Historical acceptance readback | POL-0102 Traceability at `59d1fe69f` | PASS | POL-0102 records owner acceptance of all six SPEC-0246 criteria C1–C6 with dates; no migration, restore or runtime check was run. | required | - |
+| HOME resource census 2026-11-11 | 90 | W95 | Read-only `docker inspect` limits and `docker stats` | HOME, 2026-11-11 14:26 KST, 57 running containers | PASS | All 57 containers carry CPU, memory and PID limits; none is unhealthy or starting; none uses more than 80% of its memory limit (highest CPU `kafka-1` 21.8%). Host 31 GiB, 21 GiB available. This is resource readback, not runtime role use. | optional | - |
 
 ## Criterion Acceptance
 
