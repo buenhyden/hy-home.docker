@@ -307,6 +307,9 @@ class IdentityHistoryTests(unittest.TestCase):
             for name in spaces["requirement"].child_spaces
             if name.endswith(".FR")
             and int(name[4:8]) not in spaces["requirement"].reserved_history
+            and spaces["requirement"].child_spaces[name].high_water >= 3
+            and not {2, 3}
+            & set(spaces["requirement"].child_spaces[name].reserved_history)
         )
         package = int(child_name[4:8])
         requirement_path = f"docs/01.requirements/{package:04d}-x.md"
@@ -339,6 +342,8 @@ class IdentityHistoryTests(unittest.TestCase):
                 requirement_path: (
                     f'---\nartifact_id: "{requirement_id}"\n---\n{child_line}'
                 ),
+                # Not an identified body: its mention never counts as issued.
+                "docs/01.requirements/README.md": f"{requirement_id}-FR-0003\n",
             }
             for relative, text in files.items():
                 (root / relative).parent.mkdir(parents=True, exist_ok=True)
@@ -386,6 +391,17 @@ class IdentityHistoryTests(unittest.TestCase):
                     )
                 ),
             )
+
+            # Preserving the whole body elsewhere keeps every child issued.
+            preserved = f"docs/98.archive/completed/01.requirements/{package:04d}-x.md"
+            (root / preserved).parent.mkdir(parents=True)
+            (root / preserved).write_text(
+                f'---\nartifact_id: "{requirement_id}"\n---\n{child_line}',
+                encoding="utf-8",
+            )
+            del current[requirement_path]
+            current[preserved] = requirement_id
+            self.assertEqual(set(), retired(registry))
 
     def test_reserved_history_cannot_drop_a_number(self) -> None:
         from scripts.lib.document_governance import registry as registry_module

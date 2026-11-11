@@ -703,9 +703,6 @@ def validate_allocation_transition(
         if not path.endswith(".md"):
             continue
         text = git("cat-file", "blob", oid, maximum=MAX_IDENTITY_SOURCE_BYTES)
-        if path.startswith("docs/01.requirements/"):
-            for line in text.splitlines():
-                _record_line(path, line, previous_children)
         try:
             identity = parse_frontmatter_text(text).get("artifact_id")
         except ValueError as error:
@@ -715,6 +712,10 @@ def validate_allocation_transition(
         origin = preserved_origin_path(path) or path
         if isinstance(identity, str) and _path_accepts_identity(origin, identity):
             _record(identity, previous)
+            # Same file set as the current side: identified requirement bodies.
+            if origin.startswith("docs/01.requirements/"):
+                for line in text.splitlines():
+                    _record_line(origin, line, previous_children)
     registry_oid = entries.get("docs/99.templates/registry.json")
     if registry_oid is None:
         # Every supported base already carries the Registry.
@@ -778,10 +779,13 @@ def validate_allocation_transition(
         for name, numbers in slots.items():
             observed.setdefault(name, set()).update(numbers)
     current_children: dict[str, set[int]] = {}
-    for path in current:
-        if path.startswith("docs/01.requirements/"):
+    for path, identity in current.items():
+        origin = preserved_origin_path(path) or path
+        if origin.startswith("docs/01.requirements/") and _path_accepts_identity(
+            origin, identity
+        ):
             for line in _read_identity_source(root / path).splitlines():
-                _record_line(path, line, current_children)
+                _record_line(origin, line, current_children)
 
     merged_proven_paths: set[str] = set()
     merged_owners: dict[tuple[str, int], set[str]] = {}
