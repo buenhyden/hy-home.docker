@@ -1,6 +1,6 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.14"
+version: "0.1.15"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -608,6 +608,7 @@ fixture run.
 | Document metadata rerun | 85 | W90 | `check-document-metadata.py --mode check-changed` | This Task with explicit base `origin/main` (merge base `11e41fb43`) | PASS | `check-changed` selected 1 document, 0 violations, finished in 3 min 32 s on 2026-11-10. | required | Document metadata |
 | Launcher re-review 2026-11-10 | 82 | W87 | Active optional dependency closure and independent review | Source digest prefix `f7ca8f45`, CLI `158400ce`, tests `1e395441` at `main` `5f4160d1a` | PASS | Independent re-review APPROVED: required, companion and active-profile optional closure, cycle detection and the overlay, plan-mismatch and partial-Prometheus refusals hold; `execute_plan` starts only plan targets. Minor follow-ups: implicit `network_mode`/`volumes_from`/`links` service references are not refused, two refusal tests accept any `ValueError`, missing-dependency and optional-cycle cases lack tests, one test needs Docker instead of skipping. | required | - |
 | Authenticated OTLP delivery rerun | 84 | W89 | Pinned isolated Alloy/Prometheus test | `examples/operations/quality-metrics/acceptance.py` at `main` `5f4160d1a`; cached Alloy v1.20.1 `2aa2099a`, Prometheus v3.15.1 `fa330227`, probe `79e7a9b9` | PASS | Exit 0 on 2026-11-10: 22 PASS lines covering delta and cumulative counters and histograms, the unauthenticated producer rejected with 401, a missing identity dropped, retry and epoch reset; owned containers and network removed with no volume deletion. k6 stage not run; live Grafana datasource and prior-state recovery stay NOT_RUN. | required | Authenticated OTLP delivery |
+| D08 HOME alert census 2026-11-11 | 83 | W88 | Read-only Prometheus targets, alerts and Alertmanager counters | HOME, 2026-11-11 14:26 KST | FAIL | 31 of 32 targets up; `flower` is down because it is not in the HOME selection (no container). Firing: `HermesResearchBlocked` (devops, business_ideas), `HermesResearchNoSuccess` (devops, TSK-0054), `ObservationSelectionMissing` (cleared by the HOME selector run after the OpenBao window); `PostgresHighRollbackRate` pending. Alertmanager notifications 30, failed 0. | required | - |
 
 ## Criterion Acceptance
 
