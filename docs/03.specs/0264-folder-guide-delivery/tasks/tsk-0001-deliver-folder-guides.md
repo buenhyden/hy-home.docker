@@ -1,6 +1,6 @@
 ---
 title: "Folder Guide Delivery Task"
-version: "0.6.1"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -177,6 +177,55 @@ The next step changes the Codex PreToolUse matcher and re-trusts its hash in
 the user-global `~/.codex/config.toml`. That trust is the owner's to grant in
 Codex's own prompt; this recheck did not write it.
 
+### Codex code-mode `exec` coverage (2026-11-11)
+
+The owner asked for the matcher change on 2026-11-11. The E34 session record
+(`~/.codex/sessions/.../rollout-...01a1ca32...jsonl`) shows each edit as a
+`custom_tool_call` named `exec`. Its `input` is JavaScript calling
+`tools.apply_patch("*** Begin Patch...")`, and no hook record appears.
+
+- Commit `80c49cf71` adds `exec` to the Codex PreToolUse and PostToolUse
+  matchers in the Provider Registry and `.codex/hooks.json`. It also teaches
+  `edit_targets` to read the patch literal from the `exec` input through the
+  existing `_patch_edits` and `_relative_target` checks.
+- Four security review rounds led to commits `417c1e22a`, `5b7193cd5`,
+  `c2ea32391` and the rebalance `e5f00113b`. The result fails
+  closed for the literal call form Codex emits:
+  - Every `apply_patch` reference must be one `tools.apply_patch(<literal>)`
+    call.
+  - `tools` may appear only as a direct `tools.<name>(` call.
+  - `\u` and `\x` escapes outside the patch literal are denied, and so are
+    a raw CR or U+2028 in a template literal.
+  - A short list of rare code-building words is denied: `eval`, `Function`,
+    `constructor`, `globalThis`, `Reflect`, `Proxy`, `prototype` and
+    `__proto__`. Common words such as `this`, `call` and `apply` were removed
+    again. They denied ordinary commit messages, a regression against main,
+    and the fourth round showed that no word list stops string-built names.
+  - An unrecognized input shape is denied.
+  - References are capped at 64.
+- The five real E34 `exec` inputs replayed through the parser: the three
+  patches map to `infra/README.md`, and the two shell calls yield no edit
+  targets.
+- Fed to `scripts/hooks/agent-event-hook.sh PreToolUse` with
+  `HY_HOME_HOOK_PROVIDER=codex`, the real E34 payload delivered the
+  `infra/AGENTS.md` guide, and dynamic `tools[...]` access was denied. The
+  probe's own delivery record was removed afterwards.
+
+Residuals, accepted for now:
+
+- Shell writes through `tools.exec_command` and any other runtime file API are
+  not parsed, so shell and edit policy do not see them. This is also recorded
+  in `.codex/provider.md`.
+- Deliberately obfuscated code is not seen: a string-built property name, or
+  a route through the global object or `this`. This is the same residual class
+  as a shell write, and it is no harder to reach.
+- An `exec` call whose text mentions `apply_patch`, a bare `tools` or one of
+  the rare words is denied, even inside a command string.
+- The check is best-effort and lexical, not a JavaScript parser or a sandbox.
+
+Live delivery stays unobserved. The changed hook file has a new hash, which
+the owner must trust in Codex before a live probe can run.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -215,6 +264,7 @@ Codex's own prompt; this recheck did not write it.
 | E32 | 8 | W4 | Codex hook health | Headless `codex exec` 0.166.0 at the repository root of main `602656a52`, 2026-11-11 | PASS | SessionStart delivered `hy-home.docker project context`; no hook failure reported; hooks trusted by hash; SessionStart and UserPromptSubmit exit 0 in 0.1 s by hand | required | E28 |
 | E33 | 8 | W4 | live Codex delivery | The same session, editing `infra/README.md` through `tools.apply_patch` inside the Codex `exec` tool, then reverting | FAIL | no folder guide delivered and no delivery record; Codex 0.166 wraps tool calls in `exec`, which the matcher (`Bash` or `apply_patch`) does not match; compaction NOT_RUN headless | required | - |
 | E34 | 8 | W4 | live Codex delivery | Headless `codex exec` 0.167.1 at branch commit `72571d481`, 2026-11-11, applying and reverting one line in `infra/README.md` through `apply_patch` | FAIL | no folder guide and no delivery record; Stop hook fired; file restored byte-identical; matcher and trust unchanged | required | - |
+| E35 | 8 | W4 | exec dispatcher delivery | `agent-event-hook.sh PreToolUse` with the real E34 `exec` payload at `e5f00113b`, plus `tests.lib.hooks.test_tool_payload` and `test_folder_guides` | PASS | infra guide delivered; dynamic access denied; 37 tests OK; local dispatcher only, not live Codex delivery | optional | - |
 
 ## Criterion Acceptance
 
@@ -227,7 +277,7 @@ Codex's own prompt; this recheck did not write it.
 | 5 | pending | E1, E6, E8 | owner acceptance | @buenhyden |
 | 6 | pending | E4, E25, E31 | owner acceptance | @buenhyden |
 | 7 | pending | E5 | owner acceptance | @buenhyden |
-| 8 | pending | E26, E27, E28, E32, E33, E34 | Claude observed; Codex hook health fixed (E32 resolves E28); Codex delivery FAIL under the `exec` tool model (E33) and again on 0.167.1 (E34), needs a matcher change with owner-granted trust | @buenhyden |
+| 8 | pending | E26, E27, E28, E32, E33, E34, E35 | Claude observed; Codex hook health fixed (E32 resolves E28); Codex delivery FAIL under the `exec` tool model (E33) and again on 0.167.1 (E34), exec coverage implemented and dispatcher-verified (E35); live delivery needs owner-granted trust of the new hook hash | @buenhyden |
 | 9 | pending | E10, E11, E21, E24, E30 | owner acceptance | @buenhyden |
 | 10 | pending | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner acceptance | @buenhyden |
 
