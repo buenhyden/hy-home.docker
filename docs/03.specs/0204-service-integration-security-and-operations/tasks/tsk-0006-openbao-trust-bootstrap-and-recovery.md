@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.39"
+version: "0.2.40"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4139,6 +4139,22 @@ owner's statement; the agent read no value. The same day the SEC01 gate failed
 other CVEs; the image is built with Go 1.27.3), so the owner limited the window
 to W1–W3b and kept the server and Agent at r1.
 
+### Window Cancelled — 2026-11-11
+
+At 14:44 KST the owner cancelled the 15:45 window before any step ran (W0
+preflight at 14:36 KST: `problems: 0`; `p01_run` was only defined, nothing was
+bootstrapped or issued). W1–W3b alone would have produced nothing the next
+window can use. The daily backup already takes the OpenBao Raft snapshot: W2
+finished in the 2026-10-22 window, and no run from 2026-11-09 to 2026-11-11
+logged "OpenBao snapshot token absent", so the RUN-0105 wording that the daily
+snapshot keeps failing is out of date. W3 would stop `openbao-agent`, which by
+the abort rules stays stopped until a later W5 issues a new SecretID; it also
+needs the external cluster operator's K8s writer stop, which is not arranged;
+and the pre-upgrade snapshot must be taken right before the upgrade, so a
+snapshot from today would be retaken. The next window needs an r4 image built
+with Go 1.27.4, its scan and residual-risk acceptance, an arranged K8s writer
+stop, a new `P01_APPROVED_COMMIT`, and then W1 through W7 in one window.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -4218,6 +4234,7 @@ to W1–W3b and kept the server and Agent at r1.
 | Semantic restore source independent review | 11 | W23 | Code/security/IaC blockers despite28 synthetic PASS80%branch; actual recovery NOT_READY | source4ffd0ec3/tests8ba3a111 | FAIL | Current Operation Preparation — 2026-10-14 | - |
 | Actual quoted R2 local readiness correction | 11 | W23 | Minimal Compose literal normalization, independent exact review,14+10 synthetic PASS; actual exit0 LOCAL_INPUTS_READY; no remote/custody proof | inspectorff6bae4f/launcher5f75e150 | PASS | Current Operation Preparation — 2026-10-14 | Actual offsite local readiness r2/r3 |
 | Host custody step 5 reconfirmation 2026-11-11 | 11 | W23 | owner-attested reconfirmation of the 2026-10-14 RUN-0085 step 5 table, value-free: no change or move of BKP-002, BKP-003, R2 tokens or Cloudflare access; shares and CA key unchanged so the host second copy is current; place A reachable; recovery means outside place A and the host | Owner statement 2026-11-11 | PASS | Step 5 Owner Reconfirmation — 2026-11-11 | - |
+| Window 2026-11-11 cancellation | 11 | W23 | Owner decision before W1; W0 preflight and daily-backup snapshot readback | HOME, 2026-11-11 14:36–14:44 KST | NOT_RUN | Window Cancelled — 2026-11-11 | - |
 
 ## Criterion Acceptance
 
