@@ -366,10 +366,14 @@ def _arm_parent_death(expected_parent_pid: int) -> None:
 
 
 def _kill_owned_process(process: subprocess.Popen) -> None:
-    try:
-        os.killpg(process.pid, signal.SIGKILL)
-    except ProcessLookupError:
-        pass
+    pid = process.pid
+    # killpg(1) is kill(-1): it would kill every process of this user. Only a
+    # real child group (start_new_session) is ever a valid target.
+    if type(pid) is int and pid > 1:
+        try:
+            os.killpg(pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
     try:
         process.wait(timeout=2)
     except (ProcessLookupError, subprocess.TimeoutExpired):

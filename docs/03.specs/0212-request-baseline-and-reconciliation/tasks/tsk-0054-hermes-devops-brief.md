@@ -1,6 +1,6 @@
 ---
 title: "Hermes DevOps Daily Brief Recovery Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -76,6 +76,20 @@ The direct plugin path now uses 45 s per attempt (`_HTTP_TIMEOUT` and
 total and three attempts. A new test keeps the attempt longer than the flow's
 `executionTimeout`. The installed copy under `~/.hermes/plugins/research-report`
 is owner-managed and needs the two changed files and a gateway restart.
+
+### Host session kills during verification (2026-11-11)
+
+While verifying the timeout change, three local runs of the transport tests
+(12:28:52, 12:33:50 and 12:59:10 KST) each killed every UID 1000 process on
+the HOME host: the systemd user manager, SSH sessions, the agent session, the
+Hermes gateway and containers that run as UID 1000. Raising the limit to 45 s
+made the test's over-limit case of 16 s valid, so a mocked `Popen` was called
+and returned a `MagicMock` whose `pid` converts to 1. The cleanup then ran
+`os.killpg(1, SIGKILL)`, which is `kill(-1, SIGKILL)`. The test case moved to
+46 s before #943 merged, and `_kill_owned_process` now signals only a real
+child group (`int` pid above 1), with a test that a mock, 0, 1 or -1 is
+never signalled. The 12:35:57 suspend was a separate `sudo systemctl suspend`
+sent over SSH from the owner's client, not from this work.
 
 ### Residual for the owner
 
