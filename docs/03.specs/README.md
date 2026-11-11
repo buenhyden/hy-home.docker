@@ -43,7 +43,6 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0204 | [서비스 연동·보안·운영](./0204-service-integration-security-and-operations/) | 공통 서비스 호환성·외부 연결·백업 경계의 승인용 계약 |
 | SPEC-0212 | [요청 기준선·정합화](./0212-request-baseline-and-reconciliation/) | 2026-10-07 요청의 기준선, 서비스 키 인벤토리, 충돌 지도, 후속 package 순서 |
 | SPEC-0218 | [공통 control·예외](./0218-common-controls-and-exceptions/) | root·LAB 모든 서비스의 최종 control을 정확한 예외와 대조, secret group·capability·PID 예산 정리 |
-| SPEC-0226 | [AI 런타임 고정 검증](./0226-ai-runtime-pin-verification/) | Ollama·Open WebUI digest 고정, 모델 load·대기열 한도, 세션 key·모델 catalog 백업과 격리 복원·기능 검증 |
 | SPEC-0244 | [Native memory 통제 검증](./0244-native-memory-controlled-verification/) | Claude native memory effective-state와 hook delivery를 설정·메뉴·영수증별로 분리해 통제 검증 |
 | SPEC-0245 | [Observability CA 실행](./0245-observability-ca-execution/) | Prometheus·Gatus의 백업·격리 복원 검증 후 순차 CA 재생성과 rollback 경계 |
 | SPEC-0248 | [Archive·migration 검사 폐기](./0248-archive-and-migration-check-retirement/) | Stage 98 기록과 migration ledger를 검증하던 gate를 삭제하고 현재 검사가 쓰는 읽기 전용 loader와 legacy 허용만 남겨 목록으로 관리 |
@@ -62,10 +61,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0263 | [LAB 이전 계약](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
 | SPEC-0264 | [폴더 guide 전달](./0264-folder-guide-delivery/) | Codex와 Claude가 읽지 못하는 폴더 AGENTS.md를 Claude는 생성된 폴더 `CLAUDE.md` import shim으로, Codex는 공유 hook으로 받게 함 |
 | SPEC-0265 | [Hermes 보고서 원문 계약](./0265-hermes-report-source-capture/) | Hermes가 Gateway로 보내는 `source_text`를 확정된 전체 일일 보고서 원문으로 바꾸고, 이메일·Telegram·Gateway가 같은 저장 바이트에서 나오게 하며, schema 5 전환과 backfill 제외를 운영 작업으로 분리함 |
-| SPEC-0266 | [SSO 전용 backend ingress](./0266-sso-only-backend-ingress/) | `sso-auth`만으로 보호되는 Traefik backend가 공유 `edge_net`의 다른 컨테이너에서 SSO 없이 직접 닿지 않도록 backend마다 Traefik 전용 내부 ingress 망을 두고, 기존 흐름은 이름 있는 흐름 망으로 옮김 |
 | SPEC-0267 | [보조 listener 강화](./0267-secondary-listener-hardening/) | 자체 인증이 없는 metrics·관리·broker listener 6개를 소비자 전용 주소에만 묶고, Grafana metrics 인증을 더하고, Pyroscope metastore와 ComfyUI 상태를 선언된 volume에 두며, 남는 노출은 수용 위험으로 기록함 |
-| SPEC-0268 | [ComfyUI 필요 시 외부 연결](./0268-comfyui-egress-on-demand/) | ComfyUI의 외부 연결을 기본 render에서 빼고, 모델·custom node 설치 같은 유지보수 때만 opt-in overlay로 붙였다 떼도록 함 |
-| SPEC-0269 | [n8n 유휴 main runner 제거](./0269-n8n-idle-main-runner-removal/) | offload 모드에서 broker가 없는 main 쪽 task runner를 없애 n8n API로 가는 불필요한 경로를 닫고, runner rehearsal fixture를 worker broker 구성에 맞추며 남은 TEST_RESIDUAL과 정리 경쟁 조건을 해소함 |
 
 | SPEC-0270 | [공유 기억 용량·검색](./0270-shared-memory-capacity-and-search/) | 1 GiB 공통 용량 원장, 읽기 전용 검색, 수동·일일·offsite 백업 예약과 중단 복구를 구현함 |
 

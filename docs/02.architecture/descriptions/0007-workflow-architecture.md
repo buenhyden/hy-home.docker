@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow) Architecture Description"
-version: "1.3.3"
+version: "1.3.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-11"
 layer: "architecture"
 artifact_id: "AD-0007"
 parent_ids:

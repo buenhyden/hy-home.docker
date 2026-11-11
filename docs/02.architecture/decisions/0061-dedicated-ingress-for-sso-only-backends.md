@@ -1,10 +1,10 @@
 ---
 title: "Dedicated Ingress for SSO-Only Backends"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-11"
 layer: "architecture"
 artifact_id: "ADR-0061"
 parent_ids:
@@ -94,4 +94,4 @@ decision on 2026-11-07 together with the SPEC-0266 Spec and Plan.
 - [ADR-0055](0055-segmented-per-flow-networks.md)
 - [AD-0026](../descriptions/0026-standardize-infra-net.md)
 - [AD-0001](../descriptions/0001-gateway-architecture.md)
-- [SPEC-0266](../../03.specs/0266-sso-only-backend-ingress/spec.md)
+- SPEC-0266 (retired; its body is in Git history)
