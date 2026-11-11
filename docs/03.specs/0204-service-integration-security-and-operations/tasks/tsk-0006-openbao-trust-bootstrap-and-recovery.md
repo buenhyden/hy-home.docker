@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.41"
+version: "0.2.38"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4122,60 +4122,6 @@ resolution. On the last 26 hours of HOME data the new expression crosses the
 threshold only from 11:41Z to 11:51Z, and reads `0` now. Prometheus picks the
 rule up only after the change is merged and Prometheus reloads its rules.
 
-### Step 5 Owner Reconfirmation — 2026-11-11
-
-Before the 2026-11-11 window the owner answered four value-free questions,
-all "yes": (1) BKP-002, BKP-003, the R2 tokens (BKP-004/005) and Cloudflare
-account access have not been changed or moved since 2026-10-14; (2) the unseal
-shares and the CA key have not changed, so the host second copy at
-`/home/hyunyoun/data/hy-home.secrets` is still current; (3) place A (the
-separate desktop and the password manager account) is still reachable; (4) the
-recovery means for place A are still outside place A and the host. No W1b
-rekey and no backup-key rotation is recorded since 2026-10-14. The R2 listing
-in the 14:36 KST W0 preflight used the host's values, so it does not prove
-place A's values; the owner did not repeat the place A listing. This is the
-owner's statement; the agent read no value. The same day the SEC01 gate failed
-(Go 1.27.4, released 2026-11-10, fixes CVE-2026-97054 in net/http and eleven
-other CVEs; the image is built with Go 1.27.3), so the owner limited the window
-to W1–W3b and kept the server and Agent at r1.
-
-### Window Cancelled — 2026-11-11
-
-At 14:44 KST the owner cancelled the 15:45 window before any step ran (W0
-preflight at 14:36 KST: `problems: 0`; `p01_run` was only defined, nothing was
-bootstrapped or issued). W1–W3b alone would have produced nothing the next
-window can use. The daily backup already takes the OpenBao Raft snapshot: W2
-finished in the 2026-10-22 window, and no run from 2026-11-09 to 2026-11-11
-logged "OpenBao snapshot token absent", so the RUN-0105 wording that the daily
-snapshot keeps failing is out of date. W3 would stop `openbao-agent`, which by
-the abort rules stays stopped until a later W5 issues a new SecretID; it also
-needs the external cluster operator's K8s writer stop, which is not arranged;
-and the pre-upgrade snapshot must be taken right before the upgrade, so a
-snapshot from today would be retaken. The next window needs an r4 image built
-with Go 1.27.4, its scan and residual-risk acceptance, an arranged K8s writer
-stop, a new `P01_APPROVED_COMMIT`, and then W1 through W7 in one window.
-
-### Custody Proportionality Decision — 2026-11-11
-
-After the reconfirmation the owner asked for the custody rules to match the
-real risk of this HOME: a personal development server for one administrator,
-reachable only on private LAN addresses (`192.168.0.13`, `.14`), with no
-internet tunnel or public port (host observation 2026-11-11; no router port
-forward is the owner's statement). Here custody protects recovery from R2
-after losing the host, not against theft. The owner approved three changes,
-now in POL-0085 ("위험 비례 재조정") and RUN-0105: the custody record is no
-longer retaken for every window but stays valid until a change event (key
-rotation or move, share rekey, CA key change, place A change or loss, or a
-change to the exposure premise) or until its half-yearly check is due; that
-check is a restore of one file from R2 on a non-host device with place A's
-values only, which a statement alone cannot show; and the host second copy is
-optional and not a window condition. If the exposure premise changes, the
-per-window check returns. The share-threshold exception stays, because
-splitting shares does nothing for a single administrator. RUN-0098 and
-RUN-0021 now point to the validity rule, and RUN-0105 no longer says the
-daily OpenBao snapshot fails. The first half-yearly place A restore has not
-run yet.
-
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
@@ -4254,8 +4200,6 @@ run yet.
 | Semantic restore moving initial review input | 11 | W23 | Author changed frozen source/test before independent review; old hashes not accepted | source327ab851/e597962e | FAIL | Current Operation Preparation — 2026-10-14 | - |
 | Semantic restore source independent review | 11 | W23 | Code/security/IaC blockers despite28 synthetic PASS80%branch; actual recovery NOT_READY | source4ffd0ec3/tests8ba3a111 | FAIL | Current Operation Preparation — 2026-10-14 | - |
 | Actual quoted R2 local readiness correction | 11 | W23 | Minimal Compose literal normalization, independent exact review,14+10 synthetic PASS; actual exit0 LOCAL_INPUTS_READY; no remote/custody proof | inspectorff6bae4f/launcher5f75e150 | PASS | Current Operation Preparation — 2026-10-14 | Actual offsite local readiness r2/r3 |
-| Host custody step 5 reconfirmation 2026-11-11 | 11 | W23 | owner-attested reconfirmation of the 2026-10-14 RUN-0085 step 5 table, value-free: no change or move of BKP-002, BKP-003, R2 tokens or Cloudflare access; shares and CA key unchanged so the host second copy is current; place A reachable; recovery means outside place A and the host | Owner statement 2026-11-11 | PASS | Step 5 Owner Reconfirmation — 2026-11-11 | - |
-| Window 2026-11-11 cancellation | 11 | W23 | Owner decision before W1; W0 preflight and daily-backup snapshot readback | HOME, 2026-11-11 14:36–14:44 KST | NOT_RUN | Window Cancelled — 2026-11-11 | - |
 
 ## Criterion Acceptance
 
