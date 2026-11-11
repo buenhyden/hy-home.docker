@@ -1,10 +1,10 @@
 ---
 title: "Folder Guide Delivery Task"
-version: "0.5.2"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-11"
 layer: "specs"
 artifact_id: "SPEC-0264-TSK-0001"
 parent_ids:
@@ -125,6 +125,36 @@ edits a file under `infra/` and records whether the "Folder guide
 and records whether SessionStart arrives with `source` `compact`, because
 re-delivery after compaction depends on it.
 
+### Codex recheck (2026-11-11)
+
+The owner asked for the Codex recheck on 2026-11-11. The controller ran a
+headless `codex exec` (codex-cli 0.166.0) at the repository root of main
+`602656a52`, because Codex trusts hooks by the path of the root
+`.codex/hooks.json`; a worktree would not run them. The session added and then
+removed one blank line in `infra/README.md`, and `git status` was clean
+afterwards.
+
+- Hook health: SessionStart delivered its context (`hy-home.docker project
+  context`) as a developer message, and no `hook ... Failed` appeared. The only
+  warning was the ignored user setting `persistent_instructions`. The repo hooks
+  are trusted by hash in `~/.codex/config.toml`, and both SessionStart and
+  UserPromptSubmit exit 0 in 0.1 s when run by hand.
+- Delivery on edit: no folder guide arrived. The session record shows that
+  Codex 0.166 runs every tool through one `exec` custom tool whose JavaScript
+  input calls `tools.apply_patch(...)` and `tools.exec_command(...)`. No
+  PreToolUse hook ran for those nested calls: there is no delivery record under
+  `~/.local/state/hy-home/folder-guides/`, and no hook message in the session.
+  The registered matcher `Bash|apply_patch` cannot match `exec`, and the
+  dispatcher reads only a top-level `apply_patch` or `Bash` payload. With the
+  documented `apply_patch` payload the hook still delivers the guide
+  (`tests.lib.hooks.test_folder_guides` OK).
+- Compaction: `/compact` cannot be run headlessly; NOT_RUN.
+
+Criterion 8 stays pending: Codex delivery fails under its current tool model.
+Making it work needs a separate change: confirm whether Codex fires
+PreToolUse for `exec` at all, and if so match `exec` and read the nested
+`tools.apply_patch` paths.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -160,6 +190,8 @@ re-delivery after compaction depends on it.
 | E29 | 1, 2, 4 | W1 | hook, renderer, routing and loader suites | `test_folder_guides test_validator_entrypoints test_agent_governance_ci_routing test_architecture test_operations_catalog`, then `test_spec_packages`, at committed `13ebb04f1` | PASS | 259 tests OK; 90 tests OK | required | - |
 | E30 | 9, 10 | W5 | surfaces, manifest, contract, metadata, links | `provider_surface_renderer.py --check`, `check-script-manifest.py`, `check-agent-governance-contract.py --mode repository`, `check-document-metadata.py --mode check-changed --base-ref origin/main`, `check-document-links.py --mode alignment` at `13ebb04f1` | PASS | drift=0; manifest valid; failures=0; violations=0, with 5 selected because the base is merged main `6e37096a7` and only this follow-up's documents differ; links PASS | required | - |
 | E31 | 6 | W2 | scoped review | `code-reviewer` re-review of `6e37096a7..13ebb04f1` against the #770 findings I1-I3 and M1-M9 | PASS | every finding fixed except I2's evidence revision (N1), which E29 and E30 resolve; the reviewer read `.claude/provider.md` 1.7.1 and found it names the marker comment (M9) | required | - |
+| E32 | 8 | W4 | Codex hook health | Headless `codex exec` 0.166.0 at the repository root of main `602656a52`, 2026-11-11 | PASS | SessionStart delivered `hy-home.docker project context`; no hook failure reported; hooks trusted by hash; SessionStart and UserPromptSubmit exit 0 in 0.1 s by hand | required | E28 |
+| E33 | 8 | W4 | live Codex delivery | The same session, editing `infra/README.md` through `tools.apply_patch` inside the Codex `exec` tool, then reverting | FAIL | no folder guide delivered and no delivery record; Codex 0.166 wraps tool calls in `exec`, which the matcher (`Bash` or `apply_patch`) does not match; compaction NOT_RUN headless | required | - |
 
 ## Criterion Acceptance
 
@@ -172,7 +204,7 @@ re-delivery after compaction depends on it.
 | 5 | pending | E1, E6, E8 | owner acceptance | @buenhyden |
 | 6 | pending | E4, E25, E31 | owner acceptance | @buenhyden |
 | 7 | pending | E5 | owner acceptance | @buenhyden |
-| 8 | pending | E26, E27, E28 | Claude observed; Codex observation and the Codex hook failure diagnosis rerun after 2026-11-09 18:37 KST | @buenhyden |
+| 8 | pending | E26, E27, E28, E32, E33 | Claude observed; Codex hook health fixed (E32 resolves E28); Codex delivery FAIL under the `exec` tool model (E33), needs a follow-up change | @buenhyden |
 | 9 | pending | E10, E11, E21, E24, E30 | owner acceptance | @buenhyden |
 | 10 | pending | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner acceptance | @buenhyden |
 
