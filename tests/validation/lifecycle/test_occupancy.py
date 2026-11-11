@@ -76,6 +76,54 @@ class OccupancyTests(unittest.TestCase):
                 occupancy.validate_active_stage_occupancy(ROOT),
             )
 
+    def _tracked(self, files: dict[str, str]) -> tuple[str, ...]:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            for relative, status in files.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"---\nstatus: {status}\n---\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            return occupancy.validate_active_stage_occupancy(root)
+
+    def test_a_retired_standalone_document_cannot_stay_active(self) -> None:
+        guide = "docs/05.operations/guides/02-gateway-and-networking/0999-x.md"
+        self.assertEqual((), self._tracked({guide: "active"}))
+        self.assertEqual(
+            (f"{guide}: retired document remains in an active stage",),
+            self._tracked({guide: "retired"}),
+        )
+
+    def test_a_cancelled_spec_package_keeps_no_member(self) -> None:
+        package = "docs/03.specs/0999-x"
+        self.assertEqual(
+            (
+                f"{package}/plan.md: package with a terminal Spec keeps no "
+                "member in an active stage",
+                f"{package}/spec.md: package with a terminal Spec keeps no "
+                "member in an active stage",
+            ),
+            self._tracked(
+                {f"{package}/spec.md": "cancelled", f"{package}/plan.md": "cancelled"}
+            ),
+        )
+
+    def test_a_terminal_plan_cannot_sit_in_an_open_package(self) -> None:
+        package = "docs/03.specs/0999-x"
+        self.assertEqual(
+            (),
+            self._tracked(
+                {f"{package}/spec.md": "approved", f"{package}/plan.md": "approved"}
+            ),
+        )
+        self.assertEqual(
+            (f"{package}/plan.md: cancelled member violates package occupancy",),
+            self._tracked(
+                {f"{package}/spec.md": "approved", f"{package}/plan.md": "cancelled"}
+            ),
+        )
+
     def test_stage_03_membership_comes_from_the_registry(self) -> None:
         self.assertEqual(
             "docs/03.specs/0001-example",
