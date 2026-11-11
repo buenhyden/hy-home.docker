@@ -1,10 +1,10 @@
 ---
 title: "독립 매니페스트 outbox 통지"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-11"
 ---
 
 # 독립 매니페스트 outbox 통지
@@ -51,9 +51,10 @@ main과 worker는 같은 custom node artifact와 encryption key를 사용해야 
 공통 custom bind가 이미지 설치를 가릴 수 있으므로 실제 등록을 검증해야 합니다.
 [queue mode](https://docs.n8n.io/hosting/scaling/queue-mode/)의 선언과 실제 manual·예약
 executor 배치는 별도 증거입니다. P03이 확정한 executor만 DEV와 capture 접근권한을
-받습니다. 선택 root-model overlay는 `n8n-worker`와 Mailpit만 내부
-`opsflow_capture_net`에 연결하고 worker를 Stalwart 공유 `mail_net`에 연결하지
-않습니다. 기존 n8n 관리·queue network와 Mailpit의 다른 consumer network는
+받습니다. base Compose(`n8n`·`mailpit`·`dev-db` 조각과 루트 선언)는 `n8n-worker`와 Mailpit만 내부
+`opsflow_capture_net`에, `n8n-worker`와 dev-pg만 내부 `opsflow_notifier_db_net`에 연결하고
+worker를 Stalwart 공유 `mail_net`과 `dev_data_net`에 연결하지 않습니다. Mailpit UI/API(8025)는
+`opsflow_capture_net`으로 worker에서 닿으며, capture 전용이고 외부 전달이 없는 수용된 잔여 위험입니다. 기존 n8n 관리·queue network와 Mailpit의 다른 consumer network는
 유지됩니다. 이 source topology만으로 실제 peer 거부나 native SMTP capture를
 증명하지 않습니다.
 

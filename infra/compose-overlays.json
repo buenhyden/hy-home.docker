@@ -2,13 +2,6 @@
   "version": 1,
   "overlays": [
     {
-      "file": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml",
-      "base": "docker-compose.yml",
-      "purpose": "n8n manifest-outbox notifier workload network",
-      "required_inputs": [],
-      "owner_doc": "docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md"
-    },
-    {
       "file": "infra/08-ai/comfyui/docker-compose.egress.yml",
       "base": "infra/08-ai/comfyui/docker-compose.yml",
       "purpose": "ComfyUI outbound network, maintenance only",

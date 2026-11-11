@@ -237,6 +237,10 @@ services:
       mng_data_net: {}
       # Internal path to Ollama for the Local Node; Main and runners stay off it.
       n8n_ollama_net: {}
+      # Manifest-outbox notifier: dev-pg outbox functions only (not dev_data_net)
+      # and mailpit capture.
+      opsflow_notifier_db_net: {}
+      opsflow_capture_net: {}
       # Production webhook executions run here; the only Gateway peer.
       n8n_blog_ingest_net: {}
       # Reaches Alloy's OTLP receiver for the worker's workflow and node spans.

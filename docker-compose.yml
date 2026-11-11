@@ -64,6 +64,13 @@ networks:
   # n8n-worker <-> ollama only; shared by two includes, so declared here.
   n8n_ollama_net:
     internal: true
+  # n8n-worker <-> mailpit capture for the manifest-outbox notifier; shared by
+  # two includes, so declared here. Project-scoped name, no other peer.
+  opsflow_capture_net:
+    internal: true
+  # n8n-worker <-> dev-pg only, for the notifier's outbox functions.
+  opsflow_notifier_db_net:
+    internal: true
   n8n_worker_runner_net:
     name: n8n_worker_runner_net
     internal: true

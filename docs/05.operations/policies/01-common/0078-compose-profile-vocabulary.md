@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.18.0"
+version: "1.19.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -214,12 +214,14 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
   적용하기 전에 준비한다.
 - HOME 상시 변경이던 n8n Valkey ACL(`mng-valkey`), n8n Worker와 Ollama 사이
   `n8n_ollama_net`, Opsflow manifest-pipeline의 Airflow 코드 mount·Worker 망과
-  `OPSFLOW_SECRET_DIR` mount는 base 파일로 합쳤고 overlay 파일은 없다.
+  `OPSFLOW_SECRET_DIR` mount, Opsflow manifest-outbox notifier의 n8n Worker(`opsflow_notifier_db_net`,
+  `opsflow_capture_net`)·dev-pg(`opsflow_notifier_db_net`)·Mailpit(`opsflow_capture_net`) 망과 내부
+  `opsflow_notifier_db_net`·`opsflow_capture_net` 선언은 base 파일로 합쳤고 overlay 파일은 없다.
+  n8n Worker는 `dev_data_net`에 붙지 않는다.
 - 선택형 서비스 확장의 형식은 위 [Typed optional root overlays](#typed-optional-root-overlays)가 정한다.
 
 | Overlay | Base | 목적 | 필수 입력(이름만) | 적용 방식 | 소유 문서 |
 | --- | --- | --- | --- | --- | --- |
-| `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/compose.workflow.override.yml` | `docker-compose.yml` | n8n manifest outbox notifier 망 | 없음 | 명시적 `-f`, HOME 미적용 | [RUN-0053](../../runbooks/08-workflows-and-automation/0053-n8n.md) |
 | `infra/08-ai/comfyui/docker-compose.egress.yml` | `infra/08-ai/comfyui/docker-compose.yml` | ComfyUI 외부 망(유지보수 한정) | 없음 | 명시적 `-f`, HOME 미적용 | [RUN-0081](../../runbooks/09-ai-and-search/0081-comfyui.md) |
 | `infra/01-gateway/traefik/compose.window-ca.override.yml` | `infra/01-gateway/traefik/docker-compose.yml` | Traefik owner-window CA mount | 없음 | 명시적 `-f`, owner window 한정 | [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md) |
 

@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.24"
+version: "1.2.25"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-11"
 created: "2025-11-12"
 ---
 
@@ -112,7 +112,9 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 `docker-compose.yml`은 실제 실행자인
 `n8n-worker`와 `ollama`만 `n8n_ollama_net`(`internal:true`, 루트 Compose 선언)에 붙입니다. Main/Code Runner에는
 추가 망을 주지 않습니다. 기존 Ollama `edge_net`/`ai_net` peer 접근은 유지되므로
-이 망을 전체 API 격리라고 표현하지 않습니다. 저장된 Ollama Credential·Node
+이 망을 전체 API 격리라고 표현하지 않습니다.
+`n8n-worker`는 manifest-outbox notifier용으로 내부 `opsflow_notifier_db_net`(dev-pg와만 공유)과
+`opsflow_capture_net`(Mailpit과만 공유, 둘 다 루트 Compose 선언)에도 붙습니다. `dev_data_net`에는 붙지 않습니다. 별도 overlay 없이 base 파일에 있습니다. 저장된 Ollama Credential·Node
 실행과 거부·복구는 별도이며 Cloud 호출·fallback은 추가하지 않습니다.
 정확한 선택과 인수 절차는
 [워크플로와 자동화 런북 목록](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의

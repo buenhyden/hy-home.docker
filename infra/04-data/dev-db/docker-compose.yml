@@ -106,6 +106,8 @@ services:
       start_period: 30s
     networks:
       dev_data_net: {}
+      # n8n-worker reaches dev-pg only here, for the notifier's outbox functions.
+      opsflow_notifier_db_net: {}
 
   dev-platform-provision:
     profiles: [analytics-engineering]

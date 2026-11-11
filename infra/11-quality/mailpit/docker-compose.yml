@@ -44,6 +44,8 @@ services:
       mailpit_ingress_net: {}
       # SMTP capture for containers that should not reach Stalwart.
       mail_net: {}
+      # n8n-worker notifier capture (internal); no other peer.
+      opsflow_capture_net: {}
     labels:
       <<: *tier-label
       traefik.docker.network: mailpit_ingress_net
