@@ -1,6 +1,6 @@
 ---
 title: "W02 Archive and Safe Removal Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -121,6 +121,33 @@ the existing gates block it:
 
 No package is removed. Removal waits for the owner's approval of that batch.
 
+### Batch removal 2026-11-11
+
+The owner approved removing 0226, 0266, 0267, 0268 and 0269 as one batch. A
+fresh-context promotion check found every still-current meaning of four of
+them in a current owner. 0267 failed the check: its accepted risks live only
+in its Task (n8n and Gatus `/metrics`, and Loki, Tempo and Alloy on
+`HOST_LAN_BIND_IP`). Its removal is blocked until POL-0053, POL-0087 and
+POL-0096 record those risks and AD-0026 lists its four networks.
+
+Commit `58be65ebb` retires 0226, 0266, 0268 and 0269:
+
+- Lineage lines added: SPEC-0226 in the Ollama guide, and the Open WebUI
+  no-socket, no-terminal rule in its LAB guide. SPEC-0269 in AD-0007.
+- Inbound links in ADR-0061 and the SPEC-0267 Spec become plain text. The
+  terminal 0267 Task link is excused by link alignment.
+- The index rows are removed, and 226, 266, 268 and 269 join the Spec
+  `reserved_history`.
+- Gates: metadata selected 23 with 0 violations; links 0 failures; corpus
+  lifecycle and occupancy 0.
+
+Precondition 5 record: each removed body is last carried unchanged by
+`main` `e4fd7f5f3`, which is reachable from `main`. No body is uncommitted,
+reflog-only, branch-only or shallow-missing, and no hold is recorded. The
+scratch dry-run restored all 15 files of the five packages with zero byte
+mismatches. The post-merge restore and byte comparison for the four removed
+packages are recorded in this Task after the PR merges.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -128,6 +155,7 @@ No package is removed. Removal waits for the owner's approval of that batch.
 | W02 obligation assessment | 110 | W115 | archive-owner-assessment | ARC-01 to ARC-09 at main `e4fd7f5f3` | NOT_RUN | Assessment not yet run | required | - |
 | W02 obligation assessment result | 110 | W115 | archive-owner-assessment | ARC-01 to ARC-09 at main `e4fd7f5f3` | PASS | Per-ID table above: five KEEP; ARC-02, 05 and 08 GAP changed; ARC-07 code and ARC-08 manifest surface DEFER with scope | required | W02 obligation assessment |
 | W02 removal dry-run | 110 | W115 | removal-recovery-dry-run | Five ready packages at `e4fd7f5f3` in a scratch worktree | PASS | 15 files restored with zero byte mismatches; gates block the removal until reservation and seven link cutovers | optional | - |
+| W02 batch removal | 110 | W115 | package-retirement | Commit `58be65ebb` removing 0226, 0266, 0268, 0269; 0267 held | PASS | Promotion verified for four; reserved_history and link cutover done; metadata 0, links 0, lifecycle 0; post-merge byte comparison pending | required | - |
 
 ## Criterion Acceptance
 
