@@ -1,6 +1,6 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.9.0"
+version: "0.10.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -391,6 +391,66 @@ Plugin 0.4.3, contract v3 (`SUBMIT_CONTRACT_VERSION = 3`):
   passes `report_path`; the e2e harness writes its synthetic report the same
   way.
 
+### Retry and redrive (plugin 0.4.4, 2026-11-11)
+
+Outbox records ended `uncertain` when the plugin sent but got no confirmed
+answer (client timeout, connection reset, 5xx), and nothing resent them: the
+2026-11-10 devops report was lost until an operator resent it (E9). Causes
+seen: n8n took 10.7 s to accept the first request of the morning, Traefik
+answered 499 after 14.9 s while n8n never read the body, and the n8n JS runner
+cold start. Owner decision (2026-11-11): "Retry + later redrive".
+
+Idempotency evidence (2026-11-11, live Gateway): POSTing the same request
+bytes with the same idempotency key again returned HTTP 200 with
+`duplicate: true` and the same report id, and the report and candidate counts
+did not change. A resend therefore never creates a second report.
+
+Plugin 0.4.4, contract v3 unchanged (no new argument):
+
+- Retry inside the call: a DNS rejection, a `timeout`, `network`, `tls`,
+  `invalid_response` or `transport_protocol` transport failure, and an answer
+  outside 200/201 other than 409, 401/403 and 400/404/413/415/422 are sent
+  again with the same bytes while attempts stay at most 3 and the 60 s budget
+  remains, with the existing backoff. Each attempt is written to the record
+  first. 409 stays `conflict` and the listed 4xx stay `failed`; neither is
+  resent. A 401/403 returns `credential_rejected` and leaves the record
+  `uncertain` without a resend in the call (owner ruling 2026-11-11: a rejected
+  credential says nothing about the report, so a later redrive may deliver it
+  once the credential is fixed). A 200/201 answer with an invalid receipt stays `uncertain` and is
+  not resent in the call. Other transport failures (`address_not_allowed`,
+  local request or credential refusals) are not resent. 200 is treated like
+  201.
+- Redrive: after the current result is fixed, and only when the current send
+  did not end `delivery_uncertain` or `credential_rejected` (independent review:
+  resending then would only spend earlier records' attempts), the same call
+  resends at most 2
+  earlier outbox records of the same job that are `uncertain` (or `sending`
+  left by a crash, or `pending` with at least one attempt), have fewer than 5
+  attempts and were created within 7 days, one attempt each with the stored
+  bytes and key, inside a separate 30 s budget; no attempt starts with less than 10 s left,
+  and redrive stops after an attempt ends `delivery_uncertain` or
+  `credential_rejected` (scoped re-review). Before a record is resent it must
+  pass the gates of a fresh send (`_validate`, the request size limit,
+  `collected_at` ≤ `generated_at` ≤ now) and match what the plugin stored for
+  that run: `source_text` equal to its `report.md`, `source_sha256` and
+  `source_ref` equal to that `report.md` and `source-set.json`, and every item
+  still passing `check_item` against its stored page text. A record written by
+  anything else, or changed after it was written, is skipped (automated
+  security review of the redrive path). The creation time is the
+  stored request's `generated_at`, which the plugin sets when it prepares the
+  record; no new record field is added and file times are not used. Each
+  record is redriven under its `store.lock(key)` with a lock wait of at most
+  1 s; a busy lock is skipped. 200/201 with a valid receipt makes the record
+  `persisted` with the receipt stored as `_send` stores it; 409 and the
+  listed 4xx make it `conflict` or `failed` (401/403 leave it `uncertain`); anything else leaves it
+  `uncertain` with the attempt counted. Only records with exactly the
+  current-schema fields are considered; legacy records are skipped.
+- The current call's result fields never change; when at least one record
+  was resent the result gains `redrive` with only `attempted`, `persisted`
+  and `still_uncertain` counts. Metrics are unchanged.
+- The outbox record check now accepts up to 5 attempts, so a redriven record
+  stays readable by its own run's replay.
+
 ### Owner acceptance of criteria 12 to 14 (2026-11-11)
 
 The owner accepted criteria 12, 13 and 14 on 2026-11-11 ("Accept SPEC-0265
@@ -516,6 +576,7 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 | E7 | 12 | W7 | online backup with `c05e5b88`, restore test of that backup on a private copy with the new image (`user_version`, row counts, export states and hash, FK, integrity), Compose pin #779 then `docker compose --profile blog-ingestion up -d --no-deps blog-ingestion`, startup log and live DB check | switch window 2026-11-07 09:31-09:52 KST, image `bcefdc0c0b` `sha256:8ff847c9…` | PASS | backup integrity ok 16/121; copy and live DB `user_version` 5, counts, states and hash `221634a8…` unchanged, FK 0; `listening`, `export_enabled: true` | required | - |
 | E8 | 13 | W8 | `backfill-reports --config /run/config.json` with the 16 `--exclude-report-id`, dry run and rerun; apply only for 0.4.x reports received under schema 4 | live DB after the switch, 2026-11-07 | PASS | 0 targets, rerun 0; apply not needed (no 0.4.x report reached schema 4); `SOURCE_NOT_REPORT` 0 | required | - |
 | E9 | 12 | W9 | one observed delivered run per job (stored report, `sha256(report.md)` = outbox = Gateway hash, attestation, report and item export states, item kind) | scheduled runs 2026-11-09 to 2026-11-11 on plugin 0.4.3, read-only on server A | FAIL | news delivered 11-09 and 11-11, business ideas 11-09, 11-10 and 11-11: 5 reports, all hashes equal, `source_kind` `report`, no `KIND_MISMATCH`, all acknowledged by server B; devops delivered none (11-09 n8n `TimeoutExecutionCancelledError` on runner cold start, 11-10 `uncertain` and absent from the Gateway, 11-11 Hermes run failure); news 11-10 stopped by the Hermes loop guard before submitting; email and Telegram not checked from sent messages | required | - |
+| E19 | 1, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`RetryAndRedriveTests`: current 401/403 kept `uncertain` without redrive, unconfirmed current send skips redrive, redrive eligibility of `pending`, `sending` and an unparseable `generated_at`, timeout then 201, 502 then 201, 200 duplicate, 409 and 422 not resent, exhausted budget, redrive persisted with the receipt, ineligible records untouched, at most 2, current result unchanged, redrive failure, budget, busy lock; adapted `DeliveryBudgetTests` and the restart test); new tests fail on `602656a52`; `e2e-cache-contract.sh`; ruff check and format; `check-document-metadata.py --mode check-changed --base-ref origin/main`; `check-document-links.py --mode alignment` | plugin 0.4.4 working tree on `602656a52` after the independent review fixes | PASS | 497 tests OK under both umasks (15 failures and errors in this file on `602656a52` sources); e2e exit 0; ruff clean; metadata 2 selected, 0 violations; links 914 documents, 0 failures | required | - |
 | E14 | 12, 14 | W9 | `update-hermes-plugin.sh` (digest match, doctor), restart, `update-cron-prompts.sh` and prompt checks, `UMask` and `__pycache__` mode, address allowlist parsed by the plugin loader | plugin 0.4.2 from `82b117685`, 2026-11-07 09:29 KST | PASS | 9/9 MATCH, doctor OK, 3 prompts OK, `UMask=0077`, `__pycache__` 0700, allowlist parses | required | - |
 | E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports`, the conflict test and `test_prompt_sends_the_stored_report_on_a_conflict` | fix round 2 commits above `b9c016f10` | PASS | 438 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
 | E16 | 12, 14 | W9 | installed files against source by SHA-256, gateway start and `UMask`, `__pycache__` modes, allowlist parsed by the plugin loader, cron prompts reference `report_path` | plugin 0.4.3 from `main` `c0bcfb511`, read-only, 2026-11-08 17:30 KST | PASS | 4/4 files match; started 09:54:07 KST, `UMask=0077`; 0700/0600; 1 valid CIDR; 3 prompts on `report_path`, none on `report_markdown` | required | - |
@@ -526,12 +587,12 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E1, E10 | owner acceptance | @buenhyden |
+| 1 | pending | E1, E10, E19 | owner acceptance | @buenhyden |
 | 2 | pending | E1 | owner acceptance | @buenhyden |
 | 3 | pending | E2 | owner acceptance | @buenhyden |
 | 4 | pending | E1, E10 | owner acceptance | @buenhyden |
 | 5 | pending | E3 | owner acceptance | @buenhyden |
-| 6 | pending | E1, E10 | owner acceptance | @buenhyden |
+| 6 | pending | E1, E10, E19 | owner acceptance | @buenhyden |
 | 7 | pending | E4 | owner acceptance | @buenhyden |
 | 8 | pending | E4 | owner acceptance | @buenhyden |
 | 9 | pending | E4 | owner acceptance | @buenhyden |

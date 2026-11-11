@@ -12,7 +12,9 @@ import stat
 import sys
 import tempfile
 import threading
+import time
 import unittest
+from datetime import timedelta
 from pathlib import Path
 from unittest import mock
 
@@ -79,6 +81,7 @@ def setUpModule():
         ("REPORT_DIR", root / "r"),
         ("METRICS_DIR", root / "no-metrics-dir"),
         ("METRICS_STATE_DIR", root / "metrics-state"),
+        ("OUTBOX_DIR", root / "outbox"),
     ):
         patcher = mock.patch.object(tools, name, value)
         patcher.start()
@@ -127,7 +130,11 @@ def resolved_sources(items):
             "body_sha256": "a" * 64,
             "fetched_at": "2026-11-01T00:00:30.000Z",
             "collection_call_id": f"collector-{index}",
-            "text": "source text",
+            # Page text that backs the item, as a page that passed check_item would.
+            "text": " ".join(
+                [str(entry.get("title", "")), str(entry.get("body", ""))]
+                + [q for q in entry.get("source_quotes") or [] if isinstance(q, str)]
+            ),
         }
         for index, entry in enumerate(items)
     ]
@@ -139,8 +146,8 @@ def resolve_submitted(_root, _job, _run, _scheduled, items, _receipts):
 
 class DirectTimeoutNestingTests(unittest.TestCase):
     def test_attempt_outlasts_the_flow(self):
-        # A flow that answers after the attempt ends is recorded uncertain and
-        # never retried, so each attempt must outlast the whole n8n execution.
+        # A flow that answers after the attempt ends costs a resend with the same
+        # key, so each attempt must outlast the whole n8n execution.
         workflow = json.loads((WORKLOAD / "workflow.json").read_text())
         execution = workflow["settings"]["executionTimeout"]
         self.assertLess(execution, tools._HTTP_TIMEOUT)
@@ -527,24 +534,29 @@ class DeliveryBudgetTests(unittest.TestCase):
         self.assertEqual(sleep.call_count, 2)
 
     def test_non_retryable_transport_failure_is_not_replayed(self):
+        failure = tools.webhook_transport.TransportFailure("address_not_allowed")
+        result, post, sleep = self.run_delivery(failure)
+        self.assertEqual(result["error_type"], "address_not_allowed")
+        post.assert_called_once()
+        sleep.assert_not_called()
+
+    def test_tls_failure_is_resent_with_the_same_bytes(self):
         failure = tools.webhook_transport.TransportFailure("tls")
         result, post, sleep = self.run_delivery(failure)
+        self.assertEqual(result["error"], "delivery_uncertain")
         self.assertEqual(result["error_type"], "tls")
-        post.assert_called_once()
-        sleep.assert_not_called()
+        self.assertEqual(post.call_count, 3)
+        self.assertEqual(len({call.args[1] for call in post.call_args_list}), 1)
+        self.assertEqual(sleep.call_count, 2)
 
-    def test_http_failure_after_request_is_uncertain_and_not_retried(self):
-        retry = tools.webhook_transport.Response(503, b"{}", "application/json")
-        result, post, sleep = self.run_delivery(lambda *_args, **_kwargs: retry)
-        self.assertEqual(result["error"], "delivery_uncertain")
-        post.assert_called_once()
-        sleep.assert_not_called()
-
-        redirect = tools.webhook_transport.Response(302, b"", "text/plain")
-        result, post, sleep = self.run_delivery(lambda *_args, **_kwargs: redirect)
-        self.assertEqual(result["error"], "delivery_uncertain")
-        post.assert_called_once()
-        sleep.assert_not_called()
+    def test_http_failure_after_request_is_resent_and_stays_uncertain(self):
+        for status in (503, 302):
+            answer = tools.webhook_transport.Response(status, b"{}", "text/plain")
+            result, post, sleep = self.run_delivery(lambda *_a, a=answer, **_k: a)
+            self.assertEqual(result["error"], "delivery_uncertain")
+            self.assertEqual(result["status_code"], status)
+            self.assertEqual(post.call_count, 3)
+            self.assertEqual(sleep.call_count, 2)
 
     def test_invalid_credential_never_starts_transport(self):
         import json
@@ -911,13 +923,14 @@ class P11DirectDeliveryRegressionTests(unittest.TestCase):
         self.assertEqual(post.call_count, 1)
 
     def test_ambiguous_transport_failure_is_not_replayed_on_restart(self):
+        # Three attempts inside the call; a restart of the same run sends nothing.
         failure = tools.webhook_transport.TransportFailure("timeout", retryable=True)
         post = mock.Mock(side_effect=failure)
         first = self.run_submit(post)
         second = self.run_submit(post)
         self.assertEqual(first["error"], "delivery_uncertain")
         self.assertEqual(second["error"], "delivery_uncertain")
-        post.assert_called_once()
+        self.assertEqual(post.call_count, 3)
 
     def test_missing_receipts_are_rejected_before_network(self):
         post = mock.Mock(return_value=self.receipt())
@@ -1009,6 +1022,373 @@ class P11DirectDeliveryRegressionTests(unittest.TestCase):
         self.assertEqual(result, {"ok": False, "error": "record_unverifiable"})
         post.assert_not_called()
         self.assertEqual(record_path.read_bytes(), tampered_bytes)
+
+
+def gateway_answer(status, items=1):
+    """A Gateway answer; 200 is the duplicate of an earlier 201 for the same key."""
+    if status not in (200, 201):
+        return tools.webhook_transport.Response(status, b"{}", "application/json")
+    report_id = "11111111-1111-1111-1111-111111111111"
+    body = {
+        "id": report_id,
+        "persisted": True,
+        "duplicate": status == 200,
+        "status": "received",
+        "candidate_count": items,
+        "status_url": f"/v1/ingestions/{report_id}",
+    }
+    return tools.webhook_transport.Response(
+        status, json.dumps(body).encode(), "application/json"
+    )
+
+
+TIMEOUT = tools.webhook_transport.TransportFailure("timeout", retryable=True)
+
+
+class RetryAndRedriveTests(unittest.TestCase):
+    """Plugin 0.4.4: resend unconfirmed sends in the call, then redrive earlier ones."""
+
+    JOB = "25674fbc0bf3"
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.outbox = Path(temporary.name)
+        self.environment = {
+            "RESEARCH_WEBHOOK_URL": approved_url(),
+            "RESEARCH_WEBHOOK_SECRET": "synthetic",
+            "RESEARCH_WEBHOOK_ALLOWED_CIDRS": "10.250.1.128/32",
+        }
+
+    def call(self, post, execution, *, job=JOB, monotonic=None, outbox=None):
+        clock = (
+            mock.patch.object(tools.time, "monotonic", side_effect=monotonic)
+            if monotonic is not None
+            else mock.patch.object(tools.time, "monotonic", wraps=tools.time.monotonic)
+        )
+        with (
+            mock.patch.object(
+                tools, "_CTX", CronRun(job_id=job, execution_id=execution)
+            ),
+            mock.patch.object(tools, "OUTBOX_DIR", outbox or self.outbox),
+            mock.patch.dict("os.environ", self.environment, clear=False),
+            mock.patch.object(tools.webhook_transport, "post", side_effect=post),
+            mock.patch.object(tools.time, "sleep"),
+            clock,
+            mock.patch.object(
+                source_collection, "resolve", side_effect=resolve_submitted
+            ),
+        ):
+            return json.loads(tools.handle_submit_report(submission_args()))
+
+    def path(self, execution, job=JOB):
+        return self.outbox / f"{job}:{job}-{execution}.json"
+
+    def record(self, execution, job=JOB):
+        return json.loads(self.path(execution, job).read_bytes())
+
+    def seed(self, execution, job=JOB, generated_at=None, **fields):
+        """An earlier unconfirmed send: three timeouts, then optional edits."""
+        with mock.patch.object(tools, "_redrive", create=True, return_value=None):
+            result = self.call(mock.Mock(side_effect=TIMEOUT), execution, job=job)
+        self.assertEqual(result["error"], "delivery_uncertain")
+        record = {**self.record(execution, job), **fields}
+        if generated_at is not None:
+            payload = json.loads(base64.b64decode(record["payload_b64"]))
+            payload["generated_at"] = generated_at
+            raw = json.dumps(
+                payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+            ).encode()
+            record["payload_b64"] = base64.b64encode(raw).decode("ascii")
+            record["payload_sha256"] = hashlib.sha256(raw).hexdigest()
+        self.path(execution, job).write_bytes(
+            json.dumps(record, sort_keys=True).encode()
+        )
+        return record
+
+    @staticmethod
+    def recorder(answers):
+        """Answer posts in order; repeat the last answer; keep every request body."""
+        sent = []
+
+        def post(url, body, token, policy, *, timeout):
+            sent.append(body)
+            answer = answers[min(len(sent), len(answers)) - 1]
+            if isinstance(answer, BaseException):
+                raise answer
+            return answer
+
+        return post, sent
+
+    # Retry inside the call.
+
+    def test_timeout_then_201_is_persisted_after_two_attempts(self):
+        post, sent = self.recorder([TIMEOUT, gateway_answer(201)])
+        result = self.call(post, "retry-a")
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(result["status"], "persisted")
+        self.assertEqual(len(sent), 2)
+        self.assertEqual(sent[0], sent[1])
+        record = self.record("retry-a")
+        self.assertEqual((record["status"], record["attempts"]), ("persisted", 2))
+
+    def test_502_then_201_is_persisted(self):
+        post, _sent = self.recorder([gateway_answer(502), gateway_answer(201)])
+        result = self.call(post, "retry-b")
+        self.assertEqual(result["status"], "persisted")
+        self.assertEqual(self.record("retry-b")["attempts"], 2)
+
+    def test_200_duplicate_after_a_lost_answer_is_persisted(self):
+        post, _ = self.recorder([TIMEOUT, gateway_answer(200)])
+        result = self.call(post, "retry-dup")
+        self.assertEqual(result["status"], "persisted")
+        self.assertEqual(result["status_code"], 200)
+
+    def test_terminal_answers_are_not_resent(self):
+        for status, state in ((409, "conflict"), (422, "failed")):
+            post, sent = self.recorder([gateway_answer(status), gateway_answer(201)])
+            result = self.call(post, f"terminal-{status}")
+            self.assertEqual(result["error"], "delivery_failed")
+            self.assertEqual(len(sent), 1)
+            record = self.record(f"terminal-{status}")
+            self.assertEqual((record["status"], record["attempts"]), (state, 1))
+
+    def test_exhausted_budget_stays_uncertain_within_three_attempts(self):
+        ticks = iter(range(0, 10_000, 25))
+        post, sent = self.recorder([TIMEOUT])
+        result = self.call(post, "budget", monotonic=lambda: next(ticks))
+        self.assertEqual(result["error"], "delivery_uncertain")
+        record = self.record("budget")
+        self.assertEqual(record["status"], "uncertain")
+        self.assertLessEqual(record["attempts"], 3)
+        self.assertLess(len(sent), 3)
+
+    # Redrive of earlier records.
+
+    def test_earlier_uncertain_record_is_redriven_once_and_persisted(self):
+        earlier = self.seed("earlier-1")
+        post, sent = self.recorder([gateway_answer(201)])
+        result = self.call(post, "now-1")
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(
+            result["redrive"], {"attempted": 1, "persisted": 1, "still_uncertain": 0}
+        )
+        self.assertEqual(len(sent), 2)
+        self.assertEqual(sent[1], base64.b64decode(earlier["payload_b64"]))
+        record = self.record("earlier-1")
+        self.assertEqual((record["status"], record["attempts"]), ("persisted", 4))
+        receipt = record["receipt"]
+        self.assertEqual(set(receipt), {"status", "content_type", "body_b64"})
+        self.assertEqual(receipt["status"], 201)
+        self.assertEqual(
+            base64.b64decode(receipt["body_b64"]), gateway_answer(201).body
+        )
+        # The redriven record is valid for its own run: a replay reads the receipt.
+        post, sent = self.recorder([gateway_answer(201)])
+        replay = self.call(post, "earlier-1")
+        self.assertEqual(replay["status"], "already_persisted")
+
+    def test_ineligible_records_are_not_touched(self):
+        old = tools.datetime.now(tools.UTC) - timedelta(days=8)
+        self.seed("other-job", job="6eabd835f969")
+        self.seed("too-old", generated_at=source_collection.timestamp(old))
+        self.seed("failed", status="failed")
+        self.seed("five", attempts=5)
+        legacy = self.outbox / f"{self.JOB}:legacy-1.json"
+        legacy.write_bytes(
+            json.dumps(
+                {
+                    "idempotency_key": "legacy-1",
+                    "job_id": self.JOB,
+                    "status": "uncertain",
+                    "attempts": 1,
+                    "url": approved_url(),
+                    "submitted_at": "2026-11-10T00:00:00Z",
+                }
+            ).encode()
+        )
+        legacy.chmod(0o600)
+        before = {path: path.read_bytes() for path in self.outbox.glob("*.json")}
+        post, sent = self.recorder([gateway_answer(201)])
+        result = self.call(post, "now-2")
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(len(sent), 1)
+        self.assertNotIn("redrive", result)
+        for path, raw in before.items():
+            self.assertEqual(path.read_bytes(), raw, path.name)
+
+    def test_at_most_two_records_are_redriven(self):
+        for name in ("e-1", "e-2", "e-3"):
+            self.seed(name)
+        post, sent = self.recorder([gateway_answer(201)])
+        result = self.call(post, "now-3")
+        self.assertEqual(result["redrive"]["attempted"], 2)
+        self.assertEqual(len(sent), 3)
+        statuses = sorted(self.record(name)["status"] for name in ("e-1", "e-2", "e-3"))
+        self.assertEqual(statuses, ["persisted", "persisted", "uncertain"])
+
+    def test_redrive_never_changes_the_current_result(self):
+        with tempfile.TemporaryDirectory() as clean:
+            post, _ = self.recorder([gateway_answer(201)])
+            baseline = self.call(post, "now-4", outbox=Path(clean))
+        baseline.pop("redrive", None)
+        for answers in (
+            [gateway_answer(201)],
+            [gateway_answer(201), gateway_answer(502)],
+            [gateway_answer(201), RuntimeError("unexpected")],
+            [gateway_answer(201), gateway_answer(422)],
+        ):
+            with self.subTest(answers=answers[-1]):
+                self.setUp()
+                self.seed("earlier-4")
+                post, _ = self.recorder(answers)
+                result = self.call(post, "now-4")
+                self.assertIn("redrive", result)
+                result.pop("redrive")
+                self.assertEqual(result, baseline)
+
+    def test_redrive_outcomes_are_recorded(self):
+        self.seed("e-502")
+        post, _ = self.recorder([gateway_answer(201), gateway_answer(502)])
+        result = self.call(post, "now-5")
+        self.assertEqual(
+            result["redrive"], {"attempted": 1, "persisted": 0, "still_uncertain": 1}
+        )
+        record = self.record("e-502")
+        self.assertEqual((record["status"], record["attempts"]), ("uncertain", 4))
+        self.seed("e-409")
+        post, _ = self.recorder([gateway_answer(201), gateway_answer(409)])
+        self.call(post, "now-6")
+        self.assertEqual(self.record("e-409")["status"], "conflict")
+
+    def check_rejected_credential_redrive(self, code):
+        # A 401/403 judges the credential, not the stored report: keep it for later.
+        self.seed(f"e-{code}")
+        post, sent = self.recorder([gateway_answer(201), gateway_answer(code)])
+        result = self.call(post, f"now-{code}")
+        record = self.record(f"e-{code}")
+        self.assertEqual((record["status"], record["attempts"]), ("uncertain", 4))
+        self.assertEqual(
+            result["redrive"], {"attempted": 1, "persisted": 0, "still_uncertain": 1}
+        )
+        self.assertEqual(len(sent), 2)
+
+    def test_redrive_keeps_a_record_after_a_401(self):
+        self.check_rejected_credential_redrive(401)
+
+    def test_redrive_keeps_a_record_after_a_403(self):
+        self.check_rejected_credential_redrive(403)
+
+    def forge(self, execution, change):
+        record = self.record(execution)
+        payload = json.loads(base64.b64decode(record["payload_b64"]))
+        change(payload)
+        raw = json.dumps(
+            payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode()
+        record["payload_b64"] = base64.b64encode(raw).decode("ascii")
+        record["payload_sha256"] = hashlib.sha256(raw).hexdigest()
+        self.path(execution).write_bytes(json.dumps(record, sort_keys=True).encode())
+
+    def test_forged_or_unbound_records_are_never_redriven(self):
+        def retitle(payload):
+            payload["items"][0]["title"] = "Contoso ships version 9.9 on 31 December"
+
+        def other_run(payload):
+            payload["run_id"] = "no-such-run-0001"
+
+        def forged_report(payload):
+            payload["source_text"] = payload["source_text"] + " appended"
+
+        for run, change in (
+            ("e-retitled", retitle),
+            ("e-unbound", other_run),
+            ("e-report", forged_report),
+        ):
+            self.seed(run)
+            if run == "e-retitled":
+                # Only the item changes; the report and source set still match.
+                self.forge(run, retitle)
+            else:
+                self.forge(run, change)
+        post, sent = self.recorder([gateway_answer(201), gateway_answer(201)])
+        result = self.call(post, "now-forged")
+        self.assertNotIn("redrive", result)
+        self.assertEqual(len(sent), 1)
+        for run in ("e-retitled", "e-unbound", "e-report"):
+            self.assertEqual(self.record(run)["attempts"], 3, run)
+
+    def test_redrive_stops_after_a_failure_on_the_first_record(self):
+        self.seed("e-first")
+        self.seed("e-second")
+        post, sent = self.recorder([gateway_answer(201), gateway_answer(401)])
+        result = self.call(post, "now-stop")
+        self.assertEqual(result["redrive"]["attempted"], 1)
+        self.assertEqual(len(sent), 2)
+
+    def test_current_rejected_credential_stays_uncertain_and_skips_redrive(self):
+        self.seed("e-wait")
+        for code in (401, 403):
+            post, sent = self.recorder([gateway_answer(code)])
+            result = self.call(post, f"cred-{code}")
+            self.assertEqual(result["error"], "credential_rejected", code)
+            record = self.record(f"cred-{code}")
+            self.assertEqual((record["status"], record["attempts"]), ("uncertain", 1))
+            self.assertEqual(len(sent), 1, code)
+            self.assertNotIn("redrive", result)
+        self.assertEqual(self.record("e-wait")["attempts"], 3)
+
+    def test_unconfirmed_current_send_skips_redrive(self):
+        self.seed("e-later")
+        with mock.patch.object(tools, "_redrive", wraps=tools._redrive) as redrive:
+            result = self.call(mock.Mock(side_effect=TIMEOUT), "now-down")
+        self.assertEqual(result["error"], "delivery_uncertain")
+        redrive.assert_not_called()
+        self.assertEqual(self.record("e-later")["attempts"], 3)
+
+    def test_redrive_eligibility_by_status_and_timestamp(self):
+        cases = (
+            ("e-pending-1", {"status": "pending", "attempts": 1}, None, "persisted"),
+            ("e-sending", {"status": "sending"}, None, "persisted"),
+            ("e-pending-0", {"status": "pending", "attempts": 0}, None, "pending"),
+            ("e-bad-time", {}, "not-a-time", "uncertain"),
+        )
+        for run, fields, generated_at, expected in cases:
+            self.seed(run, generated_at=generated_at, **fields)
+            post, _ = self.recorder([gateway_answer(201), gateway_answer(201)])
+            self.call(post, f"now-{run}")
+            self.assertEqual(self.record(run)["status"], expected, run)
+
+    def test_failed_current_call_still_redrives(self):
+        self.seed("e-fail")
+        post, _sent = self.recorder([gateway_answer(422), gateway_answer(201)])
+        result = self.call(post, "now-7")
+        self.assertEqual(result["error"], "delivery_failed")
+        self.assertEqual(result["redrive"]["persisted"], 1)
+
+    def test_redrive_budget_bounds_the_work(self):
+        self.seed("e-budget")
+        post, sent = self.recorder([gateway_answer(201)])
+        with mock.patch.object(tools, "_REDRIVE_BUDGET", 0, create=True):
+            result = self.call(post, "now-8")
+        self.assertNotIn("redrive", result)
+        self.assertEqual(len(sent), 1)
+
+    def test_busy_lock_is_skipped_without_waiting_past_the_budget(self):
+        self.seed("e-busy")
+        before = self.path("e-busy").read_bytes()
+        _, _, records = tools._modules()
+        store = records.PrivateRecords(self.outbox)
+        self.addCleanup(store.close)
+        post, sent = self.recorder([gateway_answer(201)])
+        with store.lock(f"{self.JOB}:{self.JOB}-e-busy"):
+            started = time.monotonic()
+            result = self.call(post, "now-9")
+            elapsed = time.monotonic() - started
+        self.assertNotIn("redrive", result)
+        self.assertEqual(len(sent), 1)
+        self.assertEqual(self.path("e-busy").read_bytes(), before)
+        self.assertLess(elapsed, 5)
 
 
 class P11CollectionToolTests(unittest.TestCase):
