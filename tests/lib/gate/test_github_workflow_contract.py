@@ -1617,8 +1617,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "missing-timeout",
                 ".github/workflows/ci-quality.yml",
-                "  main-security:\n    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n    permissions:\n      contents: read\n      security-events: write\n    runs-on: ubuntu-latest\n    timeout-minutes: 15\n",
-                "  main-security:\n    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n    permissions:\n      contents: read\n      security-events: write\n    runs-on: ubuntu-latest\n",
+                "  main-security:\n    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n    permissions:\n      contents: read\n      security-events: write\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n",
+                "  main-security:\n    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n    permissions:\n      contents: read\n      security-events: write\n    runs-on: ubuntu-24.04\n",
                 "workflow-job-timeout-mismatch",
             ),
             (
