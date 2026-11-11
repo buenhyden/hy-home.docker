@@ -1,6 +1,6 @@
 ---
 title: "Hermes OTLP Observability Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -88,6 +88,11 @@ minutes; Prometheus holds the plugin series (`hermes_token_usage_total` by
 `hermes_session_count_total`). No cost series exists because the subscription
 model is not priced, and turn exit reasons need the plugin's structured events
 (`logs.events.enabled: true`), which are off by default.
+
+After the owner turned the events on (12:08 KST), the Loop exit reasons panel
+returned `text_response(finish_reason=stop)`. Exit reasons carry a
+parenthesized detail, so the panel query now strips it with `label_format`
+and groups by cause; the live query returned `text_response` = 6 over six hours.
 
 ## Evidence
 
