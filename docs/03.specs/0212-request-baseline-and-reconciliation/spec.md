@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.46.0"
+version: "1.47.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -163,6 +163,12 @@ The owner decision of 2026-11-11 adds criterion 107 and W112 in TSK-0054 for
 the failing Hermes `devops` daily brief. It authorizes investigation and a
 repository-side fix only; Hermes agent configuration outside the repository
 and any paid model change stay owner decisions.
+
+The owner decision of 2026-11-11 adds criterion 108 and W113 in TSK-0055 to
+collect host-run Hermes traces, logs and gateway metrics through an
+authenticated Alloy OTLP receiver. Hermes configuration under `~/.hermes`
+and the token value stay owner actions; runtime changes need their own
+approval.
 
 ## Scope
 
@@ -784,6 +790,10 @@ hold, authorization and recovery requirements have been established.
      scheduled run submits a final report through the Gateway and the
      `HermesResearchNoSuccess` and `HermesResearchBlocked` alerts for it
      resolve, or records the external cause as an explicit residual.
+108. TSK-0055 collects host-run Hermes OTLP traces, logs and gateway metrics
+     through a loopback-only, bearer-authenticated Alloy receiver into Tempo,
+     Loki and Prometheus, shows them in the Hermes Grafana dashboard, and
+     sends only Hermes-redacted log content.
 
 ## Failure Conditions
 
