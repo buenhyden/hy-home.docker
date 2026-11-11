@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.8.0"
+version: "1.9.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-11"
 ---
 
 # Agent Quality and Security Standards
@@ -108,11 +108,12 @@ main-push security remains a post-merge observation.
 - Retire one-time QA in this order: transfer a continuing guarantee to its
   current owner; remove callers and registration; remove exclusive helpers,
   fixtures and tests; preserve useful actual results in existing Task/history.
-- Stage 98 (`docs/98.archive/`) holds no records. Its only check is corpus
-  lifecycle occupancy, which fails on any tracked file there other than the
-  README; no archive integrity, retention, recovery, Tombstone, migration-ledger
-  or archive-link check exists. Retired numbers come from the Registry
-  `reserved_history`, never from archive files.
+- Stage 98 holds no records, as the
+  [documentation protocol](documentation-protocol.md#document-retention-and-retirement)
+  defines. Its only check is corpus lifecycle occupancy, which fails on any
+  tracked file there other than the README, and checks that README like any
+  other; no archive integrity, retention, recovery, Tombstone,
+  migration-ledger or archive-link check exists.
 - Shared implementation libraries under `scripts/lib/` and executable QA
   owners retain meaningful test evidence. A nonmutating companion library
   outside that shared surface may be retained through a proven current
@@ -129,6 +130,11 @@ main-push security remains a post-merge observation.
   criteria. A removed check must have a disposition and any continuing owner.
   Failed required checks remain failures until repaired or deliberately retired
   under the approved contract.
+- When an implementation contradicts its canonical rule, record the conflict,
+  the decision and the change order in the current Task, and change the
+  producer, reader, schema, current guidance and tests in one logical change.
+  Never make the check pass by editing only its test expectation or by only
+  relaxing the rule, and never adopt an unapproved test constant as policy.
 
 ### 4. Execution Boundary
 

@@ -1,10 +1,10 @@
 ---
 title: "Task Checklists"
-version: "1.4.2"
+version: "1.5.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-11"
 ---
 
 # Task Checklists
@@ -57,11 +57,9 @@ No exception is granted here; a separately authorized operation follows [Approva
       may wait once it is [ready for removal review](sdlc.md#sequence);
       cancelled criteria do not waive remaining Spec acceptance evidence, and
       only a `not-required` decision closes a criterion without PASS.
-- [ ] Before removing a retired document, summarize its still-current meaning
-      into the owner's Traceability, update every inbound consumer, and add its
-      number to the Registry `reserved_history`. Delete a Stage 03 package only
-      when it is ready for removal review and its removal is approved, and record
-      that approval and each package's criterion state in the deleting Task.
+- [ ] Before removing a retired document, meet the
+      [retirement preconditions](documentation-protocol.md#retirement-preconditions);
+      delete a Stage 03 package only as the [SDLC](sdlc.md#sequence) allows.
 - [ ] Distinguish the worktree, index, and commit a review examined, and report
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.
