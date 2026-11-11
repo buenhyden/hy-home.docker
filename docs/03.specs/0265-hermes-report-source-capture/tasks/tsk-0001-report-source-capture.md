@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0265-TSK-0001"
 parent_ids:
@@ -464,6 +464,19 @@ recorded as pending with the owner's decision noted; it becomes accepted when
 a later delivered devops run resolves E9. E17 now resolves E11 (same Check,
 W5). Criteria 1 to 11 stay pending.
 
+### First scheduled devops delivery (2026-11-12)
+
+On plugin 0.4.4 the 2026-11-12 devops run delivered on its scheduled run (report
+`b1c520ab…`, first send attempt 201), so every job has now delivered and E20
+resolves E9; criterion 12 is recorded as accepted per the owner's 2026-11-11
+decision. The same morning news and business ideas stored complete reports but
+sent nothing: news was refused with `source_mismatch` because 1 of 25 items
+carried a receipt id matching none of the run's collected receipts, and
+business ideas dropped a `source_quality` item without its receipt, so its one
+resubmission returned `source_receipts_required`. Both are agent slips that a
+single receipt error turns into a lost report; pairing receipts by `item_id`
+in the plugin is proposed to the owner as a follow-up.
+
 ### Design deviations
 
 - Outcome mapping: `report_store_unavailable` and `record_unavailable` are
@@ -577,6 +590,7 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 | E8 | 13 | W8 | `backfill-reports --config /run/config.json` with the 16 `--exclude-report-id`, dry run and rerun; apply only for 0.4.x reports received under schema 4 | live DB after the switch, 2026-11-07 | PASS | 0 targets, rerun 0; apply not needed (no 0.4.x report reached schema 4); `SOURCE_NOT_REPORT` 0 | required | - |
 | E9 | 12 | W9 | one observed delivered run per job (stored report, `sha256(report.md)` = outbox = Gateway hash, attestation, report and item export states, item kind) | scheduled runs 2026-11-09 to 2026-11-11 on plugin 0.4.3, read-only on server A | FAIL | news delivered 11-09 and 11-11, business ideas 11-09, 11-10 and 11-11: 5 reports, all hashes equal, `source_kind` `report`, no `KIND_MISMATCH`, all acknowledged by server B; devops delivered none (11-09 n8n `TimeoutExecutionCancelledError` on runner cold start, 11-10 `uncertain` and absent from the Gateway, 11-11 Hermes run failure); news 11-10 stopped by the Hermes loop guard before submitting; email and Telegram not checked from sent messages | required | - |
 | E19 | 1, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`RetryAndRedriveTests`: current 401/403 kept `uncertain` without redrive, unconfirmed current send skips redrive, redrive eligibility of `pending`, `sending` and an unparseable `generated_at`, timeout then 201, 502 then 201, 200 duplicate, 409 and 422 not resent, exhausted budget, redrive persisted with the receipt, ineligible records untouched, at most 2, current result unchanged, redrive failure, budget, busy lock; adapted `DeliveryBudgetTests` and the restart test); new tests fail on `602656a52`; `e2e-cache-contract.sh`; ruff check and format; `check-document-metadata.py --mode check-changed --base-ref origin/main`; `check-document-links.py --mode alignment` | plugin 0.4.4 working tree on `602656a52` after the independent review fixes | PASS | 497 tests OK under both umasks (15 failures and errors in this file on `602656a52` sources); e2e exit 0; ruff clean; metadata 2 selected, 0 violations; links 914 documents, 0 failures | required | - |
+| E20 | 12 | W9 | one observed delivered run per job (stored report, `sha256(report.md)` = outbox = Gateway hash, attestation, report and item export states, item kind) | scheduled runs 2026-11-09 to 2026-11-12, plugins 0.4.3 and 0.4.4, read-only on server A and the Gateway | PASS | every job has an observed delivered scheduled run: news 2026-11-09 (`a3504a6f…`) and 2026-11-11 (`167e2022…`); business ideas 2026-11-09 (`d8edd7f5…`), 2026-11-10 (`20a105c8…`) and 2026-11-11 (`d7c7bce4…`); devops 2026-11-12 (`b1c520ab…`, 7127 characters, 8 `devops` items `ready`, first send attempt 201). In each, `sha256(report.md)` = outbox = Gateway stored hash, `source_kind` `report`, attested, item kinds correct. Undelivered runs (2026-11-12 news `source_mismatch`, business `source_receipts_required`) are producer-side receipt errors recorded in the Task | required | E9 |
 | E14 | 12, 14 | W9 | `update-hermes-plugin.sh` (digest match, doctor), restart, `update-cron-prompts.sh` and prompt checks, `UMask` and `__pycache__` mode, address allowlist parsed by the plugin loader | plugin 0.4.2 from `82b117685`, 2026-11-07 09:29 KST | PASS | 9/9 MATCH, doctor OK, 3 prompts OK, `UMask=0077`, `__pycache__` 0700, allowlist parses | required | - |
 | E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports`, the conflict test and `test_prompt_sends_the_stored_report_on_a_conflict` | fix round 2 commits above `b9c016f10` | PASS | 438 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
 | E16 | 12, 14 | W9 | installed files against source by SHA-256, gateway start and `UMask`, `__pycache__` modes, allowlist parsed by the plugin loader, cron prompts reference `report_path` | plugin 0.4.3 from `main` `c0bcfb511`, read-only, 2026-11-08 17:30 KST | PASS | 4/4 files match; started 09:54:07 KST, `UMask=0077`; 0700/0600; 1 valid CIDR; 3 prompts on `report_path`, none on `report_markdown` | required | - |
@@ -598,7 +612,7 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 | 9 | pending | E4 | owner acceptance | @buenhyden |
 | 10 | pending | E5, E11, E12 | owner acceptance | @buenhyden |
 | 11 | pending | E6 | owner acceptance | @buenhyden |
-| 12 | pending | E7, E9, E14, E16 | owner accepted 2026-11-11; held pending because required E9 is FAIL (devops undelivered) until a later PASS resolves it | @buenhyden |
+| 12 | accepted | E7, E9, E14, E16, E20 | owner accepted 2026-11-11; E20 (2026-11-12 devops delivered on its scheduled run) resolves E9 | @buenhyden |
 | 13 | accepted | E8 | owner accepted 2026-11-11 | @buenhyden |
 | 14 | accepted | E18 | owner accepted 2026-11-11 | @buenhyden |
 
