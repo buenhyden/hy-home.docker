@@ -1,10 +1,10 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.6.0"
+version: "1.6.1"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-11"
 runtime: "codex"
 ---
 
@@ -26,7 +26,13 @@ directory only, so a session started at the root does not load a folder guide
 below it. The shared PreToolUse dispatcher (`scripts/hooks/agent-event-hook.sh`,
 through `scripts/lib/hooks/folder_guides.py`) adds the full content of the
 nearest Git-tracked folder guide to the model context once per session, the
-first time `apply_patch` touches a file below it. It also adds a one-line
+first time `apply_patch` touches a file below it, whether called directly or
+from inside a code-mode `exec` call. For `exec` the shared payload parser
+accepts only `tools.apply_patch(<one literal>)`, the form Codex emits, and
+denies other `apply_patch` references, non-call uses of `tools`, escapes and a
+few rare code-building words. It is a best-effort lexical check, not a
+JavaScript parser or a sandbox: deliberately obfuscated code stays unseen, like
+a shell write. It also adds a one-line
 reminder naming that guide on each edit, and after a SessionStart `compact`
 or `resume` an instruction to re-read it. A shell read does not trigger it.
 The folder `CLAUDE.md` import shims are Claude's route; Codex does not read
@@ -91,7 +97,10 @@ Hook delivery also depends on user-global Codex state this adapter does not
 own: project trust and hook enablement. Observed on 2026-10-13 with codex-cli
 0.162.1, a dated observation the Stage 03 record holds:
 `apply_patch` triggers PostToolUse and its `additionalContext` reaches the
-model. Not observed: a PreToolUse denial of `apply_patch`, and delivery under
+model. A command run through `tools.exec_command` inside `exec`, or any other
+runtime file API, is not parsed, so shell-command and edit policy do not see
+it; that is an accepted residual. Not observed: a PreToolUse denial of
+`apply_patch`, and delivery under
 another trust or enablement state; record those as unverified until directly
 observed within separate authorization. Codex's sandbox cannot start on this
 host, as the [environment constraints](../.agents/governance/environment-constraints.md#1-hard-constraints)
