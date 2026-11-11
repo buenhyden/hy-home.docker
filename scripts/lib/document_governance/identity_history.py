@@ -697,10 +697,15 @@ def validate_allocation_transition(
             )
         entries[match[3]] = match[2]
     previous: dict[str, set[int]] = {}
+    # Requirement child numbers (FR/NFR/IF) live in requirement bodies.
+    previous_children: dict[str, set[int]] = {}
     for path, oid in entries.items():
         if not path.endswith(".md"):
             continue
         text = git("cat-file", "blob", oid, maximum=MAX_IDENTITY_SOURCE_BYTES)
+        if path.startswith("docs/01.requirements/"):
+            for line in text.splitlines():
+                _record_line(path, line, previous_children)
         try:
             identity = parse_frontmatter_text(text).get("artifact_id")
         except ValueError as error:
@@ -772,6 +777,11 @@ def validate_allocation_transition(
                 candidate_origins[path] = origin
         for name, numbers in slots.items():
             observed.setdefault(name, set()).update(numbers)
+    current_children: dict[str, set[int]] = {}
+    for path in current:
+        if path.startswith("docs/01.requirements/"):
+            for line in _read_identity_source(root / path).splitlines():
+                _record_line(path, line, current_children)
 
     merged_proven_paths: set[str] = set()
     merged_owners: dict[tuple[str, int], set[str]] = {}
@@ -1149,6 +1159,27 @@ def validate_allocation_transition(
                     "identity-allocation-not-advanced",
                     f"identity_spaces.{name}",
                     "new identity requires atomic allocation advancement",
+                )
+            )
+    requirement = registry.identity_spaces.get("requirement")
+    for child_name, child in (
+        requirement.child_spaces.items() if requirement is not None else ()
+    ):
+        key = f"requirement.{child_name}"
+        # A body may mention an unissued ID (a malformed cross-reference); only
+        # numbers within the allocation were ever issued.
+        removed = {
+            number
+            for number in previous_children.get(key, set())
+            - current_children.get(key, set())
+            if number <= child.high_water
+        }
+        if removed - frozenset(child.reserved_history):
+            findings.append(
+                RegistryFinding(
+                    "identity-retired-not-reserved",
+                    f"identity_spaces.requirement.child_spaces.{child_name}",
+                    "a removed requirement child must be added to reserved_history",
                 )
             )
     return tuple(sorted(findings))

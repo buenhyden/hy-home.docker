@@ -285,6 +285,108 @@ class IdentityHistoryTests(unittest.TestCase):
             )
             self.assertNotIn("identity-retired-not-reserved", codes(reserved))
 
+    def test_retirement_check_spares_moves_and_partial_removal(self) -> None:
+        """A moved document or a package that loses one Task retires nothing;
+        a removed requirement child must be reserved like a package."""
+
+        from scripts.lib.document_governance import registry as registry_module
+
+        registry = load_registry()
+        spaces = registry.identity_spaces
+
+        def live(space):
+            return next(
+                n
+                for n in range(1, space.high_water + 1)
+                if n not in space.reserved_history
+            )
+
+        adr, spec = live(spaces["adr"]), live(spaces["spec"])
+        child_name = next(
+            name
+            for name in spaces["requirement"].child_spaces
+            if name.endswith(".FR")
+            and int(name[4:8]) not in spaces["requirement"].reserved_history
+        )
+        package = int(child_name[4:8])
+        requirement_path = f"docs/01.requirements/{package:04d}-x.md"
+        requirement_id = f"REQ-{package:04d}"
+        unissued = spaces["requirement"].child_spaces[child_name].high_water + 5
+        # FR-0002 is issued; the unissued mention models a malformed
+        # cross-reference whose removal retires nothing.
+        child_line = (
+            f"{requirement_id}-FR-0001\n{requirement_id}-FR-0002\n"
+            f"see {requirement_id}-FR-{unissued:04d}\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            files = {
+                "docs/99.templates/registry.json": (
+                    registry_module.DEFAULT_REGISTRY.read_text(encoding="utf-8")
+                ),
+                f"docs/02.architecture/decisions/{adr:04d}-old.md": (
+                    f'---\nartifact_id: "ADR-{adr:04d}"\n---\n'
+                ),
+                f"docs/03.specs/{spec:04d}-x/spec.md": (
+                    f'---\nartifact_id: "SPEC-{spec:04d}"\n---\n'
+                ),
+                f"docs/03.specs/{spec:04d}-x/tasks/tsk-0001-x.md": (
+                    f'---\nartifact_id: "SPEC-{spec:04d}-TSK-0001"\n---\n'
+                ),
+                requirement_path: (
+                    f'---\nartifact_id: "{requirement_id}"\n---\n{child_line}'
+                ),
+            }
+            for relative, text in files.items():
+                (root / relative).parent.mkdir(parents=True, exist_ok=True)
+                (root / relative).write_text(text, encoding="utf-8")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "base")
+            base = self._git(root, "rev-parse", "HEAD").strip()
+            current = {
+                f"docs/02.architecture/decisions/{adr:04d}-new.md": f"ADR-{adr:04d}",
+                f"docs/03.specs/{spec:04d}-x/spec.md": f"SPEC-{spec:04d}",
+                requirement_path: requirement_id,
+            }
+
+            def retired(candidate):
+                return {
+                    item.path
+                    for item in identity_history.validate_allocation_transition(
+                        root, candidate, current, base
+                    )
+                    if item.code == "identity-retired-not-reserved"
+                }
+
+            (root / requirement_path).write_text(
+                f'---\nartifact_id: "{requirement_id}"\n---\n{requirement_id}-FR-0001\n',
+                encoding="utf-8",
+            )
+            child_path = f"identity_spaces.requirement.child_spaces.{child_name}"
+            self.assertEqual({child_path}, retired(registry))
+
+            requirement = spaces["requirement"]
+            children = dict(requirement.child_spaces)
+            child = children[child_name]
+            children[child_name] = dataclasses.replace(
+                child, reserved_history=(*child.reserved_history, 2)
+            )
+            reserved = dict(spaces)
+            reserved["requirement"] = dataclasses.replace(
+                requirement, child_spaces=MappingProxyType(children)
+            )
+            self.assertEqual(
+                set(),
+                retired(
+                    dataclasses.replace(
+                        registry, identity_spaces=MappingProxyType(reserved)
+                    )
+                ),
+            )
+
     def test_reserved_history_cannot_drop_a_number(self) -> None:
         from scripts.lib.document_governance import registry as registry_module
 
