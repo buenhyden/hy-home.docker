@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.6.0"
+version: "1.7.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-11"
 ---
 
 # Software Development Lifecycle
@@ -35,8 +35,8 @@ Spec Package, the current Task, and the registered Stage 99 contract.
 Research, design drafts, and isolated trials never require a future
 approval, commit, or digest before they start. Activating a new shared norm,
 switching a numbering scheme, or applying a retention policy needs the
-approval for that scope first, and a still-valid earlier approval for the
-same scope is reused rather than asked again.
+approval for that scope first; reusing an approval follows
+[approval boundaries](approval-boundaries.md#authorization-source-and-records).
 
 Reuse approved Requirement and Architecture inputs when they already cover the
 change. Within Stage 03, clarify unresolved scope before writing the Spec, map
@@ -54,21 +54,12 @@ evidence rather than copying it into a second ledger. Failed acceptance returns
 to the current Task; unresolved requirements or decisions return to their owning
 stage. Retry and approval boundaries remain in agent governance policy.
 
-Stage 99 assigns document-family states and legal transitions. Requirements use
-`draft`, `in-review`, and `approved`; architecture descriptions use `draft`,
-`in-review`, and `active`; ADRs use `proposed`, `accepted`, and `rejected`.
-Specs and Plans record authority only: `draft`, `in-review`, `approved`, and
-`cancelled`. Stage 01 to 03 documents never use `deprecated`, `superseded`,
-`retired`, or `archived`: a replaced or withdrawn document is summarized into
-its current owner and deleted, and its number is reserved. Operational guidance
-uses `draft`, `in-review`, `active`, `deprecated`, `superseded`, and
-`retired`. Tasks
-retain `draft`, `ready`, `in-progress`, `blocked`, `completed`, and
-`cancelled`. Incidents use `open`, `investigating`, `mitigated`, `resolved`,
-and `closed`; postmortems use `draft`, `in-review`, and `published`;
-publications use `draft`, `in-review`, `published`, `superseded`, and
-`retired`; executable contracts use `draft`, `review`, `approved`, and
-`active`. Navigation READMEs remain `active`.
+Stage 99 assigns document-family states and legal transitions in the
+Registry `lifecycles` and `transitions`; this policy does not restate them.
+Specs and Plans record authority only. Stage 01 to 03 documents never use
+`deprecated`, `superseded`, `retired`, or `archived`: a replaced or withdrawn
+document is summarized into its current owner and deleted, and its number is
+reserved.
 
 A Plan has one Spec parent and a Task has one Plan parent. A Plan is never
 ahead of its Spec and never ends before it. A Task, and each of its items,
@@ -115,10 +106,10 @@ non-PASS observation unresolved.
 Readiness is derived on read, is never stored, and is not removal approval.
 A ready package with an approved Spec may wait in Stage 03 until its removal is
 approved; a user instruction to delete completed packages approves that batch,
-and the deleting Task records it. A cancelled Spec keeps no
-member there. A package leaves Stage 03 only when its Spec number is reserved in
-the Registry `reserved_history`, after its durable meaning is summarized into
-its owners; version history keeps its body.
+and the deleting Task records the approval and each package's criterion state.
+A cancelled Spec keeps no member there. A package leaves Stage 03 only under
+the [retirement preconditions](documentation-protocol.md#retirement-preconditions);
+version history keeps its body.
 
 The Registry supplies the exact Evidence, Criterion Acceptance, Execution
 Items and Work Breakdown shapes. `spec_packages.py` implements their meaning.

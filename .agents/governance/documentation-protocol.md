@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.10.0"
+version: "3.12.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-11"
 ---
 
 # Documentation Protocol
@@ -373,12 +373,13 @@ behavior, structure, decision, or procedure. It is retired when its status is
 terminal and its still-current meaning has moved to a canonical owner.
 
 A retired document is summarized and deleted, not preserved. Its still-current
-meaning goes to the Traceability section of the owning Stage 01 requirement or
-Stage 02 description or decision, and the original file is removed. Version
+meaning goes to its canonical agent governance, Stage 01, 02 or 05 owner, as
+the [retirement preconditions](#retirement-preconditions) require, and the
+original file is removed. Version
 history is the record of the removed body. Stage 98 (`docs/98.archive/`) holds
-no records: only its README remains, describing the disposition scheme. The
-only Stage 98 check is corpus lifecycle occupancy, which fails on any tracked
-file there other than the README; the README is checked like any other README.
+no records: only its README remains, describing the disposition scheme. Its
+checks are listed in the
+[quality standards](quality-standards.md#3-reliability-baseline).
 
 Retired artifact numbers live in the Registry. Each top-level identity space
 keeps `reserved_history`, the sorted list of numbers that no current document
@@ -402,11 +403,8 @@ evidence while the package is still editable.
 
 A Stage 03 package is deleted when it is
 [ready for removal review](sdlc.md#sequence) and its removal is approved, once
-the meaning a current document still depends on sits in its owner. A user
-instruction to delete completed packages approves that batch, and the deleting
-Task records the approval and each package's criterion state. The SDLC
-readiness rule also covers Task formats older than the typed Criterion
-Acceptance table. Its Spec number joins the Registry `reserved_history`, current links to it become
+the meaning a current document still depends on sits in its owner; the
+[SDLC](sdlc.md#sequence) owns readiness and batch approval. Its Spec number joins the Registry `reserved_history`, current links to it become
 plain text, and version history keeps the body. A package with any
 non-terminal Task stays, with its completed Tasks. A terminal Task body stays
 immutable while its package exists, so a link it holds into a package deleted
@@ -444,6 +442,13 @@ Retire a package or a standalone document only when all of these hold.
 3. Every inbound consumer is updated in the same logical change.
 4. Its artifact number is added to the Registry `reserved_history` of its
    identity space in the same change.
+5. The removing change records, in a Task that survives it, the last commit
+   and path that carry each removed body, and that the commit is reachable
+   from `main`. A body that exists only as uncommitted work, only in the
+   reflog, only on an unmerged or squash-dropped branch, or not at all in a
+   shallow clone blocks that removal, as does a recorded hold. After merge, the
+   same Task restores each body from that commit and compares its bytes. This
+   is a manual record, not a gate.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to

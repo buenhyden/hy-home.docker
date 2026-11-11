@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.47.0"
+version: "1.49.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -169,6 +169,17 @@ collect host-run Hermes traces, logs and gateway metrics through an
 authenticated Alloy OTLP receiver. Hermes configuration under `~/.hermes`
 and the token value stay owner actions; runtime changes need their own
 approval.
+
+The owner decision of 2026-11-11 adds criterion 109 and W114 in TSK-0056 for
+the v14.2 W01 governance standardization. It authorizes local assessment and
+repository-side corrections of reproduced gaps only; cross-repository adoption,
+protected-branch rules and remote settings stay separate owner decisions.
+
+The owner decision of 2026-11-11 adds criterion 110 and W115 in TSK-0057 for
+the v14.2 W02 archive and safe-removal assessment. It authorizes the
+assessment, recovery proofs in a scratch location and repository-side fixes of
+reproduced gaps. Every package removal still needs its own owner approval, and
+the existing archive Tasks keep their own criteria.
 
 ## Scope
 
@@ -794,6 +805,14 @@ hold, authorization and recovery requirements have been established.
      through a loopback-only, bearer-authenticated Alloy receiver into Tempo,
      Loki and Prometheus, shows them in the Hermes Grafana dashboard, and
      sends only Hermes-redacted log content.
+109. TSK-0056 assesses the v14.2 W01 obligations GOV-01 to GOV-08 and SUP-12
+     against their canonical owners, corrects only reproduced gaps, and
+     records local adoption separately from cross-repository adoption. An
+     assessment row is not acceptance of a common contract.
+110. TSK-0057 assesses the v14.2 W02 obligations ARC-01 to ARC-09 against
+     the current retention and retirement owners, proves byte recovery for
+     each removal candidate before any removal, and blocks a removal whose
+     acceptance, promotion, hold, authority or recovery is unmet.
 
 ## Failure Conditions
 

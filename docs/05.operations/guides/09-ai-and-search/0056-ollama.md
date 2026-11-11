@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.8"
+version: "2.0.9"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -136,7 +136,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 ### Load, queue and GPU memory
 
-이미지는 [Compose](../../../../infra/08-ai/ollama/docker-compose.yml)의 tag에 registry index digest를 붙여 고정한다. 버전을 올릴 때는 GTX 1060(compute 6.1)을 지원하는 CUDA 빌드가 남아 있는지 Ollama 시작 log의 `inference compute` 줄로 확인한다. 검증 기록은 [SPEC-0226 Task](../../../03.specs/0226-ai-runtime-pin-verification/tasks/tsk-0001-ai-runtime-pin-verification.md)에 있다.
+이미지는 [Compose](../../../../infra/08-ai/ollama/docker-compose.yml)의 tag에 registry index digest를 붙여 고정한다. 버전을 올릴 때는 GTX 1060(compute 6.1)을 지원하는 CUDA 빌드가 남아 있는지 Ollama 시작 log의 `inference compute` 줄로 확인한다. 검증 기록은 SPEC-0226 TSK-0001(2026-10-09/29, 은퇴 후 Git 이력)에 있다.
 
 모델은 여러 DB가 함께 쓰는 HDD에서 읽는다. 2026-10-09 측정에서 디스크 사용률은 99%였고 Ollama가 받은 읽기 속도는 약 3 MB/s였다. load 시간은 `qwen3-embedding:4b`가 12-242초, `qwen3:8b`가 229-574초로 크게 흔들렸다. 그래서 load가 멈춘 것으로 보는 한도인 `OLLAMA_LOAD_TIMEOUT`을 15분으로 둔다. 기본값 5분에서는 `qwen3:8b` load가 두 번 HTTP 500으로 끝났다. 컨테이너 메모리를 12 GiB로 올려도 빨라지지 않았으므로 병목은 메모리가 아니라 디스크다.
 

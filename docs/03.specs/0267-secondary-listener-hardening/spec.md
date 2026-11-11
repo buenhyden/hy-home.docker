@@ -1,10 +1,10 @@
 ---
 title: "Secondary Listener Hardening Specification"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-11"
 layer: "specs"
 artifact_id: "SPEC-0267"
 parent_ids:
@@ -146,7 +146,7 @@ owner added moving those mounts onto the paths the image uses.
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-secondary-listener-hardening.md)
-- [SPEC-0266](../0266-sso-only-backend-ingress/spec.md)
+- SPEC-0266 (retired; its body is in Git history)
 - [ADR-0055](../../02.architecture/decisions/0055-segmented-per-flow-networks.md)
 - [ADR-0061](../../02.architecture/decisions/0061-dedicated-ingress-for-sso-only-backends.md)
 - [REQ-0023](../../01.requirements/0023-standardize-infra-net.md)

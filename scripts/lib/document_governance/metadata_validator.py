@@ -27,7 +27,6 @@ from scripts.lib.document_governance.metadata.lifecycle import (
     validate_record,
 )
 from scripts.lib.document_governance.metadata.profile import (
-    EXPECTED_EXCEPTION_SCHEMA,
     TARGET_MARKDOWN_FILES,
     TARGET_MARKDOWN_PREFIXES,
     Finding,
@@ -43,8 +42,6 @@ from scripts.lib.document_governance.metadata.profile import (
     load_profiles,
     matching_template_roles,
     registered_generated_owner,
-    validate_static_exception_document,
-    validate_static_migration_manifest,
 )
 from scripts.lib.document_governance.metadata.reference import (
     _write_or_check_output,
@@ -62,7 +59,6 @@ from scripts.lib.document_governance.registry import (
 
 __all__ = (
     "DEFAULT_REGISTRY",
-    "EXPECTED_EXCEPTION_SCHEMA",
     "TARGET_MARKDOWN_FILES",
     "TARGET_MARKDOWN_PREFIXES",
     "DocumentRegistry",
@@ -97,6 +93,4 @@ __all__ = (
     "validate_frontmatter",
     "validate_record",
     "validate_repository_contracts",
-    "validate_static_exception_document",
-    "validate_static_migration_manifest",
 )

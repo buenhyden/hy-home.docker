@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from scripts.lib.document_governance.metadata_validator import (
-    EXPECTED_EXCEPTION_SCHEMA,
     TARGET_MARKDOWN_FILES,
     TARGET_MARKDOWN_PREFIXES,
     Finding,
@@ -24,8 +23,6 @@ from scripts.lib.document_governance.metadata_validator import (
     registered_generated_owner,
     validate_body_contract,
     validate_record,
-    validate_static_exception_document,
-    validate_static_migration_manifest,
 )
 from scripts.lib.document_governance.registry import (
     DEFAULT_REGISTRY,
@@ -40,7 +37,6 @@ from scripts.lib.document_governance.registry import (
 
 __all__ = (
     "DEFAULT_REGISTRY",
-    "EXPECTED_EXCEPTION_SCHEMA",
     "TARGET_MARKDOWN_FILES",
     "TARGET_MARKDOWN_PREFIXES",
     "DocumentRegistry",
@@ -68,6 +64,4 @@ __all__ = (
     "validate_frontmatter",
     "validate_record",
     "validate_registry",
-    "validate_static_exception_document",
-    "validate_static_migration_manifest",
 )
