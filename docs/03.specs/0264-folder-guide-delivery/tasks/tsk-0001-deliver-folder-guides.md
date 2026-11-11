@@ -1,6 +1,6 @@
 ---
 title: "Folder Guide Delivery Task"
-version: "0.6.0"
+version: "0.6.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -155,6 +155,28 @@ Making it work needs a separate change: confirm whether Codex fires
 PreToolUse for `exec` at all, and if so match `exec` and read the nested
 `tools.apply_patch` paths.
 
+### Codex 0.167.1 recheck (2026-11-11)
+
+The owner approved the E33 follow-up on 2026-11-11. The CLI had moved to
+codex-cli 0.167.1, so the controller first repeated the unchanged probe with
+no hook or trust change: a headless `codex exec -s workspace-write --json` at
+the repository root of branch commit `72571d481`, applying and reverting one
+line in `infra/README.md` through `apply_patch`.
+
+- The JSON event stream shows two `file_change` items for `infra/README.md`.
+  No folder guide arrived, and no new record appeared under
+  `~/.local/state/hy-home/folder-guides/`.
+- The repository Stop hook did fire and reported the leftover change, so the
+  trusted repo hooks still run under 0.167.1.
+- Codex restored the file itself. Its SHA-256 matched the pre-probe value, and
+  `git status` was clean.
+- The event stream does not name the tool that carried each patch, so it
+  cannot show whether PreToolUse was offered for `exec`.
+
+The next step changes the Codex PreToolUse matcher and re-trusts its hash in
+the user-global `~/.codex/config.toml`. That trust is the owner's to grant in
+Codex's own prompt; this recheck did not write it.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -192,6 +214,7 @@ PreToolUse for `exec` at all, and if so match `exec` and read the nested
 | E31 | 6 | W2 | scoped review | `code-reviewer` re-review of `6e37096a7..13ebb04f1` against the #770 findings I1-I3 and M1-M9 | PASS | every finding fixed except I2's evidence revision (N1), which E29 and E30 resolve; the reviewer read `.claude/provider.md` 1.7.1 and found it names the marker comment (M9) | required | - |
 | E32 | 8 | W4 | Codex hook health | Headless `codex exec` 0.166.0 at the repository root of main `602656a52`, 2026-11-11 | PASS | SessionStart delivered `hy-home.docker project context`; no hook failure reported; hooks trusted by hash; SessionStart and UserPromptSubmit exit 0 in 0.1 s by hand | required | E28 |
 | E33 | 8 | W4 | live Codex delivery | The same session, editing `infra/README.md` through `tools.apply_patch` inside the Codex `exec` tool, then reverting | FAIL | no folder guide delivered and no delivery record; Codex 0.166 wraps tool calls in `exec`, which the matcher (`Bash` or `apply_patch`) does not match; compaction NOT_RUN headless | required | - |
+| E34 | 8 | W4 | live Codex delivery | Headless `codex exec` 0.167.1 at branch commit `72571d481`, 2026-11-11, applying and reverting one line in `infra/README.md` through `apply_patch` | FAIL | no folder guide and no delivery record; Stop hook fired; file restored byte-identical; matcher and trust unchanged | required | - |
 
 ## Criterion Acceptance
 
@@ -204,7 +227,7 @@ PreToolUse for `exec` at all, and if so match `exec` and read the nested
 | 5 | pending | E1, E6, E8 | owner acceptance | @buenhyden |
 | 6 | pending | E4, E25, E31 | owner acceptance | @buenhyden |
 | 7 | pending | E5 | owner acceptance | @buenhyden |
-| 8 | pending | E26, E27, E28, E32, E33 | Claude observed; Codex hook health fixed (E32 resolves E28); Codex delivery FAIL under the `exec` tool model (E33), needs a follow-up change | @buenhyden |
+| 8 | pending | E26, E27, E28, E32, E33, E34 | Claude observed; Codex hook health fixed (E32 resolves E28); Codex delivery FAIL under the `exec` tool model (E33) and again on 0.167.1 (E34), needs a matcher change with owner-granted trust | @buenhyden |
 | 9 | pending | E10, E11, E21, E24, E30 | owner acceptance | @buenhyden |
 | 10 | pending | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner acceptance | @buenhyden |
 

@@ -1142,6 +1142,37 @@ class CiGateContractTests(unittest.TestCase):
                 "ci-gate-local-aggregate-children",
             )
 
+    def test_local_aggregates_reject_a_removed_child(self) -> None:
+        candidate = complete_registry()
+        for aggregate, children in contract._LOCAL_AGGREGATE_CHILDREN.items():
+            for missing_child in children:
+                with self.subTest(aggregate=aggregate, missing_child=missing_child):
+                    nodes = tuple(
+                        dataclasses.replace(
+                            node,
+                            children=tuple(
+                                child
+                                for child in node.children
+                                if child != missing_child
+                            ),
+                        )
+                        if node.gate_id == aggregate
+                        else node
+                        for node in candidate.nodes
+                    )
+                    codes = {
+                        finding.code
+                        for finding in contract.validate_gate_registry(
+                            ROOT, dataclasses.replace(candidate, nodes=nodes)
+                        )
+                    }
+                    # The dropped leaf is either orphaned or breaks the pinned
+                    # children; both reject the unique guarantee's removal.
+                    self.assertTrue(
+                        codes & {"ci-gate-orphan", "ci-gate-local-aggregate-children"},
+                        codes,
+                    )
+
     def test_contract_reader_rejects_symlink_noncanonical_and_oversized_inputs(
         self,
     ) -> None:

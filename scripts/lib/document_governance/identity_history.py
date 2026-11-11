@@ -1110,6 +1110,18 @@ def validate_allocation_transition(
                     "reserved_history cannot drop a number its predecessor reserved",
                 )
             )
+        # A removed identity is retired in the same change (retirement
+        # precondition 4 in documentation-protocol.md).
+        if (previous.get(name, set()) - observed.get(name, set())) - frozenset(
+            space.reserved_history
+        ):
+            findings.append(
+                RegistryFinding(
+                    "identity-retired-not-reserved",
+                    f"identity_spaces.{name}",
+                    "a removed identity must be added to reserved_history",
+                )
+            )
         # A reserved number is retired: no current document may carry it.
         if frozenset(space.reserved_history) & observed.get(name, set()):
             findings.append(

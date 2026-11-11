@@ -1,10 +1,10 @@
 ---
 title: "Master Workspace Reconciliation Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0053"
 parent_ids:
@@ -365,6 +365,148 @@ and the user source under `.agents/skills`; they are not certified equivalent.
 The five superpowers entries were read as source metadata under package7.0.1,
 not invoked. Missing-root metadata does not prove unsupported runtime features.
 
+### Package v14.2 delta intake 2026-11-11
+
+The user supplied the v14.2 W00 intake prompt on 2026-11-11 with the package
+at `_workspace/workspace_execution_tasks/` (git-ignored, read-only reference
+data). The prior `_workspace/governance_prompt/` package is ABSENT locally, so
+this intake reuses the 108-row assessment above as recorded and does not
+re-derive it. Workspace root and Git top level are both this repository;
+branch main at `1d1085adf`, clean index and worktree, one worktree, no open
+PR. The v14.2 original input SHA-256 is
+`dc348e7fc67f77ab8667cc4b1eecb50dbac2857d30617eff1246dd23d8748d23`.
+
+The delta from the 108-row denominator is QA-17, a common ID that the earlier
+105-ID declaration omitted, and its five QA-ALIGN supplement clauses. These
+clauses are supplements, not separate completion counts. The original line 229
+reuses the anchor `qa-09` for QA-17. That is a defect in the source, and it is
+preserved unedited.
+
+| ID | Owner aliases | Action | Bounded observation or residual |
+| --- | --- | --- | --- |
+| QA-17 | F,G | KEEP/DEFER | Section 3 retirement and failure rules and section 7 gate ownership already bind checks to their canonical owners; the per-check QA-C01-C15 owner-to-test crosswalk is not done (W05 handoff) |
+| QA-ALIGN-01 | F | DEFER | Per-check contract-owner trace not done; unverified test expectations stay UNVERIFIED, not policy |
+| QA-ALIGN-02 | F | DEFER | No validator or fixture contract gap reproduced in this intake; no change |
+| QA-ALIGN-03 | F,G | KEEP | Leaf-equivalence and unique-guarantee retention already in section 7 |
+| QA-ALIGN-04 | G,I | DEFER | Hook/CI wiring belongs to W06 and runs after W05 defines the gaps |
+| QA-ALIGN-05 | D | KEEP | Task Evidence `Resolves` and acceptance separation already contracted |
+
+Merged PRs since the `c463e4ae5` reconciliation, read as metadata only (base,
+head and merge commit; diffs and checks not reviewed):
+
+| PR | Head | Merge | Current owner state read from source |
+| --- | --- | --- | --- |
+| 935 | codex/tsk-0052-supply-chain-evidence | 8c55be479 | TSK-0052 in-progress |
+| 936, 937 | docs/tsk-0054, docs/tsk-0055 | 27d780a29, d5dfee003 | TSK-0054/0055 draft |
+| 938 | fix/restic-daily-backup-ungated | 6a1c3800a | Daily `backup` and offsite copy carry no memory admission; only `budget-backup` calls `require_memory_admission` |
+| 939-944, 946 | Hermes OTLP, dashboard, timeout and transport fixes | 3151b2194..0c85825b8 | TSK-0055 criterion 108 pending |
+| 940 | fix/memory-export-capacity-warning | 7d75ce3b7 | SPEC-0270 criteria 1-6 pending |
+| 945, 947, 949 | window, custody and notifier-activation evidence | cc5ba6283, 718dfce96, 681d7cb0a | Not re-read in this intake |
+| 948 | fix/notifier-capture-base | 7389fdd4a | Base Compose move preserved; DATA-0096 not regenerated |
+| 950 | docs/spec-0265-accept-12-14 | 602656a52 | Criteria 13/14 accepted; 12 pending on required E9 FAIL |
+| 951 | docs/spec-0264-codex-recheck | 6bf5221c0 | E32 PASS resolves E28; E33 delivery FAIL; criterion 8 pending |
+| 952 | fix/hermes-redrive-uncertain | 1d1085adf | Not re-read in this intake |
+
+Protected and not reopened: the #938 daily backup path, TSK-0055 criterion 108
+pending, SPEC-0264 E33 FAIL, SPEC-0265 criterion 12 pending, and the archive
+residual owners listed above. OPEN-01/02 (1,250-line atomization and the 14,028
+pair judgments) keep their recorded state. The v14.2 package's own structure
+checks are not product evidence.
+
+Handoffs, without starting the receiving work: W05 receives the QA-17 and
+QA-ALIGN-01/02 crosswalk, with the QA-C01-C15 cases as reference data. W06
+receives QA-ALIGN-04 once W05 names a concrete gap. The SPEC-0264 owner keeps
+the E33 Codex `exec` matcher follow-up. No product source changed in this
+intake.
+
+A read-only residual review on the same day mapped the twelve QA-C cases that
+apply to this repository to their existing tests. C12, C13 and C15 belong to
+other repositories and are N/A here under D-04. This is assertion-line
+evidence, not reproduction:
+
+| Verdict | Cases | Basis |
+| --- | --- | --- |
+| COVERED | C02, C06, C10 | Negative assertions exist, for example `test_heading.py:349`, `test_script_manifest.py:977`, `test_links.py:2501` |
+| KEEP (policy) | C11 | Acceptance is an owner decision under `output-style.md:64` and `stage-authoring-matrix.md:65`; no machine check can grant or refuse it |
+| PARTIAL | C01, C03, C04, C05, C07, C08, C09, C14 | One named negative has no asserting test: an old-version value as current (C01), a result from another revision (C03), unapproved deletion (C04), dedup dropping a unique security or deploy check (C05), a contract or vulnerability-DB change invalidating a prior PASS (C07), a local hook result replacing the hosted check (C08), SKIPPED counted as PASS (C09), rerunning completed fixed work (C14) |
+
+A PARTIAL row is a W05 candidate, not a confirmed defect. W05 must first show
+that the validator accepts the bad input before it adds a test or a fix
+(QA-ALIGN-02).
+
+A second read-only pass on the same day probed the eight PARTIAL cases with
+isolated scratch fixtures built from the existing test helpers. No repository
+file changed.
+
+| Case | Result | Evidence and residual |
+| --- | --- | --- |
+| C03a | REPRODUCED_GAP | An accepted criterion citing a PASS row whose Input names another revision is accepted; `spec_packages.py:1546` discards Input. The validator documents structural coverage only, so binding acceptance to one revision is a W01/W04 policy question, not a blind fix |
+| C03b | REJECTED_UNTESTED | `approved` in Criterion Acceptance raises at the registered acceptance domain; no test asserts it |
+| C04a | REJECTED | Deleting a Task the Plan still names raises; editing the Plan row in the same change evades it |
+| C04b | POLICY_ONLY | Retirement preconditions are review and Task evidence; no check requires a removed number in `reserved_history` (code read only, UNVERIFIED by probe) |
+| C01 | REJECTED_UNTESTED | A registry pin older than its Compose declaration fails `sync-tech-stack-versions.sh --check`; no test asserts it; a superseded approval record has no schema field (UNVERIFIED) |
+| C05 | REJECTED_UNTESTED | Removing a pinned `local.supply-chain` child yields `ci-gate-local-aggregate-children`; only the required-active pin has a removal test |
+| C07 | STRUCTURAL | CI disables caches, reads no prior artifact and refuses an existing evidence directory, so no earlier PASS is reused |
+| C08 | STRUCTURAL | The sole required check `candidate-quality` is bound to the GitHub Actions app; a local hook result cannot satisfy it |
+| C09 | STRUCTURAL | One required job with no `needs` aggregate; failures, errors and cancellations exit non-zero; `continue-on-error` is forbidden and tested |
+| C14 | POLICY_ONLY | Idempotent reruns are intended (`test_compose_baseline_gates.py:1819`); completion needs PASS evidence under `sdlc.md:101-107` |
+
+W05 handoff: add tests for C01, C03b and C05, which currently enforce without
+an asserting test. C03a and C04b need an owner policy decision before any
+validator change.
+
+A third pass on the same day closed the test-only part:
+
+- C01 was already asserted: `test_dry_run_and_check_never_write_and_write_preserves_format`
+  in `tests/validation/test_tech_stack_version_contract.py` runs `--check`
+  with a registry pinned older than its Compose declaration and expects
+  exit 1. No test was added.
+- C03b gained `test_acceptance_rejects_values_outside_the_registered_domain`
+  in `tests/lib/document_governance/test_generation7.py`.
+- C05 gained `test_local_aggregates_reject_a_removed_child` in
+  `tests/lib/gate/test_ci_gate_contract.py`. Dropping a pinned child is
+  rejected as `ci-gate-orphan` or `ci-gate-local-aggregate-children`.
+- Each new test failed under an in-memory patch: an acceptance domain widened
+  with `approved`, and a silenced registry validator. Each passed unpatched.
+  No validator source changed.
+- C14 code read: `scripts/validation/check-supply-chain-policy.py` has no
+  cache, skip or recorded-result reuse path, so it stays POLICY_ONLY.
+- E33 documentation read: the Codex rust-v0.165.0 rollout-trace README states
+  that the model-visible transcript contains only the outer code-mode `exec`
+  call; nested tool calls are runtime calls. It does not state whether hooks
+  fire for nested calls, and the installed CLI is 0.166.0. E33 stays FAIL and
+  the dispatch question stays UNVERIFIED with the SPEC-0264 owner; no hook
+  setting or trust changed.
+
+### Owner decisions 2026-11-11
+
+On 2026-11-11 the owner decided the open items in this chat: accept criterion
+106, approve the E33 follow-up, re-review and then implement C04b, hold C03a,
+and push the branch with a PR. The owner also named the 1,250-line atomization
+and the 14,028 pair judgments without stating an action. Those stay
+REASSESS_LATEST_EVIDENCE_NOT_AUTO_REOPEN until the owner gives a scope.
+
+- C04b: the re-review found a real defect. Commits `630e53662` (nginx
+  retirement) and `61aca993f` (supabase lab) removed operations-subject 11 and
+  29 without adding them to `reserved_history`. A corpus scan found no other
+  number at or below a space's `high_water` that was neither live nor
+  reserved. Commit `72571d481` adds `identity-retired-not-reserved` to
+  `validate_allocation_transition` and reserves 11 and 29. Replayed against
+  their parents, both defective commits now fail, and the correct
+  SPEC-0209/0231 retirement `d1388968c` still passes. The new test failed with
+  the finding filtered out and passed unpatched.
+- C03a: held. Acceptance does not bind cited Evidence to one revision, and no
+  validator change is made.
+- E33: recorded as E34 in the SPEC-0264 Task. Delivery still fails on Codex
+  0.167.1 with the matcher and trust unchanged. The matcher change waits for
+  the owner to grant the new hook hash in Codex.
+- Review residual: the new check covers top-level identity spaces only.
+  Requirement child `reserved_history` lists are not compared, so removing a
+  child requirement ID unreserved still passes. That is a W05 follow-up, not
+  part of this change. Untracked, git-ignored `.pyc` caches of five removed test
+modules remain under `tests/`. No coverage is credited to them, and this
+review deleted none of them.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -375,13 +517,16 @@ not invoked. Missing-root metadata does not prove unsupported runtime features.
 | Document source verification | 106 | W111 | metadata-links-lifecycle | Current scoped documents after c463e4ae5 ownership reconciliation | PASS | Metadata selected12 violations0; corpus lifecycle0 and occupancy0; alignment908 documents/8253 links failures0, warnings0 | required | Current document verification |
 | Independent reconciliation review | 106 | W111 | independent-document-review | Scoped final diff | NOT_RUN | Awaiting read-only reviewer | required | - |
 | Final reconciliation review | 106 | W111 | independent-document-review | Current c463e4ae5 ownership, source-protection and document diff | PASS | Independent governance/document review approved; terminal TSK-0043 and TSK-0051 unchanged; current source implementation evidence remains SPEC-0270 | required | Independent reconciliation review |
+| Package v14.2 delta intake | 106 | W111 | requirement-owner-assessment | v14.2 input sha256 dc348e7f, main 1d1085adf, PR metadata 935-952 | PASS | QA-17 plus five QA-ALIGN clauses assessed (KEEP/DEFER); backup contract unittest 4/4 OK; semantic, W05 crosswalk and PR diff review not done | required | - |
+| Identity retirement check | 106 | W111 | identity-retirement-regression | Commit 72571d481 with test_identity_history, test_registry, check-active and two historical replays | PASS | New test RED with the finding filtered and GREEN unpatched; check-active selected534 violations0; 630e53662 and 61aca993f now fail, d1388968c passes | optional | - |
+| Identity retirement review | 106 | W111 | independent-source-review | Fresh-context code-reviewer of 72571d481 | PASS | APPROVED, no false positive: observed is the full tracked corpus, moves and recovery keep numbers; residual: requirement child spaces are not covered and three negative tests (move, recovery, partial package) are absent | optional | - |
 | Source implementation handoff | 106 | W111 | source-handoff | Final SPEC-0270 source at current c463e4ae5 plus task-owned diff | PASS | Memory/capacity/search/backup implementation; parent selected135 PASS and3 native NOT_RUN; branch coverage81.41 percent, combined89.125 percent; code/security approved, criterion acceptance remains with SPEC-0270 | optional | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 106 | pending | - | - | SPEC-0212 TSK-0053 |
+| 106 | accepted | Current master assessment, Document source verification, Final reconciliation review, Package v14.2 delta intake | Owner accepted on 2026-11-11 in this chat; residual semantic, native and operational obligations stay with their named owners | SPEC-0212 TSK-0053 |
 
 ## Review and Completion
 
