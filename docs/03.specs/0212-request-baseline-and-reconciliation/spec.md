@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.47.0"
+version: "1.48.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -169,6 +169,11 @@ collect host-run Hermes traces, logs and gateway metrics through an
 authenticated Alloy OTLP receiver. Hermes configuration under `~/.hermes`
 and the token value stay owner actions; runtime changes need their own
 approval.
+
+The owner decision of 2026-11-11 adds criterion 109 and W114 in TSK-0056 for
+the v14.2 W01 governance standardization. It authorizes local assessment and
+repository-side corrections of reproduced gaps only; cross-repository adoption,
+protected-branch rules and remote settings stay separate owner decisions.
 
 ## Scope
 
@@ -794,6 +799,10 @@ hold, authorization and recovery requirements have been established.
      through a loopback-only, bearer-authenticated Alloy receiver into Tempo,
      Loki and Prometheus, shows them in the Hermes Grafana dashboard, and
      sends only Hermes-redacted log content.
+109. TSK-0056 assesses the v14.2 W01 obligations GOV-01 to GOV-08 and SUP-12
+     against their canonical owners, corrects only reproduced gaps, and
+     records local adoption separately from cross-repository adoption. An
+     assessment row is not acceptance of a common contract.
 
 ## Failure Conditions
 
