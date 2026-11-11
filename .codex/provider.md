@@ -28,10 +28,11 @@ through `scripts/lib/hooks/folder_guides.py`) adds the full content of the
 nearest Git-tracked folder guide to the model context once per session, the
 first time `apply_patch` touches a file below it, whether called directly or
 from inside a code-mode `exec` call. For `exec` the shared payload parser
-accepts only `tools.apply_patch(<one literal>)`. It denies other
-`apply_patch` references, non-call uses of `tools`, escapes and known dynamic
-routes, including their mention inside a command string. It is a best-effort
-lexical check, not a JavaScript parser. It also adds a one-line
+accepts only `tools.apply_patch(<one literal>)`, the form Codex emits, and
+denies other `apply_patch` references, non-call uses of `tools`, escapes and a
+few rare code-building words. It is a best-effort lexical check, not a
+JavaScript parser or a sandbox: deliberately obfuscated code stays unseen, like
+a shell write. It also adds a one-line
 reminder naming that guide on each edit, and after a SessionStart `compact`
 or `resume` an instruction to re-read it. A shell read does not trigger it.
 The folder `CLAUDE.md` import shims are Claude's route; Codex does not read

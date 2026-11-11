@@ -168,11 +168,12 @@ _EXEC_PATCH_CALL = re.compile(
 
 _EXEC_TOOLS_MISUSE = re.compile(r"\btools\b(?!\s*\.\s*[A-Za-z_$][\w$]*\s*\()")
 _EXEC_ESCAPE = re.compile(r"\\[ux]")
+# Rare words only: common words (`this`, `call`, `apply`) would deny ordinary
+# shell commands and commit messages, and no word list can stop deliberate
+# obfuscation, which is the same residual as a shell write via exec_command.
 _EXEC_DYNAMIC = re.compile(
     r"\b(?:eval|Function|constructor|globalThis|Reflect|Proxy|setTimeout"
-    r"|setInterval|prototype|__proto__|valueOf|toString|toLocaleString"
-    r"|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|__defineGetter__"
-    r"|__lookupGetter__|bind|call|apply)\b|\b(?:with|import)\s*\(|\b(?:self|window|global|this)\s*[.\[]"
+    r"|setInterval|prototype|__proto__|__defineGetter__|__lookupGetter__)\b"
 )
 
 
@@ -183,12 +184,12 @@ def _exec_patches(source: object) -> list[str]:
     JavaScript calling `tools.apply_patch("*** Begin Patch\\n...")`. Every
     `apply_patch` reference must be such a call with one double-quoted
     JSON-compatible or plain template literal. Every other `apply_patch`
-    reference, any non-call use of `tools`, a `\\u`/`\\x` escape and the known
-    routes that rebuild code or reach the global object are denied. This is a
-    best-effort lexical check, not a JavaScript parser: an undiscovered route
-    may still exist, the denial words also deny their mention inside a shell
-    command string, and shell writes through `tools.exec_command` or any other
-    runtime file API stay unseen.
+    reference, any non-call use of `tools`, a `\\u`/`\\x` escape and a few rare
+    code-building words are denied. This covers the literal call form Codex
+    emits; it is a best-effort lexical check, not a JavaScript parser or a
+    sandbox. Deliberately obfuscated code (string-built property names, the
+    global object) and shell writes through `tools.exec_command` or any other
+    runtime file API stay unseen, as accepted residuals.
     """
     code = source if isinstance(source, str) else None
     if isinstance(source, dict):

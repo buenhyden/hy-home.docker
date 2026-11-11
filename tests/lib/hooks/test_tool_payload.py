@@ -71,6 +71,13 @@ class NativeEditPayloadTests(unittest.TestCase):
             "object input": ({"input": code}, (("infra/README.md", "x"),)),
             "template literal": ({"input": template}, (("a.txt", "a"),)),
             "no patch": ({"input": "await tools.exec_command({cmd: 'ls'})"}, ()),
+            "ordinary words": (
+                {
+                    "input": "await tools.exec_command({cmd: 'git commit -m "
+                    '"Call this. Apply with care; self.check"\'})'
+                },
+                (),
+            ),
         }
         for label, (tool_input, expected) in cases.items():
             with self.subTest(label):
@@ -96,10 +103,6 @@ class NativeEditPayloadTests(unittest.TestCase):
             "template CR header": "tools.apply_patch(`*** Begin Patch\n*** Add File: a\n+x\r*** Add File: b\n+y\n*** End Patch`)",
             "escaped tools": f"await \\u0074ools.apply\\u005fpatch({patch})",
             "constructor": "({}).constructor.constructor('return to' + 'ols')()",
-            "dynamic import": "await import('data:text/javascript,1')",
-            "with": f"with (Object) {{ keys({patch}) }}",
-            "self access": 'self["to" + "ols"]',
-            "inherited method": f'tools.valueOf()["apply_" + "patch"]({patch})',
             "arrow constructor": "(() => 0).constructor('return t' + 'ools')()",
             "unknown input shape": {"a": "x", "b": "y"},
             "template U+2028": "tools.apply_patch(`*** Begin Patch\n*** Add File: a\n+x\u2028y\n*** End Patch`)",
