@@ -97,13 +97,6 @@ pyroscope/
 - 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0047-pyroscope.md`; ID: `GDE-0047`, `POL-0047`, `RUN-0047`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주합니다. 이 README에서는 운영 중인 상태를 변경하지 않습니다.
 
-## Related Documents
-
-- Usage guide (`docs/05.operations/guides/07-observability/0047-pyroscope.md`)
-- Operations policy (`docs/05.operations/policies/07-observability/0047-pyroscope.md`)
-- Recovery runbook (`docs/05.operations/runbooks/07-observability/0047-pyroscope.md`)
-- [Documentation index](../../../docs/README.md)
-
 ## Usage
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
@@ -111,3 +104,10 @@ pyroscope/
 1. **Flamegraph Analysis**: Grafana의 Drilldown > Profiles 또는 `Observability / Pyroscope` 대시보드에서 서비스별 flamegraph를 봅니다. Tempo span 상세의 프로파일 링크는 같은 `service_name`의 시간창을 엽니다.
 2. **Resource Monitoring**: 프로파일링 수집은 CPU 사용량이 클 수 있으므로, 피크 부하 동안 `pyroscope` 컨테이너 통계를 모니터링합니다.
 3. **Traceability**: 재매핑 로직과 커스텀 레이블은 전용 시스템 가이드를 참고합니다.
+
+## Related Documents
+
+- Usage guide (`docs/05.operations/guides/07-observability/0047-pyroscope.md`)
+- Operations policy (`docs/05.operations/policies/07-observability/0047-pyroscope.md`)
+- Recovery runbook (`docs/05.operations/runbooks/07-observability/0047-pyroscope.md`)
+- [Documentation index](../../../docs/README.md)

@@ -111,16 +111,6 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 - 스트리밍 `INSERT`가 커밋되지 않음: checkpointing이 꺼져 있습니다. wrapper는 60초 간격을 설정하며 세션 `SET`으로 이를 끄면 안 됩니다.
 - Checkpoint `AccessDeniedException`: 호스트 checkpoint 디렉터리가 group-writable이 아닙니다. lakehouse runbook을 따르십시오.
 
-## Related Documents
-
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
-- [LAB 탐색](../../README.md)
-- [문서 인덱스](../../../docs/README.md)
-
----
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -147,3 +137,13 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 
 런타임 이미지 권한은 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
+
+## Related Documents
+
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
+- [LAB 탐색](../../README.md)
+- [문서 인덱스](../../../docs/README.md)
+
+---

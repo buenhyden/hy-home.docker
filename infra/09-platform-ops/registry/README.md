@@ -84,15 +84,6 @@ registry/
 - registry 네트워크, 볼륨, 레이블 참조가 계속 선언되어 있는지 hardening 점검으로 먼저 확인합니다.
 - 저장소나 접근 설정을 변경하기 전에 registry 로그와 연결된 런북을 확인합니다.
 
-## Related Documents
-
-- **Guide**: Registry Guide (`docs/05.operations/guides/10-platform-and-backup/0065-registry.md`)
-- **Policy**: Registry Operations (`docs/05.operations/policies/10-platform-and-backup/0065-registry.md`)
-- **Runbook**: Registry Runbook (`docs/05.operations/runbooks/10-platform-and-backup/0065-registry.md`)
-- [Documentation index](../../../docs/README.md)
-
----
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -120,3 +111,12 @@ registry/
 
 런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.
+
+## Related Documents
+
+- **Guide**: Registry Guide (`docs/05.operations/guides/10-platform-and-backup/0065-registry.md`)
+- **Policy**: Registry Operations (`docs/05.operations/policies/10-platform-and-backup/0065-registry.md`)
+- **Runbook**: Registry Runbook (`docs/05.operations/runbooks/10-platform-and-backup/0065-registry.md`)
+- [Documentation index](../../../docs/README.md)
+
+---

@@ -254,3 +254,39 @@ class CurrentSpecRelationTests(unittest.TestCase):
         )
 
         self.assertIn("invalid-parent-type", {finding.code for finding in findings})
+
+    def test_parent_cycles_and_a_second_plan_parent_are_rejected(self) -> None:
+        profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
+
+        def record(path: str, artifact_id: str, parents: list[str], profile: str):
+            return metadata.Record(
+                pathlib.Path(path),
+                {
+                    "artifact_id": artifact_id,
+                    "type": f"sdlc/{profile}",
+                    "status": "draft",
+                    "parent_ids": parents,
+                },
+                profile,
+                frontmatter_present=True,
+            )
+
+        first = record(
+            "docs/03.specs/0001-a/spec.md", "SPEC-0001", ["SPEC-0002"], "spec"
+        )
+        second = record(
+            "docs/03.specs/0002-b/spec.md", "SPEC-0002", ["SPEC-0001"], "spec"
+        )
+        plan = record(
+            "docs/03.specs/0001-a/plan.md",
+            "SPEC-0001-PLAN-0001",
+            ["SPEC-0001", "SPEC-0002"],
+            "plan",
+        )
+        manifest = metadata.build_manifest([first, second, plan])
+
+        def codes(item: metadata.Record) -> set[str]:
+            return {f.code for f in metadata.validate_record(item, profiles, manifest)}
+
+        self.assertIn("parent-cycle", codes(first))
+        self.assertIn("parent-cardinality", codes(plan))

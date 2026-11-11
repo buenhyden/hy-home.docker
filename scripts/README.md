@@ -169,8 +169,6 @@ Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-co
 | Analytics     | `12-analytics`, `analytics`               |
 | Experience    | `13-experience`, `experience`             |
 
-## Script Lifecycle
-
 ## Validation ownership
 
 `.github/workflow-contract.yml`은 실행 가능한 구성 레지스트리입니다. 이 파일의

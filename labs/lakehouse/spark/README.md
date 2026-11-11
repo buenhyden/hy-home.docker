@@ -102,16 +102,6 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 - Exit `64`: `lakehouse` secret이 없거나 비어 있습니다.
 - `table bucket … not found` 또는 `ForbiddenException`: lakehouse runbook을 따르십시오.
 
-## Related Documents
-
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
-- [LAB 탐색](../../README.md)
-- [문서 인덱스](../../../docs/README.md)
-
----
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -138,3 +128,13 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 
 런타임 이미지 권한은 [Dockerfile](Dockerfile)과 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
+
+## Related Documents
+
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
+- [LAB 탐색](../../README.md)
+- [문서 인덱스](../../../docs/README.md)
+
+---

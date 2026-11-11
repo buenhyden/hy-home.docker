@@ -115,16 +115,6 @@ provisioning과 Trino가 이미 준비된 경우에만 씁니다.
 - `"success": false`와 함께 exit `1`: expectation이 실패했으며 앞선 줄에 이름이 있습니다.
 - Exit `2`: 실행이 아무것도 검사하지 못했습니다(suite 없음, suite 형식 오류, Trino 또는 GX 오류). 원인은 stderr에 나옵니다.
 
-## Related Documents
-
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
-- [LAB 탐색](../../README.md)
-- [문서 인덱스](../../../docs/README.md)
-
----
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -169,3 +159,13 @@ suite·SQL asset API가 후보 릴리스 소스에 존재한다.
 이전 이미지로 되돌리는 시험은 `NOT_RUN`이다. 운영 반영 전 SPEC-0204-TSK-0009의
 격리 rehearsal과 정확한 suite·의존성·결과 기준을 검증한다. 업무 데이터 변경이나
 외부 workspace 생성은 수행하지 않는다.
+
+## Related Documents
+
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
+- [LAB 탐색](../../README.md)
+- [문서 인덱스](../../../docs/README.md)
+
+---

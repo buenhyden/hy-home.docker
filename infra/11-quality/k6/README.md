@@ -237,13 +237,6 @@ receipt 없는 로컬 적재의 object_ref는 `null`이며, 이미 적재된 ide
 - k6 네트워크, 볼륨, 지표 싱크 참조가 계속 선언되어 있는지 hardening 점검으로 먼저 확인합니다.
 - 테스트 스크립트나 지표 대상을 변경하기 전에 k6 실행 출력과 연결된 런북을 확인합니다.
 
-## Related Documents
-
-- **Guide**: k6 Performance Testing Guide (`docs/05.operations/guides/12-testing-and-quality/0061-k6.md`)
-- **Policy**: k6 operations policy (`docs/05.operations/policies/12-testing-and-quality/0061-k6.md`)
-- **Runbook**: k6 recovery runbook (`docs/05.operations/runbooks/12-testing-and-quality/0061-k6.md`)
-- [Documentation index](../../../docs/README.md)
-
 ## Service Readiness
 
 | 항목 | 근거 |
@@ -287,3 +280,10 @@ Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제
 뒤에만 부하 시험에 사용한다. 이전 2.2.0으로 되돌리는 경우 원본 artifact·receipt를 <!-- runtime-version-exception: migration — 이전 통계 출력과 receipt 비교에 사용하는 기준 이미지 -->
 보존하고 서로 다른 버전의 통계/출력 차이를 비교한다. manifest의 `tool_image`는
 별도 승인된 정확한 digest 입력이며 Dockerfile 변경으로 기존 run을 재실행하지 않는다.
+
+## Related Documents
+
+- **Guide**: k6 Performance Testing Guide (`docs/05.operations/guides/12-testing-and-quality/0061-k6.md`)
+- **Policy**: k6 operations policy (`docs/05.operations/policies/12-testing-and-quality/0061-k6.md`)
+- **Runbook**: k6 recovery runbook (`docs/05.operations/runbooks/12-testing-and-quality/0061-k6.md`)
+- [Documentation index](../../../docs/README.md)

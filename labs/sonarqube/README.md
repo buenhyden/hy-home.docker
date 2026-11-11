@@ -109,16 +109,6 @@ backup·복원 절차가 필요합니다.
 - render가 거부되면 `LAB_SONARQUBE_DB_HOST`, `LAB_DATA_DIR`, LAB secret 파일 경로를 먼저 확인합니다.
 - 데이터베이스나 quality-gate 설정을 변경하기 전에 SonarQube 로그와 연결된 런북을 확인합니다.
 
-## Related Documents
-
-- **Guide**: SonarQube Guide (`docs/05.operations/guides/15-labs/0066-sonarqube.md`)
-- **Policy**: SonarQube Operations (`docs/05.operations/policies/15-labs/0066-sonarqube.md`)
-- **Runbook**: SonarQube Runbook (`docs/05.operations/runbooks/15-labs/0066-sonarqube.md`)
-- [LAB 탐색](../README.md)
-- [Documentation index](../../docs/README.md)
-
----
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -145,3 +135,13 @@ backup·복원 절차가 필요합니다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
 런타임 고정 값은 Compose 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../infra/tech-stack.versions.json)으로 드리프트를 검증합니다.
+
+## Related Documents
+
+- **Guide**: SonarQube Guide (`docs/05.operations/guides/15-labs/0066-sonarqube.md`)
+- **Policy**: SonarQube Operations (`docs/05.operations/policies/15-labs/0066-sonarqube.md`)
+- **Runbook**: SonarQube Runbook (`docs/05.operations/runbooks/15-labs/0066-sonarqube.md`)
+- [LAB 탐색](../README.md)
+- [Documentation index](../../docs/README.md)
+
+---

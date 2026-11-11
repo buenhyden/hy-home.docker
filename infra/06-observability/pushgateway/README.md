@@ -106,13 +106,6 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 - 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0046-pushgateway.md`; ID: `GDE-0046`, `POL-0046`, `RUN-0046`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.
 
-## Related Documents
-
-- Usage guide (`docs/05.operations/guides/07-observability/0046-pushgateway.md`)
-- Operations policy (`docs/05.operations/policies/07-observability/0046-pushgateway.md`)
-- Recovery runbook (`docs/05.operations/runbooks/07-observability/0046-pushgateway.md`)
-- [Documentation index](../../../docs/README.md)
-
 ## Usage
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
@@ -120,3 +113,10 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 1. **PromQL Optimization**: Pushgateway에서 메트릭을 쿼리할 때는 서로 다른 배치 실행을 구분할 수 있도록 항상 `job` 레이블을 포함합니다.
 2. **Maintenance**: 갱신되지 않은 오래된 메트릭이 있는지 주기적으로 확인합니다.
 3. **Traceability**: 정리 로직과 근거 수집은 전용 가이드와 런북을 참고합니다.
+
+## Related Documents
+
+- Usage guide (`docs/05.operations/guides/07-observability/0046-pushgateway.md`)
+- Operations policy (`docs/05.operations/policies/07-observability/0046-pushgateway.md`)
+- Recovery runbook (`docs/05.operations/runbooks/07-observability/0046-pushgateway.md`)
+- [Documentation index](../../../docs/README.md)

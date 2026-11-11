@@ -103,15 +103,6 @@ broker 프로세스로 내보냅니다. Compose `environment`에는 어느 것�
 - 프로비저닝 종료 코드 `64` 또는 `3`과 broker 종료 코드 `64`는 런북에 설명되어 있습니다.
 - 401은 인증이 수락되지 않았다는 신호입니다. 자격 증명 누락·불일치와 전달 경로를 구분하고 비밀 값을 출력하지 않은 채 런북을 따릅니다.
 
-## Related Documents
-
-- **Guide**: Pact Broker Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0093-pact-broker.md`)
-- **Policy**: Pact Broker Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0093-pact-broker.md`)
-- **Runbook**: Pact Broker Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0093-pact-broker.md`)
-- [Documentation index](../../../docs/README.md)
-
----
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -138,3 +129,12 @@ broker 프로세스로 내보냅니다. Compose `environment`에는 어느 것�
 
 런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.
+
+## Related Documents
+
+- **Guide**: Pact Broker Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0093-pact-broker.md`)
+- **Policy**: Pact Broker Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0093-pact-broker.md`)
+- **Runbook**: Pact Broker Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0093-pact-broker.md`)
+- [Documentation index](../../../docs/README.md)
+
+---

@@ -374,6 +374,46 @@ class RegisteredSectionContractTests(unittest.TestCase):
                     "body-h1-count", self._findings(profile_id, body + "\n# Second\n")
                 )
 
+    def test_every_sectioned_profile_declares_order_and_content(self) -> None:
+        # Stage 90 research members are preserved as written, empty parents too.
+        order_only = {"research-member"}
+        for profile_id, profile in sorted(self.registry.profiles.items()):
+            # A generated body is checked by its declared producer instead.
+            if (
+                not profile.get("required_sections")
+                or profile.get("free_form_sections")
+                or profile_id == "generated"
+            ):
+                continue
+            with self.subTest(profile=profile_id):
+                self.assertTrue(profile.get("ordered_sections"))
+                self.assertEqual(
+                    profile_id not in order_only,
+                    bool(profile.get("nonempty_sections")),
+                )
+
+    def test_swapped_or_empty_sections_are_reported(self) -> None:
+        for profile_id in sorted(self.representatives):
+            body, required = self._conforming_body(profile_id)
+            if len(required) < 2:
+                continue
+            with self.subTest(profile=profile_id):
+                first, second = (f"## {name}\n\n" for name in required[:2])
+                start = body.index(first)
+                middle = body.index(second)
+                swapped = (
+                    body[:start]
+                    + body[middle : body.find("\n## ", middle) + 1]
+                    + body[start:middle]
+                    + body[body.find("\n## ", middle) + 1 :]
+                )
+                self.assertIn("body-heading-order", self._findings(profile_id, swapped))
+                if self.registry.profiles[profile_id].get("nonempty_sections"):
+                    hollow = body[: start + len(first)] + body[middle:]
+                    self.assertIn(
+                        "body-section-empty", self._findings(profile_id, hollow)
+                    )
+
     def test_readme_documents_module_uses_registered_columns(self) -> None:
         body, _ = self._conforming_body("readme")
         for header in (

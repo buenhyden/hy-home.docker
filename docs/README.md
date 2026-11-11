@@ -147,8 +147,6 @@ advisory graph는 advisory로 남고 `.agents/governance/environment-constraints
 
 ## Usage
 
-### Usage
-
 ### Audience
 
 이 README의 주요 독자:
