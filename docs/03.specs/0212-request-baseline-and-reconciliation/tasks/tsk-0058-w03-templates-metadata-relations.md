@@ -126,6 +126,7 @@ negative cases in memory. The controller re-ran each deciding probe.
 | W03 section and date RED | 111 | W116 | red-green-proof | New tests against the pre-change Registry and `_json_schema_value` | FAIL | Unquoted-date test failed; order and content tests failed for 28 profile cases with the Registry at `95a65be6d` | required | - |
 | W03 section and date GREEN | 111 | W116 | red-green-proof | Commits `ce18338c8` and `85ed595b3` | PASS | test_registry 123 OK; test_heading, test_profile, test_language 110 OK; test_lifecycle 7 OK; metadata check-active selected534 violations0, check-changed selected16 violations0; links alignment and language PASS; renderer drift 0; script manifest PASS | required | W03 section and date RED |
 | W03 code review | 111 | W116 | independent-source-review | Fresh-context code-reviewer of `ce18338c8` and `85ed595b3` | PASS | APPROVED: no false finding or exception from date objects; README content preserved; tests not vacuous. Four minor findings answered in `aa1bde154`; removing `research-member` ordering now fails the declaration test | required | - |
+| W03 governance suite | 111 | W116 | document-governance-unit-suite | `tests/lib/document_governance` discover at `cab985393`; `aa1bde154` later changed only test_heading and READMEs, rerun alone 85 OK | PASS | Ran 769 tests, OK, exit 0 | optional | - |
 
 ## Criterion Acceptance
 
