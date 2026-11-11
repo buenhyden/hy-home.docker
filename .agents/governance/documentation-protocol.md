@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.10.0"
+version: "3.11.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-11"
 ---
 
 # Documentation Protocol
@@ -376,9 +376,9 @@ A retired document is summarized and deleted, not preserved. Its still-current
 meaning goes to the Traceability section of the owning Stage 01 requirement or
 Stage 02 description or decision, and the original file is removed. Version
 history is the record of the removed body. Stage 98 (`docs/98.archive/`) holds
-no records: only its README remains, describing the disposition scheme. The
-only Stage 98 check is corpus lifecycle occupancy, which fails on any tracked
-file there other than the README; the README is checked like any other README.
+no records: only its README remains, describing the disposition scheme. Its
+checks are listed in the
+[quality standards](quality-standards.md#3-reliability-baseline).
 
 Retired artifact numbers live in the Registry. Each top-level identity space
 keeps `reserved_history`, the sorted list of numbers that no current document
@@ -402,11 +402,8 @@ evidence while the package is still editable.
 
 A Stage 03 package is deleted when it is
 [ready for removal review](sdlc.md#sequence) and its removal is approved, once
-the meaning a current document still depends on sits in its owner. A user
-instruction to delete completed packages approves that batch, and the deleting
-Task records the approval and each package's criterion state. The SDLC
-readiness rule also covers Task formats older than the typed Criterion
-Acceptance table. Its Spec number joins the Registry `reserved_history`, current links to it become
+the meaning a current document still depends on sits in its owner; the
+[SDLC](sdlc.md#sequence) owns readiness and batch approval. Its Spec number joins the Registry `reserved_history`, current links to it become
 plain text, and version history keeps the body. A package with any
 non-terminal Task stays, with its completed Tasks. A terminal Task body stays
 immutable while its package exists, so a link it holds into a package deleted

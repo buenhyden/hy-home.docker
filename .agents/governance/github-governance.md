@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.7.3"
+version: "1.8.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 ---
 
 # GitHub Governance Policy
@@ -173,8 +173,8 @@ the trusted base definition it was compared with. The QA definitions are
 `.github/workflows/`, `.github/workflow-contract.yml`, `scripts/lib/gate/`,
 `scripts/validation/ci_gate_runner.py`, `scripts/validation/run-ci-gate.py`,
 the QA dependency pins, and `.pre-commit-config.yaml`. An ordinary documentation change does not
-add this approval step, and an explicit approval already given for the same
-scope is not requested again.
+add this approval step, and approval reuse follows
+[approval boundaries](approval-boundaries.md#authorization-source-and-records).
 
 A success from a candidate running its own workflow, controller, and
 configuration never shows that the QA definition is unchanged or approved.
