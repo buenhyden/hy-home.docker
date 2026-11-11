@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "0.3.3"
+version: "0.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
@@ -119,9 +119,9 @@ P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 g
 
 1. 아래 W4/W5의 SEC01 gate(image 잔여 위험 수용과 7일 안의 stable 조회)가 기록돼 있다(owner).
 2. 보존된 attempt 대상과 container의 처리를 정한다(삭제는 명시 승인). attempt 03·04·chown container와 `-03` 대상은 2026-10-13에 owner가 삭제했다. 같은 날 owner 결정으로 빈 기본 restore 대상과 `-04` 대상도 삭제했고, 기존 업그레이드 전 snapshot 파일은 새 snapshot이 생길 때까지 rollback 지점으로 보존한다.
-3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급하며, 그 전까지 일일 backup의 OpenBao snapshot은 recovery gap으로 계속 실패한다.
+3. snapshot 전용으로 제한한 identity와 token을 발급한다(credential 발급 승인). operator policy는 `sys/policies/acl` 쓰기와 orphan token 발급을 허용하지 않으므로(2026-10-13 HTTP 403) 복구 share ceremony로 만든 임시 root가 필요하다. owner 결정으로 8단계 업그레이드 window의 같은 ceremony에서 발급했다. 2026-10-22 window에서 W2가 끝나 그 뒤로는 일일 backup이 OpenBao snapshot을 뜬다(2026-11-09~11 실행에 `snapshot token absent`가 없음, 2026-11-11 확인). 다음 window는 그 token이 갱신되는지 확인한 뒤 W2를 건너뛴다.
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
-5. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근의 off-host 보관과 share·CA key의 host 보조 사본을 값 없이 확인한다(owner 확인). 확인 전까지 미실행이며, P01은 계속 차단된다. 배치와 확인은 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다.
+5. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근의 off-host 보관 기록이 유효한지 확인한다(owner 확인). 유효 조건은 [POL-0085 위험 비례 재조정](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)의 변경 사건 없음과 반기 확인 기한이다. 유효한 기록이 없으면 미실행이며, P01은 계속 차단된다. 배치와 확인은 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다.
 6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않았다. 지금은 추적되는 `protected-semantic-restore.py`가 있고, SPEC-0243이 합성 자원에서 전체 `perform()`을 native로 리허설했다. HOME의 실제 restore와 canary는 아직 실행되지 않았다.
 7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 규칙과 drop-in은 2026-10-15에 설치됐다. 현재 HOME server에는 audit mount가 없으므로 용량 측정은 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
@@ -144,8 +144,8 @@ SPEC-0204 TSK-0006에 기록한다. 값은 화면 공유·채팅·명령 인자�
 비밀번호 관리자 계정이나 owner의 별도 데스크탑이다. 2026-10-14 기준 백업·R2 값은 별도
 데스크탑에, Cloudflare 계정 접근은 비밀번호 관리자 계정에 있다. 이 배치는 장소 분리로
 threshold를 지키지 않는다. 그 대신 host를 잃어도 R2 사본에서 모두 복구할 수 있게 하려는
-것이다. 아직 R2 원격 복구를 실행하지 않았고 OpenBao 일일 snapshot도 실패 중이므로(위
-복구 gap) 현재 보장된 상태는 아니다.
+것이다. 장소 A의 값만으로 한 R2 복원은 아래 반기 확인이 처음 실행될 때까지 미실행이므로,
+그 전까지는 보장된 상태가 아니다. OpenBao 일일 snapshot은 2026-10-22 W2 이후 성공하고 있다.
 
 **배치.**
 
@@ -153,7 +153,7 @@ threshold를 지키지 않는다. 그 대신 host를 잃어도 R2 사본에서 �
 | --- | --- | --- | --- |
 | unseal share 파일 | OpenBao Shamir share 3개(threshold 2), `secrets/security/openbao/openbao_unseal_keys.txt` | host `secrets/`, host Restic 백업(local·R2) | 한 주체가 unseal과 root ceremony를 할 수 있음 |
 | CA key | 내부 TLS 공용 root CA 개인키(`secrets/certs/`), OpenBao 전용이 아님 | host `secrets/`, host Restic 백업 | 그 CA를 믿는 모든 내부 TLS endpoint를 사칭할 수 있음 |
-| host 보조 사본 | 위 두 항목을 포함한 owner의 사본, `/home/hyunyoun/data/hy-home.secrets`(root 0700) | 같은 system disk | 실수로 지운 경우만 막음. host·disk를 잃으면 함께 잃음 |
+| host 보조 사본(선택) | 위 두 항목을 포함한 owner의 사본, `/home/hyunyoun/data/hy-home.secrets`(root 0700). window 진행 조건이 아님(2026-11-11 owner 결정) | 같은 system disk | 실수로 지운 경우만 막음. host·disk를 잃으면 함께 잃음 |
 | BKP-003 offsite key | R2 원격 Restic 저장소 암호 | host 밖 장소 A | R2 읽기 권한과 합쳐지면 R2 사본의 모든 secret과 share |
 | R2 자격 증명 | BKP-004·005 R2 API token(객체 읽기·쓰기) | host 밖 장소 A | BKP-003과 합쳐지면 R2 사본을 읽음 |
 | BKP-002 local key | local host Restic 저장소 암호 | host 밖 장소 A | local 저장소에 접근하면 그 안의 모든 secret과 share |
@@ -175,17 +175,22 @@ secret과 share를 얻는다. 같은 계정의 Cloudflare 접근과 쓰기 가�
 저장된 Cloudflare 로그인에 기대지 않게 한다. Claude Code `!` 명령이나 agent 세션처럼 저장소
 UID로 도는 process도 host를 읽는 주체에 들어간다.
 
+**유효 기간(2026-11-11 owner 결정).** 개인 개발 서버이고 외부에 노출되지 않는다는 전제에서
+custody 기록은 window마다 다시 받지 않는다. 마지막 owner-attested 기록은
+[POL-0085](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)의
+변경 사건(키 회전·이동, share rekey, CA key 교체, 장소 A 변경·분실, 노출 전제 변경)이 없고 반기 확인
+기한 안이면 유효하다. 아래 절차는 처음 기록할 때, 변경 사건 뒤, 반기 확인 때 쓴다.
+
 **절차.**
 
 1. BKP-003, R2 자격 증명, BKP-002, Cloudflare 계정 접근, R2 account ID와 bucket 이름을 계정
    A로 **복사**한다. 원본은
    지우지 않는다. clipboard 기록·동기화가 꺼진 상태에서 한 번에 하나씩 옮긴다.
-2. host 보조 사본을 갱신한다. share와 CA key가 바뀔 때마다 다시 맞춘다. sudo로 맞출 때도 값을
-   명령 인자·기록에 남기지 않는다.
-3. host가 아닌 장치에서 장소 A를 열어 항목을 꺼낼 수 있는지 확인한다. 값이 맞는지는 장소 A에서
-   꺼낸 BKP-003·R2 자격 증명·account ID·bucket을 숨김 입력으로 넣어 읽기 전용 R2 snapshot
-   목록을 받아 확인한다. 값은 출력하지 않는다. 6단계 restore는 host의 사본을 쓰므로 장소 A의
-   값을 증명하지 못한다.
+2. (선택) host 보조 사본을 둔다면 share와 CA key가 바뀔 때 다시 맞춘다. 값은 출력하지 않고
+   `sudo diff -rq`로 같은지만 본다. sudo로 맞출 때도 값을 명령 인자·기록에 남기지 않는다.
+3. host가 아닌 장치에서 장소 A의 값만 숨김 입력(`read -rs`)으로 넣어 R2 snapshot 목록을 받고,
+   작은 파일 하나를 그 장치의 임시 디렉터리에 복원한 뒤 지운다. 값과 복원한 내용은 출력하지 않는다.
+   host의 W0 R2 줄과 RUN-0021 8.3 리허설은 host의 사본을 쓰므로 장소 A의 값을 증명하지 못한다.
 4. 아래 기록을 값 없이 채워 agent에 전달한다.
 
 | 항목 | 둔 곳 | host 밖인가 | 꺼낼 수 있음을 확인한 날 |
@@ -195,15 +200,17 @@ UID로 도는 process도 host를 읽는 주체에 들어간다.
 | BKP-002 local key | | | |
 | Cloudflare 계정 접근 | | | |
 | R2 account ID·bucket 이름 | | | |
-| 장소 A의 값으로 받은 R2 snapshot 목록 | | 해당 없음 | |
-| unseal share 파일과 CA key의 host 보조 사본 | | 해당 없음 | |
+| 장소 A의 값으로 받은 R2 목록과 파일 1개 복원 | | 해당 없음 | |
 | 장소 A의 복구 수단이 장소 A와 host 밖에 있는가 | | | |
 
-**판정.** 모든 칸이 채워지고 장소 A의 다섯 행이 "host 밖 = 예"이며 R2 목록을 받은 날이 있고
+**판정.** 모든 칸이 채워지고 장소 A의 다섯 행이 "host 밖 = 예"이며 R2 목록과 복원을 한 날이 있고
 마지막 행이 "예"일 때만
 agent가 5단계를 기록한다. Evidence 결과는 `PASS`이고 Check는 "owner-attested"로 시작한다.
-칸이 비면 `NOT_RUN`, "아니오"가 하나라도 있으면 `FAIL`이다. 둘 다 유지보수 창을 열지
-않는다. owner 진술일 뿐이며 저장소는 보관 사실을 인증하지 못한다.
+칸이 비면 `NOT_RUN`, "아니오"가 하나라도 있으면 `FAIL`이다. 둘 다 유지보수 창을
+열지 않는다. owner 진술일 뿐이며 저장소는 보관 사실을 인증하지 못한다.
+
+**재확인.** 변경 사건이 없고 반기 기한 안이면, window 전에 owner가 "마지막 기록 이후 변경 사건이
+없다"고 값 없이 답한 것만 Task에 `owner-attested` 재확인으로 남긴다(2026-11-11 첫 적용).
 
 ### Maintenance Window Plan
 
@@ -226,7 +233,8 @@ SPEC-0204 TSK-0006 Evidence에 값 없이 기록한다.
 #### Custody Precondition
 
 BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근이 1인 관리자 custody 절차에 맞는 off-host 보관에
-있다는 owner 확인이 값 없이 기록되어야 한다. 확인이 없으면 window를 열지 않는다.
+있다는 **유효한** owner 기록이 값 없이 있어야 한다. 유효 조건은 위 「유효 기간」과 POL-0085의 변경
+사건·반기 확인 기한이다. 유효한 기록이 없으면 window를 열지 않는다.
 
 #### Window Schedule
 
