@@ -97,7 +97,7 @@
   "include_inputs": [
     {
       "path": "docker-compose.yml",
-      "sha256": "af19fd433e371d0f7356b18e324eb0e9d1384c7c007cc6ac87bccd0ec6b2edf7"
+      "sha256": "9e5ac4a504af731099858ea1b75c787a853cf89f91d7b7cdedac5606f6c533c8"
     },
     {
       "path": "infra/01-gateway/traefik/docker-compose.yml",
@@ -161,7 +161,7 @@
     },
     {
       "path": "infra/07-workflow/n8n/docker-compose.yml",
-      "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+      "sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e"
     },
     {
       "path": "infra/08-ai/comfyui/docker-compose.yml",
@@ -213,7 +213,7 @@
     },
     {
       "path": "infra/11-quality/mailpit/docker-compose.yml",
-      "sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a"
+      "sha256": "5d1548c68964caca256b3b0401f35e503d809969cf7667b37a0704c7718cb2a2"
     },
     {
       "path": "infra/11-quality/pact-broker/docker-compose.yml",
@@ -11287,7 +11287,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-10T14:39:40+09:00",
-      "source_input_sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a",
+      "source_input_sha256": "5d1548c68964caca256b3b0401f35e503d809969cf7667b37a0704c7718cb2a2",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
@@ -11429,7 +11429,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
-          "source_input_sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a",
+          "source_input_sha256": "5d1548c68964caca256b3b0401f35e503d809969cf7667b37a0704c7718cb2a2",
           "assessment_version": "1.33.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -14014,7 +14014,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+      "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -14288,7 +14288,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -14627,7 +14627,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+      "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
@@ -14895,7 +14895,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "n8nio/runners:2.46.6 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -15137,7 +15137,7 @@
       "upstream_reported_tag": "2.46.6",
       "next_fact_command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+      "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior dated runtime observations preserved; no current deployment inferred.",
       "target_source_image": "hyhome/n8n:2.46.6-local",
@@ -15411,7 +15411,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -27959,7 +27959,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: external producer/source contract not inspected",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+      "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -28036,7 +28036,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -28135,7 +28135,7 @@
       "upstream_reported_tag": "2026.11.9-57ff753ad",
       "next_fact_command": "docker buildx imagetools inspect searxng/searxng:latest",
       "source_refreshed_at": "2026-11-09T09:32:23.140566+00:00",
-      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+      "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -28213,7 +28213,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "2026.11.9-57ff753ad",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -28320,7 +28320,7 @@
       "upstream_reported_tag": "1.8.1",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
       "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
-      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+      "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -28398,7 +28398,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "API image 1.8.1 exact digest used one-shot",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -28506,7 +28506,7 @@
       "upstream_reported_tag": "1.8.1",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-api:latest",
       "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
-      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+      "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -28584,7 +28584,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "API image 1.8.1 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -28692,7 +28692,7 @@
       "upstream_reported_tag": "1.8.1",
       "next_fact_command": "docker buildx imagetools inspect n8nio/n8n-sandbox-service-runner-dind:latest",
       "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00",
-      "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+      "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
@@ -28770,7 +28770,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "runner-dind 1.8.1 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -49345,6 +49345,199 @@
         }
       ],
       "meaning": "2 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 13 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "0c85825b8f7c276c6933eda86314a217ebf823db",
+      "refreshed_at": "2026-11-11T14:46:58+09:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "00a5835a735bf378cc136727ad357058f0900888d8ad431abe712f7f5c70ea7c",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "af19fd433e371d0f7356b18e324eb0e9d1384c7c007cc6ac87bccd0ec6b2edf7"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "4e5f6d533d69c6c16a3f0d8101862283593a7ad2e38e249129c40826ca107e3f"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "f5ff8a8581e719a3b8398ed24503f6ac92c97b7bca8480fc800f78406eff7889"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "c567ca166971331217a51b42e86990c45881d6a24ae9be26e0563040bf9d26fe"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "docker-compose.yml",
+        "infra/07-workflow/n8n/docker-compose.yml",
+        "infra/11-quality/mailpit/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "blog-ingestion",
+          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mailpit",
+          "source_input_sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a",
+          "source_refreshed_at": "2026-11-10T14:39:40+09:00"
+        },
+        {
+          "service": "n8n",
+          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-sandbox-api",
+          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00"
+        },
+        {
+          "service": "n8n-sandbox-certs",
+          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00"
+        },
+        {
+          "service": "n8n-sandbox-runner-1",
+          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_refreshed_at": "2026-11-09T10:14:15.327330+00:00"
+        },
+        {
+          "service": "n8n-task-runner-worker",
+          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "n8n-worker",
+          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "searxng",
+          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_refreshed_at": "2026-11-09T09:32:23.140566+00:00"
+        }
+      ],
+      "meaning": "3 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 9 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {
@@ -54584,10 +54777,10 @@
     "package_lookup": "package-lookups.json#/n8n_source_preparation",
     "meaning": "Current n8n-only SOURCE preparation; no build, native execution, signature, full-image scan, HOME or recovery receipt.",
     "source_binding": {
-      "checked_at": "2026-11-10T14:39:40+09:00",
-      "source_revision": "8cffec69dcb3dace4e8aa423ff62b9fa04682be3",
-      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed after a Renovate-proposed update.",
-      "input_sha256": "97aa61dd956ba41081a169df6fa6df93a9a5aa3ccb4eb45fd5fa0235ea22fed7",
+      "checked_at": "2026-11-11T14:46:58+09:00",
+      "source_revision": "0c85825b8f7c276c6933eda86314a217ebf823db",
+      "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed.",
+      "input_sha256": "33124ec87069b468d160c515a548f842755078d4eabaa2d37525ef859577a508",
       "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
       "input_files": [
         {
@@ -54604,7 +54797,7 @@
         },
         {
           "path": "infra/07-workflow/n8n/docker-compose.yml",
-          "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+          "sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e"
         },
         {
           "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
@@ -57266,6 +57459,90 @@
         "full_image_sbom_scan": "NOT_RUN",
         "recovery": "NOT_RUN",
         "archived_at": "2026-11-10T14:39:40+09:00"
+      },
+      {
+        "checked_at": "2026-11-10T14:39:40+09:00",
+        "source_revision": "8cffec69dcb3dace4e8aa423ff62b9fa04682be3",
+        "source_state": "SOURCE_REVIEW_ONLY: the n8n input files changed on top of this revision and were rehashed after a Renovate-proposed update.",
+        "input_sha256": "97aa61dd956ba41081a169df6fa6df93a9a5aa3ccb4eb45fd5fa0235ea22fed7",
+        "algorithm": "SHA256 of sorted relative path UTF-8 bytes + NUL + file bytes; no separator after contents",
+        "input_files": [
+          {
+            "path": "infra/07-workflow/n8n/Dockerfile",
+            "sha256": "f0ec9f34e38e1692fe13dbf7eefcd3d6c6e8d35998713185f0c08310ee5aa9ce"
+          },
+          {
+            "path": "infra/07-workflow/n8n/custom/.gitkeep",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": "infra/07-workflow/n8n/dev.Dockerfile",
+            "sha256": "425dcc27f1830ab0d45a2145dd14b95c9b25196409b7d4ae0ab500b3aed15151"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-compose.yml",
+            "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.dev.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/docker-entrypoint.sh",
+            "sha256": "3cfbca353f95ee3ad195bc5b9ee1da58375441616c52106c944f191c0ea39739"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/OpsflowSmtp.node.ts",
+            "sha256": "53f5e47b5c5c7b45a242257ddfc3d7a45b51b4251971d4efa6183c7b1cbe51ca"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package-lock.json",
+            "sha256": "ddf4c50adafbc0e88c283b6a2eb7ebe1650975b47e1a5b5ab44e4dbc6258a7af"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json",
+            "sha256": "48bbd5c8a1abc7d26454ccd2c689262a84ac59dec4ba88fab89c750817929ad2"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/adapter.test.cjs",
+            "sha256": "8b10e2802c5bd84153df09c501b6c466885f9e1394914473b4c46b38b56b0215"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/node.test.cjs",
+            "sha256": "9b7b813e7a07adef7f7bd62ce001f1efbae6006e15b17633b72170d19749f56d"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/protocol.test.cjs",
+            "sha256": "2baab4f691d0a57c861f6a6ce9b2984aa4df34b449f71c4a63b25e57862a2633"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/starttls.test.cjs",
+            "sha256": "e64e92f0c0f87b13d28012530ad5b5c4b424080e3c15db7a1f8413c7f9ce7ae4"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tests/transport.test.cjs",
+            "sha256": "3319f3f070030f9040262b53502db3c1e78bff7dcb86e988cf419551f20facc5"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/transport.ts",
+            "sha256": "4117e28fd9c3b1134c9328397dba0e02b2968ec18f55204b3218f62f0a52c14c"
+          },
+          {
+            "path": "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/tsconfig.json",
+            "sha256": "ab21df464586a10da6608d309fcd64f8fb4de7ba76620681c5ae31b25f4ceabf"
+          },
+          {
+            "path": "tests/validation/test_workflow_version_bundle.py",
+            "sha256": "ddb33bea1116235ad2aaa2530530b09ea5218fdd3b19ba0d6068457f0aa8c6f1"
+          }
+        ],
+        "meaning": "Same existing n8n source paths rehashed; no custom image build, signature, scan, native or HOME acceptance, and no earlier native acceptance applies to the changed source.",
+        "native_test": "NOT_RUN",
+        "home": "NOT_RUN",
+        "signature": "NOT_RUN",
+        "full_image_sbom_scan": "NOT_RUN",
+        "recovery": "NOT_RUN",
+        "archived_at": "2026-11-11T14:46:58+09:00"
       }
     ],
     "current_source_acceptance_limit": {

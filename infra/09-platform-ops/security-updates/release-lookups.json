@@ -58276,7 +58276,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "axllent/mailpit:v1.33.0@sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
-          "source_input_sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a",
+          "source_input_sha256": "5d1548c68964caca256b3b0401f35e503d809969cf7667b37a0704c7718cb2a2",
           "assessment_version": "1.33.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58874,7 +58874,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59143,7 +59143,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/runners:2.46.6@sha256:b1fe87a59b712a03e5a4fbb46a18ea5ca9487add602f8749941a69f4ab322612",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "n8nio/runners:2.46.6 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59210,7 +59210,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hyhome/n8n:2.46.6-local",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "2.46.6 custom over exact upstream digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -63011,7 +63011,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy-home/blog-ingestion:bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -63059,7 +63059,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "2026.11.9-57ff753ad",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -63116,7 +63116,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "API image 1.8.1 exact digest used one-shot",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -63174,7 +63174,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-api:1.8.1@sha256:3ac19681cae36f3d1fb879cc572d3488088d03c45c4c96b6ff4f0bbdd2d00e7e",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "API image 1.8.1 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -63232,7 +63232,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "n8nio/n8n-sandbox-service-runner-dind:1.8.1@sha256:b744471997bbaf1bf75b5ca667d0931352bdb4d59ecc7935ceab7e742829a117",
-          "source_input_sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f",
+          "source_input_sha256": "c55565c52d907761195341f5ae0a595ab45154dbf2539ef70b282facdfb8454e",
           "assessment_version": "runner-dind 1.8.1 exact digest",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
