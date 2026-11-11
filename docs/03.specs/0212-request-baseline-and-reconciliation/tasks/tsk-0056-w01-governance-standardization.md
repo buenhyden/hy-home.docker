@@ -103,7 +103,7 @@ W01-B is KEEP: no record, check result or role string counts as approval.
 | W01 obligation assessment | 109 | W114 | governance-owner-assessment | GOV-01 to GOV-08 and SUP-12 at main `0a726ee1c` | NOT_RUN | Assessment not yet run | required | - |
 | W01 obligation assessment result | 109 | W114 | governance-owner-assessment | GOV-01 to GOV-08 and SUP-12 at main `0a726ee1c` | PASS | Per-ID table above: seven KEEP, GOV-06 and GOV-07 GAP fixed, GOV-04 cross-repo DEFER | required | W01 obligation assessment |
 | W01 governance checks | 109 | W114 | governance-contract-and-documents | Commits `c66c792a6` and `55ce3e362` | PASS | agent governance contract PASS; renderer drift 0; metadata selected8 violations0; links alignment and commands PASS; test_agent_governance_ci_routing and test_registry OK | required | - |
-| W01 governance review | 109 | W114 | independent-document-review | Fresh-context rules-engineer of `c66c792a6` | PASS | CHANGES_REQUIRED for the Stage 98 README wording, fixed in `55ce3e362`; obligations, anchors and the state-list removal otherwise verified | required | - |
+| W01 governance review | 109 | W114 | independent-document-review | Fresh-context rules-engineer of `c66c792a6` | FAIL | CHANGES_REQUIRED for the Stage 98 README wording; obligations, anchors and the state-list removal otherwise verified | required | - |
 
 ## Criterion Acceptance
 
