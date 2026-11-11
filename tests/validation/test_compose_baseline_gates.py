@@ -2344,15 +2344,16 @@ status=0
 python3() {
   printf '%s\n' "$*" >>"$staging/calls"
   [[ "$FAILURE" != backup ]] || { echo partial >"$staging/agent-memory.sqlite3"; return 7; }
+  [[ "$FAILURE" != capacity ]] || { echo partial >"$staging/agent-memory.sqlite3"; return 4; }
   echo synthetic >"$staging/agent-memory.sqlite3"
 }
 """
-        for case in ("absent", "present", "backup", "dangling"):
+        for case in ("absent", "present", "backup", "capacity", "dangling"):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 staging = root / "staging"
                 staging.mkdir()
-                if case in ("present", "backup"):
+                if case in ("present", "backup", "capacity"):
                     (root / ".workspace-memory").mkdir()
                     (root / ".workspace-memory/memory.sqlite3").write_text("")
                 elif case == "dangling":
@@ -2388,6 +2389,12 @@ python3() {
                         calls.read_text(),
                     )
                     self.assertTrue((staging / "agent-memory.sqlite3").exists())
+                elif case == "capacity":
+                    # Only the capacity refusal (exit 4) is a warning: the
+                    # saturated SPEC-0270 ledger must not fail the whole run.
+                    self.assertEqual(0, result.returncode)
+                    self.assertIn("capacity", result.stderr)
+                    self.assertFalse((staging / "agent-memory.sqlite3").exists())
                 else:
                     self.assertEqual(1, result.returncode)
                     self.assertFalse((staging / "agent-memory.sqlite3").exists())

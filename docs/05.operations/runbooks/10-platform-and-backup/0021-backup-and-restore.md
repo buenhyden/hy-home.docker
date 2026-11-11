@@ -697,6 +697,9 @@ conflict를 보존하고 검사한 뒤 교체한다. DB/backup/임시 복사본�
 `backup.sh backup`·`offsite.sh copy`는 용량 승인 없이 직접 실행한다.
 `budget-backup`·`budget-copy`와 예약 경로는 그대로 두며, snapshot 계산을 다시
 설계한 뒤 SPEC-0270이 매일 경로를 다시 옮긴다.
+같은 이유로 staging의 기억 export가 용량 거부(exit 4)로 끝나면 export만 버리고 경고를
+남기며 run은 실패로 처리하지 않는다. 그동안 기억 저장소는 매일 snapshot에 들어가지 않으므로
+마지막 복사본은 그 전 snapshot이다. 다른 export 실패는 그대로 run을 실패시킨다.
 
 예약 경로로 local state snapshot을 만들 때는 원장을 채택한 뒤 호스트에서
 `python3 scripts/operations/agent_memory.py backup-run --target state`를 사용한다.
