@@ -130,7 +130,11 @@ def resolved_sources(items):
             "body_sha256": "a" * 64,
             "fetched_at": "2026-11-01T00:00:30.000Z",
             "collection_call_id": f"collector-{index}",
-            "text": "source text",
+            # Page text that backs the item, as a page that passed check_item would.
+            "text": " ".join(
+                [str(entry.get("title", "")), str(entry.get("body", ""))]
+                + [q for q in entry.get("source_quotes") or [] if isinstance(q, str)]
+            ),
         }
         for index, entry in enumerate(items)
     ]
@@ -1274,6 +1278,45 @@ class RetryAndRedriveTests(unittest.TestCase):
 
     def test_redrive_keeps_a_record_after_a_403(self):
         self.check_rejected_credential_redrive(403)
+
+    def forge(self, execution, change):
+        record = self.record(execution)
+        payload = json.loads(base64.b64decode(record["payload_b64"]))
+        change(payload)
+        raw = json.dumps(
+            payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode()
+        record["payload_b64"] = base64.b64encode(raw).decode("ascii")
+        record["payload_sha256"] = hashlib.sha256(raw).hexdigest()
+        self.path(execution).write_bytes(json.dumps(record, sort_keys=True).encode())
+
+    def test_forged_or_unbound_records_are_never_redriven(self):
+        def retitle(payload):
+            payload["items"][0]["title"] = "Contoso ships version 9.9 on 31 December"
+
+        def other_run(payload):
+            payload["run_id"] = "no-such-run-0001"
+
+        def forged_report(payload):
+            payload["source_text"] = payload["source_text"] + " appended"
+
+        for run, change in (
+            ("e-retitled", retitle),
+            ("e-unbound", other_run),
+            ("e-report", forged_report),
+        ):
+            self.seed(run)
+            if run == "e-retitled":
+                # Only the item changes; the report and source set still match.
+                self.forge(run, retitle)
+            else:
+                self.forge(run, change)
+        post, sent = self.recorder([gateway_answer(201), gateway_answer(201)])
+        result = self.call(post, "now-forged")
+        self.assertNotIn("redrive", result)
+        self.assertEqual(len(sent), 1)
+        for run in ("e-retitled", "e-unbound", "e-report"):
+            self.assertEqual(self.record(run)["attempts"], 3, run)
 
     def test_redrive_stops_after_a_failure_on_the_first_record(self):
         self.seed("e-first")

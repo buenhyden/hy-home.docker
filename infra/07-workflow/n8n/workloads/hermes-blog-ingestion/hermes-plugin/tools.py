@@ -13,6 +13,7 @@ import tempfile
 import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 if __package__:
@@ -1195,6 +1196,60 @@ def _attempt(request, timeout, item_count, receipt_validator, *, unsent):
     return status, None, None, outcome, status == "uncertain"
 
 
+def _redrive_payload_ok(records, collection, job_id, stored, payload_bytes) -> bool:
+    """A redriven record must pass the same gates as a fresh send and match the
+    report and source set this plugin stored for that run.
+
+    Outbox files sit in a private directory, but anything that can write there
+    could otherwise have arbitrary items sent with the plugin's credential.
+    """
+    if _validate(stored) is not None or len(payload_bytes) > min(
+        webhook_transport.MAX_REQUEST_BYTES, GATEWAY_MAX_REQUEST_BYTES
+    ):
+        return False
+    try:
+        collected = collection._time(stored["collected_at"])
+        generated = collection._time(stored["generated_at"])
+        now = collection._time(collection.timestamp(datetime.now(UTC)))
+        run_id = stored["run_id"]
+        source_text = stored["source_text"]
+        source_ref = stored["source_ref"]
+    except (KeyError, TypeError, ValueError):
+        return False
+    if not (collected <= generated <= now) or not _identity(run_id):
+        return False
+    owner = SimpleNamespace(job_id=job_id, execution_id=run_id)
+    store = records.PrivateRecords(_report_directory(owner))
+    try:
+        report = store.read("report.md")
+        source_set = store.read("source-set.json")
+    finally:
+        store.close()
+    if not (
+        report is not None
+        and source_set is not None
+        and isinstance(source_text, str)
+        and source_text.encode("utf-8") == report
+        and stored.get("source_sha256") == hashlib.sha256(report).hexdigest()
+        and source_ref == "hermes-source-set:" + hashlib.sha256(source_set).hexdigest()
+    ):
+        return False
+    # Every item must still be backed by the page text stored for that run, the
+    # same check a fresh submission passes in collection.resolve().
+    try:
+        rows = {row["item_id"]: row for row in _strict_json(source_set)}
+        return all(
+            item["item_id"] in rows
+            and item.get("source_url") == rows[item["item_id"]]["source_url"]
+            and not collection.source_check.check_item(
+                item, rows[item["item_id"]]["text"]
+            )
+            for item in stored["items"]
+        )
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
 def _redrive(run, current_key, records, receipt_validator, counts) -> None:
     """Resend up to two earlier unconfirmed records of this job, once each.
 
@@ -1254,6 +1309,9 @@ def _redrive(run, current_key, records, receipt_validator, counts) -> None:
                         or f"{run.job_id}:{stored.get('idempotency_key')}" != key
                         or not isinstance(items, list)
                         or collection._time(stored["generated_at"]) < oldest
+                        or not _redrive_payload_ok(
+                            records, collection, run.job_id, stored, payload_bytes
+                        )
                     ):
                         continue
                     remaining = deadline - time.monotonic()
