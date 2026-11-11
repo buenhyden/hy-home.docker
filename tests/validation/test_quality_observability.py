@@ -271,5 +271,131 @@ class QualityObservabilityContractTest(unittest.TestCase):
         self.assertIn("`hy-home-infra`만 유지", readme)
 
 
+HERMES_DASHBOARD = (
+    ROOT / "infra/06-observability/grafana/dashboards/Applications/hermes-research.json"
+)
+HERMES_SECRET = "hermes_otlp_token"
+
+
+class HermesObservabilityContractTest(unittest.TestCase):
+    """Host-run Hermes exports OTLP over an authenticated, loopback-only path."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.config = ALLOY.read_text(encoding="utf-8")
+        cls.compose = (ROOT / "infra/06-observability/docker-compose.yml").read_text(
+            encoding="utf-8"
+        )
+
+    def block(self, header: str) -> str:
+        start = self.config.index(header)
+        return self.config[start : self.config.index("\n}\n", start)]
+
+    def test_receiver_requires_the_bearer_token_and_fans_out_by_signal(self) -> None:
+        self.assertIn('filename  = "/run/secrets/hermes_otlp_token"', self.config)
+        self.assertIn(
+            "token = local.file.hermes_otlp_token.content",
+            self.block('otelcol.auth.bearer "hermes" {'),
+        )
+        receiver = self.block('otelcol.receiver.otlp "hermes" {')
+        self.assertIn("auth     = otelcol.auth.bearer.hermes.handler", receiver)
+        self.assertIn('endpoint = "0.0.0.0:4320"', receiver)
+        self.assertNotIn("grpc", receiver)
+        self.assertIn("traces  = [otelcol.processor.batch.default.input]", receiver)
+        self.assertIn(
+            "logs    = [otelcol.processor.transform.hermes_logs.input]", receiver
+        )
+        self.assertIn(
+            "metrics = [otelcol.processor.transform.hermes_metrics.input]", receiver
+        )
+        # The unauthenticated 4317/4318 receiver still carries traces only.
+        default = self.block('otelcol.receiver.otlp "default" {')
+        self.assertNotIn("hermes", default)
+        self.assertNotIn("logs", default.split("output {")[1])
+
+    def test_logs_reach_loki_and_metrics_are_bounded_and_identity_checked(self) -> None:
+        self.assertIn(
+            'set(attributes["loki.resource.labels"], "service.name")',
+            self.block('otelcol.processor.transform "hermes_logs" {'),
+        )
+        self.assertIn(
+            "forward_to = [loki.write.local_loki.receiver]",
+            self.block('otelcol.exporter.loki "hermes" {'),
+        )
+        transform = self.block('otelcol.processor.transform "hermes_metrics" {')
+        self.assertIn(
+            'keep_keys(attributes, ["service_name", "status", "outcome", "job_kind"])',
+            transform,
+        )
+        self.assertIn("otelcol.processor.batch.hermes_metrics.input", transform)
+        self.assertIn(
+            "otelcol.exporter.prometheus.hermes_metrics.input",
+            self.block('otelcol.processor.batch "hermes_metrics" {'),
+        )
+        self.assertIn(
+            "prometheus.relabel.hermes_metrics.receiver",
+            self.block('otelcol.exporter.prometheus "hermes_metrics" {'),
+        )
+        relabel = self.block('prometheus.relabel "hermes_metrics" {')
+        self.assertIn('source_labels = ["service_name"]', relabel)
+        self.assertIn('regex         = "hermes-(agent|gateway)"', relabel)
+        self.assertIn('action = "labelkeep"', relabel)
+        # hermes-otel bounds each instrument to these attribute keys (dots
+        # become underscores in Prometheus); anything else is dropped.
+        self.assertIn(
+            'regex  = "__name__|service_name|instance|profile|platform|reason|api_mode|cache_result|type|tool_name|token_type|query_source|span_kind|cost_status|gen_ai_request_model|gen_ai_response_model|gen_ai_tool_name|le|quantile"',
+            relabel,
+        )
+        self.assertIn("max_cache_size = 2048", relabel)
+        self.assertIn(
+            "forward_to     = [prometheus.remote_write.local_prometheus.receiver]",
+            relabel,
+        )
+        for unbounded in ("trace_id", "span_id", "session", "user"):
+            self.assertNotIn(unbounded, relabel)
+
+    def test_compose_publishes_only_on_loopback_with_the_secret(self) -> None:
+        self.assertIn(
+            "'127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}:4320'", self.compose
+        )
+        self.assertIn(f"      - {HERMES_SECRET}\n", self.compose)
+        root = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
+        self.assertIn(
+            f"  {HERMES_SECRET}:\n    file: ./secrets/observability/alloy/"
+            f"{HERMES_SECRET}.txt\n",
+            root,
+        )
+
+    def test_secret_is_catalogued(self) -> None:
+        catalog = json.loads(
+            (ROOT / "infra/03-security/openbao/secret-catalog.json").read_text()
+        )
+        rows = [
+            entry
+            for entry in catalog["entries"]
+            if entry.get("source_path")
+            == f"secrets/observability/alloy/{HERMES_SECRET}.txt"
+        ]
+        self.assertEqual(["OBS-016"], [row["id"] for row in rows])
+        self.assertEqual("Token", rows[0]["value_type"])
+
+    def test_dashboard_has_loki_logs_and_tempo_trace_panels(self) -> None:
+        panels = json.loads(HERMES_DASHBOARD.read_text(encoding="utf-8"))["panels"]
+        logs = [p for p in panels if p["type"] == "logs"]
+        traces = [p for p in panels if p["datasource"]["uid"] == "Tempo"]
+        self.assertEqual(1, len(logs))
+        self.assertEqual({"type": "loki", "uid": "Loki"}, logs[0]["datasource"])
+        self.assertEqual(
+            '{service_name=~"hermes-(agent|gateway)"}', logs[0]["targets"][0]["expr"]
+        )
+        self.assertEqual(1, len(traces))
+        target = traces[0]["targets"][0]
+        self.assertEqual({"type": "tempo", "uid": "Tempo"}, target["datasource"])
+        self.assertEqual("traceql", target["queryType"])
+        self.assertIn(
+            'resource.service.name =~ "hermes-(agent|gateway)"', target["query"]
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

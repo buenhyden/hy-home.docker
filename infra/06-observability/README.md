@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.15"
+version: "1.0.16"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-11"
 created: "2025-11-12"
 ---
 
@@ -68,7 +68,7 @@ created: "2025-11-12"
 | Compose linkage | 루트 include는 [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` 경로로 활성화됨. `PROMETHEUS_CONFIG_FILE`, `CADVISOR_CPUS`, `CADVISOR_MEM_LIMIT`가 과거에는 별도 파일이었던 토폴로지를 선택함. |
 | Networks | `edge_net`(Grafana 등 자체 인증 서비스), `mng_data_net`, `object_net`, `obs_net`, `seaweedfs_s3_metrics_net`(Prometheus·Alloy); 자체 인증이 없는 Prometheus·Loki·Tempo·Alloy·Alertmanager·cAdvisor·Pyroscope·Pushgateway는 `edge_net` 대신 각자의 `<service>_ingress_net`(SPEC-0266). Prometheus는 `oauth2_proxy_metrics_net`·`keycloak_management_net`·`traefik_metrics_net`에, Alloy는 `grafana_pprof_net`에, Gatus는 `keycloak_management_net`에 붙어 각 보조 listener의 alias로 scrape·probe함(SPEC-0267). Grafana `/metrics`는 basic auth를 요구하고 Prometheus는 `grafana_metrics_password`로 scrape함 |
 | Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope 설정 마운트와 `${DEFAULT_OBSERVABILITY_DIR}` 하위 바인드 기반 명명 데이터 볼륨. `PROMETHEUS_DATA_DIR`, `TEMPO_DATA_DIR`로 SSD 경로를 재지정합니다 (SPEC-0246 W7). Pyroscope의 v2 metastore·raft 상태는 `/data`의 명명 볼륨 `pyroscope-metastore`(`${DEFAULT_OBSERVABILITY_DIR}/pyroscope-metastore`)에 둠(SPEC-0267) |
-| Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
+| Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}:4320`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
 | Labels | `hy-home.tier`와 Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, Pushgateway용 Traefik 라우터/서비스 레이블 |
 | Secret refs | 이름: `opensearch_exporter_password`, `openbao_token`, `qdrant_read_only_api_key`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_tempo_secret_key`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; 마운트: `/run/secrets/opensearch_exporter_password`, `/run/secrets/openbao_token`, `/run/secrets/qdrant_read_only_api_key`, `/run/secrets/seaweedfs_s3_loki_secret_key`, `/run/secrets/seaweedfs_s3_tempo_secret_key`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
 | Healthcheck | `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway`에 Compose 헬스체크가 선언되어 있음 |

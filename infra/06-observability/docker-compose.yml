@@ -292,11 +292,15 @@ services:
       - alloy-data:/var/lib/alloy:rw
     # Authenticated quality metrics receiver (4319) stays unpublished; only
     # per-run k6 relays on quality_otlp_net reach it (SPEC-0214).
+    # Authenticated Hermes receiver (4320) is published on host loopback only;
+    # the host-run Hermes agent exports OTLP/HTTP with hermes_otlp_token.
     secrets:
       - quality_otlp_token
+      - hermes_otlp_token
     ports:
       - '${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}'
       - '${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}'
+      - '127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}:4320'
     depends_on:
       prometheus:
         condition: service_healthy

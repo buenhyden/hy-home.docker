@@ -392,6 +392,8 @@ secrets:
     file: ./secrets/observability/grafana/grafana_metrics_password.txt
   quality_otlp_token:
     file: ./secrets/observability/alloy/quality_otlp_token.txt
+  hermes_otlp_token:
+    file: ./secrets/observability/alloy/hermes_otlp_token.txt
 
   # ── PostgreSQL ─────────────────────────────────────
   mng_postgres_password:

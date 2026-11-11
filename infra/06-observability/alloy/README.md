@@ -1,10 +1,10 @@
 ---
 title: "Grafana Alloy Unified Collector"
-version: "1.0.9"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 created: "2026-01-12"
 ---
 
@@ -27,6 +27,7 @@ Alloy는 `hy-home.docker` 플랫폼의 통합 수집 에이전트입니다. 프�
 ### In Scope
 
 - **Ingestion**: OTLP(gRPC/HTTP), Docker 소켓 디스커버리. 공개 4317/4318은 trace만 받고, 품질 metrics는 `config.home.alloy`의 인증된 OTLP HTTP 수신기(4319, host 비공개, secret `quality_otlp_token`)로만 받습니다. 이 수신기에는 internal network `quality_otlp_net`에 붙은 run별 k6 relay만 닿습니다(SPEC-0214).
+- **Hermes OTLP**: host systemd user unit으로 도는 Hermes agent는 `config.home.alloy`의 인증된 OTLP HTTP 수신기(4320, secret `hermes_otlp_token`)로 trace·log·metric을 보냅니다. Compose는 이 포트를 host loopback `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}`에만 공개하므로 같은 host의 호출자만 닿습니다. trace는 Tempo, log는 Loki(`service_name=~"hermes-(agent|gateway)"`), metric은 `service_name`·`instance`와 hermes-otel이 제한한 속성(`profile`·`platform`·`tool_name`·`token_type`·`gen_ai_request_model` 등)만 남기고 `service_name=~"hermes-(agent|gateway)"`인 series만 Prometheus remote write로 전달합니다. Hermes는 누적(cumulative) temporality로 export해야 합니다.
 - **Processing**: 대상 재레이블링, 메타데이터 보강, 배치 처리.
 - **Exporting**:
   - Metrics -> Prometheus가 Alloy `/metrics`를 직접 scrape함; self remote-write는 제거됨. 품질 OTLP metrics는 project·environment·service와 k6의 `condition`·`expected_response`·`method`·`status`·`scenario`·producer `instance`만 남긴 뒤 delta→cumulative 변환과 remote write로 전달합니다.
@@ -89,6 +90,11 @@ alloy/
 | `ALLOY_PORT`           |    No    | UI 리스닝 포트 (기본값: 12345) |
 | `ALLOY_OTLP_GRPC_PORT` |    No    | OTLP gRPC 포트 (기본값: 4317)     |
 | `ALLOY_OTLP_HTTP_PORT` |    No    | OTLP HTTP 포트 (기본값: 4318)     |
+| `ALLOY_HERMES_OTLP_HOST_PORT` |    No    | Hermes OTLP 수신기의 host loopback 포트 (기본값: 4320, 컨테이너 내부는 4320 고정) |
+
+### Hermes 연결
+
+Hermes 설정(`monitoring.export.otlp`)의 endpoint를 `http://127.0.0.1:4320`으로 두고, `Authorization: Bearer <token>` header 값은 `secrets/observability/alloy/hermes_otlp_token.txt` 파일에서 읽습니다. 값은 문서나 설정에 쓰지 않습니다. `monitoring.gateway_health_export`도 같은 endpoint를 씁니다. Grafana의 `Applications/hermes-research` 대시보드가 `{service_name=~"hermes-(agent|gateway)"}` 로그와 `service.name =~ "hermes-(agent|gateway)"` trace를 보여 줍니다.
 
 ## Validation
 

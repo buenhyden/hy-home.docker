@@ -56010,7 +56010,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "0.34.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56072,7 +56072,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "1.21.3",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56179,7 +56179,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "0.60.6",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -56569,7 +56569,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "4.9.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57351,7 +57351,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/gatus:local",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "v5.37.0 exact source; custom image not built",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57417,7 +57417,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "13.3.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -57569,7 +57569,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -58212,7 +58212,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/loki:3.7.8-seaweedfs",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "3.7.8",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -59530,7 +59530,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "1.12.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60576,7 +60576,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "3.15.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60654,7 +60654,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "1.11.5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -60711,7 +60711,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "2.4.3",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -62446,7 +62446,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/tempo:3.1.0-seaweedfs",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "3.1.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -66363,7 +66363,7 @@
         "decision": "patch",
         "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/tempo",
         "declared_subject": "hy/tempo:3.1.0-seaweedfs",
-        "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+        "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
         "operational_execution": "NOT_RUN",
         "component": "Tempo upstream binary build line",
         "fixed_candidate_version": "3.1.1",
@@ -66608,7 +66608,7 @@
         "decision": "defer",
         "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/cadvisor",
         "declared_subject": "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
-        "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+        "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
         "operational_execution": "NOT_RUN",
         "applicability": "UNKNOWN",
         "official_advisory_queries": [
@@ -66703,7 +66703,7 @@
         "decision": "defer",
         "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/gatus",
         "declared_subject": "hy/gatus:local",
-        "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+        "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
         "operational_execution": "NOT_RUN",
         "applicability": "UNKNOWN",
         "official_advisory_queries": [
@@ -66747,7 +66747,7 @@
         "decision": "defer",
         "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/loki",
         "declared_subject": "hy/loki:3.7.8-seaweedfs",
-        "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+        "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
         "operational_execution": "NOT_RUN",
         "applicability": "UNKNOWN",
         "official_advisory_queries": [
@@ -66851,7 +66851,7 @@
         "decision": "defer",
         "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/node-exporter",
         "declared_subject": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
-        "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+        "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
         "operational_execution": "NOT_RUN",
         "applicability": "UNKNOWN",
         "official_advisory_queries": [
@@ -66931,7 +66931,7 @@
         "decision": "defer",
         "previous_review": "release-lookups.json#/master_20261111_advisory_review/reviews/pushgateway",
         "declared_subject": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
-        "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+        "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
         "operational_execution": "NOT_RUN",
         "applicability": "UNKNOWN",
         "official_advisory_queries": [
