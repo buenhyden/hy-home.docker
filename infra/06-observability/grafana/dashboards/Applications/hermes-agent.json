@@ -112,14 +112,14 @@
         "x": 12,
         "y": 0
       },
-      "description": "Turn exit reasons (hermes.turn.exit_reason) from hermes-otel log events over the selected range. Needs hermes-otel structured events (logs.events.enabled: true).",
+      "description": "Turn exit reasons (hermes.turn.exit_reason) from hermes-otel log events over the selected range, grouped by cause with the parenthesized detail removed. Needs hermes-otel structured events (logs.events.enabled: true).",
       "targets": [
         {
           "datasource": {
             "type": "loki",
             "uid": "Loki"
           },
-          "expr": "sum by (exit_reason) (count_over_time({service_name=\"hermes-agent\"} | json exit_reason=\"attributes[\\\"hermes.turn.exit_reason\\\"]\" | exit_reason != \"\" [$__range]))",
+          "expr": "sum by (exit_reason) (count_over_time({service_name=\"hermes-agent\"} | json exit_reason=\"attributes[\\\"hermes.turn.exit_reason\\\"]\" | exit_reason != \"\" | label_format exit_reason=`{{ regexReplaceAll \"\\\\(.*$\" .exit_reason \"\" }}` [$__range]))",
           "refId": "A",
           "queryType": "instant",
           "legendFormat": "{{exit_reason}}"

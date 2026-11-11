@@ -421,7 +421,7 @@ class BoundariesTests(unittest.TestCase):
                 (b"{}", "x\r\ny", "10.0.0.1", 1),
                 (b"{}", "x", "", 1),
                 (b"{}", "x", "10.0.0.1", 0),
-                (b"{}", "x", "10.0.0.1", 16),
+                (b"{}", "x", "10.0.0.1", 46),
             ):
                 with (
                     self.subTest(token=repr(token), timeout=timeout),

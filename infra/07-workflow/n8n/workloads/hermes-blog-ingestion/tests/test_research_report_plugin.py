@@ -137,6 +137,19 @@ def resolve_submitted(_root, _job, _run, _scheduled, items, _receipts):
     return resolved_sources(items)
 
 
+class DirectTimeoutNestingTests(unittest.TestCase):
+    def test_attempt_outlasts_the_flow(self):
+        # A flow that answers after the attempt ends is recorded uncertain and
+        # never retried, so each attempt must outlast the whole n8n execution.
+        workflow = json.loads((WORKLOAD / "workflow.json").read_text())
+        execution = workflow["settings"]["executionTimeout"]
+        self.assertLess(execution, tools._HTTP_TIMEOUT)
+        self.assertLessEqual(
+            tools._HTTP_TIMEOUT, tools.webhook_transport.MAX_REQUEST_TIMEOUT
+        )
+        self.assertLessEqual(tools._HTTP_TIMEOUT, tools._TOTAL_HTTP_TIMEOUT)
+
+
 class SourceQuotesValidationTests(unittest.TestCase):
     def test_valid_one_to_three_quotes_passes(self):
         p = make_payload(
@@ -509,7 +522,7 @@ class DeliveryBudgetTests(unittest.TestCase):
         self.assertEqual(result["error_type"], "dns")
         self.assertEqual(post.call_count, 3)
         self.assertEqual(
-            [call.kwargs["timeout"] for call in post.call_args_list], [15, 15, 15]
+            [call.kwargs["timeout"] for call in post.call_args_list], [45, 45, 45]
         )
         self.assertEqual(sleep.call_count, 2)
 

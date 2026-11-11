@@ -1,6 +1,6 @@
 ---
 title: "Hermes DevOps Daily Brief Recovery Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -56,18 +56,47 @@ are context only.
 | H3 | Are `report_not_final` and `report_path_not_allowed` (2026-11-09) from the job's prompt or report path, or from the Gateway's validation? |
 | H4 | What did the Gateway reject on 2026-11-10? |
 
+### Diagnosis (2026-11-11)
+
+Read-only sources: `~/.hermes/cron/jobs.json`, `~/.hermes/logs/agent.log*`,
+the plugin outbox under `~/.hermes/data/research-report-outbox/`, and the
+Prometheus `hermes_research_*` series.
+
+| Item | Finding |
+| --- | --- |
+| H1 | The `devops` job pins no model, like the other jobs. At 08:00:48 the default `gpt-6.1-terra` (`openai-codex`) answered this job's first request with `HTTP 400 {"detail":"Bad Request"}`, which is not retried. The fallback chain then failed in turn: `openai-api` `gpt-5.6-sol` had no credits, the free Nous Beam model returned 404 (free period ended), and `ollama-cloud` refused for billing. Only `anthropic` `claude-haiku-5-5` accepted. The model difference is the fallback, not a job setting. Why the primary rejected this job's request is not visible in the log. |
+| H2 | The turn ended with `pending_tool_result` two API calls after the switch to `claude-haiku-5-5`, so no report was written. The 09:13 manual rerun finished, but its `submit_research_report` returned `scheduled_instant_required`: manual runs cannot submit by design, so it cannot clear either alert. |
+| H3 | `report_not_final` (2026-11-08) and `report_path_not_allowed` (2026-11-09 08:05:20) are the plugin's own report checks refusing the agent's report file. They work as designed; the agent retried in the same run. |
+| H4 | The Gateway did not reject anything. On 2026-11-09 08:05:41 and 2026-11-10 08:08:23 and 08:15:45 the plugin's POST hit its 15 s per-attempt limit and returned `delivery_uncertain` (`timeout`); the outbox records stay `uncertain` and are never retried. The workload README nests the limits as Gateway 20 s < flow `executionTimeout` 30 s < submitter attempt 45 s, and the Publisher uses 45 s, but the direct plugin path still used 15 s. A Gateway answer that takes 15–30 s, which is plausible during the 08:00 burst of jobs, is therefore lost. The flow saves no execution data, so whether those two reports were stored is not recorded. |
+
+### Repository fix
+
+The direct plugin path now uses 45 s per attempt (`_HTTP_TIMEOUT` and
+`MAX_REQUEST_TIMEOUT`), the same as the Publisher, inside the existing 60 s
+total and three attempts. A new test keeps the attempt longer than the flow's
+`executionTimeout`. The installed copy under `~/.hermes/plugins/research-report`
+is owner-managed and needs the two changed files and a gateway restart.
+
+### Residual for the owner
+
+The 2026-11-11 failure is a model-provider failure, not a repository defect:
+the primary model's HTTP 400 for this job and a fallback chain where only one
+entry still works. Choosing the fallback chain or pinning a model for the job
+is the owner's decision under `~/.hermes`; no paid model is assumed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | DevOps brief failure observation | 107 | W112 | Prometheus Hermes metrics, scheduler and agent logs | HOME, 2026-11-11 08:31 KST | FAIL | No `devops` outcome on 2026-11-11; last success 2026-11-08; both alerts still firing. | required | - |
+| DevOps brief diagnosis | 107 | W112 | Read-only Hermes cron, agent log, outbox and Prometheus readback | HOME, 2026-11-11 12:40 KST | PASS | H1–H4 answered in Diagnosis (2026-11-11). | optional | - |
 | DevOps brief scheduled success | 107 | W112 | One scheduled `devops` run submitted and both alerts resolved | Next scheduled run after the fix | NOT_RUN | Waits for the diagnosis. | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 107 | pending | DevOps brief failure observation, DevOps brief scheduled success | Diagnosis not started. | SPEC-0212 TSK-0054 |
+| 107 | pending | DevOps brief failure observation, DevOps brief diagnosis, DevOps brief scheduled success | Diagnosis done; the timeout fix waits for the owner's plugin install and the next scheduled run. | SPEC-0212 TSK-0054 |
 
 ## Review and Completion
 
