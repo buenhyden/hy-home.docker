@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.40"
+version: "0.2.41"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -4154,6 +4154,27 @@ and the pre-upgrade snapshot must be taken right before the upgrade, so a
 snapshot from today would be retaken. The next window needs an r4 image built
 with Go 1.27.4, its scan and residual-risk acceptance, an arranged K8s writer
 stop, a new `P01_APPROVED_COMMIT`, and then W1 through W7 in one window.
+
+### Custody Proportionality Decision — 2026-11-11
+
+After the reconfirmation the owner asked for the custody rules to match the
+real risk of this HOME: a personal development server for one administrator,
+reachable only on private LAN addresses (`192.168.0.13`, `.14`), with no
+internet tunnel or public port (host observation 2026-11-11; no router port
+forward is the owner's statement). Here custody protects recovery from R2
+after losing the host, not against theft. The owner approved three changes,
+now in POL-0085 ("위험 비례 재조정") and RUN-0105: the custody record is no
+longer retaken for every window but stays valid until a change event (key
+rotation or move, share rekey, CA key change, place A change or loss, or a
+change to the exposure premise) or until its half-yearly check is due; that
+check is a restore of one file from R2 on a non-host device with place A's
+values only, which a statement alone cannot show; and the host second copy is
+optional and not a window condition. If the exposure premise changes, the
+per-window check returns. The share-threshold exception stays, because
+splitting shares does nothing for a single administrator. RUN-0098 and
+RUN-0021 now point to the validity rule, and RUN-0105 no longer says the
+daily OpenBao snapshot fails. The first half-yearly place A restore has not
+run yet.
 
 ## Evidence
 
