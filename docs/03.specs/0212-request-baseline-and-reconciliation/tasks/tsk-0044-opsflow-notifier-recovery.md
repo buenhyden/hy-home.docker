@@ -1,6 +1,6 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.5.4"
+version: "0.5.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -1018,6 +1018,7 @@ criterion 73. The audit row stays NOT_RUN and is optional for this Task.
 | HOME n8n recovery target inspection | 73 | W78 | Read-only HOME queue and execution target check | mng-valkey mnginspector and read-only n8n metadata session, 2026-11-05 | PASS | jobs active/wait/delayed/paused/failed absent; 0 new/running executions; Opsflow notifier not installed; no restart run | required | - |
 | HOME producer database check | 73 | W78 | Read-only database list on HOME `dev-pg` | HOME `dev-pg`, 2026-11-08 | FAIL | `platform_dev` absent, so no outbox exists for the notifier; HOME install blocked on the P04 producer | optional | - |
 | HOME producer database check, corrected name | 73 | W78 | Read-only database list on HOME `dev-pg` | HOME `dev-pg`, 2026-11-08; producer input `pg/provision/opsflow.json` | FAIL | The notifier reads `opsflow_dev`, not `platform_dev`; `opsflow_dev` is absent too, and its role credentials are not issued (`password_secrets: null`); HOME install still blocked on the P04 producer | optional | - |
+| HOME activation preconditions 2026-11-11 | 75 | W80 | Queue, non-terminal execution, clock skew, DB timeout and outbox readback before activation | HOME, 2026-11-11 14:26 KST | BLOCKED | Queue keys all `none`, no non-terminal execution, DB-to-worker skew 0.088 s, outbox `pending` 1; but `opsflow_notifier` has `statement_timeout=30s` and the workflow sets no lower one, which does not fit the 5 s ack budget the README requires. Activation was not attempted; the owner chose read-only for this window. | optional | - |
 
 ## Criterion Acceptance
 
