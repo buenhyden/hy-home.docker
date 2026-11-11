@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.49.0"
+version: "1.50.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -150,6 +150,10 @@ Removal candidates get readiness and byte-recovery proofs first; deletion
 waits for the owner's approval of each batch. The SPEC-0248, 0249, 0250 and
 0260 Tasks keep their own residual criteria.
 
+W116 in TSK-0058 runs the v14.2 W03 template, metadata and relation work. It
+keeps current Registry H2 headings and adds the draft table's missing
+concepts only as optional or conditional sections; W05 owns the validators.
+
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
 lookups start only after the owner approves the network host scope there.
@@ -292,6 +296,7 @@ Secret access or remote integration.
 | W113 | 108 | Collect host-run Hermes OTLP traces, logs and gateway metrics through an authenticated Alloy receiver | None | TSK-0055 | Receiver and route tests, dashboard contract, then one live trace, log and metric readback after the approved apply |
 | W114 | 109 | Assess and correct the v14.2 W01 governance obligations GOV-01 to GOV-08 and SUP-12 against their canonical owners | None | TSK-0056 | Per-ID owner, approval and adoption trace; reproduced gaps fixed with regression; metadata, links, contract and renderer checks |
 | W115 | 110 | Assess ARC-01 to ARC-09 and prove readiness and byte recovery for each removal candidate before any removal | W114 | TSK-0057 | Per-ID trace; per-candidate readiness, commit:path reachability and byte comparison; blocked cases recorded; removals only on owner approval |
+| W116 | 111 | Assess DOC-01 to DOC-12 and SUP-11 and change the template, metadata and relation contract only for reproduced gaps | W115 | TSK-0058 | Per-ID trace; each changed key, section or table with producer, consumer and passing and failing tests; current documents migrated, history unchanged |
 
 ### Current v30 continuation and delivery
 
