@@ -81,6 +81,16 @@ class Generation7EvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(module.SpecPackageError, "Current Owner"):
             self.contract(missing)
 
+    def test_acceptance_rejects_values_outside_the_registered_domain(self):
+        approved = current_task("PASS")
+        approved = dataclasses.replace(
+            approved, body=approved.body.replace("| 1 | accepted |", "| 1 | approved |")
+        )
+        with self.assertRaisesRegex(
+            module.SpecPackageError, "registered acceptance domain"
+        ):
+            self.contract(approved)
+
     def test_failed_observations_cannot_be_deleted_or_downgraded(self):
         registry = load_registry()
         before = current_task("ERROR")
