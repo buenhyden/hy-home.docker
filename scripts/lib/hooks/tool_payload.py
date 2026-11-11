@@ -10,6 +10,7 @@ from pathlib import Path, PurePosixPath
 EDIT_TOOLS = frozenset({"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"})
 MAX_PAYLOAD_BYTES = 1024 * 1024
 MAX_TARGETS = 256
+MAX_EXEC_PATCH_CALLS = 64
 MEMORY_STORE_DIRECTORY = ".workspace-memory"
 _SESSION_SCRATCHPAD = re.compile(r"/tmp/claude-\d+/[^/]+/[^/]+/scratchpad/[^/].*")
 
@@ -160,16 +161,22 @@ def _patch_edits(command: object) -> list[tuple[str, str]]:
     return edits
 
 
-_EXEC_STRING = re.compile(r'"((?:[^"\\\n]|\\.)*)"|`([^`\\$]*)`')
+_EXEC_PATCH_CALL = re.compile(
+    r'tools\s*\.\s*apply_patch\s*\(\s*(?:"((?:[^"\\\n]|\\.)*)"|`([^`\\$]*)`)\s*\)'
+)
 
 
 def _exec_patches(source: object) -> list[str]:
     """Patch envelopes inside a Codex code-mode `exec` call.
 
     Codex 0.167 sends every tool through one `exec` custom tool whose input is
-    JavaScript calling `tools.apply_patch("*** Begin Patch\\n...")`. Only a
-    double-quoted JSON-compatible literal or a plain template literal is
-    decoded; a patch in any other form fails closed rather than going unseen.
+    JavaScript calling `tools.apply_patch("*** Begin Patch\\n...")`. Every
+    `apply_patch` reference must be such a call with one double-quoted
+    JSON-compatible or plain template literal; any other form (a variable,
+    concatenation, dynamic `tools[...]` access, a mention in text) fails
+    closed, because the hook cannot prove which file it writes. This is a
+    bounded lexical check, not a JavaScript parser: shell writes through
+    `tools.exec_command` and any other runtime file API stay unseen.
     """
     code = source if isinstance(source, str) else None
     if isinstance(source, dict):
@@ -177,21 +184,28 @@ def _exec_patches(source: object) -> list[str]:
             (source[k] for k in ("input", "code") if isinstance(source.get(k), str)),
             None,
         )
-    if code is None or "*** Begin Patch" not in code:
+    if code is None:
         return []
+    if re.search(r"\btools\s*\[", code) or re.search(
+        r"\btools\s*\??\.\s*[\w$]*\\u", code
+    ):
+        raise PayloadError("exec uses dynamic tool access")
+    references = len(re.findall(r"\bapply_patch\b", code))
+    if references > MAX_EXEC_PATCH_CALLS:
+        # Each reference rescans at most to its line end; the cap keeps it linear.
+        raise PayloadError("exec references apply_patch too many times")
+    calls = list(_EXEC_PATCH_CALL.finditer(code))
+    if len(calls) != references:
+        raise PayloadError("exec apply_patch must take one literal patch")
     patches: list[str] = []
-    for match in _EXEC_STRING.finditer(code):
-        if match.group(1) is not None:
+    for call in calls:
+        if call.group(1) is not None:
             try:
-                text = json.loads(f'"{match.group(1)}"')
-            except ValueError:
-                continue
+                patches.append(json.loads(f'"{call.group(1)}"'))
+            except ValueError as error:
+                raise PayloadError("exec patch literal could not be decoded") from error
         else:
-            text = match.group(2)
-        if "*** Begin Patch" in text:
-            patches.append(text)
-    if len(patches) != code.count("*** Begin Patch"):
-        raise PayloadError("exec patch could not be decoded")
+            patches.append(call.group(2))
     return patches
 
 

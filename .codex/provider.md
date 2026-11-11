@@ -27,8 +27,10 @@ below it. The shared PreToolUse dispatcher (`scripts/hooks/agent-event-hook.sh`,
 through `scripts/lib/hooks/folder_guides.py`) adds the full content of the
 nearest Git-tracked folder guide to the model context once per session, the
 first time `apply_patch` touches a file below it, whether called directly or
-from inside a code-mode `exec` call, whose patch literal the shared payload
-parser reads. It also adds a one-line
+from inside a code-mode `exec` call. For `exec` the shared payload parser
+accepts only `tools.apply_patch(<one literal>)` and denies any other reference
+to `apply_patch`, including a mention in text; it is a lexical check, not a
+JavaScript parser. It also adds a one-line
 reminder naming that guide on each edit, and after a SessionStart `compact`
 or `resume` an instruction to re-read it. A shell read does not trigger it.
 The folder `CLAUDE.md` import shims are Claude's route; Codex does not read
@@ -93,8 +95,9 @@ Hook delivery also depends on user-global Codex state this adapter does not
 own: project trust and hook enablement. Observed on 2026-10-13 with codex-cli
 0.162.1, a dated observation the Stage 03 record holds:
 `apply_patch` triggers PostToolUse and its `additionalContext` reaches the
-model. A command run through `tools.exec_command` inside `exec` is not parsed,
-so shell-command policy does not see it. Not observed: a PreToolUse denial of
+model. A command run through `tools.exec_command` inside `exec`, or any other
+runtime file API, is not parsed, so shell-command and edit policy do not see
+it; that is an accepted residual. Not observed: a PreToolUse denial of
 `apply_patch`, and delivery under
 another trust or enablement state; record those as unverified until directly
 observed within separate authorization. Codex's sandbox cannot start on this
