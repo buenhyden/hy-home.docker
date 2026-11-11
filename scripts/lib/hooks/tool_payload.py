@@ -166,33 +166,51 @@ _EXEC_PATCH_CALL = re.compile(
 )
 
 
+_EXEC_TOOLS_MISUSE = re.compile(r"\btools\b(?!\s*\.\s*[A-Za-z_$][\w$]*\s*\()")
+_EXEC_ESCAPE = re.compile(r"\\[ux]")
+_EXEC_DYNAMIC = re.compile(
+    r"\b(?:eval|Function|constructor|globalThis|Reflect|Proxy|setTimeout"
+    r"|setInterval|prototype|__proto__|valueOf|toString|toLocaleString"
+    r"|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|__defineGetter__"
+    r"|__lookupGetter__|bind|call|apply)\b|\b(?:with|import)\s*\(|\b(?:self|window|global|this)\s*[.\[]"
+)
+
+
 def _exec_patches(source: object) -> list[str]:
     """Patch envelopes inside a Codex code-mode `exec` call.
 
     Codex 0.167 sends every tool through one `exec` custom tool whose input is
     JavaScript calling `tools.apply_patch("*** Begin Patch\\n...")`. Every
     `apply_patch` reference must be such a call with one double-quoted
-    JSON-compatible or plain template literal; any other form (a variable,
-    concatenation, dynamic `tools[...]` access, a mention in text) fails
-    closed, because the hook cannot prove which file it writes. This is a
-    bounded lexical check, not a JavaScript parser: shell writes through
-    `tools.exec_command` and any other runtime file API stay unseen.
+    JSON-compatible or plain template literal. Every other `apply_patch`
+    reference, any non-call use of `tools`, a `\\u`/`\\x` escape and the known
+    routes that rebuild code or reach the global object are denied. This is a
+    best-effort lexical check, not a JavaScript parser: an undiscovered route
+    may still exist, the denial words also deny their mention inside a shell
+    command string, and shell writes through `tools.exec_command` or any other
+    runtime file API stay unseen.
     """
     code = source if isinstance(source, str) else None
     if isinstance(source, dict):
+        strings = [value for value in source.values() if isinstance(value, str)]
         code = next(
             (source[k] for k in ("input", "code") if isinstance(source.get(k), str)),
-            None,
+            strings[0] if len(strings) == 1 else None,
         )
     if code is None:
-        return []
-    # Only direct member calls `tools.<name>(` name a tool statically; any
-    # other use of `tools`, or a runtime that can rebuild it, could reach
-    # apply_patch unseen.
-    if any(
-        re.match(r"\s*\.\s*[A-Za-z_$][\w$]*\s*\(", code[m.end() :]) is None
-        for m in re.finditer(r"\btools\b", code)
-    ) or re.search(r"\b(?:eval|Function|globalThis|Reflect|Proxy)\b", code):
+        # An unrecognized input shape could carry a patch this hook cannot see.
+        raise PayloadError("exec input shape is not recognized")
+    # Only direct member calls `tools.<name>(` name a tool statically. Any
+    # other use of `tools`, an escape that could spell it, or a route that
+    # rebuilds code or reaches the global object could call apply_patch
+    # unseen. The checks run on the whole source, string contents included,
+    # because a regex cannot tell a JavaScript string from a regex literal.
+    outside = _EXEC_PATCH_CALL.sub("", code)
+    if (
+        _EXEC_TOOLS_MISUSE.search(code)
+        or _EXEC_ESCAPE.search(outside)
+        or _EXEC_DYNAMIC.search(code)
+    ):
         raise PayloadError("exec uses dynamic tool access")
     references = len(re.findall(r"\bapply_patch\b", code))
     if references > MAX_EXEC_PATCH_CALLS:
@@ -208,6 +226,10 @@ def _exec_patches(source: object) -> list[str]:
                 patches.append(json.loads(f'"{call.group(1)}"'))
             except ValueError as error:
                 raise PayloadError("exec patch literal could not be decoded") from error
+        elif any(mark in call.group(2) for mark in ("\r", "\u2028", "\u2029")):
+            # JavaScript turns a raw CR into LF inside a template literal, so
+            # the runtime could see a header line this parser does not.
+            raise PayloadError("exec template patch has a non-LF line break")
         else:
             patches.append(call.group(2))
     return patches
