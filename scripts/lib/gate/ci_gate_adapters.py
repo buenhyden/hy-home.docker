@@ -446,7 +446,8 @@ def _dispatch_adapter(
                     "playwright",
                     "install",
                     "chromium",
-                    "--with-deps",
+                    # Hosted runner images ship Chromium's system libraries,
+                    # so no apt step depends on Ubuntu mirror availability.
                 ),
                 root=canonical_root,
                 environ=environ,
