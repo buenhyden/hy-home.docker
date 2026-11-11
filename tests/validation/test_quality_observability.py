@@ -394,7 +394,7 @@ class HermesObservabilityContractTest(unittest.TestCase):
         self.assertTrue(dashboard["description"].startswith("Local dashboard"))
         panels = {p["title"]: p for p in dashboard["panels"]}
         expected = {
-            "Active sessions": ("stat", "hermes_session_count_total"),
+            "Active sessions": ("stat", "hermes_gateway_active_agents"),
             "Loop exit reasons": ("piechart", "hermes.turn.exit_reason"),
             "Cumulative cost (USD)": ("stat", "hermes_cost_usage"),
             "Tool execution latency (p95)": (
@@ -412,8 +412,13 @@ class HermesObservabilityContractTest(unittest.TestCase):
                 self.assertEqual(kind, panels[title]["type"])
                 exprs = json.dumps(panels[title]["targets"])
                 self.assertIn(needle, exprs)
-                self.assertIn("hermes-agent", exprs)
+                self.assertIn(
+                    "hermes-gateway" if title == "Active sessions" else "hermes-agent",
+                    exprs,
+                )
         self.assertIn("token_type", json.dumps(panels["Input/output token throughput"]))
+        # Subscription models are not priced, so no cost series exists: show $0.
+        self.assertIn("or vector(0)", json.dumps(panels["Cumulative cost (USD)"]))
         self.assertIn(
             "gen_ai_tool_name", json.dumps(panels["Tool execution latency (p95)"])
         )
