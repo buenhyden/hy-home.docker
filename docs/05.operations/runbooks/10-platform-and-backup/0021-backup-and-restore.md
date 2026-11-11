@@ -4,7 +4,7 @@ version: "1.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -370,7 +370,7 @@ state repository의 chunker 설정으로 원격을 초기화하고 첫 copy를 �
 
 ```bash
 docker compose --profile backup run --rm --no-deps restic-offsite init
-python3 scripts/operations/agent_memory.py backup-run --target offsite
+docker compose --profile backup run --rm --no-deps restic-offsite copy
 docker compose --profile backup run --rm --no-deps restic-offsite check
 ```
 
@@ -382,8 +382,9 @@ docker compose --profile backup run --rm --no-deps restic-offsite check
 `.env` 키 중 하나라도 비어 있으면 orchestrator는 `offsite copy not
 configured (BACKUP_OFFSITE_R2_*); skipped`를 남기고 unit 결과는 바뀌지 않는다.
 설정되면 로컬 Restic backup과 check가 성공한 뒤(staging을 비우고 SeaweedFS
-vacuum을 재개한 다음) 공유 기억 CLI의 `backup-run --target offsite`가
-예약 후 기존 offsite producer를 호출한다. 원격에 없는 snapshot만
+vacuum을 재개한 다음) `restic-offsite copy`를 실행한다. 2026-11-11부터 매일의
+local backup과 offsite copy는 용량 승인 없이 직접 실행한다(아래 "일일 경로 임시 복원").
+예약 경로 `backup-run --target offsite`는 기존 offsite producer를 호출한다. 원격에 없는 snapshot만
 올리고 조정자는 `target`, `request_key`, `snapshot_count`, `result`를 JSON으로
 반환한다. offsite의 측정된 크기는 `offsite_repo_bytes`에 담는다. 기존 shell
 producer의 `R2 repository size:` 값은 내부에서 이 숫자 필드로 전달한다.
@@ -688,7 +689,16 @@ conflict를 보존하고 검사한 뒤 교체한다. DB/backup/임시 복사본�
 함께 적용한다. 원본 inode의 백업 잠금은 전체 용량 원장의 공통 잠금과 별개다.
 완료 후 재실행하는 것으로 불명 예약을 자동 해제하지 않는다.
 
-local state snapshot을 수동으로 만들 때도 원장을 채택한 뒤 호스트에서
+#### 일일 경로 임시 복원 (2026-11-11)
+
+1 GiB 용량 상한이 기존 snapshot마다 64 MiB를 보수적으로 계산해, 채택 후에도
+기존 60개 snapshot(state 30, offsite 30)만으로 약 3.9 GiB가 되어 매일의 backup이
+모두 거부됐다(`available_bytes` 0). 소유자 결정으로 `hyhome-backup.sh`의 매일 경로와
+`backup.sh backup`·`offsite.sh copy`는 용량 승인 없이 직접 실행한다.
+`budget-backup`·`budget-copy`와 예약 경로는 그대로 두며, snapshot 계산을 다시
+설계한 뒤 SPEC-0270이 매일 경로를 다시 옮긴다.
+
+예약 경로로 local state snapshot을 만들 때는 원장을 채택한 뒤 호스트에서
 `python3 scripts/operations/agent_memory.py backup-run --target state`를 사용한다.
 기존 Restic shell 이미지는 Python 원장을 직접 열지 않는다. 범용 `cmd`는
 읽기 전용이며 raw `cmd ... backup`으로 예약을 우회하지 않는다. 이 경로는
