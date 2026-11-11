@@ -11,7 +11,7 @@ import re
 import stat
 import tempfile
 import time
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -1051,7 +1051,7 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
         }
     except Exception:
         return {"ok": False, "error": "record_unavailable"}
-    return _send(
+    result = _send(
         run,
         gateway_payload,
         payload_bytes,
@@ -1060,6 +1060,246 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
         records,
         receipt_validator,
     )
+    # The current result is fixed; earlier unconfirmed sends only add counts,
+    # and only when one was resent.
+    counts = {"attempted": 0, "persisted": 0, "still_uncertain": 0}
+    # The current send just showed the Gateway or the credential failing; resending
+    # earlier records now would only spend their remaining attempts.
+    if result.get("error") in ("delivery_uncertain", "credential_rejected"):
+        return result
+    try:
+        _redrive(
+            run,
+            f"{run.job_id}:{gateway_payload['idempotency_key']}",
+            records,
+            receipt_validator,
+            counts,
+        )
+    except Exception:
+        pass
+    return {**result, "redrive": counts} if counts["attempted"] else result
+
+
+# Failures after a connection may have written the request remotely; the
+# Gateway deduplicates by idempotency key, so the same bytes are sent again.
+_RESEND_TRANSPORT = frozenset(
+    {"timeout", "network", "tls", "invalid_response", "transport_protocol"}
+)
+_TERMINAL_STATUS = {
+    409: "conflict",
+    **dict.fromkeys((400, 404, 413, 415, 422), "failed"),
+}
+_RECORD_FIELDS = frozenset(
+    {
+        "schema_version",
+        "key",
+        "job_id",
+        "run_id",
+        "input_sha256",
+        "payload_sha256",
+        "payload_b64",
+        "status",
+        "attempts",
+        "receipt",
+    }
+)
+# Redrive of earlier unconfirmed records of the same job (plugin 0.4.4).
+_REDRIVE_LIMIT = 2
+_REDRIVE_MAX_ATTEMPTS = 5
+_REDRIVE_MAX_AGE = timedelta(days=7)
+_REDRIVE_BUDGET = 30
+# An attempt with less time left would almost surely time out and waste one of
+# the record's few attempts.
+_REDRIVE_MIN_ATTEMPT = 10
+_REDRIVE_LOCK_SECONDS = 1.0
+
+
+def _strict_json(raw):
+    return json.loads(
+        raw,
+        object_pairs_hook=_strict_object,
+        parse_constant=lambda _: (_ for _ in ()).throw(ValueError()),
+    )
+
+
+def _record_shape(record) -> bool:
+    """The outbox record exactly as _send writes it (hermes-direct-outbox/2)."""
+    return (
+        isinstance(record, dict)
+        and set(record) == _RECORD_FIELDS
+        and record["schema_version"] == "hermes-direct-outbox/2"
+        and type(record["attempts"]) is int
+        and 0 <= record["attempts"] <= _REDRIVE_MAX_ATTEMPTS
+        and record["status"]
+        in {"pending", "sending", "uncertain", "persisted", "failed", "conflict"}
+        and isinstance(record["input_sha256"], str)
+        and _SHA256_RE.fullmatch(record["input_sha256"]) is not None
+        and isinstance(record["payload_sha256"], str)
+        and _SHA256_RE.fullmatch(record["payload_sha256"]) is not None
+        and (record["status"] == "persisted" or record["receipt"] is None)
+        and (record["status"] != "persisted" or record["attempts"] >= 1)
+    )
+
+
+def _record_payload(record) -> tuple[bytes, dict[str, Any]]:
+    """The stored request bytes, checked against their digest, and their JSON."""
+    payload_bytes = base64.b64decode(record["payload_b64"], validate=True)
+    if hashlib.sha256(payload_bytes).hexdigest() != record["payload_sha256"]:
+        raise ValueError
+    stored = _strict_json(payload_bytes)
+    if not isinstance(stored, dict) or "generated_at" not in stored:
+        raise ValueError
+    return payload_bytes, stored
+
+
+def _attempt(request, timeout, item_count, receipt_validator, *, unsent):
+    """One POST; returns (status, receipt, parsed, outcome, resend).
+
+    ``unsent`` is the record status after a DNS rejection, which never connects.
+    A 401/403 leaves the record ``uncertain`` without an immediate resend: a
+    rejected credential says nothing about the stored report, so a later call
+    may still deliver it once the credential is fixed.
+    """
+    url, payload_bytes, secret, policy_text = request
+    try:
+        response = webhook_transport.post(
+            url, payload_bytes, secret, policy_text, timeout=timeout
+        )
+    except webhook_transport.TransportFailure as error:
+        if error.reason == "dns" and error.retryable:
+            outcome = {"error": "delivery_failed", "error_type": "dns"}
+            return unsent, None, None, outcome, True
+        outcome = {"error": "delivery_uncertain", "error_type": error.reason}
+        return "uncertain", None, None, outcome, error.reason in _RESEND_TRANSPORT
+    if response.status in (200, 201):
+        try:
+            parsed = receipt_validator.validate(
+                response.status, response.content_type, response.body, item_count
+            )
+        except ValueError:
+            return "uncertain", None, None, {"error": "delivery_uncertain"}, False
+        receipt = {
+            "status": response.status,
+            "content_type": response.content_type,
+            "body_b64": base64.b64encode(response.body).decode("ascii"),
+        }
+        return "persisted", receipt, parsed, None, False
+    if response.status in (401, 403):
+        outcome = {"error": "credential_rejected", "status_code": response.status}
+        return "uncertain", None, None, outcome, False
+    status = _TERMINAL_STATUS.get(response.status, "uncertain")
+    outcome = {
+        "error": "delivery_uncertain" if status == "uncertain" else "delivery_failed",
+        "status_code": response.status,
+    }
+    return status, None, None, outcome, status == "uncertain"
+
+
+def _redrive(run, current_key, records, receipt_validator, counts) -> None:
+    """Resend up to two earlier unconfirmed records of this job, once each.
+
+    Runs after the current result is fixed and inside its own budget; a record
+    whose lock is busy is skipped. Fills ``counts`` as it goes.
+    """
+    deadline = time.monotonic() + _REDRIVE_BUDGET
+    if not OUTBOX_DIR.is_dir() or _REDRIVE_BUDGET <= 0:
+        return
+    # Destination and address policy are checked before the credential is read.
+    url, policy_text = _load_url(), _load_address_policy()
+    webhook_transport.validate_endpoint(url)
+    webhook_transport.parse_address_policy(policy_text)
+    secret = _load_secret()
+    if not secret or "\r" in secret or "\n" in secret:
+        return
+    collection, _, _ = _modules()
+    oldest = datetime.now(UTC) - _REDRIVE_MAX_AGE
+    store = records.PrivateRecords(OUTBOX_DIR)
+    try:
+        # ponytail: reads every record of the job per call; an index if the
+        # outbox ever holds thousands of records.
+        for name in sorted(os.listdir(store.fd)):
+            key = name.removesuffix(".json")
+            if (
+                counts["attempted"] >= _REDRIVE_LIMIT
+                or deadline - time.monotonic() <= 0
+            ):
+                return
+            if (
+                key == name
+                or key == current_key
+                or not key.startswith(run.job_id + ":")
+            ):
+                continue
+            try:
+                with store.lock(
+                    key,
+                    timeout=min(_REDRIVE_LOCK_SECONDS, deadline - time.monotonic()),
+                ):
+                    record = _strict_json(store.read(name))
+                    if (
+                        not _record_shape(record)
+                        or record["key"] != key
+                        or record["job_id"] != run.job_id
+                        or record["attempts"] >= _REDRIVE_MAX_ATTEMPTS
+                        or not (
+                            record["status"] in ("uncertain", "sending")
+                            or (record["status"] == "pending" and record["attempts"])
+                        )
+                    ):
+                        continue
+                    payload_bytes, stored = _record_payload(record)
+                    items = stored.get("items")
+                    if (
+                        stored.get("job_id") != run.job_id
+                        or f"{run.job_id}:{stored.get('idempotency_key')}" != key
+                        or not isinstance(items, list)
+                        or collection._time(stored["generated_at"]) < oldest
+                    ):
+                        continue
+                    remaining = deadline - time.monotonic()
+                    if remaining < _REDRIVE_MIN_ATTEMPT:
+                        return
+                    unsent = "pending" if record["status"] == "pending" else "uncertain"
+                    record = {
+                        **record,
+                        "status": "sending",
+                        "attempts": record["attempts"] + 1,
+                    }
+                    store.write(name, _record_bytes(record))
+                    counts["attempted"] += 1
+                    status, receipt, _, outcome, _ = _attempt(
+                        (url, payload_bytes, secret, policy_text),
+                        min(_HTTP_TIMEOUT, remaining),
+                        len(items),
+                        receipt_validator,
+                        unsent=unsent,
+                    )
+                    store.write(
+                        name,
+                        _record_bytes({**record, "status": status, "receipt": receipt}),
+                    )
+                    if status == "persisted":
+                        counts["persisted"] += 1
+                    elif status in ("uncertain", "pending"):
+                        counts["still_uncertain"] += 1
+                    # The Gateway or the credential just failed: stop rather than
+                    # spend the next record's attempts on the same failure.
+                    if (outcome or {}).get("error") in (
+                        "delivery_uncertain",
+                        "credential_rejected",
+                    ):
+                        return
+            except (records.RecordError, ValueError, KeyError, TypeError) as error:
+                # Busy, unreadable, legacy or foreign records are skipped.
+                if type(error) is records.RecordError and str(error) not in (
+                    "lock_busy",
+                    "unsafe_record",
+                    "record_too_large",
+                    "record_changed",
+                ):
+                    raise
+    finally:
+        store.close()
 
 
 def _send(
@@ -1089,68 +1329,16 @@ def _send(
                 store.write(name, _record_bytes(record))
             else:
                 try:
-                    record = json.loads(
-                        raw,
-                        object_pairs_hook=_strict_object,
-                        parse_constant=lambda _: (_ for _ in ()).throw(ValueError()),
-                    )
-                    expected = {
-                        "schema_version",
-                        "key",
-                        "job_id",
-                        "run_id",
-                        "input_sha256",
-                        "payload_sha256",
-                        "payload_b64",
-                        "status",
-                        "attempts",
-                        "receipt",
-                    }
-                    if (
-                        not isinstance(record, dict)
-                        or set(record) != expected
-                        or record["schema_version"] != "hermes-direct-outbox/2"
-                        or (record["key"], record["job_id"], record["run_id"])
-                        != (key, run.job_id, run.execution_id)
-                        or type(record["attempts"]) is not int
-                        or not 0 <= record["attempts"] <= 3
-                        or record["status"]
-                        not in {
-                            "pending",
-                            "sending",
-                            "uncertain",
-                            "persisted",
-                            "failed",
-                            "conflict",
-                        }
-                        or not isinstance(record["input_sha256"], str)
-                        or _SHA256_RE.fullmatch(record["input_sha256"]) is None
-                        or not isinstance(record["payload_sha256"], str)
-                        or _SHA256_RE.fullmatch(record["payload_sha256"]) is None
-                        or (
-                            record["status"] != "persisted"
-                            and record["receipt"] is not None
-                        )
-                        or (record["status"] == "persisted" and record["attempts"] < 1)
-                    ):
+                    record = _strict_json(raw)
+                    if not _record_shape(record) or (
+                        record["key"],
+                        record["job_id"],
+                        record["run_id"],
+                    ) != (key, run.job_id, run.execution_id):
                         raise ValueError
                     if record["input_sha256"] != input_sha:
                         return {"ok": False, "error": "idempotency_conflict"}
-                    payload_bytes = base64.b64decode(
-                        record["payload_b64"], validate=True
-                    )
-                    if (
-                        hashlib.sha256(payload_bytes).hexdigest()
-                        != record["payload_sha256"]
-                    ):
-                        raise ValueError
-                    stored = json.loads(
-                        payload_bytes,
-                        object_pairs_hook=_strict_object,
-                        parse_constant=lambda _: (_ for _ in ()).throw(ValueError()),
-                    )
-                    if not isinstance(stored, dict) or "generated_at" not in stored:
-                        raise ValueError
+                    payload_bytes, stored = _record_payload(record)
                     expected_payload = {
                         **gateway_payload,
                         "generated_at": stored["generated_at"],
@@ -1211,92 +1399,42 @@ def _send(
             if not secret or "\r" in secret or "\n" in secret:
                 return {"ok": False, "error": "invalid_credential"}
             deadline = time.monotonic() + _TOTAL_HTTP_TIMEOUT
+            outcome = None
             while record["attempts"] < 3:
                 remaining = deadline - time.monotonic()
+                if outcome is not None and remaining > 0:
+                    # The same bytes and key again: the Gateway answers a repeat
+                    # with 200 and duplicate true, never a second report.
+                    time.sleep(min(2 * record["attempts"], 5, remaining))
+                    remaining = deadline - time.monotonic()
                 if remaining <= 0:
-                    return {"ok": False, "error": "timeout"}
+                    break
                 record = {
                     **record,
                     "status": "sending",
                     "attempts": record["attempts"] + 1,
                 }
                 store.write(name, _record_bytes(record))
-                try:
-                    response = webhook_transport.post(
-                        url,
-                        payload_bytes,
-                        secret,
-                        policy_text,
-                        timeout=min(_HTTP_TIMEOUT, remaining),
-                    )
-                except webhook_transport.TransportFailure as error:
-                    # DNS rejection happens before a connection; all other failures
-                    # can occur after a remote write and remain uncertain.
-                    safe_retry = error.reason == "dns" and error.retryable
-                    record = {
-                        **record,
-                        "status": "pending" if safe_retry else "uncertain",
-                    }
-                    store.write(name, _record_bytes(record))
-                    if safe_retry and record["attempts"] < 3:
-                        time.sleep(
-                            min(
-                                2 * record["attempts"],
-                                5,
-                                max(0, deadline - time.monotonic()),
-                            )
-                        )
-                        continue
-                    return {
-                        "ok": False,
-                        "error": "delivery_failed"
-                        if safe_retry
-                        else "delivery_uncertain",
-                        "error_type": error.reason,
-                    }
-                if response.status in (200, 201):
-                    try:
-                        parsed = receipt_validator.validate(
-                            response.status,
-                            response.content_type,
-                            response.body,
-                            len(items),
-                        )
-                    except ValueError:
-                        record = {**record, "status": "uncertain"}
-                        store.write(name, _record_bytes(record))
-                        return {"ok": False, "error": "delivery_uncertain"}
-                    receipt = {
-                        "status": response.status,
-                        "content_type": response.content_type,
-                        "body_b64": base64.b64encode(response.body).decode("ascii"),
-                    }
-                    record = {**record, "status": "persisted", "receipt": receipt}
-                    store.write(name, _record_bytes(record))
+                status, receipt, parsed, outcome, resend = _attempt(
+                    (url, payload_bytes, secret, policy_text),
+                    min(_HTTP_TIMEOUT, remaining),
+                    len(items),
+                    receipt_validator,
+                    unsent="pending",
+                )
+                record = {**record, "status": status, "receipt": receipt}
+                store.write(name, _record_bytes(record))
+                if status == "persisted":
                     return {
                         "ok": True,
                         "status": "persisted",
-                        "status_code": response.status,
+                        "status_code": receipt["status"],
                         "response": parsed,
                         "idempotency_key": gateway_payload["idempotency_key"],
                     }
-                status = (
-                    "conflict"
-                    if response.status == 409
-                    else "failed"
-                    if response.status in (400, 401, 403, 404, 413, 415, 422)
-                    else "uncertain"
-                )
-                record = {**record, "status": status}
-                store.write(name, _record_bytes(record))
-                return {
-                    "ok": False,
-                    "error": "delivery_uncertain"
-                    if status == "uncertain"
-                    else "delivery_failed",
-                    "status_code": response.status,
-                }
-            return {"ok": False, "error": "delivery_blocked"}
+                if not resend:
+                    break
+            return {"ok": False, **(outcome or {"error": "timeout"})}
     except Exception:
         return {"ok": False, "error": "record_unavailable"}
     finally:
