@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -75,11 +75,52 @@ re-checked against the current tree before reuse:
 - DOC-07: only the Markdown-link half applies; this workspace has no Vault.
 - DOC-08: DEFER until a reproduced execution-document gap exists.
 
+### W03 obligation assessment 2026-11-11
+
+Two fresh-context `qa-engineer` agents read the Registry, schema, templates,
+parsers, validators and tests at `95a65be6d` without editing, and probed
+negative cases in memory. The controller re-ran each deciding probe.
+
+| ID | Verdict | Current owner and basis |
+| --- | --- | --- |
+| DOC-01 | GAP, CHANGE in part; DEFER rest | Seven README profiles split by role. The shared required core was not ordered: 13 package READMEs had `Related Documents` before later sections. A fixed service-README section set over the 83 `infra` READMEs (27 heading shapes) is a new contract, not a reproduced defect of the current one |
+| DOC-02 | KEEP | `documentation-protocol.md` splits README, folder `AGENTS.md` and the generated `CLAUDE.md` import shim; renderer drift 0 |
+| DOC-03 | KEEP | All generated Claude skills set `disable-model-invocation: true`; the output style owns presentation only. Native runtime acceptance UNVERIFIED |
+| DOC-04 | GAP, CHANGE | Duplicate keys, invalid dates, forbidden, undeclared and missing keys are rejected. An unquoted `updated: 2026-02-28` passed, because `_json_schema_value` turned the YAML date into a string before the schema saw it |
+| DOC-05 | GAP, CHANGE | `ordered_sections` and `nonempty_sections` were set on 13 profiles; 23 profiles with required sections accepted swapped or empty sections. Generic table contracts beyond the README Documents and Evidence tables have no consumer and are not added |
+| DOC-06 | KEEP | Language rule in the documentation protocol, enforced by `language.py` through `--mode language` |
+| DOC-07 | KEEP Markdown half; Vault N/A | Missing targets, missing anchors and case mismatches are rejected. No Vault or wiki-link surface exists here |
+| DOC-08 | DEFER | 78 runbooks carry the ordered, non-empty Runbook sections; no execution document delegates its procedure to a historical link |
+| DOC-09 | KEEP; test added | Only child-to-parent `parent_ids` is stored; `parent-cycle` and `parent-cardinality` work but had no committed test |
+| DOC-10 | KEEP | Generated surfaces carry a marker and pass the renderer drift check |
+| DOC-11 | KEEP | Every template is registered and its placeholders checked; the 29 templates pass a fill-and-check probe in Registry order |
+| DOC-12 | KEEP; renumbering held | `reserved_history` and `high_water` block reuse. Path number equals the `artifact_id` number, so any renumbering is a Q-07 decision and is not made here |
+| SUP-11 | KEEP | Terminal Task bodies are exempt from rewriting; corrections are added as new sections |
+
+### W03 changes 2026-11-11
+
+- DOC-04: `registry.py` no longer converts YAML dates before the schema
+  check, so an unquoted date fails the string type. No tracked document
+  used one.
+- DOC-05 and DOC-01: the Registry sets `ordered_sections` and
+  `nonempty_sections` on the 22 remaining sectioned profiles, and
+  `ordered_sections` only on `research-member`, whose Stage 90 members keep
+  their empty parent headings. The `generated` profile stays with its
+  producer. Current documents migrated: 13 package READMEs move
+  `Related Documents` to the end, and `docs/README.md` and
+  `scripts/README.md` lose one empty heading each. No heading is renamed.
+- Tests: an unquoted-date rejection, a Registry rule that every sectioned
+  profile declares order and content, a swapped and an emptied section per
+  representative profile, and a parent cycle and a two-parent Plan.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | W03 obligation assessment | 111 | W116 | template-contract-assessment | DOC-01 to DOC-12 and SUP-11 | NOT_RUN | Assessment not yet run | required | - |
+| W03 obligation assessment result | 111 | W116 | template-contract-assessment | DOC-01 to DOC-12 and SUP-11 at `95a65be6d` | PASS | Per-ID table above: DOC-04 and DOC-05 GAP changed, DOC-01 changed in part, DOC-08 DEFER, DOC-07 Vault N/A, rest KEEP | required | W03 obligation assessment |
+| W03 section and date RED | 111 | W116 | red-green-proof | New tests against the pre-change Registry and `_json_schema_value` | FAIL | Unquoted-date test failed; order and content tests failed for 28 profile cases with the Registry at `95a65be6d` | required | - |
+| W03 section and date GREEN | 111 | W116 | red-green-proof | Commits `ce18338c8` and `85ed595b3` | PASS | test_registry 123 OK; test_heading, test_profile, test_language 110 OK; test_lifecycle 7 OK; metadata check-active selected534 violations0, check-changed selected16 violations0; links alignment and language PASS; renderer drift 0; script manifest PASS | required | W03 section and date RED |
 
 ## Criterion Acceptance
 
@@ -89,8 +130,10 @@ re-checked against the current tree before reuse:
 
 ## Review and Completion
 
-In progress. The Task is issued and the Q-03 decision is recorded; the
-assessment has not run.
+In progress. The assessment and the reproduced-gap changes are recorded.
+Criterion 111 waits for the owner. Open: a fixed service-README section set
+(DOC-01) needs an owner decision on a new contract; validator work beyond
+these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ## Related Documents
 
