@@ -127,6 +127,19 @@ class ProjectProvisionTests(unittest.TestCase):
         read_secret.assert_not_called()
         output.assert_called_once_with("project manifest valid")
 
+    def test_notifier_statement_timeout_fits_the_ack_budget(self):
+        sql = MODULE.sql_for(MODULE.validate(opsflow_manifest()))
+        for role, timeout in (
+            ("opsflow_migrator", "30s"),
+            ("opsflow_ingest", "30s"),
+            ("opsflow_notifier", "5s"),
+            ("opsflow_reader", "30s"),
+        ):
+            self.assertIn(
+                f"ALTER ROLE {role} IN DATABASE opsflow_dev SET statement_timeout = '{timeout}';",
+                sql,
+            )
+
     def test_function_only_sql_has_exact_roles_and_no_broad_acl(self):
         sql = MODULE.sql_for(MODULE.validate(opsflow_manifest()))
         for kind, role in opsflow_manifest()["roles"].items():
