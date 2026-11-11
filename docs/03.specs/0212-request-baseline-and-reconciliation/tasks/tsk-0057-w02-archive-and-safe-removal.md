@@ -1,6 +1,6 @@
 ---
 title: "W02 Archive and Safe Removal Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -160,6 +160,8 @@ packages are recorded in this Task after the PR merges.
 | W02 removal dry-run | 110 | W115 | removal-recovery-dry-run | Five ready packages at `e4fd7f5f3` in a scratch worktree | PASS | 15 files restored with zero byte mismatches; gates block the removal until reservation and seven link cutovers | optional | - |
 | W02 batch removal | 110 | W115 | package-retirement | Commit `58be65ebb` removing 0226, 0266, 0268, 0269; 0267 held | PASS | Promotion verified for four; reserved_history and link cutover done; metadata 0, links 0, lifecycle 0; post-merge byte comparison pending | required | - |
 | W02 code review | 110 | W115 | independent-source-review | Fresh-context code-reviewer of `682393d7c` | PASS | APPROVED: no removed name has a code, workflow, manifest or dynamic consumer; `manifest_schema_v2` has no reader; corrected the archive-vocabulary note | required | - |
+| W02 governance suite | 110 | W115 | document-governance-unit-suite | `tests/lib/document_governance` discover while `58be65ebb` and `8330534e3` were being written | FAIL | FAILED (errors=2); test names not captured; the corpus changed during the run | optional | - |
+| W02 governance suite rerun | 110 | W115 | document-governance-unit-suite | `tests/lib/document_governance` discover at `56d32c32f`, clean tree | PASS | Ran 765 tests, OK, exit 0 | optional | W02 governance suite |
 
 ## Criterion Acceptance
 
