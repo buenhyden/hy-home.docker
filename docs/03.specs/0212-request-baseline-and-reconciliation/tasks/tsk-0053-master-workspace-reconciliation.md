@@ -453,7 +453,30 @@ file changed.
 
 W05 handoff: add tests for C01, C03b and C05, which currently enforce without
 an asserting test. C03a and C04b need an owner policy decision before any
-validator change. Untracked, git-ignored `.pyc` caches of five removed test
+validator change.
+
+A third pass on the same day closed the test-only part:
+
+- C01 was already asserted: `test_dry_run_and_check_never_write_and_write_preserves_format`
+  in `tests/validation/test_tech_stack_version_contract.py` runs `--check`
+  with a registry pinned older than its Compose declaration and expects
+  exit 1. No test was added.
+- C03b gained `test_acceptance_rejects_values_outside_the_registered_domain`
+  in `tests/lib/document_governance/test_generation7.py`.
+- C05 gained `test_local_aggregates_reject_a_removed_child` in
+  `tests/lib/gate/test_ci_gate_contract.py`. Dropping a pinned child is
+  rejected as `ci-gate-orphan` or `ci-gate-local-aggregate-children`.
+- Each new test failed under an in-memory patch: an acceptance domain widened
+  with `approved`, and a silenced registry validator. Each passed unpatched.
+  No validator source changed.
+- C14 code read: `scripts/validation/check-supply-chain-policy.py` has no
+  cache, skip or recorded-result reuse path, so it stays POLICY_ONLY.
+- E33 documentation read: the Codex rust-v0.165.0 rollout-trace README states
+  that the model-visible transcript contains only the outer code-mode `exec`
+  call; nested tool calls are runtime calls. It does not state whether hooks
+  fire for nested calls, and the installed CLI is 0.166.0. E33 stays FAIL and
+  the dispatch question stays UNVERIFIED with the SPEC-0264 owner; no hook
+  setting or trust changed. Untracked, git-ignored `.pyc` caches of five removed test
 modules remain under `tests/`. No coverage is credited to them, and this
 review deleted none of them.
 
