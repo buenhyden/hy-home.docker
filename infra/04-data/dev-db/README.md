@@ -1,10 +1,10 @@
 ---
 title: "개발 데이터베이스 (dev-db)"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-11"
 created: "2026-10-02"
 ---
 
@@ -41,7 +41,7 @@ TimescaleDB Community 기반 PostgreSQL과 Valkey의 단일 개발 인스턴스�
 
 ## Configuration
 
-[`docker-compose.yml`](docker-compose.yml)의 `dev-data` profile, `dev_data_net`, 별도 데이터 경로와 Docker secret 참조를 사용합니다. 프로젝트별 DB·ACL은 승인된 명시적 명세로만 등록합니다.
+[`docker-compose.yml`](docker-compose.yml)의 `dev-data` profile, `dev_data_net`(dev-pg는 notifier용 내부 `opsflow_notifier_db_net`도 추가로 사용), 별도 데이터 경로와 Docker secret 참조를 사용합니다. 프로젝트별 DB·ACL은 승인된 명시적 명세로만 등록합니다.
 
 ## Validation
 

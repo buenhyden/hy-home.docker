@@ -68,6 +68,9 @@ networks:
   # two includes, so declared here. Project-scoped name, no other peer.
   opsflow_capture_net:
     internal: true
+  # n8n-worker <-> dev-pg only, for the notifier's outbox functions.
+  opsflow_notifier_db_net:
+    internal: true
   n8n_worker_runner_net:
     name: n8n_worker_runner_net
     internal: true

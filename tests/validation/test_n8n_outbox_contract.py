@@ -212,17 +212,25 @@ class OutboxWorkerPlacementTests(unittest.TestCase):
             "the notifier networks live in base Compose, not an overlay",
         )
         capture_network = "opsflow_capture_net"
+        db_network = "opsflow_notifier_db_net"
         root = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
         self.assertEqual({"internal": True}, root["networks"][capture_network])
+        self.assertEqual({"internal": True}, root["networks"][db_network])
+        dev_pg = yaml.safe_load(
+            (ROOT / "infra/04-data/dev-db/docker-compose.yml").read_text()
+        )["services"]["dev-pg"]
+        self.assertEqual({"dev_data_net", db_network}, set(dev_pg["networks"]))
         base = yaml.safe_load((WORKLOAD.parents[1] / "docker-compose.yml").read_text())
         worker = base["services"]["n8n-worker"]
-        self.assertTrue({"dev_data_net", capture_network} <= set(worker["networks"]))
+        self.assertTrue({db_network, capture_network} <= set(worker["networks"]))
         self.assertNotIn("mail_net", worker["networks"])
+        self.assertNotIn("dev_data_net", worker["networks"])
         self.assertNotIn("ports", worker)
         for name in ("n8n", "n8n-task-runner-worker"):
             networks = set(base["services"][name]["networks"])
             self.assertFalse(
-                networks & {"dev_data_net", "mail_net", capture_network}, name
+                networks & {"dev_data_net", "mail_net", db_network, capture_network},
+                name,
             )
         mailpit = yaml.safe_load(
             (ROOT / "infra/11-quality/mailpit/docker-compose.yml").read_text()
