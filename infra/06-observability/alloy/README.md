@@ -94,7 +94,7 @@ alloy/
 
 ### Hermes 연결
 
-Hermes 설정(`monitoring.export.otlp`)의 endpoint를 `http://127.0.0.1:4320`으로 두고, `Authorization: Bearer <token>` header 값은 `secrets/observability/alloy/hermes_otlp_token.txt` 파일에서 읽습니다. 값은 문서나 설정에 쓰지 않습니다. `monitoring.gateway_health_export`도 같은 endpoint를 씁니다. Grafana의 `Applications/hermes-research` 대시보드가 `{service_name=~"hermes-(agent|gateway)"}` 로그와 `service.name =~ "hermes-(agent|gateway)"` trace를 보여 줍니다.
+Hermes 설정(`monitoring.export.otlp`)의 endpoint를 `http://127.0.0.1:4320`으로 두고, `Authorization: Bearer <token>` header 값은 `secrets/observability/alloy/hermes_otlp_token.txt` 파일에서 읽습니다. 값은 문서나 설정에 쓰지 않습니다. `monitoring.gateway_health_export`도 같은 endpoint를 씁니다. Grafana의 `Applications/hermes-agent` 대시보드가 `{service_name=~"hermes-(agent|gateway)"}` 로그와 `service.name =~ "hermes-(agent|gateway)"` trace를 보여 줍니다.
 
 ## Validation
 

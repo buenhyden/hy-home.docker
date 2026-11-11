@@ -147,67 +147,6 @@
           "legendFormat": "{{job_kind}}"
         }
       ]
-    },
-    {
-      "id": 5,
-      "type": "logs",
-      "title": "Hermes logs (OTLP)",
-      "datasource": {
-        "type": "loki",
-        "uid": "Loki"
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 0,
-        "y": 16
-      },
-      "options": {
-        "showTime": true,
-        "wrapLogMessage": true,
-        "sortOrder": "Descending",
-        "enableLogDetails": true
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "loki",
-            "uid": "Loki"
-          },
-          "expr": "{service_name=~\"hermes-(agent|gateway)\"}",
-          "queryType": "range"
-        }
-      ]
-    },
-    {
-      "id": 6,
-      "type": "table",
-      "title": "Hermes traces (OTLP)",
-      "datasource": {
-        "type": "tempo",
-        "uid": "Tempo"
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 16
-      },
-      "options": {},
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "tempo",
-            "uid": "Tempo"
-          },
-          "queryType": "traceql",
-          "query": "{ resource.service.name =~ \"hermes-(agent|gateway)\" }",
-          "limit": 20,
-          "tableType": "traces"
-        }
-      ]
     }
   ],
   "templating": {
