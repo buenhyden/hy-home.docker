@@ -1,6 +1,6 @@
 ---
 title: "W01 Governance Standardization Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -110,12 +110,13 @@ W01-B is KEEP: no record, check result or role string counts as approval.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 109 | pending | - | - | SPEC-0212 TSK-0056 |
+| 109 | accepted | W01 obligation assessment result, W01 governance checks, W01 governance re-review | Owner accepted on 2026-11-11 in this chat; GOV-04 cross-repository adoption stays DEFER under D-04 | SPEC-0212 TSK-0056 |
 
 ## Review and Completion
 
-In progress. The assessment and its two corrections are recorded; criterion
-109 waits for the owner's decision.
+In progress. The owner accepted criterion 109 on 2026-11-11. GOV-04
+cross-repository adoption and GOV-08 runtime enforcement stay recorded as
+DEFER and UNVERIFIED; the Task stays open until the owner closes it.
 
 ## Related Documents
 
