@@ -1166,7 +1166,6 @@ class CiGateAdapterTests(unittest.TestCase):
                 "playwright",
                 "install",
                 "chromium",
-                "--with-deps",
             ),
             recorder.calls[0][0],
         )
