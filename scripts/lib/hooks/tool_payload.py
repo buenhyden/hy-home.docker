@@ -186,9 +186,13 @@ def _exec_patches(source: object) -> list[str]:
         )
     if code is None:
         return []
-    if re.search(r"\btools\s*\[", code) or re.search(
-        r"\btools\s*\??\.\s*[\w$]*\\u", code
-    ):
+    # Only direct member calls `tools.<name>(` name a tool statically; any
+    # other use of `tools`, or a runtime that can rebuild it, could reach
+    # apply_patch unseen.
+    if any(
+        re.match(r"\s*\.\s*[A-Za-z_$][\w$]*\s*\(", code[m.end() :]) is None
+        for m in re.finditer(r"\btools\b", code)
+    ) or re.search(r"\b(?:eval|Function|globalThis|Reflect|Proxy)\b", code):
         raise PayloadError("exec uses dynamic tool access")
     references = len(re.findall(r"\bapply_patch\b", code))
     if references > MAX_EXEC_PATCH_CALLS:
