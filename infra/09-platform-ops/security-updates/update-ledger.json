@@ -97,7 +97,7 @@
   "include_inputs": [
     {
       "path": "docker-compose.yml",
-      "sha256": "cb4914ec740966bfc9c9b8d6ee1d537859dd8994bc52190fd54d265c5c3f3fbc"
+      "sha256": "af19fd433e371d0f7356b18e324eb0e9d1384c7c007cc6ac87bccd0ec6b2edf7"
     },
     {
       "path": "infra/01-gateway/traefik/docker-compose.yml",
@@ -149,7 +149,7 @@
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
-      "sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c"
+      "sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40"
     },
     {
       "path": "infra/06-observability/dozzle/docker-compose.yml",
@@ -2354,7 +2354,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -2493,7 +2493,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "0.34.2",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -2627,7 +2627,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
@@ -2751,7 +2751,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "1.21.3",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -3131,7 +3131,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "ghcr.io/google/cadvisor:v0.60.6",
@@ -3251,7 +3251,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "0.60.6",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -4712,7 +4712,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo NVIDIA/dcgm-exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T07:19:46+09:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4851,7 +4851,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "nvcr.io/nvidia/k8s/dcgm-exporter:4.9.0@sha256:2490e1dfb5baaee6765ef2841813af7d978bb459a566c22c326a8fc27c64eea9",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "4.9.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -7793,7 +7793,7 @@
       "upstream_reported_tag": "v5.37.0",
       "next_fact_command": "gh release view --repo TwiN/gatus --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8264,7 +8264,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/gatus:local",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "v5.37.0 exact source; custom image not built",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -8453,7 +8453,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
@@ -8593,7 +8593,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "13.3.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -8819,7 +8819,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8959,7 +8959,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -10993,7 +10993,7 @@
       "upstream_reported_tag": "v3.7.8",
       "next_fact_command": "gh release view --repo grafana/loki --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11136,7 +11136,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/loki:3.7.8-seaweedfs",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "3.7.8",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -16006,7 +16006,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo prometheus/node_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -16141,7 +16141,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "1.12.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -20282,7 +20282,7 @@
       "upstream_reported_tag": "v3.15.1",
       "next_fact_command": "Run the owner steps in SPEC-0204-TSK-0021: approved pull, offline scan, promtool checks, HOME recreation.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/prometheus:v3.15.1",
@@ -20414,7 +20414,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "3.15.1",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -20559,7 +20559,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
@@ -20687,7 +20687,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "1.11.5",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -20816,7 +20816,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
@@ -20940,7 +20940,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "2.4.3",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -26047,7 +26047,7 @@
       "upstream_reported_tag": "v3.1.0",
       "next_fact_command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "hy/tempo:3.1.0-seaweedfs",
@@ -26176,7 +26176,7 @@
         "reviewed_at": "2026-11-10T21:47:20.284064+00:00",
         "reviewed_subject": {
           "declaration": "hy/tempo:3.1.0-seaweedfs",
-          "source_input_sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
           "assessment_version": "3.1.0",
           "version_binding_note": "Use this named component/source binding, not an unrelated candidate or base-image receipt; runtime contents were not newly inspected."
         },
@@ -49133,6 +49133,218 @@
         }
       ],
       "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 13 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "8c55be479e1ab886754fbf021a142145930a7c12",
+      "refreshed_at": "2026-11-11T08:13:58+09:00",
+      "revision_scope": "Compose file hash re-binding only",
+      "input_manifest_sha256": "84226078b696cbfd3efb5b91a14a99e3be9922a33aa4d0b0f6f0714d827dadb3",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "cb4914ec740966bfc9c9b8d6ee1d537859dd8994bc52190fd54d265c5c3f3fbc"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "9633fa4a6030f44d586ad6091823343876ec5d489e275ee01f1671ef3ed02382"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "4e5f6d533d69c6c16a3f0d8101862283593a7ad2e38e249129c40826ca107e3f"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "f5ff8a8581e719a3b8398ed24503f6ac92c97b7bca8480fc800f78406eff7889"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "00e817942dbfbb8f1d053ede317b097b6648552da1b314084c82a33f63ccc44c"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "41c9475af0264044a9e1a64bf82ae1479e5a4b3aa477293478ed8c685046200f"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "c567ca166971331217a51b42e86990c45881d6a24ae9be26e0563040bf9d26fe"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "5b7761dd29783ee44d21e87854952724c573dea89d01be38cd2d2a87540e708a"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "docker-compose.yml",
+        "infra/06-observability/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "alertmanager",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "alloy",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "cadvisor",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "dcgm-exporter",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T07:19:46+09:00"
+        },
+        {
+          "service": "gatus",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "grafana",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "grafana-db-provision",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "loki",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "node-exporter",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "prometheus",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "pushgateway",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "pyroscope",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "tempo",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "2 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 13 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
     }
   ],
   "delivery_preconditions": {

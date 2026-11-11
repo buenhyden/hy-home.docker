@@ -1,10 +1,10 @@
 ---
 title: "Alloy Readiness and Pipeline Recovery Runbook"
-version: "1.0.8"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-11"
 layer: "operations"
 artifact_id: "RUN-0040"
 parent_ids:
@@ -99,6 +99,20 @@ log를 보존하기 전에 payload, credential, header/cookie, private path를 �
    rg -n 'quality_otlp_token|4319|otelcol.auth.bearer' infra/06-observability/docker-compose.yml infra/06-observability/alloy/config/config.home.alloy
    test -s secrets/observability/alloy/quality_otlp_token.txt && echo non-empty
    docker network inspect quality_otlp_net --format '{{range .Containers}}{{.Name}} {{end}}'
+   ```
+
+   Hermes(host systemd user unit `hermes-gateway.service`)의 trace·log·metric이 없으면
+   `config.home.alloy`가 선택되었는지, `alloy`에 secret `hermes_otlp_token`이 부여되었는지,
+   `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}`가 publish되었는지 확인한다. Hermes 설정
+   `monitoring.export.otlp`는 endpoint `http://127.0.0.1:4320`과 이 token 파일에서 읽은 bearer
+   header를 써야 하고 `monitoring.gateway_health_export`도 같은 endpoint를 가리켜야 한다.
+   token 파일이 비어 있으면 Alloy는 요청을 거절하므로 파일이 비어 있지 않은지만 확인하고 값은
+   출력하지 않는다. metric은 누적 temporality여야 하며 `service.name`이 `hermes`가 아니면
+   버려진다. 이 확인은 읽기 전용이며 Alloy 재생성은 별도 승인이 필요하다.
+
+   ```bash
+   rg -n 'hermes_otlp_token|4320|otelcol.auth.bearer "hermes"' infra/06-observability/docker-compose.yml infra/06-observability/alloy/config/config.home.alloy
+   test -s secrets/observability/alloy/hermes_otlp_token.txt && echo non-empty
    ```
 
 6. Label drift or discovery gap이 의심되면 relabel rules와 Compose project filter를 확인한다.

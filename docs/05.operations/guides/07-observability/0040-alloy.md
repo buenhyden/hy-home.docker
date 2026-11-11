@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.1.7"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-11"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -50,7 +50,7 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 | 파일 | 역할 |
 | --- | --- |
 | [`config.alloy`](../../../../infra/06-observability/alloy/config/config.alloy) | 기본 파이프라인이다. Docker 로그를 Loki로, OTLP trace를 Tempo로, pprof를 Pyroscope로 보낸다. 품질 metric 수신기는 없다. |
-| [`config.home.alloy`](../../../../infra/06-observability/alloy/config/config.home.alloy) | 기본 파이프라인에 품질 OTLP metric 전용 경로를 더한 HOME 설정이다. 인증 수신기(HTTP 4319, host 비공개, secret `quality_otlp_token`)가 받은 metric을 속성 제한, delta-to-cumulative 변환, label 제한을 거쳐 Prometheus로 remote write한다(SPEC-0214). |
+| [`config.home.alloy`](../../../../infra/06-observability/alloy/config/config.home.alloy) | 기본 파이프라인에 품질 OTLP metric 전용 경로를 더한 HOME 설정이다. 인증 수신기(HTTP 4319, host 비공개, secret `quality_otlp_token`)가 받은 metric을 속성 제한, delta-to-cumulative 변환, label 제한을 거쳐 Prometheus로 remote write한다(SPEC-0214). 같은 설정이 host에서 도는 Hermes agent용 인증 OTLP HTTP 수신기(4320, host loopback 공개, secret `hermes_otlp_token`)도 갖는다. trace는 기본 Tempo 경로로, log는 Loki로, metric은 label 제한과 `service_name="hermes"` 확인을 거쳐 Prometheus로 간다. |
 
 두 파일이 공유하는 동작은 다음과 같다.
 
@@ -65,13 +65,14 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 ### 정상 사용
 
 - 애플리케이션 instrumentation은 가능한 OTLP endpoint를 쓴다. gRPC는 `alloy:4317`, HTTP는 `alloy:4318`이다. 현재 선언된 내부 송신자는 n8n main과 `n8n-worker`(OTLP/HTTP `alloy:4318`, `obs_net`)다.
+- Hermes agent(host systemd user unit `hermes-gateway.service`, 컨테이너 아님)는 `config.home.alloy`의 인증 수신기로만 보낸다. Hermes 설정 `monitoring.export.otlp`의 endpoint를 `http://127.0.0.1:4320`으로 두고 `Authorization: Bearer` header 값을 `secrets/observability/alloy/hermes_otlp_token.txt`에서 읽게 한다. `monitoring.gateway_health_export`도 같은 endpoint를 쓴다. Metric은 누적(cumulative) temporality로 export해야 하며, 로그는 `{service_name="hermes"}`, trace는 `service.name = "hermes"`로 Grafana `Applications/hermes-research`에서 본다. token 파일은 소유자가 만들고 값은 어디에도 쓰지 않는다.
 - Pipeline debugging은 Alloy UI `https://alloy.${DEFAULT_URL}`에서 한다. **Graph View**에서 component 연결과 error state를, **Component Details**에서 target, receiver, exporter 상태를 본다.
 - 설정이나 collector health만으로 전달 성공을 판정하지 않는다. backend에서 실제 수신을 확인한다.
 
 ### 구현 경계
 
 - **흐름·의존성**: 읽기 전용 Docker socket과 container log를 Loki로, OTLP 입력을 Tempo로 보낸다. `depends_on`의 Prometheus, Loki, Tempo는 `required: false`이므로 일부 구성만 선택해도 시작된다. Docker와 선언된 network는 여전히 전제 조건이다.
-- **네트워크**: `edge_net`, `obs_net`, `quality_otlp_net`에 붙는다. OTLP 4317/4318은 `${HOST_LAN_BIND_IP:-192.168.0.13}`에 publish한다. Alloy UI는 Traefik 경로(`gateway-standard-chain@file,sso-errors@file,sso-auth@file`)로 노출한다.
+- **네트워크**: `edge_net`, `obs_net`, `quality_otlp_net`에 붙는다. OTLP 4317/4318은 `${HOST_LAN_BIND_IP:-192.168.0.13}`에 publish하고, Hermes 수신기 4320은 host loopback `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}`에만 publish한다. Alloy UI는 Traefik 경로(`gateway-standard-chain@file,sso-errors@file,sso-auth@file`)로 노출한다.
 - **node-exporter 접근**: SPEC-0225 이후 node-exporter는 host network namespace에서 `obs_net` gateway에 bind한다. Alloy는 `extra_hosts`로 `node-exporter:10.250.5.1`을 선언해 pprof 대상 이름을 그대로 유지한다.
 - **상태·보안**: config와 host log mount는 읽기 전용이다. Docker socket 접근은 민감하다. `alloy-data:/var/lib/alloy`와 `--storage.path=/var/lib/alloy/data`, UID/GID `473:473`을 유지한다. 전송 중 telemetry는 복구 자산이 아니다. 파일 inode가 바뀌었거나 port, mount, Compose 설정이 바뀌면 restart만으로 적용을 보장하지 않으며 승인된 recreate와 state 보존 검토가 필요하다.
 
@@ -86,6 +87,7 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 - Compose 경계: `rg -n 'service: template-infra-med|image: grafana/alloy:|container_name: alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
 - Pipeline 경계: `rg -n 'discovery.docker|hy-home-infra|loki.source.docker|loki.write|pyroscope.scrape|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy infra/06-observability/alloy/config/config.home.alloy`
 - 품질 metric 수신기: `rg -n 'quality_otlp_token|otelcol.auth.bearer|0.0.0.0:4319|labelkeep' infra/06-observability/alloy/config/config.home.alloy`
+- Hermes 수신기: `rg -n 'hermes_otlp_token|otelcol.receiver.otlp "hermes"|0.0.0.0:4320|ALLOY_HERMES_OTLP_HOST_PORT' infra/06-observability/alloy/config/config.home.alloy infra/06-observability/docker-compose.yml`
 
 ### Runbook Handoff
 

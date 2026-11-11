@@ -203,6 +203,111 @@ otelcol.receiver.otlp "quality" {
   }
 }
 
+// Host-run Hermes agent exports traces, logs and metrics over OTLP/HTTP to
+// this authenticated receiver. Compose publishes it on host loopback only
+// (127.0.0.1:4320), so only same-host callers holding the token reach it.
+// Traces join the Tempo path below; logs go to Loki; metrics keep only a
+// bounded label set and the service_name "hermes" identity. Hermes must
+// export cumulative metrics: Prometheus drops delta sums and histograms.
+local.file "hermes_otlp_token" {
+  filename  = "/run/secrets/hermes_otlp_token"
+  is_secret = true
+}
+
+otelcol.auth.bearer "hermes" {
+  token = local.file.hermes_otlp_token.content
+}
+
+otelcol.receiver.otlp "hermes" {
+  http {
+    endpoint = "0.0.0.0:4320"
+    auth     = otelcol.auth.bearer.hermes.handler
+  }
+
+  output {
+    traces  = [otelcol.processor.batch.default.input]
+    logs    = [otelcol.processor.transform.hermes_logs.input]
+    metrics = [otelcol.processor.transform.hermes_metrics.input]
+  }
+}
+
+// The Loki exporter turns only hinted resource attributes into labels. Hint
+// service.name so `{service_name="hermes"}` holds even when a namespace is set.
+otelcol.processor.transform "hermes_logs" {
+  error_mode = "ignore"
+
+  log_statements {
+    context    = "resource"
+    statements = [
+      `set(attributes["loki.resource.labels"], "service.name")`,
+    ]
+  }
+
+  output {
+    logs = [otelcol.exporter.loki.hermes.input]
+  }
+}
+
+otelcol.exporter.loki "hermes" {
+  forward_to = [loki.write.local_loki.receiver]
+}
+
+otelcol.processor.transform "hermes_metrics" {
+  error_mode = "ignore"
+
+  metric_statements {
+    context = "resource"
+    statements = [
+      `keep_keys(attributes, ["service.name", "service.instance.id"])`,
+    ]
+  }
+
+  metric_statements {
+    context = "datapoint"
+    statements = [
+      `set(attributes["service_name"], resource.attributes["service.name"])`,
+      `keep_keys(attributes, ["service_name", "status", "outcome", "job_kind"])`,
+    ]
+  }
+
+  output {
+    metrics = [otelcol.processor.batch.hermes_metrics.input]
+  }
+}
+
+otelcol.processor.batch "hermes_metrics" {
+  timeout             = "1s"
+  send_batch_size     = 512
+  send_batch_max_size = 1024
+
+  output {
+    metrics = [otelcol.exporter.prometheus.hermes_metrics.input]
+  }
+}
+
+otelcol.exporter.prometheus "hermes_metrics" {
+  include_scope_info   = false
+  include_scope_labels = false
+  include_target_info  = false
+  forward_to           = [prometheus.relabel.hermes_metrics.receiver]
+}
+
+prometheus.relabel "hermes_metrics" {
+  max_cache_size = 2048
+  forward_to     = [prometheus.remote_write.local_prometheus.receiver]
+
+  rule {
+    action        = "keep"
+    source_labels = ["service_name"]
+    regex         = "hermes"
+  }
+
+  rule {
+    action = "labelkeep"
+    regex  = "__name__|service_name|instance|status|outcome|job_kind|le|quantile"
+  }
+}
+
 /*****************************************************************
  * 3. TRACING PIPELINE (Tempo)
  *****************************************************************/
