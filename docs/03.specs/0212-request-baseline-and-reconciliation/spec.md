@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.49.0"
+version: "1.50.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -180,6 +180,12 @@ the v14.2 W02 archive and safe-removal assessment. It authorizes the
 assessment, recovery proofs in a scratch location and repository-side fixes of
 reproduced gaps. Every package removal still needs its own owner approval, and
 the existing archive Tasks keep their own criteria.
+
+The owner decision of 2026-11-11 adds criterion 111 and W116 in TSK-0058 for
+the v14.2 W03 document templates, metadata and relations. The owner adopted
+the meaning of the package's draft 19-role table, not its headings: current
+Registry H2 headings stay, and only missing concepts are added as optional or
+conditional sections. Validator implementation is handed to W05.
 
 ## Scope
 
@@ -813,6 +819,11 @@ hold, authorization and recovery requirements have been established.
      the current retention and retirement owners, proves byte recovery for
      each removal candidate before any removal, and blocks a removal whose
      acceptance, promotion, hold, authority or recovery is unmet.
+111. TSK-0058 assesses the v14.2 W03 obligations DOC-01 to DOC-12 and SUP-11
+     against the Registry, templates, generators, parsers and validators.
+     Each changed key, section or table has a producer, a consumer and a
+     passing and a failing test; only current documents migrate, and
+     historical and completed evidence keeps its form.
 
 ## Failure Conditions
 

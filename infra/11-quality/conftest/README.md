@@ -93,15 +93,6 @@ wrapper가 필요하다는 오류로 종료합니다.
 - `FAIL - <file> - <namespace> - …`는 선언과 규칙을 가리키므로 해당 선언을 수정합니다.
 - `verify`가 실패하면 규칙과 그 테스트가 서로 어긋난다는 뜻입니다.
 
-## Related Documents
-
-- **Guide**: Conftest Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`)
-- **Policy**: Conftest Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`)
-- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`)
-- [Documentation index](../../../docs/README.md)
-
----
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -128,3 +119,10 @@ wrapper가 필요하다는 오류로 종료합니다.
 
 런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.
+
+## Related Documents
+
+- **Guide**: Conftest Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`)
+- **Policy**: Conftest Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`)
+- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`)
+- [Documentation index](../../../docs/README.md)

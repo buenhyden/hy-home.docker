@@ -99,13 +99,6 @@ tempo/
 - 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0049-tempo.md`; ID: `GDE-0049`, `POL-0049`, `RUN-0049`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주합니다. 이 README에서는 운영 중인 상태를 변경하지 않습니다.
 
-## Related Documents
-
-- Usage guide (`docs/05.operations/guides/07-observability/0049-tempo.md`)
-- Operations policy (`docs/05.operations/policies/07-observability/0049-tempo.md`)
-- Recovery runbook (`docs/05.operations/runbooks/07-observability/0049-tempo.md`)
-- [Documentation index](../../../docs/README.md)
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -149,3 +142,10 @@ vParquet4로 명시한다. 이는 이전 쓰기 형식을 보존하며 최신 �
 `NOT_RUN`이다. SPEC-0204-TSK-0009의 격리 시험에서 이를 통과한 뒤에만 운영 반영한다.
 검증된 백업과 지정된 빈 복원 경로에서 읽기 호환성을 먼저 확인하고, 운영 데이터에
 대한 일괄 변환·삭제 없이 변경한다. vParquet5 전환은 별도 검증과 명시적 변경으로 남긴다.
+
+## Related Documents
+
+- Usage guide (`docs/05.operations/guides/07-observability/0049-tempo.md`)
+- Operations policy (`docs/05.operations/policies/07-observability/0049-tempo.md`)
+- Recovery runbook (`docs/05.operations/runbooks/07-observability/0049-tempo.md`)
+- [Documentation index](../../../docs/README.md)

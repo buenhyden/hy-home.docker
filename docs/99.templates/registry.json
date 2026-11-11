@@ -828,7 +828,9 @@
       "exceptions": [],
       "frontmatter_values": {
         "layer": "specs"
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "openapi-contract",
@@ -1413,7 +1415,9 @@
       "exceptions": [],
       "frontmatter_values": {
         "layer": "references"
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "research",
@@ -1477,7 +1481,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "audit",
@@ -1542,7 +1548,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "data",
@@ -1609,7 +1617,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "research-member",
@@ -1666,7 +1676,8 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true
     },
     {
       "id": "audit-member",
@@ -1726,7 +1737,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "documentation-readme",
@@ -1776,7 +1789,9 @@
       ],
       "lifecycle_id": "navigation",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "repository-readme",
@@ -1835,7 +1850,9 @@
       ],
       "lifecycle_id": "navigation",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "package-readme",
@@ -1945,7 +1962,9 @@
       ],
       "lifecycle_id": "navigation",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "runtime-governance-readme",
@@ -1987,7 +2006,9 @@
       ],
       "lifecycle_id": "navigation",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "readme",
@@ -2276,7 +2297,9 @@
         ".agents/README.md": {
           "layer": "agent-governance"
         }
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "incident-year-readme",
@@ -2319,7 +2342,9 @@
       "exceptions": [],
       "frontmatter_values": {
         "layer": "operations"
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-policy",
@@ -2495,7 +2520,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-skill",
@@ -2550,7 +2577,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-provider",
@@ -2599,7 +2628,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "folder-agent-guide",
@@ -2645,7 +2676,9 @@
         "infra/AGENTS.md",
         "scripts/AGENTS.md",
         "tests/AGENTS.md"
-      ]
+      ],
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-provider-index",
@@ -2683,7 +2716,9 @@
       ],
       "lifecycle_id": "navigation",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-sdlc",
@@ -2728,7 +2763,9 @@
       },
       "additional_paths": [
         ".agents/governance/workflows.md"
-      ]
+      ],
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-knowledge",
@@ -2776,7 +2813,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-knowledge-index",
@@ -2815,7 +2854,9 @@
       ],
       "lifecycle_id": "navigation",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-prompt",
@@ -2862,7 +2903,9 @@
         "superseded": [
           "superseded_by"
         ]
-      }
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "governance-prompt-index",
@@ -2901,7 +2944,9 @@
       ],
       "lifecycle_id": "navigation",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "runtime-projection-claude",

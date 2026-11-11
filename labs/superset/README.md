@@ -123,16 +123,6 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 - Keycloak 이후 로그인 오류: redirect URI 또는 client secret 불일치; RUN-0097을 따르십시오.
 - 로그인 후 데이터가 없음: Admin이 role을 부여하기 전까지 사용자는 `Gamma`입니다.
 
-## Related Documents
-
-- **Guide**: Superset Usage Guide (`docs/05.operations/guides/15-labs/0097-superset.md`)
-- **Policy**: Superset Operations Policy (`docs/05.operations/policies/15-labs/0097-superset.md`)
-- **Runbook**: Superset Runbook (`docs/05.operations/runbooks/15-labs/0097-superset.md`)
-- [LAB 탐색](../README.md)
-- [문서 인덱스](../../docs/README.md)
-
----
-
 ## Service Readiness
 
 | Field | Evidence |
@@ -159,3 +149,11 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 
 런타임 이미지 권한은 [labs/superset/docker-compose.yml](docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../infra/tech-stack.versions.json)은 drift 증거입니다.
+
+## Related Documents
+
+- **Guide**: Superset Usage Guide (`docs/05.operations/guides/15-labs/0097-superset.md`)
+- **Policy**: Superset Operations Policy (`docs/05.operations/policies/15-labs/0097-superset.md`)
+- **Runbook**: Superset Runbook (`docs/05.operations/runbooks/15-labs/0097-superset.md`)
+- [LAB 탐색](../README.md)
+- [문서 인덱스](../../docs/README.md)
