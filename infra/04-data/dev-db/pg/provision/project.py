@@ -32,6 +32,14 @@ FUNCTION_CONNECTION_LIMITS = {
     "notifier": 5,
     "reader": 5,
 }
+# The notifier's ack must cancel inside its 5 s ack budget (manifest-outbox-notifier
+# README, "Lease와 대조 조건"); the other login roles keep 30 s.
+FUNCTION_STATEMENT_TIMEOUTS = {
+    "migrator": "30s",
+    "ingest": "30s",
+    "notifier": "5s",
+    "reader": "30s",
+}
 OPSFLOW_IDENTITY = {
     "project_id": "hyhome-opsflow",
     "database": "opsflow_dev",
@@ -453,7 +461,7 @@ def _sql_function_only(project):
             "  END IF;",
             "END $check$;",
             f"ALTER ROLE {role} IN DATABASE {db} SET search_path = {schema}, pg_catalog;",
-            f"ALTER ROLE {role} IN DATABASE {db} SET statement_timeout = '30s';",
+            f"ALTER ROLE {role} IN DATABASE {db} SET statement_timeout = '{FUNCTION_STATEMENT_TIMEOUTS[kind]}';",
         ]
     return "\n".join(lines) + "\n"
 
