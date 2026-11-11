@@ -1,8 +1,8 @@
 ---
 title: "W01 Governance Standardization Task"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-11"
 layer: "specs"
@@ -54,6 +54,7 @@ approval; it grants no operation outside the stated boundary.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0056 | draft | ready | #owner-approved-local-execution |
 | SPEC-0212-TSK-0056 | ready | in-progress | #owner-approved-local-execution |
+| SPEC-0212-TSK-0056 | in-progress | completed | #owner-closure-2026-11-11 |
 
 ### W01 obligation assessment 2026-11-11
 
@@ -96,6 +97,11 @@ rest) and Project-Template as the authoring source are cross-repository
 adoption. They stay DEFER under GOV-04 and D-04, and no schema is added here.
 W01-B is KEEP: no record, check result or role string counts as approval.
 
+### Owner closure 2026-11-11
+
+On 2026-11-11 the owner accepted criterion 109 and asked for this Task to be
+closed, after PR 954 opened for its commits.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -114,9 +120,10 @@ W01-B is KEEP: no record, check result or role string counts as approval.
 
 ## Review and Completion
 
-In progress. The owner accepted criterion 109 on 2026-11-11. GOV-04
-cross-repository adoption and GOV-08 runtime enforcement stay recorded as
-DEFER and UNVERIFIED; the Task stays open until the owner closes it.
+Completed on 2026-11-11. The owner accepted criterion 109 and closed this
+Task; see Owner closure 2026-11-11. GOV-04 cross-repository adoption stays
+DEFER under D-04, and GOV-08 runtime deny enforcement stays UNVERIFIED. Neither
+is closed here.
 
 ## Related Documents
 
