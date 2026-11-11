@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -109,6 +109,10 @@ negative cases in memory. The controller re-ran each deciding probe.
   producer. Current documents migrated: 13 package READMEs move
   `Related Documents` to the end, and `docs/README.md` and
   `scripts/README.md` lose one empty heading each. No heading is renamed.
+- Review answer `aa1bde154`: nine moved READMEs lost a stray trailing
+  `---`; the Ollama README also moves `Related Documents` last; the
+  declaration test now covers free-form profiles, so `research-member`
+  ordering is tested; the swap test handles a last second section.
 - Tests: an unquoted-date rejection, a Registry rule that every sectioned
   profile declares order and content, a swapped and an emptied section per
   representative profile, and a parent cycle and a two-parent Plan.
@@ -121,6 +125,7 @@ negative cases in memory. The controller re-ran each deciding probe.
 | W03 obligation assessment result | 111 | W116 | template-contract-assessment | DOC-01 to DOC-12 and SUP-11 at `95a65be6d` | PASS | Per-ID table above: DOC-04 and DOC-05 GAP changed, DOC-01 changed in part, DOC-08 DEFER, DOC-07 Vault N/A, rest KEEP | required | W03 obligation assessment |
 | W03 section and date RED | 111 | W116 | red-green-proof | New tests against the pre-change Registry and `_json_schema_value` | FAIL | Unquoted-date test failed; order and content tests failed for 28 profile cases with the Registry at `95a65be6d` | required | - |
 | W03 section and date GREEN | 111 | W116 | red-green-proof | Commits `ce18338c8` and `85ed595b3` | PASS | test_registry 123 OK; test_heading, test_profile, test_language 110 OK; test_lifecycle 7 OK; metadata check-active selected534 violations0, check-changed selected16 violations0; links alignment and language PASS; renderer drift 0; script manifest PASS | required | W03 section and date RED |
+| W03 code review | 111 | W116 | independent-source-review | Fresh-context code-reviewer of `ce18338c8` and `85ed595b3` | PASS | APPROVED: no false finding or exception from date objects; README content preserved; tests not vacuous. Four minor findings answered in `aa1bde154`; removing `research-member` ordering now fails the declaration test | required | - |
 
 ## Criterion Acceptance
 
