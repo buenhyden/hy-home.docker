@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Capture Specification"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0265"
 parent_ids:
@@ -105,6 +105,12 @@ The report bytes added here prove sameness of output, not truth of content.
    ADR-0060's meaning (`source_text` is the finalized report bytes) holds.
    The Gateway request also takes each item's `kind` from the job
    (`news`, `devops`, `business_idea`), overwriting the model's value.
+   From plugin 0.4.5 (2026-11-12, contract v3 unchanged) `source_receipts` is
+   optional and never decides pairing or order: each item is paired with this
+   run's own collection record by `item_id`. An item without such a record
+   (`source_missing`) or whose `source_url` differs from the record's final URL
+   (`source_url_mismatch`) is a `source_quality` failed item, not a refusal of
+   the whole submission; a day without items is decided by `items` alone.
 2. **Report store.** The plugin writes the report to a per-execution file with
    mode 0600, created exclusively (no overwrite), bound to `job_id`,
    `execution_id` and the scheduled instant (name or sibling manifest). A

@@ -1,10 +1,10 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.5.4"
+version: "0.5.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 ---
 
 # Hermes 수집 전송 소스
@@ -60,8 +60,8 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 다른 URL로 바꾸려면 충돌로 거부합니다. `normalized_text`와 원본 내용은 비신뢰 데이터로
 도구·파일·자격·목적지 권한을 추가하지 않습니다.
 
-`submit_research_report`(플러그인 0.4.3 이상, 도구 계약 v3)는 정확히 `payload`, 항목별
-`source_receipts`, 확정된 전체 보고서 파일의 절대 경로 `report_path` 세 인자만 받고 다른
+`submit_research_report`(플러그인 0.4.3 이상, 도구 계약 v3)는 `payload`, 확정된 전체
+보고서 파일의 절대 경로 `report_path`, 선택 인자 `source_receipts` 세 인자만 받고 다른
 인자(v2의 `report_markdown` 포함)는 `invalid_submission_fields`로 거부합니다. 에이전트는
 보고서를 이번 실행에서 `mktemp -d`로 만든 디렉터리 안의 `.md` 파일로 씁니다. 플러그인은
 임시 디렉터리(플러그인 프로세스의 임시 디렉터리, Hermes가 모든 에이전트 셸의 `TMPDIR`로 쓰는
@@ -72,9 +72,16 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 기존 보고서 검사 뒤에 800자 미만(`report_too_short`, 항목이 없는 날도 적용)과 항목의
 `source_url`이 보고서에 없음(`report_missing_item`)을 저장 전에 BLOCKED로 거부하므로
 에이전트는 파일을 고쳐 한 번 더 호출합니다. 항목 `kind`는 job이 정하며 도구가 덮어씁니다. payload는 `schema_version: "1.0"`과 `items`를
-가지며 receipt 식별자는 32 hex입니다. 도구가 producer/execution·scheduled/created/collected
-시각, 보고서 원본·해시, 원본 집합 참조와 멱등 키를 구성합니다. receipt의 item·순서·URL·실행·본문 해시와 기존 제목/인용/숫자/고유명
-검사를 모두 통과해야 제출합니다. 준비한 요청 바이트는 재시도에도 바꾸지 않습니다.
+가집니다. 도구가 producer/execution·scheduled/created/collected
+시각, 보고서 원본·해시, 원본 집합 참조와 멱등 키를 구성합니다. 플러그인 0.4.5부터 도구는
+각 항목을 이번 실행에서 그 `item_id`로 수집한 기록과 짝짓고, 모델이 보낸 `source_receipts`는
+짝짓기·순서에 쓰지 않습니다(빠지거나 순서가 달라도 결과가 같음). 수집 기록이 없는 항목은
+`source_missing`, 항목 `source_url`이 수집한 최종 URL과 다르면 `source_url_mismatch`로
+기존 제목/인용/숫자/고유명 검사 실패와 함께 `source_quality`의 `failed_items`에 들어가며,
+그 항목만 빼고 한 번 더 호출합니다. 중복 `item_id`(`source_identity`), 무결성이 깨진 기록,
+다른 실행의 기록, 크기·시간 위반은 계속 전체 거부입니다. 멱등 비교용 `input_sha256`은
+항목과 플러그인이 찾은 receipt 식별자(항목 순서)로 계산하므로 같은 항목의 재호출은 같은
+값이 됩니다. 모든 항목이 검사를 통과해야 제출합니다. 준비한 요청 바이트는 재시도에도 바꾸지 않습니다.
 이는 직접 제출 추적일 뿐 Publisher Ed25519 서명이나 독립 Attester의 권한이 아닙니다.
 
 직접 송신은 Publisher와 같은 요청당 45초·전체 60초·자동 시도 3회로 제한합니다. 이
@@ -115,7 +122,7 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
   `report_conflict`와 함께 먼저 저장된 보고서의 경로를 돌려줍니다. 잠금을 쥔 채 이 실행 디렉터리에 남은 `.tmp-*`를 먼저
   지워 중단된 생성(링크 2개)을 복구합니다. Hermes cron 출력 보존 기간과 무관하게
   플러그인이 소유합니다.
-- 항목이 없는 날: `items`와 `source_receipts`가 모두 빈 목록이면 보고서를 저장·렌더링하고
+- 항목이 없는 날: `items`가 빈 목록이면(`source_receipts`와 무관) 보고서를 저장·렌더링하고
   `gateway: "skipped_no_items"`를 결과에 남기며 Gateway에는 보내지 않습니다
   (`ingestion-v1`은 항목 1~100개).
 - 파생 출력: 이메일 HTML과 Telegram 텍스트는 저장된 `report.md`에서만 표준 라이브러리
