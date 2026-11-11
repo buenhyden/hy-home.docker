@@ -1,6 +1,6 @@
 ---
 title: "W02 Archive and Safe Removal Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -151,6 +151,16 @@ scratch dry-run restored all 15 files of the five packages with zero byte
 mismatches. The post-merge restore and byte comparison for the four removed
 packages are recorded in this Task after the PR merges.
 
+### CI runner pin 2026-11-12
+
+Three `candidate-quality` runs of PR 955 and one job rerun failed at the same
+step: `npx playwright install chromium --with-deps` could not resolve the
+Ubuntu apt mirrors on the `ubuntu-latest` (Ubuntu 26.04) image. Every check
+before that step passed. `main` stayed green because its runs never select
+that step. On 2026-11-12 the owner chose to pin the runner. Commit `7a109158f`
+pins both CI Quality jobs to `ubuntu-24.04` in the workflow and in
+`.github/workflow-contract.yml`, and updates the contract test fixtures.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -162,6 +172,8 @@ packages are recorded in this Task after the PR merges.
 | W02 code review | 110 | W115 | independent-source-review | Fresh-context code-reviewer of `682393d7c` | PASS | APPROVED: no removed name has a code, workflow, manifest or dynamic consumer; `manifest_schema_v2` has no reader; corrected the archive-vocabulary note | required | - |
 | W02 governance suite | 110 | W115 | document-governance-unit-suite | `tests/lib/document_governance` discover while `58be65ebb` and `8330534e3` were being written | FAIL | FAILED (errors=2); test names not captured; the corpus changed during the run | optional | - |
 | W02 governance suite rerun | 110 | W115 | document-governance-unit-suite | `tests/lib/document_governance` discover at `56d32c32f`, clean tree | PASS | Ran 765 tests, OK, exit 0 | optional | W02 governance suite |
+| W02 remote candidate | 110 | W115 | remote-candidate-quality | PR 955 runs on `ubuntu-latest` through `0ec2f14cb` | FAIL | Playwright `--with-deps` apt install could not resolve Ubuntu mirrors; earlier stages passed | required | - |
+| W02 runner pin checks | 110 | W115 | workflow-contract | Commit `7a109158f` | PASS | GitHub workflow contract PASS (workflows 5, jobs 7); test_github_workflow_contract 48 OK | required | - |
 
 ## Criterion Acceptance
 
