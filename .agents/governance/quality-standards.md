@@ -110,10 +110,10 @@ main-push security remains a post-merge observation.
   fixtures and tests; preserve useful actual results in existing Task/history.
 - Stage 98 holds no records, as the
   [documentation protocol](documentation-protocol.md#document-retention-and-retirement)
-  defines. Its only check is corpus lifecycle occupancy, which fails on any
-  tracked file there other than the README, and checks that README like any
-  other; no archive integrity, retention, recovery, Tombstone,
-  migration-ledger or archive-link check exists.
+  defines. Its only Stage 98-specific check is corpus lifecycle occupancy,
+  which fails on any tracked file there other than the README; the README is
+  checked like any other README. No archive integrity, retention, recovery,
+  Tombstone, migration-ledger or archive-link check exists.
 - Shared implementation libraries under `scripts/lib/` and executable QA
   owners retain meaningful test evidence. A nonmutating companion library
   outside that shared surface may be retained through a proven current
@@ -135,6 +135,8 @@ main-push security remains a post-merge observation.
   producer, reader, schema, current guidance and tests in one logical change.
   Never make the check pass by editing only its test expectation or by only
   relaxing the rule, and never adopt an unapproved test constant as policy.
+  Changing the canonical rule itself needs its owner's approval under
+  [approval boundaries](approval-boundaries.md#authorization-source-and-records).
 
 ### 4. Execution Boundary
 

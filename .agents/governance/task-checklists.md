@@ -56,7 +56,7 @@ No exception is granted here; a separately authorized operation follows [Approva
 - [ ] Record final criterion acceptance before disposition. A Stage 03 package
       may wait once it is [ready for removal review](sdlc.md#sequence);
       cancelled criteria do not waive remaining Spec acceptance evidence, and
-      only a `not-required` decision closes a criterion without PASS.
+      closing a criterion follows the [SDLC](sdlc.md#sequence) decisions.
 - [ ] Before removing a retired document, meet the
       [retirement preconditions](documentation-protocol.md#retirement-preconditions);
       delete a Stage 03 package only as the [SDLC](sdlc.md#sequence) allows.
