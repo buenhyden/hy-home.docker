@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.3.3"
+version: "2.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-12"
 layer: "templates"
 ---
 
@@ -103,14 +103,14 @@ fallback을 뜻하며 현재 작성 대상이 아닙니다. Stage 01~03 lifecycl
 `deprecated`, `superseded`, `retired`, `archived` 상태를 두지 않습니다.
 대체되거나 철회된 문서는 현재 owner에 요약한 뒤 삭제하고 번호를 예약합니다.
 
-### Local r10 Role Forms
+### Common Role Forms
 
-`SDLC-COMMON-r10-local-v1`는 이번 직접 요청에 따른 지역 개정 식별자다.
-역할별 필수 H2와 순서는 Registry의 `required_sections`와 `ordered_sections`가
-소유하고, 복사 양식과 현행 본문은 같은 순서를 따른다. 기존 고유 절차·명령·증거는
-해당 역할 절에 보존하며 제목이 바뀐 기존 anchor는 의미가 있는 하위 절로 유지한다.
-완료·취소 Task와 보관 원본은 원래 본문과 source-bound 판정으로 읽는다.
-이 지역 개정은 기록된 WGOV-CORE/3.0.0의 새 승인이나 네 저장소 공동 채택을 뜻하지 않는다.
+공통 역할 16개를 공통 절 계약 `COMMON-DOC-FORM-1` 1.0.0으로 옮기는 규칙은
+[문서 프로토콜](../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
+정한다. 옮기는 단위, 구 양식과 빈 절의 거부, 아직 옮기지 않은 역할의 양식,
+예외 조건이 모두 그곳에 있다. 역할별 절 이름은 Registry가 선언하며, 진행
+상황은 SPEC-0212 TSK-0059가 기록한다. 이 표기는 네 저장소 공동 채택을 뜻하지
+않는다.
 
 ### Identity and Lifecycle Rules
 

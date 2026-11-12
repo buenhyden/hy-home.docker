@@ -4,7 +4,7 @@ version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0058"
 parent_ids:
@@ -66,6 +66,18 @@ table's meaning, not its headings. Current Registry H2 headings stay. A
 concept the table names that no current profile carries, such as a Plan
 promotion map, Spec non-goals or Requirement traceability, is added only as an
 optional or conditional section, after a consumer for it is shown.
+
+### Q-03 superseded 2026-11-12
+
+On 2026-11-12 the owner directed that where an existing decision conflicts with
+the current requirement, the current requirement wins. The v14.7 W00 intake in
+[TSK-0059](tsk-0059-w00-v14-7-intake.md) found Q-03 in that conflict: the
+current requirement migrates each common role to the common H2 and H3 section
+contract, and Q-03 kept the current Registry H2 headings. Q-03 above stays as
+the record of 2026-11-11. It no longer limits W03: the Registry headings move
+to the common contract, together with the Registry `common` keys that name
+them and the current documents. The intake's handoff table lists the exact
+differences. Historical and completed evidence still keeps its form.
 
 ### Prior observations to re-check
 

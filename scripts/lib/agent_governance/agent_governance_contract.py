@@ -44,6 +44,7 @@ GOVERNANCE_PROFILES = {
     "governance-role",
     "governance-sdlc",
     "governance-skill",
+    "governance-vocabulary",
 }
 REGISTRY_KEYS = {
     "schema_version",

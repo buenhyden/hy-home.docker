@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Requirements"
-version: "1.3.0"
+version: "1.4.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "requirements"
 artifact_id: "REQ-0023"
 created: "2026-04-01"
@@ -50,6 +50,14 @@ each repository-owned network a predictable address block.
   The one exception is `crawl4ai_egress_net` (`10.250.200.0/29`).
 - **REQ-0023-FR-0003**: No service connects to the `k3d-hyhome` network (k3d
   integration removed by owner decision on 2026-09-23).
+- **REQ-0023-FR-0004**: A secondary listener without its own authentication
+  (metrics, management, profiling or broker) accepts connections only from its
+  declared consumers, on an internal network that only those consumers share.
+  Exception: a listener that is not yet bound to a consumer-only address stays
+  as it is and is recorded here with its owner, until it is bound. The
+  recorded exceptions, owned by @buenhyden, are the Registry debug listener
+  `:5001`, reachable by every `obs_net` peer, and the SeaweedFS master, volume
+  and filer metrics on `9324` to `9326`, reachable by `seaweed_internal` peers.
 
 ### Stakeholders and User Needs
 
@@ -77,6 +85,10 @@ No numbered interface requirement is issued.
   service file declares.
 - **REQ-0023-FR-0003**: No service in the rendered root composition lists
   `k3d-hyhome`.
+- **REQ-0023-FR-0004**: In the rendered root composition, each such listener
+  binds to a fixed address on an internal network whose members are only the
+  listener's service and its declared consumers, and a peer outside that
+  network is refused. The recorded exceptions are excluded.
 
 ## Related Documents
 

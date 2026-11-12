@@ -714,6 +714,12 @@
         "optional_sections": {
           "$ref": "#/$defs/stringList"
         },
+        "required_subsections": {
+          "$ref": "#/$defs/subsectionMap"
+        },
+        "optional_subsections": {
+          "$ref": "#/$defs/subsectionMap"
+        },
         "free_form_sections": {
           "type": "boolean"
         },
@@ -901,6 +907,17 @@
           }
         }
       }
+    },
+    "subsectionMap": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/stringList"
+      },
+      "minProperties": 1
     }
   }
 }

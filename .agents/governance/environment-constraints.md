@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.10.0"
+version: "1.10.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 ---
 
 # Environment Constraints
@@ -42,9 +42,9 @@ Local repository work, infrastructure execution, secrets handling, verification 
 
 ### 2. Infrastructure Constraints
 
-- **Networking**: inter-service traffic MUST stay on the repository-owned
+- **Networking**: inter-service traffic must stay on the repository-owned
   Compose networks, and a service joins one only for a peer it uses. Direct
-  external exposure is PROHIBITED except via authorized gateways.
+  external exposure is prohibited except via authorized gateways.
 - **Storage**: use named volumes named `<service>-<data>`, for example `tempo-data`;
   a node-numbered service keeps its number (`pg0-data`). The `lab-kafka-*` and
   `lab-opensearch-*` LAB volumes keep their `lab-` prefix by owner decision.

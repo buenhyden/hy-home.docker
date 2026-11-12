@@ -799,6 +799,7 @@ def validate_registry(
                             ",".join(sorted(overlap)),
                         )
                     )
+        findings.extend(_subsection_findings(profile, index))
         traceability = profile.get("traceability")
         parents = (
             traceability.get("allowed_parent_profiles")
@@ -2183,6 +2184,41 @@ _NON_DOCS_FILES = frozenset(
         "tests/validation/README.md",
     }
 )
+
+
+def _subsection_findings(
+    profile: Mapping[str, object], index: int
+) -> list[RegistryFinding]:
+    """Declared H3 sections must hang off declared H2s, once each."""
+
+    sections = {
+        name
+        for key in ("required_sections", "optional_sections")
+        for name in (profile.get(key) or ())
+        if isinstance(name, str)
+    }
+    required = profile.get("required_subsections") or {}
+    optional = profile.get("optional_subsections") or {}
+    findings: list[RegistryFinding] = []
+    if not isinstance(required, Mapping) or not isinstance(optional, Mapping):
+        return findings
+    for parent in sorted(set(required) | set(optional)):
+        if parent not in sections:
+            findings.append(
+                RegistryFinding(
+                    "profile-subsection-unknown", f"profiles.{index}", str(parent)
+                )
+            )
+        overlap = set(required.get(parent) or ()) & set(optional.get(parent) or ())
+        if overlap:
+            findings.append(
+                RegistryFinding(
+                    "profile-contract-overlap",
+                    f"profiles.{index}",
+                    ",".join(sorted(map(str, overlap))),
+                )
+            )
+    return findings
 
 
 def _registry_owned_root(value: str) -> bool:

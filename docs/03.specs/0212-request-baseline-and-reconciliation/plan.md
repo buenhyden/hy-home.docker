@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.50.0"
+version: "1.53.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -150,9 +150,18 @@ Removal candidates get readiness and byte-recovery proofs first; deletion
 waits for the owner's approval of each batch. The SPEC-0248, 0249, 0250 and
 0260 Tasks keep their own residual criteria.
 
-W116 in TSK-0058 runs the v14.2 W03 template, metadata and relation work. It
-keeps current Registry H2 headings and adds the draft table's missing
-concepts only as optional or conditional sections; W05 owns the validators.
+W116 in TSK-0058 runs the v14.2 W03 template, metadata and relation work; W05
+owns the validators. Its H2-retention decision Q-03 was superseded on
+2026-11-12: the headings migrate to the common section contract.
+
+W117 in TSK-0059 runs the v14.7 W00 intake. It records the read boundary, the
+recent pull requests, the OPEN-01 to OPEN-14 reassessment and the per-file
+differences from the common target contracts, corrects current guidance that
+conflicts with the current requirement, and hands each remaining difference
+to one receiving work unit without starting that work.
+
+W118 in TSK-0060 runs the v14.7 W01 governance work: per-ID verdicts, the
+local adoption record of each common contract and the policy corrections.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -295,8 +304,10 @@ Secret access or remote integration.
 | W112 | 107 | Diagnose and restore the scheduled Hermes `devops` daily brief | None | TSK-0054 | One scheduled run submitted and its alerts resolved, or the external cause recorded |
 | W113 | 108 | Collect host-run Hermes OTLP traces, logs and gateway metrics through an authenticated Alloy receiver | None | TSK-0055 | Receiver and route tests, dashboard contract, then one live trace, log and metric readback after the approved apply |
 | W114 | 109 | Assess and correct the v14.2 W01 governance obligations GOV-01 to GOV-08 and SUP-12 against their canonical owners | None | TSK-0056 | Per-ID owner, approval and adoption trace; reproduced gaps fixed with regression; metadata, links, contract and renderer checks |
-| W115 | 110 | Assess ARC-01 to ARC-09 and prove readiness and byte recovery for each removal candidate before any removal | W114 | TSK-0057 | Per-ID trace; per-candidate readiness, commit:path reachability and byte comparison; blocked cases recorded; removals only on owner approval |
+| W115 | 110 | Assess ARC-01 to ARC-09 (v14.2) and W02-A, W02-B, R147-08, QA-C04, WP-19, WP-20 and OPEN-ARCHIVE (v14.7), and prove readiness and byte recovery for each removal candidate before any removal | W114 | TSK-0057 | Per-ID trace; per-candidate readiness, commit:path reachability and byte comparison; blocked cases recorded; removals only on owner approval |
 | W116 | 111 | Assess DOC-01 to DOC-12 and SUP-11 and change the template, metadata and relation contract only for reproduced gaps | W115 | TSK-0058 | Per-ID trace; each changed key, section or table with producer, consumer and passing and failing tests; current documents migrated, history unchanged |
+| W117 | 112 | Assess the v14.7 W00 obligations and the common-contract differences, correct conflicting current guidance and hand off each remaining difference | W116 | TSK-0059 | Read denominator, PR and OPEN-01 to OPEN-14 tables, per-file handoff table with one writer each; metadata, links and lifecycle checks |
+| W118 | 113 | Assess the v14.7 W01 governance obligations, record local adoption of each common contract revision and correct conflicting policy | W117 | TSK-0060 | Per-ID verdicts, adoption table with contract revision and approval source, changed policy with metadata, links, governance contract and renderer checks |
 
 ### Current v30 continuation and delivery
 
@@ -636,6 +647,8 @@ only that dependent operation.
 ## Related Documents
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
+- [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
+- [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
 

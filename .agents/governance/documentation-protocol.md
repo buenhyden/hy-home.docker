@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.12.0"
+version: "3.16.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 ---
 
 # Documentation Protocol
@@ -238,12 +238,12 @@ not folder guides. A folder whose only agent rule is "never handle a secret
 value", such as `secrets/`, keeps `README.md` only, because
 [approval boundaries](approval-boundaries.md) already owns that rule.
 
-A folder `AGENTS.md` follows the Stage 99 `common/agent-guide` template:
-Overview, Scope, Working Rules, Canonical References, Verification and Related
-Documents. Canonical References name the `.agents/` policies, roles, skills,
-prompts and hook rules, and the `.claude/` and `.codex/` adapters and hooks
-that apply to the folder. Verification names only registered commands that
-exist. The guide routes and summarizes; it never copies a policy body, and
+A folder `AGENTS.md` follows the Stage 99 `common/agent-guide` template, the
+common AGENTS form: Scope, Required Policies, Workflow, Verification and
+Safety, each with the H3 sections the Registry declares. Canonical Sources
+name the `.agents/` policies, roles, skills, prompts and hook rules, and the
+`.claude/` and `.codex/` adapters and hooks that apply to the folder. Required
+Checks name only registered commands that exist. The guide routes and summarizes; it never copies a policy body, and
 when a summary and its owner disagree, the owner wins and the guide is
 corrected. Its rank and when an agent reads it are set by
 [bootstrap](bootstrap.md#authority-and-precedence); it grants no tool, path,
@@ -271,6 +271,20 @@ evidence; surrounding instructions remain current and validated normally.
 
 #### Role-Specific Authoring
 
+- Each common role moves to one form, the H2 and H3 sections of
+  `COMMON-DOC-FORM-1` 1.0.0; different roles are never forced into one form.
+  The Registry declares each profile's sections (`required_sections`,
+  `optional_sections`, `required_subsections`, `optional_subsections`), and
+  the validator checks the order of required sections and subsections only.
+  A role moves in one change that covers all of its current documents,
+  completed and approved ones included, and keeps their existing procedures,
+  commands and evidence in the matching section. From then on the old form is
+  rejected for that role, as is a section body that is only TODO, TBD, N/A or
+  `-`; an inapplicable section says why. A role not yet moved keeps its
+  `SDLC-COMMON-r10-local-v1` H2 sections until it moves. A role has moved
+  when its Registry profile declares `required_subsections`. A product difference from the form
+  is an Exception under [quality standards](quality-standards.md), with its
+  approved condition, scope, reason, end or review condition and verification.
 - A Requirement Package combines PRD, SRS, and implementation-independent
   interface perspectives. A Description owns current structure; an ADR owns one
   consequential choice. Preserve accepted decisions and use explicit
@@ -324,9 +338,10 @@ CI result when those exist. Record unavailable external evidence explicitly.
 CHANGELOG summarizes user changes; a tag or CI result proves only its observed
 event. Neither local readiness nor a Runbook proves deployment occurred.
 
-There is no separate Release Record profile. Add one only if a distinct audit
-consumer requires it, through an approved ADR and a coordinated Registry change.
-Do not change an existing accepted decision silently. Remote release and
+Release is not a document role. Do not register a Release Record profile,
+template or generator under any name; release facts stay with the owners
+above. This removes no GitHub Release, tag, CHANGELOG entry or release
+workflow. Remote release and
 deployment actions wait for their exact target under
 [Approval boundaries](approval-boundaries.md).
 
@@ -371,6 +386,11 @@ pipeline. Retention follows lifecycle and ownership. Age and document count are
 never retention criteria. A document is retained while it owns current
 behavior, structure, decision, or procedure. It is retired when its status is
 terminal and its still-current meaning has moved to a canonical owner.
+These rules govern development documents only. Operational data and backups
+keep the retention their Stage 05 owners set, and shared agent memory keeps
+the retention rules of the
+[environment constraints](environment-constraints.md); neither is deleted
+under this section.
 
 A retired document is summarized and deleted, not preserved. Its still-current
 meaning goes to its canonical agent governance, Stage 01, 02 or 05 owner, as
@@ -447,8 +467,11 @@ Retire a package or a standalone document only when all of these hold.
    from `main`. A body that exists only as uncommitted work, only in the
    reflog, only on an unmerged or squash-dropped branch, or not at all in a
    shallow clone blocks that removal, as does a recorded hold. After merge, the
-   same Task restores each body from that commit and compares its bytes. This
-   is a manual record, not a gate.
+   same Task restores each body from that commit and compares its bytes. A
+   body stored through Git LFS or a submodule is recovered as its payload or
+   submodule commit, not its pointer or gitlink, and an unrecoverable payload
+   or submodule commit blocks that removal. This is a manual record, not a
+   gate.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to

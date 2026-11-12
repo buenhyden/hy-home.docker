@@ -13,26 +13,52 @@ updated: "{{UPDATED}}"
 
 # {{TITLE}}
 
-## Overview
-
-{{FOLDER_PURPOSE_FOR_AGENTS}}
-
 ## Scope
 
-{{FILES_AND_CHANGES_THIS_GUIDE_COVERS}}
+### Allowed Surface
 
-## Working Rules
+{{ALLOWED_SURFACE}}
 
-{{FOLDER_SPECIFIC_WORKING_RULES}}
+### Non-goals
 
-## Canonical References
+{{NON_GOALS}}
 
-{{AGENTS_CLAUDE_CODEX_OWNERS_TO_LOAD}}
+## Required Policies
+
+### Canonical Sources
+
+{{CANONICAL_SOURCES}}
+
+### Local Obligations
+
+{{LOCAL_OBLIGATIONS}}
+
+## Workflow
+
+### Inspect and Change
+
+{{INSPECT_AND_CHANGE}}
+
+### Handoff
+
+{{HANDOFF}}
 
 ## Verification
 
-{{REGISTERED_CHECKS_FOR_THIS_FOLDER}}
+### Required Checks
 
-## Related Documents
+{{REQUIRED_CHECKS}}
 
-{{HUMAN_README_AND_RELATED_LINKS}}
+### Evidence and Limits
+
+{{EVIDENCE_AND_LIMITS}}
+
+## Safety
+
+### Protected Actions
+
+{{PROTECTED_ACTIONS}}
+
+### Stop and Escalate
+
+{{STOP_AND_ESCALATE}}

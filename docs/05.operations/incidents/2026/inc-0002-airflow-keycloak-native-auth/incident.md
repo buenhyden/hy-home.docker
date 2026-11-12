@@ -1,10 +1,10 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Incident"
-version: "0.2.4"
+version: "0.3.0"
 type: "operation/incident"
 status: "resolved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "inc-2026-0002"
 parent_ids:
@@ -16,7 +16,9 @@ resolved_at: "2026-09-26T22:03:08+09:00"
 
 # Airflow Keycloak Native Authentication Migration Incident
 
-## Overview
+## Summary
+
+### Event
 
 Airflow 3.3.1 환경에서 file ownership/DB migration 문제를 해결한 뒤
 OAuth2 Proxy ForwardAuth와 Airflow 자체 JWT가 충돌했다. Native Keycloak Auth
@@ -24,18 +26,36 @@ Manager로 전환하는 과정에서 Keycloak Authorization bootstrap, provider 
 permission strategy, OAuth state/cookie, resource-level authorization 문제를
 순차적으로 확인했다.
 
-2026-09-26 owner의 로그인 세션에서 Pool/DAG/Asset/HITL이 모두 `200`으로
-확인되어 resolved로 닫는다. 어느 조치가 마지막 `403`을 해소했는지와 그 시각은
-기록되어 있지 않다.
+관련 시스템은 Airflow 3.3.1, Keycloak, OAuth2 Proxy, Traefik,
+`apache-airflow-providers-keycloak` 0.8.2 -> 0.9.0이다. 관련 Runbook은
+`RUN-0050`, `RUN-0014`다.
+
+### Current Status
+
+Resolved. 2026-09-26 owner의 로그인 세션에서 Pool/DAG/Asset/HITL이 모두
+`200`으로 확인되어 resolved로 닫았다. 어느 조치가 마지막 `403`을 해소했는지와
+그 시각은 기록되어 있지 않다.
 
 ## Impact
+
+### Affected Users
+
+Airflow UI/API 사용자와 이를 운영하는 owner가 영향을 받았다.
 
 - API server 초기 기동 실패
 - UI/API 500/403
 - DAG/Pool/Asset dashboard 일부 접근 제한
 - 반복 재로그인과 Keycloak/Airflow 양측 진단 필요
 
+### Severity and Duration
+
+발생 2026-09-18T15:43:32+09:00 (`occurred_at`), 해소
+2026-09-26T22:03:08+09:00 (`resolved_at`). 심각도 등급, 사용자 수, 누락된
+DAG run은 기록되어 있지 않다.
+
 ## Timeline
+
+### Events
 
 1. `/opt/airflow/config/airflow.cfg` PermissionError.
 2. DB migration/version mismatch.
@@ -61,22 +81,16 @@ permission strategy, OAuth state/cookie, resource-level authorization 문제를
     `/ui/config`), `403` 0건. `/api/v2/pools`, `/ui/dags`,
     `/api/v2/assets`, `/api/v2/dags/{dag}/dagRuns/{run}/hitlDetails`가 `200`.
 
-## Response
+### Decisions
 
-### Coordination
+- 4단계: Airflow router에서 OAuth2 Proxy ForwardAuth를 제거하고 Native
+  Keycloak Auth Manager로 전환했다. 앱별 선택 기준은 `ADR-0038`이 소유한다.
+- 12단계: provider 0.8.2의 global Admin permission 문제를 해소하려고 0.9.0으로
+  upgrade했다.
+- 15단계: 남은 Pool/DAG/Asset 403을 로그인 문제가 아닌 resource authorization
+  문제로 분리해 다뤘다.
 
-관련 시스템:
-
-- Airflow 3.3.1
-- Keycloak
-- OAuth2 Proxy
-- Traefik
-- `apache-airflow-providers-keycloak` 0.8.2 -> 0.9.0
-
-관련 Runbook:
-
-- `RUN-0050`
-- `RUN-0014`
+## Resolution
 
 ### Mitigation
 
@@ -89,16 +103,10 @@ permission strategy, OAuth state/cookie, resource-level authorization 문제를
 - non-team `create-permissions` 재적용
 - stale callback/session 제거
 
-### Communications
+### Recovery Verification
 
-token/refresh token/id token/client secret 원문은 incident/issue/PR에 기록하지 않는다.
-
-## Resolution
-
-### Current Status
-
-Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
-(2026-09-26, Traefik access log, 경로와 상태 코드만 기록):
+로그인한 Admin 세션에서 다음 경로가 모두 `200`이다 (2026-09-26, Traefik
+access log, 경로와 상태 코드만 기록):
 
 - `/`, `/ui/config`, `/ui/auth/me`, `/ui/auth/menus`
 - `/api/v2/plugins`, `/api/v2/importErrors`
@@ -107,7 +115,21 @@ Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
 - `/api/v2/assets`, `/api/v2/dags/{dag}/assets/{asset}`
 - `/api/v2/dags/{dag}/dagRuns`, `/api/v2/dags/{dag}/dagRuns/{run}/hitlDetails`
 
-### Corrective Actions
+## Evidence
+
+### Evidence Sources
+
+- Traefik access log의 경로와 상태 코드 (2026-09-26). token/refresh token/id
+  token/client secret 원문은 incident/issue/PR에 기록하지 않는다.
+- Runbook: `RUN-0050`, `RUN-0014`
+- Policy와 Guide: `POL-0079`, `GDE-0079`
+- Decision: `ADR-0038`
+- [Postmortem](postmortem.md)
+
+### Follow-up Owners
+
+후속 조치의 owner·tracking ID·검증과 상태는 [postmortem](postmortem.md)이
+추적한다. 이 incident에서 기록한 조치는 다음과 같다.
 
 1. `RUN-0050`에 auth troubleshooting 시나리오 추가.
 2. `POL/GDE-0079`로 auth integration SSoT 신설.
@@ -118,18 +140,3 @@ Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
 7. 노출된 live token/session 폐기: 2026-09-27 완료. Keycloak `home-airflow`
    session은 0건이었고, `airflow_api_jwt_secret`을 교체해 기존 Airflow JWT를
    무효화했다.
-
-## Follow-up
-
-후속 조치의 owner·tracking ID·검증과 상태는 [postmortem](postmortem.md)이 추적한다.
-
-## Related Documents
-
-### Traceability
-
-- `RUN-0050`
-- `RUN-0014`
-- `POL-0079`
-- `GDE-0079`
-- `ADR-0038`
-- [Postmortem](postmortem.md)

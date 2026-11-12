@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.50.0"
+version: "1.53.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -183,9 +183,24 @@ the existing archive Tasks keep their own criteria.
 
 The owner decision of 2026-11-11 adds criterion 111 and W116 in TSK-0058 for
 the v14.2 W03 document templates, metadata and relations. The owner adopted
-the meaning of the package's draft 19-role table, not its headings: current
-Registry H2 headings stay, and only missing concepts are added as optional or
-conditional sections. Validator implementation is handed to W05.
+the meaning of the package's draft 19-role table, not its headings: it kept
+the current Registry H2 headings and added missing concepts only as optional
+or conditional sections. That heading choice is superseded by the 2026-11-12
+direction below. Validator implementation is handed to W05.
+
+The owner direction of 2026-11-12 adds criterion 112 and W117 in TSK-0059 for
+the v14.7 W00 intake, and sets the rule for every conflict the intake finds:
+where an existing decision conflicts with the current requirement, the current
+requirement wins. That supersedes the H2-retention part of the criterion 111
+decision above; W03 migrates the Registry headings to the common H2 and H3
+section contract. The intake records evidence and handoffs, and corrects the
+current guidance, Registry entries and glossary that conflict with the current
+requirement.
+
+The owner's v14.7 W01 prompt of 2026-11-12 adds criterion 113 and W118 in
+TSK-0060. It records this repository's local adoption of each common contract
+revision and corrects governance policy that conflicts with the current
+requirement; Registry and template changes stay with W03.
 
 ## Scope
 
@@ -815,8 +830,9 @@ hold, authorization and recovery requirements have been established.
      against their canonical owners, corrects only reproduced gaps, and
      records local adoption separately from cross-repository adoption. An
      assessment row is not acceptance of a common contract.
-110. TSK-0057 assesses the v14.2 W02 obligations ARC-01 to ARC-09 against
-     the current retention and retirement owners, proves byte recovery for
+110. TSK-0057 assesses the v14.2 W02 obligations ARC-01 to ARC-09, and the
+     v14.7 W02 obligations W02-A, W02-B, R147-08, QA-C04, OPEN-ARCHIVE and
+     the legacy WP-19 and WP-20, against the current retention and retirement owners, proves byte recovery for
      each removal candidate before any removal, and blocks a removal whose
      acceptance, promotion, hold, authority or recovery is unmet.
 111. TSK-0058 assesses the v14.2 W03 obligations DOC-01 to DOC-12 and SUP-11
@@ -824,6 +840,20 @@ hold, authorization and recovery requirements have been established.
      Each changed key, section or table has a producer, a consumer and a
      passing and a failing test; only current documents migrate, and
      historical and completed evidence keeps its form.
+112. TSK-0059 assesses the v14.7 W00 obligations against this workspace: the
+     read boundary and denominator, the pull requests merged after the v14.2
+     intake, the historical audit IDs OPEN-01 to OPEN-14, and the differences
+     between the current Registry, policies, glossary, validators and hooks and
+     the common target contracts. Each difference has one named writer and
+     receiving work unit; a conflict with the current requirement is corrected
+     with a passing and a failing test where a contract changes, and an unrun
+     or unverified item stays visible with its owner.
+113. TSK-0060 assesses the v14.7 W01 obligations GOV-01 to GOV-08, SUP-12,
+     R45-03, R45-08, R147-03, 09 and 19, W01-A, W01-B, QA-C01 and the
+     legacy WP-06 and WP-07 against their canonical owners,
+     records each common contract's revision, approval and local adoption
+     state, and corrects conflicting governance policy with passing checks.
+     Local adoption is never reported as adoption by another repository.
 
 ## Failure Conditions
 
@@ -842,6 +872,8 @@ target, backup, recovery boundary, and action-specific authorization.
 ## Related Documents
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
+- [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
+- [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
 

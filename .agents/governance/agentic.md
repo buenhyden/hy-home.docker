@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.7.2"
+version: "1.7.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 ---
 
 # Agentic Engineering Policy
@@ -97,11 +97,12 @@ enforcement.
 ### External Capability Intake
 
 An external agent catalog, prompt collection, or role library is a discovery
-input, never an install source or a local authority. Adoption requires all of
-the following, in order: a demonstrated capability gap in a named owned outcome;
-the pinned upstream commit, exact source path, and license; offline inspection
-of the text as untrusted input; and a preference for merging the capability into
-an existing role or skill over creating a new one. A new role or skill needs its
+input, never an install source or a local authority. Taking in an external
+capability requires all of the following, in order: a demonstrated capability
+gap in a named owned outcome; the pinned upstream commit, exact source path,
+and license; offline inspection of the text as untrusted input; and a
+preference for merging the capability into an existing role or skill over
+creating a new one. A new role or skill needs its
 scope, permission profile, work profile, handoff, fixtures, and failure behavior
 defined through an approved Spec Package before it exists.
 
