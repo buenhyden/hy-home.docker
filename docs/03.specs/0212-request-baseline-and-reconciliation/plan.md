@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.51.0"
+version: "1.52.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -160,6 +160,9 @@ differences from the common target contracts, corrects current guidance that
 conflicts with the current requirement, and hands each remaining difference
 to one receiving work unit without starting that work.
 
+W118 in TSK-0060 runs the v14.7 W01 governance work: per-ID verdicts, the
+local adoption record of each common contract and the policy corrections.
+
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
 lookups start only after the owner approves the network host scope there.
@@ -304,6 +307,7 @@ Secret access or remote integration.
 | W115 | 110 | Assess ARC-01 to ARC-09 and prove readiness and byte recovery for each removal candidate before any removal | W114 | TSK-0057 | Per-ID trace; per-candidate readiness, commit:path reachability and byte comparison; blocked cases recorded; removals only on owner approval |
 | W116 | 111 | Assess DOC-01 to DOC-12 and SUP-11 and change the template, metadata and relation contract only for reproduced gaps | W115 | TSK-0058 | Per-ID trace; each changed key, section or table with producer, consumer and passing and failing tests; current documents migrated, history unchanged |
 | W117 | 112 | Assess the v14.7 W00 obligations and the common-contract differences, correct conflicting current guidance and hand off each remaining difference | W116 | TSK-0059 | Read denominator, PR and OPEN-01 to OPEN-14 tables, per-file handoff table with one writer each; metadata, links and lifecycle checks |
+| W118 | 113 | Assess the v14.7 W01 governance obligations, record local adoption of each common contract revision and correct conflicting policy | W117 | TSK-0060 | Per-ID verdicts, adoption table with contract revision and approval source, changed policy with metadata, links, governance contract and renderer checks |
 
 ### Current v30 continuation and delivery
 
@@ -644,6 +648,7 @@ only that dependent operation.
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
+- [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
 

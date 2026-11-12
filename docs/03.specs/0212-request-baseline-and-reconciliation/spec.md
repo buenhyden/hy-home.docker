@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.51.0"
+version: "1.52.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -196,6 +196,11 @@ decision above; W03 migrates the Registry headings to the common H2 and H3
 section contract. The intake records evidence and handoffs, and corrects the
 current guidance, Registry entries and glossary that conflict with the current
 requirement.
+
+The owner's v14.7 W01 prompt of 2026-11-12 adds criterion 113 and W118 in
+TSK-0060. It records this repository's local adoption of each common contract
+revision and corrects governance policy that conflicts with the current
+requirement; Registry and template changes stay with W03.
 
 ## Scope
 
@@ -842,6 +847,11 @@ hold, authorization and recovery requirements have been established.
      receiving work unit; a conflict with the current requirement is corrected
      with a passing and a failing test where a contract changes, and an unrun
      or unverified item stays visible with its owner.
+113. TSK-0060 assesses the v14.7 W01 obligations GOV-01 to GOV-08, SUP-12,
+     R45-03, R45-08 and R147-03, 09 and 19 against their canonical owners,
+     records each common contract's revision, approval and local adoption
+     state, and corrects conflicting governance policy with passing checks.
+     Local adoption is never reported as adoption by another repository.
 
 ## Failure Conditions
 
@@ -861,6 +871,7 @@ target, backup, recovery boundary, and action-specific authorization.
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
+- [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
 
