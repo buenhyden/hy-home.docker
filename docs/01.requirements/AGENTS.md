@@ -1,6 +1,6 @@
 ---
 title: "Requirements Agent Guide"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
@@ -14,7 +14,8 @@ updated: "2026-11-12"
 ### Allowed Surface
 
 Stage 01 holds Requirement Packages: the problem, stakeholder value, scope,
-functional, non-functional and solution-independent interface requirements,
+functional and quality requirements (with solution-independent interface needs
+written as functional requirements),
 and acceptance criteria. This guide routes an agent that changes a file here
 to the owners that decide how. The human guide is [README.md](README.md).
 
@@ -48,8 +49,8 @@ scope; they belong to Stage 02, Stage 03 and Stage 05.
 
 ### Local Obligations
 
-- Write child IDs in full (`REQ-####-FR-####`, `REQ-####-NFR-####`,
-  `REQ-####-IF-####`). Never reuse a number or lower a high-water mark; a
+- Write child IDs in full (`REQ-####-FR-####`, `REQ-####-NFR-####`); no
+  `IF` child identity is issued. Never reuse a number or lower a high-water mark; a
   retired package or child number goes into the Registry `reserved_history`.
 - Keep requirements solution-independent. A requirement that names a script,
   container flag or volume path belongs to the Stage 03 Spec or Stage 05

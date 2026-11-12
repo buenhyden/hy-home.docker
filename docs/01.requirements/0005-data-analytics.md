@@ -1,19 +1,20 @@
 ---
 title: "Analytics Services Requirements"
-version: "1.5.0"
+version: "1.5.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "requirements"
 artifact_id: "REQ-0005"
 created: "2026-03-26"
 ---
+
 # Analytics Services Requirements
 
 ## Overview
 
-### Problem and Goals
+### Problem and Outcome
 
 The platform needs time-series history, full-text log search, SQL stream
 processing into shared tables, and interactive SQL over those tables. Time-series
@@ -24,13 +25,27 @@ lakehouse LAB (SPEC-0262); the root platform includes no stream-processing or SQ
 ksqlDB and StarRocks were removed in SPEC-0180 after the Flink and Trino live
 acceptance on 2026-09-24.
 
+### Stakeholders
+
+- **Data scientist**: derives trends with SQL queries against shared tables.
+- **SRE**: searches logs within seconds and watches system metrics.
+- **Home automation user**: queries a year of sensor history with sub-second
+  latency from a dashboard.
+- **Data engineer**: processes Kafka events with SQL into a table and queries
+  that table with SQL.
+
+The owner, @buenhyden, writes, reviews and accepts this package.
+
 ## Scope
 
-### Constraints
+### In Scope
 
-- **In Scope**: The time-series, log search, stream processing and SQL
+- The time-series, log search, stream processing and SQL
   analysis needs above, the boundary that keeps the analytics engines separate
   from core transactional data, and the InfluxDB retirement.
+
+### Constraints and Exclusions
+
 - **Owned elsewhere**: POL-0094 owns the Iceberg catalog, table bucket and
   object storage operations. SPEC-0262 owns the LAB entrypoints.
 - **Out of Scope**: Dashboard design for individual visualization tools.
@@ -40,12 +55,12 @@ acceptance on 2026-09-24.
   patterns and suggest query optimizations. It must not delete source data or
   change a running analytics engine's configuration without approval.
 
-### Assumptions
+**Assumptions.**
 
 Source data is supplied reliably through the core data tier or the messaging
 tier. A LAB reaches a HOME service only through an approved endpoint input.
 
-### Risks
+**Risks.**
 
 - Large data inflow can exhaust analytics storage or compute.
 - The LAB engines depend on the Iceberg catalog in object storage and on Kafka
@@ -64,24 +79,9 @@ FR numbers 0002 (ksqlDB stream processing) and 0004 (StarRocks OLAP) were
 retired with those engines and are not reused; 0005 and 0006 restate the same
 needs without naming an engine.
 
-### Stakeholders and User Needs
-
-- **Data scientist**: derives trends with SQL queries against shared tables.
-- **SRE**: searches logs within seconds and watches system metrics.
-- **Home automation user**: queries a year of sensor history with sub-second
-  latency from a dashboard.
-- **Data engineer**: processes Kafka events with SQL into a table and queries
-  that table with SQL.
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement is defined.
-
-### Interface Requirements
-
-No separately numbered solution-independent interface requirement is defined.
-
 ## Acceptance Criteria
+
+### Acceptance Conditions
 
 - **REQ-0005-FR-0001**: InfluxDB is retired (ADR-0047, SPEC-0213) and nothing
   current deploys it. Time-series history uses DEV TimescaleDB tables; a
@@ -100,12 +100,21 @@ No separately numbered solution-independent interface requirement is defined.
   the move to the lakehouse LAB. Interactive latency is claimed only with
   separate benchmark evidence.
 
-## Related Documents
+### Verification Method
 
-### Traceability
+Each condition is judged by reviewing the documented engine boundaries and the acceptance evidence the condition names; latency is claimed only from separate benchmark evidence. SPEC-0212, SPEC-0262 and SPEC-0265 cite REQ-0005, with SPEC-0262 covering the lakehouse LAB; their Task evidence rows record the review and any benchmark. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+
+## Traceability
+
+### Source and Constraints
+
+This package records the owner's requirements for data analytics; no upstream
+document governs it.
+
+### Downstream Links
 
 - **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/descriptions/0012-data-analytics-architecture.md)
-- **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/decisions/0062-home-lab-membership.md) (supersedes ADR-0015), [0047-dev-timescale-influx-retirement-and-load-tools.md](../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
 - **Spec**: [SPEC-0262 analytics LAB migration](../03.specs/0262-analytics-labs-migration/spec.md); SPEC-0180 (lakehouse adoption and the removal of ksqlDB and StarRocks) is retired and its body is in version history.
 - **Guide**: [Operations guides](../05.operations/guides/README.md)
+- **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/decisions/0062-home-lab-membership.md) (supersedes ADR-0015), [0047-dev-timescale-influx-retirement-and-load-tools.md](../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
 - **Retired domain Spec SPEC-0005** (data-analytics): replaced by the data-analytics guides, policies and runbooks in the operations catalog under `docs/05.operations/`.

@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.5.0"
+version: "2.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -175,7 +175,8 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
   아니라 identity에도 속합니다.
 - 안정적인 package ID는 등록된 접두사와 대소문자를 유지합니다.
 - Requirement 자식은 owner를 완전히 포함한 ID를 사용합니다:
-  `REQ-####-FR-####`, `REQ-####-NFR-####`, `REQ-####-IF-####`.
+  `REQ-####-FR-####`, `REQ-####-NFR-####`. `IF` 자식은 더 발급하지 않으며,
+  기존 `REQ-####.IF` 공간은 예약 이력을 보존하는 append-only 기록으로만 남습니다.
 - FR, NFR, IF 카운터는 package가 소유합니다. Registry 발급 key는 전체
   owner를 포함하므로(예: `REQ-0001.FR`), 같은 자식 번호가 서로 다른 두
   Requirement Package에서 독립적으로 발급될 수 있습니다.

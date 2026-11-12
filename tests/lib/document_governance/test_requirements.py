@@ -38,8 +38,12 @@ def _package_text(
         f"- **REQ-{number}-FR-0003**: The package provides behavior three.\n"
         f"- **REQ-{number}-FR-0004**: The package provides behavior four."
     )
-    non_functional = "" if non_functional is None else non_functional
-    interface = "" if interface is None else interface
+    quality = (
+        ""
+        if not non_functional
+        else f"### Quality Requirements\n\n{non_functional}\n\n"
+    )
+    interface = "" if interface is None else "\n" + interface
     return f"""---
 title: Fixture Requirement Package
 type: sdlc/requirement
@@ -55,31 +59,47 @@ updated: 2026-08-22
 
 ## Overview
 
+### Problem and Outcome
+
 One bounded problem and goal.
+
+### Stakeholders
+
+The repository owner states and accepts the requirement.
+
+## Scope
+
+### In Scope
+
+The fixture covers one bounded requirement package.
+
+### Constraints and Exclusions
+
+No constraint or exclusion applies to this fixture.
 
 ## Requirements
 
 ### Functional Requirements
 
-{functional}
+{functional}{interface}
 
-### Non-functional Requirements
+{quality}## Acceptance Criteria
 
-{non_functional}
-
-### Interface Requirements
-
-{interface}
-
-## Acceptance Criteria
+### Acceptance Conditions
 
 - The declared requirements are independently verifiable.
 
-## Scope
+### Verification Method
 
-The fixture covers one bounded requirement package.
+Each condition is judged from the evidence of the Spec that cites it.
 
-## Related Documents
+## Traceability
+
+### Source and Constraints
+
+- The fixture has no upstream source.
+
+### Downstream Links
 
 - Architecture and Spec links are added when their packages exist.
 """
@@ -170,17 +190,14 @@ class RequirementPackageTests(unittest.TestCase):
             ROOT
             / "docs/99.templates/templates/requirements/requirement-package.template.md"
         ).read_text(encoding="utf-8")
-        filled = (
-            template.replace("REQ-####-FR-####", "REQ-0001-FR-0001")
-            .replace("REQ-####-NFR-####", "REQ-0001-NFR-0002")
-            .replace("REQ-####-IF-####", "REQ-0001-IF-0003")
+        filled = template.replace("REQ-####-FR-####", "REQ-0001-FR-0001").replace(
+            "REQ-####-NFR-####", "REQ-0001-NFR-0002"
         )
 
         self.assertEqual(
             (
                 "REQ-0001-FR-0001",
                 "REQ-0001-NFR-0002",
-                "REQ-0001-IF-0003",
             ),
             tuple(item.identity for item in requirements._parse_items(filled, "0001")),
         )
@@ -252,6 +269,34 @@ class RequirementPackageTests(unittest.TestCase):
             ):
                 requirements.parse_requirement_package(path)
 
+    def test_retired_requirement_sections_fail_closed(self) -> None:
+        requirements = _requirements_module()
+        retired = {
+            "interface": (
+                "### Interface Requirements\n\n"
+                "- **REQ-0001-IF-0002**: An interface item in a retired section.\n\n"
+            ),
+            "non-functional": (
+                "### Non-functional Requirements\n\n"
+                "- **REQ-0001-NFR-0001**: A quality item in a retired section.\n\n"
+            ),
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for label, section in retired.items():
+                with self.subTest(section=label):
+                    text = _package_text().replace(
+                        "## Acceptance Criteria\n",
+                        section + "## Acceptance Criteria\n",
+                        1,
+                    )
+                    self.assertIn(section, text)
+                    path = self._write_package(root, text=text)
+                    with self.assertRaisesRegex(
+                        requirements.RequirementPackageError, "not current"
+                    ):
+                        requirements.parse_requirement_package(path)
+
     def test_child_declarations_follow_registry_allocation_state(self) -> None:
         requirements = _requirements_module()
         mutations = {
@@ -272,7 +317,7 @@ class RequirementPackageTests(unittest.TestCase):
                     path = self._write_package(root, text=text)
                     with self.assertRaisesRegex(
                         requirements.RequirementPackageError,
-                        "allocation|high-water|reserved|issued",
+                        "allocation|high-water|reserved|issued|section kind",
                     ):
                         requirements.parse_requirement_package(path)
 
@@ -302,11 +347,11 @@ class RequirementPackageTests(unittest.TestCase):
         requirements = _requirements_module()
         source = ROOT / "docs/01.requirements/0003-security.md"
         reintroduced = source.read_text(encoding="utf-8").replace(
-            "\n## Non-functional Requirements\n",
+            "\n### Quality Requirements\n",
             (
                 "\n| REQ-0003-FR-0005 | Reintroduced History | A retired "
                 "number must remain unavailable. |\n\n"
-                "## Non-functional Requirements\n"
+                "### Quality Requirements\n"
             ),
             1,
         )
@@ -394,11 +439,11 @@ class RequirementPackageTests(unittest.TestCase):
         allocation["current_issued"].append(5)
         source = ROOT / "docs/01.requirements/0003-security.md"
         reintroduced = source.read_text(encoding="utf-8").replace(
-            "\n## Non-functional Requirements\n",
+            "\n### Quality Requirements\n",
             (
                 "\n| REQ-0003-FR-0005 | Reintroduced History | A retired "
                 "number must remain unavailable. |\n\n"
-                "## Non-functional Requirements\n"
+                "### Quality Requirements\n"
             ),
             1,
         )

@@ -1,17 +1,20 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
 ---
+
 # Operational Readiness Closure Requirements
 
 ## Overview
+
+### Problem and Outcome
 
 Static documents and Compose rendering alone cannot prove startup/readiness,
 artifact trust, or promotion/rollback behavior. This
@@ -19,12 +22,28 @@ requirement reproduces the three behaviors in a locally isolated environment
 using sample artifacts and synthetic state owned by the repository, and
 records the actually verified scope without overstatement.
 
+### Stakeholders
+
+- The maintainer must distinguish implemented readiness behavior from
+  unapproved remote operations.
+- The operator needs a guarantee that the rehearsal does not change another
+  Docker project or real data.
+- The security reviewer must confirm that supply-chain verdicts are bound to
+  the same image digest.
+- The release reviewer must reproduce that a failed canary is not promoted
+  and is rolled back to the previous digest.
+
+The owner, @buenhyden, writes, reviews and accepts this package.
+
 ## Scope
 
-### Constraints
+### In Scope
 
 - Scope is limited to local isolated Compose readiness, sample-service supply
   chain, and local promotion/rollback.
+
+### Constraints and Exclusions
+
 - Production/shared runtime, real data, registry publication, OIDC signing,
   and remote GitHub configuration and deployment are out of scope.
 - Automatic cleanup is allowed only for precisely identified task-owned
@@ -59,18 +78,7 @@ records the actually verified scope without overstatement.
   process-local temporary storage; durable evidence must contain only a
   secret-scrubbed summary and immutable subject identity.
 
-### Stakeholders and User Needs
-
-- The maintainer must distinguish implemented readiness behavior from
-  unapproved remote operations.
-- The operator needs a guarantee that the rehearsal does not change another
-  Docker project or real data.
-- The security reviewer must confirm that supply-chain verdicts are bound to
-  the same image digest.
-- The release reviewer must reproduce that a failed canary is not promoted
-  and is rolled back to the previous digest.
-
-### Non-functional Requirements
+### Quality Requirements
 
 - **REQ-0025-NFR-0011 — Isolation**: Every resource must be identified by a
   task-owned identity, and cleanup must apply only to that resource; measure: every cleanup targets only task-owned identities.
@@ -90,6 +98,8 @@ records the actually verified scope without overstatement.
 
 ## Acceptance Criteria
 
+### Acceptance Conditions
+
 - The core readiness rehearsal verifies readiness, timeout, and cleanup
   boundaries.
 - The supply-chain verification and policy check produce digest-bound
@@ -99,20 +109,27 @@ records the actually verified scope without overstatement.
 - Related focused tests and the registered full profile pass, and Task
   evidence contains no secrets or raw runtime logs.
 
-## Related Documents
+### Verification Method
 
-### Traceability
+Each condition is judged by running the focused tests and the registered full profile, and the evidence names only the scope actually verified. No current Spec Package cites REQ-0025; a Spec that implements it records the evidence in its Task. The evidence is the command, scope, result, cleanup and review, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+
+## Traceability
+
+### Source and Constraints
+
+- **Retired**: REQ-0025-FR-0003 required a synthetic PostgreSQL 17 to 18
+  logical backup, restore, upgrade, and integrity rehearsal, implemented by
+  `rehearse-postgres-logical-upgrade.sh` and runbook RUN-0032. Both were
+  deleted on 2026-11-10: every HOME PostgreSQL service already runs major 18
+  and no later major image exists to rehearse against.
+
+### Downstream Links
 
 - **Architecture Description**: [AD-0028 Operational Readiness Closure](../02.architecture/descriptions/0028-operational-readiness-closure.md)
-- **Decision**: [ADR-0028 Local-Isolated Readiness Evidence](../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Implementation**: `scripts/operations/check-compose-core-readiness.sh`,
   `scripts/security/verify-sample-service-supply-chain.sh`,
   `scripts/validation/check-supply-chain-policy.py`,
   `scripts/operations/rehearse-sample-service-delivery.sh`
 - **Sample artifact**: `examples/sample-web-service/`
 - **Operations**: [Release management runbook](../05.operations/runbooks/10-platform-and-backup/0009-release-management.md)
-- **Retired**: REQ-0025-FR-0003 required a synthetic PostgreSQL 17 to 18
-  logical backup, restore, upgrade, and integrity rehearsal, implemented by
-  `rehearse-postgres-logical-upgrade.sh` and runbook RUN-0032. Both were
-  deleted on 2026-11-10: every HOME PostgreSQL service already runs major 18
-  and no later major image exists to rehearse against.
+- **Decision**: [ADR-0028 Local-Isolated Readiness Evidence](../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)

@@ -17,42 +17,60 @@ created: "{{CREATED}}"
 
 ## Overview
 
-{{PROBLEM_AND_GOALS}}
+### Problem and Outcome
+
+{{PROBLEM_AND_OUTCOME}}
+
+### Stakeholders
+
+{{STAKEHOLDERS}}
 
 ## Scope
 
-{{CONSTRAINTS}}
+### In Scope
 
-### Assumptions
+{{IN_SCOPE}}
 
-{{ASSUMPTIONS}}
+### Constraints and Exclusions
 
-### Risks
+<!-- Author prompt: State constraints, assumptions, risks and non-goals. Write "None" with a reason when one does not apply. -->
 
-{{RISKS}}
+{{CONSTRAINTS_AND_EXCLUSIONS}}
 
 ## Requirements
 
 ### Functional Requirements
 
+<!-- Author prompt: Give each requirement its rationale and priority. Write an interface need as a functional requirement; no IF identity is issued. -->
+
 - **REQ-####-FR-####**: {{FUNCTIONAL_REQUIREMENT}}
 
-### Stakeholders and User Needs
+### Quality Requirements
 
-{{STAKEHOLDERS_AND_USER_NEEDS}}
+<!-- Author prompt: Include this section only when a quality requirement applies; otherwise delete it. -->
 
-### Non-functional Requirements
-
-- **REQ-####-NFR-#### — {{QUALITY_CHARACTERISTIC}}**: {{NON_FUNCTIONAL_REQUIREMENT}}; measure: {{MEASURE_UNIT_ENVIRONMENT_AND_ACCEPTANCE}}
-
-### Interface Requirements
-
-- **REQ-####-IF-####**: {{SOLUTION_INDEPENDENT_INTERFACE_REQUIREMENT}}
+- **REQ-####-NFR-#### — {{QUALITY_CHARACTERISTIC}}**: {{QUALITY_REQUIREMENT}}; measure: {{MEASURE_UNIT_ENVIRONMENT_AND_ACCEPTANCE}}
 
 ## Acceptance Criteria
 
-{{ACCEPTANCE_CRITERIA}}
+### Acceptance Conditions
 
-## Related Documents
+{{ACCEPTANCE_CONDITIONS}}
 
-{{ARCHITECTURE_AND_SPEC_LINKS}}
+### Verification Method
+
+<!-- Author prompt: Name how each condition is judged, the evidence it needs and who decides. -->
+
+{{VERIFICATION_METHOD}}
+
+## Traceability
+
+### Source and Constraints
+
+{{SOURCES_AND_GOVERNING_CONSTRAINTS}}
+
+### Downstream Links
+
+<!-- Author prompt: Link only existing architecture, Spec and verification documents. -->
+
+{{ARCHITECTURE_SPEC_AND_VERIFICATION_LINKS}}

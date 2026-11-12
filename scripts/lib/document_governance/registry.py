@@ -60,12 +60,14 @@ _TRUSTED_CHILD_ID = re.compile(
 )
 _TRUSTED_REQUIREMENT_SECTION = re.compile(
     r"(?ms)^##(?P<h3>#)? "
-    r"(?P<name>Functional Requirements|Non-functional Requirements|"
-    r"Interface Requirements)\n(?P<body>.*?)(?=^(?(h3)#{1,3}|#{1,2}) |\Z)"
+    r"(?P<name>Functional Requirements|Quality Requirements|"
+    r"Non-functional Requirements|Interface Requirements)\n"
+    r"(?P<body>.*?)(?=^(?(h3)#{1,3}|#{1,2}) |\Z)"
 )
 _REQUIREMENT_PARENT_SECTION = re.compile(r"(?m)^## (?!#)(?P<name>[^\n]+)$")
 _TRUSTED_SECTION_KIND = {
     "Functional Requirements": "FR",
+    "Quality Requirements": "NFR",
     "Non-functional Requirements": "NFR",
     "Interface Requirements": "IF",
 }
@@ -77,6 +79,12 @@ def _trusted_requirement_sections(text: str) -> tuple[re.Match[str], ...]:
     sections: list[re.Match[str]] = []
     parents = tuple(_REQUIREMENT_PARENT_SECTION.finditer(text))
     for section in _TRUSTED_REQUIREMENT_SECTION.finditer(text):
+        if (
+            section.group("h3") is None
+            and section.group("name") == "Quality Requirements"
+        ):
+            # Only the current H3 form names this group.
+            continue
         if section.group("h3") is not None:
             preceding = tuple(
                 parent for parent in parents if parent.start() < section.start()

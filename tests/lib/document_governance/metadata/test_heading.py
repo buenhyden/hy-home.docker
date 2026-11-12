@@ -38,7 +38,7 @@ class CurrentBodyContractTests(unittest.TestCase):
 
     def test_current_role_templates_use_r10_ordered_sections(self) -> None:
         expected = {
-            "requirements-package": "Overview|Scope|Requirements|Acceptance Criteria|Related Documents",
+            "requirements-package": "Overview|Scope|Requirements|Acceptance Criteria|Traceability",
             "architecture-description": "Overview|Scope|Structure|Runtime and Deployment|Quality and Risks|Related Documents",
             "adr": "Context|Decision Drivers|Options|Decision|Consequences|Related Documents",
             "spec": "Overview|Scope|Contracts|Acceptance Criteria|Failure Conditions|Related Documents",
@@ -66,12 +66,13 @@ class CurrentBodyContractTests(unittest.TestCase):
                     [f"## {name}" for name in headings],
                     heading_module.extract_markdown_headings(source)[1],
                 )
+                optional = profile.get("optional_subsections") or {}
                 for parent, children in (
                     profile.get("required_subsections") or {}
                 ).items():
                     block = source.split(f"\n## {parent}\n", 1)[1].split("\n## ", 1)[0]
                     self.assertEqual(
-                        list(children),
+                        [*children, *optional.get(parent, ())],
                         [
                             line[4:]
                             for line in block.splitlines()
@@ -181,7 +182,12 @@ class CurrentBodyContractTests(unittest.TestCase):
             None,
         )
         self.assertEqual(
-            ["body-heading-missing", "template-body-token-in-target"],
+            [
+                "body-heading-forbidden",
+                "body-heading-missing",
+                "body-subheading-missing",
+                "template-body-token-in-target",
+            ],
             [item.code for item in findings],
         )
 
@@ -387,6 +393,29 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 self.assertIn(
                     "body-heading-forbidden", self._findings(profile_id, body)
                 )
+
+    def test_a_moved_role_rejects_its_old_form(self) -> None:
+        old_forms = {
+            "requirements-package": (
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Non-functional Requirements", "body-subheading-forbidden"),
+                ("### Interface Requirements", "body-subheading-forbidden"),
+            ),
+        }
+        for profile_id, cases in old_forms.items():
+            body, _ = self._conforming_body(profile_id)
+            for heading, code in cases:
+                with self.subTest(profile=profile_id, heading=heading):
+                    if heading.startswith("## "):
+                        old = body + f"\n{heading}\n\nFixture content.\n"
+                    else:
+                        old = body.replace(
+                            "\n## Acceptance Criteria\n",
+                            f"\n{heading}\n\nFixture content.\n\n"
+                            "## Acceptance Criteria\n",
+                            1,
+                        )
+                    self.assertIn(code, self._findings(profile_id, old))
 
     def test_a_repeated_section_is_reported(self) -> None:
         for profile_id in sorted(self.representatives):

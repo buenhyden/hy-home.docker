@@ -1,19 +1,20 @@
 ---
 title: "Messaging Tier (05-messaging) Requirements"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "requirements"
 artifact_id: "REQ-0006"
 created: "2026-03-26"
 ---
+
 # Messaging Tier (05-messaging) Requirements
 
 ## Overview
 
-### Problem and Goals
+### Problem and Outcome
 
 Direct calls between components do not scale and risk data loss and reduced
 availability. The messaging tier (`05-messaging`) of `hy-home.docker` lowers
@@ -22,13 +23,27 @@ management, a connector boundary, an HTTP access path and metrics. Streaming
 SQL processing on top of Kafka is an optional capability of the lakehouse LAB
 (SPEC-0262), not of this tier.
 
+### Stakeholders
+
+- **Backend developers**: implement asynchronous patterns and event sourcing,
+  for example by collecting system logs and events for analysis and archival.
+- **Data engineers**: use topics, schema management and connectors as the
+  pipeline input boundary and validate event formats.
+- **SREs**: manage broker availability, retention and recovery.
+- **Agents**: detect events and drive automated responses.
+
+The owner, @buenhyden, writes, reviews and accepts this package.
+
 ## Scope
 
-### Constraints
+### In Scope
 
-- **In Scope**: A single Kafka broker in KRaft mode with replication factor 1,
+- A single Kafka broker in KRaft mode with replication factor 1,
   schema management, the connector boundary, the HTTP access path, the
   management UI, and broker and consumer metrics.
+
+### Constraints and Exclusions
+
 - **Owned elsewhere**: The three-broker training topology is the
   `kafka-cluster` LAB.
 - **Out of Scope**: Producer and consumer logic inside individual services,
@@ -38,12 +53,12 @@ SQL processing on top of Kafka is an optional capability of the lakehouse LAB
   registration and consumer group status. It must not reset the cluster or
   change a retention period without approval.
 
-### Assumptions
+**Assumptions.**
 
 Messaging services communicate on a dedicated internal network and keep their
 data on dedicated persistent storage.
 
-### Risks
+**Risks.**
 
 - Recovery after a broker failure is not automatic with a single broker and
   replication factor 1.
@@ -63,24 +78,9 @@ data on dedicated persistent storage.
 FR number 0002 (AMQP 0-9-1 task queue on RabbitMQ) is retired because no
 RabbitMQ broker is implemented, and is not reused.
 
-### Stakeholders and User Needs
-
-- **Backend developers**: implement asynchronous patterns and event sourcing,
-  for example by collecting system logs and events for analysis and archival.
-- **Data engineers**: use topics, schema management and connectors as the
-  pipeline input boundary and validate event formats.
-- **SREs**: manage broker availability, retention and recovery.
-- **Agents**: detect events and drive automated responses.
-
-### Non-functional Requirements
-
-No separately numbered non-functional requirement is defined.
-
-### Interface Requirements
-
-No separately numbered solution-independent interface requirement is defined.
-
 ## Acceptance Criteria
+
+### Acceptance Conditions
 
 - **REQ-0006-FR-0001**: The root model declares exactly one KRaft broker with
   replication factor 1 and renders without error when the messaging profile is
@@ -93,11 +93,18 @@ No separately numbered solution-independent interface requirement is defined.
   broker and consumer metrics are declared as observability scrape targets.
   Live scrape success is claimed only with runtime evidence.
 
-## Related Documents
+### Verification Method
 
-### Traceability
+Each condition is judged by reviewing the rendered Compose configuration for the broker, schema, UI and metrics declarations it names, and live scrape success is judged by a runtime observation. No current Spec Package cites REQ-0006; a Spec that implements it records the evidence in its Task. The evidence is the rendered-configuration review and the scrape observation, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+
+## Traceability
+
+### Source and Constraints
+
+- **Retired requirement REQ-0017** (messaging optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the messaging operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.
+
+### Downstream Links
 
 - **Architecture Description**: [Messaging architecture](../02.architecture/descriptions/0005-messaging-architecture.md)
 - **ADR**: [ADR-0052 Kafka as the Only Messaging Broker](../02.architecture/decisions/0052-kafka-only-messaging-broker.md) (historical; RabbitMQ is not implemented)
 - **Retired domain Spec SPEC-0006** (messaging): replaced by the messaging guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
-- **Retired requirement REQ-0017** (messaging optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the messaging operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

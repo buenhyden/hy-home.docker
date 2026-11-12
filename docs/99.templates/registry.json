@@ -595,28 +595,41 @@
         "Scope",
         "Requirements",
         "Acceptance Criteria",
-        "Related Documents"
+        "Traceability"
       ],
-      "optional_sections": [
-        "Quality Requirements",
-        "Dependencies",
-        "Problem and Goals",
-        "Stakeholders and User Needs",
-        "Functional Requirements",
-        "Non-functional Requirements",
-        "Constraints",
-        "Traceability",
-        "Assumptions",
-        "Interface Requirements",
-        "Risks"
-      ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Overview": [
+          "Problem and Outcome",
+          "Stakeholders"
+        ],
+        "Scope": [
+          "In Scope",
+          "Constraints and Exclusions"
+        ],
+        "Requirements": [
+          "Functional Requirements"
+        ],
+        "Acceptance Criteria": [
+          "Acceptance Conditions",
+          "Verification Method"
+        ],
+        "Traceability": [
+          "Source and Constraints",
+          "Downstream Links"
+        ]
+      },
+      "optional_subsections": {
+        "Requirements": [
+          "Quality Requirements"
+        ]
+      },
       "lifecycle_id": "requirement",
       "traceability": {
         "allowed_parent_profiles": [],
         "internal_id_spaces": [
           "FR",
-          "NFR",
-          "IF"
+          "NFR"
         ]
       },
       "exceptions": [],

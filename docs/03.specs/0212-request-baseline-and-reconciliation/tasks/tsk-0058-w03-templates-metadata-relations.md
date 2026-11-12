@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -128,6 +128,65 @@ negative cases in memory. The controller re-ran each deciding probe.
 - Tests: an unquoted-date rejection, a Registry rule that every sectioned
   profile declares order and content, a swapped and an emptied section per
   representative profile, and a parent cycle and a two-parent Plan.
+
+### v14.7 W03 run 2026-11-12
+
+Input: the v14.7 W03 prompt the owner pasted on 2026-11-12, read as data.
+Start point: `main` `0b1b2c6a1`, clean tree; work on branch
+`docs/w03-requirement-common-form`. The W00 handoffs H-04, H-06 and H-13 and
+the W02 handoff H-W02-2 are this run's inputs; H-07 (W04) moves with H-04.
+
+Inventory at `0b1b2c6a1`, by Registry profile: three roles already use
+`COMMON-DOC-FORM-1` 1.0.0 (incident, postmortem, folder AGENTS guide). The
+other 13 common roles cover about 700 documents: Requirement 18, Spec 22,
+Plan 22, Task 104 (54 terminal), ADR 30, Architecture 27, Guide 78, Runbook
+78, Policy 77 plus 32 governance policies and rules, Skill 24 and 233
+READMEs. Heading names are read by code in `requirements.py`,
+`registry.py`, `identity_history.py`, `spec_packages.py` and
+`operations_catalog.py`, and by the Registry `common` keys.
+
+Owner decisions on 2026-11-12, in this chat:
+
+| Question | Decision |
+| --- | --- |
+| The 54 terminal Tasks | Move them to the common form too; the terminal-body protection is lifted once, for the heading change only, and every recorded fact keeps its text |
+| Requirement interface and non-functional sections | Follow the requirement: non-functional items go under `Quality Requirements`; interface needs are written as functional requirements; no `IF` section or identity |
+| `Related Documents` | Follow the requirement: links move into each role's own sections; no extra heading |
+| Delivery | One role per change and pull request, small SDLC roles first, then operations, then READMEs |
+
+Role order: Requirement, Spec, Plan, ADR, Architecture, Task, Guide,
+Runbook, Policy, Skill, READMEs. Each role changes its Registry profile,
+template, parsers, tests and current documents together.
+
+#### Requirement role 2026-11-12
+
+- Registry `requirements-package`: H2 Overview, Scope, Requirements,
+  Acceptance Criteria, Traceability with their required H3s, and the
+  optional `Quality Requirements` H3; the old optional sections are gone, so
+  the old form is rejected. `internal_id_spaces` drops `IF`: no current
+  package declares an `IF` item. The Registry `REQ-####.IF` identity spaces
+  stay, because identity history is append-only (their numbers are reserved,
+  none is current), and the parser still checks that each has nothing
+  current issued.
+- Template rewritten to the same headings.
+- `requirements.py` reads FR from `Functional Requirements` and NFR from
+  `Quality Requirements`, and rejects an old `Non-functional Requirements` or
+  `Interface Requirements` section instead of skipping it. `registry.py`
+  accepts `Quality Requirements` only as an H3 under `Requirements` and keeps
+  the historical names for baseline revisions.
+- The hook rule `enforce-docs-templates` and the hook message in
+  `agent-event-hook.sh` no longer demand `## Related Documents`; they point to
+  the link section each template declares.
+- The 18 packages are restructured by three `doc-writer` agents. Every REQ
+  identity, item line and link target from `0b1b2c6a1` is kept; the only
+  dropped lines are the "none issued" sentences of the empty NFR and
+  interface sections. `Verification Method` is new text in each package;
+  `In Scope` is new for 0024, 0026 and 0027, whose old Scope held only
+  constraints.
+- The documentation protocol, the Stage 01 guide and README now say an
+  interface need is a functional requirement and no `IF` identity is issued.
+- Tests: the fixtures use the new form; a new test rejects the old
+  `Related Documents` H2 and the old NFR and interface H3s.
 
 ## Evidence
 

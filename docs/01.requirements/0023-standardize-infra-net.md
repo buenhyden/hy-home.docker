@@ -1,6 +1,6 @@
 ---
 title: "Compose Network Segmentation Requirements"
-version: "1.4.1"
+version: "1.4.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -14,25 +14,43 @@ created: "2026-04-01"
 
 ## Overview
 
+### Problem and Outcome
+
 All services once shared one `infra_net` mesh and could reach each other, and
 some had no declared network or an ambiguous subnet. That made inter-service
 communication hard to reason about and to troubleshoot. This package requires
 that the HOME composition split network membership by traffic flow and give
 each repository-owned network a predictable address block.
 
+### Stakeholders
+
+- **Infrastructure engineer**: needs each service limited to the peers it uses,
+  to keep the structure clear and resolve communication issues.
+- **DevOps engineer**: needs a standard network and a predictable address block
+  when adding a service.
+- **Operator**: needs removed external integrations (k3d) kept off every
+  service.
+
+The owner, @buenhyden, writes, reviews and accepts this package.
+
 ## Scope
 
-- **In scope**: every service in the root composition and its included service
+### In Scope
+
+- Every service in the root composition and its included service
   files; the subnets of repository-owned networks.
+
+### Constraints and Exclusions
+
 - **Out of scope**: networks the repository does not own (for example
   `project_net`); each LAB's own isolated network, which follows the LAB
   isolation requirement in REQ-0012; service logic inside containers.
 
-### Assumptions
+**Assumptions.**
 
 - The root composition merges every included service file into one model.
 
-### Risks
+**Risks.**
 
 - A manually assigned address can collide when a subnet changes.
 
@@ -59,24 +77,9 @@ each repository-owned network a predictable address block.
   `:5001`, reachable by every `obs_net` peer, and the SeaweedFS master, volume
   and filer metrics on `9324` to `9326`, reachable by `seaweed_internal` peers.
 
-### Stakeholders and User Needs
-
-- **Infrastructure engineer**: needs each service limited to the peers it uses,
-  to keep the structure clear and resolve communication issues.
-- **DevOps engineer**: needs a standard network and a predictable address block
-  when adding a service.
-- **Operator**: needs removed external integrations (k3d) kept off every
-  service.
-
-### Non-functional Requirements
-
-No numbered non-functional requirement is issued.
-
-### Interface Requirements
-
-No numbered interface requirement is issued.
-
 ## Acceptance Criteria
+
+### Acceptance Conditions
 
 - **REQ-0023-FR-0001**: In the rendered root composition, each service's
   networks match its declared traffic flow.
@@ -90,7 +93,17 @@ No numbered interface requirement is issued.
   listener's service and its declared consumers, and a peer outside that
   network is refused. The recorded exceptions are excluded.
 
-## Related Documents
+### Verification Method
+
+Each condition is judged by reviewing the rendered root composition, as the criteria state; the recorded exceptions in REQ-0023-FR-0004 are excluded from that judgment. SPEC-0255 cites REQ-0023 in its body only; its Task evidence rows record the review result. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+
+## Traceability
+
+### Source and Constraints
+
+This package records the owner's requirements for standardized infrastructure networks; no upstream document governs it.
+
+### Downstream Links
 
 - **Architecture Description**: [Compose network segmentation](../02.architecture/descriptions/0026-standardize-infra-net.md)
 - **ADR**: [ADR-0055 Segmented Per-Flow Networks](../02.architecture/decisions/0055-segmented-per-flow-networks.md)

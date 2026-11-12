@@ -1,10 +1,10 @@
 ---
 title: "Security Tier (03-security) Requirements"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "requirements"
 artifact_id: "REQ-0003"
 created: "2026-03-26"
@@ -14,6 +14,8 @@ created: "2026-03-26"
 
 ## Overview
 
+### Problem and Outcome
+
 The `03-security` tier stores eligible consumer secrets centrally and delivers
 them to services as rendered files. When secrets are scattered across files,
 environment variables and manual steps, exposure risk and audit gaps grow.
@@ -22,22 +24,38 @@ access must be auditable, and recovery must not depend on the service being
 recovered: bootstrap, recovery and independent backup credentials keep their
 separate custody.
 
+### Stakeholders
+
+- **Security administrator**: sets fine-grained access policies, holds unseal
+  custody and reviews audit logs.
+- **Infrastructure engineer**: keeps the server available and grants each
+  service only the secret paths it needs.
+- **Service developer**: receives secrets as rendered files at startup instead
+  of environment variables, with no secret-handling code in the service.
+
+The owner, @buenhyden, writes, reviews and accepts this package.
+
 ## Scope
 
-- **In scope**: the secrets server and its storage, the delivery agent that
+### In Scope
+
+- The secrets server and its storage, the delivery agent that
   renders secrets into files for consumers, access policies, unseal and recovery
   custody, and audit logging.
+
+### Constraints and Exclusions
+
 - **Out of scope**: managing the external identity provider (Auth tier) and
   issuing browser-facing certificates (Gateway tier).
 
-### Assumptions
+**Assumptions.**
 
 - Machine consumers authenticate with a role-scoped machine identity; operators
   authenticate through the central identity provider.
 - Per-service secret paths and their access policies are declared in source and
   reviewed before change.
 
-### Risks
+**Risks.**
 
 - The server runs as a single node: if it is down or sealed, secret delivery to
   new or restarting consumers stops.
@@ -60,16 +78,7 @@ separate custody.
 - **REQ-0003-FR-0004**: Every request to the secrets server must be written to
   an audit log that does not contain secret values in plaintext.
 
-### Stakeholders and User Needs
-
-- **Security administrator**: sets fine-grained access policies, holds unseal
-  custody and reviews audit logs.
-- **Infrastructure engineer**: keeps the server available and grants each
-  service only the secret paths it needs.
-- **Service developer**: receives secrets as rendered files at startup instead
-  of environment variables, with no secret-handling code in the service.
-
-### Non-functional Requirements
+### Quality Requirements
 
 - **REQ-0003-NFR-0005 — Recoverability**: the impact of a single-node failure
   must be detectable, and the stored secrets must be restorable from a snapshot
@@ -87,12 +96,9 @@ separate custody.
   sets before measurement. No global threshold or caching guarantee is made;
   no baseline is recorded.
 
-### Interface Requirements
-
-No separately numbered solution-independent external interface requirement is
-defined.
-
 ## Acceptance Criteria
+
+### Acceptance Conditions
 
 These are local acceptance measures that apply ISO/IEC 25010, 25023 and 25030
 concepts; they are not a certification claim.
@@ -110,19 +116,28 @@ concepts; they are not a certification claim.
   required rotation and failure detections succeed; a rotation not yet observed
   stays pending in the service Task.
 
-## Related Documents
+### Verification Method
 
-- [Security architecture description](../02.architecture/descriptions/0003-security-architecture.md)
-- [ADR-0050: OpenBao as secrets manager](../02.architecture/decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0003
-- [SPEC-0204: Service integration and security](../03.specs/0204-service-integration-security-and-operations/spec.md)
-- [OpenBao policy](../05.operations/policies/04-security-and-secrets/0085-openbao.md)
-- [OpenBao runbook](../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+Each condition is judged by reviewing the rendered output, the positive and negative checks, the audit log and the measures it names, using synthetic inputs and no real credentials. SPEC-0245 lists REQ-0003 as a parent and SPEC-0212 cites it in its body; their Task evidence rows record each result. Thresholds the criteria leave open are set by the operator or consumer owner before measurement. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+
+## Traceability
+
+### Source and Constraints
+
 - Quality references: [ISO/IEC 25010](https://www.iso.org/standard/78176.html),
   [ISO/IEC 25023](https://www.iso.org/standard/35747.html),
   [ISO/IEC 25030](https://www.iso.org/standard/72116.html).
-- Retired domain Spec SPEC-0003 (security): replaced by the security guides,
-  policies and runbooks under `docs/05.operations/`.
 - Retired requirement REQ-0015 (security optimization hardening): retired under
   SPEC-0169 because every clause named an implementation artifact; its
   implementation contract lives in the security operations policies and its
   documentation traceability clause moved to REQ-0026-FR-0011.
+
+### Downstream Links
+
+- [Security architecture description](../02.architecture/descriptions/0003-security-architecture.md)
+- [SPEC-0204: Service integration and security](../03.specs/0204-service-integration-security-and-operations/spec.md)
+- [OpenBao policy](../05.operations/policies/04-security-and-secrets/0085-openbao.md)
+- [OpenBao runbook](../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+- [ADR-0050: OpenBao as secrets manager](../02.architecture/decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0003
+- Retired domain Spec SPEC-0003 (security): replaced by the security guides,
+  policies and runbooks under `docs/05.operations/`.
