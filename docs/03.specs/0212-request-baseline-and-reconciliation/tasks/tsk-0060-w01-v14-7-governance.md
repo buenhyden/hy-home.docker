@@ -1,6 +1,6 @@
 ---
 title: "W01 v14.7 Governance Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -126,6 +126,20 @@ here; cross-repository adoption stays out of scope (D-04).
   No workflow declares `merge_group`; the remote merge queue setting is
   unverified, and the trigger is added only together with an approved queue.
 
+A second re-check found three rules that lived only in this Task or in a
+README, which the prompt forbids (one owner per rule):
+
+- `approval-boundaries.md` (1.4.1 to 1.5.0) now defines draft, approved and
+  adopted, partial adoption, and the fields an adoption record names.
+- `documentation-protocol.md` (3.14.0 to 3.15.0), Role-Specific Authoring, now
+  owns the common role form: `COMMON-DOC-FORM-1` 1.0.0, one change per role
+  including completed documents, the old form rejected, and conditional
+  extensions only with condition, owner, check, review date and removal
+  criterion. The templates README (2.4.0 to 2.5.0) now points to it as a
+  summary.
+- `quality-standards.md` (1.10.0 to 1.11.0) names the `QA-STAGES-1` 1.0.0
+  revision it implements.
+
 The delivery phase matrix itself is KEEP. Implementing the Git-stage cells is
 W06's (TSK-0059 H-09).
 
@@ -147,8 +161,8 @@ is not read here (D-04).
 | Contract | Revision (package file, SHA-256 prefix) | Local scope | State here | Consumer version | Migration and rollback |
 | --- | --- | --- | --- | --- | --- |
 | Repository Vocabulary | `repository-vocabulary` v14.5 (`REPOSITORY-VOCABULARY.json`, `b03ae3c00a42`) | `.agents/knowledge/glossary.md`, `governance-vocabulary` profile | Approved; implemented and checked on this branch, not yet on `main` | Glossary `Contract Version` column reads v14.5 | Done in `07f1943c6`, `8903eeaf2`, `4ec4d7182`; rollback is a revert of those commits |
-| Common section form | `COMMON-DOC-FORM-1` 1.0.0 (`COMMON-SECTION-CONTRACT.json`, `4f79183d59c3`) | 16 common roles | Approved; 3 of 16 roles implemented (Incident, Postmortem, AGENTS) | Not recorded in the Registry (H-W01-2) | Per role in one commit, no old form; remaining roles TSK-0059 H-04 |
-| Stage QA | `QA-STAGES-1` 1.0.0 (`STAGE-QA-MATRIX.json`, `12d8962c96c7`) | `quality-standards.md`, workflows and hooks | Approved; policy meanings implemented, Git-stage cells not | Not recorded in the policy (H-W01-2) | Cells are TSK-0059 H-09 (W06) |
+| Common section form | `COMMON-DOC-FORM-1` 1.0.0 (`COMMON-SECTION-CONTRACT.json`, `4f79183d59c3`) | 16 common roles | Approved; 3 of 16 roles implemented (Incident, Postmortem, AGENTS) | Named in `documentation-protocol.md`; not in the Registry (H-W01-2) | Per role in one commit, no old form; remaining roles TSK-0059 H-04 |
+| Stage QA | `QA-STAGES-1` 1.0.0 (`STAGE-QA-MATRIX.json`, `12d8962c96c7`) | `quality-standards.md`, workflows and hooks | Approved; policy meanings implemented, Git-stage cells not | Named in `quality-standards.md` | Cells are TSK-0059 H-09 (W06) |
 | TemplateDefinition | v14.5 schema (`TEMPLATE-DEFINITION.schema.json`, `e490cf402419`) | Registry and templates | Approved; not implemented | None | TSK-0059 H-06 (W03) |
 | Template path | `Q-08` (`TEMPLATE-PATH-DECISION.json`, `7089347e62b1`) | `docs/99.templates/` | Adopted: approved in the prompt, path unchanged | N/A, a path decision | None |
 | Release document role removal | v14.7 direct requirement; no contract id | documentation protocol, Registry guards | Approved; partially adopted: policy and fixed-name guards, renamed profiles not yet rejected | N/A, no contract id | Wider guard TSK-0059 H-12 (W05) |
@@ -161,7 +175,7 @@ yet on `main`. No row is reported as adopted by another repository.
 | ID | Writer | Difference |
 | --- | --- | --- |
 | H-W01-1 | W05 | A negative test that a CI success, check result or role string is rejected as approval for a deployment or other protected operation |
-| H-W01-2 | W05 | An automated check that each consumer reads the adopted contract revision recorded here (QA-C01); the Registry and `quality-standards.md` do not yet name the revision they implement |
+| H-W01-2 | W05 | An automated check that each consumer reads the adopted contract revision recorded here (QA-C01); the Registry does not yet name the `COMMON-DOC-FORM-1` revision it implements |
 | H-W01-3 | W06 | Observe, read only, whether the remote branch protection enforces GOV-05 (one person's review is not two approvals), and record it |
 | H-W01-4 | W05 | Vocabulary violation fixtures: a merged PR read as Acceptance, an OPEN ID read as current state, and an approved Registry read as a KEEP exemption are each rejected |
 
