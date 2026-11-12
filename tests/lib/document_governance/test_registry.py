@@ -3687,3 +3687,33 @@ class RepositoryVocabularyProfileTests(unittest.TestCase):
                     "governance-knowledge",
                     classify_path(f".agents/knowledge/{name}", registry),
                 )
+
+
+class SubsectionRegistryTests(unittest.TestCase):
+    """SPEC-0212 TSK-0059: declared H3 sections must hang off declared H2s."""
+
+    def candidate(self, required: object, optional: object = None) -> dict:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        profile = next(item for item in raw["profiles"] if item["id"] == "incident")
+        profile["required_subsections"] = required
+        if optional is not None:
+            profile["optional_subsections"] = optional
+        return raw
+
+    def codes(self, raw: dict) -> set[str]:
+        return {finding.code for finding in validate_registry(raw)}
+
+    def test_subsections_of_declared_sections_are_valid(self) -> None:
+        raw = self.candidate({"Impact": ["Scope"]}, {"Impact": ["Notes"]})
+        self.assertEqual(set(), self.codes(raw))
+
+    def test_invalid_subsection_declarations_are_rejected(self) -> None:
+        self.assertIn(
+            "profile-subsection-unknown",
+            self.codes(self.candidate({"Not A Section": ["Scope"]})),
+        )
+        self.assertIn(
+            "profile-contract-overlap",
+            self.codes(self.candidate({"Impact": ["Scope"]}, {"Impact": ["Scope"]})),
+        )
+        self.assertTrue(self.codes(self.candidate({"Impact": "Scope"})))

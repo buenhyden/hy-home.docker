@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from typing import ClassVar
 from unittest.mock import patch
 
 from jsonschema import Draft202012Validator
@@ -1934,3 +1935,63 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
             },
         )
         self.assertFalse(hasattr(contract, "_CHANGED_ONLY_BODY_CODES"))
+
+
+class SubsectionContractTests(unittest.TestCase):
+    """SPEC-0212 TSK-0059: a profile can declare the H3 sections of each H2."""
+
+    PROFILE: ClassVar[dict[str, object]] = {
+        "required_sections": ("Alpha", "Beta"),
+        "ordered_sections": True,
+        "nonempty_sections": True,
+        "required_subsections": {"Alpha": ("First", "Second")},
+        "optional_subsections": {"Alpha": ("Extra",)},
+    }
+    VALID = (
+        "# Title\n\n## Alpha\n\n### First\n\nOne.\n\n### Second\n\nTwo.\n\n"
+        "## Beta\n\nThree.\n"
+    )
+
+    def record(self) -> object:
+        return metadata.Record(
+            pathlib.Path("docs/01.requirements/0001-body-fixture.md"),
+            {"profile_id": "fixture", "status": "active"},
+            "fixture",
+            frontmatter_present=True,
+        )
+
+    def codes(self, text: str) -> list[str]:
+        return [
+            finding.code
+            for finding in heading_module._registered_section_findings(
+                self.record(), text, self.PROFILE
+            )
+        ]
+
+    def test_declared_subsections_pass(self) -> None:
+        self.assertEqual([], self.codes(self.VALID))
+        optional = self.VALID.replace("## Beta", "### Extra\n\nOptional.\n\n## Beta")
+        self.assertEqual([], self.codes(optional))
+
+    def test_subsection_violations_are_reported(self) -> None:
+        cases = {
+            "body-subheading-missing": self.VALID.replace("### Second\n\nTwo.\n\n", ""),
+            "body-subheading-order": self.VALID.replace(
+                "### First\n\nOne.\n\n### Second\n\nTwo.",
+                "### Second\n\nTwo.\n\n### First\n\nOne.",
+            ),
+            "body-subheading-forbidden": self.VALID.replace(
+                "## Beta", "### Stray\n\nNo.\n\n## Beta"
+            ),
+            "body-subheading-duplicate": self.VALID.replace(
+                "## Beta", "### First\n\nAgain.\n\n## Beta"
+            ),
+            "body-section-placeholder": self.VALID.replace("One.", "N/A"),
+        }
+        for code, text in cases.items():
+            with self.subTest(code=code):
+                self.assertIn(code, self.codes(text))
+
+    def test_fenced_subheading_does_not_count(self) -> None:
+        fenced = self.VALID.replace("### Second\n\nTwo.", "```text\n### Second\n```")
+        self.assertIn("body-subheading-missing", self.codes(fenced))
