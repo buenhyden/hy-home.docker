@@ -281,8 +281,8 @@ evidence; surrounding instructions remain current and validated normally.
   commands and evidence in the matching section. From then on the old form is
   rejected for that role, as is a section body that is only TODO, TBD, N/A or
   `-`; an inapplicable section says why. A role not yet moved keeps its
-  `SDLC-COMMON-r10-local-v1` H2 sections until it moves, and SPEC-0212
-  TSK-0059 records which roles have moved. A product difference from the form
+  `SDLC-COMMON-r10-local-v1` H2 sections until it moves. A role has moved
+  when its Registry profile declares `required_subsections`. A product difference from the form
   is an Exception under [quality standards](quality-standards.md), with its
   approved condition, scope, reason, end or review condition and verification.
 - A Requirement Package combines PRD, SRS, and implementation-independent
