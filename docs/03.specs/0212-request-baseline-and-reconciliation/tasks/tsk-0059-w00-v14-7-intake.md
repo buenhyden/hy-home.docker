@@ -1,6 +1,6 @@
 ---
 title: "W00 v14.7 Intake Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -306,6 +306,80 @@ No source is a change candidate: four are adopted, and the rest add nothing
 this repository lacks or are out of scope. A source informs a choice here and
 never stands in for the owner's authority.
 
+### W00 follow-up correction 2026-11-12
+
+The owner sent a W00 follow-up prompt on 2026-11-12. It asks for the
+historical audit IDs to be judged apart from product state, for three
+wordings to be narrowed, and for each real residual to sit with its existing
+owner. It runs at the same baseline: `origin/main` `4cd25b95b`, this branch
+at `36fe501a1`, clean tree. The earlier rows of this Task, which back the
+accepted criterion 112, stay unchanged; this section is the current reading.
+
+Wording corrections:
+
+- OPEN-04 is BLOCKED_EVIDENCE only for the direct byte comparison of the two
+  historical originals. No current document, Compose file, workflow or archive
+  step reads them (`git grep` finds no consumer of WMC-20261110-03; the
+  `20261102` hits are unrelated dated paths). It blocks no product work and
+  asks no one to upload anything.
+- OPEN-08, 10 and 13 were not inspected by this W00 run. That is neither a
+  failure, nor a wait on the owner, nor completion. Each is linked below to
+  its existing owner Task.
+- OPEN-01 and 02 are closed by the owner's supersession decision, not by a
+  review. No independent review of the 1,250 lines or 14,028 pairs was done,
+  and no per-workspace acceptance of those numbers is needed.
+
+#### Historical audit IDs
+
+| ID | Historical meaning | Checked here | Existing decision | This W00 scope | Current product impact | Current owner | Verdict | Next action | Sole blocking scope |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| OPEN-01 | Semantic atomization of the 1,250 original lines | Original SHA `dc348e7f`; TSK-0053 trace section; owner answer 2026-11-12 | Superseded by the 106-ID set and per-ID assessments | Lineage only | None | TSK-0053, as history | SUPERSEDED | None | None |
+| OPEN-02 | Judgment of 14,028 relation candidates | Same; TSK-0030 covers a different set | Same decision | Lineage only | None | TSK-0053, as history | SUPERSEDED | None | None |
+| OPEN-03 | Current state of 208 legacy work packages | 52 Docker rows mapped to issued CR IDs in TSK-0053 | None needed | Trace | Each package's residual stays with its Task | Those Tasks | CLOSED_BY_EVIDENCE (trace) | None | None |
+| OPEN-04 | Byte comparison of WMC-20261110-03 and the 20261102 v4 original | Workspace and package searched; no copy, no consumer | None | Byte comparison | None | None | BLOCKED_EVIDENCE | Compare only if those exact bytes are supplied | The two-file byte comparison |
+| OPEN-05 | Retrieval of the LambdaDB article | Direct fetch succeeded 2026-11-12 (DS-03) | Not adopted | Retrieval and adoption check | None | None | NOT_APPLICABLE | None | None |
+| OPEN-06 | Upstream code, license and 72 perspectives | DS-01 to DS-12 review; SillyMemory AGPL-3.0 | Not adopted | Six-perspective review | None | None | NOT_APPLICABLE | A future adoption runs its own review | None |
+| OPEN-07 | Local workspace inventory | This Task's read denominator | None needed | W00-selected surfaces | None | TSK-0059 | CLOSED_BY_EVIDENCE (W00 scope) | None | None |
+| OPEN-08 | Operations, native, cluster and recovery observation | Owner Tasks' acceptance rows | None at W00 | Not inspected | Yes, see residuals O-1 to O-5 | TSK-0047, 0048, 0054, 0055, SPEC-0264, SPEC-0270 | UNVERIFIED (not inspected here) | W10 per residual | Each named operation only |
+| OPEN-09 | QA conforms to contracts | Inventory of 2026-11-12 | None | Inventory | H-05 done; H-08, H-12 open | No Task yet; W05 issues one | RESIDUAL_CONFIRMED | W05 | Those checks only |
+| OPEN-10 | Docker remote changes applied locally | TSK-0047, TSK-0048 texts | Owner holds per Task | Not inspected beyond Task text | Yes, see O-1 to O-3 | TSK-0047, TSK-0048 | UNVERIFIED (not inspected here) | W10 per residual | Each named recreate or window |
+| OPEN-11 | Active Tasks and manifest unit failures | SPEC-0248/0249 Resolves; SPEC-0204 TSK-0011 L1193 | None | Read | One questionable `Resolves` | No Task yet; W05 | RESIDUAL_CONFIRMED | W05 re-checks L1193 | That row only |
+| OPEN-12 | Supply-chain criteria 104, 105 | TSK-0052 acceptance rows | Pending, gates FAIL | Read | Yes | TSK-0052 | RESIDUAL_CONFIRMED | TSK-0052 | Its two criteria |
+| OPEN-13 | Required checks and trust boundary | `candidate-quality` SUCCESS on PRs 953-959; `main-protection.md:107-114` | None | Hosted rollup only | Missing, stale and wrong-App cases unexercised; ruleset not read back | No Task yet; W06 | UNVERIFIED (not inspected here) | W06 | Those enforcement cases |
+| OPEN-14 | Runner timeout cause | `tsk-0040-workspace-inventory.md:440-451` | TSK-0040 closed; fix left to CI work | Read | Full gate leaf times out | No Task yet; W06 | RESIDUAL_CONFIRMED | W06 read-only diagnosis | That leaf |
+
+#### Product residuals and current owners
+
+| ID | Residual | Current owner | Current state | Assigned to |
+| --- | --- | --- | --- | --- |
+| O-1 | HOME `kafka-connect`, `schema-registry` and `kafka-connect-data` still run after the CDC move to a LAB | TSK-0048 | Owner retirement approval pending (TSK-0048 L195-197) | W10 |
+| O-2 | `prometheus` recreate for the `flower` label and `flower` removal | TSK-0048 | Not run (TSK-0048 L218-219) | W10 |
+| O-3 | OpenBao r3 cutover; HOME still runs 2.7.1 r1 | TSK-0047 | 2026-11-11 window cancelled before any step; the next one needs an r4 image | W10 |
+| O-4 | Live readbacks: Hermes OTLP (108), `devops` brief (107), Codex folder-guide delivery (SPEC-0264 8), memory backup adoption (SPEC-0270 4) | TSK-0055, TSK-0054, SPEC-0264, SPEC-0270 | Pending in each Task | W10 |
+| O-5 | W02, W03 and hook follow-ups | TSK-0057 (110 pending), TSK-0058 (111 pending), SPEC-0264 (8 pending) | PR 955, 956 and 957 merged; their criteria are not accepted. Removed packages and checks stay removed | Their Tasks |
+
+For W10, each of O-1 to O-4 keeps its owner's approval boundary:
+
+- Approval: none is valid now. O-1 and O-2 wait for the owner. O-3 needs a new RUN-0105 window with an r4 image.
+- Target: the HOME Compose services named above.
+- Risks:
+  - O-1 and O-3 change stateful services.
+  - O-2 is a stateless recreate.
+- Read-only alternatives, available now:
+  - `docker compose ps`.
+  - The Prometheus target list.
+  - The image tags in use.
+- Rollback:
+  - O-1: keep the volume until removal is confirmed.
+  - O-2: the previous Compose revision.
+  - O-3: the RUN-0105 recovery path and the Raft snapshot from the daily backup.
+
+Nothing was started, recreated, read from `secrets/` or deployed by this
+follow-up.
+
+Branch note: this Task's corrections are on the local branch only and reach
+`main` only through a reviewed pull request.
+
 ### Read denominator
 
 | Surface | Discovered | Read | Not read |
@@ -361,9 +435,11 @@ Open, with owners:
 - H-04 (13 roles left), H-06, H-07 with the Task role, H-08, H-09, H-10 and H-12.
   H-01, H-02, H-03, H-05 and H-11 are done.
 - OPEN-09, 11, 12 and 14 (RESIDUAL_CONFIRMED).
-- OPEN-04 (BLOCKED_EVIDENCE).
-- OPEN-08, 10 and 13 (UNVERIFIED). OPEN-01 and 02 are SUPERSEDED; OPEN-05
-  and 06 are NOT_APPLICABLE.
+- OPEN-04: BLOCKED_EVIDENCE for the two-file byte comparison only; no product
+  work depends on it.
+- OPEN-08, 10 and 13: not inspected by this run; linked to their owners in
+  W00 follow-up correction 2026-11-12. OPEN-01 and 02 are SUPERSEDED;
+  OPEN-05 and 06 are NOT_APPLICABLE.
 
 ## Related Documents
 
