@@ -1027,7 +1027,6 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
         allowed = {
             "source_receipts_required",
             "source_identity",
-            "source_missing",
             "source_mismatch",
             "source_time",
         }
