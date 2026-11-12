@@ -193,8 +193,9 @@ the v14.7 W00 intake, and sets the rule for every conflict the intake finds:
 where an existing decision conflicts with the current requirement, the current
 requirement wins. That supersedes the H2-retention part of the criterion 111
 decision above; W03 migrates the Registry headings to the common H2 and H3
-section contract. The intake records evidence and handoffs and changes only
-current guidance that conflicts with the current requirement.
+section contract. The intake records evidence and handoffs, and corrects the
+current guidance, Registry entries and glossary that conflict with the current
+requirement.
 
 ## Scope
 
@@ -838,8 +839,9 @@ hold, authorization and recovery requirements have been established.
      intake, the historical audit IDs OPEN-01 to OPEN-14, and the differences
      between the current Registry, policies, glossary, validators and hooks and
      the common target contracts. Each difference has one named writer and
-     receiving work unit; a conflict with the current requirement is corrected,
-     and an unrun or unverified item stays visible with its owner.
+     receiving work unit; a conflict with the current requirement is corrected
+     with a passing and a failing test where a contract changes, and an unrun
+     or unverified item stays visible with its owner.
 
 ## Failure Conditions
 

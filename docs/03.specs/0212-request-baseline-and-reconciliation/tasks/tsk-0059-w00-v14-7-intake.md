@@ -1,6 +1,6 @@
 ---
 title: "W00 v14.7 Intake Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -160,9 +160,9 @@ Registry `common` keys and the validators in the same commit.
 
 | ID | Writer | Exact difference |
 | --- | --- | --- |
-| H-01 | W01 | `.agents/knowledge/glossary.md` has H2 Overview, Scope, Rules, Evidence, Related Documents and columns Term \| Meaning here \| Rule owner. The target is H2 Purpose, Scope, Normative Language, Repository Vocabulary, Local Extensions, Maintenance, References, with columns Term ID to Contract Version. Of the 33 target terms, 20 are absent, 8 narrower, 3 different and 2 the same. The 28 current terms with no target become Local Extensions |
-| H-02 | W01 | Competing meanings. Acceptance: `sdlc.md:83-90`, `provider-capability-matrix.md:61`, `quality-standards.md:56-65`. Adoption: `approval-boundaries.md:75-78,86`, `agentic.md:100-106`. Unverified is an evidence class in the glossary and a state in `github-governance.md:27,34`. Completion in `git-workflow.md:129-131` is UNVERIFIED against the target. Uppercase MUST without an RFC 2119/8174 declaration: `environment-constraints.md:45` |
-| H-03 | W03 | The `governance-knowledge` profile (`registry.json` L2771, `required_sections` L2798, ordered and nonempty) rejects the H-01 target H2s. It needs a glossary-specific profile or changed sections. Consumers: `providers/registry.yaml:62` and `agent_governance_contract.py:37,1253` |
+| H-01 | W01 | Done 2026-11-12 (see Vocabulary changes). Was: `.agents/knowledge/glossary.md` has H2 Overview, Scope, Rules, Evidence, Related Documents and columns Term \| Meaning here \| Rule owner. The target is H2 Purpose, Scope, Normative Language, Repository Vocabulary, Local Extensions, Maintenance, References, with columns Term ID to Contract Version. Of the 33 target terms, 20 are absent, 8 narrower, 3 different and 2 the same. The 28 current terms with no target become Local Extensions |
+| H-02 | W01 | Done 2026-11-12 (see Vocabulary changes). Was: competing meanings. Acceptance: `sdlc.md:83-90`, `provider-capability-matrix.md:61`, `quality-standards.md:56-65`. Adoption: `approval-boundaries.md:75-78,86`, `agentic.md:100-106`. Unverified is an evidence class in the glossary and a state in `github-governance.md:27,34`. Completion in `git-workflow.md:129-131` is UNVERIFIED against the target. Uppercase MUST without an RFC 2119/8174 declaration: `environment-constraints.md:45` |
+| H-03 | W03 | Done 2026-11-12 (see Vocabulary changes). Was: the `governance-knowledge` profile (`registry.json` L2771, `required_sections` L2798, ordered and nonempty) rejects the H-01 target H2s. It needs a glossary-specific profile or changed sections. Consumers: `providers/registry.yaml:62` and `agent_governance_contract.py:37,1253` |
 | H-04 | W03 | None of the 16 common roles matches its target H2 list. The per-role diffs are in the 2026-11-12 inventory: Requirement differs by one rename, and Guide and the three README roles differ entirely. The Registry declares no H3. Change `registry.json`, the templates and the current documents, and `docs/99.templates/README.md:106-113` |
 | H-05 | W05 | `metadata/heading.py:352` extracts only H1 and H2. Its checks (L728-890) have no H3 parent, condition, prohibited-content or `empty_policy` model; tests are `test_heading.py` and `test_registry.py` |
 | H-06 | W03 | TemplateDefinition: 15 of 19 fields are absent from `registry.json` and `document-profile.schema.json` (`$defs/templateRole` L798-816): role, contract_version, purpose, responsibility, non_goals, policy_refs, vocabulary_refs, applicability, extensions, consumer_paths, validation, migration, and per-profile tables. No document generator exists; templates are only validated (`heading.py:64`) |
@@ -170,8 +170,36 @@ Registry `common` keys and the validators in the same commit.
 | H-08 | W05 | 41 of 362 code files are not wired into the gate graph. Examples: `tests/validation/lifecycle/`, `check-text-style.py` (pre-commit only), `check-project-registration.py`, `check-hermes-candidate.py`. Only 96 of 200 test files appear in a manifest `tests:` field, and two manifest entries have no consumer. Re-check the SPEC-0204 TSK-0011 L1193 `Resolves` (OPEN-11) |
 | H-09 | W06 | Stage-QA cells: COMMIT-AFTER and PR-BEFORE are absent. PUSH-BEFORE refuses only `main`. `edited` and `ready_for_review` are not handled. The merge-before negative cases are unexercised. `leaf.commit-message-contract` expects `PR_BASE_SHA` and `PR_HEAD_SHA`, while `ci-quality.yml` sets `TRUSTED_*` (UNVERIFIED). MERGE-DURING is N/A: there is no merge queue |
 | H-10 | W06 | OPEN-14 runner exit 124 cause diagnosis, read-only first |
-| H-11 | W07 | Whether the provider renderer projects `glossary.md` (`canonical_sources`) into `.claude/` or `.codex/` is UNVERIFIED; check after H-01 |
+| H-11 | W07 | Done 2026-11-12: KEEP, no projection (see Vocabulary changes) |
 | H-12 | W05 | The Release guards match fixed names only. A guard that rejects a Release document role under another id, type or template name needs a rule, for example a profile `type` or template path ending in `release`, plus a renamed-profile negative test |
+
+### Vocabulary changes 2026-11-12
+
+On the owner's repeated direction of 2026-11-12 to continue each open item and
+fix conflicts with the current requirement, this Task also ran H-01, H-02,
+H-03 and H-11:
+
+- H-01: `.agents/knowledge/glossary.md` now has the Repository Vocabulary H2
+  order and the 33 common terms at contract v14.5, each with a policy owner
+  link. The 34 earlier rows stay as Local Extensions with unchanged meaning.
+  Historical Audit ID and Keep have no policy owner and say so.
+- H-03: a new `governance-vocabulary` profile, `governance/vocabulary` type
+  and `governance/vocabulary.template.md` own the glossary. Profile paths may
+  not overlap and profile types must be unique, so `governance-knowledge` now
+  names `repository-map.md` and `verification-surface-map.md` exactly. A new
+  knowledge member must be added there before it classifies; the knowledge
+  README says so. `agent_governance_contract.py` lists the new profile.
+- H-02: "tracked adoption" contradicted the target meaning of Adoption. It
+  becomes "tracked configuration" in `approval-boundaries.md`,
+  `provider-capability-matrix.md`, `.claude/provider.md` and AD-0027.
+  `agentic.md` no longer calls external capability intake adoption.
+  `environment-constraints.md` drops two uppercase keywords. "Runtime
+  acceptance" stays, as a Local Extension that is a kind of native evidence
+  and not Acceptance. "Repository adoption" already matches Adoption.
+  Completion in `git-workflow.md` and Unverified in `github-governance.md`
+  match the target: KEEP.
+- H-11: no provider surface copies the glossary. `.claude/provider.md` reads
+  knowledge files directly, and renderer drift is 0: KEEP.
 
 ### Read denominator
 
@@ -198,6 +226,8 @@ those agents and are re-verified by each receiving work unit before it edits.
 | Intake document checks result | 112 | W117 | metadata-links-lifecycle | Working tree on the branch with the five changed files | PASS | Corpus lifecycle and occupancy violations 0; metadata check-changed against main selected 5, violations 0; links alignment and commands 906 documents, 8260 links, failures 0 | required | Intake document checks |
 | Release guard regression | 112 | W117 | regression | `test_operations_catalog`, `test_operations_taxonomy`, `test_registry` and `check-agent-governance-contract.py` after the C-01 protocol change | PASS | 263 tests OK; agent governance contract failures 0, exit 0 | optional | - |
 | Intake independent review | 112 | W117 | independent-document-review | Branch diff against 4cd25b95b | NOT_RUN | Awaiting a read-only reviewer | required | - |
+| Vocabulary profile RED | 112 | W117 | red-green-proof | New `RepositoryVocabularyProfileTests` against the Registry at `ae5e6cf17` | FAIL | 1 of 2 failed: the glossary still classified as `governance-knowledge` | required | - |
+| Vocabulary profile GREEN | 112 | W117 | red-green-proof | Commits `07f1943c6`, `8903eeaf2` and the template placeholder fix | PASS | 2 tests OK; test_registry, test_heading and test_profile 228 OK; metadata check-active selected 534, violations 0; check-changed against main selected 14, violations 0 after the template title became `{{TITLE}}`; corpus lifecycle 0; links alignment 906 documents, 8293 links, failures 0; agent governance contract failures 0; renderer drift 0; script manifest PASS | required | Vocabulary profile RED |
 | Intake independent review result | 112 | W117 | independent-document-review | Fresh-context code-reviewer of `7f1c82ab9` and `ce56a7256` contents | PASS | APPROVED. Three minor findings fixed: a `main-protection.md` line citation, the superseded Spec prose for criterion 111, and the overstated guard coverage (H-12 added). 9 of 10 citations spot-checked matched | required | Intake independent review |
 
 ## Criterion Acceptance
@@ -214,7 +244,7 @@ owner acceptance.
 
 Open, with owners:
 
-- H-01 to H-12.
+- H-04 to H-10 and H-12. H-01, H-02, H-03 and H-11 are done.
 - OPEN-01, 02, 05, 09, 11, 12 and 14 (RESIDUAL_CONFIRMED).
 - OPEN-04 (BLOCKED_EVIDENCE).
 - OPEN-06, 08, 10 and 13 (UNVERIFIED).
