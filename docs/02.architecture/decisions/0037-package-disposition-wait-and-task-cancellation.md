@@ -1,10 +1,10 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.0.6"
+version: "1.0.7"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
@@ -16,44 +16,14 @@ created: "2026-09-17"
 
 ## Context
 
+### Problem and Drivers
+
 ADR-0036 admitted completed Tasks inside unfinished packages but rejected
 cancelled Tasks and completed packages in Stage 03. Completion and disposition
 therefore shared an integration, and source comparison allowed narrowly defined
 lifecycle metadata changes. Reassessment and history-only availability had no
 registered contract. These constraints made truthful cancellation, independent
 completion approval, and exact capture preparation difficult.
-
-On 2026-09-28 the repository owner explicitly approved this decision's acceptance,
-waiting/cancellation, reassessment/history-only adoption, and completing Standard
-3.0.0 adoption. The still-proposed decision and SPEC-0179 were expanded together
-before acceptance. This approval does not authorize actual payload removal,
-commits, remote integration, runtime operations or secret access.
-
-### Compliance
-
-Policy owns meaning; Registry owns shapes and generation boundaries; validators own
-executable judgments. SPEC-0179 records actual RED/GREEN, snapshot, metadata, corpus,
-link and independent review evidence, with S01–S16 and V01–V40 scope and limitations.
-This accepted decision is not itself a test result or per-unit removal authorization.
-
-### Follow-up
-
-SPEC-0179 owns implementation and local verification. Its lifecycle must still follow
-registered integration edges; the adoption approval does not fabricate intervening
-commits or authorize remote integration. A real unit disposition remains a separate
-scoped operation after recoverability and consumer checks.
-
-[ADR-0048](0048-authority-parents-and-criterion-acceptance.md), accepted on
-2026-10-13, replaces decision 1 except its last sentence, and the
-completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
-the completed Spec's PASS receipt, and that completion receipts are checked
-before moving. [ADR-0051](0051-summarize-and-delete-retirement.md), accepted after the
-owner decision of 2026-11-03, supersedes decision items 4 to
-10 and the last sentence of decision 1. Decision 1 is therefore fully replaced
-by ADR-0048 and ADR-0051; decisions 2 and 3 stay in force except their
-completion-receipt clauses.
-
-## Decision Drivers
 
 - Status records actual lifecycle facts; cancellation must retain evidence and
   account for acceptance criteria.
@@ -65,20 +35,13 @@ completion-receipt clauses.
 - Current citation permission depends on assessment before source-profile exceptions.
 - Registry owns shapes, states and ordered judgments; code implements those contracts.
 
-## Options
+### Decision Scope
 
-### Options Considered
-
-1. **Keep retained-only storage and simultaneous completion/disposition.** Rejected:
-   this cannot express approved waiting, truthful cancellation or reassessment.
-2. **Add a waiting status and duplicate machine catalog.** Rejected: waiting is
-   derivable from member statuses, and a second catalog creates conflicting authority.
-3. **Extend existing package judgments, Task metadata and Markdown catalog.** Selected:
-   preserves identities and historical rows while making current management explicit.
-4. **Rewrite all old captures to exact bytes.** Rejected: original lifecycle evidence
-   and historical transformations cannot be retroactively manufactured.
+This decision covers package waiting, task cancellation and archive reassessment for Stage 03 packages, and is implemented by SPEC-0179. Its approval does not authorize actual payload removal, commits, remote integration, runtime operations or secret access.
 
 ## Decision
+
+### Chosen Option
 
 1. A completed Spec may wait in Stage 03 when its Plan is completed and
    every Task is completed or validly cancelled. Nonterminal members fail. Waiting
@@ -134,7 +97,36 @@ completion-receipt clauses.
     Postmortem `reviewed_at`, whole-unit preservation and external-route-only records
     remain required. No new document ID or second recovery ledger is needed.
 
+### Authority and Effect
+
+On 2026-09-28 the repository owner explicitly approved this decision's acceptance,
+waiting/cancellation, reassessment/history-only adoption, and completing Standard
+3.0.0 adoption. The still-proposed decision and SPEC-0179 were expanded together
+before acceptance. This approval does not authorize actual payload removal,
+commits, remote integration, runtime operations or secret access.
+
+Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. The effective date is not recorded separately; the document was created on 2026-09-17.
+
+## Alternatives
+
+### Considered Options
+
+1. **Keep retained-only storage and simultaneous completion/disposition.** Rejected:
+   this cannot express approved waiting, truthful cancellation or reassessment.
+2. **Add a waiting status and duplicate machine catalog.** Rejected: waiting is
+   derivable from member statuses, and a second catalog creates conflicting authority.
+3. **Extend existing package judgments, Task metadata and Markdown catalog.** Selected:
+   preserves identities and historical rows while making current management explicit.
+4. **Rewrite all old captures to exact bytes.** Rejected: original lifecycle evidence
+   and historical transformations cannot be retroactively manufactured.
+
+### Trade-offs
+
+Each rejected option is rejected for the reason stated in its entry above: retained-only storage cannot express waiting, cancellation or reassessment; a duplicate machine catalog creates conflicting authority; rewriting old captures cannot manufacture original lifecycle evidence. The selected option preserves identities and historical rows while making current management explicit.
+
 ## Consequences
+
+### Impacts
 
 - Authors can record cancellation and completion without inventing execution states.
 - Assessment is mutable management information; captured lifecycle facts are immutable.
@@ -147,9 +139,43 @@ completion-receipt clauses.
 - Rollback restores the scoped current-contract diff before integration; later rollback
   uses an approved change and never rewrites frozen records or published history.
 
-## Related Documents
+### Follow-up
 
-### Traceability
+SPEC-0179 owns implementation and local verification. Its lifecycle must still follow
+registered integration edges; the adoption approval does not fabricate intervening
+commits or authorize remote integration. A real unit disposition remains a separate
+scoped operation after recoverability and consumer checks.
+
+#### Compliance
+
+Policy owns meaning; Registry owns shapes and generation boundaries; validators own
+executable judgments. SPEC-0179 records actual RED/GREEN, snapshot, metadata, corpus,
+link and independent review evidence, with S01–S16 and V01–V40 scope and limitations.
+This accepted decision is not itself a test result or per-unit removal authorization.
+
+## Traceability
+
+### Sources
+
+- [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)
+- [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
+- SPEC-0179
+- [Retention policy](../../../.agents/governance/documentation-protocol.md#retention-by-status)
+
+### Supersession
+
+ADR-0036 predecessor; its number is reserved in the Registry and its body is in version history.
+
+[ADR-0048](0048-authority-parents-and-criterion-acceptance.md), accepted on
+2026-10-13, replaces decision 1 except its last sentence, and the
+completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
+the completed Spec's PASS receipt, and that completion receipts are checked
+before moving. [ADR-0051](0051-summarize-and-delete-retirement.md), accepted after the
+owner decision of 2026-11-03, supersedes decision items 4 to
+10 and the last sentence of decision 1. Decision 1 is therefore fully replaced
+by ADR-0048 and ADR-0051; decisions 2 and 3 stay in force except their
+completion-receipt clauses.
 
 - **Partially superseded**:
   [ADR-0051](0051-summarize-and-delete-retirement.md), it supersedes decision
@@ -158,10 +184,4 @@ completion-receipt clauses.
   fully replaced; decisions 2 and 3 remain this decision except their
   completion-receipt clauses. The decision body above is kept as accepted.
 
-- [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)
-- [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
-- SPEC-0179
-- ADR-0036 predecessor; its number is reserved in the Registry and its body is in version history
-- [Retention policy](../../../.agents/governance/documentation-protocol.md#retention-by-status)
 - **Superseded archive-model decisions**: ADR-0030 made a Tombstone the record of a retirement; ADR-0031 made Stage 98 a preserved record keyed by Retired Path; ADR-0033 preserved whole Spec packages; ADR-0035 introduced Stage 98 retention classes and route dispositions; ADR-0036 added occupancy, citation, and frozen identity rules. This decision replaces ADR-0036. Under SPEC-0249 the Stage 98 records were later summarized into Stage 01 and Stage 02 and deleted; version history is their record and retired numbers live in the Registry.

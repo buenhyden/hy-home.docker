@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Contract"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0060"
 parent_ids:
@@ -16,6 +16,8 @@ created: "2026-11-06"
 # ADR-0060: Hermes Report Source Contract
 
 ## Context
+
+### Problem and Drivers
 
 The Hermes `research-report` plugin (0.3.0) sends the Gateway an `ingestion-v1`
 request whose `source_text` is the canonical JSON of the collector receipt rows
@@ -54,8 +56,6 @@ The Hermes operator drafted a contract change request on 2026-11-06 (an
 untracked draft, treated as data). On 2026-11-06 the owner answered "초안 작성
 (권장)" to drafting this contract.
 
-## Decision Drivers
-
 - `source_text` must be the report a reader receives, so the vault note and the
   `source_sha256` signature refer to the real original (ADR-0097).
 - `ingestion-v1` and attestation/2 must not change; the Gateway rejects extra
@@ -68,32 +68,17 @@ untracked draft, treated as data). On 2026-11-06 the owner answered "초안 작�
   independent Attestation, and the Attester verifies items by independent fetch
   without reading `source_text`. These trust boundaries stay distinct.
 
-## Options
+### Decision Scope
 
-### Alternatives
-
-1. **Receipt JSON as `source_text` (status quo).** No change. Rejected: it
-   violates the ADR-0097 meaning of `source_text`, publishes a JSON array as the
-   daily report, and cannot preserve the original report.
-2. **A separate artifact tool or companion record keyed by `job_id` + `run_id`**
-   (the operator's proposal, section 1 of the draft). Rejected: ADR-0097 makes
-   `source_text` the whole original report and ties its signed digest to the
-   export; a companion record would leave `source_text` meaning something else,
-   add a second contract and a second receipt, and the export would still carry
-   the wrong text. It also needs a Gateway/receiver change that the chosen
-   option avoids.
-3. **Capture the final LLM response with `post_llm_call`.** Rejected as the
-   source: it sees only the Telegram digest, not the email; the text can change
-   afterwards (fallback notice, media repair, `[SILENT]`); the hook is skipped
-   when persistence is disabled; and a failed run may already have fired it.
-4. **Wrap the Gmail send script to capture the HTML.** Rejected: it captures the
-   email only, depends on an upstream skill script, and leaves Telegram
-   unbound.
-5. **Chosen: the plugin owns the report bytes.** The agent passes the finalized
-   report once to `submit_research_report`; the plugin stores it immutably and
-   derives the other outputs from the stored file.
+This decision covers the meaning of `source_text`, `source_sha256` and
+`source_ref` in the Hermes `research-report` plugin's `ingestion-v1` request,
+and how the plugin stores the report. `ingestion-v1`, attestation/2 and the
+export contract do not change. The sidecar `84d3f689378b` failure streak is out
+of scope here.
 
 ## Decision
+
+### Chosen Option
 
 1. `source_text` is the finalized full daily report Markdown, exact UTF-8 bytes.
    `source_sha256` is the SHA-256 of those bytes. `ingestion-v1` fields,
@@ -122,7 +107,46 @@ untracked draft, treated as data). On 2026-11-06 the owner answered "초안 작�
    in the report body (its section 3); the sidecar `84d3f689378b` failure
    streak is a separate defect, out of scope here (its section 4).
 
+### Authority and Effect
+
+Decided by the owner, @buenhyden; status `accepted`. On 2026-11-06 the owner
+answered "초안 작성 (권장)" to drafting this contract. The owner approved the SPEC-0265 work on 2026-11-06 ("승인"), and this ADR moved to `accepted` after #774 merged it as `proposed`; an accepted ADR is replaced only by a new ADR.
+Effective from 2026-11-06.
+
+## Alternatives
+
+### Considered Options
+
+1. **Receipt JSON as `source_text` (status quo).** No change. Rejected: it
+   violates the ADR-0097 meaning of `source_text`, publishes a JSON array as the
+   daily report, and cannot preserve the original report.
+2. **A separate artifact tool or companion record keyed by `job_id` + `run_id`**
+   (the operator's proposal, section 1 of the draft). Rejected: ADR-0097 makes
+   `source_text` the whole original report and ties its signed digest to the
+   export; a companion record would leave `source_text` meaning something else,
+   add a second contract and a second receipt, and the export would still carry
+   the wrong text. It also needs a Gateway/receiver change that the chosen
+   option avoids.
+3. **Capture the final LLM response with `post_llm_call`.** Rejected as the
+   source: it sees only the Telegram digest, not the email; the text can change
+   afterwards (fallback notice, media repair, `[SILENT]`); the hook is skipped
+   when persistence is disabled; and a failed run may already have fired it.
+4. **Wrap the Gmail send script to capture the HTML.** Rejected: it captures the
+   email only, depends on an upstream skill script, and leaves Telegram
+   unbound.
+5. **Chosen: the plugin owns the report bytes.** The agent passes the finalized
+   report once to `submit_research_report`; the plugin stores it immutably and
+   derives the other outputs from the stored file.
+
+### Trade-offs
+
+Each rejected option carries its reason in the list above; the chosen option
+keeps one stored byte string as the source of the Gateway, email and Telegram
+outputs.
+
 ## Consequences
+
+### Impacts
 
 - The vault note shows the real report. Report size is bounded by the Gateway
   limits (524288 code points; the whole request at most 1 MiB), so a larger
@@ -137,22 +161,21 @@ untracked draft, treated as data). On 2026-11-06 the owner answered "초안 작�
   cutover restores the schema-4 backup and loses later records.
 - The 16 existing reports keep their fragments and stay out of the vault.
 
-### Compliance
-
-SPEC-0265 states testable criteria: the same stored bytes feed the Gateway,
-the email and the Telegram text; a pre-final or oversized submission is
-rejected; a receipt-set record exists beside every submission.
-
 ### Follow-up
 
 - Blog-data: a per-report exclusion or selection capability for
   `backfill-reports`, and its runbook correction (server A state is stale).
 - Owner-approved operations for the schema 5 rollout, outside this change.
-- The owner approved the SPEC-0265 work on 2026-11-06 ("승인"), and this ADR
-  moved to `accepted` after #774 merged it as `proposed`; an accepted ADR is
-  replaced only by a new ADR.
 
-## Related Documents
+#### Compliance
+
+SPEC-0265 states testable criteria: the same stored bytes feed the Gateway,
+the email and the Telegram text; a pre-final or oversized submission is
+rejected; a receipt-set record exists beside every submission.
+
+## Traceability
+
+### Sources
 
 - [SPEC-0265](../../03.specs/0265-hermes-report-source-capture/spec.md)
 - [Workload README](../../../infra/07-workflow/n8n/workloads/hermes-blog-ingestion/README.md)

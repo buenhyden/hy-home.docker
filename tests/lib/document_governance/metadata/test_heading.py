@@ -40,7 +40,7 @@ class CurrentBodyContractTests(unittest.TestCase):
         expected = {
             "requirements-package": "Overview|Scope|Requirements|Acceptance Criteria|Traceability",
             "architecture-description": "Overview|Scope|Structure|Runtime and Deployment|Quality and Risks|Related Documents",
-            "adr": "Context|Decision Drivers|Options|Decision|Consequences|Related Documents",
+            "adr": "Context|Decision|Alternatives|Consequences|Traceability",
             "spec": "Overview|Scope|Behavior Contract|Acceptance Criteria|References",
             "plan": "Overview|Scope|Work Breakdown|Verification Plan|Risks and Recovery|Related Documents",
             "task": "Overview|Inputs and Authorization|Work Log|Evidence|Criterion Acceptance|Review and Completion|Related Documents",
@@ -416,18 +416,23 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Out of Scope", "body-subheading-forbidden"),
             ),
+            "adr": (
+                ("## Decision Drivers", "body-heading-forbidden"),
+                ("## Options", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Compliance", "body-subheading-forbidden"),
+            ),
         }
         for profile_id, cases in old_forms.items():
-            body, _ = self._conforming_body(profile_id)
+            body, required = self._conforming_body(profile_id)
             for heading, code in cases:
                 with self.subTest(profile=profile_id, heading=heading):
                     if heading.startswith("## "):
                         old = body + f"\n{heading}\n\nFixture content.\n"
                     else:
                         old = body.replace(
-                            "\n## Acceptance Criteria\n",
-                            f"\n{heading}\n\nFixture content.\n\n"
-                            "## Acceptance Criteria\n",
+                            f"\n## {required[1]}\n",
+                            f"\n{heading}\n\nFixture content.\n\n## {required[1]}\n",
                             1,
                         )
                     self.assertIn(code, self._findings(profile_id, old))

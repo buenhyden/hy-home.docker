@@ -1,10 +1,10 @@
 ---
 title: "README Navigation and Document Language"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0044"
 parent_ids:
@@ -15,6 +15,8 @@ created: "2026-09-27"
 # ADR-0044: README Navigation and Document Language
 
 ## Context
+
+### Problem and Drivers
 
 On 2026-09-27 the owner asked for README navigation and document language to be
 one enforced contract across the workspace. An audit of the 186 tracked READMEs
@@ -40,20 +42,6 @@ the owner's priority:
 2. Every other human-facing document under `docs/05.operations/` is Korean.
 3. Every other document under `docs/` is English.
 
-### Compliance
-
-`check-document-links.py --mode all` enforces navigation.
-`check-document-metadata.py` enforces declared language and the Retention
-Catalog profile. The Registry schema rejects an undeclared `language` value.
-
-### Follow-up
-
-- Corpus language migration for non-README documents, and full enforcement:
-  done by SPEC-0187.
-- Script and legacy-code cleanup found by the same audit.
-
-## Decision Drivers
-
 - A README must route readers, not duplicate the membership its children own.
 - One owner per fact: the Registry owns type-to-template mapping and each
   profile's language. The tree owns folder membership.
@@ -61,23 +49,13 @@ Catalog profile. The Registry schema rejects an undeclared `language` value.
 - Frozen Stage 98 bodies, template sources, and generated adapters keep their
   own contracts.
 
-## Options
+### Decision Scope
 
-### Options Considered
-
-1. **Prose-only correction.** Edit the READMEs and the policy text. This is
-   cheap, but nothing stops a regression, and the validators that require
-   enumeration would still fail the corrected READMEs.
-2. **Role-contract enforcement (chosen).** Derive folder-only status from the
-   tracked tree and enforce a `navigation` link mode. Give every Registry
-   profile a declared `language` that the body validator reads. Move the
-   Retention Catalog into its own registered record. Retire the checks that
-   demanded enumeration.
-3. **Generated routers.** Render router READMEs from the Registry. This is
-   strong, but it replaces authored explanation with generated lists, and the
-   request needs purpose and workflow prose.
+This decision covers README navigation and document language across the workspace, for every managed README and every Registry profile that governs human prose. Frozen Stage 98 bodies, template sources, and generated adapters keep their own contracts.
 
 ## Decision
+
+### Chosen Option
 
 Adopt option 2.
 
@@ -114,7 +92,33 @@ record; retired numbers now live in the Registry `reserved_history`.
 type-to-template owner, and the `template_catalog` key and its check are
 retired.
 
+### Authority and Effect
+
+Decided by the owner, @buenhyden, who asked for the contract on 2026-09-27; status `accepted`. No separate approval record is linked. Effective from 2026-09-27.
+
+## Alternatives
+
+### Considered Options
+
+1. **Prose-only correction.** Edit the READMEs and the policy text. This is
+   cheap, but nothing stops a regression, and the validators that require
+   enumeration would still fail the corrected READMEs.
+2. **Role-contract enforcement (chosen).** Derive folder-only status from the
+   tracked tree and enforce a `navigation` link mode. Give every Registry
+   profile a declared `language` that the body validator reads. Move the
+   Retention Catalog into its own registered record. Retire the checks that
+   demanded enumeration.
+3. **Generated routers.** Render router READMEs from the Registry. This is
+   strong, but it replaces authored explanation with generated lists, and the
+   request needs purpose and workflow prose.
+
+### Trade-offs
+
+Prose-only correction is cheap but nothing stops a regression; generated routers are strong but replace authored explanation with generated lists; role-contract enforcement (option 2) was chosen. The reasons are stated in each option above.
+
 ## Consequences
+
+### Impacts
 
 - Positive: routers stop drifting from the members their children own. The
   language rule is testable. One validator run proves both rules.
@@ -125,9 +129,21 @@ retired.
 - Language judgment is a heuristic over prose characters. Its limits are
   stated in the validator and in the documentation protocol.
 
-## Related Documents
+### Follow-up
 
-### Traceability
+- Corpus language migration for non-README documents, and full enforcement:
+  done by SPEC-0187.
+- Script and legacy-code cleanup found by the same audit.
+
+#### Compliance
+
+`check-document-links.py --mode all` enforces navigation.
+`check-document-metadata.py` enforces declared language and the Retention
+Catalog profile. The Registry schema rejects an undeclared `language` value.
+
+## Traceability
+
+### Sources
 
 - Requirements: [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md),
   [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)

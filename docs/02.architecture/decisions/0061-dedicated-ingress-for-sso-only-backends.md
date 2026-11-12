@@ -1,10 +1,10 @@
 ---
 title: "Dedicated Ingress for SSO-Only Backends"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0061"
 parent_ids:
@@ -16,6 +16,8 @@ created: "2026-11-07"
 # ADR-0061: Dedicated Ingress for SSO-Only Backends
 
 ## Context
+
+### Problem and Drivers
 
 ADR-0055 segments the root Compose into per-flow networks and states that a
 compromised container reaches only the peers it is wired to. Traefik reaches
@@ -29,16 +31,42 @@ Traefik uses. Two backends already avoid the problem: Storybook shares an
 internal ingress network only with Traefik, and RedisInsight binds its
 listener to its Traefik-only ingress address.
 
-## Decision Drivers
-
 - SSO at the gateway must not be bypassable from a neighbouring backend.
 - Keep ADR-0055's explicit, internal, per-flow networks.
 - Change only what lacks its own authentication.
 - Stay within Compose, without a service mesh or extra proxy.
 
-## Options
+### Decision Scope
 
-### Alternatives
+This decision covers routed backends whose only access control is the gateway
+`sso-auth` middleware. Backends with their own login, OIDC or API credential
+stay on `edge_net`.
+
+## Decision
+
+### Chosen Option
+
+1. Each routed backend whose only access control is `sso-auth` is attached to
+   one internal ingress network that only Traefik shares, and sets
+   `traefik.docker.network` to that network.
+2. Such a backend is not on `edge_net`. If it needs `edge_net` for its own
+   outbound calls, it keeps `edge_net` only when its listener can bind to the
+   ingress address alone.
+3. A flow that today exists only through `edge_net` moves to a named network
+   that carries only that flow's peers.
+4. Backends with their own login, OIDC or API credential stay on `edge_net`.
+5. ADR-0055's rules for subnets, `internal: true` and GDE-0077 updates apply to
+   every new network.
+
+### Authority and Effect
+
+Decided by the owner, @buenhyden; status `accepted`. The owner accepted this
+decision on 2026-11-07 together with the SPEC-0266 Spec and Plan. Effective
+from 2026-11-07.
+
+## Alternatives
+
+### Considered Options
 
 - Keep the shared `edge_net` and accept the risk: rejected; one compromised
   backend opens every SSO-only one.
@@ -53,43 +81,35 @@ listener to its Traefik-only ingress address.
 - One internal ingress network per SSO-only backend, shared only with Traefik:
   selected.
 
-## Decision
+### Trade-offs
 
-1. Each routed backend whose only access control is `sso-auth` is attached to
-   one internal ingress network that only Traefik shares, and sets
-   `traefik.docker.network` to that network.
-2. Such a backend is not on `edge_net`. If it needs `edge_net` for its own
-   outbound calls, it keeps `edge_net` only when its listener can bind to the
-   ingress address alone.
-3. A flow that today exists only through `edge_net` moves to a named network
-   that carries only that flow's peers.
-4. Backends with their own login, OIDC or API credential stay on `edge_net`.
-5. ADR-0055's rules for subnets, `internal: true` and GDE-0077 updates apply to
-   every new network.
-
-## Consequences
-
-- Positive: a compromised backend no longer reaches an SSO-only backend unless
-  a declared flow connects them.
-- Positive: the network graph states each backend's real peers.
 - Trade-off: Traefik joins one more network per SSO-only backend, and each one
   consumes a `/24` in `10.250.0.0/16`.
 - Trade-off: each moved backend needs a `traefik.docker.network` label, and a
   missing label shows up as a broken route.
 
-### Compliance
+## Consequences
+
+### Impacts
+
+- Positive: a compromised backend no longer reaches an SSO-only backend unless
+  a declared flow connects them.
+- Positive: the network graph states each backend's real peers.
+
+### Follow-up
+
+SPEC-0266 confirms the backend list and flows, implements the networks, and
+applies the change in HOME under its own approval.
+
+#### Compliance
 
 A render test in `tests/validation/test_p02_service_contracts.py` fails when an
 SSO-only backend is on `edge_net` or shares a network with anything other than
 Traefik and its declared flow peers.
 
-### Follow-up
+## Traceability
 
-SPEC-0266 confirms the backend list and flows, implements the networks, and
-applies the change in HOME under its own approval. The owner accepted this
-decision on 2026-11-07 together with the SPEC-0266 Spec and Plan.
-
-## Related Documents
+### Sources
 
 - [ADR-0055](0055-segmented-per-flow-networks.md)
 - [AD-0026](../descriptions/0026-standardize-infra-net.md)

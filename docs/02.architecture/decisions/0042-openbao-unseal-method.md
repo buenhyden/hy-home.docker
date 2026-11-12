@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Unseal Method"
-version: "0.2.6"
+version: "0.2.7"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0042"
 parent_ids:
@@ -15,6 +15,8 @@ created: "2026-09-25"
 # ADR-0042: OpenBao Unseal Method
 
 ## Context
+
+### Problem and Drivers
 
 OpenBao runs as a single-node Raft on the 2.6-series image pinned by
 [Compose](../../../infra/03-security/openbao/docker-compose.yml). Compose's
@@ -69,21 +71,6 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - The Transit seal requires the transit server to be reachable at start and
   unseal time, and recommends a periodic orphan token.
 
-### Follow-up
-
-- The W11 runbook records the unseal method actually in use at decision time.
-- If deferred, record the owner and trigger in Task 0003's Deferred Items.
-
-### Official references
-
-- [OpenBao seal configuration (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/)
-- [Static Key seal](https://openbao.org/docs/configuration/seal/static/)
-- [Transit seal](https://openbao.org/docs/configuration/seal/transit/)
-- [PKCS#11 seal (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/pkcs11/)
-- [AWS KMS seal](https://openbao.org/docs/configuration/seal/awskms/)
-
-## Decision Drivers
-
 - Whether the service must come back without the owner after a reboot
   (currently both unseal and SecretID need the owner).
 - If unseal material is in the same place as the host, auto-unseal is only a
@@ -95,93 +82,13 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - The effect on the W11 cold start runbook and the Agent SecretID delivery
   method.
 
-## Options
+### Decision Scope
 
-### Options Considered
-
-| Option | Unattended reboot | Key location | New dependency | W11 impact |
-| --- | --- | --- | --- | --- |
-| (a) Keep manual Shamir | No | Host file SEC-003 (current) | None | Owner performs the unseal step |
-| (b) Transit from another OpenBao/Vault | Yes (if the transit server is alive) | Transit key on another device | Second server and network | Order requires booting the transit server first |
-| (c) Cloud KMS (AWS/GCP/Azure, etc.) | Yes (if internet and KMS are available) | Cloud KMS | Cloud account, egress | Cannot start without internet |
-| (d) Static Key or PKCS#11 (same host) | Yes | Host file or SoftHSM | None (Static) or HSM build/plugin | Unseal step disappears |
-| (e) Defer (record owner and trigger) | No | Current | None | Same as (a) |
-
-### (a) Keep manual Shamir unseal (current)
-
-- **Good**: No change. The seal key is not in container config or
-  environment. No external dependency.
-- **Bad**: The owner is needed at every reboot and OpenBao restart. Since all
-  three shares are in one file, the benefit of split custody is already lost.
-- **Agent SecretID**: No change. The owner also delivers the SecretID at every
-  reboot.
-
-### (b) Transit auto-unseal from a second OpenBao/Vault
-
-- **Method**: Keep a transit engine and key on another instance, and give
-  this server's `seal "transit"` the address, key name, and a periodic orphan
-  token.
-- **Where to run it**: Running it on the same host defeats the purpose; the
-  transit server itself needs unsealing, and an attacker with the host has
-  both. It must be on another device (NAS, another PC, a small VPS).
-  hy-home.k8s does not qualify because it is a container on the same host.
-- **Good**: Unattended reboot without a cloud account. The key is outside this
-  host.
-- **Bad**: The second server has its own unseal problem too (usually manual
-  Shamir). If that server is down, this server cannot start. Token
-  management, TLS, and a network path are newly needed.
-- **Agent SecretID**: No change.
-
-### (c) Cloud KMS auto-unseal
-
-- **Method**: `awskms`, `gcpckms`, `azurekeyvault`, etc., built into the
-  current 2.6 series. Credentials are supplied via environment variables or a
-  file (the documentation strongly recommends environment variables over
-  configuration files).
-- **Good**: The key is outside the host (in the KMS) and KMS audit logs
-  remain. Cost is around $1/month (list-price estimate) for one key and few
-  calls. Cutting off KMS access on host theft prevents data from being
-  opened.
-- **Bad**: OpenBao cannot start if the internet or KMS is unavailable (a home
-  lab line outage becomes a secret-store outage). Since the KMS access key is
-  on the host, anyone who took over the host can also unseal while the host
-  is alive. This may change with plugin registration after v2.7.0. Needs new
-  cloud credentials (a new SEC row) and egress on the OpenBao container.
-- **Agent SecretID**: No change.
-
-### (d) Static Key or PKCS#11 seal (same host)
-
-- **Method**: Give `seal "static"` a 32-byte key via `file://` and mount that
-  file as a Docker Secret. PKCS#11 keeps the key in a software token like
-  SoftHSM but needs an HSM build or a plugin.
-- **Security trade-off**: Since the key is on the same host, anyone who has
-  the host or the OpenBao container can unseal. The same is already possible
-  today with the single SEC-003 file, so **protection against host takeover
-  does not meaningfully change**. Two things do change: the key is mounted
-  into the container and could be exposed without a container escape, and if
-  the Raft snapshot and key end up in the same backup, whoever takes only the
-  snapshot can also open it. SoftHSM is no better than Static Key since its
-  key file is also on disk. The official documentation recommends Static Key
-  only when an existing source of trust is present.
-- **Good**: Unattended reboot with no external dependency.
-- **Bad**: Seal protection effectively reduces to file permissions. Requires
-  a seal transition (`-migrate`) and a recovery key scheme change.
-- **Agent SecretID**: No change.
-
-### (e) Defer (record owner and trigger)
-
-Keep (a) while recording an owner and review trigger per criterion 10.
-Candidate triggers:
-
-- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
-  while the owner is unavailable.
-- hy-home.k8s or another service comes to require OpenBao immediately after
-  boot.
-- ADR-0041 selects a cloud provider (creating grounds to review KMS on the
-  same account).
-- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
+This decision covers the unseal method of the single-node OpenBao Raft described above, which currently uses the default Shamir seal. It affects the W11 cold start runbook and the Agent SecretID delivery method.
 
 ## Decision
+
+### Chosen Option
 
 **(e) Defer, keep (a) manual Shamir unseal** (owner decision, 2026-09-25). The
 owner is @buenhyden. Whichever of the following triggers comes first opens a
@@ -204,7 +111,103 @@ Rationale:
   Another device (b) or cloud (c) creates a new availability dependency. At
   the current scale, this cost outweighs the benefit.
 
+### Authority and Effect
+
+Decided by the owner, @buenhyden (owner decision, 2026-09-25); status `accepted`. No separate approval record is linked. Effective from 2026-09-25.
+
+## Alternatives
+
+### Considered Options
+
+| Option | Unattended reboot | Key location | New dependency | W11 impact |
+| --- | --- | --- | --- | --- |
+| (a) Keep manual Shamir | No | Host file SEC-003 (current) | None | Owner performs the unseal step |
+| (b) Transit from another OpenBao/Vault | Yes (if the transit server is alive) | Transit key on another device | Second server and network | Order requires booting the transit server first |
+| (c) Cloud KMS (AWS/GCP/Azure, etc.) | Yes (if internet and KMS are available) | Cloud KMS | Cloud account, egress | Cannot start without internet |
+| (d) Static Key or PKCS#11 (same host) | Yes | Host file or SoftHSM | None (Static) or HSM build/plugin | Unseal step disappears |
+| (e) Defer (record owner and trigger) | No | Current | None | Same as (a) |
+
+#### (a) Keep manual Shamir unseal (current)
+
+- **Good**: No change. The seal key is not in container config or
+  environment. No external dependency.
+- **Bad**: The owner is needed at every reboot and OpenBao restart. Since all
+  three shares are in one file, the benefit of split custody is already lost.
+- **Agent SecretID**: No change. The owner also delivers the SecretID at every
+  reboot.
+
+#### (b) Transit auto-unseal from a second OpenBao/Vault
+
+- **Method**: Keep a transit engine and key on another instance, and give
+  this server's `seal "transit"` the address, key name, and a periodic orphan
+  token.
+- **Where to run it**: Running it on the same host defeats the purpose; the
+  transit server itself needs unsealing, and an attacker with the host has
+  both. It must be on another device (NAS, another PC, a small VPS).
+  hy-home.k8s does not qualify because it is a container on the same host.
+- **Good**: Unattended reboot without a cloud account. The key is outside this
+  host.
+- **Bad**: The second server has its own unseal problem too (usually manual
+  Shamir). If that server is down, this server cannot start. Token
+  management, TLS, and a network path are newly needed.
+- **Agent SecretID**: No change.
+
+#### (c) Cloud KMS auto-unseal
+
+- **Method**: `awskms`, `gcpckms`, `azurekeyvault`, etc., built into the
+  current 2.6 series. Credentials are supplied via environment variables or a
+  file (the documentation strongly recommends environment variables over
+  configuration files).
+- **Good**: The key is outside the host (in the KMS) and KMS audit logs
+  remain. Cost is around $1/month (list-price estimate) for one key and few
+  calls. Cutting off KMS access on host theft prevents data from being
+  opened.
+- **Bad**: OpenBao cannot start if the internet or KMS is unavailable (a home
+  lab line outage becomes a secret-store outage). Since the KMS access key is
+  on the host, anyone who took over the host can also unseal while the host
+  is alive. This may change with plugin registration after v2.7.0. Needs new
+  cloud credentials (a new SEC row) and egress on the OpenBao container.
+- **Agent SecretID**: No change.
+
+#### (d) Static Key or PKCS#11 seal (same host)
+
+- **Method**: Give `seal "static"` a 32-byte key via `file://` and mount that
+  file as a Docker Secret. PKCS#11 keeps the key in a software token like
+  SoftHSM but needs an HSM build or a plugin.
+- **Security trade-off**: Since the key is on the same host, anyone who has
+  the host or the OpenBao container can unseal. The same is already possible
+  today with the single SEC-003 file, so **protection against host takeover
+  does not meaningfully change**. Two things do change: the key is mounted
+  into the container and could be exposed without a container escape, and if
+  the Raft snapshot and key end up in the same backup, whoever takes only the
+  snapshot can also open it. SoftHSM is no better than Static Key since its
+  key file is also on disk. The official documentation recommends Static Key
+  only when an existing source of trust is present.
+- **Good**: Unattended reboot with no external dependency.
+- **Bad**: Seal protection effectively reduces to file permissions. Requires
+  a seal transition (`-migrate`) and a recovery key scheme change.
+- **Agent SecretID**: No change.
+
+#### (e) Defer (record owner and trigger)
+
+Keep (a) while recording an owner and review trigger per criterion 10.
+Candidate triggers:
+
+- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
+  while the owner is unavailable.
+- hy-home.k8s or another service comes to require OpenBao immediately after
+  boot.
+- ADR-0041 selects a cloud provider (creating grounds to review KMS on the
+  same account).
+- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
+
+### Trade-offs
+
+The Good and Bad entries of each option above record its benefits and costs. Option (e) was chosen because auto-unseal alone does not give an unattended reboot, a same-host key (d) widens the key-exposure surface with no security gain, and another device (b) or cloud (c) creates a new availability dependency whose cost outweighs the benefit at the current scale.
+
 ## Consequences
+
+### Impacts
 
 - **W11 cold start runbook**:
   - (a)/(e): The order is OpenBao start -> owner unseal (2 shares, hidden
@@ -224,16 +227,29 @@ Rationale:
   be updated together. A protected Raft snapshot and an isolated recovery
   rehearsal are needed before the transition.
 
-## Related Documents
+### Follow-up
 
-### Traceability
+- The W11 runbook records the unseal method actually in use at decision time.
+- If deferred, record the owner and trigger in Task 0003's Deferred Items.
+
+## Traceability
+
+### Sources
 
 - Parent: [AD-0003 Security Architecture](../descriptions/0003-security-architecture.md)
-- Earlier deferral: ADR-0018, superseded by [ADR-0050](0050-openbao-as-secrets-manager.md)
 - Spec: SPEC-0182 criterion 10 and 11,
   Plan W10/W11,
   Task 0003
 - Exposure correction: SPEC-0240 (superseded; number reserved in the Registry, body in version history), SPEC-0242
+- Earlier deferral: ADR-0018, superseded by [ADR-0050](0050-openbao-as-secrets-manager.md)
 - Runbook: [RUN-0085](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
 - Runtime sources: [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
   [Agent configuration](../../../infra/03-security/openbao/config/agent.hcl)
+
+#### Official references
+
+- [OpenBao seal configuration (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/)
+- [Static Key seal](https://openbao.org/docs/configuration/seal/static/)
+- [Transit seal](https://openbao.org/docs/configuration/seal/transit/)
+- [PKCS#11 seal (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/pkcs11/)
+- [AWS KMS seal](https://openbao.org/docs/configuration/seal/awskms/)

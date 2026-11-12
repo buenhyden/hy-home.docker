@@ -1,10 +1,10 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-version: "1.1.3"
+version: "1.1.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0007"
 parent_ids:
@@ -15,13 +15,9 @@ created: "2026-03-26"
 
 ## Context
 
+### Problem and Drivers
+
 This document is the architecture decision record for the background and hybrid operating strategy behind adopting both Apache Airflow and n8n as workflow engines.
-
-### Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision Drivers
 
 The project faces two different workflow needs.
 
@@ -30,19 +26,16 @@ The project faces two different workflow needs.
 
 Solving both with a single solution does not work well: Airflow is too heavy for simple integrations, and n8n has limits managing complex data pipelines.
 
-## Options
+### Decision Scope
 
-### Alternative 1: Airflow Only
+Explicit non-goals:
 
-- Good: simple with single-engine operation, strong control.
-- Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
-
-### Alternative 2: n8n Only
-
-- Good: very fast development speed, intuitive visualization.
-- Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
+- Does not standardize direct mutual calls between the two engines (done only through an API when needed).
+- Does not use n8n for large-volume data processing.
 
 ## Decision
+
+### Chosen Option
 
 - Adopt **Apache Airflow** as the "Core Orchestrator", handling complex data pipelines and system batch jobs.
 - Adopt **n8n** as the "Integration Automator", handling external service federation and lightweight event-driven automation.
@@ -60,7 +53,31 @@ Solving both with a single solution does not work well: Airflow is too heavy for
   changed, so the sentence above is preserved as a record of its time.
   Recorded by SPEC-0176.
 
+### Authority and Effect
+
+Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-26.
+
+## Alternatives
+
+### Considered Options
+
+#### Alternative 1: Airflow Only
+
+- Good: simple with single-engine operation, strong control.
+- Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
+
+#### Alternative 2: n8n Only
+
+- Good: very fast development speed, intuitive visualization.
+- Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
+
+### Trade-offs
+
+Airflow only was not chosen because simple API integrations need a lot of code and fast UI-based edits are not possible. n8n only was not chosen because complex dependency management and custom Python logic are difficult and visibility into large-scale batch jobs is low.
+
 ## Consequences
+
+### Impacts
 
 - **Positive**:
   - Improves development and operational productivity by using the optimal tool for each purpose.
@@ -70,12 +87,15 @@ Solving both with a single solution does not work well: Airflow is too heavy for
   - Operational overhead from managing two kinds of engines.
   - Increased resource (memory, CPU) consumption.
 
-### Explicit Non-goals
+### Follow-up
 
-- Does not standardize direct mutual calls between the two engines (done only through an API when needed).
-- Does not use n8n for large-volume data processing.
+No follow-up work is recorded in this decision.
 
-## Related Documents
+## Traceability
+
+### Sources
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 - **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
 - **Architecture Description**: [0007-workflow-architecture.md](../descriptions/0007-workflow-architecture.md)

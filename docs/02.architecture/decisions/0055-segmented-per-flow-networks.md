@@ -1,10 +1,10 @@
 ---
 title: "Segmented Per-Flow Networks"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0055"
 parent_ids:
@@ -16,6 +16,8 @@ created: "2026-11-06"
 
 ## Context
 
+### Problem and Drivers
+
 The root `docker-compose.yml` declares segmented networks (SPEC-0180 S05,
 AD-0026), each with an explicit `/24` in `10.250.0.0/16`: for example
 `edge_net` `10.250.1.0/24`, `mng_data_net` `10.250.2.0/24`, `object_net`
@@ -26,42 +28,21 @@ needs one: Traefik at `10.250.1.2` on `edge_net`, whose dynamic range starts at
 `.128`, and a few service-local addresses (RedisInsight, Crawl4AI). No HOME
 Compose file declares `infra_net`.
 
-### Traceability
-
-This record replaces ADR-0026, deleted in the same change (ADR-0051). ADR-0026
-put every infrastructure service on one `infra_net` fixed at
-`${INFRA_SUBNET:-172.19.0.0/16}`, required every included file to declare it,
-kept extra networks such as `k3d-hyhome` alongside it, and gave each service a
-static `ipv4_address`. It rejected Docker's automatic CIDR (addresses change
-with start order) and an external IPAM service (too heavy for local Compose).
-Its rejection of automatic CIDR and of external IPAM carries forward, as does
-keeping an existing extra network when joining one; the single flat network and
-blanket static addresses are withdrawn. Some LAB sources (for example
-`labs/couchdb`) still use `infra_net` host names; LABs are outside this
-decision until promoted. Evidence is the current repository configuration; no
-runtime state is claimed.
-
-## Decision Drivers
-
 - A flat network lets any container reach any other; segmentation limits blast
   radius.
 - Subnets must be explicit so Docker's automatic pool never takes one first.
 - Static addresses are maintenance cost and should exist only where needed.
 
-## Options
+### Decision Scope
 
-### Alternatives
-
-- One flat `infra_net` with static addresses: rejected; every service can reach
-  every other, and the address plan grows with each service.
-- Docker automatic CIDR: rejected; ranges and addresses change with start
-  order.
-- External IPAM service: rejected; too much machinery for a single-host
-  Compose platform.
-- Explicit per-flow `/24` networks with fixed addresses only where required:
-  selected.
+This decision covers the networks of the root Compose. Project application
+networks and database cluster interconnects stay out of scope. Some LAB
+sources (for example `labs/couchdb`) still use `infra_net` host names; LABs are
+outside this decision until promoted.
 
 ## Decision
+
+### Chosen Option
 
 1. The root Compose declares each network with an explicit `/24` subnet inside
    `10.250.0.0/16`. A network that needs no egress is `internal: true`.
@@ -74,28 +55,67 @@ runtime state is claimed.
    attachment when it joins a segmented network.
 5. Adding or changing a network updates GDE-0077 in the same change.
 
-## Consequences
+### Authority and Effect
 
-- Positive: a compromised container reaches only the peers it is wired to.
-- Positive: explicit subnets avoid collisions with Docker's automatic pool.
+Decided by the owner, @buenhyden; status `accepted`. No separate approval
+record is linked. Effective from 2026-11-06.
+
+## Alternatives
+
+### Considered Options
+
+- One flat `infra_net` with static addresses: rejected; every service can reach
+  every other, and the address plan grows with each service.
+- Docker automatic CIDR: rejected; ranges and addresses change with start
+  order.
+- External IPAM service: rejected; too much machinery for a single-host
+  Compose platform.
+- Explicit per-flow `/24` networks with fixed addresses only where required:
+  selected.
+
+### Trade-offs
+
 - Trade-off: a new peer relationship needs a network edit, not just a host
   name.
 - Trade-off: `10.250.0.0/16` can still collide with another local network.
 
-### Compliance
+## Consequences
 
-`scripts/hardening/check-all-hardening.sh` checks service network membership
-(for example `check_service_network` for RedisInsight on `mng_data_net`).
-Project application networks and database cluster interconnects stay out of
-scope.
+### Impacts
+
+- Positive: a compromised container reaches only the peers it is wired to.
+- Positive: explicit subnets avoid collisions with Docker's automatic pool.
 
 ### Follow-up
 
 Requirement and description text that still names `infra_net` is reconciled by
 its owners.
 
-## Related Documents
+#### Compliance
+
+`scripts/hardening/check-all-hardening.sh` checks service network membership
+(for example `check_service_network` for RedisInsight on `mng_data_net`).
+
+## Traceability
+
+### Sources
+
+Evidence is the current repository configuration; no runtime state is
+claimed.
 
 - [REQ-0023 Network standardization](../../01.requirements/0023-standardize-infra-net.md)
 - [AD-0026 Network architecture](../descriptions/0026-standardize-infra-net.md)
 - [GDE-0077 IP address management](../../05.operations/guides/02-gateway-and-networking/0077-ip-address-management.md)
+
+### Supersession
+
+This record replaces ADR-0026, deleted in the same change (ADR-0051); ADR-0026
+is historical and non-authoritative. ADR-0026
+put every infrastructure service on one `infra_net` fixed at
+`${INFRA_SUBNET:-172.19.0.0/16}`, required every included file to declare it,
+kept extra networks such as `k3d-hyhome` alongside it, and gave each service a
+static `ipv4_address`. It rejected Docker's automatic CIDR (addresses change
+with start order) and an external IPAM service (too heavy for local Compose).
+Its rejection of automatic CIDR and of external IPAM carries forward, as does
+keeping an existing extra network when joining one; the single flat network and
+blanket static addresses are withdrawn.
