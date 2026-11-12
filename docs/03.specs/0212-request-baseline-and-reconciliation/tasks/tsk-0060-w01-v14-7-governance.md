@@ -92,7 +92,7 @@ here; cross-repository adoption stays out of scope (D-04).
 
 | ID | Verdict | Current owner and basis |
 | --- | --- | --- |
-| GOV-01 | KEEP | `sdlc.md` owns Task execution state and approval separate from acceptance. The Repository Vocabulary now defines each term once with its policy owner (TSK-0059, `07f1943c6`). Consumer check: `test_generation7` rejects acceptance without PASS evidence and the deletion of failed rows (W01 consumer tests) |
+| GOV-01 | KEEP | `sdlc.md` owns Task execution state and approval separate from acceptance. The Repository Vocabulary now defines each term once with its policy owner (TSK-0059, `07f1943c6`). Consumer check: `test_generation7` rejects acceptance without PASS evidence and the deletion of failed rows (W01 final tests) |
 | GOV-02 | KEEP | `bootstrap.md` limits the Provider Registry to translation; adapters own syntax only. Consumer check: agent governance contract PASS and renderer drift 0 (W01 final checks) |
 | GOV-03 | CHANGE | Registry frontmatter rules are enforced. The adoption table adds a revision, approval and state per contract. The Release role removal has no contract id in the package, and TemplateDefinition is identified by its schema version; neither id is invented. Both are approved |
 | GOV-04 | CHANGE (local) | TSK-0056 recorded "KEEP local, DEFER cross-repo" and deferred the contract fields. Local adoption is now recorded per contract, and partial adoption is labelled partial. Cross-repository adoption stays out of scope (D-04) |
@@ -165,7 +165,7 @@ merges to `main`; nothing here is effective yet.
 | --- | --- | --- | --- | --- | --- |
 | Repository Vocabulary | `repository-vocabulary` v14.5 (`REPOSITORY-VOCABULARY.json`, `b03ae3c00a42`) | `.agents/knowledge/glossary.md`, `governance-vocabulary` profile | Approved; implemented on this branch, not on `main` | Glossary `Contract Version` column reads v14.5 | Done in `07f1943c6`, `8903eeaf2`, `4ec4d7182`; rollback is a revert of those commits |
 | Common section form | `COMMON-DOC-FORM-1` 1.0.0 (`COMMON-SECTION-CONTRACT.json`, `4f79183d59c3`) | 16 common roles | Approved; partial: 3 of 16 roles on this branch (Incident, Postmortem, AGENTS) | Named in `documentation-protocol.md`; not in the Registry (H-W01-2) | Per role in one commit, no old form; remaining roles TSK-0059 H-04. Rollback: revert that role's commit |
-| Stage QA | `QA-STAGES-1` 1.0.0 (`STAGE-QA-MATRIX.json`, `12d8962c96c7`) | `quality-standards.md`, workflows and hooks | Approved; partial: policy meanings on this branch, not all Git-stage cells | Named in `quality-standards.md` | Cells are TSK-0059 H-09 (W06). Rollback: revert `532902934` and the `quality-standards.md` hunk of `6b5c4bf27` |
+| Stage QA | `QA-STAGES-1` 1.0.0 (`STAGE-QA-MATRIX.json`, `12d8962c96c7`) | `quality-standards.md`, workflows and hooks | Approved; partial: policy meanings on this branch, not all Git-stage cells | Named in `quality-standards.md` | Cells are TSK-0059 H-09 (W06). Rollback: revert `532902934` and the `quality-standards.md` hunks of `6b5c4bf27` and `6885be9cf` |
 | TemplateDefinition | v14.5 schema (`TEMPLATE-DEFINITION.schema.json`, `e490cf402419`) | Registry and templates | Approved; not implemented | None | TSK-0059 H-06 (W03). Rollback: none needed |
 | Template path | `Q-08` (`TEMPLATE-PATH-DECISION.json`, `7089347e62b1`) | `docs/99.templates/` | Adopted: approved in the prompt, path unchanged | N/A, a path decision | None |
 | Release document role removal | v14.7 direct requirement; no contract id | documentation protocol, Registry guards | Approved; partial: policy and fixed-name guards on this branch, renamed profiles not yet rejected | N/A, no contract id | Wider guard TSK-0059 H-12 (W05). Rollback: revert `7f1c82ab9` |
@@ -212,7 +212,7 @@ documentation protocol; relation fields are W03's and state meanings W04's
 | --- | --- |
 | W01 prompt | All 501 lines, re-read in the re-check |
 | Consumer tests | `test_validator_entrypoints` renderer cases, `test_generation7`, `test_agent_governance_ci_routing` deny cases, the archive cases in `test_spec_packages` and `test_registry` |
-| Governance policies | At `b947ec52d`, before the second review fixes: `approval-boundaries.md` 1.5.0 lines 14-40 and 73-84, `quality-standards.md` 1.11.0 lines 96-104, 227-232 and 239-260, `documentation-protocol.md` 3.15.0 lines 221-281, plus the earlier W01 and W00 citations |
+| Governance policies | `approval-boundaries.md` 1.5.0 (Authorization Source and Records, shared-contract bullet), `quality-standards.md` 1.11.0 (QA reuse rule, Execution Boundary, Canonical delivery phase matrix), `documentation-protocol.md` 3.15.0 (README and AGENTS.md, Role-Specific Authoring), read in full at each commit that changed them, plus the earlier W01 and W00 citations |
 | Prior Tasks | TSK-0056 assessment and closure; TSK-0059 handoffs and vocabulary changes |
 | Package | W01 prompt in full; six contract files for id, version and hash |
 | Not read | The other three repositories (D-04); Project-Template `dev` |
