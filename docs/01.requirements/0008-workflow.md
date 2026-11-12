@@ -91,13 +91,14 @@ The core PostgreSQL in `04-data` and the observability tier are available.
 
 ### Verification Method
 
-Each condition is judged by reviewing the rendered workflow configuration for the executor, queue mode, metrics export and persistent storage, and by a request to the API that shows it is authenticated. No current Spec Package cites REQ-0008; a Spec that implements it records the evidence in its Task. The evidence is the review result and the API observation, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Rendered-configuration conditions (REQ-0008-FR-0001, REQ-0008-FR-0002 and the storage and metrics parts of REQ-0008-FR-0004) are judged by reviewing the rendered workflow configuration. Reachability through the gateway (REQ-0008-FR-0003) and the authenticated API (REQ-0008-FR-0005) are judged by runtime observations: a request through the gateway route and an unauthenticated and an authenticated API request. No current Spec Package cites REQ-0008; a Spec that implements it records the review result and the runtime observations in its Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
 ## Traceability
 
 ### Source and Constraints
 
-- **Retired requirement REQ-0019** (workflow optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the workflow operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.
+This package records the owner's requirements for the workflow tier; no upstream
+document governs it.
 
 ### Downstream Links
 
@@ -107,3 +108,4 @@ Each condition is judged by reviewing the rendered workflow configuration for th
 - **Runbook**: [airflow.md](../05.operations/runbooks/08-workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md)
 - **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
 - **Retired domain Spec SPEC-0008** (workflow): replaced by the workflow guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
+- **Retired requirement REQ-0019** (workflow optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the workflow operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

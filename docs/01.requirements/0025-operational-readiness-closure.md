@@ -117,11 +117,8 @@ Each condition is judged by running the focused tests and the registered full pr
 
 ### Source and Constraints
 
-- **Retired**: REQ-0025-FR-0003 required a synthetic PostgreSQL 17 to 18
-  logical backup, restore, upgrade, and integrity rehearsal, implemented by
-  `rehearse-postgres-logical-upgrade.sh` and runbook RUN-0032. Both were
-  deleted on 2026-11-10: every HOME PostgreSQL service already runs major 18
-  and no later major image exists to rehearse against.
+This package records the owner's requirements for operational readiness closure; no upstream
+document governs it.
 
 ### Downstream Links
 
@@ -133,3 +130,8 @@ Each condition is judged by running the focused tests and the registered full pr
 - **Sample artifact**: `examples/sample-web-service/`
 - **Operations**: [Release management runbook](../05.operations/runbooks/10-platform-and-backup/0009-release-management.md)
 - **Decision**: [ADR-0028 Local-Isolated Readiness Evidence](../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **Retired**: REQ-0025-FR-0003 required a synthetic PostgreSQL 17 to 18
+  logical backup, restore, upgrade, and integrity rehearsal, implemented by
+  `rehearse-postgres-logical-upgrade.sh` and runbook RUN-0032. Both were
+  deleted on 2026-11-10: every HOME PostgreSQL service already runs major 18
+  and no later major image exists to rehearse against.

@@ -96,10 +96,12 @@ Each condition is judged by reviewing the rendered configuration for the scrape,
 
 ### Source and Constraints
 
-- **Retired requirement REQ-0018** (observability optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the observability operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.
+This package records the owner's requirements for the observability tier; no upstream
+document governs it.
 
 ### Downstream Links
 
 - **Architecture Description**: [Observability architecture](../02.architecture/descriptions/0006-observability-architecture.md)
 - **ADR**: [ADR-0053 Observability Object Storage on SeaweedFS](../02.architecture/decisions/0053-observability-storage-on-seaweedfs.md)
 - **Retired domain Spec SPEC-0007** (observability): replaced by the observability guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
+- **Retired requirement REQ-0018** (observability optimization hardening): retired under SPEC-0169 because every clause named an implementation artifact (a middleware chain, run account, secret mount, compose declaration, or CI gate) rather than a solution-independent need. Its implementation contract lives in the observability operations catalog policy under `docs/05.operations/`, and its documentation traceability clause moved to REQ-0026-FR-0011.

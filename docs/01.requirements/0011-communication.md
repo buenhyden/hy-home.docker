@@ -100,7 +100,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Verification Method
 
-Each condition is judged by reviewing the rendered sandbox and mail server configuration and the published ports it names; external delivery success, TLS version and DNS deliverability are judged by separate runtime evidence collected at promotion. SPEC-0262 cites REQ-0011; its Task evidence rows record the review results and the promotion evidence. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Configuration conditions (REQ-0011-FR-0001, REQ-0011-FR-0002 and the bindings in REQ-0011-FR-0004 and REQ-0011-FR-0005) are judged by reviewing the rendered sandbox and mail server configuration and the published ports. Behavior conditions need runtime observations: a captured test message listed and found by search (REQ-0011-FR-0003) and an unauthenticated request redirected to SSO (REQ-0011-FR-0005). External delivery success, TLS version and DNS deliverability are judged by separate runtime evidence at promotion, which the Spec that performs the promotion records. SPEC-0262 cites REQ-0011, and its Task evidence rows record the results it produces. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence and accepts the requirement once every condition is judged met.
 
 ## Traceability
 

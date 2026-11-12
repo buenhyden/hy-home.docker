@@ -118,18 +118,14 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Verification Method
 
-Each condition is judged by reviewing the rendered root composition, the isolated LAB compositions and the registered CI policy gate it names. The criteria are verification targets, not evidence that they are met on the current host. SPEC-0262 cites REQ-0010; its Task evidence rows record the review results. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Render and policy conditions (REQ-0010-FR-0003, REQ-0010-FR-0007 and the port bindings in REQ-0010-FR-0002 and REQ-0010-FR-0004) are judged by reviewing the rendered root composition, the isolated LAB compositions and the registered CI policy gate. Behavior conditions need runtime observations: the SSO redirect of REQ-0010-FR-0001, the refusal to start without an approved database endpoint in REQ-0010-FR-0002, the registry push and pull in REQ-0010-FR-0004, and the encrypted local and offsite snapshot in REQ-0010-FR-0006. The criteria are verification targets, not evidence that they are met on the current host. SPEC-0262 cites REQ-0010, and its Task evidence rows record the results it produces; a later Spec records any runtime observation it makes in its own Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence and accepts the requirement once every condition is judged met.
 
 ## Traceability
 
 ### Source and Constraints
 
-- **Retired requirement REQ-0021** (tooling optimization hardening): retired
-  under SPEC-0169 because every clause named an implementation artifact; its
-  contract lives in the tooling operations policy, and its documentation
-  traceability clause moved to REQ-0026-FR-0011.
-- **Retired Terraform operations documents**: retired when OpenTofu became the
-  infrastructure-as-code tool.
+This package records the owner's requirements for the tooling tier; no upstream
+document governs it.
 
 ### Downstream Links
 
@@ -139,3 +135,9 @@ Each condition is judged by reviewing the rendered root composition, the isolate
 - **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/decisions/0062-home-lab-membership.md)
 - **Retired domain Spec SPEC-0010** (tooling): replaced by the tooling guides,
   policies and runbooks in the operations catalog under `docs/05.operations/`.
+- **Retired requirement REQ-0021** (tooling optimization hardening): retired
+  under SPEC-0169 because every clause named an implementation artifact; its
+  contract lives in the tooling operations policy, and its documentation
+  traceability clause moved to REQ-0026-FR-0011.
+- **Retired Terraform operations documents**: retired when OpenTofu became the
+  infrastructure-as-code tool.

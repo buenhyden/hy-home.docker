@@ -111,10 +111,8 @@ Each condition is judged by reviewing the operations catalog guides, the root co
 
 ### Source and Constraints
 
-- **Retired requirement REQ-0022** (laboratory optimization hardening): retired
-  under SPEC-0169 because every clause named an implementation artifact; its
-  contract lives in the laboratory operations policy, and its documentation
-  traceability clause moved to REQ-0026-FR-0011.
+This package records the owner's requirements for the laboratory tier; no upstream
+document governs it.
 
 ### Downstream Links
 
@@ -127,3 +125,7 @@ Each condition is judged by reviewing the operations catalog guides, the root co
 - **Retired domain Spec SPEC-0012** (laboratory): replaced by the laboratory
   guides, policies and runbooks in the operations catalog under
   `docs/05.operations/`.
+- **Retired requirement REQ-0022** (laboratory optimization hardening): retired
+  under SPEC-0169 because every clause named an implementation artifact; its
+  contract lives in the laboratory operations policy, and its documentation
+  traceability clause moved to REQ-0026-FR-0011.

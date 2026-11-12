@@ -175,6 +175,13 @@ class RequirementPackageTests(unittest.TestCase):
         self.assertIn("REQ-0001-FR-0002", trusted_historical[0].group("body"))
         self.assertNotIn("REQ-0001-FR-9999", trusted_historical[0].group("body"))
 
+        self.assertEqual(
+            (),
+            registry._trusted_requirement_sections(
+                "## Quality Requirements\n\n- **REQ-0001-NFR-0001**: An H2 group.\n"
+            ),
+        )
+
         wrong_parent = """## Acceptance Criteria
 
 ### Functional Requirements
@@ -303,12 +310,6 @@ class RequirementPackageTests(unittest.TestCase):
             "above-high-water": _package_text().replace(
                 "REQ-0001-FR-0004", "REQ-0001-FR-9999", 1
             ),
-            "reserved-if-reintroduction": _package_text(
-                interface=(
-                    "- **REQ-0001-IF-0001**: A retired interface identity must "
-                    "not be reintroduced."
-                )
-            ),
         }
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -317,9 +318,32 @@ class RequirementPackageTests(unittest.TestCase):
                     path = self._write_package(root, text=text)
                     with self.assertRaisesRegex(
                         requirements.RequirementPackageError,
-                        "allocation|high-water|reserved|issued|section kind",
+                        "allocation|high-water|reserved|issued",
                     ):
                         requirements.parse_requirement_package(path)
+
+    def test_an_issued_interface_identity_fails_without_a_section(self) -> None:
+        requirements = _requirements_module()
+        registry = requirements.load_registry()
+        requirement = registry.identity_spaces["requirement"]
+        child_spaces = dict(requirement.child_spaces)
+        interface = child_spaces["REQ-0001.IF"]
+        child_spaces["REQ-0001.IF"] = dataclasses.replace(
+            interface, current_issued=(1,), reserved_history=()
+        )
+        identity_spaces = dict(registry.identity_spaces)
+        identity_spaces["requirement"] = dataclasses.replace(
+            requirement, child_spaces=child_spaces
+        )
+        candidate = dataclasses.replace(registry, identity_spaces=identity_spaces)
+        with tempfile.TemporaryDirectory() as directory:
+            path = self._write_package(pathlib.Path(directory))
+            requirements.parse_requirement_package(path, registry=registry)
+            with self.assertRaisesRegex(
+                requirements.RequirementPackageError,
+                "IF declarations do not match current_issued",
+            ):
+                requirements.parse_requirement_package(path, registry=candidate)
 
     def test_public_parser_requires_exact_current_issued_declarations(self) -> None:
         requirements = _requirements_module()
