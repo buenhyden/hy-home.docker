@@ -135,7 +135,7 @@ Single-host power, storage, Docker daemon and GPU failure affect multiple HOME c
 
 ### Decision Links
 
-- [ADR-0062](../decisions/0062-home-lab-membership.md) is cited in the System Boundary: the source organization of packages and LABs does not change HOME selection or the root Compose project.
+- [ADR-0062](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 

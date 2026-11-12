@@ -37,7 +37,7 @@ recovery procedure.
 
 ### Context
 
-Traefik provides the external boundary, and OpenBao Agent provides minimum-scope rendered output to consuming services. Related description: [AD-0003 Security architecture](0003-security-architecture.md).
+Traefik provides the external boundary, and OpenBao Agent provides minimum-scope rendered output to consuming services.
 
 ### Constraints
 
@@ -110,6 +110,8 @@ Healthchecks, persistent data and an explicit recovery procedure keep reliabilit
 - [REQ-0003](../../01.requirements/0003-security.md)
 
 ### Currentness and Lineage
+
+- [AD-0003 Security architecture](0003-security-architecture.md)
 
 The description reflects the current tree at its `updated` date and history lives in Git.
 

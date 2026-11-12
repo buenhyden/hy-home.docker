@@ -92,7 +92,7 @@ Runtime flows are independent: selecting one narrow profile must not grant anoth
 
 ### Decision Links
 
-The retired ADR-0011 is recorded under Currentness and Lineage; no current ADR governs this tier.
+No current ADR governs this tier.
 
 ### Quality and Risks
 

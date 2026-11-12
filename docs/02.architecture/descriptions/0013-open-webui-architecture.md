@@ -40,7 +40,7 @@ inference API. Its obligations are owned by
 
 ### Context
 
-End users reach Open WebUI through Traefik; it calls the Ollama API for inference and embeddings and authenticates users against Keycloak OIDC. Related description: [AD-0008 AI infrastructure](0008-ai-architecture.md).
+End users reach Open WebUI through Traefik; it calls the Ollama API for inference and embeddings and authenticates users against Keycloak OIDC.
 
 ### Constraints
 
@@ -114,6 +114,8 @@ Open WebUI depends on a healthy Ollama service and starts after Ollama reports h
 - [REQ-0013 Open WebUI requirement](../../01.requirements/0013-ai-open-webui.md)
 
 ### Currentness and Lineage
+
+- [AD-0008 AI infrastructure](0008-ai-architecture.md)
 
 #### Evolution
 

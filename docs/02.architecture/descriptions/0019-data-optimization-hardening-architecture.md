@@ -38,7 +38,7 @@ lifecycle/recovery procedure separately.
 
 ### Context
 
-Gateway routing, `03-security` secret supply, and `06-observability` telemetry collection come from their own layers. Related description: [SPEC-0004](0004-data-architecture.md).
+Gateway routing, `03-security` secret supply, and `06-observability` telemetry collection come from their own layers.
 
 ### Constraints
 
@@ -119,6 +119,8 @@ Each component keeps its own configuration and volume, giving a per-service volu
 - [REQ-0004](../../01.requirements/0004-data.md)
 
 ### Currentness and Lineage
+
+- [SPEC-0004](0004-data-architecture.md)
 
 The description reflects the current tree at its `updated` date and history lives in Git.
 
