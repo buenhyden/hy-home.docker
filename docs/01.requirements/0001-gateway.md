@@ -96,7 +96,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Verification Method
 
-Each condition is judged by a runtime observation of the live gateway: an HTTP request and its redirect, a route-discovery timing, a TLS handshake at each protocol version, and a request through the single sign-on step. No current Spec Package cites REQ-0001; a Spec that implements it records the evidence in its Task. The evidence is the observed result of each check, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Each condition is judged by a runtime observation of the live gateway: an HTTP request and its redirect, a route-discovery timing and a request to a service without a declared route, a TLS handshake at each protocol version, and a request through the single sign-on step. No current Spec Package cites REQ-0001; a Spec that implements it records the evidence in its Task. The evidence is the observed result of each check, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
 ## Traceability
 

@@ -193,11 +193,17 @@ template, parsers, tests and current documents together.
   retired Spec links moved to `Downstream Links`, each `Verification Method`
   names the method, the evidence, its Task and who judges, and `Stakeholders`
   names who writes, reviews and accepts.
-- Re-review answers (`46890d318` and the next commit): a test for an issued
-  `IF` identity and one pinning an ignored H2 `Quality Requirements`; retired
-  Requirement lineage moved to `Downstream Links`; the 0011 promotion
-  evidence belongs to the Spec that promotes; the 0008, 0010 and 0011
-  methods name the runtime observations and reviews their conditions need.
+- Re-review answers (`46890d318`): a test for an issued `IF` identity and
+  one pinning an ignored H2 `Quality Requirements`; retired Requirement
+  lineage moved to `Downstream Links`; the 0011 promotion evidence belongs to
+  the Spec that promotes; the 0008, 0010 and 0011 methods name the runtime
+  observations their conditions need.
+- Re-review 2 answers (`baece5f5d`): the unused `interface` fixture parameter
+  removed; the 0008 task-runner rendering and the 0010 change-path conditions
+  given a method.
+- Final review answers (the next commit): one test parses a package with a
+  `Quality Requirements` section end to end; the remaining 0001, 0009 and
+  0010 conditions are given a method.
 
 Held for an owner decision, not changed here, because each would change
 what a requirement says:

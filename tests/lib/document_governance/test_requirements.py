@@ -274,6 +274,21 @@ class RequirementPackageTests(unittest.TestCase):
             ):
                 requirements.parse_requirement_package(path)
 
+    def test_quality_requirements_are_parsed_as_nfr(self) -> None:
+        requirements = _requirements_module()
+        text = _package_text(
+            non_functional=(
+                "- **REQ-0001-NFR-0001 — Latency**: A response arrives within one "
+                "second; measure: seconds on the local host."
+            )
+        )
+        self.assertIn("### Quality Requirements\n", text)
+        items = requirements._parse_items(text, "0001")
+        self.assertEqual(
+            ("FR", "FR", "FR", "FR", "NFR"), tuple(item.kind for item in items)
+        )
+        self.assertEqual("REQ-0001-NFR-0001", items[-1].identity)
+
     def test_retired_requirement_sections_fail_closed(self) -> None:
         requirements = _requirements_module()
         retired = {
