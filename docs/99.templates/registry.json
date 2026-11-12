@@ -720,18 +720,12 @@
       ],
       "required_sections": [
         "Context",
-        "Decision Drivers",
-        "Options",
         "Decision",
+        "Alternatives",
         "Consequences",
-        "Related Documents"
+        "Traceability"
       ],
-      "optional_sections": [
-        "Options Considered",
-        "Traceability",
-        "Compliance",
-        "Follow-up"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "architecture-decision",
       "traceability": {
         "allowed_parent_profiles": [
@@ -744,7 +738,33 @@
         "layer": "architecture"
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Context": [
+          "Problem and Drivers",
+          "Decision Scope"
+        ],
+        "Decision": [
+          "Chosen Option",
+          "Authority and Effect"
+        ],
+        "Alternatives": [
+          "Considered Options",
+          "Trade-offs"
+        ],
+        "Consequences": [
+          "Impacts",
+          "Follow-up"
+        ],
+        "Traceability": [
+          "Sources"
+        ]
+      },
+      "optional_subsections": {
+        "Traceability": [
+          "Supersession"
+        ]
+      }
     },
     {
       "id": "spec",
