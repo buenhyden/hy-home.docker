@@ -1,6 +1,6 @@
 ---
 title: "ComfyUI Policy"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -63,7 +63,7 @@ Compose가 서비스 선택, gateway 레이블, GPU 요청, 리소스, 마운트
 
 Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build는 주석 처리되어 있다. 이 image는 `/root/ComfyUI`에서 실행되며, 2026-11-08에 `models`, `custom_nodes`, `input`, `output`, `user` 다섯 volume을 `/root/ComfyUI/<dir>`로 다시 mount하고 데이터를 옮겼다(디렉터리별 파일 수 일치). 이전의 `/opt/comfyui` 불일치는 해소되었다.
 
-Image tag가 mutable이므로 image upgrade 전에는 새 image가 여전히 `/root/ComfyUI`에서 시작하고 다섯 mount가 그 아래에 대응하는지 확인한 뒤 진행한다. 대응이 어긋나면 @buenhyden의 승인 아래 중단하고 전체 상태를 보존한다. 비활성 Dockerfile의 CUDA/Python/Torch/ComfyUI pin, non-root 사용자와 `/opt` 구조는 활성 image 증거가 아니다. 복구 계획은 격리 rehearsal 전까지 미실행 상태다.
+Image tag가 mutable이므로 image upgrade 전에는 새 image가 여전히 `/root/ComfyUI`에서 시작하고 다섯 mount가 그 아래에 대응하는지 확인한 뒤 진행한다. 대응이 어긋나면 @buenhyden의 승인 아래 중단하고 전체 상태를 보존한다. image의 익명 `/root` volume에는 ComfyUI 코드, `/root/.cache`, 이동 전 데이터 사본이 남아 있고 이 사본이 rollback 원본이므로, @buenhyden의 승인 없이 이 volume을 recreate·prune하거나 cache와 함께 정리하지 않는다. 비활성 Dockerfile의 CUDA/Python/Torch/ComfyUI pin, non-root 사용자와 `/opt` 구조는 활성 image 증거가 아니다. 복구 계획은 격리 rehearsal 전까지 미실행 상태다.
 
 ## Exceptions
 

@@ -244,4 +244,3 @@ image와 migration 전 database 복원이 함께 필요하다. 위 격리 복구
 - [Usage guide](../../guides/03-identity-and-access/0014-keycloak.md)
 - [Operations policy](../../policies/03-identity-and-access/0014-keycloak.md)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
-- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

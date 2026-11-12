@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.8.0"
+version: "1.8.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -63,7 +63,7 @@ profile)는 `storage`와 함께 동작한다.
   job `seaweedfs-s3`로 수집한다. Listener는 게시되지 않고 Traefik route도
   없으며, `-metricsIp=10.250.41.2`로 internal 네트워크
   `seaweedfs_s3_metrics_net`의 고정 주소에만 바인딩된다. 이 네트워크의 구성원은
-  S3와 Prometheus뿐이므로 `edge_net` 서비스는 접근할 수 없다. Master, volume, filer는
+  S3, Prometheus, Alloy뿐이므로 `edge_net` 서비스는 접근할 수 없다. Master, volume, filer는
   각각 `9324`, `9325`, `9326`에서 metrics를 제공하고 Prometheus가
   `seaweedfs_metrics_net`으로 job `seaweedfs-master`·`seaweedfs-volume`·
   `seaweedfs-filer`를 수집한다. `SeaweedFSS3Down`, `SeaweedFSNodeMetricsDown`과 `SeaweedFSDataDiskLow`는
