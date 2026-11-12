@@ -1,6 +1,6 @@
 ---
 title: "W00 v14.7 Intake Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -138,7 +138,7 @@ The following items were checked and left as they are:
 | R45-05 | PASS | Only W00 ran, and no other work unit was started |
 | R45-11, R147-18 | PASS | See the OPEN table below. No OPEN ID is treated as a current file, PR or Task |
 | SUP-01 | PASS (bounded) | Same as the v14.2 intake. The source bytes and trace counts are not semantic review |
-| SUP-02 | UNVERIFIED | The 12-source, 6-perspective review was not re-run; only the six W00 sources were re-checked |
+| SUP-02 | PASS (bounded) | All 72 cells of the 12 designated sources judged on 2026-11-12; see Designated sources review |
 
 ### OPEN-01 to OPEN-14
 
@@ -278,6 +278,34 @@ directly re-checked.
 | RS-49 | git-diff, Git 2.56.0 docs | Supported: `--cached` shows staged changes against a commit | Project choice: partial-stage counterexample and no automatic stage, stash or reset |
 | RS-50 | GitHub Docs, events that trigger workflows, no visible date | Supported: a `pull_request` run uses the merge commit, not the head | Project choice: the 12 Git-stage cells; `merge_group` applies only with a merge queue |
 
+### Designated sources review 2026-11-12
+
+On the owner's request of 2026-11-12, three read-only agents fetched the 12
+designated sources and judged each against the six perspectives: composition,
+governance, rules, system, policy and template, in that order. S means
+specified, N means read and not specified. No cell is UNVERIFIED. Quotes were
+taken through a summarizing fetcher and are recorded as such in the agents'
+reports. Landing pages and the named subpages were read, not whole sites.
+
+| ID | Source | Revision or date | License | C G R S P T | Adoption here |
+| --- | --- | --- | --- | --- | --- |
+| DS-01 | ai-memory | commit `4afade5a0a48`, 2026-11-11 | MIT | S S S S S N | Not adopted: native memory is off and no memory service is in scope |
+| DS-02 | SillyMemory | commit `32ce846437e9`, 2026-11-11 | AGPL-3.0-only | N S S N S N | Not adopted: SillyTavern-only, sends chat text to a cloud service, copyleft would need a license decision (OPEN-06) |
+| DS-03 | LambdaDB article | 2026-10-25, direct fetch now succeeds | not stated | S N S S S N | Not adopted: a vendor benchmark of a cloud product (OPEN-05) |
+| DS-04 | agency-agents | commit `8ae6164602c9`, 2026-11-09 | MIT | S N S N N S | Adopted as capability knowledge only, through research pack m0003 into `.agents/roles/`; m0003 pins the older `ebe9c99a`, and a fresh intake needs its own Task |
+| DS-05 | Diátaxis | no date; home page HTTP 429, two subpages read | not stated | S N S N N N | Adopted: `documentation-protocol.md:288-292` and the Guide, Runbook and Policy templates |
+| DS-06 | specdriven.ai | no date | not stated | S S S S S N | Not adopted: adds nothing beyond `sdlc.md:40-48` |
+| DS-07 | GitHub Spec Kit | no date; persisting-specs page now loads | MIT | S S S S S N | Adopted: `sdlc.md:42-48` adapts it; Spec, Plan and Task templates |
+| DS-08 | Microsoft SDD blog | 2026-06-10 | not stated | S S S S S N | Not adopted: restates Spec Kit |
+| DS-09 | Practical SDD article | "Jun 8", year not shown; first direct read | not stated | N S S S N N | Not adopted: introductory, already covered by `sdlc.md` |
+| DS-10 | C4 model | no date | CC BY 4.0 | S N S N N N | Not adopted: optional; the description template could name C4 levels only if diagrams become required |
+| DS-11 | ADR (adr.github.io) | no date | "Some rights reserved" | S N N S N N | Adopted: the decision template and the ADR lifecycle in `sdlc.md` |
+| DS-12 | arc42 | no date | CC BY-SA 4.0 | S N S N S S | Adopted in part: the description template carries a subset of arc42 sections |
+
+No source is a change candidate: four are adopted, and the rest add nothing
+this repository lacks or are out of scope. A source informs a choice here and
+never stands in for the owner's authority.
+
 ### Read denominator
 
 | Surface | Discovered | Read | Not read |
@@ -312,19 +340,21 @@ those agents and are re-verified by each receiving work unit before it edits.
 | AGENTS full link check | 112 | W117 | metadata-links-lifecycle | `check-document-links.py --mode all` on the `4bb4add1f` working tree | PASS | PASS: document link mode all; renderer drift 0 | optional | - |
 | External sources re-check | 112 | W117 | research-recheck | RS-09, RS-18, RS-22, RS-39, RS-49 and RS-50 primary URLs fetched 2026-11-12 | PASS | All six retrieved; each narrow claim supported with a quoted sentence; applied instructions are project choices | optional | - |
 | PR 953-959 diff review | 112 | W117 | pull-request-diff-review | First-parent diffs and bodies of merges `0a726ee1c` to `4cd25b95b` | PASS | Review completed; no protected-work regression; one Important record gap and minor mismatches dispositioned in the table above | required | - |
+| Designated sources review | 112 | W117 | research-review | 12 designated sources fetched 2026-11-12 by three read-only agents | PASS | 72 of 72 cells judged S or N, none UNVERIFIED; adoption recorded per source; DS-05 home page HTTP 429, judged from two subpages | required | - |
 | Intake independent review result | 112 | W117 | independent-document-review | Fresh-context code-reviewer of `7f1c82ab9` and `ce56a7256` contents | PASS | APPROVED. Three minor findings fixed: a `main-protection.md` line citation, the superseded Spec prose for criterion 111, and the overstated guard coverage (H-12 added). 9 of 10 citations spot-checked matched | required | Intake independent review |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 112 | pending | - | - | SPEC-0212 TSK-0059 |
+| 112 | accepted | W00 v14.7 intake assessment, Intake document checks result, Intake independent review result, PR 953-959 diff review, Designated sources review | Owner accepted on 2026-11-12 in this chat. Handoffs H-04 (13 roles), H-06 to H-10 and H-12, OPEN-04 (BLOCKED_EVIDENCE) and OPEN-08, 10, 13 (UNVERIFIED) stay with their named owners | SPEC-0212 TSK-0059 |
 
 ## Review and Completion
 
 In progress. The assessment and the two conflict corrections are recorded.
-The document checks and the independent review pass. Criterion 112 waits for
-owner acceptance.
+The owner accepted criterion 112 on 2026-11-12. The Task stays in progress
+only as the record of the common form migration it started; the remaining
+roles belong to W03 and W04.
 
 Open, with owners:
 
