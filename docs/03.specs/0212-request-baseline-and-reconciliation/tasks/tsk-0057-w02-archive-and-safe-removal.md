@@ -1,6 +1,6 @@
 ---
 title: "W02 Archive and Safe Removal Task"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -353,21 +353,24 @@ Both are recorded for the owner.
 | W02 consumer tests | 110 | W115 | consumer-unittest | `tests.validation.lifecycle.test_occupancy`, `tests.lib.document_governance.test_spec_packages` and `test_operations_catalog`, plus corpus lifecycle, in a worktree pinned at `8659f05a6` | PASS | 236 tests OK in 1038 s; occupancy 0 violations | required | - |
 | W02 v14.7 review result | 110 | W115 | independent-review | Commits `5a5fa122d`, `82275d313` and `4b7021386` | PASS | code-reviewer re-reviews: I1 to I5, M1 to M7, N1 to N3 and R1 to R3 resolved; final verdict PASS | required | W02 v14.7 review |
 | W02 document checks | 110 | W115 | metadata-links-governance | HEAD `82275d313`, clean tree, covering the protocol, Stage 01, 02, 03 and 05 changes and the removal | PASS | metadata check-changed selected 52 violations 0; links all PASS; occupancy 0; operations catalog PASS; agent governance contract PASS; renderer drift 0 | required | - |
+| W02 blocking-case scenarios result | 110 | W115 | removal-blocking-scenarios | Scratch repository outside this one, run on 2026-11-12 after the owner approved it | PASS | The normal body is reachable with matching bytes. An uncommitted difference, a squash-dropped intermediate commit, a reflog-only commit and a body missing from a shallow clone are each detected as blocking. A missing historical consumer is blocked by link alignment and `package-retirement-unrecorded` (W02 removal dry-run). A hold has no Git signal; precondition 5 checks it from the Task record | required | W02 blocking-case scenarios |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 110 | pending | - | - | SPEC-0212 TSK-0057 |
+| 110 | accepted | W02 obligation assessment result, W02 batch removal, W02 post-merge recovery, W02 code review, W02 remote candidate final, W02 adapter without apt, W02 v14.7 assessment, W02 SPEC-0267 promotion final, W02 SPEC-0267 removal, W02 consumer tests, W02 v14.7 review result, W02 document checks, W02 blocking-case scenarios result | Owner accepted on 2026-11-12 in this chat. The SPEC-0267 post-merge byte comparison stays an open obligation of this Task; H-W02-1 (W05) and H-W02-2 (W03) stay with their owners | SPEC-0212 TSK-0057 |
 
 ## Review and Completion
 
 In progress. The assessment, the dry-run, the reproduced-gap changes and the
 removal of 0226, 0266, 0268 and 0269 are recorded, with their criterion state
-and post-merge recovery. Criterion 110 waits for the owner.
+and post-merge recovery.
 
-v14.7: SPEC-0267 is removed in `06bf2e201`; its post-merge byte comparison is
-pending. The blocking-case scenarios are NOT_RUN. H-W02-1 and H-W02-2 are open.
+v14.7: SPEC-0267 is removed in `06bf2e201`. The blocking-case scenarios
+passed after the owner approved them. The owner accepted criterion 110 on
+2026-11-12. Open: the SPEC-0267 post-merge byte comparison, which needs the
+branch merged to `main`, and H-W02-1 and H-W02-2.
 
 ## Related Documents
 
