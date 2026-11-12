@@ -75,7 +75,7 @@ enforced.
 | TERM-EXCEPTION | Exception | A limited departure from a standard with an approved condition, scope, reason, end or review condition, and verification | Keeping an existing difference forever | [Quality standards](../governance/quality-standards.md) | v14.5 |
 | TERM-UNVERIFIED | Unverified | The state of a claim whose needed evidence was not obtained. It asserts neither a gap, nor non-applicability, nor completion | A confirmed missing implementation | [Output style](../governance/output-style.md) | v14.5 |
 | TERM-KEEP | Keep | A change action meaning the current target and real consumers were confirmed to fit, so no change is needed; open acceptance stays separate | Exempting an approved artifact from reform | This vocabulary; the verdict lives in the owning Task | v14.5 |
-| TERM-RELEASE-OPERATION | Release Operation | The operational work on tags, artifacts, GitHub Releases and public delivery. Release is not a document role | Re-introducing a Release document role | [Documentation protocol](../governance/documentation-protocol.md#release-evidence-boundary) | v14.5 |
+| TERM-RELEASE-OPERATION | Release Operation | The operational work on tags, artifacts, GitHub Releases and public delivery. Release is not a document role | Bringing back a separate document type for releases | [Documentation protocol](../governance/documentation-protocol.md#release-evidence-boundary) | v14.5 |
 
 ## Local Extensions
 
