@@ -1,10 +1,10 @@
 ---
 title: "Folder Guide Delivery Specification"
-version: "0.4.1"
+version: "0.4.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0264"
 parent_ids:
@@ -24,7 +24,7 @@ them when an agent works below the folder. This Spec contracts how each
 provider receives the nearest folder guide: Claude Code through a generated
 folder `CLAUDE.md` import shim, Codex through one shared hook.
 
-### Background
+### Owning Requirements
 
 The owner requested on 2026-11-06 that Codex and Claude read each folder's
 `AGENTS.md`, and first chose one shared hook over folder `CLAUDE.md` shims.
@@ -44,6 +44,8 @@ compaction, and expands an `@AGENTS.md` import in it. Headless Claude Code
 a Write without a prior Read, also when the renderer marker comment and a
 heading precede the import.
 
+This Spec makes concrete REQ-0024 and AD-0027, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier.
+
 ## Scope
 
 ### In Scope
@@ -58,13 +60,13 @@ heading precede the import.
 - The `.claude/provider.md` and `.codex/provider.md` descriptions.
 - The audit of the folder `AGENTS.md` files in the same branch.
 
-### Out of Scope
+### Non-goals
 
 - A shim at the root; root `CLAUDE.md` stays the bootstrap entry shim.
 - Delivery on a Codex shell read; only `apply_patch` triggers delivery.
 - Changing what a guide says beyond the audit.
 
-## Contracts
+## Behavior Contract
 
 ### Normal Behavior
 
@@ -84,25 +86,38 @@ full nearest folder guide to `additionalContext` once per session, the first
 time `apply_patch` touches a file below it, plus the same reminders. The root
 `AGENTS.md` is never delivered.
 
-### Error Behavior
+The state directory must be owned by the current user with mode 0700, else it
+is not used. The hook adds no tool permission or approval.
+
+### Failure and Edge Cases
 
 The hook never blocks a tool call. Any failure in guide lookup, state access or
 reading leaves the tool call allowed and delivers nothing. The renderer never
 overwrites a folder `CLAUDE.md` that lacks its marker; `--write` stops with an
 error instead.
 
-### Boundary Behavior
-
 A guide larger than 16 KiB is capped. State lives under
 `$XDG_STATE_HOME/hy-home/folder-guides`, default `~/.local/state`, and is
 replaced atomically.
 
-### Constraints
+**Observable failures.**
 
-The state directory must be owned by the current user with mode 0700, else it
-is not used. The hook adds no tool permission or approval.
+- A guide missing before an edit, or repeated within a session.
+- A folder guide without its shim, or a shim without its guide, passing
+  `provider_surface_renderer.py --check`.
+- The root guide delivered.
+- A tool call blocked by the hook.
+- State in a directory not owned by the user or not mode 0700.
+
+**Stop boundaries.**
+
+A Codex shell read does not trigger delivery. Native delivery in a live
+session is not yet observed; only dispatcher tests exist until criterion 8 is
+accepted.
 
 ## Acceptance Criteria
+
+### Criteria
 
 1. Before an edit below a folder with an `AGENTS.md`, Codex (`apply_patch`)
    receives that guide in `additionalContext`, and Claude receives it through
@@ -128,27 +143,22 @@ is not used. The hook adds no tool permission or approval.
 10. The metadata, link, agent governance and script manifest checks and the
     stage loaders accept the shims.
 
-## Failure Conditions
+### Evidence Requirements
 
-### Observable Failures
+- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Task under `tasks/` (`tsk-0001-deliver-folder-guides.md`) with actual results, not intended ones.
+- Verification uses the checks the package [Plan](plan.md) and that Task name; a criterion with no recorded observation is unverified.
+- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
 
-- A guide missing before an edit, or repeated within a session.
-- A folder guide without its shim, or a shim without its guide, passing
-  `provider_surface_renderer.py --check`.
-- The root guide delivered.
-- A tool call blocked by the hook.
-- State in a directory not owned by the user or not mode 0700.
+## References
 
-### Stop Boundaries
-
-A Codex shell read does not trigger delivery. Native delivery in a live
-session is not yet observed; only dispatcher tests exist until criterion 8 is
-accepted.
-
-## Related Documents
+### Normative and Evidence
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-deliver-folder-guides.md)
 - [README and AGENTS.md split](../0251-readme-and-agents-guide-split/spec.md)
 - [Claude adapter](../../../.claude/provider.md)
 - [Codex adapter](../../../.codex/provider.md)
+
+### Historical and Navigation
+
+No retired, superseded or purely navigational link applies to this Spec.

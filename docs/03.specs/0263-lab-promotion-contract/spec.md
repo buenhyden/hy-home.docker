@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Specification"
-version: "0.4.0"
+version: "0.4.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0263"
 parent_ids:
@@ -30,7 +30,7 @@ This Spec defines four things:
 - the check that decides whether a LAB may be promoted;
 - the procedure for each kind.
 
-### Background
+### Owning Requirements
 
 The owner stated the following on 2026-11-05:
 
@@ -112,6 +112,8 @@ Observed on 2026-11-05 at `c1db5ef65`:
   - It binds the Docker socket.
   - `scripts/operations/lab.py check` (PR #752) refuses all of these.
 
+This Spec makes concrete REQ-0004 and AD-0026, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier.
+
 ## Scope
 
 ### In Scope
@@ -126,7 +128,7 @@ Observed on 2026-11-05 at `c1db5ef65`:
 - Bringing the 15 LABs present on 2026-11-05 into the standard layout, and
   retiring the supabase LAB on 2026-11-06.
 
-### Out of Scope
+### Non-goals
 
 - Promoting any LAB. Each promotion is a later Task under this Spec with its
   own owner approval and operating window.
@@ -136,7 +138,7 @@ Observed on 2026-11-05 at `c1db5ef65`:
   `volumes_from`, host `pid` or `network_mode`, `cap_add`). These stay a
   recorded residual risk.
 
-## Contracts
+## Behavior Contract
 
 ### Normal Behavior
 
@@ -293,7 +295,11 @@ data format to the new one, because the products differ.
 Each procedure is a Runbook in the target role folder. The promotion Task
 records the actual results.
 
-### Error Behavior
+The POL-0078 profile vocabulary, the `infra/` tier layout tests and the LAB
+isolation tests stay authoritative. Document moves keep artifact identifiers
+and creation dates. No secret value is read or written.
+
+### Failure and Edge Cases
 
 `lab.py check` refuses a LAB that is not in the standard layout, has no valid
 manifest, or reads a HOME secret path. The readiness check refuses a promotion
@@ -318,8 +324,6 @@ These were decided while drafting the Spec, not by the owner:
 Moving each Compose file one folder deeper changes the base that relative
 paths resolve against, so every relative path in a moved LAB is adjusted.
 
-### Boundary Behavior
-
 Bringing LABs into the standard layout moves sources, documents and catalog
 rows only, and starts nothing.
 
@@ -327,13 +331,25 @@ The public registry `secrets/SENSITIVE_ENV_VARS.md.example` is outside the
 agent's permitted paths. The agent prepares its placeholder edits and the
 owner applies them.
 
-### Constraints
+**Observable failures.**
 
-The POL-0078 profile vocabulary, the `infra/` tier layout tests and the LAB
-isolation tests stay authoritative. Document moves keep artifact identifiers
-and creation dates. No secret value is read or written.
+Any of these is a failure:
+
+- a LAB file outside its folder;
+- a LAB without a manifest, or with a manifest that disagrees with its
+  rendered limits;
+- a LAB reading a HOME secret;
+- a promotion procedure without a rollback;
+- a readiness report that passes a value it did not measure.
+
+**Stop boundaries.**
+
+This Spec promotes no LAB and starts no container. The owner applies every
+change to `secrets/SENSITIVE_ENV_VARS.md.example`.
 
 ## Acceptance Criteria
+
+### Criteria
 
 1. Every LAB lives in `labs/<name>/` with its `docker-compose.yml`, `README.md`
    and assets. Only `labs/README.md` and `labs/.env.example` remain at the
@@ -359,27 +375,20 @@ and creation dates. No secret value is read or written.
    sum reservations plus the external-workload allowance, and report owner
    check items as owner judgment.
 
-## Failure Conditions
+### Evidence Requirements
 
-### Observable Failures
+- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Tasks under `tasks/` (`tsk-0001-lab-promotion-contract.md`, `tsk-0002-lab-promotion-reservations.md`, `tsk-0003-retire-supabase-lab.md`) with actual results, not intended ones.
+- Verification uses the checks the package [Plan](plan.md) and those Tasks name; a criterion with no recorded observation is unverified.
+- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
 
-Any of these is a failure:
+## References
 
-- a LAB file outside its folder;
-- a LAB without a manifest, or with a manifest that disagrees with its
-  rendered limits;
-- a LAB reading a HOME secret;
-- a promotion procedure without a rollback;
-- a readiness report that passes a value it did not measure.
+### Normative and Evidence
 
-### Stop Boundaries
+- [LAB operations guides](../../05.operations/guides/15-labs/README.md)
+- [Analytics LAB migration](../0262-analytics-labs-migration/spec.md)
 
-This Spec promotes no LAB and starts no container. The owner applies every
-change to `secrets/SENSITIVE_ENV_VARS.md.example`.
-
-## Related Documents
+### Historical and Navigation
 
 - [LAB README](../../../labs/README.md)
 - [infra README](../../../infra/README.md)
-- [LAB operations guides](../../05.operations/guides/15-labs/README.md)
-- [Analytics LAB migration](../0262-analytics-labs-migration/spec.md)

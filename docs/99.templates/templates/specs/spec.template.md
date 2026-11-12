@@ -22,11 +22,13 @@ created: "{{CREATED}}"
 
 ### Intent
 
-{{INTENT_AND_PROBLEM}}
+{{INTENT_AND_USER_VALUE}}
 
-### Background
+### Owning Requirements
 
-{{BACKGROUND_AND_REQUIREMENT_LINKS}}
+<!-- Author prompt: Name the Requirement IDs and Architecture or ADR constraints this Spec makes concrete; list them in frontmatter `parent_ids` when the Registry requires it. -->
+
+{{OWNING_REQUIREMENTS_AND_CONSTRAINTS}}
 
 ## Scope
 
@@ -34,45 +36,45 @@ created: "{{CREATED}}"
 
 {{IN_SCOPE}}
 
-### Out of Scope
+### Non-goals
 
-{{OUT_OF_SCOPE}}
+{{NON_GOALS_AND_WITHHELD_AUTHORITY}}
 
-## Contracts
+## Behavior Contract
 
 ### Normal Behavior
 
-{{NORMAL_BEHAVIOR}}
+{{PRECONDITIONS_INPUTS_OUTPUTS_AND_INVARIANTS}}
 
-### Error Behavior
+### Failure and Edge Cases
 
-{{ERROR_BEHAVIOR}}
+<!-- Author prompt: State violations, boundaries, cancellation, observable failures, recovery and the points where work stops for a human. -->
 
-### Boundary Behavior
-
-{{BOUNDARY_BEHAVIOR}}
-
-### Constraints
-
-{{CONSTRAINTS}}
+{{FAILURE_EDGE_AND_STOP_CASES}}
 
 ## Acceptance Criteria
+
+### Criteria
 
 <!-- Author prompt: Use a numbered list of observable criteria; keep those numbers stable while Plan and Task evidence refers to them. -->
 <!-- Author prompt: An accepted criterion needs PASS evidence and no unresolved FAIL in its Task; only a `not-required` decision closes it without PASS. Cancellation disposition never closes a criterion. -->
 
 {{ACCEPTANCE_CRITERIA}}
 
-## Failure Conditions
+### Evidence Requirements
 
-### Observable Failures
+<!-- Author prompt: Use bullets, never a numbered list: every numbered line in this H2 is read as a criterion. Name the observation, the verification method and who judges. -->
 
-{{OBSERVABLE_FAILURE_CONDITIONS}}
+{{EVIDENCE_REQUIREMENTS}}
 
-### Stop Boundaries
+## References
 
-{{STOP_BOUNDARIES}}
+### Normative and Evidence
 
-## Related Documents
+{{CURRENT_REQUIREMENTS_DESIGN_POLICY_AND_EVIDENCE_LINKS}}
 
-{{RELATED_DOCUMENTS}}
+### Historical and Navigation
+
+<!-- Author prompt: Mark historical links as non-authoritative; navigation links only help readers find related documents. -->
+
+{{HISTORICAL_AND_NAVIGATION_LINKS}}

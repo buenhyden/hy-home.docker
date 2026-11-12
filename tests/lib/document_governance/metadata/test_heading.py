@@ -41,7 +41,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "requirements-package": "Overview|Scope|Requirements|Acceptance Criteria|Traceability",
             "architecture-description": "Overview|Scope|Structure|Runtime and Deployment|Quality and Risks|Related Documents",
             "adr": "Context|Decision Drivers|Options|Decision|Consequences|Related Documents",
-            "spec": "Overview|Scope|Contracts|Acceptance Criteria|Failure Conditions|Related Documents",
+            "spec": "Overview|Scope|Behavior Contract|Acceptance Criteria|References",
             "plan": "Overview|Scope|Work Breakdown|Verification Plan|Risks and Recovery|Related Documents",
             "task": "Overview|Inputs and Authorization|Work Log|Evidence|Criterion Acceptance|Review and Completion|Related Documents",
             "guide": "Overview|Scope|Concepts|Usage|Troubleshooting|Related Documents",
@@ -400,6 +400,12 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Non-functional Requirements", "body-subheading-forbidden"),
                 ("### Interface Requirements", "body-subheading-forbidden"),
+            ),
+            "spec": (
+                ("## Contracts", "body-heading-forbidden"),
+                ("## Failure Conditions", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Out of Scope", "body-subheading-forbidden"),
             ),
         }
         for profile_id, cases in old_forms.items():

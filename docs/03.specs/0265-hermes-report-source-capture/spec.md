@@ -1,6 +1,6 @@
 ---
 title: "Hermes Report Source Capture Specification"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -29,7 +29,7 @@ the finalized report once, stores it immutably, and derives the email, the
 Telegram text and the Gateway request from the same stored bytes. The decision
 is [ADR-0060](../../02.architecture/decisions/0060-hermes-report-source-contract.md).
 
-### Background
+### Owning Requirements
 
 The owner answered "초안 작성 (권장)" on 2026-11-06 to drafting this contract,
 and "Backfill 제외 (권장)" for the 16 existing Gateway reports. Predecessor
@@ -48,6 +48,8 @@ same-UID audit binding, not producer authentication or independent Attestation.
 The Attester verifies items by independent fetch and does not read `source_text`.
 The report bytes added here prove sameness of output, not truth of content.
 
+This Spec makes concrete REQ-0004 and REQ-0005 and the Architecture Descriptions AD-0004 and AD-0031, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier. It also applies ADR-0060 (the report source contract) and the blog-data ADR-0097 definition of `source_text` named in the Intent.
+
 ## Scope
 
 ### In Scope
@@ -64,7 +66,7 @@ The report bytes added here prove sameness of output, not truth of content.
 - Work units for the owner-approved schema 5 rollout and backfill exclusion
   (definition and evidence slots only).
 
-### Out of Scope
+### Non-goals
 
 - Any `ingestion-v1`, attestation/2 or export contract change.
 - A classification parser or field; body-only classification claims nothing
@@ -80,7 +82,7 @@ The report bytes added here prove sameness of output, not truth of content.
 - Blog-data code, including the per-report exclusion capability; it is a
   prerequisite delivered in that repository.
 
-## Contracts
+## Behavior Contract
 
 ### Normal Behavior
 
@@ -133,7 +135,15 @@ The report bytes added here prove sameness of output, not truth of content.
 7. **Scratch paths.** Each execution uses a unique scratch path (including
    `execution_id`) in place of `email_body.html`.
 
-### Error Behavior
+- The report file and the receipt-set record are private (0600, owner only) and
+  hold no secret values; the plugin does not copy environment values into them.
+- Metric labels are limited to low-cardinality values (job kind, outcome,
+  reason). No URL, run, execution or report ID is a label or a metric name.
+- The Gateway rollout order is fixed: backup on the schema-4 image, restore
+  test on a copy, then cutover. After cutover the old image is never attached
+  to a schema-5 database.
+
+### Failure and Edge Cases
 
 - A submission whose report argument is missing, empty, not well-formed UTF-8,
   or sent before the report is final is rejected with a stable error code and
@@ -156,23 +166,32 @@ The report bytes added here prove sameness of output, not truth of content.
 - Gateway persistence is not final delivery; the email, Telegram and Gateway
   results are recorded separately.
 
-### Boundary Behavior
-
 The report is stored and hashed as bytes; the plugin applies no newline or
 Unicode normalization (the Gateway applies none to `source_text`). The stored
 file survives cron output retention because the plugin owns it, not Hermes.
 
-### Constraints
+**Observable failures.**
 
-- The report file and the receipt-set record are private (0600, owner only) and
-  hold no secret values; the plugin does not copy environment values into them.
-- Metric labels are limited to low-cardinality values (job kind, outcome,
-  reason). No URL, run, execution or report ID is a label or a metric name.
-- The Gateway rollout order is fixed: backup on the schema-4 image, restore
-  test on a copy, then cutover. After cutover the old image is never attached
-  to a schema-5 database.
+- `source_text` that is not the stored report bytes, or a digest that differs
+  from them.
+- A receipt-set record missing, overwritten or not matching `source_ref`.
+- An email or Telegram text not derived from the stored file.
+- A report file overwritten, world-readable, or not bound to its execution.
+- A new field in the `ingestion-v1` request.
+- A metric label carrying a URL or an ID.
+- Backfill applied while the 16 existing reports are not excluded.
+- An operation step reported PASS without direct evidence.
+
+**Stop boundaries.**
+
+Stop and route to the owner when the report cannot be obtained, the Gateway
+size limits cannot hold the report, Blog-data cannot exclude reports before
+apply, or any runtime step lacks owner approval. A runtime step that is not run
+stays NOT_RUN.
 
 ## Acceptance Criteria
+
+### Criteria
 
 1. `submit_research_report` exposes a bumped tool contract version with one
    report argument, and its schema rejects any extra field. A plugin test shows
@@ -259,30 +278,21 @@ file survives cron output retention because the plugin owns it, not Hermes.
     schema-4 backup and reattaches `c05e5b88`; the old image is never attached
     to a schema-5 database.
 
-## Failure Conditions
+### Evidence Requirements
 
-### Observable Failures
+- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Task under `tasks/` (`tsk-0001-report-source-capture.md`) with actual results, not intended ones.
+- Verification uses the checks the package [Plan](plan.md) and that Task name; a criterion with no recorded observation is unverified.
+- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
 
-- `source_text` that is not the stored report bytes, or a digest that differs
-  from them.
-- A receipt-set record missing, overwritten or not matching `source_ref`.
-- An email or Telegram text not derived from the stored file.
-- A report file overwritten, world-readable, or not bound to its execution.
-- A new field in the `ingestion-v1` request.
-- A metric label carrying a URL or an ID.
-- Backfill applied while the 16 existing reports are not excluded.
-- An operation step reported PASS without direct evidence.
+## References
 
-### Stop Boundaries
-
-Stop and route to the owner when the report cannot be obtained, the Gateway
-size limits cannot hold the report, Blog-data cannot exclude reports before
-apply, or any runtime step lacks owner approval. A runtime step that is not run
-stays NOT_RUN.
-
-## Related Documents
+### Normative and Evidence
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-report-source-capture.md)
 - [ADR-0060](../../02.architecture/decisions/0060-hermes-report-source-contract.md)
 - [SPEC-0212 TSK-0050](../0212-request-baseline-and-reconciliation/tasks/tsk-0050-hermes-provenance-trust-export.md)
+
+### Historical and Navigation
+
+No retired, superseded or purely navigational link applies to this Spec.

@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.12.0"
+version: "1.12.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -17,6 +17,8 @@ created: "2026-10-03"
 # Service Integration, Security, and Operations Specification
 
 ## Overview
+
+### Intent
 
 This package owns confirmed shared-service compatibility/security gaps and the
 infrastructure side of external-project connection, signals and recovery.
@@ -45,7 +47,7 @@ preserving prior source, acceptance decisions and historical Task receipts.
 They do not authorize HOME deployment, live ACL/data migration, secret use or
 production recovery without the separate concrete target and recovery boundary.
 
-### Technical Approach
+**Technical Approach.**
 
 Use four serial Tasks: confirmed compatibility/security corrections; an
 external-project integration contract and bounded discovery; backup and
@@ -86,7 +88,7 @@ failures without relabeling them. SPEC-0221 already owns the request
 precedence policy, hooks and validator. Change an enforcer with its regression
 only when a current conflict is found; otherwise record NO_CHANGE.
 
-### Interfaces and Data
+**Interfaces and Data.**
 
 - Input: reviewed current declarations, official release/security references,
   named service consumers, approved project metadata and secret **reference
@@ -108,7 +110,7 @@ only when a current conflict is found; otherwise record NO_CHANGE.
   coverage after Qdrant role-order parity correction; latest-head CI, review
   and delivery remain pending gates. It changes no operational resource.
 
-### Open Questions
+**Open Questions.**
 
 A real external project must identify its project ID, endpoint topology,
 OIDC/S3/search scopes, operator and recovery boundary before a live connection
@@ -121,16 +123,20 @@ wiring, real consumption, rotation and recovery are separate completion states.
 HOME PITR/offsite recovery and owner-held snapshot credentials remain with
 their existing Tasks; historical isolated PASS is not a fresh HOME receipt.
 
-### Operational Impact
+**Operational Impact.**
 
 Future source changes may alter native workflow execution, crawler rejection,
 secret consumption and backup scheduling when deployed. The exact executing
 stage binds target, impact and recovery before acting. P00 performs no such
 runtime change; authorized delivery is independent of those unexecuted lanes.
 
+### Owning Requirements
+
+This Spec makes concrete the frontmatter parents REQ-0027 (HOME development host), AD-0031 and ADR-0062 (HOME LAB membership). The body cites REQ-0026, AD-0030 and ADR-0037 only as traceability links, and cites no REQ-####-FR or REQ-####-NFR identifier.
+
 ## Scope
 
-### Boundaries and Inputs
+### In Scope
 
 Use the current root include graph, service Compose/Dockerfiles/entrypoints,
 tracked configuration and key-only environment contracts, current Stage 01/02/03
@@ -143,6 +149,8 @@ temporality/retry/restart evidence. Its real application target, SeaweedFS
 object handoff and live Grafana result reader remain unverified; synthetic
 metrics acceptance is not a live external-project receipt. Archived
 SPEC-0199/0200 provide no current approval.
+
+### Non-goals
 
 No business project ID, external deployment topology, application endpoint,
 OIDC client, S3 identity, search authority, traffic budget, or speech product
@@ -158,9 +166,9 @@ navigation, Registry links and path checks; that documentation exception
 authorizes no LAB runtime action. Do not read secret values, private environment
 files, authentication files, raw HOME logs, or user data.
 
-## Contracts
+## Behavior Contract
 
-### Behavior Contract
+### Normal Behavior
 
 1. All changes are classified as confirmed source defects, consumer-dependent
    design, or runtime-unverified conditions. Each service row names the actual
@@ -254,7 +262,7 @@ files, authentication files, raw HOME logs, or user data.
     with upstream source or runtime evidence. A service whose image ignores
     a key stays out of the HOME selection until it is fixed.
 
-### P08 operations-document layout contract
+**P08 operations-document layout contract.**
 
 TSK-0015 continues criterion 8 and SPEC-0212 requirement 25 without reopening
 completed SPEC-0212/P00 or SPEC-0227 body-refresh evidence. Inspect every tracked
@@ -282,7 +290,7 @@ leases and fixed feature-owner SHAs. Future delivery requires an owning-Spec PR,
 exact-head CI and independent review before merge; operational acceptance is not
 inferred from document relocation.
 
-### Hermes ingestion transport contract
+**Hermes ingestion transport contract.**
 
 The direct 2026-10-30 request adds the bounded TSK-0022 continuation. Existing
 Hermes Cron jobs and email remain producers. The active structured exporter
@@ -340,9 +348,26 @@ record of two Export 1.0 ACKs; SPEC-0212-TSK-0050 owns the current local
 source/isolated Export 2.0 contract and leaves a new Windows ACK as a separate
 required lane.
 
+### Failure and Edge Cases
+
+**Observable failures and stop boundaries.**
+
+Reject version mismatch, unsupported `_FILE` variables, missing selected
+secret, unsafe redirect, public unauthenticated machine API, unknown project
+label, cross-project read/write, unbounded crawler egress, sealed-is-healthy
+claims, missing WAL/backups, and projection drift. Preserve unrelated worker
+changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
+credential rotation, DNS/firewall edit or HOME restart without the named target
+and recovery boundary. The current request authorizes source/docs/tests and
+logical commits; each remaining owning-Spec delivery uses its PR, exact-head CI
+and independent review before merge. `dev` is excluded throughout. This does
+not reclassify historical local-main receipts or absorb unrelated
+integration/runtime commits.
+Missing permission or target defers only the dependent operation.
+
 ## Acceptance Criteria
 
-### Acceptance Contract
+### Criteria
 
 1. Current service evidence and owner/file/variable/consumer/regression/
    rollback/approval ledger is complete, and no existing feature acceptance
@@ -610,32 +635,21 @@ required lane.
     boundary neither authenticates nor accepts another.
 <!-- markdownlint-enable MD029 -->
 
-## Failure Conditions
+### Evidence Requirements
 
-### Failure Modes and Guardrails
+- Each criterion is evidenced by rows in the Task under `tasks/` that owns its lane (for example the Hermes transport, P08 layout and P10 opsflow acceptance Tasks); a row records the observation, the check run and its actual result.
+- Source, document and regression checks named by a criterion are run by the executing Task owner and recorded with their real result; `NOT_RUN`, `BLOCKED` and unknown runtime facts stay visible and are not counted as passes.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records acceptance; historical receipts are not fresh runtime evidence.
 
-Reject version mismatch, unsupported `_FILE` variables, missing selected
-secret, unsafe redirect, public unauthenticated machine API, unknown project
-label, cross-project read/write, unbounded crawler egress, sealed-is-healthy
-claims, missing WAL/backups, and projection drift. Preserve unrelated worker
-changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
-credential rotation, DNS/firewall edit or HOME restart without the named target
-and recovery boundary. The current request authorizes source/docs/tests and
-logical commits; each remaining owning-Spec delivery uses its PR, exact-head CI
-and independent review before merge. `dev` is excluded throughout. This does
-not reclassify historical local-main receipts or absorb unrelated
-integration/runtime commits.
-Missing permission or target defers only the dependent operation.
+## References
 
-## Related Documents
+### Normative and Evidence
 
 - [Hermes transport Task](tasks/tsk-0022-hermes-blog-ingestion.md)
 
 - [P10 opsflow acceptance Task](tasks/tsk-0016-p10-opsflow-acceptance.md)
 
 - [P08 operations-document layout Task](tasks/tsk-0015-p08-operations-document-layout.md)
-
-### Traceability
 
 - [Current request reconciliation](../0212-request-baseline-and-reconciliation/spec.md)
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
@@ -648,3 +662,7 @@ Missing permission or target defers only the dependent operation.
 - SPEC-0201
 - SPEC-0202
 - SPEC-0203
+
+### Historical and Navigation
+
+No historical or navigation link applies; every link above is current authority or evidence.

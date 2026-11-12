@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.53.0"
+version: "1.53.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -20,6 +20,8 @@ created: "2026-10-07"
 # Request Baseline and Reconciliation
 
 ## Overview
+
+### Intent
 
 The earlier 11–30 request replaced P00's routing while preserving issued
 IDs, created dates and completed Task bodies. The current coordination audit is
@@ -202,7 +204,13 @@ TSK-0060. It records this repository's local adoption of each common contract
 revision and corrects governance policy that conflicts with the current
 requirement; Registry and template changes stay with W03.
 
+### Owning Requirements
+
+This Spec makes concrete the frontmatter parents REQ-0004, REQ-0005, REQ-0024 and REQ-0027 together with AD-0004 and AD-0031. The body also cites REQ-0003 (the ISO/IEC measurement wording in the acceptance text) and ADR-0050, ADR-0003 and ADR-0018 (the Vault ADR acceptance and archival recorded for criterion 49/W54); it cites no REQ-####-FR or REQ-####-NFR identifier.
+
 ## Scope
+
+### In Scope
 
 LLM Wiki work is preparation only: documentation, schema, connection contract,
 synthetic fixtures and future acceptance criteria are allowed. Wiki Core/API/UI,
@@ -214,9 +222,15 @@ LAB runtime is excluded; P08 may make actual typed `labs/` document moves with
 required READMEs, links, Registry and path checks. Learning applications remain
 excluded, including planning.
 
-## Contracts
+### Non-goals
 
-### Current P01 inventory contract (2026-11-01)
+This Spec states no separate exclusion list; the exclusions that apply are stated inside the In Scope text above.
+
+## Behavior Contract
+
+### Normal Behavior
+
+**Current P01 inventory contract (2026-11-01).**
 
 This P01 uses the input workspace and current write boundary, not a historical
 repository name, SHA or service total. `scan`, `compare` and `validate` expose
@@ -251,7 +265,7 @@ P02–P12 routes are handoff labels, not user/account authority. DATA-0096 is a
 non-normative observation consumed by TSK-0040 and exact downstream handoffs;
 existing service, port, Secret and version sources remain canonical.
 
-### Current request scope (historical items 11–30)
+**Current request scope (historical items 11-30).**
 
 Each row has one primary execution owner and one disposition. Supporting
 stages do not own the same acceptance criterion. The Task records evidence,
@@ -295,7 +309,7 @@ barrier, mitigation, review date, exit condition, and rollback boundary.
 Latest-stable lookup does not itself prove a deployed, native, HOME, or
 recovery result.
 
-### Current infrastructure-audit routing (requirements 11–32)
+**Current infrastructure-audit routing (requirements 11-32).**
 
 `INFRA-P0` fixes common source boundaries before any variable source change;
 `INFRA-P1` then protects data, secrets, backups, and recovery prerequisites.
@@ -346,7 +360,7 @@ historical scope and grant no current remote action. The two external app
 planning instructions are reused outside tracked implementation; neither they
 nor Template readiness authorizes application or sibling-repository changes.
 
-### Current coordination audit
+**Current coordination audit.**
 
 The current audit is a source-routing and handoff record, not a replacement for
 the named owners' source, native, HOME, migration, rotation, recovery or
@@ -369,7 +383,7 @@ indexes and shared Tasks require an explicit single-writer lease before change.
 Existing worktrees show activity but do not prove a writer is active; unknown
 activity remains a handoff fact rather than an inferred lock release.
 
-### Evidence and authority
+**Evidence and authority.**
 
 1. Re-read `origin/main`, remote `main`, worktree state and differences from
    the baseline at the start of each unit. An equal main does not make an old
@@ -407,7 +421,7 @@ activity remains a handoff fact rather than an inferred lock release.
    and snapshot work delivered by PRs #409/#410; residual HOME and migration/
    recovery verification remains separate work.
 
-### R10 reconciliation boundaries
+**R10 reconciliation boundaries.**
 
 P01–P08 are purposes within this package, not eight new Specs. Preserve
 existing feature owners, issued IDs, historical failures and acceptance.
@@ -432,7 +446,25 @@ in place; no repeat native-memory migration or private-body audit is implied.
 P04 retires an asset only after its current consumers, retained assurance,
 hold, authorization and recovery requirements have been established.
 
+### Failure and Edge Cases
+
+**Observable failures and stop boundaries.**
+
+Reconciliation fails when a request item has competing acceptance owners,
+a source or historical receipt is presented as fresh runtime acceptance, or
+shared paths change without the assigned writer. Learning-app work, actual
+Wiki implementation, unproven consumer retirement and unnamed operational
+targets remain outside the routed execution boundaries.
+
+The infrastructure-audit coordination also fails if a ROOT-image result is
+called current without an official release/source date and compatibility
+assessment, a lower evidence stage is promoted, a shared path changes without
+its lease, or a destructive/secret/live action proceeds without its named
+target, backup, recovery boundary, and action-specific authorization.
+
 ## Acceptance Criteria
+
+### Criteria
 
 1. The current Task records local/remote baseline and worktree evidence,
    root/inventory set equality or exact differences, and private/LAB exclusions.
@@ -855,21 +887,15 @@ hold, authorization and recovery requirements have been established.
      state, and corrects conflicting governance policy with passing checks.
      Local adoption is never reported as adoption by another repository.
 
-## Failure Conditions
+### Evidence Requirements
 
-Reconciliation fails when a request item has competing acceptance owners,
-a source or historical receipt is presented as fresh runtime acceptance, or
-shared paths change without the assigned writer. Learning-app work, actual
-Wiki implementation, unproven consumer retirement and unnamed operational
-targets remain outside the routed execution boundaries.
+- Each criterion is evidenced by rows in the Task under `tasks/` that owns it; a row records the observation, the check run and its actual result, and unknown execution or approval evidence stays unknown.
+- Local source, document and registry checks are run by the Task owner; a local source PASS never substitutes for remote, runtime or approval evidence.
+- The frontmatter owner (`@buenhyden`) judges each criterion; criterion acceptance remains separate from independent implementation review.
 
-The infrastructure-audit coordination also fails if a ROOT-image result is
-called current without an official release/source date and compatibility
-assessment, a lower evidence stage is promoted, a shared path changes without
-its lease, or a destructive/secret/live action proceeds without its named
-target, backup, recovery boundary, and action-specific authorization.
+## References
 
-## Related Documents
+### Normative and Evidence
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
@@ -898,9 +924,15 @@ target, backup, recovery boundary, and action-specific authorization.
 - [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
 - [Current coordination audit Task](tasks/tsk-0006-current-coordination-audit.md)
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
-- [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
-- [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
+
 - [Integration owner](../0204-service-integration-security-and-operations/spec.md)
 - [Request precedence owner](../../../.agents/governance/bootstrap.md#authority-and-precedence)
 - [Home host requirement](../../01.requirements/0027-home-development-host.md)
 - [Home host architecture](../../02.architecture/descriptions/0031-home-development-host.md)
+
+### Historical and Navigation
+
+The following completed Tasks are historical records and non-authoritative history.
+
+- [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
+- [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
