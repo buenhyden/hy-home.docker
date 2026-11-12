@@ -1,6 +1,6 @@
 ---
 title: "W00 v14.7 Intake Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -201,6 +201,51 @@ H-03 and H-11:
 - H-11: no provider surface copies the glossary. `.claude/provider.md` reads
   knowledge files directly, and renderer drift is 0: KEEP.
 
+### Owner decision on the common form 2026-11-12
+
+Moving the 16 common roles to the `COMMON-DOC-FORM-1` H2 and H3 sections
+touches 728 current documents, 83 of them terminal: 52 completed Tasks, 30
+accepted ADRs and 1 published postmortem. Asked how terminal documents
+should be handled, the owner answered "입력한대로 (OLD FORM은 허용하지
+않는다)": the old form is not allowed. Each role therefore migrates all of
+its current documents, terminal ones included, in the same change as its
+Registry profile and template. Recorded facts, evidence rows, decisions and
+tables keep their content; only their section placement changes. This is an
+owner-directed amendment of terminal bodies for the form migration alone.
+
+### Common form migration 2026-11-12
+
+H-05 is done. A profile can now declare `required_subsections` and
+`optional_subsections` (an H2 mapped to its ordered H3 titles). The heading
+check reports a missing, repeated, unregistered or out-of-order H3, and a
+section whose whole body is a bare TODO, TBD, N/A or dash. The Registry
+rejects an H3 declared under an undeclared H2 or in both lists. The templates
+README describes the common form and the no-old-form rule.
+
+| Role | Profiles | Documents | State |
+| --- | --- | --- | --- |
+| Incident | incident | 1 | Migrated in `ffeee0e7f` |
+| Postmortem | postmortem | 1 (published) | Migrated in `ffeee0e7f` |
+| AGENTS | folder-agent-guide | 9 | Not started |
+| Skill | governance-skill | 24 | Not started |
+| Requirement | requirements-package | 18 | Not started |
+| Architecture | architecture-description | 27 | Not started |
+| ADR | adr | 30 (accepted) | Not started |
+| Spec | spec | 23 | Not started |
+| Plan | plan | 23 | Not started |
+| Task | task | 104 (52 completed) | Not started; moves with H-07 |
+| Guide | guide | 78 | Not started |
+| Runbook | runbook | 78 | Not started |
+| Policy | policy, governance-policy, governance-hook-policy | 109 | Not started |
+| Root README | repository-readme | 13 | Not started |
+| Stage README | readme | 60 | Not started |
+| Service README | package-readme | 130 | Not started |
+
+H-06 (the TemplateDefinition fields beyond sections) is still open. The
+section contract carries only the titles and their order; the per-section
+required and prohibited content stays a review duty, except the bare
+placeholder rule above.
+
 ### Read denominator
 
 | Surface | Discovered | Read | Not read |
@@ -228,6 +273,9 @@ those agents and are re-verified by each receiving work unit before it edits.
 | Intake independent review | 112 | W117 | independent-document-review | Branch diff against 4cd25b95b | NOT_RUN | Awaiting a read-only reviewer | required | - |
 | Vocabulary profile RED | 112 | W117 | red-green-proof | New `RepositoryVocabularyProfileTests` against the Registry at `ae5e6cf17` | FAIL | 1 of 2 failed: the glossary still classified as `governance-knowledge` | required | - |
 | Vocabulary profile GREEN | 112 | W117 | red-green-proof | Commits `07f1943c6`, `8903eeaf2` and the template placeholder fix | PASS | 2 tests OK; test_registry, test_heading and test_profile 228 OK; metadata check-active selected 534, violations 0; check-changed against main selected 14, violations 0 after the template title became `{{TITLE}}`; corpus lifecycle 0; links alignment 906 documents, 8293 links, failures 0; agent governance contract failures 0; renderer drift 0; script manifest PASS | required | Vocabulary profile RED |
+| Subsection contract RED | 112 | W117 | red-green-proof | New `SubsectionContractTests` and `SubsectionRegistryTests` against `522b781cb` | FAIL | 6 heading cases and 1 Registry case failed: no H3 model existed | required | - |
+| Subsection contract GREEN | 112 | W117 | red-green-proof | Commit `8a4714b7d` | PASS | Both test classes OK; test_registry, test_heading, test_profile and test_lifecycle OK; metadata check-active selected 534, violations 0; links alignment PASS | required | Subsection contract RED |
+| Incident and postmortem migration | 112 | W117 | form-migration | Commits `4ec4d7182` and `ffeee0e7f` | PASS | test_heading, test_registry and test_operations_catalog OK after the two form tests were updated; operations catalog PASS, including incident closure on the migrated postmortem; metadata check-active selected 534, violations 0; links all 907 documents, failures 0; P03 and P11 Hermes PASS; agent governance contract PASS. `check-candidate-preflight.sh` NOT_RUN: it is the OPEN-14 timeout leaf and its document checks ran individually | required | - |
 | Intake independent review result | 112 | W117 | independent-document-review | Fresh-context code-reviewer of `7f1c82ab9` and `ce56a7256` contents | PASS | APPROVED. Three minor findings fixed: a `main-protection.md` line citation, the superseded Spec prose for criterion 111, and the overstated guard coverage (H-12 added). 9 of 10 citations spot-checked matched | required | Intake independent review |
 
 ## Criterion Acceptance
@@ -244,7 +292,8 @@ owner acceptance.
 
 Open, with owners:
 
-- H-04 to H-10 and H-12. H-01, H-02, H-03 and H-11 are done.
+- H-04 (14 roles left), H-06, H-07 with the Task role, H-08, H-09, H-10 and H-12.
+  H-01, H-02, H-03, H-05 and H-11 are done.
 - OPEN-01, 02, 05, 09, 11, 12 and 14 (RESIDUAL_CONFIRMED).
 - OPEN-04 (BLOCKED_EVIDENCE).
 - OPEN-06, 08, 10 and 13 (UNVERIFIED).
