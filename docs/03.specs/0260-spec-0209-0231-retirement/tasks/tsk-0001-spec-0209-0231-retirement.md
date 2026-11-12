@@ -1,10 +1,10 @@
 ---
 title: "SPEC-0209 and SPEC-0231 Retirement Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0260-TSK-0001"
 parent_ids:
@@ -49,6 +49,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0260-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0260-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0260-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0260-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-12 |
 
 ### Decisions
 
@@ -106,15 +107,16 @@ progress under the approved parents. Hosted CI has not run.
 | E6 | 1, 2 | W1 | unit-tests | `test_spec_packages`, `test_registry`, `test_identity_history` with `/usr/bin/python3`, same uncommitted tree on 0ab42bc30 | PASS | 242 tests OK | required | - |
 | E7 | 4 | W3 | unit-tests | `tests/lib/document_governance` discovery with `/usr/bin/python3`, same uncommitted tree on 0ab42bc30 | PASS | 764 tests OK | required | - |
 | E8 | 4 | W3 | hosted-ci | GitHub Actions | NOT_RUN | branch not pushed | required | - |
+| E9 | 4 | W3 | hosted-ci | PR #737 merged as `e3bdc5133` from head `99553241c`; check rollup re-read with `gh pr view` on 2026-11-12 | PASS | 7 checks SUCCESS, 1 SKIPPED, none failing | required | E8 |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 1 | accepted | E1, E6 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 2 | accepted | E1, E6 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 3 | accepted | E2, E3, E4, E5 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 4 | accepted | E7, E9 | Accepted by the owner on 2026-11-12 | @buenhyden |
 
 ## Review and Completion
 
@@ -128,6 +130,13 @@ Recorded 2026-11-10 from `gh pr view`: #737 merge `e3bdc5133` at
 SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
 is a candidate that passed hosted CI. This receipt is not owner acceptance: no
 criterion is accepted and the status is unchanged.
+
+### Owner acceptance 2026-11-12
+
+On 2026-11-12 the owner accepted criteria 1, 2, 3, 4 in the
+SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
+results with the same check and work unit; the earlier rows are kept.
+The Task closes as `completed`.
 
 ## Related Documents
 
