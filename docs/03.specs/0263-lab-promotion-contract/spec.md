@@ -142,6 +142,10 @@ This Spec makes concrete REQ-0004 and AD-0026, its frontmatter `parent_ids`. The
 
 ### Normal Behavior
 
+The POL-0078 profile vocabulary, the `infra/` tier layout tests and the LAB
+isolation tests stay authoritative. Document moves keep artifact identifiers
+and creation dates. No secret value is read or written.
+
 #### 1. Standard LAB layout
 
 Every LAB is one folder, `labs/<name>/`, shaped like an `infra/` service
@@ -295,10 +299,6 @@ data format to the new one, because the products differ.
 Each procedure is a Runbook in the target role folder. The promotion Task
 records the actual results.
 
-The POL-0078 profile vocabulary, the `infra/` tier layout tests and the LAB
-isolation tests stay authoritative. Document moves keep artifact identifiers
-and creation dates. No secret value is read or written.
-
 #### 7. Drafting calls
 
 These were decided while drafting the Spec, not by the owner:
@@ -318,14 +318,14 @@ These were decided while drafting the Spec, not by the owner:
 Moving each Compose file one folder deeper changes the base that relative
 paths resolve against, so every relative path in a moved LAB is adjusted.
 
+### Failure and Edge Cases
+
 Bringing LABs into the standard layout moves sources, documents and catalog
 rows only, and starts nothing.
 
 The public registry `secrets/SENSITIVE_ENV_VARS.md.example` is outside the
 agent's permitted paths. The agent prepares its placeholder edits and the
 owner applies them.
-
-### Failure and Edge Cases
 
 `lab.py check` refuses a LAB that is not in the standard layout, has no valid
 manifest, or reads a HOME secret path. The readiness check refuses a promotion

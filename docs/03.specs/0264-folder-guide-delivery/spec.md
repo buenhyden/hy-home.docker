@@ -24,13 +24,6 @@ them when an agent works below the folder. This Spec contracts how each
 provider receives the nearest folder guide: Claude Code through a generated
 folder `CLAUDE.md` import shim, Codex through one shared hook.
 
-### Owning Requirements
-
-The owner requested on 2026-11-06 that Codex and Claude read each folder's
-`AGENTS.md`, and first chose one shared hook over folder `CLAUDE.md` shims.
-Later on 2026-11-06 the owner amended that choice to a shim for Claude and the
-hook for Codex ("Claude는 shim, Codex는 hook"), so this Spec returned to review.
-
 - Codex merges `AGENTS.md` only from the repository root down to the working
   directory (`codex-rs/core/src/agents_md.rs` in openai/codex).
 - Claude Code reads `AGENTS.md` only where no `CLAUDE.md` is on the path. Root
@@ -43,6 +36,13 @@ compaction, and expands an `@AGENTS.md` import in it. Headless Claude Code
 2.1.319 loaded a folder `CLAUDE.md` holding `@AGENTS.md` on a first Read and on
 a Write without a prior Read, also when the renderer marker comment and a
 heading precede the import.
+
+### Owning Requirements
+
+The owner requested on 2026-11-06 that Codex and Claude read each folder's
+`AGENTS.md`, and first chose one shared hook over folder `CLAUDE.md` shims.
+Later on 2026-11-06 the owner amended that choice to a shim for Claude and the
+hook for Codex ("Claude는 shim, Codex는 hook"), so this Spec returned to review.
 
 This Spec makes concrete REQ-0024 and AD-0027, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier.
 
