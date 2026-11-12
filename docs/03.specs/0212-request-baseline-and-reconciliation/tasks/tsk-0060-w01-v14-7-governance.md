@@ -232,6 +232,7 @@ documentation protocol; relation fields are W03's and state meanings W04's
 | W01 re-check review result | 113 | W118 | independent-review | Commits `6885be9cf`, `46fb58b84`, `5bc39297e` and `8628193b9` | PASS | rules-engineer re-review: 13 of 14 findings resolved, then the protocol's Task dependency and four minor items fixed; final verdict PASS | required | W01 re-check review |
 | W01 final checks | 113 | W118 | metadata-links-governance | HEAD `8628193b9` | PASS | metadata check-changed selected 29 violations 0; links alignment PASS; occupancy 0; agent governance contract PASS; renderer drift 0; operations catalog PASS | required | - |
 | W01 final tests | 113 | W118 | policy-unittest | Nine modules (`test_ci_gate_evidence`, `test_github_workflow_contract`, `test_agent_governance_ci_routing`, `test_spec_packages`, `test_registry`, `test_heading`, `test_profile`, `test_validator_entrypoints`, `test_generation7`) started at `8628193b9`. W02 edits to Stage 02 and 05 documents and to the protocol's retention section were made in the working tree during the run | PASS | 497 tests OK in 925 s | required | - |
+| W01 remote candidate | 113 | W118 | remote-candidate-quality | PR #960 head `a4b6c327f`, hosted run 43169451623, check rollup read on 2026-11-12 | PASS | `candidate-quality` SUCCESS; CodeQL, GitGuardian and triage SUCCESS; `main-security` and the greeting SKIPPED as designed for a PR | optional | - |
 
 ## Criterion Acceptance
 

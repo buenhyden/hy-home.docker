@@ -236,9 +236,12 @@ repository, so ARC-09's Vault clause is N/A here.
 | W02-B, WP-19 | KEEP | The manual precondition 5 record and `archive_readiness_findings` stay separate. The latter is an on-read library function, reached only by `test_generation6.py`, with no CLI or gate. The user's Git-only goal and tool archive defaults are separate decisions: the protocol's Document Retention and Retirement summarizes and deletes, keeps version history as the record and leaves Stage 98 without bodies |
 | OPEN-ARCHIVE | No conflict | SPEC-0267 was held under Q-04 until its promotion passed, then removed in `06bf2e201`. No retention exception or authority conflict remains open |
 
-The SPEC-0248, 0249, 0250 and 0260 Tasks are merged and each has four
-criteria pending owner acceptance. They are not reimplemented. Their packages
-stay until their Tasks are terminal.
+The SPEC-0248, 0249, 0250 and 0260 Tasks are merged and are not
+reimplemented. On 2026-11-12 the owner accepted them. Each acceptance is
+recorded in its own Task through its own PR, because a PR carries one Spec:
+PR 961 (SPEC-0248, criterion 4 pending its full-suite rerun), PR 962
+(SPEC-0249), PR 963 (SPEC-0250) and PR 964 (SPEC-0260). Their packages stay until their Tasks
+are terminal and a removal is approved.
 
 ### SPEC-0267 retirement map 2026-11-12
 
@@ -356,6 +359,7 @@ outside FR-0004.
 | W02 v14.7 review result | 110 | W115 | independent-review | Commits `5a5fa122d`, `82275d313` and `4b7021386` | PASS | code-reviewer re-reviews: I1 to I5, M1 to M7, N1 to N3 and R1 to R3 resolved; final verdict PASS | required | W02 v14.7 review |
 | W02 document checks | 110 | W115 | metadata-links-governance | HEAD `82275d313`, clean tree, covering the protocol, Stage 01, 02, 03 and 05 changes and the removal | PASS | metadata check-changed selected 52 violations 0; links all PASS; occupancy 0; operations catalog PASS; agent governance contract PASS; renderer drift 0 | required | - |
 | W02 blocking-case scenarios result | 110 | W115 | removal-blocking-scenarios | Scratch repository outside this one, run on 2026-11-12 after the owner approved it | PASS | The normal body is reachable with matching bytes. An uncommitted difference, a squash-dropped intermediate commit, a reflog-only commit and a body missing from a shallow clone are each detected as blocking. A missing historical consumer is blocked by link alignment and `package-retirement-unrecorded` (W02 removal dry-run). A hold has no Git signal; precondition 5 checks it from the Task record | required | W02 blocking-case scenarios |
+| W02 v14.7 remote candidate | 110 | W115 | remote-candidate-quality | PR #960 head `a4b6c327f`, hosted run 43169451623, check rollup read on 2026-11-12 | PASS | `candidate-quality` SUCCESS; CodeQL, GitGuardian and triage SUCCESS; `main-security` and the greeting SKIPPED as designed for a PR | optional | - |
 
 ## Criterion Acceptance
 

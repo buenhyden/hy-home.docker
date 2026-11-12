@@ -428,6 +428,7 @@ those agents and are re-verified by each receiving work unit before it edits.
 | Designated sources subpage pass | 112 | W117 | research-review | Five subpages fetched 2026-11-12 | PASS | Template cell S for DS-07, DS-10, DS-11; adoption unchanged except optional H-13; five pages not fetched, recorded | optional | - |
 | Follow-up correction review | 112 | W117 | independent-document-review | Fresh-context code-reviewer of commit `968076235` | PASS | APPROVED; all seven claims confirmed; three minor findings fixed (SPEC-0264 counted once, bare verdict values, baseline note); earlier evidence and acceptance rows unchanged by `git diff 36fe501a1 968076235` | optional | - |
 | Intake independent review result | 112 | W117 | independent-document-review | Fresh-context code-reviewer of `7f1c82ab9` and `ce56a7256` contents | PASS | APPROVED. Three minor findings fixed: a `main-protection.md` line citation, the superseded Spec prose for criterion 111, and the overstated guard coverage (H-12 added). 9 of 10 citations spot-checked matched | required | Intake independent review |
+| W00 remote candidate | 112 | W117 | remote-candidate-quality | PR #960 head `a4b6c327f`, hosted run 43169451623, check rollup read on 2026-11-12 | PASS | `candidate-quality` SUCCESS; CodeQL, GitGuardian and triage SUCCESS; `main-security` and the greeting SKIPPED as designed for a PR | optional | - |
 
 ## Criterion Acceptance
 
