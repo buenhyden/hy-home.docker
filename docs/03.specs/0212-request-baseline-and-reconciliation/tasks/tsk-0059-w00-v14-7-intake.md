@@ -1,6 +1,6 @@
 ---
 title: "W00 v14.7 Intake Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -188,6 +188,7 @@ Registry `common` keys and the validators in the same commit.
 | H-09 | W06 | Stage-QA cells: COMMIT-AFTER and PR-BEFORE are absent. PUSH-BEFORE refuses only `main`. `edited` and `ready_for_review` are not handled. The merge-before negative cases are unexercised. `leaf.commit-message-contract` expects `PR_BASE_SHA` and `PR_HEAD_SHA`, while `ci-quality.yml` sets `TRUSTED_*` (UNVERIFIED). MERGE-DURING is N/A: there is no merge queue |
 | H-10 | W06 | OPEN-14 runner exit 124 cause diagnosis, read-only first |
 | H-11 | W07 | Done 2026-11-12: KEEP, no projection (see Vocabulary changes) |
+| H-13 | W03 | Optional: cite the C4 diagram review checklist (c4model.com/diagrams/checklist) from the architecture description template; no current rule requires it |
 | H-12 | W05 | The Release guards match fixed names only. A guard that rejects a Release document role under another id, type or template name needs a rule, for example a profile `type` or template path ending in `release`, plus a renamed-profile negative test |
 
 ### Vocabulary changes 2026-11-12
@@ -302,8 +303,17 @@ reports. Landing pages and the named subpages were read, not whole sites.
 | DS-11 | ADR (adr.github.io) | no date | "Some rights reserved" | S N N S N N | Adopted: the decision template and the ADR lifecycle in `sdlc.md` |
 | DS-12 | arc42 | no date | CC BY-SA 4.0 | S N S N S S | Adopted in part: the description template carries a subset of arc42 sections |
 
-No source is a change candidate: four are adopted, and the rest add nothing
-this repository lacks or are out of scope. A source informs a choice here and
+A subpage pass on 2026-11-12 read the Spec Kit spec template, the adr.github.io
+templates page, the C4 review checklist, arc42 section 2 and the Diátaxis
+reference page. The template cell becomes S for DS-07, DS-10 and DS-11;
+no governance or policy cell changed. The Diátaxis home page, C4 notation,
+Spec Kit plan and tasks templates and arc42 section 1 were not fetched and
+stay UNVERIFIED for those pages only.
+
+No source requires a change: four are adopted, and the rest add nothing
+this repository lacks or are out of scope. One optional candidate remains:
+the architecture description template could cite the C4 diagram review
+checklist when diagrams are reviewed (H-13). A source informs a choice here and
 never stands in for the owner's authority.
 
 ### W00 follow-up correction 2026-11-12
@@ -312,7 +322,7 @@ The owner sent a W00 follow-up prompt on 2026-11-12. It asks for the
 historical audit IDs to be judged apart from product state, for three
 wordings to be narrowed, and for each real residual to sit with its existing
 owner. It runs at the same baseline: `origin/main` `4cd25b95b`, this branch
-at `36fe501a1`, clean tree. The earlier rows of this Task, which back the
+at `36fe501a1` (before this correction), clean tree. The earlier rows of this Task, which back the
 accepted criterion 112, stay unchanged; this section is the current reading.
 
 Wording corrections:
@@ -335,11 +345,11 @@ Wording corrections:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | OPEN-01 | Semantic atomization of the 1,250 original lines | Original SHA `dc348e7f`; TSK-0053 trace section; owner answer 2026-11-12 | Superseded by the 106-ID set and per-ID assessments | Lineage only | None | TSK-0053, as history | SUPERSEDED | None | None |
 | OPEN-02 | Judgment of 14,028 relation candidates | Same; TSK-0030 covers a different set | Same decision | Lineage only | None | TSK-0053, as history | SUPERSEDED | None | None |
-| OPEN-03 | Current state of 208 legacy work packages | 52 Docker rows mapped to issued CR IDs in TSK-0053 | None needed | Trace | Each package's residual stays with its Task | Those Tasks | CLOSED_BY_EVIDENCE (trace) | None | None |
+| OPEN-03 | Current state of 208 legacy work packages | 52 Docker rows mapped to issued CR IDs in TSK-0053 | None needed | Trace | Each package's residual stays with its Task | Those Tasks | CLOSED_BY_EVIDENCE | None | None |
 | OPEN-04 | Byte comparison of WMC-20261110-03 and the 20261102 v4 original | Workspace and package searched; no copy, no consumer | None | Byte comparison | None | None | BLOCKED_EVIDENCE | Compare only if those exact bytes are supplied | The two-file byte comparison |
 | OPEN-05 | Retrieval of the LambdaDB article | Direct fetch succeeded 2026-11-12 (DS-03) | Not adopted | Retrieval and adoption check | None | None | NOT_APPLICABLE | None | None |
 | OPEN-06 | Upstream code, license and 72 perspectives | DS-01 to DS-12 review; SillyMemory AGPL-3.0 | Not adopted | Six-perspective review | None | None | NOT_APPLICABLE | A future adoption runs its own review | None |
-| OPEN-07 | Local workspace inventory | This Task's read denominator | None needed | W00-selected surfaces | None | TSK-0059 | CLOSED_BY_EVIDENCE (W00 scope) | None | None |
+| OPEN-07 | Local workspace inventory | This Task's read denominator | None needed | W00-selected surfaces | None | TSK-0059 | CLOSED_BY_EVIDENCE | None | None |
 | OPEN-08 | Operations, native, cluster and recovery observation | Owner Tasks' acceptance rows | None at W00 | Not inspected | Yes, see residuals O-1 to O-5 | TSK-0047, 0048, 0054, 0055, SPEC-0264, SPEC-0270 | UNVERIFIED (not inspected here) | W10 per residual | Each named operation only |
 | OPEN-09 | QA conforms to contracts | Inventory of 2026-11-12 | None | Inventory | H-05 done; H-08, H-12 open | No Task yet; W05 issues one | RESIDUAL_CONFIRMED | W05 | Those checks only |
 | OPEN-10 | Docker remote changes applied locally | TSK-0047, TSK-0048 texts | Owner holds per Task | Not inspected beyond Task text | Yes, see O-1 to O-3 | TSK-0047, TSK-0048 | UNVERIFIED (not inspected here) | W10 per residual | Each named recreate or window |
@@ -356,7 +366,7 @@ Wording corrections:
 | O-2 | `prometheus` recreate for the `flower` label and `flower` removal | TSK-0048 | Not run (TSK-0048 L218-219) | W10 |
 | O-3 | OpenBao r3 cutover; HOME still runs 2.7.1 r1 | TSK-0047 | 2026-11-11 window cancelled before any step; the next one needs an r4 image | W10 |
 | O-4 | Live readbacks: Hermes OTLP (108), `devops` brief (107), Codex folder-guide delivery (SPEC-0264 8), memory backup adoption (SPEC-0270 4) | TSK-0055, TSK-0054, SPEC-0264, SPEC-0270 | Pending in each Task | W10 |
-| O-5 | W02, W03 and hook follow-ups | TSK-0057 (110 pending), TSK-0058 (111 pending), SPEC-0264 (8 pending) | PR 955, 956 and 957 merged; their criteria are not accepted. Removed packages and checks stay removed | Their Tasks |
+| O-5 | W02, W03 and hook follow-ups | TSK-0057 (110 pending), TSK-0058 (111 pending); the hook follow-up's SPEC-0264 criterion 8 is O-4 | PR 955, 956 and 957 merged; their criteria are not accepted. Removed packages and checks stay removed | Their Tasks |
 
 For W10, each of O-1 to O-4 keeps its owner's approval boundary:
 
@@ -415,6 +425,8 @@ those agents and are re-verified by each receiving work unit before it edits.
 | External sources re-check | 112 | W117 | research-recheck | RS-09, RS-18, RS-22, RS-39, RS-49 and RS-50 primary URLs fetched 2026-11-12 | PASS | All six retrieved; each narrow claim supported with a quoted sentence; applied instructions are project choices | optional | - |
 | PR 953-959 diff review | 112 | W117 | pull-request-diff-review | First-parent diffs and bodies of merges `0a726ee1c` to `4cd25b95b` | PASS | Review completed; no protected-work regression; one Important record gap and minor mismatches dispositioned in the table above | required | - |
 | Designated sources review | 112 | W117 | research-review | 12 designated sources fetched 2026-11-12 by three read-only agents | PASS | 72 of 72 cells judged S or N, none UNVERIFIED; adoption recorded per source; DS-05 home page HTTP 429, judged from two subpages | required | - |
+| Designated sources subpage pass | 112 | W117 | research-review | Five subpages fetched 2026-11-12 | PASS | Template cell S for DS-07, DS-10, DS-11; adoption unchanged except optional H-13; five pages not fetched, recorded | optional | - |
+| Follow-up correction review | 112 | W117 | independent-document-review | Fresh-context code-reviewer of commit `968076235` | PASS | APPROVED; all seven claims confirmed; three minor findings fixed (SPEC-0264 counted once, bare verdict values, baseline note); earlier evidence and acceptance rows unchanged by `git diff 36fe501a1 968076235` | optional | - |
 | Intake independent review result | 112 | W117 | independent-document-review | Fresh-context code-reviewer of `7f1c82ab9` and `ce56a7256` contents | PASS | APPROVED. Three minor findings fixed: a `main-protection.md` line citation, the superseded Spec prose for criterion 111, and the overstated guard coverage (H-12 added). 9 of 10 citations spot-checked matched | required | Intake independent review |
 
 ## Criterion Acceptance
@@ -432,7 +444,8 @@ roles belong to W03 and W04.
 
 Open, with owners:
 
-- H-04 (13 roles left), H-06, H-07 with the Task role, H-08, H-09, H-10 and H-12.
+- H-04 (13 roles left), H-06, H-07 with the Task role, H-08, H-09, H-10, H-12
+  and the optional H-13.
   H-01, H-02, H-03, H-05 and H-11 are done.
 - OPEN-09, 11, 12 and 14 (RESIDUAL_CONFIRMED).
 - OPEN-04: BLOCKED_EVIDENCE for the two-file byte comparison only; no product
