@@ -228,6 +228,11 @@ template, parsers, tests and current documents together.
   heading; evidence requirements name each package's recorded checks;
   criterion decisions are said to be recorded in the Task's Criterion
   Acceptance table; labels and en dashes restored.
+- `8f9265822`, cited by the Spec re-review and GREEN rows, is the commit
+  before the branch was rebased onto the Requirement branch; the pushed
+  equivalent is `25f280a66`. `git diff 8f9265822 25f280a66` is empty for
+  every `spec.md`, `docs/99.templates`, `scripts` and `tests`; it differs
+  only in Requirement-branch and W02 records.
 - Tests: the template-outline and nested-section fixtures use the Spec form,
   and the old-form test rejects `Contracts`, `Failure Conditions`, `Related
   Documents` and `Out of Scope`.
